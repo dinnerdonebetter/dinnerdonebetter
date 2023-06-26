@@ -26,7 +26,7 @@ func TestServiceSettingsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		serviceSettingDataManager := &mocktypes.ServiceSettingDataManager{}
+		serviceSettingDataManager := &mocktypes.ServiceSettingDataManagerMock{}
 		serviceSettingDataManager.On(
 			"GetServiceSetting",
 			testutils.ContextMatcher,
@@ -79,7 +79,7 @@ func TestServiceSettingsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		serviceSettingDataManager := &mocktypes.ServiceSettingDataManager{}
+		serviceSettingDataManager := &mocktypes.ServiceSettingDataManagerMock{}
 		serviceSettingDataManager.On(
 			"GetServiceSetting",
 			testutils.ContextMatcher,
@@ -107,7 +107,7 @@ func TestServiceSettingsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		serviceSettingDataManager := &mocktypes.ServiceSettingDataManager{}
+		serviceSettingDataManager := &mocktypes.ServiceSettingDataManagerMock{}
 		serviceSettingDataManager.On(
 			"GetServiceSetting",
 			testutils.ContextMatcher,
@@ -141,7 +141,7 @@ func TestServiceSettingsService_ListHandler(T *testing.T) {
 
 		exampleServiceSettingList := fakes.BuildFakeServiceSettingList()
 
-		serviceSettingDataManager := &mocktypes.ServiceSettingDataManager{}
+		serviceSettingDataManager := &mocktypes.ServiceSettingDataManagerMock{}
 		serviceSettingDataManager.On(
 			"GetServiceSettings",
 			testutils.ContextMatcher,
@@ -194,7 +194,7 @@ func TestServiceSettingsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		serviceSettingDataManager := &mocktypes.ServiceSettingDataManager{}
+		serviceSettingDataManager := &mocktypes.ServiceSettingDataManagerMock{}
 		serviceSettingDataManager.On(
 			"GetServiceSettings",
 			testutils.ContextMatcher,
@@ -223,7 +223,7 @@ func TestServiceSettingsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		serviceSettingDataManager := &mocktypes.ServiceSettingDataManager{}
+		serviceSettingDataManager := &mocktypes.ServiceSettingDataManagerMock{}
 		serviceSettingDataManager.On(
 			"GetServiceSettings",
 			testutils.ContextMatcher,
@@ -264,7 +264,7 @@ func TestServiceSettingsService_SearchHandler(T *testing.T) {
 			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		serviceSettingDataManager := &mocktypes.ServiceSettingDataManager{}
+		serviceSettingDataManager := &mocktypes.ServiceSettingDataManagerMock{}
 		serviceSettingDataManager.On(
 			"SearchForServiceSettings",
 			testutils.ContextMatcher,
@@ -322,7 +322,7 @@ func TestServiceSettingsService_SearchHandler(T *testing.T) {
 			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		serviceSettingDataManager := &mocktypes.ServiceSettingDataManager{}
+		serviceSettingDataManager := &mocktypes.ServiceSettingDataManagerMock{}
 		serviceSettingDataManager.On(
 			"SearchForServiceSettings",
 			testutils.ContextMatcher,
@@ -355,7 +355,7 @@ func TestServiceSettingsService_SearchHandler(T *testing.T) {
 			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		serviceSettingDataManager := &mocktypes.ServiceSettingDataManager{}
+		serviceSettingDataManager := &mocktypes.ServiceSettingDataManagerMock{}
 		serviceSettingDataManager.On(
 			"SearchForServiceSettings",
 			testutils.ContextMatcher,

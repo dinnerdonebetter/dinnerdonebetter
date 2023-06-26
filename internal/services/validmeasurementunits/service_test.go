@@ -21,7 +21,7 @@ import (
 func buildTestService() *service {
 	return &service{
 		logger:                          logging.NewNoopLogger(),
-		validMeasurementUnitDataManager: &mocktypes.ValidMeasurementUnitDataManager{},
+		validMeasurementUnitDataManager: &mocktypes.ValidMeasurementUnitDataManagerMock{},
 		validMeasurementUnitIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:                  mockencoding.NewMockEncoderDecoder(),
 		tracer:                          tracing.NewTracerForTest("test"),
@@ -62,7 +62,7 @@ func TestProvideValidMeasurementUnitsService(T *testing.T) {
 			logger,
 			cfg,
 			&searchcfg.Config{},
-			&mocktypes.ValidMeasurementUnitDataManager{},
+			&mocktypes.ValidMeasurementUnitDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
@@ -93,7 +93,7 @@ func TestProvideValidMeasurementUnitsService(T *testing.T) {
 			logger,
 			cfg,
 			&searchcfg.Config{},
-			&mocktypes.ValidMeasurementUnitDataManager{},
+			&mocktypes.ValidMeasurementUnitDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,

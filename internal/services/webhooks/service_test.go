@@ -19,7 +19,7 @@ import (
 func buildTestService() *service {
 	return &service{
 		logger:             logging.NewNoopLogger(),
-		webhookDataManager: &mocktypes.WebhookDataManager{},
+		webhookDataManager: &mocktypes.WebhookDataManagerMock{},
 		webhookIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:     mockencoding.NewMockEncoderDecoder(),
 		tracer:             tracing.NewTracerForTest("test"),
@@ -48,7 +48,7 @@ func TestProvideWebhooksService(T *testing.T) {
 		actual, err := ProvideWebhooksService(
 			logging.NewNoopLogger(),
 			cfg,
-			&mocktypes.WebhookDataManager{},
+			&mocktypes.WebhookDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
@@ -74,7 +74,7 @@ func TestProvideWebhooksService(T *testing.T) {
 		actual, err := ProvideWebhooksService(
 			logging.NewNoopLogger(),
 			cfg,
-			&mocktypes.WebhookDataManager{},
+			&mocktypes.WebhookDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,

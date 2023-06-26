@@ -54,8 +54,8 @@ func TestProvideHouseholdInvitationsService(T *testing.T) {
 		actual, err := ProvideHouseholdInvitationsService(
 			logging.NewNoopLogger(),
 			cfg,
-			&mocktypes.UserDataManager{},
-			&mocktypes.HouseholdInvitationDataManager{},
+			&mocktypes.UserDataManagerMock{},
+			&mocktypes.HouseholdInvitationDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
@@ -83,8 +83,8 @@ func TestProvideHouseholdInvitationsService(T *testing.T) {
 		actual, err := ProvideHouseholdInvitationsService(
 			logging.NewNoopLogger(),
 			cfg,
-			&mocktypes.UserDataManager{},
-			&mocktypes.HouseholdInvitationDataManager{},
+			&mocktypes.UserDataManagerMock{},
+			&mocktypes.HouseholdInvitationDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,

@@ -19,7 +19,7 @@ import (
 func buildTestService() *service {
 	return &service{
 		logger:                                  logging.NewNoopLogger(),
-		householdInstrumentOwnershipDataManager: &mocktypes.HouseholdInstrumentOwnershipDataManager{},
+		householdInstrumentOwnershipDataManager: &mocktypes.HouseholdInstrumentOwnershipDataManagerMock{},
 		householdInstrumentOwnershipIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:                          mockencoding.NewMockEncoderDecoder(),
 		tracer:                                  tracing.NewTracerForTest("test"),
@@ -50,7 +50,7 @@ func TestProvideHouseholdInstrumentOwnershipsService(T *testing.T) {
 		s, err := ProvideService(
 			logger,
 			cfg,
-			&mocktypes.HouseholdInstrumentOwnershipDataManager{},
+			&mocktypes.HouseholdInstrumentOwnershipDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
@@ -78,7 +78,7 @@ func TestProvideHouseholdInstrumentOwnershipsService(T *testing.T) {
 		s, err := ProvideService(
 			logger,
 			cfg,
-			&mocktypes.HouseholdInstrumentOwnershipDataManager{},
+			&mocktypes.HouseholdInstrumentOwnershipDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,

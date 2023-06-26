@@ -149,7 +149,6 @@ type (
 		BuildLoginHandler(bool) func(http.ResponseWriter, *http.Request)
 		EndSessionHandler(http.ResponseWriter, *http.Request)
 		CycleCookieSecretHandler(http.ResponseWriter, *http.Request)
-		PASETOHandler(http.ResponseWriter, *http.Request)
 		ChangeActiveHouseholdHandler(http.ResponseWriter, *http.Request)
 
 		PermissionFilterMiddleware(permissions ...authorization.Permission) func(next http.Handler) http.Handler
@@ -157,6 +156,8 @@ type (
 		UserAttributionMiddleware(next http.Handler) http.Handler
 		AuthorizationMiddleware(next http.Handler) http.Handler
 		ServiceAdminMiddleware(next http.Handler) http.Handler
+
+		OAuth2Service
 	}
 )
 

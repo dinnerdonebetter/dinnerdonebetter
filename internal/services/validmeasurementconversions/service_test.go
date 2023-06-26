@@ -20,7 +20,7 @@ import (
 func buildTestService() *service {
 	return &service{
 		logger:                                logging.NewNoopLogger(),
-		validMeasurementConversionDataManager: &mocktypes.ValidMeasurementConversionDataManager{},
+		validMeasurementConversionDataManager: &mocktypes.ValidMeasurementConversionDataManagerMock{},
 		validMeasurementConversionIDFetcher:   func(req *http.Request) string { return "" },
 		validMeasurementUnitIDFetcher:         func(req *http.Request) string { return "" },
 		encoderDecoder:                        mockencoding.NewMockEncoderDecoder(),
@@ -58,7 +58,7 @@ func TestProvideValidMeasurementConversionsService(T *testing.T) {
 			ctx,
 			logger,
 			&cfg,
-			&mocktypes.ValidMeasurementConversionDataManager{},
+			&mocktypes.ValidMeasurementConversionDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
@@ -88,7 +88,7 @@ func TestProvideValidMeasurementConversionsService(T *testing.T) {
 			ctx,
 			logger,
 			&cfg,
-			&mocktypes.ValidMeasurementConversionDataManager{},
+			&mocktypes.ValidMeasurementConversionDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,

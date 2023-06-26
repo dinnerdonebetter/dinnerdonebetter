@@ -12,7 +12,9 @@ import (
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/analytics/segment"
 	"github.com/dinnerdonebetter/backend/internal/database"
+	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
 	emailcfg "github.com/dinnerdonebetter/backend/internal/email/config"
+	"github.com/dinnerdonebetter/backend/internal/email/sendgrid"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging/zerolog"
 	"github.com/dinnerdonebetter/backend/internal/search/algolia"
@@ -35,6 +37,8 @@ const (
 	gcpPASETOLocalKeyEnvVarKey           = "DINNER_DONE_BETTER_PASETO_LOCAL_KEY"
 	gcpAlgoliaAPIKeyEnvVarKey            = "DINNER_DONE_BETTER_ALGOLIA_API_KEY"
 	gcpAlgoliaAppIDEnvVarKey             = "DINNER_DONE_BETTER_ALGOLIA_APPLICATION_ID"
+	/* #nosec G101 */
+	gcpOauth2TokenEncryptionKeyEnvVarKey = "DINNER_DONE_BETTER_OAUTH2_TOKEN_ENCRYPTION_KEY"
 	/* #nosec G101 */
 	gcpDatabaseUserPasswordEnvVarKey = "DINNER_DONE_BETTER_DATABASE_PASSWORD"
 	/* #nosec G101 */
@@ -93,6 +97,8 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client
 	)
 
 	cfg.Database.ConnectionDetails = database.ConnectionDetails(dbURI)
+	cfg.Database.OAuth2TokenEncryptionKey = os.Getenv(gcpOauth2TokenEncryptionKeyEnvVarKey)
+
 	cfg.Services.Auth.Cookies.HashKey = os.Getenv(gcpCookieHashKeyEnvVarKey)
 	cfg.Services.Auth.Cookies.BlockKey = os.Getenv(gcpCookieBlockKeyEnvVarKey)
 	cfg.Services.Auth.PASETO.LocalModeKey = []byte(os.Getenv(gcpPASETOLocalKeyEnvVarKey))
@@ -313,7 +319,12 @@ func GetOutboundEmailerConfigFromGoogleCloudSecretManager(ctx context.Context) (
 	}
 
 	cfg.Analytics = analyticscfg.Config{}
-	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)
+	cfg.Email = emailcfg.Config{
+		Provider: emailcfg.ProviderSendgrid,
+		Sendgrid: &sendgrid.Config{
+			APIToken: os.Getenv(gcpSendgridTokenEnvVarKey),
+		},
+	}
 
 	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
 		return nil, validationErr
@@ -348,6 +359,29 @@ func GetSearchDataIndexerConfigFromGoogleCloudSecretManager(ctx context.Context)
 
 	cfg.Analytics = analyticscfg.Config{}
 	cfg.Email = emailcfg.Config{}
+
+	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
+		return nil, validationErr
+	}
+
+	return cfg, nil
+}
+
+// GetEmailProberConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
+func GetEmailProberConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
+	cfg, err := getWorkerConfigFromGoogleCloudSecretManager(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	cfg.Database = dbconfig.Config{ConnectionDetails: " "}
+	cfg.Analytics = analyticscfg.Config{}
+	cfg.Email = emailcfg.Config{
+		Provider: emailcfg.ProviderSendgrid,
+		Sendgrid: &sendgrid.Config{
+			APIToken: os.Getenv(gcpSendgridTokenEnvVarKey),
+		},
+	}
 
 	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
 		return nil, validationErr

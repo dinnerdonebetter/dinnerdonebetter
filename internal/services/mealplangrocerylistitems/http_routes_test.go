@@ -29,7 +29,7 @@ func TestMealPlanGroceryListItemsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealPlanGroceryListItemDataManager := &mocktypes.MealPlanGroceryListItemDataManager{}
+		mealPlanGroceryListItemDataManager := &mocktypes.MealPlanGroceryListItemDataManagerMock{}
 		mealPlanGroceryListItemDataManager.On(
 			"GetMealPlanGroceryListItem",
 			testutils.ContextMatcher,
@@ -83,7 +83,7 @@ func TestMealPlanGroceryListItemsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealPlanGroceryListItemDataManager := &mocktypes.MealPlanGroceryListItemDataManager{}
+		mealPlanGroceryListItemDataManager := &mocktypes.MealPlanGroceryListItemDataManagerMock{}
 		mealPlanGroceryListItemDataManager.On(
 			"GetMealPlanGroceryListItem",
 			testutils.ContextMatcher,
@@ -112,7 +112,7 @@ func TestMealPlanGroceryListItemsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealPlanGroceryListItemDataManager := &mocktypes.MealPlanGroceryListItemDataManager{}
+		mealPlanGroceryListItemDataManager := &mocktypes.MealPlanGroceryListItemDataManagerMock{}
 		mealPlanGroceryListItemDataManager.On(
 			"GetMealPlanGroceryListItem",
 			testutils.ContextMatcher,
@@ -147,7 +147,7 @@ func TestMealPlanGroceryListItemsService_ListHandler(T *testing.T) {
 
 		exampleMealPlanGroceryListItemList := fakes.BuildFakeMealPlanGroceryListItemList().Data
 
-		mealPlanGroceryListItemDataManager := &mocktypes.MealPlanGroceryListItemDataManager{}
+		mealPlanGroceryListItemDataManager := &mocktypes.MealPlanGroceryListItemDataManagerMock{}
 		mealPlanGroceryListItemDataManager.On(
 			"GetMealPlanGroceryListItemsForMealPlan",
 			testutils.ContextMatcher,
@@ -200,7 +200,7 @@ func TestMealPlanGroceryListItemsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealPlanGroceryListItemDataManager := &mocktypes.MealPlanGroceryListItemDataManager{}
+		mealPlanGroceryListItemDataManager := &mocktypes.MealPlanGroceryListItemDataManagerMock{}
 		mealPlanGroceryListItemDataManager.On(
 			"GetMealPlanGroceryListItemsForMealPlan",
 			testutils.ContextMatcher,
@@ -229,7 +229,7 @@ func TestMealPlanGroceryListItemsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealPlanGroceryListItemDataManager := &mocktypes.MealPlanGroceryListItemDataManager{}
+		mealPlanGroceryListItemDataManager := &mocktypes.MealPlanGroceryListItemDataManagerMock{}
 		mealPlanGroceryListItemDataManager.On(
 			"GetMealPlanGroceryListItemsForMealPlan",
 			testutils.ContextMatcher,
@@ -275,14 +275,14 @@ func TestMealPlanGroceryListItemsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanGroceryListItemDataManager.On(
+		dbManager.MealPlanGroceryListItemDataManagerMock.On(
 			"GetMealPlanGroceryListItem",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanGroceryListItem.ID,
 		).Return(expectedPrepStep, nil)
 
-		dbManager.MealPlanGroceryListItemDataManager.On(
+		dbManager.MealPlanGroceryListItemDataManagerMock.On(
 			"UpdateMealPlanGroceryListItem",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(input *types.MealPlanGroceryListItem) bool { return true }),
@@ -343,14 +343,14 @@ func TestMealPlanGroceryListItemsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanGroceryListItemDataManager.On(
+		dbManager.MealPlanGroceryListItemDataManagerMock.On(
 			"GetMealPlanGroceryListItem",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanGroceryListItem.ID,
 		).Return(helper.exampleMealPlanGroceryListItem, nil)
 
-		dbManager.MealPlanGroceryListItemDataManager.On(
+		dbManager.MealPlanGroceryListItemDataManagerMock.On(
 			"UpdateMealPlanGroceryListItem",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(input *types.MealPlanGroceryListItem) bool { return true }),
@@ -383,14 +383,14 @@ func TestMealPlanGroceryListItemsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanGroceryListItemDataManager.On(
+		dbManager.MealPlanGroceryListItemDataManagerMock.On(
 			"GetMealPlanGroceryListItem",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
 			helper.exampleMealPlanGroceryListItem.ID,
 		).Return(expectedPrepStep, nil)
 
-		dbManager.MealPlanGroceryListItemDataManager.On(
+		dbManager.MealPlanGroceryListItemDataManagerMock.On(
 			"UpdateMealPlanGroceryListItem",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(input *types.MealPlanGroceryListItem) bool { return true }),
@@ -421,7 +421,7 @@ func TestMealPlanGroceryListItemsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealPlanGroceryListItemDataManager := &mocktypes.MealPlanGroceryListItemDataManager{}
+		mealPlanGroceryListItemDataManager := &mocktypes.MealPlanGroceryListItemDataManagerMock{}
 		mealPlanGroceryListItemDataManager.On(
 			"MealPlanGroceryListItemExists",
 			testutils.ContextMatcher,
@@ -456,7 +456,7 @@ func TestMealPlanGroceryListItemsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealPlanGroceryListItemDataManager := &mocktypes.MealPlanGroceryListItemDataManager{}
+		mealPlanGroceryListItemDataManager := &mocktypes.MealPlanGroceryListItemDataManagerMock{}
 		mealPlanGroceryListItemDataManager.On(
 			"MealPlanGroceryListItemExists",
 			testutils.ContextMatcher,
@@ -478,7 +478,7 @@ func TestMealPlanGroceryListItemsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealPlanGroceryListItemDataManager := &mocktypes.MealPlanGroceryListItemDataManager{}
+		mealPlanGroceryListItemDataManager := &mocktypes.MealPlanGroceryListItemDataManagerMock{}
 		mealPlanGroceryListItemDataManager.On(
 			"MealPlanGroceryListItemExists",
 			testutils.ContextMatcher,

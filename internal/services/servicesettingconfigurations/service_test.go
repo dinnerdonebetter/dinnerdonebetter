@@ -19,7 +19,7 @@ import (
 func buildTestService() *service {
 	return &service{
 		logger:                                 logging.NewNoopLogger(),
-		serviceSettingConfigurationDataManager: &mocktypes.ServiceSettingConfigurationDataManager{},
+		serviceSettingConfigurationDataManager: &mocktypes.ServiceSettingConfigurationDataManagerMock{},
 		serviceSettingConfigurationIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:                         mockencoding.NewMockEncoderDecoder(),
 		tracer:                                 tracing.NewTracerForTest("test"),
@@ -53,7 +53,7 @@ func TestProvideServiceSettingConfigurationsService(T *testing.T) {
 		s, err := ProvideService(
 			logger,
 			&cfg,
-			&mocktypes.ServiceSettingConfigurationDataManager{},
+			&mocktypes.ServiceSettingConfigurationDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
@@ -80,7 +80,7 @@ func TestProvideServiceSettingConfigurationsService(T *testing.T) {
 		s, err := ProvideService(
 			logger,
 			&cfg,
-			&mocktypes.ServiceSettingConfigurationDataManager{},
+			&mocktypes.ServiceSettingConfigurationDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,

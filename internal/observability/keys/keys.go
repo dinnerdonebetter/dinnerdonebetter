@@ -41,10 +41,6 @@ const (
 	FilterLimitKey = "query_filter.limit"
 	// FilterIsNilKey is the standard key for referring to a types.QueryFilter's null status.
 	FilterIsNilKey = "query_filter.is_nil"
-	// APIClientClientIDKey is the standard key for referring to an API client's client ID.
-	APIClientClientIDKey = "api_client.client.id"
-	// APIClientDatabaseIDKey is the standard key for referring to an API client's database ID.
-	APIClientDatabaseIDKey = "api_client.id"
 	// WebhookIDKey is the standard key for referring to a webhook's ID.
 	WebhookIDKey = "webhook.id"
 	// URLKey is the standard key for referring to a URL.
@@ -178,4 +174,26 @@ const (
 
 	// RecipeRatingIDKey is the standard key for referring to a recipe rating's ID.
 	RecipeRatingIDKey = "recipe_rating.id"
+
+	// OAuth2ClientIDKey is the standard key for referring to an OAuth2 client's database ID.
+	OAuth2ClientIDKey = "oauth2_clients.id"
+
+	// OAuth2ClientClientIDKey is the standard key for referring to an OAuth2 client's client ID.
+	OAuth2ClientClientIDKey = "oauth2_clients.client_id"
+
+	// OAuth2ClientTokenIDKey is the standard key for referring to an OAuth2 client token's ID.
+	/* #nosec G101 */
+	OAuth2ClientTokenIDKey = "oauth2_client_tokens.id"
+
+	// OAuth2ClientTokenCodeKey is the standard key for referring to an OAuth2 client token's code.
+	/* #nosec G101 */
+	OAuth2ClientTokenCodeKey = "oauth2_client_tokens.code"
+
+	// OAuth2ClientTokenAccessKey is the standard key for referring to an OAuth2 client token's access.
+	/* #nosec G101 */
+	OAuth2ClientTokenAccessKey = "oauth2_client_tokens.access"
+
+	// OAuth2ClientTokenRefreshKey is the standard key for referring to an OAuth2 client token's refresh.
+	/* #nosec G101 */
+	OAuth2ClientTokenRefreshKey = "oauth2_client_tokens.refresh"
 )

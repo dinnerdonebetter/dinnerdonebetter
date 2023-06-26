@@ -125,16 +125,6 @@ func AttachSessionContextDataToSpan(span trace.Span, sessionCtxData *types.Sessi
 	}
 }
 
-// AttachAPIClientDatabaseIDToSpan is a consistent way to attach an API client's database row ID to a span.
-func AttachAPIClientDatabaseIDToSpan(span trace.Span, id string) {
-	AttachStringToSpan(span, keys.APIClientDatabaseIDKey, id)
-}
-
-// AttachAPIClientClientIDToSpan is a consistent way to attach an API client's ID to a span.
-func AttachAPIClientClientIDToSpan(span trace.Span, id string) {
-	AttachStringToSpan(span, keys.APIClientClientIDKey, id)
-}
-
 // AttachUserToSpan provides a consistent way to attach a user to a span.
 func AttachUserToSpan(span trace.Span, user *types.User) {
 	if user != nil {
@@ -442,4 +432,14 @@ func AttachHouseholdInstrumentOwnershipIDToSpan(span trace.Span, id string) {
 // AttachRecipeRatingIDToSpan attaches a recipe rating ID to a given span.
 func AttachRecipeRatingIDToSpan(span trace.Span, id string) {
 	AttachStringToSpan(span, keys.RecipeRatingIDKey, id)
+}
+
+// AttachOAuth2ClientIDToSpan attaches a recipe rating ID to a given span.
+func AttachOAuth2ClientIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.OAuth2ClientIDKey, id)
+}
+
+// AttachOAuth2ClientClientIDToSpan attaches a recipe rating ID to a given span.
+func AttachOAuth2ClientClientIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.OAuth2ClientIDKey, id)
 }

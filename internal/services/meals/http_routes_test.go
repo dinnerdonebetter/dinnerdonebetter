@@ -45,7 +45,7 @@ func TestMealsService_CreateMealHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealDataManager.On(
+		dbManager.MealDataManagerMock.On(
 			"CreateMeal",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.MealDatabaseCreationInput) bool { return true }),
@@ -138,7 +138,7 @@ func TestMealsService_CreateMealHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealDataManager.On(
+		dbManager.MealDataManagerMock.On(
 			"CreateMeal",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.MealDatabaseCreationInput) bool { return true }),
@@ -167,7 +167,7 @@ func TestMealsService_CreateMealHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealDataManager.On(
+		dbManager.MealDataManagerMock.On(
 			"CreateMeal",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.MealDatabaseCreationInput) bool { return true }),
@@ -201,7 +201,7 @@ func TestMealsService_ReadMealHandler(T *testing.T) {
 			return helper.exampleMeal.ID
 		}
 
-		mealDataManager := &mocktypes.MealDataManager{}
+		mealDataManager := &mocktypes.MealDataManagerMock{}
 		mealDataManager.On(
 			"GetMeal",
 			testutils.ContextMatcher,
@@ -257,7 +257,7 @@ func TestMealsService_ReadMealHandler(T *testing.T) {
 			return helper.exampleMeal.ID
 		}
 
-		mealDataManager := &mocktypes.MealDataManager{}
+		mealDataManager := &mocktypes.MealDataManagerMock{}
 		mealDataManager.On(
 			"GetMeal",
 			testutils.ContextMatcher,
@@ -288,7 +288,7 @@ func TestMealsService_ReadMealHandler(T *testing.T) {
 			return helper.exampleMeal.ID
 		}
 
-		mealDataManager := &mocktypes.MealDataManager{}
+		mealDataManager := &mocktypes.MealDataManagerMock{}
 		mealDataManager.On(
 			"GetMeal",
 			testutils.ContextMatcher,
@@ -322,7 +322,7 @@ func TestMealsService_ListMealsHandler(T *testing.T) {
 
 		exampleMealList := fakes.BuildFakeMealList()
 
-		mealDataManager := &mocktypes.MealDataManager{}
+		mealDataManager := &mocktypes.MealDataManagerMock{}
 		mealDataManager.On(
 			"GetMeals",
 			testutils.ContextMatcher,
@@ -375,7 +375,7 @@ func TestMealsService_ListMealsHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealDataManager := &mocktypes.MealDataManager{}
+		mealDataManager := &mocktypes.MealDataManagerMock{}
 		mealDataManager.On(
 			"GetMeals",
 			testutils.ContextMatcher,
@@ -404,7 +404,7 @@ func TestMealsService_ListMealsHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealDataManager := &mocktypes.MealDataManager{}
+		mealDataManager := &mocktypes.MealDataManagerMock{}
 		mealDataManager.On(
 			"GetMeals",
 			testutils.ContextMatcher,
@@ -440,7 +440,7 @@ func TestMealsService_SearchMealsHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{types.SearchQueryKey: []string{exampleQuery}}.Encode()
 
-		mealDataManager := &mocktypes.MealDataManager{}
+		mealDataManager := &mocktypes.MealDataManagerMock{}
 		mealDataManager.On(
 			"SearchForMeals",
 			testutils.ContextMatcher,
@@ -493,7 +493,7 @@ func TestMealsService_SearchMealsHandler(T *testing.T) {
 		).Return(mealSearchSubsets, nil)
 		helper.service.searchIndex = searchIndex
 
-		mealDataManager := &mocktypes.MealDataManager{}
+		mealDataManager := &mocktypes.MealDataManagerMock{}
 		mealDataManager.On(
 			"GetMealsWithIDs",
 			testutils.ContextMatcher,
@@ -525,7 +525,7 @@ func TestMealsService_SearchMealsHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{types.SearchQueryKey: []string{exampleQuery}}.Encode()
 
-		mealDataManager := &mocktypes.MealDataManager{}
+		mealDataManager := &mocktypes.MealDataManagerMock{}
 		mealDataManager.On(
 			"SearchForMeals",
 			testutils.ContextMatcher,
@@ -556,7 +556,7 @@ func TestMealsService_SearchMealsHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{types.SearchQueryKey: []string{exampleQuery}}.Encode()
 
-		mealDataManager := &mocktypes.MealDataManager{}
+		mealDataManager := &mocktypes.MealDataManagerMock{}
 		mealDataManager.On(
 			"SearchForMeals",
 			testutils.ContextMatcher,
@@ -582,13 +582,13 @@ func TestMealsService_ArchiveMealHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealDataManager.On(
+		dbManager.MealDataManagerMock.On(
 			"MealExists",
 			testutils.ContextMatcher,
 			helper.exampleMeal.ID,
 		).Return(true, nil)
 
-		dbManager.MealDataManager.On(
+		dbManager.MealDataManagerMock.On(
 			"ArchiveMeal",
 			testutils.ContextMatcher,
 			helper.exampleMeal.ID,
@@ -640,7 +640,7 @@ func TestMealsService_ArchiveMealHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealDataManager := &mocktypes.MealDataManager{}
+		mealDataManager := &mocktypes.MealDataManagerMock{}
 		mealDataManager.On(
 			"MealExists",
 			testutils.ContextMatcher,
@@ -668,7 +668,7 @@ func TestMealsService_ArchiveMealHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealDataManager := &mocktypes.MealDataManager{}
+		mealDataManager := &mocktypes.MealDataManagerMock{}
 		mealDataManager.On(
 			"MealExists",
 			testutils.ContextMatcher,
@@ -689,13 +689,13 @@ func TestMealsService_ArchiveMealHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealDataManager.On(
+		dbManager.MealDataManagerMock.On(
 			"MealExists",
 			testutils.ContextMatcher,
 			helper.exampleMeal.ID,
 		).Return(true, nil)
 
-		dbManager.MealDataManager.On(
+		dbManager.MealDataManagerMock.On(
 			"ArchiveMeal",
 			testutils.ContextMatcher,
 			helper.exampleMeal.ID,
@@ -716,13 +716,13 @@ func TestMealsService_ArchiveMealHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealDataManager.On(
+		dbManager.MealDataManagerMock.On(
 			"MealExists",
 			testutils.ContextMatcher,
 			helper.exampleMeal.ID,
 		).Return(true, nil)
 
-		dbManager.MealDataManager.On(
+		dbManager.MealDataManagerMock.On(
 			"ArchiveMeal",
 			testutils.ContextMatcher,
 			helper.exampleMeal.ID,

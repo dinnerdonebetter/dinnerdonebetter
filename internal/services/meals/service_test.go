@@ -21,7 +21,7 @@ import (
 func buildTestService() *service {
 	return &service{
 		logger:          logging.NewNoopLogger(),
-		mealDataManager: &mocktypes.MealDataManager{},
+		mealDataManager: &mocktypes.MealDataManagerMock{},
 		mealIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:  mockencoding.NewMockEncoderDecoder(),
 		tracer:          tracing.NewTracerForTest("test"),
@@ -55,7 +55,7 @@ func TestProvideMealsService(T *testing.T) {
 			logging.NewNoopLogger(),
 			cfg,
 			&searchcfg.Config{},
-			&mocktypes.MealDataManager{},
+			&mocktypes.MealDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
@@ -83,7 +83,7 @@ func TestProvideMealsService(T *testing.T) {
 			logging.NewNoopLogger(),
 			cfg,
 			&searchcfg.Config{},
-			&mocktypes.MealDataManager{},
+			&mocktypes.MealDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,

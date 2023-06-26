@@ -14,6 +14,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/cryptography"
+	"github.com/dinnerdonebetter/backend/internal/pkg/cryptography/salsa20"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 
 	"github.com/Masterminds/squirrel"
@@ -32,16 +34,17 @@ var _ database.DataManager = (*Querier)(nil)
 
 // Querier is the primary database querying client. All tracing/logging/query execution happens here. Query building generally happens elsewhere.
 type Querier struct {
-	tracer          tracing.Tracer
-	sqlBuilder      squirrel.StatementBuilderType
-	logger          logging.Logger
-	timeFunc        func() time.Time
-	config          *dbconfig.Config
-	db              *sql.DB
-	secretGenerator random.Generator
-	connectionURL   string
-	migrateOnce     sync.Once
-	logQueries      bool
+	tracer                  tracing.Tracer
+	sqlBuilder              squirrel.StatementBuilderType
+	logger                  logging.Logger
+	secretGenerator         random.Generator
+	oauth2ClientTokenEncDec cryptography.EncryptorDecryptor
+	timeFunc                func() time.Time
+	config                  *dbconfig.Config
+	db                      *sql.DB
+	connectionURL           string
+	migrateOnce             sync.Once
+	logQueries              bool
 }
 
 // ProvideDatabaseClient provides a new DataManager client.
@@ -65,16 +68,22 @@ func ProvideDatabaseClient(
 	db.SetMaxOpenConns(7)
 	db.SetConnMaxLifetime(1800 * time.Second)
 
+	encDec, err := salsa20.NewEncryptorDecryptor(tracerProvider, logger, []byte(cfg.OAuth2TokenEncryptionKey))
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating encryptor/decryptor with secret length %d", len(cfg.OAuth2TokenEncryptionKey))
+	}
+
 	c := &Querier{
-		db:              db,
-		config:          cfg,
-		tracer:          tracer,
-		logQueries:      cfg.LogQueries,
-		timeFunc:        defaultTimeFunc,
-		secretGenerator: random.NewGenerator(logger, tracerProvider),
-		connectionURL:   string(cfg.ConnectionDetails),
-		logger:          logging.EnsureLogger(logger).WithName("querier"),
-		sqlBuilder:      squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
+		db:                      db,
+		config:                  cfg,
+		tracer:                  tracer,
+		logQueries:              cfg.LogQueries,
+		timeFunc:                defaultTimeFunc,
+		secretGenerator:         random.NewGenerator(logger, tracerProvider),
+		connectionURL:           string(cfg.ConnectionDetails),
+		logger:                  logging.EnsureLogger(logger).WithName("querier"),
+		sqlBuilder:              squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
+		oauth2ClientTokenEncDec: encDec,
 	}
 
 	if cfg.RunMigrations {

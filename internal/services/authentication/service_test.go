@@ -1,10 +1,12 @@
 package authentication
 
 import (
+	"context"
 	"testing"
 	"time"
 
 	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
+	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/email"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/featureflags"
@@ -42,12 +44,12 @@ func buildTestService(t *testing.T) *service {
 	pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 	s, err := ProvideService(
+		context.Background(),
 		logger,
 		cfg,
 		&mockauthn.Authenticator{},
-		&mocktypes.UserDataManager{},
-		&mocktypes.APIClientDataManager{},
-		&mocktypes.HouseholdUserMembershipDataManager{},
+		database.NewMockDatabase(),
+		&mocktypes.HouseholdUserMembershipDataManagerMock{},
 		scs.New(),
 		encoderDecoder,
 		tracing.NewNoopTracerProvider(),
@@ -80,12 +82,12 @@ func TestProvideService(T *testing.T) {
 		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideService(
+			context.Background(),
 			logger,
 			cfg,
 			&mockauthn.Authenticator{},
-			&mocktypes.UserDataManager{},
-			&mocktypes.APIClientDataManager{},
-			&mocktypes.HouseholdUserMembershipDataManager{},
+			database.NewMockDatabase(),
+			&mocktypes.HouseholdUserMembershipDataManagerMock{},
 			scs.New(),
 			encoderDecoder,
 			tracing.NewNoopTracerProvider(),
@@ -115,6 +117,7 @@ func TestProvideService(T *testing.T) {
 		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideService(
+			context.Background(),
 			logger,
 			&Config{
 				Cookies: CookieConfig{
@@ -123,9 +126,8 @@ func TestProvideService(T *testing.T) {
 				},
 			},
 			&mockauthn.Authenticator{},
-			&mocktypes.UserDataManager{},
-			&mocktypes.APIClientDataManager{},
-			&mocktypes.HouseholdUserMembershipDataManager{},
+			database.NewMockDatabase(),
+			&mocktypes.HouseholdUserMembershipDataManagerMock{},
 			scs.New(),
 			encoderDecoder,
 			tracing.NewNoopTracerProvider(),

@@ -12,8 +12,8 @@ TEST_ENVIRONMENT_DIR          := $(ENVIRONMENTS_DIR)/testing
 TEST_DOCKER_COMPOSE_FILES_DIR := $(TEST_ENVIRONMENT_DIR)/compose_files
 SQL_GENERATOR                 := docker run --rm --volume `pwd`:/src --workdir /src kjconroy/sqlc:1.17.2
 GENERATED_QUERIES_DIR         := internal/database/postgres/generated
-LINTER_IMAGE                  := golangci/golangci-lint:v1.53.1
-CONTAINER_LINTER_IMAGE        := openpolicyagent/conftest:v0.41.0
+LINTER_IMAGE                  := golangci/golangci-lint:v1.53.3
+CONTAINER_LINTER_IMAGE        := openpolicyagent/conftest:v0.43.1
 CLOUD_JOBS                    := meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator search_data_index_scheduler
 CLOUD_FUNCTIONS               := data_changes outbound_emailer search_indexer
 WIRE_TARGETS                  := server/http/build
@@ -90,13 +90,13 @@ clean_wire:
 	done
 
 .PHONY: wire
-wire: ensure_wire_installed vendor
+wire: ensure_wire_installed
 	for tgt in $(WIRE_TARGETS); do \
 		wire gen $(THIS)/internal/$$tgt; \
 	done
 
 .PHONY: rewire
-rewire: ensure_wire_installed clean_wire wire
+rewire: clean_wire wire
 
 ## formatting
 
@@ -112,7 +112,7 @@ format_golang:
 .PHONY: format_imports
 format_imports:
 	@# TODO: find some way to use $THIS here instead of hardcoding the path
-	gci write --skip-generated --section standard --section "prefix(github.com/dinnerdonebetter/backend)" --section "prefix(github.com/dinnerdonebetter)" --section default --custom-order .
+	gci write --skip-generated --section standard --section "prefix(github.com/dinnerdonebetter/backend)" --section "prefix(github.com/dinnerdonebetter)" --section default --custom-order `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`
 
 .PHONY: terraformat
 terraformat:
@@ -134,8 +134,8 @@ pre_lint:
 	@until fieldalignment -fix ./...; do true; done > /dev/null
 	@echo ""
 
-.PHONY: docker_lint
-docker_lint:
+.PHONY: lint_docker
+lint_docker:
 	@docker pull $(CONTAINER_LINTER_IMAGE)
 	docker run --rm --volume $(PWD):$(PWD) --workdir=$(PWD) $(CONTAINER_LINTER_IMAGE) test --policy docker_security.rego `find . -type f -name "*.Dockerfile"`
 
@@ -157,7 +157,7 @@ golang_lint:
 		$(LINTER_IMAGE) golangci-lint run --config=.golangci.yml --timeout 15m ./...
 
 .PHONY: lint
-lint: docker_lint queries_lint golang_lint # terraform_lint
+lint: lint_docker queries_lint golang_lint # terraform_lint
 
 .PHONY: clean_coverage
 clean_coverage:
@@ -243,15 +243,13 @@ dev: $(ARTIFACTS_DIR)
 	# --abort-on-container-exit \
 	--always-recreate-deps
 
-.PHONY: init_db
-init_db: initialize_database
-
-.PHONY: db_init
-db_init: initialize_database
-
-.PHONY: initialize_database
-initialize_database:
-	go run github.com/dinnerdonebetter/backend/cmd/tools/db_initializer
+.PHONY: start_infra
+start_infra:
+	docker-compose \
+	--file $(ENVIRONMENTS_DIR)/local/compose_files/docker-compose.yaml up \
+	--detach \
+	--remove-orphans \
+	postgres worker_queue
 
 ## misc
 

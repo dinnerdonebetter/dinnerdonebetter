@@ -88,6 +88,21 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 				StartupDeadline: time.Second,
 			},
 			Services: ServicesConfig{
+				RecipeStepProducts:              recipestepproductsservice.Config{},
+				RecipeStepInstruments:           recipestepinstrumentsservice.Config{},
+				RecipeStepIngredients:           recipestepingredientsservice.Config{},
+				MealPlans:                       mealplansservice.Config{},
+				MealPlanOptions:                 mealplanoptionsservice.Config{},
+				Households:                      householdsservice.Config{},
+				HouseholdInvitations:            householdinvitationsservice.Config{},
+				Websockets:                      websocketsservice.Config{},
+				Webhooks:                        webhooksservice.Config{},
+				Users:                           usersservice.Config{},
+				RecipePrepTasks:                 recipepreptasksservice.Config{},
+				RecipeStepCompletionConditions:  recipestepcompletionconditionsservice.Config{},
+				ValidIngredientStates:           validingredientstatesservice.Config{},
+				ServiceSettings:                 servicesettings.Config{},
+				ServiceSettingConfigurations:    servicesettingconfigurations.Config{},
 				ValidMeasurementUnits:           validmeasurementunits.Config{},
 				ValidInstruments:                validinstrumentsservice.Config{},
 				ValidIngredients:                validingredientsservice.Config{},
@@ -103,21 +118,6 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 				RecipeSteps: recipestepsservice.Config{
 					PublicMediaURLPrefix: t.Name(),
 				},
-				RecipeStepProducts:             recipestepproductsservice.Config{},
-				RecipeStepInstruments:          recipestepinstrumentsservice.Config{},
-				RecipeStepIngredients:          recipestepingredientsservice.Config{},
-				MealPlans:                      mealplansservice.Config{},
-				MealPlanOptions:                mealplanoptionsservice.Config{},
-				Households:                     householdsservice.Config{},
-				HouseholdInvitations:           householdinvitationsservice.Config{},
-				Websockets:                     websocketsservice.Config{},
-				Webhooks:                       webhooksservice.Config{},
-				Users:                          usersservice.Config{},
-				RecipePrepTasks:                recipepreptasksservice.Config{},
-				RecipeStepCompletionConditions: recipestepcompletionconditionsservice.Config{},
-				ValidIngredientStates:          validingredientstatesservice.Config{},
-				ServiceSettings:                servicesettings.Config{},
-				ServiceSettingConfigurations:   servicesettingconfigurations.Config{},
 				Auth: authservice.Config{
 					MinimumPasswordLength: 8,
 					MinimumUsernameLength: 8,
@@ -144,6 +144,7 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 		require.NoError(t, os.Setenv(gcpSegmentTokenEnvVarKey, "fake_segment_token"))
 		require.NoError(t, os.Setenv(gcpAlgoliaAPIKeyEnvVarKey, "fake_algolia_api_key"))
 		require.NoError(t, os.Setenv(gcpAlgoliaAppIDEnvVarKey, "fake_algolia_app_id"))
+		require.NoError(t, os.Setenv(gcpOauth2TokenEncryptionKeyEnvVarKey, "fake_oauth2_token_encryption_key"))
 
 		ctx := context.Background()
 		client := &mockSecretVersionAccessor{}

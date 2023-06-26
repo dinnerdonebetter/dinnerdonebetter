@@ -8,51 +8,51 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-var _ types.ValidMeasurementConversionDataManager = (*ValidMeasurementConversionDataManager)(nil)
+var _ types.ValidMeasurementConversionDataManager = (*ValidMeasurementConversionDataManagerMock)(nil)
 
-// ValidMeasurementConversionDataManager is a mocked types.ValidMeasurementConversionDataManager for testing.
-type ValidMeasurementConversionDataManager struct {
+// ValidMeasurementConversionDataManagerMock is a mocked types.ValidMeasurementConversionDataManager for testing.
+type ValidMeasurementConversionDataManagerMock struct {
 	mock.Mock
 }
 
 // GetValidMeasurementUnitConversionsFromUnit is a mock function.
-func (m *ValidMeasurementConversionDataManager) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementUnitConversion, error) {
+func (m *ValidMeasurementConversionDataManagerMock) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementUnitConversion, error) {
 	returnValues := m.Called(ctx, validMeasurementUnitID)
 
 	return returnValues.Get(0).([]*types.ValidMeasurementUnitConversion), returnValues.Error(1)
 }
 
 // GetValidMeasurementUnitConversionsToUnit is a mock function.
-func (m *ValidMeasurementConversionDataManager) GetValidMeasurementUnitConversionsToUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementUnitConversion, error) {
+func (m *ValidMeasurementConversionDataManagerMock) GetValidMeasurementUnitConversionsToUnit(ctx context.Context, validMeasurementUnitID string) ([]*types.ValidMeasurementUnitConversion, error) {
 	returnValues := m.Called(ctx, validMeasurementUnitID)
 
 	return returnValues.Get(0).([]*types.ValidMeasurementUnitConversion), returnValues.Error(1)
 }
 
 // ValidMeasurementConversionExists is a mock function.
-func (m *ValidMeasurementConversionDataManager) ValidMeasurementConversionExists(ctx context.Context, validPreparationID string) (bool, error) {
+func (m *ValidMeasurementConversionDataManagerMock) ValidMeasurementConversionExists(ctx context.Context, validPreparationID string) (bool, error) {
 	args := m.Called(ctx, validPreparationID)
 	return args.Bool(0), args.Error(1)
 }
 
 // GetValidMeasurementUnitConversion is a mock function.
-func (m *ValidMeasurementConversionDataManager) GetValidMeasurementUnitConversion(ctx context.Context, validPreparationID string) (*types.ValidMeasurementUnitConversion, error) {
+func (m *ValidMeasurementConversionDataManagerMock) GetValidMeasurementUnitConversion(ctx context.Context, validPreparationID string) (*types.ValidMeasurementUnitConversion, error) {
 	args := m.Called(ctx, validPreparationID)
 	return args.Get(0).(*types.ValidMeasurementUnitConversion), args.Error(1)
 }
 
 // CreateValidMeasurementConversion is a mock function.
-func (m *ValidMeasurementConversionDataManager) CreateValidMeasurementConversion(ctx context.Context, input *types.ValidMeasurementConversionDatabaseCreationInput) (*types.ValidMeasurementUnitConversion, error) {
+func (m *ValidMeasurementConversionDataManagerMock) CreateValidMeasurementConversion(ctx context.Context, input *types.ValidMeasurementConversionDatabaseCreationInput) (*types.ValidMeasurementUnitConversion, error) {
 	args := m.Called(ctx, input)
 	return args.Get(0).(*types.ValidMeasurementUnitConversion), args.Error(1)
 }
 
 // UpdateValidMeasurementConversion is a mock function.
-func (m *ValidMeasurementConversionDataManager) UpdateValidMeasurementConversion(ctx context.Context, updated *types.ValidMeasurementUnitConversion) error {
+func (m *ValidMeasurementConversionDataManagerMock) UpdateValidMeasurementConversion(ctx context.Context, updated *types.ValidMeasurementUnitConversion) error {
 	return m.Called(ctx, updated).Error(0)
 }
 
 // ArchiveValidMeasurementConversion is a mock function.
-func (m *ValidMeasurementConversionDataManager) ArchiveValidMeasurementConversion(ctx context.Context, validPreparationID string) error {
+func (m *ValidMeasurementConversionDataManagerMock) ArchiveValidMeasurementConversion(ctx context.Context, validPreparationID string) error {
 	return m.Called(ctx, validPreparationID).Error(0)
 }

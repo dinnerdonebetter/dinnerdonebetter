@@ -73,7 +73,6 @@ type (
 		types.HouseholdInvitationDataManager
 		types.HouseholdUserMembershipDataManager
 		types.UserDataManager
-		types.APIClientDataManager
 		types.PasswordResetTokenDataManager
 		types.WebhookDataManager
 		types.ValidInstrumentDataManager
@@ -107,5 +106,7 @@ type (
 		types.UserIngredientPreferenceDataManager
 		types.RecipeRatingDataManager
 		types.HouseholdInstrumentOwnershipDataManager
+		types.OAuth2ClientDataManager
+		types.OAuth2ClientTokenDataManager
 	}
 )

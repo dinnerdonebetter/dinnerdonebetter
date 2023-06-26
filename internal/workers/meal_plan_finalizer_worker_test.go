@@ -65,7 +65,7 @@ func TestChoresWorker_FinalizeExpiredMealPlansWithoutReturningCount(T *testing.T
 		exampleMealPlans := fakes.BuildFakeMealPlanList().Data
 
 		dbm := database.NewMockDatabase()
-		dbm.MealPlanDataManager.On(
+		dbm.MealPlanDataManagerMock.On(
 			"GetUnfinalizedMealPlansWithExpiredVotingPeriods",
 			testutils.ContextMatcher,
 		).Return(exampleMealPlans, nil)
@@ -73,7 +73,7 @@ func TestChoresWorker_FinalizeExpiredMealPlansWithoutReturningCount(T *testing.T
 		mqm := &mockpublishers.Publisher{}
 
 		for _, mealPlan := range exampleMealPlans {
-			dbm.MealPlanDataManager.On(
+			dbm.MealPlanDataManagerMock.On(
 				"AttemptToFinalizeMealPlan",
 				testutils.ContextMatcher,
 				mealPlan.ID,

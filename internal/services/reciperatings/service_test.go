@@ -20,7 +20,7 @@ import (
 func buildTestService() *service {
 	return &service{
 		logger:                  logging.NewNoopLogger(),
-		recipeRatingDataManager: &mocktypes.RecipeRatingDataManager{},
+		recipeRatingDataManager: &mocktypes.RecipeRatingDataManagerMock{},
 		recipeRatingIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:          mockencoding.NewMockEncoderDecoder(),
 		tracer:                  tracing.NewTracerForTest("test"),
@@ -55,7 +55,7 @@ func TestProvideRecipeRatingsService(T *testing.T) {
 		s, err := ProvideService(
 			logger,
 			cfg,
-			&mocktypes.RecipeRatingDataManager{},
+			&mocktypes.RecipeRatingDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
@@ -83,7 +83,7 @@ func TestProvideRecipeRatingsService(T *testing.T) {
 		s, err := ProvideService(
 			logger,
 			cfg,
-			&mocktypes.RecipeRatingDataManager{},
+			&mocktypes.RecipeRatingDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,

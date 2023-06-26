@@ -39,6 +39,7 @@ import (
 	mealplansservice "github.com/dinnerdonebetter/backend/internal/services/mealplans"
 	"github.com/dinnerdonebetter/backend/internal/services/mealplantasks"
 	mealsservice "github.com/dinnerdonebetter/backend/internal/services/meals"
+	oauth2clientsservice "github.com/dinnerdonebetter/backend/internal/services/oauth2clients"
 	recipepreptasksservice "github.com/dinnerdonebetter/backend/internal/services/recipepreptasks"
 	reciperatingsservice "github.com/dinnerdonebetter/backend/internal/services/reciperatings"
 	recipesservice "github.com/dinnerdonebetter/backend/internal/services/recipes"
@@ -90,8 +91,9 @@ const (
 	maxAttempts           = 50
 	defaultPASETOLifetime = 1 * time.Minute
 
-	contentTypeJSON    = "application/json"
-	workerQueueAddress = "worker_queue:6379"
+	contentTypeJSON               = "application/json"
+	workerQueueAddress            = "worker_queue:6379"
+	localOAuth2TokenEncryptionKey = debugCookieSecret
 
 	pasteoIssuer = "dinner_done_better_service"
 )
@@ -181,14 +183,15 @@ func saveConfig(ctx context.Context, outputPath string, cfg *config.InstanceConf
 type configFunc func(ctx context.Context, filePath string) error
 
 var files = map[string]configFunc{
-	"environments/dev/config_files/service-config.json":                              devEnvironmentServerConfig,
-	"environments/local/config_files/service-config.json":                            localDevelopmentServiceConfig,
+	"environments/local/config_files/service-config.json":                            buildLocalDevelopmentServiceConfig(false),
+	"environments/local/config_files/service-config-local.json":                      buildLocalDevelopmentServiceConfig(true),
 	"environments/local/config_files/queue-loader-config.json":                       localDevelopmentWorkerConfig,
 	"environments/local/config_files/meal-plan-finalizer-config.json":                localDevelopmentWorkerConfig,
 	"environments/local/config_files/meal-plan-task-creator-config.json":             localDevelopmentWorkerConfig,
 	"environments/local/config_files/meal-plan-grocery-list-initializer-config.json": localDevelopmentWorkerConfig,
 	"environments/local/config_files/search-indexer-config.json":                     localDevelopmentWorkerConfig,
 	"environments/testing/config_files/integration-tests-config.json":                integrationTestConfig,
+	"environments/dev/config_files/service-config.json":                              devEnvironmentServerConfig,
 }
 
 func generatePASETOKey() []byte {
@@ -207,9 +210,7 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 
 	emailConfig := emailconfig.Config{
 		Provider: emailconfig.ProviderSendgrid,
-		Sendgrid: &sendgrid.Config{
-			WebAppURL: "https://www.dinnerdonebetter.dev",
-		},
+		Sendgrid: &sendgrid.Config{},
 	}
 
 	analyticsConfig := analyticsconfig.Config{
@@ -268,6 +269,12 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 				PASETO: authservice.PASETOConfig{
 					Issuer:   pasteoIssuer,
 					Lifetime: defaultPASETOLifetime,
+				},
+				OAuth2: authservice.OAuth2Config{
+					Domain:               "https://dinnerdonebetter.dev",
+					AccessTokenLifespan:  time.Hour,
+					RefreshTokenLifespan: time.Hour,
+					Debug:                false,
 				},
 				Cookies:               cookieConfig,
 				Debug:                 true,
@@ -367,13 +374,13 @@ func buildDevConfig() *config.InstanceConfig {
 		Events: msgconfig.Config{
 			Consumers: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderRedis,
-				RedisConfig: redis.Config{
+				Redis: redis.Config{
 					QueueAddresses: []string{workerQueueAddress},
 				},
 			},
 			Publishers: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderRedis,
-				RedisConfig: redis.Config{
+				Redis: redis.Config{
 					QueueAddresses: []string{workerQueueAddress},
 				},
 			},
@@ -384,18 +391,38 @@ func buildDevConfig() *config.InstanceConfig {
 		},
 		Server: localServer,
 		Database: dbconfig.Config{
-			Debug:             true,
-			RunMigrations:     true,
-			LogQueries:        true,
-			MaxPingAttempts:   maxAttempts,
-			PingWaitPeriod:    time.Second,
-			ConnectionDetails: devPostgresDBConnDetails,
+			OAuth2TokenEncryptionKey: localOAuth2TokenEncryptionKey,
+			Debug:                    true,
+			RunMigrations:            true,
+			LogQueries:               true,
+			MaxPingAttempts:          maxAttempts,
+			PingWaitPeriod:           time.Second,
+			ConnectionDetails:        devPostgresDBConnDetails,
 		},
 		Observability: observability.Config{
 			Logging: localLogConfig,
 			Tracing: localTracingConfig,
 		},
 		Services: config.ServicesConfig{
+			Auth: authservice.Config{
+				PASETO: authservice.PASETOConfig{
+					Issuer:       pasteoIssuer,
+					Lifetime:     defaultPASETOLifetime,
+					LocalModeKey: examplePASETOKey,
+				},
+				OAuth2: authservice.OAuth2Config{
+					Domain:               "http://localhost:9000",
+					AccessTokenLifespan:  time.Hour,
+					RefreshTokenLifespan: time.Hour,
+					Debug:                false,
+				},
+				Cookies:               localCookies,
+				Debug:                 true,
+				EnableUserSignup:      true,
+				MinimumUsernameLength: 3,
+				MinimumPasswordLength: 8,
+				DataChangesTopicName:  dataChangesTopicName,
+			},
 			Users: usersservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 				Uploads: uploads.Config{
@@ -415,19 +442,6 @@ func buildDevConfig() *config.InstanceConfig {
 			},
 			HouseholdInvitations: householdinvitationsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
-			},
-			Auth: authservice.Config{
-				PASETO: authservice.PASETOConfig{
-					Issuer:       pasteoIssuer,
-					Lifetime:     defaultPASETOLifetime,
-					LocalModeKey: examplePASETOKey,
-				},
-				Cookies:               localCookies,
-				Debug:                 true,
-				EnableUserSignup:      true,
-				MinimumUsernameLength: 3,
-				MinimumPasswordLength: 8,
-				DataChangesTopicName:  dataChangesTopicName,
 			},
 			Webhooks: webhooksservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
@@ -555,14 +569,32 @@ func buildDevConfig() *config.InstanceConfig {
 			HouseholdInstrumentOwnerships: householdinstrumentownershipsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
+			OAuth2Clients: oauth2clientsservice.Config{
+				DataChangesTopicName:  dataChangesTopicName,
+				MinimumUsernameLength: 3,
+				MinimumPasswordLength: 8,
+			},
 		},
 	}
 }
 
-func localDevelopmentServiceConfig(ctx context.Context, filePath string) error {
-	cfg := buildDevConfig()
+func buildLocalDevelopmentServiceConfig(local bool) func(context.Context, string) error {
+	const localUploadsDir = "artifacts/uploads"
+	const localRedisAddr = "localhost:6379"
+	return func(ctx context.Context, filePath string) error {
+		cfg := buildDevConfig()
 
-	return saveConfig(ctx, filePath, cfg, true, true)
+		if local {
+			cfg.Database.ConnectionDetails = "postgres://dbuser:hunter2@localhost:5432/dinner-done-better?sslmode=disable"
+			cfg.Events.Consumers.Redis.QueueAddresses = []string{localRedisAddr}
+			cfg.Events.Publishers.Redis.QueueAddresses = []string{localRedisAddr}
+			cfg.Services.Users.Uploads.Storage.FilesystemConfig.RootDirectory = localUploadsDir
+			cfg.Services.Recipes.Uploads.Storage.FilesystemConfig.RootDirectory = localUploadsDir
+			cfg.Services.RecipeSteps.Uploads.Storage.FilesystemConfig.RootDirectory = localUploadsDir
+		}
+
+		return saveConfig(ctx, filePath, cfg, true, true)
+	}
 }
 
 func localDevelopmentWorkerConfig(ctx context.Context, filePath string) error {
@@ -584,13 +616,13 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 		Events: msgconfig.Config{
 			Consumers: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderRedis,
-				RedisConfig: redis.Config{
+				Redis: redis.Config{
 					QueueAddresses: []string{workerQueueAddress},
 				},
 			},
 			Publishers: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderRedis,
-				RedisConfig: redis.Config{
+				Redis: redis.Config{
 					QueueAddresses: []string{workerQueueAddress},
 				},
 			},
@@ -604,12 +636,13 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			StartupDeadline: time.Minute,
 		},
 		Database: dbconfig.Config{
-			Debug:             true,
-			RunMigrations:     true,
-			LogQueries:        true,
-			MaxPingAttempts:   maxAttempts,
-			PingWaitPeriod:    1500 * time.Millisecond,
-			ConnectionDetails: devPostgresDBConnDetails,
+			OAuth2TokenEncryptionKey: localOAuth2TokenEncryptionKey,
+			Debug:                    true,
+			RunMigrations:            true,
+			LogQueries:               true,
+			MaxPingAttempts:          maxAttempts,
+			PingWaitPeriod:           1500 * time.Millisecond,
+			ConnectionDetails:        devPostgresDBConnDetails,
 		},
 		Observability: observability.Config{
 			Logging: logcfg.Config{
@@ -619,6 +652,32 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			Tracing: localTracingConfig,
 		},
 		Services: config.ServicesConfig{
+			Auth: authservice.Config{
+				PASETO: authservice.PASETOConfig{
+					Issuer:       pasteoIssuer,
+					Lifetime:     defaultPASETOLifetime,
+					LocalModeKey: examplePASETOKey,
+				},
+				OAuth2: authservice.OAuth2Config{
+					Domain:               "http://localhost:9000",
+					AccessTokenLifespan:  time.Hour,
+					RefreshTokenLifespan: time.Hour,
+					Debug:                false,
+				},
+				Cookies: authservice.CookieConfig{
+					Name:       defaultCookieName,
+					Domain:     defaultCookieDomain,
+					HashKey:    debugCookieSecret,
+					BlockKey:   debugCookieSigningKey,
+					Lifetime:   authservice.DefaultCookieLifetime,
+					SecureOnly: false,
+				},
+				Debug:                 false,
+				EnableUserSignup:      true,
+				MinimumUsernameLength: 3,
+				MinimumPasswordLength: 8,
+				DataChangesTopicName:  dataChangesTopicName,
+			},
 			Users: usersservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 				Uploads: uploads.Config{
@@ -635,26 +694,6 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			},
 			HouseholdInvitations: householdinvitationsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
-			},
-			Auth: authservice.Config{
-				PASETO: authservice.PASETOConfig{
-					Issuer:       pasteoIssuer,
-					Lifetime:     defaultPASETOLifetime,
-					LocalModeKey: examplePASETOKey,
-				},
-				Cookies: authservice.CookieConfig{
-					Name:       defaultCookieName,
-					Domain:     defaultCookieDomain,
-					HashKey:    debugCookieSecret,
-					BlockKey:   debugCookieSigningKey,
-					Lifetime:   authservice.DefaultCookieLifetime,
-					SecureOnly: false,
-				},
-				Debug:                 false,
-				EnableUserSignup:      true,
-				MinimumUsernameLength: 3,
-				MinimumPasswordLength: 8,
-				DataChangesTopicName:  dataChangesTopicName,
 			},
 			Webhooks: webhooksservice.Config{
 				DataChangesTopicName: dataChangesTopicName,

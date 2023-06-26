@@ -619,7 +619,7 @@ func (s *TestSuite) TestHouseholds_InviteCanBeRejected() {
 }
 
 func (s *TestSuite) TestHouseholds_ChangingMemberships() {
-	s.runForEachClient("should be possible to change members of a household", func(testClients *testClientWrapper) func() {
+	s.runForCookieClient("should be possible to change members of a household", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -751,7 +751,7 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 }
 
 func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
-	s.runForEachClient("should be possible to transfer ownership of a household", func(testClients *testClientWrapper) func() {
+	s.runForCookieClient("should be possible to transfer ownership of a household", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -759,7 +759,7 @@ func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
 			defer span.End()
 
 			// create users
-			futureOwner, _, _, futureOwnerClient := createUserAndClientForTest(ctx, t, nil)
+			futureOwner, _, futureOwnerClient, _ := createUserAndClientForTest(ctx, t, nil)
 
 			// fetch household data
 			householdCreationInput := &types.HouseholdCreationRequestInput{

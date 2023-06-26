@@ -210,7 +210,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 		ctx := context.Background()
 		mdm := database.NewMockDatabase()
 
-		mdm.MealPlanDataManager.On("GetFinalizedMealPlansWithUninitializedGroceryLists", testutils.ContextMatcher).Return(expectedMealPlans, nil)
+		mdm.MealPlanDataManagerMock.On("GetFinalizedMealPlansWithUninitializedGroceryLists", testutils.ContextMatcher).Return(expectedMealPlans, nil)
 
 		firstMealPlanExpectedGroceryListItemInputs := []*types.MealPlanGroceryListItemDatabaseCreationInput{
 			{
@@ -260,7 +260,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 		w.groceryListCreator = mglm
 
 		for mealPlanID, inputs := range expectedInputSets {
-			mdm.MealPlanGroceryListItemDataManager.On("CreateMealPlanGroceryListItemsForMealPlan", testutils.ContextMatcher, mealPlanID, inputs).Return(nil)
+			mdm.MealPlanGroceryListItemDataManagerMock.On("CreateMealPlanGroceryListItemsForMealPlan", testutils.ContextMatcher, mealPlanID, inputs).Return(nil)
 		}
 		w.dataManager = mdm
 

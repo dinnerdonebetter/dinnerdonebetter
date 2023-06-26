@@ -41,7 +41,7 @@ func TestRecipeStepCompletionConditionsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeStepCompletionConditionDataManager.On(
+		dbManager.RecipeStepCompletionConditionDataManagerMock.On(
 			"CreateRecipeStepCompletionCondition",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.RecipeStepCompletionConditionDatabaseCreationInput) bool { return true }),
@@ -134,7 +134,7 @@ func TestRecipeStepCompletionConditionsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeStepCompletionConditionDataManager.On(
+		dbManager.RecipeStepCompletionConditionDataManagerMock.On(
 			"CreateRecipeStepCompletionCondition",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.RecipeStepCompletionConditionDatabaseCreationInput) bool { return true }),
@@ -163,7 +163,7 @@ func TestRecipeStepCompletionConditionsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeStepCompletionConditionDataManager.On(
+		dbManager.RecipeStepCompletionConditionDataManagerMock.On(
 			"CreateRecipeStepCompletionCondition",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.RecipeStepCompletionConditionDatabaseCreationInput) bool { return true }),
@@ -194,7 +194,7 @@ func TestRecipeStepCompletionConditionsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeStepCompletionConditionDataManager := &mocktypes.RecipeStepCompletionConditionDataManager{}
+		recipeStepCompletionConditionDataManager := &mocktypes.RecipeStepCompletionConditionDataManagerMock{}
 		recipeStepCompletionConditionDataManager.On(
 			"GetRecipeStepCompletionCondition",
 			testutils.ContextMatcher,
@@ -249,7 +249,7 @@ func TestRecipeStepCompletionConditionsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeStepCompletionConditionDataManager := &mocktypes.RecipeStepCompletionConditionDataManager{}
+		recipeStepCompletionConditionDataManager := &mocktypes.RecipeStepCompletionConditionDataManagerMock{}
 		recipeStepCompletionConditionDataManager.On(
 			"GetRecipeStepCompletionCondition",
 			testutils.ContextMatcher,
@@ -279,7 +279,7 @@ func TestRecipeStepCompletionConditionsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeStepCompletionConditionDataManager := &mocktypes.RecipeStepCompletionConditionDataManager{}
+		recipeStepCompletionConditionDataManager := &mocktypes.RecipeStepCompletionConditionDataManagerMock{}
 		recipeStepCompletionConditionDataManager.On(
 			"GetRecipeStepCompletionCondition",
 			testutils.ContextMatcher,
@@ -315,7 +315,7 @@ func TestRecipeStepCompletionConditionsService_ListHandler(T *testing.T) {
 
 		exampleRecipeStepCompletionConditionList := fakes.BuildFakeRecipeStepCompletionConditionList()
 
-		recipeStepCompletionConditionDataManager := &mocktypes.RecipeStepCompletionConditionDataManager{}
+		recipeStepCompletionConditionDataManager := &mocktypes.RecipeStepCompletionConditionDataManagerMock{}
 		recipeStepCompletionConditionDataManager.On(
 			"GetRecipeStepCompletionConditions",
 			testutils.ContextMatcher,
@@ -370,7 +370,7 @@ func TestRecipeStepCompletionConditionsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeStepCompletionConditionDataManager := &mocktypes.RecipeStepCompletionConditionDataManager{}
+		recipeStepCompletionConditionDataManager := &mocktypes.RecipeStepCompletionConditionDataManagerMock{}
 		recipeStepCompletionConditionDataManager.On(
 			"GetRecipeStepCompletionConditions",
 			testutils.ContextMatcher,
@@ -401,7 +401,7 @@ func TestRecipeStepCompletionConditionsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeStepCompletionConditionDataManager := &mocktypes.RecipeStepCompletionConditionDataManager{}
+		recipeStepCompletionConditionDataManager := &mocktypes.RecipeStepCompletionConditionDataManagerMock{}
 		recipeStepCompletionConditionDataManager.On(
 			"GetRecipeStepCompletionConditions",
 			testutils.ContextMatcher,
@@ -445,7 +445,7 @@ func TestRecipeStepCompletionConditionsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeStepCompletionConditionDataManager.On(
+		dbManager.RecipeStepCompletionConditionDataManagerMock.On(
 			"GetRecipeStepCompletionCondition",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
@@ -453,7 +453,7 @@ func TestRecipeStepCompletionConditionsService_UpdateHandler(T *testing.T) {
 			helper.exampleRecipeStepCompletionCondition.ID,
 		).Return(helper.exampleRecipeStepCompletionCondition, nil)
 
-		dbManager.RecipeStepCompletionConditionDataManager.On(
+		dbManager.RecipeStepCompletionConditionDataManagerMock.On(
 			"UpdateRecipeStepCompletionCondition",
 			testutils.ContextMatcher,
 			helper.exampleRecipeStepCompletionCondition,
@@ -535,7 +535,7 @@ func TestRecipeStepCompletionConditionsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		recipeStepCompletionConditionDataManager := &mocktypes.RecipeStepCompletionConditionDataManager{}
+		recipeStepCompletionConditionDataManager := &mocktypes.RecipeStepCompletionConditionDataManagerMock{}
 		recipeStepCompletionConditionDataManager.On(
 			"GetRecipeStepCompletionCondition",
 			testutils.ContextMatcher,
@@ -566,7 +566,7 @@ func TestRecipeStepCompletionConditionsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		recipeStepCompletionConditionDataManager := &mocktypes.RecipeStepCompletionConditionDataManager{}
+		recipeStepCompletionConditionDataManager := &mocktypes.RecipeStepCompletionConditionDataManagerMock{}
 		recipeStepCompletionConditionDataManager.On(
 			"GetRecipeStepCompletionCondition",
 			testutils.ContextMatcher,
@@ -598,7 +598,7 @@ func TestRecipeStepCompletionConditionsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeStepCompletionConditionDataManager.On(
+		dbManager.RecipeStepCompletionConditionDataManagerMock.On(
 			"GetRecipeStepCompletionCondition",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
@@ -606,7 +606,7 @@ func TestRecipeStepCompletionConditionsService_UpdateHandler(T *testing.T) {
 			helper.exampleRecipeStepCompletionCondition.ID,
 		).Return(helper.exampleRecipeStepCompletionCondition, nil)
 
-		dbManager.RecipeStepCompletionConditionDataManager.On(
+		dbManager.RecipeStepCompletionConditionDataManagerMock.On(
 			"UpdateRecipeStepCompletionCondition",
 			testutils.ContextMatcher,
 			helper.exampleRecipeStepCompletionCondition,
@@ -635,7 +635,7 @@ func TestRecipeStepCompletionConditionsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeStepCompletionConditionDataManager.On(
+		dbManager.RecipeStepCompletionConditionDataManagerMock.On(
 			"GetRecipeStepCompletionCondition",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
@@ -643,7 +643,7 @@ func TestRecipeStepCompletionConditionsService_UpdateHandler(T *testing.T) {
 			helper.exampleRecipeStepCompletionCondition.ID,
 		).Return(helper.exampleRecipeStepCompletionCondition, nil)
 
-		dbManager.RecipeStepCompletionConditionDataManager.On(
+		dbManager.RecipeStepCompletionConditionDataManagerMock.On(
 			"UpdateRecipeStepCompletionCondition",
 			testutils.ContextMatcher,
 			helper.exampleRecipeStepCompletionCondition,
@@ -675,7 +675,7 @@ func TestRecipeStepCompletionConditionsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeStepCompletionConditionDataManager.On(
+		dbManager.RecipeStepCompletionConditionDataManagerMock.On(
 			"RecipeStepCompletionConditionExists",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
@@ -683,7 +683,7 @@ func TestRecipeStepCompletionConditionsService_ArchiveHandler(T *testing.T) {
 			helper.exampleRecipeStepCompletionCondition.ID,
 		).Return(true, nil)
 
-		dbManager.RecipeStepCompletionConditionDataManager.On(
+		dbManager.RecipeStepCompletionConditionDataManagerMock.On(
 			"ArchiveRecipeStepCompletionCondition",
 			testutils.ContextMatcher,
 			helper.exampleRecipeStep.ID,
@@ -735,7 +735,7 @@ func TestRecipeStepCompletionConditionsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeStepCompletionConditionDataManager := &mocktypes.RecipeStepCompletionConditionDataManager{}
+		recipeStepCompletionConditionDataManager := &mocktypes.RecipeStepCompletionConditionDataManagerMock{}
 		recipeStepCompletionConditionDataManager.On(
 			"RecipeStepCompletionConditionExists",
 			testutils.ContextMatcher,
@@ -765,7 +765,7 @@ func TestRecipeStepCompletionConditionsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeStepCompletionConditionDataManager := &mocktypes.RecipeStepCompletionConditionDataManager{}
+		recipeStepCompletionConditionDataManager := &mocktypes.RecipeStepCompletionConditionDataManagerMock{}
 		recipeStepCompletionConditionDataManager.On(
 			"RecipeStepCompletionConditionExists",
 			testutils.ContextMatcher,
@@ -788,7 +788,7 @@ func TestRecipeStepCompletionConditionsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeStepCompletionConditionDataManager.On(
+		dbManager.RecipeStepCompletionConditionDataManagerMock.On(
 			"RecipeStepCompletionConditionExists",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
@@ -796,7 +796,7 @@ func TestRecipeStepCompletionConditionsService_ArchiveHandler(T *testing.T) {
 			helper.exampleRecipeStepCompletionCondition.ID,
 		).Return(true, nil)
 
-		dbManager.RecipeStepCompletionConditionDataManager.On(
+		dbManager.RecipeStepCompletionConditionDataManagerMock.On(
 			"ArchiveRecipeStepCompletionCondition",
 			testutils.ContextMatcher,
 			helper.exampleRecipeStep.ID,
@@ -817,7 +817,7 @@ func TestRecipeStepCompletionConditionsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeStepCompletionConditionDataManager.On(
+		dbManager.RecipeStepCompletionConditionDataManagerMock.On(
 			"RecipeStepCompletionConditionExists",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
@@ -825,7 +825,7 @@ func TestRecipeStepCompletionConditionsService_ArchiveHandler(T *testing.T) {
 			helper.exampleRecipeStepCompletionCondition.ID,
 		).Return(true, nil)
 
-		dbManager.RecipeStepCompletionConditionDataManager.On(
+		dbManager.RecipeStepCompletionConditionDataManagerMock.On(
 			"ArchiveRecipeStepCompletionCondition",
 			testutils.ContextMatcher,
 			helper.exampleRecipeStep.ID,

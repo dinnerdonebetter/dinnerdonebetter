@@ -45,7 +45,7 @@ func TestValidPreparationsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidPreparationDataManager.On(
+		dbManager.ValidPreparationDataManagerMock.On(
 			"CreateValidPreparation",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidPreparationDatabaseCreationInput) bool { return true }),
@@ -138,7 +138,7 @@ func TestValidPreparationsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidPreparationDataManager.On(
+		dbManager.ValidPreparationDataManagerMock.On(
 			"CreateValidPreparation",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidPreparationDatabaseCreationInput) bool { return true }),
@@ -167,7 +167,7 @@ func TestValidPreparationsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidPreparationDataManager.On(
+		dbManager.ValidPreparationDataManagerMock.On(
 			"CreateValidPreparation",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidPreparationDatabaseCreationInput) bool { return true }),
@@ -198,7 +198,7 @@ func TestValidPreparationsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManager{}
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
 		validPreparationDataManager.On(
 			"GetValidPreparation",
 			testutils.ContextMatcher,
@@ -251,7 +251,7 @@ func TestValidPreparationsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManager{}
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
 		validPreparationDataManager.On(
 			"GetValidPreparation",
 			testutils.ContextMatcher,
@@ -279,7 +279,7 @@ func TestValidPreparationsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManager{}
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
 		validPreparationDataManager.On(
 			"GetValidPreparation",
 			testutils.ContextMatcher,
@@ -313,7 +313,7 @@ func TestValidPreparationsService_ListHandler(T *testing.T) {
 
 		exampleValidPreparationList := fakes.BuildFakeValidPreparationList()
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManager{}
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
 		validPreparationDataManager.On(
 			"GetValidPreparations",
 			testutils.ContextMatcher,
@@ -366,7 +366,7 @@ func TestValidPreparationsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManager{}
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
 		validPreparationDataManager.On(
 			"GetValidPreparations",
 			testutils.ContextMatcher,
@@ -395,7 +395,7 @@ func TestValidPreparationsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManager{}
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
 		validPreparationDataManager.On(
 			"GetValidPreparations",
 			testutils.ContextMatcher,
@@ -436,7 +436,7 @@ func TestValidPreparationsService_SearchHandler(T *testing.T) {
 			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManager{}
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
 		validPreparationDataManager.On(
 			"SearchForValidPreparations",
 			testutils.ContextMatcher,
@@ -486,7 +486,7 @@ func TestValidPreparationsService_SearchHandler(T *testing.T) {
 		).Return(validPreparationSearchSubsets, nil)
 		helper.service.searchIndex = searchIndex
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManager{}
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
 		validPreparationDataManager.On(
 			"GetValidPreparationsWithIDs",
 			testutils.ContextMatcher,
@@ -535,7 +535,7 @@ func TestValidPreparationsService_SearchHandler(T *testing.T) {
 			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManager{}
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
 		validPreparationDataManager.On(
 			"SearchForValidPreparations",
 			testutils.ContextMatcher,
@@ -568,7 +568,7 @@ func TestValidPreparationsService_SearchHandler(T *testing.T) {
 			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManager{}
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
 		validPreparationDataManager.On(
 			"SearchForValidPreparations",
 			testutils.ContextMatcher,
@@ -610,13 +610,13 @@ func TestValidPreparationsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidPreparationDataManager.On(
+		dbManager.ValidPreparationDataManagerMock.On(
 			"GetValidPreparation",
 			testutils.ContextMatcher,
 			helper.exampleValidPreparation.ID,
 		).Return(helper.exampleValidPreparation, nil)
 
-		dbManager.ValidPreparationDataManager.On(
+		dbManager.ValidPreparationDataManagerMock.On(
 			"UpdateValidPreparation",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidPreparation) bool { return true }),
@@ -698,7 +698,7 @@ func TestValidPreparationsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManager{}
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
 		validPreparationDataManager.On(
 			"GetValidPreparation",
 			testutils.ContextMatcher,
@@ -727,7 +727,7 @@ func TestValidPreparationsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManager{}
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
 		validPreparationDataManager.On(
 			"GetValidPreparation",
 			testutils.ContextMatcher,
@@ -757,13 +757,13 @@ func TestValidPreparationsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidPreparationDataManager.On(
+		dbManager.ValidPreparationDataManagerMock.On(
 			"GetValidPreparation",
 			testutils.ContextMatcher,
 			helper.exampleValidPreparation.ID,
 		).Return(helper.exampleValidPreparation, nil)
 
-		dbManager.ValidPreparationDataManager.On(
+		dbManager.ValidPreparationDataManagerMock.On(
 			"UpdateValidPreparation",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidPreparation) bool { return true }),
@@ -792,13 +792,13 @@ func TestValidPreparationsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidPreparationDataManager.On(
+		dbManager.ValidPreparationDataManagerMock.On(
 			"GetValidPreparation",
 			testutils.ContextMatcher,
 			helper.exampleValidPreparation.ID,
 		).Return(helper.exampleValidPreparation, nil)
 
-		dbManager.ValidPreparationDataManager.On(
+		dbManager.ValidPreparationDataManagerMock.On(
 			"UpdateValidPreparation",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidPreparation) bool { return true }),
@@ -830,13 +830,13 @@ func TestValidPreparationsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidPreparationDataManager.On(
+		dbManager.ValidPreparationDataManagerMock.On(
 			"ValidPreparationExists",
 			testutils.ContextMatcher,
 			helper.exampleValidPreparation.ID,
 		).Return(true, nil)
 
-		dbManager.ValidPreparationDataManager.On(
+		dbManager.ValidPreparationDataManagerMock.On(
 			"ArchiveValidPreparation",
 			testutils.ContextMatcher,
 			helper.exampleValidPreparation.ID,
@@ -887,7 +887,7 @@ func TestValidPreparationsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManager{}
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
 		validPreparationDataManager.On(
 			"ValidPreparationExists",
 			testutils.ContextMatcher,
@@ -915,7 +915,7 @@ func TestValidPreparationsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManager{}
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
 		validPreparationDataManager.On(
 			"ValidPreparationExists",
 			testutils.ContextMatcher,
@@ -936,13 +936,13 @@ func TestValidPreparationsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidPreparationDataManager.On(
+		dbManager.ValidPreparationDataManagerMock.On(
 			"ValidPreparationExists",
 			testutils.ContextMatcher,
 			helper.exampleValidPreparation.ID,
 		).Return(true, nil)
 
-		dbManager.ValidPreparationDataManager.On(
+		dbManager.ValidPreparationDataManagerMock.On(
 			"ArchiveValidPreparation",
 			testutils.ContextMatcher,
 			helper.exampleValidPreparation.ID,
@@ -962,13 +962,13 @@ func TestValidPreparationsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidPreparationDataManager.On(
+		dbManager.ValidPreparationDataManagerMock.On(
 			"ValidPreparationExists",
 			testutils.ContextMatcher,
 			helper.exampleValidPreparation.ID,
 		).Return(true, nil)
 
-		dbManager.ValidPreparationDataManager.On(
+		dbManager.ValidPreparationDataManagerMock.On(
 			"ArchiveValidPreparation",
 			testutils.ContextMatcher,
 			helper.exampleValidPreparation.ID,
@@ -999,7 +999,7 @@ func TestValidPreparationsService_RandomHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManager{}
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
 		validPreparationDataManager.On(
 			"GetRandomValidPreparation",
 			testutils.ContextMatcher,
@@ -1051,7 +1051,7 @@ func TestValidPreparationsService_RandomHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManager{}
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
 		validPreparationDataManager.On(
 			"GetRandomValidPreparation",
 			testutils.ContextMatcher,
@@ -1078,7 +1078,7 @@ func TestValidPreparationsService_RandomHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validPreparationDataManager := &mocktypes.ValidPreparationDataManager{}
+		validPreparationDataManager := &mocktypes.ValidPreparationDataManagerMock{}
 		validPreparationDataManager.On(
 			"GetRandomValidPreparation",
 			testutils.ContextMatcher,

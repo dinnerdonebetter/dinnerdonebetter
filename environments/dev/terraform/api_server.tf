@@ -189,7 +189,7 @@ resource "google_cloud_run_v2_service" "api_server" {
       }
 
       env {
-        name  = "DINNER_DONE_BETTER_DATA_CHANGES_TOPIC"
+        name  = "DATA_CHANGES_TOPIC_NAME"
         value = google_pubsub_topic.data_changes_topic.name
       }
 
@@ -273,6 +273,16 @@ resource "google_cloud_run_v2_service" "api_server" {
         value_source {
           secret_key_ref {
             secret  = google_secret_manager_secret.algolia_application_id.secret_id
+            version = "latest"
+          }
+        }
+      }
+
+      env {
+        name = "DINNER_DONE_BETTER_OAUTH2_TOKEN_ENCRYPTION_KEY"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.oauth2_token_encryption_key.secret_id
             version = "latest"
           }
         }

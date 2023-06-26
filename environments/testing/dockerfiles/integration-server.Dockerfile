@@ -12,7 +12,7 @@ COPY vendor vendor
 COPY go.mod go.mod
 COPY go.sum go.sum
 
-RUN --mount=type=cache,target=/root/.cache/go-build go build -trimpath -o /dinnerdonebetter github.com/dinnerdonebetter/backend/cmd/server/http
+RUN --mount=type=cache,target=/root/.cache/go-build go build -trimpath -o /dinnerdonebetter github.com/dinnerdonebetter/backend/cmd/services/api/http
 
 # final stage
 FROM debian:stretch

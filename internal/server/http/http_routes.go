@@ -8,7 +8,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/routing"
-	apiclientsservice "github.com/dinnerdonebetter/backend/internal/services/apiclients"
 	householdinstrumentownershipsservice "github.com/dinnerdonebetter/backend/internal/services/householdinstrumentownerships"
 	householdinvitationsservice "github.com/dinnerdonebetter/backend/internal/services/householdinvitations"
 	householdsservice "github.com/dinnerdonebetter/backend/internal/services/households"
@@ -19,6 +18,7 @@ import (
 	mealplansservice "github.com/dinnerdonebetter/backend/internal/services/mealplans"
 	mealplantasksservice "github.com/dinnerdonebetter/backend/internal/services/mealplantasks"
 	mealsservice "github.com/dinnerdonebetter/backend/internal/services/meals"
+	oauth2clientsservice "github.com/dinnerdonebetter/backend/internal/services/oauth2clients"
 	recipepreptasksservice "github.com/dinnerdonebetter/backend/internal/services/recipepreptasks"
 	reciperatingsservice "github.com/dinnerdonebetter/backend/internal/services/reciperatings"
 	recipesservice "github.com/dinnerdonebetter/backend/internal/services/recipes"
@@ -70,10 +70,15 @@ func (s *Server) setupRouter(ctx context.Context, router routing.Router) {
 		})
 	})
 
-	router.Post("/paseto", s.authService.PASETOHandler)
-
 	authenticatedRouter := router.WithMiddleware(s.authService.UserAttributionMiddleware)
 	authenticatedRouter.Get("/auth/status", s.authService.StatusHandler)
+
+	router.Route("/oauth2", func(userRouter routing.Router) {
+		userRouter.
+			WithMiddleware(s.authService.CookieRequirementMiddleware, s.authService.UserAttributionMiddleware).
+			Get("/authorize", s.authService.AuthorizeHandler)
+		userRouter.Post("/token", s.authService.TokenHandler)
+	})
 
 	router.Route("/users", func(userRouter routing.Router) {
 		userRouter.Post(root, s.usersService.CreateHandler)
@@ -206,23 +211,23 @@ func (s *Server) setupRouter(ctx context.Context, router routing.Router) {
 			})
 		})
 
-		// API Clients
-		v1Router.Route("/api_clients", func(clientRouter routing.Router) {
+		// OAuth2 Clients
+		v1Router.Route("/oauth2_clients", func(clientRouter routing.Router) {
 			clientRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadAPIClientsPermission)).
-				Get(root, s.apiClientsService.ListHandler)
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadOAuth2ClientsPermission)).
+				Get(root, s.oauth2ClientsService.ListHandler)
 			clientRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateAPIClientsPermission)).
-				Post(root, s.apiClientsService.CreateHandler)
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateOAuth2ClientsPermission)).
+				Post(root, s.oauth2ClientsService.CreateHandler)
 
-			singleClientRoute := buildURLVarChunk(apiclientsservice.APIClientIDURIParamKey, "")
+			singleClientRoute := buildURLVarChunk(oauth2clientsservice.OAuth2ClientIDURIParamKey, "")
 			clientRouter.Route(singleClientRoute, func(singleClientRouter routing.Router) {
 				singleClientRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadAPIClientsPermission)).
-					Get(root, s.apiClientsService.ReadHandler)
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadOAuth2ClientsPermission)).
+					Get(root, s.oauth2ClientsService.ReadHandler)
 				singleClientRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveAPIClientsPermission)).
-					Delete(root, s.apiClientsService.ArchiveHandler)
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveOAuth2ClientsPermission)).
+					Delete(root, s.oauth2ClientsService.ArchiveHandler)
 			})
 		})
 

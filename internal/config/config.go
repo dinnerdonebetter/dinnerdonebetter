@@ -73,7 +73,7 @@ func (cfg *InstanceConfig) EncodeToFile(path string, marshaller func(v any) ([]b
 func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServices bool) error {
 	var result *multierror.Error
 
-	validatorsToRun := map[string]func(context.Context) error{
+	validators := map[string]func(context.Context) error{
 		"Routing":       cfg.Routing.ValidateWithContext,
 		"Meta":          cfg.Meta.ValidateWithContext,
 		"Encoding":      cfg.Encoding.ValidateWithContext,
@@ -86,7 +86,7 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 		"Search":        cfg.Search.ValidateWithContext,
 	}
 
-	for name, validator := range validatorsToRun {
+	for name, validator := range validators {
 		if err := validator(ctx); err != nil {
 			result = multierror.Append(fmt.Errorf("error validating %s config: %w", name, err), result)
 		}

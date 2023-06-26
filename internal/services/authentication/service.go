@@ -1,10 +1,12 @@
 package authentication
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
+	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/email"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/featureflags"
@@ -15,6 +17,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/alexedwards/scs/v2"
+	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/gorilla/securecookie"
 )
 
@@ -40,7 +43,6 @@ type (
 		authenticator              authentication.Authenticator
 		featureFlagManager         featureflags.FeatureFlagManager
 		userDataManager            types.UserDataManager
-		apiClientManager           types.APIClientDataManager
 		householdMembershipManager types.HouseholdUserMembershipDataManager
 		encoderDecoder             encoding.ServerEncoderDecoder
 		secretGenerator            random.Generator
@@ -50,16 +52,17 @@ type (
 		sessionContextDataFetcher  func(*http.Request) (*types.SessionContextData, error)
 		tracer                     tracing.Tracer
 		dataChangesPublisher       messagequeue.Publisher
+		oauth2Server               *server.Server
 	}
 )
 
 // ProvideService builds a new AuthService.
 func ProvideService(
+	ctx context.Context,
 	logger logging.Logger,
 	cfg *Config,
 	authenticator authentication.Authenticator,
-	userDataManager types.UserDataManager,
-	apiClientsService types.APIClientDataManager,
+	dataManager database.DataManager,
 	householdMembershipManager types.HouseholdUserMembershipDataManager,
 	sessionManager *scs.SessionManager,
 	encoder encoding.ServerEncoderDecoder,
@@ -79,12 +82,13 @@ func ProvideService(
 		return nil, fmt.Errorf("setting up auth service data changes publisher: %w", publisherProviderErr)
 	}
 
+	tracer := tracing.NewTracer(tracerProvider.Tracer(serviceName))
+
 	svc := &service{
 		logger:                     logging.EnsureLogger(logger).WithName(serviceName),
 		encoderDecoder:             encoder,
 		config:                     cfg,
-		userDataManager:            userDataManager,
-		apiClientManager:           apiClientsService,
+		userDataManager:            dataManager,
 		householdMembershipManager: householdMembershipManager,
 		authenticator:              authenticator,
 		sessionManager:             sessionManager,
@@ -92,9 +96,10 @@ func ProvideService(
 		secretGenerator:            secretGenerator,
 		sessionContextDataFetcher:  FetchContextFromRequest,
 		cookieManager:              securecookie.New(hashKey, []byte(cfg.Cookies.BlockKey)),
-		tracer:                     tracing.NewTracer(tracerProvider.Tracer(serviceName)),
+		tracer:                     tracer,
 		dataChangesPublisher:       dataChangesPublisher,
 		featureFlagManager:         featureFlagManager,
+		oauth2Server:               ProvideOAuth2ServerImplementation(ctx, logger, tracer, &cfg.OAuth2, dataManager),
 	}
 
 	if _, err := svc.cookieManager.Encode(cfg.Cookies.Name, "blah"); err != nil {

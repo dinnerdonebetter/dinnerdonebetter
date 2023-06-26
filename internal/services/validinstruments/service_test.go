@@ -21,7 +21,7 @@ import (
 func buildTestService() *service {
 	return &service{
 		logger:                     logging.NewNoopLogger(),
-		validInstrumentDataManager: &mocktypes.ValidInstrumentDataManager{},
+		validInstrumentDataManager: &mocktypes.ValidInstrumentDataManagerMock{},
 		validInstrumentIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:             mockencoding.NewMockEncoderDecoder(),
 		tracer:                     tracing.NewTracerForTest("test"),
@@ -58,7 +58,7 @@ func TestProvideValidInstrumentsService(T *testing.T) {
 			logger,
 			cfg,
 			&searchcfg.Config{},
-			&mocktypes.ValidInstrumentDataManager{},
+			&mocktypes.ValidInstrumentDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
@@ -89,7 +89,7 @@ func TestProvideValidInstrumentsService(T *testing.T) {
 			logger,
 			cfg,
 			&searchcfg.Config{},
-			&mocktypes.ValidInstrumentDataManager{},
+			&mocktypes.ValidInstrumentDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,

@@ -3,13 +3,7 @@ package authentication
 import (
 	"bytes"
 	"context"
-	"crypto/hmac"
-	"crypto/sha256"
 	"database/sql"
-	"encoding/base32"
-	"encoding/base64"
-	"encoding/gob"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -32,7 +26,6 @@ import (
 	testutils "github.com/dinnerdonebetter/backend/tests/utils"
 
 	"github.com/gorilla/securecookie"
-	"github.com/o1egl/paseto"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -196,7 +189,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -215,7 +208,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		membershipDB.On(
 			"GetDefaultHouseholdIDForUser",
 			testutils.ContextMatcher,
@@ -252,7 +245,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetAdminUserByUsername",
 			testutils.ContextMatcher,
@@ -271,7 +264,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		membershipDB.On(
 			"GetDefaultHouseholdIDForUser",
 			testutils.ContextMatcher,
@@ -311,7 +304,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		expectedCookieDomain := ".whocares.gov"
 		helper.req.Header.Set(customCookieDomainHeader, expectedCookieDomain)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -330,7 +323,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		membershipDB.On(
 			"GetDefaultHouseholdIDForUser",
 			testutils.ContextMatcher,
@@ -405,7 +398,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -434,7 +427,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -466,7 +459,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -495,7 +488,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -535,7 +528,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -575,7 +568,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -615,7 +608,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -656,7 +649,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -696,7 +689,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -715,7 +708,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		membershipDB.On(
 			"GetDefaultHouseholdIDForUser",
 			testutils.ContextMatcher,
@@ -744,7 +737,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -763,7 +756,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		membershipDB.On(
 			"GetDefaultHouseholdIDForUser",
 			testutils.ContextMatcher,
@@ -796,7 +789,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -815,7 +808,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		membershipDB.On(
 			"GetDefaultHouseholdIDForUser",
 			testutils.ContextMatcher,
@@ -849,7 +842,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -868,7 +861,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		membershipDB.On(
 			"GetDefaultHouseholdIDForUser",
 			testutils.ContextMatcher,
@@ -914,7 +907,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return("", errors.New("blah"))
 		helper.service.cookieManager = cb
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -933,7 +926,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		membershipDB.On(
 			"GetDefaultHouseholdIDForUser",
 			testutils.ContextMatcher,
@@ -970,7 +963,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return("", errors.New("blah"))
 		helper.service.cookieManager = cb
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -989,7 +982,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		membershipDB.On(
 			"GetDefaultHouseholdIDForUser",
 			testutils.ContextMatcher,
@@ -1018,7 +1011,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		userDataManager := &mocktypes.UserDataManager{}
+		userDataManager := &mocktypes.UserDataManagerMock{}
 		userDataManager.On(
 			"GetUserByUsername",
 			testutils.ContextMatcher,
@@ -1037,7 +1030,7 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 		).Return(true, nil)
 		helper.service.authenticator = authenticator
 
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
+		membershipDB := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		membershipDB.On(
 			"GetDefaultHouseholdIDForUser",
 			testutils.ContextMatcher,
@@ -1079,7 +1072,7 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipManager.On(
 			"UserIsMemberOfHousehold",
 			testutils.ContextMatcher,
@@ -1168,7 +1161,7 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipManager.On(
 			"UserIsMemberOfHousehold",
 			testutils.ContextMatcher,
@@ -1199,7 +1192,7 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipManager.On(
 			"UserIsMemberOfHousehold",
 			testutils.ContextMatcher,
@@ -1230,7 +1223,7 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipManager.On(
 			"UserIsMemberOfHousehold",
 			testutils.ContextMatcher,
@@ -1265,7 +1258,7 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipManager.On(
 			"UserIsMemberOfHousehold",
 			testutils.ContextMatcher,
@@ -1301,7 +1294,7 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipManager.On(
 			"UserIsMemberOfHousehold",
 			testutils.ContextMatcher,
@@ -1340,7 +1333,7 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipManager.On(
 			"UserIsMemberOfHousehold",
 			testutils.ContextMatcher,
@@ -1376,7 +1369,7 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipManager.On(
 			"UserIsMemberOfHousehold",
 			testutils.ContextMatcher,
@@ -1415,7 +1408,7 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManager{}
+		householdMembershipManager := &mocktypes.HouseholdUserMembershipDataManagerMock{}
 		householdMembershipManager.On(
 			"UserIsMemberOfHousehold",
 			testutils.ContextMatcher,
@@ -1638,638 +1631,5 @@ func TestAuthenticationService_CycleSecretHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusForbidden, helper.res.Code, "expected code to be %d, but was %d", http.StatusUnauthorized, helper.res.Code)
 		assert.NoError(t, helper.service.cookieManager.Decode(helper.service.config.Cookies.Name, c.Value, &token))
-	})
-}
-
-func TestAuthenticationService_PASETOHandler(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		helper.service.config.PASETO.LocalModeKey = fakes.BuildFakeAPIClient().ClientSecret
-		helper.service.config.PASETO.Lifetime = time.Minute
-
-		exampleInput := &types.PASETOCreationInput{
-			HouseholdID: helper.exampleHousehold.ID,
-			ClientID:    helper.exampleAPIClient.ClientID,
-			RequestTime: time.Now().UTC().UnixNano(),
-		}
-
-		expected := &types.SessionContextData{
-			Requester: types.RequesterInfo{
-				UserID:                   helper.exampleUser.ID,
-				AccountStatus:            helper.exampleUser.AccountStatus,
-				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
-				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
-			},
-			ActiveHouseholdID:    helper.exampleHousehold.ID,
-			HouseholdPermissions: helper.examplePermCheckers,
-		}
-
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		apiClientDataManager := &mocktypes.APIClientDataManager{}
-		apiClientDataManager.On(
-			"GetAPIClientByClientID",
-			testutils.ContextMatcher,
-			helper.exampleAPIClient.ClientID,
-		).Return(helper.exampleAPIClient, nil)
-		helper.service.apiClientManager = apiClientDataManager
-
-		userDataManager := &mocktypes.UserDataManager{}
-		userDataManager.On(
-			"GetUser",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-		).Return(helper.exampleUser, nil)
-		helper.service.userDataManager = userDataManager
-
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
-		membershipDB.On(
-			"BuildSessionContextDataForUser",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-		).Return(expected, nil)
-		helper.service.householdMembershipManager = membershipDB
-
-		var bodyBytes bytes.Buffer
-		marshalErr := json.NewEncoder(&bodyBytes).Encode(exampleInput)
-		require.NoError(t, marshalErr)
-
-		// set HMAC signature
-		mac := hmac.New(sha256.New, helper.exampleAPIClient.ClientSecret)
-		_, macWriteErr := mac.Write(bodyBytes.Bytes())
-		require.NoError(t, macWriteErr)
-
-		sigHeader := base64.RawURLEncoding.EncodeToString(mac.Sum(nil))
-		helper.req.Header.Set(signatureHeaderKey, sigHeader)
-
-		helper.service.PASETOHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-
-		// validate results
-
-		var result *types.PASETOResponse
-		require.NoError(t, json.NewDecoder(helper.res.Body).Decode(&result))
-
-		assert.NotEmpty(t, result.Token)
-
-		var targetPayload paseto.JSONToken
-		require.NoError(t, paseto.NewV2().Decrypt(result.Token, helper.service.config.PASETO.LocalModeKey, &targetPayload, nil))
-
-		assert.True(t, targetPayload.Expiration.After(time.Now().UTC()))
-
-		payload := targetPayload.Get(pasetoDataKey)
-
-		gobEncoding, err := base64.RawURLEncoding.DecodeString(payload)
-		require.NoError(t, err)
-
-		var actual *types.SessionContextData
-		require.NoError(t, gob.NewDecoder(bytes.NewReader(gobEncoding)).Decode(&actual))
-
-		assert.NotNil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, apiClientDataManager, userDataManager, membershipDB)
-	})
-
-	T.Run("does not issue token with longer lifetime than package maximum", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		helper.service.config.PASETO.LocalModeKey = fakes.BuildFakeAPIClient().ClientSecret
-		helper.service.config.PASETO.Lifetime = 24 * time.Hour * 365 // one year
-
-		exampleInput := &types.PASETOCreationInput{
-			ClientID:    helper.exampleAPIClient.ClientID,
-			RequestTime: time.Now().UTC().UnixNano(),
-		}
-
-		expected := &types.SessionContextData{
-			Requester: types.RequesterInfo{
-				UserID:                   helper.exampleUser.ID,
-				AccountStatus:            helper.exampleUser.AccountStatus,
-				AccountStatusExplanation: helper.exampleUser.AccountStatusExplanation,
-				ServicePermissions:       authorization.NewServiceRolePermissionChecker(helper.exampleUser.ServiceRole),
-			},
-			ActiveHouseholdID:    helper.exampleHousehold.ID,
-			HouseholdPermissions: helper.examplePermCheckers,
-		}
-
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		apiClientDataManager := &mocktypes.APIClientDataManager{}
-		apiClientDataManager.On(
-			"GetAPIClientByClientID",
-			testutils.ContextMatcher,
-			helper.exampleAPIClient.ClientID,
-		).Return(helper.exampleAPIClient, nil)
-		helper.service.apiClientManager = apiClientDataManager
-
-		userDataManager := &mocktypes.UserDataManager{}
-		userDataManager.On(
-			"GetUser",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-		).Return(helper.exampleUser, nil)
-		helper.service.userDataManager = userDataManager
-
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
-		membershipDB.On(
-			"BuildSessionContextDataForUser",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-		).Return(expected, nil)
-		helper.service.householdMembershipManager = membershipDB
-
-		var bodyBytes bytes.Buffer
-		marshalErr := json.NewEncoder(&bodyBytes).Encode(exampleInput)
-		require.NoError(t, marshalErr)
-
-		// set HMAC signature
-		mac := hmac.New(sha256.New, helper.exampleAPIClient.ClientSecret)
-		_, macWriteErr := mac.Write(bodyBytes.Bytes())
-		require.NoError(t, macWriteErr)
-
-		sigHeader := base64.RawURLEncoding.EncodeToString(mac.Sum(nil))
-		helper.req.Header.Set(signatureHeaderKey, sigHeader)
-
-		helper.service.PASETOHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusAccepted, helper.res.Code)
-
-		// validate results
-
-		var result *types.PASETOResponse
-		require.NoError(t, json.NewDecoder(helper.res.Body).Decode(&result))
-
-		assert.NotEmpty(t, result.Token)
-
-		var targetPayload paseto.JSONToken
-		require.NoError(t, paseto.NewV2().Decrypt(result.Token, helper.service.config.PASETO.LocalModeKey, &targetPayload, nil))
-
-		assert.True(t, targetPayload.Expiration.Before(time.Now().UTC().Add(maxPASETOLifetime)))
-
-		payload := targetPayload.Get(pasetoDataKey)
-
-		gobEncoding, err := base64.RawURLEncoding.DecodeString(payload)
-		require.NoError(t, err)
-
-		var actual *types.SessionContextData
-		require.NoError(t, gob.NewDecoder(bytes.NewReader(gobEncoding)).Decode(&actual))
-
-		assert.NotNil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, apiClientDataManager, userDataManager, membershipDB)
-	})
-
-	T.Run("with missing input", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		helper.service.config.PASETO.LocalModeKey = fakes.BuildFakeAPIClient().ClientSecret
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(nil))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		helper.service.PASETOHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-	})
-
-	T.Run("with invalid input", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		helper.service.config.PASETO.LocalModeKey = fakes.BuildFakeAPIClient().ClientSecret
-		helper.service.config.PASETO.Lifetime = time.Minute
-
-		exampleInput := &types.PASETOCreationInput{}
-
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		helper.service.PASETOHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-	})
-
-	T.Run("with invalid request time", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		helper.service.config.PASETO.LocalModeKey = fakes.BuildFakeAPIClient().ClientSecret
-
-		exampleInput := &types.PASETOCreationInput{
-			ClientID:    helper.exampleAPIClient.ClientID,
-			RequestTime: 1,
-		}
-
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		helper.service.PASETOHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-	})
-
-	T.Run("with error decoding signature header", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		helper.service.config.PASETO.LocalModeKey = fakes.BuildFakeAPIClient().ClientSecret
-
-		exampleInput := &types.PASETOCreationInput{
-			ClientID:    helper.exampleAPIClient.ClientID,
-			RequestTime: time.Now().UTC().UnixNano(),
-		}
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		// set HMAC signature
-		mac := hmac.New(sha256.New, helper.exampleAPIClient.ClientSecret)
-		_, macWriteErr := mac.Write(jsonBytes)
-		require.NoError(t, macWriteErr)
-
-		sigHeader := base32.HexEncoding.EncodeToString(mac.Sum(nil))
-		helper.req.Header.Set(signatureHeaderKey, sigHeader)
-
-		helper.service.PASETOHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-	})
-
-	T.Run("with error fetching API client", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		helper.service.config.PASETO.LocalModeKey = fakes.BuildFakeAPIClient().ClientSecret
-
-		exampleInput := &types.PASETOCreationInput{
-			ClientID:    helper.exampleAPIClient.ClientID,
-			RequestTime: time.Now().UTC().UnixNano(),
-		}
-
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		apiClientDataManager := &mocktypes.APIClientDataManager{}
-		apiClientDataManager.On(
-			"GetAPIClientByClientID",
-			testutils.ContextMatcher,
-			helper.exampleAPIClient.ClientID,
-		).Return((*types.APIClient)(nil), errors.New("blah"))
-		helper.service.apiClientManager = apiClientDataManager
-
-		var bodyBytes bytes.Buffer
-		marshalErr := json.NewEncoder(&bodyBytes).Encode(exampleInput)
-		require.NoError(t, marshalErr)
-
-		// set HMAC signature
-		mac := hmac.New(sha256.New, helper.exampleAPIClient.ClientSecret)
-		_, macWriteErr := mac.Write(bodyBytes.Bytes())
-		require.NoError(t, macWriteErr)
-
-		sigHeader := base64.RawURLEncoding.EncodeToString(mac.Sum(nil))
-		helper.req.Header.Set(signatureHeaderKey, sigHeader)
-
-		helper.service.PASETOHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, apiClientDataManager)
-	})
-
-	T.Run("with error fetching user", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		helper.service.config.PASETO.LocalModeKey = fakes.BuildFakeAPIClient().ClientSecret
-
-		exampleInput := &types.PASETOCreationInput{
-			ClientID:    helper.exampleAPIClient.ClientID,
-			RequestTime: time.Now().UTC().UnixNano(),
-		}
-
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		apiClientDataManager := &mocktypes.APIClientDataManager{}
-		apiClientDataManager.On(
-			"GetAPIClientByClientID",
-			testutils.ContextMatcher,
-			helper.exampleAPIClient.ClientID,
-		).Return(helper.exampleAPIClient, nil)
-		helper.service.apiClientManager = apiClientDataManager
-
-		userDataManager := &mocktypes.UserDataManager{}
-		userDataManager.On(
-			"GetUser",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-		).Return((*types.User)(nil), errors.New("blah"))
-		helper.service.userDataManager = userDataManager
-
-		var bodyBytes bytes.Buffer
-		marshalErr := json.NewEncoder(&bodyBytes).Encode(exampleInput)
-		require.NoError(t, marshalErr)
-
-		// set HMAC signature
-		mac := hmac.New(sha256.New, helper.exampleAPIClient.ClientSecret)
-		_, macWriteErr := mac.Write(bodyBytes.Bytes())
-		require.NoError(t, macWriteErr)
-
-		sigHeader := base64.RawURLEncoding.EncodeToString(mac.Sum(nil))
-		helper.req.Header.Set(signatureHeaderKey, sigHeader)
-
-		helper.service.PASETOHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, apiClientDataManager, userDataManager)
-	})
-
-	T.Run("with error fetching household memberships", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		helper.service.config.PASETO.LocalModeKey = fakes.BuildFakeAPIClient().ClientSecret
-
-		exampleInput := &types.PASETOCreationInput{
-			ClientID:    helper.exampleAPIClient.ClientID,
-			RequestTime: time.Now().UTC().UnixNano(),
-		}
-
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		apiClientDataManager := &mocktypes.APIClientDataManager{}
-		apiClientDataManager.On(
-			"GetAPIClientByClientID",
-			testutils.ContextMatcher,
-			helper.exampleAPIClient.ClientID,
-		).Return(helper.exampleAPIClient, nil)
-		helper.service.apiClientManager = apiClientDataManager
-
-		userDataManager := &mocktypes.UserDataManager{}
-		userDataManager.On(
-			"GetUser",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-		).Return(helper.exampleUser, nil)
-		helper.service.userDataManager = userDataManager
-
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
-		membershipDB.On(
-			"BuildSessionContextDataForUser",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-		).Return((*types.SessionContextData)(nil), errors.New("blah"))
-		helper.service.householdMembershipManager = membershipDB
-
-		var bodyBytes bytes.Buffer
-		marshalErr := json.NewEncoder(&bodyBytes).Encode(exampleInput)
-		require.NoError(t, marshalErr)
-
-		// set HMAC signature
-		mac := hmac.New(sha256.New, helper.exampleAPIClient.ClientSecret)
-		_, macWriteErr := mac.Write(bodyBytes.Bytes())
-		require.NoError(t, macWriteErr)
-
-		sigHeader := base64.RawURLEncoding.EncodeToString(mac.Sum(nil))
-		helper.req.Header.Set(signatureHeaderKey, sigHeader)
-
-		helper.service.PASETOHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, apiClientDataManager, userDataManager, membershipDB)
-	})
-
-	T.Run("with invalid checksum", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		helper.service.config.PASETO.LocalModeKey = fakes.BuildFakeAPIClient().ClientSecret
-
-		exampleInput := &types.PASETOCreationInput{
-			ClientID:    helper.exampleAPIClient.ClientID,
-			RequestTime: time.Now().UTC().UnixNano(),
-		}
-
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		apiClientDataManager := &mocktypes.APIClientDataManager{}
-		apiClientDataManager.On(
-			"GetAPIClientByClientID",
-			testutils.ContextMatcher,
-			helper.exampleAPIClient.ClientID,
-		).Return(helper.exampleAPIClient, nil)
-		helper.service.apiClientManager = apiClientDataManager
-
-		// set HMAC signature
-		mac := hmac.New(sha256.New, helper.exampleAPIClient.ClientSecret)
-		_, macWriteErr := mac.Write([]byte("lol"))
-		require.NoError(t, macWriteErr)
-
-		sigHeader := base64.RawURLEncoding.EncodeToString(mac.Sum(nil))
-		helper.req.Header.Set(signatureHeaderKey, sigHeader)
-
-		helper.service.PASETOHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, apiClientDataManager)
-	})
-
-	T.Run("with inadequate household permissions", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		helper.service.config.PASETO.LocalModeKey = fakes.BuildFakeAPIClient().ClientSecret
-		helper.service.config.PASETO.Lifetime = time.Minute
-
-		exampleInput := &types.PASETOCreationInput{
-			HouseholdID: helper.exampleHousehold.ID,
-			ClientID:    helper.exampleAPIClient.ClientID,
-			RequestTime: time.Now().UTC().UnixNano(),
-		}
-
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		apiClientDataManager := &mocktypes.APIClientDataManager{}
-		apiClientDataManager.On(
-			"GetAPIClientByClientID",
-			testutils.ContextMatcher,
-			helper.exampleAPIClient.ClientID,
-		).Return(helper.exampleAPIClient, nil)
-		helper.service.apiClientManager = apiClientDataManager
-
-		userDataManager := &mocktypes.UserDataManager{}
-		userDataManager.On(
-			"GetUser",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-		).Return(helper.exampleUser, nil)
-		helper.service.userDataManager = userDataManager
-
-		delete(helper.sessionCtxData.HouseholdPermissions, helper.exampleHousehold.ID)
-
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
-		membershipDB.On(
-			"BuildSessionContextDataForUser",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-		).Return(helper.sessionCtxData, nil)
-		helper.service.householdMembershipManager = membershipDB
-
-		var bodyBytes bytes.Buffer
-		marshalErr := json.NewEncoder(&bodyBytes).Encode(exampleInput)
-		require.NoError(t, marshalErr)
-
-		// set HMAC signature
-		mac := hmac.New(sha256.New, helper.exampleAPIClient.ClientSecret)
-		_, macWriteErr := mac.Write(bodyBytes.Bytes())
-		require.NoError(t, macWriteErr)
-
-		sigHeader := base64.RawURLEncoding.EncodeToString(mac.Sum(nil))
-		helper.req.Header.Set(signatureHeaderKey, sigHeader)
-
-		helper.service.PASETOHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-	})
-
-	T.Run("with token encryption error", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		helper.service.config.PASETO.LocalModeKey = nil
-
-		exampleInput := &types.PASETOCreationInput{
-			ClientID:    helper.exampleAPIClient.ClientID,
-			RequestTime: time.Now().UTC().UnixNano(),
-		}
-
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		apiClientDataManager := &mocktypes.APIClientDataManager{}
-		apiClientDataManager.On(
-			"GetAPIClientByClientID",
-			testutils.ContextMatcher,
-			helper.exampleAPIClient.ClientID,
-		).Return(helper.exampleAPIClient, nil)
-		helper.service.apiClientManager = apiClientDataManager
-
-		userDataManager := &mocktypes.UserDataManager{}
-		userDataManager.On(
-			"GetUser",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-		).Return(helper.exampleUser, nil)
-		helper.service.userDataManager = userDataManager
-
-		membershipDB := &mocktypes.HouseholdUserMembershipDataManager{}
-		membershipDB.On(
-			"BuildSessionContextDataForUser",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-		).Return(helper.sessionCtxData, nil)
-		helper.service.householdMembershipManager = membershipDB
-
-		var bodyBytes bytes.Buffer
-		marshalErr := json.NewEncoder(&bodyBytes).Encode(exampleInput)
-		require.NoError(t, marshalErr)
-
-		// set HMAC signature
-		mac := hmac.New(sha256.New, helper.exampleAPIClient.ClientSecret)
-		_, macWriteErr := mac.Write(bodyBytes.Bytes())
-		require.NoError(t, macWriteErr)
-
-		sigHeader := base64.RawURLEncoding.EncodeToString(mac.Sum(nil))
-		helper.req.Header.Set(signatureHeaderKey, sigHeader)
-
-		helper.service.PASETOHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, apiClientDataManager, userDataManager, membershipDB)
 	})
 }

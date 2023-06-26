@@ -41,7 +41,7 @@ func TestServiceSettingConfigurationsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ServiceSettingConfigurationDataManager.On(
+		dbManager.ServiceSettingConfigurationDataManagerMock.On(
 			"CreateServiceSettingConfiguration",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ServiceSettingConfigurationDatabaseCreationInput) bool { return true }),
@@ -134,7 +134,7 @@ func TestServiceSettingConfigurationsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ServiceSettingConfigurationDataManager.On(
+		dbManager.ServiceSettingConfigurationDataManagerMock.On(
 			"CreateServiceSettingConfiguration",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ServiceSettingConfigurationDatabaseCreationInput) bool { return true }),
@@ -163,7 +163,7 @@ func TestServiceSettingConfigurationsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ServiceSettingConfigurationDataManager.On(
+		dbManager.ServiceSettingConfigurationDataManagerMock.On(
 			"CreateServiceSettingConfiguration",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ServiceSettingConfigurationDatabaseCreationInput) bool { return true }),
@@ -194,7 +194,7 @@ func TestServiceSettingConfigurationsService_ByNameHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManager{}
+		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManagerMock{}
 		serviceSettingConfigurationDataManager.On(
 			"GetServiceSettingConfigurationForUserByName",
 			testutils.ContextMatcher,
@@ -248,7 +248,7 @@ func TestServiceSettingConfigurationsService_ByNameHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManager{}
+		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManagerMock{}
 		serviceSettingConfigurationDataManager.On(
 			"GetServiceSettingConfigurationForUserByName",
 			testutils.ContextMatcher,
@@ -277,7 +277,7 @@ func TestServiceSettingConfigurationsService_ByNameHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManager{}
+		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManagerMock{}
 		serviceSettingConfigurationDataManager.On(
 			"GetServiceSettingConfigurationForUserByName",
 			testutils.ContextMatcher,
@@ -310,7 +310,7 @@ func TestServiceSettingConfigurationsService_ForUserHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManager{}
+		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManagerMock{}
 		serviceSettingConfigurationDataManager.On(
 			"GetServiceSettingConfigurationsForUser",
 			testutils.ContextMatcher,
@@ -363,7 +363,7 @@ func TestServiceSettingConfigurationsService_ForUserHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManager{}
+		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManagerMock{}
 		serviceSettingConfigurationDataManager.On(
 			"GetServiceSettingConfigurationsForUser",
 			testutils.ContextMatcher,
@@ -391,7 +391,7 @@ func TestServiceSettingConfigurationsService_ForUserHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManager{}
+		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManagerMock{}
 		serviceSettingConfigurationDataManager.On(
 			"GetServiceSettingConfigurationsForUser",
 			testutils.ContextMatcher,
@@ -423,7 +423,7 @@ func TestServiceSettingConfigurationsService_ForHouseholdHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManager{}
+		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManagerMock{}
 		serviceSettingConfigurationDataManager.On(
 			"GetServiceSettingConfigurationsForHousehold",
 			testutils.ContextMatcher,
@@ -476,7 +476,7 @@ func TestServiceSettingConfigurationsService_ForHouseholdHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManager{}
+		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManagerMock{}
 		serviceSettingConfigurationDataManager.On(
 			"GetServiceSettingConfigurationsForHousehold",
 			testutils.ContextMatcher,
@@ -504,7 +504,7 @@ func TestServiceSettingConfigurationsService_ForHouseholdHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManager{}
+		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManagerMock{}
 		serviceSettingConfigurationDataManager.On(
 			"GetServiceSettingConfigurationsForHousehold",
 			testutils.ContextMatcher,
@@ -546,13 +546,13 @@ func TestServiceSettingConfigurationsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ServiceSettingConfigurationDataManager.On(
+		dbManager.ServiceSettingConfigurationDataManagerMock.On(
 			"GetServiceSettingConfiguration",
 			testutils.ContextMatcher,
 			helper.exampleServiceSettingConfiguration.ID,
 		).Return(helper.exampleServiceSettingConfiguration, nil)
 
-		dbManager.ServiceSettingConfigurationDataManager.On(
+		dbManager.ServiceSettingConfigurationDataManagerMock.On(
 			"UpdateServiceSettingConfiguration",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ServiceSettingConfiguration) bool { return true }),
@@ -634,7 +634,7 @@ func TestServiceSettingConfigurationsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManager{}
+		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManagerMock{}
 		serviceSettingConfigurationDataManager.On(
 			"GetServiceSettingConfiguration",
 			testutils.ContextMatcher,
@@ -663,7 +663,7 @@ func TestServiceSettingConfigurationsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManager{}
+		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManagerMock{}
 		serviceSettingConfigurationDataManager.On(
 			"GetServiceSettingConfiguration",
 			testutils.ContextMatcher,
@@ -693,13 +693,13 @@ func TestServiceSettingConfigurationsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ServiceSettingConfigurationDataManager.On(
+		dbManager.ServiceSettingConfigurationDataManagerMock.On(
 			"GetServiceSettingConfiguration",
 			testutils.ContextMatcher,
 			helper.exampleServiceSettingConfiguration.ID,
 		).Return(helper.exampleServiceSettingConfiguration, nil)
 
-		dbManager.ServiceSettingConfigurationDataManager.On(
+		dbManager.ServiceSettingConfigurationDataManagerMock.On(
 			"UpdateServiceSettingConfiguration",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ServiceSettingConfiguration) bool { return true }),
@@ -728,13 +728,13 @@ func TestServiceSettingConfigurationsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ServiceSettingConfigurationDataManager.On(
+		dbManager.ServiceSettingConfigurationDataManagerMock.On(
 			"GetServiceSettingConfiguration",
 			testutils.ContextMatcher,
 			helper.exampleServiceSettingConfiguration.ID,
 		).Return(helper.exampleServiceSettingConfiguration, nil)
 
-		dbManager.ServiceSettingConfigurationDataManager.On(
+		dbManager.ServiceSettingConfigurationDataManagerMock.On(
 			"UpdateServiceSettingConfiguration",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ServiceSettingConfiguration) bool { return true }),
@@ -766,13 +766,13 @@ func TestServiceSettingConfigurationsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ServiceSettingConfigurationDataManager.On(
+		dbManager.ServiceSettingConfigurationDataManagerMock.On(
 			"ServiceSettingConfigurationExists",
 			testutils.ContextMatcher,
 			helper.exampleServiceSettingConfiguration.ID,
 		).Return(true, nil)
 
-		dbManager.ServiceSettingConfigurationDataManager.On(
+		dbManager.ServiceSettingConfigurationDataManagerMock.On(
 			"ArchiveServiceSettingConfiguration",
 			testutils.ContextMatcher,
 			helper.exampleServiceSettingConfiguration.ID,
@@ -823,7 +823,7 @@ func TestServiceSettingConfigurationsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManager{}
+		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManagerMock{}
 		serviceSettingConfigurationDataManager.On(
 			"ServiceSettingConfigurationExists",
 			testutils.ContextMatcher,
@@ -851,7 +851,7 @@ func TestServiceSettingConfigurationsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManager{}
+		serviceSettingConfigurationDataManager := &mocktypes.ServiceSettingConfigurationDataManagerMock{}
 		serviceSettingConfigurationDataManager.On(
 			"ServiceSettingConfigurationExists",
 			testutils.ContextMatcher,
@@ -872,13 +872,13 @@ func TestServiceSettingConfigurationsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ServiceSettingConfigurationDataManager.On(
+		dbManager.ServiceSettingConfigurationDataManagerMock.On(
 			"ServiceSettingConfigurationExists",
 			testutils.ContextMatcher,
 			helper.exampleServiceSettingConfiguration.ID,
 		).Return(true, nil)
 
-		dbManager.ServiceSettingConfigurationDataManager.On(
+		dbManager.ServiceSettingConfigurationDataManagerMock.On(
 			"ArchiveServiceSettingConfiguration",
 			testutils.ContextMatcher,
 			helper.exampleServiceSettingConfiguration.ID,
@@ -898,13 +898,13 @@ func TestServiceSettingConfigurationsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ServiceSettingConfigurationDataManager.On(
+		dbManager.ServiceSettingConfigurationDataManagerMock.On(
 			"ServiceSettingConfigurationExists",
 			testutils.ContextMatcher,
 			helper.exampleServiceSettingConfiguration.ID,
 		).Return(true, nil)
 
-		dbManager.ServiceSettingConfigurationDataManager.On(
+		dbManager.ServiceSettingConfigurationDataManagerMock.On(
 			"ArchiveServiceSettingConfiguration",
 			testutils.ContextMatcher,
 			helper.exampleServiceSettingConfiguration.ID,
