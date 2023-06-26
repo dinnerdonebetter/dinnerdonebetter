@@ -43,6 +43,7 @@ type (
 		authenticator              authentication.Authenticator
 		featureFlagManager         featureflags.FeatureFlagManager
 		userDataManager            types.UserDataManager
+		oauth2ClientDataManager    types.OAuth2ClientDataManager
 		householdMembershipManager types.HouseholdUserMembershipDataManager
 		encoderDecoder             encoding.ServerEncoderDecoder
 		secretGenerator            random.Generator

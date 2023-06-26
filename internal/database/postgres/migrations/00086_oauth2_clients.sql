@@ -46,3 +46,5 @@ CREATE TABLE IF NOT EXISTS oauth2_client_tokens (
     "refresh_expires_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW() + interval '1 hour',
     UNIQUE("belongs_to_user", "client_id", "scope", "code_expires_at", "access_expires_at", "refresh_expires_at")
 );
+
+DROP TABLE api_clients;

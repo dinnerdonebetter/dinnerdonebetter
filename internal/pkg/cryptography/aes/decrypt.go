@@ -17,7 +17,7 @@ func (e *aesImpl) Decrypt(ctx context.Context, content string) (string, error) {
 
 	ciphered, err := base64.URLEncoding.DecodeString(content)
 	if err != nil {
-		return "", observability.PrepareAndLogError(err, logger, span, "decoding ciphered content")
+		return "", observability.PrepareAndLogError(err, logger, span, "decoding ciphered text")
 	}
 
 	aesBlock, err := aes.NewCipher(e.key[:])
@@ -35,7 +35,7 @@ func (e *aesImpl) Decrypt(ctx context.Context, content string) (string, error) {
 
 	originalText, err := gcmInstance.Open(nil, nonce, cipheredText, nil)
 	if err != nil {
-		return "", observability.PrepareAndLogError(err, logger, span, "decrypting ciphered content")
+		return "", observability.PrepareAndLogError(err, logger, span, "decrypting ciphered text")
 	}
 
 	return string(originalText), nil

@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/http/httputil"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/encoding"
@@ -214,9 +213,6 @@ func UsingOAuth2(ctx context.Context, clientID, clientSecret string, cookie *htt
 		}
 
 		code := rl.Query().Get("code")
-		dumped, _ := httputil.DumpResponse(res, true)
-		_ = dumped
-
 		token, err := oauth2Config.Exchange(ctx, code,
 			oauth2.SetAuthURLParam("code_verifier", "s256example"),
 		)

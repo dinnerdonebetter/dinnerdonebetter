@@ -32,7 +32,7 @@ func (e *aesImpl) Encrypt(ctx context.Context, content string) (string, error) {
 		return "", observability.PrepareAndLogError(err, logger, span, "generating nonce")
 	}
 
-	cipheredText := gcmInstance.Seal([]byte(content)[:], nonce, []byte(content), nil)
+	cipheredText := gcmInstance.Seal(nonce, nonce, []byte(content), nil)
 
 	return base64.URLEncoding.EncodeToString(cipheredText), nil
 }
