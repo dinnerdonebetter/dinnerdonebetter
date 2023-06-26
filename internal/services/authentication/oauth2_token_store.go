@@ -109,7 +109,7 @@ func (s *oauth2TokenStoreImpl) GetByCode(ctx context.Context, code string) (oaut
 
 	token, err := s.dataManager.GetOAuth2ClientTokenByCode(ctx, code)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "removing oauth2 client token by code")
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting oauth2 client token by code")
 	}
 
 	return convertTokenToImpl(token), nil
@@ -125,7 +125,7 @@ func (s *oauth2TokenStoreImpl) GetByAccess(ctx context.Context, access string) (
 
 	token, err := s.dataManager.GetOAuth2ClientTokenByAccess(ctx, access)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "removing oauth2 client token by code")
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting oauth2 client token by access")
 	}
 
 	return convertTokenToImpl(token), nil
@@ -141,7 +141,7 @@ func (s *oauth2TokenStoreImpl) GetByRefresh(ctx context.Context, refresh string)
 
 	token, err := s.dataManager.GetOAuth2ClientTokenByRefresh(ctx, refresh)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "removing oauth2 client token by code")
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting oauth2 client token by refresh")
 	}
 
 	return convertTokenToImpl(token), nil

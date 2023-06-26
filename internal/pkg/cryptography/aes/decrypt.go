@@ -1,4 +1,4 @@
-package cryptography
+package aes
 
 import (
 	"context"
@@ -7,12 +7,6 @@ import (
 	"encoding/base64"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
-)
-
-type (
-	Decryptor interface {
-		Decrypt(ctx context.Context, content string) (string, error)
-	}
 )
 
 func (e *aesImpl) Decrypt(ctx context.Context, content string) (string, error) {

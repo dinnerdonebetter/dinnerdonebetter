@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/http/httputil"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/encoding"
@@ -157,7 +158,7 @@ func UsingLogin(ctx context.Context, input *types.UserLoginInput) func(*Client) 
 }
 
 // UsingOAuth2 sets the client to use OAuth2.
-func UsingOAuth2(ctx context.Context, clientID, clientSecret string) func(*Client) error {
+func UsingOAuth2(ctx context.Context, clientID, clientSecret string, cookie *http.Cookie) func(*Client) error {
 	genCodeChallengeS256 := func(s string) string {
 		s256 := sha256.Sum256([]byte(s))
 		return base64.URLEncoding.EncodeToString(s256[:])
@@ -168,7 +169,7 @@ func UsingOAuth2(ctx context.Context, clientID, clientSecret string) func(*Clien
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
 			Scopes:       []string{"household_member"},
-			RedirectURL:  "http://localhost:9094/oauth2",
+			RedirectURL:  "https://localhost:9000/oauth2",
 			Endpoint: oauth2.Endpoint{
 				AuthURL:  c.URL().String() + "/oauth2/authorize",
 				TokenURL: c.URL().String() + "/oauth2/token",
@@ -181,7 +182,7 @@ func UsingOAuth2(ctx context.Context, clientID, clientSecret string) func(*Clien
 			ctx,
 			http.MethodGet,
 			oauth2Config.AuthCodeURL(
-				"",
+				"xyz",
 				oauth2.SetAuthURLParam("code_challenge", genCodeChallengeS256("s256example")),
 				oauth2.SetAuthURLParam("code_challenge_method", "S256"),
 			),
@@ -189,6 +190,12 @@ func UsingOAuth2(ctx context.Context, clientID, clientSecret string) func(*Clien
 		)
 		if err != nil {
 			return fmt.Errorf("failed to get oauth2 code: %w", err)
+		}
+
+		req.AddCookie(cookie)
+		client := otelhttp.DefaultClient
+		client.CheckRedirect = func(req *http.Request, via []*http.Request) error {
+			return http.ErrUseLastResponse
 		}
 
 		res, err := otelhttp.DefaultClient.Do(req)
@@ -201,7 +208,14 @@ func UsingOAuth2(ctx context.Context, clientID, clientSecret string) func(*Clien
 			}
 		}()
 
-		code := res.Header.Get("code")
+		rl, err := res.Location()
+		if err != nil {
+			return err
+		}
+
+		code := rl.Query().Get("code")
+		dumped, _ := httputil.DumpResponse(res, true)
+		_ = dumped
 
 		token, err := oauth2Config.Exchange(ctx, code,
 			oauth2.SetAuthURLParam("code_verifier", "s256example"),

@@ -15,6 +15,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/cryptography"
+	"github.com/dinnerdonebetter/backend/internal/pkg/cryptography/salsa20"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 
 	"github.com/Masterminds/squirrel"
@@ -67,7 +68,7 @@ func ProvideDatabaseClient(
 	db.SetMaxOpenConns(7)
 	db.SetConnMaxLifetime(1800 * time.Second)
 
-	encDec, err := cryptography.NewAESEncryptorDecryptor(tracerProvider, logger, []byte(cfg.OAuth2TokenEncryptionKey))
+	encDec, err := salsa20.NewEncryptorDecryptor(tracerProvider, logger, []byte(cfg.OAuth2TokenEncryptionKey))
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating encryptor/decryptor with secret length %d", len(cfg.OAuth2TokenEncryptionKey))
 	}

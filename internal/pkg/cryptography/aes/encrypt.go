@@ -1,4 +1,4 @@
-package cryptography
+package aes
 
 import (
 	"context"
@@ -9,12 +9,6 @@ import (
 	"io"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
-)
-
-type (
-	Encryptor interface {
-		Encrypt(ctx context.Context, content string) (string, error)
-	}
 )
 
 func (e *aesImpl) Encrypt(ctx context.Context, content string) (string, error) {
@@ -38,7 +32,7 @@ func (e *aesImpl) Encrypt(ctx context.Context, content string) (string, error) {
 		return "", observability.PrepareAndLogError(err, logger, span, "generating nonce")
 	}
 
-	cipheredText := gcmInstance.Seal(nonce, nonce, []byte(content), nil)
+	cipheredText := gcmInstance.Seal([]byte(content)[:], nonce, []byte(content), nil)
 
 	return base64.URLEncoding.EncodeToString(cipheredText), nil
 }
