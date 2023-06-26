@@ -69,14 +69,13 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		// check to see if there is an OAuth2 token for a valid client attached to the request.
-		// We do this first because it is presumed to be the primary means by which requests are made to the httpServer.
-		userID, err := s.ExtractUserFromOAuth2Token(ctx, req)
+		// validate bearer token.
+		token, err := s.oauth2Server.ValidationBearerToken(req)
 		if err != nil {
 			s.logger.Error(err, "determining user ID")
 		}
 
-		if userID != "" {
+		if userID := token.GetUserID(); userID != "" {
 			sessionCtxData, sessionCtxDataErr := s.householdMembershipManager.BuildSessionContextDataForUser(ctx, userID)
 			if sessionCtxDataErr != nil {
 				observability.AcknowledgeError(sessionCtxDataErr, logger, span, "fetching user info for cookie")
@@ -92,19 +91,6 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 
 		next.ServeHTTP(res, req)
 	})
-}
-
-func (s *service) ExtractUserFromOAuth2Token(ctx context.Context, req *http.Request) (string, error) {
-	ctx, span := tracing.StartSpan(ctx)
-	defer span.End()
-
-	// validate bearer token.
-	token, err := s.oauth2Server.ValidationBearerToken(req)
-	if err != nil {
-		return "", fmt.Errorf("validating bearer token: %w", err)
-	}
-
-	return token.GetUserID(), nil
 }
 
 // AuthorizationMiddleware checks to see if a user is associated with the request, and then determines whether said request can proceed.
