@@ -77,7 +77,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 
 			for i := 0; i < 2; i++ {
 				t.Logf("creating user to invite")
-				u, _, c := createUserAndClientForTest(ctx, t, nil)
+				u, _, c, _ := createUserAndClientForTest(ctx, t, nil)
 
 				t.Logf("inviting user")
 				invitation, err := testClients.user.InviteUserToHousehold(ctx, relevantHouseholdID, &types.HouseholdInvitationCreationRequestInput{
@@ -267,7 +267,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 
 			for i := 0; i < 2; i++ {
 				t.Logf("creating user to invite")
-				u, _, c := createUserAndClientForTest(ctx, t, nil)
+				u, _, c, _ := createUserAndClientForTest(ctx, t, nil)
 
 				t.Logf("inviting user")
 				invitation, err := testClients.user.InviteUserToHousehold(ctx, relevantHouseholdID, &types.HouseholdInvitationCreationRequestInput{

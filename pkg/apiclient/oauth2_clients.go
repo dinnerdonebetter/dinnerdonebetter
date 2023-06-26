@@ -24,7 +24,7 @@ func (c *Client) GetOAuth2Client(ctx context.Context, oauth2ClientDatabaseID str
 
 	var oauth2Client *types.OAuth2Client
 	if err = c.fetchAndUnmarshal(ctx, req, &oauth2Client); err != nil {
-		return nil, observability.PrepareError(err, span, "fetching api client")
+		return nil, observability.PrepareError(err, span, "fetching oauth2 client")
 	}
 
 	return oauth2Client, nil
@@ -71,7 +71,7 @@ func (c *Client) CreateOAuth2Client(ctx context.Context, input *types.OAuth2Clie
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, &oauth2ClientResponse); err != nil {
-		return nil, observability.PrepareError(err, span, "creating api client")
+		return nil, observability.PrepareError(err, span, "creating oauth2 client")
 	}
 
 	return oauth2ClientResponse, nil
@@ -92,7 +92,7 @@ func (c *Client) ArchiveOAuth2Client(ctx context.Context, oauth2ClientDatabaseID
 	}
 
 	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareError(err, span, "archiving api client")
+		return observability.PrepareError(err, span, "archiving oauth2 client")
 	}
 
 	return nil

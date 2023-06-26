@@ -11,15 +11,6 @@ CREATE TABLE IF NOT EXISTS oauth2_clients (
     UNIQUE("name", "archived_at")
 );
 
-INSERT INTO oauth2_clients ("id", "name", "description", "client_id", "client_secret")
-VALUES (
-    'ciaaq8gpbq30v6sm92p0',
-    'demo',
-    'Demo client',
-    'a3b0030dcfc2122eec315c7f336ff0e7a89ac71565fd0cee216015d244e25bd7',
-    '48cd61ca7a45e0b9a9a5cea23bf29f4b74754effe3b24ff939a00f78c78ebe47'
-);
-
 CREATE TYPE oauth2_client_token_scopes AS ENUM (
     'unknown',
     'household_member',

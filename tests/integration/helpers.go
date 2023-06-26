@@ -38,7 +38,7 @@ func requireNotNilAndNoProblems(t *testing.T, i any, err error) {
 	require.NotNil(t, i)
 }
 
-func createUserAndClientForTest(ctx context.Context, t *testing.T, input *types.UserRegistrationInput) (user *types.User, cookie *http.Cookie, client *apiclient.Client) {
+func createUserAndClientForTest(ctx context.Context, t *testing.T, input *types.UserRegistrationInput) (user *types.User, cookie *http.Cookie, client, oauthedClient *apiclient.Client) {
 	t.Helper()
 
 	if input == nil {
@@ -69,7 +69,10 @@ func createUserAndClientForTest(ctx context.Context, t *testing.T, input *types.
 	client, err = initializeCookiePoweredClient(ctx, loginInput)
 	require.NoError(t, err)
 
-	return user, cookie, client
+	oauthedClient, err = initializeOAuth2PoweredClient(ctx, cookie)
+	require.NoError(t, err)
+
+	return user, cookie, client, oauthedClient
 }
 
 func initializeCookiePoweredClient(ctx context.Context, loginInput *types.UserLoginInput) (*apiclient.Client, error) {
@@ -82,10 +85,40 @@ func initializeCookiePoweredClient(ctx context.Context, loginInput *types.UserLo
 		return nil, err
 	}
 
-	c, err := apiclient.NewClient(parsedURLToUse,
+	c, err := apiclient.NewClient(
+		parsedURLToUse,
 		tracing.NewNoopTracerProvider(),
 		apiclient.UsingLogger(logger),
 		apiclient.UsingLogin(ctx, loginInput),
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	if debug {
+		if setOptionErr := c.SetOptions(apiclient.UsingDebug(true)); setOptionErr != nil {
+			return nil, setOptionErr
+		}
+	}
+
+	return c, nil
+}
+
+func initializeOAuth2PoweredClient(ctx context.Context, cookie *http.Cookie) (*apiclient.Client, error) {
+	if parsedURLToUse == nil {
+		panic("url not set!")
+	}
+
+	logger, err := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
+	if err != nil {
+		return nil, err
+	}
+
+	c, err := apiclient.NewClient(
+		parsedURLToUse,
+		tracing.NewNoopTracerProvider(),
+		apiclient.UsingLogger(logger),
+		apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, cookie),
 	)
 	if err != nil {
 		return nil, err
@@ -119,7 +152,7 @@ func generateTOTPTokenForUser(t *testing.T, u *types.User) string {
 	return code
 }
 
-func buildAdminCookieAndPASETOClients(ctx context.Context, t *testing.T) *apiclient.Client {
+func buildAdminCookieAndOAuthedClients(ctx context.Context, t *testing.T) (cookieClient *apiclient.Client, oauthedClient *apiclient.Client) {
 	t.Helper()
 
 	ctx, span := tracing.StartSpan(ctx)
@@ -146,5 +179,11 @@ func buildAdminCookieAndPASETOClients(ctx context.Context, t *testing.T) *apicli
 	adminCookieClient, err := initializeCookiePoweredClient(ctx, loginInput)
 	require.NoError(t, err)
 
-	return adminCookieClient
+	cookie, err := testutils.GetLoginCookie(ctx, urlToUse, premadeAdminUser)
+	require.NoError(t, err)
+
+	oauthedClient, err = initializeOAuth2PoweredClient(ctx, cookie)
+	require.NoError(t, err)
+
+	return adminCookieClient, oauthedClient
 }

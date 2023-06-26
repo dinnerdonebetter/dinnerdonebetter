@@ -34,7 +34,7 @@ func (s *TestSuite) TestAdmin_BanningUsers() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			user, _, userClient := createUserAndClientForTest(ctx, t, nil)
+			user, _, userClient, _ := createUserAndClientForTest(ctx, t, nil)
 
 			// Assert that user can access service
 			_, err := userClient.GetWebhooks(ctx, nil)

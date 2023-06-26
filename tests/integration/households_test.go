@@ -244,7 +244,7 @@ func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
 			require.Equal(t, relevantHouseholdID, createdWebhook.BelongsToHousehold)
 
 			t.Logf("creating user to invite")
-			u, _, c := createUserAndClientForTest(ctx, t, nil)
+			u, _, c, _ := createUserAndClientForTest(ctx, t, nil)
 
 			t.Logf("inviting user")
 			invitation, err := testClients.user.InviteUserToHousehold(ctx, relevantHouseholdID, &types.HouseholdInvitationCreationRequestInput{
@@ -332,7 +332,7 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
 			assert.NotEmpty(t, sentInvitations.Data)
 
 			t.Logf("creating user to invite")
-			_, _, c := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
+			_, _, c, _ := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
 				EmailAddress: inviteReq.ToEmail,
 				Username:     fakes.BuildFakeUser().Username,
 				Password:     gofakeit.Password(true, true, true, true, false, 64),
@@ -411,7 +411,7 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependentlyAndThenCan
 			assert.NotEmpty(t, sentInvitations.Data)
 
 			t.Logf("creating user to invite")
-			_, _, c := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
+			_, _, c, _ := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
 				EmailAddress: inviteReq.ToEmail,
 				Username:     fakes.BuildFakeUser().Username,
 				Password:     gofakeit.Password(true, true, true, true, false, 64),
@@ -477,7 +477,7 @@ func (s *TestSuite) TestHouseholds_InvitingNewUserWithInviteLink() {
 			assert.NotEmpty(t, sentInvitations.Data)
 
 			t.Logf("creating user to invite")
-			_, _, c := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
+			_, _, c, _ := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
 				EmailAddress:    inviteReq.ToEmail,
 				Username:        fakes.BuildFakeUser().Username,
 				Password:        gofakeit.Password(true, true, true, true, false, 64),
@@ -546,7 +546,7 @@ func (s *TestSuite) TestHouseholds_InviteCanBeCancelled() {
 			assert.Empty(t, sentInvitations.Data)
 
 			t.Logf("creating user to invite")
-			_, _, c := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
+			_, _, c, _ := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
 				EmailAddress: inviteReq.ToEmail,
 				Username:     fakes.BuildFakeUser().Username,
 				Password:     gofakeit.Password(true, true, true, true, false, 64),
@@ -587,7 +587,7 @@ func (s *TestSuite) TestHouseholds_InviteCanBeRejected() {
 			require.Equal(t, relevantHouseholdID, createdWebhook.BelongsToHousehold)
 
 			t.Logf("creating user to invite")
-			u, _, c := createUserAndClientForTest(ctx, t, nil)
+			u, _, c, _ := createUserAndClientForTest(ctx, t, nil)
 
 			t.Logf("inviting user")
 			invitation, err := testClients.user.InviteUserToHousehold(ctx, relevantHouseholdID, &types.HouseholdInvitationCreationRequestInput{
@@ -619,7 +619,7 @@ func (s *TestSuite) TestHouseholds_InviteCanBeRejected() {
 }
 
 func (s *TestSuite) TestHouseholds_ChangingMemberships() {
-	s.runForEachClient("should be possible to change members of a household", func(testClients *testClientWrapper) func() {
+	s.runForCookieClient("should be possible to change members of a household", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -666,7 +666,7 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 
 			// create users
 			for i := 0; i < userCount; i++ {
-				u, _, c := createUserAndClientForTest(ctx, t, nil)
+				u, _, c, _ := createUserAndClientForTest(ctx, t, nil)
 				users = append(users, u)
 				clients = append(clients, c)
 
@@ -751,7 +751,7 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 }
 
 func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
-	s.runForEachClient("should be possible to transfer ownership of a household", func(testClients *testClientWrapper) func() {
+	s.runForCookieClient("should be possible to transfer ownership of a household", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -759,7 +759,7 @@ func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
 			defer span.End()
 
 			// create users
-			futureOwner, _, futureOwnerClient := createUserAndClientForTest(ctx, t, nil)
+			futureOwner, _, futureOwnerClient, _ := createUserAndClientForTest(ctx, t, nil)
 
 			// fetch household data
 			householdCreationInput := &types.HouseholdCreationRequestInput{
@@ -865,7 +865,7 @@ func (s *TestSuite) TestHouseholds_UsersHaveBackupHouseholdCreatedForThemWhenRem
 				InvitationID:    createdInvitation.ID,
 				InvitationToken: createdInvitation.Token,
 			}
-			u, _, c := createUserAndClientForTest(ctx, t, regInput)
+			u, _, c, _ := createUserAndClientForTest(ctx, t, regInput)
 
 			t.Logf("fetching households")
 			households, err := c.GetHouseholds(ctx, nil)

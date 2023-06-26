@@ -16,6 +16,7 @@ import (
 
 const (
 	cookieAuthType = "cookie"
+	oauth2AuthType = "oauth2"
 )
 
 var (
@@ -37,10 +38,13 @@ func TestIntegration(t *testing.T) {
 type TestSuite struct {
 	suite.Suite
 
-	ctx                             context.Context
-	user                            *types.User
-	cookie                          *http.Cookie
-	cookieClient, adminCookieClient *apiclient.Client
+	ctx    context.Context
+	user   *types.User
+	cookie *http.Cookie
+	cookieClient,
+	oauthedClient,
+	adminCookieClient,
+	adminOAuthedClient *apiclient.Client
 }
 
 var _ suite.SetupTestSuite = (*TestSuite)(nil)
@@ -53,15 +57,16 @@ func (s *TestSuite) SetupTest() {
 	defer span.End()
 
 	s.ctx, _ = tracing.StartCustomSpan(ctx, testName)
-	s.user, s.cookie, s.cookieClient = createUserAndClientForTest(s.ctx, t, nil)
-	s.adminCookieClient = buildAdminCookieAndPASETOClients(s.ctx, t)
+	s.user, s.cookie, s.cookieClient, s.oauthedClient = createUserAndClientForTest(s.ctx, t, nil)
+	s.adminCookieClient, s.adminOAuthedClient = buildAdminCookieAndOAuthedClients(s.ctx, t)
 }
 
 func (s *TestSuite) runForCookieClient(name string, subtestBuilder func(*testClientWrapper) func()) {
-	for a, c := range s.eachClientExcept() {
-		authType, testClients := a, c
-		s.Run(fmt.Sprintf("%s via %s", name, authType), subtestBuilder(testClients))
-	}
+	s.runForEachClientExcept(name, subtestBuilder, oauth2AuthType)
+}
+
+func (s *TestSuite) runForOAuth2Client(name string, subtestBuilder func(*testClientWrapper) func()) {
+	s.runForEachClientExcept(name, subtestBuilder, cookieAuthType)
 }
 
 func (s *TestSuite) runForEachClient(name string, subtestBuilder func(*testClientWrapper) func()) {
@@ -80,6 +85,7 @@ func (s *TestSuite) eachClientExcept(exceptions ...string) map[string]*testClien
 
 	clients := map[string]*testClientWrapper{
 		cookieAuthType: {authType: cookieAuthType, user: s.cookieClient, admin: s.adminCookieClient},
+		oauth2AuthType: {authType: oauth2AuthType, user: s.oauthedClient, admin: s.adminOAuthedClient},
 	}
 
 	for _, name := range exceptions {
