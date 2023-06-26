@@ -47,7 +47,7 @@ resource "google_secret_manager_secret_version" "outbound_emails_topic_name" {
 # API server oauth2 token encryption key
 
 resource "random_string" "oauth2_token_encryption_key" {
-  length  = 64
+  length  = 32
   special = false
 }
 
