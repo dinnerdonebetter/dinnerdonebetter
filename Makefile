@@ -194,7 +194,7 @@ clean_ts:
 
 typescript: clean_ts
 	mkdir -p $(ARTIFACTS_DIR)/typescript
-	go run github.com/dinnerdonebetter/backend/cmd/tools/codegen/gen_typescript
+	go run github.com/dinnerdonebetter/backend/cmd/tools/gen_clients/gen_typescript
 	(cd ../frontend && make format)
 
 clean_swift:

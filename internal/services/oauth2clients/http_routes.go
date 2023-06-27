@@ -92,7 +92,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if err = input.ValidateWithContext(ctx, s.cfg.MinimumUsernameLength, s.cfg.MinimumPasswordLength); err != nil {
+	if err = input.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
 		return
@@ -100,37 +100,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// keep relevant data in mind.
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
-	logger = sessionCtxData.AttachToLogger(logger).WithValue("username", input.Username)
-
-	// retrieve user.
-	user, err := s.userDataManager.GetUser(ctx, sessionCtxData.Requester.UserID)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "fetching user")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-		return
-	}
-
-	// tag span since we have the info.
-	tracing.AttachUserIDToSpan(span, user.ID)
-
-	// check credentials.
-	valid, err := s.authenticator.CredentialsAreValid(
-		ctx,
-		user.HashedPassword,
-		input.Password,
-		user.TwoFactorSecret,
-		input.TOTPToken,
-	)
-
-	if !valid {
-		logger.Debug("invalid credentials provided to OAuth2 client creation route")
-		s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
-		return
-	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "validating user credentials")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-		return
-	}
+	logger = sessionCtxData.AttachToLogger(logger)
 
 	dbInput := converters.ConvertOAuth2ClientCreationRequestInputToOAuth2ClientDatabaseCreationInput(input)
 

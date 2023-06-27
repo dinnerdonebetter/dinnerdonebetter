@@ -33,7 +33,6 @@ type (
 	OAuth2ClientCreationRequestInput struct {
 		_ struct{}
 
-		UserLoginInput
 		Name        string `json:"name"`
 		Description string `json:"description"`
 	}
@@ -84,12 +83,7 @@ type (
 )
 
 // ValidateWithContext validates an APICreationInput.
-func (x *OAuth2ClientCreationRequestInput) ValidateWithContext(ctx context.Context, minUsernameLength, minPasswordLength uint8) error {
-	// this is not the place to worry if the user's password is long enough
-	if err := x.UserLoginInput.ValidateWithContext(ctx, minUsernameLength, minPasswordLength); err != nil {
-		return err
-	}
-
+func (x *OAuth2ClientCreationRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, x,
 		validation.Field(&x.Name, validation.Required),
 	)

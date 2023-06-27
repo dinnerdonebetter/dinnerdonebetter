@@ -1,7 +1,6 @@
 package fakes
 
 import (
-	"fmt"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -74,11 +73,7 @@ func BuildFakeOAuth2ClientCreationInput() *types.OAuth2ClientCreationRequestInpu
 	client := BuildFakeOAuth2Client()
 
 	return &types.OAuth2ClientCreationRequestInput{
-		UserLoginInput: types.UserLoginInput{
-			Username:  fake.Username(),
-			Password:  BuildFakePassword(),
-			TOTPToken: fmt.Sprintf("0%s", fake.Zip()),
-		},
-		Name: client.Name,
+		Name:        client.Name,
+		Description: client.Description,
 	}
 }

@@ -4,11 +4,9 @@ import (
 	"bytes"
 	"database/sql"
 	"errors"
-	"math"
 	"net/http"
 	"testing"
 
-	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
@@ -168,17 +166,6 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = mockDB
 
-		a := &mockauthn.Authenticator{}
-		a.On(
-			"CredentialsAreValid",
-			testutils.ContextMatcher,
-			helper.exampleUser.HashedPassword,
-			helper.exampleInput.Password,
-			helper.exampleUser.TwoFactorSecret,
-			helper.exampleInput.TOTPToken,
-		).Return(true, nil)
-		helper.service.authenticator = a
-
 		sg := &mockrandom.Generator{}
 		sg.On(
 			"GenerateHexEncodedString",
@@ -210,7 +197,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, a, sg, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, mockDB, sg, dataChangesPublisher)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -245,8 +232,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		helper.service.cfg.MinimumPasswordLength = math.MaxUint8
-		helper.exampleInput.Password = ""
+		helper.exampleInput.Name = ""
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
 
 		var err error
@@ -256,125 +242,6 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 
 		helper.service.CreateHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-	})
-
-	T.Run("with error retrieving user", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		mockDB := database.NewMockDatabase()
-		mockDB.UserDataManagerMock.On(
-			"GetUser",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-		).Return((*types.User)(nil), errors.New("blah"))
-		helper.service.oauth2ClientDataManager = mockDB
-		helper.service.userDataManager = mockDB
-
-		helper.service.CreateHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, mockDB)
-	})
-
-	T.Run("with invalid credentials", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		mockDB := database.NewMockDatabase()
-
-		mockDB.UserDataManagerMock.On(
-			"GetUser",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-		).Return(helper.exampleUser, nil)
-
-		mockDB.OAuth2ClientDataManagerMock.On(
-			"CreateOAuth2Client",
-			testutils.ContextMatcher,
-			oauth2ClientCreationInputMatcher,
-		).Return(helper.exampleOAuth2Client, nil)
-		helper.service.oauth2ClientDataManager = mockDB
-		helper.service.userDataManager = mockDB
-
-		a := &mockauthn.Authenticator{}
-		a.On(
-			"CredentialsAreValid",
-			testutils.ContextMatcher,
-			helper.exampleUser.HashedPassword,
-			helper.exampleInput.Password,
-			helper.exampleUser.TwoFactorSecret,
-			helper.exampleInput.TOTPToken,
-		).Return(false, nil)
-		helper.service.authenticator = a
-
-		helper.service.CreateHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, mockDB, a)
-	})
-
-	T.Run("with invalid password", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, helper.exampleInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		mockDB := database.NewMockDatabase()
-		mockDB.UserDataManagerMock.On(
-			"GetUser",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-		).Return(helper.exampleUser, nil)
-
-		mockDB.OAuth2ClientDataManagerMock.On(
-			"CreateOAuth2Client",
-			testutils.ContextMatcher,
-			oauth2ClientCreationInputMatcher,
-		).Return(helper.exampleOAuth2Client, nil)
-		helper.service.oauth2ClientDataManager = mockDB
-		helper.service.userDataManager = mockDB
-
-		a := &mockauthn.Authenticator{}
-		a.On(
-			"CredentialsAreValid",
-			testutils.ContextMatcher,
-			helper.exampleUser.HashedPassword,
-			helper.exampleInput.Password,
-			helper.exampleUser.TwoFactorSecret,
-			helper.exampleInput.TOTPToken,
-		).Return(true, errors.New("blah"))
-		helper.service.authenticator = a
-
-		helper.service.CreateHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, mockDB, a)
 	})
 
 	T.Run("with error generating client ID", func(t *testing.T) {
@@ -397,17 +264,6 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 
-		a := &mockauthn.Authenticator{}
-		a.On(
-			"CredentialsAreValid",
-			testutils.ContextMatcher,
-			helper.exampleUser.HashedPassword,
-			helper.exampleInput.Password,
-			helper.exampleUser.TwoFactorSecret,
-			helper.exampleInput.TOTPToken,
-		).Return(true, nil)
-		helper.service.authenticator = a
-
 		sg := &mockrandom.Generator{}
 		sg.On(
 			"GenerateHexEncodedString",
@@ -428,7 +284,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, a, sg)
+		mock.AssertExpectationsForObjects(t, mockDB, sg)
 	})
 
 	T.Run("with error generating client secret", func(t *testing.T) {
@@ -452,17 +308,6 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = mockDB
 
-		a := &mockauthn.Authenticator{}
-		a.On(
-			"CredentialsAreValid",
-			testutils.ContextMatcher,
-			helper.exampleUser.HashedPassword,
-			helper.exampleInput.Password,
-			helper.exampleUser.TwoFactorSecret,
-			helper.exampleInput.TOTPToken,
-		).Return(true, nil)
-		helper.service.authenticator = a
-
 		sg := &mockrandom.Generator{}
 		sg.On(
 			"GenerateHexEncodedString",
@@ -481,7 +326,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, a, sg)
+		mock.AssertExpectationsForObjects(t, mockDB, sg)
 	})
 
 	T.Run("with error creating OAuth2 client in data store", func(t *testing.T) {
@@ -503,17 +348,6 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
-
-		a := &mockauthn.Authenticator{}
-		a.On(
-			"CredentialsAreValid",
-			testutils.ContextMatcher,
-			helper.exampleUser.HashedPassword,
-			helper.exampleInput.Password,
-			helper.exampleUser.TwoFactorSecret,
-			helper.exampleInput.TOTPToken,
-		).Return(true, nil)
-		helper.service.authenticator = a
 
 		sg := &mockrandom.Generator{}
 		sg.On(
@@ -540,7 +374,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, a, sg)
+		mock.AssertExpectationsForObjects(t, mockDB, sg)
 	})
 
 	T.Run("with error publishing service event", func(t *testing.T) {
@@ -563,17 +397,6 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = mockDB
-
-		a := &mockauthn.Authenticator{}
-		a.On(
-			"CredentialsAreValid",
-			testutils.ContextMatcher,
-			helper.exampleUser.HashedPassword,
-			helper.exampleInput.Password,
-			helper.exampleUser.TwoFactorSecret,
-			helper.exampleInput.TOTPToken,
-		).Return(true, nil)
-		helper.service.authenticator = a
 
 		sg := &mockrandom.Generator{}
 		sg.On(
@@ -606,7 +429,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, a, sg, dataChangesPublisher)
+		mock.AssertExpectationsForObjects(t, mockDB, sg, dataChangesPublisher)
 	})
 }
 
