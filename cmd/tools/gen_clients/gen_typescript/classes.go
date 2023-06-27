@@ -14,13 +14,6 @@ const (
 	fieldTemplate = `	{{.FieldName}}{{if .IsPointer}}?{{end}}: {{if not .IsPointer}}NonNullable<{{end}}{{if .IsSlice}}Array<{{end}}{{.FieldType}}{{if .IsSlice}}>{{end -}}{{if not .IsPointer}}>{{end -}}{{ if ne .DefaultValue "" }} = {{ .DefaultValue }}{{ end -}};` + "\n"
 )
 
-var includedTypeMap = map[string][]string{
-	"ValidIngredientGroup": {
-		"ValidIngredientGroupMember",
-		"ValidIngredientGroupMemberCreationRequestInput",
-	},
-}
-
 func typescriptClass[T any](x T) (out string, imports []string, err error) {
 	typ := reflect.TypeOf(x)
 	fieldsForType := reflect.VisibleFields(typ)
@@ -54,17 +47,7 @@ func typescriptClass[T any](x T) (out string, imports []string, err error) {
 			defaultValue = "[]"
 		}
 
-		typeNeedsImporting := true
-		if _, ok := includedTypeMap[typ.Name()]; ok {
-			for _, t := range includedTypeMap[typ.Name()] {
-				if t == fieldType {
-					typeNeedsImporting = false
-					break
-				}
-			}
-		}
-
-		if isCustomType(fieldType) && typeNeedsImporting {
+		if isCustomType(fieldType) {
 			importedTypes = append(importedTypes, fieldType)
 		}
 

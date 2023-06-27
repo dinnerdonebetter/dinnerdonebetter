@@ -37,17 +37,7 @@ func typescriptInterface[T any](x T) (out string, imports []string, err error) {
 			continue
 		}
 
-		typeNeedsImporting := true
-		if _, ok := includedTypeMap[typ.Name()]; ok {
-			for _, t := range includedTypeMap[typ.Name()] {
-				if t == fieldType {
-					typeNeedsImporting = false
-					break
-				}
-			}
-		}
-
-		if isCustomType(fieldType) && typeNeedsImporting {
+		if isCustomType(fieldType) {
 			importedTypes = append(importedTypes, fieldType)
 		}
 
