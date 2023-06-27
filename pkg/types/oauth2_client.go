@@ -26,7 +26,7 @@ type (
 		Description  string     `json:"description"`
 		ClientID     string     `json:"clientID"`
 		ID           string     `json:"id"`
-		ClientSecret string     `json:"-"`
+		ClientSecret string     `json:"clientSecret"`
 	}
 
 	// OAuth2ClientCreationRequestInput is a struct for use when creating OAuth2 clients.
