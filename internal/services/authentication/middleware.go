@@ -75,17 +75,19 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 			s.logger.Error(err, "determining user ID")
 		}
 
-		if userID := token.GetUserID(); userID != "" {
-			sessionCtxData, sessionCtxDataErr := s.householdMembershipManager.BuildSessionContextDataForUser(ctx, userID)
-			if sessionCtxDataErr != nil {
-				observability.AcknowledgeError(sessionCtxDataErr, logger, span, "fetching user info for cookie")
-				s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-				return
-			}
+		if token != nil {
+			if userID := token.GetUserID(); userID != "" {
+				sessionCtxData, sessionCtxDataErr := s.householdMembershipManager.BuildSessionContextDataForUser(ctx, userID)
+				if sessionCtxDataErr != nil {
+					observability.AcknowledgeError(sessionCtxDataErr, logger, span, "fetching user info for cookie")
+					s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+					return
+				}
 
-			if sessionCtxData != nil {
-				next.ServeHTTP(res, req.WithContext(context.WithValue(ctx, types.SessionContextDataKey, sessionCtxData)))
-				return
+				if sessionCtxData != nil {
+					next.ServeHTTP(res, req.WithContext(context.WithValue(ctx, types.SessionContextDataKey, sessionCtxData)))
+					return
+				}
 			}
 		}
 

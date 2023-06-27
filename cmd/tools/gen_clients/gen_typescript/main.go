@@ -123,7 +123,7 @@ export * from './pagination';
 		fileOutput := copyString(generatedDisclaimer)
 		for _, file := range sortedMapKeys(filesToImportsMapForFile) {
 			imports := filesToImportsMapForFile[file]
-			if file == filename {
+			if file == fmt.Sprintf("%s.ts", filename) {
 				continue
 			}
 

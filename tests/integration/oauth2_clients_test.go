@@ -34,11 +34,6 @@ func (s *TestSuite) TestOAuth2Clients_Creating() {
 			// Create OAuth2 client.
 			exampleOAuth2Client := fakes.BuildFakeOAuth2Client()
 			exampleOAuth2ClientInput := converters.ConvertOAuth2ClientToOAuth2ClientCreationInput(exampleOAuth2Client)
-			exampleOAuth2ClientInput.UserLoginInput = types.UserLoginInput{
-				Username:  premadeAdminUser.Username,
-				Password:  premadeAdminUser.HashedPassword,
-				TOTPToken: generateTOTPTokenForUser(t, premadeAdminUser),
-			}
 
 			createdOAuth2Client, err := testClients.admin.CreateOAuth2Client(ctx, exampleOAuth2ClientInput)
 			requireNotNilAndNoProblems(t, createdOAuth2Client, err)
@@ -62,11 +57,6 @@ func (s *TestSuite) TestOAuth2Clients_Creating() {
 			// Create OAuth2 client.
 			exampleOAuth2Client := fakes.BuildFakeOAuth2Client()
 			exampleOAuth2ClientInput := converters.ConvertOAuth2ClientToOAuth2ClientCreationInput(exampleOAuth2Client)
-			exampleOAuth2ClientInput.UserLoginInput = types.UserLoginInput{
-				Username:  premadeAdminUser.Username,
-				Password:  premadeAdminUser.HashedPassword,
-				TOTPToken: generateTOTPTokenForUser(t, premadeAdminUser),
-			}
 
 			createdOAuth2Client, err := testClients.user.CreateOAuth2Client(ctx, exampleOAuth2ClientInput)
 			require.Nil(t, createdOAuth2Client)
@@ -91,11 +81,6 @@ func (s *TestSuite) TestOAuth2Clients_Listing() {
 				// Create OAuth2 client.
 				exampleOAuth2Client := fakes.BuildFakeOAuth2Client()
 				exampleOAuth2ClientInput := converters.ConvertOAuth2ClientToOAuth2ClientCreationInput(exampleOAuth2Client)
-				exampleOAuth2ClientInput.UserLoginInput = types.UserLoginInput{
-					Username:  premadeAdminUser.Username,
-					Password:  premadeAdminUser.HashedPassword,
-					TOTPToken: generateTOTPTokenForUser(t, premadeAdminUser),
-				}
 				createdOAuth2Client, err := testClients.admin.CreateOAuth2Client(ctx, exampleOAuth2ClientInput)
 				requireNotNilAndNoProblems(t, createdOAuth2Client, err)
 
@@ -147,11 +132,6 @@ func (s *TestSuite) TestOAuth2Clients_Reading() {
 			// Create OAuth2 client.
 			exampleOAuth2Client := fakes.BuildFakeOAuth2Client()
 			exampleOAuth2ClientInput := converters.ConvertOAuth2ClientToOAuth2ClientCreationInput(exampleOAuth2Client)
-			exampleOAuth2ClientInput.UserLoginInput = types.UserLoginInput{
-				Username:  premadeAdminUser.Username,
-				Password:  premadeAdminUser.HashedPassword,
-				TOTPToken: generateTOTPTokenForUser(t, premadeAdminUser),
-			}
 
 			createdOAuth2Client, err := testClients.admin.CreateOAuth2Client(ctx, exampleOAuth2ClientInput)
 			requireNotNilAndNoProblems(t, createdOAuth2Client, err)
@@ -183,11 +163,6 @@ func (s *TestSuite) TestOAuth2Clients_Archiving() {
 			// Create OAuth2 client.
 			exampleOAuth2Client := fakes.BuildFakeOAuth2Client()
 			exampleOAuth2ClientInput := converters.ConvertOAuth2ClientToOAuth2ClientCreationInput(exampleOAuth2Client)
-			exampleOAuth2ClientInput.UserLoginInput = types.UserLoginInput{
-				Username:  premadeAdminUser.Username,
-				Password:  premadeAdminUser.HashedPassword,
-				TOTPToken: generateTOTPTokenForUser(t, premadeAdminUser),
-			}
 
 			createdOAuth2Client, err := testClients.admin.CreateOAuth2Client(ctx, exampleOAuth2ClientInput)
 			requireNotNilAndNoProblems(t, createdOAuth2Client, err)
