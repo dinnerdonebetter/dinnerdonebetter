@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -213,6 +214,10 @@ func UsingOAuth2(ctx context.Context, clientID, clientSecret string, cookie *htt
 		}
 
 		code := rl.Query().Get("code")
+		if code == "" {
+			return errors.New("oauth2 code not found")
+		}
+
 		token, err := oauth2Config.Exchange(ctx, code,
 			oauth2.SetAuthURLParam("code_verifier", "s256example"),
 		)
