@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 	"reflect"
 
@@ -25,8 +26,8 @@ func writeSchemaToFile(schema *jsonschema.Schema, outputFilepath string) error {
 		return err
 	}
 
-	if err = os.WriteFile(outputFilepath, encodedSchema, os.ModePerm); err != nil {
-		return err
+	if writeErr := os.WriteFile(outputFilepath, encodedSchema, os.ModePerm); writeErr != nil {
+		return writeErr
 	}
 
 	return nil
@@ -34,7 +35,7 @@ func writeSchemaToFile(schema *jsonschema.Schema, outputFilepath string) error {
 
 func main() {
 	if err := os.MkdirAll("artifacts", os.ModeDir); err != nil {
-		// it's fine for this to fail
+		log.Println("artifacts directory already exists")
 	}
 
 	for _, typesToGenerateFor := range codegen.TypeDefinitionFilesToGenerate {
