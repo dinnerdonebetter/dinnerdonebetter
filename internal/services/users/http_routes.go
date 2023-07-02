@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"image/png"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -133,7 +134,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachRequestToSpan(span, req)
 
 	// in the event that we don't want new users to be able to sign up (a config setting) just decline the request from the get-go
-	if !s.authSettings.EnableUserSignup {
+	if !s.authSettings.EnableUserSignup || os.Getenv("DISABLE_REGISTRATION") == "true" {
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "user creation is disabled", http.StatusForbidden)
 		return
 	}
