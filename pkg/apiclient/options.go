@@ -169,7 +169,7 @@ func UsingOAuth2(ctx context.Context, clientID, clientSecret string, cookie *htt
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
 			Scopes:       []string{"household_member"},
-			RedirectURL:  "https://localhost:9000/oauth2",
+			RedirectURL:  c.url.String() + "/oauth2/callback",
 			Endpoint: oauth2.Endpoint{
 				AuthURL:  c.URL().String() + "/oauth2/authorize",
 				TokenURL: c.URL().String() + "/oauth2/token",

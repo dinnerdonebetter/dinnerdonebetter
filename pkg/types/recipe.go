@@ -148,6 +148,7 @@ type (
 		DAGHandler(http.ResponseWriter, *http.Request)
 		EstimatedPrepStepsHandler(http.ResponseWriter, *http.Request)
 		ImageUploadHandler(http.ResponseWriter, *http.Request)
+		MermaidHandler(http.ResponseWriter, *http.Request)
 	}
 )
 
@@ -175,6 +176,32 @@ func (x *Recipe) FindStepByID(id string) *RecipeStep {
 	// we could return an error here, but that would make my life a little harder
 	// so if you fuck up and submit a wrong value, and it's your fault here.
 	return nil
+}
+
+// FindStepForRecipeStepProductID finds a step for a given ID.
+func (x *Recipe) FindStepForRecipeStepProductID(recipeStepProductID string) *RecipeStep {
+	for _, step := range x.Steps {
+		for _, product := range step.Products {
+			if product.ID == recipeStepProductID {
+				return step
+			}
+		}
+	}
+
+	// we could return an error here, but that would make my life a little harder
+	// so if you fuck up and submit a wrong value, and it's your fault here.
+	return nil
+}
+
+// FindStepIndexByID finds a step for a given ID.
+func (x *Recipe) FindStepIndexByID(id string) int {
+	for i, step := range x.Steps {
+		if step.ID == id {
+			return i
+		}
+	}
+
+	return -1
 }
 
 // Update merges an RecipeUpdateRequestInput with a recipe.

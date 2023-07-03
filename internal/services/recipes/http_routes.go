@@ -545,3 +545,44 @@ func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 
 	res.WriteHeader(http.StatusCreated)
 }
+
+// MermaidHandler returns a GET handler that returns a recipe in Mermaid format.
+func (s *service) MermaidHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	// determine user ID.
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	// determine recipe ID.
+	recipeID := s.recipeIDFetcher(req)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+
+	// fetch recipe from database.
+	x, err := s.recipeDataManager.GetRecipe(ctx, recipeID)
+	if errors.Is(err, sql.ErrNoRows) {
+		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		return
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving recipe")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	graphDefinition := s.recipeAnalyzer.RenderMermaidDiagramForRecipe(ctx, x)
+
+	// encode our response and peace.
+	s.encoderDecoder.RespondWithData(ctx, res, graphDefinition)
+}
