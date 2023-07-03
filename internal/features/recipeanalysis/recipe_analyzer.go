@@ -7,8 +7,6 @@ import (
 	"image"
 	"strings"
 
-	"github.com/dustin/go-humanize/english"
-
 	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
@@ -16,6 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
+	"github.com/dustin/go-humanize/english"
 	"github.com/goccy/go-graphviz"
 	"github.com/heimdalr/dag"
 	"gonum.org/v1/gonum/graph"
@@ -418,7 +417,7 @@ func stepProvidesWhatToOtherStep(recipe *types.Recipe, fromStepIndex, toStepInde
 			}
 		*/
 
-		return strings.TrimSpace(fmt.Sprintf("%s", english.PluralWord(int(x), typ, fmt.Sprintf("%ss", typ))))
+		return strings.TrimSpace(fmt.Sprintf(" %s ", english.PluralWord(int(x), typ, fmt.Sprintf("%ss", typ))))
 	}
 
 	if count.ingredients > 0 {
@@ -437,7 +436,7 @@ func stepProvidesWhatToOtherStep(recipe *types.Recipe, fromStepIndex, toStepInde
 }
 
 func (g *recipeAnalyzer) RenderMermaidDiagramForRecipe(ctx context.Context, recipe *types.Recipe) string {
-	ctx, span := g.tracer.StartSpan(ctx)
+	_, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
 	var mermaid strings.Builder
