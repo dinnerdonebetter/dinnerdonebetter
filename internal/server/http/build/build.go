@@ -62,6 +62,7 @@ import (
 	validpreparationinstrumentsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparationinstruments"
 	validpreparationsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparations"
 	vendorproxyservice "github.com/dinnerdonebetter/backend/internal/services/vendorproxy"
+	wasmservice "github.com/dinnerdonebetter/backend/internal/services/wasm"
 	webhooksservice "github.com/dinnerdonebetter/backend/internal/services/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/uploads/images"
 
@@ -72,7 +73,7 @@ import (
 func Build(
 	ctx context.Context,
 	cfg *config.InstanceConfig,
-) (*http.Server, error) {
+) (http.Server, error) {
 	wire.Build(
 		config.ServiceConfigProviders,
 		database.DBProviders,
@@ -132,6 +133,7 @@ func Build(
 		householdinstrumentownershipsservice.Providers,
 		reciperatingsservice.Providers,
 		oauth2clientsservice.Providers,
+		wasmservice.Providers,
 	)
 
 	return nil, nil

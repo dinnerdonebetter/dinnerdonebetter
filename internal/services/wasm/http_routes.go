@@ -11,8 +11,8 @@ import (
 //go:embed assets/wasm_exec.js
 var wasmExecJS []byte
 
-// WASMHandler is our valid ingredient creation route.
-func (s *Service) WASMHandler(res http.ResponseWriter, req *http.Request) {
+// ExecJSHandler is our valid ingredient creation route.
+func (s *Service) ExecJSHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -26,6 +26,32 @@ func (s *Service) WASMHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "failed to write wasm_exec.js", http.StatusInternalServerError)
 		return
 	}
+
+	res.Header().Set("Content-Type", "application/javascript")
+
+	res.WriteHeader(http.StatusOK)
+}
+
+//go:embed assets/helpers.wasm
+var wasmBinary []byte
+
+// WASMHandler is our valid ingredient creation route.
+func (s *Service) WASMHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	logger.Info("WASM route")
+
+	if _, err := res.Write(wasmBinary); err != nil {
+		observability.AcknowledgeError(err, logger, span, "failed to write wasm binary")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "failed to write wasm binary", http.StatusInternalServerError)
+		return
+	}
+
+	res.Header().Set("Content-Type", "application/wasm")
 
 	res.WriteHeader(http.StatusOK)
 }

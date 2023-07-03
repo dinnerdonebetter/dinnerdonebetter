@@ -41,6 +41,7 @@ import (
 	validpreparationinstrumentsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparationinstruments"
 	validpreparationsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparations"
 	vendorproxyservice "github.com/dinnerdonebetter/backend/internal/services/vendorproxy"
+	wasmservice "github.com/dinnerdonebetter/backend/internal/services/wasm"
 	webhooksservice "github.com/dinnerdonebetter/backend/internal/services/webhooks"
 	websocketsservice "github.com/dinnerdonebetter/backend/internal/services/websockets"
 
@@ -90,6 +91,7 @@ type (
 		ValidInstruments                validinstrumentsservice.Config                `json:"validInstruments"                toml:"valid_instruments,omitempty"`
 		Recipes                         recipesservice.Config                         `json:"recipes"                         toml:"recipes,omitempty"`
 		Auth                            authservice.Config                            `json:"auth"                            toml:"auth,omitempty"`
+		WASM                            wasmservice.Config                            `json:"wasm"                            toml:"wasm,omitempty"`
 	}
 )
 
@@ -128,6 +130,7 @@ func (cfg *ServicesConfig) ValidateWithContext(ctx context.Context) error {
 		"ServiceSettings":                 cfg.ServiceSettings.ValidateWithContext,
 		"ServiceSettingConfigurations":    cfg.ServiceSettingConfigurations.ValidateWithContext,
 		"UserIngredientPreferences":       cfg.UserIngredientPreferences.ValidateWithContext,
+		"WASM":                            cfg.WASM.ValidateWithContext,
 	}
 
 	for name, validator := range validatorsToRun {

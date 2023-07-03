@@ -63,6 +63,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/services/validpreparationinstruments"
 	"github.com/dinnerdonebetter/backend/internal/services/validpreparations"
 	"github.com/dinnerdonebetter/backend/internal/services/vendorproxy"
+	"github.com/dinnerdonebetter/backend/internal/services/wasm"
 	"github.com/dinnerdonebetter/backend/internal/services/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/uploads/images"
 )
@@ -70,7 +71,7 @@ import (
 // Injectors from build.go:
 
 // Build builds a server.
-func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.Server, error) {
+func Build(ctx context.Context, cfg *config.InstanceConfig) (http.Server, error) {
 	httpConfig := cfg.Server
 	observabilityConfig := &cfg.Observability
 	configConfig := &observabilityConfig.Logging
@@ -356,7 +357,12 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (*http.Server, error
 	if err != nil {
 		return nil, err
 	}
-	server, err := http.ProvideHTTPServer(ctx, httpConfig, dataManager, logger, serverEncoderDecoder, router, tracerProvider, authService, userDataService, householdDataService, householdInvitationDataService, validInstrumentDataService, validIngredientDataService, validIngredientGroupDataService, validPreparationDataService, validIngredientPreparationDataService, mealDataService, recipeDataService, recipeStepDataService, recipeStepProductDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, validMeasurementUnitDataService, validIngredientStateDataService, validPreparationInstrumentDataService, validIngredientMeasurementUnitDataService, mealPlanEventDataService, mealPlanTaskDataService, recipePrepTaskDataService, mealPlanGroceryListItemDataService, validMeasurementConversionDataService, recipeStepCompletionConditionDataService, validIngredientStateIngredientDataService, recipeStepVesselDataService, webhookDataService, adminService, service, serviceSettingDataService, serviceSettingConfigurationDataService, userIngredientPreferenceDataService, recipeRatingDataService, householdInstrumentOwnershipDataService, oAuth2ClientDataService)
+	wasmConfig := &servicesConfig.WASM
+	wasmService, err := wasm.ProvideService(ctx, logger, wasmConfig, serverEncoderDecoder, tracerProvider)
+	if err != nil {
+		return nil, err
+	}
+	server, err := http.ProvideHTTPServer(ctx, httpConfig, dataManager, logger, serverEncoderDecoder, router, tracerProvider, authService, userDataService, householdDataService, householdInvitationDataService, validInstrumentDataService, validIngredientDataService, validIngredientGroupDataService, validPreparationDataService, validIngredientPreparationDataService, mealDataService, recipeDataService, recipeStepDataService, recipeStepProductDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, validMeasurementUnitDataService, validIngredientStateDataService, validPreparationInstrumentDataService, validIngredientMeasurementUnitDataService, mealPlanEventDataService, mealPlanTaskDataService, recipePrepTaskDataService, mealPlanGroceryListItemDataService, validMeasurementConversionDataService, recipeStepCompletionConditionDataService, validIngredientStateIngredientDataService, recipeStepVesselDataService, webhookDataService, adminService, service, serviceSettingDataService, serviceSettingConfigurationDataService, userIngredientPreferenceDataService, recipeRatingDataService, householdInstrumentOwnershipDataService, oAuth2ClientDataService, wasmService)
 	if err != nil {
 		return nil, err
 	}

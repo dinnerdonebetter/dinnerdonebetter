@@ -59,7 +59,7 @@ func buildURLVarChunk(key, pattern string) string {
 	return fmt.Sprintf("/{%s}", key)
 }
 
-func (s *Server) setupRouter(ctx context.Context, router routing.Router) {
+func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 

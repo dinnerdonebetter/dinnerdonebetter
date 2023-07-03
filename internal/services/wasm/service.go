@@ -33,7 +33,7 @@ func ProvideService(
 	cfg *Config,
 	encoder encoding.ServerEncoderDecoder,
 	tracerProvider tracing.TracerProvider,
-) (*Service, error) {
+) (types.WASMService, error) {
 	svc := &Service{
 		cfg:                       cfg,
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
