@@ -92,7 +92,7 @@ type (
 
 	WASMService interface {
 		ExecJSHandler(http.ResponseWriter, *http.Request)
-		WASMHandler(http.ResponseWriter, *http.Request)
+		HelpersHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

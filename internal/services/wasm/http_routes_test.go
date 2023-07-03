@@ -31,7 +31,7 @@ func TestValidIngredientsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.WASMHandler(helper.res, helper.req)
+		helper.service.HelpersHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 	})

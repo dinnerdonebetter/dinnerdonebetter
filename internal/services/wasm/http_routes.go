@@ -35,8 +35,8 @@ func (s *Service) ExecJSHandler(res http.ResponseWriter, req *http.Request) {
 //go:embed assets/helpers.wasm
 var wasmBinary []byte
 
-// WASMHandler is our valid ingredient creation route.
-func (s *Service) WASMHandler(res http.ResponseWriter, req *http.Request) {
+// HelpersHandler is our valid ingredient creation route.
+func (s *Service) HelpersHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 

@@ -80,6 +80,11 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 		userRouter.Post("/token", s.authService.TokenHandler)
 	})
 
+	router.Route("/wasm", func(userRouter routing.Router) {
+		userRouter.Get("/exec.js", s.wasmService.ExecJSHandler)
+		userRouter.Get("/helpers", s.wasmService.HelpersHandler)
+	})
+
 	router.Route("/users", func(userRouter routing.Router) {
 		userRouter.Post(root, s.usersService.CreateHandler)
 		userRouter.Post("/login", s.authService.BuildLoginHandler(false))
