@@ -109,7 +109,9 @@ func (q *Querier) scanRecipePrepTasksWithSteps(ctx context.Context, rows databas
 		x.TaskSteps = append(x.TaskSteps, recipePrepTaskRecipeStep)
 	}
 
-	recipePrepTasks = append(recipePrepTasks, x)
+	if x.ID != "" {
+		recipePrepTasks = append(recipePrepTasks, x)
+	}
 
 	return recipePrepTasks, nil
 }

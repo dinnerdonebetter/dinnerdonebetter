@@ -179,3 +179,130 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 		assert.Equal(t, expected, actual)
 	})
 }
+
+func Test_recipeAnalyzer_RenderMermaidDiagramForRecipe(T *testing.T) {
+	T.Parallel()
+
+	T.Run("basic", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		g := newAnalyzerForTest(t)
+
+		dice := fakes.BuildFakeValidPreparation()
+		dice.Name = "dice"
+		sautee := fakes.BuildFakeValidPreparation()
+		sautee.Name = "sautee"
+
+		step1ID := fakes.BuildFakeID()
+		step2ID := fakes.BuildFakeID()
+		step3ID := fakes.BuildFakeID()
+		step4ID := fakes.BuildFakeID()
+		dicedOnionRecipeStepProductID := fakes.BuildFakeID()
+		dicedCarrotRecipeStepProductID := fakes.BuildFakeID()
+		dicedCeleryRecipeStepProductID := fakes.BuildFakeID()
+
+		recipe := &types.Recipe{
+			Name: "example recipe",
+			Steps: []*types.RecipeStep{
+				{
+					ID:          step1ID,
+					Preparation: *dice,
+					Ingredients: []*types.RecipeStepIngredient{
+						{
+							Ingredient: fakes.BuildFakeValidIngredient(),
+							Name:       "onion",
+						},
+					},
+					Products: []*types.RecipeStepProduct{
+						{
+							ID:   dicedOnionRecipeStepProductID,
+							Name: "diced onion",
+							Type: types.RecipeStepProductIngredientType,
+						},
+					},
+					Notes: "first step",
+					Index: 0,
+				},
+				{
+					ID:          step2ID,
+					Preparation: *dice,
+					Ingredients: []*types.RecipeStepIngredient{
+						{
+							Ingredient: fakes.BuildFakeValidIngredient(),
+							Name:       "carrot",
+						},
+					},
+					Products: []*types.RecipeStepProduct{
+						{
+							ID:   dicedCarrotRecipeStepProductID,
+							Name: "diced carrot",
+							Type: types.RecipeStepProductIngredientType,
+						},
+					},
+					Notes: "second step",
+					Index: 1,
+				},
+				{
+					ID:          step3ID,
+					Preparation: *dice,
+					Ingredients: []*types.RecipeStepIngredient{
+						{
+							Ingredient: fakes.BuildFakeValidIngredient(),
+							Name:       "celery",
+						},
+					},
+					Products: []*types.RecipeStepProduct{
+						{
+							ID:   dicedCeleryRecipeStepProductID,
+							Name: "diced celery",
+							Type: types.RecipeStepProductIngredientType,
+						},
+					},
+					Notes: "third step",
+					Index: 2,
+				},
+				{
+					ID:          step4ID,
+					Preparation: *sautee,
+					Ingredients: []*types.RecipeStepIngredient{
+						{
+							Name:                "diced onion",
+							RecipeStepProductID: pointers.Pointer(dicedOnionRecipeStepProductID),
+						},
+						{
+							Name:                "diced carrot",
+							RecipeStepProductID: pointers.Pointer(dicedCarrotRecipeStepProductID),
+						},
+						{
+							Name:                "diced celery",
+							RecipeStepProductID: pointers.Pointer(dicedCeleryRecipeStepProductID),
+						},
+					},
+					Products: []*types.RecipeStepProduct{
+						{
+							ID:   dicedOnionRecipeStepProductID,
+							Name: "sauteed mire poix",
+							Type: types.RecipeStepProductIngredientType,
+						},
+					},
+					Notes: "fourth step",
+					Index: 3,
+				},
+			},
+		}
+
+		expected := `flowchart TD;
+	Step1["Step #1 (dice)"];
+	Step2["Step #2 (dice)"];
+	Step3["Step #3 (dice)"];
+	Step4["Step #4 (sautee)"];
+	Step1 -->|ingredient| Step4;
+	Step2 -->|ingredient| Step4;
+	Step3 -->|ingredient| Step4;
+`
+		actual := g.RenderMermaidDiagramForRecipe(ctx, recipe)
+
+		assert.Equal(t, expected, actual)
+	})
+}

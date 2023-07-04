@@ -12,7 +12,6 @@ import (
 
 func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput {
 	return &RecipeStepCreationRequestInput{
-		Index:                         fake.Uint32(),
 		PreparationID:                 fake.LoremIpsumSentence(exampleQuantity),
 		MinimumEstimatedTimeInSeconds: pointers.Pointer(fake.Uint32()),
 		MaximumEstimatedTimeInSeconds: pointers.Pointer(fake.Uint32()),
@@ -72,7 +71,6 @@ func TestRecipeStepCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepCreationRequestInput{
-			Index:                         fake.Uint32(),
 			PreparationID:                 fake.LoremIpsumSentence(exampleQuantity),
 			MinimumEstimatedTimeInSeconds: pointers.Pointer(fake.Uint32()),
 			MaximumEstimatedTimeInSeconds: pointers.Pointer(fake.Uint32()),
