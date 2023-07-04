@@ -204,6 +204,12 @@ swift: clean_swift
 	mkdir -p $(ARTIFACTS_DIR)/swift
 	go run github.com/dinnerdonebetter/backend/cmd/tools/codegen/gen_swift
 
+.PHONY: wasm
+wasm: internal/services/wasm/assets/helpers.wasm
+
+internal/services/wasm/assets/helpers.wasm:
+	GOOS=js GOARCH=wasm go build -o internal/services/wasm/assets/helpers.wasm github.com/dinnerdonebetter/backend/cmd/wasm
+
 ## Integration tests
 
 .PHONY: wipe_docker

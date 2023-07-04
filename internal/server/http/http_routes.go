@@ -59,7 +59,7 @@ func buildURLVarChunk(key, pattern string) string {
 	return fmt.Sprintf("/{%s}", key)
 }
 
-func (s *Server) setupRouter(ctx context.Context, router routing.Router) {
+func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -78,6 +78,11 @@ func (s *Server) setupRouter(ctx context.Context, router routing.Router) {
 			WithMiddleware(s.authService.CookieRequirementMiddleware, s.authService.UserAttributionMiddleware).
 			Get("/authorize", s.authService.AuthorizeHandler)
 		userRouter.Post("/token", s.authService.TokenHandler)
+	})
+
+	router.Route("/wasm", func(userRouter routing.Router) {
+		userRouter.Get("/exec.js", s.wasmService.ExecJSHandler)
+		userRouter.Get("/helpers", s.wasmService.HelpersHandler)
 	})
 
 	router.Route("/users", func(userRouter routing.Router) {

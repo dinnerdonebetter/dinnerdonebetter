@@ -28,8 +28,13 @@ const (
 )
 
 type (
-	// Server is our API http server.
-	Server struct {
+	Server interface {
+		Serve()
+		Shutdown(context.Context) error
+	}
+
+	// server is our API http server.
+	server struct {
 		authService                            types.AuthService
 		householdsService                      types.HouseholdDataService
 		householdInvitationsService            types.HouseholdInvitationDataService
@@ -68,6 +73,7 @@ type (
 		recipeRatingsService                   types.RecipeRatingDataService
 		householdInstrumentOwnershipService    types.HouseholdInstrumentOwnershipDataService
 		oauth2ClientsService                   types.OAuth2ClientDataService
+		wasmService                            types.WASMService
 		vendorProxyService                     vendorproxy.Service
 		encoder                                encoding.ServerEncoderDecoder
 		logger                                 logging.Logger
@@ -81,7 +87,7 @@ type (
 	}
 )
 
-// ProvideHTTPServer builds a new Server instance.
+// ProvideHTTPServer builds a new server instance.
 func ProvideHTTPServer(
 	ctx context.Context,
 	serverSettings Config,
@@ -129,8 +135,9 @@ func ProvideHTTPServer(
 	recipeRatingsService types.RecipeRatingDataService,
 	householdInstrumentOwnershipService types.HouseholdInstrumentOwnershipDataService,
 	oauth2ClientDataService types.OAuth2ClientDataService,
-) (*Server, error) {
-	srv := &Server{
+	wasmService types.WASMService,
+) (Server, error) {
+	srv := &server{
 		config: serverSettings,
 
 		// infra things,
@@ -182,6 +189,7 @@ func ProvideHTTPServer(
 		recipeRatingsService:                   recipeRatingsService,
 		householdInstrumentOwnershipService:    householdInstrumentOwnershipService,
 		oauth2ClientsService:                   oauth2ClientDataService,
+		wasmService:                            wasmService,
 	}
 
 	srv.setupRouter(ctx, router)
@@ -192,7 +200,7 @@ func ProvideHTTPServer(
 }
 
 // Shutdown shuts down the server.
-func (s *Server) Shutdown(ctx context.Context) error {
+func (s *server) Shutdown(ctx context.Context) error {
 	s.dataManager.Close()
 
 	if err := s.tracerProvider.ForceFlush(ctx); err != nil {
@@ -203,7 +211,7 @@ func (s *Server) Shutdown(ctx context.Context) error {
 }
 
 // Serve serves HTTP traffic.
-func (s *Server) Serve() {
+func (s *server) Serve() {
 	s.logger.Debug("setting up server")
 
 	s.httpServer.Handler = otelhttp.NewHandler(

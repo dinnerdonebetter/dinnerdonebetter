@@ -583,6 +583,8 @@ func (s *service) MermaidHandler(res http.ResponseWriter, req *http.Request) {
 
 	graphDefinition := s.recipeAnalyzer.RenderMermaidDiagramForRecipe(ctx, x)
 
+	res.Header().Set("Content-Type", "text/mermaid")
+
 	// encode our response and peace.
 	s.encoderDecoder.RespondWithData(ctx, res, graphDefinition)
 }

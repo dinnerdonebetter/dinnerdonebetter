@@ -41,6 +41,7 @@ import (
 	validpreparationinstrumentsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparationinstruments"
 	validpreparationsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparations"
 	vendorproxyservice "github.com/dinnerdonebetter/backend/internal/services/vendorproxy"
+	wasmservice "github.com/dinnerdonebetter/backend/internal/services/wasm"
 	webhooksservice "github.com/dinnerdonebetter/backend/internal/services/webhooks"
 	websocketsservice "github.com/dinnerdonebetter/backend/internal/services/websockets"
 
@@ -51,9 +52,9 @@ type (
 	// ServicesConfig collects the various service configurations.
 	ServicesConfig struct {
 		_                               struct{}
-		ValidIngredientGroups           validingredientgroupsservice.Config           `json:"validIngredientGroups"           toml:"valid_ingredient_groups,omitempty"`
-		ServiceSettingConfigurations    servicesettingconfigurationsservice.Config    `json:"serviceSettingConfigurations"    toml:"service_setting_configurations,omitempty"`
-		RecipeStepVessels               recipestepvesselsservice.Config               `json:"recipeStepVessels"               toml:"recipe_step_vessels,omitempty"`
+		WASM                            wasmservice.Config                            `json:"wasm"                            toml:"wasm,omitempty"`
+		ServiceSettings                 servicesettingsservice.Config                 `json:"serviceSettings"                 toml:"service_settings,omitempty"`
+		Websockets                      websocketsservice.Config                      `json:"websockets"                      toml:"websockets,omitempty"`
 		RecipeStepCompletionConditions  recipestepcompletionconditionsservice.Config  `json:"recipeStepCompletionConditions"  toml:"recipe_step_completion_conditions,omitempty"`
 		ValidIngredientPreparations     validingredientpreparationsservice.Config     `json:"validIngredientPreparations"     toml:"valid_ingredient_preparations,omitempty"`
 		ValidPreparationInstruments     validpreparationinstrumentsservice.Config     `json:"validPreparationInstruments"     toml:"valid_preparation_instruments,omitempty"`
@@ -65,29 +66,30 @@ type (
 		RecipeStepIngredients           recipestepingredientsservice.Config           `json:"recipeStepIngredients"           toml:"recipe_step_ingredients,omitempty"`
 		HouseholdInstrumentOwnerships   householdinstrumentownershipsservice.Config   `json:"householdInstrumentOwnerships"   toml:"household_instrument_ownerships,omitempty"`
 		RecipePrepTasks                 recipepreptasks.Config                        `json:"recipePrepTasks"                 toml:"recipe_prep_tasks,omitempty"`
-		Households                      householdsservice.Config                      `json:"households"                      toml:"households,omitempty"`
+		RecipeStepProducts              recipestepproductsservice.Config              `json:"recipeStepProducts"              toml:"recipe_step_products,omitempty"`
 		VendorProxy                     vendorproxyservice.Config                     `json:"vendorProxy"                     toml:"vendor_proxy,omitempty"`
 		UserIngredientPreferences       useringredientpreferencesservice.Config       `json:"userIngredientPreferences"       toml:"user_ingredient_preferences,omitempty"`
 		MealPlanEvents                  mealplaneventsservice.Config                  `json:"mealPlanEvents"                  toml:"meal_plan_events,omitempty"`
 		RecipeRatings                   reciperatingsservice.Config                   `json:"recipeRatings"                   toml:"recipe_ratings,omitempty"`
-		ServiceSettings                 servicesettingsservice.Config                 `json:"serviceSettings"                 toml:"service_settings,omitempty"`
-		RecipeStepProducts              recipestepproductsservice.Config              `json:"recipeStepProducts"              toml:"recipe_step_products,omitempty"`
-		Websockets                      websocketsservice.Config                      `json:"websockets"                      toml:"websockets,omitempty"`
+		ValidIngredientGroups           validingredientgroupsservice.Config           `json:"validIngredientGroups"           toml:"valid_ingredient_groups,omitempty"`
+		RecipeStepVessels               recipestepvesselsservice.Config               `json:"recipeStepVessels"               toml:"recipe_step_vessels,omitempty"`
+		Households                      householdsservice.Config                      `json:"households"                      toml:"households,omitempty"`
 		MealPlanGroceryListItems        mealplangrocerylistitems.Config               `json:"mealPlanGroceryListItems"        toml:"meal_plan_grocery_list_items,omitempty"`
 		ValidMeasurementConversions     validmeasurementconversions.Config            `json:"validMeasurementConversions"     toml:"valid_measurement_conversions,omitempty"`
 		MealPlanTasks                   mealplantasks.Config                          `json:"mealPlanTasks"                   toml:"meal_plan_tasks,omitempty"`
 		ValidIngredientStateIngredients validingredientstateingredients.Config        `json:"validIngredientStateIngredients" toml:"valid_ingredient_state_ingredients,omitempty"`
-		Users                           usersservice.Config                           `json:"users"                           toml:"users,omitempty"`
+		ServiceSettingConfigurations    servicesettingconfigurationsservice.Config    `json:"serviceSettingConfigurations"    toml:"service_setting_configurations,omitempty"`
 		RecipeSteps                     recipestepsservice.Config                     `json:"recipeSteps"                     toml:"recipe_steps,omitempty"`
-		OAuth2Clients                   oauth2clientsservice.Config                   `json:"oauth2Clients"                   toml:"oauth2_clients,omitempty"`
-		Meals                           mealsservice.Config                           `json:"meals"                           toml:"meals,omitempty"`
+		Users                           usersservice.Config                           `json:"users"                           toml:"users,omitempty"`
+		ValidPreparations               validpreparationsservice.Config               `json:"validPreparations"               toml:"valid_preparations,omitempty"`
 		ValidMeasurementUnits           validmeasurementunitsservice.Config           `json:"validMeasurementUnits"           toml:"valid_measurement_units,omitempty"`
 		ValidIngredientStates           validingredientstates.Config                  `json:"validIngredientStates"           toml:"valid_ingredient_states,omitempty"`
 		Webhooks                        webhooksservice.Config                        `json:"webhooks"                        toml:"webhooks,omitempty"`
 		ValidIngredients                validingredientsservice.Config                `json:"validIngredients"                toml:"valid_ingredients,omitempty"`
-		ValidPreparations               validpreparationsservice.Config               `json:"validPreparations"               toml:"valid_preparations,omitempty"`
+		Meals                           mealsservice.Config                           `json:"meals"                           toml:"meals,omitempty"`
 		HouseholdInvitations            householdinvitationsservice.Config            `json:"householdInvitations"            toml:"household_invitations,omitempty"`
 		ValidInstruments                validinstrumentsservice.Config                `json:"validInstruments"                toml:"valid_instruments,omitempty"`
+		OAuth2Clients                   oauth2clientsservice.Config                   `json:"oauth2Clients"                   toml:"oauth2_clients,omitempty"`
 		Recipes                         recipesservice.Config                         `json:"recipes"                         toml:"recipes,omitempty"`
 		Auth                            authservice.Config                            `json:"auth"                            toml:"auth,omitempty"`
 	}
@@ -128,6 +130,7 @@ func (cfg *ServicesConfig) ValidateWithContext(ctx context.Context) error {
 		"ServiceSettings":                 cfg.ServiceSettings.ValidateWithContext,
 		"ServiceSettingConfigurations":    cfg.ServiceSettingConfigurations.ValidateWithContext,
 		"UserIngredientPreferences":       cfg.UserIngredientPreferences.ValidateWithContext,
+		"WASM":                            cfg.WASM.ValidateWithContext,
 	}
 
 	for name, validator := range validatorsToRun {
