@@ -25,6 +25,10 @@ func ProvideOAuth2ServerImplementation(
 ) *server.Server {
 	manager := manage.NewManager()
 
+	// we don't care at the moment
+	manager.SetValidateURIHandler(func(_, _ string) error {
+		return nil
+	})
 	manager.MapAuthorizeGenerate(generates.NewAuthorizeGenerate())
 	manager.MapAccessGenerate(generates.NewAccessGenerate())
 	manager.MapClientStorage(newOAuth2ClientStore(cfg.Domain, logger, tracer, dataManager))

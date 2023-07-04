@@ -169,20 +169,18 @@ func UsingOAuth2(ctx context.Context, clientID, clientSecret string, cookie *htt
 			ClientID:     clientID,
 			ClientSecret: clientSecret,
 			Scopes:       []string{"household_member"},
-			RedirectURL:  "https://localhost:9000/oauth2",
+			RedirectURL:  c.url.String(),
 			Endpoint: oauth2.Endpoint{
 				AuthURL:  c.URL().String() + "/oauth2/authorize",
 				TokenURL: c.URL().String() + "/oauth2/token",
 			},
 		}
 
-		// TODO: ephemeral server, change redirect URL?
-
 		req, err := http.NewRequestWithContext(
 			ctx,
 			http.MethodGet,
 			oauth2Config.AuthCodeURL(
-				"xyz",
+				"state",
 				oauth2.SetAuthURLParam("code_challenge", genCodeChallengeS256("s256example")),
 				oauth2.SetAuthURLParam("code_challenge_method", "S256"),
 			),

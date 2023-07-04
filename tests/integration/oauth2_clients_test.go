@@ -19,7 +19,7 @@ func checkOAuth2ClientEquality(t *testing.T, expected, actual *types.OAuth2Clien
 	assert.Equal(t, expected.Name, actual.Name, "expected Name for OAuth2 client %s to be %q, but it was %q ", actual.ID, expected.Name, actual.Name)
 	assert.Equal(t, expected.Description, actual.Description, "expected Description for OAuth2 client %s to be %q, but it was %q ", actual.ID, expected.Description, actual.Description)
 	assert.NotEmpty(t, actual.ClientID, "expected ClientID for OAuth2 client %s to not be empty, but it was", actual.ID)
-	assert.Empty(t, actual.ClientSecret, "expected ClientSecret for OAuth2 client %s to not be empty, but it was", actual.ID)
+	assert.NotEmpty(t, actual.ClientSecret, "expected ClientSecret for OAuth2 client %s to not be empty, but it was", actual.ID)
 	assert.NotZero(t, actual.CreatedAt)
 }
 
