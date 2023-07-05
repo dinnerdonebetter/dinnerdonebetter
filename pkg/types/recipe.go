@@ -29,7 +29,8 @@ func init() {
 type (
 	// Recipe represents a recipe.
 	Recipe struct {
-		_                        struct{}
+		_ struct{}
+
 		CreatedAt                time.Time         `json:"createdAt"`
 		InspiredByRecipeID       *string           `json:"inspiredByRecipeID"`
 		LastUpdatedAt            *time.Time        `json:"lastUpdatedAt"`
@@ -54,7 +55,8 @@ type (
 
 	// RecipeCreationRequestInput represents what a user could set as input for creating recipes.
 	RecipeCreationRequestInput struct {
-		_                        struct{}
+		_ struct{}
+
 		InspiredByRecipeID       *string                                           `json:"inspiredByRecipeID"`
 		MaximumEstimatedPortions *float32                                          `json:"maximumEstimatedPortions"`
 		PortionName              string                                            `json:"portionName"`
@@ -74,7 +76,8 @@ type (
 
 	// RecipeDatabaseCreationInput represents what a user could set as input for creating recipes.
 	RecipeDatabaseCreationInput struct {
-		_                        struct{}
+		_ struct{}
+
 		InspiredByRecipeID       *string
 		MaximumEstimatedPortions *float32
 		PortionName              string
