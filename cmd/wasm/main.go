@@ -82,6 +82,39 @@ func graphIDForStep(step *types.RecipeStep) int64 {
 	return int64(step.Index + 1)
 }
 
+func mermaidDiagramFromRecipe(recipe *types.Recipe) string {
+	var mermaid strings.Builder
+	mermaid.WriteString("flowchart TD;\n")
+
+	for _, step := range recipe.Steps {
+		mermaid.WriteString(fmt.Sprintf("	Step%d[\"Step #%d (%s)\"];\n", graphIDForStep(step), graphIDForStep(step), step.Preparation.Name))
+	}
+
+	for i := range recipe.Steps {
+		for j := range recipe.Steps {
+			if i == j {
+				continue
+			}
+
+			if provides := stepProvidesWhatToOtherStep(recipe, uint(i), uint(j)); provides != "" {
+				mermaid.WriteString(fmt.Sprintf("\tStep%d -->|%s| Step%d;\n", graphIDForStep(recipe.Steps[i]), provides, graphIDForStep(recipe.Steps[j])))
+			}
+		}
+	}
+
+	for i := range recipe.PrepTasks {
+		prepTask := recipe.PrepTasks[i]
+
+		mermaid.WriteString(fmt.Sprintf("subgraph %d [\"%s (prep task #%d)\"]\n", i, prepTask.Name, i+1))
+		for j := range prepTask.TaskSteps {
+			mermaid.WriteString(fmt.Sprintf("Step%d", recipe.FindStepIndexByID(prepTask.TaskSteps[j].BelongsToRecipeStep)))
+		}
+		mermaid.WriteString("end\n")
+	}
+
+	return mermaid.String()
+}
+
 func buildRenderRecipeToMermaid() js.Func {
 	return js.FuncOf(func(this js.Value, args []js.Value) any {
 		if len(args) != 1 {
@@ -94,36 +127,8 @@ func buildRenderRecipeToMermaid() js.Func {
 			log.Printf("error: %v\n", err)
 			return ""
 		}
-		var mermaid strings.Builder
-		mermaid.WriteString("flowchart TD;\n")
 
-		for _, step := range recipe.Steps {
-			mermaid.WriteString(fmt.Sprintf("	Step%d[\"Step #%d (%s)\"];\n", graphIDForStep(step), graphIDForStep(step), step.Preparation.Name))
-		}
-
-		for i := range recipe.Steps {
-			for j := range recipe.Steps {
-				if i == j {
-					continue
-				}
-
-				if provides := stepProvidesWhatToOtherStep(recipe, uint(i), uint(j)); provides != "" {
-					mermaid.WriteString(fmt.Sprintf("\tStep%d -->|%s| Step%d;\n", graphIDForStep(recipe.Steps[i]), provides, graphIDForStep(recipe.Steps[j])))
-				}
-			}
-		}
-
-		for i := range recipe.PrepTasks {
-			prepTask := recipe.PrepTasks[i]
-
-			mermaid.WriteString(fmt.Sprintf("subgraph %d [\"%s (prep task #%d)\"]\n", i, prepTask.Name, i+1))
-			for j := range prepTask.TaskSteps {
-				mermaid.WriteString(fmt.Sprintf("Step%d", recipe.FindStepIndexByID(prepTask.TaskSteps[j].BelongsToRecipeStep)))
-			}
-			mermaid.WriteString("end\n")
-		}
-
-		return mermaid.String()
+		return mermaidDiagramFromRecipe(recipe)
 	})
 }
 
