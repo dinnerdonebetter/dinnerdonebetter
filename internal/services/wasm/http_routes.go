@@ -27,7 +27,7 @@ func (s *Service) ExecJSHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	res.Header().Set("Content-Type", "application/javascript")
+	res.Header().Set("Content-Type", "text/javascript")
 
 	res.WriteHeader(http.StatusOK)
 }
