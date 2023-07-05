@@ -19,9 +19,6 @@ jobs:
         with:
           go-version: '1.20.x'
 
-      - name: Build wasm file
-        run: make wasm
-
       - id: auth
         uses: google-github-actions/auth@v1
         with:
