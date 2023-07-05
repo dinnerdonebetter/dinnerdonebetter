@@ -205,9 +205,7 @@ swift: clean_swift
 	go run github.com/dinnerdonebetter/backend/cmd/tools/codegen/gen_swift
 
 .PHONY: wasm
-wasm: internal/services/wasm/assets/helpers.wasm
-
-internal/services/wasm/assets/helpers.wasm:
+wasm:
 	GOOS=js GOARCH=wasm go build -o internal/services/wasm/assets/helpers.wasm github.com/dinnerdonebetter/backend/cmd/wasm
 
 ## Integration tests

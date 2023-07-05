@@ -6,7 +6,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-
 	"syscall/js"
 )
 
@@ -41,4 +40,5 @@ func jsonWrapper() js.Func {
 
 func main() {
 	js.Global().Set("formatJSON", jsonWrapper())
+	<-make(chan bool)
 }
