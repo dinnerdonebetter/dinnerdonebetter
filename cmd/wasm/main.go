@@ -107,7 +107,7 @@ func mermaidDiagramFromRecipe(recipe *types.Recipe) string {
 
 		mermaid.WriteString(fmt.Sprintf("subgraph %d [\"%s (prep task #%d)\"]\n", i, prepTask.Name, i+1))
 		for j := range prepTask.TaskSteps {
-			mermaid.WriteString(fmt.Sprintf("Step%d", recipe.FindStepIndexByID(prepTask.TaskSteps[j].BelongsToRecipeStep)))
+			mermaid.WriteString(fmt.Sprintf("Step%d\n", recipe.FindStepIndexByID(prepTask.TaskSteps[j].BelongsToRecipeStep)))
 		}
 		mermaid.WriteString("end\n")
 	}
