@@ -5,7 +5,6 @@ WORKDIR /go/src/github.com/dinnerdonebetter/backend
 
 COPY . .
 
-RUN GOOS=js GOARCH=wasm go build -o internal/services/wasm/assets/helpers.wasm github.com/dinnerdonebetter/backend/cmd/wasm
 RUN go build -trimpath -o /server github.com/dinnerdonebetter/backend/cmd/services/api/http
 
 # final stage
