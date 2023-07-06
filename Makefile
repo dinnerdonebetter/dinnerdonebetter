@@ -74,7 +74,7 @@ vendor:
 	for thing in $(CLOUD_FUNCTIONS); do \
   		(cd cmd/functions/$$thing && go mod tidy) \
 	done
-	for thing in $(CLOUD_JOB); do \
+	for thing in $(CLOUD_JOBS); do \
   		(cd cmd/jobs/$$thing && go mod tidy) \
 	done
 
@@ -203,10 +203,6 @@ clean_swift:
 swift: clean_swift
 	mkdir -p $(ARTIFACTS_DIR)/swift
 	go run github.com/dinnerdonebetter/backend/cmd/tools/codegen/gen_swift
-
-.PHONY: wasm
-wasm:
-	GOOS=js GOARCH=wasm go build -o internal/services/wasm/assets/helpers.wasm github.com/dinnerdonebetter/backend/cmd/wasm
 
 ## Integration tests
 

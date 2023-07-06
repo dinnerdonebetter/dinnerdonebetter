@@ -45,3 +45,4 @@ cmd/tools/db_initializer/dump.sql
 cmd/playground/*.go
 
 artifacts/
+*.wasm

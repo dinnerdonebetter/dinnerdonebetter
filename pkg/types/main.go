@@ -2,7 +2,6 @@ package types
 
 import (
 	"fmt"
-	"net/http"
 	"time"
 )
 
@@ -88,11 +87,6 @@ type (
 	NamedID struct {
 		ID   string `json:"id,omitempty"`
 		Name string `json:"name,omitempty"`
-	}
-
-	WASMService interface {
-		ExecJSHandler(http.ResponseWriter, *http.Request)
-		HelpersHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

@@ -41,7 +41,6 @@ import (
 	validpreparationinstrumentsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparationinstruments"
 	validpreparationsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparations"
 	vendorproxyservice "github.com/dinnerdonebetter/backend/internal/services/vendorproxy"
-	wasmservice "github.com/dinnerdonebetter/backend/internal/services/wasm"
 	webhooksservice "github.com/dinnerdonebetter/backend/internal/services/webhooks"
 	websocketsservice "github.com/dinnerdonebetter/backend/internal/services/websockets"
 
@@ -51,8 +50,8 @@ import (
 type (
 	// ServicesConfig collects the various service configurations.
 	ServicesConfig struct {
-		_                               struct{}
-		WASM                            wasmservice.Config                            `json:"wasm"                            toml:"wasm,omitempty"`
+		_ struct{}
+
 		ServiceSettings                 servicesettingsservice.Config                 `json:"serviceSettings"                 toml:"service_settings,omitempty"`
 		Websockets                      websocketsservice.Config                      `json:"websockets"                      toml:"websockets,omitempty"`
 		RecipeStepCompletionConditions  recipestepcompletionconditionsservice.Config  `json:"recipeStepCompletionConditions"  toml:"recipe_step_completion_conditions,omitempty"`
@@ -130,7 +129,6 @@ func (cfg *ServicesConfig) ValidateWithContext(ctx context.Context) error {
 		"ServiceSettings":                 cfg.ServiceSettings.ValidateWithContext,
 		"ServiceSettingConfigurations":    cfg.ServiceSettingConfigurations.ValidateWithContext,
 		"UserIngredientPreferences":       cfg.UserIngredientPreferences.ValidateWithContext,
-		"WASM":                            cfg.WASM.ValidateWithContext,
 	}
 
 	for name, validator := range validatorsToRun {

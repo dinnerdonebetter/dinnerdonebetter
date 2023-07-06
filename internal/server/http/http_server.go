@@ -73,7 +73,6 @@ type (
 		recipeRatingsService                   types.RecipeRatingDataService
 		householdInstrumentOwnershipService    types.HouseholdInstrumentOwnershipDataService
 		oauth2ClientsService                   types.OAuth2ClientDataService
-		wasmService                            types.WASMService
 		vendorProxyService                     vendorproxy.Service
 		encoder                                encoding.ServerEncoderDecoder
 		logger                                 logging.Logger
@@ -135,7 +134,6 @@ func ProvideHTTPServer(
 	recipeRatingsService types.RecipeRatingDataService,
 	householdInstrumentOwnershipService types.HouseholdInstrumentOwnershipDataService,
 	oauth2ClientDataService types.OAuth2ClientDataService,
-	wasmService types.WASMService,
 ) (Server, error) {
 	srv := &server{
 		config: serverSettings,
@@ -189,7 +187,6 @@ func ProvideHTTPServer(
 		recipeRatingsService:                   recipeRatingsService,
 		householdInstrumentOwnershipService:    householdInstrumentOwnershipService,
 		oauth2ClientsService:                   oauth2ClientDataService,
-		wasmService:                            wasmService,
 	}
 
 	srv.setupRouter(ctx, router)
