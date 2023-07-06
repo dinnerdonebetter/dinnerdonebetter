@@ -62,7 +62,6 @@ var (
 			"UserIngredientPreferences",
 			"RecipeRatings",
 			"HouseholdInstrumentOwnerships",
-			"WASM",
 		),
 	)
 )
