@@ -9,7 +9,6 @@ const (
 )
 
 var (
-	// validMeasurementUnitsTableColumns are the columns for the valid_measurement_units table.
 	validMeasurementUnitsTableColumns = []string{
 		buildColumnName(validMeasurementUnitsTable, id),
 		buildColumnName(validMeasurementUnitsTable, "name"),

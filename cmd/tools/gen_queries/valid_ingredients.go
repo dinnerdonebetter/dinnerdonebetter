@@ -9,7 +9,6 @@ const (
 )
 
 var (
-	// validIngredientsTableColumns are the columns for the valid_ingredient_states table.
 	validIngredientsTableColumns = []string{
 		buildColumnName(validIngredientsTable, id),
 		buildColumnName(validIngredientsTable, "name"),

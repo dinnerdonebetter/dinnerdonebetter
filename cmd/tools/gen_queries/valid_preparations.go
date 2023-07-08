@@ -9,7 +9,6 @@ const (
 )
 
 var (
-	// validPreparationsTableColumns are the columns for the valid_preparations table.
 	validPreparationsTableColumns = []string{
 		buildColumnName(validPreparationsTable, id),
 		buildColumnName(validPreparationsTable, "name"),

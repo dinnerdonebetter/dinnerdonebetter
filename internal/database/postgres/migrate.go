@@ -479,5 +479,10 @@ var (
 			Description: "oauth2 clients",
 			Script:      fetchMigration("00086_oauth2_clients"),
 		},
+		{
+			Version:     87,
+			Description: "valid vessels",
+			Script:      fetchMigration("00087_valid_vessels"),
+		},
 	}
 )

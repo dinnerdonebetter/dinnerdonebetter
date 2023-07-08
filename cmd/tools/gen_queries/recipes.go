@@ -10,7 +10,6 @@ const (
 
 /*
 var (
-	// recipesTableColumns are the columns for the recipes table.
 	recipesTableColumns = []string{
 		buildColumnName(recipesTable, id),
 		buildColumnName(recipesTable, "name"),
