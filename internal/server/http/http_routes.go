@@ -43,6 +43,7 @@ import (
 	validmeasurementunitsservice "github.com/dinnerdonebetter/backend/internal/services/validmeasurementunits"
 	validpreparationinstrumentsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparationinstruments"
 	validpreparationsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparations"
+	validvesselsservice "github.com/dinnerdonebetter/backend/internal/services/validvessels"
 	webhooksservice "github.com/dinnerdonebetter/backend/internal/services/webhooks"
 )
 
@@ -262,7 +263,7 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidInstrumentsPermission)).
 				Get(root, s.validInstrumentsService.ListHandler)
 			validInstrumentsRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidInstrumentsPermission)).
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.SearchValidInstrumentsPermission)).
 				Get(searchRoot, s.validInstrumentsService.SearchHandler)
 			validInstrumentsRouter.
 				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidInstrumentsPermission)).
@@ -278,6 +279,37 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 				singleValidInstrumentRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidInstrumentsPermission)).
 					Delete(root, s.validInstrumentsService.ArchiveHandler)
+			})
+		})
+
+		// ValidVessels
+		validVesselPath := "valid_vessels"
+		validVesselsRouteWithPrefix := fmt.Sprintf("/%s", validVesselPath)
+		validVesselIDRouteParam := buildURLVarChunk(validvesselsservice.ValidVesselIDURIParamKey, "")
+		v1Router.Route(validVesselsRouteWithPrefix, func(validVesselsRouter routing.Router) {
+			validVesselsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateValidVesselsPermission)).
+				Post(root, s.validVesselsService.CreateHandler)
+			validVesselsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidVesselsPermission)).
+				Get(root, s.validVesselsService.ListHandler)
+			validVesselsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.SearchValidVesselsPermission)).
+				Get(searchRoot, s.validVesselsService.SearchHandler)
+			validVesselsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidVesselsPermission)).
+				Get(randomRoot, s.validVesselsService.RandomHandler)
+
+			validVesselsRouter.Route(validVesselIDRouteParam, func(singleValidVesselRouter routing.Router) {
+				singleValidVesselRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidVesselsPermission)).
+					Get(root, s.validVesselsService.ReadHandler)
+				singleValidVesselRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidVesselsPermission)).
+					Put(root, s.validVesselsService.UpdateHandler)
+				singleValidVesselRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidVesselsPermission)).
+					Delete(root, s.validVesselsService.ArchiveHandler)
 			})
 		})
 

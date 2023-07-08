@@ -61,6 +61,7 @@ import (
 	validmeasurementunitsservice "github.com/dinnerdonebetter/backend/internal/services/validmeasurementunits"
 	validpreparationinstrumentsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparationinstruments"
 	validpreparationsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparations"
+	validvesselsservice "github.com/dinnerdonebetter/backend/internal/services/validvessels"
 	vendorproxyservice "github.com/dinnerdonebetter/backend/internal/services/vendorproxy"
 	webhooksservice "github.com/dinnerdonebetter/backend/internal/services/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/uploads/images"
@@ -132,6 +133,7 @@ func Build(
 		householdinstrumentownershipsservice.Providers,
 		reciperatingsservice.Providers,
 		oauth2clientsservice.Providers,
+		validvesselsservice.Providers,
 	)
 
 	return nil, nil

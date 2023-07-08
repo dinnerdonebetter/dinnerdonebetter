@@ -36,6 +36,7 @@ type (
 	// server is our API http server.
 	server struct {
 		authService                            types.AuthService
+		validVesselsService                    types.ValidVesselDataService
 		householdsService                      types.HouseholdDataService
 		householdInvitationsService            types.HouseholdInvitationDataService
 		usersService                           types.UserDataService
@@ -134,6 +135,7 @@ func ProvideHTTPServer(
 	recipeRatingsService types.RecipeRatingDataService,
 	householdInstrumentOwnershipService types.HouseholdInstrumentOwnershipDataService,
 	oauth2ClientDataService types.OAuth2ClientDataService,
+	validVesselsService types.ValidVesselDataService,
 ) (Server, error) {
 	srv := &server{
 		config: serverSettings,
@@ -187,6 +189,7 @@ func ProvideHTTPServer(
 		recipeRatingsService:                   recipeRatingsService,
 		householdInstrumentOwnershipService:    householdInstrumentOwnershipService,
 		oauth2ClientsService:                   oauth2ClientDataService,
+		validVesselsService:                    validVesselsService,
 	}
 
 	srv.setupRouter(ctx, router)

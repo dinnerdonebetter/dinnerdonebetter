@@ -22,6 +22,8 @@ const (
 	IndexTypeValidPreparations = "valid_preparations"
 	// IndexTypeValidIngredientStates represents the valid_ingredient_states index.
 	IndexTypeValidIngredientStates = "valid_ingredient_states"
+	// IndexTypeValidVessels represents the vessels index.
+	IndexTypeValidVessels = "vessels"
 )
 
 var (
@@ -36,6 +38,7 @@ var (
 		IndexTypeValidMeasurementUnits,
 		IndexTypeValidPreparations,
 		IndexTypeValidIngredientStates,
+		IndexTypeValidVessels,
 	}
 )
 
@@ -47,7 +50,8 @@ type (
 			types.ValidInstrumentSearchSubset |
 			types.ValidMeasurementUnitSearchSubset |
 			types.ValidPreparationSearchSubset |
-			types.ValidIngredientStateSearchSubset
+			types.ValidIngredientStateSearchSubset |
+			types.ValidVesselSearchSubset
 	}
 
 	// IndexSearcher is our wrapper interface for querying a text search index.

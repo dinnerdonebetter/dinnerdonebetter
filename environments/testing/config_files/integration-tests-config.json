@@ -87,13 +87,10 @@
 		"pingWaitPeriod": 1500000000
 	},
 	"services": {
-		"validIngredientGroups": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"serviceSettingConfigurations": {
-			"dataChangesTopicName": "data_changes"
-		},
 		"recipeStepVessels": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"recipeStepProducts": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"recipeStepCompletionConditions": {
@@ -108,7 +105,7 @@
 		"mealPlanOptionVotes": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"mealPlans": {
+		"validIngredientGroups": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"mealPlanOptions": {
@@ -129,7 +126,7 @@
 		"recipePrepTasks": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"households": {
+		"serviceSettings": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"vendorProxy": {
@@ -141,16 +138,16 @@
 		"mealPlanEvents": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"recipeRatings": {
+		"households": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"serviceSettings": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"recipeStepProducts": {
+		"mealPlans": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"websockets": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"recipeRatings": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"mealPlanGroceryListItems": {
@@ -165,16 +162,8 @@
 		"validIngredientStateIngredients": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"users": {
-			"dataChangesTopicName": "data_changes",
-			"publicMediaURLPrefix": "",
-			"uploads": {
-				"storageConfig": {
-					"bucketName": "avatars",
-					"provider": "memory"
-				},
-				"debug": false
-			}
+		"serviceSettingConfigurations": {
+			"dataChangesTopicName": "data_changes"
 		},
 		"recipeSteps": {
 			"mediaUploadPrefix": "https://media.example.website/lol",
@@ -187,14 +176,20 @@
 				"debug": false
 			}
 		},
-		"oauth2Clients": {
-			"creationEnabled": false,
-			"minimumUsernameLength": 0,
-			"minimumPasswordLength": 0
-		},
-		"meals": {
+		"users": {
 			"dataChangesTopicName": "data_changes",
-			"searchFromDatabase": false
+			"publicMediaURLPrefix": "",
+			"uploads": {
+				"storageConfig": {
+					"bucketName": "avatars",
+					"provider": "memory"
+				},
+				"debug": false
+			}
+		},
+		"householdInvitations": {
+			"dataChangesTopicName": "data_changes",
+			"debug": false
 		},
 		"validMeasurementUnits": {
 			"dataChangesTopicName": "data_changes",
@@ -212,15 +207,24 @@
 			"dataChangesTopicName": "data_changes",
 			"searchFromDatabase": false
 		},
+		"meals": {
+			"dataChangesTopicName": "data_changes",
+			"searchFromDatabase": false
+		},
 		"validPreparations": {
 			"dataChangesTopicName": "data_changes",
 			"searchFromDatabase": false
 		},
-		"householdInvitations": {
-			"dataChangesTopicName": "data_changes",
-			"debug": false
-		},
 		"validInstruments": {
+			"dataChangesTopicName": "data_changes",
+			"searchFromDatabase": false
+		},
+		"oauth2Clients": {
+			"creationEnabled": false,
+			"minimumUsernameLength": 0,
+			"minimumPasswordLength": 0
+		},
+		"validVessels": {
 			"dataChangesTopicName": "data_changes",
 			"searchFromDatabase": false
 		},
@@ -259,7 +263,6 @@
 			"enableUserSignup": true,
 			"minimumUsernameLength": 3,
 			"minimumPasswordLength": 8
-		},
-		"wasm": {}
+		}
 	}
 }

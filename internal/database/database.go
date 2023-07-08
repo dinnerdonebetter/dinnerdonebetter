@@ -108,5 +108,6 @@ type (
 		types.HouseholdInstrumentOwnershipDataManager
 		types.OAuth2ClientDataManager
 		types.OAuth2ClientTokenDataManager
+		types.ValidVesselDataManager
 	}
 )
