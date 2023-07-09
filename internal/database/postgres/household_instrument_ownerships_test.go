@@ -40,8 +40,6 @@ func buildMockRowsFromHouseholdInstrumentOwnership(includeCounts bool, filteredC
 			&x.Instrument.UsableForStorage,
 			&x.Instrument.DisplayInSummaryLists,
 			&x.Instrument.IncludeInGeneratedInstructions,
-			&x.Instrument.IsVessel,
-			&x.Instrument.IsExclusivelyVessel,
 			&x.Instrument.Slug,
 			&x.Instrument.CreatedAt,
 			&x.Instrument.LastUpdatedAt,

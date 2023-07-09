@@ -53,7 +53,6 @@ func (s *TestSuite) TestRecipeStepVessels_CompleteLifecycle() {
 			}
 
 			exampleValidInstrument := fakes.BuildFakeValidInstrument()
-			exampleValidInstrument.IsVessel = true
 			exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
 			createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 			require.NoError(t, err)
@@ -77,7 +76,6 @@ func (s *TestSuite) TestRecipeStepVessels_CompleteLifecycle() {
 			checkRecipeStepVesselEquality(t, exampleRecipeStepVessel, createdRecipeStepVessel, false)
 
 			newExampleValidInstrument := fakes.BuildFakeValidInstrument()
-			exampleValidInstrument.IsVessel = true
 			newExampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(newExampleValidInstrument)
 			newValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, newExampleValidInstrumentInput)
 			require.NoError(t, err)
@@ -124,7 +122,6 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 			require.NoError(t, err)
 
 			bakingSheetBase := fakes.BuildFakeValidInstrument()
-			bakingSheetBase.IsVessel = true
 			bakingSheetBaseInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(bakingSheetBase)
 			bakingSheet, err := testClients.admin.CreateValidInstrument(ctx, bakingSheetBaseInput)
 			require.NoError(t, err)
@@ -276,7 +273,6 @@ func (s *TestSuite) TestRecipeStepVessels_Listing() {
 			}
 
 			exampleValidInstrument := fakes.BuildFakeValidInstrument()
-			exampleValidInstrument.IsVessel = true
 			exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
 			createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 			require.NoError(t, err)

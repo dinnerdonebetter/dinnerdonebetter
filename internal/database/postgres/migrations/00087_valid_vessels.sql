@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS valid_vessels (
     UNIQUE("slug", "archived_at")
 );
 
--- ALTER TABLE valid_instruments DROP COLUMN IF EXISTS "is_vessel";
--- ALTER TABLE valid_instruments DROP COLUMN IF EXISTS "is_exclusively_vessel";
+ALTER TABLE valid_instruments DROP COLUMN IF EXISTS "is_vessel";
+ALTER TABLE valid_instruments DROP COLUMN IF EXISTS "is_exclusively_vessel";
 
 ALTER TABLE recipe_step_vessels ADD COLUMN "valid_vessel_id" TEXT REFERENCES valid_vessels("id") ON DELETE CASCADE;
