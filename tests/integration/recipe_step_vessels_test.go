@@ -52,23 +52,19 @@ func (s *TestSuite) TestRecipeStepVessels_CompleteLifecycle() {
 				break
 			}
 
-			t.Log("creating valid instrument")
 			exampleValidInstrument := fakes.BuildFakeValidInstrument()
 			exampleValidInstrument.IsVessel = true
 			exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
 			createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 			require.NoError(t, err)
-			t.Logf("valid instrument %q created", createdValidInstrument.ID)
 			checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
 
-			t.Log("creating recipe step vessel")
 			exampleRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
 			exampleRecipeStepVessel.BelongsToRecipeStep = createdRecipeStepID
 			exampleRecipeStepVessel.Instrument = &types.ValidInstrument{ID: createdValidInstrument.ID}
 			exampleRecipeStepVesselInput := converters.ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(exampleRecipeStepVessel)
 			createdRecipeStepVessel, err := testClients.admin.CreateRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepVesselInput)
 			require.NoError(t, err)
-			t.Logf("recipe step vessel %q created", createdRecipeStepVessel.ID)
 
 			checkRecipeStepVesselEquality(t, exampleRecipeStepVessel, createdRecipeStepVessel, false)
 
@@ -80,23 +76,19 @@ func (s *TestSuite) TestRecipeStepVessels_CompleteLifecycle() {
 
 			checkRecipeStepVesselEquality(t, exampleRecipeStepVessel, createdRecipeStepVessel, false)
 
-			t.Log("creating valid instrument")
 			newExampleValidInstrument := fakes.BuildFakeValidInstrument()
 			exampleValidInstrument.IsVessel = true
 			newExampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(newExampleValidInstrument)
 			newValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, newExampleValidInstrumentInput)
 			require.NoError(t, err)
-			t.Logf("valid instrument %q created", createdValidInstrument.ID)
 			checkValidInstrumentEquality(t, newExampleValidInstrument, newValidInstrument)
 
-			t.Log("changing recipe step vessel")
 			newRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
 			newRecipeStepVessel.BelongsToRecipeStep = createdRecipeStepID
 			newRecipeStepVessel.Instrument = newValidInstrument
 			createdRecipeStepVessel.Update(converters.ConvertRecipeStepVesselToRecipeStepVesselUpdateRequestInput(newRecipeStepVessel))
 			assert.NoError(t, testClients.admin.UpdateRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepVessel))
 
-			t.Log("fetching changed recipe step vessel")
 			actual, err := testClients.user.GetRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepVessel.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
@@ -104,13 +96,10 @@ func (s *TestSuite) TestRecipeStepVessels_CompleteLifecycle() {
 			checkRecipeStepVesselEquality(t, newRecipeStepVessel, actual, false)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			t.Log("cleaning up recipe step vessel")
 			assert.NoError(t, testClients.user.ArchiveRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepVessel.ID))
 
-			t.Log("cleaning up recipe step")
 			assert.NoError(t, testClients.user.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStepID))
 
-			t.Log("cleaning up recipe")
 			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
@@ -124,60 +113,46 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating prerequisite valid preparation")
 			lineBase := fakes.BuildFakeValidPreparation()
 			lineInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(lineBase)
 			line, err := testClients.admin.CreateValidPreparation(ctx, lineInput)
 			require.NoError(t, err)
-			t.Logf("valid preparation %q created", line.ID)
 
-			t.Log("creating prerequisite valid preparation")
 			roastBase := fakes.BuildFakeValidPreparation()
 			roastInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(roastBase)
 			roast, err := testClients.admin.CreateValidPreparation(ctx, roastInput)
 			require.NoError(t, err)
-			t.Logf("valid preparation %q created", roast.ID)
 
-			t.Log("creating valid instrument")
 			bakingSheetBase := fakes.BuildFakeValidInstrument()
 			bakingSheetBase.IsVessel = true
 			bakingSheetBaseInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(bakingSheetBase)
 			bakingSheet, err := testClients.admin.CreateValidInstrument(ctx, bakingSheetBaseInput)
 			require.NoError(t, err)
-			t.Logf("valid instrument %q created", bakingSheet.ID)
 			checkValidInstrumentEquality(t, bakingSheetBase, bakingSheet)
 
-			t.Log("creating valid measurement units")
 			sheetsBase := fakes.BuildFakeValidMeasurementUnit()
 			sheetsBaseInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(sheetsBase)
 			sheets, err := testClients.admin.CreateValidMeasurementUnit(ctx, sheetsBaseInput)
 			require.NoError(t, err)
-			t.Logf("valid measurement unit %q created", sheets.ID)
 			checkValidMeasurementUnitEquality(t, sheetsBase, sheets)
 
-			t.Log("creating valid measurement units")
 			headsBase := fakes.BuildFakeValidMeasurementUnit()
 			headsBaseInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(headsBase)
 			head, err := testClients.admin.CreateValidMeasurementUnit(ctx, headsBaseInput)
 			require.NoError(t, err)
-			t.Logf("valid measurement unit %q created", head.ID)
 			checkValidMeasurementUnitEquality(t, headsBase, head)
 
-			t.Log("creating valid measurement units")
 			exampleUnits := fakes.BuildFakeValidMeasurementUnit()
 			exampleUnitsInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleUnits)
 			unit, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleUnitsInput)
 			require.NoError(t, err)
-			t.Logf("valid measurement unit %q created", unit.ID)
 			checkValidMeasurementUnitEquality(t, exampleUnits, unit)
 
-			t.Log("creating prerequisite valid ingredient")
 			aluminumFoilBase := fakes.BuildFakeValidIngredient()
 			aluminumFoilInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(aluminumFoilBase)
 			aluminumFoil, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, aluminumFoilInput)
 			require.NoError(t, createdValidIngredientErr)
 
-			t.Log("creating prerequisite valid ingredient")
 			garlic := fakes.BuildFakeValidIngredient()
 			garlicInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(garlic)
 			garlic, garlicErr := testClients.admin.CreateValidIngredient(ctx, garlicInput)
@@ -185,7 +160,6 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 
 			linedBakingSheetName := "lined baking sheet"
 
-			t.Log("creating recipe")
 			expected := &types.Recipe{
 				Name:                     t.Name(),
 				Slug:                     "whatever-who-cares-yadda-yadda-vessels",
@@ -262,7 +236,6 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 
 			created, err := testClients.admin.CreateRecipe(ctx, exampleRecipeInput)
 			require.NoError(t, err)
-			t.Logf("recipe %q created", created.ID)
 			checkRecipeEquality(t, expected, created)
 
 			created, err = testClients.user.GetRecipe(ctx, created.ID)
@@ -302,16 +275,13 @@ func (s *TestSuite) TestRecipeStepVessels_Listing() {
 				break
 			}
 
-			t.Log("creating valid instrument")
 			exampleValidInstrument := fakes.BuildFakeValidInstrument()
 			exampleValidInstrument.IsVessel = true
 			exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
 			createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 			require.NoError(t, err)
-			t.Logf("valid instrument %q created", createdValidInstrument.ID)
 			checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
 
-			t.Log("creating recipe step vessels")
 			var expected []*types.RecipeStepVessel
 			for i := 0; i < 5; i++ {
 				exampleRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
@@ -320,7 +290,6 @@ func (s *TestSuite) TestRecipeStepVessels_Listing() {
 				exampleRecipeStepVesselInput := converters.ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(exampleRecipeStepVessel)
 				createdRecipeStepVessel, createdRecipeStepVesselErr := testClients.admin.CreateRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepVesselInput)
 				require.NoError(t, createdRecipeStepVesselErr)
-				t.Logf("recipe step vessel %q created", createdRecipeStepVessel.ID)
 				checkRecipeStepVesselEquality(t, exampleRecipeStepVessel, createdRecipeStepVessel, false)
 
 				createdRecipeStepVessel, createdRecipeStepVesselErr = testClients.user.GetRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepVessel.ID)
@@ -341,15 +310,12 @@ func (s *TestSuite) TestRecipeStepVessels_Listing() {
 				len(actual.Data),
 			)
 
-			t.Log("cleaning up")
 			for _, createdRecipeStepVessel := range expected {
 				assert.NoError(t, testClients.user.ArchiveRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepVessel.ID))
 			}
 
-			t.Log("cleaning up recipe step")
 			assert.NoError(t, testClients.user.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStepID))
 
-			t.Log("cleaning up recipe")
 			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})

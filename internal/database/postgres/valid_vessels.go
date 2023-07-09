@@ -304,10 +304,15 @@ func (q *Querier) GetValidVessels(ctx context.Context, filter *types.QueryFilter
 	}
 
 	joins := []string{
-		"valid_measurement_units ON valid_vessels.capcity_unit=valid_measurement_units.id",
+		"valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id",
 	}
 
-	query, args := q.buildListQuery(ctx, validVesselsTable, joins, nil, nil, householdOwnershipColumn, validVesselsTableColumns, "", false, filter)
+	groupBys := []string{
+		"valid_vessels.id",
+		"valid_measurement_units.id",
+	}
+
+	query, args := q.buildListQuery(ctx, validVesselsTable, joins, groupBys, nil, householdOwnershipColumn, validVesselsTableColumns, "", false, filter)
 
 	rows, err := q.getRows(ctx, q.db, "valid instruments", query, args)
 	if err != nil {
@@ -330,9 +335,13 @@ func (q *Querier) GetValidVesselsWithIDs(ctx context.Context, ids []string) ([]*
 
 	where := squirrel.Eq{"valid_vessels.id": ids}
 	joins := []string{
-		"valid_measurement_units ON valid_vessels.capcity_unit=valid_measurement_units.id",
+		"valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id",
 	}
-	query, args := q.buildListQuery(ctx, validVesselsTable, joins, nil, where, householdOwnershipColumn, validVesselsTableColumns, "", false, nil)
+	groupBys := []string{
+		"valid_vessels.id",
+		"valid_measurement_units.id",
+	}
+	query, args := q.buildListQuery(ctx, validVesselsTable, joins, groupBys, where, householdOwnershipColumn, validVesselsTableColumns, "", false, nil)
 
 	rows, err := q.getRows(ctx, q.db, "valid instruments", query, args)
 	if err != nil {

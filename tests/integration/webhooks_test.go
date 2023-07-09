@@ -37,7 +37,6 @@ func (s *TestSuite) TestWebhooks_Creating() {
 
 			createdWebhook, err := testClients.user.CreateWebhook(ctx, exampleWebhookInput)
 			require.NoError(t, err)
-			t.Logf("created webhook %s", createdWebhook.ID)
 
 			createdWebhook, err = testClients.user.GetWebhook(ctx, createdWebhook.ID)
 			requireNotNilAndNoProblems(t, createdWebhook, err)

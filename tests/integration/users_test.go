@@ -107,9 +107,6 @@ func (s *TestSuite) TestUsers_Reading() {
 			user, _, _, _ := createUserAndClientForTest(ctx, t, nil)
 
 			actual, err := testClients.admin.GetUser(ctx, user.ID)
-			if err != nil {
-				t.Logf("error encountered trying to fetch user %q: %v\n", user.Username, err)
-			}
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// Assert user equality.
@@ -132,9 +129,6 @@ func (s *TestSuite) TestUsers_PermissionsChecking() {
 			user, _, _, _ := createUserAndClientForTest(ctx, t, nil)
 
 			permissions, err := testClients.user.CheckUserPermissions(ctx, authorization.ReadWebhooksPermission.ID())
-			if err != nil {
-				t.Logf("error encountered trying to fetch user %q: %v\n", user.Username, err)
-			}
 			requireNotNilAndNoProblems(t, permissions, err)
 
 			for _, status := range permissions.Permissions {
@@ -247,7 +241,6 @@ func (s *TestSuite) TestUsers_Archiving() {
 			assert.NotNil(t, createdUser)
 
 			if createdUser == nil || err != nil {
-				t.Log("something has gone awry, user returned is nil")
 				t.FailNow()
 			}
 

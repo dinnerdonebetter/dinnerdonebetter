@@ -27,4 +27,4 @@ CREATE TABLE IF NOT EXISTS valid_vessels (
 -- ALTER TABLE valid_instruments DROP COLUMN IF EXISTS "is_vessel";
 -- ALTER TABLE valid_instruments DROP COLUMN IF EXISTS "is_exclusively_vessel";
 
-ALTER TABLE recipe_step_vessels ADD COLUMN "valid_vessel_id" TEXT NOT NULL REFERENCES valid_vessels("id") ON DELETE CASCADE;
+ALTER TABLE recipe_step_vessels ADD COLUMN "valid_vessel_id" TEXT REFERENCES valid_vessels("id") ON DELETE CASCADE;

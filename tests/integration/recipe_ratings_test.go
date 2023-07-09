@@ -36,26 +36,22 @@ func (s *TestSuite) TestRecipeRatings_CompleteLifecycle() {
 
 			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
 
-			t.Log("creating recipe rating")
 			exampleRecipeRating := fakes.BuildFakeRecipeRating()
 			exampleRecipeRating.RecipeID = createdRecipe.ID
 			exampleRecipeRatingInput := converters.ConvertRecipeRatingToRecipeRatingCreationRequestInput(exampleRecipeRating)
 			createdRecipeRating, err := testClients.user.CreateRecipeRating(ctx, createdRecipe.ID, exampleRecipeRatingInput)
 			require.NoError(t, err)
-			t.Logf("recipe rating %q created", createdRecipeRating.ID)
 			checkRecipeRatingEquality(t, exampleRecipeRating, createdRecipeRating)
 
 			createdRecipeRating, err = testClients.user.GetRecipeRating(ctx, createdRecipe.ID, createdRecipeRating.ID)
 			requireNotNilAndNoProblems(t, createdRecipeRating, err)
 			checkRecipeRatingEquality(t, exampleRecipeRating, createdRecipeRating)
 
-			t.Log("changing recipe rating")
 			newRecipeRating := fakes.BuildFakeRecipeRating()
 			newRecipeRating.RecipeID = createdRecipe.ID
 			createdRecipeRating.Update(converters.ConvertRecipeRatingToRecipeRatingUpdateRequestInput(newRecipeRating))
 			assert.NoError(t, testClients.admin.UpdateRecipeRating(ctx, createdRecipeRating))
 
-			t.Log("fetching changed recipe rating")
 			actual, err := testClients.admin.GetRecipeRating(ctx, createdRecipe.ID, createdRecipeRating.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
@@ -63,7 +59,6 @@ func (s *TestSuite) TestRecipeRatings_CompleteLifecycle() {
 			checkRecipeRatingEquality(t, newRecipeRating, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			t.Log("cleaning up recipe rating")
 			assert.NoError(t, testClients.admin.ArchiveRecipeRating(ctx, createdRecipe.ID, createdRecipeRating.ID))
 		}
 	})
@@ -79,13 +74,11 @@ func (s *TestSuite) TestRecipeRatings_Listing() {
 
 			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
 
-			t.Log("creating recipe rating")
 			exampleRecipeRating := fakes.BuildFakeRecipeRating()
 			exampleRecipeRating.RecipeID = createdRecipe.ID
 			exampleRecipeRatingInput := converters.ConvertRecipeRatingToRecipeRatingCreationRequestInput(exampleRecipeRating)
 			createdRecipeRating, err := testClients.user.CreateRecipeRating(ctx, createdRecipe.ID, exampleRecipeRatingInput)
 			require.NoError(t, err)
-			t.Logf("recipe rating %q created", createdRecipeRating.ID)
 			checkRecipeRatingEquality(t, exampleRecipeRating, createdRecipeRating)
 
 			// assert recipe rating list equality

@@ -102,6 +102,8 @@ func doTheThing() error {
 		actionFunc = dataManager.GetValidMeasurementUnitIDsThatNeedSearchIndexing
 	case search.IndexTypeValidIngredientStates:
 		actionFunc = dataManager.GetValidIngredientStateIDsThatNeedSearchIndexing
+	case search.IndexTypeValidVessels:
+		actionFunc = dataManager.GetValidVesselIDsThatNeedSearchIndexing
 	default:
 		logger.Info("unhandled index type chosen, exiting")
 		return nil

@@ -37,7 +37,7 @@ func (s *TestSuite) TestRecipeStepCompletionConditions_CompleteLifecycle() {
 			require.NotEmpty(t, createdRecipeStep.ID, "created recipe step ID must not be empty")
 
 			// create ingredient state
-			createdValidIngredientState := createValidIngredientStateForTest(t, ctx, testClients)
+			createdValidIngredientState := createValidIngredientStateForTest(t, ctx, testClients.admin)
 
 			input := &types.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput{
 				IngredientStateID:   createdValidIngredientState.ID,
@@ -51,16 +51,13 @@ func (s *TestSuite) TestRecipeStepCompletionConditions_CompleteLifecycle() {
 				},
 			}
 
-			t.Log("fetching recipe step completion condition")
 			createdRecipeStepCompletionCondition, err := testClients.admin.CreateRecipeStepCompletionCondition(ctx, createdRecipe.ID, createdRecipeStep.ID, input)
 			requireNotNilAndNoProblems(t, createdRecipeStepCompletionCondition, err)
 
-			t.Log("changing recipe step completion condition")
 			createdRecipeStepCompletionCondition.Notes = t.Name() + " updated"
 
 			require.NoError(t, testClients.admin.UpdateRecipeStepCompletionCondition(ctx, createdRecipe.ID, createdRecipeStepCompletionCondition))
 
-			t.Log("fetching changed recipe step completion condition")
 			actual, err := testClients.user.GetRecipeStepCompletionCondition(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepCompletionCondition.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
@@ -79,13 +76,10 @@ func (s *TestSuite) TestRecipeStepCompletionConditions_CompleteLifecycle() {
 				len(listResponse.Data),
 			)
 
-			t.Log("cleaning up recipe step completion condition")
 			assert.NoError(t, testClients.user.ArchiveRecipeStepCompletionCondition(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepCompletionCondition.ID))
 
-			t.Log("cleaning up recipe step")
 			assert.NoError(t, testClients.user.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
 
-			t.Log("cleaning up recipe")
 			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})

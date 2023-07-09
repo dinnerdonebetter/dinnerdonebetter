@@ -27,7 +27,8 @@ func init() {
 type (
 	// ValidVessel represents a valid vessel.
 	ValidVessel struct {
-		_                              struct{}
+		_ struct{}
+
 		CreatedAt                      time.Time            `json:"createdAt"`
 		ArchivedAt                     *time.Time           `json:"archivedAt"`
 		LastUpdatedAt                  *time.Time           `json:"lastUpdatedAt"`
@@ -74,7 +75,8 @@ type (
 
 	// ValidVesselCreationRequestInput represents what a user could set as input for creating valid vessels.
 	ValidVesselCreationRequestInput struct {
-		_                              struct{}
+		_ struct{}
+
 		Slug                           string  `json:"slug"`
 		Description                    string  `json:"description"`
 		IconPath                       string  `json:"iconPath"`
@@ -93,7 +95,8 @@ type (
 
 	// ValidVesselDatabaseCreationInput represents what a user could set as input for creating valid vessels.
 	ValidVesselDatabaseCreationInput struct {
-		_                              struct{}
+		_ struct{}
+
 		CapacityUnitID                 string
 		ID                             string
 		Name                           string
@@ -133,7 +136,8 @@ type (
 
 	// ValidVesselSearchSubset represents the subset of values suitable to index for search.
 	ValidVesselSearchSubset struct {
-		_                struct{}
+		_ struct{}
+
 		ID               string  `json:"id,omitempty"`
 		Name             string  `json:"name,omitempty"`
 		PluralName       string  `json:"pluralName,omitempty"`

@@ -6,6 +6,6 @@ ENV SKIP_PASETO_TESTS=TRUE
 COPY . .
 
 # to debug a specific test:
-# ENTRYPOINT go test -parallel 1 -v -failfast github.com/dinnerdonebetter/backend/tests/integration -run TestIntegration/TestValidPreparations_GetRandom
+# ENTRYPOINT go test -parallel 1 -v -failfast github.com/dinnerdonebetter/backend/tests/integration -run TestIntegration/TestValidVessels_Searching
 
 ENTRYPOINT go test -v github.com/dinnerdonebetter/backend/tests/integration

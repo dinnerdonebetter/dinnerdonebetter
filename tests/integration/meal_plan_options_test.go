@@ -40,7 +40,6 @@ func (s *TestSuite) TestMealPlanOptions_CompleteLifecycle() {
 			createdMealPlanOption := createdMealPlanEvent.Options[0]
 			require.NotNil(t, createdMealPlanOption)
 
-			t.Log("changing meal plan option")
 			newMealPlanOption := fakes.BuildFakeMealPlanOption()
 			newMealPlanOption.Meal.ID = createdMealPlanOption.Meal.ID
 			newMealPlanOption.BelongsToMealPlanEvent = createdMealPlanEvent.ID
@@ -49,7 +48,6 @@ func (s *TestSuite) TestMealPlanOptions_CompleteLifecycle() {
 			createdMealPlanOption.Update(converters.ConvertMealPlanOptionToMealPlanOptionUpdateRequestInput(newMealPlanOption))
 			require.NoError(t, testClients.user.UpdateMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanOption))
 
-			t.Log("fetching changed meal plan option")
 			actual, err := testClients.user.GetMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, createdMealPlanOption.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
@@ -57,13 +55,10 @@ func (s *TestSuite) TestMealPlanOptions_CompleteLifecycle() {
 			checkMealPlanOptionEquality(t, newMealPlanOption, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			t.Log("cleaning up meal plan option")
 			require.NoError(t, testClients.user.ArchiveMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, createdMealPlanOption.ID))
 
-			t.Log("cleaning up meal plan event")
 			require.NoError(t, testClients.user.ArchiveMealPlanEvent(ctx, createdMealPlan.ID, createdMealPlanEvent.ID))
 
-			t.Log("cleaning up meal plan")
 			require.NoError(t, testClients.user.ArchiveMealPlan(ctx, createdMealPlan.ID))
 		}
 	})
@@ -88,7 +83,6 @@ func (s *TestSuite) TestMealPlanOptions_Listing() {
 			createdMealPlanOption := createdMealPlanEvent.Options[0]
 			require.NotNil(t, createdMealPlanOption)
 
-			t.Log("creating meal plan options")
 			var expected []*types.MealPlanOption
 			for i := 0; i < 5; i++ {
 				exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
@@ -102,7 +96,6 @@ func (s *TestSuite) TestMealPlanOptions_Listing() {
 				exampleMealPlanOptionInput := converters.ConvertMealPlanOptionToMealPlanOptionCreationRequestInput(exampleMealPlanOption)
 				newlyCreatedMealPlanOption, err := testClients.user.CreateMealPlanOption(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, exampleMealPlanOptionInput)
 				require.NoError(t, err)
-				t.Logf("meal plan option %q created", createdMealPlanOption.ID)
 
 				checkMealPlanOptionEquality(t, exampleMealPlanOption, newlyCreatedMealPlanOption)
 
@@ -124,7 +117,6 @@ func (s *TestSuite) TestMealPlanOptions_Listing() {
 				len(actual.Data),
 			)
 
-			t.Log("cleaning up meal plan")
 			assert.NoError(t, testClients.user.ArchiveMealPlan(ctx, createdMealPlan.ID))
 		}
 	})

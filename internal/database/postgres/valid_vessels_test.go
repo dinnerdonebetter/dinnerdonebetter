@@ -472,9 +472,13 @@ func TestQuerier_GetValidVessels(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		joins := []string{
-			"valid_measurement_units ON valid_vessels.capcity_unit=valid_measurement_units.id",
+			"valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id",
 		}
-		query, args := c.buildListQuery(ctx, validVesselsTable, joins, nil, nil, householdOwnershipColumn, validVesselsTableColumns, "", false, filter)
+		groupBys := []string{
+			"valid_vessels.id",
+			"valid_measurement_units.id",
+		}
+		query, args := c.buildListQuery(ctx, validVesselsTable, joins, groupBys, nil, householdOwnershipColumn, validVesselsTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -499,9 +503,13 @@ func TestQuerier_GetValidVessels(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		joins := []string{
-			"valid_measurement_units ON valid_vessels.capcity_unit=valid_measurement_units.id",
+			"valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id",
 		}
-		query, args := c.buildListQuery(ctx, validVesselsTable, joins, nil, nil, householdOwnershipColumn, validVesselsTableColumns, "", false, filter)
+		groupBys := []string{
+			"valid_vessels.id",
+			"valid_measurement_units.id",
+		}
+		query, args := c.buildListQuery(ctx, validVesselsTable, joins, groupBys, nil, householdOwnershipColumn, validVesselsTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -523,9 +531,13 @@ func TestQuerier_GetValidVessels(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		joins := []string{
-			"valid_measurement_units ON valid_vessels.capcity_unit=valid_measurement_units.id",
+			"valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id",
 		}
-		query, args := c.buildListQuery(ctx, validVesselsTable, joins, nil, nil, householdOwnershipColumn, validVesselsTableColumns, "", false, filter)
+		groupBys := []string{
+			"valid_vessels.id",
+			"valid_measurement_units.id",
+		}
+		query, args := c.buildListQuery(ctx, validVesselsTable, joins, groupBys, nil, householdOwnershipColumn, validVesselsTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -547,9 +559,13 @@ func TestQuerier_GetValidVessels(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		joins := []string{
-			"valid_measurement_units ON valid_vessels.capcity_unit=valid_measurement_units.id",
+			"valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id",
 		}
-		query, args := c.buildListQuery(ctx, validVesselsTable, joins, nil, nil, householdOwnershipColumn, validVesselsTableColumns, "", false, filter)
+		groupBys := []string{
+			"valid_vessels.id",
+			"valid_measurement_units.id",
+		}
+		query, args := c.buildListQuery(ctx, validVesselsTable, joins, groupBys, nil, householdOwnershipColumn, validVesselsTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -581,9 +597,13 @@ func TestQuerier_GetValidVesselsWithIDs(T *testing.T) {
 
 		where := squirrel.Eq{"valid_vessels.id": exampleIDs}
 		joins := []string{
-			"valid_measurement_units ON valid_vessels.capcity_unit=valid_measurement_units.id",
+			"valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id",
 		}
-		query, args := c.buildListQuery(ctx, validVesselsTable, joins, nil, where, householdOwnershipColumn, validVesselsTableColumns, "", false, nil)
+		groupBys := []string{
+			"valid_vessels.id",
+			"valid_measurement_units.id",
+		}
+		query, args := c.buildListQuery(ctx, validVesselsTable, joins, groupBys, where, householdOwnershipColumn, validVesselsTableColumns, "", false, nil)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
