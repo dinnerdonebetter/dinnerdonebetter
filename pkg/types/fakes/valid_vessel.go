@@ -20,7 +20,7 @@ func BuildFakeValidVessel() *types.ValidVessel {
 		IncludeInGeneratedInstructions: fake.Bool(),
 		UsableForStorage:               fake.Bool(),
 		Capacity:                       float32(BuildFakeNumber()),
-		CapacityUnit:                   *BuildFakeValidMeasurementUnit(),
+		CapacityUnit:                   BuildFakeValidMeasurementUnit(),
 		WidthInMillimeters:             float32(BuildFakeNumber()),
 		LengthInMillimeters:            float32(BuildFakeNumber()),
 		HeightInMillimeters:            float32(BuildFakeNumber()),

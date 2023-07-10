@@ -652,7 +652,7 @@ func TestQuerier_CreateValidVessel(T *testing.T) {
 		t.Parallel()
 
 		exampleValidVessel := fakes.BuildFakeValidVessel()
-		exampleValidVessel.CapacityUnit = types.ValidMeasurementUnit{ID: exampleValidVessel.CapacityUnit.ID}
+		exampleValidVessel.CapacityUnit = &types.ValidMeasurementUnit{ID: exampleValidVessel.CapacityUnit.ID}
 		exampleInput := converters.ConvertValidVesselToValidVesselDatabaseCreationInput(exampleValidVessel)
 
 		ctx := context.Background()
