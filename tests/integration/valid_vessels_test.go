@@ -46,7 +46,7 @@ func createValidVesselForTest(t *testing.T, ctx context.Context, vessel *types.V
 		exampleValidVessel = fakes.BuildFakeValidVessel()
 	}
 
-	exampleValidVessel.CapacityUnit = types.ValidMeasurementUnit{ID: createdValidMeasurementUnit.ID}
+	exampleValidVessel.CapacityUnit = &types.ValidMeasurementUnit{ID: createdValidMeasurementUnit.ID}
 	exampleValidVesselInput := converters.ConvertValidVesselToValidVesselCreationRequestInput(exampleValidVessel)
 	createdValidVessel, err := adminClient.CreateValidVessel(ctx, exampleValidVesselInput)
 	require.NoError(t, err)

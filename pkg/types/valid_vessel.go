@@ -29,24 +29,24 @@ type (
 	ValidVessel struct {
 		_ struct{}
 
-		CreatedAt                      time.Time            `json:"createdAt"`
-		ArchivedAt                     *time.Time           `json:"archivedAt"`
-		LastUpdatedAt                  *time.Time           `json:"lastUpdatedAt"`
-		ID                             string               `json:"id"`
-		Name                           string               `json:"name"`
-		PluralName                     string               `json:"pluralName"`
-		Description                    string               `json:"description"`
-		IconPath                       string               `json:"iconPath"`
-		Slug                           string               `json:"slug"`
-		Shape                          string               `json:"shape"`
-		CapacityUnit                   ValidMeasurementUnit `json:"capacityUnit"`
-		WidthInMillimeters             float32              `json:"widthInMillimeters"`
-		LengthInMillimeters            float32              `json:"lengthInMillimeters"`
-		HeightInMillimeters            float32              `json:"heightInMillimeters"`
-		Capacity                       float32              `json:"capacity"`
-		IncludeInGeneratedInstructions bool                 `json:"includeInGeneratedInstructions"`
-		DisplayInSummaryLists          bool                 `json:"displayInSummaryLists"`
-		UsableForStorage               bool                 `json:"usableForStorage"`
+		CreatedAt                      time.Time             `json:"createdAt"`
+		ArchivedAt                     *time.Time            `json:"archivedAt"`
+		LastUpdatedAt                  *time.Time            `json:"lastUpdatedAt"`
+		CapacityUnit                   *ValidMeasurementUnit `json:"capacityUnit"`
+		IconPath                       string                `json:"iconPath"`
+		PluralName                     string                `json:"pluralName"`
+		Description                    string                `json:"description"`
+		Name                           string                `json:"name"`
+		Slug                           string                `json:"slug"`
+		Shape                          string                `json:"shape"`
+		ID                             string                `json:"id"`
+		WidthInMillimeters             float32               `json:"widthInMillimeters"`
+		LengthInMillimeters            float32               `json:"lengthInMillimeters"`
+		HeightInMillimeters            float32               `json:"heightInMillimeters"`
+		Capacity                       float32               `json:"capacity"`
+		IncludeInGeneratedInstructions bool                  `json:"includeInGeneratedInstructions"`
+		DisplayInSummaryLists          bool                  `json:"displayInSummaryLists"`
+		UsableForStorage               bool                  `json:"usableForStorage"`
 	}
 
 	// NullableValidVessel represents a fully nullable valid vessel.

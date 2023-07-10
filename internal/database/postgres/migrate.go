@@ -484,5 +484,10 @@ var (
 			Description: "valid vessels",
 			Script:      fetchMigration("00087_valid_vessels"),
 		},
+		{
+			Version:     88,
+			Description: "nullable valid vessel measurement units",
+			Script:      fetchMigration("00088_nullable_valid_vessel_measurement_units"),
+		},
 	}
 )

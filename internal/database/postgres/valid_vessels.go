@@ -60,7 +60,9 @@ func (q *Querier) scanValidVessel(ctx context.Context, scan database.Scanner, in
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	x = &types.ValidVessel{}
+	x = &types.ValidVessel{
+		CapacityUnit: &types.ValidMeasurementUnit{},
+	}
 
 	targetVars := []any{
 		&x.ID,
@@ -101,6 +103,10 @@ func (q *Querier) scanValidVessel(ctx context.Context, scan database.Scanner, in
 
 	if err = scan.Scan(targetVars...); err != nil {
 		return nil, 0, 0, observability.PrepareError(err, span, "")
+	}
+
+	if x.CapacityUnit.ID == "" {
+		x.CapacityUnit = nil
 	}
 
 	return x, filteredCount, totalCount, nil
@@ -417,7 +423,7 @@ func (q *Querier) CreateValidVessel(ctx context.Context, input *types.ValidVesse
 		IconPath:                       input.IconPath,
 		Slug:                           input.Slug,
 		Shape:                          input.Shape,
-		CapacityUnit:                   types.ValidMeasurementUnit{ID: input.CapacityUnitID},
+		CapacityUnit:                   &types.ValidMeasurementUnit{ID: input.CapacityUnitID},
 		WidthInMillimeters:             input.WidthInMillimeters,
 		LengthInMillimeters:            input.LengthInMillimeters,
 		HeightInMillimeters:            input.HeightInMillimeters,
