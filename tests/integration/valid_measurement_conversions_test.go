@@ -36,7 +36,6 @@ func (s *TestSuite) TestValidMeasurementConversions_CompleteLifecycle() {
 			createdValidMeasurementUnit1 := createValidMeasurementUnitForTest(t, ctx, testClients.admin)
 			createdValidMeasurementUnit2 := createValidMeasurementUnitForTest(t, ctx, testClients.admin)
 
-			t.Log("creating valid measurement conversion")
 			exampleValidMeasurementConversion := fakes.BuildFakeValidMeasurementConversion()
 			exampleValidMeasurementConversion.From = *createdValidMeasurementUnit1
 			exampleValidMeasurementConversion.To = *createdValidMeasurementUnit2
@@ -44,7 +43,6 @@ func (s *TestSuite) TestValidMeasurementConversions_CompleteLifecycle() {
 
 			createdValidMeasurementConversion, err := testClients.admin.CreateValidMeasurementConversion(ctx, exampleValidMeasurementConversionInput)
 			require.NoError(t, err)
-			t.Logf("valid measurement conversion %q created", createdValidMeasurementConversion.ID)
 			checkValidMeasurementConversionEquality(t, exampleValidMeasurementConversion, createdValidMeasurementConversion)
 
 			createdValidMeasurementConversion, err = testClients.admin.GetValidMeasurementUnitConversion(ctx, createdValidMeasurementConversion.ID)
@@ -52,11 +50,9 @@ func (s *TestSuite) TestValidMeasurementConversions_CompleteLifecycle() {
 
 			checkValidMeasurementConversionEquality(t, exampleValidMeasurementConversion, createdValidMeasurementConversion)
 
-			t.Log("changing valid measurement conversion")
 			createdValidMeasurementConversion.Modifier = fakes.BuildFakeValidMeasurementConversion().Modifier
 			require.NoError(t, testClients.admin.UpdateValidMeasurementConversion(ctx, createdValidMeasurementConversion))
 
-			t.Log("fetching changed valid measurement conversion")
 			actual, err := testClients.admin.GetValidMeasurementUnitConversion(ctx, createdValidMeasurementConversion.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
@@ -64,7 +60,6 @@ func (s *TestSuite) TestValidMeasurementConversions_CompleteLifecycle() {
 			checkValidMeasurementConversionEquality(t, createdValidMeasurementConversion, actual)
 			require.NotNil(t, actual.LastUpdatedAt)
 
-			t.Log("cleaning up valid measurement conversion")
 			require.NoError(t, testClients.admin.ArchiveValidMeasurementConversion(ctx, createdValidMeasurementConversion.ID))
 		}
 	})
@@ -81,7 +76,6 @@ func (s *TestSuite) TestValidMeasurementConversions_GetFromUnits() {
 			createdValidMeasurementUnit1 := createValidMeasurementUnitForTest(t, ctx, testClients.admin)
 			createdValidMeasurementUnit2 := createValidMeasurementUnitForTest(t, ctx, testClients.admin)
 
-			t.Log("creating valid measurement conversion")
 			exampleValidMeasurementConversion := fakes.BuildFakeValidMeasurementConversion()
 			exampleValidMeasurementConversion.From = *createdValidMeasurementUnit1
 			exampleValidMeasurementConversion.To = *createdValidMeasurementUnit2
@@ -89,19 +83,16 @@ func (s *TestSuite) TestValidMeasurementConversions_GetFromUnits() {
 
 			createdValidMeasurementConversion, err := testClients.admin.CreateValidMeasurementConversion(ctx, exampleValidMeasurementConversionInput)
 			require.NoError(t, err)
-			t.Logf("valid measurement conversion %q created", createdValidMeasurementConversion.ID)
 			checkValidMeasurementConversionEquality(t, exampleValidMeasurementConversion, createdValidMeasurementConversion)
 
 			createdValidMeasurementConversion, err = testClients.admin.GetValidMeasurementUnitConversion(ctx, createdValidMeasurementConversion.ID)
 			requireNotNilAndNoProblems(t, createdValidMeasurementConversion, err)
 			checkValidMeasurementConversionEquality(t, exampleValidMeasurementConversion, createdValidMeasurementConversion)
 
-			t.Log("fetching from units")
 			fromUnits, err := testClients.admin.GetValidMeasurementUnitConversionsFromUnit(ctx, createdValidMeasurementUnit1.ID)
 			requireNotNilAndNoProblems(t, fromUnits, err)
 			require.Equal(t, 1, len(fromUnits))
 
-			t.Log("cleaning up valid measurement conversion")
 			require.NoError(t, testClients.admin.ArchiveValidMeasurementConversion(ctx, createdValidMeasurementConversion.ID))
 		}
 	})
@@ -118,7 +109,6 @@ func (s *TestSuite) TestValidMeasurementConversions_GetToUnits() {
 			createdValidMeasurementUnit1 := createValidMeasurementUnitForTest(t, ctx, testClients.admin)
 			createdValidMeasurementUnit2 := createValidMeasurementUnitForTest(t, ctx, testClients.admin)
 
-			t.Log("creating valid measurement conversion")
 			exampleValidMeasurementConversion := fakes.BuildFakeValidMeasurementConversion()
 			exampleValidMeasurementConversion.From = *createdValidMeasurementUnit1
 			exampleValidMeasurementConversion.To = *createdValidMeasurementUnit2
@@ -126,19 +116,16 @@ func (s *TestSuite) TestValidMeasurementConversions_GetToUnits() {
 
 			createdValidMeasurementConversion, err := testClients.admin.CreateValidMeasurementConversion(ctx, exampleValidMeasurementConversionInput)
 			require.NoError(t, err)
-			t.Logf("valid measurement conversion %q created", createdValidMeasurementConversion.ID)
 			checkValidMeasurementConversionEquality(t, exampleValidMeasurementConversion, createdValidMeasurementConversion)
 
 			createdValidMeasurementConversion, err = testClients.admin.GetValidMeasurementUnitConversion(ctx, createdValidMeasurementConversion.ID)
 			requireNotNilAndNoProblems(t, createdValidMeasurementConversion, err)
 			checkValidMeasurementConversionEquality(t, exampleValidMeasurementConversion, createdValidMeasurementConversion)
 
-			t.Log("fetching from units")
 			fromUnits, err := testClients.admin.GetValidMeasurementUnitConversionToUnit(ctx, createdValidMeasurementUnit2.ID)
 			requireNotNilAndNoProblems(t, fromUnits, err)
 			require.Equal(t, 1, len(fromUnits))
 
-			t.Log("cleaning up valid measurement conversion")
 			require.NoError(t, testClients.admin.ArchiveValidMeasurementConversion(ctx, createdValidMeasurementConversion.ID))
 		}
 	})

@@ -32,12 +32,10 @@ func checkValidMeasurementUnitEquality(t *testing.T, expected, actual *types.Val
 }
 
 func createValidMeasurementUnitForTest(t *testing.T, ctx context.Context, adminClient *apiclient.Client) *types.ValidMeasurementUnit {
-	t.Log("creating valid measurement unit")
 	exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
 	exampleValidMeasurementUnitInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleValidMeasurementUnit)
 	createdValidMeasurementUnit, err := adminClient.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
 	require.NoError(t, err)
-	t.Logf("valid measurement unit %q created", createdValidMeasurementUnit.ID)
 	checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
 
 	createdValidMeasurementUnit, err = adminClient.GetValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID)
@@ -57,12 +55,10 @@ func (s *TestSuite) TestValidMeasurementUnits_CompleteLifecycle() {
 
 			createdValidMeasurementUnit := createValidMeasurementUnitForTest(t, ctx, testClients.admin)
 
-			t.Log("changing valid measurement unit")
 			newValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
 			createdValidMeasurementUnit.Update(converters.ConvertValidMeasurementUnitToValidMeasurementUnitUpdateRequestInput(newValidMeasurementUnit))
 			assert.NoError(t, testClients.admin.UpdateValidMeasurementUnit(ctx, createdValidMeasurementUnit))
 
-			t.Log("fetching changed valid measurement unit")
 			actual, err := testClients.admin.GetValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
@@ -70,7 +66,6 @@ func (s *TestSuite) TestValidMeasurementUnits_CompleteLifecycle() {
 			checkValidMeasurementUnitEquality(t, newValidMeasurementUnit, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			t.Log("cleaning up valid measurement unit")
 			assert.NoError(t, testClients.admin.ArchiveValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID))
 		}
 	})
@@ -84,14 +79,12 @@ func (s *TestSuite) TestValidMeasurementUnits_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating valid measurement units")
 			var expected []*types.ValidMeasurementUnit
 			for i := 0; i < 5; i++ {
 				exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
 				exampleValidMeasurementUnitInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleValidMeasurementUnit)
 				createdValidMeasurementUnit, createdValidMeasurementUnitErr := testClients.admin.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
 				require.NoError(t, createdValidMeasurementUnitErr)
-				t.Logf("valid measurement unit %q created", createdValidMeasurementUnit.ID)
 
 				checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
 
@@ -109,7 +102,6 @@ func (s *TestSuite) TestValidMeasurementUnits_Listing() {
 				len(actual.Data),
 			)
 
-			t.Log("cleaning up")
 			for _, createdValidMeasurementUnit := range expected {
 				assert.NoError(t, testClients.admin.ArchiveValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID))
 			}
@@ -125,7 +117,6 @@ func (s *TestSuite) TestValidMeasurementUnits_Searching() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating valid measurement units")
 			var expected []*types.ValidMeasurementUnit
 			exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
 			exampleValidMeasurementUnit.Name = fmt.Sprintf("example_%s", testClients.authType)
@@ -136,7 +127,6 @@ func (s *TestSuite) TestValidMeasurementUnits_Searching() {
 				createdValidMeasurementUnit, createdValidMeasurementUnitErr := testClients.admin.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
 				require.NoError(t, createdValidMeasurementUnitErr)
 				checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
-				t.Logf("valid measurement unit %q created", createdValidMeasurementUnit.ID)
 
 				expected = append(expected, createdValidMeasurementUnit)
 			}
@@ -154,7 +144,6 @@ func (s *TestSuite) TestValidMeasurementUnits_Searching() {
 				len(actual),
 			)
 
-			t.Log("cleaning up")
 			for _, createdValidMeasurementUnit := range expected {
 				assert.NoError(t, testClients.admin.ArchiveValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID))
 			}

@@ -9,7 +9,6 @@ const (
 )
 
 var (
-	// validInstrumentsTableColumns are the columns for the valid_instrument_states table.
 	validInstrumentsTableColumns = []string{
 		buildColumnName(validInstrumentsTable, id),
 		buildColumnName(validInstrumentsTable, "name"),
@@ -19,8 +18,6 @@ var (
 		buildColumnName(validInstrumentsTable, "usable_for_storage"),
 		buildColumnName(validInstrumentsTable, "display_in_summary_lists"),
 		buildColumnName(validInstrumentsTable, "include_in_generated_instructions"),
-		buildColumnName(validInstrumentsTable, "is_vessel"),
-		buildColumnName(validInstrumentsTable, "is_exclusively_vessel"),
 		buildColumnName(validInstrumentsTable, "slug"),
 		buildColumnName(validInstrumentsTable, createdAt),
 		buildColumnName(validInstrumentsTable, lastUpdatedAt),

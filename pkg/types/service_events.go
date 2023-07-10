@@ -51,6 +51,7 @@ type (
 		ServiceSettingConfiguration      *ServiceSettingConfiguration    `json:"serviceSettingConfiguration,omitempty"`
 		HouseholdInstrumentOwnership     *HouseholdInstrumentOwnership   `json:"householdInstrumentOwnership,omitempty"`
 		RecipeRating                     *RecipeRating                   `json:"recipeRating,omitempty"`
+		ValidVessel                      *ValidVessel                    `json:"validVessel,omitempty"`
 		RecipeStepVesselID               string                          `json:"recipeStepVesselID,omitempty"`
 		HouseholdInvitationID            string                          `json:"householdInvitationID,omitempty"`
 		UserID                           string                          `json:"userID"`

@@ -14,7 +14,7 @@ import (
 
 const (
 	recipeStepsOnRecipeStepVesselsJoinClause      = "recipe_steps ON recipe_step_vessels.belongs_to_recipe_step=recipe_steps.id"
-	recipeStepVesselsOnValidInstrumentsJoinClause = "valid_instruments ON recipe_step_vessels.valid_instrument_id=valid_instruments.id"
+	recipeStepVesselsOnValidInstrumentsJoinClause = "valid_vessels ON recipe_step_vessels.valid_vessel_id=valid_vessels.id"
 )
 
 var (
@@ -23,20 +23,36 @@ var (
 	// recipeStepVesselsTableColumns are the columns for the recipe_step_vessels table.
 	recipeStepVesselsTableColumns = []string{
 		"recipe_step_vessels.id",
-		"valid_instruments.id",
-		"valid_instruments.name",
-		"valid_instruments.plural_name",
-		"valid_instruments.description",
-		"valid_instruments.icon_path",
-		"valid_instruments.usable_for_storage",
-		"valid_instruments.display_in_summary_lists",
-		"valid_instruments.include_in_generated_instructions",
-		"valid_instruments.is_vessel",
-		"valid_instruments.is_exclusively_vessel",
-		"valid_instruments.slug",
-		"valid_instruments.created_at",
-		"valid_instruments.last_updated_at",
-		"valid_instruments.archived_at",
+		"valid_vessels.id",
+		"valid_vessels.name",
+		"valid_vessels.plural_name",
+		"valid_vessels.description",
+		"valid_vessels.icon_path",
+		"valid_vessels.usable_for_storage",
+		"valid_vessels.slug",
+		"valid_vessels.display_in_summary_lists",
+		"valid_vessels.include_in_generated_instructions",
+		"valid_vessels.capacity",
+		"valid_measurement_units.id",
+		"valid_measurement_units.name",
+		"valid_measurement_units.description",
+		"valid_measurement_units.volumetric",
+		"valid_measurement_units.icon_path",
+		"valid_measurement_units.universal",
+		"valid_measurement_units.metric",
+		"valid_measurement_units.imperial",
+		"valid_measurement_units.slug",
+		"valid_measurement_units.plural_name",
+		"valid_measurement_units.created_at",
+		"valid_measurement_units.last_updated_at",
+		"valid_measurement_units.archived_at",
+		"valid_vessels.width_in_millimeters",
+		"valid_vessels.length_in_millimeters",
+		"valid_vessels.height_in_millimeters",
+		"valid_vessels.shape",
+		"valid_vessels.created_at",
+		"valid_vessels.last_updated_at",
+		"valid_vessels.archived_at",
 		"recipe_step_vessels.name",
 		"recipe_step_vessels.notes",
 		"recipe_step_vessels.belongs_to_recipe_step",
@@ -54,6 +70,7 @@ var (
 		recipeStepsOnRecipeStepVesselsJoinClause,
 		recipeStepVesselsOnValidInstrumentsJoinClause,
 		recipesOnRecipeStepsJoinClause,
+		"valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id",
 	}
 )
 
@@ -63,24 +80,42 @@ func (q *Querier) scanRecipeStepVessel(ctx context.Context, scan database.Scanne
 	defer span.End()
 
 	x = &types.RecipeStepVessel{}
-	instrument := &types.NullableValidInstrument{}
+	vessel := &types.NullableValidVessel{
+		CapacityUnit: &types.NullableValidMeasurementUnit{},
+	}
 
 	targetVars := []any{
 		&x.ID,
-		&instrument.ID,
-		&instrument.Name,
-		&instrument.PluralName,
-		&instrument.Description,
-		&instrument.IconPath,
-		&instrument.UsableForStorage,
-		&instrument.DisplayInSummaryLists,
-		&instrument.IncludeInGeneratedInstructions,
-		&instrument.IsVessel,
-		&instrument.IsExclusivelyVessel,
-		&instrument.Slug,
-		&instrument.CreatedAt,
-		&instrument.LastUpdatedAt,
-		&instrument.ArchivedAt,
+		&vessel.ID,
+		&vessel.Name,
+		&vessel.PluralName,
+		&vessel.Description,
+		&vessel.IconPath,
+		&vessel.UsableForStorage,
+		&vessel.Slug,
+		&vessel.DisplayInSummaryLists,
+		&vessel.IncludeInGeneratedInstructions,
+		&vessel.Capacity,
+		&vessel.CapacityUnit.ID,
+		&vessel.CapacityUnit.Name,
+		&vessel.CapacityUnit.Description,
+		&vessel.CapacityUnit.Volumetric,
+		&vessel.CapacityUnit.IconPath,
+		&vessel.CapacityUnit.Universal,
+		&vessel.CapacityUnit.Metric,
+		&vessel.CapacityUnit.Imperial,
+		&vessel.CapacityUnit.Slug,
+		&vessel.CapacityUnit.PluralName,
+		&vessel.CapacityUnit.CreatedAt,
+		&vessel.CapacityUnit.LastUpdatedAt,
+		&vessel.CapacityUnit.ArchivedAt,
+		&vessel.WidthInMillimeters,
+		&vessel.LengthInMillimeters,
+		&vessel.HeightInMillimeters,
+		&vessel.Shape,
+		&vessel.CreatedAt,
+		&vessel.LastUpdatedAt,
+		&vessel.ArchivedAt,
 		&x.Name,
 		&x.Notes,
 		&x.BelongsToRecipeStep,
@@ -102,8 +137,8 @@ func (q *Querier) scanRecipeStepVessel(ctx context.Context, scan database.Scanne
 		return nil, 0, 0, observability.PrepareError(err, span, "")
 	}
 
-	if instrument.ID != nil {
-		x.Instrument = converters.ConvertNullableValidInstrumentToValidInstrument(instrument)
+	if vessel.ID != nil {
+		x.Vessel = converters.ConvertNullableValidVesselToValidVessel(vessel)
 	}
 
 	return x, filteredCount, totalCount, nil
@@ -263,7 +298,7 @@ func (q *Querier) GetRecipeStepVessels(ctx context.Context, recipeID, recipeStep
 		}
 	}
 
-	query, args := q.buildListQuery(ctx, "recipe_step_vessels", getRecipeStepVesselsJoins, []string{"valid_instruments.id"}, nil, householdOwnershipColumn, recipeStepVesselsTableColumns, "", false, filter)
+	query, args := q.buildListQuery(ctx, "recipe_step_vessels", getRecipeStepVesselsJoins, []string{"valid_vessels.id", "valid_measurement_units.id"}, nil, householdOwnershipColumn, recipeStepVesselsTableColumns, "", false, filter)
 
 	rows, err := q.getRows(ctx, q.db, "recipe step vessels", query, args)
 	if err != nil {
@@ -330,7 +365,7 @@ func (q *Querier) createRecipeStepVessel(ctx context.Context, querier database.S
 		input.Notes,
 		input.BelongsToRecipeStep,
 		input.RecipeStepProductID,
-		input.InstrumentID,
+		input.VesselID,
 		input.VesselPreposition,
 		input.MinimumQuantity,
 		input.MaximumQuantity,
@@ -355,8 +390,8 @@ func (q *Querier) createRecipeStepVessel(ctx context.Context, querier database.S
 		CreatedAt:            q.currentTime(),
 	}
 
-	if input.InstrumentID != nil {
-		x.Instrument = &types.ValidInstrument{ID: *input.InstrumentID}
+	if input.VesselID != nil {
+		x.Vessel = &types.ValidVessel{ID: *input.VesselID}
 	}
 
 	tracing.AttachRecipeStepVesselIDToSpan(span, x.ID)
@@ -386,8 +421,8 @@ func (q *Querier) UpdateRecipeStepVessel(ctx context.Context, updated *types.Rec
 	tracing.AttachRecipeStepVesselIDToSpan(span, updated.ID)
 
 	var instrumentID *string
-	if updated.Instrument != nil {
-		instrumentID = &updated.Instrument.ID
+	if updated.Vessel != nil {
+		instrumentID = &updated.Vessel.ID
 	}
 
 	args := []any{

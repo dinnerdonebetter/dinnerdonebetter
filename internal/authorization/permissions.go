@@ -53,6 +53,17 @@ const (
 	// ArchiveValidInstrumentsPermission is a household user permission.
 	ArchiveValidInstrumentsPermission Permission = "archive.valid_instruments"
 
+	// CreateValidVesselsPermission is a household user permission.
+	CreateValidVesselsPermission Permission = "create.valid_vessels"
+	// ReadValidVesselsPermission is a household user permission.
+	ReadValidVesselsPermission Permission = "read.valid_vessels"
+	// SearchValidVesselsPermission is a household user permission.
+	SearchValidVesselsPermission Permission = "search.valid_vessels"
+	// UpdateValidVesselsPermission is a household user permission.
+	UpdateValidVesselsPermission Permission = "update.valid_vessels"
+	// ArchiveValidVesselsPermission is a household user permission.
+	ArchiveValidVesselsPermission Permission = "archive.valid_vessels"
+
 	// CreateValidIngredientsPermission is a household user permission.
 	CreateValidIngredientsPermission Permission = "create.valid_ingredients"
 	// ReadValidIngredientsPermission is a household user permission.
@@ -387,6 +398,9 @@ var (
 		CreateValidInstrumentsPermission,
 		UpdateValidInstrumentsPermission,
 		ArchiveValidInstrumentsPermission,
+		CreateValidVesselsPermission,
+		UpdateValidVesselsPermission,
+		ArchiveValidVesselsPermission,
 		CreateValidIngredientsPermission,
 		UpdateValidIngredientsPermission,
 		ArchiveValidIngredientsPermission,
@@ -497,6 +511,8 @@ var (
 		ArchiveRecipeStepProductsPermission,
 		ReadValidInstrumentsPermission,
 		SearchValidInstrumentsPermission,
+		ReadValidVesselsPermission,
+		SearchValidVesselsPermission,
 		ReadValidIngredientsPermission,
 		SearchValidIngredientsPermission,
 		ReadValidIngredientGroupsPermission,

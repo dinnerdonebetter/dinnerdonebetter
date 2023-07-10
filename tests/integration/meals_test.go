@@ -43,7 +43,6 @@ func createMealForTest(ctx context.Context, t *testing.T, adminClient, client *a
 		})
 	}
 
-	t.Log("creating meal")
 	exampleMeal := mealInput
 	if exampleMeal == nil {
 		exampleMeal = fakes.BuildFakeMeal()
@@ -54,8 +53,6 @@ func createMealForTest(ctx context.Context, t *testing.T, adminClient, client *a
 
 	createdMeal, err := client.CreateMeal(ctx, exampleMealInput)
 	require.NoError(t, err)
-
-	t.Logf("meal %q created", createdMeal.ID)
 
 	createdMeal, err = client.GetMeal(ctx, createdMeal.ID)
 	requireNotNilAndNoProblems(t, createdMeal, err)
@@ -74,7 +71,6 @@ func (s *TestSuite) TestMeals_CompleteLifecycle() {
 
 			createdMeal := createMealForTest(ctx, t, testClients.admin, testClients.user, nil)
 
-			t.Log("cleaning up meal")
 			assert.NoError(t, testClients.user.ArchiveMeal(ctx, createdMeal.ID))
 		}
 	})
@@ -88,25 +84,21 @@ func (s *TestSuite) TestMeals_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating prerequisite valid ingredient")
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
 			exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
 			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 
 			require.NoError(t, err)
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
-			t.Logf("valid ingredient %q created", createdValidIngredient.ID)
 
 			createdValidIngredient, err = testClients.user.GetValidIngredient(ctx, createdValidIngredient.ID)
 			requireNotNilAndNoProblems(t, createdValidIngredient, err)
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
-			t.Log("creating prerequisite valid preparation")
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
 			exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
 			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 			require.NoError(t, err)
-			t.Logf("valid preparation %q created", createdValidPreparation.ID)
 
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
@@ -114,7 +106,6 @@ func (s *TestSuite) TestMeals_Listing() {
 			requireNotNilAndNoProblems(t, createdValidPreparation, err)
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
-			t.Log("creating meals")
 			var expected []*types.Meal
 			for i := 0; i < 5; i++ {
 				createdMeal := createMealForTest(ctx, t, testClients.admin, testClients.user, nil)
@@ -133,7 +124,6 @@ func (s *TestSuite) TestMeals_Listing() {
 				len(actual.Data),
 			)
 
-			t.Log("cleaning up")
 			for _, createdMeal := range expected {
 				assert.NoError(t, testClients.user.ArchiveMeal(ctx, createdMeal.ID))
 			}
@@ -149,12 +139,10 @@ func (s *TestSuite) TestMeals_Searching() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating prerequisite valid ingredient")
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
 			exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
 			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			require.NoError(t, err)
-			t.Logf("valid ingredient %q created", createdValidIngredient.ID)
 
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
@@ -162,12 +150,10 @@ func (s *TestSuite) TestMeals_Searching() {
 			requireNotNilAndNoProblems(t, createdValidIngredient, err)
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
-			t.Log("creating prerequisite valid preparation")
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
 			exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
 			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 			require.NoError(t, err)
-			t.Logf("valid preparation %q created", createdValidPreparation.ID)
 
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
@@ -175,7 +161,6 @@ func (s *TestSuite) TestMeals_Searching() {
 			requireNotNilAndNoProblems(t, createdValidPreparation, err)
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
-			t.Log("creating meals")
 			exampleMeal := fakes.BuildFakeMeal()
 			var expected []*types.Meal
 			for i := 0; i < 5; i++ {
@@ -196,7 +181,6 @@ func (s *TestSuite) TestMeals_Searching() {
 				len(actual.Data),
 			)
 
-			t.Log("cleaning up")
 			for _, createdMeal := range expected {
 				assert.NoError(t, testClients.user.ArchiveMeal(ctx, createdMeal.ID))
 			}

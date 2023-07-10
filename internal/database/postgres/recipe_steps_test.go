@@ -748,7 +748,7 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 				vessel.Notes,
 				vessel.BelongsToRecipeStep,
 				vessel.RecipeStepProductID,
-				vessel.InstrumentID,
+				vessel.VesselID,
 				vessel.VesselPreposition,
 				vessel.MinimumQuantity,
 				vessel.MaximumQuantity,

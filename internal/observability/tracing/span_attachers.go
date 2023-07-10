@@ -264,6 +264,11 @@ func AttachValidInstrumentIDToSpan(span trace.Span, id string) {
 	AttachStringToSpan(span, keys.ValidInstrumentIDKey, id)
 }
 
+// AttachValidVesselIDToSpan attaches a valid vessel ID to a given span.
+func AttachValidVesselIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.ValidVesselIDKey, id)
+}
+
 // AttachValidIngredientIDToSpan attaches a valid ingredient ID to a given span.
 func AttachValidIngredientIDToSpan(span trace.Span, id string) {
 	AttachStringToSpan(span, keys.ValidIngredientIDKey, id)

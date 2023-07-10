@@ -62,6 +62,7 @@ var (
 			"UserIngredientPreferences",
 			"RecipeRatings",
 			"HouseholdInstrumentOwnerships",
+			"ValidVessels",
 		),
 	)
 )

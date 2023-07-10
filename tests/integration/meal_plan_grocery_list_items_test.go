@@ -42,28 +42,23 @@ func (s *TestSuite) TestMealPlanGroceryListItems_CompleteLifecycle() {
 
 			createdMealPlan := createMealPlanForTest(ctx, t, nil, testClients.admin, testClients.user)
 
-			t.Log("creating meal plan task")
 			exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
 			exampleMealPlanGroceryListItemInput := converters.ConvertMealPlanGroceryListItemToMealPlanGroceryListItemCreationRequestInput(exampleMealPlanGroceryListItem)
 
-			t.Log("creating valid measurement unit")
 			exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
 			exampleValidMeasurementUnitInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleValidMeasurementUnit)
 			createdValidMeasurementUnit, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
 			require.NoError(t, err)
-			t.Logf("valid measurement unit %q created", createdValidMeasurementUnit.ID)
 			checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
 
 			createdValidMeasurementUnit, err = testClients.admin.GetValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID)
 			requireNotNilAndNoProblems(t, createdValidMeasurementUnit, err)
 			checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
 
-			t.Log("creating valid ingredient")
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
 			exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
 			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			require.NoError(t, err)
-			t.Logf("valid ingredient %q created", createdValidIngredient.ID)
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
 			createdValidIngredient, err = testClients.admin.GetValidIngredient(ctx, createdValidIngredient.ID)
@@ -80,17 +75,14 @@ func (s *TestSuite) TestMealPlanGroceryListItems_CompleteLifecycle() {
 
 			createdMealPlanGroceryListItem, err := testClients.admin.CreateMealPlanGroceryListItem(ctx, createdMealPlan.ID, exampleMealPlanGroceryListItemInput)
 			require.NoError(t, err)
-			t.Logf("meal plan task %q created", createdMealPlanGroceryListItem.ID)
 			checkMealPlanGroceryListItemEquality(t, exampleMealPlanGroceryListItem, createdMealPlanGroceryListItem)
 
-			t.Log("fetching changed meal plan task")
 			actual, err := testClients.admin.GetMealPlanGroceryListItem(ctx, createdMealPlan.ID, createdMealPlanGroceryListItem.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert meal plan task equality
 			checkMealPlanGroceryListItemEquality(t, exampleMealPlanGroceryListItem, actual)
 
-			t.Log("fetching changed meal plan task")
 			actualList, err := testClients.admin.GetMealPlanGroceryListItemsForMealPlan(ctx, createdMealPlan.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 

@@ -33,8 +33,6 @@ func createValidIngredientGroupForTest(t *testing.T, ctx context.Context, creati
 		createdValidIngredients = append(createdValidIngredients, createValidIngredientForTest(t, ctx, adminClient))
 	}
 
-	t.Log("creating valid ingredient group")
-
 	exampleValidIngredientGroup := creationInput
 	if exampleValidIngredientGroup == nil {
 		exampleValidIngredientGroup = fakes.BuildFakeValidIngredientGroup()
@@ -52,7 +50,6 @@ func createValidIngredientGroupForTest(t *testing.T, ctx context.Context, creati
 	createdValidIngredientGroup, err := adminClient.CreateValidIngredientGroup(ctx, exampleValidIngredientGroupInput)
 	require.NoError(t, err)
 
-	t.Logf("valid ingredient group %q created", createdValidIngredientGroup.ID)
 	checkValidIngredientGroupEquality(t, exampleValidIngredientGroup, createdValidIngredientGroup)
 
 	createdValidIngredientGroup, err = adminClient.GetValidIngredientGroup(ctx, createdValidIngredientGroup.ID)
@@ -74,12 +71,10 @@ func (s *TestSuite) TestValidIngredientGroups_CompleteLifecycle() {
 
 			createdValidIngredientGroup := createValidIngredientGroupForTest(t, ctx, nil, testClients.admin)
 
-			t.Log("changing valid ingredient group")
 			newValidIngredientGroup := fakes.BuildFakeValidIngredientGroup()
 			createdValidIngredientGroup.Update(converters.ConvertValidIngredientGroupToValidIngredientGroupUpdateRequestInput(newValidIngredientGroup))
 			assert.NoError(t, testClients.admin.UpdateValidIngredientGroup(ctx, createdValidIngredientGroup))
 
-			t.Log("fetching changed valid ingredient group")
 			actual, err := testClients.admin.GetValidIngredientGroup(ctx, createdValidIngredientGroup.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
@@ -87,7 +82,6 @@ func (s *TestSuite) TestValidIngredientGroups_CompleteLifecycle() {
 			checkValidIngredientGroupEquality(t, newValidIngredientGroup, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			t.Log("cleaning up valid ingredient group")
 			assert.NoError(t, testClients.admin.ArchiveValidIngredientGroup(ctx, createdValidIngredientGroup.ID))
 		}
 	})
@@ -101,7 +95,6 @@ func (s *TestSuite) TestValidIngredientGroups_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating valid ingredient groups")
 			var expected []*types.ValidIngredientGroup
 			for i := 0; i < 5; i++ {
 				createdValidIngredientGroup := createValidIngredientGroupForTest(t, ctx, nil, testClients.admin)
@@ -120,7 +113,6 @@ func (s *TestSuite) TestValidIngredientGroups_Listing() {
 				len(actual.Data),
 			)
 
-			t.Log("cleaning up")
 			for _, createdValidIngredientGroup := range expected {
 				assert.NoError(t, testClients.admin.ArchiveValidIngredientGroup(ctx, createdValidIngredientGroup.ID))
 			}
@@ -136,7 +128,6 @@ func (s *TestSuite) TestValidIngredientGroups_Searching() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating valid ingredient groups")
 			var expected []*types.ValidIngredientGroup
 			exampleValidIngredientGroup := fakes.BuildFakeValidIngredientGroup()
 			exampleValidIngredientGroup.Name = fmt.Sprintf("example_%s", testClients.authType)
@@ -160,7 +151,6 @@ func (s *TestSuite) TestValidIngredientGroups_Searching() {
 				len(actual),
 			)
 
-			t.Log("cleaning up")
 			for _, createdValidIngredientGroup := range expected {
 				assert.NoError(t, testClients.admin.ArchiveValidIngredientGroup(ctx, createdValidIngredientGroup.ID))
 			}

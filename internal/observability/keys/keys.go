@@ -79,6 +79,9 @@ const (
 	// ValidInstrumentIDKey is the standard key for referring to a valid instrument's ID.
 	ValidInstrumentIDKey = "valid_instrument.id"
 
+	// ValidVesselIDKey is the standard key for referring to a valid vessel's ID.
+	ValidVesselIDKey = "valid_vessel.id"
+
 	// ValidIngredientIDKey is the standard key for referring to a valid ingredient's ID.
 	ValidIngredientIDKey = "valid_ingredient.id"
 

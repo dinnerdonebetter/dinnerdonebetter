@@ -1031,7 +1031,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 
 			for j := range step.Vessels {
 				exampleRecipe.Steps[i].Vessels[j].ID = "5"
-				exampleRecipe.Steps[i].Vessels[j].Instrument = &types.ValidInstrument{ID: exampleRecipe.Steps[i].Vessels[j].Instrument.ID}
+				exampleRecipe.Steps[i].Vessels[j].Vessel = &types.ValidVessel{ID: exampleRecipe.Steps[i].Vessels[j].Vessel.ID}
 				exampleRecipe.Steps[i].Vessels[j].BelongsToRecipeStep = "2"
 			}
 
@@ -1150,7 +1150,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 					vessel.Notes,
 					vessel.BelongsToRecipeStep,
 					vessel.RecipeStepProductID,
-					vessel.InstrumentID,
+					vessel.VesselID,
 					vessel.VesselPreposition,
 					vessel.MinimumQuantity,
 					vessel.MaximumQuantity,

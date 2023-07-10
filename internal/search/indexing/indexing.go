@@ -26,6 +26,7 @@ var (
 		search.IndexTypeValidMeasurementUnits,
 		search.IndexTypeValidPreparations,
 		search.IndexTypeValidIngredientStates,
+		search.IndexTypeValidVessels,
 	}
 )
 
@@ -145,7 +146,21 @@ func HandleIndexRequest(ctx context.Context, l logging.Logger, tracerProvider tr
 		}
 
 		toBeIndexed = converters.ConvertValidIngredientStateToValidIngredientStateSearchSubset(validIngredientState)
-		markAsIndexedFunc = func() error { return dataManager.MarkValidIngredientAsIndexed(ctx, indexReq.RowID) }
+		markAsIndexedFunc = func() error { return dataManager.MarkValidIngredientStateAsIndexed(ctx, indexReq.RowID) }
+	case search.IndexTypeValidVessels:
+		im, err = config.ProvideIndex[types.ValidVesselSearchSubset](ctx, logger, tracerProvider, searchConfig, indexReq.IndexType)
+		if err != nil {
+			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
+		}
+
+		var validVessel *types.ValidVessel
+		validVessel, err = dataManager.GetValidVessel(ctx, indexReq.RowID)
+		if err != nil {
+			return observability.PrepareAndLogError(err, logger, span, "getting valid ingredient state")
+		}
+
+		toBeIndexed = converters.ConvertValidVesselToValidVesselSearchSubset(validVessel)
+		markAsIndexedFunc = func() error { return dataManager.MarkValidVesselAsIndexed(ctx, indexReq.RowID) }
 	default:
 		logger.Info("invalid index type specified, exiting")
 		return nil

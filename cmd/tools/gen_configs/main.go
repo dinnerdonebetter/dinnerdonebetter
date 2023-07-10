@@ -64,6 +64,7 @@ import (
 	validmeasurementunitsservice "github.com/dinnerdonebetter/backend/internal/services/validmeasurementunits"
 	validpreparationinstrumentsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparationinstruments"
 	validpreparationsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparations"
+	validvesselsservice "github.com/dinnerdonebetter/backend/internal/services/validvessels"
 	"github.com/dinnerdonebetter/backend/internal/services/vendorproxy"
 	webhooksservice "github.com/dinnerdonebetter/backend/internal/services/webhooks"
 	websocketsservice "github.com/dinnerdonebetter/backend/internal/services/websockets"
@@ -340,6 +341,9 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 			ValidInstruments: validinstrumentsservice.Config{
 				UseSearchService: true,
 			},
+			ValidVessels: validvesselsservice.Config{
+				UseSearchService: true,
+			},
 			ValidMeasurementUnits: validmeasurementunitsservice.Config{
 				UseSearchService: true,
 			},
@@ -450,6 +454,9 @@ func buildDevConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidInstruments: validinstrumentsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			ValidVessels: validvesselsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidIngredients: validingredientsservice.Config{
@@ -702,6 +709,9 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidInstruments: validinstrumentsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			ValidVessels: validvesselsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidIngredients: validingredientsservice.Config{

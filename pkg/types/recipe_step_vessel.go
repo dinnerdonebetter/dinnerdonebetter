@@ -27,29 +27,31 @@ func init() {
 type (
 	// RecipeStepVessel represents a recipe step instrument.
 	RecipeStepVessel struct {
-		_                    struct{}
-		CreatedAt            time.Time        `json:"createdAt"`
-		MaximumQuantity      *uint32          `json:"maximumQuantity"`
-		LastUpdatedAt        *time.Time       `json:"lastUpdatedAt"`
-		ArchivedAt           *time.Time       `json:"archivedAt"`
-		RecipeStepProductID  *string          `json:"recipeStepProductID"`
-		Instrument           *ValidInstrument `json:"instrument"`
-		ID                   string           `json:"id"`
-		Notes                string           `json:"notes"`
-		BelongsToRecipeStep  string           `json:"belongsToRecipeStep"`
-		VesselPreposition    string           `json:"vesselPreposition"`
-		Name                 string           `json:"name"`
-		MinimumQuantity      uint32           `json:"minimumQuantity"`
-		UnavailableAfterStep bool             `json:"unavailableAfterStep"`
+		_ struct{}
+
+		CreatedAt            time.Time    `json:"createdAt"`
+		MaximumQuantity      *uint32      `json:"maximumQuantity"`
+		LastUpdatedAt        *time.Time   `json:"lastUpdatedAt"`
+		ArchivedAt           *time.Time   `json:"archivedAt"`
+		RecipeStepProductID  *string      `json:"recipeStepProductID"`
+		Vessel               *ValidVessel `json:"vessel"`
+		ID                   string       `json:"id"`
+		Notes                string       `json:"notes"`
+		BelongsToRecipeStep  string       `json:"belongsToRecipeStep"`
+		VesselPreposition    string       `json:"vesselPreposition"`
+		Name                 string       `json:"name"`
+		MinimumQuantity      uint32       `json:"minimumQuantity"`
+		UnavailableAfterStep bool         `json:"unavailableAfterStep"`
 	}
 
 	// RecipeStepVesselCreationRequestInput represents what a user could set as input for creating recipe step instruments.
 	RecipeStepVesselCreationRequestInput struct {
-		_                               struct{}
+		_ struct{}
+
 		RecipeStepProductID             *string `json:"recipeStepProductID"`
 		ProductOfRecipeStepIndex        *uint64 `json:"productOfRecipeStepIndex"`
 		ProductOfRecipeStepProductIndex *uint64 `json:"productOfRecipeStepProductIndex"`
-		InstrumentID                    *string `json:"instrumentID"`
+		VesselID                        *string `json:"vesselID"`
 		MaximumQuantity                 *uint32 `json:"maximumQuantity"`
 		Name                            string  `json:"name"`
 		Notes                           string  `json:"notes"`
@@ -60,8 +62,9 @@ type (
 
 	// RecipeStepVesselDatabaseCreationInput represents what a user could set as input for creating recipe step instruments.
 	RecipeStepVesselDatabaseCreationInput struct {
-		_                               struct{}
-		InstrumentID                    *string
+		_ struct{}
+
+		VesselID                        *string
 		RecipeStepProductID             *string
 		ProductOfRecipeStepIndex        *uint64
 		ProductOfRecipeStepProductIndex *uint64
@@ -83,7 +86,7 @@ type (
 		Name                 *string `json:"name,omitempty"`
 		Notes                *string `json:"notes,omitempty"`
 		BelongsToRecipeStep  *string `json:"belongsToRecipeStep,omitempty"`
-		InstrumentID         *string `json:"instrumentID,omitempty"`
+		VesselID             *string `json:"vesselID,omitempty"`
 		MinimumQuantity      *uint32 `json:"minimumQuantity,omitempty"`
 		MaximumQuantity      *uint32 `json:"maximumQuantity,omitempty"`
 		VesselPreposition    *string `json:"vesselPreposition,omitempty"`
@@ -152,8 +155,8 @@ func (x *RecipeStepVessel) Update(input *RecipeStepVesselUpdateRequestInput) {
 		x.Notes = *input.Notes
 	}
 
-	if input.InstrumentID != nil && x.Instrument != nil && *input.InstrumentID != x.Instrument.ID {
-		x.Instrument = &ValidInstrument{ID: *input.InstrumentID}
+	if input.VesselID != nil && x.Vessel != nil && *input.VesselID != x.Vessel.ID {
+		x.Vessel = &ValidVessel{ID: *input.VesselID}
 	}
 }
 

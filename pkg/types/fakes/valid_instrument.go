@@ -19,8 +19,6 @@ func BuildFakeValidInstrument() *types.ValidInstrument {
 		DisplayInSummaryLists:          fake.Bool(),
 		IncludeInGeneratedInstructions: fake.Bool(),
 		UsableForStorage:               fake.Bool(),
-		IsVessel:                       fake.Bool(),
-		IsExclusivelyVessel:            fake.Bool(),
 		CreatedAt:                      BuildFakeTime(),
 	}
 }

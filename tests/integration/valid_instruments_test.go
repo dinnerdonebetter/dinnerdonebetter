@@ -25,8 +25,6 @@ func checkValidInstrumentEquality(t *testing.T, expected, actual *types.ValidIns
 	assert.Equal(t, expected.UsableForStorage, actual.UsableForStorage, "expected UsableForStorage for valid instrument %s to be %v, but it was %v", expected.ID, expected.UsableForStorage, actual.UsableForStorage)
 	assert.Equal(t, expected.DisplayInSummaryLists, actual.DisplayInSummaryLists, "expected DisplayInSummaryLists for valid instrument %s to be %v, but it was %v", expected.ID, expected.DisplayInSummaryLists, actual.DisplayInSummaryLists)
 	assert.Equal(t, expected.IncludeInGeneratedInstructions, actual.IncludeInGeneratedInstructions, "expected IncludeInGeneratedInstructions for valid instrument %s to be %v, but it was %v", expected.ID, expected.IncludeInGeneratedInstructions, actual.IncludeInGeneratedInstructions)
-	assert.Equal(t, expected.IsVessel, actual.IsVessel, "expected IsVessel for valid instrument %s to be %v, but it was %v", expected.ID, expected.IsVessel, actual.IsVessel)
-	assert.Equal(t, expected.IsExclusivelyVessel, actual.IsExclusivelyVessel, "expected IsExclusivelyVessel for valid instrument %s to be %v, but it was %v", expected.ID, expected.IsExclusivelyVessel, actual.IsExclusivelyVessel)
 	assert.Equal(t, expected.Slug, actual.Slug, "expected UsableForStorage for valid instrument %s to be %v, but it was %v", expected.ID, expected.UsableForStorage, actual.UsableForStorage)
 	assert.NotZero(t, actual.CreatedAt)
 }
@@ -34,12 +32,10 @@ func checkValidInstrumentEquality(t *testing.T, expected, actual *types.ValidIns
 func createValidInstrumentForTest(t *testing.T, ctx context.Context, adminClient *apiclient.Client) *types.ValidInstrument {
 	t.Helper()
 
-	t.Log("creating valid instrument")
 	exampleValidInstrument := fakes.BuildFakeValidInstrument()
 	exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
 	createdValidInstrument, err := adminClient.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 	require.NoError(t, err)
-	t.Logf("valid instrument %q created", createdValidInstrument.ID)
 	checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
 
 	createdValidInstrument, err = adminClient.GetValidInstrument(ctx, createdValidInstrument.ID)
@@ -59,12 +55,10 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 
 			createdValidInstrument := createValidInstrumentForTest(t, ctx, testClients.admin)
 
-			t.Log("changing valid instrument")
 			newValidInstrument := fakes.BuildFakeValidInstrument()
 			createdValidInstrument.Update(converters.ConvertValidInstrumentToValidInstrumentUpdateRequestInput(newValidInstrument))
 			assert.NoError(t, testClients.admin.UpdateValidInstrument(ctx, createdValidInstrument))
 
-			t.Log("fetching changed valid instrument")
 			actual, err := testClients.admin.GetValidInstrument(ctx, createdValidInstrument.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
@@ -72,7 +66,6 @@ func (s *TestSuite) TestValidInstruments_CompleteLifecycle() {
 			checkValidInstrumentEquality(t, newValidInstrument, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			t.Log("cleaning up valid instrument")
 			assert.NoError(t, testClients.admin.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
 		}
 	})
@@ -86,19 +79,15 @@ func (s *TestSuite) TestValidInstruments_GetRandom() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating valid instrument")
 			exampleValidInstrument := fakes.BuildFakeValidInstrument()
 			exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
 			createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 			require.NoError(t, err)
-			t.Logf("valid instrument %q created", createdValidInstrument.ID)
 			checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
 
-			t.Log("fetching changed valid instrument")
 			actual, err := testClients.admin.GetRandomValidInstrument(ctx)
 			requireNotNilAndNoProblems(t, actual, err)
 
-			t.Log("cleaning up valid instrument")
 			assert.NoError(t, testClients.admin.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
 		}
 	})
@@ -112,14 +101,12 @@ func (s *TestSuite) TestValidInstruments_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating valid instruments")
 			var expected []*types.ValidInstrument
 			for i := 0; i < 5; i++ {
 				exampleValidInstrument := fakes.BuildFakeValidInstrument()
 				exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
 				createdValidInstrument, createdValidInstrumentErr := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 				require.NoError(t, createdValidInstrumentErr)
-				t.Logf("valid instrument %q created", createdValidInstrument.ID)
 
 				checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
 
@@ -137,7 +124,6 @@ func (s *TestSuite) TestValidInstruments_Listing() {
 				len(actual.Data),
 			)
 
-			t.Log("cleaning up")
 			for _, createdValidInstrument := range expected {
 				assert.NoError(t, testClients.admin.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
 			}
@@ -153,7 +139,6 @@ func (s *TestSuite) TestValidInstruments_Searching() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating valid instruments")
 			var expected []*types.ValidInstrument
 			exampleValidInstrument := fakes.BuildFakeValidInstrument()
 			exampleValidInstrument.Name = fmt.Sprintf("example_%s", testClients.authType)
@@ -163,7 +148,6 @@ func (s *TestSuite) TestValidInstruments_Searching() {
 				exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
 				createdValidInstrument, createdValidInstrumentErr := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 				require.NoError(t, createdValidInstrumentErr)
-				t.Logf("valid instrument %q created", createdValidInstrument.ID)
 				checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
 
 				expected = append(expected, createdValidInstrument)
@@ -182,7 +166,6 @@ func (s *TestSuite) TestValidInstruments_Searching() {
 				len(actual),
 			)
 
-			t.Log("cleaning up")
 			for _, createdValidInstrument := range expected {
 				assert.NoError(t, testClients.admin.ArchiveValidInstrument(ctx, createdValidInstrument.ID))
 			}
