@@ -3,7 +3,7 @@ UPDATE recipe_step_vessels SET
 	notes = $2,
 	belongs_to_recipe_step = $3,
 	recipe_step_product_id = $4,
-	valid_instrument_id = $5,
+	valid_vessel_id = $5,
 	vessel_predicate = $6,
 	minimum_quantity = $7,
     maximum_quantity = $8,

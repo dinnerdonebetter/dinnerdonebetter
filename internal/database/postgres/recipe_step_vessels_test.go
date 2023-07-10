@@ -30,18 +30,36 @@ func buildMockRowsFromRecipeStepVessels(includeCounts bool, filteredCount uint64
 	for _, x := range recipeStepVessels {
 		rowValues := []driver.Value{
 			&x.ID,
-			&x.Instrument.ID,
-			&x.Instrument.Name,
-			&x.Instrument.PluralName,
-			&x.Instrument.Description,
-			&x.Instrument.IconPath,
-			&x.Instrument.UsableForStorage,
-			&x.Instrument.DisplayInSummaryLists,
-			&x.Instrument.IncludeInGeneratedInstructions,
-			&x.Instrument.Slug,
-			&x.Instrument.CreatedAt,
-			&x.Instrument.LastUpdatedAt,
-			&x.Instrument.ArchivedAt,
+			&x.Vessel.ID,
+			&x.Vessel.Name,
+			&x.Vessel.PluralName,
+			&x.Vessel.Description,
+			&x.Vessel.IconPath,
+			&x.Vessel.UsableForStorage,
+			&x.Vessel.Slug,
+			&x.Vessel.DisplayInSummaryLists,
+			&x.Vessel.IncludeInGeneratedInstructions,
+			&x.Vessel.Capacity,
+			&x.Vessel.CapacityUnit.ID,
+			&x.Vessel.CapacityUnit.Name,
+			&x.Vessel.CapacityUnit.Description,
+			&x.Vessel.CapacityUnit.Volumetric,
+			&x.Vessel.CapacityUnit.IconPath,
+			&x.Vessel.CapacityUnit.Universal,
+			&x.Vessel.CapacityUnit.Metric,
+			&x.Vessel.CapacityUnit.Imperial,
+			&x.Vessel.CapacityUnit.Slug,
+			&x.Vessel.CapacityUnit.PluralName,
+			&x.Vessel.CapacityUnit.CreatedAt,
+			&x.Vessel.CapacityUnit.LastUpdatedAt,
+			&x.Vessel.CapacityUnit.ArchivedAt,
+			&x.Vessel.WidthInMillimeters,
+			&x.Vessel.LengthInMillimeters,
+			&x.Vessel.HeightInMillimeters,
+			&x.Vessel.Shape,
+			&x.Vessel.CreatedAt,
+			&x.Vessel.LastUpdatedAt,
+			&x.Vessel.ArchivedAt,
 			&x.Name,
 			&x.Notes,
 			&x.BelongsToRecipeStep,
@@ -352,7 +370,7 @@ func TestQuerier_GetRecipeStepVessels(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_vessels", getRecipeStepVesselsJoins, []string{"valid_instruments.id"}, nil, householdOwnershipColumn, recipeStepVesselsTableColumns, "", false, filter)
+		query, args := c.buildListQuery(ctx, "recipe_step_vessels", getRecipeStepVesselsJoins, []string{"valid_vessels.id", "valid_measurement_units.id"}, nil, householdOwnershipColumn, recipeStepVesselsTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -406,7 +424,7 @@ func TestQuerier_GetRecipeStepVessels(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_vessels", getRecipeStepVesselsJoins, []string{"valid_instruments.id"}, nil, householdOwnershipColumn, recipeStepVesselsTableColumns, "", false, filter)
+		query, args := c.buildListQuery(ctx, "recipe_step_vessels", getRecipeStepVesselsJoins, []string{"valid_vessels.id", "valid_measurement_units.id"}, nil, householdOwnershipColumn, recipeStepVesselsTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -429,7 +447,7 @@ func TestQuerier_GetRecipeStepVessels(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_vessels", getRecipeStepVesselsJoins, []string{"valid_instruments.id"}, nil, householdOwnershipColumn, recipeStepVesselsTableColumns, "", false, filter)
+		query, args := c.buildListQuery(ctx, "recipe_step_vessels", getRecipeStepVesselsJoins, []string{"valid_vessels.id", "valid_measurement_units.id"}, nil, householdOwnershipColumn, recipeStepVesselsTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -452,7 +470,7 @@ func TestQuerier_GetRecipeStepVessels(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		query, args := c.buildListQuery(ctx, "recipe_step_vessels", getRecipeStepVesselsJoins, []string{"valid_instruments.id"}, nil, householdOwnershipColumn, recipeStepVesselsTableColumns, "", false, filter)
+		query, args := c.buildListQuery(ctx, "recipe_step_vessels", getRecipeStepVesselsJoins, []string{"valid_vessels.id", "valid_measurement_units.id"}, nil, householdOwnershipColumn, recipeStepVesselsTableColumns, "", false, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -474,7 +492,7 @@ func TestQuerier_CreateRecipeStepVessel(T *testing.T) {
 
 		exampleRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
 		exampleRecipeStepVessel.ID = "1"
-		exampleRecipeStepVessel.Instrument = &types.ValidInstrument{ID: exampleRecipeStepVessel.ID}
+		exampleRecipeStepVessel.Vessel = &types.ValidVessel{ID: exampleRecipeStepVessel.ID}
 		exampleInput := converters.ConvertRecipeStepVesselToRecipeStepVesselDatabaseCreationInput(exampleRecipeStepVessel)
 
 		ctx := context.Background()
@@ -486,7 +504,7 @@ func TestQuerier_CreateRecipeStepVessel(T *testing.T) {
 			exampleInput.Notes,
 			exampleInput.BelongsToRecipeStep,
 			exampleInput.RecipeStepProductID,
-			exampleInput.InstrumentID,
+			exampleInput.VesselID,
 			exampleInput.VesselPreposition,
 			exampleInput.MinimumQuantity,
 			exampleInput.MaximumQuantity,
@@ -535,7 +553,7 @@ func TestQuerier_CreateRecipeStepVessel(T *testing.T) {
 			exampleInput.Notes,
 			exampleInput.BelongsToRecipeStep,
 			exampleInput.RecipeStepProductID,
-			exampleInput.InstrumentID,
+			exampleInput.VesselID,
 			exampleInput.VesselPreposition,
 			exampleInput.MinimumQuantity,
 			exampleInput.MaximumQuantity,
@@ -575,7 +593,7 @@ func TestQuerier_UpdateRecipeStepVessel(T *testing.T) {
 			exampleRecipeStepVessel.Notes,
 			exampleRecipeStepVessel.BelongsToRecipeStep,
 			exampleRecipeStepVessel.RecipeStepProductID,
-			exampleRecipeStepVessel.Instrument.ID,
+			exampleRecipeStepVessel.Vessel.ID,
 			exampleRecipeStepVessel.VesselPreposition,
 			exampleRecipeStepVessel.MinimumQuantity,
 			exampleRecipeStepVessel.MaximumQuantity,
@@ -615,7 +633,7 @@ func TestQuerier_UpdateRecipeStepVessel(T *testing.T) {
 			exampleRecipeStepVessel.Notes,
 			exampleRecipeStepVessel.BelongsToRecipeStep,
 			exampleRecipeStepVessel.RecipeStepProductID,
-			exampleRecipeStepVessel.Instrument.ID,
+			exampleRecipeStepVessel.Vessel.ID,
 			exampleRecipeStepVessel.VesselPreposition,
 			exampleRecipeStepVessel.MinimumQuantity,
 			exampleRecipeStepVessel.MaximumQuantity,

@@ -59,11 +59,14 @@ func ConvertNullableValidVesselToValidVessel(x *types.NullableValidVessel) *type
 		DisplayInSummaryLists:          *x.DisplayInSummaryLists,
 		IncludeInGeneratedInstructions: *x.IncludeInGeneratedInstructions,
 		Capacity:                       *x.Capacity,
-		CapacityUnit:                   *x.CapacityUnit,
+		CapacityUnit:                   *ConvertNullableValidMeasurementUnitToValidMeasurementUnit(x.CapacityUnit),
 		WidthInMillimeters:             *x.WidthInMillimeters,
 		LengthInMillimeters:            *x.LengthInMillimeters,
 		HeightInMillimeters:            *x.HeightInMillimeters,
 		Shape:                          *x.Shape,
+		CreatedAt:                      *x.CreatedAt,
+		LastUpdatedAt:                  x.LastUpdatedAt,
+		ArchivedAt:                     x.ArchivedAt,
 	}
 }
 

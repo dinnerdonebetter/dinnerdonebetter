@@ -17,7 +17,7 @@ func checkHouseholdInstrumentOwnershipEquality(t *testing.T, expected, actual *t
 
 	assert.NotZero(t, actual.ID)
 	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for household instrument ownership %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
-	assert.Equal(t, expected.Instrument.ID, actual.Instrument.ID, "expected Instrument.ID for household instrument ownership %s to be %v, but it was %v", expected.ID, expected.Instrument.ID, actual.Instrument.ID)
+	assert.Equal(t, expected.Instrument.ID, actual.Instrument.ID, "expected Vessel.ID for household instrument ownership %s to be %v, but it was %v", expected.ID, expected.Instrument.ID, actual.Instrument.ID)
 	assert.Equal(t, expected.Quantity, actual.Quantity, "expected Quantity for household instrument ownership %s to be %v, but it was %v", expected.ID, expected.Quantity, actual.Quantity)
 	assert.NotZero(t, actual.CreatedAt)
 }

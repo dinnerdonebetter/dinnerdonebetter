@@ -150,8 +150,7 @@ querier: queries_lint
 .PHONY: golang_lint
 golang_lint:
 	@docker pull $(LINTER_IMAGE)
-	docker run \
-		--rm \
+	docker run --rm \
 		--volume $(PWD):$(PWD) \
 		--workdir=$(PWD) \
 		$(LINTER_IMAGE) golangci-lint run --config=.golangci.yml --timeout 15m ./...

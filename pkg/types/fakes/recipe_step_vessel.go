@@ -12,7 +12,7 @@ import (
 func BuildFakeRecipeStepVessel() *types.RecipeStepVessel {
 	return &types.RecipeStepVessel{
 		ID:                   BuildFakeID(),
-		Instrument:           BuildFakeValidInstrument(),
+		Vessel:               BuildFakeValidVessel(),
 		Name:                 buildUniqueString(),
 		RecipeStepProductID:  nil,
 		Notes:                buildUniqueString(),

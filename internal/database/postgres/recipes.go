@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	_ "embed"
+	"log"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/identifiers"
@@ -626,13 +627,15 @@ func findCreatedRecipeStepProductsForInstruments(recipe *types.RecipeDatabaseCre
 
 func findCreatedRecipeStepProductsForVessels(recipe *types.RecipeDatabaseCreationInput) {
 	for _, step := range recipe.Steps {
-		for _, instrument := range step.Vessels {
-			if instrument.ProductOfRecipeStepIndex != nil && instrument.ProductOfRecipeStepProductIndex != nil {
-				enoughSteps := len(recipe.Steps) > int(*instrument.ProductOfRecipeStepIndex)
-				enoughRecipeStepProducts := len(recipe.Steps[int(*instrument.ProductOfRecipeStepIndex)].Products) > int(*instrument.ProductOfRecipeStepProductIndex)
-				relevantProductIsVessel := recipe.Steps[*instrument.ProductOfRecipeStepIndex].Products[*instrument.ProductOfRecipeStepProductIndex].Type == types.RecipeStepProductVesselType
+		for _, vessel := range step.Vessels {
+			if vessel.ProductOfRecipeStepIndex != nil && vessel.ProductOfRecipeStepProductIndex != nil {
+				enoughSteps := len(recipe.Steps) > int(*vessel.ProductOfRecipeStepIndex)
+				enoughRecipeStepProducts := len(recipe.Steps[int(*vessel.ProductOfRecipeStepIndex)].Products) > int(*vessel.ProductOfRecipeStepProductIndex)
+				relevantProductIsVessel := recipe.Steps[*vessel.ProductOfRecipeStepIndex].Products[*vessel.ProductOfRecipeStepProductIndex].Type == types.RecipeStepProductVesselType
 				if enoughSteps && enoughRecipeStepProducts && relevantProductIsVessel {
-					instrument.RecipeStepProductID = &recipe.Steps[*instrument.ProductOfRecipeStepIndex].Products[*instrument.ProductOfRecipeStepProductIndex].ID
+					vessel.RecipeStepProductID = &recipe.Steps[*vessel.ProductOfRecipeStepIndex].Products[*vessel.ProductOfRecipeStepProductIndex].ID
+				} else {
+					log.Printf("for recipe step id %q, vessel ID %q, not enough steps: %t, not enough recipe step products: %t, relevant product is vessel: %t", step.ID, vessel.ID, enoughSteps, enoughRecipeStepProducts, relevantProductIsVessel)
 				}
 			}
 		}

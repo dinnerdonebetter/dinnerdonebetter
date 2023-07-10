@@ -118,27 +118,10 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 
 			createdValidIngredients, createdValidPreparation, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
 
-			exampleValidInstrument := fakes.BuildFakeValidInstrument()
-			exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
-			createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
-			require.NoError(t, err)
-			checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
-
-			exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
-			exampleValidMeasurementUnitInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleValidMeasurementUnit)
-			createdValidMeasurementUnit, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
-			require.NoError(t, err)
-			checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
-
-			createdValidMeasurementUnit, err = testClients.admin.GetValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID)
-			requireNotNilAndNoProblems(t, createdValidMeasurementUnit, err)
-			checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
-
-			exampleValidIngredientState := fakes.BuildFakeValidIngredientState()
-			exampleValidIngredientStateInput := converters.ConvertValidIngredientStateToValidIngredientStateCreationRequestInput(exampleValidIngredientState)
-			createdValidIngredientState, err := testClients.admin.CreateValidIngredientState(ctx, exampleValidIngredientStateInput)
-			require.NoError(t, err)
-			checkValidIngredientStateEquality(t, createdValidIngredientState, exampleValidIngredientState)
+			createdValidMeasurementUnit := createValidMeasurementUnitForTest(t, ctx, testClients.admin)
+			createdValidInstrument := createValidInstrumentForTest(t, ctx, testClients.admin)
+			createdValidIngredientState := createValidIngredientStateForTest(t, ctx, testClients.admin)
+			createdValidVessel := createValidVesselForTest(t, ctx, nil, testClients.admin)
 
 			var expected []*types.RecipeStep
 			for i := 0; i < 5; i++ {
@@ -158,7 +141,7 @@ func (s *TestSuite) TestRecipeSteps_Listing() {
 				}
 
 				for j := range exampleRecipeStep.Vessels {
-					exampleRecipeStep.Vessels[j].Instrument = createdValidInstrument
+					exampleRecipeStep.Vessels[j].Vessel = createdValidVessel
 				}
 
 				for j := range exampleRecipeStep.CompletionConditions {

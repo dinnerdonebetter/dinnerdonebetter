@@ -20,7 +20,7 @@ func checkRecipeStepInstrumentEquality(t *testing.T, expected, actual *types.Rec
 	if checkInstrument {
 		checkValidInstrumentEquality(t, expected.Instrument, actual.Instrument)
 	} else {
-		assert.Equal(t, expected.Instrument.ID, actual.Instrument.ID, "expected Instrument.ID for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.Instrument.ID, actual.Instrument.ID)
+		assert.Equal(t, expected.Instrument.ID, actual.Instrument.ID, "expected Vessel.ID for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.Instrument.ID, actual.Instrument.ID)
 	}
 	assert.Equal(t, expected.Name, actual.Name, "expected Name for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.Name, actual.Name)
 	assert.Equal(t, expected.RecipeStepProductID, actual.RecipeStepProductID, "expected RecipeStepProductID for recipe step instrument %s to be %v, but it was %v", expected.ID, expected.RecipeStepProductID, actual.RecipeStepProductID)

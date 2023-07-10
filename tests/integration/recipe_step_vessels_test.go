@@ -19,9 +19,9 @@ func checkRecipeStepVesselEquality(t *testing.T, expected, actual *types.RecipeS
 
 	assert.NotZero(t, actual.ID)
 	if checkInstrument {
-		checkValidInstrumentEquality(t, expected.Instrument, actual.Instrument)
+		checkValidVesselEquality(t, expected.Vessel, actual.Vessel)
 	} else {
-		assert.Equal(t, expected.Instrument.ID, actual.Instrument.ID, "expected Instrument.ID for recipe step vessel %s to be %v, but it was %v", expected.ID, expected.Instrument.ID, actual.Instrument.ID)
+		assert.Equal(t, expected.Vessel.ID, actual.Vessel.ID, "expected Vessel.ID for recipe step vessel %s to be %v, but it was %v", expected.ID, expected.Vessel.ID, actual.Vessel.ID)
 	}
 
 	assert.Equal(t, expected.RecipeStepProductID, actual.RecipeStepProductID, "expected RecipeStepProductID for recipe step vessel %s to be %v, but it was %v", expected.ID, expected.RecipeStepProductID, actual.RecipeStepProductID)
@@ -52,15 +52,11 @@ func (s *TestSuite) TestRecipeStepVessels_CompleteLifecycle() {
 				break
 			}
 
-			exampleValidInstrument := fakes.BuildFakeValidInstrument()
-			exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
-			createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
-			require.NoError(t, err)
-			checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
+			createdValidVessel := createValidVesselForTest(t, ctx, nil, testClients.admin)
 
 			exampleRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
 			exampleRecipeStepVessel.BelongsToRecipeStep = createdRecipeStepID
-			exampleRecipeStepVessel.Instrument = &types.ValidInstrument{ID: createdValidInstrument.ID}
+			exampleRecipeStepVessel.Vessel = &types.ValidVessel{ID: createdValidVessel.ID}
 			exampleRecipeStepVesselInput := converters.ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(exampleRecipeStepVessel)
 			createdRecipeStepVessel, err := testClients.admin.CreateRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepVesselInput)
 			require.NoError(t, err)
@@ -70,8 +66,8 @@ func (s *TestSuite) TestRecipeStepVessels_CompleteLifecycle() {
 			createdRecipeStepVessel, err = testClients.user.GetRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepVessel.ID)
 			requireNotNilAndNoProblems(t, createdRecipeStepVessel, err)
 			require.Equal(t, createdRecipeStepID, createdRecipeStepVessel.BelongsToRecipeStep)
-			exampleRecipeStepVessel.Instrument = createdValidInstrument
-			exampleRecipeStepVessel.Instrument.CreatedAt = createdRecipeStepVessel.Instrument.CreatedAt
+			exampleRecipeStepVessel.Vessel = createdValidVessel
+			exampleRecipeStepVessel.Vessel.CreatedAt = createdRecipeStepVessel.Vessel.CreatedAt
 
 			checkRecipeStepVesselEquality(t, exampleRecipeStepVessel, createdRecipeStepVessel, false)
 
@@ -83,7 +79,7 @@ func (s *TestSuite) TestRecipeStepVessels_CompleteLifecycle() {
 
 			newRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
 			newRecipeStepVessel.BelongsToRecipeStep = createdRecipeStepID
-			newRecipeStepVessel.Instrument = newValidInstrument
+			newRecipeStepVessel.Vessel = createdValidVessel
 			createdRecipeStepVessel.Update(converters.ConvertRecipeStepVesselToRecipeStepVesselUpdateRequestInput(newRecipeStepVessel))
 			assert.NoError(t, testClients.admin.UpdateRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepVessel))
 
@@ -121,11 +117,7 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 			roast, err := testClients.admin.CreateValidPreparation(ctx, roastInput)
 			require.NoError(t, err)
 
-			bakingSheetBase := fakes.BuildFakeValidInstrument()
-			bakingSheetBaseInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(bakingSheetBase)
-			bakingSheet, err := testClients.admin.CreateValidInstrument(ctx, bakingSheetBaseInput)
-			require.NoError(t, err)
-			checkValidInstrumentEquality(t, bakingSheetBase, bakingSheet)
+			bakingSheet := createValidVesselForTest(t, ctx, nil, testClients.admin)
 
 			sheetsBase := fakes.BuildFakeValidMeasurementUnit()
 			sheetsBaseInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(sheetsBase)
@@ -188,7 +180,9 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 						},
 						Vessels: []*types.RecipeStepVessel{
 							{
-								Instrument: bakingSheet,
+								Vessel:          bakingSheet,
+								Name:            "baking sheet",
+								MinimumQuantity: 1,
 							},
 						},
 						Index: 0,
@@ -197,8 +191,8 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 						Preparation: *roast,
 						Vessels: []*types.RecipeStepVessel{
 							{
-								Name:       linedBakingSheetName,
-								Instrument: nil,
+								Name:   linedBakingSheetName,
+								Vessel: nil,
 							},
 						},
 						Products: []*types.RecipeStepProduct{
@@ -243,8 +237,8 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 			t.Log(string(createdJSON))
 
 			recipeStepProductIndex := -1
-			for i, ingredient := range created.Steps[1].Vessels {
-				if ingredient.RecipeStepProductID != nil {
+			for i, vessel := range created.Steps[1].Vessels {
+				if vessel.RecipeStepProductID != nil {
 					recipeStepProductIndex = i
 				}
 			}
@@ -272,17 +266,13 @@ func (s *TestSuite) TestRecipeStepVessels_Listing() {
 				break
 			}
 
-			exampleValidInstrument := fakes.BuildFakeValidInstrument()
-			exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
-			createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
-			require.NoError(t, err)
-			checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
+			createdValidVessel := createValidVesselForTest(t, ctx, nil, testClients.admin)
 
 			var expected []*types.RecipeStepVessel
 			for i := 0; i < 5; i++ {
 				exampleRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
 				exampleRecipeStepVessel.BelongsToRecipeStep = createdRecipeStepID
-				exampleRecipeStepVessel.Instrument = &types.ValidInstrument{ID: createdValidInstrument.ID}
+				exampleRecipeStepVessel.Vessel = &types.ValidVessel{ID: createdValidVessel.ID}
 				exampleRecipeStepVesselInput := converters.ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(exampleRecipeStepVessel)
 				createdRecipeStepVessel, createdRecipeStepVesselErr := testClients.admin.CreateRecipeStepVessel(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepVesselInput)
 				require.NoError(t, createdRecipeStepVesselErr)

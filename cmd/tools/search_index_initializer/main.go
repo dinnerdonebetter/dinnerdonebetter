@@ -51,7 +51,7 @@ func main() {
 		ConnectionDetails: database.ConnectionDetails(os.Getenv("DATABASE_URL")),
 	}
 
-	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, dbConfig, tracing.NewNoopTracerProvider())
+	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, dbConfig, tracerProvider)
 	if dataManager != nil {
 		defer dataManager.Close()
 	}
@@ -274,6 +274,32 @@ func main() {
 					indexRequestChan <- &indexing.IndexRequest{
 						RowID:     x.ID,
 						IndexType: search.IndexTypeValidIngredientStates,
+					}
+					waitGroup.Add(1)
+				}
+
+				thresholdMet = len(data.Data) == 0
+				*filter.Page++
+			}
+		case search.IndexTypeValidVessels:
+			im, err = searchcfg.ProvideIndex[types.ValidVesselSearchSubset](ctx, logger, tracerProvider, cfg, index)
+			if err != nil {
+				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
+				return
+			}
+
+			for !thresholdMet {
+				var data *types.QueryFilteredResult[types.ValidVessel]
+				data, err = dataManager.GetValidVessels(ctx, filter)
+				if err != nil {
+					log.Println(fmt.Errorf("getting ValidVessel data: %w", err))
+					return
+				}
+
+				for _, x := range data.Data {
+					indexRequestChan <- &indexing.IndexRequest{
+						RowID:     x.ID,
+						IndexType: search.IndexTypeValidVessels,
 					}
 					waitGroup.Add(1)
 				}

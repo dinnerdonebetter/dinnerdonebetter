@@ -47,7 +47,7 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 	createdValidMeasurementUnit := createValidMeasurementUnitForTest(t, ctx, adminClient)
 	createdValidInstrument := createValidInstrumentForTest(t, ctx, adminClient)
 	createdValidIngredientState := createValidIngredientStateForTest(t, ctx, adminClient)
-	// createdValidVessel := createValidVesselForTest(t, ctx, nil, adminClient)
+	createdValidVessel := createValidVesselForTest(t, ctx, nil, adminClient)
 
 	exampleRecipe := fakes.BuildFakeRecipe()
 	if recipe != nil {
@@ -77,7 +77,7 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 		}
 
 		for j := range recipeStep.Vessels {
-			recipeStep.Vessels[j].Instrument = createdValidInstrument
+			recipeStep.Vessels[j].Vessel = createdValidVessel
 		}
 
 		for j := range recipeStep.CompletionConditions {

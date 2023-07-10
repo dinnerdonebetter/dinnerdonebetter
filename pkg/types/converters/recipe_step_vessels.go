@@ -8,7 +8,7 @@ import (
 // ConvertRecipeStepVesselToRecipeStepVesselUpdateRequestInput creates a RecipeStepVesselUpdateRequestInput from a RecipeStepVessel.
 func ConvertRecipeStepVesselToRecipeStepVesselUpdateRequestInput(input *types.RecipeStepVessel) *types.RecipeStepVesselUpdateRequestInput {
 	x := &types.RecipeStepVesselUpdateRequestInput{
-		InstrumentID:         &input.Instrument.ID,
+		VesselID:             &input.Vessel.ID,
 		Notes:                &input.Notes,
 		RecipeStepProductID:  input.RecipeStepProductID,
 		Name:                 &input.Name,
@@ -26,7 +26,7 @@ func ConvertRecipeStepVesselToRecipeStepVesselUpdateRequestInput(input *types.Re
 func ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreationInput(input *types.RecipeStepVesselCreationRequestInput) *types.RecipeStepVesselDatabaseCreationInput {
 	x := &types.RecipeStepVesselDatabaseCreationInput{
 		ID:                              identifiers.New(),
-		InstrumentID:                    input.InstrumentID,
+		VesselID:                        input.VesselID,
 		RecipeStepProductID:             input.RecipeStepProductID,
 		Name:                            input.Name,
 		Notes:                           input.Notes,
@@ -44,12 +44,12 @@ func ConvertRecipeStepVesselCreationRequestInputToRecipeStepVesselDatabaseCreati
 // ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput builds a RecipeStepVesselCreationRequestInput from a RecipeStepVessel.
 func ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(input *types.RecipeStepVessel) *types.RecipeStepVesselCreationRequestInput {
 	var instrumentID *string
-	if input.Instrument != nil {
-		instrumentID = &input.Instrument.ID
+	if input.Vessel != nil {
+		instrumentID = &input.Vessel.ID
 	}
 
 	return &types.RecipeStepVesselCreationRequestInput{
-		InstrumentID:         instrumentID,
+		VesselID:             instrumentID,
 		Name:                 input.Name,
 		RecipeStepProductID:  input.RecipeStepProductID,
 		Notes:                input.Notes,
@@ -63,13 +63,13 @@ func ConvertRecipeStepVesselToRecipeStepVesselCreationRequestInput(input *types.
 // ConvertRecipeStepVesselToRecipeStepVesselDatabaseCreationInput builds a RecipeStepVesselDatabaseCreationInput from a RecipeStepVessel.
 func ConvertRecipeStepVesselToRecipeStepVesselDatabaseCreationInput(input *types.RecipeStepVessel) *types.RecipeStepVesselDatabaseCreationInput {
 	var instrumentID *string
-	if input.Instrument != nil {
-		instrumentID = &input.Instrument.ID
+	if input.Vessel != nil {
+		instrumentID = &input.Vessel.ID
 	}
 
 	return &types.RecipeStepVesselDatabaseCreationInput{
 		ID:                   input.ID,
-		InstrumentID:         instrumentID,
+		VesselID:             instrumentID,
 		Name:                 input.Name,
 		RecipeStepProductID:  input.RecipeStepProductID,
 		Notes:                input.Notes,
