@@ -78,19 +78,11 @@ func (c *Client) RequestBuilder() *requests.Builder {
 func NewClient(u *url.URL, tracerProvider tracing.TracerProvider, options ...option) (*Client, error) {
 	l := logging.NewNoopLogger()
 
-	if u == nil {
-		return nil, ErrNoURLProvided
-	}
-
-	if tracerProvider == nil {
-		tracerProvider = tracing.NewNoopTracerProvider()
-	}
-
 	c := &Client{
 		url:                   u,
-		logger:                l,
+		logger:                logging.EnsureLogger(l),
 		debug:                 false,
-		tracer:                tracing.NewTracer(tracerProvider.Tracer(clientName)),
+		tracer:                tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer(clientName)),
 		panicker:              panicking.NewProductionPanicker(),
 		encoder:               encoding.ProvideClientEncoder(l, tracerProvider, encoding.ContentTypeJSON),
 		authedClient:          tracing.BuildTracedHTTPClient(),
@@ -109,6 +101,10 @@ func NewClient(u *url.URL, tracerProvider tracing.TracerProvider, options ...opt
 		if optionSetErr := opt(c); optionSetErr != nil {
 			return nil, optionSetErr
 		}
+	}
+
+	if c.url == nil {
+		return nil, ErrNoURLProvided
 	}
 
 	return c, nil

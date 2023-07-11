@@ -319,7 +319,7 @@ func (s *TestSuite) TestLogin_RequestingPasswordReset() {
 			panic("empty database address provided")
 		}
 
-		db, err := sql.Open("postgres", dbAddr)
+		db, err := sql.Open("pgx", dbAddr)
 		if err != nil {
 			panic(err)
 		}

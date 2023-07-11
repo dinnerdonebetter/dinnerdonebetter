@@ -34,12 +34,12 @@ require (
 	github.com/hashicorp/go-retryablehttp v0.7.4
 	github.com/heimdalr/dag v1.2.1
 	github.com/invopop/jsonschema v0.7.0
+	github.com/jackc/pgx/v5 v5.4.1
 	github.com/jinzhu/copier v0.3.5
 	github.com/keith-turner/ecoji/v2 v2.0.1
 	github.com/kyleconroy/sqlc v1.15.0
 	github.com/launchdarkly/go-sdk-common/v3 v3.0.1
 	github.com/launchdarkly/go-server-sdk/v6 v6.1.0
-	github.com/lib/pq v1.10.9
 	github.com/luna-duclos/instrumentedsql v1.1.3
 	github.com/mailgun/mailgun-go/v4 v4.9.0
 	github.com/mailjet/mailjet-apiv3-go/v4 v4.0.1
@@ -145,6 +145,8 @@ require (
 	github.com/huandu/xstrings v1.4.0 // indirect
 	github.com/iancoleman/orderedmap v0.0.0-20190318233801-ac98e3ecb4b0 // indirect
 	github.com/imdario/mergo v0.3.16 // indirect
+	github.com/jackc/pgpassfile v1.0.0 // indirect
+	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jaytaylor/html2text v0.0.0-20230321000545-74c2419ad056 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
@@ -159,6 +161,7 @@ require (
 	github.com/launchdarkly/go-sdk-events/v2 v2.0.2 // indirect
 	github.com/launchdarkly/go-semver v1.0.2 // indirect
 	github.com/launchdarkly/go-server-sdk-evaluation/v2 v2.0.2 // indirect
+	github.com/lib/pq v1.10.7 // indirect
 	github.com/mailjet/mailjet-apiv3-go/v3 v3.2.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect

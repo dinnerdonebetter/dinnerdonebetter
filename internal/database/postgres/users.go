@@ -16,7 +16,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
-	"github.com/lib/pq"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 var (
@@ -436,9 +436,9 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 	if writeErr := q.performWriteQuery(ctx, tx, "user creation", userCreationQuery, userCreationArgs); writeErr != nil {
 		q.rollbackTransaction(ctx, tx)
 
-		var e *pq.Error
-		if errors.As(writeErr, &e) {
-			if e.Code == postgresDuplicateEntryErrorCode {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			if pgErr.Code == postgresDuplicateEntryErrorCode {
 				return nil, database.ErrUserAlreadyExists
 			}
 		}

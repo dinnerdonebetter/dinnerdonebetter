@@ -34,7 +34,12 @@ func CreateServiceUser(ctx context.Context, address string, in *types.UserRegist
 		return nil, err
 	}
 
-	c, err := apiclient.NewClient(parsedAddress, tracing.NewNoopTracerProvider())
+	c, err := apiclient.NewClient(
+		parsedAddress,
+		tracing.NewNoopTracerProvider(),
+		apiclient.UsingTracingProvider(tracing.NewNoopTracerProvider()),
+		apiclient.UsingURL(address),
+	)
 	if err != nil {
 		return nil, fmt.Errorf("initializing client: %w", err)
 	}

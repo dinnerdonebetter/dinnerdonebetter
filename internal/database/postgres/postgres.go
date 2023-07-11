@@ -21,6 +21,7 @@ import (
 	"github.com/Masterminds/squirrel"
 	"github.com/alexedwards/scs/postgresstore"
 	"github.com/alexedwards/scs/v2"
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 const (
@@ -59,7 +60,7 @@ func ProvideDatabaseClient(
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
 
-	db, err := sql.Open("postgres", string(cfg.ConnectionDetails))
+	db, err := sql.Open("pgx", string(cfg.ConnectionDetails))
 	if err != nil {
 		return nil, fmt.Errorf("connecting to postgres database: %w", err)
 	}

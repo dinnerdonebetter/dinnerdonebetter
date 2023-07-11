@@ -87,6 +87,8 @@ func initializeCookiePoweredClient(ctx context.Context, loginInput *types.UserLo
 		parsedURLToUse,
 		tracing.NewNoopTracerProvider(),
 		apiclient.UsingLogger(logger),
+		apiclient.UsingTracingProvider(tracing.NewNoopTracerProvider()),
+		apiclient.UsingURL(urlToUse),
 		apiclient.UsingLogin(ctx, loginInput),
 	)
 	if err != nil {
@@ -116,6 +118,8 @@ func initializeOAuth2PoweredClient(ctx context.Context, cookie *http.Cookie) (*a
 		parsedURLToUse,
 		tracing.NewNoopTracerProvider(),
 		apiclient.UsingLogger(logger),
+		apiclient.UsingTracingProvider(tracing.NewNoopTracerProvider()),
+		apiclient.UsingURL(urlToUse),
 		apiclient.UsingOAuth2(ctx, createdClientID, createdClientSecret, cookie),
 	)
 	if err != nil {
@@ -134,7 +138,12 @@ func initializeOAuth2PoweredClient(ctx context.Context, cookie *http.Cookie) (*a
 func buildSimpleClient(t *testing.T) *apiclient.Client {
 	t.Helper()
 
-	c, err := apiclient.NewClient(parsedURLToUse, tracing.NewNoopTracerProvider())
+	c, err := apiclient.NewClient(
+		parsedURLToUse,
+		tracing.NewNoopTracerProvider(),
+		apiclient.UsingTracingProvider(tracing.NewNoopTracerProvider()),
+		apiclient.UsingURL(urlToUse),
+	)
 	require.NoError(t, err)
 
 	return c

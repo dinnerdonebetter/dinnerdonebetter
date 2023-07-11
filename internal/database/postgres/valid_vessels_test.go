@@ -471,16 +471,16 @@ func TestQuerier_GetValidVessels(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		joins := []string{
-			"valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id",
+		args := []any{
+			filter.CreatedBefore,
+			filter.CreatedAfter,
+			filter.UpdatedBefore,
+			filter.UpdatedAfter,
+			filter.QueryOffset(),
+			filter.Limit,
 		}
-		groupBys := []string{
-			"valid_vessels.id",
-			"valid_measurement_units.id",
-		}
-		query, args := c.buildListQuery(ctx, validVesselsTable, joins, groupBys, nil, householdOwnershipColumn, validVesselsTableColumns, "", false, filter)
 
-		db.ExpectQuery(formatQueryForSQLMock(query)).
+		db.ExpectQuery(formatQueryForSQLMock(getValidVesselsQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromValidVessels(true, exampleValidVesselList.FilteredCount, exampleValidVesselList.Data...))
 
@@ -494,7 +494,7 @@ func TestQuerier_GetValidVessels(T *testing.T) {
 	T.Run("with nil filter", func(t *testing.T) {
 		t.Parallel()
 
-		filter := (*types.QueryFilter)(nil)
+		filter := types.DefaultQueryFilter()
 		exampleValidVesselList := fakes.BuildFakeValidVesselList()
 		exampleValidVesselList.Page = 0
 		exampleValidVesselList.Limit = 0
@@ -502,20 +502,19 @@ func TestQuerier_GetValidVessels(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		joins := []string{
-			"valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id",
+		args := []any{
+			filter.CreatedBefore,
+			filter.CreatedAfter,
+			filter.UpdatedBefore,
+			filter.UpdatedAfter,
+			filter.QueryOffset(),
+			filter.Limit,
 		}
-		groupBys := []string{
-			"valid_vessels.id",
-			"valid_measurement_units.id",
-		}
-		query, args := c.buildListQuery(ctx, validVesselsTable, joins, groupBys, nil, householdOwnershipColumn, validVesselsTableColumns, "", false, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
+		db.ExpectQuery(formatQueryForSQLMock(getValidVesselsQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromValidVessels(true, exampleValidVesselList.FilteredCount, exampleValidVesselList.Data...))
 
-		actual, err := c.GetValidVessels(ctx, filter)
+		actual, err := c.GetValidVessels(ctx, nil)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleValidVesselList, actual)
 
@@ -530,16 +529,15 @@ func TestQuerier_GetValidVessels(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		joins := []string{
-			"valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id",
+		args := []any{
+			filter.CreatedBefore,
+			filter.CreatedAfter,
+			filter.UpdatedBefore,
+			filter.UpdatedAfter,
+			filter.QueryOffset(),
+			filter.Limit,
 		}
-		groupBys := []string{
-			"valid_vessels.id",
-			"valid_measurement_units.id",
-		}
-		query, args := c.buildListQuery(ctx, validVesselsTable, joins, groupBys, nil, householdOwnershipColumn, validVesselsTableColumns, "", false, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
+		db.ExpectQuery(formatQueryForSQLMock(getValidVesselsQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
@@ -558,16 +556,15 @@ func TestQuerier_GetValidVessels(T *testing.T) {
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		joins := []string{
-			"valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id",
+		args := []any{
+			filter.CreatedBefore,
+			filter.CreatedAfter,
+			filter.UpdatedBefore,
+			filter.UpdatedAfter,
+			filter.QueryOffset(),
+			filter.Limit,
 		}
-		groupBys := []string{
-			"valid_vessels.id",
-			"valid_measurement_units.id",
-		}
-		query, args := c.buildListQuery(ctx, validVesselsTable, joins, groupBys, nil, householdOwnershipColumn, validVesselsTableColumns, "", false, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
+		db.ExpectQuery(formatQueryForSQLMock(getValidVesselsQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildErroneousMockRow())
 
