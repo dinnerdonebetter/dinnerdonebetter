@@ -23,8 +23,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 	"github.com/dinnerdonebetter/backend/internal/server/http/utils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-
-	_ "github.com/lib/pq"
 )
 
 const (
@@ -128,7 +126,7 @@ func init() {
 
 	createdClientID, createdClientSecret = createdClient.ClientID, createdClient.ClientSecret
 
-	db, err := sql.Open("postgres", dbAddr)
+	db, err := sql.Open("pgx", dbAddr)
 	if err != nil {
 		panic(err)
 	}

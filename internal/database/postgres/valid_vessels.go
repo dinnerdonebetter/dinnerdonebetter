@@ -9,6 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
 	"github.com/Masterminds/squirrel"
 )
@@ -60,41 +61,41 @@ func (q *Querier) scanValidVessel(ctx context.Context, scan database.Scanner, in
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	x = &types.ValidVessel{
-		CapacityUnit: &types.ValidMeasurementUnit{},
+	z := &types.NullableValidVessel{
+		CapacityUnit: &types.NullableValidMeasurementUnit{},
 	}
 
 	targetVars := []any{
-		&x.ID,
-		&x.Name,
-		&x.PluralName,
-		&x.Description,
-		&x.IconPath,
-		&x.UsableForStorage,
-		&x.Slug,
-		&x.DisplayInSummaryLists,
-		&x.IncludeInGeneratedInstructions,
-		&x.Capacity,
-		&x.CapacityUnit.ID,
-		&x.CapacityUnit.Name,
-		&x.CapacityUnit.Description,
-		&x.CapacityUnit.Volumetric,
-		&x.CapacityUnit.IconPath,
-		&x.CapacityUnit.Universal,
-		&x.CapacityUnit.Metric,
-		&x.CapacityUnit.Imperial,
-		&x.CapacityUnit.Slug,
-		&x.CapacityUnit.PluralName,
-		&x.CapacityUnit.CreatedAt,
-		&x.CapacityUnit.LastUpdatedAt,
-		&x.CapacityUnit.ArchivedAt,
-		&x.WidthInMillimeters,
-		&x.LengthInMillimeters,
-		&x.HeightInMillimeters,
-		&x.Shape,
-		&x.CreatedAt,
-		&x.LastUpdatedAt,
-		&x.ArchivedAt,
+		&z.ID,
+		&z.Name,
+		&z.PluralName,
+		&z.Description,
+		&z.IconPath,
+		&z.UsableForStorage,
+		&z.Slug,
+		&z.DisplayInSummaryLists,
+		&z.IncludeInGeneratedInstructions,
+		&z.Capacity,
+		&z.CapacityUnit.ID,
+		&z.CapacityUnit.Name,
+		&z.CapacityUnit.Description,
+		&z.CapacityUnit.Volumetric,
+		&z.CapacityUnit.IconPath,
+		&z.CapacityUnit.Universal,
+		&z.CapacityUnit.Metric,
+		&z.CapacityUnit.Imperial,
+		&z.CapacityUnit.Slug,
+		&z.CapacityUnit.PluralName,
+		&z.CapacityUnit.CreatedAt,
+		&z.CapacityUnit.LastUpdatedAt,
+		&z.CapacityUnit.ArchivedAt,
+		&z.WidthInMillimeters,
+		&z.LengthInMillimeters,
+		&z.HeightInMillimeters,
+		&z.Shape,
+		&z.CreatedAt,
+		&z.LastUpdatedAt,
+		&z.ArchivedAt,
 	}
 
 	if includeCounts {
@@ -105,7 +106,9 @@ func (q *Querier) scanValidVessel(ctx context.Context, scan database.Scanner, in
 		return nil, 0, 0, observability.PrepareError(err, span, "")
 	}
 
-	if x.CapacityUnit.ID == "" {
+	x = converters.ConvertNullableValidVesselToValidVessel(z)
+
+	if x.CapacityUnit != nil && x.CapacityUnit.ID == "" {
 		x.CapacityUnit = nil
 	}
 
@@ -286,6 +289,9 @@ func (q *Querier) SearchForValidVesselsForPreparation(ctx context.Context, prepa
 	return validVessels, nil
 }
 
+//go:embed queries/valid_vessels/get_many.sql
+var getValidVesselsQuery string
+
 // GetValidVessels fetches a list of valid instruments from the database that meet a particular filter.
 func (q *Querier) GetValidVessels(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidVessel], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -309,18 +315,16 @@ func (q *Querier) GetValidVessels(ctx context.Context, filter *types.QueryFilter
 		filter = types.DefaultQueryFilter()
 	}
 
-	joins := []string{
-		"valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id",
+	args := []any{
+		filter.CreatedBefore,
+		filter.CreatedAfter,
+		filter.UpdatedBefore,
+		filter.UpdatedAfter,
+		filter.QueryOffset(),
+		filter.Limit,
 	}
 
-	groupBys := []string{
-		"valid_vessels.id",
-		"valid_measurement_units.id",
-	}
-
-	query, args := q.buildListQuery(ctx, validVesselsTable, joins, groupBys, nil, householdOwnershipColumn, validVesselsTableColumns, "", false, filter)
-
-	rows, err := q.getRows(ctx, q.db, "valid instruments", query, args)
+	rows, err := q.getRows(ctx, q.db, "valid instruments", getValidVesselsQuery, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid instruments list retrieval query")
 	}

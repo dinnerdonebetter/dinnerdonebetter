@@ -262,6 +262,11 @@ var (
 			types.ValidPreparationCreationRequestInput{},
 			types.ValidPreparationUpdateRequestInput{},
 		},
+		"validVessels": {
+			types.ValidVessel{},
+			types.ValidVesselCreationRequestInput{},
+			types.ValidVesselUpdateRequestInput{},
+		},
 		"serviceSetting": {
 			types.ServiceSetting{},
 			types.ServiceSettingCreationRequestInput{},

@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/encoding"
@@ -33,6 +34,29 @@ func (c *Client) SetOptions(opts ...option) error {
 	}
 
 	return nil
+}
+
+// UsingURL sets the url on the client.
+func UsingURL(u string) func(*Client) error {
+	return func(c *Client) error {
+		parsed, err := url.Parse(u)
+		if err != nil {
+			return err
+		}
+
+		c.url = parsed
+
+		return nil
+	}
+}
+
+// UsingTracingProvider sets the url on the client.
+func UsingTracingProvider(tracerProvider tracing.TracerProvider) option {
+	return func(c *Client) error {
+		c.tracer = tracing.NewTracer(tracerProvider.Tracer(clientName))
+
+		return nil
+	}
 }
 
 // UsingJSON sets the url on the client.

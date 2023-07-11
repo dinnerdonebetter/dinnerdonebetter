@@ -101,6 +101,9 @@ require (
 	github.com/heimdalr/dag v1.2.1 // indirect
 	github.com/huandu/xstrings v1.4.0 // indirect
 	github.com/imdario/mergo v0.3.16 // indirect
+	github.com/jackc/pgpassfile v1.0.0 // indirect
+	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
+	github.com/jackc/pgx/v5 v5.4.1 // indirect
 	github.com/jaytaylor/html2text v0.0.0-20230321000545-74c2419ad056 // indirect
 	github.com/jinzhu/copier v0.3.5 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
@@ -117,7 +120,6 @@ require (
 	github.com/launchdarkly/go-semver v1.0.2 // indirect
 	github.com/launchdarkly/go-server-sdk-evaluation/v2 v2.0.2 // indirect
 	github.com/launchdarkly/go-server-sdk/v6 v6.1.0 // indirect
-	github.com/lib/pq v1.10.9 // indirect
 	github.com/luna-duclos/instrumentedsql v1.1.3 // indirect
 	github.com/mailgun/mailgun-go/v4 v4.9.0 // indirect
 	github.com/mailjet/mailjet-apiv3-go/v3 v3.2.0 // indirect

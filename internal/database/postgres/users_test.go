@@ -17,7 +17,7 @@ import (
 	testutils "github.com/dinnerdonebetter/backend/tests/utils"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/lib/pq"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -1032,7 +1032,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(userCreationQuery)).
 			WithArgs(interfaceToDriverValue(userCreationArgs)...).
-			WillReturnError(&pq.Error{Code: postgresDuplicateEntryErrorCode})
+			WillReturnError(&pgconn.PgError{Code: postgresDuplicateEntryErrorCode})
 
 		db.ExpectRollback()
 
