@@ -641,7 +641,7 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 		})
 
 		// ValidPreparationVessels
-		validPreparationVesselPath := "valid_preparation_instruments"
+		validPreparationVesselPath := "valid_preparation_vessels"
 		validPreparationVesselsRouteWithPrefix := fmt.Sprintf("/%s", validPreparationVesselPath)
 		v1Router.Route(validPreparationVesselsRouteWithPrefix, func(validPreparationVesselsRouter routing.Router) {
 			validPreparationVesselsRouter.

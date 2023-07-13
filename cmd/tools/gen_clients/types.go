@@ -257,6 +257,11 @@ var (
 			types.ValidPreparationInstrumentCreationRequestInput{},
 			types.ValidPreparationInstrumentUpdateRequestInput{},
 		},
+		"validPreparationVessels": {
+			types.ValidPreparationVessel{},
+			types.ValidPreparationVesselCreationRequestInput{},
+			types.ValidPreparationVesselUpdateRequestInput{},
+		},
 		"validPreparations": {
 			types.ValidPreparation{},
 			types.ValidPreparationCreationRequestInput{},
