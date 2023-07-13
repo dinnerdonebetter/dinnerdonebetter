@@ -199,4 +199,7 @@ const (
 	// OAuth2ClientTokenRefreshKey is the standard key for referring to an OAuth2 client token's refresh.
 	/* #nosec G101 */
 	OAuth2ClientTokenRefreshKey = "oauth2_client_tokens.refresh"
+
+	// ValidPreparationVesselIDKey is the standard key for referring to a valid preparation vessel's ID.
+	ValidPreparationVesselIDKey = "valid_preparation_vessels.id"
 )

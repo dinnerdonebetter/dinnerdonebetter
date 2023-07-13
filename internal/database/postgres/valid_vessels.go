@@ -506,7 +506,7 @@ func (q *Querier) MarkValidVesselAsIndexed(ctx context.Context, validVesselID st
 		validVesselID,
 	}
 
-	if err := q.performWriteQuery(ctx, q.db, "valid instrument last_indexed_at", updateValidVesselLastIndexedAtQuery, args); err != nil {
+	if err := q.performWriteQuery(ctx, q.db, "set valid instrument last_indexed_at", updateValidVesselLastIndexedAtQuery, args); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking valid instrument as indexed")
 	}
 
