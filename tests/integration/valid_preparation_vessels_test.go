@@ -38,16 +38,7 @@ func createValidPreparationVesselForTest(t *testing.T, ctx context.Context, admi
 	requireNotNilAndNoProblems(t, createdValidPreparation, err)
 	checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
-	exampleValidVessel := fakes.BuildFakeValidVessel()
-	exampleValidVesselInput := converters.ConvertValidVesselToValidVesselCreationRequestInput(exampleValidVessel)
-	createdValidVessel, err := adminClient.CreateValidVessel(ctx, exampleValidVesselInput)
-	require.NoError(t, err)
-
-	checkValidVesselEquality(t, exampleValidVessel, createdValidVessel)
-
-	createdValidVessel, err = adminClient.GetValidVessel(ctx, createdValidVessel.ID)
-	requireNotNilAndNoProblems(t, createdValidVessel, err)
-	checkValidVesselEquality(t, exampleValidVessel, createdValidVessel)
+	createdValidVessel := createValidVesselForTest(t, ctx, nil, adminClient)
 
 	exampleValidPreparationVessel := fakes.BuildFakeValidPreparationVessel()
 	exampleValidPreparationVessel.Vessel = *createdValidVessel

@@ -43,7 +43,7 @@ func TestProvideValidPreparationInstrumentsService(T *testing.T) {
 		).Return(func(*http.Request) string { return "" })
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
-			ValidInstrumentIDURIParamKey,
+			ValidVesselIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 
 		cfg := &Config{

@@ -53,7 +53,7 @@ func ProvideService(
 		logger:                                logging.EnsureLogger(logger).WithName(serviceName),
 		validPreparationInstrumentIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(ValidPreparationVesselIDURIParamKey),
 		validPreparationIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(ValidPreparationIDURIParamKey),
-		validInstrumentIDFetcher:              routeParamManager.BuildRouteParamStringIDFetcher(ValidInstrumentIDURIParamKey),
+		validInstrumentIDFetcher:              routeParamManager.BuildRouteParamStringIDFetcher(ValidVesselIDURIParamKey),
 		sessionContextDataFetcher:             authservice.FetchContextFromRequest,
 		validPreparationInstrumentDataManager: validPreparationInstrumentDataManager,
 		dataChangesPublisher:                  dataChangesPublisher,
