@@ -63,6 +63,7 @@ var (
 			"RecipeRatings",
 			"HouseholdInstrumentOwnerships",
 			"ValidVessels",
+			"ValidPreparationVessels",
 		),
 	)
 )

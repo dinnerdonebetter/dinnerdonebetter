@@ -1,4 +1,4 @@
-package validpreparationinstruments
+package validpreparationvessels
 
 import (
 	"database/sql"
@@ -14,15 +14,15 @@ import (
 )
 
 const (
-	// ValidPreparationVesselIDURIParamKey is a standard string that we'll use to refer to valid preparation instrument IDs with.
-	ValidPreparationVesselIDURIParamKey = "validPreparationInstrumentID"
+	// ValidPreparationVesselIDURIParamKey is a standard string that we'll use to refer to valid preparation vessel IDs with.
+	ValidPreparationVesselIDURIParamKey = "validPreparationVesselID"
 	// ValidPreparationIDURIParamKey is a standard string that we'll use to refer to valid preparation IDs with.
 	ValidPreparationIDURIParamKey = "validPreparationID"
-	// ValidInstrumentIDURIParamKey is a standard string that we'll use to refer to valid preparation IDs with.
-	ValidInstrumentIDURIParamKey = "validInstrumentID"
+	// ValidVesselIDURIParamKey is a standard string that we'll use to refer to valid preparation IDs with.
+	ValidVesselIDURIParamKey = "ValidVesselID"
 )
 
-// CreateHandler is our valid preparation instrument creation route.
+// CreateHandler is our valid preparation vessel creation route.
 func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -42,7 +42,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// read parsed input struct from request body.
-	providedInput := new(types.ValidPreparationInstrumentCreationRequestInput)
+	providedInput := new(types.ValidPreparationVesselCreationRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
@@ -55,32 +55,32 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	input := converters.ConvertValidPreparationInstrumentCreationRequestInputToValidPreparationInstrumentDatabaseCreationInput(providedInput)
+	input := converters.ConvertValidPreparationVesselCreationRequestInputToValidPreparationVesselDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
 
-	tracing.AttachValidPreparationInstrumentIDToSpan(span, input.ID)
+	tracing.AttachValidPreparationVesselIDToSpan(span, input.ID)
 
-	validPreparationInstrument, err := s.validPreparationInstrumentDataManager.CreateValidPreparationInstrument(ctx, input)
+	validPreparationVessel, err := s.validPreparationVesselDataManager.CreateValidPreparationVessel(ctx, input)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "creating valid preparation instrument")
+		observability.AcknowledgeError(err, logger, span, "creating valid preparation vessel")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
 	dcm := &types.DataChangeMessage{
-		EventType:                  types.ValidPreparationInstrumentCreatedCustomerEventType,
-		ValidPreparationInstrument: validPreparationInstrument,
-		UserID:                     sessionCtxData.Requester.UserID,
+		EventType:              types.ValidPreparationVesselCreatedCustomerEventType,
+		ValidPreparationVessel: validPreparationVessel,
+		UserID:                 sessionCtxData.Requester.UserID,
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validPreparationInstrument, http.StatusCreated)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validPreparationVessel, http.StatusCreated)
 }
 
-// ReadHandler returns a GET handler that returns a valid preparation instrument.
+// ReadHandler returns a GET handler that returns a valid preparation vessel.
 func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -99,18 +99,18 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	// determine valid preparation instrument ID.
-	validPreparationInstrumentID := s.validPreparationInstrumentIDFetcher(req)
-	tracing.AttachValidPreparationInstrumentIDToSpan(span, validPreparationInstrumentID)
-	logger = logger.WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
+	// determine valid preparation vessel ID.
+	validPreparationVesselID := s.validPreparationVesselIDFetcher(req)
+	tracing.AttachValidPreparationVesselIDToSpan(span, validPreparationVesselID)
+	logger = logger.WithValue(keys.ValidPreparationVesselIDKey, validPreparationVesselID)
 
-	// fetch valid preparation instrument from database.
-	x, err := s.validPreparationInstrumentDataManager.GetValidPreparationInstrument(ctx, validPreparationInstrumentID)
+	// fetch valid preparation vessel from database.
+	x, err := s.validPreparationVesselDataManager.GetValidPreparationVessel(ctx, validPreparationVesselID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving valid preparation instrument")
+		observability.AcknowledgeError(err, logger, span, "retrieving valid preparation vessel")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -144,21 +144,21 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	validPreparationInstruments, err := s.validPreparationInstrumentDataManager.GetValidPreparationInstruments(ctx, filter)
+	validPreparationVessels, err := s.validPreparationVesselDataManager.GetValidPreparationVessels(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		validPreparationInstruments = &types.QueryFilteredResult[types.ValidPreparationInstrument]{Data: []*types.ValidPreparationInstrument{}}
+		validPreparationVessels = &types.QueryFilteredResult[types.ValidPreparationVessel]{Data: []*types.ValidPreparationVessel{}}
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving valid preparation instruments")
+		observability.AcknowledgeError(err, logger, span, "retrieving valid preparation vessels")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, validPreparationInstruments)
+	s.encoderDecoder.RespondWithData(ctx, res, validPreparationVessels)
 }
 
-// UpdateHandler returns a handler that updates a valid preparation instrument.
+// UpdateHandler returns a handler that updates a valid preparation vessel.
 func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -178,7 +178,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// check for parsed input attached to session context data.
-	input := new(types.ValidPreparationInstrumentUpdateRequestInput)
+	input := new(types.ValidPreparationVesselUpdateRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		logger.Error(err, "error encountered decoding request body")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
@@ -191,35 +191,35 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	// determine valid preparation instrument ID.
-	validPreparationInstrumentID := s.validPreparationInstrumentIDFetcher(req)
-	tracing.AttachValidPreparationInstrumentIDToSpan(span, validPreparationInstrumentID)
-	logger = logger.WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
+	// determine valid preparation vessel ID.
+	validPreparationVesselID := s.validPreparationVesselIDFetcher(req)
+	tracing.AttachValidPreparationVesselIDToSpan(span, validPreparationVesselID)
+	logger = logger.WithValue(keys.ValidPreparationVesselIDKey, validPreparationVesselID)
 
-	// fetch valid preparation instrument from database.
-	validPreparationInstrument, err := s.validPreparationInstrumentDataManager.GetValidPreparationInstrument(ctx, validPreparationInstrumentID)
+	// fetch valid preparation vessel from database.
+	validPreparationVessel, err := s.validPreparationVesselDataManager.GetValidPreparationVessel(ctx, validPreparationVesselID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving valid preparation instrument for update")
+		observability.AcknowledgeError(err, logger, span, "retrieving valid preparation vessel for update")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
-	// update the valid preparation instrument.
-	validPreparationInstrument.Update(input)
+	// update the valid preparation vessel.
+	validPreparationVessel.Update(input)
 
-	if err = s.validPreparationInstrumentDataManager.UpdateValidPreparationInstrument(ctx, validPreparationInstrument); err != nil {
-		observability.AcknowledgeError(err, logger, span, "updating valid preparation instrument")
+	if err = s.validPreparationVesselDataManager.UpdateValidPreparationVessel(ctx, validPreparationVessel); err != nil {
+		observability.AcknowledgeError(err, logger, span, "updating valid preparation vessel")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
 	dcm := &types.DataChangeMessage{
-		EventType:                  types.ValidPreparationInstrumentUpdatedCustomerEventType,
-		ValidPreparationInstrument: validPreparationInstrument,
-		UserID:                     sessionCtxData.Requester.UserID,
+		EventType:              types.ValidPreparationVesselUpdatedCustomerEventType,
+		ValidPreparationVessel: validPreparationVessel,
+		UserID:                 sessionCtxData.Requester.UserID,
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
@@ -227,10 +227,10 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, validPreparationInstrument)
+	s.encoderDecoder.RespondWithData(ctx, res, validPreparationVessel)
 }
 
-// ArchiveHandler returns a handler that archives a valid preparation instrument.
+// ArchiveHandler returns a handler that archives a valid preparation vessel.
 func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -249,14 +249,14 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	// determine valid preparation instrument ID.
-	validPreparationInstrumentID := s.validPreparationInstrumentIDFetcher(req)
-	tracing.AttachValidPreparationInstrumentIDToSpan(span, validPreparationInstrumentID)
-	logger = logger.WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
+	// determine valid preparation vessel ID.
+	validPreparationVesselID := s.validPreparationVesselIDFetcher(req)
+	tracing.AttachValidPreparationVesselIDToSpan(span, validPreparationVesselID)
+	logger = logger.WithValue(keys.ValidPreparationVesselIDKey, validPreparationVesselID)
 
-	exists, existenceCheckErr := s.validPreparationInstrumentDataManager.ValidPreparationInstrumentExists(ctx, validPreparationInstrumentID)
+	exists, existenceCheckErr := s.validPreparationVesselDataManager.ValidPreparationVesselExists(ctx, validPreparationVesselID)
 	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
-		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking valid preparation instrument existence")
+		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking valid preparation vessel existence")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
@@ -264,14 +264,14 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if err = s.validPreparationInstrumentDataManager.ArchiveValidPreparationInstrument(ctx, validPreparationInstrumentID); err != nil {
-		observability.AcknowledgeError(err, logger, span, "archiving valid preparation instrument")
+	if err = s.validPreparationVesselDataManager.ArchiveValidPreparationVessel(ctx, validPreparationVesselID); err != nil {
+		observability.AcknowledgeError(err, logger, span, "archiving valid preparation vessel")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
 	dcm := &types.DataChangeMessage{
-		EventType: types.ValidPreparationInstrumentArchivedCustomerEventType,
+		EventType: types.ValidPreparationVesselArchivedCustomerEventType,
 		UserID:    sessionCtxData.Requester.UserID,
 	}
 
@@ -283,7 +283,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	res.WriteHeader(http.StatusNoContent)
 }
 
-// SearchByPreparationHandler is our valid preparation instrument search route for preparations.
+// SearchByPreparationHandler is our valid preparation vessel search route for preparations.
 func (s *service) SearchByPreparationHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -311,18 +311,18 @@ func (s *service) SearchByPreparationHandler(res http.ResponseWriter, req *http.
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	validPreparationInstruments, err := s.validPreparationInstrumentDataManager.GetValidPreparationInstrumentsForPreparation(ctx, validPreparationID, filter)
+	validPreparationVessels, err := s.validPreparationVesselDataManager.GetValidPreparationVesselsForPreparation(ctx, validPreparationID, filter)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "searching for valid preparation instruments")
+		observability.AcknowledgeError(err, logger, span, "searching for valid preparation vessels")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validPreparationInstruments, http.StatusOK)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validPreparationVessels, http.StatusOK)
 }
 
-// SearchByInstrumentHandler is our valid preparation instrument search route for instruments.
-func (s *service) SearchByInstrumentHandler(res http.ResponseWriter, req *http.Request) {
+// SearchByVesselHandler is our valid preparation vessel search route by vessel.
+func (s *service) SearchByVesselHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -336,7 +336,7 @@ func (s *service) SearchByInstrumentHandler(res http.ResponseWriter, req *http.R
 		WithValue(keys.FilterPageKey, filter.Page).
 		WithValue(keys.FilterSortByKey, filter.SortBy)
 
-	validInstrumentID := s.validInstrumentIDFetcher(req)
+	ValidVesselID := s.validVesselIDFetcher(req)
 
 	// determine user ID.
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
@@ -349,12 +349,12 @@ func (s *service) SearchByInstrumentHandler(res http.ResponseWriter, req *http.R
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	validPreparationInstruments, err := s.validPreparationInstrumentDataManager.GetValidPreparationInstrumentsForInstrument(ctx, validInstrumentID, filter)
+	validPreparationVessels, err := s.validPreparationVesselDataManager.GetValidPreparationVesselsForVessel(ctx, ValidVesselID, filter)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "searching for valid preparation instruments")
+		observability.AcknowledgeError(err, logger, span, "searching for valid preparation vessels")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validPreparationInstruments, http.StatusOK)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validPreparationVessels, http.StatusOK)
 }

@@ -40,8 +40,8 @@ func (m *ValidPreparationVesselDataManagerMock) GetValidPreparationVesselsForPre
 }
 
 // GetValidPreparationVesselsForVessel is a mock function.
-func (m *ValidPreparationVesselDataManagerMock) GetValidPreparationVesselsForVessel(ctx context.Context, instrumentID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidPreparationVessel], error) {
-	args := m.Called(ctx, instrumentID, filter)
+func (m *ValidPreparationVesselDataManagerMock) GetValidPreparationVesselsForVessel(ctx context.Context, vesselID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidPreparationVessel], error) {
+	args := m.Called(ctx, vesselID, filter)
 	return args.Get(0).(*types.QueryFilteredResult[types.ValidPreparationVessel]), args.Error(1)
 }
 

@@ -74,6 +74,7 @@ type (
 		recipeRatingsService                   types.RecipeRatingDataService
 		householdInstrumentOwnershipService    types.HouseholdInstrumentOwnershipDataService
 		oauth2ClientsService                   types.OAuth2ClientDataService
+		validPreparationVesselsService         types.ValidPreparationVesselDataService
 		vendorProxyService                     vendorproxy.Service
 		encoder                                encoding.ServerEncoderDecoder
 		logger                                 logging.Logger
@@ -136,6 +137,7 @@ func ProvideHTTPServer(
 	householdInstrumentOwnershipService types.HouseholdInstrumentOwnershipDataService,
 	oauth2ClientDataService types.OAuth2ClientDataService,
 	validVesselsService types.ValidVesselDataService,
+	validPreparationVesselsService types.ValidPreparationVesselDataService,
 ) (Server, error) {
 	srv := &server{
 		config: serverSettings,
@@ -190,12 +192,12 @@ func ProvideHTTPServer(
 		householdInstrumentOwnershipService:    householdInstrumentOwnershipService,
 		oauth2ClientsService:                   oauth2ClientDataService,
 		validVesselsService:                    validVesselsService,
+		validPreparationVesselsService:         validPreparationVesselsService,
 	}
 
 	srv.setupRouter(ctx, router)
 
 	logger.Debug("HTTP server successfully constructed")
-
 	return srv, nil
 }
 

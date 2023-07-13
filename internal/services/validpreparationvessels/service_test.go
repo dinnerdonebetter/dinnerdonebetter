@@ -1,4 +1,4 @@
-package validpreparationinstruments
+package validpreparationvessels
 
 import (
 	"errors"
@@ -18,15 +18,15 @@ import (
 
 func buildTestService() *service {
 	return &service{
-		logger:                                logging.NewNoopLogger(),
-		validPreparationInstrumentDataManager: &mocktypes.ValidPreparationInstrumentDataManagerMock{},
-		validPreparationInstrumentIDFetcher:   func(req *http.Request) string { return "" },
-		encoderDecoder:                        mockencoding.NewMockEncoderDecoder(),
-		tracer:                                tracing.NewTracerForTest("test"),
+		logger:                            logging.NewNoopLogger(),
+		validPreparationVesselDataManager: &mocktypes.ValidPreparationVesselDataManagerMock{},
+		validPreparationVesselIDFetcher:   func(req *http.Request) string { return "" },
+		encoderDecoder:                    mockencoding.NewMockEncoderDecoder(),
+		tracer:                            tracing.NewTracerForTest("test"),
 	}
 }
 
-func TestProvideValidPreparationInstrumentsService(T *testing.T) {
+func TestProvideValidPreparationVesselsService(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -43,7 +43,7 @@ func TestProvideValidPreparationInstrumentsService(T *testing.T) {
 		).Return(func(*http.Request) string { return "" })
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
-			ValidInstrumentIDURIParamKey,
+			ValidVesselIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 
 		cfg := &Config{
@@ -56,7 +56,7 @@ func TestProvideValidPreparationInstrumentsService(T *testing.T) {
 		s, err := ProvideService(
 			logging.NewNoopLogger(),
 			cfg,
-			&mocktypes.ValidPreparationInstrumentDataManagerMock{},
+			&mocktypes.ValidPreparationVesselDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
@@ -82,7 +82,7 @@ func TestProvideValidPreparationInstrumentsService(T *testing.T) {
 		s, err := ProvideService(
 			logging.NewNoopLogger(),
 			cfg,
-			&mocktypes.ValidPreparationInstrumentDataManagerMock{},
+			&mocktypes.ValidPreparationVesselDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,

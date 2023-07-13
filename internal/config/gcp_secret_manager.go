@@ -26,6 +26,8 @@ import (
 )
 
 const (
+	dataChangesTopicAccessName           = "data_changes_topic_name"
+	googleCloudCloudSQLSocket            = "/cloudsql"
 	gcpConfigFilePathEnvVarKey           = "CONFIGURATION_FILEPATH"
 	gcpPortEnvVarKey                     = "PORT"
 	gcpDatabaseSocketDirEnvVarKey        = "DB_SOCKET_DIR"
@@ -45,9 +47,6 @@ const (
 	gcpSendgridTokenEnvVarKey = "DINNER_DONE_BETTER_SENDGRID_API_TOKEN"
 	/* #nosec G101 */
 	gcpSegmentTokenEnvVarKey = "DINNER_DONE_BETTER_SEGMENT_API_TOKEN"
-
-	dataChangesTopicAccessName = "data_changes_topic_name"
-	googleCloudCloudSQLSocket  = "/cloudsql"
 )
 
 // SecretVersionAccessor is an interface abstraction of the GCP Secret Manager API call we use during config hydration.
@@ -159,6 +158,7 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client
 	cfg.Services.RecipeRatings.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.HouseholdInstrumentOwnerships.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.ValidVessels.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.ValidPreparationVessels.DataChangesTopicName = dataChangesTopicName
 
 	if validationErr := cfg.ValidateWithContext(ctx, true); validationErr != nil {
 		return nil, validationErr

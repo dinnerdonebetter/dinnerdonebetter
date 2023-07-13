@@ -109,5 +109,6 @@ type (
 		types.OAuth2ClientDataManager
 		types.OAuth2ClientTokenDataManager
 		types.ValidVesselDataManager
+		types.ValidPreparationVesselDataManager
 	}
 )

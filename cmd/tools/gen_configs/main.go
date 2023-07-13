@@ -64,6 +64,7 @@ import (
 	validmeasurementunitsservice "github.com/dinnerdonebetter/backend/internal/services/validmeasurementunits"
 	validpreparationinstrumentsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparationinstruments"
 	validpreparationsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparations"
+	validpreparationvesselsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparationvessels"
 	validvesselsservice "github.com/dinnerdonebetter/backend/internal/services/validvessels"
 	"github.com/dinnerdonebetter/backend/internal/services/vendorproxy"
 	webhooksservice "github.com/dinnerdonebetter/backend/internal/services/webhooks"
@@ -459,6 +460,9 @@ func buildDevConfig() *config.InstanceConfig {
 			ValidVessels: validvesselsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
+			ValidPreparationVessels: validpreparationvesselsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
 			ValidIngredients: validingredientsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
@@ -712,6 +716,9 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidVessels: validvesselsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			ValidPreparationVessels: validpreparationvesselsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidIngredients: validingredientsservice.Config{

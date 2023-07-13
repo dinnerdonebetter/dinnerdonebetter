@@ -159,6 +159,17 @@ const (
 	// ArchiveValidPreparationInstrumentsPermission is a household user permission.
 	ArchiveValidPreparationInstrumentsPermission Permission = "archive.valid_preparation_instruments"
 
+	// CreateValidPreparationVesselsPermission is a household user permission.
+	CreateValidPreparationVesselsPermission Permission = "create.valid_preparation_vessels"
+	// ReadValidPreparationVesselsPermission is a household user permission.
+	ReadValidPreparationVesselsPermission Permission = "read.valid_preparation_vessels"
+	// SearchValidPreparationVesselsPermission is a household user permission.
+	SearchValidPreparationVesselsPermission Permission = "search.valid_preparation_vessels"
+	// UpdateValidPreparationVesselsPermission is a household user permission.
+	UpdateValidPreparationVesselsPermission Permission = "update.valid_preparation_vessels"
+	// ArchiveValidPreparationVesselsPermission is a household user permission.
+	ArchiveValidPreparationVesselsPermission Permission = "archive.valid_preparation_vessels"
+
 	// CreateValidIngredientMeasurementUnitsPermission is a household user permission.
 	CreateValidIngredientMeasurementUnitsPermission Permission = "create.valid_ingredient_measurement_units"
 	// ReadValidIngredientMeasurementUnitsPermission is a household user permission.
@@ -425,6 +436,9 @@ var (
 		CreateValidPreparationInstrumentsPermission,
 		UpdateValidPreparationInstrumentsPermission,
 		ArchiveValidPreparationInstrumentsPermission,
+		CreateValidPreparationVesselsPermission,
+		UpdateValidPreparationVesselsPermission,
+		ArchiveValidPreparationVesselsPermission,
 		CreateValidIngredientMeasurementUnitsPermission,
 		UpdateValidIngredientMeasurementUnitsPermission,
 		ArchiveValidIngredientMeasurementUnitsPermission,
@@ -528,6 +542,8 @@ var (
 		SearchValidIngredientStateIngredientsPermission,
 		ReadValidPreparationInstrumentsPermission,
 		SearchValidPreparationInstrumentsPermission,
+		ReadValidPreparationVesselsPermission,
+		SearchValidPreparationVesselsPermission,
 		ReadValidIngredientMeasurementUnitsPermission,
 		SearchValidIngredientMeasurementUnitsPermission,
 		ReadMealPlansPermission,

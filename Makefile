@@ -269,38 +269,3 @@ start_dev_cloud_sql_proxy:
 
 .PHONY: proxy_dev_db
 proxy_dev_db: start_dev_cloud_sql_proxy
-
-.PHONY: twirp  # I'm right here
-twirp: clean_protobufs protobufs_typescript protobufs_golang
-
-.PHONY: clean_protobufs
-clean_protobufs:
-	rm -rf internal/proto
-
-.PHONY: protobufs_golang
-protobufs_golang: $(ARTIFACTS_DIR)
-	protoc --go_out=$(ARTIFACTS_DIR)/ \
-		--twirp_out=$(ARTIFACTS_DIR)/ \
-		--go_opt=paths=import \
-		--proto_path protobufs \
-		--experimental_allow_proto3_optional \
-	 	protobufs/*.proto
-	mv $(ARTIFACTS_DIR)/$(THIS)/internal/proto internal/
-	rm -rf $(ARTIFACTS_DIR)/github.com
-
-## Required for the typescript portions of this to work:
-# npm install -g ts-protobufs twirp-ts @protobuf-ts/plugin@next
-
-.PHONY: protobufs_typescript
-protobufs_typescript: $(ARTIFACTS_DIR)
-	protoc \
-		-I ./protobufs \
-		--plugin=protoc-gen-ts_proto=`which protoc-gen-ts_proto` \
-		--plugin=protoc-gen-twirp_ts=`which protoc-gen-twirp_ts` \
-		--ts_proto_opt=esModuleInterop=true \
-		--ts_proto_opt=outputClientImpl=false \
-		--ts_proto_out=$(ARTIFACTS_DIR) \
-		--twirp_ts_opt="ts_proto" \
-		--twirp_ts_out=$(ARTIFACTS_DIR) \
-		--experimental_allow_proto3_optional \
-		./protobufs/*.proto

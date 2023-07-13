@@ -50,6 +50,7 @@ var (
 		ProvideHouseholdInstrumentOwnershipDataManager,
 		ProvideOAuth2ClientDataManager,
 		ProvideValidVesselDataManager,
+		ProvideValidPreparationVesselDataManager,
 	)
 )
 
@@ -255,5 +256,10 @@ func ProvideOAuth2ClientDataManager(db DataManager) types.OAuth2ClientDataManage
 
 // ProvideValidVesselDataManager is an arbitrary function for dependency injection's sake.
 func ProvideValidVesselDataManager(db DataManager) types.ValidVesselDataManager {
+	return db
+}
+
+// ProvideValidPreparationVesselDataManager is an arbitrary function for dependency injection's sake.
+func ProvideValidPreparationVesselDataManager(db DataManager) types.ValidPreparationVesselDataManager {
 	return db
 }

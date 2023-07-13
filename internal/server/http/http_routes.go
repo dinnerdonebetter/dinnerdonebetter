@@ -626,7 +626,7 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 					Get(root, s.validPreparationInstrumentsService.SearchByInstrumentHandler)
 			})
 
-			validPreparationInstrumentIDRouteParam := buildURLVarChunk(validpreparationinstrumentsservice.ValidPreparationInstrumentIDURIParamKey, "")
+			validPreparationInstrumentIDRouteParam := buildURLVarChunk(validpreparationinstrumentsservice.ValidPreparationVesselIDURIParamKey, "")
 			validPreparationInstrumentsRouter.Route(validPreparationInstrumentIDRouteParam, func(singleValidPreparationInstrumentRouter routing.Router) {
 				singleValidPreparationInstrumentRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidPreparationInstrumentsPermission)).
@@ -637,6 +637,45 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 				singleValidPreparationInstrumentRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidPreparationInstrumentsPermission)).
 					Delete(root, s.validPreparationInstrumentsService.ArchiveHandler)
+			})
+		})
+
+		// ValidPreparationVessels
+		validPreparationVesselPath := "valid_preparation_instruments"
+		validPreparationVesselsRouteWithPrefix := fmt.Sprintf("/%s", validPreparationVesselPath)
+		v1Router.Route(validPreparationVesselsRouteWithPrefix, func(validPreparationVesselsRouter routing.Router) {
+			validPreparationVesselsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateValidPreparationVesselsPermission)).
+				Post(root, s.validPreparationVesselsService.CreateHandler)
+			validPreparationVesselsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidPreparationVesselsPermission)).
+				Get(root, s.validPreparationVesselsService.ListHandler)
+
+			validPreparationVesselsByPreparationIDRouteParam := fmt.Sprintf("/by_preparation%s", buildURLVarChunk(validpreparationinstrumentsservice.ValidPreparationIDURIParamKey, ""))
+			validPreparationVesselsRouter.Route(validPreparationVesselsByPreparationIDRouteParam, func(byValidPreparationIDRouter routing.Router) {
+				byValidPreparationIDRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidPreparationVesselsPermission)).
+					Get(root, s.validPreparationVesselsService.SearchByPreparationHandler)
+			})
+
+			validPreparationVesselsByInstrumentIDRouteParam := fmt.Sprintf("/by_vessel%s", buildURLVarChunk(validpreparationinstrumentsservice.ValidInstrumentIDURIParamKey, ""))
+			validPreparationVesselsRouter.Route(validPreparationVesselsByInstrumentIDRouteParam, func(byValidPreparationIDRouter routing.Router) {
+				byValidPreparationIDRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidPreparationVesselsPermission)).
+					Get(root, s.validPreparationVesselsService.SearchByVesselHandler)
+			})
+
+			validPreparationVesselIDRouteParam := buildURLVarChunk(validpreparationinstrumentsservice.ValidPreparationVesselIDURIParamKey, "")
+			validPreparationVesselsRouter.Route(validPreparationVesselIDRouteParam, func(singleValidPreparationVesselRouter routing.Router) {
+				singleValidPreparationVesselRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidPreparationVesselsPermission)).
+					Get(root, s.validPreparationVesselsService.ReadHandler)
+				singleValidPreparationVesselRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidPreparationVesselsPermission)).
+					Put(root, s.validPreparationVesselsService.UpdateHandler)
+				singleValidPreparationVesselRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidPreparationVesselsPermission)).
+					Delete(root, s.validPreparationVesselsService.ArchiveHandler)
 			})
 		})
 
