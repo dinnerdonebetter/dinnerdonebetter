@@ -585,6 +585,8 @@ func TestQuerier_buildGetValidPreparationVesselsRestrictedByIDsQuery(T *testing.
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
