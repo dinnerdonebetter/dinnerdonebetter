@@ -94,24 +94,19 @@ func (q *Querier) scanRecipePrepTasksWithSteps(ctx context.Context, rows databas
 			return nil, observability.PrepareError(err, span, "scanning complete recipe prep task")
 		}
 
-		if x.ID == "" {
-			taskSteps := x.TaskSteps
-			x = recipePrepTask
-			x.TaskSteps = taskSteps
-		}
-
-		if x.ID != recipePrepTask.ID {
-			recipePrepTasks = append(recipePrepTasks, x)
-			// TODO: should this be `x = recipePrepTask`?
-			x = &types.RecipePrepTask{}
+		if recipePrepTask.ID != x.ID {
+			if x.ID == "" {
+				x = recipePrepTask
+			} else {
+				recipePrepTasks = append(recipePrepTasks, x)
+				x = recipePrepTask
+			}
 		}
 
 		x.TaskSteps = append(x.TaskSteps, recipePrepTaskRecipeStep)
 	}
 
-	if x.ID != "" {
-		recipePrepTasks = append(recipePrepTasks, x)
-	}
+	recipePrepTasks = append(recipePrepTasks, x)
 
 	return recipePrepTasks, nil
 }
