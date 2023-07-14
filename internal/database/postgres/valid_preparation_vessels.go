@@ -17,6 +17,7 @@ import (
 const (
 	validInstrumentsOnValidPreparationVesselsJoinClause  = "valid_vessels ON valid_preparation_vessels.valid_vessel_id = valid_vessels.id"
 	validPreparationsOnValidPreparationVesselsJoinClause = "valid_preparations ON valid_preparation_vessels.valid_preparation_id = valid_preparations.id"
+	validMeasurementUnitsOnValidVesselsJoinClause        = "valid_measurement_units ON valid_vessels.capacity_unit = valid_measurement_units.id"
 )
 
 var (
@@ -86,7 +87,7 @@ var (
 	}
 )
 
-// scanValidPreparationVessel takes a database Scanner (i.e. *sql.Row) and scans the result into a valid ingredient preparation struct.
+// scanValidPreparationVessel takes a database Scanner (i.e. *sql.Row) and scans the result into a valid preparation vessel struct.
 func (q *Querier) scanValidPreparationVessel(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.ValidPreparationVessel, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -172,7 +173,7 @@ func (q *Querier) scanValidPreparationVessel(ctx context.Context, scan database.
 	return x, filteredCount, totalCount, nil
 }
 
-// scanValidPreparationVessels takes some database rows and turns them into a slice of valid ingredient preparations.
+// scanValidPreparationVessels takes some database rows and turns them into a slice of valid preparation vessels.
 func (q *Querier) scanValidPreparationVessels(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validPreparationVessels []*types.ValidPreparationVessel, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -206,7 +207,7 @@ func (q *Querier) scanValidPreparationVessels(ctx context.Context, rows database
 //go:embed queries/valid_preparation_vessels/exists.sql
 var validPreparationVesselExistenceQuery string
 
-// ValidPreparationVesselExists fetches whether a valid ingredient preparation exists from the database.
+// ValidPreparationVesselExists fetches whether a valid preparation vessel exists from the database.
 func (q *Querier) ValidPreparationVesselExists(ctx context.Context, validPreparationVesselID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -222,7 +223,7 @@ func (q *Querier) ValidPreparationVesselExists(ctx context.Context, validPrepara
 
 	result, err := q.performBooleanQuery(ctx, q.db, validPreparationVesselExistenceQuery, args)
 	if err != nil {
-		return false, observability.PrepareError(err, span, "performing valid ingredient preparation existence check")
+		return false, observability.PrepareError(err, span, "performing valid preparation vessel existence check")
 	}
 
 	return result, nil
@@ -231,7 +232,7 @@ func (q *Querier) ValidPreparationVesselExists(ctx context.Context, validPrepara
 //go:embed queries/valid_preparation_vessels/get_one.sql
 var getValidPreparationVesselQuery string
 
-// GetValidPreparationVessel fetches a valid ingredient preparation from the database.
+// GetValidPreparationVessel fetches a valid preparation vessel from the database.
 func (q *Querier) GetValidPreparationVessel(ctx context.Context, validPreparationVesselID string) (*types.ValidPreparationVessel, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -255,7 +256,7 @@ func (q *Querier) GetValidPreparationVessel(ctx context.Context, validPreparatio
 	return validPreparationVessel, nil
 }
 
-// GetValidPreparationVessels fetches a list of valid ingredient preparations from the database that meet a particular filter.
+// GetValidPreparationVessels fetches a list of valid preparation vessels from the database that meet a particular filter.
 func (q *Querier) GetValidPreparationVessels(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidPreparationVessel], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -276,21 +277,23 @@ func (q *Querier) GetValidPreparationVessels(ctx context.Context, filter *types.
 	joins := []string{
 		validInstrumentsOnValidPreparationVesselsJoinClause,
 		validPreparationsOnValidPreparationVesselsJoinClause,
+		validMeasurementUnitsOnValidVesselsJoinClause,
 	}
 	groupBys := []string{
 		"valid_preparations.id",
 		"valid_vessels.id",
 		"valid_preparation_vessels.id",
+		"valid_measurement_units.id",
 	}
 	query, args := q.buildListQuery(ctx, "valid_preparation_vessels", joins, groupBys, nil, householdOwnershipColumn, fullValidPreparationVesselsTableColumns, "", false, filter)
 
 	rows, err := q.getRows(ctx, q.db, "valid preparation instruments", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing valid ingredient preparations list retrieval query")
+		return nil, observability.PrepareError(err, span, "executing valid preparation vessels list retrieval query")
 	}
 
 	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidPreparationVessels(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning valid ingredient preparations")
+		return nil, observability.PrepareError(err, span, "scanning valid preparation vessels")
 	}
 
 	return x, nil
@@ -304,6 +307,7 @@ func (q *Querier) buildGetValidPreparationVesselsRestrictedByIDsQuery(ctx contex
 		From("valid_preparation_vessels").
 		Join(validInstrumentsOnValidPreparationVesselsJoinClause).
 		Join(validPreparationsOnValidPreparationVesselsJoinClause).
+		LeftJoin(validMeasurementUnitsOnValidVesselsJoinClause).
 		Where(squirrel.Eq{
 			fmt.Sprintf("valid_preparation_vessels.%s", column): ids,
 			"valid_preparation_vessels.archived_at":             nil,
@@ -320,7 +324,7 @@ func (q *Querier) buildGetValidPreparationVesselsWithPreparationIDsQuery(ctx con
 	return q.buildGetValidPreparationVesselsRestrictedByIDsQuery(ctx, "valid_preparation_id", limit, ids)
 }
 
-// GetValidPreparationVesselsForPreparation fetches a list of valid ingredient preparations from the database that meet a particular filter.
+// GetValidPreparationVesselsForPreparation fetches a list of valid preparation vessels from the database that meet a particular filter.
 func (q *Querier) GetValidPreparationVesselsForPreparation(ctx context.Context, preparationID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidPreparationVessel], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -352,21 +356,21 @@ func (q *Querier) GetValidPreparationVesselsForPreparation(ctx context.Context, 
 
 	rows, err := q.getRows(ctx, q.db, "valid preparation instruments for preparation", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing valid ingredient preparations list retrieval query")
+		return nil, observability.PrepareError(err, span, "executing valid preparation vessels list retrieval query")
 	}
 
 	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidPreparationVessels(ctx, rows, false); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning valid ingredient preparations")
+		return nil, observability.PrepareError(err, span, "scanning valid preparation vessels")
 	}
 
 	return x, nil
 }
 
-func (q *Querier) buildGetValidPreparationVesselsWithInstrumentIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []any) {
+func (q *Querier) buildGetValidPreparationVesselsWithVesselIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []any) {
 	return q.buildGetValidPreparationVesselsRestrictedByIDsQuery(ctx, "valid_vessel_id", limit, ids)
 }
 
-// GetValidPreparationVesselsForVessel fetches a list of valid ingredient preparations from the database that meet a particular filter.
+// GetValidPreparationVesselsForVessel fetches a list of valid preparation vessels from the database that meet a particular filter.
 func (q *Querier) GetValidPreparationVesselsForVessel(ctx context.Context, vesselID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidPreparationVessel], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -394,15 +398,17 @@ func (q *Querier) GetValidPreparationVesselsForVessel(ctx context.Context, vesse
 	}
 
 	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
-	query, args := q.buildGetValidPreparationVesselsWithInstrumentIDsQuery(ctx, x.Limit, []string{vesselID})
+	query, args := q.buildGetValidPreparationVesselsWithVesselIDsQuery(ctx, x.Limit, []string{vesselID})
+
+	q.logger.WithValue("query", query).Info("querying")
 
 	rows, err := q.getRows(ctx, q.db, "valid preparation instruments for instrument", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing valid ingredient preparations list retrieval query")
+		return nil, observability.PrepareError(err, span, "executing valid preparation vessels list retrieval query")
 	}
 
 	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidPreparationVessels(ctx, rows, false); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning valid ingredient preparations")
+		return nil, observability.PrepareError(err, span, "scanning valid preparation vessels")
 	}
 
 	return x, nil
@@ -411,7 +417,7 @@ func (q *Querier) GetValidPreparationVesselsForVessel(ctx context.Context, vesse
 //go:embed queries/valid_preparation_vessels/create.sql
 var validPreparationVesselCreationQuery string
 
-// CreateValidPreparationVessel creates a valid ingredient preparation in the database.
+// CreateValidPreparationVessel creates a valid preparation vessel in the database.
 func (q *Querier) CreateValidPreparationVessel(ctx context.Context, input *types.ValidPreparationVesselDatabaseCreationInput) (*types.ValidPreparationVessel, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -429,9 +435,9 @@ func (q *Querier) CreateValidPreparationVessel(ctx context.Context, input *types
 		input.ValidVesselID,
 	}
 
-	// create the valid ingredient preparation.
-	if err := q.performWriteQuery(ctx, q.db, "valid ingredient preparation creation", validPreparationVesselCreationQuery, args); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "performing valid ingredient preparation creation query")
+	// create the valid preparation vessel.
+	if err := q.performWriteQuery(ctx, q.db, "valid preparation vessel creation", validPreparationVesselCreationQuery, args); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing valid preparation vessel creation query")
 	}
 
 	x := &types.ValidPreparationVessel{
@@ -443,7 +449,7 @@ func (q *Querier) CreateValidPreparationVessel(ctx context.Context, input *types
 	}
 
 	tracing.AttachValidPreparationVesselIDToSpan(span, x.ID)
-	logger.Info("valid ingredient preparation created")
+	logger.Info("valid preparation vessel created")
 
 	return x, nil
 }
@@ -451,7 +457,7 @@ func (q *Querier) CreateValidPreparationVessel(ctx context.Context, input *types
 //go:embed queries/valid_preparation_vessels/update.sql
 var updateValidPreparationVesselQuery string
 
-// UpdateValidPreparationVessel updates a particular valid ingredient preparation.
+// UpdateValidPreparationVessel updates a particular valid preparation vessel.
 func (q *Querier) UpdateValidPreparationVessel(ctx context.Context, updated *types.ValidPreparationVessel) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -470,11 +476,11 @@ func (q *Querier) UpdateValidPreparationVessel(ctx context.Context, updated *typ
 		updated.ID,
 	}
 
-	if err := q.performWriteQuery(ctx, q.db, "valid ingredient preparation update", updateValidPreparationVesselQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient preparation")
+	if err := q.performWriteQuery(ctx, q.db, "valid preparation vessel update", updateValidPreparationVesselQuery, args); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation vessel")
 	}
 
-	logger.Info("valid ingredient preparation updated")
+	logger.Info("valid preparation vessel updated")
 
 	return nil
 }
@@ -482,7 +488,7 @@ func (q *Querier) UpdateValidPreparationVessel(ctx context.Context, updated *typ
 //go:embed queries/valid_preparation_vessels/archive.sql
 var archiveValidPreparationVesselQuery string
 
-// ArchiveValidPreparationVessel archives a valid ingredient preparation from the database by its ID.
+// ArchiveValidPreparationVessel archives a valid preparation vessel from the database by its ID.
 func (q *Querier) ArchiveValidPreparationVessel(ctx context.Context, validPreparationVesselID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -497,11 +503,11 @@ func (q *Querier) ArchiveValidPreparationVessel(ctx context.Context, validPrepar
 		validPreparationVesselID,
 	}
 
-	if err := q.performWriteQuery(ctx, q.db, "valid ingredient preparation archive", archiveValidPreparationVesselQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient preparation")
+	if err := q.performWriteQuery(ctx, q.db, "valid preparation vessel archive", archiveValidPreparationVesselQuery, args); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation vessel")
 	}
 
-	logger.Info("valid ingredient preparation archived")
+	logger.Info("valid preparation vessel archived")
 
 	return nil
 }

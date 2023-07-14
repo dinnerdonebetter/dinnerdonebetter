@@ -24,20 +24,10 @@ func checkValidPreparationVesselEquality(t *testing.T, expected, actual *types.V
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-func createValidPreparationVesselForTest(t *testing.T, ctx context.Context, adminClient *apiclient.Client) *types.ValidPreparationVessel {
+func createValidPreparationVesselForTest(t *testing.T, ctx context.Context, adminClient *apiclient.Client) (*types.ValidPreparation, *types.ValidVessel, *types.ValidPreparationVessel) {
 	t.Helper()
 
-	exampleValidPreparation := fakes.BuildFakeValidPreparation()
-	exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
-	createdValidPreparation, err := adminClient.CreateValidPreparation(ctx, exampleValidPreparationInput)
-	require.NoError(t, err)
-
-	checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
-
-	createdValidPreparation, err = adminClient.GetValidPreparation(ctx, createdValidPreparation.ID)
-	requireNotNilAndNoProblems(t, createdValidPreparation, err)
-	checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
-
+	createdValidPreparation := createValidPreparationForTest(t, ctx, nil, adminClient)
 	createdValidVessel := createValidVesselForTest(t, ctx, nil, adminClient)
 
 	exampleValidPreparationVessel := fakes.BuildFakeValidPreparationVessel()
@@ -46,13 +36,14 @@ func createValidPreparationVesselForTest(t *testing.T, ctx context.Context, admi
 	exampleValidPreparationVesselInput := converters.ConvertValidPreparationVesselToValidPreparationVesselCreationRequestInput(exampleValidPreparationVessel)
 	createdValidPreparationVessel, err := adminClient.CreateValidPreparationVessel(ctx, exampleValidPreparationVesselInput)
 	require.NoError(t, err)
+	t.Logf("created valid preparation vessel pre-fetch %q", createdValidPreparationVessel.ID)
 
 	checkValidPreparationVesselEquality(t, exampleValidPreparationVessel, createdValidPreparationVessel)
 
 	createdValidPreparationVessel, err = adminClient.GetValidPreparationVessel(ctx, createdValidPreparationVessel.ID)
 	requireNotNilAndNoProblems(t, createdValidPreparationVessel, err)
 
-	return exampleValidPreparationVessel
+	return createdValidPreparation, createdValidVessel, createdValidPreparationVessel
 }
 
 func (s *TestSuite) TestValidPreparationVessels_CompleteLifecycle() {
@@ -63,7 +54,7 @@ func (s *TestSuite) TestValidPreparationVessels_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			createdValidPreparationVessel := createValidPreparationVesselForTest(t, ctx, testClients.admin)
+			_, _, createdValidPreparationVessel := createValidPreparationVesselForTest(t, ctx, testClients.admin)
 
 			newValidPreparationVessel := fakes.BuildFakeValidPreparationVessel()
 			newValidPreparationVessel.Vessel = createdValidPreparationVessel.Vessel
@@ -74,7 +65,7 @@ func (s *TestSuite) TestValidPreparationVessels_CompleteLifecycle() {
 			actual, err := testClients.user.GetValidPreparationVessel(ctx, createdValidPreparationVessel.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
-			// assert valid preparation instrument equality
+			// assert valid preparation vessel equality
 			checkValidPreparationVesselEquality(t, newValidPreparationVessel, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
@@ -97,41 +88,11 @@ func (s *TestSuite) TestValidPreparationVessels_Listing() {
 
 			var expected []*types.ValidPreparationVessel
 			for i := 0; i < 5; i++ {
-				exampleValidPreparation := fakes.BuildFakeValidPreparation()
-				exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
-				createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
-				require.NoError(t, err)
-
-				checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
-
-				createdValidPreparation, err = testClients.user.GetValidPreparation(ctx, createdValidPreparation.ID)
-				requireNotNilAndNoProblems(t, createdValidPreparation, err)
-				checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
-
-				exampleValidVessel := fakes.BuildFakeValidVessel()
-				exampleValidVesselInput := converters.ConvertValidVesselToValidVesselCreationRequestInput(exampleValidVessel)
-				createdValidVessel, err := testClients.admin.CreateValidVessel(ctx, exampleValidVesselInput)
-				require.NoError(t, err)
-
-				checkValidVesselEquality(t, exampleValidVessel, createdValidVessel)
-
-				createdValidVessel, err = testClients.user.GetValidVessel(ctx, createdValidVessel.ID)
-				requireNotNilAndNoProblems(t, createdValidVessel, err)
-				checkValidVesselEquality(t, exampleValidVessel, createdValidVessel)
-
-				exampleValidPreparationVessel := fakes.BuildFakeValidPreparationVessel()
-				exampleValidPreparationVessel.Vessel = *createdValidVessel
-				exampleValidPreparationVessel.Preparation = *createdValidPreparation
-				exampleValidPreparationVesselInput := converters.ConvertValidPreparationVesselToValidPreparationVesselCreationRequestInput(exampleValidPreparationVessel)
-				createdValidPreparationVessel, createdValidPreparationVesselErr := testClients.admin.CreateValidPreparationVessel(ctx, exampleValidPreparationVesselInput)
-				require.NoError(t, createdValidPreparationVesselErr)
-
-				checkValidPreparationVesselEquality(t, exampleValidPreparationVessel, createdValidPreparationVessel)
-
+				_, _, createdValidPreparationVessel := createValidPreparationVesselForTest(t, ctx, testClients.admin)
 				expected = append(expected, createdValidPreparationVessel)
 			}
 
-			// assert valid preparation instrument list equality
+			// assert valid preparation vessel list equality
 			actual, err := testClients.user.GetValidPreparationVessels(ctx, nil)
 			requireNotNilAndNoProblems(t, actual, err)
 			assert.True(
@@ -157,36 +118,7 @@ func (s *TestSuite) TestValidPreparationVessels_Listing_ByValue() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
-			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
-			require.NoError(t, err)
-
-			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
-
-			createdValidPreparation, err = testClients.user.GetValidPreparation(ctx, createdValidPreparation.ID)
-			requireNotNilAndNoProblems(t, createdValidPreparation, err)
-			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
-
-			exampleValidVessel := fakes.BuildFakeValidVessel()
-			exampleValidVesselInput := converters.ConvertValidVesselToValidVesselCreationRequestInput(exampleValidVessel)
-			createdValidVessel, err := testClients.admin.CreateValidVessel(ctx, exampleValidVesselInput)
-			require.NoError(t, err)
-
-			checkValidVesselEquality(t, exampleValidVessel, createdValidVessel)
-
-			createdValidVessel, err = testClients.user.GetValidVessel(ctx, createdValidVessel.ID)
-			requireNotNilAndNoProblems(t, createdValidVessel, err)
-			checkValidVesselEquality(t, exampleValidVessel, createdValidVessel)
-
-			exampleValidPreparationVessel := fakes.BuildFakeValidPreparationVessel()
-			exampleValidPreparationVessel.Vessel = *createdValidVessel
-			exampleValidPreparationVessel.Preparation = *createdValidPreparation
-			exampleValidPreparationVesselInput := converters.ConvertValidPreparationVesselToValidPreparationVesselCreationRequestInput(exampleValidPreparationVessel)
-			createdValidPreparationVessel, err := testClients.admin.CreateValidPreparationVessel(ctx, exampleValidPreparationVesselInput)
-			require.NoError(t, err)
-
-			checkValidPreparationVesselEquality(t, exampleValidPreparationVessel, createdValidPreparationVessel)
+			createdValidPreparation, createdValidVessel, createdValidPreparationVessel := createValidPreparationVesselForTest(t, ctx, testClients.admin)
 
 			validPreparationVesselsForVessel, err := testClients.user.GetValidPreparationVesselsForVessel(ctx, createdValidVessel.ID, nil)
 			requireNotNilAndNoProblems(t, validPreparationVesselsForVessel, err)

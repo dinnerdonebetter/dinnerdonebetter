@@ -336,7 +336,8 @@ func (s *service) SearchByVesselHandler(res http.ResponseWriter, req *http.Reque
 		WithValue(keys.FilterPageKey, filter.Page).
 		WithValue(keys.FilterSortByKey, filter.SortBy)
 
-	ValidVesselID := s.validVesselIDFetcher(req)
+	validVesselID := s.validVesselIDFetcher(req)
+	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
 
 	// determine user ID.
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
@@ -349,7 +350,7 @@ func (s *service) SearchByVesselHandler(res http.ResponseWriter, req *http.Reque
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	validPreparationVessels, err := s.validPreparationVesselDataManager.GetValidPreparationVesselsForVessel(ctx, ValidVesselID, filter)
+	validPreparationVessels, err := s.validPreparationVesselDataManager.GetValidPreparationVesselsForVessel(ctx, validVesselID, filter)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "searching for valid preparation vessels")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)

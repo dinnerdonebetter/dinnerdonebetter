@@ -66,7 +66,7 @@ var (
 	}
 )
 
-// scanValidPreparationInstrument takes a database Scanner (i.e. *sql.Row) and scans the result into a valid ingredient preparation struct.
+// scanValidPreparationInstrument takes a database Scanner (i.e. *sql.Row) and scans the result into a valid preparation instrument struct.
 func (q *Querier) scanValidPreparationInstrument(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.ValidPreparationInstrument, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -126,7 +126,7 @@ func (q *Querier) scanValidPreparationInstrument(ctx context.Context, scan datab
 	return x, filteredCount, totalCount, nil
 }
 
-// scanValidPreparationInstruments takes some database rows and turns them into a slice of valid ingredient preparations.
+// scanValidPreparationInstruments takes some database rows and turns them into a slice of valid preparation instruments.
 func (q *Querier) scanValidPreparationInstruments(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validPreparationInstruments []*types.ValidPreparationInstrument, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -160,7 +160,7 @@ func (q *Querier) scanValidPreparationInstruments(ctx context.Context, rows data
 //go:embed queries/valid_preparation_instruments/exists.sql
 var validPreparationInstrumentExistenceQuery string
 
-// ValidPreparationInstrumentExists fetches whether a valid ingredient preparation exists from the database.
+// ValidPreparationInstrumentExists fetches whether a valid preparation instrument exists from the database.
 func (q *Querier) ValidPreparationInstrumentExists(ctx context.Context, validPreparationInstrumentID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -176,7 +176,7 @@ func (q *Querier) ValidPreparationInstrumentExists(ctx context.Context, validPre
 
 	result, err := q.performBooleanQuery(ctx, q.db, validPreparationInstrumentExistenceQuery, args)
 	if err != nil {
-		return false, observability.PrepareError(err, span, "performing valid ingredient preparation existence check")
+		return false, observability.PrepareError(err, span, "performing valid preparation instrument existence check")
 	}
 
 	return result, nil
@@ -185,7 +185,7 @@ func (q *Querier) ValidPreparationInstrumentExists(ctx context.Context, validPre
 //go:embed queries/valid_preparation_instruments/get_one.sql
 var getValidPreparationInstrumentQuery string
 
-// GetValidPreparationInstrument fetches a valid ingredient preparation from the database.
+// GetValidPreparationInstrument fetches a valid preparation instrument from the database.
 func (q *Querier) GetValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) (*types.ValidPreparationInstrument, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -209,7 +209,7 @@ func (q *Querier) GetValidPreparationInstrument(ctx context.Context, validPrepar
 	return validPreparationInstrument, nil
 }
 
-// GetValidPreparationInstruments fetches a list of valid ingredient preparations from the database that meet a particular filter.
+// GetValidPreparationInstruments fetches a list of valid preparation instruments from the database that meet a particular filter.
 func (q *Querier) GetValidPreparationInstruments(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidPreparationInstrument], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -242,11 +242,11 @@ func (q *Querier) GetValidPreparationInstruments(ctx context.Context, filter *ty
 
 	rows, err := q.getRows(ctx, q.db, "valid preparation instruments", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing valid ingredient preparations list retrieval query")
+		return nil, observability.PrepareError(err, span, "executing valid preparation instruments list retrieval query")
 	}
 
 	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidPreparationInstruments(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning valid ingredient preparations")
+		return nil, observability.PrepareError(err, span, "scanning valid preparation instruments")
 	}
 
 	return x, nil
@@ -276,7 +276,7 @@ func (q *Querier) buildGetValidPreparationInstrumentsWithPreparationIDsQuery(ctx
 	return q.buildGetValidPreparationInstrumentsRestrictedByIDsQuery(ctx, "valid_preparation_id", limit, ids)
 }
 
-// GetValidPreparationInstrumentsForPreparation fetches a list of valid ingredient preparations from the database that meet a particular filter.
+// GetValidPreparationInstrumentsForPreparation fetches a list of valid preparation instruments from the database that meet a particular filter.
 func (q *Querier) GetValidPreparationInstrumentsForPreparation(ctx context.Context, preparationID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidPreparationInstrument], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -308,11 +308,11 @@ func (q *Querier) GetValidPreparationInstrumentsForPreparation(ctx context.Conte
 
 	rows, err := q.getRows(ctx, q.db, "valid preparation instruments for preparation", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing valid ingredient preparations list retrieval query")
+		return nil, observability.PrepareError(err, span, "executing valid preparation instruments list retrieval query")
 	}
 
 	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidPreparationInstruments(ctx, rows, false); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning valid ingredient preparations")
+		return nil, observability.PrepareError(err, span, "scanning valid preparation instruments")
 	}
 
 	return x, nil
@@ -322,7 +322,7 @@ func (q *Querier) buildGetValidPreparationInstrumentsWithInstrumentIDsQuery(ctx 
 	return q.buildGetValidPreparationInstrumentsRestrictedByIDsQuery(ctx, "valid_instrument_id", limit, ids)
 }
 
-// GetValidPreparationInstrumentsForInstrument fetches a list of valid ingredient preparations from the database that meet a particular filter.
+// GetValidPreparationInstrumentsForInstrument fetches a list of valid preparation instruments from the database that meet a particular filter.
 func (q *Querier) GetValidPreparationInstrumentsForInstrument(ctx context.Context, instrumentID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidPreparationInstrument], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -354,11 +354,11 @@ func (q *Querier) GetValidPreparationInstrumentsForInstrument(ctx context.Contex
 
 	rows, err := q.getRows(ctx, q.db, "valid preparation instruments for instrument", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing valid ingredient preparations list retrieval query")
+		return nil, observability.PrepareError(err, span, "executing valid preparation instruments list retrieval query")
 	}
 
 	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidPreparationInstruments(ctx, rows, false); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning valid ingredient preparations")
+		return nil, observability.PrepareError(err, span, "scanning valid preparation instruments")
 	}
 
 	return x, nil
@@ -367,7 +367,7 @@ func (q *Querier) GetValidPreparationInstrumentsForInstrument(ctx context.Contex
 //go:embed queries/valid_preparation_instruments/create.sql
 var validPreparationInstrumentCreationQuery string
 
-// CreateValidPreparationInstrument creates a valid ingredient preparation in the database.
+// CreateValidPreparationInstrument creates a valid preparation instrument in the database.
 func (q *Querier) CreateValidPreparationInstrument(ctx context.Context, input *types.ValidPreparationInstrumentDatabaseCreationInput) (*types.ValidPreparationInstrument, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -385,9 +385,9 @@ func (q *Querier) CreateValidPreparationInstrument(ctx context.Context, input *t
 		input.ValidInstrumentID,
 	}
 
-	// create the valid ingredient preparation.
-	if err := q.performWriteQuery(ctx, q.db, "valid ingredient preparation creation", validPreparationInstrumentCreationQuery, args); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "performing valid ingredient preparation creation query")
+	// create the valid preparation instrument.
+	if err := q.performWriteQuery(ctx, q.db, "valid preparation instrument creation", validPreparationInstrumentCreationQuery, args); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing valid preparation instrument creation query")
 	}
 
 	x := &types.ValidPreparationInstrument{
@@ -399,7 +399,7 @@ func (q *Querier) CreateValidPreparationInstrument(ctx context.Context, input *t
 	}
 
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, x.ID)
-	logger.Info("valid ingredient preparation created")
+	logger.Info("valid preparation instrument created")
 
 	return x, nil
 }
@@ -407,7 +407,7 @@ func (q *Querier) CreateValidPreparationInstrument(ctx context.Context, input *t
 //go:embed queries/valid_preparation_instruments/update.sql
 var updateValidPreparationInstrumentQuery string
 
-// UpdateValidPreparationInstrument updates a particular valid ingredient preparation.
+// UpdateValidPreparationInstrument updates a particular valid preparation instrument.
 func (q *Querier) UpdateValidPreparationInstrument(ctx context.Context, updated *types.ValidPreparationInstrument) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -426,11 +426,11 @@ func (q *Querier) UpdateValidPreparationInstrument(ctx context.Context, updated 
 		updated.ID,
 	}
 
-	if err := q.performWriteQuery(ctx, q.db, "valid ingredient preparation update", updateValidPreparationInstrumentQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient preparation")
+	if err := q.performWriteQuery(ctx, q.db, "valid preparation instrument update", updateValidPreparationInstrumentQuery, args); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation instrument")
 	}
 
-	logger.Info("valid ingredient preparation updated")
+	logger.Info("valid preparation instrument updated")
 
 	return nil
 }
@@ -438,7 +438,7 @@ func (q *Querier) UpdateValidPreparationInstrument(ctx context.Context, updated 
 //go:embed queries/valid_preparation_instruments/archive.sql
 var archiveValidPreparationInstrumentQuery string
 
-// ArchiveValidPreparationInstrument archives a valid ingredient preparation from the database by its ID.
+// ArchiveValidPreparationInstrument archives a valid preparation instrument from the database by its ID.
 func (q *Querier) ArchiveValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -453,11 +453,11 @@ func (q *Querier) ArchiveValidPreparationInstrument(ctx context.Context, validPr
 		validPreparationInstrumentID,
 	}
 
-	if err := q.performWriteQuery(ctx, q.db, "valid ingredient preparation archive", archiveValidPreparationInstrumentQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient preparation")
+	if err := q.performWriteQuery(ctx, q.db, "valid preparation instrument archive", archiveValidPreparationInstrumentQuery, args); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation instrument")
 	}
 
-	logger.Info("valid ingredient preparation archived")
+	logger.Info("valid preparation instrument archived")
 
 	return nil
 }

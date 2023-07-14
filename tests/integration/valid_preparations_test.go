@@ -1,10 +1,12 @@
 package integration
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -38,6 +40,26 @@ func checkValidPreparationEquality(t *testing.T, expected, actual *types.ValidPr
 	assert.NotZero(t, actual.CreatedAt)
 }
 
+func createValidPreparationForTest(t *testing.T, ctx context.Context, vessel *types.ValidPreparation, adminClient *apiclient.Client) *types.ValidPreparation {
+	t.Helper()
+
+	exampleValidPreparation := vessel
+	if exampleValidPreparation == nil {
+		exampleValidPreparation = fakes.BuildFakeValidPreparation()
+	}
+
+	exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
+	createdValidPreparation, err := adminClient.CreateValidPreparation(ctx, exampleValidPreparationInput)
+	require.NoError(t, err)
+	checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
+
+	createdValidPreparation, err = adminClient.GetValidPreparation(ctx, createdValidPreparation.ID)
+	requireNotNilAndNoProblems(t, createdValidPreparation, err)
+	checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
+
+	return createdValidPreparation
+}
+
 func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -47,14 +69,7 @@ func (s *TestSuite) TestValidPreparations_CompleteLifecycle() {
 			defer span.End()
 
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
-			exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
-			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
-			require.NoError(t, err)
-			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
-
-			createdValidPreparation, err = testClients.admin.GetValidPreparation(ctx, createdValidPreparation.ID)
-			requireNotNilAndNoProblems(t, createdValidPreparation, err)
-			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
+			createdValidPreparation := createValidPreparationForTest(t, ctx, exampleValidPreparation, testClients.admin)
 
 			newValidPreparation := fakes.BuildFakeValidPreparation()
 			createdValidPreparation.Update(converters.ConvertValidPreparationToValidPreparationUpdateRequestInput(newValidPreparation))

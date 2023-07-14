@@ -18,8 +18,8 @@ const (
 	ValidPreparationVesselIDURIParamKey = "validPreparationVesselID"
 	// ValidPreparationIDURIParamKey is a standard string that we'll use to refer to valid preparation IDs with.
 	ValidPreparationIDURIParamKey = "validPreparationID"
-	// ValidVesselIDURIParamKey is a standard string that we'll use to refer to valid preparation IDs with.
-	ValidVesselIDURIParamKey = "validVesselID"
+	// ValidInstrumentIDURIParamKey is a standard string that we'll use to refer to valid preparation IDs with.
+	ValidInstrumentIDURIParamKey = "validInstrumentID"
 )
 
 // CreateHandler is our valid preparation instrument creation route.
