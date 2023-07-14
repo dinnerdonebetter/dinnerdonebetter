@@ -281,6 +281,9 @@
 			"enableUserSignup": true,
 			"minimumUsernameLength": 3,
 			"minimumPasswordLength": 8
+		},
+		"validPreparationVessels": {
+			"dataChangesTopicName": "data_changes"
 		}
 	}
 }

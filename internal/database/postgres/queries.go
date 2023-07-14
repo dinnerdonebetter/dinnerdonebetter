@@ -275,7 +275,7 @@ func (q *Querier) buildListQuery(
 
 	builder := q.sqlBuilder.Select(columns...).From(tableName)
 	for _, join := range joins {
-		builder = builder.Join(join)
+		builder = builder.LeftJoin(join)
 	}
 
 	if !forAdmin {

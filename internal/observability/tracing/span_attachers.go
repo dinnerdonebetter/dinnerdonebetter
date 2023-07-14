@@ -444,7 +444,7 @@ func AttachOAuth2ClientIDToSpan(span trace.Span, id string) {
 	AttachStringToSpan(span, keys.OAuth2ClientIDKey, id)
 }
 
-// AttachOAuth2ClientClientIDToSpan attaches a recipe rating ID to a given span.
-func AttachOAuth2ClientClientIDToSpan(span trace.Span, id string) {
-	AttachStringToSpan(span, keys.OAuth2ClientIDKey, id)
+// AttachValidPreparationVesselIDToSpan attaches a valid preparation vessel ID to a given span.
+func AttachValidPreparationVesselIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.ValidPreparationVesselIDKey, id)
 }

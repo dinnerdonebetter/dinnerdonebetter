@@ -35,7 +35,7 @@ func TestProvideValidPreparationInstrumentsService(T *testing.T) {
 		rpm := mockrouting.NewRouteParamManager()
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
-			ValidPreparationInstrumentIDURIParamKey,
+			ValidPreparationVesselIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",

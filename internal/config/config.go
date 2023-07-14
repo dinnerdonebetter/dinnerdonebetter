@@ -39,15 +39,16 @@ type (
 
 	// InstanceConfig configures an instance of the service. It is composed of all the other setting structs.
 	InstanceConfig struct {
-		_             struct{}
+		_ struct{}
+
 		Observability observability.Config      `json:"observability" toml:"observability,omitempty"`
 		Email         emailconfig.Config        `json:"email"         toml:"email,omitempty"`
-		Search        searchcfg.Config          `json:"search"        toml:"search,omitempty"`
 		Analytics     analyticsconfig.Config    `json:"analytics"     toml:"analytics,omitempty"`
+		Search        searchcfg.Config          `json:"search"        toml:"search,omitempty"`
 		FeatureFlags  featureflagsconfig.Config `json:"featureFlags"  toml:"events,omitempty"`
 		Encoding      encoding.Config           `json:"encoding"      toml:"encoding,omitempty"`
-		Routing       routing.Config            `json:"routing"       toml:"routing,omitempty"`
 		Meta          MetaSettings              `json:"meta"          toml:"meta,omitempty"`
+		Routing       routing.Config            `json:"routing"       toml:"routing,omitempty"`
 		Events        msgconfig.Config          `json:"events"        toml:"events,omitempty"`
 		Server        http.Config               `json:"server"        toml:"server,omitempty"`
 		Database      dbconfig.Config           `json:"database"      toml:"database,omitempty"`
