@@ -54,6 +54,13 @@ resource "google_cloud_run_v2_job" "search_data_index_scheduler" {
       containers {
         image = format("%s-docker.pkg.dev/%s/%s/search-data-index-scheduler", local.gcp_region, local.project_id, google_artifact_registry_repository.dev_repository.name)
 
+        resources {
+          limits = {
+            cpu    = "1"
+            memory = "128Mi"
+          }
+        }
+
         env {
           name  = "DINNER_DONE_BETTER_DATABASE_USER"
           value = google_sql_user.api_user.name

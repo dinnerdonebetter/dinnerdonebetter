@@ -153,6 +153,15 @@ resource "google_cloud_run_v2_service" "api_server" {
     containers {
       image = "us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server"
 
+      resources {
+        limits = {
+          cpu    = "1"
+          memory = "128Mi"
+        }
+        cpu_idle          = true
+        startup_cpu_boost = false
+      }
+
       env {
         name  = "RUNNING_IN_GOOGLE_CLOUD_RUN"
         value = "true"

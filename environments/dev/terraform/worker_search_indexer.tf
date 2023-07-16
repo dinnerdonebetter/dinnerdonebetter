@@ -74,6 +74,7 @@ resource "google_cloudfunctions2_function" "search_indexer" {
   }
 
   service_config {
+    max_instance_count             = 1
     available_memory               = "128Mi"
     ingress_settings               = "ALLOW_INTERNAL_ONLY"
     all_traffic_on_latest_revision = true
