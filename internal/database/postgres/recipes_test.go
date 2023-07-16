@@ -734,6 +734,7 @@ func TestQuerier_GetRecipes(T *testing.T) {
 			exampleRecipeList.Data[i].Steps = nil
 			exampleRecipeList.Data[i].PrepTasks = nil
 			exampleRecipeList.Data[i].Media = nil
+			exampleRecipeList.Data[i].SupportingRecipes = nil
 		}
 
 		ctx := context.Background()
@@ -763,6 +764,7 @@ func TestQuerier_GetRecipes(T *testing.T) {
 			exampleRecipeList.Data[i].Steps = nil
 			exampleRecipeList.Data[i].PrepTasks = nil
 			exampleRecipeList.Data[i].Media = nil
+			exampleRecipeList.Data[i].SupportingRecipes = nil
 		}
 
 		ctx := context.Background()
@@ -925,6 +927,7 @@ func TestQuerier_SearchForRecipes(T *testing.T) {
 			exampleRecipeList.Data[i].Steps = nil
 			exampleRecipeList.Data[i].PrepTasks = nil
 			exampleRecipeList.Data[i].Media = nil
+			exampleRecipeList.Data[i].SupportingRecipes = nil
 		}
 
 		ctx := context.Background()
@@ -1011,6 +1014,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		exampleRecipe := fakes.BuildFakeRecipe()
 		exampleRecipe.ID = "1"
 		exampleRecipe.Media = nil
+		exampleRecipe.SupportingRecipes = nil
 		for i, step := range exampleRecipe.Steps {
 			exampleRecipe.Steps[i].ID = "2"
 			exampleRecipe.Steps[i].BelongsToRecipe = "1"
@@ -1276,6 +1280,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		exampleRecipe.Steps = nil
 		exampleRecipe.PrepTasks = nil
 		exampleRecipe.Media = nil
+		exampleRecipe.SupportingRecipes = nil
 		exampleRecipe.ID = "1"
 
 		exampleInput := converters.ConvertRecipeToRecipeDatabaseCreationInput(exampleRecipe)

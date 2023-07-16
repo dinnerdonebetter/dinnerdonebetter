@@ -29,25 +29,25 @@ func init() {
 type (
 	// Recipe represents a recipe.
 	Recipe struct {
-		_ struct{}
-
+		_                        struct{}
 		CreatedAt                time.Time         `json:"createdAt"`
 		InspiredByRecipeID       *string           `json:"inspiredByRecipeID"`
 		LastUpdatedAt            *time.Time        `json:"lastUpdatedAt"`
 		ArchivedAt               *time.Time        `json:"archivedAt"`
 		MaximumEstimatedPortions *float32          `json:"maximumEstimatedPortions"`
-		ID                       string            `json:"id"`
-		Slug                     string            `json:"slug"`
+		PluralPortionName        string            `json:"pluralPortionName"`
+		Description              string            `json:"description"`
 		Name                     string            `json:"name"`
 		PortionName              string            `json:"portionName"`
-		PluralPortionName        string            `json:"pluralPortionName"`
+		ID                       string            `json:"id"`
 		CreatedByUser            string            `json:"createdByUser"`
 		Source                   string            `json:"source"`
-		Description              string            `json:"description"`
+		Slug                     string            `json:"slug"`
 		YieldsComponentType      string            `json:"yieldsComponentType"`
 		PrepTasks                []*RecipePrepTask `json:"prepTasks"`
 		Steps                    []*RecipeStep     `json:"steps"`
 		Media                    []*RecipeMedia    `json:"media"`
+		SupportingRecipes        []*Recipe         `json:"supportingRecipes"`
 		MinimumEstimatedPortions float32           `json:"minimumEstimatedPortions"`
 		SealOfApproval           bool              `json:"sealOfApproval"`
 		EligibleForMeals         bool              `json:"eligibleForMeals"`
