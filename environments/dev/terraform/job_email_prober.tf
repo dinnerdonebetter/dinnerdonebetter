@@ -49,6 +49,13 @@ resource "google_cloud_run_v2_job" "email_prober" {
           name  = "GOOGLE_CLOUD_PROJECT_ID"
           value = data.google_project.project.project_id
         }
+
+        resources {
+          limits {
+            cpu    = "1"
+            memory = "128Mi"
+          }
+        }
       }
     }
   }

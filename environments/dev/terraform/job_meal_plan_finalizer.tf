@@ -85,6 +85,16 @@ resource "google_cloud_run_v2_job" "meal_plan_finalizer" {
         }
 
         env {
+          name = "DINNER_DONE_BETTER_OAUTH2_TOKEN_ENCRYPTION_KEY"
+          value_source {
+            secret_key_ref {
+              secret  = google_secret_manager_secret.oauth2_token_encryption_key.secret_id
+              version = "latest"
+            }
+          }
+        }
+
+        env {
           name = "DINNER_DONE_BETTER_DATABASE_PASSWORD"
           value_source {
             secret_key_ref {
@@ -113,8 +123,8 @@ resource "google_cloud_scheduler_job" "meal_plan_finalization" {
   project          = local.project_id
   region           = local.gcp_region
   name             = "meal-plan-finalizer"
-  description      = "Runs the meal plan finalizer every 2 minutes"
-  schedule         = "*/2 * * * *"
+  description      = "Runs the meal plan finalizer every 15 minutes"
+  schedule         = "*/15 * * * *"
   time_zone        = "America/Chicago"
   attempt_deadline = "320s"
 
