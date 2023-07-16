@@ -236,6 +236,7 @@ func getWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*Instance
 
 	cfg.Database.ConnectionDetails = database.ConnectionDetails(dbURI)
 	cfg.Database.RunMigrations = false
+	cfg.Database.OAuth2TokenEncryptionKey = " "
 	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)
 	cfg.Analytics = analyticscfg.Config{
 		Segment:  &segment.Config{APIToken: os.Getenv(gcpSegmentTokenEnvVarKey)},
@@ -375,7 +376,7 @@ func GetEmailProberConfigFromGoogleCloudSecretManager(ctx context.Context) (*Ins
 		return nil, err
 	}
 
-	cfg.Database = dbconfig.Config{ConnectionDetails: " "}
+	cfg.Database = dbconfig.Config{ConnectionDetails: " ", OAuth2TokenEncryptionKey: " "}
 	cfg.Analytics = analyticscfg.Config{}
 	cfg.Email = emailcfg.Config{
 		Provider: emailcfg.ProviderSendgrid,
