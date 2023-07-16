@@ -51,7 +51,7 @@ resource "google_cloud_run_v2_job" "email_prober" {
         }
 
         resources {
-          limits {
+          limits = {
             cpu    = "1"
             memory = "128Mi"
           }
