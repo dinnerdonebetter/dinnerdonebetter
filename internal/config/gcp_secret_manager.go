@@ -97,7 +97,6 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client
 
 	cfg.Database.ConnectionDetails = database.ConnectionDetails(dbURI)
 	cfg.Database.OAuth2TokenEncryptionKey = os.Getenv(gcpOauth2TokenEncryptionKeyEnvVarKey)
-
 	cfg.Services.Auth.Cookies.HashKey = os.Getenv(gcpCookieHashKeyEnvVarKey)
 	cfg.Services.Auth.Cookies.BlockKey = os.Getenv(gcpCookieBlockKeyEnvVarKey)
 	cfg.Services.Auth.PASETO.LocalModeKey = []byte(os.Getenv(gcpPASETOLocalKeyEnvVarKey))
