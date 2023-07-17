@@ -375,6 +375,7 @@ func GetEmailProberConfigFromGoogleCloudSecretManager(ctx context.Context) (*Ins
 		return nil, err
 	}
 
+	// this just needs to pass validation, the prober has no business connecting to the database
 	cfg.Database = dbconfig.Config{ConnectionDetails: " ", OAuth2TokenEncryptionKey: " "}
 	cfg.Analytics = analyticscfg.Config{}
 	cfg.Email = emailcfg.Config{
