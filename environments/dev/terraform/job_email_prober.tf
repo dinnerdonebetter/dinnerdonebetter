@@ -56,6 +56,16 @@ resource "google_cloud_run_v2_job" "email_prober" {
           name  = "GOOGLE_CLOUD_PROJECT_ID"
           value = data.google_project.project.project_id
         }
+
+        env {
+          name = "DINNER_DONE_BETTER_SENDGRID_API_TOKEN"
+          value_source {
+            secret_key_ref {
+              secret  = google_secret_manager_secret.sendgrid_api_token.secret_id
+              version = "latest"
+            }
+          }
+        }
       }
     }
   }
