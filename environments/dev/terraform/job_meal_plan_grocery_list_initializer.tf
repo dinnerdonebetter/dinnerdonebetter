@@ -58,6 +58,13 @@ resource "google_cloud_run_v2_job" "meal_plan_grocery_list_initializer" {
       containers {
         image = format("%s-docker.pkg.dev/%s/%s/meal-plan-grocery-list-initializer", local.gcp_region, local.project_id, google_artifact_registry_repository.dev_repository.name)
 
+        resources {
+          limits = {
+            cpu    = "1"
+            memory = "512Mi"
+          }
+        }
+
         env {
           name  = "DINNER_DONE_BETTER_DATABASE_USER"
           value = google_sql_user.api_user.name
@@ -94,6 +101,16 @@ resource "google_cloud_run_v2_job" "meal_plan_grocery_list_initializer" {
         }
 
         env {
+          name = "DINNER_DONE_BETTER_OAUTH2_TOKEN_ENCRYPTION_KEY"
+          value_source {
+            secret_key_ref {
+              secret  = google_secret_manager_secret.oauth2_token_encryption_key.secret_id
+              version = "latest"
+            }
+          }
+        }
+
+        env {
           name = "DINNER_DONE_BETTER_DATABASE_PASSWORD"
           value_source {
             secret_key_ref {
@@ -123,8 +140,8 @@ resource "google_cloud_scheduler_job" "meal_plan_grocery_list_init" {
   project          = local.project_id
   region           = local.gcp_region
   name             = "meal-plan-grocery-list-initializer"
-  description      = "Runs the meal plan grocery list initializer every 2 minutes"
-  schedule         = "*/2 * * * *"
+  description      = "Runs the meal plan grocery list initializer every 15 minutes"
+  schedule         = "*/15 * * * *"
   time_zone        = "America/Chicago"
   attempt_deadline = "320s"
 

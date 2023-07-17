@@ -54,6 +54,13 @@ resource "google_cloud_run_v2_job" "search_data_index_scheduler" {
       containers {
         image = format("%s-docker.pkg.dev/%s/%s/search-data-index-scheduler", local.gcp_region, local.project_id, google_artifact_registry_repository.dev_repository.name)
 
+        resources {
+          limits = {
+            cpu    = "1"
+            memory = "512Mi"
+          }
+        }
+
         env {
           name  = "DINNER_DONE_BETTER_DATABASE_USER"
           value = google_sql_user.api_user.name
@@ -90,6 +97,16 @@ resource "google_cloud_run_v2_job" "search_data_index_scheduler" {
         }
 
         env {
+          name = "DINNER_DONE_BETTER_OAUTH2_TOKEN_ENCRYPTION_KEY"
+          value_source {
+            secret_key_ref {
+              secret  = google_secret_manager_secret.oauth2_token_encryption_key.secret_id
+              version = "latest"
+            }
+          }
+        }
+
+        env {
           name = "DINNER_DONE_BETTER_DATABASE_PASSWORD"
           value_source {
             secret_key_ref {
@@ -116,8 +133,8 @@ resource "google_cloud_run_v2_job" "search_data_index_scheduler" {
 
 resource "google_cloud_scheduler_job" "run_data_index_scheduler" {
   name             = "scheduled-data-indexing"
-  description      = "Runs the search data index scheduler every 10 minutes"
-  schedule         = "*/10 * * * *"
+  description      = "Runs the search data index scheduler every 30 minutes"
+  schedule         = "*/30 * * * *"
   time_zone        = "America/Chicago"
   attempt_deadline = "320s"
 

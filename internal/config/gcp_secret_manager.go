@@ -97,7 +97,6 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client
 
 	cfg.Database.ConnectionDetails = database.ConnectionDetails(dbURI)
 	cfg.Database.OAuth2TokenEncryptionKey = os.Getenv(gcpOauth2TokenEncryptionKeyEnvVarKey)
-
 	cfg.Services.Auth.Cookies.HashKey = os.Getenv(gcpCookieHashKeyEnvVarKey)
 	cfg.Services.Auth.Cookies.BlockKey = os.Getenv(gcpCookieBlockKeyEnvVarKey)
 	cfg.Services.Auth.PASETO.LocalModeKey = []byte(os.Getenv(gcpPASETOLocalKeyEnvVarKey))
@@ -236,6 +235,7 @@ func getWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*Instance
 
 	cfg.Database.ConnectionDetails = database.ConnectionDetails(dbURI)
 	cfg.Database.RunMigrations = false
+	cfg.Database.OAuth2TokenEncryptionKey = os.Getenv(gcpOauth2TokenEncryptionKeyEnvVarKey)
 	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)
 	cfg.Analytics = analyticscfg.Config{
 		Segment:  &segment.Config{APIToken: os.Getenv(gcpSegmentTokenEnvVarKey)},
@@ -375,7 +375,8 @@ func GetEmailProberConfigFromGoogleCloudSecretManager(ctx context.Context) (*Ins
 		return nil, err
 	}
 
-	cfg.Database = dbconfig.Config{ConnectionDetails: " "}
+	// this just needs to pass validation, the prober has no business connecting to the database
+	cfg.Database = dbconfig.Config{ConnectionDetails: " ", OAuth2TokenEncryptionKey: " "}
 	cfg.Analytics = analyticscfg.Config{}
 	cfg.Email = emailcfg.Config{
 		Provider: emailcfg.ProviderSendgrid,

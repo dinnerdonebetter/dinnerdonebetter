@@ -40,6 +40,13 @@ resource "google_cloud_run_v2_job" "email_prober" {
       containers {
         image = format("%s-docker.pkg.dev/%s/%s/email-prober", local.gcp_region, local.project_id, google_artifact_registry_repository.dev_repository.name)
 
+        resources {
+          limits = {
+            cpu    = "1"
+            memory = "512Mi"
+          }
+        }
+
         env {
           name  = "GOOGLE_CLOUD_SECRET_STORE_PREFIX"
           value = format("projects/%d/secrets", data.google_project.project.number)
@@ -48,6 +55,16 @@ resource "google_cloud_run_v2_job" "email_prober" {
         env {
           name  = "GOOGLE_CLOUD_PROJECT_ID"
           value = data.google_project.project.project_id
+        }
+
+        env {
+          name = "DINNER_DONE_BETTER_SENDGRID_API_TOKEN"
+          value_source {
+            secret_key_ref {
+              secret  = google_secret_manager_secret.sendgrid_api_token.secret_id
+              version = "latest"
+            }
+          }
         }
       }
     }
