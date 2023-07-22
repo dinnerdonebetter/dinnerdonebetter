@@ -1,6 +1,7 @@
 package config
 
 import (
+	"context"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
@@ -56,6 +57,7 @@ func TestProvidePublisherProvider(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := context.Background()
 		logger := zerolog.NewZerologLogger(logging.DebugLevel)
 		cfg := &Config{
 			Publishers: MessageQueueConfig{
@@ -63,7 +65,7 @@ func TestProvidePublisherProvider(T *testing.T) {
 			},
 		}
 
-		provider, err := ProvidePublisherProvider(logger, tracing.NewNoopTracerProvider(), cfg)
+		provider, err := ProvidePublisherProvider(ctx, logger, tracing.NewNoopTracerProvider(), cfg)
 		assert.NoError(t, err)
 		assert.NotNil(t, provider)
 	})
@@ -71,10 +73,11 @@ func TestProvidePublisherProvider(T *testing.T) {
 	T.Run("with invalid provider", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := context.Background()
 		logger := zerolog.NewZerologLogger(logging.DebugLevel)
 		cfg := &Config{}
 
-		provider, err := ProvidePublisherProvider(logger, tracing.NewNoopTracerProvider(), cfg)
+		provider, err := ProvidePublisherProvider(ctx, logger, tracing.NewNoopTracerProvider(), cfg)
 		assert.Error(t, err)
 		assert.Nil(t, provider)
 	})

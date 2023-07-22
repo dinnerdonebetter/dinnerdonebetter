@@ -98,7 +98,7 @@ func SendEmail(ctx context.Context, e event.Event) error {
 
 	var msg MessagePublishedData
 	if err = e.DataAs(&msg); err != nil {
-		return fmt.Errorf("event.DataAs: %v", err)
+		return fmt.Errorf("event.DataAs: %w", err)
 	}
 
 	var emailDeliveryRequest email.DeliveryRequest
@@ -131,16 +131,12 @@ func SendEmail(ctx context.Context, e event.Event) error {
 			return observability.PrepareAndLogError(err, logger, span, "building email message")
 		}
 		emailType = "invite"
-
-		break
 	case email.TemplateTypeUsernameReminder:
 		mail, err = email.BuildUsernameReminderEmail(user, envCfg)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "building username reminder email")
 		}
 		emailType = "username reminder"
-
-		break
 	case email.TemplateTypePasswordResetTokenCreated:
 		if emailDeliveryRequest.PasswordResetToken == nil {
 			return observability.PrepareAndLogError(err, logger, span, "missing password reset token")
@@ -151,32 +147,24 @@ func SendEmail(ctx context.Context, e event.Event) error {
 			return observability.PrepareAndLogError(err, logger, span, "building password reset token created email")
 		}
 		emailType = "password reset token"
-
-		break
 	case email.TemplateTypePasswordReset:
 		mail, err = email.BuildPasswordChangedEmail(user, envCfg)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "building password reset token email")
 		}
 		emailType = "password reset token"
-
-		break
 	case email.TemplateTypePasswordResetTokenRedeemed:
 		mail, err = email.BuildPasswordResetTokenRedeemedEmail(user, envCfg)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "building password reset token redemption email")
 		}
 		emailType = "password reset token redemption"
-
-		break
 	case email.TemplateTypeMealPlanCreated:
 		mail, err = email.BuildMealPlanCreatedEmail(user, emailDeliveryRequest.MealPlan, envCfg)
 		if err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "building meal plan created email")
 		}
 		emailType = "meal plan created"
-
-		break
 	case email.TemplateTypeVerifyEmailAddress:
 		shouldSkipIfUnverified = false
 		mail, err = email.BuildVerifyEmailAddressEmail(user, emailDeliveryRequest.EmailVerificationToken, envCfg)
@@ -184,8 +172,6 @@ func SendEmail(ctx context.Context, e event.Event) error {
 			return observability.PrepareAndLogError(err, logger, span, "building meal plan created email")
 		}
 		emailType = "email address verification"
-
-		break
 	}
 
 	if shouldSkipIfUnverified && user.EmailAddressVerifiedAt == nil {

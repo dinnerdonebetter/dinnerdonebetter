@@ -9,7 +9,7 @@ import (
 	"os"
 	"reflect"
 
-	codegen "github.com/dinnerdonebetter/backend/cmd/tools/gen_clients"
+	"github.com/dinnerdonebetter/backend/cmd/tools/codegen"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/objectstorage"
 	"github.com/dinnerdonebetter/backend/internal/routing"
@@ -121,7 +121,7 @@ func main() {
 		spec.Components.Schemas[typ.Name()] = schemaRef
 	}
 
-	routeSpecs := []routeSpec{
+	routeSpecs := []*routeSpec{
 		{
 			path:               "/api/v1/valid_ingredients",
 			method:             http.MethodGet,
@@ -142,7 +142,7 @@ func main() {
 			description:    "Fetches a valid ingredient",
 			operationID:    "getValidIngredient",
 			returnTypeName: "ValidIngredient",
-			routeParams: []routeParam{
+			routeParams: []*routeParam{
 				{
 					name:        "id",
 					description: "the valid ingredient's id",
@@ -182,7 +182,7 @@ func main() {
 	}
 
 	for _, rs := range routeSpecs {
-		addRoute(spec, rs)
+		addRoute(&spec, rs)
 	}
 
 	marshalledSpec, err := yaml.Marshal(spec)
@@ -193,7 +193,7 @@ func main() {
 		panic(err)
 	}
 
-	if err = os.WriteFile(outputFilepath, marshalledSpec, 0o644); err != nil {
+	if err = os.WriteFile(outputFilepath, marshalledSpec, 0o600); err != nil {
 		panic(err)
 	}
 }

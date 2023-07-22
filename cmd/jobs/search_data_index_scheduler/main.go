@@ -67,7 +67,7 @@ func doTheThing() error {
 
 	cancel()
 
-	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
+	publisherProvider, err := msgconfig.ProvidePublisherProvider(ctx, logger, tracerProvider, &cfg.Events)
 	if err != nil {
 		return observability.PrepareError(err, span, "configuring queue manager")
 	}

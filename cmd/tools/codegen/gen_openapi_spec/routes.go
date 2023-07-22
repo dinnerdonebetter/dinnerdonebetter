@@ -9,8 +9,6 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
-type addRouteOption func(spec openapi3.T)
-
 type routeParam struct {
 	name        string
 	description string
@@ -19,21 +17,20 @@ type routeParam struct {
 }
 
 type routeSpec struct {
-	path                       string
-	method                     string
-	description                string
-	operationID                string
-	returnTypeName             string
-	routeParams                []routeParam
-	tags                       []string
-	returnCode                 int
-	returnsContent             bool
-	returnsArray               bool
-	acceptsQueryFilter         bool
-	doesNotReturn404OnNotFound bool
+	path               string
+	method             string
+	description        string
+	operationID        string
+	returnTypeName     string
+	routeParams        []*routeParam
+	tags               []string
+	returnCode         int
+	returnsContent     bool
+	returnsArray       bool
+	acceptsQueryFilter bool
 }
 
-func (r routeSpec) Parameters() openapi3.Parameters {
+func (r *routeSpec) Parameters() openapi3.Parameters {
 	output := []*openapi3.ParameterRef{}
 
 	if r.acceptsQueryFilter {
@@ -233,7 +230,7 @@ func (r routeSpec) Parameters() openapi3.Parameters {
 	return output
 }
 
-func addRoute(spec openapi3.T, r routeSpec) {
+func addRoute(spec *openapi3.T, r *routeSpec) {
 	contentReturn := openapi3.Content{}
 	if r.returnsContent {
 		if r.returnsArray {

@@ -303,7 +303,7 @@ var (
 		},
 	}
 
-	TypesWeCareAbout = []TypeDefinition{
+	TypesWeCareAbout = []*TypeDefinition{
 		{
 			Type:        &types.ModifyUserPermissionsInput{},
 			Description: "",
@@ -524,10 +524,10 @@ var (
 			Type:        &types.UserPermissionsRequestInput{},
 			Description: "",
 		},
-		//{
-		//	Type:        &types.UserPermissionsResponse{},
-		//	Description: "",
-		//},
+		{
+			Type:        &types.UserPermissionsResponse{},
+			Description: "",
+		},
 		{
 			Type:        &types.RecipeMedia{},
 			Description: "",

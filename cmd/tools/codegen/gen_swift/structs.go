@@ -7,7 +7,7 @@ import (
 	"strings"
 	"text/template"
 
-	codegen "github.com/dinnerdonebetter/backend/cmd/tools/gen_clients"
+	"github.com/dinnerdonebetter/backend/cmd/tools/codegen"
 )
 
 const (
