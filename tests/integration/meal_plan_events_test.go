@@ -39,14 +39,12 @@ func (s *TestSuite) TestMealPlanEvents_CompleteLifecycle() {
 			require.NotNil(t, createdMealPlan.Events[0])
 			createdMealPlanEvent := createdMealPlan.Events[0]
 
-			t.Log("changing meal plan event")
 			newMealPlanEvent := fakes.BuildFakeMealPlanEvent()
 			newMealPlanEvent.BelongsToMealPlan = createdMealPlan.ID
 
 			createdMealPlanEvent.Update(converters.ConvertMealPlanEventToMealPlanEventUpdateRequestInput(newMealPlanEvent))
 			assert.NoError(t, testClients.user.UpdateMealPlanEvent(ctx, createdMealPlanEvent))
 
-			t.Log("fetching changed meal plan event")
 			actual, err := testClients.user.GetMealPlanEvent(ctx, createdMealPlan.ID, createdMealPlanEvent.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
@@ -54,10 +52,8 @@ func (s *TestSuite) TestMealPlanEvents_CompleteLifecycle() {
 			checkMealPlanEventEquality(t, newMealPlanEvent, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			t.Log("cleaning up meal plan event")
 			assert.NoError(t, testClients.user.ArchiveMealPlanEvent(ctx, createdMealPlan.ID, createdMealPlanEvent.ID))
 
-			t.Log("cleaning up meal plan")
 			assert.NoError(t, testClients.user.ArchiveMealPlan(ctx, createdMealPlan.ID))
 		}
 	})
@@ -73,7 +69,6 @@ func (s *TestSuite) TestMealPlanEvents_Listing() {
 
 			createdMealPlan := createMealPlanForTest(ctx, t, nil, testClients.admin, testClients.user)
 
-			t.Log("creating meal plan events")
 			var expected []*types.MealPlanEvent
 			for i := 0; i < 5; i++ {
 				exampleMealPlanEvent := fakes.BuildFakeMealPlanEvent()
@@ -83,7 +78,6 @@ func (s *TestSuite) TestMealPlanEvents_Listing() {
 				exampleMealPlanEventInput := converters.ConvertMealPlanEventToMealPlanEventCreationRequestInput(exampleMealPlanEvent)
 				createdMealPlanEvent, err := testClients.user.CreateMealPlanEvent(ctx, createdMealPlan.ID, exampleMealPlanEventInput)
 				require.NoError(t, err)
-				t.Logf("meal plan event %q created", createdMealPlanEvent.ID)
 
 				checkMealPlanEventEquality(t, exampleMealPlanEvent, createdMealPlanEvent)
 
@@ -105,12 +99,10 @@ func (s *TestSuite) TestMealPlanEvents_Listing() {
 				len(actual.Data),
 			)
 
-			t.Log("cleaning up")
 			for _, createdMealPlanEvent := range expected {
 				assert.NoError(t, testClients.user.ArchiveMealPlanEvent(ctx, createdMealPlan.ID, createdMealPlanEvent.ID))
 			}
 
-			t.Log("cleaning up meal plan")
 			assert.NoError(t, testClients.user.ArchiveMealPlan(ctx, createdMealPlan.ID))
 		}
 	})

@@ -4,12 +4,6 @@
 			"level": 0,
 			"provider": "zerolog"
 		},
-		"metrics": {
-			"prometheus": {
-				"runtimeMetricsCollectionInterval": 1000000000
-			},
-			"provider": "prometheus"
-		},
 		"tracing": {
 			"jaeger": {
 				"collector_endpoint": "http://tracing-server:14268/api/traces",
@@ -23,6 +17,11 @@
 		"sendgrid": null,
 		"mailgun": null,
 		"mailjet": null,
+		"provider": ""
+	},
+	"search": {
+		"algolia": null,
+		"elasticsearch": null,
 		"provider": ""
 	},
 	"analytics": {
@@ -40,14 +39,6 @@
 	"routing": {
 		"provider": "chi",
 		"enableCORSForLocalhost": true
-	},
-	"database": {
-		"connectionDetails": "postgres://dbuser:hunter2@pgdatabase:5432/dinner-done-better?sslmode=disable",
-		"debug": true,
-		"logQueries": true,
-		"runMigrations": true,
-		"maxPingAttempts": 50,
-		"pingWaitPeriod": 1500000000
 	},
 	"meta": {
 		"runMode": "testing",
@@ -86,32 +77,38 @@
 		"httpPort": 8000,
 		"debug": false
 	},
+	"database": {
+		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
+		"connectionDetails": "postgres://dbuser:hunter2@pgdatabase:5432/dinner-done-better?sslmode=disable",
+		"debug": true,
+		"logQueries": true,
+		"runMigrations": true,
+		"maxPingAttempts": 50,
+		"pingWaitPeriod": 1500000000
+	},
 	"services": {
+		"recipeStepVessels": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"recipeStepProducts": {
+			"dataChangesTopicName": "data_changes"
+		},
 		"recipeStepCompletionConditions": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"mealPlanOptions": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"validIngredients": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"validIngredientGroups": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"validIngredientPreparations": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"validPreparations": {
+		"validPreparationInstruments": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"mealPlanOptionVotes": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"mealPlans": {
+		"validIngredientGroups": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"recipeStepVessels": {
+		"mealPlanOptions": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"validInstrumentMeasurementUnits": {
@@ -123,37 +120,37 @@
 		"recipeStepIngredients": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"validMeasurementUnits": {
+		"householdInstrumentOwnerships": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"recipeStepProducts": {
+		"recipePrepTasks": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"households": {
+		"serviceSettings": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"vendorProxy": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"validInstruments": {
+		"userIngredientPreferences": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"mealPlanEvents": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"validPreparationInstruments": {
+		"households": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"meals": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"validIngredientStateIngredients": {
+		"mealPlans": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"websockets": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"validIngredientStates": {
+		"recipeRatings": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"mealPlanGroceryListItems": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"validMeasurementConversions": {
@@ -162,21 +159,15 @@
 		"mealPlanTasks": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"recipePrepTasks": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"mealPlanGroceryListItems": {
-			"dataChangesTopicName": "data_changes"
-		},
-		"serviceSettings": {
+		"validIngredientStateIngredients": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"serviceSettingConfigurations": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"recipes": {
-			"dataChangesTopicName": "data_changes",
+		"recipeSteps": {
 			"mediaUploadPrefix": "https://media.example.website/lol",
+			"dataChangesTopicName": "data_changes",
 			"uploads": {
 				"storageConfig": {
 					"bucketName": "recipes",
@@ -196,24 +187,58 @@
 				"debug": false
 			}
 		},
-		"recipeSteps": {
-			"mediaUploadPrefix": "https://media.example.website/lol",
+		"householdInvitations": {
 			"dataChangesTopicName": "data_changes",
+			"debug": false
+		},
+		"validMeasurementUnits": {
+			"dataChangesTopicName": "data_changes",
+			"searchFromDatabase": false
+		},
+		"validIngredientStates": {
+			"dataChangesTopicName": "data_changes",
+			"searchFromDatabase": false
+		},
+		"webhooks": {
+			"dataChangesTopicName": "data_changes",
+			"debug": false
+		},
+		"validIngredients": {
+			"dataChangesTopicName": "data_changes",
+			"searchFromDatabase": false
+		},
+		"meals": {
+			"dataChangesTopicName": "data_changes",
+			"searchFromDatabase": false
+		},
+		"validPreparations": {
+			"dataChangesTopicName": "data_changes",
+			"searchFromDatabase": false
+		},
+		"validInstruments": {
+			"dataChangesTopicName": "data_changes",
+			"searchFromDatabase": false
+		},
+		"oauth2Clients": {
+			"creationEnabled": false,
+			"minimumUsernameLength": 0,
+			"minimumPasswordLength": 0
+		},
+		"validVessels": {
+			"dataChangesTopicName": "data_changes",
+			"searchFromDatabase": false
+		},
+		"recipes": {
+			"dataChangesTopicName": "data_changes",
+			"mediaUploadPrefix": "https://media.example.website/lol",
 			"uploads": {
 				"storageConfig": {
 					"bucketName": "recipes",
 					"provider": "memory"
 				},
 				"debug": false
-			}
-		},
-		"webhooks": {
-			"dataChangesTopicName": "data_changes",
-			"debug": false
-		},
-		"householdInvitations": {
-			"dataChangesTopicName": "data_changes",
-			"debug": false
+			},
+			"searchFromDatabase": false
 		},
 		"auth": {
 			"dataChanges": "data_changes",
@@ -229,9 +254,18 @@
 				"localModeKey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
 				"lifetime": 60000000000
 			},
+			"oauth2": {
+				"domain": "http://localhost:9000",
+				"accessTokenLifespan": 3600000000000,
+				"refreshTokenLifespan": 3600000000000,
+				"debug": false
+			},
 			"enableUserSignup": true,
 			"minimumUsernameLength": 3,
 			"minimumPasswordLength": 8
+		},
+		"validPreparationVessels": {
+			"dataChangesTopicName": "data_changes"
 		}
 	}
 }

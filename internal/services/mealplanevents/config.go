@@ -10,7 +10,7 @@ import (
 type Config struct {
 	_ struct{}
 
-	DataChangesTopicName string `json:"dataChangesTopicName,omitempty" mapstructure:"data_changes_topic_name" toml:"data_changes_topic_name,omitempty"`
+	DataChangesTopicName string `json:"dataChangesTopicName,omitempty" toml:"data_changes_topic_name,omitempty"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)

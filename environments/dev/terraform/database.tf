@@ -4,7 +4,7 @@ locals {
 
 resource "google_sql_database_instance" "dev" {
   name                = "dev"
-  database_version    = "POSTGRES_13"
+  database_version    = "POSTGRES_15"
   region              = local.gcp_region
   deletion_protection = false
 

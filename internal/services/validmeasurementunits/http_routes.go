@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -161,13 +162,20 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get("useDB"))) == "true"
+
 	query := req.URL.Query().Get(types.SearchQueryKey)
+	tracing.AttachSearchQueryToSpan(span, query)
+
 	filter := types.ExtractQueryFilterFromRequest(req)
+	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+
 	logger := s.logger.WithRequest(req).
 		WithValue(keys.FilterLimitKey, filter.Limit).
 		WithValue(keys.FilterPageKey, filter.Page).
 		WithValue(keys.FilterSortByKey, filter.SortBy).
-		WithValue(keys.SearchQueryKey, query)
+		WithValue(keys.SearchQueryKey, query).
+		WithValue("using_database", useDB)
 
 	tracing.AttachRequestToSpan(span, req)
 	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
@@ -183,12 +191,31 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	validMeasurementUnits, err := s.validMeasurementUnitDataManager.SearchForValidMeasurementUnitsByName(ctx, query)
+	var validMeasurementUnits []*types.ValidMeasurementUnit
+	if useDB {
+		validMeasurementUnits, err = s.validMeasurementUnitDataManager.SearchForValidMeasurementUnitsByName(ctx, query)
+	} else {
+		var validMeasurementUnitSubsets []*types.ValidMeasurementUnitSearchSubset
+		validMeasurementUnitSubsets, err = s.searchIndex.Search(ctx, query)
+		if err != nil {
+			observability.AcknowledgeError(err, logger, span, "searching for valid measurement units")
+			s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+			return
+		}
+
+		ids := []string{}
+		for _, validMeasurementUnitSubset := range validMeasurementUnitSubsets {
+			ids = append(ids, validMeasurementUnitSubset.ID)
+		}
+
+		validMeasurementUnits, err = s.validMeasurementUnitDataManager.GetValidMeasurementUnitsWithIDs(ctx, ids)
+	}
+
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
 		validMeasurementUnits = []*types.ValidMeasurementUnit{}
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "searching valid measurement units")
+		observability.AcknowledgeError(err, logger, span, "searching for valid measurement units")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}

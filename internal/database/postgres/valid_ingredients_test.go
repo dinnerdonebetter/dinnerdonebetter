@@ -14,6 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/Masterminds/squirrel"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -551,6 +552,65 @@ func TestQuerier_GetValidIngredients(T *testing.T) {
 	})
 }
 
+func TestQuerier_GetValidIngredientsWithIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleValidIngredientList := fakes.BuildFakeValidIngredientList()
+
+		exampleIDs := []string{}
+		for _, exampleValidIngredient := range exampleValidIngredientList.Data {
+			exampleIDs = append(exampleIDs, exampleValidIngredient.ID)
+		}
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		where := squirrel.Eq{"valid_ingredients.id": exampleIDs}
+		query, args := c.buildListQuery(ctx, validIngredientsTable, nil, nil, where, householdOwnershipColumn, validIngredientsTableColumns, "", false, nil)
+
+		db.ExpectQuery(formatQueryForSQLMock(query)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockRowsFromValidIngredients(true, exampleValidIngredientList.FilteredCount, exampleValidIngredientList.Data...))
+
+		actual, err := c.GetValidIngredientsWithIDs(ctx, exampleIDs)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleValidIngredientList.Data, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_GetValidIngredientThatNeedSearchIndexing(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleValidIngredientList := fakes.BuildFakeValidIngredientList()
+
+		c, db := buildTestClient(t)
+
+		exampleIDs := []string{}
+		for _, exampleValidIngredient := range exampleValidIngredientList.Data {
+			exampleIDs = append(exampleIDs, exampleValidIngredient.ID)
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(validIngredientsNeedingIndexingQuery)).
+			WithArgs(interfaceToDriverValue(nil)...).
+			WillReturnRows(buildMockRowsFromIDs(exampleIDs...))
+
+		actual, err := c.GetValidIngredientIDsThatNeedSearchIndexing(ctx)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleIDs, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
 func TestQuerier_CreateValidIngredient(T *testing.T) {
 	T.Parallel()
 
@@ -866,6 +926,61 @@ func TestQuerier_ArchiveValidIngredient(T *testing.T) {
 			WillReturnError(errors.New("blah"))
 
 		assert.Error(t, c.ArchiveValidIngredient(ctx, exampleValidIngredient.ID))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_MarkValidIngredientAsIndexed(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleValidIngredient := fakes.BuildFakeValidIngredient()
+
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleValidIngredient.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(updateValidIngredientLastIndexedAtQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		assert.NoError(t, c.MarkValidIngredientAsIndexed(ctx, exampleValidIngredient.ID))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with invalid ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+
+		assert.Error(t, c.MarkValidIngredientAsIndexed(ctx, ""))
+	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleValidIngredient := fakes.BuildFakeValidIngredient()
+
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleValidIngredient.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(updateValidIngredientLastIndexedAtQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		assert.Error(t, c.MarkValidIngredientAsIndexed(ctx, exampleValidIngredient.ID))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})

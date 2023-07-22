@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockconsumers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -109,7 +109,7 @@ func Test_buildWebsocketErrorFunc(T *testing.T) {
 		encoder := encoding.ProvideServerEncoderDecoder(nil, tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		res := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		req := httptest.NewRequest(http.MethodGet, "/", http.NoBody)
 
 		buildWebsocketErrorFunc(encoder)(res, req, 200, errors.New("blah"))
 	})

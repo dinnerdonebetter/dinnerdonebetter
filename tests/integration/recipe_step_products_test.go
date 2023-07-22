@@ -17,7 +17,7 @@ func checkRecipeStepProductEquality(t *testing.T, expected, actual *types.Recipe
 
 	assert.NotZero(t, actual.ID)
 	assert.Equal(t, expected.Name, actual.Name, "expected Name for recipe step product %s to be %v, but it was %v", expected.ID, expected.Name, actual.Name)
-	assert.Equal(t, expected.Type, actual.Type, "expected Type for recipe step product %s to be %v, but it was %v", expected.ID, expected.Type, actual.Type)
+	assert.Equal(t, expected.Type, actual.Type, "expected IndexType for recipe step product %s to be %v, but it was %v", expected.ID, expected.Type, actual.Type)
 	assert.Equal(t, expected.MeasurementUnit.ID, actual.MeasurementUnit.ID, "expected MeasurementUnit.ID for recipe step product %s to be %v, but it was %v", expected.ID, expected.MeasurementUnit.ID, actual.MeasurementUnit.ID)
 	assert.Equal(t, expected.MinimumQuantity, actual.MinimumQuantity, "expected MinimumQuantity for recipe step product %s to be %v, but it was %v", expected.ID, expected.MinimumQuantity, actual.MinimumQuantity)
 	assert.Equal(t, expected.MaximumQuantity, actual.MaximumQuantity, "expected MaximumQuantity for recipe step product %s to be %v, but it was %v", expected.ID, expected.MaximumQuantity, actual.MaximumQuantity)
@@ -52,26 +52,22 @@ func (s *TestSuite) TestRecipeStepProducts_CompleteLifecycle() {
 				break
 			}
 
-			t.Log("creating valid measurement unit")
 			exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
 			exampleValidMeasurementUnitInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleValidMeasurementUnit)
 			createdValidMeasurementUnit, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
 			require.NoError(t, err)
-			t.Logf("valid measurement unit %q created", createdValidMeasurementUnit.ID)
 			checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
 
 			createdValidMeasurementUnit, err = testClients.admin.GetValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID)
 			requireNotNilAndNoProblems(t, createdValidMeasurementUnit, err)
 			checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
 
-			t.Log("creating recipe step product")
 			exampleRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
 			exampleRecipeStepProduct.BelongsToRecipeStep = createdRecipeStepID
 			exampleRecipeStepProduct.MeasurementUnit = createdValidMeasurementUnit
 			exampleRecipeStepProductInput := converters.ConvertRecipeStepProductToRecipeStepProductCreationRequestInput(exampleRecipeStepProduct)
 			createdRecipeStepProduct, err := testClients.admin.CreateRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepProductInput)
 			require.NoError(t, err)
-			t.Logf("recipe step product %q created", createdRecipeStepProduct.ID)
 
 			checkRecipeStepProductEquality(t, exampleRecipeStepProduct, createdRecipeStepProduct)
 
@@ -81,14 +77,12 @@ func (s *TestSuite) TestRecipeStepProducts_CompleteLifecycle() {
 
 			checkRecipeStepProductEquality(t, exampleRecipeStepProduct, createdRecipeStepProduct)
 
-			t.Log("changing recipe step product")
 			newRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
 			newRecipeStepProduct.MeasurementUnit = createdValidMeasurementUnit
 			createdRecipeStepProduct.Update(converters.ConvertRecipeStepProductToRecipeStepProductUpdateRequestInput(newRecipeStepProduct))
 
 			require.NoError(t, testClients.admin.UpdateRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepProduct))
 
-			t.Log("fetching changed recipe step product")
 			actual, err := testClients.user.GetRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepProduct.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
@@ -96,13 +90,10 @@ func (s *TestSuite) TestRecipeStepProducts_CompleteLifecycle() {
 			checkRecipeStepProductEquality(t, newRecipeStepProduct, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			t.Log("cleaning up recipe step product")
 			assert.NoError(t, testClients.user.ArchiveRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepProduct.ID))
 
-			t.Log("cleaning up recipe step")
 			assert.NoError(t, testClients.user.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStepID))
 
-			t.Log("cleaning up recipe")
 			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
@@ -126,19 +117,16 @@ func (s *TestSuite) TestRecipeStepProducts_Listing() {
 				break
 			}
 
-			t.Log("creating valid measurement unit")
 			exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
 			exampleValidMeasurementUnitInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleValidMeasurementUnit)
 			createdValidMeasurementUnit, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
 			require.NoError(t, err)
-			t.Logf("valid measurement unit %q created", createdValidMeasurementUnit.ID)
 			checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
 
 			createdValidMeasurementUnit, err = testClients.admin.GetValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID)
 			requireNotNilAndNoProblems(t, createdValidMeasurementUnit, err)
 			checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
 
-			t.Log("creating recipe step products")
 			var expected []*types.RecipeStepProduct
 			for i := 0; i < 5; i++ {
 				exampleRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
@@ -147,7 +135,6 @@ func (s *TestSuite) TestRecipeStepProducts_Listing() {
 				exampleRecipeStepProductInput := converters.ConvertRecipeStepProductToRecipeStepProductCreationRequestInput(exampleRecipeStepProduct)
 				createdRecipeStepProduct, createdRecipeStepProductErr := testClients.admin.CreateRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, exampleRecipeStepProductInput)
 				require.NoError(t, createdRecipeStepProductErr)
-				t.Logf("recipe step product %q created", createdRecipeStepProduct.ID)
 
 				checkRecipeStepProductEquality(t, exampleRecipeStepProduct, createdRecipeStepProduct)
 
@@ -169,15 +156,12 @@ func (s *TestSuite) TestRecipeStepProducts_Listing() {
 				len(actual.Data),
 			)
 
-			t.Log("cleaning up")
 			for _, createdRecipeStepProduct := range expected {
 				assert.NoError(t, testClients.user.ArchiveRecipeStepProduct(ctx, createdRecipe.ID, createdRecipeStepID, createdRecipeStepProduct.ID))
 			}
 
-			t.Log("cleaning up recipe step")
 			assert.NoError(t, testClients.user.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStepID))
 
-			t.Log("cleaning up recipe")
 			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})

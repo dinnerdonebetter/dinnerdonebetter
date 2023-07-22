@@ -7,8 +7,8 @@ import (
 )
 
 type Config struct {
-	APIKey       string `json:"apiKey" mapstructure:"api_key" toml:"api_key"`
-	DataPlaneURL string `json:"dataPlaneURL" mapstructure:"data_plane_url" toml:"data_plane_url,omitempty"`
+	APIKey       string `json:"apiKey"       toml:"api_key"`
+	DataPlaneURL string `json:"dataPlaneURL" toml:"data_plane_url,omitempty"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)

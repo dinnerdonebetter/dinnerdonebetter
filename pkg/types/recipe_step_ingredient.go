@@ -27,25 +27,26 @@ func init() {
 type (
 	// RecipeStepIngredient represents a recipe step ingredient.
 	RecipeStepIngredient struct {
-		_                      struct{}
-		CreatedAt              time.Time            `json:"createdAt"`
-		RecipeStepProductID    *string              `json:"recipeStepProductID"`
-		ArchivedAt             *time.Time           `json:"archivedAt"`
-		Ingredient             *ValidIngredient     `json:"ingredient"`
-		LastUpdatedAt          *time.Time           `json:"lastUpdatedAt"`
-		MaximumQuantity        *float32             `json:"maximumQuantity"`
-		VesselIndex            *uint16              `json:"vesselIndex"`
-		ProductPercentageToUse *float32             `json:"productPercentageToUse"`
-		Name                   string               `json:"name"`
-		QuantityNotes          string               `json:"quantityNotes"`
-		ID                     string               `json:"id"`
-		BelongsToRecipeStep    string               `json:"belongsToRecipeStep"`
-		IngredientNotes        string               `json:"ingredientNotes"`
-		MeasurementUnit        ValidMeasurementUnit `json:"measurementUnit"`
-		MinimumQuantity        float32              `json:"minimumQuantity"`
-		OptionIndex            uint16               `json:"optionIndex"`
-		Optional               bool                 `json:"optional"`
-		ToTaste                bool                 `json:"toTaste"`
+		_                         struct{}
+		CreatedAt                 time.Time            `json:"createdAt"`
+		RecipeStepProductID       *string              `json:"recipeStepProductID"`
+		ArchivedAt                *time.Time           `json:"archivedAt"`
+		Ingredient                *ValidIngredient     `json:"ingredient"`
+		LastUpdatedAt             *time.Time           `json:"lastUpdatedAt"`
+		MaximumQuantity           *float32             `json:"maximumQuantity"`
+		VesselIndex               *uint16              `json:"vesselIndex"`
+		ProductPercentageToUse    *float32             `json:"productPercentageToUse"`
+		RecipeStepProductRecipeID *string              `json:"productOfRecipeID"`
+		QuantityNotes             string               `json:"quantityNotes"`
+		ID                        string               `json:"id"`
+		BelongsToRecipeStep       string               `json:"belongsToRecipeStep"`
+		IngredientNotes           string               `json:"ingredientNotes"`
+		Name                      string               `json:"name"`
+		MeasurementUnit           ValidMeasurementUnit `json:"measurementUnit"`
+		MinimumQuantity           float32              `json:"minimumQuantity"`
+		OptionIndex               uint16               `json:"optionIndex"`
+		Optional                  bool                 `json:"optional"`
+		ToTaste                   bool                 `json:"toTaste"`
 	}
 
 	// RecipeStepIngredientCreationRequestInput represents what a user could set as input for creating recipe step ingredients.
@@ -57,10 +58,11 @@ type (
 		MaximumQuantity                 *float32 `json:"maximumQuantity"`
 		VesselIndex                     *uint16  `json:"vesselIndex"`
 		ProductPercentageToUse          *float32 `json:"productPercentageToUse"`
-		QuantityNotes                   string   `json:"quantityNotes"`
+		RecipeStepProductRecipeID       *string  `json:"productOfRecipeID"`
 		IngredientNotes                 string   `json:"ingredientNotes"`
 		MeasurementUnitID               string   `json:"measurementUnitID"`
 		Name                            string   `json:"name"`
+		QuantityNotes                   string   `json:"quantityNotes"`
 		MinimumQuantity                 float32  `json:"minimumQuantity"`
 		OptionIndex                     uint16   `json:"optionIndex"`
 		Optional                        bool     `json:"optional"`
@@ -70,6 +72,7 @@ type (
 	// RecipeStepIngredientDatabaseCreationInput represents what a user could set as input for creating recipe step ingredients.
 	RecipeStepIngredientDatabaseCreationInput struct {
 		_                               struct{}
+		RecipeStepProductRecipeID       *string
 		IngredientID                    *string
 		RecipeStepProductID             *string
 		ProductOfRecipeStepIndex        *uint64
@@ -78,11 +81,11 @@ type (
 		VesselIndex                     *uint16
 		ProductPercentageToUse          *float32
 		ID                              string
-		QuantityNotes                   string
 		MeasurementUnitID               string
 		BelongsToRecipeStep             string
 		Name                            string
 		IngredientNotes                 string
+		QuantityNotes                   string
 		MinimumQuantity                 float32
 		OptionIndex                     uint16
 		Optional                        bool
@@ -93,20 +96,21 @@ type (
 	RecipeStepIngredientUpdateRequestInput struct {
 		_ struct{}
 		// IngredientID and RecipeStepProductID are already pointers, and I don't feel like making it a double pointer.
-		IngredientID           *string  `json:"ingredientID,omitempty"`
-		RecipeStepProductID    *string  `json:"recipeStepProductID,omitempty"`
-		Name                   *string  `json:"name,omitempty"`
-		Optional               *bool    `json:"optional,omitempty"`
-		MeasurementUnitID      *string  `json:"measurementUnitID,omitempty"`
-		QuantityNotes          *string  `json:"quantityNotes,omitempty"`
-		IngredientNotes        *string  `json:"ingredientNotes,omitempty"`
-		BelongsToRecipeStep    *string  `json:"belongsToRecipeStep,omitempty"`
-		MinimumQuantity        *float32 `json:"minimumQuantity,omitempty"`
-		MaximumQuantity        *float32 `json:"maximumQuantity,omitempty"`
-		OptionIndex            *uint16  `json:"optionIndex,omitempty"`
-		VesselIndex            *uint16  `json:"vesselIndex,omitempty"`
-		ToTaste                *bool    `json:"toTaste,omitempty"`
-		ProductPercentageToUse *float32 `json:"productPercentageToUse,omitempty"`
+		IngredientID              *string  `json:"ingredientID,omitempty"`
+		RecipeStepProductID       *string  `json:"recipeStepProductID,omitempty"`
+		Name                      *string  `json:"name,omitempty"`
+		Optional                  *bool    `json:"optional,omitempty"`
+		MeasurementUnitID         *string  `json:"measurementUnitID,omitempty"`
+		QuantityNotes             *string  `json:"quantityNotes,omitempty"`
+		IngredientNotes           *string  `json:"ingredientNotes,omitempty"`
+		BelongsToRecipeStep       *string  `json:"belongsToRecipeStep,omitempty"`
+		MinimumQuantity           *float32 `json:"minimumQuantity,omitempty"`
+		MaximumQuantity           *float32 `json:"maximumQuantity,omitempty"`
+		OptionIndex               *uint16  `json:"optionIndex,omitempty"`
+		VesselIndex               *uint16  `json:"vesselIndex,omitempty"`
+		ToTaste                   *bool    `json:"toTaste,omitempty"`
+		ProductPercentageToUse    *float32 `json:"productPercentageToUse,omitempty"`
+		RecipeStepProductRecipeID *string  `json:"productOfRecipeID"`
 	}
 
 	// RecipeStepIngredientDataManager describes a structure capable of storing recipe step ingredients permanently.
@@ -137,6 +141,10 @@ func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateRequestIn
 
 	if input.RecipeStepProductID != nil && (x.RecipeStepProductID == nil || (*input.RecipeStepProductID != "" && *input.RecipeStepProductID != *x.RecipeStepProductID)) {
 		x.RecipeStepProductID = input.RecipeStepProductID
+	}
+
+	if input.RecipeStepProductRecipeID != nil && x.RecipeStepProductRecipeID != nil && *input.RecipeStepProductRecipeID != *x.RecipeStepProductRecipeID {
+		x.RecipeStepProductRecipeID = input.RecipeStepProductRecipeID
 	}
 
 	if input.Name != nil && *input.Name != x.Name {

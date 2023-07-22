@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -19,7 +19,7 @@ import (
 func buildTestService() *service {
 	return &service{
 		logger:                                logging.NewNoopLogger(),
-		validPreparationInstrumentDataManager: &mocktypes.ValidPreparationInstrumentDataManager{},
+		validPreparationInstrumentDataManager: &mocktypes.ValidPreparationInstrumentDataManagerMock{},
 		validPreparationInstrumentIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:                        mockencoding.NewMockEncoderDecoder(),
 		tracer:                                tracing.NewTracerForTest("test"),
@@ -35,7 +35,7 @@ func TestProvideValidPreparationInstrumentsService(T *testing.T) {
 		rpm := mockrouting.NewRouteParamManager()
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
-			ValidPreparationInstrumentIDURIParamKey,
+			ValidPreparationVesselIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
@@ -56,7 +56,7 @@ func TestProvideValidPreparationInstrumentsService(T *testing.T) {
 		s, err := ProvideService(
 			logging.NewNoopLogger(),
 			cfg,
-			&mocktypes.ValidPreparationInstrumentDataManager{},
+			&mocktypes.ValidPreparationInstrumentDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
@@ -82,7 +82,7 @@ func TestProvideValidPreparationInstrumentsService(T *testing.T) {
 		s, err := ProvideService(
 			logging.NewNoopLogger(),
 			cfg,
-			&mocktypes.ValidPreparationInstrumentDataManager{},
+			&mocktypes.ValidPreparationInstrumentDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,

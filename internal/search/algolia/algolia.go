@@ -13,10 +13,16 @@ import (
 	algolia "github.com/algolia/algoliasearch-client-go/v3/algolia/search"
 )
 
-var _ search.IndexManager[types.ValidIngredient] = (*IndexManager[types.ValidIngredient])(nil)
+var (
+	_ search.Index[types.ValidIngredientSearchSubset]      = (*indexManager[types.ValidIngredientSearchSubset])(nil)
+	_ search.Index[types.ValidInstrumentSearchSubset]      = (*indexManager[types.ValidInstrumentSearchSubset])(nil)
+	_ search.Index[types.ValidMeasurementUnitSearchSubset] = (*indexManager[types.ValidMeasurementUnitSearchSubset])(nil)
+	_ search.Index[types.ValidPreparationSearchSubset]     = (*indexManager[types.ValidPreparationSearchSubset])(nil)
+	_ search.Index[types.ValidIngredientStateSearchSubset] = (*indexManager[types.ValidIngredientStateSearchSubset])(nil)
+)
 
 type (
-	IndexManager[T search.Searchable] struct {
+	indexManager[T search.Searchable] struct {
 		logger   logging.Logger
 		tracer   tracing.Tracer
 		client   *algolia.Index
@@ -31,8 +37,8 @@ func ProvideIndexManager[T search.Searchable](
 	tracerProvider tracing.TracerProvider,
 	cfg *Config,
 	indexName string,
-) (search.IndexManager[T], error) {
-	im := &IndexManager[T]{
+) (search.Index[T], error) {
+	im := &indexManager[T]{
 		tracer:  tracing.NewTracer(tracerProvider.Tracer(fmt.Sprintf("search_%s", indexName))),
 		logger:  logging.EnsureLogger(logger).WithName(indexName),
 		client:  algolia.NewClient(cfg.AppID, cfg.APIKey).InitIndex(indexName),

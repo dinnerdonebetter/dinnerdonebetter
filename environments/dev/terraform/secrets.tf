@@ -44,6 +44,27 @@ resource "google_secret_manager_secret_version" "outbound_emails_topic_name" {
   secret_data = google_pubsub_topic.outbound_emails_topic.name
 }
 
+# API server oauth2 token encryption key
+
+resource "random_string" "oauth2_token_encryption_key" {
+  length  = 32
+  special = false
+}
+
+resource "google_secret_manager_secret" "oauth2_token_encryption_key" {
+  secret_id = "oauth2_token_encryption_key"
+
+  replication {
+    automatic = true
+  }
+}
+
+resource "google_secret_manager_secret_version" "oauth2_token_encryption_key" {
+  secret = google_secret_manager_secret.oauth2_token_encryption_key.id
+
+  secret_data = random_string.oauth2_token_encryption_key.result
+}
+
 # API server cookie hash key
 
 resource "random_string" "cookie_hash_key" {
@@ -142,4 +163,36 @@ resource "google_secret_manager_secret_version" "segment_api_token" {
   secret = google_secret_manager_secret.segment_api_token.id
 
   secret_data = var.SEGMENT_API_TOKEN
+}
+
+# Segment API token
+
+resource "google_secret_manager_secret" "algolia_application_id" {
+  secret_id = "algolia_application_id"
+
+  replication {
+    automatic = true
+  }
+}
+
+resource "google_secret_manager_secret_version" "algolia_application_id" {
+  secret = google_secret_manager_secret.algolia_application_id.id
+
+  secret_data = var.ALGOLIA_APPLICATION_ID
+}
+
+# Segment API token
+
+resource "google_secret_manager_secret" "algolia_api_key" {
+  secret_id = "algolia_api_key"
+
+  replication {
+    automatic = true
+  }
+}
+
+resource "google_secret_manager_secret_version" "algolia_api_key" {
+  secret = google_secret_manager_secret.algolia_api_key.id
+
+  secret_data = var.ALGOLIA_API_KEY
 }

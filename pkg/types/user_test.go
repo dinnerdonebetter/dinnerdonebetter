@@ -10,17 +10,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestIsValidHouseholdStatus(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		assert.True(t, IsValidHouseholdStatus(string(GoodStandingUserAccountStatus)))
-		assert.False(t, IsValidHouseholdStatus("blah"))
-	})
-}
-
 func TestUser_Update(T *testing.T) {
 	T.Parallel()
 

@@ -225,11 +225,9 @@ func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Logf("determining household ID")
 			currentStatus, statusErr := testClients.user.UserStatus(s.ctx)
 			requireNotNilAndNoProblems(t, currentStatus, statusErr)
 			relevantHouseholdID := currentStatus.ActiveHousehold
-			t.Logf("initial household is %s; initial user ID is %s", relevantHouseholdID, s.user.ID)
 
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
@@ -243,10 +241,8 @@ func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
 			requireNotNilAndNoProblems(t, createdWebhook, err)
 			require.Equal(t, relevantHouseholdID, createdWebhook.BelongsToHousehold)
 
-			t.Logf("creating user to invite")
 			u, _, c, _ := createUserAndClientForTest(ctx, t, nil)
 
-			t.Logf("inviting user")
 			invitation, err := testClients.user.InviteUserToHousehold(ctx, relevantHouseholdID, &types.HouseholdInvitationCreationRequestInput{
 				Note:    t.Name(),
 				ToName:  t.Name(),
@@ -254,26 +250,21 @@ func (s *TestSuite) TestHouseholds_InvitingPreExistentUser() {
 			})
 			require.NoError(t, err)
 
-			t.Logf("checking for sent invitation")
 			sentInvitations, err := testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
 			assert.NotEmpty(t, sentInvitations.Data)
 
-			t.Logf("checking for received invitation")
 			invitations, err := c.GetPendingHouseholdInvitationsForUser(ctx, nil)
 			requireNotNilAndNoProblems(t, invitations, err)
 			assert.NotEmpty(t, invitations.Data)
 
-			t.Logf("accepting invitation")
 			err = c.AcceptHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name())
 			require.NoError(t, err)
 
-			t.Logf("checking for sent invitation")
 			sentInvitations, err = testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
 			assert.Empty(t, sentInvitations.Data)
 
-			t.Logf("fetching households")
 			households, err := c.GetHouseholds(ctx, nil)
 
 			var found bool
@@ -300,11 +291,9 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Logf("determining household ID")
 			currentStatus, statusErr := testClients.user.UserStatus(s.ctx)
 			requireNotNilAndNoProblems(t, currentStatus, statusErr)
 			relevantHouseholdID := currentStatus.ActiveHousehold
-			t.Logf("initial household is %s; initial user ID is %s", relevantHouseholdID, s.user.ID)
 
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
@@ -318,7 +307,6 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
 			requireNotNilAndNoProblems(t, createdWebhook, err)
 			require.Equal(t, relevantHouseholdID, createdWebhook.BelongsToHousehold)
 
-			t.Logf("inviting user")
 			inviteReq := &types.HouseholdInvitationCreationRequestInput{
 				Note:    t.Name(),
 				ToEmail: gofakeit.Email(),
@@ -326,28 +314,23 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
 			invitation, err := testClients.user.InviteUserToHousehold(ctx, relevantHouseholdID, inviteReq)
 			require.NoError(t, err)
 
-			t.Logf("checking for sent invitation")
 			sentInvitations, err := testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
 			assert.NotEmpty(t, sentInvitations.Data)
 
-			t.Logf("creating user to invite")
 			_, _, c, _ := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
 				EmailAddress: inviteReq.ToEmail,
 				Username:     fakes.BuildFakeUser().Username,
 				Password:     gofakeit.Password(true, true, true, true, false, 64),
 			})
 
-			t.Logf("checking for invitation")
 			invitations, err := c.GetPendingHouseholdInvitationsForUser(ctx, nil)
 			requireNotNilAndNoProblems(t, invitations, err)
 			assert.NotEmpty(t, invitations.Data)
 
-			t.Logf("accepting invitation")
 			err = c.AcceptHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name())
 			require.NoError(t, err)
 
-			t.Logf("fetching households")
 			households, err := c.GetHouseholds(ctx, nil)
 
 			var found bool
@@ -363,7 +346,6 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependently() {
 			_, err = c.GetWebhook(ctx, createdWebhook.ID)
 			require.NoError(t, err)
 
-			t.Logf("checking for sent invitation")
 			sentInvitations, err = testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
 			assert.Empty(t, sentInvitations.Data)
@@ -379,11 +361,9 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependentlyAndThenCan
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Logf("determining household ID")
 			currentStatus, statusErr := testClients.user.UserStatus(s.ctx)
 			requireNotNilAndNoProblems(t, currentStatus, statusErr)
 			relevantHouseholdID := currentStatus.ActiveHousehold
-			t.Logf("initial household is %s; initial user ID is %s", relevantHouseholdID, s.user.ID)
 
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
@@ -397,7 +377,6 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependentlyAndThenCan
 			requireNotNilAndNoProblems(t, createdWebhook, err)
 			require.Equal(t, relevantHouseholdID, createdWebhook.BelongsToHousehold)
 
-			t.Logf("inviting user")
 			inviteReq := &types.HouseholdInvitationCreationRequestInput{
 				Note:    t.Name(),
 				ToEmail: gofakeit.Email(),
@@ -405,28 +384,23 @@ func (s *TestSuite) TestHouseholds_InvitingUserWhoSignsUpIndependentlyAndThenCan
 			invitation, err := testClients.user.InviteUserToHousehold(ctx, relevantHouseholdID, inviteReq)
 			require.NoError(t, err)
 
-			t.Logf("checking for sent invitation")
 			sentInvitations, err := testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
 			assert.NotEmpty(t, sentInvitations.Data)
 
-			t.Logf("creating user to invite")
 			_, _, c, _ := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
 				EmailAddress: inviteReq.ToEmail,
 				Username:     fakes.BuildFakeUser().Username,
 				Password:     gofakeit.Password(true, true, true, true, false, 64),
 			})
 
-			t.Logf("checking for invitation")
 			invitations, err := c.GetPendingHouseholdInvitationsForUser(ctx, nil)
 			requireNotNilAndNoProblems(t, invitations, err)
 			assert.NotEmpty(t, invitations.Data)
 
-			t.Logf("cancelling invitation")
 			err = testClients.user.CancelHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name())
 			require.NoError(t, err)
 
-			t.Logf("checking for sent invitation")
 			sentInvitations, err = testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
 			assert.Empty(t, sentInvitations.Data)
@@ -442,11 +416,9 @@ func (s *TestSuite) TestHouseholds_InvitingNewUserWithInviteLink() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Logf("determining household ID")
 			currentStatus, statusErr := testClients.user.UserStatus(s.ctx)
 			requireNotNilAndNoProblems(t, currentStatus, statusErr)
 			relevantHouseholdID := currentStatus.ActiveHousehold
-			t.Logf("initial household is %s; initial user ID is %s", relevantHouseholdID, s.user.ID)
 
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
@@ -460,7 +432,6 @@ func (s *TestSuite) TestHouseholds_InvitingNewUserWithInviteLink() {
 			requireNotNilAndNoProblems(t, createdWebhook, err)
 			require.Equal(t, relevantHouseholdID, createdWebhook.BelongsToHousehold)
 
-			t.Logf("inviting user")
 			inviteReq := &types.HouseholdInvitationCreationRequestInput{
 				Note:    t.Name(),
 				ToEmail: gofakeit.Email(),
@@ -471,12 +442,10 @@ func (s *TestSuite) TestHouseholds_InvitingNewUserWithInviteLink() {
 			createdInvitation, err = testClients.user.GetHouseholdInvitation(ctx, relevantHouseholdID, createdInvitation.ID)
 			requireNotNilAndNoProblems(t, createdInvitation, err)
 
-			t.Logf("checking for sent invitation")
 			sentInvitations, err := testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
 			assert.NotEmpty(t, sentInvitations.Data)
 
-			t.Logf("creating user to invite")
 			_, _, c, _ := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
 				EmailAddress:    inviteReq.ToEmail,
 				Username:        fakes.BuildFakeUser().Username,
@@ -485,7 +454,6 @@ func (s *TestSuite) TestHouseholds_InvitingNewUserWithInviteLink() {
 				InvitationToken: createdInvitation.Token,
 			})
 
-			t.Logf("fetching households")
 			households, err := c.GetHouseholds(ctx, nil)
 			require.NoError(t, err)
 
@@ -512,11 +480,9 @@ func (s *TestSuite) TestHouseholds_InviteCanBeCancelled() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Logf("determining household ID")
 			currentStatus, statusErr := testClients.user.UserStatus(s.ctx)
 			requireNotNilAndNoProblems(t, currentStatus, statusErr)
 			relevantHouseholdID := currentStatus.ActiveHousehold
-			t.Logf("initial household is %s; initial user ID is %s", relevantHouseholdID, s.user.ID)
 
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
@@ -530,7 +496,6 @@ func (s *TestSuite) TestHouseholds_InviteCanBeCancelled() {
 			requireNotNilAndNoProblems(t, createdWebhook, err)
 			require.Equal(t, relevantHouseholdID, createdWebhook.BelongsToHousehold)
 
-			t.Logf("inviting user")
 			inviteReq := &types.HouseholdInvitationCreationRequestInput{
 				Note:    t.Name(),
 				ToEmail: gofakeit.Email(),
@@ -540,19 +505,16 @@ func (s *TestSuite) TestHouseholds_InviteCanBeCancelled() {
 
 			require.NoError(t, testClients.user.CancelHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name()))
 
-			t.Logf("checking for sent invitation")
 			sentInvitations, err := testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
 			assert.Empty(t, sentInvitations.Data)
 
-			t.Logf("creating user to invite")
 			_, _, c, _ := createUserAndClientForTest(ctx, t, &types.UserRegistrationInput{
 				EmailAddress: inviteReq.ToEmail,
 				Username:     fakes.BuildFakeUser().Username,
 				Password:     gofakeit.Password(true, true, true, true, false, 64),
 			})
 
-			t.Logf("checking for invitation")
 			invitations, err := c.GetPendingHouseholdInvitationsForUser(ctx, nil)
 			requireNotNilAndNoProblems(t, invitations, err)
 			assert.Empty(t, invitations.Data)
@@ -568,11 +530,9 @@ func (s *TestSuite) TestHouseholds_InviteCanBeRejected() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Logf("determining household ID")
 			currentStatus, statusErr := testClients.user.UserStatus(s.ctx)
 			requireNotNilAndNoProblems(t, currentStatus, statusErr)
 			relevantHouseholdID := currentStatus.ActiveHousehold
-			t.Logf("initial household is %s; initial user ID is %s", relevantHouseholdID, s.user.ID)
 
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
@@ -586,31 +546,25 @@ func (s *TestSuite) TestHouseholds_InviteCanBeRejected() {
 			requireNotNilAndNoProblems(t, createdWebhook, err)
 			require.Equal(t, relevantHouseholdID, createdWebhook.BelongsToHousehold)
 
-			t.Logf("creating user to invite")
 			u, _, c, _ := createUserAndClientForTest(ctx, t, nil)
 
-			t.Logf("inviting user")
 			invitation, err := testClients.user.InviteUserToHousehold(ctx, relevantHouseholdID, &types.HouseholdInvitationCreationRequestInput{
 				Note:    t.Name(),
 				ToEmail: u.EmailAddress,
 			})
 			require.NoError(t, err)
 
-			t.Logf("checking for sent invitation")
 			sentInvitations, err := testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
 			assert.NotEmpty(t, sentInvitations.Data)
 
-			t.Logf("checking for received invitation")
 			invitations, err := c.GetPendingHouseholdInvitationsForUser(ctx, nil)
 			requireNotNilAndNoProblems(t, invitations, err)
 			assert.NotEmpty(t, invitations.Data)
 
-			t.Logf("accepting invitation")
 			err = c.RejectHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name())
 			require.NoError(t, err)
 
-			t.Logf("checking for sent invitation")
 			sentInvitations, err = testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
 			assert.Empty(t, sentInvitations.Data)
@@ -619,7 +573,7 @@ func (s *TestSuite) TestHouseholds_InviteCanBeRejected() {
 }
 
 func (s *TestSuite) TestHouseholds_ChangingMemberships() {
-	s.runForEachClient("should be possible to change members of a household", func(testClients *testClientWrapper) func() {
+	s.runForCookieClient("should be possible to change members of a household", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -630,7 +584,6 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 
 			currentStatus, statusErr := testClients.user.UserStatus(s.ctx)
 			requireNotNilAndNoProblems(t, currentStatus, statusErr)
-			t.Logf("initial household is %s; initial user ID is %s", currentStatus.ActiveHousehold, s.user.ID)
 
 			// fetch household data
 			householdCreationInput := &types.HouseholdCreationRequestInput{
@@ -640,11 +593,7 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 			require.NoError(t, householdCreationErr)
 			require.NotNil(t, household)
 
-			t.Logf("created household %s", household.ID)
-
 			require.NoError(t, testClients.user.SwitchActiveHousehold(ctx, household.ID))
-
-			t.Logf("switched user test client active household to %s, creating webhook", household.ID)
 
 			// Create webhook.
 			exampleWebhook := fakes.BuildFakeWebhook()
@@ -658,8 +607,6 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 			requireNotNilAndNoProblems(t, createdWebhook, err)
 			require.Equal(t, household.ID, createdWebhook.BelongsToHousehold)
 
-			t.Logf("created webhook %s for household %s", createdWebhook.ID, createdWebhook.BelongsToHousehold)
-
 			// create dummy users
 			users := []*types.User{}
 			clients := []*apiclient.Client{}
@@ -672,12 +619,10 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 
 				currentStatus, statusErr = c.UserStatus(s.ctx)
 				requireNotNilAndNoProblems(t, currentStatus, statusErr)
-				t.Logf("created user user %q with household %s", u.ID, currentStatus.ActiveHousehold)
 			}
 
 			// check that each user cannot see the unreachable webhook
 			for i := 0; i < userCount; i++ {
-				t.Logf("checking that user %q CANNOT see webhook %s belonging to household %s", users[i].ID, createdWebhook.ID, createdWebhook.BelongsToHousehold)
 				webhook, err := clients[i].GetWebhook(ctx, createdWebhook.ID)
 				require.Nil(t, webhook)
 				require.Error(t, err)
@@ -685,31 +630,25 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 
 			// add them to the household
 			for i := 0; i < userCount; i++ {
-				t.Logf("adding user %q to household %s", users[i].ID, household.ID)
 				invitation, invitationErr := testClients.user.InviteUserToHousehold(ctx, household.ID, &types.HouseholdInvitationCreationRequestInput{
 					ToEmail: users[i].EmailAddress,
 					Note:    t.Name(),
 				})
 				require.NoError(t, invitationErr)
 				require.NotEmpty(t, invitation.ID)
-				t.Logf("invited user %q to household %s", users[i].ID, household.ID)
 
-				t.Logf("checking for received invitation")
 				invitations, fetchInvitationsErr := clients[i].GetPendingHouseholdInvitationsForUser(ctx, nil)
 				requireNotNilAndNoProblems(t, invitations, fetchInvitationsErr)
 				assert.NotEmpty(t, invitations.Data)
 
-				t.Logf("accepting invitation")
 				err = clients[i].AcceptHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name())
 				require.NoError(t, err)
 
-				t.Logf("setting user %q's client to household %s", users[i].ID, household.ID)
 				require.NoError(t, clients[i].SwitchActiveHousehold(ctx, household.ID))
 
 				currentStatus, statusErr = clients[i].UserStatus(s.ctx)
 				requireNotNilAndNoProblems(t, currentStatus, statusErr)
 				require.Equal(t, currentStatus.ActiveHousehold, household.ID)
-				t.Logf("set user %q's current active household to %s", users[i].ID, household.ID)
 			}
 
 			// grant all permissions
@@ -723,7 +662,6 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 
 			// check that each user can see the webhook
 			for i := 0; i < userCount; i++ {
-				t.Logf("checking if user %q CAN now see webhook %s belonging to household %s", users[i].ID, createdWebhook.ID, createdWebhook.BelongsToHousehold)
 				webhook, webhookRetrievalError := clients[i].GetWebhook(ctx, createdWebhook.ID)
 				requireNotNilAndNoProblems(t, webhook, webhookRetrievalError)
 			}
@@ -751,7 +689,7 @@ func (s *TestSuite) TestHouseholds_ChangingMemberships() {
 }
 
 func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
-	s.runForEachClient("should be possible to transfer ownership of a household", func(testClients *testClientWrapper) func() {
+	s.runForCookieClient("should be possible to transfer ownership of a household", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -759,7 +697,7 @@ func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
 			defer span.End()
 
 			// create users
-			futureOwner, _, _, futureOwnerClient := createUserAndClientForTest(ctx, t, nil)
+			futureOwner, _, futureOwnerClient, _ := createUserAndClientForTest(ctx, t, nil)
 
 			// fetch household data
 			householdCreationInput := &types.HouseholdCreationRequestInput{
@@ -769,11 +707,7 @@ func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
 			require.NoError(t, householdCreationErr)
 			require.NotNil(t, household)
 
-			t.Logf("created household %s", household.ID)
-
 			require.NoError(t, testClients.user.SwitchActiveHousehold(ctx, household.ID))
-
-			t.Logf("switched to active household: %s", household.ID)
 
 			// create a webhook
 
@@ -788,7 +722,6 @@ func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
 			createdWebhook, err = testClients.user.GetWebhook(ctx, createdWebhook.ID)
 			requireNotNilAndNoProblems(t, createdWebhook, err)
 
-			t.Logf("created webhook %s belonging to household %s", createdWebhook.ID, createdWebhook.BelongsToHousehold)
 			require.Equal(t, household.ID, createdWebhook.BelongsToHousehold)
 
 			// check that user cannot see the webhook
@@ -802,8 +735,6 @@ func (s *TestSuite) TestHouseholds_OwnershipTransfer() {
 				CurrentOwner: household.BelongsToUser,
 				NewOwner:     futureOwner.ID,
 			}))
-
-			t.Logf("transferred household %s from user %s to user %s", household.ID, household.BelongsToUser, futureOwner.ID)
 
 			require.NoError(t, futureOwnerClient.SwitchActiveHousehold(ctx, household.ID))
 
@@ -834,13 +765,10 @@ func (s *TestSuite) TestHouseholds_UsersHaveBackupHouseholdCreatedForThemWhenRem
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Logf("determining household ID")
 			currentStatus, statusErr := testClients.user.UserStatus(s.ctx)
 			requireNotNilAndNoProblems(t, currentStatus, statusErr)
 			relevantHouseholdID := currentStatus.ActiveHousehold
-			t.Logf("initial household is %s; initial user ID is %s", relevantHouseholdID, s.user.ID)
 
-			t.Logf("inviting user")
 			inviteReq := &types.HouseholdInvitationCreationRequestInput{
 				Note:    t.Name(),
 				ToEmail: gofakeit.Email(),
@@ -851,12 +779,9 @@ func (s *TestSuite) TestHouseholds_UsersHaveBackupHouseholdCreatedForThemWhenRem
 			createdInvitation, err = testClients.user.GetHouseholdInvitation(ctx, relevantHouseholdID, createdInvitation.ID)
 			requireNotNilAndNoProblems(t, createdInvitation, err)
 
-			t.Logf("checking for sent invitation")
 			sentInvitations, err := testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
 			requireNotNilAndNoProblems(t, sentInvitations, err)
 			assert.NotEmpty(t, sentInvitations.Data)
-
-			t.Logf("creating user to invite")
 
 			regInput := &types.UserRegistrationInput{
 				EmailAddress:    inviteReq.ToEmail,
@@ -867,7 +792,6 @@ func (s *TestSuite) TestHouseholds_UsersHaveBackupHouseholdCreatedForThemWhenRem
 			}
 			u, _, c, _ := createUserAndClientForTest(ctx, t, regInput)
 
-			t.Logf("fetching households")
 			households, err := c.GetHouseholds(ctx, nil)
 			require.NoError(t, err)
 

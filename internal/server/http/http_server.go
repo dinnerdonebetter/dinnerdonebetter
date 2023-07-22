@@ -28,14 +28,19 @@ const (
 )
 
 type (
-	// HTTPServer is our API http server.
-	HTTPServer struct {
+	Server interface {
+		Serve()
+		Shutdown(context.Context) error
+	}
+
+	// server is our API http server.
+	server struct {
 		authService                            types.AuthService
+		validVesselsService                    types.ValidVesselDataService
 		householdsService                      types.HouseholdDataService
 		householdInvitationsService            types.HouseholdInvitationDataService
 		usersService                           types.UserDataService
 		adminService                           types.AdminService
-		apiClientsService                      types.APIClientDataService
 		webhooksService                        types.WebhookDataService
 		validInstrumentsService                types.ValidInstrumentDataService
 		validIngredientsService                types.ValidIngredientDataService
@@ -65,6 +70,11 @@ type (
 		recipeStepVesselsService               types.RecipeStepVesselDataService
 		serviceSettingsService                 types.ServiceSettingDataService
 		serviceSettingConfigurationsService    types.ServiceSettingConfigurationDataService
+		userIngredientPreferencesService       types.UserIngredientPreferenceDataService
+		recipeRatingsService                   types.RecipeRatingDataService
+		householdInstrumentOwnershipService    types.HouseholdInstrumentOwnershipDataService
+		oauth2ClientsService                   types.OAuth2ClientDataService
+		validPreparationVesselsService         types.ValidPreparationVesselDataService
 		vendorProxyService                     vendorproxy.Service
 		encoder                                encoding.ServerEncoderDecoder
 		logger                                 logging.Logger
@@ -78,15 +88,19 @@ type (
 	}
 )
 
-// ProvideHTTPServer builds a new HTTPServer instance.
+// ProvideHTTPServer builds a new server instance.
 func ProvideHTTPServer(
 	ctx context.Context,
 	serverSettings Config,
+	dataManager database.DataManager,
+	logger logging.Logger,
+	encoder encoding.ServerEncoderDecoder,
+	router routing.Router,
+	tracerProvider tracing.TracerProvider,
 	authService types.AuthService,
 	usersService types.UserDataService,
 	householdsService types.HouseholdDataService,
 	householdInvitationsService types.HouseholdInvitationDataService,
-	apiClientsService types.APIClientDataService,
 	validInstrumentsService types.ValidInstrumentDataService,
 	validIngredientsService types.ValidIngredientDataService,
 	validIngredientGroupsService types.ValidIngredientGroupDataService,
@@ -115,16 +129,17 @@ func ProvideHTTPServer(
 	recipeStepVesselsService types.RecipeStepVesselDataService,
 	webhooksService types.WebhookDataService,
 	adminService types.AdminService,
-	dataManager database.DataManager,
-	logger logging.Logger,
-	encoder encoding.ServerEncoderDecoder,
-	router routing.Router,
-	tracerProvider tracing.TracerProvider,
 	vendorProxyService vendorproxy.Service,
 	serviceSettingDataService types.ServiceSettingDataService,
 	serviceSettingConfigurationsService types.ServiceSettingConfigurationDataService,
-) (*HTTPServer, error) {
-	srv := &HTTPServer{
+	userIngredientPreferencesService types.UserIngredientPreferenceDataService,
+	recipeRatingsService types.RecipeRatingDataService,
+	householdInstrumentOwnershipService types.HouseholdInstrumentOwnershipDataService,
+	oauth2ClientDataService types.OAuth2ClientDataService,
+	validVesselsService types.ValidVesselDataService,
+	validPreparationVesselsService types.ValidPreparationVesselDataService,
+) (Server, error) {
+	srv := &server{
 		config: serverSettings,
 
 		// infra things,
@@ -132,7 +147,7 @@ func ProvideHTTPServer(
 		encoder:        encoder,
 		logger:         logging.EnsureLogger(logger).WithName(loggerName),
 		panicker:       panicking.NewProductionPanicker(),
-		httpServer:     provideStdLibHTTPServer(serverSettings.HTTPPort),
+		httpServer:     ProvideStdLibHTTPServer(serverSettings.HTTPPort),
 		dataManager:    dataManager,
 		tracerProvider: tracerProvider,
 
@@ -158,7 +173,6 @@ func ProvideHTTPServer(
 		mealPlanOptionsService:                 mealPlanOptionsService,
 		mealPlanOptionVotesService:             mealPlanOptionVotesService,
 		validMeasurementUnitsService:           validMeasurementUnitsService,
-		apiClientsService:                      apiClientsService,
 		validPreparationInstrumentsService:     validPreparationInstrumentsService,
 		validIngredientMeasurementUnitsService: validIngredientMeasurementUnitsService,
 		mealPlanEventsService:                  mealPlanEventsService,
@@ -173,28 +187,33 @@ func ProvideHTTPServer(
 		vendorProxyService:                     vendorProxyService,
 		serviceSettingsService:                 serviceSettingDataService,
 		serviceSettingConfigurationsService:    serviceSettingConfigurationsService,
+		userIngredientPreferencesService:       userIngredientPreferencesService,
+		recipeRatingsService:                   recipeRatingsService,
+		householdInstrumentOwnershipService:    householdInstrumentOwnershipService,
+		oauth2ClientsService:                   oauth2ClientDataService,
+		validVesselsService:                    validVesselsService,
+		validPreparationVesselsService:         validPreparationVesselsService,
 	}
 
 	srv.setupRouter(ctx, router)
 
 	logger.Debug("HTTP server successfully constructed")
-
 	return srv, nil
 }
 
 // Shutdown shuts down the server.
-func (s *HTTPServer) Shutdown(ctx context.Context) error {
+func (s *server) Shutdown(ctx context.Context) error {
 	s.dataManager.Close()
 
-	if flushErr := s.tracerProvider.ForceFlush(ctx); flushErr != nil {
-		s.logger.Error(flushErr, "flushing traces")
+	if err := s.tracerProvider.ForceFlush(ctx); err != nil {
+		s.logger.Error(err, "flushing traces")
 	}
 
 	return s.httpServer.Shutdown(ctx)
 }
 
 // Serve serves HTTP traffic.
-func (s *HTTPServer) Serve() {
+func (s *server) Serve() {
 	s.logger.Debug("setting up server")
 
 	s.httpServer.Handler = otelhttp.NewHandler(
@@ -209,7 +228,7 @@ func (s *HTTPServer) Serve() {
 		s.panicker.Panic(err)
 	}
 
-	s.logger.WithValue("listening_on", s.httpServer.Addr).Debug("Listening for HTTP requests")
+	s.logger.WithValue("listening_on", s.httpServer.Addr).Info("Listening for HTTP requests")
 
 	if s.config.HTTPSCertificateFile != "" && s.config.HTTPSCertificateKeyFile != "" {
 		// returns ErrServerClosed on graceful close.
@@ -243,8 +262,8 @@ const (
 	idleTimeout  = maxTimeout
 )
 
-// provideStdLibHTTPServer provides an HTTP httpServer.
-func provideStdLibHTTPServer(port uint16) *http.Server {
+// ProvideStdLibHTTPServer provides an HTTP httpServer.
+func ProvideStdLibHTTPServer(port uint16) *http.Server {
 	// heavily inspired by https://blog.cloudflare.com/exposing-go-on-the-internet/
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", port),

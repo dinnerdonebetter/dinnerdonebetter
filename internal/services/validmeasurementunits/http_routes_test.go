@@ -11,11 +11,13 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	mocksearch "github.com/dinnerdonebetter/backend/internal/search/mock"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 	testutils "github.com/dinnerdonebetter/backend/tests/utils"
@@ -43,7 +45,7 @@ func TestValidMeasurementUnitsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementUnitDataManager.On(
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
 			"CreateValidMeasurementUnit",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidMeasurementUnitDatabaseCreationInput) bool { return true }),
@@ -136,7 +138,7 @@ func TestValidMeasurementUnitsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementUnitDataManager.On(
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
 			"CreateValidMeasurementUnit",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidMeasurementUnitDatabaseCreationInput) bool { return true }),
@@ -165,7 +167,7 @@ func TestValidMeasurementUnitsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementUnitDataManager.On(
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
 			"CreateValidMeasurementUnit",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidMeasurementUnitDatabaseCreationInput) bool { return true }),
@@ -196,7 +198,7 @@ func TestValidMeasurementUnitsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManager{}
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
 		validMeasurementUnitDataManager.On(
 			"GetValidMeasurementUnit",
 			testutils.ContextMatcher,
@@ -249,7 +251,7 @@ func TestValidMeasurementUnitsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManager{}
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
 		validMeasurementUnitDataManager.On(
 			"GetValidMeasurementUnit",
 			testutils.ContextMatcher,
@@ -277,7 +279,7 @@ func TestValidMeasurementUnitsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManager{}
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
 		validMeasurementUnitDataManager.On(
 			"GetValidMeasurementUnit",
 			testutils.ContextMatcher,
@@ -311,7 +313,7 @@ func TestValidMeasurementUnitsService_ListHandler(T *testing.T) {
 
 		exampleValidMeasurementUnitList := fakes.BuildFakeValidMeasurementUnitList()
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManager{}
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
 		validMeasurementUnitDataManager.On(
 			"GetValidMeasurementUnits",
 			testutils.ContextMatcher,
@@ -364,7 +366,7 @@ func TestValidMeasurementUnitsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManager{}
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
 		validMeasurementUnitDataManager.On(
 			"GetValidMeasurementUnits",
 			testutils.ContextMatcher,
@@ -393,7 +395,7 @@ func TestValidMeasurementUnitsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManager{}
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
 		validMeasurementUnitDataManager.On(
 			"GetValidMeasurementUnits",
 			testutils.ContextMatcher,
@@ -434,7 +436,7 @@ func TestValidMeasurementUnitsService_SearchHandler(T *testing.T) {
 			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManager{}
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
 		validMeasurementUnitDataManager.On(
 			"SearchForValidMeasurementUnitsByName",
 			testutils.ContextMatcher,
@@ -456,6 +458,47 @@ func TestValidMeasurementUnitsService_SearchHandler(T *testing.T) {
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager, encoderDecoder)
+	})
+
+	T.Run("using external service", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.cfg.UseSearchService = true
+
+		helper.req.URL.RawQuery = url.Values{
+			types.SearchQueryKey: []string{exampleQuery},
+			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+		}.Encode()
+
+		expectedIDs := []string{}
+		validMeasurementUnitSearchSubsets := make([]*types.ValidMeasurementUnitSearchSubset, len(exampleValidMeasurementUnitList.Data))
+		for i := range exampleValidMeasurementUnitList.Data {
+			expectedIDs = append(expectedIDs, exampleValidMeasurementUnitList.Data[i].ID)
+			validMeasurementUnitSearchSubsets[i] = converters.ConvertValidMeasurementUnitToValidMeasurementUnitSearchSubset(exampleValidMeasurementUnitList.Data[i])
+		}
+
+		searchIndex := &mocksearch.IndexManager[types.ValidMeasurementUnitSearchSubset]{}
+		searchIndex.On(
+			"Search",
+			testutils.ContextMatcher,
+			exampleQuery,
+		).Return(validMeasurementUnitSearchSubsets, nil)
+		helper.service.searchIndex = searchIndex
+
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
+		validMeasurementUnitDataManager.On(
+			"GetValidMeasurementUnitsWithIDs",
+			testutils.ContextMatcher,
+			expectedIDs,
+		).Return(exampleValidMeasurementUnitList.Data, nil)
+		helper.service.validMeasurementUnitDataManager = validMeasurementUnitDataManager
+
+		helper.service.SearchHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager, searchIndex)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -491,7 +534,7 @@ func TestValidMeasurementUnitsService_SearchHandler(T *testing.T) {
 			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManager{}
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
 		validMeasurementUnitDataManager.On(
 			"SearchForValidMeasurementUnitsByName",
 			testutils.ContextMatcher,
@@ -524,7 +567,7 @@ func TestValidMeasurementUnitsService_SearchHandler(T *testing.T) {
 			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManager{}
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
 		validMeasurementUnitDataManager.On(
 			"SearchForValidMeasurementUnitsByName",
 			testutils.ContextMatcher,
@@ -565,7 +608,7 @@ func TestValidMeasurementUnitsService_SearchByIngredientIDHandler(T *testing.T) 
 			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManager{}
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
 		validMeasurementUnitDataManager.On(
 			"ValidMeasurementUnitsForIngredientID",
 			testutils.ContextMatcher,
@@ -623,7 +666,7 @@ func TestValidMeasurementUnitsService_SearchByIngredientIDHandler(T *testing.T) 
 			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManager{}
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
 		validMeasurementUnitDataManager.On(
 			"ValidMeasurementUnitsForIngredientID",
 			testutils.ContextMatcher,
@@ -657,7 +700,7 @@ func TestValidMeasurementUnitsService_SearchByIngredientIDHandler(T *testing.T) 
 			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManager{}
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
 		validMeasurementUnitDataManager.On(
 			"ValidMeasurementUnitsForIngredientID",
 			testutils.ContextMatcher,
@@ -700,13 +743,13 @@ func TestValidMeasurementUnitsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementUnitDataManager.On(
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
 			"GetValidMeasurementUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementUnit.ID,
 		).Return(helper.exampleValidMeasurementUnit, nil)
 
-		dbManager.ValidMeasurementUnitDataManager.On(
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
 			"UpdateValidMeasurementUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementUnit,
@@ -788,7 +831,7 @@ func TestValidMeasurementUnitsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManager{}
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
 		validMeasurementUnitDataManager.On(
 			"GetValidMeasurementUnit",
 			testutils.ContextMatcher,
@@ -817,7 +860,7 @@ func TestValidMeasurementUnitsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManager{}
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
 		validMeasurementUnitDataManager.On(
 			"GetValidMeasurementUnit",
 			testutils.ContextMatcher,
@@ -847,13 +890,13 @@ func TestValidMeasurementUnitsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementUnitDataManager.On(
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
 			"GetValidMeasurementUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementUnit.ID,
 		).Return(helper.exampleValidMeasurementUnit, nil)
 
-		dbManager.ValidMeasurementUnitDataManager.On(
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
 			"UpdateValidMeasurementUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementUnit,
@@ -882,13 +925,13 @@ func TestValidMeasurementUnitsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementUnitDataManager.On(
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
 			"GetValidMeasurementUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementUnit.ID,
 		).Return(helper.exampleValidMeasurementUnit, nil)
 
-		dbManager.ValidMeasurementUnitDataManager.On(
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
 			"UpdateValidMeasurementUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementUnit,
@@ -920,13 +963,13 @@ func TestValidMeasurementUnitsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementUnitDataManager.On(
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
 			"ValidMeasurementUnitExists",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementUnit.ID,
 		).Return(true, nil)
 
-		dbManager.ValidMeasurementUnitDataManager.On(
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
 			"ArchiveValidMeasurementUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementUnit.ID,
@@ -977,7 +1020,7 @@ func TestValidMeasurementUnitsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManager{}
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
 		validMeasurementUnitDataManager.On(
 			"ValidMeasurementUnitExists",
 			testutils.ContextMatcher,
@@ -1005,7 +1048,7 @@ func TestValidMeasurementUnitsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManager{}
+		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
 		validMeasurementUnitDataManager.On(
 			"ValidMeasurementUnitExists",
 			testutils.ContextMatcher,
@@ -1026,13 +1069,13 @@ func TestValidMeasurementUnitsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementUnitDataManager.On(
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
 			"ValidMeasurementUnitExists",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementUnit.ID,
 		).Return(true, nil)
 
-		dbManager.ValidMeasurementUnitDataManager.On(
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
 			"ArchiveValidMeasurementUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementUnit.ID,
@@ -1052,13 +1095,13 @@ func TestValidMeasurementUnitsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementUnitDataManager.On(
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
 			"ValidMeasurementUnitExists",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementUnit.ID,
 		).Return(true, nil)
 
-		dbManager.ValidMeasurementUnitDataManager.On(
+		dbManager.ValidMeasurementUnitDataManagerMock.On(
 			"ArchiveValidMeasurementUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementUnit.ID,

@@ -9,7 +9,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -41,7 +41,7 @@ func TestRecipeStepInstrumentsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeStepInstrumentDataManager.On(
+		dbManager.RecipeStepInstrumentDataManagerMock.On(
 			"CreateRecipeStepInstrument",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.RecipeStepInstrumentDatabaseCreationInput) bool { return true }),
@@ -134,7 +134,7 @@ func TestRecipeStepInstrumentsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeStepInstrumentDataManager.On(
+		dbManager.RecipeStepInstrumentDataManagerMock.On(
 			"CreateRecipeStepInstrument",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.RecipeStepInstrumentDatabaseCreationInput) bool { return true }),
@@ -163,7 +163,7 @@ func TestRecipeStepInstrumentsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeStepInstrumentDataManager.On(
+		dbManager.RecipeStepInstrumentDataManagerMock.On(
 			"CreateRecipeStepInstrument",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.RecipeStepInstrumentDatabaseCreationInput) bool { return true }),
@@ -194,7 +194,7 @@ func TestRecipeStepInstrumentsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeStepInstrumentDataManager := &mocktypes.RecipeStepInstrumentDataManager{}
+		recipeStepInstrumentDataManager := &mocktypes.RecipeStepInstrumentDataManagerMock{}
 		recipeStepInstrumentDataManager.On(
 			"GetRecipeStepInstrument",
 			testutils.ContextMatcher,
@@ -249,7 +249,7 @@ func TestRecipeStepInstrumentsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeStepInstrumentDataManager := &mocktypes.RecipeStepInstrumentDataManager{}
+		recipeStepInstrumentDataManager := &mocktypes.RecipeStepInstrumentDataManagerMock{}
 		recipeStepInstrumentDataManager.On(
 			"GetRecipeStepInstrument",
 			testutils.ContextMatcher,
@@ -279,7 +279,7 @@ func TestRecipeStepInstrumentsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeStepInstrumentDataManager := &mocktypes.RecipeStepInstrumentDataManager{}
+		recipeStepInstrumentDataManager := &mocktypes.RecipeStepInstrumentDataManagerMock{}
 		recipeStepInstrumentDataManager.On(
 			"GetRecipeStepInstrument",
 			testutils.ContextMatcher,
@@ -315,7 +315,7 @@ func TestRecipeStepInstrumentsService_ListHandler(T *testing.T) {
 
 		exampleRecipeStepInstrumentList := fakes.BuildFakeRecipeStepInstrumentList()
 
-		recipeStepInstrumentDataManager := &mocktypes.RecipeStepInstrumentDataManager{}
+		recipeStepInstrumentDataManager := &mocktypes.RecipeStepInstrumentDataManagerMock{}
 		recipeStepInstrumentDataManager.On(
 			"GetRecipeStepInstruments",
 			testutils.ContextMatcher,
@@ -370,7 +370,7 @@ func TestRecipeStepInstrumentsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeStepInstrumentDataManager := &mocktypes.RecipeStepInstrumentDataManager{}
+		recipeStepInstrumentDataManager := &mocktypes.RecipeStepInstrumentDataManagerMock{}
 		recipeStepInstrumentDataManager.On(
 			"GetRecipeStepInstruments",
 			testutils.ContextMatcher,
@@ -401,7 +401,7 @@ func TestRecipeStepInstrumentsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeStepInstrumentDataManager := &mocktypes.RecipeStepInstrumentDataManager{}
+		recipeStepInstrumentDataManager := &mocktypes.RecipeStepInstrumentDataManagerMock{}
 		recipeStepInstrumentDataManager.On(
 			"GetRecipeStepInstruments",
 			testutils.ContextMatcher,
@@ -445,7 +445,7 @@ func TestRecipeStepInstrumentsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeStepInstrumentDataManager.On(
+		dbManager.RecipeStepInstrumentDataManagerMock.On(
 			"GetRecipeStepInstrument",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
@@ -454,7 +454,7 @@ func TestRecipeStepInstrumentsService_UpdateHandler(T *testing.T) {
 		).Return(helper.exampleRecipeStepInstrument, nil)
 		helper.service.recipeStepInstrumentDataManager = dbManager
 
-		dbManager.RecipeStepInstrumentDataManager.On(
+		dbManager.RecipeStepInstrumentDataManagerMock.On(
 			"UpdateRecipeStepInstrument",
 			testutils.ContextMatcher,
 			helper.exampleRecipeStepInstrument,
@@ -536,7 +536,7 @@ func TestRecipeStepInstrumentsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		recipeStepInstrumentDataManager := &mocktypes.RecipeStepInstrumentDataManager{}
+		recipeStepInstrumentDataManager := &mocktypes.RecipeStepInstrumentDataManagerMock{}
 		recipeStepInstrumentDataManager.On(
 			"GetRecipeStepInstrument",
 			testutils.ContextMatcher,
@@ -567,7 +567,7 @@ func TestRecipeStepInstrumentsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		recipeStepInstrumentDataManager := &mocktypes.RecipeStepInstrumentDataManager{}
+		recipeStepInstrumentDataManager := &mocktypes.RecipeStepInstrumentDataManagerMock{}
 		recipeStepInstrumentDataManager.On(
 			"GetRecipeStepInstrument",
 			testutils.ContextMatcher,
@@ -599,7 +599,7 @@ func TestRecipeStepInstrumentsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeStepInstrumentDataManager.On(
+		dbManager.RecipeStepInstrumentDataManagerMock.On(
 			"GetRecipeStepInstrument",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
@@ -608,7 +608,7 @@ func TestRecipeStepInstrumentsService_UpdateHandler(T *testing.T) {
 		).Return(helper.exampleRecipeStepInstrument, nil)
 		helper.service.recipeStepInstrumentDataManager = dbManager
 
-		dbManager.RecipeStepInstrumentDataManager.On(
+		dbManager.RecipeStepInstrumentDataManagerMock.On(
 			"UpdateRecipeStepInstrument",
 			testutils.ContextMatcher,
 			helper.exampleRecipeStepInstrument,
@@ -637,7 +637,7 @@ func TestRecipeStepInstrumentsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeStepInstrumentDataManager.On(
+		dbManager.RecipeStepInstrumentDataManagerMock.On(
 			"GetRecipeStepInstrument",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
@@ -646,7 +646,7 @@ func TestRecipeStepInstrumentsService_UpdateHandler(T *testing.T) {
 		).Return(helper.exampleRecipeStepInstrument, nil)
 		helper.service.recipeStepInstrumentDataManager = dbManager
 
-		dbManager.RecipeStepInstrumentDataManager.On(
+		dbManager.RecipeStepInstrumentDataManagerMock.On(
 			"UpdateRecipeStepInstrument",
 			testutils.ContextMatcher,
 			helper.exampleRecipeStepInstrument,
@@ -678,7 +678,7 @@ func TestRecipeStepInstrumentsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeStepInstrumentDataManager.On(
+		dbManager.RecipeStepInstrumentDataManagerMock.On(
 			"RecipeStepInstrumentExists",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
@@ -686,7 +686,7 @@ func TestRecipeStepInstrumentsService_ArchiveHandler(T *testing.T) {
 			helper.exampleRecipeStepInstrument.ID,
 		).Return(true, nil)
 
-		dbManager.RecipeStepInstrumentDataManager.On(
+		dbManager.RecipeStepInstrumentDataManagerMock.On(
 			"ArchiveRecipeStepInstrument",
 			testutils.ContextMatcher,
 			helper.exampleRecipeStep.ID,
@@ -738,7 +738,7 @@ func TestRecipeStepInstrumentsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeStepInstrumentDataManager := &mocktypes.RecipeStepInstrumentDataManager{}
+		recipeStepInstrumentDataManager := &mocktypes.RecipeStepInstrumentDataManagerMock{}
 		recipeStepInstrumentDataManager.On(
 			"RecipeStepInstrumentExists",
 			testutils.ContextMatcher,
@@ -768,7 +768,7 @@ func TestRecipeStepInstrumentsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeStepInstrumentDataManager := &mocktypes.RecipeStepInstrumentDataManager{}
+		recipeStepInstrumentDataManager := &mocktypes.RecipeStepInstrumentDataManagerMock{}
 		recipeStepInstrumentDataManager.On(
 			"RecipeStepInstrumentExists",
 			testutils.ContextMatcher,
@@ -791,7 +791,7 @@ func TestRecipeStepInstrumentsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeStepInstrumentDataManager.On(
+		dbManager.RecipeStepInstrumentDataManagerMock.On(
 			"RecipeStepInstrumentExists",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
@@ -799,7 +799,7 @@ func TestRecipeStepInstrumentsService_ArchiveHandler(T *testing.T) {
 			helper.exampleRecipeStepInstrument.ID,
 		).Return(true, nil)
 
-		dbManager.RecipeStepInstrumentDataManager.On(
+		dbManager.RecipeStepInstrumentDataManagerMock.On(
 			"ArchiveRecipeStepInstrument",
 			testutils.ContextMatcher,
 			helper.exampleRecipeStep.ID,
@@ -820,7 +820,7 @@ func TestRecipeStepInstrumentsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeStepInstrumentDataManager.On(
+		dbManager.RecipeStepInstrumentDataManagerMock.On(
 			"RecipeStepInstrumentExists",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
@@ -828,7 +828,7 @@ func TestRecipeStepInstrumentsService_ArchiveHandler(T *testing.T) {
 			helper.exampleRecipeStepInstrument.ID,
 		).Return(true, nil)
 
-		dbManager.RecipeStepInstrumentDataManager.On(
+		dbManager.RecipeStepInstrumentDataManagerMock.On(
 			"ArchiveRecipeStepInstrument",
 			testutils.ContextMatcher,
 			helper.exampleRecipeStep.ID,

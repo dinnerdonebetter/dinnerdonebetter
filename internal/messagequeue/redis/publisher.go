@@ -72,10 +72,11 @@ type publisherProvider struct {
 }
 
 // ProvideRedisPublisherProvider returns a PublisherProvider for a given address.
-func ProvideRedisPublisherProvider(logger logging.Logger, tracerProvider tracing.TracerProvider, cfg Config) messagequeue.PublisherProvider {
-	logger.WithValue("queue_addresses", cfg.QueueAddresses).
+func ProvideRedisPublisherProvider(l logging.Logger, tracerProvider tracing.TracerProvider, cfg Config) messagequeue.PublisherProvider {
+	logger := l.WithValue("queue_addresses", cfg.QueueAddresses).
 		WithValue("username", cfg.Username).
-		WithValue("password", cfg.Password).Info("setting up redis publisher")
+		WithValue("password", cfg.Password)
+	logger.Info("setting up redis publisher")
 
 	var redisClient messagePublisher
 	if len(cfg.QueueAddresses) > 1 {
@@ -96,8 +97,10 @@ func ProvideRedisPublisherProvider(logger logging.Logger, tracerProvider tracing
 		})
 	}
 
+	logger.Info("redis publisher setup complete")
+
 	return &publisherProvider{
-		logger:         logging.EnsureLogger(logger),
+		logger:         logging.EnsureLogger(l),
 		redisClient:    redisClient,
 		publisherCache: map[string]messagequeue.Publisher{},
 		tracerProvider: tracerProvider,

@@ -27,10 +27,10 @@ const (
 type (
 	// Config is the configuration structure.
 	Config struct {
-		Sendgrid *sendgrid.Config `json:"sendgrid" mapstructure:"sendgrid" toml:"sendgrid,omitempty"`
-		Mailgun  *mailgun.Config  `json:"mailgun" mapstructure:"mailgun" toml:"mailgun,omitempty"`
-		Mailjet  *mailjet.Config  `json:"mailjet" mapstructure:"mailjet" toml:"mailjet,omitempty"`
-		Provider string           `json:"provider" mapstructure:"provider" toml:"provider,omitempty"`
+		Sendgrid *sendgrid.Config `json:"sendgrid" toml:"sendgrid,omitempty"`
+		Mailgun  *mailgun.Config  `json:"mailgun"  toml:"mailgun,omitempty"`
+		Mailjet  *mailjet.Config  `json:"mailjet"  toml:"mailjet,omitempty"`
+		Provider string           `json:"provider" toml:"provider,omitempty"`
 	}
 )
 
@@ -39,7 +39,9 @@ var _ validation.ValidatableWithContext = (*Config)(nil)
 // ValidateWithContext validates a Config struct.
 func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, cfg,
-		validation.Field(&cfg.Sendgrid, validation.When(strings.EqualFold(strings.TrimSpace(cfg.Provider), ProviderSendgrid), validation.Required)),
+		validation.Field(&cfg.Sendgrid, validation.When(cfg.Provider == ProviderSendgrid, validation.Required)),
+		validation.Field(&cfg.Mailgun, validation.When(cfg.Provider == ProviderMailgun, validation.Required)),
+		validation.Field(&cfg.Mailjet, validation.When(cfg.Provider == ProviderMailjet, validation.Required)),
 	)
 }
 

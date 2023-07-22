@@ -15,6 +15,12 @@ resource "google_project_iam_custom_role" "data_changes_worker_role" {
     "pubsub.subscriptions.consume",
     "pubsub.subscriptions.create",
     "pubsub.subscriptions.delete",
+    "eventarc.events.receiveAuditLogWritten",
+    "eventarc.events.receiveEvent",
+    "run.jobs.run",
+    "run.routes.invoke",
+    "artifactregistry.dockerimages.get",
+    "artifactregistry.dockerimages.list",
   ]
 }
 
@@ -47,27 +53,6 @@ resource "google_project_iam_member" "data_changes_worker" {
   member  = "serviceAccount:${google_service_account.data_changes_user_service_account.email}"
 }
 
-resource "google_project_iam_member" "data_changes_secret_accessor" {
-  project    = local.project_id
-  role       = "roles/secretmanager.secretAccessor"
-  member     = "serviceAccount:${google_service_account.data_changes_user_service_account.email}"
-  depends_on = [google_project_iam_member.data_changes_worker]
-}
-
-resource "google_project_iam_member" "data_changes_event_receiving" {
-  project    = local.project_id
-  role       = "roles/eventarc.eventReceiver"
-  member     = "serviceAccount:${google_service_account.data_changes_user_service_account.email}"
-  depends_on = [google_project_iam_member.data_changes_secret_accessor]
-}
-
-resource "google_project_iam_member" "data_changes_artifactregistry_reader" {
-  project    = local.project_id
-  role       = "roles/artifactregistry.reader"
-  member     = "serviceAccount:${google_service_account.data_changes_user_service_account.email}"
-  depends_on = [google_project_iam_member.data_changes_event_receiving]
-}
-
 resource "google_project_iam_member" "data_changes_user" {
   project = local.project_id
   role    = google_project_iam_custom_role.data_changes_worker_role.id
@@ -75,11 +60,6 @@ resource "google_project_iam_member" "data_changes_user" {
 }
 
 resource "google_cloudfunctions2_function" "data_changes" {
-  depends_on = [
-    google_project_iam_member.data_changes_event_receiving,
-    google_project_iam_member.data_changes_artifactregistry_reader,
-  ]
-
   name        = "data-changes"
   location    = local.gcp_region
   description = format("Data Changes (%s)", data.archive_file.data_changes_function.output_md5)
@@ -97,6 +77,7 @@ resource "google_cloudfunctions2_function" "data_changes" {
   }
 
   service_config {
+    max_instance_count             = 1
     available_memory               = "128Mi"
     ingress_settings               = "ALLOW_INTERNAL_ONLY"
     all_traffic_on_latest_revision = true
@@ -106,6 +87,7 @@ resource "google_cloudfunctions2_function" "data_changes" {
       GOOGLE_CLOUD_SECRET_STORE_PREFIX = format("projects/%d/secrets", data.google_project.project.number)
       GOOGLE_CLOUD_PROJECT_ID          = data.google_project.project.project_id
       OUTBOUND_EMAILS_TOPIC_NAME       = google_pubsub_topic.outbound_emails_topic.name
+      SEARCH_INDEXING_TOPIC_NAME       = google_pubsub_topic.search_index_requests_topic.name
       DINNER_DONE_BETTER_DATABASE_USER = google_sql_user.api_user.name,
       DINNER_DONE_BETTER_DATABASE_NAME = local.database_name,
       // NOTE: if you're creating a cloud function or server for the first time, terraform cannot configure the database connection.

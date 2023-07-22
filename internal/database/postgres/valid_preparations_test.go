@@ -14,6 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/Masterminds/squirrel"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -457,6 +458,65 @@ func TestQuerier_GetValidPreparations(T *testing.T) {
 	})
 }
 
+func TestQuerier_GetValidPreparationsWithIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleValidPreparationList := fakes.BuildFakeValidPreparationList()
+
+		exampleIDs := []string{}
+		for _, exampleValidPreparation := range exampleValidPreparationList.Data {
+			exampleIDs = append(exampleIDs, exampleValidPreparation.ID)
+		}
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		where := squirrel.Eq{"valid_preparations.id": exampleIDs}
+		query, args := c.buildListQuery(ctx, validPreparationsTable, nil, nil, where, householdOwnershipColumn, validPreparationsTableColumns, "", false, nil)
+
+		db.ExpectQuery(formatQueryForSQLMock(query)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockRowsFromValidPreparations(true, exampleValidPreparationList.FilteredCount, exampleValidPreparationList.Data...))
+
+		actual, err := c.GetValidPreparationsWithIDs(ctx, exampleIDs)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleValidPreparationList.Data, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_GetValidPreparationThatNeedSearchIndexing(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleValidPreparationList := fakes.BuildFakeValidPreparationList()
+
+		c, db := buildTestClient(t)
+
+		exampleIDs := []string{}
+		for _, exampleValidPreparation := range exampleValidPreparationList.Data {
+			exampleIDs = append(exampleIDs, exampleValidPreparation.ID)
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(validPreparationsNeedingIndexingQuery)).
+			WithArgs(interfaceToDriverValue(nil)...).
+			WillReturnRows(buildMockRowsFromIDs(exampleIDs...))
+
+		actual, err := c.GetValidPreparationIDsThatNeedSearchIndexing(ctx)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleIDs, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
 func TestQuerier_CreateValidPreparation(T *testing.T) {
 	T.Parallel()
 
@@ -708,6 +768,61 @@ func TestQuerier_ArchiveValidPreparation(T *testing.T) {
 			WillReturnError(errors.New("blah"))
 
 		assert.Error(t, c.ArchiveValidPreparation(ctx, exampleValidPreparation.ID))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_MarkValidPreparationAsIndexed(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleValidPreparation := fakes.BuildFakeValidPreparation()
+
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleValidPreparation.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(updateValidPreparationLastIndexedAtQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		assert.NoError(t, c.MarkValidPreparationAsIndexed(ctx, exampleValidPreparation.ID))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with invalid ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+
+		assert.Error(t, c.MarkValidPreparationAsIndexed(ctx, ""))
+	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleValidPreparation := fakes.BuildFakeValidPreparation()
+
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleValidPreparation.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(updateValidPreparationLastIndexedAtQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		assert.Error(t, c.MarkValidPreparationAsIndexed(ctx, exampleValidPreparation.ID))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})

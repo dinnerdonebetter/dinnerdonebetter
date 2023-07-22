@@ -7,9 +7,7 @@ SET
 	usable_for_storage = $5,
 	display_in_summary_lists = $6,
 	include_in_generated_instructions = $7,
-    is_vessel = $8,
-    is_exclusively_vessel = $9,
-	slug = $10,
+	slug = $8,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND id = $11;
+	AND id = $9;

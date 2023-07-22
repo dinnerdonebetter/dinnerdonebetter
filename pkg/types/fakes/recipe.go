@@ -46,6 +46,8 @@ func BuildFakeRecipe() *types.Recipe {
 		PortionName:              buildUniqueString(),
 		PluralPortionName:        buildUniqueString(),
 		EligibleForMeals:         true,
+		YieldsComponentType:      "main",
+		SupportingRecipes:        []*types.Recipe{},
 	}
 }
 

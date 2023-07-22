@@ -6,16 +6,19 @@ import (
 	"errors"
 	"net/http"
 	"net/url"
+	"strconv"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	mocksearch "github.com/dinnerdonebetter/backend/internal/search/mock"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 	testutils "github.com/dinnerdonebetter/backend/tests/utils"
@@ -43,7 +46,7 @@ func TestRecipesService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"CreateRecipe",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.RecipeDatabaseCreationInput) bool { return true }),
@@ -136,7 +139,7 @@ func TestRecipesService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"CreateRecipe",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.RecipeDatabaseCreationInput) bool { return true }),
@@ -165,7 +168,7 @@ func TestRecipesService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"CreateRecipe",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.RecipeDatabaseCreationInput) bool { return true }),
@@ -199,7 +202,7 @@ func TestRecipesService_ReadHandler(T *testing.T) {
 			return helper.exampleRecipe.ID
 		}
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"GetRecipe",
 			testutils.ContextMatcher,
@@ -255,7 +258,7 @@ func TestRecipesService_ReadHandler(T *testing.T) {
 			return helper.exampleRecipe.ID
 		}
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"GetRecipe",
 			testutils.ContextMatcher,
@@ -286,7 +289,7 @@ func TestRecipesService_ReadHandler(T *testing.T) {
 			return helper.exampleRecipe.ID
 		}
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"GetRecipe",
 			testutils.ContextMatcher,
@@ -320,7 +323,7 @@ func TestRecipesService_ListHandler(T *testing.T) {
 
 		exampleRecipeList := fakes.BuildFakeRecipeList()
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"GetRecipes",
 			testutils.ContextMatcher,
@@ -373,7 +376,7 @@ func TestRecipesService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"GetRecipes",
 			testutils.ContextMatcher,
@@ -402,7 +405,7 @@ func TestRecipesService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"GetRecipes",
 			testutils.ContextMatcher,
@@ -430,6 +433,7 @@ func TestRecipesService_SearchHandler(T *testing.T) {
 	T.Parallel()
 
 	const exampleQuery = "example"
+	exampleRecipeList := fakes.BuildFakeRecipeList()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -437,9 +441,7 @@ func TestRecipesService_SearchHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{types.SearchQueryKey: []string{exampleQuery}}.Encode()
 
-		exampleRecipeList := fakes.BuildFakeRecipeList()
-
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"SearchForRecipes",
 			testutils.ContextMatcher,
@@ -464,6 +466,49 @@ func TestRecipesService_SearchHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, recipeDataManager, encoderDecoder)
 	})
 
+	T.Run("using external service", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.cfg.UseSearchService = true
+
+		exampleLimit := uint8(123)
+
+		helper.req.URL.RawQuery = url.Values{
+			types.SearchQueryKey: []string{exampleQuery},
+			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+		}.Encode()
+
+		expectedIDs := []string{}
+		recipeSearchSubsets := make([]*types.RecipeSearchSubset, len(exampleRecipeList.Data))
+		for i := range exampleRecipeList.Data {
+			expectedIDs = append(expectedIDs, exampleRecipeList.Data[i].ID)
+			recipeSearchSubsets[i] = converters.ConvertRecipeToRecipeSearchSubset(exampleRecipeList.Data[i])
+		}
+
+		searchIndex := &mocksearch.IndexManager[types.RecipeSearchSubset]{}
+		searchIndex.On(
+			"Search",
+			testutils.ContextMatcher,
+			exampleQuery,
+		).Return(recipeSearchSubsets, nil)
+		helper.service.searchIndex = searchIndex
+
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
+		recipeDataManager.On(
+			"GetRecipesWithIDs",
+			testutils.ContextMatcher,
+			expectedIDs,
+		).Return(exampleRecipeList.Data, nil)
+		helper.service.recipeDataManager = recipeDataManager
+
+		helper.service.SearchHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager, searchIndex)
+	})
+
 	T.Run("with error fetching session context data", func(t *testing.T) {
 		t.Parallel()
 
@@ -481,7 +526,7 @@ func TestRecipesService_SearchHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{types.SearchQueryKey: []string{exampleQuery}}.Encode()
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"SearchForRecipes",
 			testutils.ContextMatcher,
@@ -512,7 +557,7 @@ func TestRecipesService_SearchHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{types.SearchQueryKey: []string{exampleQuery}}.Encode()
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"SearchForRecipes",
 			testutils.ContextMatcher,
@@ -547,14 +592,14 @@ func TestRecipesService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"GetRecipeByIDAndUser",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleUser.ID,
 		).Return(helper.exampleRecipe, nil)
 
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"UpdateRecipe",
 			testutils.ContextMatcher,
 			helper.exampleRecipe,
@@ -636,7 +681,7 @@ func TestRecipesService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"GetRecipeByIDAndUser",
 			testutils.ContextMatcher,
@@ -666,7 +711,7 @@ func TestRecipesService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"GetRecipeByIDAndUser",
 			testutils.ContextMatcher,
@@ -697,14 +742,14 @@ func TestRecipesService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"GetRecipeByIDAndUser",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleUser.ID,
 		).Return(helper.exampleRecipe, nil)
 
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"UpdateRecipe",
 			testutils.ContextMatcher,
 			helper.exampleRecipe,
@@ -733,14 +778,14 @@ func TestRecipesService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"GetRecipeByIDAndUser",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleUser.ID,
 		).Return(helper.exampleRecipe, nil)
 
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"UpdateRecipe",
 			testutils.ContextMatcher,
 			helper.exampleRecipe,
@@ -772,13 +817,13 @@ func TestRecipesService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"RecipeExists",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 		).Return(true, nil)
 
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"ArchiveRecipe",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
@@ -830,7 +875,7 @@ func TestRecipesService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"RecipeExists",
 			testutils.ContextMatcher,
@@ -858,7 +903,7 @@ func TestRecipesService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"RecipeExists",
 			testutils.ContextMatcher,
@@ -879,13 +924,13 @@ func TestRecipesService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"RecipeExists",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 		).Return(true, nil)
 
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"ArchiveRecipe",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
@@ -906,13 +951,13 @@ func TestRecipesService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"RecipeExists",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 		).Return(true, nil)
 
-		dbManager.RecipeDataManager.On(
+		dbManager.RecipeDataManagerMock.On(
 			"ArchiveRecipe",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
@@ -947,7 +992,7 @@ func TestRecipesService_DAGHandler(T *testing.T) {
 			return helper.exampleRecipe.ID
 		}
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"GetRecipe",
 			testutils.ContextMatcher,
@@ -996,7 +1041,7 @@ func TestRecipesService_DAGHandler(T *testing.T) {
 			return helper.exampleRecipe.ID
 		}
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"GetRecipe",
 			testutils.ContextMatcher,
@@ -1019,7 +1064,7 @@ func TestRecipesService_DAGHandler(T *testing.T) {
 			return helper.exampleRecipe.ID
 		}
 
-		recipeDataManager := &mocktypes.RecipeDataManager{}
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
 		recipeDataManager.On(
 			"GetRecipe",
 			testutils.ContextMatcher,
@@ -1041,5 +1086,136 @@ func TestRecipesService_DAGHandler(T *testing.T) {
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, recipeDataManager, mockGrapher)
+	})
+}
+
+func TestRecipesService_MermaidHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.recipeIDFetcher = func(_ *http.Request) string {
+			return helper.exampleRecipe.ID
+		}
+
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
+		recipeDataManager.On(
+			"GetRecipe",
+			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
+		).Return(helper.exampleRecipe, nil)
+		helper.service.recipeDataManager = recipeDataManager
+
+		fakeResult := fakes.BuildFakeID()
+		mockGrapher := &recipeanalysis.MockRecipeAnalyzer{}
+		mockGrapher.On(
+			"RenderMermaidDiagramForRecipe",
+			testutils.ContextMatcher,
+			helper.exampleRecipe,
+		).Return(fakeResult)
+		helper.service.recipeAnalyzer = mockGrapher
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"RespondWithData",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+			fakeResult,
+		)
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.MermaidHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager, mockGrapher, encoderDecoder)
+	})
+
+	T.Run("with error retrieving session context data", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeErrorResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+			"unauthenticated",
+			http.StatusUnauthorized,
+		)
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
+
+		helper.service.MermaidHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, encoderDecoder)
+	})
+
+	T.Run("with no such recipe in the database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.recipeIDFetcher = func(_ *http.Request) string {
+			return helper.exampleRecipe.ID
+		}
+
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
+		recipeDataManager.On(
+			"GetRecipe",
+			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
+		).Return((*types.Recipe)(nil), sql.ErrNoRows)
+		helper.service.recipeDataManager = recipeDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeNotFoundResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+		).Return()
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.MermaidHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager, encoderDecoder)
+	})
+
+	T.Run("with error fetching from database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.recipeIDFetcher = func(_ *http.Request) string {
+			return helper.exampleRecipe.ID
+		}
+
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
+		recipeDataManager.On(
+			"GetRecipe",
+			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
+		).Return((*types.Recipe)(nil), errors.New("blah"))
+		helper.service.recipeDataManager = recipeDataManager
+
+		encoderDecoder := mockencoding.NewMockEncoderDecoder()
+		encoderDecoder.On(
+			"EncodeUnspecifiedInternalServerErrorResponse",
+			testutils.ContextMatcher,
+			testutils.HTTPResponseWriterMatcher,
+		)
+		helper.service.encoderDecoder = encoderDecoder
+
+		helper.service.MermaidHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager, encoderDecoder)
 	})
 }

@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -28,7 +28,7 @@ func TestMealPlanTasksService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealPlanTaskDataManager := &mocktypes.MealPlanTaskDataManager{}
+		mealPlanTaskDataManager := &mocktypes.MealPlanTaskDataManagerMock{}
 		mealPlanTaskDataManager.On(
 			"GetMealPlanTask",
 			testutils.ContextMatcher,
@@ -81,7 +81,7 @@ func TestMealPlanTasksService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealPlanTaskDataManager := &mocktypes.MealPlanTaskDataManager{}
+		mealPlanTaskDataManager := &mocktypes.MealPlanTaskDataManagerMock{}
 		mealPlanTaskDataManager.On(
 			"GetMealPlanTask",
 			testutils.ContextMatcher,
@@ -109,7 +109,7 @@ func TestMealPlanTasksService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealPlanTaskDataManager := &mocktypes.MealPlanTaskDataManager{}
+		mealPlanTaskDataManager := &mocktypes.MealPlanTaskDataManagerMock{}
 		mealPlanTaskDataManager.On(
 			"GetMealPlanTask",
 			testutils.ContextMatcher,
@@ -143,7 +143,7 @@ func TestMealPlanTasksService_ListHandler(T *testing.T) {
 
 		exampleMealPlanTaskList := fakes.BuildFakeMealPlanTaskList().Data
 
-		mealPlanTaskDataManager := &mocktypes.MealPlanTaskDataManager{}
+		mealPlanTaskDataManager := &mocktypes.MealPlanTaskDataManagerMock{}
 		mealPlanTaskDataManager.On(
 			"GetMealPlanTasksForMealPlan",
 			testutils.ContextMatcher,
@@ -196,7 +196,7 @@ func TestMealPlanTasksService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealPlanTaskDataManager := &mocktypes.MealPlanTaskDataManager{}
+		mealPlanTaskDataManager := &mocktypes.MealPlanTaskDataManagerMock{}
 		mealPlanTaskDataManager.On(
 			"GetMealPlanTasksForMealPlan",
 			testutils.ContextMatcher,
@@ -225,7 +225,7 @@ func TestMealPlanTasksService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealPlanTaskDataManager := &mocktypes.MealPlanTaskDataManager{}
+		mealPlanTaskDataManager := &mocktypes.MealPlanTaskDataManagerMock{}
 		mealPlanTaskDataManager.On(
 			"GetMealPlanTasksForMealPlan",
 			testutils.ContextMatcher,
@@ -271,13 +271,13 @@ func TestMealPlanTasksService_StatusChangeHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanTaskDataManager.On(
+		dbManager.MealPlanTaskDataManagerMock.On(
 			"GetMealPlanTask",
 			testutils.ContextMatcher,
 			helper.exampleMealPlanTask.ID,
 		).Return(expectedPrepStep, nil)
 
-		dbManager.MealPlanTaskDataManager.On(
+		dbManager.MealPlanTaskDataManagerMock.On(
 			"ChangeMealPlanTaskStatus",
 			testutils.ContextMatcher,
 			exampleStatusChangeInput,
@@ -338,13 +338,13 @@ func TestMealPlanTasksService_StatusChangeHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanTaskDataManager.On(
+		dbManager.MealPlanTaskDataManagerMock.On(
 			"GetMealPlanTask",
 			testutils.ContextMatcher,
 			helper.exampleMealPlanTask.ID,
 		).Return(helper.exampleMealPlanTask, nil)
 
-		dbManager.MealPlanTaskDataManager.On(
+		dbManager.MealPlanTaskDataManagerMock.On(
 			"ChangeMealPlanTaskStatus",
 			testutils.ContextMatcher,
 			exampleCreationInput,
@@ -377,13 +377,13 @@ func TestMealPlanTasksService_StatusChangeHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanTaskDataManager.On(
+		dbManager.MealPlanTaskDataManagerMock.On(
 			"GetMealPlanTask",
 			testutils.ContextMatcher,
 			helper.exampleMealPlanTask.ID,
 		).Return(expectedPrepStep, nil)
 
-		dbManager.MealPlanTaskDataManager.On(
+		dbManager.MealPlanTaskDataManagerMock.On(
 			"ChangeMealPlanTaskStatus",
 			testutils.ContextMatcher,
 			exampleCreationInput,

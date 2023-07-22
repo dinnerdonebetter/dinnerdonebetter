@@ -73,21 +73,24 @@ func ConvertValidMeasurementUnitToValidMeasurementUnitDatabaseCreationInput(vali
 
 // ConvertNullableValidMeasurementUnitToValidMeasurementUnit produces a ValidMeasurementUnit from a NullableValidMeasurementUnit.
 func ConvertNullableValidMeasurementUnitToValidMeasurementUnit(x *types.NullableValidMeasurementUnit) *types.ValidMeasurementUnit {
-	return &types.ValidMeasurementUnit{
-		CreatedAt:     *x.CreatedAt,
-		LastUpdatedAt: x.LastUpdatedAt,
-		ArchivedAt:    x.ArchivedAt,
-		Name:          *x.Name,
-		IconPath:      *x.IconPath,
-		ID:            *x.ID,
-		Description:   *x.Description,
-		PluralName:    *x.PluralName,
-		Slug:          *x.Slug,
-		Volumetric:    *x.Volumetric,
-		Universal:     *x.Universal,
-		Metric:        *x.Metric,
-		Imperial:      *x.Imperial,
+	if x != nil && x.ID != nil {
+		return &types.ValidMeasurementUnit{
+			CreatedAt:     *x.CreatedAt,
+			LastUpdatedAt: x.LastUpdatedAt,
+			ArchivedAt:    x.ArchivedAt,
+			Name:          *x.Name,
+			IconPath:      *x.IconPath,
+			ID:            *x.ID,
+			Description:   *x.Description,
+			PluralName:    *x.PluralName,
+			Slug:          *x.Slug,
+			Volumetric:    *x.Volumetric,
+			Universal:     *x.Universal,
+			Metric:        *x.Metric,
+			Imperial:      *x.Imperial,
+		}
 	}
+	return nil
 }
 
 // ConvertValidMeasurementUnitToNullableValidMeasurementUnit converts a NullableValidMeasurementUnit to a ValidMeasurementUnit.
@@ -106,5 +109,15 @@ func ConvertValidMeasurementUnitToNullableValidMeasurementUnit(input *types.Vali
 		Universal:     &input.Universal,
 		Metric:        &input.Metric,
 		Imperial:      &input.Imperial,
+	}
+}
+
+// ConvertValidMeasurementUnitToValidMeasurementUnitSearchSubset converts a ValidMeasurementUnit to a ValidMeasurementUnitSearchSubset.
+func ConvertValidMeasurementUnitToValidMeasurementUnitSearchSubset(x *types.ValidMeasurementUnit) *types.ValidMeasurementUnitSearchSubset {
+	return &types.ValidMeasurementUnitSearchSubset{
+		ID:          x.ID,
+		Name:        x.Name,
+		PluralName:  x.PluralName,
+		Description: x.Description,
 	}
 }

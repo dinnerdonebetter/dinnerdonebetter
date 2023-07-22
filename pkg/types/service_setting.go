@@ -140,11 +140,7 @@ func (x *ServiceSettingCreationRequestInput) ValidateWithContext(ctx context.Con
 		result = multierror.Append(result, err)
 	}
 
-	if result != nil {
-		return result
-	}
-
-	return nil
+	return result.ErrorOrNil()
 }
 
 var _ validation.ValidatableWithContext = (*ServiceSettingDatabaseCreationInput)(nil)
@@ -186,9 +182,5 @@ func (x *ServiceSettingUpdateRequestInput) ValidateWithContext(ctx context.Conte
 		result = multierror.Append(result, err)
 	}
 
-	if result != nil {
-		return result
-	}
-
-	return nil
+	return result.ErrorOrNil()
 }

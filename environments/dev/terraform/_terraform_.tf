@@ -15,11 +15,15 @@ terraform {
     }
     google = {
       source  = "hashicorp/google"
-      version = "4.43.0"
+      version = "4.73.1"
     }
     archive = {
       source  = "hashicorp/archive"
       version = "2.2.0"
+    }
+    algolia = {
+      source  = "philippe-vandermoere/algolia"
+      version = "0.7.0"
     }
   }
 }

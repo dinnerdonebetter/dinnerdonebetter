@@ -44,6 +44,7 @@ func buildMockRowsFromRecipes(includeCounts bool, filteredCount uint64, recipes 
 			x.PluralPortionName,
 			x.SealOfApproval,
 			x.EligibleForMeals,
+			x.YieldsComponentType,
 			x.CreatedAt,
 			x.LastUpdatedAt,
 			x.ArchivedAt,
@@ -74,6 +75,7 @@ var fullRecipesColumns = []string{
 	"recipes.plural_portion_name",
 	"recipes.seal_of_approval",
 	"recipes.eligible_for_meals",
+	"recipes.yields_component_type",
 	"recipes.created_at",
 	"recipes.last_updated_at",
 	"recipes.archived_at",
@@ -134,6 +136,7 @@ func buildMockFullRowsFromRecipe(recipe *types.Recipe) *sqlmock.Rows {
 			&recipe.PluralPortionName,
 			&recipe.SealOfApproval,
 			&recipe.EligibleForMeals,
+			&recipe.YieldsComponentType,
 			&recipe.CreatedAt,
 			&recipe.LastUpdatedAt,
 			&recipe.ArchivedAt,
@@ -731,6 +734,7 @@ func TestQuerier_GetRecipes(T *testing.T) {
 			exampleRecipeList.Data[i].Steps = nil
 			exampleRecipeList.Data[i].PrepTasks = nil
 			exampleRecipeList.Data[i].Media = nil
+			exampleRecipeList.Data[i].SupportingRecipes = nil
 		}
 
 		ctx := context.Background()
@@ -760,6 +764,7 @@ func TestQuerier_GetRecipes(T *testing.T) {
 			exampleRecipeList.Data[i].Steps = nil
 			exampleRecipeList.Data[i].PrepTasks = nil
 			exampleRecipeList.Data[i].Media = nil
+			exampleRecipeList.Data[i].SupportingRecipes = nil
 		}
 
 		ctx := context.Background()
@@ -821,6 +826,61 @@ func TestQuerier_GetRecipes(T *testing.T) {
 	})
 }
 
+func TestQuerier_GetRecipesWithIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		exampleRecipeList := fakes.BuildFakeRecipeList()
+		exampleIDs := make([]string, len(exampleRecipeList.Data))
+		for i, exampleRecipe := range exampleRecipeList.Data {
+			exampleIDs[i] = exampleRecipe.ID
+		}
+
+		for _, exampleRecipe := range exampleRecipeList.Data {
+			prepareMockToSuccessfullyGetRecipe(t, exampleRecipe, "", db)
+		}
+
+		actual, err := c.GetRecipesWithIDs(ctx, exampleIDs)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleRecipeList.Data, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_GetRecipeThatNeedSearchIndexing(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleRecipeList := fakes.BuildFakeRecipeList()
+
+		c, db := buildTestClient(t)
+
+		exampleIDs := []string{}
+		for _, exampleRecipe := range exampleRecipeList.Data {
+			exampleIDs = append(exampleIDs, exampleRecipe.ID)
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(recipesNeedingIndexingQuery)).
+			WithArgs(interfaceToDriverValue(nil)...).
+			WillReturnRows(buildMockRowsFromIDs(exampleIDs...))
+
+		actual, err := c.GetRecipeIDsThatNeedSearchIndexing(ctx)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleIDs, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
 func TestQuerier_getRecipeIDsForMeal(T *testing.T) {
 	T.Parallel()
 
@@ -867,6 +927,7 @@ func TestQuerier_SearchForRecipes(T *testing.T) {
 			exampleRecipeList.Data[i].Steps = nil
 			exampleRecipeList.Data[i].PrepTasks = nil
 			exampleRecipeList.Data[i].Media = nil
+			exampleRecipeList.Data[i].SupportingRecipes = nil
 		}
 
 		ctx := context.Background()
@@ -953,6 +1014,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		exampleRecipe := fakes.BuildFakeRecipe()
 		exampleRecipe.ID = "1"
 		exampleRecipe.Media = nil
+		exampleRecipe.SupportingRecipes = nil
 		for i, step := range exampleRecipe.Steps {
 			exampleRecipe.Steps[i].ID = "2"
 			exampleRecipe.Steps[i].BelongsToRecipe = "1"
@@ -973,7 +1035,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 
 			for j := range step.Vessels {
 				exampleRecipe.Steps[i].Vessels[j].ID = "5"
-				exampleRecipe.Steps[i].Vessels[j].Instrument = &types.ValidInstrument{ID: exampleRecipe.Steps[i].Vessels[j].Instrument.ID}
+				exampleRecipe.Steps[i].Vessels[j].Vessel = &types.ValidVessel{ID: exampleRecipe.Steps[i].Vessels[j].Vessel.ID}
 				exampleRecipe.Steps[i].Vessels[j].BelongsToRecipeStep = "2"
 			}
 
@@ -1011,6 +1073,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleRecipe.PluralPortionName,
 			exampleRecipe.SealOfApproval,
 			exampleRecipe.EligibleForMeals,
+			exampleRecipe.YieldsComponentType,
 			exampleRecipe.CreatedByUser,
 		}
 
@@ -1055,6 +1118,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 					ingredient.ToTaste,
 					ingredient.ProductPercentageToUse,
 					ingredient.VesselIndex,
+					ingredient.RecipeStepProductRecipeID,
 					ingredient.BelongsToRecipeStep,
 				}
 
@@ -1090,7 +1154,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 					vessel.Notes,
 					vessel.BelongsToRecipeStep,
 					vessel.RecipeStepProductID,
-					vessel.InstrumentID,
+					vessel.VesselID,
 					vessel.VesselPreposition,
 					vessel.MinimumQuantity,
 					vessel.MaximumQuantity,
@@ -1216,6 +1280,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		exampleRecipe.Steps = nil
 		exampleRecipe.PrepTasks = nil
 		exampleRecipe.Media = nil
+		exampleRecipe.SupportingRecipes = nil
 		exampleRecipe.ID = "1"
 
 		exampleInput := converters.ConvertRecipeToRecipeDatabaseCreationInput(exampleRecipe)
@@ -1240,6 +1305,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleRecipe.PluralPortionName,
 			exampleRecipe.SealOfApproval,
 			exampleRecipe.EligibleForMeals,
+			exampleRecipe.YieldsComponentType,
 			exampleRecipe.CreatedByUser,
 		}
 
@@ -1365,6 +1431,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleRecipe.PluralPortionName,
 			exampleRecipe.SealOfApproval,
 			exampleRecipe.EligibleForMeals,
+			exampleRecipe.YieldsComponentType,
 			exampleInput.CreatedByUser,
 		}
 
@@ -1423,6 +1490,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleRecipe.PluralPortionName,
 			exampleRecipe.SealOfApproval,
 			exampleRecipe.EligibleForMeals,
+			exampleRecipe.YieldsComponentType,
 			exampleRecipe.CreatedByUser,
 		}
 
@@ -1488,6 +1556,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleInput.PluralPortionName,
 			exampleInput.SealOfApproval,
 			exampleInput.EligibleForMeals,
+			exampleRecipe.YieldsComponentType,
 			exampleInput.CreatedByUser,
 		}
 
@@ -1540,6 +1609,7 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 			exampleRecipe.PluralPortionName,
 			exampleRecipe.SealOfApproval,
 			exampleRecipe.EligibleForMeals,
+			exampleRecipe.YieldsComponentType,
 			exampleRecipe.CreatedByUser,
 		}
 
@@ -1606,6 +1676,7 @@ func TestQuerier_UpdateRecipe(T *testing.T) {
 			exampleRecipe.PluralPortionName,
 			exampleRecipe.SealOfApproval,
 			exampleRecipe.EligibleForMeals,
+			exampleRecipe.YieldsComponentType,
 			exampleRecipe.CreatedByUser,
 			exampleRecipe.ID,
 		}
@@ -1648,6 +1719,7 @@ func TestQuerier_UpdateRecipe(T *testing.T) {
 			exampleRecipe.PluralPortionName,
 			exampleRecipe.SealOfApproval,
 			exampleRecipe.EligibleForMeals,
+			exampleRecipe.YieldsComponentType,
 			exampleRecipe.CreatedByUser,
 			exampleRecipe.ID,
 		}
@@ -2034,5 +2106,60 @@ func Test_findCreatedRecipeStepProductsForInstruments(T *testing.T) {
 
 		require.NotNil(t, exampleRecipeInput.Steps[1].Instruments[0].RecipeStepProductID)
 		assert.Equal(t, exampleRecipeInput.Steps[0].Products[0].ID, *exampleRecipeInput.Steps[1].Instruments[0].RecipeStepProductID)
+	})
+}
+
+func TestQuerier_MarkRecipeAsIndexed(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleRecipe := fakes.BuildFakeRecipe()
+
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleRecipe.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(updateRecipeLastIndexedAtQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		assert.NoError(t, c.MarkRecipeAsIndexed(ctx, exampleRecipe.ID))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with invalid ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+
+		assert.Error(t, c.MarkRecipeAsIndexed(ctx, ""))
+	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleRecipe := fakes.BuildFakeRecipe()
+
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleRecipe.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(updateRecipeLastIndexedAtQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		assert.Error(t, c.MarkRecipeAsIndexed(ctx, exampleRecipe.ID))
+
+		mock.AssertExpectationsForObjects(t, db)
 	})
 }

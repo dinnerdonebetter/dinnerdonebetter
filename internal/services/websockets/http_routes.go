@@ -7,8 +7,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 )
 
-// SubscribeHandler is our subscription route.
-func (s *service) SubscribeHandler(res http.ResponseWriter, req *http.Request) {
+// WebsocketSubscriptionHandler is our subscription route.
+func (s *service) WebsocketSubscriptionHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 

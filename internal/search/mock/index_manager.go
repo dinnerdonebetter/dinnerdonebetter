@@ -9,7 +9,13 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-var _ search.IndexManager[types.ValidIngredient] = (*IndexManager[types.ValidIngredient])(nil)
+var (
+	_ search.Index[types.ValidIngredientSearchSubset]      = (*IndexManager[types.ValidIngredientSearchSubset])(nil)
+	_ search.Index[types.ValidInstrumentSearchSubset]      = (*IndexManager[types.ValidInstrumentSearchSubset])(nil)
+	_ search.Index[types.ValidMeasurementUnitSearchSubset] = (*IndexManager[types.ValidMeasurementUnitSearchSubset])(nil)
+	_ search.Index[types.ValidPreparationSearchSubset]     = (*IndexManager[types.ValidPreparationSearchSubset])(nil)
+	_ search.Index[types.ValidIngredientStateSearchSubset] = (*IndexManager[types.ValidIngredientStateSearchSubset])(nil)
+)
 
 // IndexManager is a mock IndexManager.
 type IndexManager[T any] struct {

@@ -67,23 +67,21 @@ type (
 	ValidMeasurementUnitCreationRequestInput struct {
 		_ struct{}
 
-		CreatedAt   time.Time `json:"createdAt"`
-		Name        string    `json:"name"`
-		Description string    `json:"description"`
-		IconPath    string    `json:"iconPath"`
-		PluralName  string    `json:"pluralName"`
-		Slug        string    `json:"slug"`
-		Volumetric  bool      `json:"volumetric"`
-		Universal   bool      `json:"universal"`
-		Metric      bool      `json:"metric"`
-		Imperial    bool      `json:"imperial"`
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		IconPath    string `json:"iconPath"`
+		PluralName  string `json:"pluralName"`
+		Slug        string `json:"slug"`
+		Volumetric  bool   `json:"volumetric"`
+		Universal   bool   `json:"universal"`
+		Metric      bool   `json:"metric"`
+		Imperial    bool   `json:"imperial"`
 	}
 
 	// ValidMeasurementUnitDatabaseCreationInput represents what a user could set as input for creating valid measurement units.
 	ValidMeasurementUnitDatabaseCreationInput struct {
 		_ struct{}
 
-		CreatedAt   time.Time
 		Name        string
 		Description string
 		ID          string
@@ -100,16 +98,25 @@ type (
 	ValidMeasurementUnitUpdateRequestInput struct {
 		_ struct{}
 
-		Name        *string    `json:"name,omitempty"`
-		Description *string    `json:"description,omitempty"`
-		IconPath    *string    `json:"iconPath,omitempty"`
-		CreatedAt   *time.Time `json:"createdAt,omitempty"`
-		Volumetric  *bool      `json:"volumetric,omitempty"`
-		Universal   *bool      `json:"universal,omitempty"`
-		Metric      *bool      `json:"metric,omitempty"`
-		Imperial    *bool      `json:"imperial,omitempty"`
-		PluralName  *string    `json:"pluralName,omitempty"`
-		Slug        *string    `json:"slug,omitempty"`
+		Name        *string `json:"name,omitempty"`
+		Description *string `json:"description,omitempty"`
+		IconPath    *string `json:"iconPath,omitempty"`
+		Volumetric  *bool   `json:"volumetric,omitempty"`
+		Universal   *bool   `json:"universal,omitempty"`
+		Metric      *bool   `json:"metric,omitempty"`
+		Imperial    *bool   `json:"imperial,omitempty"`
+		PluralName  *string `json:"pluralName,omitempty"`
+		Slug        *string `json:"slug,omitempty"`
+	}
+
+	// ValidMeasurementUnitSearchSubset represents the subset of values suitable to index for search.
+	ValidMeasurementUnitSearchSubset struct {
+		_ struct{}
+
+		Name        string `json:"name,omitempty"`
+		ID          string `json:"id,omitempty"`
+		Description string `json:"description,omitempty"`
+		PluralName  string `json:"pluralName,omitempty"`
 	}
 
 	// ValidMeasurementUnitDataManager describes a structure capable of storing valid measurement units permanently.
@@ -121,7 +128,10 @@ type (
 		ValidMeasurementUnitsForIngredientID(ctx context.Context, validIngredientID string, filter *QueryFilter) (*QueryFilteredResult[ValidMeasurementUnit], error)
 		CreateValidMeasurementUnit(ctx context.Context, input *ValidMeasurementUnitDatabaseCreationInput) (*ValidMeasurementUnit, error)
 		UpdateValidMeasurementUnit(ctx context.Context, updated *ValidMeasurementUnit) error
+		MarkValidMeasurementUnitAsIndexed(ctx context.Context, validMeasurementUnitID string) error
 		ArchiveValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) error
+		GetValidMeasurementUnitIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error)
+		GetValidMeasurementUnitsWithIDs(ctx context.Context, ids []string) ([]*ValidMeasurementUnit, error)
 	}
 
 	// ValidMeasurementUnitDataService describes a structure capable of serving traffic related to valid measurement units.

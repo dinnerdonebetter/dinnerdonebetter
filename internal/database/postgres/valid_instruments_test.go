@@ -14,6 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/Masterminds/squirrel"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -37,8 +38,6 @@ func buildMockRowsFromValidInstruments(includeCounts bool, filteredCount uint64,
 			x.UsableForStorage,
 			x.DisplayInSummaryLists,
 			x.IncludeInGeneratedInstructions,
-			x.IsVessel,
-			x.IsExclusivelyVessel,
 			x.Slug,
 			x.CreatedAt,
 			x.LastUpdatedAt,
@@ -534,6 +533,65 @@ func TestQuerier_GetValidInstruments(T *testing.T) {
 	})
 }
 
+func TestQuerier_GetValidInstrumentsWithIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleValidInstrumentList := fakes.BuildFakeValidInstrumentList()
+
+		exampleIDs := []string{}
+		for _, exampleValidInstrument := range exampleValidInstrumentList.Data {
+			exampleIDs = append(exampleIDs, exampleValidInstrument.ID)
+		}
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		where := squirrel.Eq{"valid_instruments.id": exampleIDs}
+		query, args := c.buildListQuery(ctx, validInstrumentsTable, nil, nil, where, householdOwnershipColumn, validInstrumentsTableColumns, "", false, nil)
+
+		db.ExpectQuery(formatQueryForSQLMock(query)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockRowsFromValidInstruments(true, exampleValidInstrumentList.FilteredCount, exampleValidInstrumentList.Data...))
+
+		actual, err := c.GetValidInstrumentsWithIDs(ctx, exampleIDs)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleValidInstrumentList.Data, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_GetValidInstrumentThatNeedSearchIndexing(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleValidInstrumentList := fakes.BuildFakeValidInstrumentList()
+
+		c, db := buildTestClient(t)
+
+		exampleIDs := []string{}
+		for _, exampleValidInstrument := range exampleValidInstrumentList.Data {
+			exampleIDs = append(exampleIDs, exampleValidInstrument.ID)
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(validInstrumentsNeedingIndexingQuery)).
+			WithArgs(interfaceToDriverValue(nil)...).
+			WillReturnRows(buildMockRowsFromIDs(exampleIDs...))
+
+		actual, err := c.GetValidInstrumentIDsThatNeedSearchIndexing(ctx)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleIDs, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
 func TestQuerier_CreateValidInstrument(T *testing.T) {
 	T.Parallel()
 
@@ -556,8 +614,6 @@ func TestQuerier_CreateValidInstrument(T *testing.T) {
 			exampleInput.UsableForStorage,
 			exampleInput.DisplayInSummaryLists,
 			exampleInput.IncludeInGeneratedInstructions,
-			exampleInput.IsVessel,
-			exampleInput.IsExclusivelyVessel,
 			exampleInput.Slug,
 		}
 
@@ -606,8 +662,6 @@ func TestQuerier_CreateValidInstrument(T *testing.T) {
 			exampleInput.UsableForStorage,
 			exampleInput.DisplayInSummaryLists,
 			exampleInput.IncludeInGeneratedInstructions,
-			exampleInput.IsVessel,
-			exampleInput.IsExclusivelyVessel,
 			exampleInput.Slug,
 		}
 
@@ -647,8 +701,6 @@ func TestQuerier_UpdateValidInstrument(T *testing.T) {
 			exampleValidInstrument.UsableForStorage,
 			exampleValidInstrument.DisplayInSummaryLists,
 			exampleValidInstrument.IncludeInGeneratedInstructions,
-			exampleValidInstrument.IsVessel,
-			exampleValidInstrument.IsExclusivelyVessel,
 			exampleValidInstrument.Slug,
 			exampleValidInstrument.ID,
 		}
@@ -687,8 +739,6 @@ func TestQuerier_UpdateValidInstrument(T *testing.T) {
 			exampleValidInstrument.UsableForStorage,
 			exampleValidInstrument.DisplayInSummaryLists,
 			exampleValidInstrument.IncludeInGeneratedInstructions,
-			exampleValidInstrument.IsVessel,
-			exampleValidInstrument.IsExclusivelyVessel,
 			exampleValidInstrument.Slug,
 			exampleValidInstrument.ID,
 		}
@@ -753,6 +803,61 @@ func TestQuerier_ArchiveValidInstrument(T *testing.T) {
 			WillReturnError(errors.New("blah"))
 
 		assert.Error(t, c.ArchiveValidInstrument(ctx, exampleValidInstrument.ID))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_MarkValidInstrumentAsIndexed(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleValidInstrument := fakes.BuildFakeValidInstrument()
+
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleValidInstrument.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(updateValidInstrumentLastIndexedAtQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		assert.NoError(t, c.MarkValidInstrumentAsIndexed(ctx, exampleValidInstrument.ID))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with invalid ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+
+		assert.Error(t, c.MarkValidInstrumentAsIndexed(ctx, ""))
+	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleValidInstrument := fakes.BuildFakeValidInstrument()
+
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleValidInstrument.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(updateValidInstrumentLastIndexedAtQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		assert.Error(t, c.MarkValidInstrumentAsIndexed(ctx, exampleValidInstrument.ID))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})

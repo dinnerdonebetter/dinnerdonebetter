@@ -29,7 +29,7 @@ func init() {
 	zerolog.TimestampFunc = func() time.Time {
 		return time.Now().In(loc)
 	}
-	zerolog.CallerMarshalFunc = func(file string, line int) string {
+	zerolog.CallerMarshalFunc = func(_ uintptr, file string, line int) string {
 		return strings.TrimPrefix(file, here) + ", line " + strconv.Itoa(line)
 	}
 	zerolog.LevelFieldName = "severity"

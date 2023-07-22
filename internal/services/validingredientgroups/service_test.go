@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -19,7 +19,7 @@ import (
 func buildTestService() *service {
 	return &service{
 		logger:                             logging.NewNoopLogger(),
-		validIngredientGroupDataManager:    &mocktypes.ValidIngredientGroupDataManager{},
+		validIngredientGroupDataManager:    &mocktypes.ValidIngredientGroupDataManagerMock{},
 		validIngredientGroupIDFetcher:      func(req *http.Request) string { return "" },
 		validIngredientGroupStateIDFetcher: func(req *http.Request) string { return "" },
 		encoderDecoder:                     mockencoding.NewMockEncoderDecoder(),
@@ -58,7 +58,7 @@ func TestProvideValidIngredientGroupsService(T *testing.T) {
 		s, err := ProvideService(
 			logger,
 			cfg,
-			&mocktypes.ValidIngredientGroupDataManager{},
+			&mocktypes.ValidIngredientGroupDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
@@ -86,7 +86,7 @@ func TestProvideValidIngredientGroupsService(T *testing.T) {
 		s, err := ProvideService(
 			logger,
 			cfg,
-			&mocktypes.ValidIngredientGroupDataManager{},
+			&mocktypes.ValidIngredientGroupDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,

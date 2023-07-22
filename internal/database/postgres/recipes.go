@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	_ "embed"
+	"log"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/identifiers"
@@ -32,6 +33,7 @@ var (
 		"recipes.plural_portion_name",
 		"recipes.seal_of_approval",
 		"recipes.eligible_for_meals",
+		"recipes.yields_component_type",
 		"recipes.created_at",
 		"recipes.last_updated_at",
 		"recipes.archived_at",
@@ -59,6 +61,7 @@ func (q *Querier) scanRecipe(ctx context.Context, scan database.Scanner, include
 		&x.PluralPortionName,
 		&x.SealOfApproval,
 		&x.EligibleForMeals,
+		&x.YieldsComponentType,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
@@ -159,6 +162,7 @@ func (q *Querier) scanRecipeAndStep(ctx context.Context, scan database.Scanner) 
 		&x.PluralPortionName,
 		&x.SealOfApproval,
 		&x.EligibleForMeals,
+		&x.YieldsComponentType,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
 		&x.ArchivedAt,
@@ -289,8 +293,13 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID, userID string) (*type
 		return nil, observability.PrepareError(err, span, "fetching recipe step completion conditions for recipe")
 	}
 
+	supportingRecipeInfo := map[string]bool{}
 	for i, step := range x.Steps {
 		for _, ingredient := range ingredients {
+			if ingredient.RecipeStepProductRecipeID != nil {
+				supportingRecipeInfo[*ingredient.RecipeStepProductRecipeID] = true
+			}
+
 			if ingredient.BelongsToRecipeStep == step.ID {
 				x.Steps[i].Ingredients = append(x.Steps[i].Ingredients, ingredient)
 			}
@@ -325,6 +334,16 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID, userID string) (*type
 			return nil, observability.PrepareError(err, span, "fetching recipe step ingredients for recipe")
 		}
 		x.Steps[i].Media = recipeMedia
+	}
+
+	var supportingRecipeIDs []string
+	for supportingRecipe := range supportingRecipeInfo {
+		supportingRecipeIDs = append(supportingRecipeIDs, supportingRecipe)
+	}
+
+	x.SupportingRecipes, err = q.GetRecipesWithIDs(ctx, supportingRecipeIDs)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "fetching supporting recipes")
 	}
 
 	return x, nil
@@ -370,6 +389,42 @@ func (q *Querier) GetRecipes(ctx context.Context, filter *types.QueryFilter) (x 
 	}
 
 	return x, nil
+}
+
+// GetRecipesWithIDs fetches a list of recipes from the database that meet a particular filter.
+func (q *Querier) GetRecipesWithIDs(ctx context.Context, ids []string) ([]*types.Recipe, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	recipes := []*types.Recipe{}
+	for _, id := range ids {
+		r, err := q.getRecipe(ctx, id, "")
+		if err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "getting recipe")
+		}
+
+		recipes = append(recipes, r)
+	}
+
+	return recipes, nil
+}
+
+//go:embed generated_queries/recipes/get_needing_indexing.sql
+var recipesNeedingIndexingQuery string
+
+// GetRecipeIDsThatNeedSearchIndexing fetches a list of recipe IDs from the database that meet a particular filter.
+func (q *Querier) GetRecipeIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	rows, err := q.getRows(ctx, q.db, "recipes needing indexing", recipesNeedingIndexingQuery, nil)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "executing recipes list retrieval query")
+	}
+
+	return q.scanIDs(ctx, rows)
 }
 
 //go:embed queries/recipes/ids_for_meal.sql
@@ -466,6 +521,7 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 		input.PluralPortionName,
 		input.SealOfApproval,
 		input.EligibleForMeals,
+		input.YieldsComponentType,
 		input.CreatedByUser,
 	}
 
@@ -489,6 +545,7 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 		EligibleForMeals:         input.EligibleForMeals,
 		PortionName:              input.PortionName,
 		PluralPortionName:        input.PluralPortionName,
+		YieldsComponentType:      input.YieldsComponentType,
 		CreatedAt:                q.currentTime(),
 	}
 
@@ -585,13 +642,15 @@ func findCreatedRecipeStepProductsForInstruments(recipe *types.RecipeDatabaseCre
 
 func findCreatedRecipeStepProductsForVessels(recipe *types.RecipeDatabaseCreationInput) {
 	for _, step := range recipe.Steps {
-		for _, instrument := range step.Vessels {
-			if instrument.ProductOfRecipeStepIndex != nil && instrument.ProductOfRecipeStepProductIndex != nil {
-				enoughSteps := len(recipe.Steps) > int(*instrument.ProductOfRecipeStepIndex)
-				enoughRecipeStepProducts := len(recipe.Steps[int(*instrument.ProductOfRecipeStepIndex)].Products) > int(*instrument.ProductOfRecipeStepProductIndex)
-				relevantProductIsVessel := recipe.Steps[*instrument.ProductOfRecipeStepIndex].Products[*instrument.ProductOfRecipeStepProductIndex].Type == types.RecipeStepProductVesselType
+		for _, vessel := range step.Vessels {
+			if vessel.ProductOfRecipeStepIndex != nil && vessel.ProductOfRecipeStepProductIndex != nil {
+				enoughSteps := len(recipe.Steps) > int(*vessel.ProductOfRecipeStepIndex)
+				enoughRecipeStepProducts := len(recipe.Steps[int(*vessel.ProductOfRecipeStepIndex)].Products) > int(*vessel.ProductOfRecipeStepProductIndex)
+				relevantProductIsVessel := recipe.Steps[*vessel.ProductOfRecipeStepIndex].Products[*vessel.ProductOfRecipeStepProductIndex].Type == types.RecipeStepProductVesselType
 				if enoughSteps && enoughRecipeStepProducts && relevantProductIsVessel {
-					instrument.RecipeStepProductID = &recipe.Steps[*instrument.ProductOfRecipeStepIndex].Products[*instrument.ProductOfRecipeStepProductIndex].ID
+					vessel.RecipeStepProductID = &recipe.Steps[*vessel.ProductOfRecipeStepIndex].Products[*vessel.ProductOfRecipeStepProductIndex].ID
+				} else {
+					log.Printf("for recipe step id %q, vessel ID %q, not enough steps: %t, not enough recipe step products: %t, relevant product is vessel: %t", step.ID, vessel.ID, enoughSteps, enoughRecipeStepProducts, relevantProductIsVessel)
 				}
 			}
 		}
@@ -626,6 +685,7 @@ func (q *Querier) UpdateRecipe(ctx context.Context, updated *types.Recipe) error
 		updated.PluralPortionName,
 		updated.SealOfApproval,
 		updated.EligibleForMeals,
+		updated.YieldsComponentType,
 		updated.CreatedByUser,
 		updated.ID,
 	}
@@ -635,6 +695,35 @@ func (q *Querier) UpdateRecipe(ctx context.Context, updated *types.Recipe) error
 	}
 
 	logger.Info("recipe updated")
+
+	return nil
+}
+
+//go:embed queries/recipes/update_last_indexed_at.sql
+var updateRecipeLastIndexedAtQuery string
+
+// MarkRecipeAsIndexed updates a particular recipe's last_indexed_at value.
+func (q *Querier) MarkRecipeAsIndexed(ctx context.Context, recipeID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if recipeID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+
+	args := []any{
+		recipeID,
+	}
+
+	if err := q.performWriteQuery(ctx, q.db, "recipe last_indexed_at", updateRecipeLastIndexedAtQuery, args); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "marking recipe as indexed")
+	}
+
+	logger.Info("recipe marked as indexed")
 
 	return nil
 }

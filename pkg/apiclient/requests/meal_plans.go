@@ -142,3 +142,30 @@ func (b *Builder) BuildArchiveMealPlanRequest(ctx context.Context, mealPlanID st
 
 	return req, nil
 }
+
+// BuildFinalizeMealPlanRequest builds an HTTP request for finalizing a meal plan.
+func (b *Builder) BuildFinalizeMealPlanRequest(ctx context.Context, mealPlanID string) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if mealPlanID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
+	uri := b.BuildURL(
+		ctx,
+		nil,
+		mealPlansBasePath,
+		mealPlanID,
+		"finalize",
+	)
+	tracing.AttachRequestURIToSpan(span, uri)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, http.NoBody)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "building request")
+	}
+
+	return req, nil
+}

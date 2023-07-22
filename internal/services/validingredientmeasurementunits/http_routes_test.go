@@ -9,7 +9,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -41,7 +41,7 @@ func TestValidIngredientMeasurementUnitsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientMeasurementUnitDataManager.On(
+		dbManager.ValidIngredientMeasurementUnitDataManagerMock.On(
 			"CreateValidIngredientMeasurementUnit",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidIngredientMeasurementUnitDatabaseCreationInput) bool { return true }),
@@ -134,7 +134,7 @@ func TestValidIngredientMeasurementUnitsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientMeasurementUnitDataManager.On(
+		dbManager.ValidIngredientMeasurementUnitDataManagerMock.On(
 			"CreateValidIngredientMeasurementUnit",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidIngredientMeasurementUnitDatabaseCreationInput) bool { return true }),
@@ -163,7 +163,7 @@ func TestValidIngredientMeasurementUnitsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientMeasurementUnitDataManager.On(
+		dbManager.ValidIngredientMeasurementUnitDataManagerMock.On(
 			"CreateValidIngredientMeasurementUnit",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidIngredientMeasurementUnitDatabaseCreationInput) bool { return true }),
@@ -194,7 +194,7 @@ func TestValidIngredientMeasurementUnitsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManager{}
+		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManagerMock{}
 		validIngredientMeasurementUnitDataManager.On(
 			"GetValidIngredientMeasurementUnit",
 			testutils.ContextMatcher,
@@ -247,7 +247,7 @@ func TestValidIngredientMeasurementUnitsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManager{}
+		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManagerMock{}
 		validIngredientMeasurementUnitDataManager.On(
 			"GetValidIngredientMeasurementUnit",
 			testutils.ContextMatcher,
@@ -275,7 +275,7 @@ func TestValidIngredientMeasurementUnitsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManager{}
+		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManagerMock{}
 		validIngredientMeasurementUnitDataManager.On(
 			"GetValidIngredientMeasurementUnit",
 			testutils.ContextMatcher,
@@ -309,7 +309,7 @@ func TestValidIngredientMeasurementUnitsService_ListHandler(T *testing.T) {
 
 		exampleValidIngredientMeasurementUnitList := fakes.BuildFakeValidIngredientMeasurementUnitList()
 
-		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManager{}
+		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManagerMock{}
 		validIngredientMeasurementUnitDataManager.On(
 			"GetValidIngredientMeasurementUnits",
 			testutils.ContextMatcher,
@@ -362,7 +362,7 @@ func TestValidIngredientMeasurementUnitsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManager{}
+		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManagerMock{}
 		validIngredientMeasurementUnitDataManager.On(
 			"GetValidIngredientMeasurementUnits",
 			testutils.ContextMatcher,
@@ -391,7 +391,7 @@ func TestValidIngredientMeasurementUnitsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManager{}
+		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManagerMock{}
 		validIngredientMeasurementUnitDataManager.On(
 			"GetValidIngredientMeasurementUnits",
 			testutils.ContextMatcher,
@@ -433,13 +433,13 @@ func TestValidIngredientMeasurementUnitsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientMeasurementUnitDataManager.On(
+		dbManager.ValidIngredientMeasurementUnitDataManagerMock.On(
 			"GetValidIngredientMeasurementUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientMeasurementUnit.ID,
 		).Return(helper.exampleValidIngredientMeasurementUnit, nil)
 
-		dbManager.ValidIngredientMeasurementUnitDataManager.On(
+		dbManager.ValidIngredientMeasurementUnitDataManagerMock.On(
 			"UpdateValidIngredientMeasurementUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientMeasurementUnit,
@@ -521,7 +521,7 @@ func TestValidIngredientMeasurementUnitsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManager{}
+		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManagerMock{}
 		validIngredientMeasurementUnitDataManager.On(
 			"GetValidIngredientMeasurementUnit",
 			testutils.ContextMatcher,
@@ -550,7 +550,7 @@ func TestValidIngredientMeasurementUnitsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManager{}
+		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManagerMock{}
 		validIngredientMeasurementUnitDataManager.On(
 			"GetValidIngredientMeasurementUnit",
 			testutils.ContextMatcher,
@@ -580,13 +580,13 @@ func TestValidIngredientMeasurementUnitsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientMeasurementUnitDataManager.On(
+		dbManager.ValidIngredientMeasurementUnitDataManagerMock.On(
 			"GetValidIngredientMeasurementUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientMeasurementUnit.ID,
 		).Return(helper.exampleValidIngredientMeasurementUnit, nil)
 
-		dbManager.ValidIngredientMeasurementUnitDataManager.On(
+		dbManager.ValidIngredientMeasurementUnitDataManagerMock.On(
 			"UpdateValidIngredientMeasurementUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientMeasurementUnit,
@@ -615,13 +615,13 @@ func TestValidIngredientMeasurementUnitsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientMeasurementUnitDataManager.On(
+		dbManager.ValidIngredientMeasurementUnitDataManagerMock.On(
 			"GetValidIngredientMeasurementUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientMeasurementUnit.ID,
 		).Return(helper.exampleValidIngredientMeasurementUnit, nil)
 
-		dbManager.ValidIngredientMeasurementUnitDataManager.On(
+		dbManager.ValidIngredientMeasurementUnitDataManagerMock.On(
 			"UpdateValidIngredientMeasurementUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientMeasurementUnit,
@@ -653,13 +653,13 @@ func TestValidIngredientMeasurementUnitsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientMeasurementUnitDataManager.On(
+		dbManager.ValidIngredientMeasurementUnitDataManagerMock.On(
 			"ValidIngredientMeasurementUnitExists",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientMeasurementUnit.ID,
 		).Return(true, nil)
 
-		dbManager.ValidIngredientMeasurementUnitDataManager.On(
+		dbManager.ValidIngredientMeasurementUnitDataManagerMock.On(
 			"ArchiveValidIngredientMeasurementUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientMeasurementUnit.ID,
@@ -710,7 +710,7 @@ func TestValidIngredientMeasurementUnitsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManager{}
+		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManagerMock{}
 		validIngredientMeasurementUnitDataManager.On(
 			"ValidIngredientMeasurementUnitExists",
 			testutils.ContextMatcher,
@@ -738,7 +738,7 @@ func TestValidIngredientMeasurementUnitsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManager{}
+		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManagerMock{}
 		validIngredientMeasurementUnitDataManager.On(
 			"ValidIngredientMeasurementUnitExists",
 			testutils.ContextMatcher,
@@ -759,13 +759,13 @@ func TestValidIngredientMeasurementUnitsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientMeasurementUnitDataManager.On(
+		dbManager.ValidIngredientMeasurementUnitDataManagerMock.On(
 			"ValidIngredientMeasurementUnitExists",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientMeasurementUnit.ID,
 		).Return(true, nil)
 
-		dbManager.ValidIngredientMeasurementUnitDataManager.On(
+		dbManager.ValidIngredientMeasurementUnitDataManagerMock.On(
 			"ArchiveValidIngredientMeasurementUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientMeasurementUnit.ID,
@@ -785,13 +785,13 @@ func TestValidIngredientMeasurementUnitsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientMeasurementUnitDataManager.On(
+		dbManager.ValidIngredientMeasurementUnitDataManagerMock.On(
 			"ValidIngredientMeasurementUnitExists",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientMeasurementUnit.ID,
 		).Return(true, nil)
 
-		dbManager.ValidIngredientMeasurementUnitDataManager.On(
+		dbManager.ValidIngredientMeasurementUnitDataManagerMock.On(
 			"ArchiveValidIngredientMeasurementUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientMeasurementUnit.ID,
@@ -824,7 +824,7 @@ func TestValidIngredientMeasurementUnitsService_SearchByIngredientHandler(T *tes
 
 		exampleResponse := fakes.BuildFakeValidIngredientMeasurementUnitList()
 
-		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManager{}
+		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManagerMock{}
 		validIngredientMeasurementUnitDataManager.On(
 			"GetValidIngredientMeasurementUnitsForIngredient",
 			testutils.ContextMatcher,
@@ -869,7 +869,7 @@ func TestValidIngredientMeasurementUnitsService_SearchByIngredientHandler(T *tes
 
 		helper := buildTestHelper(t)
 
-		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManager{}
+		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManagerMock{}
 		validIngredientMeasurementUnitDataManager.On(
 			"GetValidIngredientMeasurementUnitsForIngredient",
 			testutils.ContextMatcher,
@@ -896,7 +896,7 @@ func TestValidIngredientMeasurementUnitsService_SearchByMeasurementUnitHandler(T
 
 		exampleResponse := fakes.BuildFakeValidIngredientMeasurementUnitList()
 
-		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManager{}
+		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManagerMock{}
 		validIngredientMeasurementUnitDataManager.On(
 			"GetValidIngredientMeasurementUnitsForMeasurementUnit",
 			testutils.ContextMatcher,
@@ -941,7 +941,7 @@ func TestValidIngredientMeasurementUnitsService_SearchByMeasurementUnitHandler(T
 
 		helper := buildTestHelper(t)
 
-		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManager{}
+		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManagerMock{}
 		validIngredientMeasurementUnitDataManager.On(
 			"GetValidIngredientMeasurementUnitsForMeasurementUnit",
 			testutils.ContextMatcher,

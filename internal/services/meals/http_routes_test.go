@@ -6,15 +6,18 @@ import (
 	"errors"
 	"net/http"
 	"net/url"
+	"strconv"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	mocksearch "github.com/dinnerdonebetter/backend/internal/search/mock"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 	testutils "github.com/dinnerdonebetter/backend/tests/utils"
@@ -24,7 +27,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestMealsService_CreateHandler(T *testing.T) {
+func TestMealsService_CreateMealHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -42,7 +45,7 @@ func TestMealsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealDataManager.On(
+		dbManager.MealDataManagerMock.On(
 			"CreateMeal",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.MealDatabaseCreationInput) bool { return true }),
@@ -57,7 +60,7 @@ func TestMealsService_CreateHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
@@ -75,7 +78,7 @@ func TestMealsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 	})
@@ -94,7 +97,7 @@ func TestMealsService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 	})
@@ -115,7 +118,7 @@ func TestMealsService_CreateHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
@@ -135,14 +138,14 @@ func TestMealsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealDataManager.On(
+		dbManager.MealDataManagerMock.On(
 			"CreateMeal",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.MealDatabaseCreationInput) bool { return true }),
 		).Return((*types.Meal)(nil), errors.New("blah"))
 		helper.service.mealDataManager = dbManager
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
@@ -164,7 +167,7 @@ func TestMealsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealDataManager.On(
+		dbManager.MealDataManagerMock.On(
 			"CreateMeal",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.MealDatabaseCreationInput) bool { return true }),
@@ -179,7 +182,7 @@ func TestMealsService_CreateHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.CreateHandler(helper.res, helper.req)
+		helper.service.CreateMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 
@@ -187,7 +190,7 @@ func TestMealsService_CreateHandler(T *testing.T) {
 	})
 }
 
-func TestMealsService_ReadHandler(T *testing.T) {
+func TestMealsService_ReadMealHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -198,7 +201,7 @@ func TestMealsService_ReadHandler(T *testing.T) {
 			return helper.exampleMeal.ID
 		}
 
-		mealDataManager := &mocktypes.MealDataManager{}
+		mealDataManager := &mocktypes.MealDataManagerMock{}
 		mealDataManager.On(
 			"GetMeal",
 			testutils.ContextMatcher,
@@ -215,7 +218,7 @@ func TestMealsService_ReadHandler(T *testing.T) {
 		)
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
@@ -239,7 +242,7 @@ func TestMealsService_ReadHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 
@@ -254,7 +257,7 @@ func TestMealsService_ReadHandler(T *testing.T) {
 			return helper.exampleMeal.ID
 		}
 
-		mealDataManager := &mocktypes.MealDataManager{}
+		mealDataManager := &mocktypes.MealDataManagerMock{}
 		mealDataManager.On(
 			"GetMeal",
 			testutils.ContextMatcher,
@@ -270,7 +273,7 @@ func TestMealsService_ReadHandler(T *testing.T) {
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
@@ -285,7 +288,7 @@ func TestMealsService_ReadHandler(T *testing.T) {
 			return helper.exampleMeal.ID
 		}
 
-		mealDataManager := &mocktypes.MealDataManager{}
+		mealDataManager := &mocktypes.MealDataManagerMock{}
 		mealDataManager.On(
 			"GetMeal",
 			testutils.ContextMatcher,
@@ -301,7 +304,7 @@ func TestMealsService_ReadHandler(T *testing.T) {
 		)
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.ReadHandler(helper.res, helper.req)
+		helper.service.ReadMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
@@ -309,7 +312,7 @@ func TestMealsService_ReadHandler(T *testing.T) {
 	})
 }
 
-func TestMealsService_ListHandler(T *testing.T) {
+func TestMealsService_ListMealsHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -319,7 +322,7 @@ func TestMealsService_ListHandler(T *testing.T) {
 
 		exampleMealList := fakes.BuildFakeMealList()
 
-		mealDataManager := &mocktypes.MealDataManager{}
+		mealDataManager := &mocktypes.MealDataManagerMock{}
 		mealDataManager.On(
 			"GetMeals",
 			testutils.ContextMatcher,
@@ -336,7 +339,7 @@ func TestMealsService_ListHandler(T *testing.T) {
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListMealsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
@@ -360,7 +363,7 @@ func TestMealsService_ListHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListMealsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 
@@ -372,7 +375,7 @@ func TestMealsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealDataManager := &mocktypes.MealDataManager{}
+		mealDataManager := &mocktypes.MealDataManagerMock{}
 		mealDataManager.On(
 			"GetMeals",
 			testutils.ContextMatcher,
@@ -389,7 +392,7 @@ func TestMealsService_ListHandler(T *testing.T) {
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListMealsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
@@ -401,7 +404,7 @@ func TestMealsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealDataManager := &mocktypes.MealDataManager{}
+		mealDataManager := &mocktypes.MealDataManagerMock{}
 		mealDataManager.On(
 			"GetMeals",
 			testutils.ContextMatcher,
@@ -417,7 +420,7 @@ func TestMealsService_ListHandler(T *testing.T) {
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.ListHandler(helper.res, helper.req)
+		helper.service.ListMealsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
@@ -425,10 +428,11 @@ func TestMealsService_ListHandler(T *testing.T) {
 	})
 }
 
-func TestMealsService_SearchHandler(T *testing.T) {
+func TestMealsService_SearchMealsHandler(T *testing.T) {
 	T.Parallel()
 
 	const exampleQuery = "example"
+	exampleMealList := fakes.BuildFakeMealList()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -436,9 +440,7 @@ func TestMealsService_SearchHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{types.SearchQueryKey: []string{exampleQuery}}.Encode()
 
-		exampleMealList := fakes.BuildFakeMealList()
-
-		mealDataManager := &mocktypes.MealDataManager{}
+		mealDataManager := &mocktypes.MealDataManagerMock{}
 		mealDataManager.On(
 			"SearchForMeals",
 			testutils.ContextMatcher,
@@ -456,11 +458,54 @@ func TestMealsService_SearchHandler(T *testing.T) {
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.SearchHandler(helper.res, helper.req)
+		helper.service.SearchMealsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mealDataManager, encoderDecoder)
+	})
+
+	T.Run("using external service", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.cfg.UseSearchService = true
+
+		exampleLimit := uint8(123)
+
+		helper.req.URL.RawQuery = url.Values{
+			types.SearchQueryKey: []string{exampleQuery},
+			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+		}.Encode()
+
+		expectedIDs := []string{}
+		mealSearchSubsets := make([]*types.MealSearchSubset, len(exampleMealList.Data))
+		for i := range exampleMealList.Data {
+			expectedIDs = append(expectedIDs, exampleMealList.Data[i].ID)
+			mealSearchSubsets[i] = converters.ConvertMealToMealSearchSubset(exampleMealList.Data[i])
+		}
+
+		searchIndex := &mocksearch.IndexManager[types.MealSearchSubset]{}
+		searchIndex.On(
+			"Search",
+			testutils.ContextMatcher,
+			exampleQuery,
+		).Return(mealSearchSubsets, nil)
+		helper.service.searchIndex = searchIndex
+
+		mealDataManager := &mocktypes.MealDataManagerMock{}
+		mealDataManager.On(
+			"GetMealsWithIDs",
+			testutils.ContextMatcher,
+			expectedIDs,
+		).Return(exampleMealList.Data, nil)
+		helper.service.mealDataManager = mealDataManager
+
+		helper.service.SearchMealsHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, mealDataManager, searchIndex)
 	})
 
 	T.Run("with error fetching session context data", func(t *testing.T) {
@@ -469,7 +514,7 @@ func TestMealsService_SearchHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.SearchHandler(helper.res, helper.req)
+		helper.service.SearchMealsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 	})
@@ -480,7 +525,7 @@ func TestMealsService_SearchHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{types.SearchQueryKey: []string{exampleQuery}}.Encode()
 
-		mealDataManager := &mocktypes.MealDataManager{}
+		mealDataManager := &mocktypes.MealDataManagerMock{}
 		mealDataManager.On(
 			"SearchForMeals",
 			testutils.ContextMatcher,
@@ -498,7 +543,7 @@ func TestMealsService_SearchHandler(T *testing.T) {
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.SearchHandler(helper.res, helper.req)
+		helper.service.SearchMealsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
@@ -511,7 +556,7 @@ func TestMealsService_SearchHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.req.URL.RawQuery = url.Values{types.SearchQueryKey: []string{exampleQuery}}.Encode()
 
-		mealDataManager := &mocktypes.MealDataManager{}
+		mealDataManager := &mocktypes.MealDataManagerMock{}
 		mealDataManager.On(
 			"SearchForMeals",
 			testutils.ContextMatcher,
@@ -520,7 +565,7 @@ func TestMealsService_SearchHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.Meal])(nil), errors.New("blah"))
 		helper.service.mealDataManager = mealDataManager
 
-		helper.service.SearchHandler(helper.res, helper.req)
+		helper.service.SearchMealsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
@@ -528,7 +573,7 @@ func TestMealsService_SearchHandler(T *testing.T) {
 	})
 }
 
-func TestMealsService_ArchiveHandler(T *testing.T) {
+func TestMealsService_ArchiveMealHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -537,13 +582,13 @@ func TestMealsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealDataManager.On(
+		dbManager.MealDataManagerMock.On(
 			"MealExists",
 			testutils.ContextMatcher,
 			helper.exampleMeal.ID,
 		).Return(true, nil)
 
-		dbManager.MealDataManager.On(
+		dbManager.MealDataManagerMock.On(
 			"ArchiveMeal",
 			testutils.ContextMatcher,
 			helper.exampleMeal.ID,
@@ -559,7 +604,7 @@ func TestMealsService_ArchiveHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
@@ -583,7 +628,7 @@ func TestMealsService_ArchiveHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 
@@ -595,7 +640,7 @@ func TestMealsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealDataManager := &mocktypes.MealDataManager{}
+		mealDataManager := &mocktypes.MealDataManagerMock{}
 		mealDataManager.On(
 			"MealExists",
 			testutils.ContextMatcher,
@@ -611,7 +656,7 @@ func TestMealsService_ArchiveHandler(T *testing.T) {
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
@@ -623,7 +668,7 @@ func TestMealsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealDataManager := &mocktypes.MealDataManager{}
+		mealDataManager := &mocktypes.MealDataManagerMock{}
 		mealDataManager.On(
 			"MealExists",
 			testutils.ContextMatcher,
@@ -631,7 +676,7 @@ func TestMealsService_ArchiveHandler(T *testing.T) {
 		).Return(false, errors.New("blah"))
 		helper.service.mealDataManager = mealDataManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
@@ -644,13 +689,13 @@ func TestMealsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealDataManager.On(
+		dbManager.MealDataManagerMock.On(
 			"MealExists",
 			testutils.ContextMatcher,
 			helper.exampleMeal.ID,
 		).Return(true, nil)
 
-		dbManager.MealDataManager.On(
+		dbManager.MealDataManagerMock.On(
 			"ArchiveMeal",
 			testutils.ContextMatcher,
 			helper.exampleMeal.ID,
@@ -658,7 +703,7 @@ func TestMealsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.mealDataManager = dbManager
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
@@ -671,13 +716,13 @@ func TestMealsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealDataManager.On(
+		dbManager.MealDataManagerMock.On(
 			"MealExists",
 			testutils.ContextMatcher,
 			helper.exampleMeal.ID,
 		).Return(true, nil)
 
-		dbManager.MealDataManager.On(
+		dbManager.MealDataManagerMock.On(
 			"ArchiveMeal",
 			testutils.ContextMatcher,
 			helper.exampleMeal.ID,
@@ -693,7 +738,7 @@ func TestMealsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
-		helper.service.ArchiveHandler(helper.res, helper.req)
+		helper.service.ArchiveMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 

@@ -10,9 +10,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/config"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	logcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
-	"github.com/dinnerdonebetter/backend/internal/server/http/config"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	_ "go.uber.org/automaxprocs"

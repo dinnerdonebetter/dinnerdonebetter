@@ -31,7 +31,7 @@ type authMethod struct{}
 
 var (
 	cookieAuthMethod   = new(authMethod)
-	pasetoAuthMethod   = new(authMethod)
+	oauth2AuthMethod   = new(authMethod)
 	defaultContentType = encoding.ContentTypeJSON
 
 	errInvalidResponseCode = errors.New("invalid response code")
@@ -78,19 +78,11 @@ func (c *Client) RequestBuilder() *requests.Builder {
 func NewClient(u *url.URL, tracerProvider tracing.TracerProvider, options ...option) (*Client, error) {
 	l := logging.NewNoopLogger()
 
-	if u == nil {
-		return nil, ErrNoURLProvided
-	}
-
-	if tracerProvider == nil {
-		tracerProvider = tracing.NewNoopTracerProvider()
-	}
-
 	c := &Client{
 		url:                   u,
-		logger:                l,
+		logger:                logging.EnsureLogger(l),
 		debug:                 false,
-		tracer:                tracing.NewTracer(tracerProvider.Tracer(clientName)),
+		tracer:                tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer(clientName)),
 		panicker:              panicking.NewProductionPanicker(),
 		encoder:               encoding.ProvideClientEncoder(l, tracerProvider, encoding.ContentTypeJSON),
 		authedClient:          tracing.BuildTracedHTTPClient(),
@@ -109,6 +101,10 @@ func NewClient(u *url.URL, tracerProvider tracing.TracerProvider, options ...opt
 		if optionSetErr := opt(c); optionSetErr != nil {
 			return nil, optionSetErr
 		}
+	}
+
+	if c.url == nil {
+		return nil, ErrNoURLProvided
 	}
 
 	return c, nil
@@ -267,13 +263,13 @@ func (c *Client) executeAndUnmarshal(ctx context.Context, req *http.Request, htt
 		return observability.PrepareAndLogError(err, logger, span, "executing request")
 	}
 
-	if err = errorFromResponse(res); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "executing request")
+	if resErr := errorFromResponse(res); resErr != nil {
+		return resErr
 	}
 
 	if out != nil {
 		if err = c.unmarshalBody(ctx, res, out); err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "loading %s %d response from server", res.Request.Method, res.StatusCode)
+			return observability.PrepareAndLogError(err, logger, span, "%s %s %d", res.Request.Method, res.Request.URL.Path, res.StatusCode)
 		}
 	}
 

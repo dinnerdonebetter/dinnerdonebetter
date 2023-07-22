@@ -14,6 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	"github.com/Masterminds/squirrel"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -556,6 +557,65 @@ func TestQuerier_GetValidMeasurementUnits(T *testing.T) {
 	})
 }
 
+func TestQuerier_GetValidMeasurementUnitsWithIDs(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleValidMeasurementUnitList := fakes.BuildFakeValidMeasurementUnitList()
+
+		exampleIDs := []string{}
+		for _, exampleValidMeasurementUnit := range exampleValidMeasurementUnitList.Data {
+			exampleIDs = append(exampleIDs, exampleValidMeasurementUnit.ID)
+		}
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		where := squirrel.Eq{"valid_measurement_units.id": exampleIDs}
+		query, args := c.buildListQuery(ctx, validMeasurementUnitsTable, nil, nil, where, householdOwnershipColumn, validMeasurementUnitsTableColumns, "", false, nil)
+
+		db.ExpectQuery(formatQueryForSQLMock(query)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnRows(buildMockRowsFromValidMeasurementUnits(true, exampleValidMeasurementUnitList.FilteredCount, exampleValidMeasurementUnitList.Data...))
+
+		actual, err := c.GetValidMeasurementUnitsWithIDs(ctx, exampleIDs)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleValidMeasurementUnitList.Data, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_GetValidMeasurementUnitThatNeedSearchIndexing(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleValidMeasurementUnitList := fakes.BuildFakeValidMeasurementUnitList()
+
+		c, db := buildTestClient(t)
+
+		exampleIDs := []string{}
+		for _, exampleValidMeasurementUnit := range exampleValidMeasurementUnitList.Data {
+			exampleIDs = append(exampleIDs, exampleValidMeasurementUnit.ID)
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(validMeasurementUnitsNeedingIndexingQuery)).
+			WithArgs(interfaceToDriverValue(nil)...).
+			WillReturnRows(buildMockRowsFromIDs(exampleIDs...))
+
+		actual, err := c.GetValidMeasurementUnitIDsThatNeedSearchIndexing(ctx)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleIDs, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
 func TestQuerier_CreateValidMeasurementUnit(T *testing.T) {
 	T.Parallel()
 
@@ -771,6 +831,61 @@ func TestQuerier_ArchiveValidMeasurementUnit(T *testing.T) {
 			WillReturnError(errors.New("blah"))
 
 		assert.Error(t, c.ArchiveValidMeasurementUnit(ctx, exampleValidMeasurementUnit.ID))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_MarkValidMeasurementUnitAsIndexed(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
+
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleValidMeasurementUnit.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(updateValidMeasurementUnitLastIndexedAtQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		assert.NoError(t, c.MarkValidMeasurementUnitAsIndexed(ctx, exampleValidMeasurementUnit.ID))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with invalid ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+
+		assert.Error(t, c.MarkValidMeasurementUnitAsIndexed(ctx, ""))
+	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
+
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleValidMeasurementUnit.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(updateValidMeasurementUnitLastIndexedAtQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		assert.Error(t, c.MarkValidMeasurementUnitAsIndexed(ctx, exampleValidMeasurementUnit.ID))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})

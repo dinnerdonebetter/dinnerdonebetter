@@ -25,8 +25,8 @@ var (
 
 type (
 	Config struct {
-		SDKKey      string        `json:"sdkKey" mapstructure:"sdk_key" toml:"sdk_key"`
-		InitTimeout time.Duration `json:"initTimeout" mapstructure:"init_timeout" toml:"init_timeout"`
+		SDKKey      string        `json:"sdkKey"      toml:"sdk_key"`
+		InitTimeout time.Duration `json:"initTimeout" toml:"init_timeout"`
 	}
 
 	launchDarklyClient interface {

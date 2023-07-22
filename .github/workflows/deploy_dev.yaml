@@ -8,7 +8,7 @@ on: # [pull_request]
 
 name: deploy
 jobs:
-  dev:
+  infrastructure:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -29,7 +29,10 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1
 
       - name: Authorize Docker push
-        run: gcloud auth configure-docker
+        run: gcloud auth configure-docker gcr.io
+
+      - name: Authorize Docker push
+        run: gcloud auth configure-docker us-central1-docker.pkg.dev
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -42,25 +45,14 @@ jobs:
         id: init
         run: terraform init
 
-      - name: Build API server container
-        run: |
-          docker build --tag gcr.io/dinner-done-better-dev/api_server:${{  github.sha }} --file environments/dev/dockerfiles/api_server.Dockerfile .
-          docker build --tag gcr.io/dinner-done-better-dev/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
-
       - name: Build data changes cloud function directory
         run: ./scripts/build_cloud_function.sh data_changes
 
       - name: Build outbound outbound_emailer cloud function directory
         run: ./scripts/build_cloud_function.sh outbound_emailer
 
-      - name: Build meal plan finalizer cloud function directory
-        run: ./scripts/build_cloud_function.sh meal_plan_finalizer
-
-      - name: Build meal plan task creator cloud function directory
-        run: ./scripts/build_cloud_function.sh meal_plan_task_creator
-
-      - name: Build meal plan grocery list initializer cloud function directory
-        run: ./scripts/build_cloud_function.sh meal_plan_grocery_list_initializer
+      - name: Build search indexer cloud function directory
+        run: ./scripts/build_cloud_function.sh search_indexer
 
       - name: copy API server config file
         working-directory: environments/dev
@@ -72,14 +64,34 @@ jobs:
         id: validate
         run: terraform validate -no-color
 
-      - name: Push API server container
-        run: |
-          docker push gcr.io/dinner-done-better-dev/api_server:${{  github.sha }}
-          docker push gcr.io/dinner-done-better-dev/api_server:latest
-
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: environments/dev/terraform
+
+  deploy-api-server:
+    needs: [infrastructure]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - id: auth
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Authorize Docker push
+        run: gcloud auth configure-docker us-central1-docker.pkg.dev
+
+      - name: Build and push API server container
+        run: |
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:${{  github.sha }} --file environments/dev/dockerfiles/api_server.Dockerfile .
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
+          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:${{  github.sha }}
+          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:latest
 
       # if this step fails, you need to add the `Service Account User` role to the GitHub Actions IAM Principal.
       - id: deploy-api-server
@@ -87,4 +99,154 @@ jobs:
         with:
           service: 'api-server'
           project_id: 'dinner-done-better-dev'
-          image: 'gcr.io/dinner-done-better-dev/api_server'
+          image: 'us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server'
+
+  search-container:
+    needs: [infrastructure]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.20.x'
+
+      - id: auth
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Authorize Docker push
+        run: gcloud auth configure-docker us-central1-docker.pkg.dev
+
+      - name: Build and push search data index scheduler container
+        run: |
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:${{  github.sha }} --file environments/dev/dockerfiles/search_data_index_scheduler.Dockerfile .
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:latest --file environments/dev/dockerfiles/search_data_index_scheduler.Dockerfile .
+          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:${{  github.sha }}
+          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:latest
+
+  email-prober-container:
+    needs: [infrastructure]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.20.x'
+
+      - id: auth
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Authorize Docker push
+        run: gcloud auth configure-docker us-central1-docker.pkg.dev
+
+      - name: Build and push email prober container
+        run: |
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/email-prober:${{  github.sha }} --file environments/dev/dockerfiles/email_prober.Dockerfile .
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/email-prober:latest --file environments/dev/dockerfiles/email_prober.Dockerfile .
+          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/email-prober:${{  github.sha }}
+          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/email-prober:latest
+
+  meal-plan-finalizer-container:
+    needs: [infrastructure]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.20.x'
+
+      - id: auth
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Authorize Docker push
+        run: gcloud auth configure-docker us-central1-docker.pkg.dev
+
+      - name: Build and push meal plan finalizer container
+        run: |
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:${{  github.sha }} --file environments/dev/dockerfiles/meal_plan_finalizer.Dockerfile .
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:latest --file environments/dev/dockerfiles/meal_plan_finalizer.Dockerfile .
+          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:${{  github.sha }}
+          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:latest
+
+  meal-plan-grocery-list-init-container:
+    needs: [infrastructure]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.20.x'
+
+      - id: auth
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Authorize Docker push
+        run: gcloud auth configure-docker us-central1-docker.pkg.dev
+
+      - name: Build and push meal plan grocery list initializer container
+        run: |
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-grocery-list-initializer:${{  github.sha }} --file environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-grocery-list-initializer:latest --file environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .
+          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-grocery-list-initializer:${{  github.sha }}
+          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-grocery-list-initializer:latest
+
+  meal-plan-task-creator-container:
+    needs: [infrastructure]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.20.x'
+
+      - id: auth
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+
+      - name: Authorize Docker push
+        run: gcloud auth configure-docker us-central1-docker.pkg.dev
+
+      - name: Build and push meal plan task creator container
+        run: |
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-task-creator:${{  github.sha }} --file environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-task-creator:latest --file environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .
+          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-task-creator:${{  github.sha }}
+          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-task-creator:latest

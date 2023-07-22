@@ -6,11 +6,12 @@ import (
 	"net/http"
 	"testing"
 
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/routing/mock"
+	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 
 	"github.com/stretchr/testify/assert"
@@ -19,8 +20,11 @@ import (
 
 func buildTestService() *service {
 	return &service{
-		logger:                      logging.NewNoopLogger(),
-		validPreparationDataManager: &mocktypes.ValidPreparationDataManager{},
+		logger: logging.NewNoopLogger(),
+		cfg: &Config{
+			UseSearchService: false,
+		},
+		validPreparationDataManager: &mocktypes.ValidPreparationDataManagerMock{},
 		validPreparationIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:              mockencoding.NewMockEncoderDecoder(),
 		tracer:                      tracing.NewTracerForTest("test"),
@@ -53,7 +57,8 @@ func TestProvideValidPreparationsService(T *testing.T) {
 			ctx,
 			logger,
 			&cfg,
-			&mocktypes.ValidPreparationDataManager{},
+			&searchcfg.Config{Provider: ""},
+			&mocktypes.ValidPreparationDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
@@ -83,7 +88,8 @@ func TestProvideValidPreparationsService(T *testing.T) {
 			ctx,
 			logger,
 			&cfg,
-			&mocktypes.ValidPreparationDataManager{},
+			&searchcfg.Config{Provider: ""},
+			&mocktypes.ValidPreparationDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,

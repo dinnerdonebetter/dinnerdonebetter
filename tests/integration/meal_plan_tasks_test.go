@@ -35,7 +35,6 @@ func (s *TestSuite) TestMealPlanTasks_CompleteLifecycle() {
 
 			createdMealPlan := createMealPlanForTest(ctx, t, nil, testClients.admin, testClients.user)
 
-			t.Log("creating meal plan task")
 			exampleMealPlanTask := fakes.BuildFakeMealPlanTask()
 			exampleMealPlanTaskInput := converters.ConvertMealPlanTaskToMealPlanTaskCreationRequestInput(exampleMealPlanTask)
 
@@ -44,10 +43,8 @@ func (s *TestSuite) TestMealPlanTasks_CompleteLifecycle() {
 
 			createdMealPlanTask, err := testClients.admin.CreateMealPlanTask(ctx, createdMealPlan.ID, exampleMealPlanTaskInput)
 			require.NoError(t, err)
-			t.Logf("meal plan task %q created", createdMealPlanTask.ID)
 			checkMealPlanTaskEquality(t, exampleMealPlanTask, createdMealPlanTask)
 
-			t.Log("fetching changed meal plan task")
 			actual, err := testClients.admin.GetMealPlanTask(ctx, createdMealPlan.ID, createdMealPlanTask.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 

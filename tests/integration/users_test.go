@@ -38,7 +38,7 @@ func checkUserEquality(t *testing.T, expected, actual *types.User) {
 }
 
 func (s *TestSuite) TestUsers_Creating() {
-	s.runForEachClientExcept("should be creatable", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("should be creatable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -57,7 +57,7 @@ func (s *TestSuite) TestUsers_Creating() {
 		}
 	})
 
-	s.runForEachClientExcept("should return 400 for duplicate user registration", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("should return 400 for duplicate user registration", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -82,7 +82,7 @@ func (s *TestSuite) TestUsers_Creating() {
 }
 
 func (s *TestSuite) TestUsers_Reading_Returns404ForNonexistentUser() {
-	s.runForEachClientExcept("should return an error when trying to read a user that does not exist", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("should return an error when trying to read a user that does not exist", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -97,7 +97,7 @@ func (s *TestSuite) TestUsers_Reading_Returns404ForNonexistentUser() {
 }
 
 func (s *TestSuite) TestUsers_Reading() {
-	s.runForEachClientExcept("should be able to be read", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("should be able to be read", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -107,9 +107,6 @@ func (s *TestSuite) TestUsers_Reading() {
 			user, _, _, _ := createUserAndClientForTest(ctx, t, nil)
 
 			actual, err := testClients.admin.GetUser(ctx, user.ID)
-			if err != nil {
-				t.Logf("error encountered trying to fetch user %q: %v\n", user.Username, err)
-			}
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// Assert user equality.
@@ -122,7 +119,7 @@ func (s *TestSuite) TestUsers_Reading() {
 }
 
 func (s *TestSuite) TestUsers_PermissionsChecking() {
-	s.runForEachClientExcept("should be able to check users permissions", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("should be able to check users permissions", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -132,9 +129,6 @@ func (s *TestSuite) TestUsers_PermissionsChecking() {
 			user, _, _, _ := createUserAndClientForTest(ctx, t, nil)
 
 			permissions, err := testClients.user.CheckUserPermissions(ctx, authorization.ReadWebhooksPermission.ID())
-			if err != nil {
-				t.Logf("error encountered trying to fetch user %q: %v\n", user.Username, err)
-			}
 			requireNotNilAndNoProblems(t, permissions, err)
 
 			for _, status := range permissions.Permissions {
@@ -148,7 +142,7 @@ func (s *TestSuite) TestUsers_PermissionsChecking() {
 }
 
 func (s *TestSuite) TestUsers_Searching_ReturnsEmptyWhenSearchingForUsernameThatIsNotPresentInTheDatabase() {
-	s.runForEachClientExcept("it should return empty slice when searching for a username that does not exist", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("it should return empty slice when searching for a username that does not exist", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -163,7 +157,7 @@ func (s *TestSuite) TestUsers_Searching_ReturnsEmptyWhenSearchingForUsernameThat
 }
 
 func (s *TestSuite) TestUsers_Searching_OnlyAccessibleToAdmins() {
-	s.runForEachClientExcept("it should only be accessible to admins", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("it should only be accessible to admins", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -179,7 +173,7 @@ func (s *TestSuite) TestUsers_Searching_OnlyAccessibleToAdmins() {
 }
 
 func (s *TestSuite) TestUsers_Searching() {
-	s.runForEachClientExcept("it should return be searchable", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("it should return be searchable", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -220,7 +214,7 @@ func (s *TestSuite) TestUsers_Searching() {
 }
 
 func (s *TestSuite) TestUsers_Archiving_Returns404ForNonexistentUser() {
-	s.runForEachClientExcept("should fail to archive a non-existent user", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("should error when archiving a non-existent user", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -233,7 +227,7 @@ func (s *TestSuite) TestUsers_Archiving_Returns404ForNonexistentUser() {
 }
 
 func (s *TestSuite) TestUsers_Archiving() {
-	s.runForEachClientExcept("should be able to be archived", func(testClients *testClientWrapper) func() {
+	s.runForEachClient("should be able to be archived", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -247,7 +241,6 @@ func (s *TestSuite) TestUsers_Archiving() {
 			assert.NotNil(t, createdUser)
 
 			if createdUser == nil || err != nil {
-				t.Log("something has gone awry, user returned is nil")
 				t.FailNow()
 			}
 
@@ -258,7 +251,7 @@ func (s *TestSuite) TestUsers_Archiving() {
 }
 
 func (s *TestSuite) TestUsers_AvatarManagement() {
-	s.runForEachClientExcept("should be able to upload an avatar", func(testClients *testClientWrapper) func() {
+	s.runForCookieClient("should be able to upload an avatar", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
 
@@ -279,5 +272,5 @@ func (s *TestSuite) TestUsers_AvatarManagement() {
 
 			assert.NoError(t, testClients.admin.ArchiveUser(ctx, s.user.ID))
 		}
-	}, pasetoAuthType)
+	})
 }

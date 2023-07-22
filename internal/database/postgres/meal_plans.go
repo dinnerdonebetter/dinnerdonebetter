@@ -3,6 +3,8 @@ package postgres
 import (
 	"context"
 	_ "embed"
+	"errors"
+	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -245,10 +247,10 @@ func (q *Querier) CreateMealPlan(ctx context.Context, input *types.MealPlanDatab
 
 	logger := q.logger.WithValue(keys.MealPlanIDKey, input.ID)
 
-	status := types.FinalizedMealPlanStatus
+	status := types.MealPlanStatusFinalized
 	for _, event := range input.Events {
 		if len(event.Options) > 1 {
-			status = types.AwaitingVotesMealPlanStatus
+			status = types.MealPlanStatusAwaitingVotes
 		}
 	}
 
@@ -376,6 +378,9 @@ func (q *Querier) ArchiveMealPlan(ctx context.Context, mealPlanID, householdID s
 //go:embed queries/meal_plans/finalize.sql
 var finalizeMealPlanQuery string
 
+// ErrAlreadyFinalized is returned when a meal plan is already finalized.
+var ErrAlreadyFinalized = errors.New("meal plan already finalized")
+
 // AttemptToFinalizeMealPlan finalizes a meal plan if all of its options have a selection.
 func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, householdID string) (finalized bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -408,20 +413,27 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, hou
 		return false, observability.PrepareAndLogError(err, logger, span, "fetching meal plan")
 	}
 
+	votingDeadlineHasPassed := mealPlan.VotingDeadline.Before(q.currentTime())
+	if strings.EqualFold(mealPlan.Status, string(types.MealPlanStatusFinalized)) {
+		return false, ErrAlreadyFinalized
+	}
+
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	allOptionsChosen := true
+	allVotesAreSubmitted := true
 	for _, event := range mealPlan.Events {
 		if len(event.Options) == 0 {
 			continue
 		}
 
-		availableVotes := map[string]bool{}
+		// we load this map with false for each member of the household
+		// and then iterate through the votes and mark each voter as true
+		userHasVoted := map[string]bool{}
 		for _, member := range household.Members {
-			availableVotes[member.BelongsToUser.ID] = false
+			userHasVoted[member.BelongsToUser.ID] = true
 		}
 
 		alreadyChosen := false
@@ -430,26 +442,31 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, hou
 				alreadyChosen = true
 				break
 			}
+
 			for _, vote := range opt.Votes {
-				if _, ok := availableVotes[vote.ByUser]; ok {
-					availableVotes[vote.ByUser] = true
+				if _, ok := userHasVoted[vote.ByUser]; ok {
+					userHasVoted[vote.ByUser] = false
 				}
 			}
 		}
 
+		// if we've previously marked an event option as chosen, then we don't need to do anything else
 		if alreadyChosen {
 			continue
 		}
 
-		for _, vote := range availableVotes {
-			if !vote {
-				allOptionsChosen = false
-				continue
+		for _, hasVoted := range userHasVoted {
+			if hasVoted {
+				allVotesAreSubmitted = false
 			}
 		}
 
-		// if we get here, then the tally is ready to be calculated for this set of options
+		// if we're missing votes from household members, and the deadline hasn't passed, then we can't finalize the meal plan.
+		if !allVotesAreSubmitted && !votingDeadlineHasPassed {
+			continue
+		}
 
+		// the ballot is ready to be tallied for this event
 		winner, tiebroken, chosen := q.decideOptionWinner(ctx, event.Options)
 		if chosen {
 			args := []any{
@@ -469,9 +486,9 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, hou
 		}
 	}
 
-	if allOptionsChosen {
+	if allVotesAreSubmitted {
 		args := []any{
-			types.FinalizedMealPlanStatus,
+			types.MealPlanStatusFinalized,
 			mealPlanID,
 		}
 
@@ -483,8 +500,8 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, hou
 		finalized = true
 	}
 
-	if commitErr := tx.Commit(); commitErr != nil {
-		return false, observability.PrepareAndLogError(commitErr, logger, span, "committing transaction")
+	if err = tx.Commit(); err != nil {
+		return false, observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	return finalized, nil

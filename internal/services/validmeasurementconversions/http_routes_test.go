@@ -9,7 +9,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -41,7 +41,7 @@ func TestValidMeasurementConversionsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementConversionDataManager.On(
+		dbManager.ValidMeasurementConversionDataManagerMock.On(
 			"CreateValidMeasurementConversion",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidMeasurementConversionDatabaseCreationInput) bool { return true }),
@@ -134,7 +134,7 @@ func TestValidMeasurementConversionsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementConversionDataManager.On(
+		dbManager.ValidMeasurementConversionDataManagerMock.On(
 			"CreateValidMeasurementConversion",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidMeasurementConversionDatabaseCreationInput) bool { return true }),
@@ -163,7 +163,7 @@ func TestValidMeasurementConversionsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementConversionDataManager.On(
+		dbManager.ValidMeasurementConversionDataManagerMock.On(
 			"CreateValidMeasurementConversion",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidMeasurementConversionDatabaseCreationInput) bool { return true }),
@@ -194,9 +194,9 @@ func TestValidMeasurementConversionsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManager{}
+		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManagerMock{}
 		validMeasurementConversionDataManager.On(
-			"GetValidMeasurementConversion",
+			"GetValidMeasurementUnitConversion",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementConversion.ID,
 		).Return(helper.exampleValidMeasurementConversion, nil)
@@ -247,9 +247,9 @@ func TestValidMeasurementConversionsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManager{}
+		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManagerMock{}
 		validMeasurementConversionDataManager.On(
-			"GetValidMeasurementConversion",
+			"GetValidMeasurementUnitConversion",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementConversion.ID,
 		).Return((*types.ValidMeasurementUnitConversion)(nil), sql.ErrNoRows)
@@ -275,9 +275,9 @@ func TestValidMeasurementConversionsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManager{}
+		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManagerMock{}
 		validMeasurementConversionDataManager.On(
-			"GetValidMeasurementConversion",
+			"GetValidMeasurementUnitConversion",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementConversion.ID,
 		).Return((*types.ValidMeasurementUnitConversion)(nil), errors.New("blah"))
@@ -317,13 +317,13 @@ func TestValidMeasurementConversionsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementConversionDataManager.On(
-			"GetValidMeasurementConversion",
+		dbManager.ValidMeasurementConversionDataManagerMock.On(
+			"GetValidMeasurementUnitConversion",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementConversion.ID,
 		).Return(helper.exampleValidMeasurementConversion, nil)
 
-		dbManager.ValidMeasurementConversionDataManager.On(
+		dbManager.ValidMeasurementConversionDataManagerMock.On(
 			"UpdateValidMeasurementConversion",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidMeasurementUnitConversion) bool { return true }),
@@ -405,9 +405,9 @@ func TestValidMeasurementConversionsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManager{}
+		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManagerMock{}
 		validMeasurementConversionDataManager.On(
-			"GetValidMeasurementConversion",
+			"GetValidMeasurementUnitConversion",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementConversion.ID,
 		).Return((*types.ValidMeasurementUnitConversion)(nil), sql.ErrNoRows)
@@ -434,9 +434,9 @@ func TestValidMeasurementConversionsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManager{}
+		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManagerMock{}
 		validMeasurementConversionDataManager.On(
-			"GetValidMeasurementConversion",
+			"GetValidMeasurementUnitConversion",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementConversion.ID,
 		).Return((*types.ValidMeasurementUnitConversion)(nil), errors.New("blah"))
@@ -464,13 +464,13 @@ func TestValidMeasurementConversionsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementConversionDataManager.On(
-			"GetValidMeasurementConversion",
+		dbManager.ValidMeasurementConversionDataManagerMock.On(
+			"GetValidMeasurementUnitConversion",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementConversion.ID,
 		).Return(helper.exampleValidMeasurementConversion, nil)
 
-		dbManager.ValidMeasurementConversionDataManager.On(
+		dbManager.ValidMeasurementConversionDataManagerMock.On(
 			"UpdateValidMeasurementConversion",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidMeasurementUnitConversion) bool { return true }),
@@ -499,13 +499,13 @@ func TestValidMeasurementConversionsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementConversionDataManager.On(
-			"GetValidMeasurementConversion",
+		dbManager.ValidMeasurementConversionDataManagerMock.On(
+			"GetValidMeasurementUnitConversion",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementConversion.ID,
 		).Return(helper.exampleValidMeasurementConversion, nil)
 
-		dbManager.ValidMeasurementConversionDataManager.On(
+		dbManager.ValidMeasurementConversionDataManagerMock.On(
 			"UpdateValidMeasurementConversion",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidMeasurementUnitConversion) bool { return true }),
@@ -537,13 +537,13 @@ func TestValidMeasurementConversionsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementConversionDataManager.On(
+		dbManager.ValidMeasurementConversionDataManagerMock.On(
 			"ValidMeasurementConversionExists",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementConversion.ID,
 		).Return(true, nil)
 
-		dbManager.ValidMeasurementConversionDataManager.On(
+		dbManager.ValidMeasurementConversionDataManagerMock.On(
 			"ArchiveValidMeasurementConversion",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementConversion.ID,
@@ -594,7 +594,7 @@ func TestValidMeasurementConversionsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManager{}
+		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManagerMock{}
 		validMeasurementConversionDataManager.On(
 			"ValidMeasurementConversionExists",
 			testutils.ContextMatcher,
@@ -622,7 +622,7 @@ func TestValidMeasurementConversionsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManager{}
+		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManagerMock{}
 		validMeasurementConversionDataManager.On(
 			"ValidMeasurementConversionExists",
 			testutils.ContextMatcher,
@@ -643,13 +643,13 @@ func TestValidMeasurementConversionsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementConversionDataManager.On(
+		dbManager.ValidMeasurementConversionDataManagerMock.On(
 			"ValidMeasurementConversionExists",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementConversion.ID,
 		).Return(true, nil)
 
-		dbManager.ValidMeasurementConversionDataManager.On(
+		dbManager.ValidMeasurementConversionDataManagerMock.On(
 			"ArchiveValidMeasurementConversion",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementConversion.ID,
@@ -669,13 +669,13 @@ func TestValidMeasurementConversionsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementConversionDataManager.On(
+		dbManager.ValidMeasurementConversionDataManagerMock.On(
 			"ValidMeasurementConversionExists",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementConversion.ID,
 		).Return(true, nil)
 
-		dbManager.ValidMeasurementConversionDataManager.On(
+		dbManager.ValidMeasurementConversionDataManagerMock.On(
 			"ArchiveValidMeasurementConversion",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementConversion.ID,
@@ -706,9 +706,9 @@ func TestValidMeasurementConversionsService_FromMeasurementUnitHandler(T *testin
 
 		helper := buildTestHelper(t)
 
-		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManager{}
+		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManagerMock{}
 		validMeasurementConversionDataManager.On(
-			"GetValidMeasurementConversionsFromUnit",
+			"GetValidMeasurementUnitConversionsFromUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementUnit.ID,
 		).Return([]*types.ValidMeasurementUnitConversion{helper.exampleValidMeasurementConversion}, nil)
@@ -759,9 +759,9 @@ func TestValidMeasurementConversionsService_FromMeasurementUnitHandler(T *testin
 
 		helper := buildTestHelper(t)
 
-		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManager{}
+		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManagerMock{}
 		validMeasurementConversionDataManager.On(
-			"GetValidMeasurementConversionsFromUnit",
+			"GetValidMeasurementUnitConversionsFromUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementUnit.ID,
 		).Return([]*types.ValidMeasurementUnitConversion(nil), sql.ErrNoRows)
@@ -787,9 +787,9 @@ func TestValidMeasurementConversionsService_FromMeasurementUnitHandler(T *testin
 
 		helper := buildTestHelper(t)
 
-		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManager{}
+		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManagerMock{}
 		validMeasurementConversionDataManager.On(
-			"GetValidMeasurementConversionsFromUnit",
+			"GetValidMeasurementUnitConversionsFromUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementUnit.ID,
 		).Return([]*types.ValidMeasurementUnitConversion(nil), errors.New("blah"))
@@ -819,9 +819,9 @@ func TestValidMeasurementConversionsService_ToMeasurementUnitHandler(T *testing.
 
 		helper := buildTestHelper(t)
 
-		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManager{}
+		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManagerMock{}
 		validMeasurementConversionDataManager.On(
-			"GetValidMeasurementConversionsToUnit",
+			"GetValidMeasurementUnitConversionsToUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementUnit.ID,
 		).Return([]*types.ValidMeasurementUnitConversion{helper.exampleValidMeasurementConversion}, nil)
@@ -872,9 +872,9 @@ func TestValidMeasurementConversionsService_ToMeasurementUnitHandler(T *testing.
 
 		helper := buildTestHelper(t)
 
-		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManager{}
+		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManagerMock{}
 		validMeasurementConversionDataManager.On(
-			"GetValidMeasurementConversionsToUnit",
+			"GetValidMeasurementUnitConversionsToUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementUnit.ID,
 		).Return([]*types.ValidMeasurementUnitConversion(nil), sql.ErrNoRows)
@@ -900,9 +900,9 @@ func TestValidMeasurementConversionsService_ToMeasurementUnitHandler(T *testing.
 
 		helper := buildTestHelper(t)
 
-		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManager{}
+		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManagerMock{}
 		validMeasurementConversionDataManager.On(
-			"GetValidMeasurementConversionsToUnit",
+			"GetValidMeasurementUnitConversionsToUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementUnit.ID,
 		).Return([]*types.ValidMeasurementUnitConversion(nil), errors.New("blah"))

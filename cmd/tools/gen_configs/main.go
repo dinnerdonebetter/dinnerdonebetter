@@ -10,6 +10,7 @@ import (
 
 	analyticsconfig "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/analytics/segment"
+	"github.com/dinnerdonebetter/backend/internal/config"
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
 	emailconfig "github.com/dinnerdonebetter/backend/internal/email/config"
 	"github.com/dinnerdonebetter/backend/internal/email/sendgrid"
@@ -20,15 +21,15 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	logcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
-	metricscfg "github.com/dinnerdonebetter/backend/internal/observability/metrics/config"
-	"github.com/dinnerdonebetter/backend/internal/observability/metrics/prometheus"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing/cloudtrace"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing/jaeger"
 	"github.com/dinnerdonebetter/backend/internal/routing"
+	"github.com/dinnerdonebetter/backend/internal/search/algolia"
+	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
-	"github.com/dinnerdonebetter/backend/internal/server/http/config"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
+	householdinstrumentownershipsservice "github.com/dinnerdonebetter/backend/internal/services/householdinstrumentownerships"
 	householdinvitationsservice "github.com/dinnerdonebetter/backend/internal/services/householdinvitations"
 	householdsservice "github.com/dinnerdonebetter/backend/internal/services/households"
 	mealplaneventsservice "github.com/dinnerdonebetter/backend/internal/services/mealplanevents"
@@ -38,7 +39,9 @@ import (
 	mealplansservice "github.com/dinnerdonebetter/backend/internal/services/mealplans"
 	"github.com/dinnerdonebetter/backend/internal/services/mealplantasks"
 	mealsservice "github.com/dinnerdonebetter/backend/internal/services/meals"
+	oauth2clientsservice "github.com/dinnerdonebetter/backend/internal/services/oauth2clients"
 	recipepreptasksservice "github.com/dinnerdonebetter/backend/internal/services/recipepreptasks"
+	reciperatingsservice "github.com/dinnerdonebetter/backend/internal/services/reciperatings"
 	recipesservice "github.com/dinnerdonebetter/backend/internal/services/recipes"
 	recipestepcompletionconditionsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepcompletionconditions"
 	recipestepingredientsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepingredients"
@@ -48,6 +51,7 @@ import (
 	recipestepvesselsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepvessels"
 	"github.com/dinnerdonebetter/backend/internal/services/servicesettingconfigurations"
 	"github.com/dinnerdonebetter/backend/internal/services/servicesettings"
+	useringredientpreferencesservice "github.com/dinnerdonebetter/backend/internal/services/useringredientpreferences"
 	usersservice "github.com/dinnerdonebetter/backend/internal/services/users"
 	validingredientgroupsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientgroups"
 	validingredientmeasurementunitsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientmeasurementunits"
@@ -60,6 +64,8 @@ import (
 	validmeasurementunitsservice "github.com/dinnerdonebetter/backend/internal/services/validmeasurementunits"
 	validpreparationinstrumentsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparationinstruments"
 	validpreparationsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparations"
+	validpreparationvesselsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparationvessels"
+	validvesselsservice "github.com/dinnerdonebetter/backend/internal/services/validvessels"
 	"github.com/dinnerdonebetter/backend/internal/services/vendorproxy"
 	webhooksservice "github.com/dinnerdonebetter/backend/internal/services/webhooks"
 	websocketsservice "github.com/dinnerdonebetter/backend/internal/services/websockets"
@@ -87,8 +93,9 @@ const (
 	maxAttempts           = 50
 	defaultPASETOLifetime = 1 * time.Minute
 
-	contentTypeJSON    = "application/json"
-	workerQueueAddress = "worker_queue:6379"
+	contentTypeJSON               = "application/json"
+	workerQueueAddress            = "worker_queue:6379"
+	localOAuth2TokenEncryptionKey = debugCookieSecret
 
 	pasteoIssuer = "dinner_done_better_service"
 )
@@ -131,13 +138,6 @@ var (
 		BlockKey:   debugCookieSigningKey,
 		Lifetime:   authservice.DefaultCookieLifetime,
 		SecureOnly: false,
-	}
-
-	localMetricsConfig = metricscfg.Config{
-		Provider: "prometheus",
-		Prometheus: &prometheus.Config{
-			RuntimeMetricsCollectionInterval: time.Second,
-		},
 	}
 
 	localTracingConfig = tracingcfg.Config{
@@ -185,13 +185,15 @@ func saveConfig(ctx context.Context, outputPath string, cfg *config.InstanceConf
 type configFunc func(ctx context.Context, filePath string) error
 
 var files = map[string]configFunc{
-	"environments/dev/config_files/service-config.json":                              devEnvironmentServerConfig,
-	"environments/local/config_files/service-config.json":                            localDevelopmentServiceConfig,
+	"environments/local/config_files/service-config.json":                            buildLocalDevelopmentServiceConfig(false),
+	"environments/local/config_files/service-config-local.json":                      buildLocalDevelopmentServiceConfig(true),
 	"environments/local/config_files/queue-loader-config.json":                       localDevelopmentWorkerConfig,
 	"environments/local/config_files/meal-plan-finalizer-config.json":                localDevelopmentWorkerConfig,
 	"environments/local/config_files/meal-plan-task-creator-config.json":             localDevelopmentWorkerConfig,
 	"environments/local/config_files/meal-plan-grocery-list-initializer-config.json": localDevelopmentWorkerConfig,
+	"environments/local/config_files/search-indexer-config.json":                     localDevelopmentWorkerConfig,
 	"environments/testing/config_files/integration-tests-config.json":                integrationTestConfig,
+	"environments/dev/config_files/service-config.json":                              devEnvironmentServerConfig,
 }
 
 func generatePASETOKey() []byte {
@@ -210,9 +212,7 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 
 	emailConfig := emailconfig.Config{
 		Provider: emailconfig.ProviderSendgrid,
-		Sendgrid: &sendgrid.Config{
-			WebAppURL: "https://www.dinnerdonebetter.dev",
-		},
+		Sendgrid: &sendgrid.Config{},
 	}
 
 	analyticsConfig := analyticsconfig.Config{
@@ -244,6 +244,10 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 			HTTPPort:        defaultPort,
 			StartupDeadline: time.Minute,
 		},
+		Search: searchcfg.Config{
+			Algolia:  &algolia.Config{},
+			Provider: searchcfg.AlgoliaProvider,
+		},
 		Database: dbconfig.Config{
 			Debug:           true,
 			LogQueries:      true,
@@ -253,7 +257,6 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 		},
 		Observability: observability.Config{
 			Logging: devEnvLogConfig,
-			Metrics: metricscfg.Config{},
 			Tracing: tracingcfg.Config{
 				Provider: tracingcfg.ProviderCloudTrace,
 				CloudTrace: &cloudtrace.Config{
@@ -268,6 +271,12 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 				PASETO: authservice.PASETOConfig{
 					Issuer:   pasteoIssuer,
 					Lifetime: defaultPASETOLifetime,
+				},
+				OAuth2: authservice.OAuth2Config{
+					Domain:               "https://dinnerdonebetter.dev",
+					AccessTokenLifespan:  time.Hour,
+					RefreshTokenLifespan: time.Hour,
+					Debug:                false,
 				},
 				Cookies:               cookieConfig,
 				Debug:                 true,
@@ -293,6 +302,7 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 			},
 			Recipes: recipesservice.Config{
 				// note, this should effectively be "https://media.dinnerdonebetter.dev" + bucket prefix
+				UseSearchService:     true,
 				PublicMediaURLPrefix: "https://media.dinnerdonebetter.dev/recipe_media",
 				Uploads: uploads.Config{
 					Debug: true,
@@ -322,6 +332,27 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 						},
 					},
 				},
+			},
+			ValidIngredients: validingredientsservice.Config{
+				UseSearchService: true,
+			},
+			ValidIngredientStates: validingredientstatesservice.Config{
+				UseSearchService: true,
+			},
+			ValidInstruments: validinstrumentsservice.Config{
+				UseSearchService: true,
+			},
+			ValidVessels: validvesselsservice.Config{
+				UseSearchService: true,
+			},
+			ValidMeasurementUnits: validmeasurementunitsservice.Config{
+				UseSearchService: true,
+			},
+			ValidPreparations: validpreparationsservice.Config{
+				UseSearchService: true,
+			},
+			Meals: mealsservice.Config{
+				UseSearchService: true,
 			},
 		},
 	}
@@ -348,32 +379,55 @@ func buildDevConfig() *config.InstanceConfig {
 		Events: msgconfig.Config{
 			Consumers: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderRedis,
-				RedisConfig: redis.Config{
+				Redis: redis.Config{
 					QueueAddresses: []string{workerQueueAddress},
 				},
 			},
 			Publishers: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderRedis,
-				RedisConfig: redis.Config{
+				Redis: redis.Config{
 					QueueAddresses: []string{workerQueueAddress},
 				},
 			},
 		},
+		Search: searchcfg.Config{
+			Algolia:  &algolia.Config{},
+			Provider: searchcfg.AlgoliaProvider,
+		},
 		Server: localServer,
 		Database: dbconfig.Config{
-			Debug:             true,
-			RunMigrations:     true,
-			LogQueries:        true,
-			MaxPingAttempts:   maxAttempts,
-			PingWaitPeriod:    time.Second,
-			ConnectionDetails: devPostgresDBConnDetails,
+			OAuth2TokenEncryptionKey: localOAuth2TokenEncryptionKey,
+			Debug:                    true,
+			RunMigrations:            true,
+			LogQueries:               true,
+			MaxPingAttempts:          maxAttempts,
+			PingWaitPeriod:           time.Second,
+			ConnectionDetails:        devPostgresDBConnDetails,
 		},
 		Observability: observability.Config{
 			Logging: localLogConfig,
-			Metrics: localMetricsConfig,
 			Tracing: localTracingConfig,
 		},
 		Services: config.ServicesConfig{
+			Auth: authservice.Config{
+				PASETO: authservice.PASETOConfig{
+					Issuer:       pasteoIssuer,
+					Lifetime:     defaultPASETOLifetime,
+					LocalModeKey: examplePASETOKey,
+				},
+				OAuth2: authservice.OAuth2Config{
+					Domain:               "http://localhost:9000",
+					AccessTokenLifespan:  time.Hour,
+					RefreshTokenLifespan: time.Hour,
+					Debug:                false,
+				},
+				Cookies:               localCookies,
+				Debug:                 true,
+				EnableUserSignup:      true,
+				MinimumUsernameLength: 3,
+				MinimumPasswordLength: 8,
+				DataChangesTopicName:  dataChangesTopicName,
+			},
 			Users: usersservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 				Uploads: uploads.Config{
@@ -394,19 +448,6 @@ func buildDevConfig() *config.InstanceConfig {
 			HouseholdInvitations: householdinvitationsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
-			Auth: authservice.Config{
-				PASETO: authservice.PASETOConfig{
-					Issuer:       pasteoIssuer,
-					Lifetime:     defaultPASETOLifetime,
-					LocalModeKey: examplePASETOKey,
-				},
-				Cookies:               localCookies,
-				Debug:                 true,
-				EnableUserSignup:      true,
-				MinimumUsernameLength: 3,
-				MinimumPasswordLength: 8,
-				DataChangesTopicName:  dataChangesTopicName,
-			},
 			Webhooks: webhooksservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
@@ -416,6 +457,12 @@ func buildDevConfig() *config.InstanceConfig {
 			ValidInstruments: validinstrumentsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
+			ValidVessels: validvesselsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			ValidPreparationVessels: validpreparationvesselsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
 			ValidIngredients: validingredientsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
@@ -423,6 +470,9 @@ func buildDevConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidPreparations: validpreparationsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			UserIngredientPreferences: useringredientpreferencesservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidIngredientStates: validingredientstatesservice.Config{
@@ -524,14 +574,38 @@ func buildDevConfig() *config.InstanceConfig {
 			ServiceSettingConfigurations: servicesettingconfigurations.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
+			RecipeRatings: reciperatingsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			HouseholdInstrumentOwnerships: householdinstrumentownershipsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			OAuth2Clients: oauth2clientsservice.Config{
+				DataChangesTopicName:  dataChangesTopicName,
+				MinimumUsernameLength: 3,
+				MinimumPasswordLength: 8,
+			},
 		},
 	}
 }
 
-func localDevelopmentServiceConfig(ctx context.Context, filePath string) error {
-	cfg := buildDevConfig()
+func buildLocalDevelopmentServiceConfig(local bool) func(context.Context, string) error {
+	const localUploadsDir = "artifacts/uploads"
+	const localRedisAddr = "localhost:6379"
+	return func(ctx context.Context, filePath string) error {
+		cfg := buildDevConfig()
 
-	return saveConfig(ctx, filePath, cfg, true, true)
+		if local {
+			cfg.Database.ConnectionDetails = "postgres://dbuser:hunter2@localhost:5432/dinner-done-better?sslmode=disable"
+			cfg.Events.Consumers.Redis.QueueAddresses = []string{localRedisAddr}
+			cfg.Events.Publishers.Redis.QueueAddresses = []string{localRedisAddr}
+			cfg.Services.Users.Uploads.Storage.FilesystemConfig.RootDirectory = localUploadsDir
+			cfg.Services.Recipes.Uploads.Storage.FilesystemConfig.RootDirectory = localUploadsDir
+			cfg.Services.RecipeSteps.Uploads.Storage.FilesystemConfig.RootDirectory = localUploadsDir
+		}
+
+		return saveConfig(ctx, filePath, cfg, true, true)
+	}
 }
 
 func localDevelopmentWorkerConfig(ctx context.Context, filePath string) error {
@@ -553,13 +627,13 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 		Events: msgconfig.Config{
 			Consumers: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderRedis,
-				RedisConfig: redis.Config{
+				Redis: redis.Config{
 					QueueAddresses: []string{workerQueueAddress},
 				},
 			},
 			Publishers: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderRedis,
-				RedisConfig: redis.Config{
+				Redis: redis.Config{
 					QueueAddresses: []string{workerQueueAddress},
 				},
 			},
@@ -573,22 +647,48 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			StartupDeadline: time.Minute,
 		},
 		Database: dbconfig.Config{
-			Debug:             true,
-			RunMigrations:     true,
-			LogQueries:        true,
-			MaxPingAttempts:   maxAttempts,
-			PingWaitPeriod:    1500 * time.Millisecond,
-			ConnectionDetails: devPostgresDBConnDetails,
+			OAuth2TokenEncryptionKey: localOAuth2TokenEncryptionKey,
+			Debug:                    true,
+			RunMigrations:            true,
+			LogQueries:               true,
+			MaxPingAttempts:          maxAttempts,
+			PingWaitPeriod:           1500 * time.Millisecond,
+			ConnectionDetails:        devPostgresDBConnDetails,
 		},
 		Observability: observability.Config{
 			Logging: logcfg.Config{
 				Level:    logging.InfoLevel,
 				Provider: logcfg.ProviderZerolog,
 			},
-			Metrics: localMetricsConfig,
 			Tracing: localTracingConfig,
 		},
 		Services: config.ServicesConfig{
+			Auth: authservice.Config{
+				PASETO: authservice.PASETOConfig{
+					Issuer:       pasteoIssuer,
+					Lifetime:     defaultPASETOLifetime,
+					LocalModeKey: examplePASETOKey,
+				},
+				OAuth2: authservice.OAuth2Config{
+					Domain:               "http://localhost:9000",
+					AccessTokenLifespan:  time.Hour,
+					RefreshTokenLifespan: time.Hour,
+					Debug:                false,
+				},
+				Cookies: authservice.CookieConfig{
+					Name:       defaultCookieName,
+					Domain:     defaultCookieDomain,
+					HashKey:    debugCookieSecret,
+					BlockKey:   debugCookieSigningKey,
+					Lifetime:   authservice.DefaultCookieLifetime,
+					SecureOnly: false,
+				},
+				Debug:                 false,
+				EnableUserSignup:      true,
+				MinimumUsernameLength: 3,
+				MinimumPasswordLength: 8,
+				DataChangesTopicName:  dataChangesTopicName,
+			},
 			Users: usersservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 				Uploads: uploads.Config{
@@ -606,26 +706,6 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			HouseholdInvitations: householdinvitationsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
-			Auth: authservice.Config{
-				PASETO: authservice.PASETOConfig{
-					Issuer:       pasteoIssuer,
-					Lifetime:     defaultPASETOLifetime,
-					LocalModeKey: examplePASETOKey,
-				},
-				Cookies: authservice.CookieConfig{
-					Name:       defaultCookieName,
-					Domain:     defaultCookieDomain,
-					HashKey:    debugCookieSecret,
-					BlockKey:   debugCookieSigningKey,
-					Lifetime:   authservice.DefaultCookieLifetime,
-					SecureOnly: false,
-				},
-				Debug:                 false,
-				EnableUserSignup:      true,
-				MinimumUsernameLength: 3,
-				MinimumPasswordLength: 8,
-				DataChangesTopicName:  dataChangesTopicName,
-			},
 			Webhooks: webhooksservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
@@ -635,6 +715,12 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			ValidInstruments: validinstrumentsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
+			ValidVessels: validvesselsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			ValidPreparationVessels: validpreparationvesselsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
 			ValidIngredients: validingredientsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
@@ -642,6 +728,9 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidPreparations: validpreparationsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			UserIngredientPreferences: useringredientpreferencesservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidIngredientStates: validingredientstatesservice.Config{
@@ -735,6 +824,12 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ServiceSettingConfigurations: servicesettingconfigurations.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			RecipeRatings: reciperatingsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			HouseholdInstrumentOwnerships: householdinstrumentownershipsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 		},

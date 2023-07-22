@@ -11,6 +11,7 @@ SELECT
 	recipes.plural_portion_name,
 	recipes.seal_of_approval,
 	recipes.eligible_for_meals,
+	recipes.yields_component_type,
 	recipes.created_at,
 	recipes.last_updated_at,
 	recipes.archived_at,

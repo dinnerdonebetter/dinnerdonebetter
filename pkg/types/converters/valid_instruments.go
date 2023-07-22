@@ -15,8 +15,6 @@ func ConvertValidInstrumentToValidInstrumentUpdateRequestInput(input *types.Vali
 		UsableForStorage:               &input.UsableForStorage,
 		Slug:                           &input.Slug,
 		DisplayInSummaryLists:          &input.DisplayInSummaryLists,
-		IsVessel:                       &input.IsVessel,
-		IsExclusivelyVessel:            &input.IsExclusivelyVessel,
 		IncludeInGeneratedInstructions: &input.IncludeInGeneratedInstructions,
 	}
 
@@ -34,8 +32,6 @@ func ConvertValidInstrumentCreationRequestInputToValidInstrumentDatabaseCreation
 		Slug:                           input.Slug,
 		UsableForStorage:               input.UsableForStorage,
 		DisplayInSummaryLists:          input.DisplayInSummaryLists,
-		IsVessel:                       input.IsVessel,
-		IsExclusivelyVessel:            input.IsExclusivelyVessel,
 		IncludeInGeneratedInstructions: input.IncludeInGeneratedInstructions,
 	}
 
@@ -56,8 +52,6 @@ func ConvertNullableValidInstrumentToValidInstrument(x *types.NullableValidInstr
 		UsableForStorage:               *x.UsableForStorage,
 		Slug:                           *x.Slug,
 		DisplayInSummaryLists:          *x.DisplayInSummaryLists,
-		IsVessel:                       *x.IsVessel,
-		IsExclusivelyVessel:            *x.IsExclusivelyVessel,
 		IncludeInGeneratedInstructions: *x.IncludeInGeneratedInstructions,
 	}
 }
@@ -72,8 +66,6 @@ func ConvertValidInstrumentToValidInstrumentCreationRequestInput(validInstrument
 		UsableForStorage:               validInstrument.UsableForStorage,
 		Slug:                           validInstrument.Slug,
 		DisplayInSummaryLists:          validInstrument.DisplayInSummaryLists,
-		IsVessel:                       validInstrument.IsVessel,
-		IsExclusivelyVessel:            validInstrument.IsExclusivelyVessel,
 		IncludeInGeneratedInstructions: validInstrument.IncludeInGeneratedInstructions,
 	}
 }
@@ -89,8 +81,16 @@ func ConvertValidInstrumentToValidInstrumentDatabaseCreationInput(validInstrumen
 		UsableForStorage:               validInstrument.UsableForStorage,
 		Slug:                           validInstrument.Slug,
 		DisplayInSummaryLists:          validInstrument.DisplayInSummaryLists,
-		IsVessel:                       validInstrument.IsVessel,
-		IsExclusivelyVessel:            validInstrument.IsExclusivelyVessel,
 		IncludeInGeneratedInstructions: validInstrument.IncludeInGeneratedInstructions,
+	}
+}
+
+// ConvertValidInstrumentToValidInstrumentSearchSubset converts a ValidInstrument to a ValidInstrumentSearchSubset.
+func ConvertValidInstrumentToValidInstrumentSearchSubset(x *types.ValidInstrument) *types.ValidInstrumentSearchSubset {
+	return &types.ValidInstrumentSearchSubset{
+		ID:          x.ID,
+		Name:        x.Name,
+		PluralName:  x.PluralName,
+		Description: x.Description,
 	}
 }

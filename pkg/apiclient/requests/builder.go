@@ -79,7 +79,7 @@ func (b *Builder) BuildURL(ctx context.Context, qp url.Values, parts ...string) 
 	return ""
 }
 
-// Must requires that a given request be built without error.
+// Must mandates that a given request is built without error.
 func (b *Builder) Must(req *http.Request, err error) *http.Request {
 	if err != nil {
 		b.panicker.Panic(err)

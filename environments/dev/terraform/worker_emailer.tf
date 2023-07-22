@@ -15,6 +15,12 @@ resource "google_project_iam_custom_role" "outbound_emailer_role" {
     "pubsub.subscriptions.consume",
     "pubsub.subscriptions.create",
     "pubsub.subscriptions.delete",
+    "eventarc.events.receiveAuditLogWritten",
+    "eventarc.events.receiveEvent",
+    "run.jobs.run",
+    "run.routes.invoke",
+    "artifactregistry.dockerimages.get",
+    "artifactregistry.dockerimages.list",
   ]
 }
 
@@ -40,34 +46,6 @@ resource "google_service_account" "outbound_emailer_user_service_account" {
   display_name = "Outbound Emailer Worker"
 }
 
-# Permissions on the service account used by the function and Eventarc trigger
-resource "google_project_iam_member" "outbound_emailer_invoking" {
-  project = local.project_id
-  role    = "roles/run.invoker"
-  member  = "serviceAccount:${google_service_account.outbound_emailer_user_service_account.email}"
-}
-
-resource "google_project_iam_member" "outbound_emailer_secret_accessor" {
-  project    = local.project_id
-  role       = "roles/secretmanager.secretAccessor"
-  member     = "serviceAccount:${google_service_account.outbound_emailer_user_service_account.email}"
-  depends_on = [google_project_iam_member.outbound_emailer_invoking]
-}
-
-resource "google_project_iam_member" "outbound_emailer_event_receiving" {
-  project    = local.project_id
-  role       = "roles/eventarc.eventReceiver"
-  member     = "serviceAccount:${google_service_account.outbound_emailer_user_service_account.email}"
-  depends_on = [google_project_iam_member.outbound_emailer_secret_accessor]
-}
-
-resource "google_project_iam_member" "outbound_emailer_artifactregistry_reader" {
-  project    = local.project_id
-  role       = "roles/artifactregistry.reader"
-  member     = "serviceAccount:${google_service_account.outbound_emailer_user_service_account.email}"
-  depends_on = [google_project_iam_member.outbound_emailer_event_receiving]
-}
-
 resource "google_project_iam_member" "outbound_emailer_user" {
   project = local.project_id
   role    = google_project_iam_custom_role.outbound_emailer_role.id
@@ -75,11 +53,6 @@ resource "google_project_iam_member" "outbound_emailer_user" {
 }
 
 resource "google_cloudfunctions2_function" "outbound_emailer" {
-  depends_on = [
-    google_project_iam_member.outbound_emailer_event_receiving,
-    google_project_iam_member.outbound_emailer_artifactregistry_reader,
-  ]
-
   name        = "outbound-emailer"
   location    = local.gcp_region
   description = format("Outbound Emailer (%s)", data.archive_file.outbound_emailer_function.output_md5)
@@ -97,6 +70,7 @@ resource "google_cloudfunctions2_function" "outbound_emailer" {
   }
 
   service_config {
+    max_instance_count             = 1
     available_memory               = "128Mi"
     ingress_settings               = "ALLOW_INTERNAL_ONLY"
     all_traffic_on_latest_revision = true

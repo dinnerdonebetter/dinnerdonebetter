@@ -14,11 +14,14 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/random"
+	"github.com/dinnerdonebetter/backend/internal/pkg/cryptography"
+	"github.com/dinnerdonebetter/backend/internal/pkg/cryptography/salsa20"
+	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/alexedwards/scs/postgresstore"
 	"github.com/alexedwards/scs/v2"
+	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
 const (
@@ -32,16 +35,17 @@ var _ database.DataManager = (*Querier)(nil)
 
 // Querier is the primary database querying client. All tracing/logging/query execution happens here. Query building generally happens elsewhere.
 type Querier struct {
-	tracer          tracing.Tracer
-	sqlBuilder      squirrel.StatementBuilderType
-	logger          logging.Logger
-	timeFunc        func() time.Time
-	config          *dbconfig.Config
-	db              *sql.DB
-	secretGenerator random.Generator
-	connectionURL   string
-	migrateOnce     sync.Once
-	logQueries      bool
+	tracer                  tracing.Tracer
+	sqlBuilder              squirrel.StatementBuilderType
+	logger                  logging.Logger
+	secretGenerator         random.Generator
+	oauth2ClientTokenEncDec cryptography.EncryptorDecryptor
+	timeFunc                func() time.Time
+	config                  *dbconfig.Config
+	db                      *sql.DB
+	connectionURL           string
+	migrateOnce             sync.Once
+	logQueries              bool
 }
 
 // ProvideDatabaseClient provides a new DataManager client.
@@ -56,7 +60,7 @@ func ProvideDatabaseClient(
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
 
-	db, err := sql.Open("postgres", string(cfg.ConnectionDetails))
+	db, err := sql.Open("pgx", string(cfg.ConnectionDetails))
 	if err != nil {
 		return nil, fmt.Errorf("connecting to postgres database: %w", err)
 	}
@@ -65,16 +69,22 @@ func ProvideDatabaseClient(
 	db.SetMaxOpenConns(7)
 	db.SetConnMaxLifetime(1800 * time.Second)
 
+	encDec, err := salsa20.NewEncryptorDecryptor(tracerProvider, logger, []byte(cfg.OAuth2TokenEncryptionKey))
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating encryptor/decryptor with secret length %d", len(cfg.OAuth2TokenEncryptionKey))
+	}
+
 	c := &Querier{
-		db:              db,
-		config:          cfg,
-		tracer:          tracer,
-		logQueries:      cfg.LogQueries,
-		timeFunc:        defaultTimeFunc,
-		secretGenerator: random.NewGenerator(logger, tracerProvider),
-		connectionURL:   string(cfg.ConnectionDetails),
-		logger:          logging.EnsureLogger(logger).WithName("querier"),
-		sqlBuilder:      squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
+		db:                      db,
+		config:                  cfg,
+		tracer:                  tracer,
+		logQueries:              cfg.LogQueries,
+		timeFunc:                defaultTimeFunc,
+		secretGenerator:         random.NewGenerator(logger, tracerProvider),
+		connectionURL:           string(cfg.ConnectionDetails),
+		logger:                  logging.EnsureLogger(logger).WithName("querier"),
+		sqlBuilder:              squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
+		oauth2ClientTokenEncDec: encDec,
 	}
 
 	if cfg.RunMigrations {
@@ -109,7 +119,7 @@ func (q *Querier) ProvideSessionStore() scs.Store {
 }
 
 // IsReady is a simple wrapper around the core querier IsReady call.
-func (q *Querier) IsReady(ctx context.Context, waitPeriod time.Duration, maxAttempts uint8) (ready bool) {
+func (q *Querier) IsReady(ctx context.Context, waitPeriod time.Duration, maxAttempts uint64) (ready bool) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -182,8 +192,6 @@ func (q *Querier) getOneRow(ctx context.Context, querier database.SQLQueryExecut
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	query = minimizeSQL(query)
-
 	logger := q.logger.WithValue("query_desc", queryDescription)
 	if q.logQueries {
 		logger = logger.WithValue("args", args)
@@ -204,8 +212,6 @@ func (q *Querier) getRows(ctx context.Context, querier database.SQLQueryExecutor
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	query = minimizeSQL(query)
-
 	logger := q.logger.WithValue("query_desc", queryDescription)
 	if q.logQueries {
 		logger = logger.WithValue("args", args)
@@ -215,11 +221,11 @@ func (q *Querier) getRows(ctx context.Context, querier database.SQLQueryExecutor
 
 	rows, err := querier.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "performing read query")
+		return nil, observability.PrepareError(err, span, "performing read query")
 	}
 
-	if rowsErr := rows.Err(); rowsErr != nil {
-		return nil, observability.PrepareError(rowsErr, span, "scanning results")
+	if err = rows.Err(); err != nil {
+		return nil, observability.PrepareError(err, span, "scanning results")
 	}
 
 	if q.logQueries {
@@ -232,8 +238,6 @@ func (q *Querier) getRows(ctx context.Context, querier database.SQLQueryExecutor
 func (q *Querier) performBooleanQuery(ctx context.Context, querier database.SQLQueryExecutor, query string, args []any) (bool, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
-
-	query = minimizeSQL(query)
 
 	logger := q.logger.WithValue(keys.DatabaseQueryKey, query).WithValue("args", args)
 	tracing.AttachDatabaseQueryToSpan(span, "boolean query", query, args)
@@ -257,8 +261,6 @@ func (q *Querier) performBooleanQuery(ctx context.Context, querier database.SQLQ
 func (q *Querier) performWriteQuery(ctx context.Context, querier database.SQLQueryExecutor, queryDescription, query string, args []any) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
-
-	query = minimizeSQL(query)
 
 	logger := q.logger.WithValue("query_desc", queryDescription)
 	if q.logQueries {

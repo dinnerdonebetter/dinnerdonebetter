@@ -32,7 +32,6 @@ var (
 		ProvideMealPlanOptionVoteDataManager,
 		ProvideUserDataManager,
 		ProvideAdminUserDataManager,
-		ProvideAPIClientDataManager,
 		ProvidePasswordResetTokenDataManager,
 		ProvideWebhookDataManager,
 		ProvideRecipePrepTaskDataManager,
@@ -46,6 +45,12 @@ var (
 		ProvideServiceSettingDataManager,
 		ProvideServiceSettingConfigurationDataManager,
 		ProvideValidIngredientGroupDataManager,
+		ProvideUserIngredientPreferenceDataManager,
+		ProvideRecipeRatingDataManager,
+		ProvideHouseholdInstrumentOwnershipDataManager,
+		ProvideOAuth2ClientDataManager,
+		ProvideValidVesselDataManager,
+		ProvideValidPreparationVesselDataManager,
 	)
 )
 
@@ -164,11 +169,6 @@ func ProvideAdminUserDataManager(db DataManager) types.AdminUserDataManager {
 	return db
 }
 
-// ProvideAPIClientDataManager is an arbitrary function for dependency injection's sake.
-func ProvideAPIClientDataManager(db DataManager) types.APIClientDataManager {
-	return db
-}
-
 // ProvidePasswordResetTokenDataManager is an arbitrary function for dependency injection's sake.
 func ProvidePasswordResetTokenDataManager(db DataManager) types.PasswordResetTokenDataManager {
 	return db
@@ -231,5 +231,35 @@ func ProvideServiceSettingConfigurationDataManager(db DataManager) types.Service
 
 // ProvideValidIngredientGroupDataManager is an arbitrary function for dependency injection's sake.
 func ProvideValidIngredientGroupDataManager(db DataManager) types.ValidIngredientGroupDataManager {
+	return db
+}
+
+// ProvideUserIngredientPreferenceDataManager is an arbitrary function for dependency injection's sake.
+func ProvideUserIngredientPreferenceDataManager(db DataManager) types.UserIngredientPreferenceDataManager {
+	return db
+}
+
+// ProvideRecipeRatingDataManager is an arbitrary function for dependency injection's sake.
+func ProvideRecipeRatingDataManager(db DataManager) types.RecipeRatingDataManager {
+	return db
+}
+
+// ProvideHouseholdInstrumentOwnershipDataManager is an arbitrary function for dependency injection's sake.
+func ProvideHouseholdInstrumentOwnershipDataManager(db DataManager) types.HouseholdInstrumentOwnershipDataManager {
+	return db
+}
+
+// ProvideOAuth2ClientDataManager is an arbitrary function for dependency injection's sake.
+func ProvideOAuth2ClientDataManager(db DataManager) types.OAuth2ClientDataManager {
+	return db
+}
+
+// ProvideValidVesselDataManager is an arbitrary function for dependency injection's sake.
+func ProvideValidVesselDataManager(db DataManager) types.ValidVesselDataManager {
+	return db
+}
+
+// ProvideValidPreparationVesselDataManager is an arbitrary function for dependency injection's sake.
+func ProvideValidPreparationVesselDataManager(db DataManager) types.ValidPreparationVesselDataManager {
 	return db
 }

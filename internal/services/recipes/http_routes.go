@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"image/png"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/identifiers"
@@ -169,17 +170,20 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	defer span.End()
 
 	tracing.AttachRequestToSpan(span, req)
+	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get("useDB"))) == "true"
+
+	query := req.URL.Query().Get(types.SearchQueryKey)
+	tracing.AttachSearchQueryToSpan(span, query)
 
 	filter := types.ExtractQueryFilterFromRequest(req)
+	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+
 	logger := s.logger.WithRequest(req).
 		WithValue(keys.FilterLimitKey, filter.Limit).
 		WithValue(keys.FilterPageKey, filter.Page).
-		WithValue(keys.FilterSortByKey, filter.SortBy)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
-
-	searchQuery := req.URL.Query().Get(types.SearchQueryKey)
-	tracing.AttachSearchQueryToSpan(span, searchQuery)
-	logger = logger.WithValue(keys.SearchQueryKey, searchQuery)
+		WithValue(keys.FilterSortByKey, filter.SortBy).
+		WithValue(keys.SearchQueryKey, query).
+		WithValue("using_database", useDB)
 
 	// determine user ID.
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
@@ -192,12 +196,36 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	recipes, err := s.recipeDataManager.SearchForRecipes(ctx, searchQuery, filter)
+	recipes := &types.QueryFilteredResult[types.Recipe]{
+		Pagination: filter.ToPagination(),
+	}
+	if useDB {
+		recipes, err = s.recipeDataManager.SearchForRecipes(ctx, query, filter)
+	} else {
+		var recipeSubsets []*types.RecipeSearchSubset
+		recipeSubsets, err = s.searchIndex.Search(ctx, query)
+		if err != nil {
+			observability.AcknowledgeError(err, logger, span, "external search for recipes")
+			s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+			return
+		}
+
+		ids := []string{}
+		for _, recipeSubset := range recipeSubsets {
+			ids = append(ids, recipeSubset.ID)
+		}
+
+		recipes.Data, err = s.recipeDataManager.GetRecipesWithIDs(ctx, ids)
+	}
+
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		recipes = &types.QueryFilteredResult[types.Recipe]{Data: []*types.Recipe{}}
+		recipes = &types.QueryFilteredResult[types.Recipe]{
+			Pagination: filter.ToPagination(),
+			Data:       []*types.Recipe{},
+		}
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving recipes")
+		observability.AcknowledgeError(err, logger, span, "searching for recipes")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -516,4 +544,47 @@ func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 	}
 
 	res.WriteHeader(http.StatusCreated)
+}
+
+// MermaidHandler returns a GET handler that returns a recipe in Mermaid format.
+func (s *service) MermaidHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	// determine user ID.
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	// determine recipe ID.
+	recipeID := s.recipeIDFetcher(req)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+
+	// fetch recipe from database.
+	x, err := s.recipeDataManager.GetRecipe(ctx, recipeID)
+	if errors.Is(err, sql.ErrNoRows) {
+		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		return
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving recipe")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	graphDefinition := s.recipeAnalyzer.RenderMermaidDiagramForRecipe(ctx, x)
+
+	res.Header().Set("Content-Type", "text/mermaid")
+
+	// encode our response and peace.
+	s.encoderDecoder.RespondWithData(ctx, res, graphDefinition)
 }

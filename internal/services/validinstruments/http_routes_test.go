@@ -11,11 +11,13 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	mocksearch "github.com/dinnerdonebetter/backend/internal/search/mock"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 	testutils "github.com/dinnerdonebetter/backend/tests/utils"
@@ -43,7 +45,7 @@ func TestValidInstrumentsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidInstrumentDataManager.On(
+		dbManager.ValidInstrumentDataManagerMock.On(
 			"CreateValidInstrument",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidInstrumentDatabaseCreationInput) bool { return true }),
@@ -136,7 +138,7 @@ func TestValidInstrumentsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidInstrumentDataManager.On(
+		dbManager.ValidInstrumentDataManagerMock.On(
 			"CreateValidInstrument",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidInstrumentDatabaseCreationInput) bool { return true }),
@@ -165,7 +167,7 @@ func TestValidInstrumentsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidInstrumentDataManager.On(
+		dbManager.ValidInstrumentDataManagerMock.On(
 			"CreateValidInstrument",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidInstrumentDatabaseCreationInput) bool { return true }),
@@ -196,7 +198,7 @@ func TestValidInstrumentsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
 		validInstrumentDataManager.On(
 			"GetValidInstrument",
 			testutils.ContextMatcher,
@@ -249,7 +251,7 @@ func TestValidInstrumentsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
 		validInstrumentDataManager.On(
 			"GetValidInstrument",
 			testutils.ContextMatcher,
@@ -277,7 +279,7 @@ func TestValidInstrumentsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
 		validInstrumentDataManager.On(
 			"GetValidInstrument",
 			testutils.ContextMatcher,
@@ -311,7 +313,7 @@ func TestValidInstrumentsService_ListHandler(T *testing.T) {
 
 		exampleValidInstrumentList := fakes.BuildFakeValidInstrumentList()
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
 		validInstrumentDataManager.On(
 			"GetValidInstruments",
 			testutils.ContextMatcher,
@@ -364,7 +366,7 @@ func TestValidInstrumentsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
 		validInstrumentDataManager.On(
 			"GetValidInstruments",
 			testutils.ContextMatcher,
@@ -393,7 +395,7 @@ func TestValidInstrumentsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
 		validInstrumentDataManager.On(
 			"GetValidInstruments",
 			testutils.ContextMatcher,
@@ -434,7 +436,7 @@ func TestValidInstrumentsService_SearchHandler(T *testing.T) {
 			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
 		validInstrumentDataManager.On(
 			"SearchForValidInstruments",
 			testutils.ContextMatcher,
@@ -456,6 +458,47 @@ func TestValidInstrumentsService_SearchHandler(T *testing.T) {
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, validInstrumentDataManager, encoderDecoder)
+	})
+
+	T.Run("using external service", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.cfg.UseSearchService = true
+
+		helper.req.URL.RawQuery = url.Values{
+			types.SearchQueryKey: []string{exampleQuery},
+			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
+		}.Encode()
+
+		expectedIDs := []string{}
+		validInstrumentSearchSubsets := make([]*types.ValidInstrumentSearchSubset, len(exampleValidInstrumentList.Data))
+		for i := range exampleValidInstrumentList.Data {
+			expectedIDs = append(expectedIDs, exampleValidInstrumentList.Data[i].ID)
+			validInstrumentSearchSubsets[i] = converters.ConvertValidInstrumentToValidInstrumentSearchSubset(exampleValidInstrumentList.Data[i])
+		}
+
+		searchIndex := &mocksearch.IndexManager[types.ValidInstrumentSearchSubset]{}
+		searchIndex.On(
+			"Search",
+			testutils.ContextMatcher,
+			exampleQuery,
+		).Return(validInstrumentSearchSubsets, nil)
+		helper.service.searchIndex = searchIndex
+
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
+		validInstrumentDataManager.On(
+			"GetValidInstrumentsWithIDs",
+			testutils.ContextMatcher,
+			expectedIDs,
+		).Return(exampleValidInstrumentList.Data, nil)
+		helper.service.validInstrumentDataManager = validInstrumentDataManager
+
+		helper.service.SearchHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, validInstrumentDataManager, searchIndex)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -492,7 +535,7 @@ func TestValidInstrumentsService_SearchHandler(T *testing.T) {
 			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
 		validInstrumentDataManager.On(
 			"SearchForValidInstruments",
 			testutils.ContextMatcher,
@@ -525,7 +568,7 @@ func TestValidInstrumentsService_SearchHandler(T *testing.T) {
 			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
 		validInstrumentDataManager.On(
 			"SearchForValidInstruments",
 			testutils.ContextMatcher,
@@ -567,13 +610,13 @@ func TestValidInstrumentsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidInstrumentDataManager.On(
+		dbManager.ValidInstrumentDataManagerMock.On(
 			"GetValidInstrument",
 			testutils.ContextMatcher,
 			helper.exampleValidInstrument.ID,
 		).Return(helper.exampleValidInstrument, nil)
 
-		dbManager.ValidInstrumentDataManager.On(
+		dbManager.ValidInstrumentDataManagerMock.On(
 			"UpdateValidInstrument",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidInstrument) bool { return true }),
@@ -655,7 +698,7 @@ func TestValidInstrumentsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
 		validInstrumentDataManager.On(
 			"GetValidInstrument",
 			testutils.ContextMatcher,
@@ -684,7 +727,7 @@ func TestValidInstrumentsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
 		validInstrumentDataManager.On(
 			"GetValidInstrument",
 			testutils.ContextMatcher,
@@ -714,13 +757,13 @@ func TestValidInstrumentsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidInstrumentDataManager.On(
+		dbManager.ValidInstrumentDataManagerMock.On(
 			"GetValidInstrument",
 			testutils.ContextMatcher,
 			helper.exampleValidInstrument.ID,
 		).Return(helper.exampleValidInstrument, nil)
 
-		dbManager.ValidInstrumentDataManager.On(
+		dbManager.ValidInstrumentDataManagerMock.On(
 			"UpdateValidInstrument",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidInstrument) bool { return true }),
@@ -749,13 +792,13 @@ func TestValidInstrumentsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidInstrumentDataManager.On(
+		dbManager.ValidInstrumentDataManagerMock.On(
 			"GetValidInstrument",
 			testutils.ContextMatcher,
 			helper.exampleValidInstrument.ID,
 		).Return(helper.exampleValidInstrument, nil)
 
-		dbManager.ValidInstrumentDataManager.On(
+		dbManager.ValidInstrumentDataManagerMock.On(
 			"UpdateValidInstrument",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidInstrument) bool { return true }),
@@ -786,7 +829,7 @@ func TestValidInstrumentsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
 		validInstrumentDataManager.On(
 			"ValidInstrumentExists",
 			testutils.ContextMatcher,
@@ -844,7 +887,7 @@ func TestValidInstrumentsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
 		validInstrumentDataManager.On(
 			"ValidInstrumentExists",
 			testutils.ContextMatcher,
@@ -872,7 +915,7 @@ func TestValidInstrumentsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
 		validInstrumentDataManager.On(
 			"ValidInstrumentExists",
 			testutils.ContextMatcher,
@@ -892,7 +935,7 @@ func TestValidInstrumentsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
 		validInstrumentDataManager.On(
 			"ValidInstrumentExists",
 			testutils.ContextMatcher,
@@ -918,7 +961,7 @@ func TestValidInstrumentsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
 		validInstrumentDataManager.On(
 			"ValidInstrumentExists",
 			testutils.ContextMatcher,
@@ -956,7 +999,7 @@ func TestValidInstrumentsService_RandomHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
 		validInstrumentDataManager.On(
 			"GetRandomValidInstrument",
 			testutils.ContextMatcher,
@@ -1008,7 +1051,7 @@ func TestValidInstrumentsService_RandomHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
 		validInstrumentDataManager.On(
 			"GetRandomValidInstrument",
 			testutils.ContextMatcher,
@@ -1035,7 +1078,7 @@ func TestValidInstrumentsService_RandomHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManager{}
+		validInstrumentDataManager := &mocktypes.ValidInstrumentDataManagerMock{}
 		validInstrumentDataManager.On(
 			"GetRandomValidInstrument",
 			testutils.ContextMatcher,

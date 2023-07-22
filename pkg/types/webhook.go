@@ -88,10 +88,10 @@ type (
 
 	// WebhookDataService describes a structure capable of serving traffic related to webhooks.
 	WebhookDataService interface {
-		ListHandler(http.ResponseWriter, *http.Request)
-		CreateHandler(http.ResponseWriter, *http.Request)
-		ReadHandler(http.ResponseWriter, *http.Request)
-		ArchiveHandler(http.ResponseWriter, *http.Request)
+		ListWebhooksHandler(http.ResponseWriter, *http.Request)
+		CreateWebhookHandler(http.ResponseWriter, *http.Request)
+		ReadWebhookHandler(http.ResponseWriter, *http.Request)
+		ArchiveWebhookHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

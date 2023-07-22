@@ -6,13 +6,14 @@ import (
 	"net/http"
 	"testing"
 
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/objectstorage"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/routing/mock"
+	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
 	"github.com/dinnerdonebetter/backend/internal/uploads"
 	"github.com/dinnerdonebetter/backend/internal/uploads/images"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
@@ -24,10 +25,13 @@ import (
 func buildTestService() *service {
 	return &service{
 		logger:            logging.NewNoopLogger(),
-		recipeDataManager: &mocktypes.RecipeDataManager{},
+		recipeDataManager: &mocktypes.RecipeDataManagerMock{},
 		recipeIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:    mockencoding.NewMockEncoderDecoder(),
 		tracer:            tracing.NewTracerForTest("test"),
+		cfg: &Config{
+			UseSearchService: false,
+		},
 	}
 }
 
@@ -46,9 +50,8 @@ func TestProvideRecipesService(T *testing.T) {
 		cfg := &Config{
 			Uploads: uploads.Config{
 				Storage: objectstorage.Config{
-					FilesystemConfig: &objectstorage.FilesystemConfig{RootDirectory: t.Name()},
-					BucketName:       t.Name(),
-					Provider:         objectstorage.FilesystemProvider,
+					BucketName: t.Name(),
+					Provider:   objectstorage.MemoryProvider,
 				},
 				Debug: false,
 			},
@@ -65,8 +68,9 @@ func TestProvideRecipesService(T *testing.T) {
 			context.Background(),
 			logging.NewNoopLogger(),
 			cfg,
-			&mocktypes.RecipeDataManager{},
-			&mocktypes.RecipeMediaDataManager{},
+			&searchcfg.Config{},
+			&mocktypes.RecipeDataManagerMock{},
+			&mocktypes.RecipeMediaDataManagerMock{},
 			&recipeanalysis.MockRecipeAnalyzer{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
@@ -87,9 +91,8 @@ func TestProvideRecipesService(T *testing.T) {
 		cfg := &Config{
 			Uploads: uploads.Config{
 				Storage: objectstorage.Config{
-					FilesystemConfig: &objectstorage.FilesystemConfig{RootDirectory: t.Name()},
-					BucketName:       t.Name(),
-					Provider:         objectstorage.FilesystemProvider,
+					BucketName: t.Name(),
+					Provider:   objectstorage.MemoryProvider,
 				},
 				Debug: false,
 			},
@@ -102,8 +105,9 @@ func TestProvideRecipesService(T *testing.T) {
 			context.Background(),
 			logging.NewNoopLogger(),
 			cfg,
-			&mocktypes.RecipeDataManager{},
-			&mocktypes.RecipeMediaDataManager{},
+			&searchcfg.Config{},
+			&mocktypes.RecipeDataManagerMock{},
+			&mocktypes.RecipeMediaDataManagerMock{},
 			&recipeanalysis.MockRecipeAnalyzer{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,

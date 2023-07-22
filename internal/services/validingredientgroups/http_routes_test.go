@@ -11,7 +11,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -43,7 +43,7 @@ func TestValidIngredientGroupsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientGroupDataManager.On(
+		dbManager.ValidIngredientGroupDataManagerMock.On(
 			"CreateValidIngredientGroup",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidIngredientGroupDatabaseCreationInput) bool { return true }),
@@ -136,7 +136,7 @@ func TestValidIngredientGroupsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientGroupDataManager.On(
+		dbManager.ValidIngredientGroupDataManagerMock.On(
 			"CreateValidIngredientGroup",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidIngredientGroupDatabaseCreationInput) bool { return true }),
@@ -165,7 +165,7 @@ func TestValidIngredientGroupsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientGroupDataManager.On(
+		dbManager.ValidIngredientGroupDataManagerMock.On(
 			"CreateValidIngredientGroup",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidIngredientGroupDatabaseCreationInput) bool { return true }),
@@ -196,7 +196,7 @@ func TestValidIngredientGroupsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManager{}
+		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManagerMock{}
 		validIngredientGroupDataManager.On(
 			"GetValidIngredientGroup",
 			testutils.ContextMatcher,
@@ -249,7 +249,7 @@ func TestValidIngredientGroupsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManager{}
+		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManagerMock{}
 		validIngredientGroupDataManager.On(
 			"GetValidIngredientGroup",
 			testutils.ContextMatcher,
@@ -277,7 +277,7 @@ func TestValidIngredientGroupsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManager{}
+		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManagerMock{}
 		validIngredientGroupDataManager.On(
 			"GetValidIngredientGroup",
 			testutils.ContextMatcher,
@@ -311,7 +311,7 @@ func TestValidIngredientGroupsService_ListHandler(T *testing.T) {
 
 		exampleValidIngredientGroupList := fakes.BuildFakeValidIngredientGroupList()
 
-		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManager{}
+		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManagerMock{}
 		validIngredientGroupDataManager.On(
 			"GetValidIngredientGroups",
 			testutils.ContextMatcher,
@@ -364,7 +364,7 @@ func TestValidIngredientGroupsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManager{}
+		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManagerMock{}
 		validIngredientGroupDataManager.On(
 			"GetValidIngredientGroups",
 			testutils.ContextMatcher,
@@ -393,7 +393,7 @@ func TestValidIngredientGroupsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManager{}
+		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManagerMock{}
 		validIngredientGroupDataManager.On(
 			"GetValidIngredientGroups",
 			testutils.ContextMatcher,
@@ -434,7 +434,7 @@ func TestValidIngredientGroupsService_SearchHandler(T *testing.T) {
 			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManager{}
+		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManagerMock{}
 		validIngredientGroupDataManager.On(
 			"SearchForValidIngredientGroups",
 			testutils.ContextMatcher,
@@ -492,7 +492,7 @@ func TestValidIngredientGroupsService_SearchHandler(T *testing.T) {
 			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManager{}
+		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManagerMock{}
 		validIngredientGroupDataManager.On(
 			"SearchForValidIngredientGroups",
 			testutils.ContextMatcher,
@@ -526,7 +526,7 @@ func TestValidIngredientGroupsService_SearchHandler(T *testing.T) {
 			types.LimitQueryKey:  []string{strconv.Itoa(int(exampleLimit))},
 		}.Encode()
 
-		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManager{}
+		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManagerMock{}
 		validIngredientGroupDataManager.On(
 			"SearchForValidIngredientGroups",
 			testutils.ContextMatcher,
@@ -569,13 +569,13 @@ func TestValidIngredientGroupsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientGroupDataManager.On(
+		dbManager.ValidIngredientGroupDataManagerMock.On(
 			"GetValidIngredientGroup",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientGroup.ID,
 		).Return(helper.exampleValidIngredientGroup, nil)
 
-		dbManager.ValidIngredientGroupDataManager.On(
+		dbManager.ValidIngredientGroupDataManagerMock.On(
 			"UpdateValidIngredientGroup",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientGroup,
@@ -657,7 +657,7 @@ func TestValidIngredientGroupsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManager{}
+		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManagerMock{}
 		validIngredientGroupDataManager.On(
 			"GetValidIngredientGroup",
 			testutils.ContextMatcher,
@@ -686,7 +686,7 @@ func TestValidIngredientGroupsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManager{}
+		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManagerMock{}
 		validIngredientGroupDataManager.On(
 			"GetValidIngredientGroup",
 			testutils.ContextMatcher,
@@ -716,13 +716,13 @@ func TestValidIngredientGroupsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientGroupDataManager.On(
+		dbManager.ValidIngredientGroupDataManagerMock.On(
 			"GetValidIngredientGroup",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientGroup.ID,
 		).Return(helper.exampleValidIngredientGroup, nil)
 
-		dbManager.ValidIngredientGroupDataManager.On(
+		dbManager.ValidIngredientGroupDataManagerMock.On(
 			"UpdateValidIngredientGroup",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientGroup,
@@ -751,13 +751,13 @@ func TestValidIngredientGroupsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientGroupDataManager.On(
+		dbManager.ValidIngredientGroupDataManagerMock.On(
 			"GetValidIngredientGroup",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientGroup.ID,
 		).Return(helper.exampleValidIngredientGroup, nil)
 
-		dbManager.ValidIngredientGroupDataManager.On(
+		dbManager.ValidIngredientGroupDataManagerMock.On(
 			"UpdateValidIngredientGroup",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientGroup,
@@ -789,13 +789,13 @@ func TestValidIngredientGroupsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientGroupDataManager.On(
+		dbManager.ValidIngredientGroupDataManagerMock.On(
 			"ValidIngredientGroupExists",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientGroup.ID,
 		).Return(true, nil)
 
-		dbManager.ValidIngredientGroupDataManager.On(
+		dbManager.ValidIngredientGroupDataManagerMock.On(
 			"ArchiveValidIngredientGroup",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientGroup.ID,
@@ -846,7 +846,7 @@ func TestValidIngredientGroupsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManager{}
+		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManagerMock{}
 		validIngredientGroupDataManager.On(
 			"ValidIngredientGroupExists",
 			testutils.ContextMatcher,
@@ -874,7 +874,7 @@ func TestValidIngredientGroupsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManager{}
+		validIngredientGroupDataManager := &mocktypes.ValidIngredientGroupDataManagerMock{}
 		validIngredientGroupDataManager.On(
 			"ValidIngredientGroupExists",
 			testutils.ContextMatcher,
@@ -895,13 +895,13 @@ func TestValidIngredientGroupsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientGroupDataManager.On(
+		dbManager.ValidIngredientGroupDataManagerMock.On(
 			"ValidIngredientGroupExists",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientGroup.ID,
 		).Return(true, nil)
 
-		dbManager.ValidIngredientGroupDataManager.On(
+		dbManager.ValidIngredientGroupDataManagerMock.On(
 			"ArchiveValidIngredientGroup",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientGroup.ID,
@@ -921,13 +921,13 @@ func TestValidIngredientGroupsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientGroupDataManager.On(
+		dbManager.ValidIngredientGroupDataManagerMock.On(
 			"ValidIngredientGroupExists",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientGroup.ID,
 		).Return(true, nil)
 
-		dbManager.ValidIngredientGroupDataManager.On(
+		dbManager.ValidIngredientGroupDataManagerMock.On(
 			"ArchiveValidIngredientGroup",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientGroup.ID,

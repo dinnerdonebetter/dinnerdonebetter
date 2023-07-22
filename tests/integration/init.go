@@ -20,10 +20,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	logcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 	"github.com/dinnerdonebetter/backend/internal/server/http/utils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-
-	_ "github.com/lib/pq"
 )
 
 const (
@@ -35,6 +34,8 @@ var (
 	urlToUse       string
 	parsedURLToUse *url.URL
 	dbmanager      database.DataManager
+
+	createdClientID, createdClientSecret string
 
 	premadeAdminUser = &types.User{
 		ID:              identifiers.New(),
@@ -66,10 +67,11 @@ func init() {
 	}
 
 	cfg := &dbconfig.Config{
-		ConnectionDetails: database.ConnectionDetails(dbAddr),
-		Debug:             false,
-		RunMigrations:     false,
-		MaxPingAttempts:   100,
+		OAuth2TokenEncryptionKey: "                                ",
+		ConnectionDetails:        database.ConnectionDetails(dbAddr),
+		Debug:                    false,
+		RunMigrations:            false,
+		MaxPingAttempts:          500,
 	}
 
 	dbm, err := postgres.ProvideDatabaseClient(ctx, logger, cfg, tracing.NewNoopTracerProvider())
@@ -102,7 +104,29 @@ func init() {
 		panic(err)
 	}
 
-	db, err := sql.Open("postgres", dbAddr)
+	clientID, err := random.GenerateHexEncodedString(ctx, 16)
+	if err != nil {
+		panic(err)
+	}
+	clientSecret, err := random.GenerateHexEncodedString(ctx, 16)
+	if err != nil {
+		panic(err)
+	}
+
+	createdClient, err := dbmanager.CreateOAuth2Client(ctx, &types.OAuth2ClientDatabaseCreationInput{
+		ID:           identifiers.New(),
+		Name:         "integration_client",
+		Description:  "integration test client",
+		ClientID:     clientID,
+		ClientSecret: clientSecret,
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	createdClientID, createdClientSecret = createdClient.ClientID, createdClient.ClientSecret
+
+	db, err := sql.Open("pgx", dbAddr)
 	if err != nil {
 		panic(err)
 	}

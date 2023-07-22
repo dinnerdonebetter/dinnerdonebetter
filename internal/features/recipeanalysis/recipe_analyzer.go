@@ -14,6 +14,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
+	"github.com/dustin/go-humanize/english"
 	"github.com/goccy/go-graphviz"
 	"github.com/heimdalr/dag"
 	"gonum.org/v1/gonum/graph"
@@ -22,17 +23,19 @@ import (
 	"gonum.org/v1/gonum/graph/topo"
 )
 
-var errNotAcyclic = errors.New("recipe is not acyclic")
+var (
+	_ graph.Node = (*recipeStepGraphNode)(nil)
 
-var _ graph.Node = (*recipeStepGraphNode)(nil)
+	errNotAcyclic = errors.New("recipe is not acyclic")
+)
 
 // recipeStepGraphNode is a node in an implicit graph.
 type recipeStepGraphNode struct {
 	id int64
 }
 
-// NewGraphNode returns a new recipeStepGraphNode.
-func NewGraphNode(id int64) graph.Node {
+// newGraphNode returns a new recipeStepGraphNode.
+func newGraphNode(id int64) graph.Node {
 	return &recipeStepGraphNode{id: id}
 }
 
@@ -43,24 +46,16 @@ func (g recipeStepGraphNode) ID() int64 {
 var errRecipeStepIDNotFound = errors.New("recipe step ID not found")
 
 func findStepIndexForRecipeStepProductID(recipe *types.Recipe, recipeStepProductID string) (int64, error) {
-	for _, step := range recipe.Steps {
-		for _, product := range step.Products {
-			if product.ID == recipeStepProductID {
-				return graphIDForStep(step), nil
-			}
-		}
+	if step := recipe.FindStepForRecipeStepProductID(recipeStepProductID); step != nil {
+		return graphIDForStep(step), nil
 	}
 
 	return -1, errRecipeStepIDNotFound
 }
 
 func findStepIDForRecipeStepProductID(recipe *types.Recipe, recipeStepProductID string) (string, error) {
-	for _, step := range recipe.Steps {
-		for _, product := range step.Products {
-			if product.ID == recipeStepProductID {
-				return fmt.Sprintf("%d", graphIDForStep(step)), nil
-			}
-		}
+	if step := recipe.FindStepForRecipeStepProductID(recipeStepProductID); step != nil {
+		return fmt.Sprintf("%d", graphIDForStep(step)), nil
 	}
 
 	return "", errRecipeStepIDNotFound
@@ -85,6 +80,7 @@ type RecipeAnalyzer interface {
 	MakeGraphForRecipe(ctx context.Context, recipe *types.Recipe) (*simple.DirectedGraph, error)
 	GenerateDAGDiagramForRecipe(ctx context.Context, recipe *types.Recipe) (image.Image, error)
 	GenerateMealPlanTasksForRecipe(ctx context.Context, mealPlanOptionID string, recipe *types.Recipe) ([]*types.MealPlanTaskDatabaseCreationInput, error)
+	RenderMermaidDiagramForRecipe(ctx context.Context, recipe *types.Recipe) string
 }
 
 var _ RecipeAnalyzer = (*recipeAnalyzer)(nil)
@@ -128,7 +124,7 @@ func (g *recipeAnalyzer) MakeGraphForRecipe(ctx context.Context, recipe *types.R
 	recipeGraph := simple.NewDirectedGraph()
 
 	for _, step := range recipe.Steps {
-		recipeGraph.AddNode(NewGraphNode(graphIDForStep(step)))
+		recipeGraph.AddNode(newGraphNode(graphIDForStep(step)))
 	}
 
 	for _, step := range recipe.Steps {
@@ -137,12 +133,12 @@ func (g *recipeAnalyzer) MakeGraphForRecipe(ctx context.Context, recipe *types.R
 				continue
 			}
 
-			toStep, err := findStepIndexForRecipeStepProductID(recipe, *ingredient.RecipeStepProductID)
+			fromStep, err := findStepIndexForRecipeStepProductID(recipe, *ingredient.RecipeStepProductID)
 			if err != nil {
 				return nil, err
 			}
 
-			from := recipeGraph.Node(toStep)
+			from := recipeGraph.Node(fromStep)
 			to := recipeGraph.Node(graphIDForStep(step))
 			recipeGraph.SetEdge(simple.Edge{F: from, T: to})
 		}
@@ -152,12 +148,12 @@ func (g *recipeAnalyzer) MakeGraphForRecipe(ctx context.Context, recipe *types.R
 				continue
 			}
 
-			toStep, err := findStepIndexForRecipeStepProductID(recipe, *instrument.RecipeStepProductID)
+			fromStep, err := findStepIndexForRecipeStepProductID(recipe, *instrument.RecipeStepProductID)
 			if err != nil {
 				return nil, err
 			}
 
-			from := recipeGraph.Node(toStep)
+			from := recipeGraph.Node(fromStep)
 			to := recipeGraph.Node(graphIDForStep(step))
 			recipeGraph.SetEdge(simple.Edge{F: from, T: to})
 		}
@@ -167,12 +163,12 @@ func (g *recipeAnalyzer) MakeGraphForRecipe(ctx context.Context, recipe *types.R
 				continue
 			}
 
-			toStep, err := findStepIndexForRecipeStepProductID(recipe, *vessel.RecipeStepProductID)
+			fromStep, err := findStepIndexForRecipeStepProductID(recipe, *vessel.RecipeStepProductID)
 			if err != nil {
 				return nil, err
 			}
 
-			from := recipeGraph.Node(toStep)
+			from := recipeGraph.Node(fromStep)
 			to := recipeGraph.Node(graphIDForStep(step))
 			recipeGraph.SetEdge(simple.Edge{F: from, T: to})
 		}
@@ -374,4 +370,103 @@ func (g *recipeAnalyzer) GenerateMealPlanTasksForRecipe(ctx context.Context, mea
 	}
 
 	return inputs, nil
+}
+
+type provisionCount struct {
+	ingredients, instruments, vessels uint
+}
+
+func stepProvidesWhatToOtherStep(recipe *types.Recipe, fromStepIndex, toStepIndex uint) string {
+	from, to := recipe.Steps[fromStepIndex], recipe.Steps[toStepIndex]
+	provides := []string{}
+
+	count := provisionCount{}
+	for _, product := range from.Products {
+		for _, step := range recipe.Steps {
+			if step.ID != to.ID {
+				continue
+			}
+
+			for _, ingredient := range step.Ingredients {
+				if ingredient.RecipeStepProductID != nil && *ingredient.RecipeStepProductID == product.ID {
+					count.ingredients++
+				}
+			}
+
+			for _, instrument := range step.Instruments {
+				if instrument.RecipeStepProductID != nil && *instrument.RecipeStepProductID == product.ID {
+					count.instruments++
+				}
+			}
+
+			for _, vessel := range step.Vessels {
+				if vessel.RecipeStepProductID != nil && *vessel.RecipeStepProductID == product.ID {
+					count.vessels++
+				}
+			}
+		}
+	}
+
+	renderCount := func(x uint, typ string) string {
+		/*
+			unnecessary Sprintf, but I might do something like this later:
+
+			var prefix string
+			if x == 1 {
+				prefix = "an"
+			}
+		*/
+
+		return strings.TrimSpace(fmt.Sprintf(" %s ", english.PluralWord(int(x), typ, fmt.Sprintf("%ss", typ))))
+	}
+
+	if count.ingredients > 0 {
+		provides = append(provides, renderCount(count.ingredients, "ingredient"))
+	}
+
+	if count.instruments > 0 {
+		provides = append(provides, renderCount(count.ingredients, "instrument"))
+	}
+
+	if count.vessels > 0 {
+		provides = append(provides, renderCount(count.vessels, "vessel"))
+	}
+
+	return english.OxfordWordSeries(provides, "and")
+}
+
+func (g *recipeAnalyzer) RenderMermaidDiagramForRecipe(ctx context.Context, recipe *types.Recipe) string {
+	_, span := g.tracer.StartSpan(ctx)
+	defer span.End()
+
+	var mermaid strings.Builder
+	mermaid.WriteString("flowchart TD;\n")
+
+	for _, step := range recipe.Steps {
+		mermaid.WriteString(fmt.Sprintf("	Step%d[\"Step #%d (%s)\"];\n", graphIDForStep(step), graphIDForStep(step), step.Preparation.Name))
+	}
+
+	for i := range recipe.Steps {
+		for j := range recipe.Steps {
+			if i == j {
+				continue
+			}
+
+			if provides := stepProvidesWhatToOtherStep(recipe, uint(i), uint(j)); provides != "" {
+				mermaid.WriteString(fmt.Sprintf("\tStep%d -->|%s| Step%d;\n", graphIDForStep(recipe.Steps[i]), provides, graphIDForStep(recipe.Steps[j])))
+			}
+		}
+	}
+
+	for i := range recipe.PrepTasks {
+		prepTask := recipe.PrepTasks[i]
+
+		mermaid.WriteString(fmt.Sprintf("subgraph %d [\"%s (prep task #%d)\"]\n", i, prepTask.Name, i+1))
+		for j := range prepTask.TaskSteps {
+			mermaid.WriteString(fmt.Sprintf("Step%d\n", recipe.FindStepIndexByID(prepTask.TaskSteps[j].BelongsToRecipeStep)))
+		}
+		mermaid.WriteString("end\n")
+	}
+
+	return mermaid.String()
 }

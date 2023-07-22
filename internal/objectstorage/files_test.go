@@ -110,7 +110,7 @@ func TestUploader_ServeFiles(T *testing.T) {
 		}
 
 		res := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/things", nil)
+		req := httptest.NewRequest(http.MethodGet, "/things", http.NoBody)
 
 		u.ServeFiles(res, req)
 
@@ -132,7 +132,7 @@ func TestUploader_ServeFiles(T *testing.T) {
 		}
 
 		res := httptest.NewRecorder()
-		req := httptest.NewRequest(http.MethodGet, "/things", nil)
+		req := httptest.NewRequest(http.MethodGet, "/things", http.NoBody)
 
 		u.ServeFiles(res, req)
 
@@ -160,7 +160,7 @@ func TestUploader_ServeFiles(T *testing.T) {
 		res := &testutils.MockHTTPResponseWriter{}
 		res.On("Write", mock.IsType([]byte(nil))).Return(0, errors.New("blah"))
 		res.On("Header").Return(http.Header{})
-		req := httptest.NewRequest(http.MethodGet, "/things", nil)
+		req := httptest.NewRequest(http.MethodGet, "/things", http.NoBody)
 
 		u.ServeFiles(res, req)
 

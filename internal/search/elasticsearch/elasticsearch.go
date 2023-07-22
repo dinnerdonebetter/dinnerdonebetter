@@ -17,7 +17,13 @@ import (
 	"github.com/elastic/go-elasticsearch/v8/esapi"
 )
 
-var _ search.IndexManager[types.ValidIngredient] = (*indexManager[types.ValidIngredient])(nil)
+var (
+	_ search.Index[types.ValidIngredientSearchSubset]      = (*indexManager[types.ValidIngredientSearchSubset])(nil)
+	_ search.Index[types.ValidInstrumentSearchSubset]      = (*indexManager[types.ValidInstrumentSearchSubset])(nil)
+	_ search.Index[types.ValidMeasurementUnitSearchSubset] = (*indexManager[types.ValidMeasurementUnitSearchSubset])(nil)
+	_ search.Index[types.ValidPreparationSearchSubset]     = (*indexManager[types.ValidPreparationSearchSubset])(nil)
+	_ search.Index[types.ValidIngredientStateSearchSubset] = (*indexManager[types.ValidIngredientStateSearchSubset])(nil)
+)
 
 type (
 	indexManager[T search.Searchable] struct {
@@ -29,7 +35,7 @@ type (
 	}
 )
 
-func ProvideIndexManager[T search.Searchable](ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *Config, indexName string) (search.IndexManager[T], error) {
+func ProvideIndexManager[T search.Searchable](ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *Config, indexName string) (search.Index[T], error) {
 	c, err := cfg.provideElasticsearchClient()
 	if err != nil {
 		return nil, fmt.Errorf("initializing search client: %w", err)

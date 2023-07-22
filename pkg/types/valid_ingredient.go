@@ -234,6 +234,17 @@ type (
 		IsHeat                                  *bool    `json:"is_heat"`
 	}
 
+	// ValidIngredientSearchSubset represents the subset of values suitable to index for search.
+	ValidIngredientSearchSubset struct {
+		_ struct{}
+
+		PluralName          string `json:"pluralName,omitempty"`
+		Name                string `json:"name,omitempty"`
+		ID                  string `json:"id,omitempty"`
+		Description         string `json:"description,omitempty"`
+		ShoppingSuggestions string `json:"shoppingSuggestions,omitempty"`
+	}
+
 	// ValidIngredientDataManager describes a structure capable of storing valid ingredients permanently.
 	ValidIngredientDataManager interface {
 		ValidIngredientExists(ctx context.Context, validIngredientID string) (bool, error)
@@ -245,7 +256,10 @@ type (
 		SearchForValidIngredientsForIngredientState(ctx context.Context, ingredientStateID, query string, filter *QueryFilter) ([]*ValidIngredient, error)
 		CreateValidIngredient(ctx context.Context, input *ValidIngredientDatabaseCreationInput) (*ValidIngredient, error)
 		UpdateValidIngredient(ctx context.Context, updated *ValidIngredient) error
+		MarkValidIngredientAsIndexed(ctx context.Context, validIngredientID string) error
 		ArchiveValidIngredient(ctx context.Context, validIngredientID string) error
+		GetValidIngredientIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error)
+		GetValidIngredientsWithIDs(ctx context.Context, ids []string) ([]*ValidIngredient, error)
 	}
 
 	// ValidIngredientDataService describes a structure capable of serving traffic related to valid ingredients.
@@ -263,8 +277,6 @@ type (
 )
 
 // Update merges an ValidIngredientUpdateRequestInput with a valid ingredient.
-//
-//nolint:maintidx // i'm working on a reflection based solution to this problem
 func (x *ValidIngredient) Update(input *ValidIngredientUpdateRequestInput) {
 	if input.Name != nil && *input.Name != x.Name {
 		x.Name = *input.Name

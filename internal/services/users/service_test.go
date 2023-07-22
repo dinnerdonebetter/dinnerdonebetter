@@ -6,13 +6,13 @@ import (
 	"testing"
 
 	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	"github.com/dinnerdonebetter/backend/internal/featureflags"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/objectstorage"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/random"
+	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 	"github.com/dinnerdonebetter/backend/internal/routing/chi"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/routing/mock"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
@@ -31,9 +31,8 @@ func buildTestService(t *testing.T) *service {
 	cfg := &Config{
 		Uploads: uploads.Config{
 			Storage: objectstorage.Config{
-				FilesystemConfig: &objectstorage.FilesystemConfig{RootDirectory: t.Name()},
-				BucketName:       t.Name(),
-				Provider:         objectstorage.FilesystemProvider,
+				BucketName: t.Name(),
+				Provider:   objectstorage.MemoryProvider,
 			},
 			Debug: false,
 		},
@@ -47,10 +46,10 @@ func buildTestService(t *testing.T) *service {
 		cfg,
 		&authservice.Config{},
 		logging.NewNoopLogger(),
-		&mocktypes.UserDataManager{},
-		&mocktypes.HouseholdDataManager{},
-		&mocktypes.HouseholdInvitationDataManager{},
-		&mocktypes.HouseholdUserMembershipDataManager{},
+		&mocktypes.UserDataManagerMock{},
+		&mocktypes.HouseholdDataManagerMock{},
+		&mocktypes.HouseholdInvitationDataManagerMock{},
+		&mocktypes.HouseholdUserMembershipDataManagerMock{},
 		&mockauthn.Authenticator{},
 		mockencoding.NewMockEncoderDecoder(),
 		&images.MockImageUploadProcessor{},
@@ -58,7 +57,7 @@ func buildTestService(t *testing.T) *service {
 		tracing.NewNoopTracerProvider(),
 		pp,
 		random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
-		&mocktypes.PasswordResetTokenDataManager{},
+		&mocktypes.PasswordResetTokenDataManagerMock{},
 		&featureflags.NoopFeatureFlagManager{},
 	)
 
@@ -82,9 +81,8 @@ func TestProvideUsersService(T *testing.T) {
 		cfg := &Config{
 			Uploads: uploads.Config{
 				Storage: objectstorage.Config{
-					FilesystemConfig: &objectstorage.FilesystemConfig{RootDirectory: t.Name()},
-					BucketName:       t.Name(),
-					Provider:         objectstorage.FilesystemProvider,
+					BucketName: t.Name(),
+					Provider:   objectstorage.MemoryProvider,
 				},
 				Debug: false,
 			},
@@ -103,10 +101,10 @@ func TestProvideUsersService(T *testing.T) {
 			cfg,
 			&authservice.Config{},
 			logging.NewNoopLogger(),
-			&mocktypes.UserDataManager{},
-			&mocktypes.HouseholdDataManager{},
-			&mocktypes.HouseholdInvitationDataManager{},
-			&mocktypes.HouseholdUserMembershipDataManager{},
+			&mocktypes.UserDataManagerMock{},
+			&mocktypes.HouseholdDataManagerMock{},
+			&mocktypes.HouseholdInvitationDataManagerMock{},
+			&mocktypes.HouseholdUserMembershipDataManagerMock{},
 			&mockauthn.Authenticator{},
 			mockencoding.NewMockEncoderDecoder(),
 			&images.MockImageUploadProcessor{},
@@ -114,7 +112,7 @@ func TestProvideUsersService(T *testing.T) {
 			tracing.NewNoopTracerProvider(),
 			pp,
 			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
-			&mocktypes.PasswordResetTokenDataManager{},
+			&mocktypes.PasswordResetTokenDataManagerMock{},
 			&featureflags.NoopFeatureFlagManager{},
 		)
 

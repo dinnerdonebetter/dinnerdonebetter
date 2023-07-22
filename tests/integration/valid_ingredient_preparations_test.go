@@ -31,12 +31,10 @@ func (s *TestSuite) TestValidIngredientPreparations_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating prerequisite valid preparation")
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
 			exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
 			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 			require.NoError(t, err)
-			t.Logf("valid preparation %q created", createdValidPreparation.ID)
 
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
@@ -44,7 +42,6 @@ func (s *TestSuite) TestValidIngredientPreparations_CompleteLifecycle() {
 			requireNotNilAndNoProblems(t, createdValidPreparation, err)
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
-			t.Log("creating prerequisite valid ingredient")
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
 			exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
 			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
@@ -55,16 +52,13 @@ func (s *TestSuite) TestValidIngredientPreparations_CompleteLifecycle() {
 			createdValidIngredient, err = testClients.user.GetValidIngredient(ctx, createdValidIngredient.ID)
 			requireNotNilAndNoProblems(t, createdValidIngredient, err)
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
-			t.Logf("valid ingredient %q created", createdValidIngredient.ID)
 
-			t.Log("creating valid ingredient preparation")
 			exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
 			exampleValidIngredientPreparation.Ingredient = *createdValidIngredient
 			exampleValidIngredientPreparation.Preparation = *createdValidPreparation
 			exampleValidIngredientPreparationInput := converters.ConvertValidIngredientPreparationToValidIngredientPreparationCreationRequestInput(exampleValidIngredientPreparation)
 			createdValidIngredientPreparation, err := testClients.admin.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
 			require.NoError(t, err)
-			t.Logf("valid ingredient preparation %q created", createdValidIngredientPreparation.ID)
 
 			checkValidIngredientPreparationEquality(t, exampleValidIngredientPreparation, createdValidIngredientPreparation)
 
@@ -73,14 +67,12 @@ func (s *TestSuite) TestValidIngredientPreparations_CompleteLifecycle() {
 
 			checkValidIngredientPreparationEquality(t, exampleValidIngredientPreparation, createdValidIngredientPreparation)
 
-			t.Log("changing valid ingredient preparation")
 			newValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
 			newValidIngredientPreparation.Ingredient = *createdValidIngredient
 			newValidIngredientPreparation.Preparation = *createdValidPreparation
 			createdValidIngredientPreparation.Update(converters.ConvertValidIngredientPreparationToValidIngredientPreparationUpdateRequestInput(newValidIngredientPreparation))
 			assert.NoError(t, testClients.admin.UpdateValidIngredientPreparation(ctx, createdValidIngredientPreparation))
 
-			t.Log("fetching changed valid ingredient preparation")
 			actual, err := testClients.user.GetValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
@@ -88,13 +80,10 @@ func (s *TestSuite) TestValidIngredientPreparations_CompleteLifecycle() {
 			checkValidIngredientPreparationEquality(t, newValidIngredientPreparation, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			t.Log("cleaning up valid ingredient preparation")
 			assert.NoError(t, testClients.admin.ArchiveValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID))
 
-			t.Log("cleaning up valid ingredient preparation")
 			assert.NoError(t, testClients.admin.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
 
-			t.Log("cleaning up valid ingredient preparation")
 			assert.NoError(t, testClients.admin.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
 		}
 	})
@@ -108,15 +97,12 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating valid ingredient preparations")
 			var expected []*types.ValidIngredientPreparation
 			for i := 0; i < 5; i++ {
-				t.Log("creating prerequisite valid preparation")
 				exampleValidPreparation := fakes.BuildFakeValidPreparation()
 				exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
 				createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 				require.NoError(t, err)
-				t.Logf("valid preparation %q created", createdValidPreparation.ID)
 
 				checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
@@ -124,7 +110,6 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing() {
 				requireNotNilAndNoProblems(t, createdValidPreparation, err)
 				checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
-				t.Log("creating prerequisite valid ingredient")
 				exampleValidIngredient := fakes.BuildFakeValidIngredient()
 				exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
 				createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
@@ -135,7 +120,6 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing() {
 				createdValidIngredient, err = testClients.user.GetValidIngredient(ctx, createdValidIngredient.ID)
 				requireNotNilAndNoProblems(t, createdValidIngredient, err)
 				checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
-				t.Logf("valid ingredient %q created", createdValidIngredient.ID)
 
 				exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
 				exampleValidIngredientPreparation.Ingredient = *createdValidIngredient
@@ -163,7 +147,6 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing() {
 				len(actual.Data),
 			)
 
-			t.Log("cleaning up")
 			for _, createdValidIngredientPreparation := range expected {
 				assert.NoError(t, testClients.admin.ArchiveValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID))
 			}
@@ -179,12 +162,10 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing_ByValues() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating prerequisite valid preparation")
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
 			exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
 			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 			require.NoError(t, err)
-			t.Logf("valid preparation %q created", createdValidPreparation.ID)
 
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
@@ -192,7 +173,6 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing_ByValues() {
 			requireNotNilAndNoProblems(t, createdValidPreparation, err)
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
-			t.Log("creating prerequisite valid ingredient")
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
 			exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
 			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
@@ -203,16 +183,13 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing_ByValues() {
 			createdValidIngredient, err = testClients.user.GetValidIngredient(ctx, createdValidIngredient.ID)
 			requireNotNilAndNoProblems(t, createdValidIngredient, err)
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
-			t.Logf("valid ingredient %q created", createdValidIngredient.ID)
 
-			t.Log("creating valid ingredient preparation")
 			exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
 			exampleValidIngredientPreparation.Ingredient = *createdValidIngredient
 			exampleValidIngredientPreparation.Preparation = *createdValidPreparation
 			exampleValidIngredientPreparationInput := converters.ConvertValidIngredientPreparationToValidIngredientPreparationCreationRequestInput(exampleValidIngredientPreparation)
 			createdValidIngredientPreparation, err := testClients.admin.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
 			require.NoError(t, err)
-			t.Logf("valid ingredient preparation %q created", createdValidIngredientPreparation.ID)
 
 			checkValidIngredientPreparationEquality(t, exampleValidIngredientPreparation, createdValidIngredientPreparation)
 
@@ -228,13 +205,10 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing_ByValues() {
 			require.Len(t, validIngredientMeasurementUnitsForValidMeasurementUnit.Data, 1)
 			assert.Equal(t, validIngredientMeasurementUnitsForValidMeasurementUnit.Data[0].ID, createdValidIngredientPreparation.ID)
 
-			t.Log("cleaning up valid ingredient preparation")
 			assert.NoError(t, testClients.admin.ArchiveValidIngredientPreparation(ctx, createdValidIngredientPreparation.ID))
 
-			t.Log("cleaning up valid ingredient")
 			assert.NoError(t, testClients.admin.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
 
-			t.Log("cleaning up valid preparation")
 			assert.NoError(t, testClients.admin.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
 		}
 	})
@@ -246,12 +220,10 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing_ByValues() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating prerequisite valid preparation")
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
 			exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
 			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 			require.NoError(t, err)
-			t.Logf("valid preparation %q created", createdValidPreparation.ID)
 
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
@@ -265,7 +237,6 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing_ByValues() {
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
 			originalName := exampleValidIngredient.Name
 			for i := 0; i < 5; i++ {
-				t.Log("creating prerequisite valid ingredients")
 				exampleValidIngredient.Name = fmt.Sprintf("%s #%d", originalName, i)
 				exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
 				createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
@@ -276,16 +247,13 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing_ByValues() {
 				createdValidIngredient, err = testClients.user.GetValidIngredient(ctx, createdValidIngredient.ID)
 				requireNotNilAndNoProblems(t, createdValidIngredient, err)
 				checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
-				t.Logf("valid ingredient %q created", createdValidIngredient.ID)
 
-				t.Log("creating valid ingredient preparation")
 				exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
 				exampleValidIngredientPreparation.Ingredient = *createdValidIngredient
 				exampleValidIngredientPreparation.Preparation = *createdValidPreparation
 				exampleValidIngredientPreparationInput := converters.ConvertValidIngredientPreparationToValidIngredientPreparationCreationRequestInput(exampleValidIngredientPreparation)
 				createdValidIngredientPreparation, err := testClients.admin.CreateValidIngredientPreparation(ctx, exampleValidIngredientPreparationInput)
 				require.NoError(t, err)
-				t.Logf("valid ingredient preparation %q created", createdValidIngredientPreparation.ID)
 
 				checkValidIngredientPreparationEquality(t, exampleValidIngredientPreparation, createdValidIngredientPreparation)
 
@@ -300,16 +268,13 @@ func (s *TestSuite) TestValidIngredientPreparations_Listing_ByValues() {
 			assert.Equal(t, len(validIngredientMeasurementUnitsForValidIngredient.Data), len(createdValidIngredients))
 
 			for _, createdValidIngredientsPreparation := range createdValidIngredientPreparations {
-				t.Log("cleaning up valid ingredient preparation")
 				assert.NoError(t, testClients.admin.ArchiveValidIngredientPreparation(ctx, createdValidIngredientsPreparation.ID))
 			}
 
 			for _, createdValidIngredient := range createdValidIngredients {
-				t.Log("cleaning up valid ingredient")
 				assert.NoError(t, testClients.admin.ArchiveValidIngredient(ctx, createdValidIngredient.ID))
 			}
 
-			t.Log("cleaning up valid preparation")
 			assert.NoError(t, testClients.admin.ArchiveValidPreparation(ctx, createdValidPreparation.ID))
 		}
 	})

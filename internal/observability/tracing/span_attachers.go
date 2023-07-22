@@ -16,30 +16,30 @@ import (
 )
 
 // AttachIntToSpan attaches an int to a span.
-func AttachIntToSpan(span trace.Span, attachmentKey string, id int) {
+func AttachIntToSpan(span trace.Span, attachmentKey string, x int) {
 	if span != nil {
-		span.SetAttributes(attribute.Int64(attachmentKey, int64(id)))
+		span.SetAttributes(attribute.Int64(attachmentKey, int64(x)))
 	}
 }
 
 // AttachUint8ToSpan attaches a uint8 to a span.
-func AttachUint8ToSpan(span trace.Span, attachmentKey string, id uint8) {
+func AttachUint8ToSpan(span trace.Span, attachmentKey string, x uint8) {
 	if span != nil {
-		span.SetAttributes(attribute.Int64(attachmentKey, int64(id)))
+		span.SetAttributes(attribute.Int64(attachmentKey, int64(x)))
 	}
 }
 
 // AttachUint16ToSpan attaches a uint16 to a span.
-func AttachUint16ToSpan(span trace.Span, attachmentKey string, id uint16) {
+func AttachUint16ToSpan(span trace.Span, attachmentKey string, x uint16) {
 	if span != nil {
-		span.SetAttributes(attribute.Int64(attachmentKey, int64(id)))
+		span.SetAttributes(attribute.Int64(attachmentKey, int64(x)))
 	}
 }
 
 // AttachUint64ToSpan attaches a uint64 to a span.
-func AttachUint64ToSpan(span trace.Span, attachmentKey string, id uint64) {
+func AttachUint64ToSpan(span trace.Span, attachmentKey string, x uint64) {
 	if span != nil {
-		span.SetAttributes(attribute.Int64(attachmentKey, int64(id)))
+		span.SetAttributes(attribute.Int64(attachmentKey, int64(x)))
 	}
 }
 
@@ -90,28 +90,28 @@ func AttachEmailAddressToSpan(span trace.Span, emailAddress string) {
 }
 
 // AttachHouseholdIDToSpan provides a consistent way to attach a household's ID to a span.
-func AttachHouseholdIDToSpan(span trace.Span, householdID string) {
-	AttachStringToSpan(span, keys.HouseholdIDKey, householdID)
+func AttachHouseholdIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.HouseholdIDKey, id)
 }
 
 // AttachHouseholdInvitationIDToSpan provides a consistent way to attach a household's ID to a span.
-func AttachHouseholdInvitationIDToSpan(span trace.Span, householdInvitationID string) {
-	AttachStringToSpan(span, keys.HouseholdInvitationIDKey, householdInvitationID)
+func AttachHouseholdInvitationIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.HouseholdInvitationIDKey, id)
 }
 
 // AttachHouseholdInvitationTokenToSpan provides a consistent way to attach a household's ID to a span.
-func AttachHouseholdInvitationTokenToSpan(span trace.Span, householdInvitationTokenID string) {
-	AttachStringToSpan(span, keys.HouseholdInvitationTokenKey, householdInvitationTokenID)
+func AttachHouseholdInvitationTokenToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.HouseholdInvitationTokenKey, id)
 }
 
 // AttachActiveHouseholdIDToSpan provides a consistent way to attach a household's ID to a span.
-func AttachActiveHouseholdIDToSpan(span trace.Span, householdID string) {
-	AttachStringToSpan(span, keys.ActiveHouseholdIDKey, householdID)
+func AttachActiveHouseholdIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.ActiveHouseholdIDKey, id)
 }
 
 // AttachRequestingUserIDToSpan provides a consistent way to attach a user's ID to a span.
-func AttachRequestingUserIDToSpan(span trace.Span, userID string) {
-	AttachStringToSpan(span, keys.RequesterIDKey, userID)
+func AttachRequestingUserIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.RequesterIDKey, id)
 }
 
 // AttachSessionContextDataToSpan provides a consistent way to attach a SessionContextData object to a span.
@@ -125,16 +125,6 @@ func AttachSessionContextDataToSpan(span trace.Span, sessionCtxData *types.Sessi
 	}
 }
 
-// AttachAPIClientDatabaseIDToSpan is a consistent way to attach an API client's database row ID to a span.
-func AttachAPIClientDatabaseIDToSpan(span trace.Span, clientID string) {
-	AttachStringToSpan(span, keys.APIClientDatabaseIDKey, clientID)
-}
-
-// AttachAPIClientClientIDToSpan is a consistent way to attach an API client's ID to a span.
-func AttachAPIClientClientIDToSpan(span trace.Span, clientID string) {
-	AttachStringToSpan(span, keys.APIClientClientIDKey, clientID)
-}
-
 // AttachUserToSpan provides a consistent way to attach a user to a span.
 func AttachUserToSpan(span trace.Span, user *types.User) {
 	if user != nil {
@@ -144,8 +134,8 @@ func AttachUserToSpan(span trace.Span, user *types.User) {
 }
 
 // AttachUserIDToSpan provides a consistent way to attach a user's ID to a span.
-func AttachUserIDToSpan(span trace.Span, userID string) {
-	AttachStringToSpan(span, keys.UserIDKey, userID)
+func AttachUserIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.UserIDKey, id)
 }
 
 // AttachUsernameToSpan provides a consistent way to attach a user's username to a span.
@@ -154,8 +144,8 @@ func AttachUsernameToSpan(span trace.Span, username string) {
 }
 
 // AttachWebhookIDToSpan provides a consistent way to attach a webhook's ID to a span.
-func AttachWebhookIDToSpan(span trace.Span, webhookID string) {
-	AttachStringToSpan(span, keys.WebhookIDKey, webhookID)
+func AttachWebhookIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.WebhookIDKey, id)
 }
 
 // AttachURLToSpan attaches a given URI to a span.
@@ -270,161 +260,191 @@ func AttachUserAgentDataToSpan(span trace.Span, req *http.Request) {
 }
 
 // AttachValidInstrumentIDToSpan attaches a valid instrument ID to a given span.
-func AttachValidInstrumentIDToSpan(span trace.Span, validInstrumentID string) {
-	AttachStringToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
+func AttachValidInstrumentIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.ValidInstrumentIDKey, id)
+}
+
+// AttachValidVesselIDToSpan attaches a valid vessel ID to a given span.
+func AttachValidVesselIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.ValidVesselIDKey, id)
 }
 
 // AttachValidIngredientIDToSpan attaches a valid ingredient ID to a given span.
-func AttachValidIngredientIDToSpan(span trace.Span, validIngredientID string) {
-	AttachStringToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
+func AttachValidIngredientIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.ValidIngredientIDKey, id)
 }
 
 // AttachValidIngredientGroupIDToSpan attaches a valid ingredient group ID to a given span.
-func AttachValidIngredientGroupIDToSpan(span trace.Span, validIngredientGroupID string) {
-	AttachStringToSpan(span, keys.ValidIngredientGroupIDKey, validIngredientGroupID)
+func AttachValidIngredientGroupIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.ValidIngredientGroupIDKey, id)
 }
 
 // AttachValidPreparationIDToSpan attaches a valid preparation ID to a given span.
-func AttachValidPreparationIDToSpan(span trace.Span, validPreparationID string) {
-	AttachStringToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
+func AttachValidPreparationIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.ValidPreparationIDKey, id)
 }
 
 // AttachValidIngredientPreparationIDToSpan attaches a valid ingredient preparation ID to a given span.
-func AttachValidIngredientPreparationIDToSpan(span trace.Span, validIngredientPreparationID string) {
-	AttachStringToSpan(span, keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
+func AttachValidIngredientPreparationIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.ValidIngredientPreparationIDKey, id)
 }
 
 // AttachValidIngredientStateIngredientIDToSpan attaches a valid ingredient state ingredient ID to a given span.
-func AttachValidIngredientStateIngredientIDToSpan(span trace.Span, validIngredientStateIngredientID string) {
-	AttachStringToSpan(span, keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
+func AttachValidIngredientStateIngredientIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.ValidIngredientStateIngredientIDKey, id)
 }
 
 // AttachValidPreparationInstrumentIDToSpan attaches a valid preparation instrument ID to a given span.
-func AttachValidPreparationInstrumentIDToSpan(span trace.Span, validPreparationInstrumentID string) {
-	AttachStringToSpan(span, keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
+func AttachValidPreparationInstrumentIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.ValidPreparationInstrumentIDKey, id)
 }
 
 // AttachValidIngredientMeasurementUnitIDToSpan attaches a valid ingredient measurement unit ID to a given span.
-func AttachValidIngredientMeasurementUnitIDToSpan(span trace.Span, validIngredientMeasurementUnitID string) {
-	AttachStringToSpan(span, keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
+func AttachValidIngredientMeasurementUnitIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.ValidIngredientMeasurementUnitIDKey, id)
 }
 
 // AttachMealIDToSpan attaches a recipe ID to a given span.
-func AttachMealIDToSpan(span trace.Span, mealID string) {
-	AttachStringToSpan(span, keys.MealIDKey, mealID)
+func AttachMealIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.MealIDKey, id)
 }
 
 // AttachRecipeIDToSpan attaches a recipe ID to a given span.
-func AttachRecipeIDToSpan(span trace.Span, recipeID string) {
-	AttachStringToSpan(span, keys.RecipeIDKey, recipeID)
+func AttachRecipeIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.RecipeIDKey, id)
 }
 
 // AttachRecipePrepTaskIDToSpan attaches a recipe prep task ID to a given span.
-func AttachRecipePrepTaskIDToSpan(span trace.Span, recipePrepTaskID string) {
-	AttachStringToSpan(span, keys.RecipePrepTaskIDKey, recipePrepTaskID)
+func AttachRecipePrepTaskIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.RecipePrepTaskIDKey, id)
 }
 
 // AttachValidIngredientStateIDToSpan attaches a valid ingredient state ID to a given span.
-func AttachValidIngredientStateIDToSpan(span trace.Span, validIngredientStateID string) {
-	AttachStringToSpan(span, keys.ValidIngredientStateIDKey, validIngredientStateID)
+func AttachValidIngredientStateIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.ValidIngredientStateIDKey, id)
 }
 
 // AttachRecipeStepIDToSpan attaches a recipe step ID to a given span.
-func AttachRecipeStepIDToSpan(span trace.Span, recipeStepID string) {
-	AttachStringToSpan(span, keys.RecipeStepIDKey, recipeStepID)
+func AttachRecipeStepIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.RecipeStepIDKey, id)
 }
 
 // AttachRecipeStepInstrumentIDToSpan attaches a recipe step instrument ID to a given span.
-func AttachRecipeStepInstrumentIDToSpan(span trace.Span, recipeStepInstrumentID string) {
-	AttachStringToSpan(span, keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
+func AttachRecipeStepInstrumentIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.RecipeStepInstrumentIDKey, id)
 }
 
 // AttachRecipeStepVesselIDToSpan attaches a recipe step vessel ID to a given span.
-func AttachRecipeStepVesselIDToSpan(span trace.Span, recipeStepVesselID string) {
-	AttachStringToSpan(span, keys.RecipeStepVesselIDKey, recipeStepVesselID)
+func AttachRecipeStepVesselIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.RecipeStepVesselIDKey, id)
 }
 
 // AttachRecipeStepIngredientIDToSpan attaches a recipe step ingredient ID to a given span.
-func AttachRecipeStepIngredientIDToSpan(span trace.Span, recipeStepIngredientID string) {
-	AttachStringToSpan(span, keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
+func AttachRecipeStepIngredientIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.RecipeStepIngredientIDKey, id)
 }
 
 // AttachRecipeStepCompletionConditionIDToSpan attaches a recipe step completion condition ID to a given span.
-func AttachRecipeStepCompletionConditionIDToSpan(span trace.Span, recipeStepCompletionConditionID string) {
-	AttachStringToSpan(span, keys.RecipeStepCompletionConditionIDKey, recipeStepCompletionConditionID)
+func AttachRecipeStepCompletionConditionIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.RecipeStepCompletionConditionIDKey, id)
 }
 
 // AttachRecipeStepProductIDToSpan attaches a recipe step product ID to a given span.
-func AttachRecipeStepProductIDToSpan(span trace.Span, recipeStepProductID string) {
-	AttachStringToSpan(span, keys.RecipeStepProductIDKey, recipeStepProductID)
+func AttachRecipeStepProductIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.RecipeStepProductIDKey, id)
 }
 
 // AttachMealPlanIDToSpan attaches a meal plan ID to a given span.
-func AttachMealPlanIDToSpan(span trace.Span, mealPlanID string) {
-	AttachStringToSpan(span, keys.MealPlanIDKey, mealPlanID)
+func AttachMealPlanIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.MealPlanIDKey, id)
 }
 
 // AttachMealPlanEventIDToSpan attaches a meal plan ID to a given span.
-func AttachMealPlanEventIDToSpan(span trace.Span, mealPlanEventID string) {
-	AttachStringToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
+func AttachMealPlanEventIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.MealPlanEventIDKey, id)
 }
 
 // AttachMealPlanOptionIDToSpan attaches a meal plan option ID to a given span.
-func AttachMealPlanOptionIDToSpan(span trace.Span, mealPlanOptionID string) {
-	AttachStringToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
+func AttachMealPlanOptionIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.MealPlanOptionIDKey, id)
 }
 
 // AttachMealPlanOptionVoteIDToSpan attaches a meal plan option vote ID to a given span.
-func AttachMealPlanOptionVoteIDToSpan(span trace.Span, mealPlanOptionVoteID string) {
-	AttachStringToSpan(span, keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
+func AttachMealPlanOptionVoteIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.MealPlanOptionVoteIDKey, id)
 }
 
 // AttachPasswordResetTokenIDToSpan attaches a password reset token ID to a given span.
-func AttachPasswordResetTokenIDToSpan(span trace.Span, passwordResetTokenID string) {
-	AttachStringToSpan(span, keys.PasswordResetTokenIDKey, passwordResetTokenID)
+func AttachPasswordResetTokenIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.PasswordResetTokenIDKey, id)
 }
 
 // AttachPasswordResetTokenToSpan attaches a password reset token to a given span.
-func AttachPasswordResetTokenToSpan(span trace.Span, passwordResetToken string) {
-	AttachStringToSpan(span, keys.PasswordResetTokenIDKey, passwordResetToken)
+func AttachPasswordResetTokenToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.PasswordResetTokenIDKey, id)
 }
 
 // AttachValidMeasurementUnitIDToSpan attaches a valid measurement unit ID to a given span.
-func AttachValidMeasurementUnitIDToSpan(span trace.Span, validMeasurementUnitID string) {
-	AttachStringToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
+func AttachValidMeasurementUnitIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.ValidMeasurementUnitIDKey, id)
 }
 
 // AttachMealPlanTaskIDToSpan attaches a meal plan task ID to a given span.
-func AttachMealPlanTaskIDToSpan(span trace.Span, mealPlanTaskID string) {
-	AttachStringToSpan(span, keys.MealPlanTaskIDKey, mealPlanTaskID)
+func AttachMealPlanTaskIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.MealPlanTaskIDKey, id)
 }
 
 // AttachMealPlanGroceryListItemIDToSpan attaches a meal plan task ID to a given span.
-func AttachMealPlanGroceryListItemIDToSpan(span trace.Span, mealPlanGroceryListItemID string) {
-	AttachStringToSpan(span, keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
+func AttachMealPlanGroceryListItemIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.MealPlanGroceryListItemIDKey, id)
 }
 
 // AttachValidMeasurementConversionIDToSpan attaches a valid measurement conversion ID to a given span.
-func AttachValidMeasurementConversionIDToSpan(span trace.Span, validMeasurementConversionID string) {
-	AttachStringToSpan(span, keys.ValidMeasurementConversionIDKey, validMeasurementConversionID)
+func AttachValidMeasurementConversionIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.ValidMeasurementConversionIDKey, id)
 }
 
 // AttachRecipeMediaIDToSpan attaches a recipe media ID to a given span.
-func AttachRecipeMediaIDToSpan(span trace.Span, recipeMediaID string) {
-	AttachStringToSpan(span, keys.RecipeMediaIDKey, recipeMediaID)
+func AttachRecipeMediaIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.RecipeMediaIDKey, id)
 }
 
 // AttachServiceSettingIDToSpan attaches a service setting ID to a given span.
-func AttachServiceSettingIDToSpan(span trace.Span, serviceSettingID string) {
-	AttachStringToSpan(span, keys.ServiceSettingIDKey, serviceSettingID)
+func AttachServiceSettingIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.ServiceSettingIDKey, id)
 }
 
 // AttachServiceSettingNameToSpan attaches a service setting name to a given span.
-func AttachServiceSettingNameToSpan(span trace.Span, serviceSettingName string) {
-	AttachStringToSpan(span, keys.ServiceSettingNameKey, serviceSettingName)
+func AttachServiceSettingNameToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.ServiceSettingNameKey, id)
 }
 
 // AttachServiceSettingConfigurationIDToSpan attaches a service setting configuration ID to a given span.
-func AttachServiceSettingConfigurationIDToSpan(span trace.Span, serviceSettingConfigurationID string) {
-	AttachStringToSpan(span, keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
+func AttachServiceSettingConfigurationIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.ServiceSettingConfigurationIDKey, id)
+}
+
+// AttachUserIngredientPreferenceIDToSpan attaches a user ingredient preference ID to a given span.
+func AttachUserIngredientPreferenceIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.UserIngredientPreferenceIDKey, id)
+}
+
+// AttachHouseholdInstrumentOwnershipIDToSpan attaches a household instrument ownership ID to a given span.
+func AttachHouseholdInstrumentOwnershipIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, id)
+}
+
+// AttachRecipeRatingIDToSpan attaches a recipe rating ID to a given span.
+func AttachRecipeRatingIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.RecipeRatingIDKey, id)
+}
+
+// AttachOAuth2ClientIDToSpan attaches a recipe rating ID to a given span.
+func AttachOAuth2ClientIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.OAuth2ClientIDKey, id)
+}
+
+// AttachValidPreparationVesselIDToSpan attaches a valid preparation vessel ID to a given span.
+func AttachValidPreparationVesselIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.ValidPreparationVesselIDKey, id)
 }

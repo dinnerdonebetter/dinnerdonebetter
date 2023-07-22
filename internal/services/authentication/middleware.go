@@ -1,69 +1,17 @@
 package authentication
 
 import (
-	"bytes"
 	"context"
-	"encoding/base64"
-	"encoding/gob"
 	"errors"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-
-	"github.com/o1egl/paseto"
 )
-
-const (
-	signatureHeaderKey           = "Signature"
-	pasetoAuthorizationHeaderKey = "Authorization"
-)
-
-var (
-	errTokenExpired  = errors.New("token expired")
-	errTokenNotFound = errors.New("no token data found")
-)
-
-func (s *service) fetchSessionContextDataFromPASETO(ctx context.Context, req *http.Request) (*types.SessionContextData, error) {
-	_, span := s.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := s.logger.WithRequest(req)
-
-	if rawToken := req.Header.Get(pasetoAuthorizationHeaderKey); rawToken != "" {
-		var token paseto.JSONToken
-
-		if err := paseto.NewV2().Decrypt(rawToken, s.config.PASETO.LocalModeKey, &token, nil); err != nil {
-			return nil, observability.PrepareError(err, span, "decrypting PASETO")
-		}
-
-		if time.Now().UTC().After(token.Expiration) {
-			return nil, errTokenExpired
-		}
-
-		base64Encoded := token.Get(pasetoDataKey)
-		gobEncoded, err := base64.RawURLEncoding.DecodeString(base64Encoded)
-		if err != nil {
-			return nil, observability.PrepareError(err, span, "decoding base64 encoded GOB payload")
-		}
-
-		var reqContext *types.SessionContextData
-		if err = gob.NewDecoder(bytes.NewReader(gobEncoded)).Decode(&reqContext); err != nil {
-			return nil, observability.PrepareError(err, span, "decoding GOB encoded session info payload")
-		}
-
-		logger.Debug("fetched context from PASETO")
-
-		return reqContext, nil
-	}
-
-	return nil, errTokenNotFound
-}
 
 // CookieRequirementMiddleware requires every request have a valid cookie.
 func (s *service) CookieRequirementMiddleware(next http.Handler) http.Handler {
@@ -121,15 +69,26 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		tokenSessionContextData, err := s.fetchSessionContextDataFromPASETO(ctx, req)
-		if err != nil && !(errors.Is(err, errTokenNotFound) || errors.Is(err, errTokenExpired)) {
-			observability.AcknowledgeError(err, logger, span, "extracting token from request")
+		// validate bearer token.
+		token, err := s.oauth2Server.ValidationBearerToken(req)
+		if err != nil {
+			s.logger.Error(err, "determining user ID")
 		}
 
-		if tokenSessionContextData != nil {
-			// no need to fetch info since tokens are so short-lived.
-			next.ServeHTTP(res, req.WithContext(context.WithValue(ctx, types.SessionContextDataKey, tokenSessionContextData)))
-			return
+		if token != nil {
+			if userID := token.GetUserID(); userID != "" {
+				sessionCtxData, sessionCtxDataErr := s.householdMembershipManager.BuildSessionContextDataForUser(ctx, userID)
+				if sessionCtxDataErr != nil {
+					observability.AcknowledgeError(sessionCtxDataErr, logger, span, "fetching user info for cookie")
+					s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+					return
+				}
+
+				if sessionCtxData != nil {
+					next.ServeHTTP(res, req.WithContext(context.WithValue(ctx, types.SessionContextDataKey, sessionCtxData)))
+					return
+				}
+			}
 		}
 
 		next.ServeHTTP(res, req)
@@ -178,6 +137,7 @@ func (s *service) PermissionFilterMiddleware(permissions ...authorization.Permis
 			defer span.End()
 
 			logger := s.logger.WithRequest(req)
+			logger.Debug("checking permissions in middleware")
 
 			// check for a session context data first.
 			sessionContextData, err := s.sessionContextDataFetcher(req)
@@ -189,6 +149,7 @@ func (s *service) PermissionFilterMiddleware(permissions ...authorization.Permis
 
 			logger = sessionContextData.AttachToLogger(logger)
 			isServiceAdmin := sessionContextData.Requester.ServicePermissions.IsServiceAdmin()
+			logger = logger.WithValue("is_service_admin", isServiceAdmin)
 
 			if _, allowed := sessionContextData.HouseholdPermissions[sessionContextData.ActiveHouseholdID]; !allowed && !isServiceAdmin {
 				logger.Info("not authorized for household")

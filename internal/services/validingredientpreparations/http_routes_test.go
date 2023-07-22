@@ -9,7 +9,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -41,7 +41,7 @@ func TestValidIngredientPreparationsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientPreparationDataManager.On(
+		dbManager.ValidIngredientPreparationDataManagerMock.On(
 			"CreateValidIngredientPreparation",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidIngredientPreparationDatabaseCreationInput) bool { return true }),
@@ -134,7 +134,7 @@ func TestValidIngredientPreparationsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientPreparationDataManager.On(
+		dbManager.ValidIngredientPreparationDataManagerMock.On(
 			"CreateValidIngredientPreparation",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidIngredientPreparationDatabaseCreationInput) bool { return true }),
@@ -163,7 +163,7 @@ func TestValidIngredientPreparationsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientPreparationDataManager.On(
+		dbManager.ValidIngredientPreparationDataManagerMock.On(
 			"CreateValidIngredientPreparation",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidIngredientPreparationDatabaseCreationInput) bool { return true }),
@@ -194,7 +194,7 @@ func TestValidIngredientPreparationsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManager{}
+		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManagerMock{}
 		validIngredientPreparationDataManager.On(
 			"GetValidIngredientPreparation",
 			testutils.ContextMatcher,
@@ -247,7 +247,7 @@ func TestValidIngredientPreparationsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManager{}
+		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManagerMock{}
 		validIngredientPreparationDataManager.On(
 			"GetValidIngredientPreparation",
 			testutils.ContextMatcher,
@@ -275,7 +275,7 @@ func TestValidIngredientPreparationsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManager{}
+		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManagerMock{}
 		validIngredientPreparationDataManager.On(
 			"GetValidIngredientPreparation",
 			testutils.ContextMatcher,
@@ -309,7 +309,7 @@ func TestValidIngredientPreparationsService_ListHandler(T *testing.T) {
 
 		exampleValidIngredientPreparationList := fakes.BuildFakeValidIngredientPreparationList()
 
-		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManager{}
+		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManagerMock{}
 		validIngredientPreparationDataManager.On(
 			"GetValidIngredientPreparations",
 			testutils.ContextMatcher,
@@ -362,7 +362,7 @@ func TestValidIngredientPreparationsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManager{}
+		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManagerMock{}
 		validIngredientPreparationDataManager.On(
 			"GetValidIngredientPreparations",
 			testutils.ContextMatcher,
@@ -391,7 +391,7 @@ func TestValidIngredientPreparationsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManager{}
+		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManagerMock{}
 		validIngredientPreparationDataManager.On(
 			"GetValidIngredientPreparations",
 			testutils.ContextMatcher,
@@ -433,13 +433,13 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientPreparationDataManager.On(
+		dbManager.ValidIngredientPreparationDataManagerMock.On(
 			"GetValidIngredientPreparation",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientPreparation.ID,
 		).Return(helper.exampleValidIngredientPreparation, nil)
 
-		dbManager.ValidIngredientPreparationDataManager.On(
+		dbManager.ValidIngredientPreparationDataManagerMock.On(
 			"UpdateValidIngredientPreparation",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientPreparation,
@@ -521,7 +521,7 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManager{}
+		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManagerMock{}
 		validIngredientPreparationDataManager.On(
 			"GetValidIngredientPreparation",
 			testutils.ContextMatcher,
@@ -550,7 +550,7 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManager{}
+		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManagerMock{}
 		validIngredientPreparationDataManager.On(
 			"GetValidIngredientPreparation",
 			testutils.ContextMatcher,
@@ -580,13 +580,13 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientPreparationDataManager.On(
+		dbManager.ValidIngredientPreparationDataManagerMock.On(
 			"GetValidIngredientPreparation",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientPreparation.ID,
 		).Return(helper.exampleValidIngredientPreparation, nil)
 
-		dbManager.ValidIngredientPreparationDataManager.On(
+		dbManager.ValidIngredientPreparationDataManagerMock.On(
 			"UpdateValidIngredientPreparation",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientPreparation,
@@ -615,13 +615,13 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientPreparationDataManager.On(
+		dbManager.ValidIngredientPreparationDataManagerMock.On(
 			"GetValidIngredientPreparation",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientPreparation.ID,
 		).Return(helper.exampleValidIngredientPreparation, nil)
 
-		dbManager.ValidIngredientPreparationDataManager.On(
+		dbManager.ValidIngredientPreparationDataManagerMock.On(
 			"UpdateValidIngredientPreparation",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientPreparation,
@@ -653,13 +653,13 @@ func TestValidIngredientPreparationsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientPreparationDataManager.On(
+		dbManager.ValidIngredientPreparationDataManagerMock.On(
 			"ValidIngredientPreparationExists",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientPreparation.ID,
 		).Return(true, nil)
 
-		dbManager.ValidIngredientPreparationDataManager.On(
+		dbManager.ValidIngredientPreparationDataManagerMock.On(
 			"ArchiveValidIngredientPreparation",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientPreparation.ID,
@@ -710,7 +710,7 @@ func TestValidIngredientPreparationsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManager{}
+		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManagerMock{}
 		validIngredientPreparationDataManager.On(
 			"ValidIngredientPreparationExists",
 			testutils.ContextMatcher,
@@ -738,7 +738,7 @@ func TestValidIngredientPreparationsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManager{}
+		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManagerMock{}
 		validIngredientPreparationDataManager.On(
 			"ValidIngredientPreparationExists",
 			testutils.ContextMatcher,
@@ -759,13 +759,13 @@ func TestValidIngredientPreparationsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientPreparationDataManager.On(
+		dbManager.ValidIngredientPreparationDataManagerMock.On(
 			"ValidIngredientPreparationExists",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientPreparation.ID,
 		).Return(true, nil)
 
-		dbManager.ValidIngredientPreparationDataManager.On(
+		dbManager.ValidIngredientPreparationDataManagerMock.On(
 			"ArchiveValidIngredientPreparation",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientPreparation.ID,
@@ -785,13 +785,13 @@ func TestValidIngredientPreparationsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidIngredientPreparationDataManager.On(
+		dbManager.ValidIngredientPreparationDataManagerMock.On(
 			"ValidIngredientPreparationExists",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientPreparation.ID,
 		).Return(true, nil)
 
-		dbManager.ValidIngredientPreparationDataManager.On(
+		dbManager.ValidIngredientPreparationDataManagerMock.On(
 			"ArchiveValidIngredientPreparation",
 			testutils.ContextMatcher,
 			helper.exampleValidIngredientPreparation.ID,
@@ -824,7 +824,7 @@ func TestValidIngredientPreparationsService_SearchByIngredientHandler(T *testing
 
 		exampleResponse := fakes.BuildFakeValidIngredientPreparationList()
 
-		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManager{}
+		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManagerMock{}
 		validIngredientPreparationDataManager.On(
 			"GetValidIngredientPreparationsForIngredient",
 			testutils.ContextMatcher,
@@ -869,7 +869,7 @@ func TestValidIngredientPreparationsService_SearchByIngredientHandler(T *testing
 
 		helper := buildTestHelper(t)
 
-		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManager{}
+		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManagerMock{}
 		validIngredientPreparationDataManager.On(
 			"GetValidIngredientPreparationsForIngredient",
 			testutils.ContextMatcher,
@@ -896,7 +896,7 @@ func TestValidIngredientPreparationsService_SearchByPreparationHandler(T *testin
 
 		exampleResponse := fakes.BuildFakeValidIngredientPreparationList()
 
-		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManager{}
+		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManagerMock{}
 		validIngredientPreparationDataManager.On(
 			"GetValidIngredientPreparationsForPreparation",
 			testutils.ContextMatcher,
@@ -941,7 +941,7 @@ func TestValidIngredientPreparationsService_SearchByPreparationHandler(T *testin
 
 		helper := buildTestHelper(t)
 
-		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManager{}
+		validIngredientPreparationDataManager := &mocktypes.ValidIngredientPreparationDataManagerMock{}
 		validIngredientPreparationDataManager.On(
 			"GetValidIngredientPreparationsForPreparation",
 			testutils.ContextMatcher,

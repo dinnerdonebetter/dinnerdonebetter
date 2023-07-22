@@ -11,6 +11,39 @@ import (
 	"github.com/GuiaBolso/darwin"
 )
 
+func fetchMigration(name string) string {
+	file, err := rawMigrations.ReadFile(fmt.Sprintf("migrations/%s.sql", name))
+	if err != nil {
+		panic(err)
+	}
+
+	return string(file)
+}
+
+// BuildMigrationFunc returns a sync.Once compatible function closure that will migrate a postgres database.
+func (q *Querier) migrationFunc() {
+	driver := darwin.NewGenericDriver(q.db, darwin.PostgresDialect{})
+	if err := darwin.New(driver, migrations, nil).Migrate(); err != nil {
+		panic(fmt.Errorf("running migration: %w", err))
+	}
+}
+
+// Migrate is a simple wrapper around the core querier Migrate call.
+func (q *Querier) Migrate(ctx context.Context, waitPeriod time.Duration, maxAttempts uint64) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	q.logger.Info("migrating db")
+
+	if !q.IsReady(ctx, waitPeriod, maxAttempts) {
+		return database.ErrDatabaseNotReady
+	}
+
+	q.migrateOnce.Do(q.migrationFunc)
+
+	return nil
+}
+
 var (
 	//go:embed migrations/*.sql
 	rawMigrations embed.FS
@@ -426,38 +459,40 @@ var (
 			Description: "valid ingredient groups",
 			Script:      fetchMigration("00082_valid_ingredient_groups"),
 		},
+		{
+			Version:     83,
+			Description: "user ingredient preferences",
+			Script:      fetchMigration("00083_user_ingredient_preferences"),
+		},
+		{
+			Version:     84,
+			Description: "grab bag",
+			Script:      fetchMigration("00084_grab_bag"),
+		},
+		{
+			Version:     85,
+			Description: "new last indexed field",
+			Script:      fetchMigration("00085_new_last_indexed_field"),
+		},
+		{
+			Version:     86,
+			Description: "oauth2 clients",
+			Script:      fetchMigration("00086_oauth2_clients"),
+		},
+		{
+			Version:     87,
+			Description: "valid vessels",
+			Script:      fetchMigration("00087_valid_vessels"),
+		},
+		{
+			Version:     88,
+			Description: "nullable valid vessel measurement units",
+			Script:      fetchMigration("00088_nullable_valid_vessel_measurement_units"),
+		},
+		{
+			Version:     89,
+			Description: "valid preparation vessels",
+			Script:      fetchMigration("00089_valid_preparation_vessel_bridge"),
+		},
 	}
 )
-
-func fetchMigration(name string) string {
-	file, err := rawMigrations.ReadFile(fmt.Sprintf("migrations/%s.sql", name))
-	if err != nil {
-		panic(err)
-	}
-
-	return string(file)
-}
-
-// BuildMigrationFunc returns a sync.Once compatible function closure that will migrate a postgres database.
-func (q *Querier) migrationFunc() {
-	driver := darwin.NewGenericDriver(q.db, darwin.PostgresDialect{})
-	if err := darwin.New(driver, migrations, nil).Migrate(); err != nil {
-		panic(fmt.Errorf("running migration: %w", err))
-	}
-}
-
-// Migrate is a simple wrapper around the core querier Migrate call.
-func (q *Querier) Migrate(ctx context.Context, waitPeriod time.Duration, maxAttempts uint8) error {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	q.logger.Info("migrating db")
-
-	if !q.IsReady(ctx, waitPeriod, maxAttempts) {
-		return database.ErrDatabaseNotReady
-	}
-
-	q.migrateOnce.Do(q.migrationFunc)
-
-	return nil
-}

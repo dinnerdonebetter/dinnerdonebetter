@@ -14,8 +14,8 @@ import (
 )
 
 const (
-	// ValidPreparationInstrumentIDURIParamKey is a standard string that we'll use to refer to valid preparation instrument IDs with.
-	ValidPreparationInstrumentIDURIParamKey = "validPreparationInstrumentID"
+	// ValidPreparationVesselIDURIParamKey is a standard string that we'll use to refer to valid preparation instrument IDs with.
+	ValidPreparationVesselIDURIParamKey = "validPreparationVesselID"
 	// ValidPreparationIDURIParamKey is a standard string that we'll use to refer to valid preparation IDs with.
 	ValidPreparationIDURIParamKey = "validPreparationID"
 	// ValidInstrumentIDURIParamKey is a standard string that we'll use to refer to valid preparation IDs with.

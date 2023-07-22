@@ -41,8 +41,6 @@ type (
 		DisplayInSummaryLists          bool       `json:"displayInSummaryLists"`
 		IncludeInGeneratedInstructions bool       `json:"includeInGeneratedInstructions"`
 		UsableForStorage               bool       `json:"usableForStorage"`
-		IsVessel                       bool       `json:"isVessel"`
-		IsExclusivelyVessel            bool       `json:"isExclusivelyVessel"`
 	}
 
 	// NullableValidInstrument represents a fully nullable valid instrument.
@@ -60,8 +58,6 @@ type (
 		IncludeInGeneratedInstructions *bool
 		PluralName                     *string
 		UsableForStorage               *bool
-		IsVessel                       *bool
-		IsExclusivelyVessel            *bool
 		CreatedAt                      *time.Time
 	}
 
@@ -77,8 +73,6 @@ type (
 		DisplayInSummaryLists          bool   `json:"displayInSummaryLists"`
 		IncludeInGeneratedInstructions bool   `json:"includeInGeneratedInstructions"`
 		UsableForStorage               bool   `json:"usableForStorage"`
-		IsExclusivelyVessel            bool   `json:"isExclusivelyVessel"`
-		IsVessel                       bool   `json:"isVessel"`
 	}
 
 	// ValidInstrumentDatabaseCreationInput represents what a user could set as input for creating valid instruments.
@@ -93,8 +87,6 @@ type (
 		Slug                           string
 		DisplayInSummaryLists          bool
 		UsableForStorage               bool
-		IsVessel                       bool
-		IsExclusivelyVessel            bool
 		IncludeInGeneratedInstructions bool
 	}
 
@@ -110,8 +102,16 @@ type (
 		UsableForStorage               *bool   `json:"usableForStorage,omitempty"`
 		DisplayInSummaryLists          *bool   `json:"displayInSummaryLists,omitempty"`
 		IncludeInGeneratedInstructions *bool   `json:"includeInGeneratedInstructions,omitempty"`
-		IsVessel                       *bool   `json:"isVessel,omitempty"`
-		IsExclusivelyVessel            *bool   `json:"isExclusivelyVessel,omitempty"`
+	}
+
+	// ValidInstrumentSearchSubset represents the subset of values suitable to index for search.
+	ValidInstrumentSearchSubset struct {
+		_ struct{}
+
+		ID          string `json:"id,omitempty"`
+		Name        string `json:"name,omitempty"`
+		PluralName  string `json:"pluralName,omitempty"`
+		Description string `json:"description,omitempty"`
 	}
 
 	// ValidInstrumentDataManager describes a structure capable of storing valid instruments permanently.
@@ -123,7 +123,10 @@ type (
 		SearchForValidInstruments(ctx context.Context, query string) ([]*ValidInstrument, error)
 		CreateValidInstrument(ctx context.Context, input *ValidInstrumentDatabaseCreationInput) (*ValidInstrument, error)
 		UpdateValidInstrument(ctx context.Context, updated *ValidInstrument) error
+		MarkValidInstrumentAsIndexed(ctx context.Context, validInstrumentID string) error
 		ArchiveValidInstrument(ctx context.Context, validInstrumentID string) error
+		GetValidInstrumentIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error)
+		GetValidInstrumentsWithIDs(ctx context.Context, ids []string) ([]*ValidInstrument, error)
 	}
 
 	// ValidInstrumentDataService describes a structure capable of serving traffic related to valid instruments.
@@ -166,14 +169,6 @@ func (x *ValidInstrument) Update(input *ValidInstrumentUpdateRequestInput) {
 
 	if input.DisplayInSummaryLists != nil && *input.DisplayInSummaryLists != x.DisplayInSummaryLists {
 		x.DisplayInSummaryLists = *input.DisplayInSummaryLists
-	}
-
-	if input.IsVessel != nil && *input.IsVessel != x.IsVessel {
-		x.IsVessel = *input.IsVessel
-	}
-
-	if input.IsExclusivelyVessel != nil && *input.IsExclusivelyVessel != x.IsExclusivelyVessel {
-		x.IsExclusivelyVessel = *input.IsExclusivelyVessel
 	}
 
 	if input.IncludeInGeneratedInstructions != nil && *input.IncludeInGeneratedInstructions != x.IncludeInGeneratedInstructions {

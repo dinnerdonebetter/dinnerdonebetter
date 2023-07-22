@@ -27,6 +27,8 @@ func checkRecipeEquality(t *testing.T, expected, actual *types.Recipe) {
 	assert.Equal(t, expected.Description, actual.Description, "expected Description for recipe %s to be %v, but it was %v", expected.ID, expected.Description, actual.Description)
 	assert.Equal(t, expected.InspiredByRecipeID, actual.InspiredByRecipeID, "expected InspiredByRecipeID for recipe %s to be %v, but it was %v", expected.ID, expected.InspiredByRecipeID, actual.InspiredByRecipeID)
 	assert.Equal(t, expected.MinimumEstimatedPortions, actual.MinimumEstimatedPortions, "expected MinimumEstimatedPortions for recipe %s to be %v, but it was %v", expected.ID, expected.MinimumEstimatedPortions, actual.MinimumEstimatedPortions)
+	assert.Equal(t, expected.MaximumEstimatedPortions, actual.MaximumEstimatedPortions, "expected MaximumEstimatedPortions for recipe %s to be %v, but it was %v", expected.ID, expected.MaximumEstimatedPortions, actual.MaximumEstimatedPortions)
+	assert.Equal(t, expected.YieldsComponentType, actual.YieldsComponentType, "expected YieldsComponentType for recipe %s to be %v, but it was %v", expected.ID, expected.YieldsComponentType, actual.YieldsComponentType)
 	assert.Equal(t, expected.PortionName, actual.PortionName, "expected PortionName for recipe %s to be %v, but it was %v", expected.ID, expected.PortionName, actual.PortionName)
 	assert.Equal(t, expected.PluralPortionName, actual.PluralPortionName, "expected PluralPortionName for recipe %s to be %v, but it was %v", expected.ID, expected.PluralPortionName, actual.PluralPortionName)
 	assert.Equal(t, expected.SealOfApproval, actual.SealOfApproval, "expected SealOfApproval for recipe %s to be %v, but it was %v", expected.ID, expected.SealOfApproval, actual.SealOfApproval)
@@ -37,40 +39,15 @@ func checkRecipeEquality(t *testing.T, expected, actual *types.Recipe) {
 func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client *apiclient.Client, recipe *types.Recipe, inputFilter ...func(input *types.RecipeCreationRequestInput)) ([]*types.ValidIngredient, *types.ValidPreparation, *types.Recipe) {
 	t.Helper()
 
-	t.Log("creating prerequisite valid preparation")
 	exampleValidPreparation := fakes.BuildFakeValidPreparation()
 	exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
 	createdValidPreparation, err := adminClient.CreateValidPreparation(ctx, exampleValidPreparationInput)
 	require.NoError(t, err)
-	t.Logf("valid preparation %q created", createdValidPreparation.ID)
 
-	t.Log("creating valid measurement unit")
-	exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
-	exampleValidMeasurementUnitInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleValidMeasurementUnit)
-	createdValidMeasurementUnit, err := adminClient.CreateValidMeasurementUnit(ctx, exampleValidMeasurementUnitInput)
-	require.NoError(t, err)
-	t.Logf("valid measurement unit %q created", createdValidMeasurementUnit.ID)
-	checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
-
-	t.Log("creating valid instrument")
-	exampleValidInstrument := fakes.BuildFakeValidInstrument()
-	exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
-	createdValidInstrument, err := adminClient.CreateValidInstrument(ctx, exampleValidInstrumentInput)
-	require.NoError(t, err)
-	t.Logf("valid instrument %q created", createdValidInstrument.ID)
-	checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
-
-	t.Log("creating valid ingredient state")
-	exampleValidIngredientState := fakes.BuildFakeValidIngredientState()
-	exampleValidIngredientStateInput := converters.ConvertValidIngredientStateToValidIngredientStateCreationRequestInput(exampleValidIngredientState)
-	createdValidIngredientState, err := adminClient.CreateValidIngredientState(ctx, exampleValidIngredientStateInput)
-	require.NoError(t, err)
-	t.Logf("valid instrument %q created", createdValidIngredientState.ID)
-	checkValidIngredientStateEquality(t, createdValidIngredientState, exampleValidIngredientState)
-
-	createdValidMeasurementUnit, err = adminClient.GetValidMeasurementUnit(ctx, createdValidMeasurementUnit.ID)
-	requireNotNilAndNoProblems(t, createdValidMeasurementUnit, err)
-	checkValidMeasurementUnitEquality(t, exampleValidMeasurementUnit, createdValidMeasurementUnit)
+	createdValidMeasurementUnit := createValidMeasurementUnitForTest(t, ctx, adminClient)
+	createdValidInstrument := createValidInstrumentForTest(t, ctx, adminClient)
+	createdValidIngredientState := createValidIngredientStateForTest(t, ctx, adminClient)
+	createdValidVessel := createValidVesselForTest(t, ctx, nil, adminClient)
 
 	exampleRecipe := fakes.BuildFakeRecipe()
 	if recipe != nil {
@@ -80,7 +57,6 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 	createdValidIngredients := []*types.ValidIngredient{}
 	for i, recipeStep := range exampleRecipe.Steps {
 		for j := range recipeStep.Ingredients {
-			t.Log("creating prerequisite valid ingredient")
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
 			exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
 			createdValidIngredient, createdValidIngredientErr := adminClient.CreateValidIngredient(ctx, exampleValidIngredientInput)
@@ -101,7 +77,7 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 		}
 
 		for j := range recipeStep.Vessels {
-			recipeStep.Vessels[j].Instrument = createdValidInstrument
+			recipeStep.Vessels[j].Vessel = createdValidVessel
 		}
 
 		for j := range recipeStep.CompletionConditions {
@@ -132,10 +108,8 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 		filter(exampleRecipeInput)
 	}
 
-	t.Log("creating recipe")
 	createdRecipe, err := adminClient.CreateRecipe(ctx, exampleRecipeInput)
 	require.NoError(t, err)
-	t.Logf("recipe %q created", createdRecipe.ID)
 	checkRecipeEquality(t, exampleRecipe, createdRecipe)
 
 	createdRecipe, err = client.GetRecipe(ctx, createdRecipe.ID)
@@ -155,26 +129,20 @@ func (s *TestSuite) TestRecipes_Realistic() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating prerequisite valid preparation")
 			soakBase := fakes.BuildFakeValidPreparation()
 			soakInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(soakBase)
 			soak, err := testClients.admin.CreateValidPreparation(ctx, soakInput)
 			require.NoError(t, err)
-			t.Logf("valid preparation %q created", soak.ID)
 
-			t.Log("creating prerequisite valid preparation")
 			mixBase := fakes.BuildFakeValidPreparation()
 			mixInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(mixBase)
 			mix, err := testClients.admin.CreateValidPreparation(ctx, mixInput)
 			require.NoError(t, err)
-			t.Logf("valid preparation %q created", mix.ID)
 
-			t.Log("creating valid measurement units")
 			exampleGrams := fakes.BuildFakeValidMeasurementUnit()
 			exampleGramsInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleGrams)
 			grams, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleGramsInput)
 			require.NoError(t, err)
-			t.Logf("valid measurement unit %q created", grams.ID)
 			checkValidMeasurementUnitEquality(t, exampleGrams, grams)
 
 			grams, err = testClients.admin.GetValidMeasurementUnit(ctx, grams.ID)
@@ -185,43 +153,40 @@ func (s *TestSuite) TestRecipes_Realistic() {
 			exampleCupsInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleCups)
 			cups, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleCupsInput)
 			require.NoError(t, err)
-			t.Logf("valid measurement unit %q created", cups.ID)
 			checkValidMeasurementUnitEquality(t, exampleCups, cups)
 
 			cups, err = testClients.admin.GetValidMeasurementUnit(ctx, cups.ID)
 			requireNotNilAndNoProblems(t, cups, err)
 			checkValidMeasurementUnitEquality(t, exampleCups, cups)
 
-			t.Log("creating prerequisite valid ingredient")
 			pintoBeanBase := fakes.BuildFakeValidIngredient()
 			pintoBeanInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(pintoBeanBase)
 			pintoBeans, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, pintoBeanInput)
 			require.NoError(t, createdValidIngredientErr)
 
-			t.Log("creating prerequisite valid ingredient")
 			waterBase := fakes.BuildFakeValidIngredient()
 			waterInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(waterBase)
 			water, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, waterInput)
 			require.NoError(t, createdValidIngredientErr)
 
-			t.Log("creating prerequisite valid ingredient")
 			garlicPaste := fakes.BuildFakeValidIngredient()
 			garlicPasteInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(garlicPaste)
 			garlicPaste, garlicPasteErr := testClients.admin.CreateValidIngredient(ctx, garlicPasteInput)
 			require.NoError(t, garlicPasteErr)
 
-			t.Log("creating valid instrument")
 			exampleValidInstrument := fakes.BuildFakeValidInstrument()
 			exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
 			createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 			require.NoError(t, err)
-			t.Logf("valid instrument %q created", createdValidInstrument.ID)
 			checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
 
-			t.Log("creating recipe")
 			expected := &types.Recipe{
-				Name:        "sopa de frijol",
-				Description: "",
+				Name:                     "sopa de frijol",
+				Slug:                     "sopa-de-frijol-whatever-who-cares",
+				YieldsComponentType:      types.MealComponentTypesMain,
+				PortionName:              t.Name(),
+				PluralPortionName:        t.Name(),
+				MinimumEstimatedPortions: 1,
 				Steps: []*types.RecipeStep{
 					{
 						Products: []*types.RecipeStepProduct{
@@ -294,8 +259,13 @@ func (s *TestSuite) TestRecipes_Realistic() {
 			}
 
 			expectedInput := &types.RecipeCreationRequestInput{
-				Name:        expected.Name,
-				Description: expected.Description,
+				Name:                     expected.Name,
+				Description:              expected.Description,
+				Slug:                     expected.Slug,
+				YieldsComponentType:      expected.YieldsComponentType,
+				PortionName:              expected.PortionName,
+				PluralPortionName:        expected.PluralPortionName,
+				MinimumEstimatedPortions: expected.MinimumEstimatedPortions,
 				Steps: []*types.RecipeStepCreationRequestInput{
 					{
 						MinimumTemperatureInCelsius: expected.Steps[0].MinimumTemperatureInCelsius,
@@ -373,7 +343,6 @@ func (s *TestSuite) TestRecipes_Realistic() {
 
 			created, err := testClients.admin.CreateRecipe(ctx, expectedInput)
 			require.NoError(t, err)
-			t.Logf("recipe %q created", created.ID)
 			checkRecipeEquality(t, expected, created)
 
 			created, err = testClients.user.GetRecipe(ctx, created.ID)
@@ -404,12 +373,10 @@ func (s *TestSuite) TestRecipes_Updating() {
 
 			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
 
-			t.Log("changing recipe")
 			newRecipe := fakes.BuildFakeRecipe()
 			createdRecipe.Update(converters.ConvertRecipeToRecipeUpdateRequestInput(newRecipe))
 			assert.NoError(t, testClients.admin.UpdateRecipe(ctx, createdRecipe))
 
-			t.Log("fetching changed recipe")
 			actual, err := testClients.user.GetRecipe(ctx, createdRecipe.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
@@ -417,7 +384,6 @@ func (s *TestSuite) TestRecipes_Updating() {
 			checkRecipeEquality(t, newRecipe, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			t.Log("cleaning up recipe")
 			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
@@ -433,12 +399,10 @@ func (s *TestSuite) TestRecipes_ContentUploading() {
 
 			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
 
-			t.Log("changing recipe")
 			newRecipe := fakes.BuildFakeRecipe()
 			createdRecipe.Update(converters.ConvertRecipeToRecipeUpdateRequestInput(newRecipe))
 			assert.NoError(t, testClients.admin.UpdateRecipe(ctx, createdRecipe))
 
-			t.Log("fetching changed recipe")
 			actual, err := testClients.user.GetRecipe(ctx, createdRecipe.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
@@ -458,7 +422,6 @@ func (s *TestSuite) TestRecipes_ContentUploading() {
 
 			require.NoError(t, testClients.user.UploadRecipeMedia(ctx, files, actual.ID))
 
-			t.Log("cleaning up recipe")
 			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
@@ -493,7 +456,6 @@ func (s *TestSuite) TestRecipes_AlsoCreateMeal() {
 
 			require.NotEmpty(t, foundMealID)
 
-			t.Log("cleaning up recipe")
 			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
@@ -507,7 +469,6 @@ func (s *TestSuite) TestRecipes_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating recipes")
 			var expected []*types.Recipe
 			for i := 0; i < 5; i++ {
 				_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
@@ -526,7 +487,6 @@ func (s *TestSuite) TestRecipes_Listing() {
 				len(actual.Data),
 			)
 
-			t.Log("cleaning up")
 			for _, createdRecipe := range expected {
 				assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 			}
@@ -542,12 +502,10 @@ func (s *TestSuite) TestRecipes_Searching() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating prerequisite valid ingredient")
 			exampleValidIngredient := fakes.BuildFakeValidIngredient()
 			exampleValidIngredientInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(exampleValidIngredient)
 			createdValidIngredient, err := testClients.admin.CreateValidIngredient(ctx, exampleValidIngredientInput)
 			require.NoError(t, err)
-			t.Logf("valid ingredient %q created", createdValidIngredient.ID)
 
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
@@ -555,12 +513,10 @@ func (s *TestSuite) TestRecipes_Searching() {
 			requireNotNilAndNoProblems(t, createdValidIngredient, err)
 			checkValidIngredientEquality(t, exampleValidIngredient, createdValidIngredient)
 
-			t.Log("creating prerequisite valid preparation")
 			exampleValidPreparation := fakes.BuildFakeValidPreparation()
 			exampleValidPreparationInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(exampleValidPreparation)
 			createdValidPreparation, err := testClients.admin.CreateValidPreparation(ctx, exampleValidPreparationInput)
 			require.NoError(t, err)
-			t.Logf("valid preparation %q created", createdValidPreparation.ID)
 
 			checkValidPreparationEquality(t, exampleValidPreparation, createdValidPreparation)
 
@@ -570,7 +526,6 @@ func (s *TestSuite) TestRecipes_Searching() {
 
 			exampleRecipe := fakes.BuildFakeRecipe()
 
-			t.Log("creating recipes")
 			var expected []*types.Recipe
 			for i := 0; i < 5; i++ {
 				exampleRecipe.Name = fmt.Sprintf("example%d", i)
@@ -590,7 +545,6 @@ func (s *TestSuite) TestRecipes_Searching() {
 				len(actual.Data),
 			)
 
-			t.Log("cleaning up")
 			for _, createdRecipe := range expected {
 				assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 			}
@@ -606,51 +560,45 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating prerequisite valid preparation")
 			diceBase := fakes.BuildFakeValidPreparation()
 			diceInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(diceBase)
 			dice, err := testClients.admin.CreateValidPreparation(ctx, diceInput)
 			require.NoError(t, err)
-			t.Logf("valid preparation %q created", dice.ID)
 
-			t.Log("creating valid measurement units")
 			exampleGrams := fakes.BuildFakeValidMeasurementUnit()
 			exampleGramsInput := converters.ConvertValidMeasurementUnitToValidMeasurementUnitCreationRequestInput(exampleGrams)
 			grams, err := testClients.admin.CreateValidMeasurementUnit(ctx, exampleGramsInput)
 			require.NoError(t, err)
-			t.Logf("valid measurement unit %q created", grams.ID)
 			checkValidMeasurementUnitEquality(t, exampleGrams, grams)
 
 			grams, err = testClients.admin.GetValidMeasurementUnit(ctx, grams.ID)
 			requireNotNilAndNoProblems(t, grams, err)
 			checkValidMeasurementUnitEquality(t, exampleGrams, grams)
 
-			t.Log("creating prerequisite valid ingredient")
 			chickenBreastBase := fakes.BuildFakeValidIngredient()
 			chickenBreastInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(chickenBreastBase)
 			chickenBreastInput.MinimumIdealStorageTemperatureInCelsius = pointers.Pointer(float32(2.5))
 			chickenBreast, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, chickenBreastInput)
 			require.NoError(t, createdValidIngredientErr)
 
-			t.Log("creating valid instrument")
 			exampleValidInstrument := fakes.BuildFakeValidInstrument()
 			exampleValidInstrumentInput := converters.ConvertValidInstrumentToValidInstrumentCreationRequestInput(exampleValidInstrument)
 			createdValidInstrument, err := testClients.admin.CreateValidInstrument(ctx, exampleValidInstrumentInput)
 			require.NoError(t, err)
-			t.Logf("valid instrument %q created", createdValidInstrument.ID)
 			checkValidInstrumentEquality(t, exampleValidInstrument, createdValidInstrument)
 
-			t.Log("creating prerequisite valid preparation")
 			sauteeBase := fakes.BuildFakeValidPreparation()
 			sauteeInput := converters.ConvertValidPreparationToValidPreparationCreationRequestInput(sauteeBase)
 			sautee, err := testClients.admin.CreateValidPreparation(ctx, sauteeInput)
 			require.NoError(t, err)
-			t.Logf("valid preparation %q created", sautee.ID)
 
-			t.Log("creating recipe")
 			expected := &types.Recipe{
-				Name:        "sopa de frijol",
-				Description: "",
+				Name:                     "sopa de frijol",
+				Slug:                     "whatever-who-cares-sopa-de-frijol",
+				YieldsComponentType:      types.MealComponentTypesMain,
+				PortionName:              t.Name(),
+				PluralPortionName:        t.Name(),
+				MinimumEstimatedPortions: 1,
 				Steps: []*types.RecipeStep{
 					{
 						MinimumTemperatureInCelsius: nil,
@@ -714,8 +662,12 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 			}
 
 			expectedInput := &types.RecipeCreationRequestInput{
-				Name:        "sopa de frijol",
-				Description: "",
+				Name:                     expected.Name,
+				Slug:                     expected.Slug,
+				YieldsComponentType:      expected.YieldsComponentType,
+				PortionName:              expected.PortionName,
+				PluralPortionName:        expected.PluralPortionName,
+				MinimumEstimatedPortions: expected.MinimumEstimatedPortions,
 				Steps: []*types.RecipeStepCreationRequestInput{
 					{
 						MinimumTemperatureInCelsius: nil,
@@ -781,7 +733,6 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 
 			created, err := testClients.admin.CreateRecipe(ctx, expectedInput)
 			require.NoError(t, err)
-			t.Logf("recipe %q created", created.ID)
 			checkRecipeEquality(t, expected, created)
 
 			steps, err := testClients.user.GetMealPlanTasksForRecipe(ctx, created.ID)
@@ -802,11 +753,9 @@ func (s *TestSuite) TestRecipes_DAGGeneration() {
 
 			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
 
-			t.Log("fetching changed recipe")
 			actual, err := testClients.user.GetRecipeDAG(ctx, createdRecipe.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
-			t.Log("cleaning up recipe")
 			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})

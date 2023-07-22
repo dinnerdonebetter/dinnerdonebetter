@@ -155,9 +155,7 @@ func buildTestClientWithStatusCodeResponse(t *testing.T, spec *requestSpec, code
 	ts := httptest.NewTLSServer(http.HandlerFunc(
 		func(res http.ResponseWriter, req *http.Request) {
 			t.Helper()
-
 			assertRequestQuality(t, req, spec)
-
 			res.WriteHeader(code)
 		},
 	))
@@ -171,9 +169,7 @@ func buildTestClientWithInvalidResponse(t *testing.T, spec *requestSpec) *Client
 	ts := httptest.NewTLSServer(http.HandlerFunc(
 		func(res http.ResponseWriter, req *http.Request) {
 			t.Helper()
-
 			assertRequestQuality(t, req, spec)
-
 			require.NoError(t, json.NewEncoder(res).Encode("BLAH"))
 		},
 	))
@@ -204,9 +200,7 @@ func buildTestClientWithJSONResponse(t *testing.T, spec *requestSpec, outputBody
 	ts := httptest.NewTLSServer(http.HandlerFunc(
 		func(res http.ResponseWriter, req *http.Request) {
 			t.Helper()
-
 			assertRequestQuality(t, req, spec)
-
 			assert.NoError(t, json.NewEncoder(res).Encode(outputBody))
 		},
 	))

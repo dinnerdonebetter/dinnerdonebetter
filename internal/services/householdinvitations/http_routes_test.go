@@ -10,11 +10,11 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	mockrandom "github.com/dinnerdonebetter/backend/internal/random/mock"
+	"github.com/dinnerdonebetter/backend/internal/pkg/random/mock"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -43,7 +43,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		udm := &mocktypes.UserDataManager{}
+		udm := &mocktypes.UserDataManagerMock{}
 		udm.On(
 			"GetUserByEmail",
 			testutils.ContextMatcher,
@@ -60,7 +60,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.secretGenerator = sg
 
 		dbManager := database.NewMockDatabase()
-		dbManager.HouseholdInvitationDataManager.On(
+		dbManager.HouseholdInvitationDataManagerMock.On(
 			"CreateHouseholdInvitation",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.HouseholdInvitationDatabaseCreationInput) bool { return true }),
@@ -193,7 +193,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		).Return(t.Name(), nil)
 		helper.service.secretGenerator = sg
 
-		udm := &mocktypes.UserDataManager{}
+		udm := &mocktypes.UserDataManagerMock{}
 		udm.On(
 			"GetUserByEmail",
 			testutils.ContextMatcher,
@@ -221,7 +221,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		udm := &mocktypes.UserDataManager{}
+		udm := &mocktypes.UserDataManagerMock{}
 		udm.On(
 			"GetUserByEmail",
 			testutils.ContextMatcher,
@@ -238,7 +238,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.secretGenerator = sg
 
 		dbManager := database.NewMockDatabase()
-		dbManager.HouseholdInvitationDataManager.On(
+		dbManager.HouseholdInvitationDataManagerMock.On(
 			"CreateHouseholdInvitation",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.HouseholdInvitationDatabaseCreationInput) bool { return true }),
@@ -265,7 +265,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		udm := &mocktypes.UserDataManager{}
+		udm := &mocktypes.UserDataManagerMock{}
 		udm.On(
 			"GetUserByEmail",
 			testutils.ContextMatcher,
@@ -282,7 +282,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.secretGenerator = sg
 
 		dbManager := database.NewMockDatabase()
-		dbManager.HouseholdInvitationDataManager.On(
+		dbManager.HouseholdInvitationDataManagerMock.On(
 			"CreateHouseholdInvitation",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.HouseholdInvitationDatabaseCreationInput) bool { return true }),
@@ -317,7 +317,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		udm := &mocktypes.UserDataManager{}
+		udm := &mocktypes.UserDataManagerMock{}
 		udm.On(
 			"GetUserByEmail",
 			testutils.ContextMatcher,
@@ -334,7 +334,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.secretGenerator = sg
 
 		dbManager := database.NewMockDatabase()
-		dbManager.HouseholdInvitationDataManager.On(
+		dbManager.HouseholdInvitationDataManagerMock.On(
 			"CreateHouseholdInvitation",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.HouseholdInvitationDatabaseCreationInput) bool { return true }),
@@ -369,7 +369,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		udm := &mocktypes.UserDataManager{}
+		udm := &mocktypes.UserDataManagerMock{}
 		udm.On(
 			"GetUserByEmail",
 			testutils.ContextMatcher,
@@ -386,7 +386,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.secretGenerator = sg
 
 		dbManager := database.NewMockDatabase()
-		dbManager.HouseholdInvitationDataManager.On(
+		dbManager.HouseholdInvitationDataManagerMock.On(
 			"CreateHouseholdInvitation",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.HouseholdInvitationDatabaseCreationInput) bool { return true }),
@@ -416,7 +416,7 @@ func Test_service_ReadHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		wd := &mocktypes.HouseholdInvitationDataManager{}
+		wd := &mocktypes.HouseholdInvitationDataManagerMock{}
 		wd.On(
 			"GetHouseholdInvitationByHouseholdAndID",
 			testutils.ContextMatcher,
@@ -456,7 +456,7 @@ func Test_service_ReadHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		wd := &mocktypes.HouseholdInvitationDataManager{}
+		wd := &mocktypes.HouseholdInvitationDataManagerMock{}
 		wd.On(
 			"GetHouseholdInvitationByHouseholdAndID",
 			testutils.ContextMatcher,
@@ -484,7 +484,7 @@ func Test_service_ReadHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		wd := &mocktypes.HouseholdInvitationDataManager{}
+		wd := &mocktypes.HouseholdInvitationDataManagerMock{}
 		wd.On(
 			"GetHouseholdInvitationByHouseholdAndID",
 			testutils.ContextMatcher,
@@ -517,7 +517,7 @@ func Test_service_InboundInvitesHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		exampleHouseholdInvitations := fakes.BuildFakeHouseholdInvitationList()
 
-		wd := &mocktypes.HouseholdInvitationDataManager{}
+		wd := &mocktypes.HouseholdInvitationDataManagerMock{}
 		wd.On(
 			"GetPendingHouseholdInvitationsForUser",
 			testutils.ContextMatcher,
@@ -558,7 +558,7 @@ func Test_service_InboundInvitesHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		wd := &mocktypes.HouseholdInvitationDataManager{}
+		wd := &mocktypes.HouseholdInvitationDataManagerMock{}
 		wd.On(
 			"GetPendingHouseholdInvitationsForUser",
 			testutils.ContextMatcher,
@@ -583,7 +583,7 @@ func Test_service_OutboundInvitesHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		exampleHouseholdInvitations := fakes.BuildFakeHouseholdInvitationList()
 
-		wd := &mocktypes.HouseholdInvitationDataManager{}
+		wd := &mocktypes.HouseholdInvitationDataManagerMock{}
 		wd.On(
 			"GetPendingHouseholdInvitationsFromUser",
 			testutils.ContextMatcher,
@@ -624,7 +624,7 @@ func Test_service_OutboundInvitesHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		wd := &mocktypes.HouseholdInvitationDataManager{}
+		wd := &mocktypes.HouseholdInvitationDataManagerMock{}
 		wd.On(
 			"GetPendingHouseholdInvitationsFromUser",
 			testutils.ContextMatcher,
@@ -657,7 +657,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManager{}
+		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
 			testutils.ContextMatcher,
@@ -747,7 +747,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManager{}
+		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
 			testutils.ContextMatcher,
@@ -776,7 +776,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManager{}
+		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
 			testutils.ContextMatcher,
@@ -805,7 +805,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManager{}
+		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
 			testutils.ContextMatcher,
@@ -842,7 +842,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManager{}
+		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
 			testutils.ContextMatcher,
@@ -891,7 +891,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManager{}
+		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
 			testutils.ContextMatcher,
@@ -968,7 +968,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManager{}
+		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
 			testutils.ContextMatcher,
@@ -997,7 +997,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManager{}
+		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
 			testutils.ContextMatcher,
@@ -1038,7 +1038,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManager{}
+		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
 			testutils.ContextMatcher,
@@ -1074,7 +1074,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManager{}
+		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
 			testutils.ContextMatcher,
@@ -1122,7 +1122,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManager{}
+		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
 			testutils.ContextMatcher,
@@ -1184,7 +1184,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManager{}
+		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
 			testutils.ContextMatcher,
@@ -1213,7 +1213,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManager{}
+		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
 			testutils.ContextMatcher,
@@ -1270,7 +1270,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManager{}
+		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
 			testutils.ContextMatcher,
@@ -1306,7 +1306,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		dataManager := &mocktypes.HouseholdInvitationDataManager{}
+		dataManager := &mocktypes.HouseholdInvitationDataManagerMock{}
 		dataManager.On(
 			"GetHouseholdInvitationByTokenAndID",
 			testutils.ContextMatcher,

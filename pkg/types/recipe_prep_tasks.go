@@ -224,11 +224,7 @@ func (x *RecipePrepTaskCreationRequestInput) ValidateWithContext(ctx context.Con
 		result = multierror.Append(err, result)
 	}
 
-	if result != nil {
-		return result
-	}
-
-	return nil
+	return result.ErrorOrNil()
 }
 
 var _ validation.ValidatableWithContext = (*RecipePrepTaskDatabaseCreationInput)(nil)

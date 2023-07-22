@@ -3,8 +3,6 @@ package integration
 import (
 	"context"
 	"database/sql"
-	"encoding/base64"
-	"encoding/json"
 	"net/http"
 	"net/url"
 	"os"
@@ -48,8 +46,8 @@ func (s *TestSuite) TestLogin() {
 	})
 }
 
-func (s *TestSuite) TestLogin_WithoutBodyFails() {
-	s.Run("login request without body fails", func() {
+func (s *TestSuite) TestLogin_WithoutBodyReturnsError() {
+	s.Run("login request without body returns error", func() {
 		t := s.T()
 
 		ctx, span := tracing.StartSpan(context.Background())
@@ -173,50 +171,6 @@ func (s *TestSuite) TestCheckingAuthStatus() {
 		assert.NotZero(t, actual.ActiveHousehold)
 
 		assert.NoError(t, testClient.EndSession(ctx))
-	})
-}
-
-func (s *TestSuite) TestPASETOGeneration() {
-	s.Run("checking auth status", func() {
-		t := s.T()
-
-		ctx, span := tracing.StartCustomSpan(context.Background(), t.Name())
-		defer span.End()
-
-		user, cookie, testClient, _ := createUserAndClientForTest(ctx, t, nil)
-
-		// Create API client.
-		exampleAPIClient := fakes.BuildFakeAPIClient()
-		exampleAPIClientInput := fakes.BuildFakeAPIClientCreationInputFromClient(exampleAPIClient)
-		exampleAPIClientInput.UserLoginInput = types.UserLoginInput{
-			Username:  user.Username,
-			Password:  user.HashedPassword,
-			TOTPToken: generateTOTPTokenForUser(t, user),
-		}
-
-		createdAPIClient, apiClientCreationErr := testClient.CreateAPIClient(ctx, cookie, exampleAPIClientInput)
-		requireNotNilAndNoProblems(t, createdAPIClient, apiClientCreationErr)
-
-		actualKey, keyDecodeErr := base64.RawURLEncoding.DecodeString(createdAPIClient.ClientSecret)
-		require.NoError(t, keyDecodeErr)
-
-		input := &types.PASETOCreationInput{
-			ClientID:    createdAPIClient.ClientID,
-			RequestTime: time.Now().UTC().UnixNano(),
-		}
-
-		req, err := testClient.RequestBuilder().BuildAPIClientAuthTokenRequest(ctx, input, actualKey)
-		require.NoError(t, err)
-
-		res, err := http.DefaultClient.Do(req)
-		require.NoError(t, err)
-		require.NotNil(t, res)
-
-		var tokenRes types.PASETOResponse
-		require.NoError(t, json.NewDecoder(res.Body).Decode(&tokenRes))
-
-		assert.NotEmpty(t, tokenRes.Token)
-		assert.NotEmpty(t, tokenRes.ExpiresAt)
 	})
 }
 
@@ -365,7 +319,7 @@ func (s *TestSuite) TestLogin_RequestingPasswordReset() {
 			panic("empty database address provided")
 		}
 
-		db, err := sql.Open("postgres", dbAddr)
+		db, err := sql.Open("pgx", dbAddr)
 		if err != nil {
 			panic(err)
 		}

@@ -299,3 +299,69 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	// encode our response and peace.
 	res.WriteHeader(http.StatusNoContent)
 }
+
+// FinalizeHandler returns a handler that attempts to finalize a meal plan.
+func (s *service) FinalizeHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	// determine user ID.
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	householdID := sessionCtxData.ActiveHouseholdID
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	// determine meal plan ID.
+	mealPlanID := s.mealPlanIDFetcher(req)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+
+	// fetch meal plan from database.
+	mealPlan, err := s.mealPlanDataManager.GetMealPlan(ctx, mealPlanID, householdID)
+	if errors.Is(err, sql.ErrNoRows) {
+		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		return
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving meal plan for update")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	// update the meal plan.
+	worked, err := s.mealPlanDataManager.AttemptToFinalizeMealPlan(ctx, mealPlan.ID, householdID)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "finalizing meal plan")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	if !worked {
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "meal plan cannot be finalized", http.StatusBadRequest)
+		return
+	} else {
+		dcm := &types.DataChangeMessage{
+			EventType:   types.MealPlanFinalizedCustomerEventType,
+			MealPlan:    mealPlan,
+			HouseholdID: householdID,
+			UserID:      sessionCtxData.Requester.UserID,
+		}
+
+		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+			observability.AcknowledgeError(err, logger, span, "publishing data change message")
+		}
+
+		mealPlan.Status = string(types.MealPlanStatusFinalized)
+
+		// encode our response and peace.
+		s.encoderDecoder.RespondWithData(ctx, res, mealPlan)
+	}
+}

@@ -9,7 +9,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -41,7 +41,7 @@ func TestRecipeStepsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeStepDataManager.On(
+		dbManager.RecipeStepDataManagerMock.On(
 			"CreateRecipeStep",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.RecipeStepDatabaseCreationInput) bool { return true }),
@@ -134,7 +134,7 @@ func TestRecipeStepsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeStepDataManager.On(
+		dbManager.RecipeStepDataManagerMock.On(
 			"CreateRecipeStep",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.RecipeStepDatabaseCreationInput) bool { return true }),
@@ -163,7 +163,7 @@ func TestRecipeStepsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeStepDataManager.On(
+		dbManager.RecipeStepDataManagerMock.On(
 			"CreateRecipeStep",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.RecipeStepDatabaseCreationInput) bool { return true }),
@@ -194,7 +194,7 @@ func TestRecipeStepsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeStepDataManager := &mocktypes.RecipeStepDataManager{}
+		recipeStepDataManager := &mocktypes.RecipeStepDataManagerMock{}
 		recipeStepDataManager.On(
 			"GetRecipeStep",
 			testutils.ContextMatcher,
@@ -248,7 +248,7 @@ func TestRecipeStepsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeStepDataManager := &mocktypes.RecipeStepDataManager{}
+		recipeStepDataManager := &mocktypes.RecipeStepDataManagerMock{}
 		recipeStepDataManager.On(
 			"GetRecipeStep",
 			testutils.ContextMatcher,
@@ -277,7 +277,7 @@ func TestRecipeStepsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeStepDataManager := &mocktypes.RecipeStepDataManager{}
+		recipeStepDataManager := &mocktypes.RecipeStepDataManagerMock{}
 		recipeStepDataManager.On(
 			"GetRecipeStep",
 			testutils.ContextMatcher,
@@ -312,7 +312,7 @@ func TestRecipeStepsService_ListHandler(T *testing.T) {
 
 		exampleRecipeStepList := fakes.BuildFakeRecipeStepList()
 
-		recipeStepDataManager := &mocktypes.RecipeStepDataManager{}
+		recipeStepDataManager := &mocktypes.RecipeStepDataManagerMock{}
 		recipeStepDataManager.On(
 			"GetRecipeSteps",
 			testutils.ContextMatcher,
@@ -366,7 +366,7 @@ func TestRecipeStepsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeStepDataManager := &mocktypes.RecipeStepDataManager{}
+		recipeStepDataManager := &mocktypes.RecipeStepDataManagerMock{}
 		recipeStepDataManager.On(
 			"GetRecipeSteps",
 			testutils.ContextMatcher,
@@ -396,7 +396,7 @@ func TestRecipeStepsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeStepDataManager := &mocktypes.RecipeStepDataManager{}
+		recipeStepDataManager := &mocktypes.RecipeStepDataManagerMock{}
 		recipeStepDataManager.On(
 			"GetRecipeSteps",
 			testutils.ContextMatcher,
@@ -439,14 +439,14 @@ func TestRecipeStepsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeStepDataManager.On(
+		dbManager.RecipeStepDataManagerMock.On(
 			"GetRecipeStep",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
 		).Return(helper.exampleRecipeStep, nil)
 
-		dbManager.RecipeStepDataManager.On(
+		dbManager.RecipeStepDataManagerMock.On(
 			"UpdateRecipeStep",
 			testutils.ContextMatcher,
 			helper.exampleRecipeStep,
@@ -528,7 +528,7 @@ func TestRecipeStepsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		recipeStepDataManager := &mocktypes.RecipeStepDataManager{}
+		recipeStepDataManager := &mocktypes.RecipeStepDataManagerMock{}
 		recipeStepDataManager.On(
 			"GetRecipeStep",
 			testutils.ContextMatcher,
@@ -558,7 +558,7 @@ func TestRecipeStepsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		recipeStepDataManager := &mocktypes.RecipeStepDataManager{}
+		recipeStepDataManager := &mocktypes.RecipeStepDataManagerMock{}
 		recipeStepDataManager.On(
 			"GetRecipeStep",
 			testutils.ContextMatcher,
@@ -589,14 +589,14 @@ func TestRecipeStepsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeStepDataManager.On(
+		dbManager.RecipeStepDataManagerMock.On(
 			"GetRecipeStep",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
 		).Return(helper.exampleRecipeStep, nil)
 
-		dbManager.RecipeStepDataManager.On(
+		dbManager.RecipeStepDataManagerMock.On(
 			"UpdateRecipeStep",
 			testutils.ContextMatcher,
 			helper.exampleRecipeStep,
@@ -625,14 +625,14 @@ func TestRecipeStepsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeStepDataManager.On(
+		dbManager.RecipeStepDataManagerMock.On(
 			"GetRecipeStep",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
 		).Return(helper.exampleRecipeStep, nil)
 
-		dbManager.RecipeStepDataManager.On(
+		dbManager.RecipeStepDataManagerMock.On(
 			"UpdateRecipeStep",
 			testutils.ContextMatcher,
 			helper.exampleRecipeStep,
@@ -664,14 +664,14 @@ func TestRecipeStepsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeStepDataManager.On(
+		dbManager.RecipeStepDataManagerMock.On(
 			"RecipeStepExists",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
 		).Return(true, nil)
 
-		dbManager.RecipeStepDataManager.On(
+		dbManager.RecipeStepDataManagerMock.On(
 			"ArchiveRecipeStep",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
@@ -723,7 +723,7 @@ func TestRecipeStepsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeStepDataManager := &mocktypes.RecipeStepDataManager{}
+		recipeStepDataManager := &mocktypes.RecipeStepDataManagerMock{}
 		recipeStepDataManager.On(
 			"RecipeStepExists",
 			testutils.ContextMatcher,
@@ -752,7 +752,7 @@ func TestRecipeStepsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		recipeStepDataManager := &mocktypes.RecipeStepDataManager{}
+		recipeStepDataManager := &mocktypes.RecipeStepDataManagerMock{}
 		recipeStepDataManager.On(
 			"RecipeStepExists",
 			testutils.ContextMatcher,
@@ -774,14 +774,14 @@ func TestRecipeStepsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeStepDataManager.On(
+		dbManager.RecipeStepDataManagerMock.On(
 			"RecipeStepExists",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
 		).Return(true, nil)
 
-		dbManager.RecipeStepDataManager.On(
+		dbManager.RecipeStepDataManagerMock.On(
 			"ArchiveRecipeStep",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
@@ -802,14 +802,14 @@ func TestRecipeStepsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.RecipeStepDataManager.On(
+		dbManager.RecipeStepDataManagerMock.On(
 			"RecipeStepExists",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,
 			helper.exampleRecipeStep.ID,
 		).Return(true, nil)
 
-		dbManager.RecipeStepDataManager.On(
+		dbManager.RecipeStepDataManagerMock.On(
 			"ArchiveRecipeStep",
 			testutils.ContextMatcher,
 			helper.exampleRecipe.ID,

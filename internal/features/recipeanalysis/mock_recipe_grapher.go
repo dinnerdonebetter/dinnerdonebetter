@@ -44,3 +44,8 @@ func (m *MockRecipeAnalyzer) GenerateDAGDiagramForRecipe(ctx context.Context, re
 
 	return returnArgs.Get(0).(image.Image), returnArgs.Error(1)
 }
+
+// RenderMermaidDiagramForRecipe implements our interface.
+func (m *MockRecipeAnalyzer) RenderMermaidDiagramForRecipe(ctx context.Context, recipe *types.Recipe) string {
+	return m.Called(ctx, recipe).String(0)
+}

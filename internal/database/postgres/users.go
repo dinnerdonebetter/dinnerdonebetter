@@ -16,7 +16,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
-	"github.com/lib/pq"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 var (
@@ -40,6 +40,8 @@ var (
 		"users.user_account_status",
 		"users.user_account_status_explanation",
 		"users.birthday",
+		"users.last_accepted_terms_of_service",
+		"users.last_accepted_privacy_policy",
 		"users.created_at",
 		"users.last_updated_at",
 		"users.archived_at",
@@ -75,6 +77,8 @@ func (q *Querier) scanUser(ctx context.Context, scan database.Scanner, includeCo
 		&user.AccountStatus,
 		&user.AccountStatusExplanation,
 		&user.Birthday,
+		&user.LastAcceptedTOS,
+		&user.LastAcceptedPrivacyPolicy,
 		&user.CreatedAt,
 		&user.LastUpdatedAt,
 		&user.ArchivedAt,
@@ -432,9 +436,9 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 	if writeErr := q.performWriteQuery(ctx, tx, "user creation", userCreationQuery, userCreationArgs); writeErr != nil {
 		q.rollbackTransaction(ctx, tx)
 
-		var e *pq.Error
-		if errors.As(writeErr, &e) {
-			if e.Code == postgresDuplicateEntryErrorCode {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) {
+			if pgErr.Code == postgresDuplicateEntryErrorCode {
 				return nil, database.ErrUserAlreadyExists
 			}
 		}
@@ -550,21 +554,23 @@ func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.S
 //go:embed queries/users/update_username.sql
 var updateUsernameQuery string
 
-// UpdateUsername updates a user's username.
+// UpdateUserUsername updates a user's username.
 func (q *Querier) UpdateUserUsername(ctx context.Context, userID, newUsername string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := q.logger.Clone()
+
 	if userID == "" {
 		return ErrInvalidIDProvided
 	}
+	logger = logger.WithValue(keys.UserIDKey, userID)
+	tracing.AttachUserIDToSpan(span, userID)
 
 	if newUsername == "" {
 		return ErrEmptyInputProvided
 	}
-
-	logger := q.logger.WithValue(keys.UsernameKey, newUsername).WithValue(keys.UserIDKey, userID)
-	tracing.AttachUserIDToSpan(span, userID)
+	logger = logger.WithValue(keys.UsernameKey, newUsername)
 	tracing.AttachUsernameToSpan(span, newUsername)
 
 	updateUsernameArgs := []any{

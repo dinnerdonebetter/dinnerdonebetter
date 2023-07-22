@@ -249,6 +249,42 @@ func (q *Querier) GetMeals(ctx context.Context, filter *types.QueryFilter) (x *t
 	return x, nil
 }
 
+// GetMealsWithIDs fetches a list of meals from the database that have IDs within a given set.
+func (q *Querier) GetMealsWithIDs(ctx context.Context, ids []string) ([]*types.Meal, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	meals := []*types.Meal{}
+	for _, id := range ids {
+		r, err := q.GetMeal(ctx, id)
+		if err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "getting meal")
+		}
+
+		meals = append(meals, r)
+	}
+
+	return meals, nil
+}
+
+//go:embed generated_queries/meals/get_needing_indexing.sql
+var mealsNeedingIndexingQuery string
+
+// GetMealIDsThatNeedSearchIndexing fetches a list of meal IDs from the database that meet a particular filter.
+func (q *Querier) GetMealIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	rows, err := q.getRows(ctx, q.db, "meals needing indexing", mealsNeedingIndexingQuery, nil)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "executing meals list retrieval query")
+	}
+
+	return q.scanIDs(ctx, rows)
+}
+
 // SearchForMeals fetches a list of recipes from the database that match a query.
 func (q *Querier) SearchForMeals(ctx context.Context, mealNameQuery string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.Meal], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -397,6 +433,35 @@ func (q *Querier) CreateMealComponent(ctx context.Context, querier database.SQLQ
 	if err := q.performWriteQuery(ctx, querier, "meal recipe creation", mealRecipeCreationQuery, args); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "performing meal creation query")
 	}
+
+	return nil
+}
+
+//go:embed queries/meals/update_last_indexed_at.sql
+var updateMealLastIndexedAtQuery string
+
+// MarkMealAsIndexed updates a particular meal's last_indexed_at value.
+func (q *Querier) MarkMealAsIndexed(ctx context.Context, mealID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if mealID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealIDKey, mealID)
+	tracing.AttachMealIDToSpan(span, mealID)
+
+	args := []any{
+		mealID,
+	}
+
+	if err := q.performWriteQuery(ctx, q.db, "meal last_indexed_at", updateMealLastIndexedAtQuery, args); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "marking meal as indexed")
+	}
+
+	logger.Info("meal marked as indexed")
 
 	return nil
 }

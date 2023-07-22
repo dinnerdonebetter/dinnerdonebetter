@@ -217,7 +217,7 @@ func BuildFakeUserDetailsUpdateInput() *types.UserDetailsUpdateInput {
 	return &types.UserDetailsUpdateInput{
 		FirstName:       buildUniqueString(),
 		LastName:        buildUniqueString(),
-		Birthday:        fake.Date(),
+		Birthday:        BuildFakeTime(),
 		CurrentPassword: fake.Password(true, true, true, false, false, 32),
 		TOTPToken:       "123456",
 	}

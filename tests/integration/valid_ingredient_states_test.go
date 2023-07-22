@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -27,17 +28,16 @@ func checkValidIngredientStateEquality(t *testing.T, expected, actual *types.Val
 	assert.NotZero(t, actual.CreatedAt)
 }
 
-func createValidIngredientStateForTest(t *testing.T, ctx context.Context, testClients *testClientWrapper) *types.ValidIngredientState {
+func createValidIngredientStateForTest(t *testing.T, ctx context.Context, adminClient *apiclient.Client) *types.ValidIngredientState {
 	t.Helper()
 
 	exampleValidIngredientState := fakes.BuildFakeValidIngredientState()
 	exampleValidIngredientStateInput := converters.ConvertValidIngredientStateToValidIngredientStateCreationRequestInput(exampleValidIngredientState)
-	createdValidIngredientState, err := testClients.admin.CreateValidIngredientState(ctx, exampleValidIngredientStateInput)
+	createdValidIngredientState, err := adminClient.CreateValidIngredientState(ctx, exampleValidIngredientStateInput)
 	require.NoError(t, err)
-	t.Logf("valid ingredient state %q created", createdValidIngredientState.ID)
 	checkValidIngredientStateEquality(t, exampleValidIngredientState, createdValidIngredientState)
 
-	createdValidIngredientState, err = testClients.admin.GetValidIngredientState(ctx, createdValidIngredientState.ID)
+	createdValidIngredientState, err = adminClient.GetValidIngredientState(ctx, createdValidIngredientState.ID)
 	requireNotNilAndNoProblems(t, createdValidIngredientState, err)
 	checkValidIngredientStateEquality(t, exampleValidIngredientState, createdValidIngredientState)
 
@@ -52,15 +52,12 @@ func (s *TestSuite) TestValidIngredientStates_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating valid ingredient state")
-			createdValidIngredientState := createValidIngredientStateForTest(t, ctx, testClients)
+			createdValidIngredientState := createValidIngredientStateForTest(t, ctx, testClients.admin)
 
-			t.Log("changing valid ingredient state")
 			newValidIngredientState := fakes.BuildFakeValidIngredientState()
 			createdValidIngredientState.Update(converters.ConvertValidIngredientStateToValidIngredientStateUpdateRequestInput(newValidIngredientState))
 			assert.NoError(t, testClients.admin.UpdateValidIngredientState(ctx, createdValidIngredientState))
 
-			t.Log("fetching changed valid ingredient state")
 			actual, err := testClients.admin.GetValidIngredientState(ctx, createdValidIngredientState.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
@@ -68,7 +65,6 @@ func (s *TestSuite) TestValidIngredientStates_CompleteLifecycle() {
 			checkValidIngredientStateEquality(t, newValidIngredientState, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			t.Log("cleaning up valid ingredient state")
 			assert.NoError(t, testClients.admin.ArchiveValidIngredientState(ctx, createdValidIngredientState.ID))
 		}
 	})
@@ -82,14 +78,12 @@ func (s *TestSuite) TestValidIngredientStates_Listing() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating valid ingredient states")
 			var expected []*types.ValidIngredientState
 			for i := 0; i < 5; i++ {
 				exampleValidIngredientState := fakes.BuildFakeValidIngredientState()
 				exampleValidIngredientStateInput := converters.ConvertValidIngredientStateToValidIngredientStateCreationRequestInput(exampleValidIngredientState)
 				createdValidIngredientState, createdValidIngredientStateErr := testClients.admin.CreateValidIngredientState(ctx, exampleValidIngredientStateInput)
 				require.NoError(t, createdValidIngredientStateErr)
-				t.Logf("valid ingredient state %q created", createdValidIngredientState.ID)
 
 				checkValidIngredientStateEquality(t, exampleValidIngredientState, createdValidIngredientState)
 
@@ -107,7 +101,6 @@ func (s *TestSuite) TestValidIngredientStates_Listing() {
 				len(actual.Data),
 			)
 
-			t.Log("cleaning up")
 			for _, createdValidIngredientState := range expected {
 				assert.NoError(t, testClients.admin.ArchiveValidIngredientState(ctx, createdValidIngredientState.ID))
 			}
@@ -123,7 +116,6 @@ func (s *TestSuite) TestValidIngredientStates_Searching() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			t.Log("creating valid ingredient states")
 			var expected []*types.ValidIngredientState
 			exampleValidIngredientState := fakes.BuildFakeValidIngredientState()
 			exampleValidIngredientState.Name = fmt.Sprintf("example_%s", testClients.authType)
@@ -133,7 +125,6 @@ func (s *TestSuite) TestValidIngredientStates_Searching() {
 				exampleValidIngredientStateInput := converters.ConvertValidIngredientStateToValidIngredientStateCreationRequestInput(exampleValidIngredientState)
 				createdValidIngredientState, createdValidIngredientStateErr := testClients.admin.CreateValidIngredientState(ctx, exampleValidIngredientStateInput)
 				require.NoError(t, createdValidIngredientStateErr)
-				t.Logf("valid ingredient state %q created", createdValidIngredientState.ID)
 				checkValidIngredientStateEquality(t, exampleValidIngredientState, createdValidIngredientState)
 
 				expected = append(expected, createdValidIngredientState)
@@ -152,7 +143,6 @@ func (s *TestSuite) TestValidIngredientStates_Searching() {
 				len(actual),
 			)
 
-			t.Log("cleaning up")
 			for _, createdValidIngredientState := range expected {
 				assert.NoError(t, testClients.admin.ArchiveValidIngredientState(ctx, createdValidIngredientState.ID))
 			}

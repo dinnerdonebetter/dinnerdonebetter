@@ -9,6 +9,7 @@ import (
 	"time"
 
 	analyticsconfig "github.com/dinnerdonebetter/backend/internal/analytics/config"
+	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/email"
 	emailconfig "github.com/dinnerdonebetter/backend/internal/email/config"
@@ -16,7 +17,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging/zerolog"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/server/http/config"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
@@ -45,7 +45,7 @@ type PubSubMessage struct {
 	Data []byte `json:"data"`
 }
 
-// SendEmail handles a data change.
+// SendEmail handles sending an email.
 func SendEmail(ctx context.Context, e event.Event) error {
 	logger := zerolog.NewZerologLogger(logging.DebugLevel)
 
@@ -104,7 +104,7 @@ func SendEmail(ctx context.Context, e event.Event) error {
 	var emailDeliveryRequest email.DeliveryRequest
 	if err = json.Unmarshal(msg.Message.Data, &emailDeliveryRequest); err != nil {
 		logger = logger.WithValue("raw_data", msg.Message.Data)
-		return observability.PrepareAndLogError(err, logger, span, "unmarshalling data change message")
+		return observability.PrepareAndLogError(err, logger, span, "unmarshalling delivery request message")
 	}
 
 	logger = logger.WithValue("template", emailDeliveryRequest.Template)

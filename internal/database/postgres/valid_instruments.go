@@ -9,6 +9,12 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+
+	"github.com/Masterminds/squirrel"
+)
+
+const (
+	validInstrumentsTable = "valid_instruments"
 )
 
 var (
@@ -24,8 +30,6 @@ var (
 		"valid_instruments.usable_for_storage",
 		"valid_instruments.display_in_summary_lists",
 		"valid_instruments.include_in_generated_instructions",
-		"valid_instruments.is_vessel",
-		"valid_instruments.is_exclusively_vessel",
 		"valid_instruments.slug",
 		"valid_instruments.created_at",
 		"valid_instruments.last_updated_at",
@@ -49,8 +53,6 @@ func (q *Querier) scanValidInstrument(ctx context.Context, scan database.Scanner
 		&x.UsableForStorage,
 		&x.DisplayInSummaryLists,
 		&x.IncludeInGeneratedInstructions,
-		&x.IsVessel,
-		&x.IsExclusivelyVessel,
 		&x.Slug,
 		&x.CreatedAt,
 		&x.LastUpdatedAt,
@@ -265,7 +267,7 @@ func (q *Querier) GetValidInstruments(ctx context.Context, filter *types.QueryFi
 		filter = types.DefaultQueryFilter()
 	}
 
-	query, args := q.buildListQuery(ctx, "valid_instruments", nil, nil, nil, householdOwnershipColumn, validInstrumentsTableColumns, "", false, filter)
+	query, args := q.buildListQuery(ctx, validInstrumentsTable, nil, nil, nil, householdOwnershipColumn, validInstrumentsTableColumns, "", false, filter)
 
 	rows, err := q.getRows(ctx, q.db, "valid instruments", query, args)
 	if err != nil {
@@ -277,6 +279,45 @@ func (q *Querier) GetValidInstruments(ctx context.Context, filter *types.QueryFi
 	}
 
 	return x, nil
+}
+
+// GetValidInstrumentsWithIDs fetches a list of valid instruments from the database that meet a particular filter.
+func (q *Querier) GetValidInstrumentsWithIDs(ctx context.Context, ids []string) ([]*types.ValidInstrument, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	where := squirrel.Eq{"valid_instruments.id": ids}
+	query, args := q.buildListQuery(ctx, validInstrumentsTable, nil, nil, where, householdOwnershipColumn, validInstrumentsTableColumns, "", false, nil)
+
+	rows, err := q.getRows(ctx, q.db, "valid instruments", query, args)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid instruments id list retrieval query")
+	}
+
+	instruments, _, _, err := q.scanValidInstruments(ctx, rows, true)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid instruments")
+	}
+
+	return instruments, nil
+}
+
+//go:embed generated_queries/valid_instruments/get_needing_indexing.sql
+var validInstrumentsNeedingIndexingQuery string
+
+// GetValidInstrumentIDsThatNeedSearchIndexing fetches a list of valid instruments from the database that meet a particular filter.
+func (q *Querier) GetValidInstrumentIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	rows, err := q.getRows(ctx, q.db, "valid instruments needing indexing", validInstrumentsNeedingIndexingQuery, nil)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "executing valid instruments list retrieval query")
+	}
+
+	return q.scanIDs(ctx, rows)
 }
 
 //go:embed queries/valid_instruments/create.sql
@@ -302,8 +343,6 @@ func (q *Querier) CreateValidInstrument(ctx context.Context, input *types.ValidI
 		input.UsableForStorage,
 		input.DisplayInSummaryLists,
 		input.IncludeInGeneratedInstructions,
-		input.IsVessel,
-		input.IsExclusivelyVessel,
 		input.Slug,
 	}
 
@@ -322,8 +361,6 @@ func (q *Querier) CreateValidInstrument(ctx context.Context, input *types.ValidI
 		Slug:                           input.Slug,
 		DisplayInSummaryLists:          input.DisplayInSummaryLists,
 		IncludeInGeneratedInstructions: input.IncludeInGeneratedInstructions,
-		IsVessel:                       input.IsVessel,
-		IsExclusivelyVessel:            input.IsExclusivelyVessel,
 		CreatedAt:                      q.currentTime(),
 	}
 
@@ -356,8 +393,6 @@ func (q *Querier) UpdateValidInstrument(ctx context.Context, updated *types.Vali
 		updated.UsableForStorage,
 		updated.DisplayInSummaryLists,
 		updated.IncludeInGeneratedInstructions,
-		updated.IsVessel,
-		updated.IsExclusivelyVessel,
 		updated.Slug,
 		updated.ID,
 	}
@@ -367,6 +402,35 @@ func (q *Querier) UpdateValidInstrument(ctx context.Context, updated *types.Vali
 	}
 
 	logger.Info("valid instrument updated")
+
+	return nil
+}
+
+//go:embed queries/valid_instruments/update_last_indexed_at.sql
+var updateValidInstrumentLastIndexedAtQuery string
+
+// MarkValidInstrumentAsIndexed updates a particular valid instrument's last_indexed_at value.
+func (q *Querier) MarkValidInstrumentAsIndexed(ctx context.Context, validInstrumentID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if validInstrumentID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
+	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
+
+	args := []any{
+		validInstrumentID,
+	}
+
+	if err := q.performWriteQuery(ctx, q.db, "valid instrument last_indexed_at", updateValidInstrumentLastIndexedAtQuery, args); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "marking valid instrument as indexed")
+	}
+
+	logger.Info("valid instrument marked as indexed")
 
 	return nil
 }

@@ -18,7 +18,7 @@ const (
 	serviceName string = "meal_plan_events_service"
 )
 
-var _ types.MealPlanDataService = (*service)(nil)
+var _ types.MealPlanEventDataService = (*service)(nil)
 
 type (
 	// service handles meal plans.
@@ -34,7 +34,7 @@ type (
 	}
 )
 
-// ProvideService builds a new MealPlansService.
+// ProvideService builds a new MealPlanEventDataService.
 func ProvideService(
 	logger logging.Logger,
 	cfg *Config,

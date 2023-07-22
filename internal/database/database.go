@@ -10,6 +10,8 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/alexedwards/scs/v2"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 var (
@@ -34,6 +36,14 @@ type (
 		io.Closer
 	}
 
+	// V2ResultIterator represents any iterable database response (i.e. sql.Rows).
+	V2ResultIterator interface {
+		Next() bool
+		Err() error
+		Scanner
+		Close()
+	}
+
 	// SQLQueryExecutor is a subset interface for sql.{DB|Tx} objects.
 	SQLQueryExecutor interface {
 		ExecContext(ctx context.Context, query string, args ...any) (sql.Result, error)
@@ -42,15 +52,33 @@ type (
 		QueryRowContext(ctx context.Context, query string, args ...any) *sql.Row
 	}
 
+	// V2SQLQueryExecutor is a subset interface for sql.{DB|Tx} objects.
+	V2SQLQueryExecutor interface {
+		Exec(ctx context.Context, sql string, arguments ...any) (commandTag pgconn.CommandTag, err error)
+		Query(ctx context.Context, sql string, args ...any) (pgx.Rows, error)
+		QueryRow(ctx context.Context, sql string, args ...any) pgx.Row
+	}
+
 	// SQLTransactionManager is a subset interface for sql.{DB|Tx} objects.
 	SQLTransactionManager interface {
 		Rollback() error
+	}
+
+	// V2SQLTransactionManager is a subset interface for sql.{DB|Tx} objects.
+	V2SQLTransactionManager interface {
+		Rollback(ctx context.Context) error
 	}
 
 	// SQLQueryExecutorAndTransactionManager is a subset interface for sql.{DB|Tx} objects.
 	SQLQueryExecutorAndTransactionManager interface {
 		SQLQueryExecutor
 		SQLTransactionManager
+	}
+
+	// V2SQLQueryExecutorAndTransactionManager is a subset interface for sql.{DB|Tx} objects.
+	V2SQLQueryExecutorAndTransactionManager interface {
+		V2SQLQueryExecutor
+		V2SQLTransactionManager
 	}
 
 	// MetricsCollectionInterval defines the interval at which we collect database metrics.
@@ -63,8 +91,8 @@ type (
 	DataManager interface {
 		DB() *sql.DB
 		Close()
-		Migrate(ctx context.Context, waitPeriod time.Duration, maxAttempts uint8) error
-		IsReady(ctx context.Context, waitPeriod time.Duration, maxAttempts uint8) (ready bool)
+		Migrate(ctx context.Context, waitPeriod time.Duration, maxAttempts uint64) error
+		IsReady(ctx context.Context, waitPeriod time.Duration, maxAttempts uint64) (ready bool)
 		ProvideSessionStore() scs.Store
 
 		types.MealPlanTaskDataManager
@@ -73,7 +101,6 @@ type (
 		types.HouseholdInvitationDataManager
 		types.HouseholdUserMembershipDataManager
 		types.UserDataManager
-		types.APIClientDataManager
 		types.PasswordResetTokenDataManager
 		types.WebhookDataManager
 		types.ValidInstrumentDataManager
@@ -104,5 +131,12 @@ type (
 		types.ServiceSettingDataManager
 		types.ServiceSettingConfigurationDataManager
 		types.ValidIngredientGroupDataManager
+		types.UserIngredientPreferenceDataManager
+		types.RecipeRatingDataManager
+		types.HouseholdInstrumentOwnershipDataManager
+		types.OAuth2ClientDataManager
+		types.OAuth2ClientTokenDataManager
+		types.ValidVesselDataManager
+		types.ValidPreparationVesselDataManager
 	}
 )

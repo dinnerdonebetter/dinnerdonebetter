@@ -9,7 +9,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -41,7 +41,7 @@ func TestMealPlanOptionsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanOptionDataManager.On(
+		dbManager.MealPlanOptionDataManagerMock.On(
 			"CreateMealPlanOption",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.MealPlanOptionDatabaseCreationInput) bool { return true }),
@@ -134,7 +134,7 @@ func TestMealPlanOptionsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanOptionDataManager.On(
+		dbManager.MealPlanOptionDataManagerMock.On(
 			"CreateMealPlanOption",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.MealPlanOptionDatabaseCreationInput) bool { return true }),
@@ -163,7 +163,7 @@ func TestMealPlanOptionsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanOptionDataManager.On(
+		dbManager.MealPlanOptionDataManagerMock.On(
 			"CreateMealPlanOption",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.MealPlanOptionDatabaseCreationInput) bool { return true }),
@@ -194,7 +194,7 @@ func TestMealPlanOptionsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealPlanOptionDataManager := &mocktypes.MealPlanOptionDataManager{}
+		mealPlanOptionDataManager := &mocktypes.MealPlanOptionDataManagerMock{}
 		mealPlanOptionDataManager.On(
 			"GetMealPlanOption",
 			testutils.ContextMatcher,
@@ -249,7 +249,7 @@ func TestMealPlanOptionsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealPlanOptionDataManager := &mocktypes.MealPlanOptionDataManager{}
+		mealPlanOptionDataManager := &mocktypes.MealPlanOptionDataManagerMock{}
 		mealPlanOptionDataManager.On(
 			"GetMealPlanOption",
 			testutils.ContextMatcher,
@@ -279,7 +279,7 @@ func TestMealPlanOptionsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealPlanOptionDataManager := &mocktypes.MealPlanOptionDataManager{}
+		mealPlanOptionDataManager := &mocktypes.MealPlanOptionDataManagerMock{}
 		mealPlanOptionDataManager.On(
 			"GetMealPlanOption",
 			testutils.ContextMatcher,
@@ -315,7 +315,7 @@ func TestMealPlanOptionsService_ListHandler(T *testing.T) {
 
 		exampleMealPlanOptionList := fakes.BuildFakeMealPlanOptionList()
 
-		mealPlanOptionDataManager := &mocktypes.MealPlanOptionDataManager{}
+		mealPlanOptionDataManager := &mocktypes.MealPlanOptionDataManagerMock{}
 		mealPlanOptionDataManager.On(
 			"GetMealPlanOptions",
 			testutils.ContextMatcher,
@@ -370,7 +370,7 @@ func TestMealPlanOptionsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealPlanOptionDataManager := &mocktypes.MealPlanOptionDataManager{}
+		mealPlanOptionDataManager := &mocktypes.MealPlanOptionDataManagerMock{}
 		mealPlanOptionDataManager.On(
 			"GetMealPlanOptions",
 			testutils.ContextMatcher,
@@ -401,7 +401,7 @@ func TestMealPlanOptionsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealPlanOptionDataManager := &mocktypes.MealPlanOptionDataManager{}
+		mealPlanOptionDataManager := &mocktypes.MealPlanOptionDataManagerMock{}
 		mealPlanOptionDataManager.On(
 			"GetMealPlanOptions",
 			testutils.ContextMatcher,
@@ -445,7 +445,7 @@ func TestMealPlanOptionsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanOptionDataManager.On(
+		dbManager.MealPlanOptionDataManagerMock.On(
 			"GetMealPlanOption",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -453,7 +453,7 @@ func TestMealPlanOptionsService_UpdateHandler(T *testing.T) {
 			helper.exampleMealPlanOption.ID,
 		).Return(helper.exampleMealPlanOption, nil)
 
-		dbManager.MealPlanOptionDataManager.On(
+		dbManager.MealPlanOptionDataManagerMock.On(
 			"UpdateMealPlanOption",
 			testutils.ContextMatcher,
 			helper.exampleMealPlanOption,
@@ -535,7 +535,7 @@ func TestMealPlanOptionsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		mealPlanOptionDataManager := &mocktypes.MealPlanOptionDataManager{}
+		mealPlanOptionDataManager := &mocktypes.MealPlanOptionDataManagerMock{}
 		mealPlanOptionDataManager.On(
 			"GetMealPlanOption",
 			testutils.ContextMatcher,
@@ -566,7 +566,7 @@ func TestMealPlanOptionsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		mealPlanOptionDataManager := &mocktypes.MealPlanOptionDataManager{}
+		mealPlanOptionDataManager := &mocktypes.MealPlanOptionDataManagerMock{}
 		mealPlanOptionDataManager.On(
 			"GetMealPlanOption",
 			testutils.ContextMatcher,
@@ -598,7 +598,7 @@ func TestMealPlanOptionsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanOptionDataManager.On(
+		dbManager.MealPlanOptionDataManagerMock.On(
 			"GetMealPlanOption",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -606,7 +606,7 @@ func TestMealPlanOptionsService_UpdateHandler(T *testing.T) {
 			helper.exampleMealPlanOption.ID,
 		).Return(helper.exampleMealPlanOption, nil)
 
-		dbManager.MealPlanOptionDataManager.On(
+		dbManager.MealPlanOptionDataManagerMock.On(
 			"UpdateMealPlanOption",
 			testutils.ContextMatcher,
 			helper.exampleMealPlanOption,
@@ -635,7 +635,7 @@ func TestMealPlanOptionsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanOptionDataManager.On(
+		dbManager.MealPlanOptionDataManagerMock.On(
 			"GetMealPlanOption",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -643,7 +643,7 @@ func TestMealPlanOptionsService_UpdateHandler(T *testing.T) {
 			helper.exampleMealPlanOption.ID,
 		).Return(helper.exampleMealPlanOption, nil)
 
-		dbManager.MealPlanOptionDataManager.On(
+		dbManager.MealPlanOptionDataManagerMock.On(
 			"UpdateMealPlanOption",
 			testutils.ContextMatcher,
 			helper.exampleMealPlanOption,
@@ -675,7 +675,7 @@ func TestMealPlanOptionsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanOptionDataManager.On(
+		dbManager.MealPlanOptionDataManagerMock.On(
 			"MealPlanOptionExists",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -683,7 +683,7 @@ func TestMealPlanOptionsService_ArchiveHandler(T *testing.T) {
 			helper.exampleMealPlanOption.ID,
 		).Return(true, nil)
 
-		dbManager.MealPlanOptionDataManager.On(
+		dbManager.MealPlanOptionDataManagerMock.On(
 			"ArchiveMealPlanOption",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -736,7 +736,7 @@ func TestMealPlanOptionsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealPlanOptionDataManager := &mocktypes.MealPlanOptionDataManager{}
+		mealPlanOptionDataManager := &mocktypes.MealPlanOptionDataManagerMock{}
 		mealPlanOptionDataManager.On(
 			"MealPlanOptionExists",
 			testutils.ContextMatcher,
@@ -766,7 +766,7 @@ func TestMealPlanOptionsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		mealPlanOptionDataManager := &mocktypes.MealPlanOptionDataManager{}
+		mealPlanOptionDataManager := &mocktypes.MealPlanOptionDataManagerMock{}
 		mealPlanOptionDataManager.On(
 			"MealPlanOptionExists",
 			testutils.ContextMatcher,
@@ -789,7 +789,7 @@ func TestMealPlanOptionsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanOptionDataManager.On(
+		dbManager.MealPlanOptionDataManagerMock.On(
 			"MealPlanOptionExists",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -797,7 +797,7 @@ func TestMealPlanOptionsService_ArchiveHandler(T *testing.T) {
 			helper.exampleMealPlanOption.ID,
 		).Return(true, nil)
 
-		dbManager.MealPlanOptionDataManager.On(
+		dbManager.MealPlanOptionDataManagerMock.On(
 			"ArchiveMealPlanOption",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -819,7 +819,7 @@ func TestMealPlanOptionsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.MealPlanOptionDataManager.On(
+		dbManager.MealPlanOptionDataManagerMock.On(
 			"MealPlanOptionExists",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,
@@ -827,7 +827,7 @@ func TestMealPlanOptionsService_ArchiveHandler(T *testing.T) {
 			helper.exampleMealPlanOption.ID,
 		).Return(true, nil)
 
-		dbManager.MealPlanOptionDataManager.On(
+		dbManager.MealPlanOptionDataManagerMock.On(
 			"ArchiveMealPlanOption",
 			testutils.ContextMatcher,
 			helper.exampleMealPlan.ID,

@@ -4,8 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"os"
-	"strconv"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -18,7 +16,7 @@ import (
 
 const (
 	cookieAuthType = "cookie"
-	pasetoAuthType = "PASETO"
+	oauth2AuthType = "oauth2"
 )
 
 var (
@@ -44,9 +42,9 @@ type TestSuite struct {
 	user   *types.User
 	cookie *http.Cookie
 	cookieClient,
-	pasetoClient,
+	oauthedClient,
 	adminCookieClient,
-	adminPASETOClient *apiclient.Client
+	adminOAuthedClient *apiclient.Client
 }
 
 var _ suite.SetupTestSuite = (*TestSuite)(nil)
@@ -59,33 +57,20 @@ func (s *TestSuite) SetupTest() {
 	defer span.End()
 
 	s.ctx, _ = tracing.StartCustomSpan(ctx, testName)
-	s.user, s.cookie, s.cookieClient, s.pasetoClient = createUserAndClientForTest(s.ctx, t, nil)
-	s.adminCookieClient, s.adminPASETOClient = buildAdminCookieAndPASETOClients(s.ctx, t)
+	s.user, s.cookie, s.cookieClient, s.oauthedClient = createUserAndClientForTest(s.ctx, t, nil)
+	s.adminCookieClient, s.adminOAuthedClient = buildAdminCookieAndOAuthedClients(s.ctx, t)
 }
 
 func (s *TestSuite) runForCookieClient(name string, subtestBuilder func(*testClientWrapper) func()) {
-	for a, c := range s.eachClientExcept(pasetoAuthType) {
-		authType, testClients := a, c
-		s.Run(fmt.Sprintf("%s via %s", name, authType), subtestBuilder(testClients))
-	}
+	s.runForEachClientExcept(name, subtestBuilder, oauth2AuthType)
 }
 
-func (s *TestSuite) runForPASETOClient(name string, subtestBuilder func(*testClientWrapper) func()) {
-	if x, _ := strconv.ParseBool(os.Getenv("SKIP_PASETO_TESTS")); x {
-		return
-	}
-
-	for a, c := range s.eachClientExcept(cookieAuthType) {
-		authType, testClients := a, c
-		s.Run(fmt.Sprintf("%s via %s", name, authType), subtestBuilder(testClients))
-	}
+func (s *TestSuite) runForOAuth2Client(name string, subtestBuilder func(*testClientWrapper) func()) {
+	s.runForEachClientExcept(name, subtestBuilder, cookieAuthType)
 }
 
 func (s *TestSuite) runForEachClient(name string, subtestBuilder func(*testClientWrapper) func()) {
-	for a, c := range s.eachClientExcept() {
-		authType, testClients := a, c
-		s.Run(fmt.Sprintf("%s via %s", name, authType), subtestBuilder(testClients))
-	}
+	s.runForEachClientExcept(name, subtestBuilder)
 }
 
 func (s *TestSuite) runForEachClientExcept(name string, subtestBuilder func(*testClientWrapper) func(), exceptions ...string) {
@@ -100,7 +85,7 @@ func (s *TestSuite) eachClientExcept(exceptions ...string) map[string]*testClien
 
 	clients := map[string]*testClientWrapper{
 		cookieAuthType: {authType: cookieAuthType, user: s.cookieClient, admin: s.adminCookieClient},
-		pasetoAuthType: {authType: pasetoAuthType, user: s.pasetoClient, admin: s.adminPASETOClient},
+		oauth2AuthType: {authType: oauth2AuthType, user: s.oauthedClient, admin: s.adminOAuthedClient},
 	}
 
 	for _, name := range exceptions {

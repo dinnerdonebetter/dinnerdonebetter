@@ -5,7 +5,7 @@ WORKDIR /go/src/github.com/dinnerdonebetter/backend
 
 COPY . .
 
-RUN go build -trimpath -o /server github.com/dinnerdonebetter/backend/cmd/server
+RUN go build -trimpath -o /server github.com/dinnerdonebetter/backend/cmd/services/api/http
 
 # final stage
 FROM debian:bullseye

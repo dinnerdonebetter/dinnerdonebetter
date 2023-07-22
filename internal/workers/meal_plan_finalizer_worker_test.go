@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/analytics"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
@@ -27,7 +26,6 @@ func newTestChoresWorker(t *testing.T) *MealPlanFinalizationWorker {
 		zerolog.NewZerologLogger(logging.DebugLevel),
 		&database.MockDatabase{},
 		&mockpublishers.Publisher{},
-		&analytics.MockEventReporter{},
 		tracing.NewNoopTracerProvider(),
 	)
 	assert.NotNil(t, worker)
@@ -45,7 +43,6 @@ func TestProvideChoresWorker(T *testing.T) {
 			zerolog.NewZerologLogger(logging.DebugLevel),
 			&database.MockDatabase{},
 			&mockpublishers.Publisher{},
-			&analytics.MockEventReporter{},
 			tracing.NewNoopTracerProvider(),
 		)
 		assert.NotNil(t, actual)
@@ -68,7 +65,7 @@ func TestChoresWorker_FinalizeExpiredMealPlansWithoutReturningCount(T *testing.T
 		exampleMealPlans := fakes.BuildFakeMealPlanList().Data
 
 		dbm := database.NewMockDatabase()
-		dbm.MealPlanDataManager.On(
+		dbm.MealPlanDataManagerMock.On(
 			"GetUnfinalizedMealPlansWithExpiredVotingPeriods",
 			testutils.ContextMatcher,
 		).Return(exampleMealPlans, nil)
@@ -76,7 +73,7 @@ func TestChoresWorker_FinalizeExpiredMealPlansWithoutReturningCount(T *testing.T
 		mqm := &mockpublishers.Publisher{}
 
 		for _, mealPlan := range exampleMealPlans {
-			dbm.MealPlanDataManager.On(
+			dbm.MealPlanDataManagerMock.On(
 				"AttemptToFinalizeMealPlan",
 				testutils.ContextMatcher,
 				mealPlan.ID,

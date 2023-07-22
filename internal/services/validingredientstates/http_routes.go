@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
+	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -159,16 +160,20 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get("useDB"))) == "true"
+
 	query := req.URL.Query().Get(types.SearchQueryKey)
+	tracing.AttachSearchQueryToSpan(span, query)
+
 	filter := types.ExtractQueryFilterFromRequest(req)
+	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+
 	logger := s.logger.WithRequest(req).
 		WithValue(keys.FilterLimitKey, filter.Limit).
 		WithValue(keys.FilterPageKey, filter.Page).
 		WithValue(keys.FilterSortByKey, filter.SortBy).
-		WithValue(keys.SearchQueryKey, query)
-
-	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+		WithValue(keys.SearchQueryKey, query).
+		WithValue("using_database", useDB)
 
 	// determine user ID.
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
@@ -181,13 +186,31 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	// fetch valid ingredient states from database.
-	validIngredientStates, err := s.validIngredientStateDataManager.SearchForValidIngredientStates(ctx, query)
+	var validIngredientStates []*types.ValidIngredientState
+	if useDB {
+		validIngredientStates, err = s.validIngredientStateDataManager.SearchForValidIngredientStates(ctx, query)
+	} else {
+		var validIngredientStateSubsets []*types.ValidIngredientStateSearchSubset
+		validIngredientStateSubsets, err = s.searchIndex.Search(ctx, query)
+		if err != nil {
+			observability.AcknowledgeError(err, logger, span, "searching for valid ingredient states")
+			s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+			return
+		}
+
+		ids := []string{}
+		for _, validIngredientStateSubset := range validIngredientStateSubsets {
+			ids = append(ids, validIngredientStateSubset.ID)
+		}
+
+		validIngredientStates, err = s.validIngredientStateDataManager.GetValidIngredientStatesWithIDs(ctx, ids)
+	}
+
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
 		validIngredientStates = []*types.ValidIngredientState{}
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "searching valid ingredient states")
+		observability.AcknowledgeError(err, logger, span, "searching for valid ingredient states")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}

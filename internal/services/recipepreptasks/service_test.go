@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -20,7 +20,7 @@ import (
 func buildTestService() *service {
 	return &service{
 		logger:                    logging.NewNoopLogger(),
-		recipePrepTaskDataManager: &mocktypes.RecipePrepTaskDataManager{},
+		recipePrepTaskDataManager: &mocktypes.RecipePrepTaskDataManagerMock{},
 		recipePrepTaskIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:            mockencoding.NewMockEncoderDecoder(),
 		tracer:                    tracing.NewTracerForTest("test"),
@@ -53,7 +53,7 @@ func TestProvideRecipePrepTasksService(T *testing.T) {
 		s, err := ProvideService(
 			logging.NewNoopLogger(),
 			cfg,
-			&mocktypes.RecipePrepTaskDataManager{},
+			&mocktypes.RecipePrepTaskDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
@@ -79,7 +79,7 @@ func TestProvideRecipePrepTasksService(T *testing.T) {
 		s, err := ProvideService(
 			logging.NewNoopLogger(),
 			cfg,
-			&mocktypes.RecipePrepTaskDataManager{},
+			&mocktypes.RecipePrepTaskDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,

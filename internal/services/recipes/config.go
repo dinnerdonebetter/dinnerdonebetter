@@ -12,9 +12,10 @@ import (
 type Config struct {
 	_ struct{}
 
-	DataChangesTopicName string         `json:"dataChangesTopicName,omitempty" mapstructure:"data_changes_topic_name" toml:"data_changes_topic_name,omitempty"`
-	PublicMediaURLPrefix string         `json:"mediaUploadPrefix" mapstructure:"media_upload_prefix" toml:"media_upload_prefix"`
-	Uploads              uploads.Config `json:"uploads" mapstructure:"uploads" toml:"uploads,omitempty"`
+	DataChangesTopicName string         `json:"dataChangesTopicName,omitempty" toml:"data_changes_topic_name,omitempty"`
+	PublicMediaURLPrefix string         `json:"mediaUploadPrefix"              toml:"media_upload_prefix"`
+	Uploads              uploads.Config `json:"uploads"                        toml:"uploads,omitempty"`
+	UseSearchService     bool           `json:"searchFromDatabase"             toml:"search_from_database,omitempty"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)

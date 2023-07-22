@@ -10,14 +10,14 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/database"
-	mockrandom "github.com/dinnerdonebetter/backend/internal/random/mock"
+	"github.com/dinnerdonebetter/backend/internal/pkg/random/mock"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	testutils "github.com/dinnerdonebetter/backend/tests/utils"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/lib/pq"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -50,6 +50,8 @@ func buildMockRowsFromUsers(includeCounts bool, filteredCount uint64, users ...*
 			user.AccountStatus,
 			user.AccountStatusExplanation,
 			user.Birthday,
+			user.LastAcceptedTOS,
+			user.LastAcceptedPrivacyPolicy,
 			user.CreatedAt,
 			user.LastUpdatedAt,
 			user.ArchivedAt,
@@ -1030,7 +1032,7 @@ func TestQuerier_CreateUser(T *testing.T) {
 
 		db.ExpectExec(formatQueryForSQLMock(userCreationQuery)).
 			WithArgs(interfaceToDriverValue(userCreationArgs)...).
-			WillReturnError(&pq.Error{Code: postgresDuplicateEntryErrorCode})
+			WillReturnError(&pgconn.PgError{Code: postgresDuplicateEntryErrorCode})
 
 		db.ExpectRollback()
 

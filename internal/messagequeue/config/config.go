@@ -31,30 +31,30 @@ type (
 
 	// RedisConfig configures a Redis-backed consumer.
 	RedisConfig struct {
-		QueueAddress string `json:"message_queue_address,omitempty" mapstructure:"message_queue_address" toml:"message_queue_address,omitempty"`
+		QueueAddress string `json:"message_queue_address,omitempty" toml:"message_queue_address,omitempty"`
 	}
 
 	// SQSConfig configures a SQS-backed consumer.
 	SQSConfig struct {
-		QueueAddress string `json:"message_queue_address,omitempty" mapstructure:"message_queue_address" toml:"message_queue_address,omitempty"`
+		QueueAddress string `json:"message_queue_address,omitempty" toml:"message_queue_address,omitempty"`
 	}
 
 	// MessageQueueConfig is used to indicate how the messaging provider should be configured.
 	MessageQueueConfig struct {
 		_ struct{}
 
-		Provider     Provider      `json:"provider,omitempty" mapstructure:"provider" toml:"provider,omitempty"`
-		SQSConfig    sqs.Config    `json:"sqs,omitempty" mapstructure:"sqs" toml:"sqs,omitempty"`
-		PubSubConfig pubsub.Config `json:"pubsub,omitempty" mapstructure:"pubsub" toml:"pubsub,omitempty"`
-		RedisConfig  redis.Config  `json:"redis,omitempty" mapstructure:"redis" toml:"redis,omitempty"`
+		Provider Provider      `json:"provider,omitempty" toml:"provider,omitempty"`
+		SQS      sqs.Config    `json:"sqs,omitempty"      toml:"sqs,omitempty"`
+		PubSub   pubsub.Config `json:"pubsub,omitempty"   toml:"pubsub,omitempty"`
+		Redis    redis.Config  `json:"redis,omitempty"    toml:"redis,omitempty"`
 	}
 
 	// Config is used to indicate how the messaging provider should be configured.
 	Config struct {
 		_ struct{}
 
-		Consumers  MessageQueueConfig `json:"consumers,omitempty" mapstructure:"consumers" toml:"consumers,omitempty"`
-		Publishers MessageQueueConfig `json:"publishers,omitempty" mapstructure:"publishers" toml:"publishers,omitempty"`
+		Consumers  MessageQueueConfig `json:"consumers,omitempty"  toml:"consumers,omitempty"`
+		Publishers MessageQueueConfig `json:"publishers,omitempty" toml:"publishers,omitempty"`
 	}
 )
 
@@ -66,7 +66,7 @@ func cleanString(s string) string {
 func ProvideConsumerProvider(logger logging.Logger, tracerProvider tracing.TracerProvider, c *Config) (messagequeue.ConsumerProvider, error) {
 	switch cleanString(string(c.Consumers.Provider)) {
 	case ProviderRedis:
-		return redis.ProvideRedisConsumerProvider(logger, tracerProvider, c.Consumers.RedisConfig), nil
+		return redis.ProvideRedisConsumerProvider(logger, tracerProvider, c.Consumers.Redis), nil
 	default:
 		return nil, fmt.Errorf("invalid provider: %q", c.Consumers.Provider)
 	}
@@ -76,7 +76,7 @@ func ProvideConsumerProvider(logger logging.Logger, tracerProvider tracing.Trace
 func ProvidePublisherProvider(logger logging.Logger, tracerProvider tracing.TracerProvider, c *Config) (messagequeue.PublisherProvider, error) {
 	switch cleanString(string(c.Publishers.Provider)) {
 	case ProviderRedis:
-		return redis.ProvideRedisPublisherProvider(logger, tracerProvider, c.Publishers.RedisConfig), nil
+		return redis.ProvideRedisPublisherProvider(logger, tracerProvider, c.Publishers.Redis), nil
 	case ProviderSQS:
 		return sqs.ProvideSQSPublisherProvider(logger, tracerProvider), nil
 	case ProviderPubSub:

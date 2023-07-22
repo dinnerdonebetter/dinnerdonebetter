@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"testing"
 
-	mockencoding "github.com/dinnerdonebetter/backend/internal/encoding/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/objectstorage"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
@@ -24,7 +24,7 @@ import (
 func buildTestService() *service {
 	return &service{
 		logger:                logging.NewNoopLogger(),
-		recipeStepDataManager: &mocktypes.RecipeStepDataManager{},
+		recipeStepDataManager: &mocktypes.RecipeStepDataManagerMock{},
 		recipeStepIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:        mockencoding.NewMockEncoderDecoder(),
 		tracer:                tracing.NewTracerForTest("test"),
@@ -51,9 +51,8 @@ func TestProvideRecipeStepsService(T *testing.T) {
 			DataChangesTopicName: "data_changes",
 			Uploads: uploads.Config{
 				Storage: objectstorage.Config{
-					FilesystemConfig: &objectstorage.FilesystemConfig{RootDirectory: t.Name()},
-					BucketName:       t.Name(),
-					Provider:         objectstorage.FilesystemProvider,
+					BucketName: t.Name(),
+					Provider:   objectstorage.MemoryProvider,
 				},
 				Debug: false,
 			},
@@ -71,8 +70,8 @@ func TestProvideRecipeStepsService(T *testing.T) {
 			context.Background(),
 			logging.NewNoopLogger(),
 			cfg,
-			&mocktypes.RecipeStepDataManager{},
-			&mocktypes.RecipeMediaDataManager{},
+			&mocktypes.RecipeStepDataManagerMock{},
+			&mocktypes.RecipeMediaDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
@@ -93,9 +92,8 @@ func TestProvideRecipeStepsService(T *testing.T) {
 			DataChangesTopicName: "data_changes",
 			Uploads: uploads.Config{
 				Storage: objectstorage.Config{
-					FilesystemConfig: &objectstorage.FilesystemConfig{RootDirectory: t.Name()},
-					BucketName:       t.Name(),
-					Provider:         objectstorage.FilesystemProvider,
+					BucketName: t.Name(),
+					Provider:   objectstorage.MemoryProvider,
 				},
 				Debug: false,
 			},
@@ -108,8 +106,8 @@ func TestProvideRecipeStepsService(T *testing.T) {
 			context.Background(),
 			logging.NewNoopLogger(),
 			cfg,
-			&mocktypes.RecipeStepDataManager{},
-			&mocktypes.RecipeMediaDataManager{},
+			&mocktypes.RecipeStepDataManagerMock{},
+			&mocktypes.RecipeMediaDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,

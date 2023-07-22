@@ -25,10 +25,10 @@ const (
 	// MealPlanFinalizedCustomerEventType indicates a meal plan was finalized.
 	MealPlanFinalizedCustomerEventType CustomerEventType = "meal_plan_finalized"
 
-	// AwaitingVotesMealPlanStatus indicates a household invitation is pending.
-	AwaitingVotesMealPlanStatus MealPlanStatus = "awaiting_votes"
-	// FinalizedMealPlanStatus indicates a household invitation was accepted.
-	FinalizedMealPlanStatus MealPlanStatus = "finalized"
+	// MealPlanStatusAwaitingVotes indicates a household invitation is pending.
+	MealPlanStatusAwaitingVotes MealPlanStatus = "awaiting_votes"
+	// MealPlanStatusFinalized indicates a household invitation was accepted.
+	MealPlanStatusFinalized MealPlanStatus = "finalized"
 )
 
 func init() {
@@ -122,6 +122,7 @@ type (
 		ReadHandler(http.ResponseWriter, *http.Request)
 		UpdateHandler(http.ResponseWriter, *http.Request)
 		ArchiveHandler(http.ResponseWriter, *http.Request)
+		FinalizeHandler(http.ResponseWriter, *http.Request)
 	}
 )
 
@@ -132,7 +133,6 @@ func (x *MealPlan) Update(input *MealPlanUpdateRequestInput) {
 	}
 }
 
-var errTooFewUniqueMeals = errors.New("too many instances of the same meal")
 var errInvalidVotingDeadline = errors.New("invalid voting deadline")
 
 var _ validation.ValidatableWithContext = (*MealPlanCreationRequestInput)(nil)

@@ -474,7 +474,7 @@ func (q *Querier) CreateValidIngredientGroupMember(ctx context.Context, db datab
 		return nil, ErrNilInputProvided
 	}
 
-	logger := q.logger.WithValue(keys.ValidIngredientGroupIDKey, input.ID)
+	logger := q.logger.WithValue(keys.ValidIngredientGroupIDKey, input.ID).WithValue(keys.ValidIngredientIDKey, input.ValidIngredientID)
 
 	args := []any{
 		input.ID,
