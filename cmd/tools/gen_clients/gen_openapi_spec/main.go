@@ -63,6 +63,10 @@ func fetchServiceRouter() (routing.Router, error) {
 }
 
 func main() {
+	if _, err := fetchServiceRouter(); err != nil {
+		panic(err)
+	}
+
 	spec := openapi3.T{
 		Servers: openapi3.Servers{
 			&openapi3.Server{
@@ -70,7 +74,7 @@ func main() {
 				Description: "Development server",
 			},
 		},
-		OpenAPI: "3.0.0",
+		OpenAPI: "3.0.3",
 		Info: &openapi3.Info{
 			Title:          "Dinner Done Better API",
 			Description:    "Dinner Done Better API",
@@ -184,11 +188,12 @@ func main() {
 	marshalledSpec, err := yaml.Marshal(spec)
 	mustnt(err)
 
-	if err = os.Remove("./cmd/tools/gen_clients/gen_openapi_spec/schema.yaml"); err != nil {
+	const outputFilepath = "./openapi-schema.yaml"
+	if err = os.Remove(outputFilepath); err != nil {
 		panic(err)
 	}
 
-	if err = os.WriteFile("./cmd/tools/gen_clients/gen_openapi_spec/schema.yaml", marshalledSpec, 0o644); err != nil {
+	if err = os.WriteFile(outputFilepath, marshalledSpec, 0o644); err != nil {
 		panic(err)
 	}
 }

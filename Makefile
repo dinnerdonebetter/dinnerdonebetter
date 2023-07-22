@@ -201,7 +201,12 @@ clean_swift:
 
 swift: clean_swift
 	mkdir -p $(ARTIFACTS_DIR)/swift
-	go run github.com/dinnerdonebetter/backend/cmd/tools/codegen/gen_swift
+	go run github.com/dinnerdonebetter/backend/cmd/tools/gen_clients/gen_swift
+
+.PHONY: openapi-schema.yaml
+openapi-schema.yaml:
+	@touch openapi-schema.yaml
+	go run github.com/dinnerdonebetter/backend/cmd/tools/gen_clients/gen_openapi_spec
 
 ## Integration tests
 
