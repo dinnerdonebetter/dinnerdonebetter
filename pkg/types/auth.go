@@ -125,24 +125,6 @@ type (
 		HouseholdID string `json:"householdID"`
 	}
 
-	// PASETOCreationInput is used to create a PASETO.
-	PASETOCreationInput struct {
-		_ struct{}
-
-		ClientID          string `json:"clientID"`
-		HouseholdID       string `json:"householdID"`
-		RequestTime       int64  `json:"requestTime"`
-		RequestedLifetime uint64 `json:"requestedLifetime,omitempty"`
-	}
-
-	// PASETOResponse is used to respond to a PASETO request.
-	PASETOResponse struct {
-		_ struct{}
-
-		Token     string `json:"token"`
-		ExpiresAt string `json:"expiresAt"`
-	}
-
 	// AuthService describes a structure capable of handling passwords and authorization requests.
 	AuthService interface {
 		StatusHandler(http.ResponseWriter, *http.Request)
@@ -167,16 +149,6 @@ var _ validation.ValidatableWithContext = (*ChangeActiveHouseholdInput)(nil)
 func (x *ChangeActiveHouseholdInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, x,
 		validation.Field(&x.HouseholdID, validation.Required),
-	)
-}
-
-var _ validation.ValidatableWithContext = (*PASETOCreationInput)(nil)
-
-// ValidateWithContext ensures our  provided UserLoginInput meets expectations.
-func (i *PASETOCreationInput) ValidateWithContext(ctx context.Context) error {
-	return validation.ValidateStructWithContext(ctx, i,
-		validation.Field(&i.ClientID, validation.Required),
-		validation.Field(&i.RequestTime, validation.Required),
 	)
 }
 

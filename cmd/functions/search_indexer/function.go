@@ -85,7 +85,7 @@ func IndexDataForSearch(ctx context.Context, e event.Event) error {
 
 	var msg MessagePublishedData
 	if err = e.DataAs(&msg); err != nil {
-		return fmt.Errorf("event.DataAs: %v", err)
+		return fmt.Errorf("event.DataAs: %w", err)
 	}
 
 	var searchIndexRequest *indexing.IndexRequest

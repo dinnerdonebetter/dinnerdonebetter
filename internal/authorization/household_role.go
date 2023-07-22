@@ -3,7 +3,7 @@ package authorization
 import (
 	"encoding/gob"
 
-	"gopkg.in/mikespook/gorbac.v2"
+	"github.com/mikespook/gorbac/v2"
 )
 
 type (

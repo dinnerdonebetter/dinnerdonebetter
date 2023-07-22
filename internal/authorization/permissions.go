@@ -1,7 +1,7 @@
 package authorization
 
 import (
-	"gopkg.in/mikespook/gorbac.v2"
+	"github.com/mikespook/gorbac/v2"
 )
 
 var _ gorbac.Permission = (*Permission)(nil)

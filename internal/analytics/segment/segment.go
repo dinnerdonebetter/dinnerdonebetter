@@ -9,7 +9,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
-	segment "gopkg.in/segmentio/analytics-go.v3"
+	segment "github.com/segmentio/analytics-go/v3"
 )
 
 const (

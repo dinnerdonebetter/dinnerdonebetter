@@ -105,7 +105,7 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (http.Server, error)
 		return nil, err
 	}
 	config11 := &cfg.Events
-	publisherProvider, err := config5.ProvidePublisherProvider(logger, tracerProvider, config11)
+	publisherProvider, err := config5.ProvidePublisherProvider(ctx, logger, tracerProvider, config11)
 	if err != nil {
 		return nil, err
 	}

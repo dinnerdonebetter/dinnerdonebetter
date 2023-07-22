@@ -7,21 +7,20 @@ import (
 	"strings"
 	"text/template"
 
-	codegen "github.com/dinnerdonebetter/backend/cmd/tools/gen_clients"
+	"github.com/dinnerdonebetter/backend/cmd/tools/codegen"
 )
 
 const (
-	fieldTemplate = `	{{.FieldName}}{{if .IsPointer}}?{{end}}: {{if not .IsPointer}}NonNullable<{{end}}{{if .IsSlice}}Array<{{end}}{{.FieldType}}{{if .IsSlice}}>{{end -}}{{if not .IsPointer}}>{{end -}}{{ if ne .DefaultValue "" }} = {{ .DefaultValue }}{{ end -}};` + "\n"
+	fieldTemplate = `	let {{.FieldName}}: {{if .IsSlice}}[{{end}}{{.FieldType}}{{if .IsPointer}}?{{end}}{{if .IsSlice}}]{{end -}}{{ if ne .DefaultValue "" }} = {{ .DefaultValue }}{{ end -}};`
 )
 
-func typescriptClass[T any](x T) (out string, imports []string, err error) {
+func swiftStruct[T any](x T) (out string, imports []string, err error) {
 	typ := reflect.TypeOf(x)
 	fieldsForType := reflect.VisibleFields(typ)
 
-	output := fmt.Sprintf("export class %s implements I%s {\n", typ.Name(), typ.Name())
+	output := fmt.Sprintf("struct %s {\n", typ.Name())
 	importedTypes := []string{}
 
-	parsedLines := []CodeLine{}
 	for i := range fieldsForType {
 		field := fieldsForType[i]
 		if field.Name == "_" {
@@ -33,7 +32,7 @@ func typescriptClass[T any](x T) (out string, imports []string, err error) {
 			continue
 		}
 
-		fieldType := strings.Replace(strings.TrimPrefix(strings.Replace(field.Type.String(), "[]", "", 1), "*"), "types.", "", 1)
+		fieldType := strings.Replace(strings.Replace(strings.Replace(field.Type.String(), "[]", "", 1), "*", "", 1), "types.", "", 1)
 		isPointer := field.Type.Kind() == reflect.Ptr
 		isSlice := field.Type.Kind() == reflect.Slice
 		defaultValue := ""
@@ -53,29 +52,38 @@ func typescriptClass[T any](x T) (out string, imports []string, err error) {
 
 		switch fieldType {
 		case stringType:
+			fieldType = "String"
 			if !isSlice {
-				defaultValue = `''`
+				defaultValue = `""`
 				if isPointer {
 					defaultValue = ""
 				}
 			}
 		case mapStringToBoolType:
-			fieldType = "Record<string, boolean>"
-			defaultValue = "{}"
+			fieldType = "[String: Bool]"
+			defaultValue = "[String: Bool]()"
 		case timeType:
-			fieldType = stringType
+			fieldType = "Date"
 			if !isPointer {
-				defaultValue = "'1970-01-01T00:00:00Z'"
+				defaultValue = `Date(timeIntervalSince1970: 0)`
 			}
 		case boolType:
-			fieldType = "boolean"
+			fieldType = "Bool"
 			if !isSlice {
 				defaultValue = "false"
 			}
 		}
 
-		if numberMatcherRegex.MatchString(field.Type.String()) {
-			fieldType = "number"
+		ts := fieldType
+		if numberMatcherRegex.MatchString(ts) {
+			switch ts {
+			case "int", "int8", "int16", "int32", "int64":
+				fieldType = "Int"
+			case "uint", "uint8", "uint16", "uint32", "uint64":
+				fieldType = "UInt"
+			case "float32", "float64":
+				fieldType = "Double"
+			}
 			if !isPointer && !isSlice {
 				defaultValue = "0"
 			}
@@ -88,7 +96,7 @@ func typescriptClass[T any](x T) (out string, imports []string, err error) {
 		if t, ok := codegen.CustomTypeMap[fmt.Sprintf("%s.%s", typ.Name(), fieldName)]; ok {
 			fieldType = t
 			importedTypes = append(importedTypes, t)
-			defaultValue = codegen.DefaultValues[t]
+			defaultValue = codegen.DefaultEnumValues[t]
 		}
 
 		line := CodeLine{
@@ -107,27 +115,10 @@ func typescriptClass[T any](x T) (out string, imports []string, err error) {
 			return "", nil, tmplExecErr
 		}
 
-		thisLine := b.String()
-		output += thisLine
-		parsedLines = append(parsedLines, line)
+		output += b.String() + "\n"
 	}
 
-	output += fmt.Sprintf(`
-	constructor(input: Partial<%s> = {}) {
-`, typ.Name())
-
-	for i := range parsedLines {
-		line := parsedLines[i]
-
-		dv := ""
-		if line.DefaultValue != "" {
-			dv = fmt.Sprintf(" ?? %s", line.DefaultValue)
-		}
-
-		output += fmt.Sprintf("    this.%s = input.%s%s;\n", line.FieldName, line.FieldName, dv)
-	}
-
-	output += "	}\n}\n"
+	output += "}\n"
 
 	return output, importedTypes, nil
 }

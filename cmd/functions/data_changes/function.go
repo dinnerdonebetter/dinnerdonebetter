@@ -62,7 +62,7 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 
 	var msg MessagePublishedData
 	if err := e.DataAs(&msg); err != nil {
-		return fmt.Errorf("event.DataAs: %v", err)
+		return fmt.Errorf("event.DataAs: %w", err)
 	}
 
 	cfg, err := config.GetDataChangesWorkerConfigFromGoogleCloudSecretManager(ctx)
@@ -88,7 +88,7 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 
 	defer analyticsEventReporter.Close()
 
-	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
+	publisherProvider, err := msgconfig.ProvidePublisherProvider(ctx, logger, tracerProvider, &cfg.Events)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring queue manager")
 	}
@@ -134,11 +134,11 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 		}
 	}
 
-	if err = handleOutboundNotifications(ctx, logger, tracer, dataManager, outboundEmailsPublisher, analyticsEventReporter, changeMessage); err != nil {
+	if err = handleOutboundNotifications(ctx, logger, tracer, dataManager, outboundEmailsPublisher, analyticsEventReporter, &changeMessage); err != nil {
 		observability.AcknowledgeError(err, logger, span, "notifying customer(s)")
 	}
 
-	if err = handleSearchIndexUpdates(ctx, logger, tracer, searchDataIndexPublisher, changeMessage); err != nil {
+	if err = handleSearchIndexUpdates(ctx, logger, tracer, searchDataIndexPublisher, &changeMessage); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating search index)")
 	}
 
@@ -152,7 +152,7 @@ func handleSearchIndexUpdates(
 	l logging.Logger,
 	tracer tracing.Tracer,
 	searchDataIndexPublisher messagequeue.Publisher,
-	changeMessage types.DataChangeMessage,
+	changeMessage *types.DataChangeMessage,
 ) error {
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
@@ -333,7 +333,7 @@ func handleOutboundNotifications(
 	dataManager database.DataManager,
 	outboundEmailsPublisher messagequeue.Publisher,
 	analyticsEventReporter analytics.EventReporter,
-	changeMessage types.DataChangeMessage,
+	changeMessage *types.DataChangeMessage,
 ) error {
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()

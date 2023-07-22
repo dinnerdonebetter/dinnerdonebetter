@@ -57,7 +57,7 @@ func main() {
 		logger.Error(initializeTracerErr, "initializing tracer")
 	}
 
-	publisherProvider, err := msgconfig.ProvidePublisherProvider(logger, tracerProvider, &cfg.Events)
+	publisherProvider, err := msgconfig.ProvidePublisherProvider(ctx, logger, tracerProvider, &cfg.Events)
 	if err != nil {
 		log.Fatal(err)
 	}
