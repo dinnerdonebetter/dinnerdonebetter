@@ -1,5 +1,9 @@
 package authorization
 
+import (
+	"github.com/mikespook/gorbac/v2"
+)
+
 var _ gorbac.Permission = (*Permission)(nil)
 
 type (

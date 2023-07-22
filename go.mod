@@ -48,6 +48,7 @@ require (
 	github.com/mailgun/mailgun-go/v4 v4.9.2
 	github.com/mailjet/mailjet-apiv3-go/v4 v4.0.1
 	github.com/matcornic/hermes/v2 v2.1.0
+	github.com/mikespook/gorbac/v2 v2.3.3
 	github.com/mjibson/sqlfmt v0.5.0
 	github.com/moul/http2curl v1.0.0
 	github.com/mssola/useragent v1.0.0
@@ -177,6 +178,7 @@ require (
 	github.com/mattn/go-colorable v0.1.12 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
 	github.com/mattn/go-runewidth v0.0.3 // indirect
+	github.com/mikespook/gorbac v2.3.0+incompatible // indirect
 	github.com/mitchellh/copystructure v1.0.0 // indirect
 	github.com/mitchellh/reflectwalk v1.0.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect

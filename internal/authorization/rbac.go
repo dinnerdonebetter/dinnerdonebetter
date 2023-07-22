@@ -1,5 +1,9 @@
 package authorization
 
+import (
+	"github.com/mikespook/gorbac/v2"
+)
+
 type (
 	role int
 )

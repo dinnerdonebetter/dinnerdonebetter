@@ -2,6 +2,8 @@ package authorization
 
 import (
 	"encoding/gob"
+
+	"github.com/mikespook/gorbac/v2"
 )
 
 type (
