@@ -29,6 +29,12 @@ func defaultSchemaCustomizer(name string, _ reflect.Type, _ reflect.StructTag, _
 
 func main() {
 	spec := openapi3.T{
+		Servers: openapi3.Servers{
+			&openapi3.Server{
+				URL:         "https://api.dinnerdonebetter.dev",
+				Description: "Development server",
+			},
+		},
 		OpenAPI: "3.0.0",
 		Info: &openapi3.Info{
 			Title:          "Dinner Done Better API",
@@ -57,6 +63,10 @@ func main() {
 	}
 
 	for _, typ := range codegen.TypesWeCareAbout {
+		if typ.Name() == "QueryFilter" {
+			continue
+		}
+
 		schemaRef, err := openapi3gen.NewSchemaRefForValue(
 			typ.Type,
 			spec.Components.Schemas,
@@ -67,9 +77,90 @@ func main() {
 			panic(err)
 		}
 
+		schemaRef.Value.Description = typ.Description
+
 		spec.Components.Schemas[typ.Name()] = schemaRef
 	}
 
+	routeSpecs := []routeSpec{
+		{
+			path:               "/api/v1/valid_ingredients",
+			method:             http.MethodGet,
+			description:        "Fetches valid ingredients",
+			operationID:        "getValidIngredients",
+			returnTypeName:     "ValidIngredient",
+			returnCode:         http.StatusOK,
+			returnsContent:     true,
+			returnsArray:       true,
+			acceptsQueryFilter: true,
+			tags: []string{
+				"Valid Ingredients",
+			},
+		},
+		{
+			path:           "/api/v1/valid_ingredients/{id}",
+			method:         http.MethodGet,
+			description:    "Fetches a valid ingredient",
+			operationID:    "getValidIngredient",
+			returnTypeName: "ValidIngredient",
+			routeParams: []routeParam{
+				{
+					name:        "id",
+					description: "the valid ingredient's id",
+					typ:         "string",
+				},
+			},
+			returnCode:     http.StatusOK,
+			returnsContent: true,
+			tags: []string{
+				"Valid Ingredients",
+			},
+		},
+		{
+			path:           "/api/v1/valid_ingredients/random",
+			method:         http.MethodGet,
+			description:    "Fetches a random valid ingredient",
+			operationID:    "getRandomValidIngredient",
+			returnTypeName: "ValidIngredient",
+			returnCode:     http.StatusOK,
+			returnsContent: true,
+			tags: []string{
+				"Valid Ingredients",
+			},
+		},
+		{
+			path:           "/api/v1/valid_ingredients",
+			method:         http.MethodPost,
+			description:    "Creates a valid ingredient",
+			operationID:    "createValidIngredient",
+			returnTypeName: "ValidIngredient",
+			returnCode:     http.StatusCreated,
+			returnsContent: true,
+			tags: []string{
+				"Valid Ingredients",
+			},
+		},
+	}
+
+	for _, rs := range routeSpecs {
+		addRoute(spec, rs)
+	}
+
+	//manuallyAddRoutesToSpec(spec)
+
+	marshalledSpec, err := yaml.Marshal(spec)
+	mustnt(err)
+
+	if err = os.Remove("./cmd/tools/gen_clients/gen_openapi_spec/schema.yaml"); err != nil {
+		panic(err)
+	}
+
+	if err = os.WriteFile("./cmd/tools/gen_clients/gen_openapi_spec/schema.yaml", marshalledSpec, 0o644); err != nil {
+		panic(err)
+	}
+}
+
+func manuallyAddRoutesToSpec(spec openapi3.T) {
 	spec.AddOperation("/api/v1/valid_ingredients", http.MethodPost, &openapi3.Operation{
 		OperationID: "createRandomValidIngredient",
 		Parameters:  openapi3.Parameters{},
@@ -162,15 +253,4 @@ func main() {
 			},
 		},
 	})
-
-	marshalledSpec, err := yaml.Marshal(spec)
-	mustnt(err)
-
-	if err = os.Remove("./cmd/tools/gen_clients/gen_openapi_spec/schema.yaml"); err != nil {
-		panic(err)
-	}
-
-	if err = os.WriteFile("./cmd/tools/gen_clients/gen_openapi_spec/schema.yaml", marshalledSpec, 0o644); err != nil {
-		panic(err)
-	}
 }

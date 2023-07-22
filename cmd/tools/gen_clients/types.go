@@ -305,460 +305,612 @@ var (
 
 	TypesWeCareAbout = []TypeDefinition{
 		{
-			Type: &types.ModifyUserPermissionsInput{},
+			Type:        &types.ModifyUserPermissionsInput{},
+			Description: "",
 		},
 		{
-			Type: &types.OAuth2Client{},
+			Type:        &types.OAuth2Client{},
+			Description: "",
 		},
 		{
-			Type: &types.OAuth2ClientCreationRequestInput{},
+			Type:        &types.OAuth2ClientCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.OAuth2ClientCreationResponse{},
+			Type:        &types.OAuth2ClientCreationResponse{},
+			Description: "",
 		},
 		{
-			Type: &types.ChangeActiveHouseholdInput{},
+			Type:        &types.ChangeActiveHouseholdInput{},
+			Description: "",
 		},
 		{
-			Type: &types.PasswordResetToken{},
+			Type:        &types.PasswordResetToken{},
+			Description: "",
 		},
 		{
-			Type: &types.PasswordResetTokenCreationRequestInput{},
+			Type:        &types.PasswordResetTokenCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.PasswordResetTokenRedemptionRequestInput{},
+			Type:        &types.PasswordResetTokenRedemptionRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.TOTPSecretRefreshInput{},
+			Type:        &types.TOTPSecretRefreshInput{},
+			Description: "",
 		},
 		{
-			Type: &types.TOTPSecretVerificationInput{},
+			Type:        &types.TOTPSecretVerificationInput{},
+			Description: "",
 		},
 		{
-			Type: &types.TOTPSecretRefreshResponse{},
+			Type:        &types.TOTPSecretRefreshResponse{},
+			Description: "",
 		},
 		{
-			Type: &types.PasswordUpdateInput{},
+			Type:        &types.PasswordUpdateInput{},
+			Description: "",
 		},
 		{
-			Type: &types.APIError{},
+			Type:        &types.APIError{},
+			Description: "",
 		},
 		{
-			Type: &types.HouseholdInvitation{},
+			Type:        &types.HouseholdInvitation{},
+			Description: "",
 		},
 		{
-			Type: &types.HouseholdInvitationUpdateRequestInput{},
+			Type:        &types.HouseholdInvitationUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.HouseholdInvitationCreationRequestInput{},
+			Type:        &types.HouseholdInvitationCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.Household{},
+			Type:        &types.Household{},
+			Description: "",
 		},
 		{
-			Type: &types.HouseholdCreationRequestInput{},
+			Type:        &types.HouseholdCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.HouseholdUpdateRequestInput{},
+			Type:        &types.HouseholdUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.HouseholdOwnershipTransferInput{},
+			Type:        &types.HouseholdOwnershipTransferInput{},
+			Description: "",
 		},
 		{
-			Type: &types.HouseholdUserMembership{},
+			Type:        &types.HouseholdUserMembership{},
+			Description: "",
 		},
 		{
-			Type: &types.HouseholdUserMembershipWithUser{},
+			Type:        &types.HouseholdUserMembershipWithUser{},
+			Description: "",
 		},
 		{
-			Type: &types.HouseholdUserMembershipCreationRequestInput{},
+			Type:        &types.HouseholdUserMembershipCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.MealPlanEvent{},
+			Type:        &types.MealPlanEvent{},
+			Description: "",
 		},
 		{
-			Type: &types.MealPlanEventCreationRequestInput{},
+			Type:        &types.MealPlanEventCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.MealPlanEventUpdateRequestInput{},
+			Type:        &types.MealPlanEventUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.MealPlanGroceryListItem{},
+			Type:        &types.MealPlanGroceryListItem{},
+			Description: "",
 		},
 		{
-			Type: &types.MealPlanGroceryListItemCreationRequestInput{},
+			Type:        &types.MealPlanGroceryListItemCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.MealPlanGroceryListItemUpdateRequestInput{},
+			Type:        &types.MealPlanGroceryListItemUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.MealPlanOption{},
+			Type:        &types.MealPlanOption{},
+			Description: "",
 		},
 		{
-			Type: &types.MealPlanOptionCreationRequestInput{},
+			Type:        &types.MealPlanOptionCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.MealPlanOptionUpdateRequestInput{},
+			Type:        &types.MealPlanOptionUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.MealPlanOptionVote{},
+			Type:        &types.MealPlanOptionVote{},
+			Description: "",
 		},
 		{
-			Type: &types.MealPlanOptionVoteCreationInput{},
+			Type:        &types.MealPlanOptionVoteCreationInput{},
+			Description: "",
 		},
 		{
-			Type: &types.MealPlanOptionVoteCreationRequestInput{},
+			Type:        &types.MealPlanOptionVoteCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.MealPlanOptionVoteUpdateRequestInput{},
+			Type:        &types.MealPlanOptionVoteUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.MealPlan{},
+			Type:        &types.MealPlan{},
+			Description: "",
 		},
 		{
-			Type: &types.MealPlanCreationRequestInput{},
+			Type:        &types.MealPlanCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.MealPlanUpdateRequestInput{},
+			Type:        &types.MealPlanUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.MealPlanTask{},
+			Type:        &types.MealPlanTask{},
+			Description: "",
 		},
 		{
-			Type: &types.MealPlanTaskCreationRequestInput{},
+			Type:        &types.MealPlanTaskCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.MealPlanTaskStatusChangeRequestInput{},
+			Type:        &types.MealPlanTaskStatusChangeRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.Meal{},
+			Type:        &types.Meal{},
+			Description: "",
 		},
 		{
-			Type: &types.MealCreationRequestInput{},
+			Type:        &types.MealCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.MealUpdateRequestInput{},
+			Type:        &types.MealUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipeRating{},
+			Type:        &types.RecipeRating{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipeRatingCreationRequestInput{},
+			Type:        &types.RecipeRatingCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipeRatingUpdateRequestInput{},
+			Type:        &types.RecipeRatingUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.HouseholdInstrumentOwnership{},
+			Type:        &types.HouseholdInstrumentOwnership{},
+			Description: "",
 		},
 		{
-			Type: &types.HouseholdInstrumentOwnershipCreationRequestInput{},
+			Type:        &types.HouseholdInstrumentOwnershipCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.HouseholdInstrumentOwnershipUpdateRequestInput{},
+			Type:        &types.HouseholdInstrumentOwnershipUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.MealComponent{},
+			Type:        &types.MealComponent{},
+			Description: "",
 		},
 		{
-			Type: &types.MealComponentCreationRequestInput{},
+			Type:        &types.MealComponentCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.MealComponentUpdateRequestInput{},
+			Type:        &types.MealComponentUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.UserPermissionsRequestInput{},
+			Type:        &types.UserPermissionsRequestInput{},
+			Description: "",
 		},
+		//{
+		//	Type:        &types.UserPermissionsResponse{},
+		//	Description: "",
+		//},
 		{
-			Type: &types.UserPermissionsResponse{},
+			Type:        &types.RecipeMedia{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipeMedia{},
+			Type:        &types.RecipeMediaCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipeMediaCreationRequestInput{},
+			Type:        &types.RecipeMediaUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipeMediaUpdateRequestInput{},
+			Type:        &types.RecipePrepTask{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipePrepTask{},
+			Type:        &types.RecipePrepTaskCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipePrepTaskCreationRequestInput{},
+			Type:        &types.RecipePrepTaskWithinRecipeCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipePrepTaskWithinRecipeCreationRequestInput{},
+			Type:        &types.RecipePrepTaskUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipePrepTaskUpdateRequestInput{},
+			Type:        &types.RecipePrepTaskStep{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipePrepTaskStep{},
+			Type:        &types.RecipePrepTaskStepWithinRecipeCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipePrepTaskStepWithinRecipeCreationRequestInput{},
+			Type:        &types.RecipePrepTaskStepCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipePrepTaskStepCreationRequestInput{},
+			Type:        &types.RecipePrepTaskStepUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipePrepTaskStepUpdateRequestInput{},
+			Type:        &types.RecipeStepCompletionCondition{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipeStepCompletionCondition{},
+			Type:        &types.RecipeStepCompletionConditionIngredient{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipeStepCompletionConditionIngredient{},
+			Type:        &types.RecipeStepCompletionConditionCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipeStepCompletionConditionCreationRequestInput{},
+			Type:        &types.RecipeStepCompletionConditionIngredientCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipeStepCompletionConditionIngredientCreationRequestInput{},
+			Type:        &types.RecipeStepCompletionConditionUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipeStepCompletionConditionUpdateRequestInput{},
+			Type:        &types.RecipeStepIngredient{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipeStepIngredient{},
+			Type:        &types.RecipeStepIngredientCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipeStepIngredientCreationRequestInput{},
+			Type:        &types.RecipeStepIngredientUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipeStepIngredientUpdateRequestInput{},
+			Type:        &types.RecipeStepInstrument{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipeStepInstrument{},
+			Type:        &types.RecipeStepInstrumentCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipeStepInstrumentCreationRequestInput{},
+			Type:        &types.RecipeStepInstrumentUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipeStepInstrumentUpdateRequestInput{},
+			Type:        &types.RecipeStepVessel{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipeStepVessel{},
+			Type:        &types.RecipeStepVesselCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipeStepVesselCreationRequestInput{},
+			Type:        &types.RecipeStepVesselUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipeStepVesselUpdateRequestInput{},
+			Type:        &types.RecipeStepProduct{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipeStepProduct{},
+			Type:        &types.RecipeStepProductCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipeStepProductCreationRequestInput{},
+			Type:        &types.RecipeStepProductUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipeStepProductUpdateRequestInput{},
+			Type:        &types.RecipeStep{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipeStep{},
+			Type:        &types.RecipeStepCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipeStepCreationRequestInput{},
+			Type:        &types.RecipeStepUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipeStepUpdateRequestInput{},
+			Type:        &types.Recipe{},
+			Description: "",
 		},
 		{
-			Type: &types.Recipe{},
+			Type:        &types.RecipeCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipeCreationRequestInput{},
+			Type:        &types.RecipeUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.RecipeUpdateRequestInput{},
+			Type:        &types.UserStatusResponse{},
+			Description: "",
 		},
 		{
-			Type: &types.UserStatusResponse{},
+			Type:        &types.User{},
+			Description: "",
 		},
 		{
-			Type: &types.User{},
+			Type:        &types.UserRegistrationInput{},
+			Description: "",
 		},
 		{
-			Type: &types.UserRegistrationInput{},
+			Type:        &types.UserCreationResponse{},
+			Description: "",
 		},
 		{
-			Type: &types.UserCreationResponse{},
+			Type:        &types.UserLoginInput{},
+			Description: "",
 		},
 		{
-			Type: &types.UserLoginInput{},
+			Type:        &types.UsernameReminderRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.UsernameReminderRequestInput{},
+			Type:        &types.UserAccountStatusUpdateInput{},
+			Description: "",
 		},
 		{
-			Type: &types.UserAccountStatusUpdateInput{},
+			Type:        &types.EmailAddressVerificationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.EmailAddressVerificationRequestInput{},
+			Type:        &types.AvatarUpdateInput{},
+			Description: "",
 		},
 		{
-			Type: &types.AvatarUpdateInput{},
+			Type:        &types.UserIngredientPreference{},
+			Description: "",
 		},
 		{
-			Type: &types.UserIngredientPreference{},
+			Type:        &types.UserIngredientPreferenceCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.UserIngredientPreferenceCreationRequestInput{},
+			Type:        &types.UserIngredientPreferenceUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.UserIngredientPreferenceUpdateRequestInput{},
+			Type:        &types.ValidIngredientMeasurementUnit{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidIngredientMeasurementUnit{},
+			Type:        &types.ValidIngredientMeasurementUnitCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidIngredientMeasurementUnitCreationRequestInput{},
+			Type:        &types.ValidIngredientMeasurementUnitUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidIngredientMeasurementUnitUpdateRequestInput{},
+			Type:        &types.ValidIngredientPreparation{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidIngredientPreparation{},
+			Type:        &types.ValidIngredientPreparationCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidIngredientPreparationCreationRequestInput{},
+			Type:        &types.ValidIngredientPreparationUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidIngredientPreparationUpdateRequestInput{},
+			Type:        &types.ValidIngredientState{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidIngredientState{},
+			Type:        &types.ValidIngredientStateCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidIngredientStateCreationRequestInput{},
+			Type:        &types.ValidIngredientStateUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidIngredientStateUpdateRequestInput{},
+			Type:        &types.ValidIngredientStateIngredient{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidIngredientStateIngredient{},
+			Type:        &types.ValidIngredientStateIngredientCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidIngredientStateIngredientCreationRequestInput{},
+			Type:        &types.ValidIngredientStateIngredientUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidIngredientStateIngredientUpdateRequestInput{},
+			Type:        &types.ValidIngredient{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidIngredient{},
+			Type:        &types.ValidIngredientCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidIngredientCreationRequestInput{},
+			Type:        &types.ValidIngredientUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidIngredientUpdateRequestInput{},
+			Type:        &types.ValidIngredientGroup{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidIngredientGroup{},
+			Type:        &types.ValidIngredientGroupCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidIngredientGroupCreationRequestInput{},
+			Type:        &types.ValidIngredientGroupUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidIngredientGroupUpdateRequestInput{},
+			Type:        &types.ValidIngredientGroupMember{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidIngredientGroupMember{},
+			Type:        &types.ValidIngredientGroupMemberCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidIngredientGroupMemberCreationRequestInput{},
+			Type:        &types.ValidInstrument{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidInstrument{},
+			Type:        &types.ValidInstrumentCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidInstrumentCreationRequestInput{},
+			Type:        &types.ValidInstrumentUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidInstrumentUpdateRequestInput{},
+			Type:        &types.ValidMeasurementUnitConversion{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidMeasurementUnitConversion{},
+			Type:        &types.ValidMeasurementUnitConversionCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidMeasurementUnitConversionCreationRequestInput{},
+			Type:        &types.ValidMeasurementUnitConversionUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidMeasurementUnitConversionUpdateRequestInput{},
+			Type:        &types.ValidMeasurementUnit{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidMeasurementUnit{},
+			Type:        &types.ValidMeasurementUnitCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidMeasurementUnitCreationRequestInput{},
+			Type:        &types.ValidMeasurementUnitUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidMeasurementUnitUpdateRequestInput{},
+			Type:        &types.ValidPreparationInstrument{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidPreparationInstrument{},
+			Type:        &types.ValidPreparationInstrumentCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidPreparationInstrumentCreationRequestInput{},
+			Type:        &types.ValidPreparationInstrumentUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidPreparationInstrumentUpdateRequestInput{},
+			Type:        &types.ValidPreparationVessel{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidPreparationVessel{},
+			Type:        &types.ValidPreparationVesselCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidPreparationVesselCreationRequestInput{},
+			Type:        &types.ValidPreparationVesselUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidPreparationVesselUpdateRequestInput{},
+			Type:        &types.ValidPreparation{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidPreparation{},
+			Type:        &types.ValidPreparationCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidPreparationCreationRequestInput{},
+			Type:        &types.ValidPreparationUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidPreparationUpdateRequestInput{},
+			Type:        &types.ValidVessel{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidVessel{},
+			Type:        &types.ValidVesselCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidVesselCreationRequestInput{},
+			Type:        &types.ValidVesselUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ValidVesselUpdateRequestInput{},
+			Type:        &types.ServiceSetting{},
+			Description: "",
 		},
 		{
-			Type: &types.ServiceSetting{},
+			Type:        &types.ServiceSettingCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ServiceSettingCreationRequestInput{},
+			Type:        &types.ServiceSettingUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ServiceSettingUpdateRequestInput{},
+			Type:        &types.ServiceSettingConfiguration{},
+			Description: "",
 		},
 		{
-			Type: &types.ServiceSettingConfiguration{},
+			Type:        &types.ServiceSettingConfigurationCreationRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ServiceSettingConfigurationCreationRequestInput{},
+			Type:        &types.ServiceSettingConfigurationUpdateRequestInput{},
+			Description: "",
 		},
 		{
-			Type: &types.ServiceSettingConfigurationUpdateRequestInput{},
+			Type:        &types.Webhook{},
+			Description: "",
 		},
 		{
-			Type: &types.Webhook{},
+			Type:        &types.WebhookTriggerEvent{},
+			Description: "",
 		},
 		{
-			Type: &types.WebhookTriggerEvent{},
-		},
-		{
-			Type: &types.WebhookCreationRequestInput{},
+			Type:        &types.WebhookCreationRequestInput{},
+			Description: "",
 		},
 	}
 )

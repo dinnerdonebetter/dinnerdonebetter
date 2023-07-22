@@ -10048,15 +10048,6 @@ components:
           type: array
           items:
             type: string
-    UserPermissionsResponse:
-      type: object
-      properties:
-        permissions:
-          type: object
-          additionalProperties:
-            has: null
-            schema:
-              type: boolean
     UserRegistrationInput:
       type: object
       properties:
@@ -12117,6 +12108,8 @@ info:
 paths:
   /api/v1/valid_ingredients:
     get:
+      tags:
+      - Valid Ingredients
       operationId: getValidIngredients
       parameters:
       - name: limit
@@ -12126,9 +12119,67 @@ paths:
         allowEmptyValue: true
         schema:
           type: number
+      - name: page
+        in: query
+        style: form
+        explode: false
+        allowEmptyValue: true
+        schema:
+          type: number
+      - name: sortBy
+        in: query
+        style: form
+        explode: false
+        allowEmptyValue: true
+        schema:
+          type: string
+          enum:
+          - asc
+          - desc
+      - name: createdAfter
+        in: query
+        style: form
+        explode: false
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: date-time
+      - name: createdBefore
+        in: query
+        style: form
+        explode: false
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: date-time
+      - name: updatedAfter
+        in: query
+        style: form
+        explode: false
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: date-time
+      - name: updatedBefore
+        in: query
+        style: form
+        explode: false
+        allowEmptyValue: true
+        schema:
+          type: string
+          format: date-time
+      - name: includeArchived
+        in: query
+        style: form
+        explode: false
+        allowEmptyValue: true
+        schema:
+          type: string
+          enum:
+          - "true"
       responses:
         "200":
-          description: ' '
+          description: Fetches valid ingredients
           content:
             application/json:
               schema:
@@ -12136,27 +12187,49 @@ paths:
                 items:
                   $ref: '#/components/schemas/ValidIngredient'
     post:
-      operationId: createRandomValidIngredient
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ValidIngredientCreationRequestInput'
+      tags:
+      - Valid Ingredients
+      operationId: createValidIngredient
       responses:
         "201":
-          description: ' '
+          description: Creates a valid ingredient
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidIngredient'
+  /api/v1/valid_ingredients/{id}:
+    get:
+      tags:
+      - Valid Ingredients
+      operationId: getValidIngredient
+      parameters:
+      - name: id
+        in: path
+        description: the valid ingredient's id
+        style: simple
+        allowReserved: true
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Fetches a valid ingredient
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidIngredient'
   /api/v1/valid_ingredients/random:
     get:
+      tags:
+      - Valid Ingredients
       operationId: getRandomValidIngredient
       responses:
         "200":
-          description: ' '
+          description: Fetches a random valid ingredient
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ValidIngredient'
+servers:
+- url: https://api.dinnerdonebetter.dev
+  description: Development server
