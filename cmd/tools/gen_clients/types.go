@@ -28,6 +28,9 @@ var (
 		"MealPlan.electionMethod":                                "ValidMealPlanElectionMethod",
 		"MealPlanUpdateRequestInput.electionMethod":              "ValidMealPlanElectionMethod",
 		"MealPlanCreationRequestInput.electionMethod":            "ValidMealPlanElectionMethod",
+		"ValidVessel.shape":                                      "ValidVesselShapeType",
+		"ValidVesselUpdateRequestInput.shape":                    "ValidVesselShapeType",
+		"ValidVesselCreationRequestInput.shape":                  "ValidVesselShapeType",
 	}
 
 	DefaultValues = map[string]string{
@@ -38,6 +41,7 @@ var (
 		"ValidRecipeStepProductType":         "'ingredient'",
 		"MealComponentType":                  "'unspecified'",
 		"MealPlanTaskStatus":                 "'unfinished'",
+		"ValidVesselShapeType":               "'other'",
 	}
 
 	TypeDefinitionFilesToGenerate = map[string][]any{
