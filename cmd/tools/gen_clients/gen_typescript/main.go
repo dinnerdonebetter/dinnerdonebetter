@@ -31,14 +31,9 @@ type CodeLine struct {
 }
 
 func buildImportMap() map[string]string {
-	importMap := map[string]string{
-		"ValidIngredientStateAttributeType":  "_unions.ts",
-		"ValidMealPlanStatus":                "_unions.ts",
-		"ValidMealPlanGroceryListItemStatus": "_unions.ts",
-		"ValidMealPlanElectionMethod":        "_unions.ts",
-		"ValidRecipeStepProductType":         "_unions.ts",
-		"MealComponentType":                  "_unions.ts",
-		"MealPlanTaskStatus":                 "_unions.ts",
+	importMap := map[string]string{}
+	for _, u := range unions {
+		importMap[u.Name] = "_unions.ts"
 	}
 
 	for filename, typesToGenerateFor := range codegen.TypeDefinitionFilesToGenerate {

@@ -192,8 +192,6 @@ func (q *Querier) getOneRow(ctx context.Context, querier database.SQLQueryExecut
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	query = minimizeSQL(query)
-
 	logger := q.logger.WithValue("query_desc", queryDescription)
 	if q.logQueries {
 		logger = logger.WithValue("args", args)
@@ -213,8 +211,6 @@ func (q *Querier) getOneRow(ctx context.Context, querier database.SQLQueryExecut
 func (q *Querier) getRows(ctx context.Context, querier database.SQLQueryExecutor, queryDescription, query string, args []any) (*sql.Rows, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
-
-	query = minimizeSQL(query)
 
 	logger := q.logger.WithValue("query_desc", queryDescription)
 	if q.logQueries {
@@ -243,8 +239,6 @@ func (q *Querier) performBooleanQuery(ctx context.Context, querier database.SQLQ
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	query = minimizeSQL(query)
-
 	logger := q.logger.WithValue(keys.DatabaseQueryKey, query).WithValue("args", args)
 	tracing.AttachDatabaseQueryToSpan(span, "boolean query", query, args)
 
@@ -267,8 +261,6 @@ func (q *Querier) performBooleanQuery(ctx context.Context, querier database.SQLQ
 func (q *Querier) performWriteQuery(ctx context.Context, querier database.SQLQueryExecutor, queryDescription, query string, args []any) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
-
-	query = minimizeSQL(query)
 
 	logger := q.logger.WithValue("query_desc", queryDescription)
 	if q.logQueries {

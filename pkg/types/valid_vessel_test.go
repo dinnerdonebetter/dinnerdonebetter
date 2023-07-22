@@ -20,7 +20,8 @@ func TestValidVesselCreationRequestInput_Validate(T *testing.T) {
 			Name:           fake.LoremIpsumSentence(exampleQuantity),
 			Description:    fake.LoremIpsumSentence(exampleQuantity),
 			IconPath:       fake.LoremIpsumSentence(exampleQuantity),
-			CapacityUnitID: fake.LoremIpsumSentence(exampleQuantity),
+			Capacity:       exampleQuantity,
+			CapacityUnitID: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

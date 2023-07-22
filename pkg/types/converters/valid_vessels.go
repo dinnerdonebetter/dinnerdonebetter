@@ -105,7 +105,7 @@ func ConvertNullableValidVesselToValidVessel(x *types.NullableValidVessel) *type
 
 // ConvertValidVesselToValidVesselCreationRequestInput builds a ValidVesselCreationRequestInput from a ValidVessel.
 func ConvertValidVesselToValidVesselCreationRequestInput(x *types.ValidVessel) *types.ValidVesselCreationRequestInput {
-	return &types.ValidVesselCreationRequestInput{
+	v := &types.ValidVesselCreationRequestInput{
 		Name:                           x.Name,
 		PluralName:                     x.PluralName,
 		Description:                    x.Description,
@@ -115,17 +115,22 @@ func ConvertValidVesselToValidVesselCreationRequestInput(x *types.ValidVessel) *
 		DisplayInSummaryLists:          x.DisplayInSummaryLists,
 		IncludeInGeneratedInstructions: x.IncludeInGeneratedInstructions,
 		Capacity:                       x.Capacity,
-		CapacityUnitID:                 x.CapacityUnit.ID,
 		WidthInMillimeters:             x.WidthInMillimeters,
 		LengthInMillimeters:            x.LengthInMillimeters,
 		HeightInMillimeters:            x.HeightInMillimeters,
 		Shape:                          x.Shape,
 	}
+
+	if x.CapacityUnit != nil {
+		v.CapacityUnitID = &x.CapacityUnit.ID
+	}
+
+	return v
 }
 
 // ConvertValidVesselToValidVesselDatabaseCreationInput builds a ValidVesselDatabaseCreationInput from a ValidVessel.
 func ConvertValidVesselToValidVesselDatabaseCreationInput(x *types.ValidVessel) *types.ValidVesselDatabaseCreationInput {
-	return &types.ValidVesselDatabaseCreationInput{
+	v := &types.ValidVesselDatabaseCreationInput{
 		ID:                             x.ID,
 		Name:                           x.Name,
 		PluralName:                     x.PluralName,
@@ -136,12 +141,17 @@ func ConvertValidVesselToValidVesselDatabaseCreationInput(x *types.ValidVessel) 
 		DisplayInSummaryLists:          x.DisplayInSummaryLists,
 		IncludeInGeneratedInstructions: x.IncludeInGeneratedInstructions,
 		Capacity:                       x.Capacity,
-		CapacityUnitID:                 x.CapacityUnit.ID,
 		WidthInMillimeters:             x.WidthInMillimeters,
 		LengthInMillimeters:            x.LengthInMillimeters,
 		HeightInMillimeters:            x.HeightInMillimeters,
 		Shape:                          x.Shape,
 	}
+
+	if x.CapacityUnit != nil {
+		v.CapacityUnitID = &x.CapacityUnit.ID
+	}
+
+	return v
 }
 
 // ConvertValidVesselToValidVesselSearchSubset converts a ValidVessel to a ValidVesselSearchSubset.
