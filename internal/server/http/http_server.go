@@ -31,6 +31,7 @@ type (
 	Server interface {
 		Serve()
 		Shutdown(context.Context) error
+		Router() routing.Router
 	}
 
 	// server is our API http server.
@@ -147,7 +148,7 @@ func ProvideHTTPServer(
 		encoder:        encoder,
 		logger:         logging.EnsureLogger(logger).WithName(loggerName),
 		panicker:       panicking.NewProductionPanicker(),
-		httpServer:     ProvideStdLibHTTPServer(serverSettings.HTTPPort),
+		httpServer:     provideStdLibHTTPServer(serverSettings.HTTPPort),
 		dataManager:    dataManager,
 		tracerProvider: tracerProvider,
 
@@ -199,6 +200,11 @@ func ProvideHTTPServer(
 
 	logger.Debug("HTTP server successfully constructed")
 	return srv, nil
+}
+
+// Router returns the router.
+func (s *server) Router() routing.Router {
+	return s.router
 }
 
 // Shutdown shuts down the server.
@@ -262,8 +268,8 @@ const (
 	idleTimeout  = maxTimeout
 )
 
-// ProvideStdLibHTTPServer provides an HTTP httpServer.
-func ProvideStdLibHTTPServer(port uint16) *http.Server {
+// provideStdLibHTTPServer provides an HTTP httpServer.
+func provideStdLibHTTPServer(port uint16) *http.Server {
 	// heavily inspired by https://blog.cloudflare.com/exposing-go-on-the-internet/
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%d", port),

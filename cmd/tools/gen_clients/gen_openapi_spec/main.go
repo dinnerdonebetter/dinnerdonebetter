@@ -1,12 +1,19 @@
 package main
 
 import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 	"reflect"
 
 	codegen "github.com/dinnerdonebetter/backend/cmd/tools/gen_clients"
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/config"
+	"github.com/dinnerdonebetter/backend/internal/objectstorage"
+	"github.com/dinnerdonebetter/backend/internal/routing"
+	"github.com/dinnerdonebetter/backend/internal/server/http/build"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3gen"
@@ -25,6 +32,34 @@ func defaultSchemaCustomizer(name string, _ reflect.Type, _ reflect.StructTag, _
 	}
 
 	return nil
+}
+
+func fetchServiceRouter() (routing.Router, error) {
+	var cfg *config.InstanceConfig
+	configBytes, err := os.ReadFile("environments/local/config_files/service-config.json")
+	if err != nil {
+		return nil, fmt.Errorf("reading local config file: %w", err)
+	}
+
+	if err = json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil || cfg == nil {
+		return nil, fmt.Errorf("decoding config file contents: %w", err)
+	}
+
+	cfg.Database.RunMigrations = false
+	cfg.Services.Users.Uploads.Storage.Provider = objectstorage.MemoryProvider
+	cfg.Services.Users.Uploads.Storage.FilesystemConfig = nil
+	cfg.Services.Recipes.Uploads.Storage.Provider = objectstorage.MemoryProvider
+	cfg.Services.Recipes.Uploads.Storage.FilesystemConfig = nil
+	cfg.Services.RecipeSteps.Uploads.Storage.Provider = objectstorage.MemoryProvider
+	cfg.Services.RecipeSteps.Uploads.Storage.FilesystemConfig = nil
+
+	// build our server struct.
+	srv, err := build.Build(context.Background(), cfg)
+	if err != nil {
+		return nil, fmt.Errorf("building server: %w", err)
+	}
+
+	return srv.Router(), nil
 }
 
 func main() {
@@ -146,8 +181,6 @@ func main() {
 		addRoute(spec, rs)
 	}
 
-	//manuallyAddRoutesToSpec(spec)
-
 	marshalledSpec, err := yaml.Marshal(spec)
 	mustnt(err)
 
@@ -158,99 +191,4 @@ func main() {
 	if err = os.WriteFile("./cmd/tools/gen_clients/gen_openapi_spec/schema.yaml", marshalledSpec, 0o644); err != nil {
 		panic(err)
 	}
-}
-
-func manuallyAddRoutesToSpec(spec openapi3.T) {
-	spec.AddOperation("/api/v1/valid_ingredients", http.MethodPost, &openapi3.Operation{
-		OperationID: "createRandomValidIngredient",
-		Parameters:  openapi3.Parameters{},
-		RequestBody: &openapi3.RequestBodyRef{
-			Value: &openapi3.RequestBody{
-				Required: true,
-				Content: openapi3.Content{
-					"application/json": &openapi3.MediaType{
-						Schema: &openapi3.SchemaRef{
-							Ref: "#/components/schemas/ValidIngredientCreationRequestInput",
-						},
-					},
-				},
-			},
-		},
-		Responses: openapi3.Responses{
-			"201": &openapi3.ResponseRef{
-				Value: &openapi3.Response{
-					Description: pointers.Pointer(" "),
-					Content: openapi3.Content{
-						"application/json": &openapi3.MediaType{
-							Schema: &openapi3.SchemaRef{
-								Ref: "#/components/schemas/ValidIngredient",
-							},
-						},
-					},
-				},
-			},
-		},
-	})
-
-	spec.AddOperation("/api/v1/valid_ingredients", http.MethodGet, &openapi3.Operation{
-		OperationID: "getValidIngredients",
-		Parameters: openapi3.Parameters{
-			&openapi3.ParameterRef{
-				Value: &openapi3.Parameter{
-					Name:            "limit",
-					In:              "query",
-					Description:     "",
-					Required:        false,
-					Deprecated:      false,
-					AllowEmptyValue: true,
-					Style:           "form",
-					Explode:         pointers.Pointer(false),
-					AllowReserved:   false,
-					Schema: &openapi3.SchemaRef{
-						Value: &openapi3.Schema{
-							Type: "number",
-						},
-					},
-				},
-			},
-		},
-		Responses: openapi3.Responses{
-			"200": &openapi3.ResponseRef{
-				Value: &openapi3.Response{
-					Description: pointers.Pointer(" "),
-					Content: openapi3.Content{
-						"application/json": &openapi3.MediaType{
-							Schema: &openapi3.SchemaRef{
-								Value: &openapi3.Schema{
-									Type: "array",
-									Items: &openapi3.SchemaRef{
-										Ref: "#/components/schemas/ValidIngredient",
-									},
-								},
-							},
-						},
-					},
-				},
-			},
-		},
-	})
-
-	spec.AddOperation("/api/v1/valid_ingredients/random", http.MethodGet, &openapi3.Operation{
-		OperationID: "getRandomValidIngredient",
-		Parameters:  openapi3.Parameters{},
-		Responses: openapi3.Responses{
-			"200": &openapi3.ResponseRef{
-				Value: &openapi3.Response{
-					Description: pointers.Pointer(" "),
-					Content: openapi3.Content{
-						"application/json": &openapi3.MediaType{
-							Schema: &openapi3.SchemaRef{
-								Ref: "#/components/schemas/ValidIngredient",
-							},
-						},
-					},
-				},
-			},
-		},
-	})
 }

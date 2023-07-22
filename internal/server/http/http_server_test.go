@@ -12,7 +12,7 @@ func TestProvideHTTPServer(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		x := ProvideStdLibHTTPServer(12345)
+		x := provideStdLibHTTPServer(12345)
 
 		assert.NotNil(t, x)
 	})
