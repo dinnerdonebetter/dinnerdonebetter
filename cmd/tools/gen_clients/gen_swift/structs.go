@@ -96,7 +96,7 @@ func swiftStruct[T any](x T) (out string, imports []string, err error) {
 		if t, ok := codegen.CustomTypeMap[fmt.Sprintf("%s.%s", typ.Name(), fieldName)]; ok {
 			fieldType = t
 			importedTypes = append(importedTypes, t)
-			defaultValue = codegen.DefaultValues[t]
+			defaultValue = codegen.DefaultEnumValues[t]
 		}
 
 		line := CodeLine{

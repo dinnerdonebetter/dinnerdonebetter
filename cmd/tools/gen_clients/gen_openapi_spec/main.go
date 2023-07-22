@@ -1,14 +1,16 @@
 package main
 
 import (
-	"encoding/json"
 	"net/http"
+	"os"
+	"reflect"
 
+	codegen "github.com/dinnerdonebetter/backend/cmd/tools/gen_clients"
 	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/openapi3gen"
+	"gopkg.in/yaml.v2"
 )
 
 func mustnt(err error) {
@@ -17,9 +19,15 @@ func mustnt(err error) {
 	}
 }
 
-func main() {
-	//ctx := context.Background()
+func defaultSchemaCustomizer(name string, _ reflect.Type, _ reflect.StructTag, _ *openapi3.Schema) error {
+	if name == "_" {
+		return &openapi3gen.ExcludeSchemaSentinel{}
+	}
 
+	return nil
+}
+
+func main() {
 	spec := openapi3.T{
 		OpenAPI: "3.0.0",
 		Info: &openapi3.Info{
@@ -30,10 +38,6 @@ func main() {
 				Name:  "",
 				URL:   "",
 				Email: "",
-			},
-			License: &openapi3.License{
-				Name: "nunya",
-				URL:  "",
 			},
 			Version: "0.0.1",
 		},
@@ -52,13 +56,19 @@ func main() {
 		},
 	}
 
-	validIngredientSchemaRef, err := openapi3gen.NewSchemaRefForValue(&types.ValidIngredient{}, spec.Components.Schemas, openapi3gen.UseAllExportedFields(), openapi3gen.ThrowErrorOnCycle())
-	mustnt(err)
-	spec.Components.Schemas["ValidIngredient"] = validIngredientSchemaRef
+	for _, typ := range codegen.TypesWeCareAbout {
+		schemaRef, err := openapi3gen.NewSchemaRefForValue(
+			typ.Type,
+			spec.Components.Schemas,
+			openapi3gen.UseAllExportedFields(),
+			openapi3gen.SchemaCustomizer(defaultSchemaCustomizer),
+		)
+		if err != nil {
+			panic(err)
+		}
 
-	validIngredientCreationRequestInputSchemaRef, err := openapi3gen.NewSchemaRefForValue(&types.ValidIngredientCreationRequestInput{}, spec.Components.Schemas, openapi3gen.UseAllExportedFields(), openapi3gen.ThrowErrorOnCycle())
-	mustnt(err)
-	spec.Components.Schemas["ValidIngredientCreationRequestInput"] = validIngredientCreationRequestInputSchemaRef
+		spec.Components.Schemas[typ.Name()] = schemaRef
+	}
 
 	spec.AddOperation("/api/v1/valid_ingredients", http.MethodPost, &openapi3.Operation{
 		OperationID: "createRandomValidIngredient",
@@ -153,10 +163,14 @@ func main() {
 		},
 	})
 
-	//mustnt(spec.Validate(ctx))
-
-	marshalledSpec, err := json.MarshalIndent(spec, "", "  ")
+	marshalledSpec, err := yaml.Marshal(spec)
 	mustnt(err)
 
-	println(string(marshalledSpec))
+	if err = os.Remove("./cmd/tools/gen_clients/gen_openapi_spec/schema.yaml"); err != nil {
+		panic(err)
+	}
+
+	if err = os.WriteFile("./cmd/tools/gen_clients/gen_openapi_spec/schema.yaml", marshalledSpec, 0o644); err != nil {
+		panic(err)
+	}
 }

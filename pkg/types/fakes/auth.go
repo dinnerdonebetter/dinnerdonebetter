@@ -1,8 +1,6 @@
 package fakes
 
 import (
-	"time"
-
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
@@ -62,13 +60,5 @@ func BuildFakeTransferHouseholdOwnershipInput() *types.HouseholdOwnershipTransfe
 func BuildFakeChangeActiveHouseholdInput() *types.ChangeActiveHouseholdInput {
 	return &types.ChangeActiveHouseholdInput{
 		HouseholdID: fake.UUID(),
-	}
-}
-
-// BuildFakePASETOCreationInput builds a faked PASETOCreationInput.
-func BuildFakePASETOCreationInput() *types.PASETOCreationInput {
-	return &types.PASETOCreationInput{
-		ClientID:    BuildFakeID(),
-		RequestTime: time.Now().Unix(),
 	}
 }

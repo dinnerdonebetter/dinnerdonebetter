@@ -77,6 +77,7 @@ require (
 	golang.org/x/oauth2 v0.10.0
 	golang.org/x/tools v0.11.0
 	gonum.org/v1/gonum v0.13.0
+	gopkg.in/yaml.v2 v2.4.0
 	resenje.org/schulze v0.4.2
 )
 
@@ -224,6 +225,5 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230717213848-3f92550aa753 // indirect
 	google.golang.org/grpc v1.56.2 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
