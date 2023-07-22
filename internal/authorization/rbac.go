@@ -1,9 +1,5 @@
 package authorization
 
-import (
-	"gopkg.in/mikespook/gorbac.v2"
-)
-
 type (
 	role int
 )
