@@ -97,6 +97,21 @@ var (
 				"finished",
 			},
 		},
+		{
+			Comment:   "valid vessel shape types",
+			Name:      "ValidVesselShapeType",
+			ConstName: "VALID_VESSEL_SHAPE_TYPES",
+			Values: []string{
+				"hemisphere",
+				"rectangle",
+				"cone",
+				"pyramid",
+				"cylinder",
+				"sphere",
+				"cube",
+				"other",
+			},
+		},
 	}
 )
 

@@ -56,7 +56,7 @@ var (
 	}
 )
 
-// scanValidVessel takes a database Scanner (i.e. *sql.Row) and scans the result into a valid instrument struct.
+// scanValidVessel takes a database Scanner (i.e. *sql.Row) and scans the result into a valid vessel struct.
 func (q *Querier) scanValidVessel(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.ValidVessel, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -115,7 +115,7 @@ func (q *Querier) scanValidVessel(ctx context.Context, scan database.Scanner, in
 	return x, filteredCount, totalCount, nil
 }
 
-// scanValidVessels takes some database rows and turns them into a slice of valid instruments.
+// scanValidVessels takes some database rows and turns them into a slice of valid vessels.
 func (q *Querier) scanValidVessels(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validVessels []*types.ValidVessel, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -149,7 +149,7 @@ func (q *Querier) scanValidVessels(ctx context.Context, rows database.ResultIter
 //go:embed queries/valid_vessels/exists.sql
 var validVesselExistenceQuery string
 
-// ValidVesselExists fetches whether a valid instrument exists from the database.
+// ValidVesselExists fetches whether a valid vessel exists from the database.
 func (q *Querier) ValidVesselExists(ctx context.Context, validVesselID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -168,7 +168,7 @@ func (q *Querier) ValidVesselExists(ctx context.Context, validVesselID string) (
 
 	result, err := q.performBooleanQuery(ctx, q.db, validVesselExistenceQuery, args)
 	if err != nil {
-		return false, observability.PrepareAndLogError(err, logger, span, "performing valid instrument existence check")
+		return false, observability.PrepareAndLogError(err, logger, span, "performing valid vessel existence check")
 	}
 
 	return result, nil
@@ -177,7 +177,7 @@ func (q *Querier) ValidVesselExists(ctx context.Context, validVesselID string) (
 //go:embed queries/valid_vessels/get_one.sql
 var getValidVesselQuery string
 
-// GetValidVessel fetches a valid instrument from the database.
+// GetValidVessel fetches a valid vessel from the database.
 func (q *Querier) GetValidVessel(ctx context.Context, validVesselID string) (*types.ValidVessel, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -207,7 +207,7 @@ func (q *Querier) GetValidVessel(ctx context.Context, validVesselID string) (*ty
 //go:embed queries/valid_vessels/get_random.sql
 var getRandomValidVesselQuery string
 
-// GetRandomValidVessel fetches a valid instrument from the database.
+// GetRandomValidVessel fetches a valid vessel from the database.
 func (q *Querier) GetRandomValidVessel(ctx context.Context) (*types.ValidVessel, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -227,7 +227,7 @@ func (q *Querier) GetRandomValidVessel(ctx context.Context) (*types.ValidVessel,
 //go:embed queries/valid_vessels/search.sql
 var validVesselSearchQuery string
 
-// SearchForValidVessels fetches a valid instrument from the database.
+// SearchForValidVessels fetches a valid vessel from the database.
 func (q *Querier) SearchForValidVessels(ctx context.Context, query string) ([]*types.ValidVessel, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -257,7 +257,7 @@ func (q *Querier) SearchForValidVessels(ctx context.Context, query string) ([]*t
 	return validVessels, nil
 }
 
-// SearchForValidVesselsForPreparation fetches a valid instrument from the database.
+// SearchForValidVesselsForPreparation fetches a valid vessel from the database.
 func (q *Querier) SearchForValidVesselsForPreparation(ctx context.Context, preparationID, query string) ([]*types.ValidVessel, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -292,7 +292,7 @@ func (q *Querier) SearchForValidVesselsForPreparation(ctx context.Context, prepa
 //go:embed queries/valid_vessels/get_many.sql
 var getValidVesselsQuery string
 
-// GetValidVessels fetches a list of valid instruments from the database that meet a particular filter.
+// GetValidVessels fetches a list of valid vessels from the database that meet a particular filter.
 func (q *Querier) GetValidVessels(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidVessel], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -324,19 +324,19 @@ func (q *Querier) GetValidVessels(ctx context.Context, filter *types.QueryFilter
 		filter.Limit,
 	}
 
-	rows, err := q.getRows(ctx, q.db, "valid instruments", getValidVesselsQuery, args)
+	rows, err := q.getRows(ctx, q.db, "valid vessels", getValidVesselsQuery, args)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid instruments list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid vessels list retrieval query")
 	}
 
 	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidVessels(ctx, rows, true); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid instruments")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid vessels")
 	}
 
 	return x, nil
 }
 
-// GetValidVesselsWithIDs fetches a list of valid instruments from the database that meet a particular filter.
+// GetValidVesselsWithIDs fetches a list of valid vessels from the database that meet a particular filter.
 func (q *Querier) GetValidVesselsWithIDs(ctx context.Context, ids []string) ([]*types.ValidVessel, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -353,14 +353,14 @@ func (q *Querier) GetValidVesselsWithIDs(ctx context.Context, ids []string) ([]*
 	}
 	query, args := q.buildListQuery(ctx, validVesselsTable, joins, groupBys, where, householdOwnershipColumn, validVesselsTableColumns, "", false, nil)
 
-	rows, err := q.getRows(ctx, q.db, "valid instruments", query, args)
+	rows, err := q.getRows(ctx, q.db, "valid vessels", query, args)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid instruments id list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid vessels id list retrieval query")
 	}
 
 	instruments, _, _, err := q.scanValidVessels(ctx, rows, true)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid instruments")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid vessels")
 	}
 
 	return instruments, nil
@@ -369,14 +369,14 @@ func (q *Querier) GetValidVesselsWithIDs(ctx context.Context, ids []string) ([]*
 //go:embed queries/valid_vessels/get_needing_indexing.sql
 var validVesselsNeedingIndexingQuery string
 
-// GetValidVesselIDsThatNeedSearchIndexing fetches a list of valid instruments from the database that meet a particular filter.
+// GetValidVesselIDsThatNeedSearchIndexing fetches a list of valid vessels from the database that meet a particular filter.
 func (q *Querier) GetValidVesselIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	rows, err := q.getRows(ctx, q.db, "valid instruments needing indexing", validVesselsNeedingIndexingQuery, nil)
+	rows, err := q.getRows(ctx, q.db, "valid vessels needing indexing", validVesselsNeedingIndexingQuery, nil)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing valid instruments list retrieval query")
+		return nil, observability.PrepareError(err, span, "executing valid vessels list retrieval query")
 	}
 
 	return q.scanIDs(ctx, rows)
@@ -385,7 +385,7 @@ func (q *Querier) GetValidVesselIDsThatNeedSearchIndexing(ctx context.Context) (
 //go:embed queries/valid_vessels/create.sql
 var validVesselCreationQuery string
 
-// CreateValidVessel creates a valid instrument in the database.
+// CreateValidVessel creates a valid vessel in the database.
 func (q *Querier) CreateValidVessel(ctx context.Context, input *types.ValidVesselDatabaseCreationInput) (*types.ValidVessel, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -414,9 +414,9 @@ func (q *Querier) CreateValidVessel(ctx context.Context, input *types.ValidVesse
 		input.Shape,
 	}
 
-	// create the valid instrument.
-	if err := q.performWriteQuery(ctx, q.db, "valid instrument creation", validVesselCreationQuery, args); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "performing valid instrument creation query")
+	// create the valid vessel.
+	if err := q.performWriteQuery(ctx, q.db, "valid vessel creation", validVesselCreationQuery, args); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing valid vessel creation query")
 	}
 
 	x := &types.ValidVessel{
@@ -427,7 +427,6 @@ func (q *Querier) CreateValidVessel(ctx context.Context, input *types.ValidVesse
 		IconPath:                       input.IconPath,
 		Slug:                           input.Slug,
 		Shape:                          input.Shape,
-		CapacityUnit:                   &types.ValidMeasurementUnit{ID: input.CapacityUnitID},
 		WidthInMillimeters:             input.WidthInMillimeters,
 		LengthInMillimeters:            input.LengthInMillimeters,
 		HeightInMillimeters:            input.HeightInMillimeters,
@@ -438,8 +437,12 @@ func (q *Querier) CreateValidVessel(ctx context.Context, input *types.ValidVesse
 		CreatedAt:                      q.currentTime(),
 	}
 
+	if input.CapacityUnitID != nil {
+		x.CapacityUnit = &types.ValidMeasurementUnit{ID: *input.CapacityUnitID}
+	}
+
 	tracing.AttachValidVesselIDToSpan(span, x.ID)
-	logger.Info("valid instrument created")
+	logger.Info("valid vessel created")
 
 	return x, nil
 }
@@ -447,7 +450,7 @@ func (q *Querier) CreateValidVessel(ctx context.Context, input *types.ValidVesse
 //go:embed queries/valid_vessels/update.sql
 var updateValidVesselQuery string
 
-// UpdateValidVessel updates a particular valid instrument.
+// UpdateValidVessel updates a particular valid vessel.
 func (q *Querier) UpdateValidVessel(ctx context.Context, updated *types.ValidVessel) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -477,11 +480,11 @@ func (q *Querier) UpdateValidVessel(ctx context.Context, updated *types.ValidVes
 		updated.ID,
 	}
 
-	if err := q.performWriteQuery(ctx, q.db, "valid instrument update", updateValidVesselQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating valid instrument")
+	if err := q.performWriteQuery(ctx, q.db, "valid vessel update", updateValidVesselQuery, args); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating valid vessel")
 	}
 
-	logger.Info("valid instrument updated")
+	logger.Info("valid vessel updated")
 
 	return nil
 }
@@ -489,7 +492,7 @@ func (q *Querier) UpdateValidVessel(ctx context.Context, updated *types.ValidVes
 //go:embed queries/valid_vessels/update_last_indexed_at.sql
 var updateValidVesselLastIndexedAtQuery string
 
-// MarkValidVesselAsIndexed updates a particular valid instrument's last_indexed_at value.
+// MarkValidVesselAsIndexed updates a particular valid vessel's last_indexed_at value.
 func (q *Querier) MarkValidVesselAsIndexed(ctx context.Context, validVesselID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -506,11 +509,11 @@ func (q *Querier) MarkValidVesselAsIndexed(ctx context.Context, validVesselID st
 		validVesselID,
 	}
 
-	if err := q.performWriteQuery(ctx, q.db, "set valid instrument last_indexed_at", updateValidVesselLastIndexedAtQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "marking valid instrument as indexed")
+	if err := q.performWriteQuery(ctx, q.db, "set valid vessel last_indexed_at", updateValidVesselLastIndexedAtQuery, args); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "marking valid vessel as indexed")
 	}
 
-	logger.Info("valid instrument marked as indexed")
+	logger.Info("valid vessel marked as indexed")
 
 	return nil
 }
@@ -518,7 +521,7 @@ func (q *Querier) MarkValidVesselAsIndexed(ctx context.Context, validVesselID st
 //go:embed queries/valid_vessels/archive.sql
 var archiveValidVesselQuery string
 
-// ArchiveValidVessel archives a valid instrument from the database by its ID.
+// ArchiveValidVessel archives a valid vessel from the database by its ID.
 func (q *Querier) ArchiveValidVessel(ctx context.Context, validVesselID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -535,11 +538,11 @@ func (q *Querier) ArchiveValidVessel(ctx context.Context, validVesselID string) 
 		validVesselID,
 	}
 
-	if err := q.performWriteQuery(ctx, q.db, "valid instrument archive", archiveValidVesselQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating valid instrument")
+	if err := q.performWriteQuery(ctx, q.db, "valid vessel archive", archiveValidVesselQuery, args); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating valid vessel")
 	}
 
-	logger.Info("valid instrument archived")
+	logger.Info("valid vessel archived")
 
 	return nil
 }

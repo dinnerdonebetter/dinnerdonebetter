@@ -77,13 +77,13 @@ type (
 	ValidVesselCreationRequestInput struct {
 		_ struct{}
 
-		Slug                           string  `json:"slug"`
-		Description                    string  `json:"description"`
+		CapacityUnitID                 *string `json:"capacityUnitID"`
+		Shape                          string  `json:"shape"`
 		IconPath                       string  `json:"iconPath"`
 		PluralName                     string  `json:"pluralName"`
 		Name                           string  `json:"name"`
-		Shape                          string  `json:"shape"`
-		CapacityUnitID                 string  `json:"capacityUnitID"`
+		Description                    string  `json:"description"`
+		Slug                           string  `json:"slug"`
 		LengthInMillimeters            float32 `json:"lengthInMillimeters"`
 		HeightInMillimeters            float32 `json:"heightInMillimeters"`
 		Capacity                       float32 `json:"capacity"`
@@ -97,7 +97,7 @@ type (
 	ValidVesselDatabaseCreationInput struct {
 		_ struct{}
 
-		CapacityUnitID                 string
+		CapacityUnitID                 *string
 		ID                             string
 		Name                           string
 		PluralName                     string
@@ -240,7 +240,7 @@ func (x *ValidVesselCreationRequestInput) ValidateWithContext(ctx context.Contex
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-		validation.Field(&x.CapacityUnitID, validation.Required),
+		validation.Field(&x.Capacity, validation.When(x.CapacityUnitID != nil, validation.Required)),
 		validation.Field(&x.Shape, validation.In(
 			"hemisphere",
 			"rectangle",
