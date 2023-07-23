@@ -1,0 +1,1 @@
+ALTER TABLE recipe_prep_task_steps ADD CONSTRAINT unique_recipe_step_and_prep_task unique(belongs_to_recipe_step, belongs_to_recipe_prep_task);

@@ -9,7 +9,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -48,7 +47,7 @@ func main() {
 	}
 
 	dbConfig := &dbconfig.Config{
-		ConnectionDetails: database.ConnectionDetails(os.Getenv("DATABASE_URL")),
+		ConnectionDetails: os.Getenv("DATABASE_URL"),
 	}
 
 	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, dbConfig, tracerProvider)

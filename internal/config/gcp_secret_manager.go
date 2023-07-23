@@ -11,7 +11,6 @@ import (
 
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/analytics/segment"
-	"github.com/dinnerdonebetter/backend/internal/database"
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
 	emailcfg "github.com/dinnerdonebetter/backend/internal/email/config"
 	"github.com/dinnerdonebetter/backend/internal/email/sendgrid"
@@ -95,7 +94,7 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client
 		os.Getenv(gcpDatabaseInstanceConnNameEnvVarKey),
 	)
 
-	cfg.Database.ConnectionDetails = database.ConnectionDetails(dbURI)
+	cfg.Database.ConnectionDetails = dbURI
 	cfg.Database.OAuth2TokenEncryptionKey = os.Getenv(gcpOauth2TokenEncryptionKeyEnvVarKey)
 	cfg.Services.Auth.Cookies.HashKey = os.Getenv(gcpCookieHashKeyEnvVarKey)
 	cfg.Services.Auth.Cookies.BlockKey = os.Getenv(gcpCookieBlockKeyEnvVarKey)
@@ -233,7 +232,7 @@ func getWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*Instance
 		},
 	}
 
-	cfg.Database.ConnectionDetails = database.ConnectionDetails(dbURI)
+	cfg.Database.ConnectionDetails = dbURI
 	cfg.Database.RunMigrations = false
 	cfg.Database.OAuth2TokenEncryptionKey = os.Getenv(gcpOauth2TokenEncryptionKeyEnvVarKey)
 	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)

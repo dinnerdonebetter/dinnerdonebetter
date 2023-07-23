@@ -36,8 +36,8 @@ var _ database.DataManager = (*Querier)(nil)
 // Querier is the primary database querying client. All tracing/logging/query execution happens here. Query building generally happens elsewhere.
 type Querier struct {
 	tracer                  tracing.Tracer
-	sqlBuilder              squirrel.StatementBuilderType
 	logger                  logging.Logger
+	sqlBuilder              squirrel.StatementBuilderType
 	secretGenerator         random.Generator
 	oauth2ClientTokenEncDec cryptography.EncryptorDecryptor
 	timeFunc                func() time.Time
@@ -81,7 +81,7 @@ func ProvideDatabaseClient(
 		logQueries:              cfg.LogQueries,
 		timeFunc:                defaultTimeFunc,
 		secretGenerator:         random.NewGenerator(logger, tracerProvider),
-		connectionURL:           string(cfg.ConnectionDetails),
+		connectionURL:           cfg.ConnectionDetails,
 		logger:                  logging.EnsureLogger(logger).WithName("querier"),
 		sqlBuilder:              squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
 		oauth2ClientTokenEncDec: encDec,

@@ -7,7 +7,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -52,7 +51,7 @@ func TestServerConfig_EncodeToFile(T *testing.T) {
 			Database: dbconfig.Config{
 				Debug:             true,
 				RunMigrations:     true,
-				ConnectionDetails: database.ConnectionDetails("postgres://username:password@host/table"),
+				ConnectionDetails: "postgres://username:password@host/table",
 			},
 		}
 

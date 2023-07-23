@@ -1,0 +1,1 @@
+ALTER TABLE valid_preparation_instruments ADD CONSTRAINT valid_instrument_preparation_pair unique(valid_instrument_id, valid_preparation_id, archived_at);

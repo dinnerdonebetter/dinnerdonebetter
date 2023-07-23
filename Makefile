@@ -107,7 +107,7 @@ format: format_imports format_golang
 format_golang:
 	@until fieldalignment -fix ./...; do true; done > /dev/null
 	@until tagalign -fix -sort -order "json,toml" ./...; do true; done > /dev/null
-	for file in `find $PWD -type f -not -path '*/vendor/*' -name "*.go"`; do $(GO_FORMAT) $$file; done
+	for file in `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`; do $(GO_FORMAT) $$file; done
 
 .PHONY: format_imports
 format_imports:
