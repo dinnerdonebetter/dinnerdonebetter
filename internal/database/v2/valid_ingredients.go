@@ -6,6 +6,10 @@ import (
 	"time"
 
 	"github.com/doug-martin/goqu/v9"
+	"github.com/jinzhu/copier"
+
+	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
 const (
@@ -59,22 +63,32 @@ type (
 )
 
 // CreateValidIngredient gets a valid ingredient from the database
-func (c *DatabaseClient) CreateValidIngredient(ctx context.Context, input *ValidIngredient) (*ValidIngredient, error) {
+func (c *DatabaseClient) CreateValidIngredient(ctx context.Context, input *ValidIngredient) (*types.ValidIngredient, error) {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
 	q := c.xdb.Insert(validIngredientsTableName).Rows(
 		input,
 	)
 
 	if _, err := q.Executor().ExecContext(ctx); err != nil {
-		return nil, err
+		return nil, observability.PrepareError(err, span, "creating valid ingredient")
 	}
 
-	return input, nil
+	var output types.ValidIngredient
+	if err := copier.Copy(&output, input); err != nil {
+		return nil, observability.PrepareError(err, span, "copying input to output")
+	}
+
+	return &output, nil
 }
 
 // GetValidIngredient gets a valid ingredient from the database
-func (c *DatabaseClient) GetValidIngredient(ctx context.Context, validIngredientID string) (*ValidIngredient, error) {
-	x := &ValidIngredient{}
+func (c *DatabaseClient) GetValidIngredient(ctx context.Context, validIngredientID string) (*types.ValidIngredient, error) {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
 
+	x := &ValidIngredient{}
 	q := c.xdb.From(validIngredientsTableName).Where(goqu.Ex{
 		idColumn:         validIngredientID,
 		archivedAtColumn: nil,
@@ -87,5 +101,47 @@ func (c *DatabaseClient) GetValidIngredient(ctx context.Context, validIngredient
 		return nil, sql.ErrNoRows
 	}
 
-	return x, nil
+	var output types.ValidIngredient
+	if err = copier.Copy(&output, x); err != nil {
+		return nil, observability.PrepareError(err, span, "copying input to output")
+	}
+
+	return &output, nil
+}
+
+// UpdateValidIngredient gets a valid ingredient from the database
+func (c *DatabaseClient) UpdateValidIngredient(ctx context.Context, input *types.ValidIngredient) error {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	var updateInput ValidIngredient
+	if err := copier.Copy(&updateInput, input); err != nil {
+		return observability.PrepareError(err, span, "copying input to output")
+	}
+
+	q := c.xdb.Update(validIngredientsTableName).Set(
+		updateInput,
+	)
+
+	if _, err := q.Executor().ExecContext(ctx); err != nil {
+		return observability.PrepareError(err, span, "updating valid ingredient")
+	}
+
+	return nil
+}
+
+// ArchiveValidIngredient gets a valid ingredient from the database
+func (c *DatabaseClient) ArchiveValidIngredient(ctx context.Context, validIngredientID string) error {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	q := c.xdb.Update(validIngredientsTableName).
+		Set(goqu.Record{archivedAtColumn: goqu.L("NOW()")}).
+		Where(goqu.Ex{idColumn: validIngredientID})
+
+	if _, err := q.Executor().ExecContext(ctx); err != nil {
+		return observability.PrepareError(err, span, "archiving valid ingredient")
+	}
+
+	return nil
 }

@@ -2,6 +2,7 @@ package v2
 
 import (
 	"context"
+	"database/sql"
 	"testing"
 	"time"
 
@@ -61,17 +62,38 @@ func TestDatabaseClient_ValidIngredients(T *testing.T) {
 			assert.NoError(tt, container.Terminate(ctx))
 		}(t)
 
-		var f ValidIngredient
-		require.NoError(t, copier.Copy(&f, fakes.BuildFakeValidIngredient()))
+		// create
 
-		created, err := dbc.CreateValidIngredient(ctx, &f)
+		exampleValidIngredient := fakes.BuildFakeValidIngredient()
+		var x ValidIngredient
+		require.NoError(t, copier.Copy(&x, exampleValidIngredient))
+
+		created, err := dbc.CreateValidIngredient(ctx, &x)
 		assert.NoError(t, err)
-		assert.NotNil(t, created)
+		assert.Equal(t, exampleValidIngredient, created)
 
-		x, err := dbc.GetValidIngredient(ctx, created.ID)
-		created.CreatedAt = x.CreatedAt
+		// read
+
+		validIngredient, err := dbc.GetValidIngredient(ctx, created.ID)
+		exampleValidIngredient.CreatedAt = validIngredient.CreatedAt
 
 		assert.NoError(t, err)
-		assert.Equal(t, x, created)
+		assert.Equal(t, validIngredient, exampleValidIngredient)
+
+		// update
+
+		updatedValidIngredient := fakes.BuildFakeValidIngredient()
+		updatedValidIngredient.ID = created.ID
+		var y ValidIngredient
+		require.NoError(t, copier.Copy(&y, updatedValidIngredient))
+		assert.NoError(t, dbc.UpdateValidIngredient(ctx, updatedValidIngredient))
+
+		// delete
+		assert.NoError(t, dbc.ArchiveValidIngredient(ctx, created.ID))
+
+		validIngredient, err = dbc.GetValidIngredient(ctx, created.ID)
+		assert.Nil(t, validIngredient)
+		assert.Error(t, err)
+		assert.ErrorIs(t, err, sql.ErrNoRows)
 	})
 }
