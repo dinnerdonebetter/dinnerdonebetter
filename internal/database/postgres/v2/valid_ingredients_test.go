@@ -20,20 +20,27 @@ import (
 )
 
 const (
-	defaultImage = "postgres:15"
+	defaultImage            = "postgres:15"
+	defaultDatabaseName     = "dinnerdonebetter"
+	defaultDatabaseUsername = "dbuser"
+	defaultDatabasePassword = "hunter2"
 )
 
 func buildDatabaseClientForTest(t *testing.T, ctx context.Context) (*DatabaseClient, *postgres.PostgresContainer) {
 	t.Helper()
 
-	container, err := postgres.RunContainer(ctx,
+	// testcontainers.Logger = log.New(io.Discard, "", log.LstdFlags)
+
+	container, err := postgres.RunContainer(
+		ctx,
 		testcontainers.WithImage(defaultImage),
-		postgres.WithDatabase("database"),
-		postgres.WithUsername("user"),
-		postgres.WithPassword("password"),
+		postgres.WithDatabase(defaultDatabaseName),
+		postgres.WithUsername(defaultDatabaseUsername),
+		postgres.WithPassword(defaultDatabasePassword),
 		testcontainers.WithWaitStrategy(
 			wait.ForLog("database system is ready to accept connections").
-				WithOccurrence(2).WithStartupTimeout(5*time.Second)),
+				WithOccurrence(2).
+				WithStartupTimeout(time.Minute)),
 	)
 
 	require.NoError(t, err)
