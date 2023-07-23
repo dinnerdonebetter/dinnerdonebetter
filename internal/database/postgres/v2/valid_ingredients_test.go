@@ -36,8 +36,8 @@ func buildDatabaseClientForTest(t *testing.T, ctx context.Context) (*DatabaseCli
 				WithOccurrence(2).WithStartupTimeout(5*time.Second)),
 	)
 
-	require.NotNil(t, container)
 	require.NoError(t, err)
+	require.NotNil(t, container)
 
 	connStr, err := container.ConnectionString(ctx, "sslmode=disable")
 	require.NoError(t, err)
