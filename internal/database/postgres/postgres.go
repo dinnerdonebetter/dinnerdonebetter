@@ -60,7 +60,7 @@ func ProvideDatabaseClient(
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
 
-	db, err := sql.Open("pgx", string(cfg.ConnectionDetails))
+	db, err := sql.Open("pgx", cfg.ConnectionDetails)
 	if err != nil {
 		return nil, fmt.Errorf("connecting to postgres database: %w", err)
 	}

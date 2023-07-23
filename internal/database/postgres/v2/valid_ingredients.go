@@ -5,11 +5,11 @@ import (
 	"database/sql"
 	"time"
 
-	"github.com/doug-martin/goqu/v9"
-	"github.com/jinzhu/copier"
-
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+
+	"github.com/doug-martin/goqu/v9"
+	"github.com/jinzhu/copier"
 )
 
 const (
@@ -62,7 +62,7 @@ type (
 	}
 )
 
-// CreateValidIngredient gets a valid ingredient from the database
+// CreateValidIngredient gets a valid ingredient from the database.
 func (c *DatabaseClient) CreateValidIngredient(ctx context.Context, input *ValidIngredient) (*types.ValidIngredient, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -83,7 +83,7 @@ func (c *DatabaseClient) CreateValidIngredient(ctx context.Context, input *Valid
 	return &output, nil
 }
 
-// GetValidIngredient gets a valid ingredient from the database
+// GetValidIngredient gets a valid ingredient from the database.
 func (c *DatabaseClient) GetValidIngredient(ctx context.Context, validIngredientID string) (*types.ValidIngredient, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -109,7 +109,7 @@ func (c *DatabaseClient) GetValidIngredient(ctx context.Context, validIngredient
 	return &output, nil
 }
 
-// UpdateValidIngredient gets a valid ingredient from the database
+// UpdateValidIngredient gets a valid ingredient from the database.
 func (c *DatabaseClient) UpdateValidIngredient(ctx context.Context, input *types.ValidIngredient) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -130,7 +130,7 @@ func (c *DatabaseClient) UpdateValidIngredient(ctx context.Context, input *types
 	return nil
 }
 
-// ArchiveValidIngredient gets a valid ingredient from the database
+// ArchiveValidIngredient gets a valid ingredient from the database.
 func (c *DatabaseClient) ArchiveValidIngredient(ctx context.Context, validIngredientID string) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()

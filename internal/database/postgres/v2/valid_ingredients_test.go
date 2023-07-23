@@ -58,12 +58,12 @@ func TestDatabaseClient_ValidIngredients(T *testing.T) {
 		ctx := context.Background()
 		dbc, container := buildDatabaseClientForTest(t, ctx)
 
-		defer func(tt *testing.T) {
-			assert.NoError(tt, container.Terminate(ctx))
+		defer func(t *testing.T) {
+			t.Helper()
+			assert.NoError(t, container.Terminate(ctx))
 		}(t)
 
 		// create
-
 		exampleValidIngredient := fakes.BuildFakeValidIngredient()
 		var x ValidIngredient
 		require.NoError(t, copier.Copy(&x, exampleValidIngredient))
@@ -73,7 +73,6 @@ func TestDatabaseClient_ValidIngredients(T *testing.T) {
 		assert.Equal(t, exampleValidIngredient, created)
 
 		// read
-
 		validIngredient, err := dbc.GetValidIngredient(ctx, created.ID)
 		exampleValidIngredient.CreatedAt = validIngredient.CreatedAt
 
@@ -81,7 +80,6 @@ func TestDatabaseClient_ValidIngredients(T *testing.T) {
 		assert.Equal(t, validIngredient, exampleValidIngredient)
 
 		// update
-
 		updatedValidIngredient := fakes.BuildFakeValidIngredient()
 		updatedValidIngredient.ID = created.ID
 		var y ValidIngredient

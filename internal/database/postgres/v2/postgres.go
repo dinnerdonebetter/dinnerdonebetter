@@ -42,7 +42,7 @@ func NewDatabaseClient(
 		logger: logging.EnsureLogger(logger).WithName("postgres"),
 	}
 
-	db, err := sql.Open("pgx", string(cfg.ConnectionDetails))
+	db, err := sql.Open("pgx", cfg.ConnectionDetails)
 	if err != nil {
 		return nil, fmt.Errorf("connecting to postgres database: %w", err)
 	}
