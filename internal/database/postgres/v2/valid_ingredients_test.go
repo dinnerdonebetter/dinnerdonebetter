@@ -37,10 +37,11 @@ func buildDatabaseClientForTest(t *testing.T, ctx context.Context) (*DatabaseCli
 		postgres.WithDatabase(defaultDatabaseName),
 		postgres.WithUsername(defaultDatabaseUsername),
 		postgres.WithPassword(defaultDatabasePassword),
-		testcontainers.WithWaitStrategy(
+		testcontainers.WithWaitStrategyAndDeadline(
+			time.Minute,
 			wait.ForLog("database system is ready to accept connections").
-				WithOccurrence(2).
-				WithStartupTimeout(time.Minute)),
+				WithOccurrence(2),
+		),
 	)
 
 	require.NoError(t, err)
