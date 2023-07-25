@@ -143,6 +143,10 @@ lint_docker:
 queries_lint:
 	$(SQL_GENERATOR) compile
 
+.PHONY: struct_equality
+struct_equality:
+	go run $(THIS)/cmd/tools/structchecker
+
 .PHONY: querier
 querier: queries_lint
 	$(SQL_GENERATOR) generate
@@ -156,7 +160,7 @@ golang_lint:
 		$(LINTER_IMAGE) golangci-lint run --config=.golangci.yml --timeout 15m ./...
 
 .PHONY: lint
-lint: lint_docker queries_lint golang_lint # terraform_lint
+lint: lint_docker queries_lint struct_equality golang_lint # terraform_lint
 
 .PHONY: clean_coverage
 clean_coverage:
