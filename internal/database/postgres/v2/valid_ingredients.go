@@ -109,6 +109,37 @@ func (c *DatabaseClient) GetValidIngredient(ctx context.Context, validIngredient
 	return &output, nil
 }
 
+// GetValidIngredients gets a valid ingredient from the database.
+func (c *DatabaseClient) GetValidIngredients(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredient], error) {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+
+	x := []*ValidIngredient{}
+
+	q := c.xdb.From(validIngredientsTableName)
+	queryFilterToGoqu(q, filter)
+
+	if err := q.ScanStructsContext(ctx, &x); err != nil {
+		return nil, err
+	}
+
+	var output types.QueryFilteredResult[types.ValidIngredient]
+	for _, y := range x {
+		var z types.ValidIngredient
+		if err := copier.Copy(&z, y); err != nil {
+			return nil, observability.PrepareError(err, span, "copying input to output")
+		}
+
+		output.Data = append(output.Data, &z)
+	}
+
+	return &output, nil
+}
+
 // UpdateValidIngredient gets a valid ingredient from the database.
 func (c *DatabaseClient) UpdateValidIngredient(ctx context.Context, input *types.ValidIngredient) error {
 	ctx, span := c.tracer.StartSpan(ctx)

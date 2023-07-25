@@ -9,6 +9,7 @@ import (
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/doug-martin/goqu/v9"
 	_ "github.com/doug-martin/goqu/v9/dialect/postgres"
@@ -57,4 +58,53 @@ func NewDatabaseClient(
 	}
 
 	return x, nil
+}
+
+func queryFilterToGoqu(q *goqu.SelectDataset, filter *types.QueryFilter) goqu.Ex {
+	x := goqu.Ex{}
+
+	if filter == nil {
+		return x
+	}
+
+	var (
+		createdAtOp = goqu.Op{}
+		updatedAtOp = goqu.Op{}
+	)
+
+	if filter.CreatedAfter != nil {
+		createdAtOp["gt"] = filter.CreatedAfter
+	}
+
+	if filter.CreatedBefore != nil {
+		createdAtOp["lt"] = filter.CreatedAfter
+	}
+
+	if len(createdAtOp) > 0 {
+		x["created_at"] = createdAtOp
+	}
+
+	if filter.UpdatedAfter != nil {
+		updatedAtOp["gt"] = filter.UpdatedAfter
+	}
+
+	if filter.UpdatedBefore != nil {
+		updatedAtOp["lt"] = filter.UpdatedBefore
+	}
+
+	if len(updatedAtOp) > 0 {
+		x["last_updated_at"] = updatedAtOp
+	}
+
+	q = q.Where(x)
+
+	if filter.Page != nil {
+		q = q.Offset(uint(*filter.Page))
+	}
+
+	if filter.Limit != nil {
+		q = q.Limit(uint(*filter.Limit))
+	}
+
+	return x
 }

@@ -4,102 +4,76 @@ import (
 	"context"
 	"database/sql"
 	"testing"
-	"time"
 
-	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/jinzhu/copier"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/testcontainers/testcontainers-go"
-	"github.com/testcontainers/testcontainers-go/modules/postgres"
-	"github.com/testcontainers/testcontainers-go/wait"
 )
 
-const (
-	defaultImage            = "postgres:15"
-	defaultDatabaseName     = "dinnerdonebetter"
-	defaultDatabaseUsername = "dbuser"
-	defaultDatabasePassword = "hunter2"
-)
-
-func buildDatabaseClientForTest(t *testing.T, ctx context.Context) (*DatabaseClient, *postgres.PostgresContainer) {
+func createValidIngredientForTest(t *testing.T, ctx context.Context, dbc *DatabaseClient) *types.ValidIngredient {
 	t.Helper()
 
-	// testcontainers.Logger = log.New(io.Discard, "", log.LstdFlags)
+	// create
+	exampleValidIngredient := fakes.BuildFakeValidIngredient()
+	var x ValidIngredient
+	require.NoError(t, copier.Copy(&x, exampleValidIngredient))
 
-	container, err := postgres.RunContainer(
-		ctx,
-		testcontainers.WithImage(defaultImage),
-		postgres.WithDatabase(defaultDatabaseName),
-		postgres.WithUsername(defaultDatabaseUsername),
-		postgres.WithPassword(defaultDatabasePassword),
-		testcontainers.WithWaitStrategyAndDeadline(
-			time.Minute,
-			wait.ForLog("database system is ready to accept connections").
-				WithOccurrence(2),
-		),
-	)
+	created, err := dbc.CreateValidIngredient(ctx, &x)
+	assert.NoError(t, err)
+	assert.Equal(t, exampleValidIngredient, created)
 
-	require.NoError(t, err)
-	require.NotNil(t, container)
+	validIngredient, err := dbc.GetValidIngredient(ctx, created.ID)
+	exampleValidIngredient.CreatedAt = validIngredient.CreatedAt
 
-	connStr, err := container.ConnectionString(ctx, "sslmode=disable")
-	require.NoError(t, err)
+	assert.NoError(t, err)
+	assert.Equal(t, validIngredient, exampleValidIngredient)
 
-	dbc, err := NewDatabaseClient(ctx, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), &dbconfig.Config{ConnectionDetails: connStr, RunMigrations: true})
-	require.NoError(t, err)
-	require.NotNil(t, dbc)
-
-	return dbc, container
+	return created
 }
 
-func TestDatabaseClient_ValidIngredients(T *testing.T) {
-	T.Parallel()
+func TestDatabaseClient_ValidIngredients(t *testing.T) {
+	ctx := context.Background()
+	dbc, container := buildDatabaseClientForTest(t, ctx)
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
 
-		ctx := context.Background()
-		dbc, container := buildDatabaseClientForTest(t, ctx)
+	createdValidIngredients := []*types.ValidIngredient{}
 
-		defer func(t *testing.T) {
-			t.Helper()
-			assert.NoError(t, container.Terminate(ctx))
-		}(t)
+	// create
+	created := createValidIngredientForTest(t, ctx, dbc)
+	createdValidIngredients = append(createdValidIngredients, created)
 
-		// create
-		exampleValidIngredient := fakes.BuildFakeValidIngredient()
-		var x ValidIngredient
-		require.NoError(t, copier.Copy(&x, exampleValidIngredient))
+	// update
+	updatedValidIngredient := fakes.BuildFakeValidIngredient()
+	updatedValidIngredient.ID = createdValidIngredients[0].ID
+	var x ValidIngredient
+	require.NoError(t, copier.Copy(&x, updatedValidIngredient))
+	assert.NoError(t, dbc.UpdateValidIngredient(ctx, updatedValidIngredient))
 
-		created, err := dbc.CreateValidIngredient(ctx, &x)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleValidIngredient, created)
+	// create more
+	for i := 0; i < exampleQuantity; i++ {
+		createdValidIngredients = append(createdValidIngredients, createValidIngredientForTest(t, ctx, dbc))
+	}
 
-		// read
-		validIngredient, err := dbc.GetValidIngredient(ctx, created.ID)
-		exampleValidIngredient.CreatedAt = validIngredient.CreatedAt
+	// fetch as list
+	validIngredients, err := dbc.GetValidIngredients(ctx, nil)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, validIngredients)
 
-		assert.NoError(t, err)
-		assert.Equal(t, validIngredient, exampleValidIngredient)
+	// delete
+	for _, validIngredient := range createdValidIngredients {
+		assert.NoError(t, dbc.ArchiveValidIngredient(ctx, validIngredient.ID))
 
-		// update
-		updatedValidIngredient := fakes.BuildFakeValidIngredient()
-		updatedValidIngredient.ID = created.ID
-		var y ValidIngredient
-		require.NoError(t, copier.Copy(&y, updatedValidIngredient))
-		assert.NoError(t, dbc.UpdateValidIngredient(ctx, updatedValidIngredient))
-
-		// delete
-		assert.NoError(t, dbc.ArchiveValidIngredient(ctx, created.ID))
-
-		validIngredient, err = dbc.GetValidIngredient(ctx, created.ID)
-		assert.Nil(t, validIngredient)
+		var y *types.ValidIngredient
+		y, err = dbc.GetValidIngredient(ctx, created.ID)
+		assert.Nil(t, y)
 		assert.Error(t, err)
 		assert.ErrorIs(t, err, sql.ErrNoRows)
-	})
+	}
 }
