@@ -45,14 +45,18 @@ func fetchTypesForPackage(pkg, typeName string) *ast.StructType {
 }
 
 type typeSpec struct {
-	packages []string
 	typeName string
+	packages []string
 }
 
 func ensureTypesHaveMatchingFields(allStructDefinitions []*ast.StructType) error {
 	allStructFields := []map[string]string{}
 	for _, strukt := range allStructDefinitions {
 		allStructFields = append(allStructFields, getFieldsForStruct(strukt))
+	}
+
+	if len(allStructFields) == 0 {
+		return fmt.Errorf("no struct fields found")
 	}
 
 	for i := 1; i < len(allStructFields); i++ {
@@ -125,6 +129,20 @@ func main() {
 		},
 		{
 			typeName: "ValidPreparation",
+			packages: []string{
+				"internal/database/postgres/v2",
+				"pkg/types",
+			},
+		},
+		{
+			typeName: "Webhook",
+			packages: []string{
+				"internal/database/postgres/v2",
+				"pkg/types",
+			},
+		},
+		{
+			typeName: "WebhookTriggerEvent",
 			packages: []string{
 				"internal/database/postgres/v2",
 				"pkg/types",

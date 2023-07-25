@@ -21,15 +21,15 @@ type (
 	ValidPreparation struct {
 		_ struct{}
 
-		CreatedAt                   time.Time  `db:"created_at"                                   goqu:"skipinsert"`
-		LastUpdatedAt               *time.Time `db:"last_updated_at"                              goqu:"skipinsert"`
-		ArchivedAt                  *time.Time `db:"archived_at"                                  goqu:"skipinsert"`
+		CreatedAt                   time.Time  `db:"created_at"                    goqu:"skipinsert"`
+		LastUpdatedAt               *time.Time `db:"last_updated_at"               goqu:"skipinsert"`
+		ArchivedAt                  *time.Time `db:"archived_at"                   goqu:"skipinsert"`
 		MaximumInstrumentCount      *int32     `db:"maximum_instrument_count"`
 		MaximumIngredientCount      *int32     `db:"maximum_ingredient_count"`
 		MaximumVesselCount          *int32     `db:"maximum_vessel_count"`
 		IconPath                    string     `db:"icon_path"`
 		PastTense                   string     `db:"past_tense"`
-		ID                          string     `db:"id"`
+		ID                          string     `db:"id"                            goqu:"skipupdate"`
 		Name                        string     `db:"name"`
 		Description                 string     `db:"description"`
 		Slug                        string     `db:"slug"`

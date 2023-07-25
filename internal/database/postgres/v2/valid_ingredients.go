@@ -31,7 +31,7 @@ type (
 		PluralName                              string     `db:"plural_name"`
 		StorageInstructions                     string     `db:"storage_instructions"`
 		Name                                    string     `db:"name"`
-		ID                                      string     `db:"id"`
+		ID                                      string     `db:"id"                                           goqu:"skipupdate"`
 		Description                             string     `db:"description"`
 		Slug                                    string     `db:"slug"`
 		ShoppingSuggestions                     string     `db:"shopping_suggestions"`

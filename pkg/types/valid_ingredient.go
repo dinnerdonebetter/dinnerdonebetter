@@ -29,44 +29,44 @@ type (
 	ValidIngredient struct {
 		_ struct{}
 
-		CreatedAt                               time.Time  `json:"createdAt"                               `
-		LastUpdatedAt                           *time.Time `json:"lastUpdatedAt"                           `
-		ArchivedAt                              *time.Time `json:"archivedAt"                              `
-		MaximumIdealStorageTemperatureInCelsius *float32   `json:"maximumIdealStorageTemperatureInCelsius" `
-		MinimumIdealStorageTemperatureInCelsius *float32   `json:"minimumIdealStorageTemperatureInCelsius" `
-		IconPath                                string     `json:"iconPath"                                `
-		Warning                                 string     `json:"warning"                                 `
-		PluralName                              string     `json:"pluralName"                              `
-		StorageInstructions                     string     `json:"storageInstructions"                     `
-		Name                                    string     `json:"name"                                    `
-		ID                                      string     `json:"id"                                      `
-		Description                             string     `json:"description"                             `
-		Slug                                    string     `json:"slug"                                    `
-		ShoppingSuggestions                     string     `json:"shoppingSuggestions"                     `
-		ContainsShellfish                       bool       `json:"containsShellfish"                       `
-		IsMeasuredVolumetrically                bool       `json:"isMeasuredVolumetrically"                `
-		IsLiquid                                bool       `json:"isLiquid"                                `
-		ContainsPeanut                          bool       `json:"containsPeanut"                          `
-		ContainsTreeNut                         bool       `json:"containsTreeNut"                         `
-		ContainsEgg                             bool       `json:"containsEgg"                             `
-		ContainsWheat                           bool       `json:"containsWheat"                           `
-		ContainsSoy                             bool       `json:"containsSoy"                             `
-		AnimalDerived                           bool       `json:"animalDerived"                           `
-		RestrictToPreparations                  bool       `json:"restrictToPreparations"                  `
-		ContainsSesame                          bool       `json:"containsSesame"                          `
-		ContainsFish                            bool       `json:"containsFish"                            `
-		ContainsGluten                          bool       `json:"containsGluten"                          `
-		ContainsDairy                           bool       `json:"containsDairy"                           `
-		ContainsAlcohol                         bool       `json:"containsAlcohol"                         `
-		AnimalFlesh                             bool       `json:"animalFlesh"                             `
-		IsStarch                                bool       `json:"is_starch"                               `
-		IsProtein                               bool       `json:"is_protein"                              `
-		IsGrain                                 bool       `json:"is_grain"                                `
-		IsFruit                                 bool       `json:"is_fruit"                                `
-		IsSalt                                  bool       `json:"is_salt"                                 `
-		IsFat                                   bool       `json:"is_fat"                                  `
-		IsAcid                                  bool       `json:"is_acid"                                 `
-		IsHeat                                  bool       `json:"is_heat"                                 `
+		CreatedAt                               time.Time  `json:"createdAt"`
+		LastUpdatedAt                           *time.Time `json:"lastUpdatedAt"`
+		ArchivedAt                              *time.Time `json:"archivedAt"`
+		MaximumIdealStorageTemperatureInCelsius *float32   `json:"maximumIdealStorageTemperatureInCelsius"`
+		MinimumIdealStorageTemperatureInCelsius *float32   `json:"minimumIdealStorageTemperatureInCelsius"`
+		IconPath                                string     `json:"iconPath"`
+		Warning                                 string     `json:"warning"`
+		PluralName                              string     `json:"pluralName"`
+		StorageInstructions                     string     `json:"storageInstructions"`
+		Name                                    string     `json:"name"`
+		ID                                      string     `json:"id"`
+		Description                             string     `json:"description"`
+		Slug                                    string     `json:"slug"`
+		ShoppingSuggestions                     string     `json:"shoppingSuggestions"`
+		ContainsShellfish                       bool       `json:"containsShellfish"`
+		IsMeasuredVolumetrically                bool       `json:"isMeasuredVolumetrically"`
+		IsLiquid                                bool       `json:"isLiquid"`
+		ContainsPeanut                          bool       `json:"containsPeanut"`
+		ContainsTreeNut                         bool       `json:"containsTreeNut"`
+		ContainsEgg                             bool       `json:"containsEgg"`
+		ContainsWheat                           bool       `json:"containsWheat"`
+		ContainsSoy                             bool       `json:"containsSoy"`
+		AnimalDerived                           bool       `json:"animalDerived"`
+		RestrictToPreparations                  bool       `json:"restrictToPreparations"`
+		ContainsSesame                          bool       `json:"containsSesame"`
+		ContainsFish                            bool       `json:"containsFish"`
+		ContainsGluten                          bool       `json:"containsGluten"`
+		ContainsDairy                           bool       `json:"containsDairy"`
+		ContainsAlcohol                         bool       `json:"containsAlcohol"`
+		AnimalFlesh                             bool       `json:"animalFlesh"`
+		IsStarch                                bool       `json:"is_starch"`
+		IsProtein                               bool       `json:"is_protein"`
+		IsGrain                                 bool       `json:"is_grain"`
+		IsFruit                                 bool       `json:"is_fruit"`
+		IsSalt                                  bool       `json:"is_salt"`
+		IsFat                                   bool       `json:"is_fat"`
+		IsAcid                                  bool       `json:"is_acid"`
+		IsHeat                                  bool       `json:"is_heat"`
 	}
 
 	// NullableValidIngredient represents a nullable valid ingredient.

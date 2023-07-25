@@ -25,7 +25,7 @@ type (
 		LastUpdatedAt                  *time.Time `db:"last_updated_at"`
 		ArchivedAt                     *time.Time `db:"archived_at"`
 		IconPath                       string     `db:"icon_path"`
-		ID                             string     `db:"id"`
+		ID                             string     `db:"id"                                goqu:"skipupdate"`
 		Name                           string     `db:"name"`
 		PluralName                     string     `db:"plural_name"`
 		Description                    string     `db:"description"`
