@@ -3,6 +3,7 @@ package v2
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -13,11 +14,13 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createValidIngredientForTest(t *testing.T, ctx context.Context, dbc *DatabaseClient) *types.ValidIngredient {
+func createValidIngredientForTest(t *testing.T, ctx context.Context, exampleValidIngredient *types.ValidIngredient, dbc *DatabaseClient) *types.ValidIngredient {
 	t.Helper()
 
 	// create
-	exampleValidIngredient := fakes.BuildFakeValidIngredient()
+	if exampleValidIngredient == nil {
+		exampleValidIngredient = fakes.BuildFakeValidIngredient()
+	}
 	var x ValidIngredient
 	require.NoError(t, copier.Copy(&x, exampleValidIngredient))
 
@@ -43,10 +46,11 @@ func TestDatabaseClient_ValidIngredients(t *testing.T) {
 		assert.NoError(t, container.Terminate(ctx))
 	}(t)
 
+	exampleValidIngredient := fakes.BuildFakeValidIngredient()
 	createdValidIngredients := []*types.ValidIngredient{}
 
 	// create
-	createdValidIngredients = append(createdValidIngredients, createValidIngredientForTest(t, ctx, dbc))
+	createdValidIngredients = append(createdValidIngredients, createValidIngredientForTest(t, ctx, exampleValidIngredient, dbc))
 
 	// update
 	updatedValidIngredient := fakes.BuildFakeValidIngredient()
@@ -57,7 +61,9 @@ func TestDatabaseClient_ValidIngredients(t *testing.T) {
 
 	// create more
 	for i := 0; i < exampleQuantity; i++ {
-		createdValidIngredients = append(createdValidIngredients, createValidIngredientForTest(t, ctx, dbc))
+		input := fakes.BuildFakeValidIngredient()
+		input.Name = fmt.Sprintf("%s %d", exampleValidIngredient.Name, i)
+		createdValidIngredients = append(createdValidIngredients, createValidIngredientForTest(t, ctx, input, dbc))
 	}
 
 	// fetch as list
@@ -75,6 +81,11 @@ func TestDatabaseClient_ValidIngredients(t *testing.T) {
 	byIDs, err := dbc.GetValidIngredientsWithIDs(ctx, validIngredientIDs)
 	assert.NoError(t, err)
 	assert.Equal(t, validIngredients.Data, byIDs)
+
+	// fetch via name search
+	byName, err := dbc.SearchForValidIngredients(ctx, exampleValidIngredient.Name, nil)
+	assert.NoError(t, err)
+	assert.Equal(t, validIngredients, byName)
 
 	// delete
 	for _, validIngredient := range createdValidIngredients {

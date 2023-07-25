@@ -118,6 +118,42 @@ func (c *DatabaseClient) GetValidInstruments(ctx context.Context, filter *types.
 	return output, nil
 }
 
+// SearchForValidInstruments gets a valid instrument from the database.
+func (c *DatabaseClient) SearchForValidInstruments(ctx context.Context, query string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidInstrument], error) {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+
+	q := c.xdb.From(validInstrumentsTableName).Where(goqu.Ex{
+		archivedAtColumn: nil,
+		"name":           goqu.Op{"like": "%" + query + "%"},
+	})
+	q = queryFilterToGoqu(q, filter)
+
+	var x []ValidInstrument
+	if err := q.ScanStructsContext(ctx, &x); err != nil {
+		return nil, err
+	}
+
+	output := &types.QueryFilteredResult[types.ValidInstrument]{
+		Data:       []*types.ValidInstrument{},
+		Pagination: filter.ToPagination(),
+	}
+	for _, y := range x {
+		var z types.ValidInstrument
+		if err := copier.Copy(&z, y); err != nil {
+			return nil, observability.PrepareError(err, span, "copying input to output")
+		}
+
+		output.Data = append(output.Data, &z)
+	}
+
+	return output, nil
+}
+
 // GetValidInstrumentsWithIDs gets a valid instrument from the database.
 func (c *DatabaseClient) GetValidInstrumentsWithIDs(ctx context.Context, ids []string) ([]*types.ValidInstrument, error) {
 	ctx, span := c.tracer.StartSpan(ctx)

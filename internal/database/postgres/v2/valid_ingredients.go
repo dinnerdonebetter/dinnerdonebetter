@@ -144,6 +144,42 @@ func (c *DatabaseClient) GetValidIngredients(ctx context.Context, filter *types.
 	return output, nil
 }
 
+// SearchForValidIngredients gets a valid ingredient from the database.
+func (c *DatabaseClient) SearchForValidIngredients(ctx context.Context, query string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredient], error) {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+
+	q := c.xdb.From(validIngredientsTableName).Where(goqu.Ex{
+		archivedAtColumn: nil,
+		"name":           goqu.Op{"like": "%" + query + "%"},
+	})
+	q = queryFilterToGoqu(q, filter)
+
+	var x []ValidIngredient
+	if err := q.ScanStructsContext(ctx, &x); err != nil {
+		return nil, err
+	}
+
+	output := &types.QueryFilteredResult[types.ValidIngredient]{
+		Data:       []*types.ValidIngredient{},
+		Pagination: filter.ToPagination(),
+	}
+	for _, y := range x {
+		var z types.ValidIngredient
+		if err := copier.Copy(&z, y); err != nil {
+			return nil, observability.PrepareError(err, span, "copying input to output")
+		}
+
+		output.Data = append(output.Data, &z)
+	}
+
+	return output, nil
+}
+
 // GetValidIngredientsWithIDs gets a valid ingredient from the database.
 func (c *DatabaseClient) GetValidIngredientsWithIDs(ctx context.Context, ids []string) ([]*types.ValidIngredient, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
