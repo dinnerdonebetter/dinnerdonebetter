@@ -118,16 +118,20 @@ func (c *DatabaseClient) GetValidIngredients(ctx context.Context, filter *types.
 		filter = types.DefaultQueryFilter()
 	}
 
-	x := []*ValidIngredient{}
+	q := c.xdb.From(validIngredientsTableName).Where(goqu.Ex{
+		archivedAtColumn: nil,
+	})
+	q = queryFilterToGoqu(q, filter)
 
-	q := c.xdb.From(validIngredientsTableName)
-	queryFilterToGoqu(q, filter)
-
+	var x []ValidIngredient
 	if err := q.ScanStructsContext(ctx, &x); err != nil {
 		return nil, err
 	}
 
-	var output types.QueryFilteredResult[types.ValidIngredient]
+	output := &types.QueryFilteredResult[types.ValidIngredient]{
+		Data:       []*types.ValidIngredient{},
+		Pagination: filter.ToPagination(),
+	}
 	for _, y := range x {
 		var z types.ValidIngredient
 		if err := copier.Copy(&z, y); err != nil {
@@ -137,7 +141,36 @@ func (c *DatabaseClient) GetValidIngredients(ctx context.Context, filter *types.
 		output.Data = append(output.Data, &z)
 	}
 
-	return &output, nil
+	return output, nil
+}
+
+// GetValidIngredientsWithIDs gets a valid ingredient from the database.
+func (c *DatabaseClient) GetValidIngredientsWithIDs(ctx context.Context, ids []string) ([]*types.ValidIngredient, error) {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	x := []*ValidIngredient{}
+
+	q := c.xdb.From(validIngredientsTableName).Where(goqu.Ex{
+		idColumn:         ids,
+		archivedAtColumn: nil,
+	})
+
+	if err := q.ScanStructsContext(ctx, &x); err != nil {
+		return nil, err
+	}
+
+	var output []*types.ValidIngredient
+	for _, y := range x {
+		var z types.ValidIngredient
+		if err := copier.Copy(&z, y); err != nil {
+			return nil, observability.PrepareError(err, span, "copying input to output")
+		}
+
+		output = append(output, &z)
+	}
+
+	return output, nil
 }
 
 // UpdateValidIngredient gets a valid ingredient from the database.
@@ -152,7 +185,7 @@ func (c *DatabaseClient) UpdateValidIngredient(ctx context.Context, input *types
 
 	q := c.xdb.Update(validIngredientsTableName).Set(
 		updateInput,
-	)
+	).Set(goqu.Ex{lastUpdatedAtColumn: goqu.L("NOW()")})
 
 	if _, err := q.Executor().ExecContext(ctx); err != nil {
 		return observability.PrepareError(err, span, "updating valid ingredient")

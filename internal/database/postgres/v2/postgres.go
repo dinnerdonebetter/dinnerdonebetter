@@ -17,9 +17,14 @@ import (
 )
 
 const (
-	idColumn         = "id"
-	archivedAtColumn = "archived_at"
+	idColumn            = "id"
+	lastUpdatedAtColumn = "last_updated_at"
+	archivedAtColumn    = "archived_at"
 )
+
+func init() {
+	goqu.SetIgnoreUntaggedFields(true)
+}
 
 type (
 	DatabaseClient struct {
@@ -60,11 +65,11 @@ func NewDatabaseClient(
 	return x, nil
 }
 
-func queryFilterToGoqu(q *goqu.SelectDataset, filter *types.QueryFilter) goqu.Ex {
+func queryFilterToGoqu(q *goqu.SelectDataset, filter *types.QueryFilter) *goqu.SelectDataset {
 	x := goqu.Ex{}
 
 	if filter == nil {
-		return x
+		return q
 	}
 
 	var (
@@ -99,12 +104,12 @@ func queryFilterToGoqu(q *goqu.SelectDataset, filter *types.QueryFilter) goqu.Ex
 	q = q.Where(x)
 
 	if filter.Page != nil {
-		q = q.Offset(uint(*filter.Page))
+		q = q.Offset(uint(filter.QueryOffset()))
 	}
 
 	if filter.Limit != nil {
 		q = q.Limit(uint(*filter.Limit))
 	}
 
-	return x
+	return q
 }

@@ -46,8 +46,7 @@ func TestDatabaseClient_ValidInstruments(t *testing.T) {
 	createdValidInstruments := []*types.ValidInstrument{}
 
 	// create
-	created := createValidInstrumentForTest(t, ctx, dbc)
-	createdValidInstruments = append(createdValidInstruments, created)
+	createdValidInstruments = append(createdValidInstruments, createValidInstrumentForTest(t, ctx, dbc))
 
 	// update
 	updatedValidInstrument := fakes.BuildFakeValidInstrument()
@@ -64,14 +63,25 @@ func TestDatabaseClient_ValidInstruments(t *testing.T) {
 	// fetch as list
 	validInstruments, err := dbc.GetValidInstruments(ctx, nil)
 	assert.NoError(t, err)
-	assert.NotEmpty(t, validInstruments)
+	assert.NotEmpty(t, validInstruments.Data)
+	assert.Equal(t, len(createdValidInstruments), len(validInstruments.Data))
+
+	// fetch as list of IDs
+	validInstrumentIDs := []string{}
+	for _, validInstrument := range createdValidInstruments {
+		validInstrumentIDs = append(validInstrumentIDs, validInstrument.ID)
+	}
+
+	byIDs, err := dbc.GetValidInstrumentsWithIDs(ctx, validInstrumentIDs)
+	assert.NoError(t, err)
+	assert.Equal(t, validInstruments.Data, byIDs)
 
 	// delete
 	for _, validInstrument := range createdValidInstruments {
 		assert.NoError(t, dbc.ArchiveValidInstrument(ctx, validInstrument.ID))
 
 		var y *types.ValidInstrument
-		y, err = dbc.GetValidInstrument(ctx, created.ID)
+		y, err = dbc.GetValidInstrument(ctx, validInstrument.ID)
 		assert.Nil(t, y)
 		assert.Error(t, err)
 		assert.ErrorIs(t, err, sql.ErrNoRows)

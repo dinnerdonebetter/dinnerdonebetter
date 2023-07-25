@@ -19,7 +19,7 @@ import (
 
 const (
 	defaultImage            = "postgres:15"
-	defaultDatabaseName     = "dinnerdonebetter"
+	defaultDatabaseName     = "dinner-done-better"
 	defaultDatabaseUsername = "dbuser"
 	defaultDatabasePassword = "hunter2"
 	exampleQuantity         = 3

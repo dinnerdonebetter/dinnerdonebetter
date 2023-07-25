@@ -92,16 +92,20 @@ func (c *DatabaseClient) GetValidInstruments(ctx context.Context, filter *types.
 		filter = types.DefaultQueryFilter()
 	}
 
-	x := []*ValidInstrument{}
+	q := c.xdb.From(validInstrumentsTableName).Where(goqu.Ex{
+		archivedAtColumn: nil,
+	})
+	q = queryFilterToGoqu(q, filter)
 
-	q := c.xdb.From(validInstrumentsTableName)
-	queryFilterToGoqu(q, filter)
-
+	var x []ValidInstrument
 	if err := q.ScanStructsContext(ctx, &x); err != nil {
 		return nil, err
 	}
 
-	var output types.QueryFilteredResult[types.ValidInstrument]
+	output := &types.QueryFilteredResult[types.ValidInstrument]{
+		Data:       []*types.ValidInstrument{},
+		Pagination: filter.ToPagination(),
+	}
 	for _, y := range x {
 		var z types.ValidInstrument
 		if err := copier.Copy(&z, y); err != nil {
@@ -111,7 +115,36 @@ func (c *DatabaseClient) GetValidInstruments(ctx context.Context, filter *types.
 		output.Data = append(output.Data, &z)
 	}
 
-	return &output, nil
+	return output, nil
+}
+
+// GetValidInstrumentsWithIDs gets a valid instrument from the database.
+func (c *DatabaseClient) GetValidInstrumentsWithIDs(ctx context.Context, ids []string) ([]*types.ValidInstrument, error) {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	x := []*ValidInstrument{}
+
+	q := c.xdb.From(validInstrumentsTableName).Where(goqu.Ex{
+		idColumn:         ids,
+		archivedAtColumn: nil,
+	})
+
+	if err := q.ScanStructsContext(ctx, &x); err != nil {
+		return nil, err
+	}
+
+	var output []*types.ValidInstrument
+	for _, y := range x {
+		var z types.ValidInstrument
+		if err := copier.Copy(&z, y); err != nil {
+			return nil, observability.PrepareError(err, span, "copying input to output")
+		}
+
+		output = append(output, &z)
+	}
+
+	return output, nil
 }
 
 // UpdateValidInstrument gets a valid instrument from the database.
@@ -126,7 +159,7 @@ func (c *DatabaseClient) UpdateValidInstrument(ctx context.Context, input *types
 
 	q := c.xdb.Update(validInstrumentsTableName).Set(
 		updateInput,
-	)
+	).Set(goqu.Ex{lastUpdatedAtColumn: goqu.L("NOW()")})
 
 	if _, err := q.Executor().ExecContext(ctx); err != nil {
 		return observability.PrepareError(err, span, "updating valid instrument")

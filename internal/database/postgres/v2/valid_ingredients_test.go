@@ -46,8 +46,7 @@ func TestDatabaseClient_ValidIngredients(t *testing.T) {
 	createdValidIngredients := []*types.ValidIngredient{}
 
 	// create
-	created := createValidIngredientForTest(t, ctx, dbc)
-	createdValidIngredients = append(createdValidIngredients, created)
+	createdValidIngredients = append(createdValidIngredients, createValidIngredientForTest(t, ctx, dbc))
 
 	// update
 	updatedValidIngredient := fakes.BuildFakeValidIngredient()
@@ -64,14 +63,25 @@ func TestDatabaseClient_ValidIngredients(t *testing.T) {
 	// fetch as list
 	validIngredients, err := dbc.GetValidIngredients(ctx, nil)
 	assert.NoError(t, err)
-	assert.NotEmpty(t, validIngredients)
+	assert.NotEmpty(t, validIngredients.Data)
+	assert.Equal(t, len(createdValidIngredients), len(validIngredients.Data))
+
+	// fetch as list of IDs
+	validIngredientIDs := []string{}
+	for _, validIngredient := range createdValidIngredients {
+		validIngredientIDs = append(validIngredientIDs, validIngredient.ID)
+	}
+
+	byIDs, err := dbc.GetValidIngredientsWithIDs(ctx, validIngredientIDs)
+	assert.NoError(t, err)
+	assert.Equal(t, validIngredients.Data, byIDs)
 
 	// delete
 	for _, validIngredient := range createdValidIngredients {
 		assert.NoError(t, dbc.ArchiveValidIngredient(ctx, validIngredient.ID))
 
 		var y *types.ValidIngredient
-		y, err = dbc.GetValidIngredient(ctx, created.ID)
+		y, err = dbc.GetValidIngredient(ctx, validIngredient.ID)
 		assert.Nil(t, y)
 		assert.Error(t, err)
 		assert.ErrorIs(t, err, sql.ErrNoRows)
