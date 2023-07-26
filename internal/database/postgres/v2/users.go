@@ -17,7 +17,7 @@ const (
 )
 
 type (
-	// User represents a valid ingredient.
+	// User represents a user.
 	User struct {
 		_ struct{}
 
@@ -45,7 +45,7 @@ type (
 	}
 )
 
-// CreateUser gets a valid ingredient from the database.
+// CreateUser gets a user from the database.
 func (c *DatabaseClient) CreateUser(ctx context.Context, input *User) (*types.User, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -55,7 +55,7 @@ func (c *DatabaseClient) CreateUser(ctx context.Context, input *User) (*types.Us
 	)
 
 	if _, err := q.Executor().ExecContext(ctx); err != nil {
-		return nil, observability.PrepareError(err, span, "creating valid ingredient")
+		return nil, observability.PrepareError(err, span, "creating user")
 	}
 
 	var output types.User
@@ -66,7 +66,7 @@ func (c *DatabaseClient) CreateUser(ctx context.Context, input *User) (*types.Us
 	return &output, nil
 }
 
-// GetUser gets a valid ingredient from the database.
+// GetUser gets a user from the database.
 func (c *DatabaseClient) GetUser(ctx context.Context, userID string) (*types.User, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -92,7 +92,7 @@ func (c *DatabaseClient) GetUser(ctx context.Context, userID string) (*types.Use
 	return &output, nil
 }
 
-// GetUsers gets a valid ingredient from the database.
+// GetUsers gets a user from the database.
 func (c *DatabaseClient) GetUsers(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.User], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -127,7 +127,7 @@ func (c *DatabaseClient) GetUsers(ctx context.Context, filter *types.QueryFilter
 	return output, nil
 }
 
-// SearchForUsers gets a valid ingredient from the database.
+// SearchForUsers gets a user from the database.
 func (c *DatabaseClient) SearchForUsers(ctx context.Context, query string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.User], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -163,7 +163,7 @@ func (c *DatabaseClient) SearchForUsers(ctx context.Context, query string, filte
 	return output, nil
 }
 
-// GetUsersWithIDs gets a valid ingredient from the database.
+// GetUsersWithIDs gets a user from the database.
 func (c *DatabaseClient) GetUsersWithIDs(ctx context.Context, ids []string) ([]*types.User, error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -192,7 +192,7 @@ func (c *DatabaseClient) GetUsersWithIDs(ctx context.Context, ids []string) ([]*
 	return output, nil
 }
 
-// ArchiveUser gets a valid ingredient from the database.
+// ArchiveUser gets a user from the database.
 func (c *DatabaseClient) ArchiveUser(ctx context.Context, userID string) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
@@ -202,7 +202,7 @@ func (c *DatabaseClient) ArchiveUser(ctx context.Context, userID string) error {
 		Where(goqu.Ex{idColumn: userID})
 
 	if _, err := q.Executor().ExecContext(ctx); err != nil {
-		return observability.PrepareError(err, span, "archiving valid ingredient")
+		return observability.PrepareError(err, span, "archiving user")
 	}
 
 	return nil
