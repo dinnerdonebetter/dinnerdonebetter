@@ -10,6 +10,32 @@ import (
 	"strings"
 )
 
+var (
+	packagesToCheck = []string{
+		"internal/database/postgres/v2",
+		"pkg/types",
+	}
+
+	specs = []typeSpec{
+		{
+			typeName: "ValidIngredient",
+			packages: packagesToCheck,
+		},
+		{
+			typeName: "ValidInstrument",
+			packages: packagesToCheck,
+		},
+		{
+			typeName: "ValidPreparation",
+			packages: packagesToCheck,
+		},
+		{
+			typeName: "User",
+			packages: packagesToCheck,
+		},
+	}
+)
+
 func noTestFiles(f os.FileInfo) bool {
 	return !f.IsDir() && !strings.HasSuffix(f.Name(), "_test.go")
 }
@@ -112,44 +138,6 @@ func getFieldsForStruct(structType *ast.StructType) map[string]string {
 }
 
 func main() {
-	specs := []typeSpec{
-		{
-			typeName: "ValidIngredient",
-			packages: []string{
-				"internal/database/postgres/v2",
-				"pkg/types",
-			},
-		},
-		{
-			typeName: "ValidInstrument",
-			packages: []string{
-				"internal/database/postgres/v2",
-				"pkg/types",
-			},
-		},
-		{
-			typeName: "ValidPreparation",
-			packages: []string{
-				"internal/database/postgres/v2",
-				"pkg/types",
-			},
-		},
-		{
-			typeName: "Webhook",
-			packages: []string{
-				"internal/database/postgres/v2",
-				"pkg/types",
-			},
-		},
-		{
-			typeName: "WebhookTriggerEvent",
-			packages: []string{
-				"internal/database/postgres/v2",
-				"pkg/types",
-			},
-		},
-	}
-
 	for _, s := range specs {
 		if err := evaluateTypeSpec(s); err != nil {
 			log.Fatalf("failed to evaluate type spec: %v", err)
