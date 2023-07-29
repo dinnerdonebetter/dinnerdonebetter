@@ -24,6 +24,7 @@ var (
 		"content_type",
 		"url",
 		"method",
+		belongsToHousehold,
 	}
 
 	rawWebhooksTableColumns = []string{

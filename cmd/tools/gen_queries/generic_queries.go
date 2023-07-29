@@ -29,6 +29,29 @@ func buildListOfNeedingIndexingQuery(table string) string {
 	return query
 }
 
+func buildListQuery(table string, columns []string) string {
+	anyCols := []any{}
+	for _, col := range columns {
+		anyCols = append(anyCols, col)
+	}
+
+	q := goqu.Select(anyCols...).From(table).
+		Where(goqu.Ex{
+			buildColumnName(table, archivedAt): nil,
+		})
+
+	query, args, err := q.ToSQL()
+	if err != nil {
+		panic(err)
+	}
+
+	if len(args) > 0 {
+		panic("args should be empty")
+	}
+
+	return query
+}
+
 func buildSelectQuery(table string, columns []string) string {
 	anyCols := []any{}
 	for _, col := range columns {

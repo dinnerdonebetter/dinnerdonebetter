@@ -273,3 +273,6 @@ start_dev_cloud_sql_proxy:
 
 .PHONY: proxy_dev_db
 proxy_dev_db: start_dev_cloud_sql_proxy
+
+generate_database_models:
+ 	xo schema postgres://api_db_user:$7dl#ks-W0gOMGuISohZVQk$MXPLe9A]WczTQslu4NP##3S0AnR]em4E9d4Fsn+Y@127.0.0.1:5434/dinner-done-better?sslmode=disable

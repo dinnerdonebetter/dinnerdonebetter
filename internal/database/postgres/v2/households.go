@@ -39,7 +39,20 @@ type (
 		PaymentProcessorCustomerID string     `db:"payment_processor_customer_id"`
 		BelongsToUser              string     `db:"belongs_to_user"`
 		Name                       string     `db:"name"`
-		// Members                    []*HouseholdUserMembershipWithUser `json:"members"`
+	}
+
+	// HouseholdUserMembershipWithUser defines a relationship between a user and a household.
+	HouseholdUserMembershipWithUser struct {
+		_ struct{}
+
+		CreatedAt          time.Time  `db:"created_at"           goqu:"skipinsert"`
+		LastUpdatedAt      *time.Time `db:"last_updated_at"      goqu:"skipinsert"`
+		ArchivedAt         *time.Time `db:"archived_at"          goqu:"skipinsert"`
+		ID                 string     `db:"id"                   goqu:"skipupdate"`
+		BelongsToUser      *User      `db:"users"`
+		BelongsToHousehold string     `db:"belongs_to_household"`
+		HouseholdRole      string     `db:"household_role"`
+		DefaultHousehold   bool       `db:"default_household"`
 	}
 )
 

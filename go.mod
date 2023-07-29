@@ -13,6 +13,7 @@ require (
 	github.com/alexedwards/scs/postgresstore v0.0.0-20230327161757-10d4299e3b24
 	github.com/alexedwards/scs/v2 v2.5.1
 	github.com/algolia/algoliasearch-client-go/v3 v3.30.1
+	github.com/andreyvit/diff v0.0.0-20170406064948-c7f18ee00883
 	github.com/aws/aws-sdk-go v1.44.306
 	github.com/boombuler/barcode v1.0.1
 	github.com/brianvoe/gofakeit/v5 v5.11.2
@@ -31,7 +32,6 @@ require (
 	github.com/googleapis/gax-go/v2 v2.12.0
 	github.com/gorilla/securecookie v1.1.1
 	github.com/gorilla/websocket v1.5.0
-	github.com/hashicorp/consul/sdk v0.14.0
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/hashicorp/go-retryablehttp v0.7.4
 	github.com/heimdalr/dag v1.2.1
@@ -135,6 +135,7 @@ require (
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/elastic/elastic-transport-go/v8 v8.3.0 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
+	github.com/fatih/color v1.14.1 // indirect
 	github.com/felixge/httpsnoop v1.0.3 // indirect
 	github.com/fogleman/gg v1.3.0 // indirect
 	github.com/getsentry/sentry-go v0.12.0 // indirect
@@ -157,6 +158,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
+	github.com/hashicorp/go-hclog v1.5.0 // indirect
 	github.com/hexops/gotextdiff v1.0.3 // indirect
 	github.com/huandu/xstrings v1.3.0 // indirect
 	github.com/iancoleman/orderedmap v0.0.0-20190318233801-ac98e3ecb4b0 // indirect
@@ -208,6 +210,7 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/sasha-s/go-deadlock v0.3.1 // indirect
 	github.com/segmentio/backo-go v1.0.1 // indirect
+	github.com/sergi/go-diff v1.2.0 // indirect
 	github.com/sirupsen/logrus v1.9.0 // indirect
 	github.com/spf13/cobra v1.7.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect

@@ -24,7 +24,6 @@ func createHouseholdForTest(t *testing.T, ctx context.Context, exampleHousehold 
 
 	user := createUserForTest(t, ctx, nil, dbc)
 	exampleHousehold.BelongsToUser = user.ID
-
 	exampleHousehold.Members = nil
 
 	var x Household
@@ -35,9 +34,8 @@ func createHouseholdForTest(t *testing.T, ctx context.Context, exampleHousehold 
 	assert.Equal(t, exampleHousehold, created)
 
 	household, err := dbc.GetHousehold(ctx, created.ID)
-	exampleHousehold.CreatedAt = household.CreatedAt
-
 	assert.NoError(t, err)
+	exampleHousehold.CreatedAt = household.CreatedAt
 	assert.Equal(t, household, exampleHousehold)
 
 	return created

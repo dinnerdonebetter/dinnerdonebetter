@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path"
 	"path/filepath"
@@ -48,6 +49,11 @@ func writeFileToPath(outputFilepath, content string) error {
 		return fmt.Errorf("failed to create f: %w", err)
 	}
 
+	content, err = formatQuery(content)
+	if err != nil {
+		return fmt.Errorf("failed to format query: %w", err)
+	}
+
 	// Write the content to the f
 	if _, err = f.WriteString(content); err != nil {
 		return fmt.Errorf("failed to write to f: %w", err)
@@ -64,14 +70,18 @@ func writeFileToPath(outputFilepath, content string) error {
 func formatQuery(query string) (string, error) {
 	cfg := tree.DefaultPrettyCfg()
 	cfg.UseTabs = true
-	cfg.LineWidth = 60
+	cfg.LineWidth = 75
 	cfg.TabWidth = 4
 	cfg.Simplify = true
-	cfg.Align = tree.PrettyAlignOnly
+	cfg.Align = tree.PrettyAlignAndDeindent
 	cfg.Case = strings.ToUpper
-	cfg.JSONFmt = true
 
-	return sqlfmt.FmtSQL(cfg, []string{query})
+	query, err := sqlfmt.FmtSQL(cfg, []string{query})
+	if err != nil {
+		return "", err
+	}
+
+	return query + "\n", nil
 }
 
 type queryFunc func(squirrel.StatementBuilderType) string
@@ -90,6 +100,7 @@ var (
 		"valid_instruments/get_needing_indexing.sql":       buildSelectValidInstrumentsNeedingIndexingQuery,
 		"valid_instruments/get_by_id.sql":                  buildSelectValidInstrumentQuery,
 		"valid_ingredients/get_needing_indexing.sql":       buildSelectValidIngredientsNeedingIndexingQuery,
+		"valid_ingredients/get_many.sql":                   buildSelectValidIngredientsQuery,
 		"valid_ingredients/get_by_id.sql":                  buildSelectValidIngredientQuery,
 		"valid_measurement_units/get_needing_indexing.sql": buildSelectValidMeasurementUnitsNeedingIndexingQuery,
 		"valid_measurement_units/get_by_id.sql":            buildSelectValidMeasurementUnitQuery,
@@ -116,5 +127,64 @@ func main() {
 		if err = writeFileToPath(path.Join(destinationPath, filename), query); err != nil {
 			panic(err)
 		}
+	}
+
+	compareQueries()
+}
+
+func compareQueries() {
+	// Define the two root directories for comparison
+	rootDirA := "internal/database/postgres/generated_queries"
+	rootDirB := "internal/database/postgres/queries"
+
+	// Walk through the first root directory and iterate over the SQL files
+	err := filepath.Walk(rootDirA, func(path string, info os.FileInfo, err error) error {
+		// Skip directories or files with different extensions
+		if err != nil || info.IsDir() || filepath.Ext(path) != ".sql" {
+			return nil
+		}
+
+		// Get the relative path of the SQL file with respect to rootDirA
+		relPath, err := filepath.Rel(rootDirA, path)
+		if err != nil {
+			return err
+		}
+
+		// Create the corresponding path in rootDirB for comparison
+		correspondingPathInB := filepath.Join(rootDirB, relPath)
+
+		// Read the contents of the SQL files in both directories
+		rawGeneratedQuery, err := os.ReadFile(path)
+		if err != nil {
+			return err
+		}
+
+		rawManualQuery, err := os.ReadFile(correspondingPathInB)
+		if err != nil {
+			return err
+		}
+
+		generatedQuery, manualQuery := strings.TrimSpace(string(rawGeneratedQuery)), strings.TrimSpace(string(rawManualQuery))
+
+		generatedQuery, err = formatQuery(generatedQuery)
+		if err != nil {
+			return err
+		}
+
+		manualQuery, err = formatQuery(manualQuery)
+		if err != nil {
+			return err
+		}
+
+		// Compare the contents of the files
+		if strings.Compare(generatedQuery, manualQuery) != 0 {
+			fmt.Printf("Files %s and %s have different content.\n", path, correspondingPathInB)
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		log.Fatal(err)
 	}
 }

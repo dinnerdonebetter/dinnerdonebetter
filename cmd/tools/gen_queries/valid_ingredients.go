@@ -55,6 +55,10 @@ func buildSelectValidIngredientsNeedingIndexingQuery(_ squirrel.StatementBuilder
 	return buildListOfNeedingIndexingQuery(validIngredientsTable)
 }
 
+func buildSelectValidIngredientsQuery(_ squirrel.StatementBuilderType) string {
+	return buildListQuery(validIngredientsTable, validIngredientsTableColumns)
+}
+
 func buildSelectValidIngredientQuery(_ squirrel.StatementBuilderType) string {
 	return buildSelectQuery(validIngredientsTable, validIngredientsTableColumns)
 }
