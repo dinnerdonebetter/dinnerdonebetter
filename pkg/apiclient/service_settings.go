@@ -86,3 +86,56 @@ func (c *Client) GetServiceSettings(ctx context.Context, filter *types.QueryFilt
 
 	return serviceSettings, nil
 }
+
+// CreateServiceSetting creates a service setting.
+func (c *Client) CreateServiceSetting(ctx context.Context, input *types.ServiceSettingCreationRequestInput) (*types.ServiceSetting, error) {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := c.logger.Clone()
+
+	if input == nil {
+		return nil, ErrNilInputProvided
+	}
+
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
+	}
+
+	req, err := c.requestBuilder.BuildCreateServiceSettingRequest(ctx, input)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "building create service setting request")
+	}
+
+	var serviceSetting *types.ServiceSetting
+	if err = c.fetchAndUnmarshal(ctx, req, &serviceSetting); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "creating service setting")
+	}
+
+	return serviceSetting, nil
+}
+
+// ArchiveServiceSetting archives a service setting.
+func (c *Client) ArchiveServiceSetting(ctx context.Context, serviceSettingID string) error {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := c.logger.Clone()
+
+	if serviceSettingID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.ServiceSettingIDKey, serviceSettingID)
+	tracing.AttachServiceSettingIDToSpan(span, serviceSettingID)
+
+	req, err := c.requestBuilder.BuildArchiveServiceSettingRequest(ctx, serviceSettingID)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "building archive service setting request")
+	}
+
+	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving service setting %s", serviceSettingID)
+	}
+
+	return nil
+}

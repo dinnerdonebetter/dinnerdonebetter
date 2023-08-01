@@ -11,6 +11,15 @@ import (
 	"github.com/hashicorp/go-multierror"
 )
 
+const (
+	// ServiceSettingCreatedCustomerEventType indicates a service setting was created.
+	ServiceSettingCreatedCustomerEventType CustomerEventType = "service_setting_created"
+	// ServiceSettingUpdatedCustomerEventType indicates a service setting was updated.
+	ServiceSettingUpdatedCustomerEventType CustomerEventType = "service_setting_updated"
+	// ServiceSettingArchivedCustomerEventType indicates a service setting was archived.
+	ServiceSettingArchivedCustomerEventType CustomerEventType = "service_setting_archived"
+)
+
 func init() {
 	gob.Register(new(ServiceSetting))
 	gob.Register(new(ServiceSettingCreationRequestInput))
@@ -73,17 +82,21 @@ type (
 
 	// ServiceSettingDataManager describes a structure capable of storing settings permanently.
 	ServiceSettingDataManager interface {
+		CreateServiceSetting(ctx context.Context, input *ServiceSettingDatabaseCreationInput) (*ServiceSetting, error)
 		ServiceSettingExists(ctx context.Context, serviceSettingID string) (bool, error)
 		GetServiceSetting(ctx context.Context, serviceSettingID string) (*ServiceSetting, error)
 		GetServiceSettings(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ServiceSetting], error)
 		SearchForServiceSettings(ctx context.Context, query string) ([]*ServiceSetting, error)
+		ArchiveServiceSetting(ctx context.Context, serviceSettingID string) error
 	}
 
 	// ServiceSettingDataService describes a structure capable of serving traffic related to service settings.
 	ServiceSettingDataService interface {
+		CreateHandler(http.ResponseWriter, *http.Request)
 		SearchHandler(http.ResponseWriter, *http.Request)
 		ListHandler(http.ResponseWriter, *http.Request)
 		ReadHandler(http.ResponseWriter, *http.Request)
+		ArchiveHandler(http.ResponseWriter, *http.Request)
 	}
 )
 
