@@ -242,6 +242,7 @@ integration_tests_postgres:
 	--remove-orphans \
 	--always-recreate-deps \
 	$(if $(filter y Y yes YES true TRUE plz sure yup YUP,$(LET_HANG)),,--abort-on-container-exit) \
+	--exit-code-from test \
 	--renew-anon-volumes
 
 ## Running
@@ -252,16 +253,7 @@ dev: $(ARTIFACTS_DIR)
 	--file $(ENVIRONMENTS_DIR)/local/compose_files/docker-compose.yaml up \
 	--quiet-pull \
 	--no-recreate \
-	# --abort-on-container-exit \
 	--always-recreate-deps
-
-.PHONY: start_infra
-start_infra:
-	docker-compose \
-	--file $(ENVIRONMENTS_DIR)/local/compose_files/docker-compose.yaml up \
-	--detach \
-	--remove-orphans \
-	postgres worker_queue
 
 ## misc
 
@@ -276,9 +268,6 @@ line_count: ensure_scc_installed
 ## maintenance
 
 # https://cloud.google.com/sql/docs/postgres/connect-admin-proxy#connect-tcp
-.PHONY: start_dev_cloud_sql_proxy
-start_dev_cloud_sql_proxy:
-	cloud_sql_proxy -dir=/cloudsql -instances='dinner-done-better-dev:us-central1:dev=tcp:5434'
-
 .PHONY: proxy_dev_db
-proxy_dev_db: start_dev_cloud_sql_proxy
+proxy_dev_db:
+	cloud_sql_proxy -dir=/cloudsql -instances='dinner-done-better-dev:us-central1:dev=tcp:5434'
