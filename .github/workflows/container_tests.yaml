@@ -1,9 +1,8 @@
 on: # [gollum]
   pull_request:
     paths:
-      - pkg/**
-      - internal/**
-name: unit tests
+      - internal/database/postgres/**
+name: container tests
 jobs:
  run:
    strategy:
@@ -20,4 +19,6 @@ jobs:
        uses: actions/checkout@v3
 
      - name: run unit tests
-       run: make quicktest
+       run: make containertests
+       env:
+         TESTCONTAINERS_RYUK_DISABLED: true

@@ -178,10 +178,18 @@ coverage: clean_coverage $(ARTIFACTS_DIR)
 	@go test -coverprofile=$(COVERAGE_OUT) -shuffle=on -covermode=atomic -race $(TESTABLE_PACKAGE_LIST) > /dev/null
 	@go tool cover -func=$(ARTIFACTS_DIR)/coverage.out | grep 'total:' | xargs | awk '{ print "COVERAGE: " $$3 }'
 
+.PHONY: build
+build:
+	go build $(TOTAL_PACKAGE_LIST)
+
 .PHONY: quicktest # basically only running once instead of with -count 5 or whatever
-quicktest: $(ARTIFACTS_DIR) vendor clear
+quicktest: $(ARTIFACTS_DIR) vendor build clear
 	go build $(TOTAL_PACKAGE_LIST)
 	go test -cover -shuffle=on -race -failfast $(TESTABLE_PACKAGE_LIST)
+
+.PHONY: containertests
+containertests:
+	go test -tags testcontainers -cover -shuffle=on -race -failfast $(THIS)/internal/database/postgres
 
 .PHONY: check_queries
 check_queries:
