@@ -2,14 +2,6 @@ version: "2"
 sql:
   - schema: "internal/database/postgres/migrations"
     queries:
-      # - "internal/database/postgres/generated_queries/meals"
-      # - "internal/database/postgres/generated_queries/recipes"
-      # - "internal/database/postgres/generated_queries/valid_ingredient_states"
-      # - "internal/database/postgres/generated_queries/valid_ingredients"
-      # - "internal/database/postgres/generated_queries/valid_instruments"
-      # - "internal/database/postgres/generated_queries/valid_measurement_units"
-      # - "internal/database/postgres/generated_queries/valid_preparations"
-      # - "internal/database/postgres/generated_queries/webhooks"
         - "internal/database/postgres/queries/admin"
         - "internal/database/postgres/queries/household_instrument_ownerships"
         - "internal/database/postgres/queries/household_invitations"
@@ -41,7 +33,7 @@ sql:
         - "internal/database/postgres/queries/service_settings"
         - "internal/database/postgres/queries/user_ingredient_preferences"
         - "internal/database/postgres/queries/users"
-        # - "internal/database/postgres/queries/valid_ingredient_groups"
+        - "internal/database/postgres/queries/valid_ingredient_groups"
         - "internal/database/postgres/queries/valid_ingredient_measurement_units"
         - "internal/database/postgres/queries/valid_ingredient_preparations"
         - "internal/database/postgres/queries/valid_ingredient_state_ingredients"
@@ -53,7 +45,7 @@ sql:
         - "internal/database/postgres/queries/valid_preparation_instruments"
         - "internal/database/postgres/queries/valid_preparations"
         - "internal/database/postgres/queries/webhook_trigger_events"
-        # - "internal/database/postgres/queries/webhooks"
+        - "internal/database/postgres/queries/webhooks"
     engine: "postgresql"
     strict_function_checks: true
     gen:

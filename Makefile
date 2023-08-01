@@ -10,8 +10,8 @@ TESTABLE_PACKAGE_LIST         := `go list $(THIS)/... | grep -Ev '(integration)'
 ENVIRONMENTS_DIR              := environments
 TEST_ENVIRONMENT_DIR          := $(ENVIRONMENTS_DIR)/testing
 TEST_DOCKER_COMPOSE_FILES_DIR := $(TEST_ENVIRONMENT_DIR)/compose_files
-SQL_GENERATOR                 := docker run --rm --volume `pwd`:/src --workdir /src kjconroy/sqlc:1.17.2
 GENERATED_QUERIES_DIR         := internal/database/postgres/generated
+SQL_GENERATOR                 := kjconroy/sqlc:1.20.0
 LINTER_IMAGE                  := golangci/golangci-lint:v1.53.3
 CONTAINER_LINTER_IMAGE        := openpolicyagent/conftest:v0.43.1
 CLOUD_JOBS                    := meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator search_data_index_scheduler
@@ -136,20 +136,31 @@ pre_lint:
 
 .PHONY: lint_docker
 lint_docker:
-	@docker pull $(CONTAINER_LINTER_IMAGE)
+	@docker pull --quiet $(CONTAINER_LINTER_IMAGE)
 	docker run --rm --volume $(PWD):$(PWD) --workdir=$(PWD) $(CONTAINER_LINTER_IMAGE) test --policy docker_security.rego `find . -type f -name "*.Dockerfile"`
 
 .PHONY: queries_lint
 queries_lint:
-	$(SQL_GENERATOR) compile
+	@docker pull --quiet $(SQL_GENERATOR)
+	docker run --rm \
+		--volume $(PWD):/src \
+		--workdir /src \
+		$(SQL_GENERATOR) compile --no-database --no-remote
+	docker run --rm \
+		--volume $(PWD):/src \
+		--workdir /src \
+		$(SQL_GENERATOR) vet --no-database --no-remote
 
 .PHONY: querier
 querier: queries_lint
+	docker run --rm \
+		--volume $(PWD):/src \
+		--workdir /src \
 	$(SQL_GENERATOR) generate
 
 .PHONY: golang_lint
 golang_lint:
-	@docker pull $(LINTER_IMAGE)
+	@docker pull --quiet $(LINTER_IMAGE)
 	docker run --rm \
 		--volume $(PWD):$(PWD) \
 		--workdir=$(PWD) \
@@ -167,10 +178,18 @@ coverage: clean_coverage $(ARTIFACTS_DIR)
 	@go test -coverprofile=$(COVERAGE_OUT) -shuffle=on -covermode=atomic -race $(TESTABLE_PACKAGE_LIST) > /dev/null
 	@go tool cover -func=$(ARTIFACTS_DIR)/coverage.out | grep 'total:' | xargs | awk '{ print "COVERAGE: " $$3 }'
 
+.PHONY: build
+build:
+	go build $(TOTAL_PACKAGE_LIST)
+
 .PHONY: quicktest # basically only running once instead of with -count 5 or whatever
-quicktest: $(ARTIFACTS_DIR) vendor clear
+quicktest: $(ARTIFACTS_DIR) vendor build clear
 	go build $(TOTAL_PACKAGE_LIST)
 	go test -cover -shuffle=on -race -failfast $(TESTABLE_PACKAGE_LIST)
+
+.PHONY: containertests
+containertests:
+	go test -tags testcontainers -cover -shuffle=on -race -failfast $(THIS)/internal/database/postgres
 
 .PHONY: check_queries
 check_queries:
@@ -223,6 +242,7 @@ integration_tests_postgres:
 	--remove-orphans \
 	--always-recreate-deps \
 	$(if $(filter y Y yes YES true TRUE plz sure yup YUP,$(LET_HANG)),,--abort-on-container-exit) \
+	--exit-code-from test \
 	--renew-anon-volumes
 
 ## Running
@@ -233,16 +253,7 @@ dev: $(ARTIFACTS_DIR)
 	--file $(ENVIRONMENTS_DIR)/local/compose_files/docker-compose.yaml up \
 	--quiet-pull \
 	--no-recreate \
-	# --abort-on-container-exit \
 	--always-recreate-deps
-
-.PHONY: start_infra
-start_infra:
-	docker-compose \
-	--file $(ENVIRONMENTS_DIR)/local/compose_files/docker-compose.yaml up \
-	--detach \
-	--remove-orphans \
-	postgres worker_queue
 
 ## misc
 
@@ -257,9 +268,6 @@ line_count: ensure_scc_installed
 ## maintenance
 
 # https://cloud.google.com/sql/docs/postgres/connect-admin-proxy#connect-tcp
-.PHONY: start_dev_cloud_sql_proxy
-start_dev_cloud_sql_proxy:
-	cloud_sql_proxy -dir=/cloudsql -instances='dinner-done-better-dev:us-central1:dev=tcp:5434'
-
 .PHONY: proxy_dev_db
-proxy_dev_db: start_dev_cloud_sql_proxy
+proxy_dev_db:
+	cloud_sql_proxy -dir=/cloudsql -instances='dinner-done-better-dev:us-central1:dev=tcp:5434'
