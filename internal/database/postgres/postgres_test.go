@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"errors"
+	"io"
+	"log"
 	"regexp"
 	"strings"
 	"testing"
@@ -23,6 +25,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
+	"github.com/testcontainers/testcontainers-go"
+	"github.com/testcontainers/testcontainers-go/modules/postgres"
+	"github.com/testcontainers/testcontainers-go/wait"
 )
 
 var _ sqlmock.Argument = (*idMatcher)(nil)
@@ -123,6 +128,44 @@ func buildTestClient(t *testing.T) (*Querier, *sqlmockExpecterWrapper) {
 	}
 
 	return c, &sqlmockExpecterWrapper{Sqlmock: sqlMock}
+}
+
+const (
+	defaultImage            = "postgres:15"
+	defaultDatabaseName     = "dinner-done-better"
+	defaultDatabaseUsername = "dbuser"
+	defaultDatabasePassword = "hunter2"
+)
+
+func buildDatabaseClientForTest(t *testing.T, ctx context.Context) (*Querier, *postgres.PostgresContainer) {
+	t.Helper()
+
+	testcontainers.Logger = log.New(io.Discard, "", log.LstdFlags)
+
+	container, err := postgres.RunContainer(
+		ctx,
+		testcontainers.WithImage(defaultImage),
+		postgres.WithDatabase(defaultDatabaseName),
+		postgres.WithUsername(defaultDatabaseUsername),
+		postgres.WithPassword(defaultDatabasePassword),
+		testcontainers.WithWaitStrategyAndDeadline(
+			time.Minute,
+			wait.ForLog("database system is ready to accept connections").
+				WithOccurrence(2),
+		),
+	)
+
+	require.NoError(t, err)
+	require.NotNil(t, container)
+
+	connStr, err := container.ConnectionString(ctx, "sslmode=disable")
+	require.NoError(t, err)
+
+	dbc, err := ProvideDatabaseClient(ctx, logging.NewNoopLogger(), &config.Config{ConnectionDetails: connStr, RunMigrations: true, OAuth2TokenEncryptionKey: "blahblahblahblahblahblahblahblah"}, tracing.NewNoopTracerProvider())
+	require.NoError(t, err)
+	require.NotNil(t, dbc)
+
+	return dbc.(*Querier), container
 }
 
 func buildErroneousMockRow() *sqlmock.Rows {

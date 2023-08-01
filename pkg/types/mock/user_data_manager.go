@@ -126,3 +126,13 @@ func (m *UserDataManagerMock) GetEmailAddressVerificationTokenForUser(ctx contex
 	args := m.Called(ctx, userID)
 	return args.String(0), args.Error(1)
 }
+
+// GetUserIDsThatNeedSearchIndexing is a mock function.
+func (m *UserDataManagerMock) GetUserIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+	args := m.Called(ctx)
+	return args.Get(0).([]string), args.Error(1)
+}
+
+func (m *UserDataManagerMock) MarkUserAsIndexed(ctx context.Context, userID string) error {
+	return m.Called(ctx, userID).Error(0)
+}

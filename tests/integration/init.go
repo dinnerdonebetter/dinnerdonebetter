@@ -68,7 +68,7 @@ func init() {
 
 	cfg := &dbconfig.Config{
 		OAuth2TokenEncryptionKey: "                                ",
-		ConnectionDetails:        database.ConnectionDetails(dbAddr),
+		ConnectionDetails:        dbAddr,
 		Debug:                    false,
 		RunMigrations:            false,
 		MaxPingAttempts:          500,

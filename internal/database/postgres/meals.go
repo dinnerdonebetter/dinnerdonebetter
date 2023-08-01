@@ -269,7 +269,7 @@ func (q *Querier) GetMealsWithIDs(ctx context.Context, ids []string) ([]*types.M
 	return meals, nil
 }
 
-//go:embed generated_queries/meals/get_needing_indexing.sql
+//go:embed queries/meals/get_needing_indexing.sql
 var mealsNeedingIndexingQuery string
 
 // GetMealIDsThatNeedSearchIndexing fetches a list of meal IDs from the database that meet a particular filter.

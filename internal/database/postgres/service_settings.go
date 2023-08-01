@@ -229,3 +229,78 @@ func (q *Querier) GetServiceSettings(ctx context.Context, filter *types.QueryFil
 
 	return x, nil
 }
+
+//go:embed queries/service_settings/create.sql
+var serviceSettingCreationQuery string
+
+// CreateServiceSetting creates a service setting in the database.
+func (q *Querier) CreateServiceSetting(ctx context.Context, input *types.ServiceSettingDatabaseCreationInput) (*types.ServiceSetting, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if input == nil {
+		return nil, ErrNilInputProvided
+	}
+
+	logger := q.logger.WithValue(keys.ServiceSettingIDKey, input.ID)
+
+	args := []any{
+		input.ID,
+		input.Name,
+		input.Type,
+		input.Description,
+		input.DefaultValue,
+		input.AdminsOnly,
+		strings.Join(input.Enumeration, serviceSettingsEnumDelimiter),
+	}
+
+	// create the service setting.
+	if err := q.performWriteQuery(ctx, q.db, "service setting creation", serviceSettingCreationQuery, args); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing service setting creation query")
+	}
+
+	x := &types.ServiceSetting{
+		ID:           input.ID,
+		Name:         input.Name,
+		Type:         input.Type,
+		Description:  input.Description,
+		DefaultValue: input.DefaultValue,
+		AdminsOnly:   input.AdminsOnly,
+		Enumeration:  input.Enumeration,
+		CreatedAt:    q.currentTime(),
+	}
+
+	tracing.AttachServiceSettingIDToSpan(span, x.ID)
+	logger.Info("service setting created")
+
+	return x, nil
+}
+
+//go:embed queries/service_settings/archive.sql
+var archiveServiceSettingQuery string
+
+// ArchiveServiceSetting archives a service setting from the database by its ID.
+func (q *Querier) ArchiveServiceSetting(ctx context.Context, serviceSettingID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if serviceSettingID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.ServiceSettingIDKey, serviceSettingID)
+	tracing.AttachServiceSettingIDToSpan(span, serviceSettingID)
+
+	args := []any{
+		serviceSettingID,
+	}
+
+	if err := q.performWriteQuery(ctx, q.db, "service setting archive", archiveServiceSettingQuery, args); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating service setting")
+	}
+
+	logger.Info("service setting archived")
+
+	return nil
+}

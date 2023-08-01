@@ -384,6 +384,51 @@ func (q *Querier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x *t
 	return x, nil
 }
 
+//go:embed queries/users/get_needing_indexing.sql
+var usersNeedingIndexingQuery string
+
+// GetUserIDsThatNeedSearchIndexing fetches a list of valid vessels from the database that meet a particular filter.
+func (q *Querier) GetUserIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	rows, err := q.getRows(ctx, q.db, "users needing indexing", usersNeedingIndexingQuery, nil)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "executing users list retrieval query")
+	}
+
+	return q.scanIDs(ctx, rows)
+}
+
+//go:embed queries/users/update_last_indexed_at.sql
+var updateUserLastIndexedAtQuery string
+
+// MarkUserAsIndexed updates a particular user's last_indexed_at value.
+func (q *Querier) MarkUserAsIndexed(ctx context.Context, validVesselID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if validVesselID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.UserIDKey, validVesselID)
+	tracing.AttachUserIDToSpan(span, validVesselID)
+
+	args := []any{
+		validVesselID,
+	}
+
+	if err := q.performWriteQuery(ctx, q.db, "set user last_indexed_at", updateUserLastIndexedAtQuery, args); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "marking user as indexed")
+	}
+
+	logger.Info("user marked as indexed")
+
+	return nil
+}
+
 //go:embed queries/users/create.sql
 var userCreationQuery string
 

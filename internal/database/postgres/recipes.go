@@ -411,7 +411,7 @@ func (q *Querier) GetRecipesWithIDs(ctx context.Context, ids []string) ([]*types
 	return recipes, nil
 }
 
-//go:embed generated_queries/recipes/get_needing_indexing.sql
+//go:embed queries/recipes/get_needing_indexing.sql
 var recipesNeedingIndexingQuery string
 
 // GetRecipeIDsThatNeedSearchIndexing fetches a list of recipe IDs from the database that meet a particular filter.

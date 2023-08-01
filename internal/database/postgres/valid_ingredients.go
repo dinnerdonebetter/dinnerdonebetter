@@ -406,7 +406,7 @@ func (q *Querier) GetValidIngredientsWithIDs(ctx context.Context, ids []string) 
 	return ingredients, nil
 }
 
-//go:embed generated_queries/valid_ingredients/get_needing_indexing.sql
+//go:embed queries/valid_ingredients/get_needing_indexing.sql
 var validIngredientsNeedingIndexingQuery string
 
 // GetValidIngredientIDsThatNeedSearchIndexing fetches a list of valid ingredients from the database that meet a particular filter.

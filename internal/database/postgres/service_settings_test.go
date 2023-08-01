@@ -7,9 +7,11 @@ import (
 	"errors"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -395,6 +397,147 @@ func TestQuerier_GetServiceSettings(T *testing.T) {
 		actual, err := c.GetServiceSettings(ctx, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_CreateServiceSetting(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleServiceSetting := fakes.BuildFakeServiceSetting()
+		exampleServiceSetting.ID = "1"
+		exampleInput := converters.ConvertServiceSettingToServiceSettingDatabaseCreationInput(exampleServiceSetting)
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleInput.ID,
+			exampleInput.Name,
+			exampleInput.Type,
+			exampleInput.Description,
+			exampleInput.DefaultValue,
+			exampleInput.AdminsOnly,
+			strings.Join(exampleInput.Enumeration, serviceSettingsEnumDelimiter),
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(serviceSettingCreationQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		c.timeFunc = func() time.Time {
+			return exampleServiceSetting.CreatedAt
+		}
+
+		actual, err := c.CreateServiceSetting(ctx, exampleInput)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleServiceSetting, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with invalid input", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+
+		actual, err := c.CreateServiceSetting(ctx, nil)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		expectedErr := errors.New(t.Name())
+		exampleServiceSetting := fakes.BuildFakeServiceSetting()
+		exampleInput := converters.ConvertServiceSettingToServiceSettingDatabaseCreationInput(exampleServiceSetting)
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleInput.ID,
+			exampleInput.Name,
+			exampleInput.Type,
+			exampleInput.Description,
+			exampleInput.DefaultValue,
+			exampleInput.AdminsOnly,
+			strings.Join(exampleInput.Enumeration, serviceSettingsEnumDelimiter),
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(serviceSettingCreationQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(expectedErr)
+
+		c.timeFunc = func() time.Time {
+			return exampleServiceSetting.CreatedAt
+		}
+
+		actual, err := c.CreateServiceSetting(ctx, exampleInput)
+		assert.Error(t, err)
+		assert.True(t, errors.Is(err, expectedErr))
+		assert.Nil(t, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_ArchiveServiceSetting(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleServiceSetting := fakes.BuildFakeServiceSetting()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleServiceSetting.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(archiveServiceSettingQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		assert.NoError(t, c.ArchiveServiceSetting(ctx, exampleServiceSetting.ID))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with invalid service setting ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+
+		assert.Error(t, c.ArchiveServiceSetting(ctx, ""))
+	})
+
+	T.Run("with error writing to database", func(t *testing.T) {
+		t.Parallel()
+
+		exampleServiceSetting := fakes.BuildFakeServiceSetting()
+
+		ctx := context.Background()
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleServiceSetting.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(archiveServiceSettingQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		assert.Error(t, c.ArchiveServiceSetting(ctx, exampleServiceSetting.ID))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})

@@ -292,7 +292,7 @@ func (q *Querier) GetValidPreparationsWithIDs(ctx context.Context, ids []string)
 	return preparations, nil
 }
 
-//go:embed generated_queries/valid_preparations/get_needing_indexing.sql
+//go:embed queries/valid_preparations/get_needing_indexing.sql
 var validPreparationsNeedingIndexingQuery string
 
 // GetValidPreparationIDsThatNeedSearchIndexing fetches a list of valid preparations from the database that meet a particular filter.

@@ -381,6 +381,10 @@ issues:
       linters:
         - paralleltest
 
+    - path: .*_integration_test\.go
+      linters:
+        - paralleltest
+
     - path: internal/featureflags/launchdarkly/mock_client.go
       linters:
         - gocritic

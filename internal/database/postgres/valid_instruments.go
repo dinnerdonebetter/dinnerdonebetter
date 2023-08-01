@@ -304,7 +304,7 @@ func (q *Querier) GetValidInstrumentsWithIDs(ctx context.Context, ids []string) 
 	return instruments, nil
 }
 
-//go:embed generated_queries/valid_instruments/get_needing_indexing.sql
+//go:embed queries/valid_instruments/get_needing_indexing.sql
 var validInstrumentsNeedingIndexingQuery string
 
 // GetValidInstrumentIDsThatNeedSearchIndexing fetches a list of valid instruments from the database that meet a particular filter.

@@ -334,6 +334,8 @@ const (
 	// UpdateMealPlanTasksPermission is a household user permission.
 	UpdateMealPlanTasksPermission Permission = "update.meal_plan_tasks"
 
+	// CreateServiceSettingsPermission is an admin user permission.
+	CreateServiceSettingsPermission Permission = "create.service_settings"
 	// ReadServiceSettingsPermission is an admin user permission.
 	ReadServiceSettingsPermission Permission = "read.service_settings"
 	// SearchServiceSettingsPermission is an admin user permission.
@@ -446,6 +448,7 @@ var (
 		UpdateValidIngredientStatesPermission,
 		ArchiveValidIngredientStatesPermission,
 		// only admins can arbitrarily create these via the API, this is exclusively for integration test purposes.
+		CreateServiceSettingsPermission,
 		CreateMealPlanTasksPermission,
 		CreateMealPlanGroceryListItemsPermission,
 	}

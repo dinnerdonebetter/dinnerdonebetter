@@ -5,16 +5,76 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 )
 
 const (
 	// ServiceSettingIDURIParamKey is a standard string that we'll use to refer to service setting IDs with.
 	ServiceSettingIDURIParamKey = "serviceSettingID"
 )
+
+// CreateHandler is our service setting creation route.
+func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	// determine user ID.
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	// read parsed input struct from request body.
+	providedInput := new(types.ServiceSettingCreationRequestInput)
+	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
+		observability.AcknowledgeError(err, logger, span, "decoding request")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		return
+	}
+
+	if err = providedInput.ValidateWithContext(ctx); err != nil {
+		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	input := converters.ConvertServiceSettingCreationRequestInputToServiceSettingDatabaseCreationInput(providedInput)
+	input.ID = identifiers.New()
+
+	tracing.AttachServiceSettingIDToSpan(span, input.ID)
+
+	serviceSetting, err := s.serviceSettingDataManager.CreateServiceSetting(ctx, input)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "creating service setting")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	dcm := &types.DataChangeMessage{
+		EventType:      types.ServiceSettingCreatedCustomerEventType,
+		ServiceSetting: serviceSetting,
+		UserID:         sessionCtxData.Requester.UserID,
+	}
+
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, serviceSetting, http.StatusCreated)
+}
 
 // ReadHandler returns a GET handler that returns a service setting.
 func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
@@ -134,4 +194,57 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 
 	// encode our response and peace.
 	s.encoderDecoder.RespondWithData(ctx, res, serviceSettings)
+}
+
+// ArchiveHandler returns a handler that archives a valid vessel.
+func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	// determine user ID.
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	// determine valid vessel ID.
+	serviceSettingID := s.serviceSettingIDFetcher(req)
+	tracing.AttachServiceSettingIDToSpan(span, serviceSettingID)
+	logger = logger.WithValue(keys.ServiceSettingIDKey, serviceSettingID)
+
+	exists, existenceCheckErr := s.serviceSettingDataManager.ServiceSettingExists(ctx, serviceSettingID)
+	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
+		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking valid vessel existence")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
+		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		return
+	}
+
+	if err = s.serviceSettingDataManager.ArchiveServiceSetting(ctx, serviceSettingID); err != nil {
+		observability.AcknowledgeError(err, logger, span, "archiving valid vessel")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	dcm := &types.DataChangeMessage{
+		EventType: types.ServiceSettingArchivedCustomerEventType,
+		UserID:    sessionCtxData.Requester.UserID,
+	}
+
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
+	}
+
+	// encode our response and peace.
+	res.WriteHeader(http.StatusNoContent)
 }
