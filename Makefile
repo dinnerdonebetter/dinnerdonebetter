@@ -10,8 +10,8 @@ TESTABLE_PACKAGE_LIST         := `go list $(THIS)/... | grep -Ev '(integration)'
 ENVIRONMENTS_DIR              := environments
 TEST_ENVIRONMENT_DIR          := $(ENVIRONMENTS_DIR)/testing
 TEST_DOCKER_COMPOSE_FILES_DIR := $(TEST_ENVIRONMENT_DIR)/compose_files
-SQL_GENERATOR                 := docker run --rm --volume `pwd`:/src --workdir /src kjconroy/sqlc:1.17.2
 GENERATED_QUERIES_DIR         := internal/database/postgres/generated
+SQL_GENERATOR                 := kjconroy/sqlc:1.20.0
 LINTER_IMAGE                  := golangci/golangci-lint:v1.53.3
 CONTAINER_LINTER_IMAGE        := openpolicyagent/conftest:v0.43.1
 CLOUD_JOBS                    := meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator search_data_index_scheduler
@@ -136,20 +136,31 @@ pre_lint:
 
 .PHONY: lint_docker
 lint_docker:
-	@docker pull $(CONTAINER_LINTER_IMAGE)
+	@docker pull --quiet $(CONTAINER_LINTER_IMAGE)
 	docker run --rm --volume $(PWD):$(PWD) --workdir=$(PWD) $(CONTAINER_LINTER_IMAGE) test --policy docker_security.rego `find . -type f -name "*.Dockerfile"`
 
 .PHONY: queries_lint
 queries_lint:
-	$(SQL_GENERATOR) compile
+	@docker pull --quiet $(SQL_GENERATOR)
+	docker run --rm \
+		--volume $(PWD):/src \
+		--workdir /src \
+		$(SQL_GENERATOR) compile --no-database --no-remote
+	docker run --rm \
+		--volume $(PWD):/src \
+		--workdir /src \
+		$(SQL_GENERATOR) vet --no-database --no-remote
 
 .PHONY: querier
 querier: queries_lint
+	docker run --rm \
+		--volume $(PWD):/src \
+		--workdir /src \
 	$(SQL_GENERATOR) generate
 
 .PHONY: golang_lint
 golang_lint:
-	@docker pull $(LINTER_IMAGE)
+	@docker pull --quiet $(LINTER_IMAGE)
 	docker run --rm \
 		--volume $(PWD):$(PWD) \
 		--workdir=$(PWD) \

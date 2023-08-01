@@ -65,7 +65,7 @@ SELECT
                 valid_ingredient_groups.last_updated_at IS NULL
                 OR valid_ingredient_groups.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
             )
-        OFFSET COALESCE($1, 0)
+        OFFSET $1
     ) AS filtered_count,
     (
         SELECT
@@ -91,4 +91,4 @@ WHERE
 	    valid_ingredient_groups.last_updated_at IS NULL
 	    OR valid_ingredient_groups.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
 	)
-	OFFSET COALESCE($1, 0);
+	OFFSET $1;

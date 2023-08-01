@@ -13,7 +13,7 @@ SELECT webhooks.id,
        webhooks.archived_at,
        webhooks.belongs_to_household
   FROM webhooks
-       JOIN webhooks ON
+       JOIN webhook_trigger_events ON
 			webhook_trigger_events.belongs_to_webhook
 			= webhooks.id
  WHERE webhook_trigger_events.archived_at IS NULL

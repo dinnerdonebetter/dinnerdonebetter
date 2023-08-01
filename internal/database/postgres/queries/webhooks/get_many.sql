@@ -30,7 +30,8 @@ SELECT
 	            webhooks.last_updated_at IS NULL
 	            OR webhooks.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
 	        )
-	    OFFSET COALESCE($6, 0)
+          AND webhooks.belongs_to_household = $1
+	    OFFSET $6
 	) as filtered_count,
 	(
 	    SELECT
@@ -39,6 +40,7 @@ SELECT
 	        webhooks
 	    WHERE
 	        webhooks.archived_at IS NULL
+            AND webhooks.belongs_to_household = $1
 	) as total_count
 FROM
 	webhooks
@@ -57,4 +59,4 @@ WHERE
 	    OR webhooks.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
 	)
 	AND webhooks.belongs_to_household = $1
-	OFFSET COALESCE($6, 0);
+	OFFSET $6;

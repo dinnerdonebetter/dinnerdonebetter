@@ -66,7 +66,5 @@ GROUP BY
   valid_instruments.id
 ORDER BY
   household_instrument_ownerships.id
-OFFSET
-  COALESCE($6, 0)
-LIMIT
-  COALESCE($7, 50);
+OFFSET $6
+LIMIT $7;
