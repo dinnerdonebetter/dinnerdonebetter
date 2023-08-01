@@ -2,7 +2,6 @@ package search
 
 import (
 	"context"
-	"errors"
 
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
@@ -24,22 +23,8 @@ const (
 	IndexTypeValidIngredientStates = "valid_ingredient_states"
 	// IndexTypeValidVessels represents the vessels index.
 	IndexTypeValidVessels = "vessels"
-)
-
-var (
-	ErrNilIndexRequest = errors.New("nil index request")
-
-	// AllIndexTypes is a list of all index types.
-	AllIndexTypes = []string{
-		IndexTypeRecipes,
-		IndexTypeMeals,
-		IndexTypeValidIngredients,
-		IndexTypeValidInstruments,
-		IndexTypeValidMeasurementUnits,
-		IndexTypeValidPreparations,
-		IndexTypeValidIngredientStates,
-		IndexTypeValidVessels,
-	}
+	// IndexTypeUsers represents the users index.
+	IndexTypeUsers = "users"
 )
 
 type (
@@ -51,7 +36,8 @@ type (
 			types.ValidMeasurementUnitSearchSubset |
 			types.ValidPreparationSearchSubset |
 			types.ValidIngredientStateSearchSubset |
-			types.ValidVesselSearchSubset
+			types.ValidVesselSearchSubset |
+			types.UserSearchSubset
 	}
 
 	// IndexSearcher is our wrapper interface for querying a text search index.

@@ -494,5 +494,10 @@ var (
 			Description: "valid preparation vessels",
 			Script:      fetchMigration("00089_valid_preparation_vessel_bridge"),
 		},
+		{
+			Version:     90,
+			Description: "user indexing",
+			Script:      fetchMigration("00090_add_indexing_to_users"),
+		},
 	}
 )

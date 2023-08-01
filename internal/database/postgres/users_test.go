@@ -762,6 +762,89 @@ func TestQuerier_GetUsers(T *testing.T) {
 	})
 }
 
+func TestQuerier_GetUserThatNeedSearchIndexing(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleUserList := fakes.BuildFakeUserList()
+
+		c, db := buildTestClient(t)
+
+		exampleIDs := []string{}
+		for _, exampleUser := range exampleUserList.Data {
+			exampleIDs = append(exampleIDs, exampleUser.ID)
+		}
+
+		db.ExpectQuery(formatQueryForSQLMock(usersNeedingIndexingQuery)).
+			WithArgs(interfaceToDriverValue(nil)...).
+			WillReturnRows(buildMockRowsFromIDs(exampleIDs...))
+
+		actual, err := c.GetUserIDsThatNeedSearchIndexing(ctx)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleIDs, actual)
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
+func TestQuerier_MarkUserAsIndexed(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleUser := fakes.BuildFakeUser()
+
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleUser.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(updateUserLastIndexedAtQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnResult(newArbitraryDatabaseResult())
+
+		assert.NoError(t, c.MarkUserAsIndexed(ctx, exampleUser.ID))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+
+	T.Run("with invalid ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+
+		assert.Error(t, c.MarkUserAsIndexed(ctx, ""))
+	})
+
+	T.Run("with error executing query", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		exampleUser := fakes.BuildFakeUser()
+
+		c, db := buildTestClient(t)
+
+		args := []any{
+			exampleUser.ID,
+		}
+
+		db.ExpectExec(formatQueryForSQLMock(updateUserLastIndexedAtQuery)).
+			WithArgs(interfaceToDriverValue(args)...).
+			WillReturnError(errors.New("blah"))
+
+		assert.Error(t, c.MarkUserAsIndexed(ctx, exampleUser.ID))
+
+		mock.AssertExpectationsForObjects(t, db)
+	})
+}
+
 func TestQuerier_CreateUser(T *testing.T) {
 	T.Parallel()
 

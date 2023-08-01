@@ -62,4 +62,4 @@ GROUP BY
 ORDER BY
   valid_ingredients.id
 LIMIT
-  20
+  20;

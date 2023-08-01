@@ -143,10 +143,6 @@ lint_docker:
 queries_lint:
 	$(SQL_GENERATOR) compile
 
-.PHONY: struct_equality
-struct_equality:
-	go run $(THIS)/cmd/tools/structchecker
-
 .PHONY: querier
 querier: queries_lint
 	$(SQL_GENERATOR) generate
@@ -160,7 +156,7 @@ golang_lint:
 		$(LINTER_IMAGE) golangci-lint run --config=.golangci.yml --timeout 15m ./...
 
 .PHONY: lint
-lint: lint_docker queries_lint struct_equality golang_lint # terraform_lint
+lint: lint_docker queries_lint golang_lint # terraform_lint
 
 .PHONY: clean_coverage
 clean_coverage:
@@ -185,12 +181,6 @@ check_queries:
 .PHONY: configs
 configs:
 	go run github.com/dinnerdonebetter/backend/cmd/tools/gen_configs
-
-.PHONY: queries
-queries:
-	go run github.com/dinnerdonebetter/backend/cmd/tools/gen_queries
-
-gen: configs queries
 
 clean_ts:
 	rm -rf $(ARTIFACTS_DIR)/typescript
@@ -273,6 +263,3 @@ start_dev_cloud_sql_proxy:
 
 .PHONY: proxy_dev_db
 proxy_dev_db: start_dev_cloud_sql_proxy
-
-generate_database_models:
- 	xo schema postgres://api_db_user:$7dl#ks-W0gOMGuISohZVQk$MXPLe9A]WczTQslu4NP##3S0AnR]em4E9d4Fsn+Y@127.0.0.1:5434/dinner-done-better?sslmode=disable

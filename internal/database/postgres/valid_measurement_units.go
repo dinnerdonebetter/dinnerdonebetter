@@ -346,7 +346,7 @@ func (q *Querier) GetValidMeasurementUnitsWithIDs(ctx context.Context, ids []str
 	return measurementUnits, nil
 }
 
-//go:embed generated_queries/valid_measurement_units/get_needing_indexing.sql
+//go:embed queries/valid_measurement_units/get_needing_indexing.sql
 var validMeasurementUnitsNeedingIndexingQuery string
 
 // GetValidMeasurementUnitIDsThatNeedSearchIndexing fetches a list of valid measurement units from the database that meet a particular filter.
