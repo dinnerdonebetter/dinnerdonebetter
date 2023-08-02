@@ -49,7 +49,6 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 
 	filter.AttachToLogger(logger)
-	logger.Debug("filtering?!")
 
 	fetchFunc := s.householdDataManager.GetHouseholds
 	if sessionCtxData.ServiceRolePermissionChecker().IsServiceAdmin() {

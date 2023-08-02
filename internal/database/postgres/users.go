@@ -168,37 +168,6 @@ func (q *Querier) getUser(ctx context.Context, userID string, withVerifiedTOTPSe
 	return u, nil
 }
 
-//go:embed queries/users/exists_with_status.sql
-var userHasStatusQuery string
-
-// UserHasStatus fetches whether a user has a particular status.
-func (q *Querier) UserHasStatus(ctx context.Context, userID string, statuses ...string) (bool, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	if userID == "" {
-		return false, ErrInvalidIDProvided
-	}
-
-	if len(statuses) == 0 {
-		return true, nil
-	}
-
-	tracing.AttachUserIDToSpan(span, userID)
-
-	args := []any{userID}
-	for _, status := range statuses {
-		args = append(args, status)
-	}
-
-	result, err := q.performBooleanQuery(ctx, q.db, userHasStatusQuery, args)
-	if err != nil {
-		return false, observability.PrepareError(err, span, "performing user status check")
-	}
-
-	return result, nil
-}
-
 // GetUser fetches a user.
 func (q *Querier) GetUser(ctx context.Context, userID string) (*types.User, error) {
 	ctx, span := q.tracer.StartSpan(ctx)

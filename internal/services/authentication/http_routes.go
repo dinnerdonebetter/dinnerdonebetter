@@ -87,7 +87,7 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 			logger = logger.WithValue("cookie_domain", requestedCookieDomain)
 		}
 
-		var userFunc = s.userDataManager.GetUserByUsername
+		userFunc := s.userDataManager.GetUserByUsername
 		if adminOnly {
 			userFunc = s.userDataManager.GetAdminUserByUsername
 		}

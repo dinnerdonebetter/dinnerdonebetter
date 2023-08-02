@@ -87,7 +87,7 @@ func main() {
 	mealPlanTaskCreationEnsurerWorker := workers.ProvideMealPlanTaskCreationEnsurerWorker(
 		logger,
 		dataManager,
-		&recipeanalysis.MockRecipeAnalyzer{},
+		recipeanalysis.NewRecipeAnalyzer(logger, tracerProvider),
 		dataChangesPublisher,
 		cdp,
 		tracerProvider,

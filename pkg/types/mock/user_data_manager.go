@@ -46,13 +46,6 @@ func (m *UserDataManagerMock) MarkUserEmailAddressAsVerified(ctx context.Context
 	return m.Called(ctx, userID, token).Error(0)
 }
 
-// UserHasStatus is a mock function.
-func (m *UserDataManagerMock) UserHasStatus(ctx context.Context, userID string, statuses ...string) (bool, error) {
-	args := m.Called(ctx, userID, statuses)
-
-	return args.Bool(0), args.Error(1)
-}
-
 // GetUser is a mock function.
 func (m *UserDataManagerMock) GetUser(ctx context.Context, userID string) (*types.User, error) {
 	args := m.Called(ctx, userID)

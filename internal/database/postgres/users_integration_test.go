@@ -121,10 +121,6 @@ func TestQuerier_Integration_Users(t *testing.T) {
 	assert.NoError(t, dbc.UpdateUserTwoFactorSecret(ctx, firstUser.ID, new2FASecret))
 	firstUser.TwoFactorSecret = new2FASecret
 
-	hasStatus, err := dbc.UserHasStatus(ctx, firstUser.ID, firstUser.AccountStatus)
-	assert.True(t, hasStatus)
-	assert.NoError(t, err)
-
 	assert.NoError(t, dbc.MarkUserTwoFactorSecretAsVerified(ctx, firstUser.ID))
 	assert.NoError(t, dbc.MarkUserTwoFactorSecretAsUnverified(ctx, firstUser.ID, fakes.BuildFakeID()))
 
