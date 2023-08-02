@@ -193,7 +193,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 
 	var validMeasurementUnits []*types.ValidMeasurementUnit
 	if useDB {
-		validMeasurementUnits, err = s.validMeasurementUnitDataManager.SearchForValidMeasurementUnitsByName(ctx, query)
+		validMeasurementUnits, err = s.validMeasurementUnitDataManager.SearchForValidMeasurementUnits(ctx, query)
 	} else {
 		var validMeasurementUnitSubsets []*types.ValidMeasurementUnitSearchSubset
 		validMeasurementUnitSubsets, err = s.searchIndex.Search(ctx, query)

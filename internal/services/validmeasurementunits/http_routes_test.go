@@ -438,7 +438,7 @@ func TestValidMeasurementUnitsService_SearchHandler(T *testing.T) {
 
 		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
 		validMeasurementUnitDataManager.On(
-			"SearchForValidMeasurementUnitsByName",
+			"SearchForValidMeasurementUnits",
 			testutils.ContextMatcher,
 			exampleQuery,
 		).Return(exampleValidMeasurementUnitList.Data, nil)
@@ -536,7 +536,7 @@ func TestValidMeasurementUnitsService_SearchHandler(T *testing.T) {
 
 		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
 		validMeasurementUnitDataManager.On(
-			"SearchForValidMeasurementUnitsByName",
+			"SearchForValidMeasurementUnits",
 			testutils.ContextMatcher,
 			exampleQuery,
 		).Return([]*types.ValidMeasurementUnit{}, sql.ErrNoRows)
@@ -569,7 +569,7 @@ func TestValidMeasurementUnitsService_SearchHandler(T *testing.T) {
 
 		validMeasurementUnitDataManager := &mocktypes.ValidMeasurementUnitDataManagerMock{}
 		validMeasurementUnitDataManager.On(
-			"SearchForValidMeasurementUnitsByName",
+			"SearchForValidMeasurementUnits",
 			testutils.ContextMatcher,
 			exampleQuery,
 		).Return([]*types.ValidMeasurementUnit(nil), errors.New("blah"))

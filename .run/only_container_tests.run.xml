@@ -1,7 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="only container tests" type="GoTestRunConfiguration" factoryName="Go Test">
+  <configuration default="false" name="only_container_tests" type="GoTestRunConfiguration" factoryName="Go Test">
     <module name="backend" />
     <working_directory value="$PROJECT_DIR$/internal/database/postgres" />
+    <go_parameters value="-shuffle on" />
     <envs>
       <env name="RUN_DATABASE_CONTAINER_TESTS" value="true" />
       <env name="TESTCONTAINERS_RYUK_DISABLED" value="true" />
