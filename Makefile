@@ -7,8 +7,7 @@ THIS                          := github.com/dinnerdonebetter/backend
 TOTAL_PACKAGE_LIST            := `go list $(THIS)/...`
 TESTABLE_PACKAGE_LIST         := `go list $(THIS)/... | grep -Ev '(integration)'`
 ENVIRONMENTS_DIR              := environments
-TEST_ENVIRONMENT_DIR          := $(ENVIRONMENTS_DIR)/testing
-TEST_DOCKER_COMPOSE_FILES_DIR := $(TEST_ENVIRONMENT_DIR)/compose_files
+TEST_DOCKER_COMPOSE_FILES_DIR := $(ENVIRONMENTS_DIR)/testing/compose_files
 GENERATED_QUERIES_DIR         := internal/database/postgres/generated
 SQL_GENERATOR_IMAGE           := kjconroy/sqlc:1.20.0
 LINTER_IMAGE                  := golangci/golangci-lint:v1.53.3
@@ -18,12 +17,6 @@ CLOUD_FUNCTIONS               := data_changes outbound_emailer search_indexer
 WIRE_TARGETS                  := server/http/build
 
 ## non-PHONY folders/files
-
-regit:
-	(rm -rf .git && cd ../ && rm -rf backend2 && git clone git@github.com:dinnerdonebetter/backend backend2 && cp -rf backend2/.git backend/.git && rm -rf backend2)
-
-clear:
-	@printf "\033[2J\033[3J\033[1;1H"
 
 clean:
 	rm -rf $(ARTIFACTS_DIR)
@@ -39,26 +32,33 @@ setup: $(ARTIFACTS_DIR) revendor rewire configs
 
 ## prerequisites
 
-# not a bad idea to do this either:
-## GO111MODULE=off go install golang.org/x/tools/...
-
+.PHONY: ensure_wire_installed
 ensure_wire_installed:
-ifndef $(shell command -v wire 2> /dev/null)
+ifeq (, $(shell which wire))
 	$(shell go install github.com/google/wire/cmd/wire@latest)
 endif
 
+.PHONY: ensure_fieldalignment_installed
 ensure_fieldalignment_installed:
-ifndef $(shell command -v wire 2> /dev/null)
+ifeq (, $(shell which fieldalignment))
 	$(shell go install golang.org/x/tools/go/analysis/passes/fieldalignment/cmd/fieldalignment@latest)
 endif
 
+.PHONY: ensure_tagalign_installed
 ensure_tagalign_installed:
-ifndef $(shell command -v wire 2> /dev/null)
+ifeq (, $(shell which tagalign))
 	$(shell go install github.com/4meepo/tagalign/cmd/tagalign@latest)
 endif
 
+.PHONY: ensure_gci_installed
+ensure_gci_installed:
+ifeq (, $(shell which gci))
+	$(shell go install github.com/daixiang0/gci@latest)
+endif
+
+.PHONY: ensure_scc_installed
 ensure_scc_installed:
-ifndef $(shell command -v scc 2> /dev/null)
+ifeq (, $(shell which scc))
 	$(shell go install github.com/boyter/scc@latest)
 endif
 
@@ -100,16 +100,16 @@ rewire: clean_wire wire
 ## formatting
 
 .PHONY: format
-format: format_imports format_golang
+format: format_golang terraformat
 
 .PHONY: format_golang
-format_golang:
+format_golang: format_imports ensure_fieldalignment_installed ensure_tagalign_installed
 	@until fieldalignment -fix ./...; do true; done > /dev/null
 	@until tagalign -fix -sort -order "json,toml" ./...; do true; done > /dev/null
 	for file in `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`; do $(GO_FORMAT) $$file; done
 
 .PHONY: format_imports
-format_imports:
+format_imports: ensure_gci_installed
 	@# TODO: find some way to use $THIS here instead of hardcoding the path
 	gci write --skip-generated --section standard --section "prefix(github.com/dinnerdonebetter/backend)" --section "prefix(github.com/dinnerdonebetter)" --section default --custom-order `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`
 
@@ -182,9 +182,8 @@ coverage: clean_coverage $(ARTIFACTS_DIR)
 build:
 	go build $(TOTAL_PACKAGE_LIST)
 
-.PHONY: quicktest # basically only running once instead of with -count 5 or whatever
-quicktest: $(ARTIFACTS_DIR) vendor build clear
-	go build $(TOTAL_PACKAGE_LIST)
+.PHONY: quicktest
+quicktest: $(ARTIFACTS_DIR) vendor build
 	go test -cover -shuffle=on -race -failfast $(TESTABLE_PACKAGE_LIST)
 
 .PHONY: containertests

@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/stretchr/testify/require"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -12,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func createValidVesselForTest(t *testing.T, ctx context.Context, exampleValidVessel *types.ValidVessel, dbc *Querier) *types.ValidVessel {

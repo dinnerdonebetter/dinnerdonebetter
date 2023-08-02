@@ -25,7 +25,7 @@ func BuildFakeUser() *types.User {
 		EmailAddress:              fake.Email(),
 		Username:                  fake.Password(true, true, true, false, false, 32),
 		Birthday:                  pointers.Pointer(BuildFakeTime()),
-		AccountStatus:             string(types.GoodStandingUserAccountStatus),
+		AccountStatus:             string(types.UnverifiedHouseholdStatus),
 		TwoFactorSecret:           base32.StdEncoding.EncodeToString([]byte(fake.Password(false, true, true, false, false, 32))),
 		TwoFactorSecretVerifiedAt: &fakeDate,
 		ServiceRole:               authorization.ServiceUserRole.String(),

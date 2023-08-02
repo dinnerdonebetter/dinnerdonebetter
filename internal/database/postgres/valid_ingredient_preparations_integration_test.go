@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	"github.com/stretchr/testify/require"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -11,6 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func createValidIngredientPreparationForTest(t *testing.T, ctx context.Context, exampleValidIngredientPreparation *types.ValidIngredientPreparation, dbc *Querier) *types.ValidIngredientPreparation {
@@ -23,8 +23,8 @@ func createValidIngredientPreparationForTest(t *testing.T, ctx context.Context, 
 		exampleValidIngredientPreparation = fakes.BuildFakeValidIngredientPreparation()
 		exampleValidIngredientPreparation.Ingredient = *exampleValidIngredient
 		exampleValidIngredientPreparation.Preparation = *exampleValidPreparation
-
 	}
+
 	dbInput := converters.ConvertValidIngredientPreparationToValidIngredientPreparationDatabaseCreationInput(exampleValidIngredientPreparation)
 
 	created, err := dbc.CreateValidIngredientPreparation(ctx, dbInput)
@@ -89,12 +89,6 @@ func TestQuerier_Integration_ValidIngredientPreparations(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, validIngredientPreparations.Data)
 	assert.Equal(t, len(createdValidIngredientPreparations), len(validIngredientPreparations.Data))
-
-	// fetch as list of IDs
-	validIngredientPreparationIDs := []string{}
-	for _, validIngredientPreparation := range createdValidIngredientPreparations {
-		validIngredientPreparationIDs = append(validIngredientPreparationIDs, validIngredientPreparation.ID)
-	}
 
 	// delete
 	for _, validIngredientPreparation := range createdValidIngredientPreparations {

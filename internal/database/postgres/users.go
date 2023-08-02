@@ -348,6 +348,10 @@ func (q *Querier) SearchForUsersByUsername(ctx context.Context, usernameQuery st
 		return nil, observability.PrepareError(err, span, "scanning user")
 	}
 
+	if len(u) == 0 {
+		return nil, sql.ErrNoRows
+	}
+
 	return u, nil
 }
 
@@ -466,7 +470,7 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 		input.HashedPassword,
 		input.TwoFactorSecret,
 		input.AvatarSrc,
-		types.UnverifiedHouseholdStatus,
+		string(types.UnverifiedHouseholdStatus),
 		input.Birthday,
 		authorization.ServiceUserRole.String(),
 		token,
@@ -501,6 +505,7 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 		EmailAddress:    input.EmailAddress,
 		HashedPassword:  input.HashedPassword,
 		TwoFactorSecret: input.TwoFactorSecret,
+		AccountStatus:   string(types.UnverifiedHouseholdStatus),
 		Birthday:        input.Birthday,
 		ServiceRole:     authorization.ServiceUserRole.String(),
 		CreatedAt:       q.currentTime(),

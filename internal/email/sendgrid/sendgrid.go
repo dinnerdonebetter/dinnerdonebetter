@@ -32,7 +32,7 @@ var (
 type (
 	// Config configures SendGrid to send email.
 	Config struct {
-		APIToken string `json:"apiToken"  toml:"api_token,omitempty"`
+		APIToken string `json:"apiToken" toml:"api_token,omitempty"`
 	}
 
 	// Emailer uses SendGrid to send email.
