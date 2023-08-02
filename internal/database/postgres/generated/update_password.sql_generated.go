@@ -22,8 +22,8 @@ WHERE archived_at IS NULL
 
 type UpdateUserPasswordParams struct {
 	HashedPassword         string `db:"hashed_password"`
-	RequiresPasswordChange bool   `db:"requires_password_change"`
 	ID                     string `db:"id"`
+	RequiresPasswordChange bool   `db:"requires_password_change"`
 }
 
 func (q *Queries) UpdateUserPassword(ctx context.Context, db DBTX, arg *UpdateUserPasswordParams) error {

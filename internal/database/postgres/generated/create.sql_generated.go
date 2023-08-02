@@ -17,19 +17,19 @@ INSERT INTO households (id,"name",billing_status,contact_phone,address_line_1,ad
 `
 
 type CreateHouseholdParams struct {
-	ID            string         `db:"id"`
+	City          string         `db:"city"`
 	Name          string         `db:"name"`
 	BillingStatus string         `db:"billing_status"`
 	ContactPhone  string         `db:"contact_phone"`
 	AddressLine1  string         `db:"address_line_1"`
 	AddressLine2  string         `db:"address_line_2"`
-	City          string         `db:"city"`
+	ID            string         `db:"id"`
 	State         string         `db:"state"`
 	ZipCode       string         `db:"zip_code"`
 	Country       string         `db:"country"`
+	BelongsToUser string         `db:"belongs_to_user"`
 	Latitude      sql.NullString `db:"latitude"`
 	Longitude     sql.NullString `db:"longitude"`
-	BelongsToUser string         `db:"belongs_to_user"`
 }
 
 func (q *Queries) CreateHousehold(ctx context.Context, db DBTX, arg *CreateHouseholdParams) error {
@@ -59,9 +59,9 @@ INSERT INTO household_instrument_ownerships (id,notes,quantity,valid_instrument_
 type CreateHouseholdInstrumentOwnershipParams struct {
 	ID                 string `db:"id"`
 	Notes              string `db:"notes"`
-	Quantity           int32  `db:"quantity"`
 	ValidInstrumentID  string `db:"valid_instrument_id"`
 	BelongsToHousehold string `db:"belongs_to_household"`
+	Quantity           int32  `db:"quantity"`
 }
 
 func (q *Queries) CreateHouseholdInstrumentOwnership(ctx context.Context, db DBTX, arg *CreateHouseholdInstrumentOwnershipParams) error {
@@ -81,15 +81,15 @@ INSERT INTO household_invitations (id,from_user,to_user,to_name,note,to_email,to
 `
 
 type CreateHouseholdInvitationParams struct {
+	ExpiresAt            time.Time      `db:"expires_at"`
 	ID                   string         `db:"id"`
 	FromUser             string         `db:"from_user"`
-	ToUser               sql.NullString `db:"to_user"`
 	ToName               string         `db:"to_name"`
 	Note                 string         `db:"note"`
 	ToEmail              string         `db:"to_email"`
 	Token                string         `db:"token"`
 	DestinationHousehold string         `db:"destination_household"`
-	ExpiresAt            time.Time      `db:"expires_at"`
+	ToUser               sql.NullString `db:"to_user"`
 }
 
 func (q *Queries) CreateHouseholdInvitation(ctx context.Context, db DBTX, arg *CreateHouseholdInvitationParams) error {
@@ -117,9 +117,9 @@ type CreateMealParams struct {
 	Name                 string         `db:"name"`
 	Description          string         `db:"description"`
 	MinEstimatedPortions string         `db:"min_estimated_portions"`
+	CreatedByUser        string         `db:"created_by_user"`
 	MaxEstimatedPortions sql.NullString `db:"max_estimated_portions"`
 	EligibleForMealPlans bool           `db:"eligible_for_meal_plans"`
-	CreatedByUser        string         `db:"created_by_user"`
 }
 
 func (q *Queries) CreateMeal(ctx context.Context, db DBTX, arg *CreateMealParams) error {
@@ -227,13 +227,13 @@ type CreateMealPlanGroceryListItemParams struct {
 	ValidIngredient          string                `db:"valid_ingredient"`
 	ValidMeasurementUnit     string                `db:"valid_measurement_unit"`
 	MinimumQuantityNeeded    string                `db:"minimum_quantity_needed"`
+	StatusExplanation        string                `db:"status_explanation"`
+	Status                   GroceryListItemStatus `db:"status"`
 	MaximumQuantityNeeded    sql.NullString        `db:"maximum_quantity_needed"`
 	QuantityPurchased        sql.NullString        `db:"quantity_purchased"`
 	PurchasedMeasurementUnit sql.NullString        `db:"purchased_measurement_unit"`
 	PurchasedUpc             sql.NullString        `db:"purchased_upc"`
 	PurchasePrice            sql.NullString        `db:"purchase_price"`
-	StatusExplanation        string                `db:"status_explanation"`
-	Status                   GroceryListItemStatus `db:"status"`
 }
 
 func (q *Queries) CreateMealPlanGroceryListItem(ctx context.Context, db DBTX, arg *CreateMealPlanGroceryListItemParams) error {
@@ -291,11 +291,11 @@ INSERT INTO meal_plan_option_votes (id,rank,abstain,notes,by_user,belongs_to_mea
 
 type CreateMealPlanOptionVoteParams struct {
 	ID                      string `db:"id"`
-	Rank                    int32  `db:"rank"`
-	Abstain                 bool   `db:"abstain"`
 	Notes                   string `db:"notes"`
 	ByUser                  string `db:"by_user"`
 	BelongsToMealPlanOption string `db:"belongs_to_meal_plan_option"`
+	Rank                    int32  `db:"rank"`
+	Abstain                 bool   `db:"abstain"`
 }
 
 func (q *Queries) CreateMealPlanOptionVote(ctx context.Context, db DBTX, arg *CreateMealPlanOptionVoteParams) error {
@@ -367,22 +367,22 @@ INSERT INTO oauth2_client_tokens (id,client_id,belongs_to_user,redirect_uri,scop
 `
 
 type CreateOAuth2ClientTokenParams struct {
-	ID                  string                  `db:"id"`
-	ClientID            string                  `db:"client_id"`
-	BelongsToUser       string                  `db:"belongs_to_user"`
-	RedirectUri         string                  `db:"redirect_uri"`
-	Scope               Oauth2ClientTokenScopes `db:"scope"`
-	Code                string                  `db:"code"`
+	AccessExpiresAt     time.Time               `db:"access_expires_at"`
+	CodeExpiresAt       time.Time               `db:"code_expires_at"`
+	RefreshExpiresAt    time.Time               `db:"refresh_expires_at"`
+	RefreshCreatedAt    time.Time               `db:"refresh_created_at"`
+	CodeCreatedAt       time.Time               `db:"code_created_at"`
+	AccessCreatedAt     time.Time               `db:"access_created_at"`
 	CodeChallenge       string                  `db:"code_challenge"`
 	CodeChallengeMethod string                  `db:"code_challenge_method"`
-	CodeCreatedAt       time.Time               `db:"code_created_at"`
-	CodeExpiresAt       time.Time               `db:"code_expires_at"`
+	Scope               Oauth2ClientTokenScopes `db:"scope"`
+	ClientID            string                  `db:"client_id"`
 	Access              string                  `db:"access"`
-	AccessCreatedAt     time.Time               `db:"access_created_at"`
-	AccessExpiresAt     time.Time               `db:"access_expires_at"`
+	Code                string                  `db:"code"`
+	ID                  string                  `db:"id"`
 	Refresh             string                  `db:"refresh"`
-	RefreshCreatedAt    time.Time               `db:"refresh_created_at"`
-	RefreshExpiresAt    time.Time               `db:"refresh_expires_at"`
+	RedirectUri         string                  `db:"redirect_uri"`
+	BelongsToUser       string                  `db:"belongs_to_user"`
 }
 
 func (q *Queries) CreateOAuth2ClientToken(ctx context.Context, db DBTX, arg *CreateOAuth2ClientTokenParams) error {
@@ -429,20 +429,20 @@ INSERT INTO recipes (id,"name",slug,"source",description,inspired_by_recipe_id,m
 `
 
 type CreateRecipeParams struct {
+	MinEstimatedPortions string         `db:"min_estimated_portions"`
 	ID                   string         `db:"id"`
-	Name                 string         `db:"name"`
 	Slug                 string         `db:"slug"`
 	Source               string         `db:"source"`
 	Description          string         `db:"description"`
-	InspiredByRecipeID   sql.NullString `db:"inspired_by_recipe_id"`
-	MinEstimatedPortions string         `db:"min_estimated_portions"`
-	MaxEstimatedPortions sql.NullString `db:"max_estimated_portions"`
+	CreatedByUser        string         `db:"created_by_user"`
+	Name                 string         `db:"name"`
+	YieldsComponentType  ComponentType  `db:"yields_component_type"`
 	PortionName          string         `db:"portion_name"`
 	PluralPortionName    string         `db:"plural_portion_name"`
+	MaxEstimatedPortions sql.NullString `db:"max_estimated_portions"`
+	InspiredByRecipeID   sql.NullString `db:"inspired_by_recipe_id"`
 	SealOfApproval       bool           `db:"seal_of_approval"`
 	EligibleForMeals     bool           `db:"eligible_for_meals"`
-	YieldsComponentType  ComponentType  `db:"yields_component_type"`
-	CreatedByUser        string         `db:"created_by_user"`
 }
 
 func (q *Queries) CreateRecipe(ctx context.Context, db DBTX, arg *CreateRecipeParams) error {
@@ -473,11 +473,11 @@ INSERT INTO recipe_media (id,belongs_to_recipe,belongs_to_recipe_step,mime_type,
 
 type CreateRecipeMediaParams struct {
 	ID                  string         `db:"id"`
-	BelongsToRecipe     sql.NullString `db:"belongs_to_recipe"`
-	BelongsToRecipeStep sql.NullString `db:"belongs_to_recipe_step"`
 	MimeType            string         `db:"mime_type"`
 	InternalPath        string         `db:"internal_path"`
 	ExternalPath        string         `db:"external_path"`
+	BelongsToRecipe     sql.NullString `db:"belongs_to_recipe"`
+	BelongsToRecipeStep sql.NullString `db:"belongs_to_recipe_step"`
 	Index               int32          `db:"index"`
 }
 
@@ -505,14 +505,14 @@ type CreateRecipePrepTaskParams struct {
 	Name                                   string                   `db:"name"`
 	Description                            string                   `db:"description"`
 	Notes                                  string                   `db:"notes"`
-	Optional                               bool                     `db:"optional"`
 	ExplicitStorageInstructions            string                   `db:"explicit_storage_instructions"`
-	MinimumTimeBufferBeforeRecipeInSeconds int32                    `db:"minimum_time_buffer_before_recipe_in_seconds"`
-	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32            `db:"maximum_time_buffer_before_recipe_in_seconds"`
+	BelongsToRecipe                        string                   `db:"belongs_to_recipe"`
 	StorageType                            NullStorageContainerType `db:"storage_type"`
 	MinimumStorageTemperatureInCelsius     sql.NullString           `db:"minimum_storage_temperature_in_celsius"`
 	MaximumStorageTemperatureInCelsius     sql.NullString           `db:"maximum_storage_temperature_in_celsius"`
-	BelongsToRecipe                        string                   `db:"belongs_to_recipe"`
+	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32            `db:"maximum_time_buffer_before_recipe_in_seconds"`
+	MinimumTimeBufferBeforeRecipeInSeconds int32                    `db:"minimum_time_buffer_before_recipe_in_seconds"`
+	Optional                               bool                     `db:"optional"`
 }
 
 func (q *Queries) CreateRecipePrepTask(ctx context.Context, db DBTX, arg *CreateRecipePrepTaskParams) error {
@@ -564,13 +564,13 @@ INSERT INTO recipe_ratings (id,recipe_id,taste,difficulty,cleanup,instructions,o
 type CreateRecipeRatingParams struct {
 	ID           string         `db:"id"`
 	RecipeID     string         `db:"recipe_id"`
+	Notes        string         `db:"notes"`
+	ByUser       string         `db:"by_user"`
 	Taste        sql.NullString `db:"taste"`
 	Difficulty   sql.NullString `db:"difficulty"`
 	Cleanup      sql.NullString `db:"cleanup"`
 	Instructions sql.NullString `db:"instructions"`
 	Overall      sql.NullString `db:"overall"`
-	Notes        string         `db:"notes"`
-	ByUser       string         `db:"by_user"`
 }
 
 func (q *Queries) CreateRecipeRating(ctx context.Context, db DBTX, arg *CreateRecipeRatingParams) error {
@@ -597,18 +597,18 @@ VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
 
 type CreateRecipeStepParams struct {
 	ID                            string         `db:"id"`
-	Index                         int32          `db:"index"`
+	BelongsToRecipe               string         `db:"belongs_to_recipe"`
 	PreparationID                 string         `db:"preparation_id"`
-	MinimumEstimatedTimeInSeconds sql.NullInt64  `db:"minimum_estimated_time_in_seconds"`
-	MaximumEstimatedTimeInSeconds sql.NullInt64  `db:"maximum_estimated_time_in_seconds"`
-	MinimumTemperatureInCelsius   sql.NullString `db:"minimum_temperature_in_celsius"`
-	MaximumTemperatureInCelsius   sql.NullString `db:"maximum_temperature_in_celsius"`
-	Notes                         string         `db:"notes"`
-	ExplicitInstructions          string         `db:"explicit_instructions"`
 	ConditionExpression           string         `db:"condition_expression"`
+	ExplicitInstructions          string         `db:"explicit_instructions"`
+	Notes                         string         `db:"notes"`
+	MaximumTemperatureInCelsius   sql.NullString `db:"maximum_temperature_in_celsius"`
+	MinimumTemperatureInCelsius   sql.NullString `db:"minimum_temperature_in_celsius"`
+	MaximumEstimatedTimeInSeconds sql.NullInt64  `db:"maximum_estimated_time_in_seconds"`
+	MinimumEstimatedTimeInSeconds sql.NullInt64  `db:"minimum_estimated_time_in_seconds"`
+	Index                         int32          `db:"index"`
 	Optional                      bool           `db:"optional"`
 	StartTimerAutomatically       bool           `db:"start_timer_automatically"`
-	BelongsToRecipe               string         `db:"belongs_to_recipe"`
 }
 
 func (q *Queries) CreateRecipeStep(ctx context.Context, db DBTX, arg *CreateRecipeStepParams) error {
@@ -645,8 +645,8 @@ type CreateRecipeStepCompletionConditionParams struct {
 	ID                  string `db:"id"`
 	BelongsToRecipeStep string `db:"belongs_to_recipe_step"`
 	IngredientState     string `db:"ingredient_state"`
-	Optional            bool   `db:"optional"`
 	Notes               string `db:"notes"`
+	Optional            bool   `db:"optional"`
 }
 
 func (q *Queries) CreateRecipeStepCompletionCondition(ctx context.Context, db DBTX, arg *CreateRecipeStepCompletionConditionParams) error {
@@ -703,22 +703,22 @@ INSERT INTO recipe_step_ingredients (
 `
 
 type CreateRecipeStepIngredientParams struct {
-	ID                        string         `db:"id"`
-	Name                      string         `db:"name"`
-	Optional                  bool           `db:"optional"`
-	IngredientID              sql.NullString `db:"ingredient_id"`
-	MeasurementUnit           sql.NullString `db:"measurement_unit"`
-	MinimumQuantityValue      string         `db:"minimum_quantity_value"`
-	MaximumQuantityValue      sql.NullString `db:"maximum_quantity_value"`
 	QuantityNotes             string         `db:"quantity_notes"`
-	RecipeStepProductID       sql.NullString `db:"recipe_step_product_id"`
+	Name                      string         `db:"name"`
+	BelongsToRecipeStep       string         `db:"belongs_to_recipe_step"`
 	IngredientNotes           string         `db:"ingredient_notes"`
+	ID                        string         `db:"id"`
+	MinimumQuantityValue      string         `db:"minimum_quantity_value"`
+	RecipeStepProductID       sql.NullString `db:"recipe_step_product_id"`
+	MaximumQuantityValue      sql.NullString `db:"maximum_quantity_value"`
+	MeasurementUnit           sql.NullString `db:"measurement_unit"`
+	IngredientID              sql.NullString `db:"ingredient_id"`
+	ProductPercentageToUse    sql.NullString `db:"product_percentage_to_use"`
+	RecipeStepProductRecipeID sql.NullString `db:"recipe_step_product_recipe_id"`
+	VesselIndex               sql.NullInt32  `db:"vessel_index"`
 	OptionIndex               int32          `db:"option_index"`
 	ToTaste                   bool           `db:"to_taste"`
-	ProductPercentageToUse    sql.NullString `db:"product_percentage_to_use"`
-	VesselIndex               sql.NullInt32  `db:"vessel_index"`
-	RecipeStepProductRecipeID sql.NullString `db:"recipe_step_product_recipe_id"`
-	BelongsToRecipeStep       string         `db:"belongs_to_recipe_step"`
+	Optional                  bool           `db:"optional"`
 }
 
 func (q *Queries) CreateRecipeStepIngredient(ctx context.Context, db DBTX, arg *CreateRecipeStepIngredientParams) error {
@@ -752,16 +752,16 @@ VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
 
 type CreateRecipeStepInstrumentParams struct {
 	ID                  string         `db:"id"`
-	InstrumentID        sql.NullString `db:"instrument_id"`
-	RecipeStepProductID sql.NullString `db:"recipe_step_product_id"`
 	Name                string         `db:"name"`
 	Notes               string         `db:"notes"`
+	BelongsToRecipeStep string         `db:"belongs_to_recipe_step"`
+	InstrumentID        sql.NullString `db:"instrument_id"`
+	RecipeStepProductID sql.NullString `db:"recipe_step_product_id"`
+	MaximumQuantity     sql.NullInt32  `db:"maximum_quantity"`
 	PreferenceRank      int32          `db:"preference_rank"`
-	Optional            bool           `db:"optional"`
 	OptionIndex         int32          `db:"option_index"`
 	MinimumQuantity     int32          `db:"minimum_quantity"`
-	MaximumQuantity     sql.NullInt32  `db:"maximum_quantity"`
-	BelongsToRecipeStep string         `db:"belongs_to_recipe_step"`
+	Optional            bool           `db:"optional"`
 }
 
 func (q *Queries) CreateRecipeStepInstrument(ctx context.Context, db DBTX, arg *CreateRecipeStepInstrumentParams) error {
@@ -789,23 +789,23 @@ VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
 `
 
 type CreateRecipeStepProductParams struct {
-	ID                                 string                `db:"id"`
+	QuantityNotes                      string                `db:"quantity_notes"`
 	Name                               string                `db:"name"`
 	Type                               RecipeStepProductType `db:"type"`
-	MeasurementUnit                    sql.NullString        `db:"measurement_unit"`
+	BelongsToRecipeStep                string                `db:"belongs_to_recipe_step"`
+	ID                                 string                `db:"id"`
+	StorageInstructions                string                `db:"storage_instructions"`
 	MinimumQuantityValue               sql.NullString        `db:"minimum_quantity_value"`
-	MaximumQuantityValue               sql.NullString        `db:"maximum_quantity_value"`
-	QuantityNotes                      string                `db:"quantity_notes"`
-	Compostable                        bool                  `db:"compostable"`
-	MaximumStorageDurationInSeconds    sql.NullInt32         `db:"maximum_storage_duration_in_seconds"`
 	MinimumStorageTemperatureInCelsius sql.NullString        `db:"minimum_storage_temperature_in_celsius"`
 	MaximumStorageTemperatureInCelsius sql.NullString        `db:"maximum_storage_temperature_in_celsius"`
-	StorageInstructions                string                `db:"storage_instructions"`
-	BelongsToRecipeStep                string                `db:"belongs_to_recipe_step"`
+	MaximumQuantityValue               sql.NullString        `db:"maximum_quantity_value"`
+	MeasurementUnit                    sql.NullString        `db:"measurement_unit"`
+	MaximumStorageDurationInSeconds    sql.NullInt32         `db:"maximum_storage_duration_in_seconds"`
+	ContainedInVesselIndex             sql.NullInt32         `db:"contained_in_vessel_index"`
+	Index                              int32                 `db:"index"`
+	Compostable                        bool                  `db:"compostable"`
 	IsLiquid                           bool                  `db:"is_liquid"`
 	IsWaste                            bool                  `db:"is_waste"`
-	Index                              int32                 `db:"index"`
-	ContainedInVesselIndex             sql.NullInt32         `db:"contained_in_vessel_index"`
 }
 
 func (q *Queries) CreateRecipeStepProduct(ctx context.Context, db DBTX, arg *CreateRecipeStepProductParams) error {
@@ -843,11 +843,11 @@ type CreateRecipeStepVesselParams struct {
 	Name                 string         `db:"name"`
 	Notes                string         `db:"notes"`
 	BelongsToRecipeStep  string         `db:"belongs_to_recipe_step"`
+	VesselPredicate      string         `db:"vessel_predicate"`
 	RecipeStepProductID  sql.NullString `db:"recipe_step_product_id"`
 	ValidVesselID        sql.NullString `db:"valid_vessel_id"`
-	VesselPredicate      string         `db:"vessel_predicate"`
-	MinimumQuantity      int32          `db:"minimum_quantity"`
 	MaximumQuantity      sql.NullInt32  `db:"maximum_quantity"`
+	MinimumQuantity      int32          `db:"minimum_quantity"`
 	UnavailableAfterStep bool           `db:"unavailable_after_step"`
 }
 
@@ -878,9 +878,9 @@ type CreateServiceSettingParams struct {
 	Name         string         `db:"name"`
 	Type         SettingType    `db:"type"`
 	Description  string         `db:"description"`
+	Enumeration  string         `db:"enumeration"`
 	DefaultValue sql.NullString `db:"default_value"`
 	AdminsOnly   bool           `db:"admins_only"`
-	Enumeration  string         `db:"enumeration"`
 }
 
 func (q *Queries) CreateServiceSetting(ctx context.Context, db DBTX, arg *CreateServiceSettingParams) error {
@@ -968,10 +968,10 @@ INSERT INTO user_ingredient_preferences (id,ingredient,rating,notes,allergy,belo
 type CreateUserIngredientPreferenceParams struct {
 	ID            string `db:"id"`
 	Ingredient    string `db:"ingredient"`
-	Rating        int16  `db:"rating"`
 	Notes         string `db:"notes"`
-	Allergy       bool   `db:"allergy"`
 	BelongsToUser string `db:"belongs_to_user"`
+	Rating        int16  `db:"rating"`
+	Allergy       bool   `db:"allergy"`
 }
 
 func (q *Queries) CreateUserIngredientPreference(ctx context.Context, db DBTX, arg *CreateUserIngredientPreferenceParams) error {
@@ -1033,29 +1033,29 @@ type CreateValidIngredientParams struct {
 	Name                                    string         `db:"name"`
 	Description                             string         `db:"description"`
 	Warning                                 string         `db:"warning"`
-	ContainsEgg                             bool           `db:"contains_egg"`
-	ContainsDairy                           bool           `db:"contains_dairy"`
-	ContainsPeanut                          bool           `db:"contains_peanut"`
-	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
-	ContainsSoy                             bool           `db:"contains_soy"`
-	ContainsWheat                           bool           `db:"contains_wheat"`
-	ContainsShellfish                       bool           `db:"contains_shellfish"`
-	ContainsSesame                          bool           `db:"contains_sesame"`
-	ContainsFish                            bool           `db:"contains_fish"`
-	ContainsGluten                          bool           `db:"contains_gluten"`
-	AnimalFlesh                             bool           `db:"animal_flesh"`
-	Volumetric                              bool           `db:"volumetric"`
-	IsLiquid                                sql.NullBool   `db:"is_liquid"`
-	IconPath                                string         `db:"icon_path"`
-	AnimalDerived                           bool           `db:"animal_derived"`
-	PluralName                              string         `db:"plural_name"`
-	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
-	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
-	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
-	StorageInstructions                     string         `db:"storage_instructions"`
-	Slug                                    string         `db:"slug"`
-	ContainsAlcohol                         bool           `db:"contains_alcohol"`
 	ShoppingSuggestions                     string         `db:"shopping_suggestions"`
+	Slug                                    string         `db:"slug"`
+	StorageInstructions                     string         `db:"storage_instructions"`
+	PluralName                              string         `db:"plural_name"`
+	IconPath                                string         `db:"icon_path"`
+	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
+	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
+	IsLiquid                                sql.NullBool   `db:"is_liquid"`
+	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
+	IsHeat                                  bool           `db:"is_heat"`
+	ContainsFish                            bool           `db:"contains_fish"`
+	Volumetric                              bool           `db:"volumetric"`
+	ContainsSesame                          bool           `db:"contains_sesame"`
+	ContainsShellfish                       bool           `db:"contains_shellfish"`
+	AnimalDerived                           bool           `db:"animal_derived"`
+	ContainsWheat                           bool           `db:"contains_wheat"`
+	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
+	ContainsDairy                           bool           `db:"contains_dairy"`
+	AnimalFlesh                             bool           `db:"animal_flesh"`
+	ContainsGluten                          bool           `db:"contains_gluten"`
+	ContainsSoy                             bool           `db:"contains_soy"`
+	ContainsAlcohol                         bool           `db:"contains_alcohol"`
+	ContainsEgg                             bool           `db:"contains_egg"`
 	IsStarch                                bool           `db:"is_starch"`
 	IsProtein                               bool           `db:"is_protein"`
 	IsGrain                                 bool           `db:"is_grain"`
@@ -1063,7 +1063,7 @@ type CreateValidIngredientParams struct {
 	IsSalt                                  bool           `db:"is_salt"`
 	IsFat                                   bool           `db:"is_fat"`
 	IsAcid                                  bool           `db:"is_acid"`
-	IsHeat                                  bool           `db:"is_heat"`
+	ContainsPeanut                          bool           `db:"contains_peanut"`
 }
 
 func (q *Queries) CreateValidIngredient(ctx context.Context, db DBTX, arg *CreateValidIngredientParams) error {
@@ -1246,10 +1246,10 @@ type CreateValidInstrumentParams struct {
 	PluralName                     string `db:"plural_name"`
 	Description                    string `db:"description"`
 	IconPath                       string `db:"icon_path"`
+	Slug                           string `db:"slug"`
 	UsableForStorage               bool   `db:"usable_for_storage"`
 	DisplayInSummaryLists          bool   `db:"display_in_summary_lists"`
 	IncludeInGeneratedInstructions bool   `db:"include_in_generated_instructions"`
-	Slug                           string `db:"slug"`
 }
 
 func (q *Queries) CreateValidInstrument(ctx context.Context, db DBTX, arg *CreateValidInstrumentParams) error {
@@ -1277,9 +1277,9 @@ type CreateValidMeasurementConversionParams struct {
 	ID                string         `db:"id"`
 	FromUnit          string         `db:"from_unit"`
 	ToUnit            string         `db:"to_unit"`
-	OnlyForIngredient sql.NullString `db:"only_for_ingredient"`
 	Modifier          string         `db:"modifier"`
 	Notes             string         `db:"notes"`
+	OnlyForIngredient sql.NullString `db:"only_for_ingredient"`
 }
 
 func (q *Queries) CreateValidMeasurementConversion(ctx context.Context, db DBTX, arg *CreateValidMeasurementConversionParams) error {
@@ -1305,13 +1305,13 @@ type CreateValidMeasurementUnitParams struct {
 	ID          string       `db:"id"`
 	Name        string       `db:"name"`
 	Description string       `db:"description"`
-	Volumetric  sql.NullBool `db:"volumetric"`
 	IconPath    string       `db:"icon_path"`
+	PluralName  string       `db:"plural_name"`
+	Slug        string       `db:"slug"`
+	Volumetric  sql.NullBool `db:"volumetric"`
 	Universal   bool         `db:"universal"`
 	Metric      bool         `db:"metric"`
 	Imperial    bool         `db:"imperial"`
-	PluralName  string       `db:"plural_name"`
-	Slug        string       `db:"slug"`
 }
 
 func (q *Queries) CreateValidMeasurementUnit(ctx context.Context, db DBTX, arg *CreateValidMeasurementUnitParams) error {
@@ -1336,25 +1336,25 @@ INSERT INTO valid_preparations (id,"name",description,icon_path,yields_nothing,r
 `
 
 type CreateValidPreparationParams struct {
-	ID                          string        `db:"id"`
 	Name                        string        `db:"name"`
 	Description                 string        `db:"description"`
 	IconPath                    string        `db:"icon_path"`
-	YieldsNothing               bool          `db:"yields_nothing"`
-	RestrictToIngredients       bool          `db:"restrict_to_ingredients"`
-	MinimumIngredientCount      int32         `db:"minimum_ingredient_count"`
+	ID                          string        `db:"id"`
+	Slug                        string        `db:"slug"`
+	PastTense                   string        `db:"past_tense"`
 	MaximumIngredientCount      sql.NullInt32 `db:"maximum_ingredient_count"`
-	MinimumInstrumentCount      int32         `db:"minimum_instrument_count"`
 	MaximumInstrumentCount      sql.NullInt32 `db:"maximum_instrument_count"`
-	TemperatureRequired         bool          `db:"temperature_required"`
-	TimeEstimateRequired        bool          `db:"time_estimate_required"`
-	ConditionExpressionRequired bool          `db:"condition_expression_required"`
+	MaximumVesselCount          sql.NullInt32 `db:"maximum_vessel_count"`
+	MinimumVesselCount          int32         `db:"minimum_vessel_count"`
+	MinimumIngredientCount      int32         `db:"minimum_ingredient_count"`
+	MinimumInstrumentCount      int32         `db:"minimum_instrument_count"`
+	YieldsNothing               bool          `db:"yields_nothing"`
 	ConsumesVessel              bool          `db:"consumes_vessel"`
 	OnlyForVessels              bool          `db:"only_for_vessels"`
-	MinimumVesselCount          int32         `db:"minimum_vessel_count"`
-	MaximumVesselCount          sql.NullInt32 `db:"maximum_vessel_count"`
-	PastTense                   string        `db:"past_tense"`
-	Slug                        string        `db:"slug"`
+	ConditionExpressionRequired bool          `db:"condition_expression_required"`
+	TimeEstimateRequired        bool          `db:"time_estimate_required"`
+	TemperatureRequired         bool          `db:"temperature_required"`
+	RestrictToIngredients       bool          `db:"restrict_to_ingredients"`
 }
 
 func (q *Queries) CreateValidPreparation(ctx context.Context, db DBTX, arg *CreateValidPreparationParams) error {
@@ -1432,21 +1432,21 @@ INSERT INTO valid_vessels (id,"name",plural_name,description,icon_path,usable_fo
 `
 
 type CreateValidVesselParams struct {
+	Slug                           string         `db:"slug"`
 	ID                             string         `db:"id"`
-	Name                           string         `db:"name"`
 	PluralName                     string         `db:"plural_name"`
 	Description                    string         `db:"description"`
 	IconPath                       string         `db:"icon_path"`
-	UsableForStorage               bool           `db:"usable_for_storage"`
-	Slug                           string         `db:"slug"`
-	DisplayInSummaryLists          bool           `db:"display_in_summary_lists"`
-	IncludeInGeneratedInstructions bool           `db:"include_in_generated_instructions"`
+	Shape                          VesselShape    `db:"shape"`
+	Name                           string         `db:"name"`
 	Capacity                       string         `db:"capacity"`
 	CapacityUnit                   sql.NullString `db:"capacity_unit"`
 	WidthInMillimeters             sql.NullString `db:"width_in_millimeters"`
 	LengthInMillimeters            sql.NullString `db:"length_in_millimeters"`
 	HeightInMillimeters            sql.NullString `db:"height_in_millimeters"`
-	Shape                          VesselShape    `db:"shape"`
+	IncludeInGeneratedInstructions bool           `db:"include_in_generated_instructions"`
+	DisplayInSummaryLists          bool           `db:"display_in_summary_lists"`
+	UsableForStorage               bool           `db:"usable_for_storage"`
 }
 
 func (q *Queries) CreateValidVessel(ctx context.Context, db DBTX, arg *CreateValidVesselParams) error {

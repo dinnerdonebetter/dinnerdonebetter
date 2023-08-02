@@ -82,60 +82,60 @@ type GetRecipeByIDAndAuthorIDParams struct {
 }
 
 type GetRecipeByIDAndAuthorIDRow struct {
-	ID                            sql.NullString    `db:"id"`
-	Name                          sql.NullString    `db:"name"`
-	Slug                          sql.NullString    `db:"slug"`
-	Source                        sql.NullString    `db:"source"`
-	Description                   sql.NullString    `db:"description"`
-	InspiredByRecipeID            sql.NullString    `db:"inspired_by_recipe_id"`
-	MinEstimatedPortions          sql.NullString    `db:"min_estimated_portions"`
-	MaxEstimatedPortions          sql.NullString    `db:"max_estimated_portions"`
-	PortionName                   sql.NullString    `db:"portion_name"`
-	PluralPortionName             sql.NullString    `db:"plural_portion_name"`
-	SealOfApproval                sql.NullBool      `db:"seal_of_approval"`
-	EligibleForMeals              sql.NullBool      `db:"eligible_for_meals"`
-	YieldsComponentType           NullComponentType `db:"yields_component_type"`
+	LastUpdatedAt_2               sql.NullTime      `db:"last_updated_at_2"`
 	CreatedAt                     sql.NullTime      `db:"created_at"`
-	LastUpdatedAt                 sql.NullTime      `db:"last_updated_at"`
+	ArchivedAt_3                  sql.NullTime      `db:"archived_at_3"`
+	LastUpdatedAt_3               sql.NullTime      `db:"last_updated_at_3"`
+	CreatedAt_3                   sql.NullTime      `db:"created_at_3"`
+	ArchivedAt_2                  sql.NullTime      `db:"archived_at_2"`
+	CreatedAt_2                   sql.NullTime      `db:"created_at_2"`
 	ArchivedAt                    sql.NullTime      `db:"archived_at"`
+	LastUpdatedAt                 sql.NullTime      `db:"last_updated_at"`
+	MaximumTemperatureInCelsius   sql.NullString    `db:"maximum_temperature_in_celsius"`
+	MinimumTemperatureInCelsius   sql.NullString    `db:"minimum_temperature_in_celsius"`
+	BelongsToRecipe               sql.NullString    `db:"belongs_to_recipe"`
+	YieldsComponentType           NullComponentType `db:"yields_component_type"`
+	PluralPortionName             sql.NullString    `db:"plural_portion_name"`
+	PortionName                   sql.NullString    `db:"portion_name"`
+	MaxEstimatedPortions          sql.NullString    `db:"max_estimated_portions"`
 	CreatedByUser                 sql.NullString    `db:"created_by_user"`
 	ID_2                          sql.NullString    `db:"id_2"`
-	Index                         sql.NullInt32     `db:"index"`
+	Source                        sql.NullString    `db:"source"`
 	ID_3                          sql.NullString    `db:"id_3"`
 	Name_2                        sql.NullString    `db:"name_2"`
 	Description_2                 sql.NullString    `db:"description_2"`
 	IconPath                      sql.NullString    `db:"icon_path"`
-	YieldsNothing                 sql.NullBool      `db:"yields_nothing"`
-	RestrictToIngredients         sql.NullBool      `db:"restrict_to_ingredients"`
-	MinimumIngredientCount        sql.NullInt32     `db:"minimum_ingredient_count"`
-	MaximumIngredientCount        sql.NullInt32     `db:"maximum_ingredient_count"`
-	MinimumInstrumentCount        sql.NullInt32     `db:"minimum_instrument_count"`
-	MaximumInstrumentCount        sql.NullInt32     `db:"maximum_instrument_count"`
-	TemperatureRequired           sql.NullBool      `db:"temperature_required"`
-	TimeEstimateRequired          sql.NullBool      `db:"time_estimate_required"`
-	ConditionExpressionRequired   sql.NullBool      `db:"condition_expression_required"`
-	ConsumesVessel                sql.NullBool      `db:"consumes_vessel"`
-	OnlyForVessels                sql.NullBool      `db:"only_for_vessels"`
-	MinimumVesselCount            sql.NullInt32     `db:"minimum_vessel_count"`
-	MaximumVesselCount            sql.NullInt32     `db:"maximum_vessel_count"`
-	Slug_2                        sql.NullString    `db:"slug_2"`
+	Description                   sql.NullString    `db:"description"`
+	ConditionExpression           sql.NullString    `db:"condition_expression"`
+	ExplicitInstructions          sql.NullString    `db:"explicit_instructions"`
+	Slug                          sql.NullString    `db:"slug"`
+	Notes                         sql.NullString    `db:"notes"`
+	Name                          sql.NullString    `db:"name"`
+	InspiredByRecipeID            sql.NullString    `db:"inspired_by_recipe_id"`
+	ID                            sql.NullString    `db:"id"`
+	MinEstimatedPortions          sql.NullString    `db:"min_estimated_portions"`
 	PastTense                     sql.NullString    `db:"past_tense"`
-	CreatedAt_2                   sql.NullTime      `db:"created_at_2"`
-	LastUpdatedAt_2               sql.NullTime      `db:"last_updated_at_2"`
-	ArchivedAt_2                  sql.NullTime      `db:"archived_at_2"`
+	Slug_2                        sql.NullString    `db:"slug_2"`
 	MinimumEstimatedTimeInSeconds sql.NullInt64     `db:"minimum_estimated_time_in_seconds"`
 	MaximumEstimatedTimeInSeconds sql.NullInt64     `db:"maximum_estimated_time_in_seconds"`
-	MinimumTemperatureInCelsius   sql.NullString    `db:"minimum_temperature_in_celsius"`
-	MaximumTemperatureInCelsius   sql.NullString    `db:"maximum_temperature_in_celsius"`
-	Notes                         sql.NullString    `db:"notes"`
-	ExplicitInstructions          sql.NullString    `db:"explicit_instructions"`
-	ConditionExpression           sql.NullString    `db:"condition_expression"`
-	Optional                      sql.NullBool      `db:"optional"`
+	MinimumInstrumentCount        sql.NullInt32     `db:"minimum_instrument_count"`
+	MaximumInstrumentCount        sql.NullInt32     `db:"maximum_instrument_count"`
+	MaximumIngredientCount        sql.NullInt32     `db:"maximum_ingredient_count"`
+	Index                         sql.NullInt32     `db:"index"`
+	MinimumVesselCount            sql.NullInt32     `db:"minimum_vessel_count"`
+	MinimumIngredientCount        sql.NullInt32     `db:"minimum_ingredient_count"`
+	MaximumVesselCount            sql.NullInt32     `db:"maximum_vessel_count"`
+	OnlyForVessels                sql.NullBool      `db:"only_for_vessels"`
+	SealOfApproval                sql.NullBool      `db:"seal_of_approval"`
 	StartTimerAutomatically       sql.NullBool      `db:"start_timer_automatically"`
-	CreatedAt_3                   sql.NullTime      `db:"created_at_3"`
-	LastUpdatedAt_3               sql.NullTime      `db:"last_updated_at_3"`
-	ArchivedAt_3                  sql.NullTime      `db:"archived_at_3"`
-	BelongsToRecipe               sql.NullString    `db:"belongs_to_recipe"`
+	ConsumesVessel                sql.NullBool      `db:"consumes_vessel"`
+	RestrictToIngredients         sql.NullBool      `db:"restrict_to_ingredients"`
+	Optional                      sql.NullBool      `db:"optional"`
+	TemperatureRequired           sql.NullBool      `db:"temperature_required"`
+	YieldsNothing                 sql.NullBool      `db:"yields_nothing"`
+	TimeEstimateRequired          sql.NullBool      `db:"time_estimate_required"`
+	ConditionExpressionRequired   sql.NullBool      `db:"condition_expression_required"`
+	EligibleForMeals              sql.NullBool      `db:"eligible_for_meals"`
 }
 
 func (q *Queries) GetRecipeByIDAndAuthorID(ctx context.Context, db DBTX, arg *GetRecipeByIDAndAuthorIDParams) ([]*GetRecipeByIDAndAuthorIDRow, error) {

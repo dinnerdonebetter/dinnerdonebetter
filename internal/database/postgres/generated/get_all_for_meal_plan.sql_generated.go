@@ -39,21 +39,21 @@ ORDER BY meal_plan_grocery_list_items.id
 `
 
 type GetMealPlanGroceryListItemsForMealPlanRow struct {
-	ID                       sql.NullString            `db:"id"`
-	BelongsToMealPlan        sql.NullString            `db:"belongs_to_meal_plan"`
-	ValidIngredient          sql.NullString            `db:"valid_ingredient"`
-	ValidMeasurementUnit     sql.NullString            `db:"valid_measurement_unit"`
+	CreatedAt                sql.NullTime              `db:"created_at"`
+	ArchivedAt               sql.NullTime              `db:"archived_at"`
+	LastUpdatedAt            sql.NullTime              `db:"last_updated_at"`
+	QuantityPurchased        sql.NullString            `db:"quantity_purchased"`
 	MinimumQuantityNeeded    sql.NullString            `db:"minimum_quantity_needed"`
 	MaximumQuantityNeeded    sql.NullString            `db:"maximum_quantity_needed"`
-	QuantityPurchased        sql.NullString            `db:"quantity_purchased"`
+	ID                       sql.NullString            `db:"id"`
 	PurchasedMeasurementUnit sql.NullString            `db:"purchased_measurement_unit"`
 	PurchasedUpc             sql.NullString            `db:"purchased_upc"`
 	PurchasePrice            sql.NullString            `db:"purchase_price"`
 	StatusExplanation        sql.NullString            `db:"status_explanation"`
 	Status                   NullGroceryListItemStatus `db:"status"`
-	CreatedAt                sql.NullTime              `db:"created_at"`
-	LastUpdatedAt            sql.NullTime              `db:"last_updated_at"`
-	ArchivedAt               sql.NullTime              `db:"archived_at"`
+	ValidMeasurementUnit     sql.NullString            `db:"valid_measurement_unit"`
+	ValidIngredient          sql.NullString            `db:"valid_ingredient"`
+	BelongsToMealPlan        sql.NullString            `db:"belongs_to_meal_plan"`
 }
 
 func (q *Queries) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, db DBTX, belongsToMealPlan string) ([]*GetMealPlanGroceryListItemsForMealPlanRow, error) {

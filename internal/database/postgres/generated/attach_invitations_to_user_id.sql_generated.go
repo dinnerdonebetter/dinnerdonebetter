@@ -20,8 +20,8 @@ WHERE archived_at IS NULL
 `
 
 type AttachHouseholdInvitationsToUserIDParams struct {
-	ToUser sql.NullString `db:"to_user"`
 	Lower  string         `db:"lower"`
+	ToUser sql.NullString `db:"to_user"`
 }
 
 func (q *Queries) AttachHouseholdInvitationsToUserID(ctx context.Context, db DBTX, arg *AttachHouseholdInvitationsToUserIDParams) error {

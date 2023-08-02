@@ -13,7 +13,7 @@ TEST_DOCKER_COMPOSE_FILES_DIR := $(TEST_ENVIRONMENT_DIR)/compose_files
 GENERATED_QUERIES_DIR         := internal/database/postgres/generated
 SQL_GENERATOR                 := kjconroy/sqlc:1.20.0
 LINTER_IMAGE                  := golangci/golangci-lint:v1.53.3
-CONTAINER_LINTER_IMAGE        := openpolicyagent/conftest:v0.43.1
+CONTAINER_LINTER_IMAGE        := openpolicyagent/conftest:v0.44.1
 CLOUD_JOBS                    := meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator search_data_index_scheduler
 CLOUD_FUNCTIONS               := data_changes outbound_emailer search_indexer
 WIRE_TARGETS                  := server/http/build
@@ -157,6 +157,7 @@ querier: queries_lint
 		--volume $(PWD):/src \
 		--workdir /src \
 	$(SQL_GENERATOR) generate
+	$(MAKE) format
 
 .PHONY: golang_lint
 golang_lint:

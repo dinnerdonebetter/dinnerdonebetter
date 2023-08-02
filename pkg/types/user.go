@@ -37,27 +37,27 @@ type (
 	User struct {
 		_ struct{}
 
-		CreatedAt                 time.Time  `json:"createdAt"`
-		PasswordLastChangedAt     *time.Time `json:"passwordLastChangedAt"`
-		LastUpdatedAt             *time.Time `json:"lastUpdatedAt"`
-		LastAcceptedTOS           *time.Time `json:"lastAcceptedTOS"`
-		LastAcceptedPrivacyPolicy *time.Time `json:"lastAcceptedPrivacyPolicy"`
-		TwoFactorSecretVerifiedAt *time.Time `json:"twoFactorSecretVerifiedAt"`
-		AvatarSrc                 *string    `json:"avatar"`
-		Birthday                  *time.Time `json:"birthday"`
-		ArchivedAt                *time.Time `json:"archivedAt"`
-		AccountStatusExplanation  string     `json:"accountStatusExplanation"`
-		TwoFactorSecret           string     `json:"-"`
-		HashedPassword            string     `json:"-"`
-		ID                        string     `json:"id"`
-		AccountStatus             string     `json:"accountStatus"`
-		Username                  string     `json:"username"`
-		FirstName                 string     `json:"firstName"`
-		LastName                  string     `json:"lastName"`
-		EmailAddress              string     `json:"emailAddress"`
-		EmailAddressVerifiedAt    *time.Time `json:"emailAddressVerifiedAt"`
-		ServiceRole               string     `json:"serviceRoles"`
-		RequiresPasswordChange    bool       `json:"requiresPasswordChange"`
+		CreatedAt                  time.Time  `json:"createdAt"`
+		PasswordLastChangedAt      *time.Time `json:"passwordLastChangedAt"`
+		LastUpdatedAt              *time.Time `json:"lastUpdatedAt"`
+		LastAcceptedTermsOfService *time.Time `json:"lastAcceptedTOS"`
+		LastAcceptedPrivacyPolicy  *time.Time `json:"lastAcceptedPrivacyPolicy"`
+		TwoFactorSecretVerifiedAt  *time.Time `json:"twoFactorSecretVerifiedAt"`
+		AvatarSrc                  *string    `json:"avatar"`
+		Birthday                   *time.Time `json:"birthday"`
+		ArchivedAt                 *time.Time `json:"archivedAt"`
+		AccountStatusExplanation   string     `json:"accountStatusExplanation"`
+		TwoFactorSecret            string     `json:"-"`
+		HashedPassword             string     `json:"-"`
+		ID                         string     `json:"id"`
+		AccountStatus              string     `json:"accountStatus"`
+		Username                   string     `json:"username"`
+		FirstName                  string     `json:"firstName"`
+		LastName                   string     `json:"lastName"`
+		EmailAddress               string     `json:"emailAddress"`
+		EmailAddressVerifiedAt     *time.Time `json:"emailAddressVerifiedAt"`
+		ServiceRole                string     `json:"serviceRoles"`
+		RequiresPasswordChange     bool       `json:"requiresPasswordChange"`
 	}
 
 	// UserSearchSubset represents the subset of values suitable to index for search.

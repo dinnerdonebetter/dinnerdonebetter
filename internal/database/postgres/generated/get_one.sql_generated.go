@@ -46,25 +46,25 @@ type GetHouseholdInstrumentOwnershipParams struct {
 }
 
 type GetHouseholdInstrumentOwnershipRow struct {
+	CreatedAt                      time.Time    `db:"created_at"`
+	CreatedAt_2                    time.Time    `db:"created_at_2"`
+	ArchivedAt_2                   sql.NullTime `db:"archived_at_2"`
+	LastUpdatedAt_2                sql.NullTime `db:"last_updated_at_2"`
+	ArchivedAt                     sql.NullTime `db:"archived_at"`
+	LastUpdatedAt                  sql.NullTime `db:"last_updated_at"`
+	Name                           string       `db:"name"`
+	IconPath                       string       `db:"icon_path"`
+	Slug                           string       `db:"slug"`
+	Description                    string       `db:"description"`
+	PluralName                     string       `db:"plural_name"`
 	ID                             string       `db:"id"`
+	BelongsToHousehold             string       `db:"belongs_to_household"`
+	ID_2                           string       `db:"id_2"`
 	Notes                          string       `db:"notes"`
 	Quantity                       int32        `db:"quantity"`
-	ID_2                           string       `db:"id_2"`
-	Name                           string       `db:"name"`
-	PluralName                     string       `db:"plural_name"`
-	Description                    string       `db:"description"`
-	IconPath                       string       `db:"icon_path"`
 	UsableForStorage               bool         `db:"usable_for_storage"`
 	DisplayInSummaryLists          bool         `db:"display_in_summary_lists"`
 	IncludeInGeneratedInstructions bool         `db:"include_in_generated_instructions"`
-	Slug                           string       `db:"slug"`
-	CreatedAt                      time.Time    `db:"created_at"`
-	LastUpdatedAt                  sql.NullTime `db:"last_updated_at"`
-	ArchivedAt                     sql.NullTime `db:"archived_at"`
-	BelongsToHousehold             string       `db:"belongs_to_household"`
-	CreatedAt_2                    time.Time    `db:"created_at_2"`
-	LastUpdatedAt_2                sql.NullTime `db:"last_updated_at_2"`
-	ArchivedAt_2                   sql.NullTime `db:"archived_at_2"`
 }
 
 func (q *Queries) GetHouseholdInstrumentOwnership(ctx context.Context, db DBTX, arg *GetHouseholdInstrumentOwnershipParams) (*GetHouseholdInstrumentOwnershipRow, error) {
@@ -118,19 +118,19 @@ WHERE meals.archived_at IS NULL
 `
 
 type GetMealRow struct {
-	ID                   sql.NullString    `db:"id"`
-	Name                 sql.NullString    `db:"name"`
-	Description          sql.NullString    `db:"description"`
+	CreatedAt            sql.NullTime      `db:"created_at"`
+	ArchivedAt           sql.NullTime      `db:"archived_at"`
+	LastUpdatedAt        sql.NullTime      `db:"last_updated_at"`
 	MinEstimatedPortions sql.NullString    `db:"min_estimated_portions"`
 	MaxEstimatedPortions sql.NullString    `db:"max_estimated_portions"`
-	EligibleForMealPlans sql.NullBool      `db:"eligible_for_meal_plans"`
-	CreatedAt            sql.NullTime      `db:"created_at"`
-	LastUpdatedAt        sql.NullTime      `db:"last_updated_at"`
-	ArchivedAt           sql.NullTime      `db:"archived_at"`
+	ID                   sql.NullString    `db:"id"`
+	Description          sql.NullString    `db:"description"`
+	Name                 sql.NullString    `db:"name"`
 	CreatedByUser        sql.NullString    `db:"created_by_user"`
 	RecipeID             sql.NullString    `db:"recipe_id"`
 	RecipeScale          sql.NullString    `db:"recipe_scale"`
 	MealComponentType    NullComponentType `db:"meal_component_type"`
+	EligibleForMealPlans sql.NullBool      `db:"eligible_for_meal_plans"`
 }
 
 func (q *Queries) GetMeal(ctx context.Context, db DBTX, id string) (*GetMealRow, error) {
@@ -181,18 +181,18 @@ type GetMealPlanParams struct {
 }
 
 type GetMealPlanRow struct {
-	ID                     string              `db:"id"`
-	Notes                  string              `db:"notes"`
-	Status                 MealPlanStatus      `db:"status"`
 	VotingDeadline         time.Time           `db:"voting_deadline"`
-	GroceryListInitialized bool                `db:"grocery_list_initialized"`
-	TasksCreated           bool                `db:"tasks_created"`
-	ElectionMethod         ValidElectionMethod `db:"election_method"`
 	CreatedAt              time.Time           `db:"created_at"`
 	LastUpdatedAt          sql.NullTime        `db:"last_updated_at"`
 	ArchivedAt             sql.NullTime        `db:"archived_at"`
+	ID                     string              `db:"id"`
+	Notes                  string              `db:"notes"`
+	Status                 MealPlanStatus      `db:"status"`
+	ElectionMethod         ValidElectionMethod `db:"election_method"`
 	BelongsToHousehold     string              `db:"belongs_to_household"`
 	CreatedByUser          string              `db:"created_by_user"`
+	GroceryListInitialized bool                `db:"grocery_list_initialized"`
+	TasksCreated           bool                `db:"tasks_created"`
 }
 
 func (q *Queries) GetMealPlan(ctx context.Context, db DBTX, arg *GetMealPlanParams) (*GetMealPlanRow, error) {
@@ -286,21 +286,21 @@ type GetMealPlanGroceryListItemParams struct {
 }
 
 type GetMealPlanGroceryListItemRow struct {
-	ID                       sql.NullString            `db:"id"`
-	BelongsToMealPlan        sql.NullString            `db:"belongs_to_meal_plan"`
-	ValidIngredient          sql.NullString            `db:"valid_ingredient"`
-	ValidMeasurementUnit     sql.NullString            `db:"valid_measurement_unit"`
+	CreatedAt                sql.NullTime              `db:"created_at"`
+	ArchivedAt               sql.NullTime              `db:"archived_at"`
+	LastUpdatedAt            sql.NullTime              `db:"last_updated_at"`
+	QuantityPurchased        sql.NullString            `db:"quantity_purchased"`
 	MinimumQuantityNeeded    sql.NullString            `db:"minimum_quantity_needed"`
 	MaximumQuantityNeeded    sql.NullString            `db:"maximum_quantity_needed"`
-	QuantityPurchased        sql.NullString            `db:"quantity_purchased"`
+	ID                       sql.NullString            `db:"id"`
 	PurchasedMeasurementUnit sql.NullString            `db:"purchased_measurement_unit"`
 	PurchasedUpc             sql.NullString            `db:"purchased_upc"`
 	PurchasePrice            sql.NullString            `db:"purchase_price"`
 	StatusExplanation        sql.NullString            `db:"status_explanation"`
 	Status                   NullGroceryListItemStatus `db:"status"`
-	CreatedAt                sql.NullTime              `db:"created_at"`
-	LastUpdatedAt            sql.NullTime              `db:"last_updated_at"`
-	ArchivedAt               sql.NullTime              `db:"archived_at"`
+	ValidMeasurementUnit     sql.NullString            `db:"valid_measurement_unit"`
+	ValidIngredient          sql.NullString            `db:"valid_ingredient"`
+	BelongsToMealPlan        sql.NullString            `db:"belongs_to_meal_plan"`
 }
 
 func (q *Queries) GetMealPlanGroceryListItem(ctx context.Context, db DBTX, arg *GetMealPlanGroceryListItemParams) (*GetMealPlanGroceryListItemRow, error) {
@@ -366,33 +366,33 @@ WHERE meal_plan_options.archived_at IS NULL
 
 type GetMealPlanOptionParams struct {
 	BelongsToMealPlan      string         `db:"belongs_to_meal_plan"`
-	BelongsToMealPlanEvent sql.NullString `db:"belongs_to_meal_plan_event"`
 	ID                     string         `db:"id"`
+	BelongsToMealPlanEvent sql.NullString `db:"belongs_to_meal_plan_event"`
 }
 
 type GetMealPlanOptionRow struct {
-	ID                     string         `db:"id"`
-	AssignedCook           sql.NullString `db:"assigned_cook"`
-	AssignedDishwasher     sql.NullString `db:"assigned_dishwasher"`
-	Chosen                 bool           `db:"chosen"`
-	Tiebroken              bool           `db:"tiebroken"`
-	MealScale              string         `db:"meal_scale"`
-	MealID                 string         `db:"meal_id"`
-	Notes                  string         `db:"notes"`
 	CreatedAt              time.Time      `db:"created_at"`
-	LastUpdatedAt          sql.NullTime   `db:"last_updated_at"`
+	CreatedAt_2            time.Time      `db:"created_at_2"`
+	ArchivedAt_2           sql.NullTime   `db:"archived_at_2"`
+	LastUpdatedAt_2        sql.NullTime   `db:"last_updated_at_2"`
 	ArchivedAt             sql.NullTime   `db:"archived_at"`
-	BelongsToMealPlanEvent sql.NullString `db:"belongs_to_meal_plan_event"`
+	LastUpdatedAt          sql.NullTime   `db:"last_updated_at"`
+	MealScale              string         `db:"meal_scale"`
+	MinEstimatedPortions   string         `db:"min_estimated_portions"`
+	MealID                 string         `db:"meal_id"`
+	ID                     string         `db:"id"`
+	CreatedByUser          string         `db:"created_by_user"`
+	Notes                  string         `db:"notes"`
 	ID_2                   string         `db:"id_2"`
 	Name                   string         `db:"name"`
 	Description            string         `db:"description"`
-	MinEstimatedPortions   string         `db:"min_estimated_portions"`
 	MaxEstimatedPortions   sql.NullString `db:"max_estimated_portions"`
+	BelongsToMealPlanEvent sql.NullString `db:"belongs_to_meal_plan_event"`
+	AssignedDishwasher     sql.NullString `db:"assigned_dishwasher"`
+	AssignedCook           sql.NullString `db:"assigned_cook"`
 	EligibleForMealPlans   bool           `db:"eligible_for_meal_plans"`
-	CreatedAt_2            time.Time      `db:"created_at_2"`
-	LastUpdatedAt_2        sql.NullTime   `db:"last_updated_at_2"`
-	ArchivedAt_2           sql.NullTime   `db:"archived_at_2"`
-	CreatedByUser          string         `db:"created_by_user"`
+	Chosen                 bool           `db:"chosen"`
+	Tiebroken              bool           `db:"tiebroken"`
 }
 
 func (q *Queries) GetMealPlanOption(ctx context.Context, db DBTX, arg *GetMealPlanOptionParams) (*GetMealPlanOptionRow, error) {
@@ -457,8 +457,8 @@ WHERE meal_plan_option_votes.archived_at IS NULL
 type GetMealPlanOptionVoteParams struct {
 	BelongsToMealPlanOption string         `db:"belongs_to_meal_plan_option"`
 	ID                      string         `db:"id"`
-	BelongsToMealPlanEvent  sql.NullString `db:"belongs_to_meal_plan_event"`
 	BelongsToMealPlan       string         `db:"belongs_to_meal_plan"`
+	BelongsToMealPlanEvent  sql.NullString `db:"belongs_to_meal_plan_event"`
 }
 
 func (q *Queries) GetMealPlanOptionVote(ctx context.Context, db DBTX, arg *GetMealPlanOptionVoteParams) (*MealPlanOptionVotes, error) {
@@ -542,45 +542,45 @@ WHERE meal_plan_options.archived_at IS NULL
 `
 
 type GetMealPlanTaskRow struct {
-	ID                                     sql.NullString           `db:"id"`
-	ID_2                                   sql.NullString           `db:"id_2"`
-	AssignedCook                           sql.NullString           `db:"assigned_cook"`
-	AssignedDishwasher                     sql.NullString           `db:"assigned_dishwasher"`
-	Chosen                                 sql.NullBool             `db:"chosen"`
-	Tiebroken                              sql.NullBool             `db:"tiebroken"`
-	MealScale                              sql.NullString           `db:"meal_scale"`
-	MealID                                 sql.NullString           `db:"meal_id"`
-	Notes                                  sql.NullString           `db:"notes"`
-	CreatedAt                              sql.NullTime             `db:"created_at"`
+	CreatedAt_2                            time.Time                `db:"created_at_2"`
+	ArchivedAt_2                           sql.NullTime             `db:"archived_at_2"`
 	LastUpdatedAt                          sql.NullTime             `db:"last_updated_at"`
+	CompletedAt                            sql.NullTime             `db:"completed_at"`
+	LastUpdatedAt_3                        sql.NullTime             `db:"last_updated_at_3"`
+	CreatedAt_3                            sql.NullTime             `db:"created_at_3"`
+	LastUpdatedAt_2                        sql.NullTime             `db:"last_updated_at_2"`
+	CreatedAt                              sql.NullTime             `db:"created_at"`
 	ArchivedAt                             sql.NullTime             `db:"archived_at"`
-	BelongsToMealPlanEvent                 sql.NullString           `db:"belongs_to_meal_plan_event"`
+	BelongsToRecipeStep                    string                   `db:"belongs_to_recipe_step"`
+	ID_4                                   string                   `db:"id_4"`
+	BelongsToRecipePrepTask                string                   `db:"belongs_to_recipe_prep_task"`
+	BelongsToRecipe                        string                   `db:"belongs_to_recipe"`
 	ID_3                                   string                   `db:"id_3"`
 	Name                                   string                   `db:"name"`
 	Description                            string                   `db:"description"`
 	Notes_2                                string                   `db:"notes_2"`
-	Optional                               bool                     `db:"optional"`
 	ExplicitStorageInstructions            string                   `db:"explicit_storage_instructions"`
-	MinimumTimeBufferBeforeRecipeInSeconds int32                    `db:"minimum_time_buffer_before_recipe_in_seconds"`
-	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32            `db:"maximum_time_buffer_before_recipe_in_seconds"`
-	StorageType                            NullStorageContainerType `db:"storage_type"`
 	MinimumStorageTemperatureInCelsius     sql.NullString           `db:"minimum_storage_temperature_in_celsius"`
-	MaximumStorageTemperatureInCelsius     sql.NullString           `db:"maximum_storage_temperature_in_celsius"`
-	BelongsToRecipe                        string                   `db:"belongs_to_recipe"`
-	CreatedAt_2                            time.Time                `db:"created_at_2"`
-	LastUpdatedAt_2                        sql.NullTime             `db:"last_updated_at_2"`
-	ArchivedAt_2                           sql.NullTime             `db:"archived_at_2"`
-	ID_4                                   string                   `db:"id_4"`
-	BelongsToRecipeStep                    string                   `db:"belongs_to_recipe_step"`
-	BelongsToRecipePrepTask                string                   `db:"belongs_to_recipe_prep_task"`
-	SatisfiesRecipeStep                    bool                     `db:"satisfies_recipe_step"`
-	CreatedAt_3                            sql.NullTime             `db:"created_at_3"`
-	LastUpdatedAt_3                        sql.NullTime             `db:"last_updated_at_3"`
-	CompletedAt                            sql.NullTime             `db:"completed_at"`
-	Status                                 NullPrepStepStatus       `db:"status"`
+	ID_2                                   sql.NullString           `db:"id_2"`
+	BelongsToMealPlanEvent                 sql.NullString           `db:"belongs_to_meal_plan_event"`
 	CreationExplanation                    sql.NullString           `db:"creation_explanation"`
+	AssignedDishwasher                     sql.NullString           `db:"assigned_dishwasher"`
+	ID                                     sql.NullString           `db:"id"`
+	MaximumStorageTemperatureInCelsius     sql.NullString           `db:"maximum_storage_temperature_in_celsius"`
+	MealScale                              sql.NullString           `db:"meal_scale"`
 	StatusExplanation                      sql.NullString           `db:"status_explanation"`
+	MealID                                 sql.NullString           `db:"meal_id"`
+	AssignedCook                           sql.NullString           `db:"assigned_cook"`
+	Status                                 NullPrepStepStatus       `db:"status"`
+	Notes                                  sql.NullString           `db:"notes"`
 	AssignedToUser                         sql.NullString           `db:"assigned_to_user"`
+	StorageType                            NullStorageContainerType `db:"storage_type"`
+	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32            `db:"maximum_time_buffer_before_recipe_in_seconds"`
+	MinimumTimeBufferBeforeRecipeInSeconds int32                    `db:"minimum_time_buffer_before_recipe_in_seconds"`
+	Chosen                                 sql.NullBool             `db:"chosen"`
+	Tiebroken                              sql.NullBool             `db:"tiebroken"`
+	Optional                               bool                     `db:"optional"`
+	SatisfiesRecipeStep                    bool                     `db:"satisfies_recipe_step"`
 }
 
 func (q *Queries) GetMealPlanTask(ctx context.Context, db DBTX, id string) (*GetMealPlanTaskRow, error) {
@@ -680,16 +680,16 @@ WHERE recipe_media.archived_at IS NULL
 `
 
 type GetRecipeMediaRow struct {
-	ID                  string         `db:"id"`
-	BelongsToRecipe     sql.NullString `db:"belongs_to_recipe"`
-	BelongsToRecipeStep sql.NullString `db:"belongs_to_recipe_step"`
-	MimeType            string         `db:"mime_type"`
-	InternalPath        string         `db:"internal_path"`
-	ExternalPath        string         `db:"external_path"`
-	Index               int32          `db:"index"`
 	CreatedAt           time.Time      `db:"created_at"`
 	LastUpdatedAt       sql.NullTime   `db:"last_updated_at"`
 	ArchivedAt          sql.NullTime   `db:"archived_at"`
+	ID                  string         `db:"id"`
+	MimeType            string         `db:"mime_type"`
+	InternalPath        string         `db:"internal_path"`
+	ExternalPath        string         `db:"external_path"`
+	BelongsToRecipe     sql.NullString `db:"belongs_to_recipe"`
+	BelongsToRecipeStep sql.NullString `db:"belongs_to_recipe_step"`
+	Index               int32          `db:"index"`
 }
 
 func (q *Queries) GetRecipeMedia(ctx context.Context, db DBTX, id string) (*GetRecipeMediaRow, error) {
@@ -740,24 +740,24 @@ WHERE recipe_prep_tasks.archived_at IS NULL
 `
 
 type GetRecipePrepTaskRow struct {
-	ID                                     sql.NullString           `db:"id"`
-	Name                                   sql.NullString           `db:"name"`
-	Description                            sql.NullString           `db:"description"`
-	Notes                                  sql.NullString           `db:"notes"`
-	Optional                               sql.NullBool             `db:"optional"`
-	ExplicitStorageInstructions            sql.NullString           `db:"explicit_storage_instructions"`
-	MinimumTimeBufferBeforeRecipeInSeconds sql.NullInt32            `db:"minimum_time_buffer_before_recipe_in_seconds"`
-	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32            `db:"maximum_time_buffer_before_recipe_in_seconds"`
+	CreatedAt                              sql.NullTime             `db:"created_at"`
+	ArchivedAt                             sql.NullTime             `db:"archived_at"`
+	LastUpdatedAt                          sql.NullTime             `db:"last_updated_at"`
 	StorageType                            NullStorageContainerType `db:"storage_type"`
+	Description                            sql.NullString           `db:"description"`
+	ExplicitStorageInstructions            sql.NullString           `db:"explicit_storage_instructions"`
+	BelongsToRecipePrepTask                sql.NullString           `db:"belongs_to_recipe_prep_task"`
+	BelongsToRecipeStep                    sql.NullString           `db:"belongs_to_recipe_step"`
+	ID                                     sql.NullString           `db:"id"`
 	MinimumStorageTemperatureInCelsius     sql.NullString           `db:"minimum_storage_temperature_in_celsius"`
 	MaximumStorageTemperatureInCelsius     sql.NullString           `db:"maximum_storage_temperature_in_celsius"`
 	BelongsToRecipe                        sql.NullString           `db:"belongs_to_recipe"`
-	CreatedAt                              sql.NullTime             `db:"created_at"`
-	LastUpdatedAt                          sql.NullTime             `db:"last_updated_at"`
-	ArchivedAt                             sql.NullTime             `db:"archived_at"`
+	Notes                                  sql.NullString           `db:"notes"`
 	ID_2                                   sql.NullString           `db:"id_2"`
-	BelongsToRecipeStep                    sql.NullString           `db:"belongs_to_recipe_step"`
-	BelongsToRecipePrepTask                sql.NullString           `db:"belongs_to_recipe_prep_task"`
+	Name                                   sql.NullString           `db:"name"`
+	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32            `db:"maximum_time_buffer_before_recipe_in_seconds"`
+	MinimumTimeBufferBeforeRecipeInSeconds sql.NullInt32            `db:"minimum_time_buffer_before_recipe_in_seconds"`
+	Optional                               sql.NullBool             `db:"optional"`
 	SatisfiesRecipeStep                    sql.NullBool             `db:"satisfies_recipe_step"`
 }
 
@@ -884,43 +884,43 @@ type GetRecipeStepParams struct {
 }
 
 type GetRecipeStepRow struct {
-	ID                            string         `db:"id"`
-	Index                         int32          `db:"index"`
+	CreatedAt                     time.Time      `db:"created_at"`
+	CreatedAt_2                   time.Time      `db:"created_at_2"`
+	ArchivedAt_2                  sql.NullTime   `db:"archived_at_2"`
+	LastUpdatedAt                 sql.NullTime   `db:"last_updated_at"`
+	ArchivedAt                    sql.NullTime   `db:"archived_at"`
+	LastUpdatedAt_2               sql.NullTime   `db:"last_updated_at_2"`
+	ConditionExpression           string         `db:"condition_expression"`
 	ID_2                          string         `db:"id_2"`
-	Name                          string         `db:"name"`
 	Description                   string         `db:"description"`
+	ID                            string         `db:"id"`
+	Name                          string         `db:"name"`
+	ExplicitInstructions          string         `db:"explicit_instructions"`
+	Notes                         string         `db:"notes"`
 	IconPath                      string         `db:"icon_path"`
-	YieldsNothing                 bool           `db:"yields_nothing"`
-	RestrictToIngredients         bool           `db:"restrict_to_ingredients"`
-	MinimumIngredientCount        int32          `db:"minimum_ingredient_count"`
+	PastTense                     string         `db:"past_tense"`
+	Slug                          string         `db:"slug"`
+	BelongsToRecipe               string         `db:"belongs_to_recipe"`
+	MaximumTemperatureInCelsius   sql.NullString `db:"maximum_temperature_in_celsius"`
+	MinimumTemperatureInCelsius   sql.NullString `db:"minimum_temperature_in_celsius"`
+	MinimumEstimatedTimeInSeconds sql.NullInt64  `db:"minimum_estimated_time_in_seconds"`
+	MaximumEstimatedTimeInSeconds sql.NullInt64  `db:"maximum_estimated_time_in_seconds"`
 	MaximumIngredientCount        sql.NullInt32  `db:"maximum_ingredient_count"`
-	MinimumInstrumentCount        int32          `db:"minimum_instrument_count"`
+	MaximumVesselCount            sql.NullInt32  `db:"maximum_vessel_count"`
 	MaximumInstrumentCount        sql.NullInt32  `db:"maximum_instrument_count"`
+	MinimumVesselCount            int32          `db:"minimum_vessel_count"`
+	Index                         int32          `db:"index"`
+	MinimumIngredientCount        int32          `db:"minimum_ingredient_count"`
+	MinimumInstrumentCount        int32          `db:"minimum_instrument_count"`
 	TemperatureRequired           bool           `db:"temperature_required"`
 	TimeEstimateRequired          bool           `db:"time_estimate_required"`
 	ConditionExpressionRequired   bool           `db:"condition_expression_required"`
-	ConsumesVessel                bool           `db:"consumes_vessel"`
-	OnlyForVessels                bool           `db:"only_for_vessels"`
-	MinimumVesselCount            int32          `db:"minimum_vessel_count"`
-	MaximumVesselCount            sql.NullInt32  `db:"maximum_vessel_count"`
-	Slug                          string         `db:"slug"`
-	PastTense                     string         `db:"past_tense"`
-	CreatedAt                     time.Time      `db:"created_at"`
-	LastUpdatedAt                 sql.NullTime   `db:"last_updated_at"`
-	ArchivedAt                    sql.NullTime   `db:"archived_at"`
-	MinimumEstimatedTimeInSeconds sql.NullInt64  `db:"minimum_estimated_time_in_seconds"`
-	MaximumEstimatedTimeInSeconds sql.NullInt64  `db:"maximum_estimated_time_in_seconds"`
-	MinimumTemperatureInCelsius   sql.NullString `db:"minimum_temperature_in_celsius"`
-	MaximumTemperatureInCelsius   sql.NullString `db:"maximum_temperature_in_celsius"`
-	Notes                         string         `db:"notes"`
-	ExplicitInstructions          string         `db:"explicit_instructions"`
-	ConditionExpression           string         `db:"condition_expression"`
 	Optional                      bool           `db:"optional"`
 	StartTimerAutomatically       bool           `db:"start_timer_automatically"`
-	CreatedAt_2                   time.Time      `db:"created_at_2"`
-	LastUpdatedAt_2               sql.NullTime   `db:"last_updated_at_2"`
-	ArchivedAt_2                  sql.NullTime   `db:"archived_at_2"`
-	BelongsToRecipe               string         `db:"belongs_to_recipe"`
+	ConsumesVessel                bool           `db:"consumes_vessel"`
+	RestrictToIngredients         bool           `db:"restrict_to_ingredients"`
+	YieldsNothing                 bool           `db:"yields_nothing"`
+	OnlyForVessels                bool           `db:"only_for_vessels"`
 }
 
 func (q *Queries) GetRecipeStep(ctx context.Context, db DBTX, arg *GetRecipeStepParams) (*GetRecipeStepRow, error) {
@@ -1014,26 +1014,26 @@ type GetRecipeStepCompletionConditionParams struct {
 }
 
 type GetRecipeStepCompletionConditionRow struct {
-	ID                                     string                  `db:"id"`
-	BelongsToRecipeStepCompletionCondition string                  `db:"belongs_to_recipe_step_completion_condition"`
-	RecipeStepIngredient                   string                  `db:"recipe_step_ingredient"`
-	ID_2                                   string                  `db:"id_2"`
-	BelongsToRecipeStep                    string                  `db:"belongs_to_recipe_step"`
+	CreatedAt                              time.Time               `db:"created_at"`
+	CreatedAt_2                            time.Time               `db:"created_at_2"`
+	ArchivedAt_2                           sql.NullTime            `db:"archived_at_2"`
+	LastUpdatedAt_2                        sql.NullTime            `db:"last_updated_at_2"`
+	ArchivedAt                             sql.NullTime            `db:"archived_at"`
+	LastUpdatedAt                          sql.NullTime            `db:"last_updated_at"`
+	PastTense                              string                  `db:"past_tense"`
 	ID_3                                   string                  `db:"id_3"`
-	Name                                   string                  `db:"name"`
-	Description                            string                  `db:"description"`
 	IconPath                               string                  `db:"icon_path"`
 	Slug                                   string                  `db:"slug"`
-	PastTense                              string                  `db:"past_tense"`
+	ID                                     string                  `db:"id"`
 	AttributeType                          IngredientAttributeType `db:"attribute_type"`
-	CreatedAt                              time.Time               `db:"created_at"`
-	LastUpdatedAt                          sql.NullTime            `db:"last_updated_at"`
-	ArchivedAt                             sql.NullTime            `db:"archived_at"`
-	Optional                               bool                    `db:"optional"`
+	Name                                   string                  `db:"name"`
+	Description                            string                  `db:"description"`
+	BelongsToRecipeStep                    string                  `db:"belongs_to_recipe_step"`
+	BelongsToRecipeStepCompletionCondition string                  `db:"belongs_to_recipe_step_completion_condition"`
 	Notes                                  string                  `db:"notes"`
-	CreatedAt_2                            time.Time               `db:"created_at_2"`
-	LastUpdatedAt_2                        sql.NullTime            `db:"last_updated_at_2"`
-	ArchivedAt_2                           sql.NullTime            `db:"archived_at_2"`
+	ID_2                                   string                  `db:"id_2"`
+	RecipeStepIngredient                   string                  `db:"recipe_step_ingredient"`
+	Optional                               bool                    `db:"optional"`
 }
 
 func (q *Queries) GetRecipeStepCompletionCondition(ctx context.Context, db DBTX, arg *GetRecipeStepCompletionConditionParams) (*GetRecipeStepCompletionConditionRow, error) {
@@ -1159,74 +1159,74 @@ type GetRecipeStepIngredientParams struct {
 }
 
 type GetRecipeStepIngredientRow struct {
-	ID                                      string         `db:"id"`
-	Name                                    string         `db:"name"`
-	Optional                                bool           `db:"optional"`
-	ID_2                                    string         `db:"id_2"`
-	Name_2                                  string         `db:"name_2"`
-	Description                             string         `db:"description"`
-	Warning                                 string         `db:"warning"`
-	ContainsEgg                             bool           `db:"contains_egg"`
-	ContainsDairy                           bool           `db:"contains_dairy"`
-	ContainsPeanut                          bool           `db:"contains_peanut"`
-	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
-	ContainsSoy                             bool           `db:"contains_soy"`
-	ContainsWheat                           bool           `db:"contains_wheat"`
-	ContainsShellfish                       bool           `db:"contains_shellfish"`
-	ContainsSesame                          bool           `db:"contains_sesame"`
-	ContainsFish                            bool           `db:"contains_fish"`
-	ContainsGluten                          bool           `db:"contains_gluten"`
-	AnimalFlesh                             bool           `db:"animal_flesh"`
-	Volumetric                              bool           `db:"volumetric"`
-	IsLiquid                                sql.NullBool   `db:"is_liquid"`
+	CreatedAt_3                             time.Time      `db:"created_at_3"`
+	CreatedAt                               time.Time      `db:"created_at"`
+	CreatedAt_2                             time.Time      `db:"created_at_2"`
+	LastUpdatedAt                           sql.NullTime   `db:"last_updated_at"`
+	LastUpdatedAt_2                         sql.NullTime   `db:"last_updated_at_2"`
+	ArchivedAt_2                            sql.NullTime   `db:"archived_at_2"`
+	ArchivedAt                              sql.NullTime   `db:"archived_at"`
+	ArchivedAt_3                            sql.NullTime   `db:"archived_at_3"`
+	LastUpdatedAt_3                         sql.NullTime   `db:"last_updated_at_3"`
 	IconPath                                string         `db:"icon_path"`
-	AnimalDerived                           bool           `db:"animal_derived"`
+	PluralName_2                            string         `db:"plural_name_2"`
+	Name                                    string         `db:"name"`
+	BelongsToRecipeStep                     string         `db:"belongs_to_recipe_step"`
+	ID_3                                    string         `db:"id_3"`
+	IngredientNotes                         string         `db:"ingredient_notes"`
+	Name_3                                  string         `db:"name_3"`
+	QuantityNotes                           string         `db:"quantity_notes"`
+	ID                                      string         `db:"id"`
+	Description_2                           string         `db:"description_2"`
+	IconPath_2                              string         `db:"icon_path_2"`
+	Warning                                 string         `db:"warning"`
+	MinimumQuantityValue                    string         `db:"minimum_quantity_value"`
 	PluralName                              string         `db:"plural_name"`
-	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
-	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
-	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
+	Description                             string         `db:"description"`
+	Slug_2                                  string         `db:"slug_2"`
+	ID_2                                    string         `db:"id_2"`
 	StorageInstructions                     string         `db:"storage_instructions"`
 	Slug                                    string         `db:"slug"`
-	ContainsAlcohol                         bool           `db:"contains_alcohol"`
+	Name_2                                  string         `db:"name_2"`
 	ShoppingSuggestions                     string         `db:"shopping_suggestions"`
-	IsStarch                                bool           `db:"is_starch"`
-	IsProtein                               bool           `db:"is_protein"`
-	IsGrain                                 bool           `db:"is_grain"`
-	IsFruit                                 bool           `db:"is_fruit"`
-	IsSalt                                  bool           `db:"is_salt"`
-	IsFat                                   bool           `db:"is_fat"`
-	IsAcid                                  bool           `db:"is_acid"`
-	IsHeat                                  bool           `db:"is_heat"`
-	CreatedAt                               time.Time      `db:"created_at"`
-	LastUpdatedAt                           sql.NullTime   `db:"last_updated_at"`
-	ArchivedAt                              sql.NullTime   `db:"archived_at"`
-	ID_3                                    string         `db:"id_3"`
-	Name_3                                  string         `db:"name_3"`
-	Description_2                           string         `db:"description_2"`
+	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
+	RecipeStepProductRecipeID               sql.NullString `db:"recipe_step_product_recipe_id"`
+	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
+	MaximumQuantityValue                    sql.NullString `db:"maximum_quantity_value"`
+	RecipeStepProductID                     sql.NullString `db:"recipe_step_product_id"`
+	ProductPercentageToUse                  sql.NullString `db:"product_percentage_to_use"`
+	VesselIndex                             sql.NullInt32  `db:"vessel_index"`
+	OptionIndex                             int32          `db:"option_index"`
+	IsLiquid                                sql.NullBool   `db:"is_liquid"`
 	Volumetric_2                            sql.NullBool   `db:"volumetric_2"`
-	IconPath_2                              string         `db:"icon_path_2"`
+	AnimalFlesh                             bool           `db:"animal_flesh"`
+	IsHeat                                  bool           `db:"is_heat"`
+	IsAcid                                  bool           `db:"is_acid"`
+	IsFat                                   bool           `db:"is_fat"`
+	IsSalt                                  bool           `db:"is_salt"`
+	IsFruit                                 bool           `db:"is_fruit"`
 	Universal                               bool           `db:"universal"`
 	Metric                                  bool           `db:"metric"`
 	Imperial                                bool           `db:"imperial"`
-	Slug_2                                  string         `db:"slug_2"`
-	PluralName_2                            string         `db:"plural_name_2"`
-	CreatedAt_2                             time.Time      `db:"created_at_2"`
-	LastUpdatedAt_2                         sql.NullTime   `db:"last_updated_at_2"`
-	ArchivedAt_2                            sql.NullTime   `db:"archived_at_2"`
-	MinimumQuantityValue                    string         `db:"minimum_quantity_value"`
-	MaximumQuantityValue                    sql.NullString `db:"maximum_quantity_value"`
-	QuantityNotes                           string         `db:"quantity_notes"`
-	RecipeStepProductID                     sql.NullString `db:"recipe_step_product_id"`
-	IngredientNotes                         string         `db:"ingredient_notes"`
-	OptionIndex                             int32          `db:"option_index"`
+	IsGrain                                 bool           `db:"is_grain"`
+	IsProtein                               bool           `db:"is_protein"`
+	IsStarch                                bool           `db:"is_starch"`
+	ContainsAlcohol                         bool           `db:"contains_alcohol"`
+	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
+	AnimalDerived                           bool           `db:"animal_derived"`
+	Volumetric                              bool           `db:"volumetric"`
+	ContainsGluten                          bool           `db:"contains_gluten"`
+	ContainsFish                            bool           `db:"contains_fish"`
+	ContainsSesame                          bool           `db:"contains_sesame"`
+	ContainsShellfish                       bool           `db:"contains_shellfish"`
 	ToTaste                                 bool           `db:"to_taste"`
-	ProductPercentageToUse                  sql.NullString `db:"product_percentage_to_use"`
-	VesselIndex                             sql.NullInt32  `db:"vessel_index"`
-	RecipeStepProductRecipeID               sql.NullString `db:"recipe_step_product_recipe_id"`
-	CreatedAt_3                             time.Time      `db:"created_at_3"`
-	LastUpdatedAt_3                         sql.NullTime   `db:"last_updated_at_3"`
-	ArchivedAt_3                            sql.NullTime   `db:"archived_at_3"`
-	BelongsToRecipeStep                     string         `db:"belongs_to_recipe_step"`
+	ContainsWheat                           bool           `db:"contains_wheat"`
+	ContainsSoy                             bool           `db:"contains_soy"`
+	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
+	ContainsPeanut                          bool           `db:"contains_peanut"`
+	ContainsDairy                           bool           `db:"contains_dairy"`
+	ContainsEgg                             bool           `db:"contains_egg"`
+	Optional                                bool           `db:"optional"`
 }
 
 func (q *Queries) GetRecipeStepIngredient(ctx context.Context, db DBTX, arg *GetRecipeStepIngredientParams) (*GetRecipeStepIngredientRow, error) {
@@ -1362,31 +1362,31 @@ type GetRecipeStepInstrumentParams struct {
 }
 
 type GetRecipeStepInstrumentRow struct {
-	ID                             string         `db:"id"`
-	ID_2                           sql.NullString `db:"id_2"`
-	Name                           sql.NullString `db:"name"`
-	PluralName                     sql.NullString `db:"plural_name"`
-	Description                    sql.NullString `db:"description"`
-	IconPath                       sql.NullString `db:"icon_path"`
-	UsableForStorage               sql.NullBool   `db:"usable_for_storage"`
-	DisplayInSummaryLists          sql.NullBool   `db:"display_in_summary_lists"`
-	IncludeInGeneratedInstructions sql.NullBool   `db:"include_in_generated_instructions"`
-	Slug                           sql.NullString `db:"slug"`
-	CreatedAt                      sql.NullTime   `db:"created_at"`
-	LastUpdatedAt                  sql.NullTime   `db:"last_updated_at"`
-	ArchivedAt                     sql.NullTime   `db:"archived_at"`
-	RecipeStepProductID            sql.NullString `db:"recipe_step_product_id"`
-	Name_2                         string         `db:"name_2"`
-	Notes                          string         `db:"notes"`
-	PreferenceRank                 int32          `db:"preference_rank"`
-	Optional                       bool           `db:"optional"`
-	MinimumQuantity                int32          `db:"minimum_quantity"`
-	MaximumQuantity                sql.NullInt32  `db:"maximum_quantity"`
-	OptionIndex                    int32          `db:"option_index"`
 	CreatedAt_2                    time.Time      `db:"created_at_2"`
-	LastUpdatedAt_2                sql.NullTime   `db:"last_updated_at_2"`
+	ArchivedAt                     sql.NullTime   `db:"archived_at"`
 	ArchivedAt_2                   sql.NullTime   `db:"archived_at_2"`
+	LastUpdatedAt_2                sql.NullTime   `db:"last_updated_at_2"`
+	LastUpdatedAt                  sql.NullTime   `db:"last_updated_at"`
+	CreatedAt                      sql.NullTime   `db:"created_at"`
+	Name_2                         string         `db:"name_2"`
 	BelongsToRecipeStep            string         `db:"belongs_to_recipe_step"`
+	ID                             string         `db:"id"`
+	Notes                          string         `db:"notes"`
+	Description                    sql.NullString `db:"description"`
+	PluralName                     sql.NullString `db:"plural_name"`
+	IconPath                       sql.NullString `db:"icon_path"`
+	Slug                           sql.NullString `db:"slug"`
+	RecipeStepProductID            sql.NullString `db:"recipe_step_product_id"`
+	Name                           sql.NullString `db:"name"`
+	ID_2                           sql.NullString `db:"id_2"`
+	MaximumQuantity                sql.NullInt32  `db:"maximum_quantity"`
+	MinimumQuantity                int32          `db:"minimum_quantity"`
+	OptionIndex                    int32          `db:"option_index"`
+	PreferenceRank                 int32          `db:"preference_rank"`
+	IncludeInGeneratedInstructions sql.NullBool   `db:"include_in_generated_instructions"`
+	DisplayInSummaryLists          sql.NullBool   `db:"display_in_summary_lists"`
+	UsableForStorage               sql.NullBool   `db:"usable_for_storage"`
+	Optional                       bool           `db:"optional"`
 }
 
 func (q *Queries) GetRecipeStepInstrument(ctx context.Context, db DBTX, arg *GetRecipeStepInstrumentParams) (*GetRecipeStepInstrumentRow, error) {
@@ -1486,38 +1486,38 @@ type GetRecipeStepProductParams struct {
 }
 
 type GetRecipeStepProductRow struct {
-	ID                                 string                `db:"id"`
-	Name                               string                `db:"name"`
-	Type                               RecipeStepProductType `db:"type"`
+	CreatedAt_2                        time.Time             `db:"created_at_2"`
+	CreatedAt                          time.Time             `db:"created_at"`
+	ArchivedAt_2                       sql.NullTime          `db:"archived_at_2"`
+	LastUpdatedAt_2                    sql.NullTime          `db:"last_updated_at_2"`
+	ArchivedAt                         sql.NullTime          `db:"archived_at"`
+	LastUpdatedAt                      sql.NullTime          `db:"last_updated_at"`
+	QuantityNotes                      string                `db:"quantity_notes"`
 	ID_2                               string                `db:"id_2"`
-	Name_2                             string                `db:"name_2"`
-	Description                        string                `db:"description"`
-	Volumetric                         sql.NullBool          `db:"volumetric"`
-	IconPath                           string                `db:"icon_path"`
-	Universal                          bool                  `db:"universal"`
-	Metric                             bool                  `db:"metric"`
-	Imperial                           bool                  `db:"imperial"`
+	ID                                 string                `db:"id"`
+	BelongsToRecipeStep                string                `db:"belongs_to_recipe_step"`
+	Name                               string                `db:"name"`
 	Slug                               string                `db:"slug"`
 	PluralName                         string                `db:"plural_name"`
-	CreatedAt                          time.Time             `db:"created_at"`
-	LastUpdatedAt                      sql.NullTime          `db:"last_updated_at"`
-	ArchivedAt                         sql.NullTime          `db:"archived_at"`
-	MinimumQuantityValue               sql.NullString        `db:"minimum_quantity_value"`
+	Description                        string                `db:"description"`
+	Name_2                             string                `db:"name_2"`
+	IconPath                           string                `db:"icon_path"`
+	StorageInstructions                string                `db:"storage_instructions"`
+	Type                               RecipeStepProductType `db:"type"`
 	MaximumQuantityValue               sql.NullString        `db:"maximum_quantity_value"`
-	QuantityNotes                      string                `db:"quantity_notes"`
-	Compostable                        bool                  `db:"compostable"`
-	MaximumStorageDurationInSeconds    sql.NullInt32         `db:"maximum_storage_duration_in_seconds"`
 	MinimumStorageTemperatureInCelsius sql.NullString        `db:"minimum_storage_temperature_in_celsius"`
 	MaximumStorageTemperatureInCelsius sql.NullString        `db:"maximum_storage_temperature_in_celsius"`
-	StorageInstructions                string                `db:"storage_instructions"`
-	IsLiquid                           bool                  `db:"is_liquid"`
-	IsWaste                            bool                  `db:"is_waste"`
-	Index                              int32                 `db:"index"`
+	MinimumQuantityValue               sql.NullString        `db:"minimum_quantity_value"`
+	MaximumStorageDurationInSeconds    sql.NullInt32         `db:"maximum_storage_duration_in_seconds"`
 	ContainedInVesselIndex             sql.NullInt32         `db:"contained_in_vessel_index"`
-	CreatedAt_2                        time.Time             `db:"created_at_2"`
-	LastUpdatedAt_2                    sql.NullTime          `db:"last_updated_at_2"`
-	ArchivedAt_2                       sql.NullTime          `db:"archived_at_2"`
-	BelongsToRecipeStep                string                `db:"belongs_to_recipe_step"`
+	Index                              int32                 `db:"index"`
+	Volumetric                         sql.NullBool          `db:"volumetric"`
+	Universal                          bool                  `db:"universal"`
+	IsWaste                            bool                  `db:"is_waste"`
+	IsLiquid                           bool                  `db:"is_liquid"`
+	Compostable                        bool                  `db:"compostable"`
+	Imperial                           bool                  `db:"imperial"`
+	Metric                             bool                  `db:"metric"`
 }
 
 func (q *Queries) GetRecipeStepProduct(ctx context.Context, db DBTX, arg *GetRecipeStepProductParams) (*GetRecipeStepProductRow, error) {
@@ -1635,48 +1635,48 @@ type GetRecipeStepVesselParams struct {
 }
 
 type GetRecipeStepVesselRow struct {
+	CreatedAt_3                    time.Time       `db:"created_at_3"`
+	LastUpdatedAt_2                sql.NullTime    `db:"last_updated_at_2"`
+	LastUpdatedAt_3                sql.NullTime    `db:"last_updated_at_3"`
+	ArchivedAt_3                   sql.NullTime    `db:"archived_at_3"`
+	ArchivedAt_2                   sql.NullTime    `db:"archived_at_2"`
+	CreatedAt                      sql.NullTime    `db:"created_at"`
+	CreatedAt_2                    sql.NullTime    `db:"created_at_2"`
+	ArchivedAt                     sql.NullTime    `db:"archived_at"`
+	LastUpdatedAt                  sql.NullTime    `db:"last_updated_at"`
+	VesselPredicate                string          `db:"vessel_predicate"`
+	BelongsToRecipeStep            string          `db:"belongs_to_recipe_step"`
+	Notes                          string          `db:"notes"`
+	Name_3                         string          `db:"name_3"`
 	ID                             string          `db:"id"`
+	Capacity                       sql.NullString  `db:"capacity"`
+	IconPath                       sql.NullString  `db:"icon_path"`
 	ID_2                           sql.NullString  `db:"id_2"`
 	Name                           sql.NullString  `db:"name"`
 	PluralName                     sql.NullString  `db:"plural_name"`
-	Description                    sql.NullString  `db:"description"`
-	IconPath                       sql.NullString  `db:"icon_path"`
-	UsableForStorage               sql.NullBool    `db:"usable_for_storage"`
-	Slug                           sql.NullString  `db:"slug"`
-	DisplayInSummaryLists          sql.NullBool    `db:"display_in_summary_lists"`
-	IncludeInGeneratedInstructions sql.NullBool    `db:"include_in_generated_instructions"`
-	Capacity                       sql.NullString  `db:"capacity"`
-	ID_3                           sql.NullString  `db:"id_3"`
-	Name_2                         sql.NullString  `db:"name_2"`
-	Description_2                  sql.NullString  `db:"description_2"`
-	Volumetric                     sql.NullBool    `db:"volumetric"`
-	IconPath_2                     sql.NullString  `db:"icon_path_2"`
-	Universal                      sql.NullBool    `db:"universal"`
-	Metric                         sql.NullBool    `db:"metric"`
-	Imperial                       sql.NullBool    `db:"imperial"`
 	Slug_2                         sql.NullString  `db:"slug_2"`
 	PluralName_2                   sql.NullString  `db:"plural_name_2"`
-	CreatedAt                      sql.NullTime    `db:"created_at"`
-	LastUpdatedAt                  sql.NullTime    `db:"last_updated_at"`
-	ArchivedAt                     sql.NullTime    `db:"archived_at"`
+	Description                    sql.NullString  `db:"description"`
+	Description_2                  sql.NullString  `db:"description_2"`
+	Name_2                         sql.NullString  `db:"name_2"`
 	WidthInMillimeters             sql.NullString  `db:"width_in_millimeters"`
 	LengthInMillimeters            sql.NullString  `db:"length_in_millimeters"`
 	HeightInMillimeters            sql.NullString  `db:"height_in_millimeters"`
 	Shape                          NullVesselShape `db:"shape"`
-	CreatedAt_2                    sql.NullTime    `db:"created_at_2"`
-	LastUpdatedAt_2                sql.NullTime    `db:"last_updated_at_2"`
-	ArchivedAt_2                   sql.NullTime    `db:"archived_at_2"`
-	Name_3                         string          `db:"name_3"`
-	Notes                          string          `db:"notes"`
-	BelongsToRecipeStep            string          `db:"belongs_to_recipe_step"`
+	ID_3                           sql.NullString  `db:"id_3"`
 	RecipeStepProductID            sql.NullString  `db:"recipe_step_product_id"`
-	VesselPredicate                string          `db:"vessel_predicate"`
-	MinimumQuantity                int32           `db:"minimum_quantity"`
+	IconPath_2                     sql.NullString  `db:"icon_path_2"`
+	Slug                           sql.NullString  `db:"slug"`
 	MaximumQuantity                sql.NullInt32   `db:"maximum_quantity"`
+	MinimumQuantity                int32           `db:"minimum_quantity"`
+	UsableForStorage               sql.NullBool    `db:"usable_for_storage"`
+	DisplayInSummaryLists          sql.NullBool    `db:"display_in_summary_lists"`
+	IncludeInGeneratedInstructions sql.NullBool    `db:"include_in_generated_instructions"`
+	Volumetric                     sql.NullBool    `db:"volumetric"`
+	Imperial                       sql.NullBool    `db:"imperial"`
+	Metric                         sql.NullBool    `db:"metric"`
+	Universal                      sql.NullBool    `db:"universal"`
 	UnavailableAfterStep           bool            `db:"unavailable_after_step"`
-	CreatedAt_3                    time.Time       `db:"created_at_3"`
-	LastUpdatedAt_3                sql.NullTime    `db:"last_updated_at_3"`
-	ArchivedAt_3                   sql.NullTime    `db:"archived_at_3"`
 }
 
 func (q *Queries) GetRecipeStepVessel(ctx context.Context, db DBTX, arg *GetRecipeStepVesselParams) (*GetRecipeStepVesselRow, error) {
@@ -1754,16 +1754,16 @@ WHERE service_settings.archived_at IS NULL
 `
 
 type GetServiceSettingRow struct {
+	CreatedAt     time.Time      `db:"created_at"`
+	LastUpdatedAt sql.NullTime   `db:"last_updated_at"`
+	ArchivedAt    sql.NullTime   `db:"archived_at"`
 	ID            string         `db:"id"`
 	Name          string         `db:"name"`
 	Type          SettingType    `db:"type"`
 	Description   string         `db:"description"`
+	Enumeration   string         `db:"enumeration"`
 	DefaultValue  sql.NullString `db:"default_value"`
 	AdminsOnly    bool           `db:"admins_only"`
-	Enumeration   string         `db:"enumeration"`
-	CreatedAt     time.Time      `db:"created_at"`
-	LastUpdatedAt sql.NullTime   `db:"last_updated_at"`
-	ArchivedAt    sql.NullTime   `db:"archived_at"`
 }
 
 func (q *Queries) GetServiceSetting(ctx context.Context, db DBTX, id string) (*GetServiceSettingRow, error) {
@@ -1831,33 +1831,33 @@ AND valid_ingredients.id = $1
 `
 
 type GetValidIngredientRow struct {
-	ID                                      string         `db:"id"`
-	Name                                    string         `db:"name"`
-	Description                             string         `db:"description"`
+	CreatedAt                               time.Time      `db:"created_at"`
+	ArchivedAt                              sql.NullTime   `db:"archived_at"`
+	LastUpdatedAt                           sql.NullTime   `db:"last_updated_at"`
 	Warning                                 string         `db:"warning"`
-	ContainsEgg                             bool           `db:"contains_egg"`
-	ContainsDairy                           bool           `db:"contains_dairy"`
-	ContainsPeanut                          bool           `db:"contains_peanut"`
-	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
-	ContainsSoy                             bool           `db:"contains_soy"`
-	ContainsWheat                           bool           `db:"contains_wheat"`
-	ContainsShellfish                       bool           `db:"contains_shellfish"`
-	ContainsSesame                          bool           `db:"contains_sesame"`
-	ContainsFish                            bool           `db:"contains_fish"`
-	ContainsGluten                          bool           `db:"contains_gluten"`
-	AnimalFlesh                             bool           `db:"animal_flesh"`
-	Volumetric                              bool           `db:"volumetric"`
-	IsLiquid                                sql.NullBool   `db:"is_liquid"`
-	IconPath                                string         `db:"icon_path"`
-	AnimalDerived                           bool           `db:"animal_derived"`
-	PluralName                              string         `db:"plural_name"`
-	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
-	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
-	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
-	StorageInstructions                     string         `db:"storage_instructions"`
-	Slug                                    string         `db:"slug"`
-	ContainsAlcohol                         bool           `db:"contains_alcohol"`
+	Description                             string         `db:"description"`
+	Name                                    string         `db:"name"`
 	ShoppingSuggestions                     string         `db:"shopping_suggestions"`
+	Slug                                    string         `db:"slug"`
+	StorageInstructions                     string         `db:"storage_instructions"`
+	PluralName                              string         `db:"plural_name"`
+	ID                                      string         `db:"id"`
+	IconPath                                string         `db:"icon_path"`
+	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
+	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
+	IsLiquid                                sql.NullBool   `db:"is_liquid"`
+	AnimalDerived                           bool           `db:"animal_derived"`
+	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
+	AnimalFlesh                             bool           `db:"animal_flesh"`
+	ContainsGluten                          bool           `db:"contains_gluten"`
+	ContainsFish                            bool           `db:"contains_fish"`
+	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
+	ContainsSesame                          bool           `db:"contains_sesame"`
+	ContainsShellfish                       bool           `db:"contains_shellfish"`
+	ContainsWheat                           bool           `db:"contains_wheat"`
+	ContainsSoy                             bool           `db:"contains_soy"`
+	ContainsAlcohol                         bool           `db:"contains_alcohol"`
+	Volumetric                              bool           `db:"volumetric"`
 	IsStarch                                bool           `db:"is_starch"`
 	IsProtein                               bool           `db:"is_protein"`
 	IsGrain                                 bool           `db:"is_grain"`
@@ -1866,9 +1866,9 @@ type GetValidIngredientRow struct {
 	IsFat                                   bool           `db:"is_fat"`
 	IsAcid                                  bool           `db:"is_acid"`
 	IsHeat                                  bool           `db:"is_heat"`
-	CreatedAt                               time.Time      `db:"created_at"`
-	LastUpdatedAt                           sql.NullTime   `db:"last_updated_at"`
-	ArchivedAt                              sql.NullTime   `db:"archived_at"`
+	ContainsPeanut                          bool           `db:"contains_peanut"`
+	ContainsDairy                           bool           `db:"contains_dairy"`
+	ContainsEgg                             bool           `db:"contains_egg"`
 }
 
 func (q *Queries) GetValidIngredient(ctx context.Context, db DBTX, id string) (*GetValidIngredientRow, error) {
@@ -1978,42 +1978,42 @@ AND valid_ingredient_groups.id = $1
 `
 
 type GetValidIngredientGroupRow struct {
-	ID                                      string         `db:"id"`
-	Name                                    string         `db:"name"`
-	Description                             string         `db:"description"`
-	Slug                                    string         `db:"slug"`
+	CreatedAt_2                             time.Time      `db:"created_at_2"`
 	CreatedAt                               time.Time      `db:"created_at"`
+	CreatedAt_3                             time.Time      `db:"created_at_3"`
+	ArchivedAt_3                            sql.NullTime   `db:"archived_at_3"`
+	LastUpdatedAt_2                         sql.NullTime   `db:"last_updated_at_2"`
+	ArchivedAt_2                            sql.NullTime   `db:"archived_at_2"`
 	LastUpdatedAt                           sql.NullTime   `db:"last_updated_at"`
 	ArchivedAt                              sql.NullTime   `db:"archived_at"`
-	ID_2                                    string         `db:"id_2"`
-	BelongsToGroup                          string         `db:"belongs_to_group"`
-	ID_3                                    string         `db:"id_3"`
+	Warning                                 string         `db:"warning"`
+	Name                                    string         `db:"name"`
 	Name_2                                  string         `db:"name_2"`
 	Description_2                           string         `db:"description_2"`
-	Warning                                 string         `db:"warning"`
-	ContainsEgg                             bool           `db:"contains_egg"`
-	ContainsDairy                           bool           `db:"contains_dairy"`
-	ContainsPeanut                          bool           `db:"contains_peanut"`
-	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
-	ContainsSoy                             bool           `db:"contains_soy"`
-	ContainsWheat                           bool           `db:"contains_wheat"`
-	ContainsShellfish                       bool           `db:"contains_shellfish"`
-	ContainsSesame                          bool           `db:"contains_sesame"`
-	ContainsFish                            bool           `db:"contains_fish"`
-	ContainsGluten                          bool           `db:"contains_gluten"`
-	AnimalFlesh                             bool           `db:"animal_flesh"`
-	Volumetric                              bool           `db:"volumetric"`
-	IsLiquid                                sql.NullBool   `db:"is_liquid"`
 	IconPath                                string         `db:"icon_path"`
-	AnimalDerived                           bool           `db:"animal_derived"`
+	BelongsToGroup                          string         `db:"belongs_to_group"`
+	ID_2                                    string         `db:"id_2"`
+	Slug                                    string         `db:"slug"`
+	Description                             string         `db:"description"`
+	ID_3                                    string         `db:"id_3"`
+	ShoppingSuggestions                     string         `db:"shopping_suggestions"`
+	Slug_2                                  string         `db:"slug_2"`
+	StorageInstructions                     string         `db:"storage_instructions"`
+	ID                                      string         `db:"id"`
 	PluralName                              string         `db:"plural_name"`
-	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
 	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
 	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
-	StorageInstructions                     string         `db:"storage_instructions"`
-	Slug_2                                  string         `db:"slug_2"`
+	IsLiquid                                sql.NullBool   `db:"is_liquid"`
+	Volumetric                              bool           `db:"volumetric"`
+	AnimalDerived                           bool           `db:"animal_derived"`
+	AnimalFlesh                             bool           `db:"animal_flesh"`
+	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
+	ContainsGluten                          bool           `db:"contains_gluten"`
+	ContainsFish                            bool           `db:"contains_fish"`
+	ContainsSesame                          bool           `db:"contains_sesame"`
+	ContainsShellfish                       bool           `db:"contains_shellfish"`
 	ContainsAlcohol                         bool           `db:"contains_alcohol"`
-	ShoppingSuggestions                     string         `db:"shopping_suggestions"`
+	ContainsWheat                           bool           `db:"contains_wheat"`
 	IsStarch                                bool           `db:"is_starch"`
 	IsProtein                               bool           `db:"is_protein"`
 	IsGrain                                 bool           `db:"is_grain"`
@@ -2022,11 +2022,11 @@ type GetValidIngredientGroupRow struct {
 	IsFat                                   bool           `db:"is_fat"`
 	IsAcid                                  bool           `db:"is_acid"`
 	IsHeat                                  bool           `db:"is_heat"`
-	CreatedAt_2                             time.Time      `db:"created_at_2"`
-	LastUpdatedAt_2                         sql.NullTime   `db:"last_updated_at_2"`
-	ArchivedAt_2                            sql.NullTime   `db:"archived_at_2"`
-	CreatedAt_3                             time.Time      `db:"created_at_3"`
-	ArchivedAt_3                            sql.NullTime   `db:"archived_at_3"`
+	ContainsSoy                             bool           `db:"contains_soy"`
+	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
+	ContainsPeanut                          bool           `db:"contains_peanut"`
+	ContainsDairy                           bool           `db:"contains_dairy"`
+	ContainsEgg                             bool           `db:"contains_egg"`
 }
 
 func (q *Queries) GetValidIngredientGroup(ctx context.Context, db DBTX, id string) ([]*GetValidIngredientGroupRow, error) {
@@ -2171,48 +2171,48 @@ WHERE valid_ingredient_measurement_units.archived_at IS NULL
 `
 
 type GetValidIngredientMeasurementUnitRow struct {
-	ID                                      string         `db:"id"`
-	Notes                                   string         `db:"notes"`
-	ID_2                                    string         `db:"id_2"`
-	Name                                    string         `db:"name"`
-	Description                             string         `db:"description"`
-	Volumetric                              sql.NullBool   `db:"volumetric"`
-	IconPath                                string         `db:"icon_path"`
-	Universal                               bool           `db:"universal"`
-	Metric                                  bool           `db:"metric"`
-	Imperial                                bool           `db:"imperial"`
-	Slug                                    string         `db:"slug"`
-	PluralName                              string         `db:"plural_name"`
 	CreatedAt                               time.Time      `db:"created_at"`
-	LastUpdatedAt                           sql.NullTime   `db:"last_updated_at"`
+	CreatedAt_2                             time.Time      `db:"created_at_2"`
+	CreatedAt_3                             time.Time      `db:"created_at_3"`
 	ArchivedAt                              sql.NullTime   `db:"archived_at"`
+	LastUpdatedAt                           sql.NullTime   `db:"last_updated_at"`
+	LastUpdatedAt_2                         sql.NullTime   `db:"last_updated_at_2"`
+	ArchivedAt_2                            sql.NullTime   `db:"archived_at_2"`
+	LastUpdatedAt_3                         sql.NullTime   `db:"last_updated_at_3"`
+	ArchivedAt_3                            sql.NullTime   `db:"archived_at_3"`
+	Slug                                    string         `db:"slug"`
+	Slug_2                                  string         `db:"slug_2"`
 	ID_3                                    string         `db:"id_3"`
 	Name_2                                  string         `db:"name_2"`
 	Description_2                           string         `db:"description_2"`
 	Warning                                 string         `db:"warning"`
-	ContainsEgg                             bool           `db:"contains_egg"`
-	ContainsDairy                           bool           `db:"contains_dairy"`
-	ContainsPeanut                          bool           `db:"contains_peanut"`
-	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
-	ContainsSoy                             bool           `db:"contains_soy"`
-	ContainsWheat                           bool           `db:"contains_wheat"`
-	ContainsShellfish                       bool           `db:"contains_shellfish"`
-	ContainsSesame                          bool           `db:"contains_sesame"`
-	ContainsFish                            bool           `db:"contains_fish"`
-	ContainsGluten                          bool           `db:"contains_gluten"`
-	AnimalFlesh                             bool           `db:"animal_flesh"`
-	Volumetric_2                            bool           `db:"volumetric_2"`
-	IsLiquid                                sql.NullBool   `db:"is_liquid"`
-	IconPath_2                              string         `db:"icon_path_2"`
-	AnimalDerived                           bool           `db:"animal_derived"`
 	PluralName_2                            string         `db:"plural_name_2"`
-	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
-	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
-	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
-	StorageInstructions                     string         `db:"storage_instructions"`
-	Slug_2                                  string         `db:"slug_2"`
-	ContainsAlcohol                         bool           `db:"contains_alcohol"`
+	IconPath_2                              string         `db:"icon_path_2"`
+	IconPath                                string         `db:"icon_path"`
+	Description                             string         `db:"description"`
+	ID                                      string         `db:"id"`
+	MinimumAllowableQuantity                string         `db:"minimum_allowable_quantity"`
+	Name                                    string         `db:"name"`
+	ID_2                                    string         `db:"id_2"`
+	Notes                                   string         `db:"notes"`
 	ShoppingSuggestions                     string         `db:"shopping_suggestions"`
+	PluralName                              string         `db:"plural_name"`
+	StorageInstructions                     string         `db:"storage_instructions"`
+	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
+	MaximumAllowableQuantity                sql.NullString `db:"maximum_allowable_quantity"`
+	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
+	Volumetric                              sql.NullBool   `db:"volumetric"`
+	IsLiquid                                sql.NullBool   `db:"is_liquid"`
+	ContainsGluten                          bool           `db:"contains_gluten"`
+	AnimalDerived                           bool           `db:"animal_derived"`
+	Volumetric_2                            bool           `db:"volumetric_2"`
+	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
+	AnimalFlesh                             bool           `db:"animal_flesh"`
+	ContainsFish                            bool           `db:"contains_fish"`
+	ContainsSesame                          bool           `db:"contains_sesame"`
+	ContainsShellfish                       bool           `db:"contains_shellfish"`
+	ContainsAlcohol                         bool           `db:"contains_alcohol"`
+	ContainsWheat                           bool           `db:"contains_wheat"`
 	IsStarch                                bool           `db:"is_starch"`
 	IsProtein                               bool           `db:"is_protein"`
 	IsGrain                                 bool           `db:"is_grain"`
@@ -2221,14 +2221,14 @@ type GetValidIngredientMeasurementUnitRow struct {
 	IsFat                                   bool           `db:"is_fat"`
 	IsAcid                                  bool           `db:"is_acid"`
 	IsHeat                                  bool           `db:"is_heat"`
-	CreatedAt_2                             time.Time      `db:"created_at_2"`
-	LastUpdatedAt_2                         sql.NullTime   `db:"last_updated_at_2"`
-	ArchivedAt_2                            sql.NullTime   `db:"archived_at_2"`
-	MinimumAllowableQuantity                string         `db:"minimum_allowable_quantity"`
-	MaximumAllowableQuantity                sql.NullString `db:"maximum_allowable_quantity"`
-	CreatedAt_3                             time.Time      `db:"created_at_3"`
-	LastUpdatedAt_3                         sql.NullTime   `db:"last_updated_at_3"`
-	ArchivedAt_3                            sql.NullTime   `db:"archived_at_3"`
+	ContainsSoy                             bool           `db:"contains_soy"`
+	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
+	ContainsPeanut                          bool           `db:"contains_peanut"`
+	ContainsDairy                           bool           `db:"contains_dairy"`
+	ContainsEgg                             bool           `db:"contains_egg"`
+	Imperial                                bool           `db:"imperial"`
+	Metric                                  bool           `db:"metric"`
+	Universal                               bool           `db:"universal"`
 }
 
 func (q *Queries) GetValidIngredientMeasurementUnit(ctx context.Context, db DBTX, id string) (*GetValidIngredientMeasurementUnitRow, error) {
@@ -2373,57 +2373,57 @@ WHERE valid_ingredient_preparations.archived_at IS NULL
 `
 
 type GetValidIngredientPreparationRow struct {
-	ID                                      string         `db:"id"`
-	Notes                                   string         `db:"notes"`
+	CreatedAt_3                             time.Time      `db:"created_at_3"`
+	CreatedAt                               time.Time      `db:"created_at"`
+	CreatedAt_2                             time.Time      `db:"created_at_2"`
+	ArchivedAt                              sql.NullTime   `db:"archived_at"`
+	LastUpdatedAt                           sql.NullTime   `db:"last_updated_at"`
+	LastUpdatedAt_2                         sql.NullTime   `db:"last_updated_at_2"`
+	ArchivedAt_3                            sql.NullTime   `db:"archived_at_3"`
+	LastUpdatedAt_3                         sql.NullTime   `db:"last_updated_at_3"`
+	ArchivedAt_2                            sql.NullTime   `db:"archived_at_2"`
+	ID_3                                    string         `db:"id_3"`
 	ID_2                                    string         `db:"id_2"`
-	Name                                    string         `db:"name"`
-	Description                             string         `db:"description"`
+	IconPath_2                              string         `db:"icon_path_2"`
+	PluralName                              string         `db:"plural_name"`
+	StorageInstructions                     string         `db:"storage_instructions"`
 	IconPath                                string         `db:"icon_path"`
-	YieldsNothing                           bool           `db:"yields_nothing"`
-	RestrictToIngredients                   bool           `db:"restrict_to_ingredients"`
-	MinimumIngredientCount                  int32          `db:"minimum_ingredient_count"`
-	MaximumIngredientCount                  sql.NullInt32  `db:"maximum_ingredient_count"`
-	MinimumInstrumentCount                  int32          `db:"minimum_instrument_count"`
-	MaximumInstrumentCount                  sql.NullInt32  `db:"maximum_instrument_count"`
-	TemperatureRequired                     bool           `db:"temperature_required"`
-	TimeEstimateRequired                    bool           `db:"time_estimate_required"`
-	ConditionExpressionRequired             bool           `db:"condition_expression_required"`
-	ConsumesVessel                          bool           `db:"consumes_vessel"`
-	OnlyForVessels                          bool           `db:"only_for_vessels"`
-	MinimumVesselCount                      int32          `db:"minimum_vessel_count"`
-	MaximumVesselCount                      sql.NullInt32  `db:"maximum_vessel_count"`
+	ID                                      string         `db:"id"`
+	Description                             string         `db:"description"`
+	Slug_2                                  string         `db:"slug_2"`
+	ShoppingSuggestions                     string         `db:"shopping_suggestions"`
 	Slug                                    string         `db:"slug"`
 	PastTense                               string         `db:"past_tense"`
-	CreatedAt                               time.Time      `db:"created_at"`
-	LastUpdatedAt                           sql.NullTime   `db:"last_updated_at"`
-	ArchivedAt                              sql.NullTime   `db:"archived_at"`
-	ID_3                                    string         `db:"id_3"`
-	Name_2                                  string         `db:"name_2"`
-	Description_2                           string         `db:"description_2"`
+	Name                                    string         `db:"name"`
 	Warning                                 string         `db:"warning"`
-	ContainsEgg                             bool           `db:"contains_egg"`
-	ContainsDairy                           bool           `db:"contains_dairy"`
-	ContainsPeanut                          bool           `db:"contains_peanut"`
-	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
-	ContainsSoy                             bool           `db:"contains_soy"`
-	ContainsWheat                           bool           `db:"contains_wheat"`
-	ContainsShellfish                       bool           `db:"contains_shellfish"`
-	ContainsSesame                          bool           `db:"contains_sesame"`
+	Notes                                   string         `db:"notes"`
+	Description_2                           string         `db:"description_2"`
+	Name_2                                  string         `db:"name_2"`
+	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
+	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
+	MaximumVesselCount                      sql.NullInt32  `db:"maximum_vessel_count"`
+	MaximumIngredientCount                  sql.NullInt32  `db:"maximum_ingredient_count"`
+	MaximumInstrumentCount                  sql.NullInt32  `db:"maximum_instrument_count"`
+	MinimumInstrumentCount                  int32          `db:"minimum_instrument_count"`
+	MinimumVesselCount                      int32          `db:"minimum_vessel_count"`
+	MinimumIngredientCount                  int32          `db:"minimum_ingredient_count"`
+	IsLiquid                                sql.NullBool   `db:"is_liquid"`
+	ConsumesVessel                          bool           `db:"consumes_vessel"`
 	ContainsFish                            bool           `db:"contains_fish"`
 	ContainsGluten                          bool           `db:"contains_gluten"`
 	AnimalFlesh                             bool           `db:"animal_flesh"`
 	Volumetric                              bool           `db:"volumetric"`
-	IsLiquid                                sql.NullBool   `db:"is_liquid"`
-	IconPath_2                              string         `db:"icon_path_2"`
+	ContainsSesame                          bool           `db:"contains_sesame"`
+	ContainsShellfish                       bool           `db:"contains_shellfish"`
 	AnimalDerived                           bool           `db:"animal_derived"`
-	PluralName                              string         `db:"plural_name"`
+	ContainsWheat                           bool           `db:"contains_wheat"`
 	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
-	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
-	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
-	StorageInstructions                     string         `db:"storage_instructions"`
-	Slug_2                                  string         `db:"slug_2"`
+	ContainsSoy                             bool           `db:"contains_soy"`
+	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
+	ContainsPeanut                          bool           `db:"contains_peanut"`
+	ContainsDairy                           bool           `db:"contains_dairy"`
 	ContainsAlcohol                         bool           `db:"contains_alcohol"`
-	ShoppingSuggestions                     string         `db:"shopping_suggestions"`
+	ContainsEgg                             bool           `db:"contains_egg"`
 	IsStarch                                bool           `db:"is_starch"`
 	IsProtein                               bool           `db:"is_protein"`
 	IsGrain                                 bool           `db:"is_grain"`
@@ -2432,12 +2432,12 @@ type GetValidIngredientPreparationRow struct {
 	IsFat                                   bool           `db:"is_fat"`
 	IsAcid                                  bool           `db:"is_acid"`
 	IsHeat                                  bool           `db:"is_heat"`
-	CreatedAt_2                             time.Time      `db:"created_at_2"`
-	LastUpdatedAt_2                         sql.NullTime   `db:"last_updated_at_2"`
-	ArchivedAt_2                            sql.NullTime   `db:"archived_at_2"`
-	CreatedAt_3                             time.Time      `db:"created_at_3"`
-	LastUpdatedAt_3                         sql.NullTime   `db:"last_updated_at_3"`
-	ArchivedAt_3                            sql.NullTime   `db:"archived_at_3"`
+	OnlyForVessels                          bool           `db:"only_for_vessels"`
+	ConditionExpressionRequired             bool           `db:"condition_expression_required"`
+	TimeEstimateRequired                    bool           `db:"time_estimate_required"`
+	TemperatureRequired                     bool           `db:"temperature_required"`
+	RestrictToIngredients                   bool           `db:"restrict_to_ingredients"`
+	YieldsNothing                           bool           `db:"yields_nothing"`
 }
 
 func (q *Queries) GetValidIngredientPreparation(ctx context.Context, db DBTX, id string) (*GetValidIngredientPreparationRow, error) {
@@ -2626,45 +2626,45 @@ WHERE valid_ingredient_state_ingredients.archived_at IS NULL
 `
 
 type GetValidIngredientStateIngredientRow struct {
-	ID                                      string                  `db:"id"`
-	Notes                                   string                  `db:"notes"`
-	ID_2                                    string                  `db:"id_2"`
-	Name                                    string                  `db:"name"`
-	Description                             string                  `db:"description"`
-	IconPath                                string                  `db:"icon_path"`
-	Slug                                    string                  `db:"slug"`
-	PastTense                               string                  `db:"past_tense"`
-	AttributeType                           IngredientAttributeType `db:"attribute_type"`
 	CreatedAt                               time.Time               `db:"created_at"`
+	CreatedAt_2                             time.Time               `db:"created_at_2"`
+	CreatedAt_3                             time.Time               `db:"created_at_3"`
+	ArchivedAt_3                            sql.NullTime            `db:"archived_at_3"`
 	LastUpdatedAt                           sql.NullTime            `db:"last_updated_at"`
 	ArchivedAt                              sql.NullTime            `db:"archived_at"`
+	LastUpdatedAt_2                         sql.NullTime            `db:"last_updated_at_2"`
+	ArchivedAt_2                            sql.NullTime            `db:"archived_at_2"`
+	LastUpdatedAt_3                         sql.NullTime            `db:"last_updated_at_3"`
+	Description                             string                  `db:"description"`
+	PluralName                              string                  `db:"plural_name"`
+	AttributeType                           IngredientAttributeType `db:"attribute_type"`
 	ID_3                                    string                  `db:"id_3"`
 	Name_2                                  string                  `db:"name_2"`
 	Description_2                           string                  `db:"description_2"`
 	Warning                                 string                  `db:"warning"`
-	ContainsEgg                             bool                    `db:"contains_egg"`
-	ContainsDairy                           bool                    `db:"contains_dairy"`
-	ContainsPeanut                          bool                    `db:"contains_peanut"`
-	ContainsTreeNut                         bool                    `db:"contains_tree_nut"`
-	ContainsSoy                             bool                    `db:"contains_soy"`
-	ContainsWheat                           bool                    `db:"contains_wheat"`
-	ContainsShellfish                       bool                    `db:"contains_shellfish"`
-	ContainsSesame                          bool                    `db:"contains_sesame"`
-	ContainsFish                            bool                    `db:"contains_fish"`
-	ContainsGluten                          bool                    `db:"contains_gluten"`
-	AnimalFlesh                             bool                    `db:"animal_flesh"`
-	Volumetric                              bool                    `db:"volumetric"`
-	IsLiquid                                sql.NullBool            `db:"is_liquid"`
 	IconPath_2                              string                  `db:"icon_path_2"`
-	AnimalDerived                           bool                    `db:"animal_derived"`
-	PluralName                              string                  `db:"plural_name"`
-	RestrictToPreparations                  bool                    `db:"restrict_to_preparations"`
-	MinimumIdealStorageTemperatureInCelsius sql.NullString          `db:"minimum_ideal_storage_temperature_in_celsius"`
-	MaximumIdealStorageTemperatureInCelsius sql.NullString          `db:"maximum_ideal_storage_temperature_in_celsius"`
 	StorageInstructions                     string                  `db:"storage_instructions"`
-	Slug_2                                  string                  `db:"slug_2"`
-	ContainsAlcohol                         bool                    `db:"contains_alcohol"`
+	Slug                                    string                  `db:"slug"`
+	IconPath                                string                  `db:"icon_path"`
+	PastTense                               string                  `db:"past_tense"`
+	Name                                    string                  `db:"name"`
+	ID_2                                    string                  `db:"id_2"`
+	Notes                                   string                  `db:"notes"`
 	ShoppingSuggestions                     string                  `db:"shopping_suggestions"`
+	Slug_2                                  string                  `db:"slug_2"`
+	ID                                      string                  `db:"id"`
+	MaximumIdealStorageTemperatureInCelsius sql.NullString          `db:"maximum_ideal_storage_temperature_in_celsius"`
+	MinimumIdealStorageTemperatureInCelsius sql.NullString          `db:"minimum_ideal_storage_temperature_in_celsius"`
+	IsLiquid                                sql.NullBool            `db:"is_liquid"`
+	ContainsFish                            bool                    `db:"contains_fish"`
+	AnimalDerived                           bool                    `db:"animal_derived"`
+	RestrictToPreparations                  bool                    `db:"restrict_to_preparations"`
+	Volumetric                              bool                    `db:"volumetric"`
+	AnimalFlesh                             bool                    `db:"animal_flesh"`
+	ContainsGluten                          bool                    `db:"contains_gluten"`
+	ContainsSesame                          bool                    `db:"contains_sesame"`
+	ContainsAlcohol                         bool                    `db:"contains_alcohol"`
+	ContainsShellfish                       bool                    `db:"contains_shellfish"`
 	IsStarch                                bool                    `db:"is_starch"`
 	IsProtein                               bool                    `db:"is_protein"`
 	IsGrain                                 bool                    `db:"is_grain"`
@@ -2673,12 +2673,12 @@ type GetValidIngredientStateIngredientRow struct {
 	IsFat                                   bool                    `db:"is_fat"`
 	IsAcid                                  bool                    `db:"is_acid"`
 	IsHeat                                  bool                    `db:"is_heat"`
-	CreatedAt_2                             time.Time               `db:"created_at_2"`
-	LastUpdatedAt_2                         sql.NullTime            `db:"last_updated_at_2"`
-	ArchivedAt_2                            sql.NullTime            `db:"archived_at_2"`
-	CreatedAt_3                             time.Time               `db:"created_at_3"`
-	LastUpdatedAt_3                         sql.NullTime            `db:"last_updated_at_3"`
-	ArchivedAt_3                            sql.NullTime            `db:"archived_at_3"`
+	ContainsWheat                           bool                    `db:"contains_wheat"`
+	ContainsSoy                             bool                    `db:"contains_soy"`
+	ContainsTreeNut                         bool                    `db:"contains_tree_nut"`
+	ContainsPeanut                          bool                    `db:"contains_peanut"`
+	ContainsDairy                           bool                    `db:"contains_dairy"`
+	ContainsEgg                             bool                    `db:"contains_egg"`
 }
 
 func (q *Queries) GetValidIngredientStateIngredient(ctx context.Context, db DBTX, id string) (*GetValidIngredientStateIngredientRow, error) {
@@ -2763,18 +2763,18 @@ WHERE valid_instruments.archived_at IS NULL
 `
 
 type GetValidInstrumentRow struct {
+	CreatedAt                      time.Time    `db:"created_at"`
+	LastUpdatedAt                  sql.NullTime `db:"last_updated_at"`
+	ArchivedAt                     sql.NullTime `db:"archived_at"`
 	ID                             string       `db:"id"`
 	Name                           string       `db:"name"`
 	PluralName                     string       `db:"plural_name"`
 	Description                    string       `db:"description"`
 	IconPath                       string       `db:"icon_path"`
+	Slug                           string       `db:"slug"`
 	UsableForStorage               bool         `db:"usable_for_storage"`
 	DisplayInSummaryLists          bool         `db:"display_in_summary_lists"`
 	IncludeInGeneratedInstructions bool         `db:"include_in_generated_instructions"`
-	Slug                           string       `db:"slug"`
-	CreatedAt                      time.Time    `db:"created_at"`
-	LastUpdatedAt                  sql.NullTime `db:"last_updated_at"`
-	ArchivedAt                     sql.NullTime `db:"archived_at"`
 }
 
 func (q *Queries) GetValidInstrument(ctx context.Context, db DBTX, id string) (*GetValidInstrumentRow, error) {
@@ -2881,60 +2881,60 @@ WHERE valid_measurement_conversions.id = $1
 `
 
 type GetValidMeasurementConversionRow struct {
-	ID                                      string         `db:"id"`
-	ID_2                                    string         `db:"id_2"`
-	Name                                    string         `db:"name"`
-	Description                             string         `db:"description"`
-	Volumetric                              sql.NullBool   `db:"volumetric"`
-	IconPath                                string         `db:"icon_path"`
-	Universal                               bool           `db:"universal"`
-	Metric                                  bool           `db:"metric"`
-	Imperial                                bool           `db:"imperial"`
-	Slug                                    string         `db:"slug"`
-	PluralName                              string         `db:"plural_name"`
+	CreatedAt_4                             time.Time      `db:"created_at_4"`
+	CreatedAt_2                             time.Time      `db:"created_at_2"`
 	CreatedAt                               time.Time      `db:"created_at"`
 	LastUpdatedAt                           sql.NullTime   `db:"last_updated_at"`
 	ArchivedAt                              sql.NullTime   `db:"archived_at"`
+	ArchivedAt_2                            sql.NullTime   `db:"archived_at_2"`
+	LastUpdatedAt_4                         sql.NullTime   `db:"last_updated_at_4"`
+	LastUpdatedAt_2                         sql.NullTime   `db:"last_updated_at_2"`
+	CreatedAt_3                             sql.NullTime   `db:"created_at_3"`
+	ArchivedAt_4                            sql.NullTime   `db:"archived_at_4"`
+	LastUpdatedAt_3                         sql.NullTime   `db:"last_updated_at_3"`
+	ArchivedAt_3                            sql.NullTime   `db:"archived_at_3"`
+	Slug                                    string         `db:"slug"`
+	Name                                    string         `db:"name"`
 	ID_3                                    string         `db:"id_3"`
 	Name_2                                  string         `db:"name_2"`
 	Description_2                           string         `db:"description_2"`
-	Volumetric_2                            sql.NullBool   `db:"volumetric_2"`
+	Modifier                                string         `db:"modifier"`
 	IconPath_2                              string         `db:"icon_path_2"`
-	Universal_2                             bool           `db:"universal_2"`
-	Metric_2                                bool           `db:"metric_2"`
-	Imperial_2                              bool           `db:"imperial_2"`
+	ID                                      string         `db:"id"`
+	PluralName                              string         `db:"plural_name"`
+	Notes                                   string         `db:"notes"`
 	Slug_2                                  string         `db:"slug_2"`
 	PluralName_2                            string         `db:"plural_name_2"`
-	CreatedAt_2                             time.Time      `db:"created_at_2"`
-	LastUpdatedAt_2                         sql.NullTime   `db:"last_updated_at_2"`
-	ArchivedAt_2                            sql.NullTime   `db:"archived_at_2"`
-	ID_4                                    sql.NullString `db:"id_4"`
+	ID_2                                    string         `db:"id_2"`
+	Description                             string         `db:"description"`
+	IconPath                                string         `db:"icon_path"`
+	Slug_3                                  sql.NullString `db:"slug_3"`
 	Name_3                                  sql.NullString `db:"name_3"`
 	Description_3                           sql.NullString `db:"description_3"`
 	Warning                                 sql.NullString `db:"warning"`
-	ContainsEgg                             sql.NullBool   `db:"contains_egg"`
-	ContainsDairy                           sql.NullBool   `db:"contains_dairy"`
-	ContainsPeanut                          sql.NullBool   `db:"contains_peanut"`
-	ContainsTreeNut                         sql.NullBool   `db:"contains_tree_nut"`
-	ContainsSoy                             sql.NullBool   `db:"contains_soy"`
-	ContainsWheat                           sql.NullBool   `db:"contains_wheat"`
-	ContainsShellfish                       sql.NullBool   `db:"contains_shellfish"`
+	ShoppingSuggestions                     sql.NullString `db:"shopping_suggestions"`
+	ID_4                                    sql.NullString `db:"id_4"`
+	StorageInstructions                     sql.NullString `db:"storage_instructions"`
+	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
+	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
+	PluralName_3                            sql.NullString `db:"plural_name_3"`
+	IconPath_3                              sql.NullString `db:"icon_path_3"`
 	ContainsSesame                          sql.NullBool   `db:"contains_sesame"`
-	ContainsFish                            sql.NullBool   `db:"contains_fish"`
+	ContainsEgg                             sql.NullBool   `db:"contains_egg"`
 	ContainsGluten                          sql.NullBool   `db:"contains_gluten"`
 	AnimalFlesh                             sql.NullBool   `db:"animal_flesh"`
 	Volumetric_3                            sql.NullBool   `db:"volumetric_3"`
 	IsLiquid                                sql.NullBool   `db:"is_liquid"`
-	IconPath_3                              sql.NullString `db:"icon_path_3"`
+	ContainsShellfish                       sql.NullBool   `db:"contains_shellfish"`
 	AnimalDerived                           sql.NullBool   `db:"animal_derived"`
-	PluralName_3                            sql.NullString `db:"plural_name_3"`
+	ContainsWheat                           sql.NullBool   `db:"contains_wheat"`
 	RestrictToPreparations                  sql.NullBool   `db:"restrict_to_preparations"`
-	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
-	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
-	StorageInstructions                     sql.NullString `db:"storage_instructions"`
-	Slug_3                                  sql.NullString `db:"slug_3"`
+	ContainsSoy                             sql.NullBool   `db:"contains_soy"`
+	ContainsTreeNut                         sql.NullBool   `db:"contains_tree_nut"`
+	ContainsPeanut                          sql.NullBool   `db:"contains_peanut"`
+	ContainsDairy                           sql.NullBool   `db:"contains_dairy"`
 	ContainsAlcohol                         sql.NullBool   `db:"contains_alcohol"`
-	ShoppingSuggestions                     sql.NullString `db:"shopping_suggestions"`
+	ContainsFish                            sql.NullBool   `db:"contains_fish"`
 	IsStarch                                sql.NullBool   `db:"is_starch"`
 	IsProtein                               sql.NullBool   `db:"is_protein"`
 	IsGrain                                 sql.NullBool   `db:"is_grain"`
@@ -2943,14 +2943,14 @@ type GetValidMeasurementConversionRow struct {
 	IsFat                                   sql.NullBool   `db:"is_fat"`
 	IsAcid                                  sql.NullBool   `db:"is_acid"`
 	IsHeat                                  sql.NullBool   `db:"is_heat"`
-	CreatedAt_3                             sql.NullTime   `db:"created_at_3"`
-	LastUpdatedAt_3                         sql.NullTime   `db:"last_updated_at_3"`
-	ArchivedAt_3                            sql.NullTime   `db:"archived_at_3"`
-	Modifier                                string         `db:"modifier"`
-	Notes                                   string         `db:"notes"`
-	CreatedAt_4                             time.Time      `db:"created_at_4"`
-	LastUpdatedAt_4                         sql.NullTime   `db:"last_updated_at_4"`
-	ArchivedAt_4                            sql.NullTime   `db:"archived_at_4"`
+	Volumetric                              sql.NullBool   `db:"volumetric"`
+	Volumetric_2                            sql.NullBool   `db:"volumetric_2"`
+	Universal_2                             bool           `db:"universal_2"`
+	Metric_2                                bool           `db:"metric_2"`
+	Imperial                                bool           `db:"imperial"`
+	Metric                                  bool           `db:"metric"`
+	Universal                               bool           `db:"universal"`
+	Imperial_2                              bool           `db:"imperial_2"`
 }
 
 func (q *Queries) GetValidMeasurementConversion(ctx context.Context, db DBTX, id string) (*GetValidMeasurementConversionRow, error) {
@@ -3053,19 +3053,19 @@ WHERE valid_measurement_units.archived_at IS NULL
 `
 
 type GetValidMeasurementUnitRow struct {
-	ID            string       `db:"id"`
+	CreatedAt     time.Time    `db:"created_at"`
+	ArchivedAt    sql.NullTime `db:"archived_at"`
+	LastUpdatedAt sql.NullTime `db:"last_updated_at"`
+	PluralName    string       `db:"plural_name"`
 	Name          string       `db:"name"`
 	Description   string       `db:"description"`
-	Volumetric    sql.NullBool `db:"volumetric"`
+	ID            string       `db:"id"`
 	IconPath      string       `db:"icon_path"`
-	Universal     bool         `db:"universal"`
-	Metric        bool         `db:"metric"`
-	Imperial      bool         `db:"imperial"`
 	Slug          string       `db:"slug"`
-	PluralName    string       `db:"plural_name"`
-	CreatedAt     time.Time    `db:"created_at"`
-	LastUpdatedAt sql.NullTime `db:"last_updated_at"`
-	ArchivedAt    sql.NullTime `db:"archived_at"`
+	Volumetric    sql.NullBool `db:"volumetric"`
+	Imperial      bool         `db:"imperial"`
+	Metric        bool         `db:"metric"`
+	Universal     bool         `db:"universal"`
 }
 
 func (q *Queries) GetValidMeasurementUnit(ctx context.Context, db DBTX, id string) (*GetValidMeasurementUnitRow, error) {
@@ -3120,28 +3120,28 @@ WHERE valid_preparations.archived_at IS NULL
 `
 
 type GetValidPreparationRow struct {
-	ID                          string        `db:"id"`
-	Name                        string        `db:"name"`
-	Description                 string        `db:"description"`
-	IconPath                    string        `db:"icon_path"`
-	YieldsNothing               bool          `db:"yields_nothing"`
-	RestrictToIngredients       bool          `db:"restrict_to_ingredients"`
-	MinimumIngredientCount      int32         `db:"minimum_ingredient_count"`
-	MaximumIngredientCount      sql.NullInt32 `db:"maximum_ingredient_count"`
-	MinimumInstrumentCount      int32         `db:"minimum_instrument_count"`
-	MaximumInstrumentCount      sql.NullInt32 `db:"maximum_instrument_count"`
-	TemperatureRequired         bool          `db:"temperature_required"`
-	TimeEstimateRequired        bool          `db:"time_estimate_required"`
-	ConditionExpressionRequired bool          `db:"condition_expression_required"`
-	ConsumesVessel              bool          `db:"consumes_vessel"`
-	OnlyForVessels              bool          `db:"only_for_vessels"`
-	MinimumVesselCount          int32         `db:"minimum_vessel_count"`
-	MaximumVesselCount          sql.NullInt32 `db:"maximum_vessel_count"`
-	Slug                        string        `db:"slug"`
-	PastTense                   string        `db:"past_tense"`
 	CreatedAt                   time.Time     `db:"created_at"`
 	LastUpdatedAt               sql.NullTime  `db:"last_updated_at"`
 	ArchivedAt                  sql.NullTime  `db:"archived_at"`
+	Name                        string        `db:"name"`
+	Description                 string        `db:"description"`
+	IconPath                    string        `db:"icon_path"`
+	ID                          string        `db:"id"`
+	Slug                        string        `db:"slug"`
+	PastTense                   string        `db:"past_tense"`
+	MaximumInstrumentCount      sql.NullInt32 `db:"maximum_instrument_count"`
+	MaximumIngredientCount      sql.NullInt32 `db:"maximum_ingredient_count"`
+	MaximumVesselCount          sql.NullInt32 `db:"maximum_vessel_count"`
+	MinimumVesselCount          int32         `db:"minimum_vessel_count"`
+	MinimumInstrumentCount      int32         `db:"minimum_instrument_count"`
+	MinimumIngredientCount      int32         `db:"minimum_ingredient_count"`
+	RestrictToIngredients       bool          `db:"restrict_to_ingredients"`
+	OnlyForVessels              bool          `db:"only_for_vessels"`
+	ConsumesVessel              bool          `db:"consumes_vessel"`
+	ConditionExpressionRequired bool          `db:"condition_expression_required"`
+	TimeEstimateRequired        bool          `db:"time_estimate_required"`
+	TemperatureRequired         bool          `db:"temperature_required"`
+	YieldsNothing               bool          `db:"yields_nothing"`
 }
 
 func (q *Queries) GetValidPreparation(ctx context.Context, db DBTX, id string) (*GetValidPreparationRow, error) {
@@ -3226,45 +3226,45 @@ WHERE
 `
 
 type GetValidPreparationInstrumentRow struct {
-	ID                             string        `db:"id"`
-	Notes                          string        `db:"notes"`
-	ID_2                           string        `db:"id_2"`
-	Name                           string        `db:"name"`
-	Description                    string        `db:"description"`
+	CreatedAt                      time.Time     `db:"created_at"`
+	CreatedAt_2                    time.Time     `db:"created_at_2"`
+	CreatedAt_3                    time.Time     `db:"created_at_3"`
+	ArchivedAt_2                   sql.NullTime  `db:"archived_at_2"`
+	LastUpdatedAt                  sql.NullTime  `db:"last_updated_at"`
+	LastUpdatedAt_2                sql.NullTime  `db:"last_updated_at_2"`
+	ArchivedAt                     sql.NullTime  `db:"archived_at"`
+	ArchivedAt_3                   sql.NullTime  `db:"archived_at_3"`
+	LastUpdatedAt_3                sql.NullTime  `db:"last_updated_at_3"`
 	IconPath                       string        `db:"icon_path"`
-	YieldsNothing                  bool          `db:"yields_nothing"`
-	RestrictToIngredients          bool          `db:"restrict_to_ingredients"`
-	MinimumIngredientCount         int32         `db:"minimum_ingredient_count"`
+	PluralName                     string        `db:"plural_name"`
+	Description                    string        `db:"description"`
+	Name                           string        `db:"name"`
+	Slug_2                         string        `db:"slug_2"`
+	IconPath_2                     string        `db:"icon_path_2"`
+	Description_2                  string        `db:"description_2"`
+	ID                             string        `db:"id"`
+	Name_2                         string        `db:"name_2"`
+	ID_3                           string        `db:"id_3"`
+	Slug                           string        `db:"slug"`
+	PastTense                      string        `db:"past_tense"`
+	ID_2                           string        `db:"id_2"`
+	Notes                          string        `db:"notes"`
 	MaximumIngredientCount         sql.NullInt32 `db:"maximum_ingredient_count"`
-	MinimumInstrumentCount         int32         `db:"minimum_instrument_count"`
+	MaximumVesselCount             sql.NullInt32 `db:"maximum_vessel_count"`
 	MaximumInstrumentCount         sql.NullInt32 `db:"maximum_instrument_count"`
-	TemperatureRequired            bool          `db:"temperature_required"`
+	MinimumVesselCount             int32         `db:"minimum_vessel_count"`
+	MinimumIngredientCount         int32         `db:"minimum_ingredient_count"`
+	MinimumInstrumentCount         int32         `db:"minimum_instrument_count"`
+	DisplayInSummaryLists          bool          `db:"display_in_summary_lists"`
+	UsableForStorage               bool          `db:"usable_for_storage"`
+	IncludeInGeneratedInstructions bool          `db:"include_in_generated_instructions"`
 	TimeEstimateRequired           bool          `db:"time_estimate_required"`
+	TemperatureRequired            bool          `db:"temperature_required"`
 	ConditionExpressionRequired    bool          `db:"condition_expression_required"`
 	ConsumesVessel                 bool          `db:"consumes_vessel"`
 	OnlyForVessels                 bool          `db:"only_for_vessels"`
-	MinimumVesselCount             int32         `db:"minimum_vessel_count"`
-	MaximumVesselCount             sql.NullInt32 `db:"maximum_vessel_count"`
-	Slug                           string        `db:"slug"`
-	PastTense                      string        `db:"past_tense"`
-	CreatedAt                      time.Time     `db:"created_at"`
-	LastUpdatedAt                  sql.NullTime  `db:"last_updated_at"`
-	ArchivedAt                     sql.NullTime  `db:"archived_at"`
-	ID_3                           string        `db:"id_3"`
-	Name_2                         string        `db:"name_2"`
-	PluralName                     string        `db:"plural_name"`
-	Description_2                  string        `db:"description_2"`
-	IconPath_2                     string        `db:"icon_path_2"`
-	UsableForStorage               bool          `db:"usable_for_storage"`
-	DisplayInSummaryLists          bool          `db:"display_in_summary_lists"`
-	IncludeInGeneratedInstructions bool          `db:"include_in_generated_instructions"`
-	Slug_2                         string        `db:"slug_2"`
-	CreatedAt_2                    time.Time     `db:"created_at_2"`
-	LastUpdatedAt_2                sql.NullTime  `db:"last_updated_at_2"`
-	ArchivedAt_2                   sql.NullTime  `db:"archived_at_2"`
-	CreatedAt_3                    time.Time     `db:"created_at_3"`
-	LastUpdatedAt_3                sql.NullTime  `db:"last_updated_at_3"`
-	ArchivedAt_3                   sql.NullTime  `db:"archived_at_3"`
+	RestrictToIngredients          bool          `db:"restrict_to_ingredients"`
+	YieldsNothing                  bool          `db:"yields_nothing"`
 }
 
 func (q *Queries) GetValidPreparationInstrument(ctx context.Context, db DBTX, id string) (*GetValidPreparationInstrumentRow, error) {
@@ -3388,63 +3388,63 @@ WHERE
 `
 
 type GetValidPreparationVesselRow struct {
-	ID                             string         `db:"id"`
-	Notes                          string         `db:"notes"`
-	ID_2                           string         `db:"id_2"`
-	Name                           string         `db:"name"`
-	Description                    string         `db:"description"`
-	IconPath                       string         `db:"icon_path"`
-	YieldsNothing                  bool           `db:"yields_nothing"`
-	RestrictToIngredients          bool           `db:"restrict_to_ingredients"`
-	MinimumIngredientCount         int32          `db:"minimum_ingredient_count"`
-	MaximumIngredientCount         sql.NullInt32  `db:"maximum_ingredient_count"`
-	MinimumInstrumentCount         int32          `db:"minimum_instrument_count"`
-	MaximumInstrumentCount         sql.NullInt32  `db:"maximum_instrument_count"`
-	TemperatureRequired            bool           `db:"temperature_required"`
-	TimeEstimateRequired           bool           `db:"time_estimate_required"`
-	ConditionExpressionRequired    bool           `db:"condition_expression_required"`
-	ConsumesVessel                 bool           `db:"consumes_vessel"`
-	OnlyForVessels                 bool           `db:"only_for_vessels"`
-	MinimumVesselCount             int32          `db:"minimum_vessel_count"`
-	MaximumVesselCount             sql.NullInt32  `db:"maximum_vessel_count"`
-	Slug                           string         `db:"slug"`
-	PastTense                      string         `db:"past_tense"`
+	CreatedAt_4                    time.Time      `db:"created_at_4"`
 	CreatedAt                      time.Time      `db:"created_at"`
+	CreatedAt_3                    time.Time      `db:"created_at_3"`
+	LastUpdatedAt_4                sql.NullTime   `db:"last_updated_at_4"`
 	LastUpdatedAt                  sql.NullTime   `db:"last_updated_at"`
 	ArchivedAt                     sql.NullTime   `db:"archived_at"`
+	ArchivedAt_4                   sql.NullTime   `db:"archived_at_4"`
+	CreatedAt_2                    sql.NullTime   `db:"created_at_2"`
+	LastUpdatedAt_2                sql.NullTime   `db:"last_updated_at_2"`
+	ArchivedAt_3                   sql.NullTime   `db:"archived_at_3"`
+	LastUpdatedAt_3                sql.NullTime   `db:"last_updated_at_3"`
+	ArchivedAt_2                   sql.NullTime   `db:"archived_at_2"`
+	PastTense                      string         `db:"past_tense"`
+	Slug_2                         string         `db:"slug_2"`
+	Name                           string         `db:"name"`
+	IconPath_2                     string         `db:"icon_path_2"`
+	Shape                          VesselShape    `db:"shape"`
+	Capacity                       string         `db:"capacity"`
+	ID_2                           string         `db:"id_2"`
+	Slug                           string         `db:"slug"`
+	ID                             string         `db:"id"`
+	Notes                          string         `db:"notes"`
+	Description                    string         `db:"description"`
+	IconPath                       string         `db:"icon_path"`
 	ID_3                           string         `db:"id_3"`
 	Name_2                         string         `db:"name_2"`
 	PluralName                     string         `db:"plural_name"`
 	Description_2                  string         `db:"description_2"`
-	IconPath_2                     string         `db:"icon_path_2"`
-	UsableForStorage               bool           `db:"usable_for_storage"`
-	Slug_2                         string         `db:"slug_2"`
-	DisplayInSummaryLists          bool           `db:"display_in_summary_lists"`
-	IncludeInGeneratedInstructions bool           `db:"include_in_generated_instructions"`
-	Capacity                       string         `db:"capacity"`
+	PluralName_2                   sql.NullString `db:"plural_name_2"`
+	IconPath_3                     sql.NullString `db:"icon_path_3"`
+	Slug_3                         sql.NullString `db:"slug_3"`
+	HeightInMillimeters            sql.NullString `db:"height_in_millimeters"`
+	LengthInMillimeters            sql.NullString `db:"length_in_millimeters"`
+	WidthInMillimeters             sql.NullString `db:"width_in_millimeters"`
 	ID_4                           sql.NullString `db:"id_4"`
 	Name_3                         sql.NullString `db:"name_3"`
 	Description_3                  sql.NullString `db:"description_3"`
+	MaximumIngredientCount         sql.NullInt32  `db:"maximum_ingredient_count"`
+	MaximumInstrumentCount         sql.NullInt32  `db:"maximum_instrument_count"`
+	MaximumVesselCount             sql.NullInt32  `db:"maximum_vessel_count"`
+	MinimumVesselCount             int32          `db:"minimum_vessel_count"`
+	MinimumInstrumentCount         int32          `db:"minimum_instrument_count"`
+	MinimumIngredientCount         int32          `db:"minimum_ingredient_count"`
 	Volumetric                     sql.NullBool   `db:"volumetric"`
-	IconPath_3                     sql.NullString `db:"icon_path_3"`
-	Universal                      sql.NullBool   `db:"universal"`
-	Metric                         sql.NullBool   `db:"metric"`
 	Imperial                       sql.NullBool   `db:"imperial"`
-	Slug_3                         sql.NullString `db:"slug_3"`
-	PluralName_2                   sql.NullString `db:"plural_name_2"`
-	CreatedAt_2                    sql.NullTime   `db:"created_at_2"`
-	LastUpdatedAt_2                sql.NullTime   `db:"last_updated_at_2"`
-	ArchivedAt_2                   sql.NullTime   `db:"archived_at_2"`
-	WidthInMillimeters             sql.NullString `db:"width_in_millimeters"`
-	LengthInMillimeters            sql.NullString `db:"length_in_millimeters"`
-	HeightInMillimeters            sql.NullString `db:"height_in_millimeters"`
-	Shape                          VesselShape    `db:"shape"`
-	CreatedAt_3                    time.Time      `db:"created_at_3"`
-	LastUpdatedAt_3                sql.NullTime   `db:"last_updated_at_3"`
-	ArchivedAt_3                   sql.NullTime   `db:"archived_at_3"`
-	CreatedAt_4                    time.Time      `db:"created_at_4"`
-	LastUpdatedAt_4                sql.NullTime   `db:"last_updated_at_4"`
-	ArchivedAt_4                   sql.NullTime   `db:"archived_at_4"`
+	Metric                         sql.NullBool   `db:"metric"`
+	Universal                      sql.NullBool   `db:"universal"`
+	OnlyForVessels                 bool           `db:"only_for_vessels"`
+	TimeEstimateRequired           bool           `db:"time_estimate_required"`
+	ConditionExpressionRequired    bool           `db:"condition_expression_required"`
+	TemperatureRequired            bool           `db:"temperature_required"`
+	ConsumesVessel                 bool           `db:"consumes_vessel"`
+	UsableForStorage               bool           `db:"usable_for_storage"`
+	IncludeInGeneratedInstructions bool           `db:"include_in_generated_instructions"`
+	DisplayInSummaryLists          bool           `db:"display_in_summary_lists"`
+	RestrictToIngredients          bool           `db:"restrict_to_ingredients"`
+	YieldsNothing                  bool           `db:"yields_nothing"`
 }
 
 func (q *Queries) GetValidPreparationVessel(ctx context.Context, db DBTX, id string) (*GetValidPreparationVesselRow, error) {
@@ -3553,36 +3553,36 @@ WHERE valid_vessels.archived_at IS NULL
 `
 
 type GetValidVesselRow struct {
-	ID                             string         `db:"id"`
-	Name                           string         `db:"name"`
-	PluralName                     string         `db:"plural_name"`
-	Description                    string         `db:"description"`
+	CreatedAt                      time.Time      `db:"created_at"`
+	CreatedAt_2                    time.Time      `db:"created_at_2"`
+	ArchivedAt_2                   sql.NullTime   `db:"archived_at_2"`
+	LastUpdatedAt_2                sql.NullTime   `db:"last_updated_at_2"`
+	ArchivedAt                     sql.NullTime   `db:"archived_at"`
+	LastUpdatedAt                  sql.NullTime   `db:"last_updated_at"`
+	IconPath_2                     string         `db:"icon_path_2"`
 	IconPath                       string         `db:"icon_path"`
-	UsableForStorage               bool           `db:"usable_for_storage"`
-	Slug                           string         `db:"slug"`
-	DisplayInSummaryLists          bool           `db:"display_in_summary_lists"`
-	IncludeInGeneratedInstructions bool           `db:"include_in_generated_instructions"`
+	Name                           string         `db:"name"`
 	Capacity                       string         `db:"capacity"`
 	ID_2                           string         `db:"id_2"`
 	Name_2                         string         `db:"name_2"`
 	Description_2                  string         `db:"description_2"`
-	Volumetric                     sql.NullBool   `db:"volumetric"`
-	IconPath_2                     string         `db:"icon_path_2"`
-	Universal                      bool           `db:"universal"`
-	Metric                         bool           `db:"metric"`
-	Imperial                       bool           `db:"imperial"`
+	PluralName                     string         `db:"plural_name"`
+	ID                             string         `db:"id"`
+	Description                    string         `db:"description"`
+	Shape                          VesselShape    `db:"shape"`
+	Slug                           string         `db:"slug"`
 	Slug_2                         string         `db:"slug_2"`
 	PluralName_2                   string         `db:"plural_name_2"`
-	CreatedAt                      time.Time      `db:"created_at"`
-	LastUpdatedAt                  sql.NullTime   `db:"last_updated_at"`
-	ArchivedAt                     sql.NullTime   `db:"archived_at"`
 	WidthInMillimeters             sql.NullString `db:"width_in_millimeters"`
 	LengthInMillimeters            sql.NullString `db:"length_in_millimeters"`
 	HeightInMillimeters            sql.NullString `db:"height_in_millimeters"`
-	Shape                          VesselShape    `db:"shape"`
-	CreatedAt_2                    time.Time      `db:"created_at_2"`
-	LastUpdatedAt_2                sql.NullTime   `db:"last_updated_at_2"`
-	ArchivedAt_2                   sql.NullTime   `db:"archived_at_2"`
+	Volumetric                     sql.NullBool   `db:"volumetric"`
+	Imperial                       bool           `db:"imperial"`
+	UsableForStorage               bool           `db:"usable_for_storage"`
+	DisplayInSummaryLists          bool           `db:"display_in_summary_lists"`
+	Metric                         bool           `db:"metric"`
+	Universal                      bool           `db:"universal"`
+	IncludeInGeneratedInstructions bool           `db:"include_in_generated_instructions"`
 }
 
 func (q *Queries) GetValidVessel(ctx context.Context, db DBTX, id string) (*GetValidVesselRow, error) {

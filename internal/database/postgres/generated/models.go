@@ -816,34 +816,34 @@ type MealPlanEvents struct {
 }
 
 type MealPlanOptionVotes struct {
-	ID                      string       `db:"id"`
-	Rank                    int32        `db:"rank"`
-	Abstain                 bool         `db:"abstain"`
-	Notes                   string       `db:"notes"`
-	ByUser                  string       `db:"by_user"`
 	CreatedAt               time.Time    `db:"created_at"`
 	LastUpdatedAt           sql.NullTime `db:"last_updated_at"`
 	ArchivedAt              sql.NullTime `db:"archived_at"`
+	ID                      string       `db:"id"`
+	Notes                   string       `db:"notes"`
+	ByUser                  string       `db:"by_user"`
 	BelongsToMealPlanOption string       `db:"belongs_to_meal_plan_option"`
+	Rank                    int32        `db:"rank"`
+	Abstain                 bool         `db:"abstain"`
 }
 
 type Oauth2ClientTokens struct {
-	ID                  string                  `db:"id"`
-	ClientID            string                  `db:"client_id"`
-	BelongsToUser       string                  `db:"belongs_to_user"`
-	RedirectUri         string                  `db:"redirect_uri"`
-	Scope               Oauth2ClientTokenScopes `db:"scope"`
-	Code                string                  `db:"code"`
+	AccessExpiresAt     time.Time               `db:"access_expires_at"`
+	CodeExpiresAt       time.Time               `db:"code_expires_at"`
+	RefreshExpiresAt    time.Time               `db:"refresh_expires_at"`
+	RefreshCreatedAt    time.Time               `db:"refresh_created_at"`
+	CodeCreatedAt       time.Time               `db:"code_created_at"`
+	AccessCreatedAt     time.Time               `db:"access_created_at"`
 	CodeChallenge       string                  `db:"code_challenge"`
 	CodeChallengeMethod string                  `db:"code_challenge_method"`
-	CodeCreatedAt       time.Time               `db:"code_created_at"`
-	CodeExpiresAt       time.Time               `db:"code_expires_at"`
+	Scope               Oauth2ClientTokenScopes `db:"scope"`
+	ClientID            string                  `db:"client_id"`
 	Access              string                  `db:"access"`
-	AccessCreatedAt     time.Time               `db:"access_created_at"`
-	AccessExpiresAt     time.Time               `db:"access_expires_at"`
+	Code                string                  `db:"code"`
+	ID                  string                  `db:"id"`
 	Refresh             string                  `db:"refresh"`
-	RefreshCreatedAt    time.Time               `db:"refresh_created_at"`
-	RefreshExpiresAt    time.Time               `db:"refresh_expires_at"`
+	RedirectUri         string                  `db:"redirect_uri"`
+	BelongsToUser       string                  `db:"belongs_to_user"`
 }
 
 type PasswordResetTokens struct {
@@ -857,16 +857,16 @@ type PasswordResetTokens struct {
 }
 
 type RecipeRatings struct {
+	CreatedAt     time.Time      `db:"created_at"`
+	LastUpdatedAt sql.NullTime   `db:"last_updated_at"`
+	ArchivedAt    sql.NullTime   `db:"archived_at"`
 	ID            string         `db:"id"`
 	RecipeID      string         `db:"recipe_id"`
+	Notes         string         `db:"notes"`
+	ByUser        string         `db:"by_user"`
 	Taste         sql.NullString `db:"taste"`
 	Difficulty    sql.NullString `db:"difficulty"`
 	Cleanup       sql.NullString `db:"cleanup"`
 	Instructions  sql.NullString `db:"instructions"`
 	Overall       sql.NullString `db:"overall"`
-	Notes         string         `db:"notes"`
-	ByUser        string         `db:"by_user"`
-	CreatedAt     time.Time      `db:"created_at"`
-	LastUpdatedAt sql.NullTime   `db:"last_updated_at"`
-	ArchivedAt    sql.NullTime   `db:"archived_at"`
 }

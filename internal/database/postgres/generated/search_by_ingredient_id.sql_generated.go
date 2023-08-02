@@ -82,21 +82,21 @@ type SearchValidMeasurementUnitsByIngredientIDParams struct {
 }
 
 type SearchValidMeasurementUnitsByIngredientIDRow struct {
-	ID            sql.NullString `db:"id"`
-	Name          sql.NullString `db:"name"`
-	Description   sql.NullString `db:"description"`
-	Volumetric    sql.NullBool   `db:"volumetric"`
-	IconPath      sql.NullString `db:"icon_path"`
-	Universal     sql.NullBool   `db:"universal"`
-	Metric        sql.NullBool   `db:"metric"`
-	Imperial      sql.NullBool   `db:"imperial"`
-	Slug          sql.NullString `db:"slug"`
-	PluralName    sql.NullString `db:"plural_name"`
-	CreatedAt     sql.NullTime   `db:"created_at"`
 	LastUpdatedAt sql.NullTime   `db:"last_updated_at"`
 	ArchivedAt    sql.NullTime   `db:"archived_at"`
-	FilteredCount int64          `db:"filtered_count"`
+	CreatedAt     sql.NullTime   `db:"created_at"`
+	Name          sql.NullString `db:"name"`
+	Description   sql.NullString `db:"description"`
+	ID            sql.NullString `db:"id"`
+	IconPath      sql.NullString `db:"icon_path"`
+	Slug          sql.NullString `db:"slug"`
+	PluralName    sql.NullString `db:"plural_name"`
 	TotalCount    int64          `db:"total_count"`
+	FilteredCount int64          `db:"filtered_count"`
+	Volumetric    sql.NullBool   `db:"volumetric"`
+	Imperial      sql.NullBool   `db:"imperial"`
+	Metric        sql.NullBool   `db:"metric"`
+	Universal     sql.NullBool   `db:"universal"`
 }
 
 func (q *Queries) SearchValidMeasurementUnitsByIngredientID(ctx context.Context, db DBTX, arg *SearchValidMeasurementUnitsByIngredientIDParams) ([]*SearchValidMeasurementUnitsByIngredientIDRow, error) {

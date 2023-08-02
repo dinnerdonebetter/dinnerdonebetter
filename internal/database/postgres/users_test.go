@@ -50,7 +50,7 @@ func buildMockRowsFromUsers(includeCounts bool, filteredCount uint64, users ...*
 			user.AccountStatus,
 			user.AccountStatusExplanation,
 			user.Birthday,
-			user.LastAcceptedTOS,
+			user.LastAcceptedTermsOfService,
 			user.LastAcceptedPrivacyPolicy,
 			user.CreatedAt,
 			user.LastUpdatedAt,

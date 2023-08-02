@@ -58,33 +58,33 @@ ORDER BY random() LIMIT 1
 `
 
 type GetRandomValidIngredientRow struct {
-	ID                                      string         `db:"id"`
-	Name                                    string         `db:"name"`
-	Description                             string         `db:"description"`
+	CreatedAt                               time.Time      `db:"created_at"`
+	ArchivedAt                              sql.NullTime   `db:"archived_at"`
+	LastUpdatedAt                           sql.NullTime   `db:"last_updated_at"`
 	Warning                                 string         `db:"warning"`
-	ContainsEgg                             bool           `db:"contains_egg"`
-	ContainsDairy                           bool           `db:"contains_dairy"`
-	ContainsPeanut                          bool           `db:"contains_peanut"`
-	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
-	ContainsSoy                             bool           `db:"contains_soy"`
-	ContainsWheat                           bool           `db:"contains_wheat"`
-	ContainsShellfish                       bool           `db:"contains_shellfish"`
-	ContainsSesame                          bool           `db:"contains_sesame"`
-	ContainsFish                            bool           `db:"contains_fish"`
-	ContainsGluten                          bool           `db:"contains_gluten"`
-	AnimalFlesh                             bool           `db:"animal_flesh"`
-	Volumetric                              bool           `db:"volumetric"`
-	IsLiquid                                sql.NullBool   `db:"is_liquid"`
-	IconPath                                string         `db:"icon_path"`
-	AnimalDerived                           bool           `db:"animal_derived"`
-	PluralName                              string         `db:"plural_name"`
-	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
-	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
-	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
-	StorageInstructions                     string         `db:"storage_instructions"`
-	Slug                                    string         `db:"slug"`
-	ContainsAlcohol                         bool           `db:"contains_alcohol"`
+	Description                             string         `db:"description"`
+	Name                                    string         `db:"name"`
 	ShoppingSuggestions                     string         `db:"shopping_suggestions"`
+	Slug                                    string         `db:"slug"`
+	StorageInstructions                     string         `db:"storage_instructions"`
+	PluralName                              string         `db:"plural_name"`
+	ID                                      string         `db:"id"`
+	IconPath                                string         `db:"icon_path"`
+	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
+	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
+	IsLiquid                                sql.NullBool   `db:"is_liquid"`
+	AnimalDerived                           bool           `db:"animal_derived"`
+	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
+	AnimalFlesh                             bool           `db:"animal_flesh"`
+	ContainsGluten                          bool           `db:"contains_gluten"`
+	ContainsFish                            bool           `db:"contains_fish"`
+	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
+	ContainsSesame                          bool           `db:"contains_sesame"`
+	ContainsShellfish                       bool           `db:"contains_shellfish"`
+	ContainsWheat                           bool           `db:"contains_wheat"`
+	ContainsSoy                             bool           `db:"contains_soy"`
+	ContainsAlcohol                         bool           `db:"contains_alcohol"`
+	Volumetric                              bool           `db:"volumetric"`
 	IsStarch                                bool           `db:"is_starch"`
 	IsProtein                               bool           `db:"is_protein"`
 	IsGrain                                 bool           `db:"is_grain"`
@@ -93,9 +93,9 @@ type GetRandomValidIngredientRow struct {
 	IsFat                                   bool           `db:"is_fat"`
 	IsAcid                                  bool           `db:"is_acid"`
 	IsHeat                                  bool           `db:"is_heat"`
-	CreatedAt                               time.Time      `db:"created_at"`
-	LastUpdatedAt                           sql.NullTime   `db:"last_updated_at"`
-	ArchivedAt                              sql.NullTime   `db:"archived_at"`
+	ContainsPeanut                          bool           `db:"contains_peanut"`
+	ContainsDairy                           bool           `db:"contains_dairy"`
+	ContainsEgg                             bool           `db:"contains_egg"`
 }
 
 func (q *Queries) GetRandomValidIngredient(ctx context.Context, db DBTX) (*GetRandomValidIngredientRow, error) {
@@ -165,18 +165,18 @@ WHERE valid_instruments.archived_at IS NULL
 `
 
 type GetRandomValidInstrumentRow struct {
+	CreatedAt                      time.Time    `db:"created_at"`
+	LastUpdatedAt                  sql.NullTime `db:"last_updated_at"`
+	ArchivedAt                     sql.NullTime `db:"archived_at"`
 	ID                             string       `db:"id"`
 	Name                           string       `db:"name"`
 	PluralName                     string       `db:"plural_name"`
 	Description                    string       `db:"description"`
 	IconPath                       string       `db:"icon_path"`
+	Slug                           string       `db:"slug"`
 	UsableForStorage               bool         `db:"usable_for_storage"`
 	DisplayInSummaryLists          bool         `db:"display_in_summary_lists"`
 	IncludeInGeneratedInstructions bool         `db:"include_in_generated_instructions"`
-	Slug                           string       `db:"slug"`
-	CreatedAt                      time.Time    `db:"created_at"`
-	LastUpdatedAt                  sql.NullTime `db:"last_updated_at"`
-	ArchivedAt                     sql.NullTime `db:"archived_at"`
 }
 
 func (q *Queries) GetRandomValidInstrument(ctx context.Context, db DBTX) (*GetRandomValidInstrumentRow, error) {
@@ -221,19 +221,19 @@ WHERE valid_measurement_units.archived_at IS NULL
 `
 
 type GetRandomValidMeasurementUnitRow struct {
-	ID            string       `db:"id"`
+	CreatedAt     time.Time    `db:"created_at"`
+	ArchivedAt    sql.NullTime `db:"archived_at"`
+	LastUpdatedAt sql.NullTime `db:"last_updated_at"`
+	PluralName    string       `db:"plural_name"`
 	Name          string       `db:"name"`
 	Description   string       `db:"description"`
-	Volumetric    sql.NullBool `db:"volumetric"`
+	ID            string       `db:"id"`
 	IconPath      string       `db:"icon_path"`
-	Universal     bool         `db:"universal"`
-	Metric        bool         `db:"metric"`
-	Imperial      bool         `db:"imperial"`
 	Slug          string       `db:"slug"`
-	PluralName    string       `db:"plural_name"`
-	CreatedAt     time.Time    `db:"created_at"`
-	LastUpdatedAt sql.NullTime `db:"last_updated_at"`
-	ArchivedAt    sql.NullTime `db:"archived_at"`
+	Volumetric    sql.NullBool `db:"volumetric"`
+	Imperial      bool         `db:"imperial"`
+	Metric        bool         `db:"metric"`
+	Universal     bool         `db:"universal"`
 }
 
 func (q *Queries) GetRandomValidMeasurementUnit(ctx context.Context, db DBTX) (*GetRandomValidMeasurementUnitRow, error) {
@@ -288,28 +288,28 @@ WHERE valid_preparations.archived_at IS NULL
 `
 
 type GetRandomValidPreparationRow struct {
-	ID                          string        `db:"id"`
-	Name                        string        `db:"name"`
-	Description                 string        `db:"description"`
-	IconPath                    string        `db:"icon_path"`
-	YieldsNothing               bool          `db:"yields_nothing"`
-	RestrictToIngredients       bool          `db:"restrict_to_ingredients"`
-	MinimumIngredientCount      int32         `db:"minimum_ingredient_count"`
-	MaximumIngredientCount      sql.NullInt32 `db:"maximum_ingredient_count"`
-	MinimumInstrumentCount      int32         `db:"minimum_instrument_count"`
-	MaximumInstrumentCount      sql.NullInt32 `db:"maximum_instrument_count"`
-	TemperatureRequired         bool          `db:"temperature_required"`
-	TimeEstimateRequired        bool          `db:"time_estimate_required"`
-	ConditionExpressionRequired bool          `db:"condition_expression_required"`
-	ConsumesVessel              bool          `db:"consumes_vessel"`
-	OnlyForVessels              bool          `db:"only_for_vessels"`
-	MinimumVesselCount          int32         `db:"minimum_vessel_count"`
-	MaximumVesselCount          sql.NullInt32 `db:"maximum_vessel_count"`
-	Slug                        string        `db:"slug"`
-	PastTense                   string        `db:"past_tense"`
 	CreatedAt                   time.Time     `db:"created_at"`
 	LastUpdatedAt               sql.NullTime  `db:"last_updated_at"`
 	ArchivedAt                  sql.NullTime  `db:"archived_at"`
+	Name                        string        `db:"name"`
+	Description                 string        `db:"description"`
+	IconPath                    string        `db:"icon_path"`
+	ID                          string        `db:"id"`
+	Slug                        string        `db:"slug"`
+	PastTense                   string        `db:"past_tense"`
+	MaximumInstrumentCount      sql.NullInt32 `db:"maximum_instrument_count"`
+	MaximumIngredientCount      sql.NullInt32 `db:"maximum_ingredient_count"`
+	MaximumVesselCount          sql.NullInt32 `db:"maximum_vessel_count"`
+	MinimumVesselCount          int32         `db:"minimum_vessel_count"`
+	MinimumInstrumentCount      int32         `db:"minimum_instrument_count"`
+	MinimumIngredientCount      int32         `db:"minimum_ingredient_count"`
+	RestrictToIngredients       bool          `db:"restrict_to_ingredients"`
+	OnlyForVessels              bool          `db:"only_for_vessels"`
+	ConsumesVessel              bool          `db:"consumes_vessel"`
+	ConditionExpressionRequired bool          `db:"condition_expression_required"`
+	TimeEstimateRequired        bool          `db:"time_estimate_required"`
+	TemperatureRequired         bool          `db:"temperature_required"`
+	YieldsNothing               bool          `db:"yields_nothing"`
 }
 
 func (q *Queries) GetRandomValidPreparation(ctx context.Context, db DBTX) (*GetRandomValidPreparationRow, error) {
@@ -383,36 +383,36 @@ WHERE valid_vessels.archived_at IS NULL
 `
 
 type GetRandomValidVesselRow struct {
-	ID                             string         `db:"id"`
-	Name                           string         `db:"name"`
-	PluralName                     string         `db:"plural_name"`
-	Description                    string         `db:"description"`
+	CreatedAt                      time.Time      `db:"created_at"`
+	CreatedAt_2                    time.Time      `db:"created_at_2"`
+	ArchivedAt_2                   sql.NullTime   `db:"archived_at_2"`
+	LastUpdatedAt_2                sql.NullTime   `db:"last_updated_at_2"`
+	ArchivedAt                     sql.NullTime   `db:"archived_at"`
+	LastUpdatedAt                  sql.NullTime   `db:"last_updated_at"`
+	IconPath_2                     string         `db:"icon_path_2"`
 	IconPath                       string         `db:"icon_path"`
-	UsableForStorage               bool           `db:"usable_for_storage"`
-	Slug                           string         `db:"slug"`
-	DisplayInSummaryLists          bool           `db:"display_in_summary_lists"`
-	IncludeInGeneratedInstructions bool           `db:"include_in_generated_instructions"`
+	Name                           string         `db:"name"`
 	Capacity                       string         `db:"capacity"`
 	ID_2                           string         `db:"id_2"`
 	Name_2                         string         `db:"name_2"`
 	Description_2                  string         `db:"description_2"`
-	Volumetric                     sql.NullBool   `db:"volumetric"`
-	IconPath_2                     string         `db:"icon_path_2"`
-	Universal                      bool           `db:"universal"`
-	Metric                         bool           `db:"metric"`
-	Imperial                       bool           `db:"imperial"`
+	PluralName                     string         `db:"plural_name"`
+	ID                             string         `db:"id"`
+	Description                    string         `db:"description"`
+	Shape                          VesselShape    `db:"shape"`
+	Slug                           string         `db:"slug"`
 	Slug_2                         string         `db:"slug_2"`
 	PluralName_2                   string         `db:"plural_name_2"`
-	CreatedAt                      time.Time      `db:"created_at"`
-	LastUpdatedAt                  sql.NullTime   `db:"last_updated_at"`
-	ArchivedAt                     sql.NullTime   `db:"archived_at"`
 	WidthInMillimeters             sql.NullString `db:"width_in_millimeters"`
 	LengthInMillimeters            sql.NullString `db:"length_in_millimeters"`
 	HeightInMillimeters            sql.NullString `db:"height_in_millimeters"`
-	Shape                          VesselShape    `db:"shape"`
-	CreatedAt_2                    time.Time      `db:"created_at_2"`
-	LastUpdatedAt_2                sql.NullTime   `db:"last_updated_at_2"`
-	ArchivedAt_2                   sql.NullTime   `db:"archived_at_2"`
+	Volumetric                     sql.NullBool   `db:"volumetric"`
+	Imperial                       bool           `db:"imperial"`
+	UsableForStorage               bool           `db:"usable_for_storage"`
+	DisplayInSummaryLists          bool           `db:"display_in_summary_lists"`
+	Metric                         bool           `db:"metric"`
+	Universal                      bool           `db:"universal"`
+	IncludeInGeneratedInstructions bool           `db:"include_in_generated_instructions"`
 }
 
 func (q *Queries) GetRandomValidVessel(ctx context.Context, db DBTX) (*GetRandomValidVesselRow, error) {

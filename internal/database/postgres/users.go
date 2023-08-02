@@ -77,7 +77,7 @@ func (q *Querier) scanUser(ctx context.Context, scan database.Scanner, includeCo
 		&user.AccountStatus,
 		&user.AccountStatusExplanation,
 		&user.Birthday,
-		&user.LastAcceptedTOS,
+		&user.LastAcceptedTermsOfService,
 		&user.LastAcceptedPrivacyPolicy,
 		&user.CreatedAt,
 		&user.LastUpdatedAt,

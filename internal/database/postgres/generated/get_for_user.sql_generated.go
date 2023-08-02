@@ -29,14 +29,14 @@ WHERE household_user_memberships.archived_at IS NULL
 `
 
 type GetHouseholdUserMembershipsForUserRow struct {
+	CreatedAt          time.Time    `db:"created_at"`
+	LastUpdatedAt      sql.NullTime `db:"last_updated_at"`
+	ArchivedAt         sql.NullTime `db:"archived_at"`
 	ID                 string       `db:"id"`
 	BelongsToUser      string       `db:"belongs_to_user"`
 	BelongsToHousehold string       `db:"belongs_to_household"`
 	HouseholdRole      string       `db:"household_role"`
 	DefaultHousehold   bool         `db:"default_household"`
-	CreatedAt          time.Time    `db:"created_at"`
-	LastUpdatedAt      sql.NullTime `db:"last_updated_at"`
-	ArchivedAt         sql.NullTime `db:"archived_at"`
 }
 
 func (q *Queries) GetHouseholdUserMembershipsForUser(ctx context.Context, db DBTX, belongsToUser string) ([]*GetHouseholdUserMembershipsForUserRow, error) {
@@ -134,52 +134,52 @@ type GetUserIngredientPreferencesForUserParams struct {
 }
 
 type GetUserIngredientPreferencesForUserRow struct {
-	ID                                      string         `db:"id"`
-	ID_2                                    string         `db:"id_2"`
-	Name                                    string         `db:"name"`
-	Description                             string         `db:"description"`
+	CreatedAt                               time.Time      `db:"created_at"`
+	CreatedAt_2                             time.Time      `db:"created_at_2"`
+	ArchivedAt_2                            sql.NullTime   `db:"archived_at_2"`
+	LastUpdatedAt                           sql.NullTime   `db:"last_updated_at"`
+	ArchivedAt                              sql.NullTime   `db:"archived_at"`
+	LastUpdatedAt_2                         sql.NullTime   `db:"last_updated_at_2"`
+	ShoppingSuggestions                     string         `db:"shopping_suggestions"`
+	Slug                                    string         `db:"slug"`
 	Warning                                 string         `db:"warning"`
-	ContainsEgg                             bool           `db:"contains_egg"`
-	ContainsDairy                           bool           `db:"contains_dairy"`
-	ContainsPeanut                          bool           `db:"contains_peanut"`
-	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
-	ContainsSoy                             bool           `db:"contains_soy"`
-	ContainsWheat                           bool           `db:"contains_wheat"`
-	ContainsShellfish                       bool           `db:"contains_shellfish"`
-	ContainsSesame                          bool           `db:"contains_sesame"`
-	ContainsFish                            bool           `db:"contains_fish"`
-	ContainsGluten                          bool           `db:"contains_gluten"`
-	AnimalFlesh                             bool           `db:"animal_flesh"`
-	Volumetric                              bool           `db:"volumetric"`
-	IsLiquid                                sql.NullBool   `db:"is_liquid"`
-	IconPath                                string         `db:"icon_path"`
-	AnimalDerived                           bool           `db:"animal_derived"`
+	Notes                                   string         `db:"notes"`
 	PluralName                              string         `db:"plural_name"`
-	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
+	ID                                      string         `db:"id"`
+	Description                             string         `db:"description"`
+	Name                                    string         `db:"name"`
+	ID_2                                    string         `db:"id_2"`
+	StorageInstructions                     string         `db:"storage_instructions"`
+	BelongsToUser                           string         `db:"belongs_to_user"`
+	IconPath                                string         `db:"icon_path"`
 	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
 	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
-	StorageInstructions                     string         `db:"storage_instructions"`
-	Slug                                    string         `db:"slug"`
+	Rating                                  int16          `db:"rating"`
+	IsLiquid                                sql.NullBool   `db:"is_liquid"`
+	ContainsShellfish                       bool           `db:"contains_shellfish"`
+	IsFat                                   bool           `db:"is_fat"`
+	AnimalDerived                           bool           `db:"animal_derived"`
+	Volumetric                              bool           `db:"volumetric"`
 	ContainsAlcohol                         bool           `db:"contains_alcohol"`
-	ShoppingSuggestions                     string         `db:"shopping_suggestions"`
+	AnimalFlesh                             bool           `db:"animal_flesh"`
 	IsStarch                                bool           `db:"is_starch"`
 	IsProtein                               bool           `db:"is_protein"`
 	IsGrain                                 bool           `db:"is_grain"`
 	IsFruit                                 bool           `db:"is_fruit"`
 	IsSalt                                  bool           `db:"is_salt"`
-	IsFat                                   bool           `db:"is_fat"`
+	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
 	IsAcid                                  bool           `db:"is_acid"`
 	IsHeat                                  bool           `db:"is_heat"`
-	CreatedAt                               time.Time      `db:"created_at"`
-	LastUpdatedAt                           sql.NullTime   `db:"last_updated_at"`
-	ArchivedAt                              sql.NullTime   `db:"archived_at"`
-	Rating                                  int16          `db:"rating"`
-	Notes                                   string         `db:"notes"`
+	ContainsGluten                          bool           `db:"contains_gluten"`
+	ContainsFish                            bool           `db:"contains_fish"`
+	ContainsSesame                          bool           `db:"contains_sesame"`
+	ContainsWheat                           bool           `db:"contains_wheat"`
+	ContainsSoy                             bool           `db:"contains_soy"`
 	Allergy                                 bool           `db:"allergy"`
-	CreatedAt_2                             time.Time      `db:"created_at_2"`
-	LastUpdatedAt_2                         sql.NullTime   `db:"last_updated_at_2"`
-	ArchivedAt_2                            sql.NullTime   `db:"archived_at_2"`
-	BelongsToUser                           string         `db:"belongs_to_user"`
+	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
+	ContainsPeanut                          bool           `db:"contains_peanut"`
+	ContainsDairy                           bool           `db:"contains_dairy"`
+	ContainsEgg                             bool           `db:"contains_egg"`
 }
 
 func (q *Queries) GetUserIngredientPreferencesForUser(ctx context.Context, db DBTX, arg *GetUserIngredientPreferencesForUserParams) ([]*GetUserIngredientPreferencesForUserRow, error) {

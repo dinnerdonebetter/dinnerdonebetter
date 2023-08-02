@@ -42,27 +42,27 @@ WHERE users.archived_at IS NULL
 `
 
 type GetUserWithVerifiedTwoFactorRow struct {
-	ID                           string         `db:"id"`
-	FirstName                    string         `db:"first_name"`
-	LastName                     string         `db:"last_name"`
-	Username                     string         `db:"username"`
-	EmailAddress                 string         `db:"email_address"`
-	EmailAddressVerifiedAt       sql.NullTime   `db:"email_address_verified_at"`
-	AvatarSrc                    sql.NullString `db:"avatar_src"`
-	HashedPassword               string         `db:"hashed_password"`
-	RequiresPasswordChange       bool           `db:"requires_password_change"`
+	CreatedAt                    time.Time      `db:"created_at"`
+	Birthday                     sql.NullTime   `db:"birthday"`
+	ArchivedAt                   sql.NullTime   `db:"archived_at"`
 	PasswordLastChangedAt        sql.NullTime   `db:"password_last_changed_at"`
-	TwoFactorSecret              string         `db:"two_factor_secret"`
+	LastUpdatedAt                sql.NullTime   `db:"last_updated_at"`
+	EmailAddressVerifiedAt       sql.NullTime   `db:"email_address_verified_at"`
+	LastAcceptedPrivacyPolicy    sql.NullTime   `db:"last_accepted_privacy_policy"`
+	LastAcceptedTermsOfService   sql.NullTime   `db:"last_accepted_terms_of_service"`
 	TwoFactorSecretVerifiedAt    sql.NullTime   `db:"two_factor_secret_verified_at"`
+	UserAccountStatusExplanation string         `db:"user_account_status_explanation"`
+	FirstName                    string         `db:"first_name"`
 	ServiceRole                  string         `db:"service_role"`
 	UserAccountStatus            string         `db:"user_account_status"`
-	UserAccountStatusExplanation string         `db:"user_account_status_explanation"`
-	Birthday                     sql.NullTime   `db:"birthday"`
-	LastAcceptedTermsOfService   sql.NullTime   `db:"last_accepted_terms_of_service"`
-	LastAcceptedPrivacyPolicy    sql.NullTime   `db:"last_accepted_privacy_policy"`
-	CreatedAt                    time.Time      `db:"created_at"`
-	LastUpdatedAt                sql.NullTime   `db:"last_updated_at"`
-	ArchivedAt                   sql.NullTime   `db:"archived_at"`
+	LastName                     string         `db:"last_name"`
+	ID                           string         `db:"id"`
+	HashedPassword               string         `db:"hashed_password"`
+	TwoFactorSecret              string         `db:"two_factor_secret"`
+	EmailAddress                 string         `db:"email_address"`
+	Username                     string         `db:"username"`
+	AvatarSrc                    sql.NullString `db:"avatar_src"`
+	RequiresPasswordChange       bool           `db:"requires_password_change"`
 }
 
 func (q *Queries) GetUserWithVerifiedTwoFactor(ctx context.Context, db DBTX, id string) (*GetUserWithVerifiedTwoFactorRow, error) {

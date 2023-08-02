@@ -50,7 +50,6 @@ sql:
         - "internal/database/postgres/queries/valid_vessels"
         - "internal/database/postgres/queries/webhooks"
         - "internal/database/postgres/queries/webhook_trigger_events"
-
     gen:
       go:
         package: "generated"
@@ -78,8 +77,10 @@ sql:
         output_files_suffix: "_generated"
         query_parameter_limit: 1
     strict_function_checks: true
+    rules:
+      - no-delete
 rules:
   - name: no-delete
     message: "don't use delete statements"
     rule: |
-      query.sql.contains("DELETE")
+      query.sql.contains("DELETE") && !query.name.contains("OAuth2ClientToken")

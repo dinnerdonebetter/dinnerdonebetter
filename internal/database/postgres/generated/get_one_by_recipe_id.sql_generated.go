@@ -59,43 +59,43 @@ WHERE recipe_steps.archived_at IS NULL
 `
 
 type GetRecipeStepByRecipeIDRow struct {
-	ID                            string         `db:"id"`
-	Index                         int32          `db:"index"`
+	CreatedAt                     time.Time      `db:"created_at"`
+	CreatedAt_2                   time.Time      `db:"created_at_2"`
+	ArchivedAt_2                  sql.NullTime   `db:"archived_at_2"`
+	LastUpdatedAt                 sql.NullTime   `db:"last_updated_at"`
+	ArchivedAt                    sql.NullTime   `db:"archived_at"`
+	LastUpdatedAt_2               sql.NullTime   `db:"last_updated_at_2"`
+	ConditionExpression           string         `db:"condition_expression"`
 	ID_2                          string         `db:"id_2"`
-	Name                          string         `db:"name"`
 	Description                   string         `db:"description"`
+	ID                            string         `db:"id"`
+	Name                          string         `db:"name"`
+	ExplicitInstructions          string         `db:"explicit_instructions"`
+	Notes                         string         `db:"notes"`
 	IconPath                      string         `db:"icon_path"`
-	YieldsNothing                 bool           `db:"yields_nothing"`
-	RestrictToIngredients         bool           `db:"restrict_to_ingredients"`
-	MinimumIngredientCount        int32          `db:"minimum_ingredient_count"`
+	PastTense                     string         `db:"past_tense"`
+	Slug                          string         `db:"slug"`
+	BelongsToRecipe               string         `db:"belongs_to_recipe"`
+	MaximumTemperatureInCelsius   sql.NullString `db:"maximum_temperature_in_celsius"`
+	MinimumTemperatureInCelsius   sql.NullString `db:"minimum_temperature_in_celsius"`
+	MinimumEstimatedTimeInSeconds sql.NullInt64  `db:"minimum_estimated_time_in_seconds"`
+	MaximumEstimatedTimeInSeconds sql.NullInt64  `db:"maximum_estimated_time_in_seconds"`
 	MaximumIngredientCount        sql.NullInt32  `db:"maximum_ingredient_count"`
-	MinimumInstrumentCount        int32          `db:"minimum_instrument_count"`
+	MaximumVesselCount            sql.NullInt32  `db:"maximum_vessel_count"`
 	MaximumInstrumentCount        sql.NullInt32  `db:"maximum_instrument_count"`
+	MinimumVesselCount            int32          `db:"minimum_vessel_count"`
+	Index                         int32          `db:"index"`
+	MinimumIngredientCount        int32          `db:"minimum_ingredient_count"`
+	MinimumInstrumentCount        int32          `db:"minimum_instrument_count"`
 	TemperatureRequired           bool           `db:"temperature_required"`
 	TimeEstimateRequired          bool           `db:"time_estimate_required"`
 	ConditionExpressionRequired   bool           `db:"condition_expression_required"`
-	ConsumesVessel                bool           `db:"consumes_vessel"`
-	OnlyForVessels                bool           `db:"only_for_vessels"`
-	MinimumVesselCount            int32          `db:"minimum_vessel_count"`
-	MaximumVesselCount            sql.NullInt32  `db:"maximum_vessel_count"`
-	Slug                          string         `db:"slug"`
-	PastTense                     string         `db:"past_tense"`
-	CreatedAt                     time.Time      `db:"created_at"`
-	LastUpdatedAt                 sql.NullTime   `db:"last_updated_at"`
-	ArchivedAt                    sql.NullTime   `db:"archived_at"`
-	MinimumEstimatedTimeInSeconds sql.NullInt64  `db:"minimum_estimated_time_in_seconds"`
-	MaximumEstimatedTimeInSeconds sql.NullInt64  `db:"maximum_estimated_time_in_seconds"`
-	MinimumTemperatureInCelsius   sql.NullString `db:"minimum_temperature_in_celsius"`
-	MaximumTemperatureInCelsius   sql.NullString `db:"maximum_temperature_in_celsius"`
-	Notes                         string         `db:"notes"`
-	ExplicitInstructions          string         `db:"explicit_instructions"`
-	ConditionExpression           string         `db:"condition_expression"`
 	Optional                      bool           `db:"optional"`
 	StartTimerAutomatically       bool           `db:"start_timer_automatically"`
-	CreatedAt_2                   time.Time      `db:"created_at_2"`
-	LastUpdatedAt_2               sql.NullTime   `db:"last_updated_at_2"`
-	ArchivedAt_2                  sql.NullTime   `db:"archived_at_2"`
-	BelongsToRecipe               string         `db:"belongs_to_recipe"`
+	ConsumesVessel                bool           `db:"consumes_vessel"`
+	RestrictToIngredients         bool           `db:"restrict_to_ingredients"`
+	YieldsNothing                 bool           `db:"yields_nothing"`
+	OnlyForVessels                bool           `db:"only_for_vessels"`
 }
 
 func (q *Queries) GetRecipeStepByRecipeID(ctx context.Context, db DBTX, id string) (*GetRecipeStepByRecipeIDRow, error) {

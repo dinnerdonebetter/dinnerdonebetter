@@ -50,26 +50,26 @@ GROUP BY recipe_step_completion_conditions.id,
 `
 
 type GetAllRecipeStepCompletionConditionsForRecipeRow struct {
-	ID                                     string                  `db:"id"`
-	BelongsToRecipeStepCompletionCondition string                  `db:"belongs_to_recipe_step_completion_condition"`
-	RecipeStepIngredient                   string                  `db:"recipe_step_ingredient"`
-	ID_2                                   string                  `db:"id_2"`
-	BelongsToRecipeStep                    string                  `db:"belongs_to_recipe_step"`
+	CreatedAt                              time.Time               `db:"created_at"`
+	CreatedAt_2                            time.Time               `db:"created_at_2"`
+	ArchivedAt_2                           sql.NullTime            `db:"archived_at_2"`
+	LastUpdatedAt_2                        sql.NullTime            `db:"last_updated_at_2"`
+	ArchivedAt                             sql.NullTime            `db:"archived_at"`
+	LastUpdatedAt                          sql.NullTime            `db:"last_updated_at"`
+	PastTense                              string                  `db:"past_tense"`
 	ID_3                                   string                  `db:"id_3"`
-	Name                                   string                  `db:"name"`
-	Description                            string                  `db:"description"`
 	IconPath                               string                  `db:"icon_path"`
 	Slug                                   string                  `db:"slug"`
-	PastTense                              string                  `db:"past_tense"`
+	ID                                     string                  `db:"id"`
 	AttributeType                          IngredientAttributeType `db:"attribute_type"`
-	CreatedAt                              time.Time               `db:"created_at"`
-	LastUpdatedAt                          sql.NullTime            `db:"last_updated_at"`
-	ArchivedAt                             sql.NullTime            `db:"archived_at"`
-	Optional                               bool                    `db:"optional"`
+	Name                                   string                  `db:"name"`
+	Description                            string                  `db:"description"`
+	BelongsToRecipeStep                    string                  `db:"belongs_to_recipe_step"`
+	BelongsToRecipeStepCompletionCondition string                  `db:"belongs_to_recipe_step_completion_condition"`
 	Notes                                  string                  `db:"notes"`
-	CreatedAt_2                            time.Time               `db:"created_at_2"`
-	LastUpdatedAt_2                        sql.NullTime            `db:"last_updated_at_2"`
-	ArchivedAt_2                           sql.NullTime            `db:"archived_at_2"`
+	ID_2                                   string                  `db:"id_2"`
+	RecipeStepIngredient                   string                  `db:"recipe_step_ingredient"`
+	Optional                               bool                    `db:"optional"`
 }
 
 func (q *Queries) GetAllRecipeStepCompletionConditionsForRecipe(ctx context.Context, db DBTX, id string) ([]*GetAllRecipeStepCompletionConditionsForRecipeRow, error) {

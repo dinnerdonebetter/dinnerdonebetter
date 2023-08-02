@@ -44,24 +44,24 @@ WHERE recipe_prep_tasks.archived_at IS NULL
 `
 
 type ListAllRecipePrepTasksByRecipeRow struct {
-	ID                                     sql.NullString           `db:"id"`
-	Name                                   sql.NullString           `db:"name"`
-	Description                            sql.NullString           `db:"description"`
-	Notes                                  sql.NullString           `db:"notes"`
-	Optional                               sql.NullBool             `db:"optional"`
-	ExplicitStorageInstructions            sql.NullString           `db:"explicit_storage_instructions"`
-	MinimumTimeBufferBeforeRecipeInSeconds sql.NullInt32            `db:"minimum_time_buffer_before_recipe_in_seconds"`
-	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32            `db:"maximum_time_buffer_before_recipe_in_seconds"`
+	CreatedAt                              sql.NullTime             `db:"created_at"`
+	ArchivedAt                             sql.NullTime             `db:"archived_at"`
+	LastUpdatedAt                          sql.NullTime             `db:"last_updated_at"`
 	StorageType                            NullStorageContainerType `db:"storage_type"`
+	Description                            sql.NullString           `db:"description"`
+	ExplicitStorageInstructions            sql.NullString           `db:"explicit_storage_instructions"`
+	BelongsToRecipePrepTask                sql.NullString           `db:"belongs_to_recipe_prep_task"`
+	BelongsToRecipeStep                    sql.NullString           `db:"belongs_to_recipe_step"`
+	ID                                     sql.NullString           `db:"id"`
 	MinimumStorageTemperatureInCelsius     sql.NullString           `db:"minimum_storage_temperature_in_celsius"`
 	MaximumStorageTemperatureInCelsius     sql.NullString           `db:"maximum_storage_temperature_in_celsius"`
 	BelongsToRecipe                        sql.NullString           `db:"belongs_to_recipe"`
-	CreatedAt                              sql.NullTime             `db:"created_at"`
-	LastUpdatedAt                          sql.NullTime             `db:"last_updated_at"`
-	ArchivedAt                             sql.NullTime             `db:"archived_at"`
+	Notes                                  sql.NullString           `db:"notes"`
 	ID_2                                   sql.NullString           `db:"id_2"`
-	BelongsToRecipeStep                    sql.NullString           `db:"belongs_to_recipe_step"`
-	BelongsToRecipePrepTask                sql.NullString           `db:"belongs_to_recipe_prep_task"`
+	Name                                   sql.NullString           `db:"name"`
+	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32            `db:"maximum_time_buffer_before_recipe_in_seconds"`
+	MinimumTimeBufferBeforeRecipeInSeconds sql.NullInt32            `db:"minimum_time_buffer_before_recipe_in_seconds"`
+	Optional                               sql.NullBool             `db:"optional"`
 	SatisfiesRecipeStep                    sql.NullBool             `db:"satisfies_recipe_step"`
 }
 

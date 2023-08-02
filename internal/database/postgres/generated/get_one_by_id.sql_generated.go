@@ -45,28 +45,28 @@ WHERE meal_plan_options.archived_at IS NULL
 `
 
 type GetMealPlanOptionByIDRow struct {
-	ID                     string         `db:"id"`
-	AssignedCook           sql.NullString `db:"assigned_cook"`
-	AssignedDishwasher     sql.NullString `db:"assigned_dishwasher"`
-	Chosen                 bool           `db:"chosen"`
-	Tiebroken              bool           `db:"tiebroken"`
-	MealScale              string         `db:"meal_scale"`
-	MealID                 string         `db:"meal_id"`
-	Notes                  string         `db:"notes"`
 	CreatedAt              time.Time      `db:"created_at"`
-	LastUpdatedAt          sql.NullTime   `db:"last_updated_at"`
+	CreatedAt_2            time.Time      `db:"created_at_2"`
+	ArchivedAt_2           sql.NullTime   `db:"archived_at_2"`
+	LastUpdatedAt_2        sql.NullTime   `db:"last_updated_at_2"`
 	ArchivedAt             sql.NullTime   `db:"archived_at"`
-	BelongsToMealPlanEvent sql.NullString `db:"belongs_to_meal_plan_event"`
+	LastUpdatedAt          sql.NullTime   `db:"last_updated_at"`
+	MealScale              string         `db:"meal_scale"`
+	MinEstimatedPortions   string         `db:"min_estimated_portions"`
+	MealID                 string         `db:"meal_id"`
+	ID                     string         `db:"id"`
+	CreatedByUser          string         `db:"created_by_user"`
+	Notes                  string         `db:"notes"`
 	ID_2                   string         `db:"id_2"`
 	Name                   string         `db:"name"`
 	Description            string         `db:"description"`
-	MinEstimatedPortions   string         `db:"min_estimated_portions"`
 	MaxEstimatedPortions   sql.NullString `db:"max_estimated_portions"`
+	BelongsToMealPlanEvent sql.NullString `db:"belongs_to_meal_plan_event"`
+	AssignedDishwasher     sql.NullString `db:"assigned_dishwasher"`
+	AssignedCook           sql.NullString `db:"assigned_cook"`
 	EligibleForMealPlans   bool           `db:"eligible_for_meal_plans"`
-	CreatedAt_2            time.Time      `db:"created_at_2"`
-	LastUpdatedAt_2        sql.NullTime   `db:"last_updated_at_2"`
-	ArchivedAt_2           sql.NullTime   `db:"archived_at_2"`
-	CreatedByUser          string         `db:"created_by_user"`
+	Chosen                 bool           `db:"chosen"`
+	Tiebroken              bool           `db:"tiebroken"`
 }
 
 func (q *Queries) GetMealPlanOptionByID(ctx context.Context, db DBTX, id string) (*GetMealPlanOptionByIDRow, error) {

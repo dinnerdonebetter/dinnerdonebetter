@@ -40,24 +40,24 @@ WHERE service_settings.archived_at IS NULL
 `
 
 type GetServiceSettingConfigurationsForHouseholdRow struct {
-	ID                 string         `db:"id"`
-	Value              string         `db:"value"`
-	Notes              string         `db:"notes"`
-	ID_2               string         `db:"id_2"`
-	Name               string         `db:"name"`
-	Type               SettingType    `db:"type"`
-	Description        string         `db:"description"`
-	DefaultValue       sql.NullString `db:"default_value"`
-	Enumeration        string         `db:"enumeration"`
-	AdminsOnly         bool           `db:"admins_only"`
 	CreatedAt          time.Time      `db:"created_at"`
-	LastUpdatedAt      sql.NullTime   `db:"last_updated_at"`
+	CreatedAt_2        time.Time      `db:"created_at_2"`
+	ArchivedAt_2       sql.NullTime   `db:"archived_at_2"`
+	LastUpdatedAt_2    sql.NullTime   `db:"last_updated_at_2"`
 	ArchivedAt         sql.NullTime   `db:"archived_at"`
+	LastUpdatedAt      sql.NullTime   `db:"last_updated_at"`
+	Name               string         `db:"name"`
+	Enumeration        string         `db:"enumeration"`
+	Description        string         `db:"description"`
+	Type               SettingType    `db:"type"`
+	ID                 string         `db:"id"`
 	BelongsToUser      string         `db:"belongs_to_user"`
 	BelongsToHousehold string         `db:"belongs_to_household"`
-	CreatedAt_2        time.Time      `db:"created_at_2"`
-	LastUpdatedAt_2    sql.NullTime   `db:"last_updated_at_2"`
-	ArchivedAt_2       sql.NullTime   `db:"archived_at_2"`
+	ID_2               string         `db:"id_2"`
+	Notes              string         `db:"notes"`
+	Value              string         `db:"value"`
+	DefaultValue       sql.NullString `db:"default_value"`
+	AdminsOnly         bool           `db:"admins_only"`
 }
 
 func (q *Queries) GetServiceSettingConfigurationsForHousehold(ctx context.Context, db DBTX, belongsToHousehold string) ([]*GetServiceSettingConfigurationsForHouseholdRow, error) {

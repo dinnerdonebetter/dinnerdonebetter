@@ -341,36 +341,36 @@ WHERE (valid_vessels.archived_at IS NULL AND valid_measurement_units.archived_at
 `
 
 type GetValidVesselsNeedingIndexingRow struct {
-	ID                             string         `db:"id"`
-	Name                           string         `db:"name"`
-	PluralName                     string         `db:"plural_name"`
-	Description                    string         `db:"description"`
+	CreatedAt                      time.Time      `db:"created_at"`
+	CreatedAt_2                    time.Time      `db:"created_at_2"`
+	ArchivedAt_2                   sql.NullTime   `db:"archived_at_2"`
+	LastUpdatedAt_2                sql.NullTime   `db:"last_updated_at_2"`
+	ArchivedAt                     sql.NullTime   `db:"archived_at"`
+	LastUpdatedAt                  sql.NullTime   `db:"last_updated_at"`
+	IconPath_2                     string         `db:"icon_path_2"`
 	IconPath                       string         `db:"icon_path"`
-	UsableForStorage               bool           `db:"usable_for_storage"`
-	Slug                           string         `db:"slug"`
-	DisplayInSummaryLists          bool           `db:"display_in_summary_lists"`
-	IncludeInGeneratedInstructions bool           `db:"include_in_generated_instructions"`
+	Name                           string         `db:"name"`
 	Capacity                       string         `db:"capacity"`
 	ID_2                           string         `db:"id_2"`
 	Name_2                         string         `db:"name_2"`
 	Description_2                  string         `db:"description_2"`
-	Volumetric                     sql.NullBool   `db:"volumetric"`
-	IconPath_2                     string         `db:"icon_path_2"`
-	Universal                      bool           `db:"universal"`
-	Metric                         bool           `db:"metric"`
-	Imperial                       bool           `db:"imperial"`
+	PluralName                     string         `db:"plural_name"`
+	ID                             string         `db:"id"`
+	Description                    string         `db:"description"`
+	Shape                          VesselShape    `db:"shape"`
+	Slug                           string         `db:"slug"`
 	Slug_2                         string         `db:"slug_2"`
 	PluralName_2                   string         `db:"plural_name_2"`
-	CreatedAt                      time.Time      `db:"created_at"`
-	LastUpdatedAt                  sql.NullTime   `db:"last_updated_at"`
-	ArchivedAt                     sql.NullTime   `db:"archived_at"`
 	WidthInMillimeters             sql.NullString `db:"width_in_millimeters"`
 	LengthInMillimeters            sql.NullString `db:"length_in_millimeters"`
 	HeightInMillimeters            sql.NullString `db:"height_in_millimeters"`
-	Shape                          VesselShape    `db:"shape"`
-	CreatedAt_2                    time.Time      `db:"created_at_2"`
-	LastUpdatedAt_2                sql.NullTime   `db:"last_updated_at_2"`
-	ArchivedAt_2                   sql.NullTime   `db:"archived_at_2"`
+	Volumetric                     sql.NullBool   `db:"volumetric"`
+	Imperial                       bool           `db:"imperial"`
+	UsableForStorage               bool           `db:"usable_for_storage"`
+	DisplayInSummaryLists          bool           `db:"display_in_summary_lists"`
+	Metric                         bool           `db:"metric"`
+	Universal                      bool           `db:"universal"`
+	IncludeInGeneratedInstructions bool           `db:"include_in_generated_instructions"`
 }
 
 func (q *Queries) GetValidVesselsNeedingIndexing(ctx context.Context, db DBTX) ([]*GetValidVesselsNeedingIndexingRow, error) {

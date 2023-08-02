@@ -70,45 +70,45 @@ WHERE meal_plan_options.archived_at IS NULL
 `
 
 type ListAllMealPlanTasksByMealPlanRow struct {
-	ID                                     sql.NullString           `db:"id"`
-	ID_2                                   sql.NullString           `db:"id_2"`
-	AssignedCook                           sql.NullString           `db:"assigned_cook"`
-	AssignedDishwasher                     sql.NullString           `db:"assigned_dishwasher"`
-	Chosen                                 sql.NullBool             `db:"chosen"`
-	Tiebroken                              sql.NullBool             `db:"tiebroken"`
-	MealScale                              sql.NullString           `db:"meal_scale"`
-	MealID                                 sql.NullString           `db:"meal_id"`
-	Notes                                  sql.NullString           `db:"notes"`
-	CreatedAt                              sql.NullTime             `db:"created_at"`
+	CreatedAt_2                            time.Time                `db:"created_at_2"`
+	ArchivedAt_2                           sql.NullTime             `db:"archived_at_2"`
 	LastUpdatedAt                          sql.NullTime             `db:"last_updated_at"`
+	CompletedAt                            sql.NullTime             `db:"completed_at"`
+	LastUpdatedAt_3                        sql.NullTime             `db:"last_updated_at_3"`
+	CreatedAt_3                            sql.NullTime             `db:"created_at_3"`
+	LastUpdatedAt_2                        sql.NullTime             `db:"last_updated_at_2"`
+	CreatedAt                              sql.NullTime             `db:"created_at"`
 	ArchivedAt                             sql.NullTime             `db:"archived_at"`
-	BelongsToMealPlanEvent                 sql.NullString           `db:"belongs_to_meal_plan_event"`
+	BelongsToRecipeStep                    string                   `db:"belongs_to_recipe_step"`
+	ID_4                                   string                   `db:"id_4"`
+	BelongsToRecipePrepTask                string                   `db:"belongs_to_recipe_prep_task"`
+	BelongsToRecipe                        string                   `db:"belongs_to_recipe"`
 	ID_3                                   string                   `db:"id_3"`
 	Name                                   string                   `db:"name"`
 	Description                            string                   `db:"description"`
 	Notes_2                                string                   `db:"notes_2"`
-	Optional                               bool                     `db:"optional"`
 	ExplicitStorageInstructions            string                   `db:"explicit_storage_instructions"`
-	MinimumTimeBufferBeforeRecipeInSeconds int32                    `db:"minimum_time_buffer_before_recipe_in_seconds"`
-	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32            `db:"maximum_time_buffer_before_recipe_in_seconds"`
-	StorageType                            NullStorageContainerType `db:"storage_type"`
 	MinimumStorageTemperatureInCelsius     sql.NullString           `db:"minimum_storage_temperature_in_celsius"`
-	MaximumStorageTemperatureInCelsius     sql.NullString           `db:"maximum_storage_temperature_in_celsius"`
-	BelongsToRecipe                        string                   `db:"belongs_to_recipe"`
-	CreatedAt_2                            time.Time                `db:"created_at_2"`
-	LastUpdatedAt_2                        sql.NullTime             `db:"last_updated_at_2"`
-	ArchivedAt_2                           sql.NullTime             `db:"archived_at_2"`
-	ID_4                                   string                   `db:"id_4"`
-	BelongsToRecipeStep                    string                   `db:"belongs_to_recipe_step"`
-	BelongsToRecipePrepTask                string                   `db:"belongs_to_recipe_prep_task"`
-	SatisfiesRecipeStep                    bool                     `db:"satisfies_recipe_step"`
-	CreatedAt_3                            sql.NullTime             `db:"created_at_3"`
-	LastUpdatedAt_3                        sql.NullTime             `db:"last_updated_at_3"`
-	CompletedAt                            sql.NullTime             `db:"completed_at"`
-	Status                                 NullPrepStepStatus       `db:"status"`
+	ID_2                                   sql.NullString           `db:"id_2"`
+	BelongsToMealPlanEvent                 sql.NullString           `db:"belongs_to_meal_plan_event"`
 	CreationExplanation                    sql.NullString           `db:"creation_explanation"`
+	AssignedDishwasher                     sql.NullString           `db:"assigned_dishwasher"`
+	ID                                     sql.NullString           `db:"id"`
+	MaximumStorageTemperatureInCelsius     sql.NullString           `db:"maximum_storage_temperature_in_celsius"`
+	MealScale                              sql.NullString           `db:"meal_scale"`
 	StatusExplanation                      sql.NullString           `db:"status_explanation"`
+	MealID                                 sql.NullString           `db:"meal_id"`
+	AssignedCook                           sql.NullString           `db:"assigned_cook"`
+	Status                                 NullPrepStepStatus       `db:"status"`
+	Notes                                  sql.NullString           `db:"notes"`
 	AssignedToUser                         sql.NullString           `db:"assigned_to_user"`
+	StorageType                            NullStorageContainerType `db:"storage_type"`
+	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32            `db:"maximum_time_buffer_before_recipe_in_seconds"`
+	MinimumTimeBufferBeforeRecipeInSeconds int32                    `db:"minimum_time_buffer_before_recipe_in_seconds"`
+	Chosen                                 sql.NullBool             `db:"chosen"`
+	Tiebroken                              sql.NullBool             `db:"tiebroken"`
+	Optional                               bool                     `db:"optional"`
+	SatisfiesRecipeStep                    bool                     `db:"satisfies_recipe_step"`
 }
 
 func (q *Queries) ListAllMealPlanTasksByMealPlan(ctx context.Context, db DBTX, id string) ([]*ListAllMealPlanTasksByMealPlanRow, error) {

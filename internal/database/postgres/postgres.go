@@ -10,6 +10,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
@@ -40,6 +41,7 @@ type Querier struct {
 	sqlBuilder              squirrel.StatementBuilderType
 	secretGenerator         random.Generator
 	oauth2ClientTokenEncDec cryptography.EncryptorDecryptor
+	generatedQuerier        generated.Querier
 	timeFunc                func() time.Time
 	config                  *dbconfig.Config
 	db                      *sql.DB
@@ -80,6 +82,7 @@ func ProvideDatabaseClient(
 		tracer:                  tracer,
 		logQueries:              cfg.LogQueries,
 		timeFunc:                defaultTimeFunc,
+		generatedQuerier:        generated.New(),
 		secretGenerator:         random.NewGenerator(logger, tracerProvider),
 		connectionURL:           cfg.ConnectionDetails,
 		logger:                  logging.EnsureLogger(logger).WithName("querier"),
@@ -144,6 +147,22 @@ func (q *Querier) IsReady(ctx context.Context, waitPeriod time.Duration, maxAtte
 	}
 
 	return false
+}
+
+func timePointerFromNullTime(nt sql.NullTime) *time.Time {
+	if nt.Valid {
+		return &nt.Time
+	}
+
+	return nil
+}
+
+func stringPointerFromNullString(nt sql.NullString) *string {
+	if nt.Valid {
+		return &nt.String
+	}
+
+	return nil
 }
 
 func defaultTimeFunc() time.Time {
