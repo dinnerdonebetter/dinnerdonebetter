@@ -2,7 +2,6 @@ PWD                           := $(shell pwd)
 GOPATH                        := $(GOPATH)
 ARTIFACTS_DIR                 := artifacts
 COVERAGE_OUT                  := $(ARTIFACTS_DIR)/coverage.out
-GO                            := docker run --interactive --tty --volume $(PWD):$(PWD) --workdir $(PWD) --user $(shell id -u):$(shell id -g) golang:1.18-stretch go
 GO_FORMAT                     := gofmt -s -w
 THIS                          := github.com/dinnerdonebetter/backend
 TOTAL_PACKAGE_LIST            := `go list $(THIS)/...`
@@ -11,7 +10,7 @@ ENVIRONMENTS_DIR              := environments
 TEST_ENVIRONMENT_DIR          := $(ENVIRONMENTS_DIR)/testing
 TEST_DOCKER_COMPOSE_FILES_DIR := $(TEST_ENVIRONMENT_DIR)/compose_files
 GENERATED_QUERIES_DIR         := internal/database/postgres/generated
-SQL_GENERATOR                 := kjconroy/sqlc:1.20.0
+SQL_GENERATOR_IMAGE           := kjconroy/sqlc:1.20.0
 LINTER_IMAGE                  := golangci/golangci-lint:v1.53.3
 CONTAINER_LINTER_IMAGE        := openpolicyagent/conftest:v0.44.1
 CLOUD_JOBS                    := meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator search_data_index_scheduler
@@ -45,12 +44,12 @@ setup: $(ARTIFACTS_DIR) revendor rewire configs
 
 ensure_wire_installed:
 ifndef $(shell command -v wire 2> /dev/null)
-	$(shell GO111MODULE=off go install github.com/google/wire/cmd/wire@latest)
+	$(shell go install github.com/google/wire/cmd/wire@latest)
 endif
 
 ensure_fieldalignment_installed:
 ifndef $(shell command -v wire 2> /dev/null)
-	$(shell GO111MODULE=off go get -u golang.org/x/tools/...)
+	$(shell go install golang.org/x/tools/go/analysis/passes/fieldalignment/cmd/fieldalignment@latest)
 endif
 
 ensure_tagalign_installed:
@@ -60,7 +59,7 @@ endif
 
 ensure_scc_installed:
 ifndef $(shell command -v scc 2> /dev/null)
-	$(shell GO111MODULE=off go install github.com/boyter/scc@latest)
+	$(shell go install github.com/boyter/scc@latest)
 endif
 
 .PHONY: clean_vendor
@@ -141,22 +140,22 @@ lint_docker:
 
 .PHONY: queries_lint
 queries_lint:
-	@docker pull --quiet $(SQL_GENERATOR)
+	@docker pull --quiet $(SQL_GENERATOR_IMAGE)
 	docker run --rm \
 		--volume $(PWD):/src \
 		--workdir /src \
-		$(SQL_GENERATOR) compile --no-database --no-remote
+		$(SQL_GENERATOR_IMAGE) compile --no-database --no-remote
 	docker run --rm \
 		--volume $(PWD):/src \
 		--workdir /src \
-		$(SQL_GENERATOR) vet --no-database --no-remote
+		$(SQL_GENERATOR_IMAGE) vet --no-database --no-remote
 
 .PHONY: querier
 querier: queries_lint
 	docker run --rm \
 		--volume $(PWD):/src \
 		--workdir /src \
-	$(SQL_GENERATOR) generate
+	$(SQL_GENERATOR_IMAGE) generate
 	$(MAKE) format
 
 .PHONY: golang_lint
@@ -190,7 +189,7 @@ quicktest: $(ARTIFACTS_DIR) vendor build clear
 
 .PHONY: containertests
 containertests:
-	go test -tags testcontainers -cover -shuffle=on -race -failfast $(THIS)/internal/database/postgres
+	RUN_DATABASE_CONTAINER_TESTS=true TESTCONTAINERS_RYUK_DISABLED=true go test -cover -shuffle=on -race -failfast $(THIS)/internal/database/postgres -run ^TestQuerier_Integration_*
 
 ## Generated files
 
@@ -227,12 +226,13 @@ integration_tests_postgres:
 	--file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration-tests.yaml \
 	up \
 	--build \
-	--quiet-pull \
 	--force-recreate \
 	--remove-orphans \
+	--attach-dependencies \
+	--pull always \
+	--no-log-prefix \
 	--always-recreate-deps \
 	$(if $(filter y Y yes YES true TRUE plz sure yup YUP,$(LET_HANG)),,--abort-on-container-exit) \
-	--exit-code-from test \
 	--renew-anon-volumes
 
 ## Running

@@ -1,0 +1,18 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="only container tests" type="GoTestRunConfiguration" factoryName="Go Test">
+    <module name="backend" />
+    <working_directory value="$PROJECT_DIR$/internal/database/postgres" />
+    <envs>
+      <env name="RUN_DATABASE_CONTAINER_TESTS" value="true" />
+      <env name="TESTCONTAINERS_RYUK_DISABLED" value="true" />
+    </envs>
+    <root_directory value="$PROJECT_DIR$" />
+    <kind value="PACKAGE" />
+    <package value="github.com/dinnerdonebetter/backend/internal/database/postgres" />
+    <directory value="$PROJECT_DIR$" />
+    <filePath value="$PROJECT_DIR$" />
+    <framework value="gotest" />
+    <pattern value="^TestQuerier_Integration_*" />
+    <method v="2" />
+  </configuration>
+</component>
