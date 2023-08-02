@@ -169,7 +169,7 @@ func SendEmail(ctx context.Context, e event.Event) error {
 		shouldSkipIfUnverified = false
 		mail, err = email.BuildVerifyEmailAddressEmail(user, emailDeliveryRequest.EmailVerificationToken, envCfg)
 		if err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "building meal plan created email")
+			return observability.PrepareAndLogError(err, logger, span, "building address verification email")
 		}
 		emailType = "email address verification"
 	}

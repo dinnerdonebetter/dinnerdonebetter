@@ -1,3 +1,5 @@
+-- name: GetEmailVerificationTokenByUserID :one
+
 SELECT
 	users.email_address_verification_token
 FROM users

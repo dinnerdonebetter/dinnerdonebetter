@@ -1,3 +1,5 @@
+-- name: MarkMealPlanAsPrepTasksCreated :exec
+
 UPDATE meal_plans
 SET
 	tasks_created = 'true',

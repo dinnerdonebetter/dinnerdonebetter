@@ -1,3 +1,5 @@
+-- name: CheckRecipePrepTaskExistence :one
+
 SELECT EXISTS (
 	SELECT recipe_prep_tasks.id
 	FROM recipe_prep_tasks

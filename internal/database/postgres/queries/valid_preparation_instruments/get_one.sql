@@ -1,3 +1,5 @@
+-- name: GetValidPreparationInstrument :one
+
 SELECT
 	valid_preparation_instruments.id,
 	valid_preparation_instruments.notes,

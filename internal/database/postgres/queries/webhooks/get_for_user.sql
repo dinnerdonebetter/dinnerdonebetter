@@ -1,3 +1,5 @@
+-- name: GetWebhooksForUser :many
+
 SELECT webhooks.id,
        webhooks.name,
        webhooks.content_type,

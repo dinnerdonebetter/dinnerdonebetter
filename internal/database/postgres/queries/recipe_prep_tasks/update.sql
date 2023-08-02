@@ -1,3 +1,5 @@
+-- name: UpdateRecipePrepTask :exec
+
 UPDATE recipe_prep_tasks SET
 	 name = $1,
 	 description = $2,

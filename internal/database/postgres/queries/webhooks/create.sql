@@ -1,3 +1,5 @@
+-- name: CreateWebhook :exec
+
 INSERT INTO webhooks (
 	id,
 	"name",

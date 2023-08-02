@@ -1,3 +1,5 @@
+-- name: GetMeal :one
+
 SELECT
 	meals.id,
 	meals.name,

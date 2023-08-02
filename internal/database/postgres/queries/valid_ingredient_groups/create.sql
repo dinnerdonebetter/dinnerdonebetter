@@ -1,3 +1,5 @@
+-- name: CreateValidIngredientGroup :exec
+
 INSERT INTO valid_ingredient_groups
 (
 	id,

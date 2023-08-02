@@ -1,3 +1,5 @@
+-- name: MarkTwoFactorSecretAsUnverified :exec
+
 UPDATE users SET
 	two_factor_secret_verified_at = NULL,
 	two_factor_secret = $1,

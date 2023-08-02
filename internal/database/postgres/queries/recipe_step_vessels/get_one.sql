@@ -1,3 +1,5 @@
+-- name: GetRecipeStepVessel :one
+
 SELECT
     recipe_step_vessels.id,
 	valid_vessels.id,

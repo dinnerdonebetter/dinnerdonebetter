@@ -1,3 +1,5 @@
+-- name: UpdateValidIngredient :exec
+
 UPDATE valid_ingredients SET
 	name = $1,
 	description = $2,

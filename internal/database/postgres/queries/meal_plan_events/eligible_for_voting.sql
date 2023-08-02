@@ -1,3 +1,5 @@
+-- name: GetMealPlanEventsEligibleForVoting :many
+
 SELECT
   EXISTS (
     SELECT

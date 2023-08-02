@@ -194,7 +194,7 @@ func (q *Querier) GetValidVessel(ctx context.Context, validVesselID string) (*ty
 		validVesselID,
 	}
 
-	row := q.getOneRow(ctx, q.db, "validVessel", getValidVesselQuery, args)
+	row := q.getOneRow(ctx, q.db, "valid vessel", getValidVesselQuery, args)
 
 	validVessel, _, _, err := q.scanValidVessel(ctx, row, false)
 	if err != nil {

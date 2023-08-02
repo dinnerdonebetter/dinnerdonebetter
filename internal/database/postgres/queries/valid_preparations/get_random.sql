@@ -1,3 +1,5 @@
+-- name: GetRandomValidPreparation :one
+
 SELECT
 	valid_preparations.id,
 	valid_preparations.name,

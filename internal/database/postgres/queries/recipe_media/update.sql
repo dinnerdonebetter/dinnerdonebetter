@@ -1,3 +1,5 @@
+-- name: UpdateRecipeMedia :exec
+
 UPDATE recipe_media
 SET
 	belongs_to_recipe = $1,

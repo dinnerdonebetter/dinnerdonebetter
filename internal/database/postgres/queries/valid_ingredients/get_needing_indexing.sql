@@ -1,3 +1,5 @@
+-- name: GetValidIngredientsNeedingIndexing :many
+
 SELECT valid_ingredients.id
   FROM valid_ingredients
  WHERE (valid_ingredients.archived_at IS NULL)

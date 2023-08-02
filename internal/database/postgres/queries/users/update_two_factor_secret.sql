@@ -1,3 +1,5 @@
+-- name: UpdateUserTwoFactorSecret :exec
+
 UPDATE users SET
 	two_factor_secret_verified_at = $1,
 	two_factor_secret = $2,

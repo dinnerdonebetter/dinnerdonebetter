@@ -1,3 +1,5 @@
+-- name: GetValidIngredientGroups :many
+
 SELECT
     valid_ingredient_groups.id,
     valid_ingredient_groups.name,

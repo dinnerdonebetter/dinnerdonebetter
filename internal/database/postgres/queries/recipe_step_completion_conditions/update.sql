@@ -1,3 +1,5 @@
+-- name: UpdateRecipeStepCompletionCondition :exec
+
 UPDATE recipe_step_completion_conditions
 SET
 	optional = $1,

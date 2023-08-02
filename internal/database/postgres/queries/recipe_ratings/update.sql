@@ -1,3 +1,5 @@
+-- name: UpdateRecipeRating :exec
+
 UPDATE recipe_ratings
 SET
 	recipe_id = $1,

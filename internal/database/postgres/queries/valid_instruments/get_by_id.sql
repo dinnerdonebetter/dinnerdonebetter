@@ -1,3 +1,5 @@
+-- name: GetValidInstrumentByID :one
+
 SELECT valid_instruments.id,
        valid_instruments.name,
        valid_instruments.plural_name,

@@ -1,3 +1,5 @@
+-- name: CheckRecipeStepExistence :one
+
 SELECT EXISTS (
 	SELECT recipe_steps.id
 	FROM recipe_steps

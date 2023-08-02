@@ -1,3 +1,5 @@
+-- name: CheckMealPlanOptionVoteExistence :one
+
 SELECT EXISTS (
 	SELECT
 	 meal_plan_option_votes.id

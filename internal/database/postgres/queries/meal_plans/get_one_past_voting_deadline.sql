@@ -1,3 +1,5 @@
+-- name: GetOnePastVotingDeadline :one
+
 SELECT
 	meal_plans.id,
 	meal_plans.notes,

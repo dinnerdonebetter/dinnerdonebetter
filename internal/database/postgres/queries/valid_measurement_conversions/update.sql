@@ -1,3 +1,5 @@
+-- name: UpdateValidMeasurementConversion :exec
+
 UPDATE valid_measurement_conversions
 SET
 	from_unit = $1,

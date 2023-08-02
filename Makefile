@@ -13,7 +13,7 @@ TEST_DOCKER_COMPOSE_FILES_DIR := $(TEST_ENVIRONMENT_DIR)/compose_files
 GENERATED_QUERIES_DIR         := internal/database/postgres/generated
 SQL_GENERATOR                 := kjconroy/sqlc:1.20.0
 LINTER_IMAGE                  := golangci/golangci-lint:v1.53.3
-CONTAINER_LINTER_IMAGE        := openpolicyagent/conftest:v0.43.1
+CONTAINER_LINTER_IMAGE        := openpolicyagent/conftest:v0.44.1
 CLOUD_JOBS                    := meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator search_data_index_scheduler
 CLOUD_FUNCTIONS               := data_changes outbound_emailer search_indexer
 WIRE_TARGETS                  := server/http/build
@@ -157,6 +157,7 @@ querier: queries_lint
 		--volume $(PWD):/src \
 		--workdir /src \
 	$(SQL_GENERATOR) generate
+	$(MAKE) format
 
 .PHONY: golang_lint
 golang_lint:
@@ -167,7 +168,7 @@ golang_lint:
 		$(LINTER_IMAGE) golangci-lint run --config=.golangci.yml --timeout 15m ./...
 
 .PHONY: lint
-lint: lint_docker queries_lint golang_lint # terraform_lint
+lint: lint_docker queries_lint golang_lint
 
 .PHONY: clean_coverage
 clean_coverage:
@@ -191,10 +192,6 @@ quicktest: $(ARTIFACTS_DIR) vendor build clear
 containertests:
 	go test -tags testcontainers -cover -shuffle=on -race -failfast $(THIS)/internal/database/postgres
 
-.PHONY: check_queries
-check_queries:
-	$(SQL_GENERATOR) compile
-
 ## Generated files
 
 .PHONY: configs
@@ -208,13 +205,6 @@ typescript: clean_ts
 	mkdir -p $(ARTIFACTS_DIR)/typescript
 	go run github.com/dinnerdonebetter/backend/cmd/tools/codegen/gen_typescript
 	(cd ../frontend && make format)
-
-clean_swift:
-	rm -rf $(ARTIFACTS_DIR)/swift
-
-swift: clean_swift
-	mkdir -p $(ARTIFACTS_DIR)/swift
-	go run github.com/dinnerdonebetter/backend/cmd/tools/codegen/gen_swift
 
 ## Integration tests
 

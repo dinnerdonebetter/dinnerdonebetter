@@ -1,3 +1,5 @@
+-- name: GetRecipeStepByRecipeID :one
+
 SELECT
 	recipe_steps.id,
 	recipe_steps.index,

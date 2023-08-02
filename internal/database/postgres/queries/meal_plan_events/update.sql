@@ -1,3 +1,5 @@
+-- name: UpdateMealPlanEvent :exec
+
 UPDATE meal_plan_events
 SET notes = $1,
 	starts_at = $2,

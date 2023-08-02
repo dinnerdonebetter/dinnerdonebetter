@@ -22,7 +22,7 @@ image_tag_list = [
     "LATEST",
 ]
 
-# Looking for suspicious environemnt variables
+# Looking for suspicious environment variables
 deny[msg] {
     input[i].Cmd == "env"
     val := input[i].Value

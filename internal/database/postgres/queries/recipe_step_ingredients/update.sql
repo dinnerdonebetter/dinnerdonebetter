@@ -1,3 +1,5 @@
+-- name: UpdateRecipeStepIngredient :exec
+
 UPDATE recipe_step_ingredients SET
 	ingredient_id = $1,
 	name = $2,

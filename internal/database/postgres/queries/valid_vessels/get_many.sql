@@ -1,3 +1,5 @@
+-- name: GetValidVessels :many
+
 SELECT
   valid_vessels.id,
   valid_vessels.name,

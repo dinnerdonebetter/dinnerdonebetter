@@ -385,7 +385,7 @@ func (q *Querier) CreateMealPlanTasksForMealPlanOption(ctx context.Context, inpu
 	return outputs, nil
 }
 
-//go:embed queries/meal_plans/mark_as_steps_created.sql
+//go:embed queries/meal_plans/mark_as_tasks_created.sql
 var markMealPlanAsHavingStepsCreatedQuery string
 
 // MarkMealPlanAsHavingTasksCreated marks a meal plan as having all its tasks created.

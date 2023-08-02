@@ -1,3 +1,5 @@
+-- name: SearchUsersByUsername :many
+
 SELECT
 	users.id,
 	users.first_name,

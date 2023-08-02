@@ -1,0 +1,15 @@
+on: [gollum]
+#  pull_request:
+#    paths:
+#      - pkg/**
+#      - internal/**
+name: integration tests
+jobs:
+ run:
+   runs-on: ubuntu-latest
+   steps:
+     - name: Checkout code
+       uses: actions/checkout@v3
+
+     - name: run integration tests
+       run: make integration_tests

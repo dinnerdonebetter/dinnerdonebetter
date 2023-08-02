@@ -1,3 +1,5 @@
+-- name: GetValidPreparationsNeedingIndexing :many
+
 SELECT valid_preparations.id
   FROM valid_preparations
  WHERE (valid_preparations.archived_at IS NULL)

@@ -1,3 +1,5 @@
+-- name: GetUserIngredientPreferencesForUser :many
+
 SELECT
 	user_ingredient_preferences.id,
     valid_ingredients.id,

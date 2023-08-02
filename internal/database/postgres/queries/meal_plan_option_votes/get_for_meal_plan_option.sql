@@ -1,3 +1,5 @@
+-- name: GetMealPlanOptionVotesForMealPlanOption :many
+
 SELECT
 	meal_plan_option_votes.id,
 	meal_plan_option_votes.rank,

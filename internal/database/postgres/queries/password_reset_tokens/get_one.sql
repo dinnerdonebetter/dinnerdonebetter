@@ -1,3 +1,5 @@
+-- name: GetPasswordResetToken :one
+
 SELECT
 	password_reset_tokens.id,
 	password_reset_tokens.token,

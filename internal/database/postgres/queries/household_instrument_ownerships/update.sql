@@ -1,3 +1,5 @@
+-- name: UpdateHouseholdInstrumentOwnership :exec
+
 UPDATE household_instrument_ownerships
 SET
 	notes = $1,

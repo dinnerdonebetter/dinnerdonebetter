@@ -1,3 +1,5 @@
+-- name: GetMealPlanOptionsForMealPlanEvent :many
+
 SELECT
 	meal_plan_options.id,
 	meal_plan_options.assigned_cook,

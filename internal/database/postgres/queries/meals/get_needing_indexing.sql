@@ -1,3 +1,5 @@
+-- name: GetMealsNeedingIndexing :many
+
 SELECT meals.id
   FROM meals
  WHERE (meals.archived_at IS NULL)

@@ -1,3 +1,5 @@
+-- name: GetValidPreparationVessel :one
+
 SELECT
     valid_preparation_vessels.id,
     valid_preparation_vessels.notes,

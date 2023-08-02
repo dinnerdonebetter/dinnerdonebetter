@@ -1,3 +1,5 @@
+-- name: UpdateUser :exec
+
 UPDATE users SET
 	username = $1,
 	first_name = $2,

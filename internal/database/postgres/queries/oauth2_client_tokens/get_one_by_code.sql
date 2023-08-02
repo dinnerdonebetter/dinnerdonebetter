@@ -1,3 +1,5 @@
+-- name: GetOAuth2ClientTokenByCode :one
+
 SELECT
 	oauth2_client_tokens.id,
 	oauth2_client_tokens.client_id,
