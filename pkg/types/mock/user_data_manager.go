@@ -31,7 +31,7 @@ func (m *UserDataManagerMock) UpdateUserEmailAddress(ctx context.Context, userID
 }
 
 // UpdateUserDetails is a mock function.
-func (m *UserDataManagerMock) UpdateUserDetails(ctx context.Context, userID string, input *types.UserDetailsUpdateInput) error {
+func (m *UserDataManagerMock) UpdateUserDetails(ctx context.Context, userID string, input *types.UserDetailsDatabaseUpdateInput) error {
 	return m.Called(ctx, userID, input).Error(0)
 }
 

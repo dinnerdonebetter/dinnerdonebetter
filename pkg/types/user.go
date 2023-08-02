@@ -162,8 +162,8 @@ type (
 		TOTPToken       string `json:"totpToken"`
 	}
 
-	// UserDetailsUpdateInput represents input a User would provide when updating their information.
-	UserDetailsUpdateInput struct {
+	// UserDetailsUpdateRequestInput represents input a User would provide when updating their information.
+	UserDetailsUpdateRequestInput struct {
 		_ struct{}
 
 		FirstName       string    `json:"firstName"`
@@ -171,6 +171,14 @@ type (
 		Birthday        time.Time `json:"birthday"`
 		CurrentPassword string    `json:"currentPassword"`
 		TOTPToken       string    `json:"totpToken"`
+	}
+
+	// UserDetailsDatabaseUpdateInput represents input a User would provide when updating their information.
+	UserDetailsDatabaseUpdateInput struct {
+		_         struct{}
+		Birthday  time.Time `json:"-"`
+		FirstName string    `json:"-"`
+		LastName  string    `json:"-"`
 	}
 
 	// AvatarUpdateInput represents input a User would provide when updating their passwords.
@@ -229,7 +237,7 @@ type (
 		UpdateUserAvatar(ctx context.Context, userID, newAvatarContent string) error
 		UpdateUserUsername(ctx context.Context, userID, newUsername string) error
 		UpdateUserEmailAddress(ctx context.Context, userID, newEmailAddress string) error
-		UpdateUserDetails(ctx context.Context, userID string, input *UserDetailsUpdateInput) error
+		UpdateUserDetails(ctx context.Context, userID string, input *UserDetailsDatabaseUpdateInput) error
 		UpdateUserPassword(ctx context.Context, userID, newHash string) error
 		ArchiveUser(ctx context.Context, userID string) error
 		UserHasStatus(ctx context.Context, userID string, statuses ...string) (bool, error)
@@ -375,10 +383,10 @@ func (i *UserEmailAddressUpdateInput) ValidateWithContext(ctx context.Context) e
 	)
 }
 
-var _ validation.ValidatableWithContext = (*UserDetailsUpdateInput)(nil)
+var _ validation.ValidatableWithContext = (*UserDetailsUpdateRequestInput)(nil)
 
-// ValidateWithContext ensures our provided UserDetailsUpdateInput meets expectations.
-func (i *UserDetailsUpdateInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext ensures our provided UserDetailsUpdateRequestInput meets expectations.
+func (i *UserDetailsUpdateRequestInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, i,
 		validation.Field(&i.FirstName, validation.Required),
 		validation.Field(&i.CurrentPassword, validation.Required),

@@ -856,7 +856,6 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleUser := fakes.BuildFakeUser()
 		exampleUser.TwoFactorSecretVerifiedAt = nil
 		exampleUser.CreatedAt = exampleCreationTime
-		exampleUser.AccountStatus = ""
 		exampleUserCreationInput := converters.ConvertUserToUserDatabaseCreationInput(exampleUser)
 
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
@@ -1134,7 +1133,6 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleUser := fakes.BuildFakeUser()
 		exampleUser.TwoFactorSecretVerifiedAt = nil
 		exampleUser.CreatedAt = exampleCreationTime
-		exampleUser.AccountStatus = ""
 		exampleUserCreationInput := converters.ConvertUserToUserDatabaseCreationInput(exampleUser)
 
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
@@ -2093,7 +2091,7 @@ func TestQuerier_UpdateUserDetails(T *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleInput := fakes.BuildFakeUserDetailsUpdateInput()
+		exampleInput := fakes.BuildFakeUserDetailsDatabaseUpdateInput()
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -2118,7 +2116,7 @@ func TestQuerier_UpdateUserDetails(T *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleInput := fakes.BuildFakeUserDetailsUpdateInput()
+		exampleInput := fakes.BuildFakeUserDetailsDatabaseUpdateInput()
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)

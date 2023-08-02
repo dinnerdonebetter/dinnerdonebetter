@@ -172,7 +172,7 @@ func (q *Querier) getUser(ctx context.Context, userID string, withVerifiedTOTPSe
 var userHasStatusQuery string
 
 // UserHasStatus fetches whether a user has a particular status.
-func (q *Querier) UserHasStatus(ctx context.Context, userID string, statuses ...string) (banned bool, err error) {
+func (q *Querier) UserHasStatus(ctx context.Context, userID string, statuses ...string) (bool, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -675,7 +675,7 @@ func (q *Querier) UpdateUserEmailAddress(ctx context.Context, userID, newEmailAd
 var updateUserDetailsQuery string
 
 // UpdateUserDetails updates a user's username.
-func (q *Querier) UpdateUserDetails(ctx context.Context, userID string, input *types.UserDetailsUpdateInput) error {
+func (q *Querier) UpdateUserDetails(ctx context.Context, userID string, input *types.UserDetailsDatabaseUpdateInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

@@ -21,3 +21,6 @@ jobs:
 
      - name: run unit tests
        run: make quicktest
+       env:
+         TESTCONTAINERS_RYUK_DISABLED: true
+         RUN_DATABASE_CONTAINER_TESTS: true

@@ -23,7 +23,7 @@ func BuildFakeHousehold() *types.Household {
 	return &types.Household{
 		ID:                         householdID,
 		Name:                       fake.UUID(),
-		BillingStatus:              string(types.PaidHouseholdBillingStatus),
+		BillingStatus:              string(types.UnpaidHouseholdBillingStatus),
 		ContactPhone:               fake.PhoneFormatted(),
 		PaymentProcessorCustomerID: fake.UUID(),
 		CreatedAt:                  BuildFakeTime(),

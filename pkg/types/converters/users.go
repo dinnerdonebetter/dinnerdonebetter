@@ -39,3 +39,11 @@ func ConvertUserToUserSearchSubset(x *types.User) *types.UserSearchSubset {
 		EmailAddress: x.EmailAddress,
 	}
 }
+
+func ConvertUserDetailsUpdateRequestInputToUserDetailsUpdateInput(x *types.UserDetailsUpdateRequestInput) *types.UserDetailsDatabaseUpdateInput {
+	return &types.UserDetailsDatabaseUpdateInput{
+		FirstName: x.FirstName,
+		LastName:  x.LastName,
+		Birthday:  x.Birthday,
+	}
+}

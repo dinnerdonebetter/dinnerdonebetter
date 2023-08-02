@@ -20,6 +20,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
 	"github.com/boombuler/barcode"
 	"github.com/boombuler/barcode/qr"
@@ -837,15 +838,15 @@ func (s *service) UpdateUserDetailsHandler(res http.ResponseWriter, req *http.Re
 	tracing.AttachRequestToSpan(span, req)
 
 	// decode the request.
-	input := new(types.UserDetailsUpdateInput)
-	if err := s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
+	providedInput := new(types.UserDetailsUpdateRequestInput)
+	if err := s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
 		return
 	}
 
-	if err := input.ValidateWithContext(ctx); err != nil {
-		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
+	if err := providedInput.ValidateWithContext(ctx); err != nil {
+		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided providedInput was invalid")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
 		return
 	}
@@ -865,8 +866,8 @@ func (s *service) UpdateUserDetailsHandler(res http.ResponseWriter, req *http.Re
 	user, httpStatus := s.validateCredentialsForUpdateRequest(
 		ctx,
 		sessionCtxData.Requester.UserID,
-		input.CurrentPassword,
-		input.TOTPToken,
+		providedInput.CurrentPassword,
+		providedInput.TOTPToken,
 	)
 
 	// if the above function returns something other than 200, it means some error occurred.
@@ -875,8 +876,10 @@ func (s *service) UpdateUserDetailsHandler(res http.ResponseWriter, req *http.Re
 		return
 	}
 
+	dbInput := converters.ConvertUserDetailsUpdateRequestInputToUserDetailsUpdateInput(providedInput)
+
 	// update the user.
-	if err = s.userDataManager.UpdateUserDetails(ctx, user.ID, input); err != nil {
+	if err = s.userDataManager.UpdateUserDetails(ctx, user.ID, dbInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating user")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
