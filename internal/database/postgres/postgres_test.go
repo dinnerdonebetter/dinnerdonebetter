@@ -7,6 +7,7 @@ import (
 	"errors"
 	"io"
 	"log"
+	"os"
 	"regexp"
 	"strings"
 	"testing"
@@ -28,6 +29,14 @@ import (
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
 	"github.com/testcontainers/testcontainers-go/wait"
+)
+
+const (
+	exampleQuantity = 3
+)
+
+var (
+	runningContainerTests = strings.ToLower(os.Getenv("RUN_DATABASE_CONTAINER_TESTS")) == "true"
 )
 
 var _ sqlmock.Argument = (*idMatcher)(nil)
