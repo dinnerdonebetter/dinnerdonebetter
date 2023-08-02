@@ -8,6 +8,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -277,9 +278,6 @@ func (q *Querier) ModifyUserPermissions(ctx context.Context, householdID, userID
 //go:embed queries/household_user_memberships/transfer_ownership.sql
 var transferHouseholdOwnershipQuery string
 
-//go:embed queries/household_user_memberships/transfer_membership.sql
-var transferHouseholdMembershipQuery string
-
 // TransferHouseholdOwnership does a thing.
 func (q *Querier) TransferHouseholdOwnership(ctx context.Context, householdID string, input *types.HouseholdOwnershipTransferInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -320,16 +318,27 @@ func (q *Querier) TransferHouseholdOwnership(ctx context.Context, householdID st
 		return observability.PrepareAndLogError(err, logger, span, "transferring household to new owner")
 	}
 
-	transferHouseholdMembershipArgs := []any{
-		input.NewOwner,
-		householdID,
-		input.CurrentOwner,
+	isMember, err := q.UserIsMemberOfHousehold(ctx, input.NewOwner, householdID)
+	if err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareAndLogError(err, logger, span, "checking if user is member of household")
 	}
 
-	// create the membership.
-	if err = q.performWriteQuery(ctx, tx, "user memberships transfer", transferHouseholdMembershipQuery, transferHouseholdMembershipArgs); err != nil {
-		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareAndLogError(err, logger, span, "transferring household memberships")
+	if !isMember {
+		if err = q.addUserToHousehold(ctx, tx, &types.HouseholdUserMembershipDatabaseCreationInput{
+			ID:            identifiers.New(),
+			Reason:        "transferred ownership",
+			UserID:        input.NewOwner,
+			HouseholdID:   householdID,
+			HouseholdRole: "household_admin",
+		}); err != nil {
+			q.rollbackTransaction(ctx, tx)
+			return observability.PrepareAndLogError(err, logger, span, "adding user to household")
+		}
+	}
+
+	if err = q.removeUserFromHousehold(ctx, tx, input.CurrentOwner, householdID); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "removing user from household")
 	}
 
 	if err = tx.Commit(); err != nil {
@@ -381,6 +390,72 @@ func (q *Querier) addUserToHousehold(ctx context.Context, querier database.SQLQu
 //go:embed queries/household_user_memberships/remove_user_from_household.sql
 var removeUserFromHouseholdQuery string
 
+// removeUserFromHousehold removes a user's membership to a household.
+func (q *Querier) removeUserFromHousehold(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, userID, householdID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if userID == "" {
+		return ErrInvalidIDProvided
+	}
+	tracing.AttachUserIDToSpan(span, userID)
+
+	if householdID == "" {
+		return ErrInvalidIDProvided
+	}
+	tracing.AttachHouseholdIDToSpan(span, householdID)
+
+	logger := q.logger.WithValues(map[string]any{
+		keys.UserIDKey:      userID,
+		keys.HouseholdIDKey: householdID,
+	})
+
+	logger.Info("creating")
+
+	args := []any{
+		householdID,
+		userID,
+	}
+
+	// remove the membership.
+	if err := q.performWriteQuery(ctx, querier, "user membership removal", removeUserFromHouseholdQuery, args); err != nil {
+		q.rollbackTransaction(ctx, querier)
+		return observability.PrepareAndLogError(err, logger, span, "removing user from household")
+	}
+
+	logger.Info("user removed from household")
+
+	remainingHouseholds, fetchRemainingHouseholdsErr := q.getHouseholdsForUser(ctx, querier, userID, false, nil)
+	if fetchRemainingHouseholdsErr != nil {
+		q.rollbackTransaction(ctx, querier)
+		return observability.PrepareError(fetchRemainingHouseholdsErr, span, "fetching remaining households")
+	}
+
+	logger = logger.WithValue("count", len(remainingHouseholds.Data))
+	logger.Info("remaining households fetched")
+
+	if len(remainingHouseholds.Data) == 0 {
+		if err := q.createHouseholdForUser(ctx, querier, false, "", userID); err != nil {
+			return observability.PrepareAndLogError(err, logger, span, "creating household for new user")
+		}
+		return nil
+	}
+
+	household := remainingHouseholds.Data[0]
+
+	logger = logger.WithValue(keys.HouseholdIDKey, household.ID)
+	logger.Info("about to mark household as default")
+
+	if err := q.markHouseholdAsUserDefault(ctx, querier, userID, household.ID); err != nil {
+		q.rollbackTransaction(ctx, querier)
+		return observability.PrepareAndLogError(err, logger, span, "marking household as default")
+	}
+
+	logger.Info("marked household as default, committing transaction")
+
+	return nil
+}
+
 // RemoveUserFromHousehold removes a user's membership to a household.
 func (q *Querier) RemoveUserFromHousehold(ctx context.Context, userID, householdID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -408,48 +483,9 @@ func (q *Querier) RemoveUserFromHousehold(ctx context.Context, userID, household
 		return observability.PrepareError(createTransactionErr, span, "beginning transaction")
 	}
 
-	logger.Info("created transaction")
-
-	args := []any{
-		householdID,
-		userID,
-	}
-
-	// remove the membership.
-	if err := q.performWriteQuery(ctx, tx, "user membership removal", removeUserFromHouseholdQuery, args); err != nil {
-		q.rollbackTransaction(ctx, tx)
+	if err := q.removeUserFromHousehold(ctx, tx, userID, householdID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "removing user from household")
 	}
-
-	logger.Info("user removed from household")
-
-	remainingHouseholds, fetchRemainingHouseholdsErr := q.getHouseholdsForUser(ctx, tx, userID, false, nil)
-	if fetchRemainingHouseholdsErr != nil {
-		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareError(fetchRemainingHouseholdsErr, span, "fetching remaining households")
-	}
-
-	logger = logger.WithValue("count", len(remainingHouseholds.Data))
-	logger.Info("remaining households fetched")
-
-	if len(remainingHouseholds.Data) == 0 {
-		if err := q.createHouseholdForUser(ctx, tx, false, "", userID); err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "creating household for new user")
-		}
-		return nil
-	}
-
-	household := remainingHouseholds.Data[0]
-
-	logger = logger.WithValue(keys.HouseholdIDKey, household.ID)
-	logger.Info("about to mark household as default")
-
-	if err := q.markHouseholdAsUserDefault(ctx, tx, userID, household.ID); err != nil {
-		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareAndLogError(err, logger, span, "marking household as default")
-	}
-
-	logger.Info("marked household as default, committing transaction")
 
 	if err := tx.Commit(); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
