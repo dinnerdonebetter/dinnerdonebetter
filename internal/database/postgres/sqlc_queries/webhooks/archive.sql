@@ -1,3 +1,5 @@
+-- name: ArchiveWebhook :exec
+
 UPDATE webhooks
 SET
 	last_updated_at = NOW(),

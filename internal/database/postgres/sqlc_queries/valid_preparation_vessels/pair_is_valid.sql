@@ -1,3 +1,5 @@
+-- name: ValidPreparationVesselPairIsValid :one
+
 SELECT EXISTS(
 	SELECT id
 	FROM valid_preparation_vessels

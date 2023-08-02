@@ -1,3 +1,5 @@
+-- name: GetRecipePrepTask :one
+
 SELECT
 	recipe_prep_tasks.id,
 	recipe_prep_tasks.name,

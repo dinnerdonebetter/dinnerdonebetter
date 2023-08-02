@@ -1,3 +1,5 @@
+-- name: GetFinalizedMealPlansForPlanning :many
+
 SELECT
   meal_plans.id as meal_plan_id,
   meal_plan_options.id as meal_plan_option_id,

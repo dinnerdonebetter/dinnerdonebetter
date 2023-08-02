@@ -1,3 +1,5 @@
+-- name: UpdateValidMeasurementUnit :exec
+
 UPDATE valid_measurement_units SET
 	name = $1,
 	description = $2,

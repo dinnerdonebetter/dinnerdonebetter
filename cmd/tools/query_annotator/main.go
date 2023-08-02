@@ -186,1151 +186,1151 @@ var (
 			QueryType: sqlcQueryTypeExec,
 		},
 		"recipe_prep_task_steps/create.sql": {
-			Name:      "",
+			Name:      "CreateRecipePrepTaskStep",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"webhooks/create.sql": {
-			Name:      "",
+			Name:      "CreateWebhook",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"households/create.sql": {
-			Name:      "",
+			Name:      "CreateHousehold",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"recipe_step_completion_condition_ingredients/create.sql": {
-			Name:      "",
+			Name:      "CreateRecipeStepCompletionConditionIngredient",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"oauth2_client_tokens/create.sql": {
-			Name:      "",
+			Name:      "CreateOAuth2ClientToken",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"meal_plan_tasks/create.sql": {
-			Name:      "",
+			Name:      "CreateMealPlanTask",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"users/create.sql": {
-			Name:      "",
+			Name:      "CreateUser",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_vessels/create.sql": {
-			Name:      "",
+			Name:      "CreateValidVessel",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"recipe_step_completion_conditions/create.sql": {
-			Name:      "",
+			Name:      "CreateRecipeStepCompletionCondition",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_ingredient_states/create.sql": {
-			Name:      "",
+			Name:      "CreateValidIngredientState",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_instruments/create.sql": {
-			Name:      "",
+			Name:      "CreateValidInstrument",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"household_instrument_ownerships/create.sql": {
-			Name:      "",
+			Name:      "CreateHouseholdInstrumentOwnership",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"recipe_prep_tasks/create.sql": {
-			Name:      "",
+			Name:      "CreateRecipePrepTask",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_preparation_instruments/create.sql": {
-			Name:      "",
+			Name:      "CreateValidPreparationInstrument",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_preparation_vessels/create.sql": {
-			Name:      "",
+			Name:      "CreateValidPreparationVessel",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"recipe_step_vessels/create.sql": {
-			Name:      "",
+			Name:      "CreateRecipeStepVessel",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"recipe_prep_tasks/update.sql": {
-			Name:      "",
+			Name:      "UpdateRecipePrepTask",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"recipe_step_products/update.sql": {
-			Name:      "",
+			Name:      "UpdateRecipeStepProduct",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"recipe_steps/update.sql": {
-			Name:      "",
+			Name:      "UpdateRecipeStep",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"meal_plan_options/update.sql": {
-			Name:      "",
+			Name:      "UpdateMealPlanOption",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"household_instrument_ownerships/update.sql": {
-			Name:      "",
+			Name:      "UpdateHouseholdInstrumentOwnership",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"recipes/update.sql": {
-			Name:      "",
+			Name:      "UpdateRecipe",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"recipe_step_vessels/update.sql": {
-			Name:      "",
+			Name:      "UpdateRecipeStepVessel",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_preparation_vessels/update.sql": {
-			Name:      "",
+			Name:      "UpdateValidPreparationVessel",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"recipe_step_instruments/update.sql": {
-			Name:      "",
+			Name:      "UpdateRecipeStepInstrument",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_ingredient_state_ingredients/update.sql": {
-			Name:      "",
+			Name:      "UpdateValidIngredientStateIngredient",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_ingredient_measurement_units/update.sql": {
-			Name:      "",
+			Name:      "UpdateValidIngredientMeasurementUnit",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_preparations/update.sql": {
-			Name:      "",
+			Name:      "UpdateValidPreparation",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"recipe_ratings/update.sql": {
-			Name:      "",
+			Name:      "UpdateRecipeRating",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_instruments/update.sql": {
-			Name:      "",
+			Name:      "UpdateValidInstrument",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"meal_plan_grocery_list_items/update.sql": {
-			Name:      "",
+			Name:      "UpdateMealPlanGroceryListItem",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"meal_plan_option_votes/update.sql": {
-			Name:      "",
+			Name:      "UpdateMealPlanOptionVote",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_ingredient_states/update.sql": {
-			Name:      "",
+			Name:      "UpdateValidIngredientState",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_measurement_units/update.sql": {
-			Name:      "",
+			Name:      "UpdateValidMeasurementUnit",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"users/update.sql": {
-			Name:      "",
+			Name:      "UpdateUser",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"meal_plans/update.sql": {
-			Name:      "",
+			Name:      "UpdateMealPlan",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_ingredients/update.sql": {
-			Name:      "",
+			Name:      "UpdateValidIngredient",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_preparation_instruments/update.sql": {
-			Name:      "",
+			Name:      "UpdateValidPreparationInstrument",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"households/update.sql": {
-			Name:      "",
+			Name:      "UpdateHousehold",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"user_ingredient_preferences/update.sql": {
-			Name:      "",
+			Name:      "UpdateUserIngredientPreference",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_measurement_conversions/update.sql": {
-			Name:      "",
+			Name:      "UpdateValidMeasurementConversion",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_ingredient_preparations/update.sql": {
-			Name:      "",
+			Name:      "UpdateValidIngredientPreparation",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_vessels/update.sql": {
-			Name:      "",
+			Name:      "UpdateValidVessel",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"recipe_media/update.sql": {
-			Name:      "",
+			Name:      "UpdateRecipeMedia",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"recipe_step_ingredients/update.sql": {
-			Name:      "",
+			Name:      "UpdateRecipeStepIngredient",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"service_setting_configurations/update.sql": {
-			Name:      "",
+			Name:      "UpdateServiceSettingConfiguration",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"recipe_step_completion_conditions/update.sql": {
-			Name:      "",
+			Name:      "UpdateRecipeStepCompletionCondition",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"meal_plan_events/update.sql": {
-			Name:      "",
+			Name:      "UpdateMealPlanEvent",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_ingredient_groups/update.sql": {
-			Name:      "",
+			Name:      "UpdateValidIngredientGroup",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"recipe_prep_tasks/exists.sql": {
-			Name:      "",
+			Name:      "CheckRecipePrepTaskExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"meal_plan_options/exists.sql": {
-			Name:      "",
+			Name:      "CheckMealPlanOptionExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"webhooks/exists.sql": {
-			Name:      "",
+			Name:      "CheckWebhookExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_measurement_units/exists.sql": {
-			Name:      "",
+			Name:      "CheckValidMeasurementUnitExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_preparation_instruments/exists.sql": {
-			Name:      "",
+			Name:      "CheckValidPreparationInstrumentExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_vessels/exists.sql": {
-			Name:      "",
+			Name:      "CheckValidVesselExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"recipe_ratings/exists.sql": {
-			Name:      "",
+			Name:      "CheckRecipeRatingExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"service_settings/exists.sql": {
-			Name:      "",
+			Name:      "CheckServiceSettingExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"recipe_media/exists.sql": {
-			Name:      "",
+			Name:      "CheckRecipeMediaExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"meal_plan_grocery_list_items/exists.sql": {
-			Name:      "",
+			Name:      "CheckMealPlanGroceryListItemExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_ingredient_measurement_units/exists.sql": {
-			Name:      "",
+			Name:      "CheckValidIngredientMeasurementUnitExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_measurement_conversions/exists.sql": {
-			Name:      "",
+			Name:      "CheckValidMeasurementConversionExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"recipe_step_vessels/exists.sql": {
-			Name:      "",
+			Name:      "CheckRecipeStepVesselExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_ingredient_state_ingredients/exists.sql": {
-			Name:      "",
+			Name:      "CheckValidIngredientStateIngredientExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"oauth2_client_tokens/exists.sql": {
-			Name:      "",
+			Name:      "CheckOAuth2ClientTokenExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"meal_plan_tasks/exists.sql": {
-			Name:      "",
+			Name:      "CheckMealPlanTaskExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"recipe_step_ingredients/exists.sql": {
-			Name:      "",
+			Name:      "CheckRecipeStepIngredientExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"service_setting_configurations/exists.sql": {
-			Name:      "",
+			Name:      "CheckServiceSettingConfigurationExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_ingredient_groups/exists.sql": {
-			Name:      "",
+			Name:      "CheckValidIngredientGroupExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"user_ingredient_preferences/exists.sql": {
-			Name:      "",
+			Name:      "CheckUserIngredientPreferenceExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"meal_plans/exists.sql": {
-			Name:      "",
+			Name:      "CheckMealPlanExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"household_instrument_ownerships/exists.sql": {
-			Name:      "",
+			Name:      "CheckHouseholdInstrumentOwnershipExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"recipe_step_products/exists.sql": {
-			Name:      "",
+			Name:      "CheckRecipeStepProductExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_ingredient_states/exists.sql": {
-			Name:      "",
+			Name:      "CheckValidIngredientStateExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_instruments/exists.sql": {
-			Name:      "",
+			Name:      "CheckValidInstrumentExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"recipes/exists.sql": {
-			Name:      "",
+			Name:      "CheckRecipeExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_ingredients/exists.sql": {
-			Name:      "",
+			Name:      "CheckValidIngredientExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"recipe_steps/exists.sql": {
-			Name:      "",
+			Name:      "CheckRecipeStepExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"meals/exists.sql": {
-			Name:      "",
+			Name:      "CheckMealExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_ingredient_preparations/exists.sql": {
-			Name:      "",
+			Name:      "CheckValidIngredientPreparationExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"recipe_step_instruments/exists.sql": {
-			Name:      "",
+			Name:      "CheckRecipeStepInstrumentExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"meal_plan_option_votes/exists.sql": {
-			Name:      "",
+			Name:      "CheckMealPlanOptionVoteExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_preparations/exists.sql": {
-			Name:      "",
+			Name:      "CheckValidPreparationExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"household_invitations/exists.sql": {
-			Name:      "",
+			Name:      "CheckHouseholdInvitationExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"meal_plan_events/exists.sql": {
-			Name:      "",
+			Name:      "CheckMealPlanEventExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_preparation_vessels/exists.sql": {
-			Name:      "",
+			Name:      "CheckValidPreparationVesselExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"recipe_step_completion_conditions/exists.sql": {
-			Name:      "",
+			Name:      "CheckRecipeStepCompletionConditionExistence",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"recipe_ratings/get_many.sql": {
-			Name:      "",
+			Name:      "GetRecipeRatings",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"recipe_step_completion_conditions/get_many.sql": {
-			Name:      "",
+			Name:      "GetRecipeStepCompletionConditions",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"valid_ingredient_groups/get_many.sql": {
-			Name:      "",
+			Name:      "GetValidIngredientGroups",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"valid_instruments/get_many.sql": {
-			Name:      "",
+			Name:      "GetValidInstruments",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"webhooks/get_many.sql": {
-			Name:      "",
+			Name:      "GetWebhooks",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"valid_ingredients/get_many.sql": {
-			Name:      "",
+			Name:      "GetValidIngredients",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"valid_vessels/get_many.sql": {
-			Name:      "",
+			Name:      "GetValidVessels",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"household_instrument_ownerships/get_many.sql": {
-			Name:      "",
+			Name:      "GetHouseholdInstrumentOwnerships",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"recipes/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveRecipe",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"recipe_step_products/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveRecipeStepProduct",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_ingredient_preparations/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveValidIngredientPreparation",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"oauth2_clients/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveOAuth2Client",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"users/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveUser",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"recipe_step_ingredients/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveRecipeStepIngredient",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_instruments/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveValidInstrument",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"recipe_prep_tasks/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveRecipePrepTask",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_preparation_vessels/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveValidPreparationVessel",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"recipe_step_vessels/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveRecipeStepVessel",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_measurement_units/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveValidMeasurementUnit",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_ingredient_state_ingredients/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveValidIngredientStateIngredient",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_vessels/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveValidVessel",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_ingredient_states/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveValidIngredientState",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"meal_plan_events/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveMealPlanEvent",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"meal_plan_options/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveMealPlanOption",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"meal_plan_option_votes/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveMealPlanOptionVote",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"recipe_step_instruments/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveRecipeStepInstrument",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_ingredient_measurement_units/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveValidIngredientMeasurementUnit",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"meals/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveMeal",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_preparations/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveValidPreparation",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"webhooks/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveWebhook",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"households/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveHousehold",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"household_instrument_ownerships/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveHouseholdInstrumentOwnership",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"service_setting_configurations/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveServiceSettingConfiguration",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"service_settings/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveServiceSetting",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"recipe_steps/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveRecipeStep",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"user_ingredient_preferences/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveUserIngredientPreference",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"meal_plan_grocery_list_items/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveMealPlanGroceryListItem",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_preparation_instruments/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveValidPreparationInstrument",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"recipe_ratings/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveRecipeRating",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"meal_plans/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveMealPlan",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"recipe_step_completion_conditions/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveRecipeStepCompletionCondition",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_measurement_conversions/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveValidMeasurementConversion",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_ingredient_groups/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveValidIngredientGroup",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"recipe_media/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveRecipeMedia",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_ingredient_state_ingredients/pair_is_valid.sql": {
-			Name:      "",
+			Name:      "CheckValidityOfValidIngredientStateIngredientPair",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_ingredients/archive.sql": {
-			Name:      "",
+			Name:      "ArchiveValidIngredient",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_ingredient_groups/get_one.sql": {
-			Name:      "",
+			Name:      "GetValidIngredientGroup",
 			QueryType: sqlcQueryTypeMany,
 		},
-		"meal_plans/mark_as_steps_created.sql": {
-			Name:      "",
+		"meal_plans/mark_as_tasks_created.sql": {
+			Name:      "MarkMealPlanAsPrepTasksCreated",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"meal_plans/get_finalized_without_grocery_list_init.sql": {
-			Name:      "",
+			Name:      "GetFinalizedMealPlansWithoutGroceryListInit",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"valid_vessels/get_one.sql": {
-			Name:      "",
+			Name:      "GetValidVessel",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"recipes/update_last_indexed_at.sql": {
-			Name:      "",
+			Name:      "UpdateRecipeLastIndexedAt",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_ingredient_states/update_last_indexed_at.sql": {
-			Name:      "",
+			Name:      "UpdateValidIngredientStateLastIndexedAt",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_measurement_units/update_last_indexed_at.sql": {
-			Name:      "",
+			Name:      "UpdateValidMeasurementUnitLastIndexedAt",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_vessels/update_last_indexed_at.sql": {
-			Name:      "",
+			Name:      "UpdateValidVesselLastIndexedAt",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_instruments/update_last_indexed_at.sql": {
-			Name:      "",
+			Name:      "UpdateValidInstrumentLastIndexedAt",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_ingredients/update_last_indexed_at.sql": {
-			Name:      "",
+			Name:      "UpdateValidIngredientLastIndexedAt",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"meals/update_last_indexed_at.sql": {
-			Name:      "",
+			Name:      "UpdateMealLastIndexedAt",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_preparations/update_last_indexed_at.sql": {
-			Name:      "",
+			Name:      "UpdateValidPreparationLastIndexedAt",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"users/update_last_indexed_at.sql": {
-			Name:      "",
+			Name:      "UpdateUserLastIndexedAt",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_ingredient_state_ingredients/get_one.sql": {
-			Name:      "",
+			Name:      "GetValidIngredientStateIngredient",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"meal_plans/get_one.sql": {
-			Name:      "",
+			Name:      "GetMealPlan",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_measurement_units/get_one.sql": {
-			Name:      "",
+			Name:      "GetValidMeasurementUnit",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"meals/get_one.sql": {
-			Name:      "",
+			Name:      "GetMeal",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"recipe_step_products/get_one.sql": {
-			Name:      "",
+			Name:      "GetRecipeStepProduct",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"recipe_step_vessels/get_one.sql": {
-			Name:      "",
+			Name:      "GetRecipeStepVessel",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"recipe_steps/get_one.sql": {
-			Name:      "",
+			Name:      "GetRecipeStep",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"meal_plan_tasks/get_one.sql": {
-			Name:      "",
+			Name:      "GetMealPlanTask",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"service_settings/get_one.sql": {
-			Name:      "",
+			Name:      "GetServiceSetting",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"recipe_step_completion_conditions/get_one.sql": {
-			Name:      "",
+			Name:      "GetRecipeStepCompletionCondition",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_preparations/get_one.sql": {
-			Name:      "",
+			Name:      "GetValidPreparation",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_preparation_instruments/get_one.sql": {
-			Name:      "",
+			Name:      "GetValidPreparationInstrument",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"webhooks/get_one.sql": {
-			Name:      "",
+			Name:      "GetWebhook",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"recipe_prep_tasks/get_one.sql": {
-			Name:      "",
+			Name:      "GetRecipePrepTask",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_preparation_vessels/get_one.sql": {
-			Name:      "",
+			Name:      "GetValidPreparationVessel",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_ingredient_measurement_units/get_one.sql": {
-			Name:      "",
+			Name:      "GetValidIngredientMeasurementUnit",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"meal_plan_events/get_one.sql": {
-			Name:      "",
+			Name:      "GetMealPlanEvent",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"meal_plan_options/get_one.sql": {
-			Name:      "",
+			Name:      "GetMealPlanOption",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_measurement_conversions/get_one.sql": {
-			Name:      "",
+			Name:      "GetValidMeasurementConversion",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"recipe_media/get_one.sql": {
-			Name:      "",
+			Name:      "GetRecipeMedia",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_ingredient_preparations/get_one.sql": {
-			Name:      "",
+			Name:      "GetValidIngredientPreparation",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_ingredient_states/get_one.sql": {
-			Name:      "",
+			Name:      "GetValidIngredientState",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_instruments/get_one.sql": {
-			Name:      "",
+			Name:      "GetValidInstrument",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"password_reset_tokens/get_one.sql": {
-			Name:      "",
+			Name:      "GetPasswordResetToken",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"recipe_ratings/get_one.sql": {
-			Name:      "",
+			Name:      "GetRecipeRating",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"household_instrument_ownerships/get_one.sql": {
-			Name:      "",
+			Name:      "GetHouseholdInstrumentOwnership",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"recipe_step_instruments/get_one.sql": {
-			Name:      "",
+			Name:      "GetRecipeStepInstrument",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_ingredients/get_one.sql": {
-			Name:      "",
+			Name:      "GetValidIngredient",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"meal_plan_option_votes/get_one.sql": {
-			Name:      "",
+			Name:      "GetMealPlanOptionVote",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"recipe_step_ingredients/get_one.sql": {
-			Name:      "",
+			Name:      "GetRecipeStepIngredient",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"meal_plan_grocery_list_items/get_one.sql": {
-			Name:      "",
+			Name:      "GetMealPlanGroceryListItem",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"users/update_two_factor_secret.sql": {
-			Name:      "",
+			Name:      "UpdateUserTwoFactorSecret",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"users/update_avatar_src.sql": {
-			Name:      "",
+			Name:      "UpdateUserAvatarSrc",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"users/update_details.sql": {
-			Name:      "",
+			Name:      "UpdateUserDetails",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"users/update_email_address.sql": {
-			Name:      "",
+			Name:      "UpdateUserEmailAddress",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"users/update_password.sql": {
-			Name:      "",
+			Name:      "UpdateUserPassword",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"users/update_username.sql": {
-			Name:      "",
+			Name:      "UpdateUserUsername",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"meal_plan_tasks/change_status.sql": {
-			Name:      "",
+			Name:      "ChangeMealPlanTaskStatus",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_measurement_units/search.sql": {
-			Name:      "",
+			Name:      "SearchForValidMeasurementUnits",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"service_settings/search.sql": {
-			Name:      "",
+			Name:      "SearchForServiceSettings",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"valid_vessels/search.sql": {
-			Name:      "",
+			Name:      "SearchForValidVessels",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"valid_instruments/search.sql": {
-			Name:      "",
+			Name:      "SearchForValidInstruments",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"valid_preparations/search.sql": {
-			Name:      "",
+			Name:      "SearchForValidPreparations",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"valid_ingredients/search.sql": {
-			Name:      "",
+			Name:      "SearchForValidIngredients",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"valid_ingredient_states/search.sql": {
-			Name:      "",
+			Name:      "SearchForValidIngredientStates",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"valid_ingredient_groups/search.sql": {
-			Name:      "",
+			Name:      "SearchForValidIngredientGroups",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"users/get_by_email.sql": {
-			Name:      "",
+			Name:      "GetUserByEmail",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_measurement_units/get_random.sql": {
-			Name:      "",
+			Name:      "GetRandomValidMeasurementUnit",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_vessels/get_random.sql": {
-			Name:      "",
+			Name:      "GetRandomValidVessel",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_instruments/get_random.sql": {
-			Name:      "",
+			Name:      "GetRandomValidInstrument",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_ingredients/get_random.sql": {
-			Name:      "",
+			Name:      "GetRandomValidIngredient",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_preparations/get_random.sql": {
-			Name:      "",
+			Name:      "GetRandomValidPreparation",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_instruments/get_by_id.sql": {
-			Name:      "",
+			Name:      "GetValidInstrumentByID",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_measurement_units/get_by_id.sql": {
-			Name:      "",
+			Name:      "GetValidMeasurementUnitByID",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_ingredients/get_by_id.sql": {
-			Name:      "",
+			Name:      "GetValidIngredientByID",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"recipes/get_by_id.sql": {
-			Name:      "",
+			Name:      "GetRecipeByID",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"service_setting_configurations/get_by_id.sql": {
-			Name:      "",
+			Name:      "GetServiceSettingConfigurationByID",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"users/get_by_id.sql": {
-			Name:      "",
+			Name:      "GetUserByID",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_preparations/get_by_id.sql": {
-			Name:      "",
+			Name:      "GetValidPreparationByID",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"meal_plan_options/finalize.sql": {
-			Name:      "",
+			Name:      "FinalizeMealPlanOption",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"meal_plans/get_one_past_voting_deadline.sql": {
-			Name:      "",
+			Name:      "GetOnePastVotingDeadline",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"oauth2_client_tokens/get_one_by_access.sql": {
-			Name:      "",
+			Name:      "GetOAuth2ClientTokenByAccess",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"oauth2_client_tokens/get_one_by_code.sql": {
-			Name:      "",
+			Name:      "GetOAuth2ClientTokenByCode",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"recipe_steps/get_one_by_recipe_id.sql": {
-			Name:      "",
+			Name:      "GetRecipeStepByRecipeID",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"oauth2_client_tokens/get_one_by_refresh.sql": {
-			Name:      "",
+			Name:      "GetOAuth2ClientTokenByRefresh",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"meal_plan_options/get_one_by_id.sql": {
-			Name:      "",
+			Name:      "GetMealPlanOptionByID",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"recipe_step_ingredients/get_for_recipe.sql": {
-			Name:      "",
+			Name:      "GetRecipeStepIngredientsForRecipe",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"recipes/get_by_id_and_author_id.sql": {
-			Name:      "",
+			Name:      "GetRecipeByIDAndAuthorID",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"valid_ingredient_groups/create_group_member.sql": {
-			Name:      "",
+			Name:      "CreateValidIngredientGroupMember",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"oauth2_client_tokens/archive_by_code.sql": {
-			Name:      "",
+			Name:      "ArchiveOAuth2ClientTokenByCode",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"household_user_memberships/mark_as_user_default.sql": {
-			Name:      "",
+			Name:      "MarkHouseholdUserMembershipAsUserDefault",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"meal_plan_tasks/list_incomplete_by_meal_plan_option.sql": {
-			Name:      "",
+			Name:      "ListIncompleteMealPlanTasksByMealPlanOption",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"households/get_by_id_with_memberships.sql": {
-			Name:      "",
+			Name:      "GetHouseholdByIDWithMemberships",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"oauth2_client_tokens/archive_by_refresh.sql": {
-			Name:      "",
+			Name:      "ArchiveOAuth2ClientTokenByRefresh",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"recipe_step_completion_conditions/get_all_for_recipe.sql": {
-			Name:      "",
+			Name:      "GetAllRecipeStepCompletionConditionsForRecipe",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"meal_plan_options/get_for_meal_plan_event.sql": {
-			Name:      "",
+			Name:      "GetMealPlanOptionsForMealPlanEvent",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"recipe_step_products/get_for_recipe.sql": {
-			Name:      "",
+			Name:      "GetRecipeStepProductsForRecipe",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"household_invitations/get_by_token_and_id.sql": {
-			Name:      "",
+			Name:      "GetHouseholdInvitationByTokenAndID",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"service_setting_configurations/get_settings_for_household.sql": {
-			Name:      "",
+			Name:      "GetServiceSettingConfigurationsForHousehold",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"service_setting_configurations/get_settings_for_user.sql": {
-			Name:      "",
+			Name:      "GetServiceSettingConfigurationsForUser",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"household_invitations/attach_invitations_to_user_id.sql": {
-			Name:      "",
+			Name:      "AttachHouseholdInvitationsToUserID",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"service_setting_configurations/get_for_user_by_setting_name.sql": {
-			Name:      "",
+			Name:      "GetServiceSettingConfigurationsForUserBySettingName",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"household_user_memberships/get_default_household_id_for_user.sql": {
-			Name:      "",
+			Name:      "GetDefaultHouseholdIDForUser",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_preparation_vessels/pair_is_valid.sql": {
-			Name:      "",
+			Name:      "ValidPreparationVesselPairIsValid",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"recipe_media/for_recipe.sql": {
-			Name:      "",
+			Name:      "GetRecipeMediaForRecipe",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"webhooks/get_for_user.sql": {
-			Name:      "",
+			Name:      "GetWebhooksForUser",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"meal_plan_events/eligible_for_voting.sql": {
-			Name:      "",
+			Name:      "GetMealPlanEventsEligibleForVoting",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"users/mark_email_address_as_verified.sql": {
-			Name:      "",
+			Name:      "MarkEmailAddressAsVerified",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_preparation_instruments/pair_is_valid.sql": {
-			Name:      "",
+			Name:      "ValidPreparationInstrumentPairIsValid",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"household_user_memberships/remove_user_from_household.sql": {
-			Name:      "",
+			Name:      "RemoveUserFromHousehold",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_ingredient_measurement_units/pair_is_valid.sql": {
-			Name:      "",
+			Name:      "ValidIngredientMeasurementUnitPairIsValid",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"admin/set_user_account_status.sql": {
-			Name:      "",
+			Name:      "SetUserAccountStatus",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"service_setting_configurations/get_for_household_by_setting_name.sql": {
-			Name:      "",
+			Name:      "GetServiceSettingConfigurationsForHouseholdBySettingName",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"valid_measurement_conversions/get_all_from_measurement_unit.sql": {
-			Name:      "",
+			Name:      "GetAllValidMeasurementConversionsFromMeasurementUnit",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"household_invitations/get_by_household_and_id.sql": {
-			Name:      "",
+			Name:      "GetHouseholdInvitationByHouseholdAndID",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"users/get_by_email_verification_token.sql": {
-			Name:      "",
+			Name:      "GetUserByEmailAddressVerificationToken",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"users/mark_two_factor_secret_as_unverified.sql": {
-			Name:      "",
+			Name:      "MarkTwoFactorSecretAsUnverified",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"meal_plans/get_finalized_for_planning.sql": {
-			Name:      "",
+			Name:      "GetFinalizedMealPlansForPlanning",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"user_ingredient_preferences/get_for_user.sql": {
-			Name:      "",
+			Name:      "GetUserIngredientPreferencesForUser",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"users/get_admin_by_username.sql": {
-			Name:      "",
+			Name:      "GetAdminUserByUsername",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_ingredient_preparations/get_values_for_ingredient.sql": {
-			Name:      "",
+			Name:      "GetValidIngredientPreparationsForIngredient",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"household_user_memberships/create_for_new_user.sql": {
-			Name:      "",
+			Name:      "CreateHouseholdUserMembershipForNewUser",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_ingredient_groups/archive_group_member.sql": {
-			Name:      "",
+			Name:      "ArchiveValidIngredientGroupMember",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"meal_plan_grocery_list_items/get_all_for_meal_plan.sql": {
-			Name:      "",
+			Name:      "GetMealPlanGroceryListItemsForMealPlan",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"valid_ingredient_preparations/get_values_for_preparation.sql": {
-			Name:      "",
+			Name:      "GetValidIngredientPreparationsForPreparation",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"meal_plan_events/get_for_meal_plan.sql": {
-			Name:      "",
+			Name:      "GetMealPlanEventsForMealPlan",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"household_user_memberships/add_user_to_household.sql": {
-			Name:      "",
+			Name:      "AddUserToHousehold",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"oauth2_clients/get_by_client_id.sql": {
-			Name:      "",
+			Name:      "GetOAuth2ClientByClientID",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"recipe_prep_tasks/list_all_by_recipe.sql": {
-			Name:      "",
+			Name:      "ListAllRecipePrepTasksByRecipe",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"users/exists_with_status.sql": {
-			Name:      "",
+			Name:      "UserExistsWithStatus",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"users/accept_terms_of_service_for_user.sql": {
-			Name:      "",
+			Name:      "AcceptTermsOfServiceForUser",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"recipe_media/for_recipe_step.sql": {
-			Name:      "",
+			Name:      "GetRecipeMediaForRecipeStep",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"recipe_step_vessels/get_for_recipe.sql": {
-			Name:      "",
+			Name:      "GetRecipeStepVesselsForRecipe",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"users/search_by_username.sql": {
-			Name:      "",
+			Name:      "SearchUsersByUsername",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"valid_ingredient_preparations/pair_is_valid.sql": {
-			Name:      "",
+			Name:      "ValidIngredientPreparationPairIsValid",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_ingredient_preparations/search_by_preparation_and_ingredient_name.sql": {
-			Name:      "",
+			Name:      "SearchValidIngredientPreparationsByPreparationAndIngredientName",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"household_invitations/get_by_email_and_token.sql": {
-			Name:      "",
+			Name:      "GetHouseholdInvitationByEmailAndToken",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"meal_plan_option_votes/get_for_meal_plan_option.sql": {
-			Name:      "",
+			Name:      "GetMealPlanOptionVotesForMealPlanOption",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"household_user_memberships/transfer_membership.sql": {
-			Name:      "",
+			Name:      "TransferHouseholdMembership",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"household_user_memberships/transfer_ownership.sql": {
-			Name:      "",
+			Name:      "TransferHouseholdOwnership",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"recipe_step_instruments/get_for_recipe.sql": {
-			Name:      "",
+			Name:      "GetRecipeStepInstrumentsForRecipe",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"users/mark_two_factor_secret_as_verified.sql": {
-			Name:      "",
+			Name:      "MarkTwoFactorSecretAsVerified",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"oauth2_client_tokens/archive_by_access.sql": {
-			Name:      "",
+			Name:      "ArchiveOAuth2ClientTokenByAccess",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"recipes/ids_for_meal.sql": {
-			Name:      "",
+			Name:      "GetRecipeIDsForMeal",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"meal_plans/mark_as_grocery_list_initialized.sql": {
-			Name:      "",
+			Name:      "MarkMealPlanAsGroceryListInitialized",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"household_user_memberships/user_is_member.sql": {
-			Name:      "",
+			Name:      "UserIsHouseholdMember",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"meal_plans/get_expired_and_unresolved.sql": {
-			Name:      "",
+			Name:      "GetExpiredAndUnresolvedMealPlans",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"password_reset_tokens/redeem.sql": {
-			Name:      "",
+			Name:      "RedeemPasswordResetToken",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"households/add_to_household_during_creation.sql": {
-			Name:      "",
+			Name:      "AddToHouseholdDuringCreation",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"household_user_memberships/modify_user_permissions.sql": {
-			Name:      "",
+			Name:      "ModifyHouseholdUserPermissions",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"users/get_with_verified_two_factor.sql": {
-			Name:      "",
+			Name:      "GetUserWithVerifiedTwoFactor",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"users/archive_memberships.sql": {
-			Name:      "",
+			Name:      "ArchiveUserMemberships",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"valid_measurement_conversions/get_all_to_measurement_unit.sql": {
-			Name:      "",
+			Name:      "GetAllValidMeasurementConversionsToMeasurementUnit",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"meal_plan_tasks/list_all_by_meal_plan.sql": {
-			Name:      "",
+			Name:      "ListAllMealPlanTasksByMealPlan",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"valid_measurement_units/search_by_ingredient_id.sql": {
-			Name:      "",
+			Name:      "SearchValidMeasurementUnitsByIngredientID",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"meal_plans/finalize.sql": {
-			Name:      "",
+			Name:      "FinalizeMealPlan",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"users/get_email_verification_token_by_user_id.sql": {
-			Name:      "",
+			Name:      "GetEmailVerificationTokenByUserID",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"household_user_memberships/get_for_user.sql": {
-			Name:      "",
+			Name:      "GetHouseholdUserMembershipsForUser",
 			QueryType: sqlcQueryTypeMany,
 		},
 		"household_invitations/set_status.sql": {
-			Name:      "",
+			Name:      "SetHouseholdInvitationStatus",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"users/accept_privacy_policy_for_user.sql": {
-			Name:      "",
+			Name:      "AcceptPrivacyPolicyForUser",
 			QueryType: sqlcQueryTypeExec,
 		},
 		"oauth2_clients/get_by_database_id.sql": {
-			Name:      "",
+			Name:      "GetOAuth2ClientByDatabaseID",
 			QueryType: sqlcQueryTypeOne,
 		},
 		"valid_ingredients/search_by_preparation_and_ingredient_name.sql": {
-			Name:      "",
+			Name:      "SearchValidIngredientsByPreparationAndIngredientName",
 			QueryType: sqlcQueryTypeMany,
 		},
 	}
@@ -1341,8 +1341,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	uniqueQueryNames := map[string]bool{}
 
 	for _, folder := range queryFolders {
 		n := folder.Name()
@@ -1364,7 +1362,9 @@ func main() {
 				panic(err)
 			}
 
-			fmt.Println(query)
+			if err = os.WriteFile(fmt.Sprintf("%s/%s/%s", queryFolder, n, qfn), []byte(query), 0644); err != nil {
+				panic(err)
+			}
 		}
 	}
 }

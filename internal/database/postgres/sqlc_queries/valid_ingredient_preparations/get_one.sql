@@ -1,3 +1,5 @@
+-- name: GetValidIngredientPreparation :one
+
 SELECT
 	valid_ingredient_preparations.id,
 	valid_ingredient_preparations.notes,

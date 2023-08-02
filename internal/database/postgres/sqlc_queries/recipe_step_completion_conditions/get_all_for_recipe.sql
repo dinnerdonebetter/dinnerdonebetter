@@ -1,3 +1,5 @@
+-- name: GetAllRecipeStepCompletionConditionsForRecipe :many
+
 SELECT
 	recipe_step_completion_condition_ingredients.id,
 	recipe_step_completion_condition_ingredients.belongs_to_recipe_step_completion_condition,

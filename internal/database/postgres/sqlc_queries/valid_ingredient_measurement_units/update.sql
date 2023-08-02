@@ -1,3 +1,5 @@
+-- name: UpdateValidIngredientMeasurementUnit :exec
+
 UPDATE valid_ingredient_measurement_units
 SET
 	notes = $1,

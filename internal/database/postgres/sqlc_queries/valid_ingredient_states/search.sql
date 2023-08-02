@@ -1,3 +1,5 @@
+-- name: SearchForValidIngredientStates :many
+
 SELECT
 	valid_ingredient_states.id,
 	valid_ingredient_states.name,

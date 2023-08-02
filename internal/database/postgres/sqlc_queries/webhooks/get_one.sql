@@ -1,3 +1,5 @@
+-- name: GetWebhook :many
+
 SELECT
 	webhooks.id,
 	webhooks.name,

@@ -1,3 +1,5 @@
+-- name: UpdateServiceSettingConfiguration :exec
+
 UPDATE service_setting_configurations
 SET
     value = $1,

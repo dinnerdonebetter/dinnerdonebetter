@@ -1,3 +1,5 @@
+-- name: GetOAuth2ClientByClientID :one
+
 SELECT
 	oauth2_clients.id,
 	oauth2_clients.name,

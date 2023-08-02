@@ -1,3 +1,5 @@
+-- name: SearchValidMeasurementUnitsByIngredientID :many
+
 SELECT
 	DISTINCT(valid_measurement_units.id),
 	valid_measurement_units.name,

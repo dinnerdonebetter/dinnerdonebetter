@@ -1,3 +1,5 @@
+-- name: GetDefaultHouseholdIDForUser :one
+
 SELECT households.id
 FROM households
  JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id

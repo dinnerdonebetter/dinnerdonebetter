@@ -1,3 +1,5 @@
+-- name: GetValidIngredientMeasurementUnit :one
+
 SELECT
 	valid_ingredient_measurement_units.id,
 	valid_ingredient_measurement_units.notes,

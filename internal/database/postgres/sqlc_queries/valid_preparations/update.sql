@@ -1,3 +1,5 @@
+-- name: UpdateValidPreparation :exec
+
 UPDATE valid_preparations
 SET
 	name = $1,

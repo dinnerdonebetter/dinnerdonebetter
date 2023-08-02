@@ -1,3 +1,5 @@
+-- name: SearchValidIngredientsByPreparationAndIngredientName :many
+
 SELECT
 	DISTINCT(valid_ingredients.id),
 	valid_ingredients.name,

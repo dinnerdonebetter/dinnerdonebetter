@@ -1,3 +1,5 @@
+-- name: GetRecipeMedia :one
+
 SELECT
 	recipe_media.id,
 	recipe_media.belongs_to_recipe,

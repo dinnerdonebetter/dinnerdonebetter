@@ -1,3 +1,5 @@
+-- name: ListAllMealPlanTasksByMealPlan :many
+
 SELECT
 	meal_plan_tasks.id,
 	meal_plan_options.id,

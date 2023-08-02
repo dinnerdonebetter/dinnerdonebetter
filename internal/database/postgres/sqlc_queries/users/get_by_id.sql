@@ -1,3 +1,5 @@
+-- name: GetUserByID :one
+
 SELECT
 	users.id,
 	users.first_name,

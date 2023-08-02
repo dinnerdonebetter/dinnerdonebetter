@@ -1,3 +1,5 @@
+-- name: GetValidIngredients :many
+
 SELECT
   valid_ingredients.id,
   valid_ingredients.name,

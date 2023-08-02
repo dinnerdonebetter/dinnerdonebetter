@@ -1,3 +1,5 @@
+-- name: MarkMealPlanAsGroceryListInitialized :exec
+
 UPDATE meal_plans
 SET
 	grocery_list_initialized = 'true',

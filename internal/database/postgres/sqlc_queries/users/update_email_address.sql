@@ -1,3 +1,5 @@
+-- name: UpdateUserEmailAddress :exec
+
 UPDATE users SET
 	email_address = $1,
 	email_address_verified_at = NULL,

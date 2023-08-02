@@ -1,3 +1,5 @@
+-- name: CreateValidIngredient :exec
+
 INSERT INTO valid_ingredients
 (
 	id,

@@ -1,3 +1,5 @@
+-- name: GetHouseholdInvitationByTokenAndID :one
+
 SELECT
 	household_invitations.id,
 	households.id,

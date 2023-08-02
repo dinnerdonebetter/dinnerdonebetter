@@ -1,3 +1,5 @@
+-- name: SetHouseholdInvitationStatus :exec
+
 UPDATE household_invitations SET
 	status = $1,
 	status_note = $2,

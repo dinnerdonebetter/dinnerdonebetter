@@ -1,3 +1,5 @@
+-- name: GetUsersNeedingIndexing :many
+
 SELECT users.id
   FROM users
  WHERE (users.archived_at IS NULL)

@@ -1,3 +1,5 @@
+-- name: GetValidMeasurementConversion :one
+
 SELECT
 	valid_measurement_conversions.id,
 	valid_measurement_units_from.id,

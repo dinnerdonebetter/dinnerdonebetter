@@ -1,3 +1,5 @@
+-- name: GetRecipeRating :one
+
 SELECT
 	recipe_ratings.id,
     recipe_ratings.recipe_id,

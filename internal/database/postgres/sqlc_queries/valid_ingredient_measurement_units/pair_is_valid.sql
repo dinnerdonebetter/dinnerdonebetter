@@ -1,3 +1,5 @@
+-- name: ValidIngredientMeasurementUnitPairIsValid :one
+
 SELECT EXISTS(
 	SELECT id
 	FROM valid_ingredient_measurement_units

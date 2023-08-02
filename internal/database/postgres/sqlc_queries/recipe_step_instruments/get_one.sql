@@ -1,3 +1,5 @@
+-- name: GetRecipeStepInstrument :one
+
 SELECT
 	recipe_step_instruments.id,
 	valid_instruments.id,
