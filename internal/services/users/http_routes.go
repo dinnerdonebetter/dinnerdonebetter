@@ -94,6 +94,11 @@ func (s *service) UsernameSearchHandler(res http.ResponseWriter, req *http.Reque
 	// fetch user data.
 	users, err := s.userDataManager.SearchForUsersByUsername(ctx, query)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+			return
+		}
+
 		observability.AcknowledgeError(err, logger, span, "searching for users")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
