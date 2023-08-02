@@ -1,34 +1,36 @@
 version: "2"
 sql:
-  - schema: "internal/database/postgres/migrations"
+  - engine: "postgresql"
+    schema: "internal/database/postgres/migrations"
     queries:
         - "internal/database/postgres/queries/admin"
         - "internal/database/postgres/queries/household_instrument_ownerships"
         - "internal/database/postgres/queries/household_invitations"
-        - "internal/database/postgres/queries/household_user_memberships"
         - "internal/database/postgres/queries/households"
+        - "internal/database/postgres/queries/household_user_memberships"
         - "internal/database/postgres/queries/meal_components"
         - "internal/database/postgres/queries/meal_plan_events"
         - "internal/database/postgres/queries/meal_plan_grocery_list_items"
-        - "internal/database/postgres/queries/meal_plan_option_votes"
         - "internal/database/postgres/queries/meal_plan_options"
-        - "internal/database/postgres/queries/meal_plan_tasks"
+        - "internal/database/postgres/queries/meal_plan_option_votes"
         - "internal/database/postgres/queries/meal_plans"
+        - "internal/database/postgres/queries/meal_plan_tasks"
         - "internal/database/postgres/queries/meals"
         - "internal/database/postgres/queries/oauth2_clients"
+        - "internal/database/postgres/queries/oauth2_client_tokens"
         - "internal/database/postgres/queries/password_reset_tokens"
-        - "internal/database/postgres/queries/recipes"
         - "internal/database/postgres/queries/recipe_media"
-        - "internal/database/postgres/queries/recipe_prep_task_steps"
         - "internal/database/postgres/queries/recipe_prep_tasks"
+        - "internal/database/postgres/queries/recipe_prep_task_steps"
         - "internal/database/postgres/queries/recipe_ratings"
+        - "internal/database/postgres/queries/recipes"
         - "internal/database/postgres/queries/recipe_step_completion_condition_ingredients"
         - "internal/database/postgres/queries/recipe_step_completion_conditions"
         - "internal/database/postgres/queries/recipe_step_ingredients"
         - "internal/database/postgres/queries/recipe_step_instruments"
         - "internal/database/postgres/queries/recipe_step_products"
-        - "internal/database/postgres/queries/recipe_step_vessels"
         - "internal/database/postgres/queries/recipe_steps"
+        - "internal/database/postgres/queries/recipe_step_vessels"
         - "internal/database/postgres/queries/service_setting_configurations"
         - "internal/database/postgres/queries/service_settings"
         - "internal/database/postgres/queries/user_ingredient_preferences"
@@ -36,24 +38,24 @@ sql:
         - "internal/database/postgres/queries/valid_ingredient_groups"
         - "internal/database/postgres/queries/valid_ingredient_measurement_units"
         - "internal/database/postgres/queries/valid_ingredient_preparations"
+        - "internal/database/postgres/queries/valid_ingredients"
         - "internal/database/postgres/queries/valid_ingredient_state_ingredients"
         - "internal/database/postgres/queries/valid_ingredient_states"
-        - "internal/database/postgres/queries/valid_ingredients"
         - "internal/database/postgres/queries/valid_instruments"
         - "internal/database/postgres/queries/valid_measurement_conversions"
         - "internal/database/postgres/queries/valid_measurement_units"
         - "internal/database/postgres/queries/valid_preparation_instruments"
         - "internal/database/postgres/queries/valid_preparations"
-        - "internal/database/postgres/queries/webhook_trigger_events"
+        - "internal/database/postgres/queries/valid_preparation_vessels"
+        - "internal/database/postgres/queries/valid_vessels"
         - "internal/database/postgres/queries/webhooks"
-    engine: "postgresql"
-    strict_function_checks: true
+        - "internal/database/postgres/queries/webhook_trigger_events"
+
     gen:
       go:
         package: "generated"
-        sql_package: "database/sql"
         out: "internal/database/postgres/generated"
-        output_files_suffix: "_generated"
+        sql_package: "database/sql"
         emit_db_tags: true
         emit_prepared_queries: false
         emit_interface: true
@@ -66,3 +68,18 @@ sql:
         emit_methods_with_db_argument: true
         emit_enum_valid_method: true
         emit_all_enum_values: false
+        json_tags_id_uppercase: true
+        json_tags_case_style: "camel"
+        omit_unused_structs: true
+        output_batch_file_name: "batch.go"
+        output_db_file_name: "db.go"
+        output_models_file_name: "models.go"
+        output_querier_file_name: "querier.go"
+        output_files_suffix: "_generated"
+        query_parameter_limit: 1
+    strict_function_checks: true
+rules:
+  - name: no-delete
+    message: "don't use delete statements"
+    rule: |
+      query.sql.contains("DELETE")
