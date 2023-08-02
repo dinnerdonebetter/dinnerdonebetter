@@ -168,7 +168,7 @@ golang_lint:
 		$(LINTER_IMAGE) golangci-lint run --config=.golangci.yml --timeout 15m ./...
 
 .PHONY: lint
-lint: lint_docker queries_lint golang_lint # terraform_lint
+lint: lint_docker queries_lint golang_lint
 
 .PHONY: clean_coverage
 clean_coverage:
@@ -192,10 +192,6 @@ quicktest: $(ARTIFACTS_DIR) vendor build clear
 containertests:
 	go test -tags testcontainers -cover -shuffle=on -race -failfast $(THIS)/internal/database/postgres
 
-.PHONY: check_queries
-check_queries:
-	$(SQL_GENERATOR) compile
-
 ## Generated files
 
 .PHONY: configs
@@ -209,13 +205,6 @@ typescript: clean_ts
 	mkdir -p $(ARTIFACTS_DIR)/typescript
 	go run github.com/dinnerdonebetter/backend/cmd/tools/codegen/gen_typescript
 	(cd ../frontend && make format)
-
-clean_swift:
-	rm -rf $(ARTIFACTS_DIR)/swift
-
-swift: clean_swift
-	mkdir -p $(ARTIFACTS_DIR)/swift
-	go run github.com/dinnerdonebetter/backend/cmd/tools/codegen/gen_swift
 
 ## Integration tests
 
