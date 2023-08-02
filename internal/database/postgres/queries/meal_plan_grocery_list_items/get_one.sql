@@ -1,3 +1,5 @@
+-- name: GetMealPlanGroceryListItem :one
+
 SELECT
 	meal_plan_grocery_list_items.id,
 	meal_plan_grocery_list_items.belongs_to_meal_plan,

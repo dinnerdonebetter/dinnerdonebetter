@@ -1,3 +1,5 @@
+-- name: GetRecipesNeedingIndexing :many
+
 SELECT recipes.id
   FROM recipes
  WHERE (recipes.archived_at IS NULL)

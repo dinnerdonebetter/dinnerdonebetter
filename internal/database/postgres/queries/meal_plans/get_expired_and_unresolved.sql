@@ -1,3 +1,5 @@
+-- name: GetExpiredAndUnresolvedMealPlans :many
+
 SELECT
 	meal_plans.id,
 	meal_plans.notes,

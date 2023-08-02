@@ -1,3 +1,5 @@
+-- name: CheckMealPlanTaskExistence :one
+
 SELECT EXISTS (
 	SELECT meal_plan_tasks.id
 	FROM meal_plan_tasks

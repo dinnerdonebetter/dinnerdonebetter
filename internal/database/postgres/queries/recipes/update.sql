@@ -1,3 +1,5 @@
+-- name: UpdateRecipe :exec
+
 UPDATE recipes SET
     name = $1,
     slug = $2,

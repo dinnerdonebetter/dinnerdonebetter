@@ -1,3 +1,5 @@
+-- name: UpdateUserPassword :exec
+
 UPDATE users SET
 	hashed_password = $1,
 	requires_password_change = $2,

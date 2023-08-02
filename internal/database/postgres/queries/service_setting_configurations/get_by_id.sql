@@ -1,3 +1,5 @@
+-- name: GetServiceSettingConfigurationByID :one
+
 SELECT
 	service_setting_configurations.id,
     service_setting_configurations.value,

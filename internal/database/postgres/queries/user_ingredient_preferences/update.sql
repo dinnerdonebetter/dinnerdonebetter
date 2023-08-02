@@ -1,3 +1,5 @@
+-- name: UpdateUserIngredientPreference :exec
+
 UPDATE user_ingredient_preferences
 SET
 	ingredient = $1,

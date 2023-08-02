@@ -1,3 +1,5 @@
+-- name: GetHouseholdUserMembershipsForUser :many
+
 SELECT
 	household_user_memberships.id,
 	household_user_memberships.belongs_to_user,

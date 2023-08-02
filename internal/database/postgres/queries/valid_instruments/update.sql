@@ -1,3 +1,5 @@
+-- name: UpdateValidInstrument :exec
+
 UPDATE valid_instruments
 SET
 	name = $1,

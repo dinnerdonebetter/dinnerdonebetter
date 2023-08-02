@@ -1,3 +1,5 @@
+-- name: GetValidIngredientStateIngredient :one
+
 SELECT
 	valid_ingredient_state_ingredients.id,
 	valid_ingredient_state_ingredients.notes,

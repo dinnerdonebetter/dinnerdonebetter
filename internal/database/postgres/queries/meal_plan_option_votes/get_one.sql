@@ -1,3 +1,5 @@
+-- name: GetMealPlanOptionVote :one
+
 
 SELECT
 	meal_plan_option_votes.id,

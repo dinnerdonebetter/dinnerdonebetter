@@ -3,12 +3,17 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
 )
 
 func readFileAndAddAnnotation(filepath string, spec sqlcAnnotation) (string, error) {
 	query, err := os.ReadFile(filepath)
 	if err != nil {
 		return "", err
+	}
+
+	if strings.HasPrefix(string(query), "-- name: ") {
+		return string(query), nil
 	}
 
 	return fmt.Sprintf("-- name: %s :%s\n\n%s", spec.Name, spec.QueryType, string(query)), nil
@@ -1362,7 +1367,7 @@ func main() {
 				panic(err)
 			}
 
-			if err = os.WriteFile(fmt.Sprintf("%s/%s/%s", queryFolder, n, qfn), []byte(query), 0644); err != nil {
+			if err = os.WriteFile(fmt.Sprintf("%s/%s/%s", queryFolder, n, qfn), []byte(query), 0o644); err != nil {
 				panic(err)
 			}
 		}

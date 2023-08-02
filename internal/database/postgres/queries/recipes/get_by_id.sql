@@ -1,3 +1,5 @@
+-- name: GetRecipeByID :one
+
 SELECT
 	recipes.id,
 	recipes.name,

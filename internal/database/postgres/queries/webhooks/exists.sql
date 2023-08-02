@@ -1,3 +1,5 @@
+-- name: CheckWebhookExistence :one
+
 SELECT EXISTS (
 	SELECT webhooks.id
 	FROM webhooks

@@ -1,3 +1,5 @@
+-- name: UpdateMealPlanGroceryListItem :exec
+
 UPDATE meal_plan_grocery_list_items
 SET
 	belongs_to_meal_plan = $1,

@@ -1,3 +1,5 @@
+-- name: SearchForServiceSettings :many
+
 SELECT
 	service_settings.id,
     service_settings.name,

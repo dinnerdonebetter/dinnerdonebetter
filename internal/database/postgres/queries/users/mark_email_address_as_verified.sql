@@ -1,3 +1,5 @@
+-- name: MarkEmailAddressAsVerified :exec
+
 UPDATE users SET
 	email_address_verified_at = NOW(),
 	last_updated_at = NOW()

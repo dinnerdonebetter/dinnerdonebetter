@@ -1,3 +1,5 @@
+-- name: GetMealPlanEventsForMealPlan :many
+
 SELECT
 	meal_plan_events.id,
 	meal_plan_events.notes,

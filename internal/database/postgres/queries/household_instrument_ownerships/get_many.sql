@@ -1,3 +1,5 @@
+-- name: GetHouseholdInstrumentOwnerships :many
+
 SELECT
   household_instrument_ownerships.id,
   household_instrument_ownerships.notes,

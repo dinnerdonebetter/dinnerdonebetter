@@ -1,3 +1,5 @@
+-- name: CreateWebhookTriggerEvent :exec
+
 INSERT INTO webhook_trigger_events (
 	id,
 	trigger_event,

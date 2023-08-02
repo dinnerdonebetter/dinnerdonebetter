@@ -1,3 +1,5 @@
+-- name: GetRecipeIDsForMeal :many
+
 SELECT
 	recipes.id
 FROM

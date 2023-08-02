@@ -1,3 +1,5 @@
+-- name: UpdateHousehold :exec
+
 UPDATE households
 SET
 	name = $1,

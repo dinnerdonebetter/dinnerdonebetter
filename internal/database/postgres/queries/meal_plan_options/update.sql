@@ -1,3 +1,5 @@
+-- name: UpdateMealPlanOption :exec
+
 UPDATE meal_plan_options
 SET
 	assigned_cook = $1,

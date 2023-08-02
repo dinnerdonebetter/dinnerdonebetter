@@ -1,3 +1,5 @@
+-- name: GetRecipeStepProductsForRecipe :many
+
 SELECT
 	recipe_step_products.id,
 	recipe_step_products.name,

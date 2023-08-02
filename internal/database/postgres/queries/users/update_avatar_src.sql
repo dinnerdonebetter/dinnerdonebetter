@@ -1,3 +1,5 @@
+-- name: UpdateUserAvatarSrc :exec
+
 UPDATE users SET
 	avatar_src = $1,
 	last_updated_at = NOW()

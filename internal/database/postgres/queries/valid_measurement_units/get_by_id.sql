@@ -1,3 +1,5 @@
+-- name: GetValidMeasurementUnitByID :one
+
 SELECT valid_measurement_units.id,
        valid_measurement_units.name,
        valid_measurement_units.description,

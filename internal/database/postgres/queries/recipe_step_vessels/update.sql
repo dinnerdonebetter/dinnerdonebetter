@@ -1,3 +1,5 @@
+-- name: UpdateRecipeStepVessel :exec
+
 UPDATE recipe_step_vessels SET
 	name = $1,
 	notes = $2,

@@ -1,3 +1,5 @@
+-- name: UserIsHouseholdMember :one
+
 SELECT EXISTS (
    SELECT household_user_memberships.id
 	 FROM household_user_memberships

@@ -1,3 +1,5 @@
+-- name: UpdateValidVessel :exec
+
 UPDATE valid_vessels
 SET
     name = $1,

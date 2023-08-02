@@ -1,3 +1,5 @@
+-- name: ValidIngredientPreparationPairIsValid :one
+
 SELECT EXISTS(
 	SELECT id
 	FROM valid_ingredient_preparations

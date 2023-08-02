@@ -1,3 +1,5 @@
+-- name: SearchForValidInstruments :many
+
 SELECT
 	valid_instruments.id,
 	valid_instruments.name,

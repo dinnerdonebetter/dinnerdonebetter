@@ -1,3 +1,5 @@
+-- name: GetUserByEmailAddressVerificationToken :one
+
 SELECT
 	users.id,
 	users.first_name,

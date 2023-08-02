@@ -1,3 +1,5 @@
+-- name: GetRandomValidVessel :one
+
 SELECT
 	valid_vessels.id,
     valid_vessels.name,

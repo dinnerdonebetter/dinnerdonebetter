@@ -1,3 +1,5 @@
+-- name: GetValidPreparationByID :one
+
 SELECT valid_preparations.id,
        valid_preparations.name,
        valid_preparations.description,

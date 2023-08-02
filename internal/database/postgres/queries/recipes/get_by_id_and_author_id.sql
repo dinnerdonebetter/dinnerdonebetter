@@ -1,3 +1,5 @@
+-- name: GetRecipeByIDAndAuthorID :many
+
 SELECT
 	recipes.id,
 	recipes.name,

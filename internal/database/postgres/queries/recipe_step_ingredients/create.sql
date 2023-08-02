@@ -1,3 +1,5 @@
+-- name: CreateRecipeStepIngredient :exec
+
 INSERT INTO recipe_step_ingredients (
 	id,
 	"name",

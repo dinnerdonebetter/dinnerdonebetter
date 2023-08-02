@@ -1,3 +1,5 @@
+-- name: SearchForValidPreparations :many
+
 SELECT
 	valid_preparations.id,
 	valid_preparations.name,

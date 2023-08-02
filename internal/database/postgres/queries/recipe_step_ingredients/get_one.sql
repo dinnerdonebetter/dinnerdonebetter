@@ -1,3 +1,5 @@
+-- name: GetRecipeStepIngredient :one
+
 SELECT
 	recipe_step_ingredients.id,
 	recipe_step_ingredients.name,

@@ -1,3 +1,5 @@
+-- name: GetFinalizedMealPlansWithoutGroceryListInit :many
+
 SELECT
 	meal_plans.id,
 	meal_plans.belongs_to_household

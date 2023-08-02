@@ -1,3 +1,5 @@
+-- name: ValidPreparationInstrumentPairIsValid :one
+
 SELECT EXISTS(
 	SELECT id
 	FROM valid_preparation_instruments

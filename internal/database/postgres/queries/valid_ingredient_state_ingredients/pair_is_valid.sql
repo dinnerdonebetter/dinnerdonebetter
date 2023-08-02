@@ -1,3 +1,5 @@
+-- name: CheckValidityOfValidIngredientStateIngredientPair :one
+
 SELECT EXISTS(
 	SELECT id
 	FROM valid_ingredient_state_ingredients

@@ -1,3 +1,5 @@
+-- name: GetHouseholdByIDWithMemberships :many
+
 SELECT
 	households.id,
 	households.name,

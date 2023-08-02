@@ -1,3 +1,5 @@
+-- name: GetUserWithVerifiedTwoFactor :one
+
 SELECT
 	users.id,
 	users.first_name,

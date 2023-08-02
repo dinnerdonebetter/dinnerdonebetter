@@ -1,3 +1,5 @@
+-- name: GetMealPlan :one
+
 SELECT
 	meal_plans.id,
 	meal_plans.notes,
