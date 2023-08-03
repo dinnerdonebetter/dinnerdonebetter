@@ -306,6 +306,32 @@ func main() {
 				thresholdMet = len(data.Data) == 0
 				*filter.Page++
 			}
+		case search.IndexTypeUsers:
+			im, err = searchcfg.ProvideIndex[types.UserSearchSubset](ctx, logger, tracerProvider, cfg, index)
+			if err != nil {
+				observability.AcknowledgeError(err, logger, nil, "initializing index manager")
+				return
+			}
+
+			for !thresholdMet {
+				var data *types.QueryFilteredResult[types.User]
+				data, err = dataManager.GetUsers(ctx, filter)
+				if err != nil {
+					log.Println(fmt.Errorf("getting user data: %w", err))
+					return
+				}
+
+				for _, x := range data.Data {
+					indexRequestChan <- &indexing.IndexRequest{
+						RowID:     x.ID,
+						IndexType: search.IndexTypeUsers,
+					}
+					waitGroup.Add(1)
+				}
+
+				thresholdMet = len(data.Data) == 0
+				*filter.Page++
+			}
 		}
 	}
 }
