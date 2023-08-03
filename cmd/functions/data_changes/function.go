@@ -160,7 +160,12 @@ func handleSearchIndexUpdates(
 	logger := l.WithValue("event_type", changeMessage.EventType)
 
 	switch changeMessage.EventType {
-	case types.UserSignedUpCustomerEventType:
+	case types.UserSignedUpCustomerEventType,
+		types.UserArchivedCustomerEventType,
+		types.EmailAddressChangedEventType,
+		types.UsernameChangedEventType,
+		types.UserDetailsChangedEventType,
+		types.UserEmailAddressVerifiedEventType:
 		if changeMessage.UserID == "" {
 			observability.AcknowledgeError(errRequiredDataIsNil, logger, span, "updating search index for User")
 		}
@@ -168,7 +173,7 @@ func handleSearchIndexUpdates(
 		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
 			RowID:     changeMessage.UserID,
 			IndexType: search.IndexTypeUsers,
-			Delete:    changeMessage.EventType == types.UserSignedUpCustomerEventType,
+			Delete:    changeMessage.EventType == types.UserArchivedCustomerEventType,
 		}); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")
 		}
