@@ -2581,11 +2581,19 @@ func TestService_ArchiveHandler(T *testing.T) {
 		).Return(nil)
 		helper.service.userDataManager = mockDB
 
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
+		).Return(nil)
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB)
+		mock.AssertExpectationsForObjects(t, mockDB, dataChangesPublisher)
 	})
 
 	T.Run("with no results in the database", func(t *testing.T) {
