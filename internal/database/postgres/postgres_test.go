@@ -9,7 +9,6 @@ import (
 	"hash/fnv"
 	"io"
 	"log"
-	"os"
 	"regexp"
 	"strings"
 	"testing"
@@ -38,7 +37,7 @@ const (
 )
 
 var (
-	runningContainerTests = strings.ToLower(os.Getenv("RUN_DATABASE_CONTAINER_TESTS")) == "true"
+	runningContainerTests = true // strings.ToLower(os.Getenv("RUN_DATABASE_CONTAINER_TESTS")) == "true"
 )
 
 var _ sqlmock.Argument = (*idMatcher)(nil)

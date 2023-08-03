@@ -502,7 +502,7 @@ func TestSQLQuerier_BuildGetPendingHouseholdInvitationsFromUserQuery(T *testing.
 
 		c, _ := buildTestClient(t)
 
-		actualQuery, actualArgs := c.BuildGetPendingHouseholdInvitationsFromUserQuery(ctx, userID, filter)
+		actualQuery, actualArgs := c.buildGetPendingHouseholdInvitationsFromUserQuery(ctx, userID, filter)
 
 		assert.Equal(t, expectedQuery, actualQuery)
 		assert.Equal(t, expectedArgs, actualArgs)
@@ -525,7 +525,7 @@ func TestSQLQuerier_GetPendingHouseholdInvitationsFromUser(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		query, args := c.BuildGetPendingHouseholdInvitationsFromUserQuery(ctx, exampleUserID, filter)
+		query, args := c.buildGetPendingHouseholdInvitationsFromUserQuery(ctx, exampleUserID, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -551,7 +551,7 @@ func TestSQLQuerier_GetPendingHouseholdInvitationsFromUser(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		query, args := c.BuildGetPendingHouseholdInvitationsFromUserQuery(ctx, exampleUserID, filter)
+		query, args := c.buildGetPendingHouseholdInvitationsFromUserQuery(ctx, exampleUserID, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -577,7 +577,7 @@ func TestSQLQuerier_GetPendingHouseholdInvitationsFromUser(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		query, args := c.BuildGetPendingHouseholdInvitationsFromUserQuery(ctx, exampleUserID, filter)
+		query, args := c.buildGetPendingHouseholdInvitationsFromUserQuery(ctx, exampleUserID, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -613,7 +613,7 @@ func TestSQLQuerier_BuildGetPendingHouseholdInvitationsForUserQuery(T *testing.T
 
 		c, _ := buildTestClient(t)
 
-		actualQuery, actualArgs := c.BuildGetPendingHouseholdInvitationsForUserQuery(ctx, userID, filter)
+		actualQuery, actualArgs := c.buildGetPendingHouseholdInvitationsForUserQuery(ctx, userID, filter)
 
 		assert.Equal(t, expectedQuery, actualQuery)
 		assert.Equal(t, expectedArgs, actualArgs)
@@ -636,7 +636,7 @@ func TestSQLQuerier_GetPendingHouseholdInvitationsForUser(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		query, args := c.BuildGetPendingHouseholdInvitationsForUserQuery(ctx, exampleUserID, filter)
+		query, args := c.buildGetPendingHouseholdInvitationsForUserQuery(ctx, exampleUserID, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -658,7 +658,7 @@ func TestSQLQuerier_GetPendingHouseholdInvitationsForUser(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		query, args := c.BuildGetPendingHouseholdInvitationsForUserQuery(ctx, exampleUserID, filter)
+		query, args := c.buildGetPendingHouseholdInvitationsForUserQuery(ctx, exampleUserID, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).
@@ -684,7 +684,7 @@ func TestSQLQuerier_GetPendingHouseholdInvitationsForUser(T *testing.T) {
 
 		c, db := buildTestClient(t)
 
-		query, args := c.BuildGetPendingHouseholdInvitationsForUserQuery(ctx, exampleUserID, filter)
+		query, args := c.buildGetPendingHouseholdInvitationsForUserQuery(ctx, exampleUserID, filter)
 
 		db.ExpectQuery(formatQueryForSQLMock(query)).
 			WithArgs(interfaceToDriverValue(args)...).

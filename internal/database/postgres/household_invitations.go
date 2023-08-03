@@ -381,8 +381,8 @@ func (q *Querier) CreateHouseholdInvitation(ctx context.Context, input *types.Ho
 	return x, nil
 }
 
-// BuildGetPendingHouseholdInvitationsFromUserQuery builds a query for fetching pending household invitations sent by a given user.
-func (q *Querier) BuildGetPendingHouseholdInvitationsFromUserQuery(ctx context.Context, userID string, filter *types.QueryFilter) (query string, args []any) {
+// buildGetPendingHouseholdInvitationsFromUserQuery builds a query for fetching pending household invitations sent by a given user.
+func (q *Querier) buildGetPendingHouseholdInvitationsFromUserQuery(ctx context.Context, userID string, filter *types.QueryFilter) (query string, args []any) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -425,7 +425,7 @@ func (q *Querier) GetPendingHouseholdInvitationsFromUser(ctx context.Context, us
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 	filter.AttachToLogger(logger)
 
-	query, args := q.BuildGetPendingHouseholdInvitationsFromUserQuery(ctx, userID, filter)
+	query, args := q.buildGetPendingHouseholdInvitationsFromUserQuery(ctx, userID, filter)
 
 	rows, err := q.getRows(ctx, q.db, "household invitations from user", query, args)
 	if err != nil {
@@ -458,8 +458,8 @@ func (q *Querier) GetPendingHouseholdInvitationsFromUser(ctx context.Context, us
 	return returnList, nil
 }
 
-// BuildGetPendingHouseholdInvitationsForUserQuery builds a query for fetching pending household invitations sent to a given user.
-func (q *Querier) BuildGetPendingHouseholdInvitationsForUserQuery(ctx context.Context, userID string, filter *types.QueryFilter) (query string, args []any) {
+// buildGetPendingHouseholdInvitationsForUserQuery builds a query for fetching pending household invitations sent to a given user.
+func (q *Querier) buildGetPendingHouseholdInvitationsForUserQuery(ctx context.Context, userID string, filter *types.QueryFilter) (query string, args []any) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -502,7 +502,7 @@ func (q *Querier) GetPendingHouseholdInvitationsForUser(ctx context.Context, use
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 	filter.AttachToLogger(logger)
 
-	query, args := q.BuildGetPendingHouseholdInvitationsForUserQuery(ctx, userID, filter)
+	query, args := q.buildGetPendingHouseholdInvitationsForUserQuery(ctx, userID, filter)
 
 	rows, err := q.getRows(ctx, q.db, "household invitations for user", query, args)
 	if err != nil {

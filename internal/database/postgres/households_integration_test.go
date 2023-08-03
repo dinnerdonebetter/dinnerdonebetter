@@ -11,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func createHouseholdForTest(t *testing.T, ctx context.Context, exampleHousehold *types.Household, dbc *Querier) *types.Household {
@@ -18,15 +19,18 @@ func createHouseholdForTest(t *testing.T, ctx context.Context, exampleHousehold 
 
 	// create
 	if exampleHousehold == nil {
+		exampleUser := createUserForTest(t, ctx, nil, dbc)
 		exampleHousehold = fakes.BuildFakeHousehold()
+		exampleHousehold.BelongsToUser = exampleUser.ID
 	}
 	exampleHousehold.PaymentProcessorCustomerID = ""
 	exampleHousehold.Members = nil
 	dbInput := converters.ConvertHouseholdToHouseholdDatabaseCreationInput(exampleHousehold)
 
 	created, err := dbc.CreateHousehold(ctx, dbInput)
-	exampleHousehold.CreatedAt = created.CreatedAt
 	assert.NoError(t, err)
+	require.NotNil(t, created)
+	exampleHousehold.CreatedAt = created.CreatedAt
 	assert.Equal(t, exampleHousehold, created)
 
 	household, err := dbc.GetHousehold(ctx, created.ID)
