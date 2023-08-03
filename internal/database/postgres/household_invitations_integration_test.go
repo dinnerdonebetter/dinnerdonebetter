@@ -112,6 +112,25 @@ func TestQuerier_Integration_HouseholdInvitations(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, invite)
 
+	// create invite for nonexistent user
+	forNewUserInput := fakes.BuildFakeHouseholdInvitation()
+	forNewUserInput.DestinationHousehold = *household
+	forNewUserInput.ExpiresAt = time.Now().Add(time.Hour * 24 * 7)
+	forNewUserInput.FromUser = *fromUser
+	forNewUserInput.ToUser = nil
+	forNewUserInput.ToEmail = fakes.BuildFakeUser().EmailAddress
+	forNewUser := createHouseholdInvitationForTest(t, ctx, forNewUserInput, dbc)
+
+	fakeUser := fakes.BuildFakeUser()
+	fakeUser.EmailAddress = forNewUserInput.ToEmail
+	dbInput := converters.ConvertUserToUserDatabaseCreationInput(fakeUser)
+	dbInput.InvitationToken = forNewUser.Token
+	dbInput.DestinationHouseholdID = household.ID
+
+	createdUser, err := dbc.CreateUser(ctx, dbInput)
+	assert.NoError(t, err)
+	assert.NotNil(t, createdUser)
+
 	assert.NoError(t, dbc.CancelHouseholdInvitation(ctx, toBeCancelled.ID, "testing"))
 	assert.NoError(t, dbc.RejectHouseholdInvitation(ctx, toBeRejected.ID, "testing"))
 	assert.NoError(t, dbc.AcceptHouseholdInvitation(ctx, toBeAccepted.ID, toBeAccepted.Token, "testing"))

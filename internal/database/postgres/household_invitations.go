@@ -14,71 +14,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-
-	"github.com/Masterminds/squirrel"
 )
 
-const (
-	householdOnHouseholdInvitationsJoin = "households ON household_invitations.destination_household = households.id"
-	usersOnHouseholdInvitationsJoin     = "users ON household_invitations.from_user = users.id"
-)
-
-var (
-	_ types.HouseholdInvitationDataManager = (*Querier)(nil)
-
-	// householdInvitationsTableColumns are the columns for the household invitations table.
-	householdInvitationsTableColumns = []string{
-		"household_invitations.id",
-		"households.id",
-		"households.name",
-		"households.billing_status",
-		"households.contact_phone",
-		"households.address_line_1",
-		"households.address_line_2",
-		"households.city",
-		"households.state",
-		"households.zip_code",
-		"households.country",
-		"households.latitude",
-		"households.longitude",
-		"households.payment_processor_customer_id",
-		"households.subscription_plan_id",
-		"households.created_at",
-		"households.last_updated_at",
-		"households.archived_at",
-		"households.belongs_to_user",
-		"household_invitations.to_email",
-		"household_invitations.to_user",
-		"users.id",
-		"users.first_name",
-		"users.last_name",
-		"users.username",
-		"users.email_address",
-		"users.email_address_verified_at",
-		"users.avatar_src",
-		"users.hashed_password",
-		"users.requires_password_change",
-		"users.password_last_changed_at",
-		"users.two_factor_secret",
-		"users.two_factor_secret_verified_at",
-		"users.service_role",
-		"users.user_account_status",
-		"users.user_account_status_explanation",
-		"users.birthday",
-		"users.created_at",
-		"users.last_updated_at",
-		"users.archived_at",
-		"household_invitations.to_name",
-		"household_invitations.status",
-		"household_invitations.note",
-		"household_invitations.status_note",
-		"household_invitations.token",
-		"household_invitations.expires_at",
-		"household_invitations.created_at",
-		"household_invitations.last_updated_at",
-		"household_invitations.archived_at",
-	}
-)
+var _ types.HouseholdInvitationDataManager = (*Querier)(nil)
 
 // scanHouseholdInvitation is a consistent way to turn a *sql.Row into an invitation struct.
 func (q *Querier) scanHouseholdInvitation(ctx context.Context, scan database.Scanner, includeCounts bool) (householdInvitation *types.HouseholdInvitation, filteredCount, totalCount uint64, err error) {
@@ -381,53 +319,31 @@ func (q *Querier) CreateHouseholdInvitation(ctx context.Context, input *types.Ho
 	return x, nil
 }
 
-// buildGetPendingHouseholdInvitationsFromUserQuery builds a query for fetching pending household invitations sent by a given user.
-func (q *Querier) buildGetPendingHouseholdInvitationsFromUserQuery(ctx context.Context, userID string, filter *types.QueryFilter) (query string, args []any) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	where := squirrel.Eq{
-		"household_invitations.from_user":   userID,
-		"household_invitations.archived_at": nil,
-		"household_invitations.status":      types.PendingHouseholdInvitationStatus,
-	}
-
-	joins := []string{householdOnHouseholdInvitationsJoin, usersOnHouseholdInvitationsJoin}
-
-	filteredCountQuery, filteredCountQueryArgs := q.buildFilteredCountQuery(ctx, "household_invitations", joins, where, "", "", false, false, filter)
-	totalCountQuery, totalCountQueryArgs := q.buildTotalCountQuery(ctx, "household_invitations", joins, where, "", "", false, false)
-
-	queryBuilder := q.sqlBuilder.Select(
-		append(
-			householdInvitationsTableColumns,
-			fmt.Sprintf("(%s) as filtered_count", filteredCountQuery),
-			fmt.Sprintf("(%s) as total_count", totalCountQuery),
-		)...,
-	).
-		From("household_invitations").
-		Join(householdOnHouseholdInvitationsJoin).
-		Join(usersOnHouseholdInvitationsJoin).
-		Where(where)
-
-	queryBuilder = applyFilterToQueryBuilder(filter, "household_invitations", queryBuilder)
-
-	query, args, err := queryBuilder.ToSql()
-	q.logQueryBuildingError(span, err)
-
-	return query, append(append(filteredCountQueryArgs, totalCountQueryArgs...), args...)
-}
+//go:embed queries/household_invitations/get_pending_invites_from_user.sql
+var getPendingInvitesFromUserQuery string
 
 // GetPendingHouseholdInvitationsFromUser fetches pending household invitations sent from a given user.
 func (q *Querier) GetPendingHouseholdInvitationsFromUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.HouseholdInvitation], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 	filter.AttachToLogger(logger)
 
-	query, args := q.buildGetPendingHouseholdInvitationsFromUserQuery(ctx, userID, filter)
+	getPendingInvitesFromUserArgs := []any{
+		userID,
+		types.PendingHouseholdInvitationStatus,
+		filter.CreatedAfter,
+		filter.CreatedBefore,
+		filter.UpdatedAfter,
+		filter.UpdatedBefore,
+	}
 
-	rows, err := q.getRows(ctx, q.db, "household invitations from user", query, args)
+	rows, err := q.getRows(ctx, q.db, "household invitations from user", getPendingInvitesFromUserQuery, getPendingInvitesFromUserArgs)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "reading household invitations from user")
 	}
@@ -445,66 +361,42 @@ func (q *Querier) GetPendingHouseholdInvitationsFromUser(ctx context.Context, us
 		Data: householdInvitations,
 	}
 
-	if filter != nil {
-		if filter.Page != nil {
-			returnList.Page = *filter.Page
-		}
+	if filter.Page != nil {
+		returnList.Page = *filter.Page
+	}
 
-		if filter.Limit != nil {
-			returnList.Limit = *filter.Limit
-		}
+	if filter.Limit != nil {
+		returnList.Limit = *filter.Limit
 	}
 
 	return returnList, nil
 }
 
-// buildGetPendingHouseholdInvitationsForUserQuery builds a query for fetching pending household invitations sent to a given user.
-func (q *Querier) buildGetPendingHouseholdInvitationsForUserQuery(ctx context.Context, userID string, filter *types.QueryFilter) (query string, args []any) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	where := squirrel.Eq{
-		"household_invitations.to_user":     userID,
-		"household_invitations.archived_at": nil,
-		"household_invitations.status":      types.PendingHouseholdInvitationStatus,
-	}
-
-	joins := []string{householdOnHouseholdInvitationsJoin, usersOnHouseholdInvitationsJoin}
-
-	filteredCountQuery, filteredCountQueryArgs := q.buildFilteredCountQuery(ctx, "household_invitations", joins, where, "", "", false, false, filter)
-	totalCountQuery, totalCountQueryArgs := q.buildTotalCountQuery(ctx, "household_invitations", joins, where, "", "", false, false)
-
-	queryBuilder := q.sqlBuilder.Select(
-		append(
-			householdInvitationsTableColumns,
-			fmt.Sprintf("(%s) as filtered_count", filteredCountQuery),
-			fmt.Sprintf("(%s) as total_count", totalCountQuery),
-		)...,
-	).
-		From("household_invitations").
-		Join(householdOnHouseholdInvitationsJoin).
-		Join(usersOnHouseholdInvitationsJoin).
-		Where(where)
-
-	queryBuilder = applyFilterToQueryBuilder(filter, "household_invitations", queryBuilder)
-
-	query, args, err := queryBuilder.ToSql()
-	q.logQueryBuildingError(span, err)
-
-	return query, append(append(filteredCountQueryArgs, totalCountQueryArgs...), args...)
-}
+//go:embed queries/household_invitations/get_pending_invites_for_user.sql
+var getPendingInvitesForUserQuery string
 
 // GetPendingHouseholdInvitationsForUser fetches pending household invitations sent to a given user.
 func (q *Querier) GetPendingHouseholdInvitationsForUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.HouseholdInvitation], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 	filter.AttachToLogger(logger)
 
-	query, args := q.buildGetPendingHouseholdInvitationsForUserQuery(ctx, userID, filter)
+	getPendingInvitesForUserArgs := []any{
+		userID,
+		types.PendingHouseholdInvitationStatus,
+		filter.CreatedAfter,
+		filter.CreatedBefore,
+		filter.UpdatedAfter,
+		filter.UpdatedBefore,
+	}
 
-	rows, err := q.getRows(ctx, q.db, "household invitations for user", query, args)
+	rows, err := q.getRows(ctx, q.db, "household invitations for user", getPendingInvitesForUserQuery, getPendingInvitesForUserArgs)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "reading household invitations from user")
 	}
@@ -522,14 +414,12 @@ func (q *Querier) GetPendingHouseholdInvitationsForUser(ctx context.Context, use
 		Data: householdInvitations,
 	}
 
-	if filter != nil {
-		if filter.Page != nil {
-			returnList.Page = *filter.Page
-		}
+	if filter.Page != nil {
+		returnList.Page = *filter.Page
+	}
 
-		if filter.Limit != nil {
-			returnList.Limit = *filter.Limit
-		}
+	if filter.Limit != nil {
+		returnList.Limit = *filter.Limit
 	}
 
 	return returnList, nil

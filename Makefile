@@ -186,10 +186,6 @@ build:
 quicktest: $(ARTIFACTS_DIR) vendor build
 	go test -cover -shuffle=on -race -failfast $(TESTABLE_PACKAGE_LIST)
 
-.PHONY: containertests
-containertests:
-	RUN_DATABASE_CONTAINER_TESTS=true TESTCONTAINERS_RYUK_DISABLED=true go test -cover -shuffle=on -race -failfast $(THIS)/internal/database/postgres -run ^TestQuerier_Integration_*
-
 ## Generated files
 
 .PHONY: configs
@@ -222,14 +218,12 @@ integration_tests: integration_tests_postgres
 .PHONY: integration_tests_postgres
 integration_tests_postgres:
 	docker-compose \
-	--file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration-tests.yaml \
-	up \
+	--file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration-tests.yaml up \
 	--build \
 	--force-recreate \
 	--remove-orphans \
 	--attach-dependencies \
 	--pull always \
-	--no-log-prefix \
 	--always-recreate-deps \
 	$(if $(filter y Y yes YES true TRUE plz sure yup YUP,$(LET_HANG)),,--abort-on-container-exit) \
 	--renew-anon-volumes
