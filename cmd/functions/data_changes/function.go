@@ -145,7 +145,7 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 	return nil
 }
 
-var errRequiredDataIsNil = errors.New("recipe is nil")
+var errRequiredDataIsNil = errors.New("required data is nil")
 
 func handleSearchIndexUpdates(
 	ctx context.Context,

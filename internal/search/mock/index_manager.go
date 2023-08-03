@@ -10,11 +10,7 @@ import (
 )
 
 var (
-	_ search.Index[types.ValidIngredientSearchSubset]      = (*IndexManager[types.ValidIngredientSearchSubset])(nil)
-	_ search.Index[types.ValidInstrumentSearchSubset]      = (*IndexManager[types.ValidInstrumentSearchSubset])(nil)
-	_ search.Index[types.ValidMeasurementUnitSearchSubset] = (*IndexManager[types.ValidMeasurementUnitSearchSubset])(nil)
-	_ search.Index[types.ValidPreparationSearchSubset]     = (*IndexManager[types.ValidPreparationSearchSubset])(nil)
-	_ search.Index[types.ValidIngredientStateSearchSubset] = (*IndexManager[types.ValidIngredientStateSearchSubset])(nil)
+	_ search.Index[types.UserSearchSubset] = (*IndexManager[types.UserSearchSubset])(nil)
 )
 
 // IndexManager is a mock IndexManager.

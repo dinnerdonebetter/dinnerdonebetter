@@ -19,7 +19,7 @@ const (
 
 	defaultEnv = "testing"
 
-	// SentEventType indicates a recipe step was created.
+	// SentEventType indicates an email was sent.
 	SentEventType types.CustomerEventType = "email_sent"
 
 	// TemplateTypeInvite is used to indicate the invite template.

@@ -18,11 +18,7 @@ import (
 )
 
 var (
-	_ search.Index[types.ValidIngredientSearchSubset]      = (*indexManager[types.ValidIngredientSearchSubset])(nil)
-	_ search.Index[types.ValidInstrumentSearchSubset]      = (*indexManager[types.ValidInstrumentSearchSubset])(nil)
-	_ search.Index[types.ValidMeasurementUnitSearchSubset] = (*indexManager[types.ValidMeasurementUnitSearchSubset])(nil)
-	_ search.Index[types.ValidPreparationSearchSubset]     = (*indexManager[types.ValidPreparationSearchSubset])(nil)
-	_ search.Index[types.ValidIngredientStateSearchSubset] = (*indexManager[types.ValidIngredientStateSearchSubset])(nil)
+	_ search.Index[types.UserSearchSubset] = (*indexManager[types.UserSearchSubset])(nil)
 )
 
 type (
