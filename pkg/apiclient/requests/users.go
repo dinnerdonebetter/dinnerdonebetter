@@ -203,7 +203,7 @@ func (b *Builder) BuildUpdateUserUsernameRequest(ctx context.Context, input *typ
 }
 
 // BuildUpdateUserDetailsRequest builds an HTTP request for updating a user's username.
-func (b *Builder) BuildUpdateUserDetailsRequest(ctx context.Context, input *types.UserDetailsUpdateInput) (*http.Request, error) {
+func (b *Builder) BuildUpdateUserDetailsRequest(ctx context.Context, input *types.UserDetailsUpdateRequestInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 

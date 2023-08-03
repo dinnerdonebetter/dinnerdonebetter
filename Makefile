@@ -2,16 +2,14 @@ PWD                           := $(shell pwd)
 GOPATH                        := $(GOPATH)
 ARTIFACTS_DIR                 := artifacts
 COVERAGE_OUT                  := $(ARTIFACTS_DIR)/coverage.out
-GO                            := docker run --interactive --tty --volume $(PWD):$(PWD) --workdir $(PWD) --user $(shell id -u):$(shell id -g) golang:1.18-stretch go
 GO_FORMAT                     := gofmt -s -w
 THIS                          := github.com/dinnerdonebetter/backend
 TOTAL_PACKAGE_LIST            := `go list $(THIS)/...`
 TESTABLE_PACKAGE_LIST         := `go list $(THIS)/... | grep -Ev '(integration)'`
 ENVIRONMENTS_DIR              := environments
-TEST_ENVIRONMENT_DIR          := $(ENVIRONMENTS_DIR)/testing
-TEST_DOCKER_COMPOSE_FILES_DIR := $(TEST_ENVIRONMENT_DIR)/compose_files
+TEST_DOCKER_COMPOSE_FILES_DIR := $(ENVIRONMENTS_DIR)/testing/compose_files
 GENERATED_QUERIES_DIR         := internal/database/postgres/generated
-SQL_GENERATOR                 := kjconroy/sqlc:1.20.0
+SQL_GENERATOR_IMAGE           := kjconroy/sqlc:1.20.0
 LINTER_IMAGE                  := golangci/golangci-lint:v1.53.3
 CONTAINER_LINTER_IMAGE        := openpolicyagent/conftest:v0.44.1
 CLOUD_JOBS                    := meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator search_data_index_scheduler
@@ -19,12 +17,6 @@ CLOUD_FUNCTIONS               := data_changes outbound_emailer search_indexer
 WIRE_TARGETS                  := server/http/build
 
 ## non-PHONY folders/files
-
-regit:
-	(rm -rf .git && cd ../ && rm -rf backend2 && git clone git@github.com:dinnerdonebetter/backend backend2 && cp -rf backend2/.git backend/.git && rm -rf backend2)
-
-clear:
-	@printf "\033[2J\033[3J\033[1;1H"
 
 clean:
 	rm -rf $(ARTIFACTS_DIR)
@@ -40,27 +32,34 @@ setup: $(ARTIFACTS_DIR) revendor rewire configs
 
 ## prerequisites
 
-# not a bad idea to do this either:
-## GO111MODULE=off go install golang.org/x/tools/...
-
+.PHONY: ensure_wire_installed
 ensure_wire_installed:
-ifndef $(shell command -v wire 2> /dev/null)
-	$(shell GO111MODULE=off go install github.com/google/wire/cmd/wire@latest)
+ifeq (, $(shell which wire))
+	$(shell go install github.com/google/wire/cmd/wire@latest)
 endif
 
+.PHONY: ensure_fieldalignment_installed
 ensure_fieldalignment_installed:
-ifndef $(shell command -v wire 2> /dev/null)
-	$(shell GO111MODULE=off go get -u golang.org/x/tools/...)
+ifeq (, $(shell which fieldalignment))
+	$(shell go install golang.org/x/tools/go/analysis/passes/fieldalignment/cmd/fieldalignment@latest)
 endif
 
+.PHONY: ensure_tagalign_installed
 ensure_tagalign_installed:
-ifndef $(shell command -v wire 2> /dev/null)
+ifeq (, $(shell which tagalign))
 	$(shell go install github.com/4meepo/tagalign/cmd/tagalign@latest)
 endif
 
+.PHONY: ensure_gci_installed
+ensure_gci_installed:
+ifeq (, $(shell which gci))
+	$(shell go install github.com/daixiang0/gci@latest)
+endif
+
+.PHONY: ensure_scc_installed
 ensure_scc_installed:
-ifndef $(shell command -v scc 2> /dev/null)
-	$(shell GO111MODULE=off go install github.com/boyter/scc@latest)
+ifeq (, $(shell which scc))
+	$(shell go install github.com/boyter/scc@latest)
 endif
 
 .PHONY: clean_vendor
@@ -101,16 +100,16 @@ rewire: clean_wire wire
 ## formatting
 
 .PHONY: format
-format: format_imports format_golang
+format: format_golang terraformat
 
 .PHONY: format_golang
-format_golang:
+format_golang: format_imports ensure_fieldalignment_installed ensure_tagalign_installed
 	@until fieldalignment -fix ./...; do true; done > /dev/null
 	@until tagalign -fix -sort -order "json,toml" ./...; do true; done > /dev/null
 	for file in `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`; do $(GO_FORMAT) $$file; done
 
 .PHONY: format_imports
-format_imports:
+format_imports: ensure_gci_installed
 	@# TODO: find some way to use $THIS here instead of hardcoding the path
 	gci write --skip-generated --section standard --section "prefix(github.com/dinnerdonebetter/backend)" --section "prefix(github.com/dinnerdonebetter)" --section default --custom-order `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`
 
@@ -141,22 +140,22 @@ lint_docker:
 
 .PHONY: queries_lint
 queries_lint:
-	@docker pull --quiet $(SQL_GENERATOR)
+	@docker pull --quiet $(SQL_GENERATOR_IMAGE)
 	docker run --rm \
 		--volume $(PWD):/src \
 		--workdir /src \
-		$(SQL_GENERATOR) compile --no-database --no-remote
+		$(SQL_GENERATOR_IMAGE) compile --no-database --no-remote
 	docker run --rm \
 		--volume $(PWD):/src \
 		--workdir /src \
-		$(SQL_GENERATOR) vet --no-database --no-remote
+		$(SQL_GENERATOR_IMAGE) vet --no-database --no-remote
 
 .PHONY: querier
 querier: queries_lint
 	docker run --rm \
 		--volume $(PWD):/src \
 		--workdir /src \
-	$(SQL_GENERATOR) generate
+	$(SQL_GENERATOR_IMAGE) generate
 	$(MAKE) format
 
 .PHONY: golang_lint
@@ -183,14 +182,9 @@ coverage: clean_coverage $(ARTIFACTS_DIR)
 build:
 	go build $(TOTAL_PACKAGE_LIST)
 
-.PHONY: quicktest # basically only running once instead of with -count 5 or whatever
-quicktest: $(ARTIFACTS_DIR) vendor build clear
-	go build $(TOTAL_PACKAGE_LIST)
+.PHONY: quicktest
+quicktest: $(ARTIFACTS_DIR) vendor build
 	go test -cover -shuffle=on -race -failfast $(TESTABLE_PACKAGE_LIST)
-
-.PHONY: containertests
-containertests:
-	go test -tags testcontainers -cover -shuffle=on -race -failfast $(THIS)/internal/database/postgres
 
 ## Generated files
 
@@ -224,15 +218,14 @@ integration_tests: integration_tests_postgres
 .PHONY: integration_tests_postgres
 integration_tests_postgres:
 	docker-compose \
-	--file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration-tests.yaml \
-	up \
+	--file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration-tests.yaml up \
 	--build \
-	--quiet-pull \
 	--force-recreate \
 	--remove-orphans \
+	--attach-dependencies \
+	--pull always \
 	--always-recreate-deps \
 	$(if $(filter y Y yes YES true TRUE plz sure yup YUP,$(LET_HANG)),,--abort-on-container-exit) \
-	--exit-code-from test \
 	--renew-anon-volumes
 
 ## Running

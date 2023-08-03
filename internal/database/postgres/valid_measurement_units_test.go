@@ -299,7 +299,7 @@ func TestQuerier_SearchForValidMeasurementUnits(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildMockRowsFromValidMeasurementUnits(false, 0, exampleValidMeasurementUnits.Data...))
 
-		actual, err := c.SearchForValidMeasurementUnitsByName(ctx, exampleQuery)
+		actual, err := c.SearchForValidMeasurementUnits(ctx, exampleQuery)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleValidMeasurementUnits.Data, actual)
 
@@ -312,7 +312,7 @@ func TestQuerier_SearchForValidMeasurementUnits(T *testing.T) {
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.SearchForValidMeasurementUnitsByName(ctx, "")
+		actual, err := c.SearchForValidMeasurementUnits(ctx, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -331,7 +331,7 @@ func TestQuerier_SearchForValidMeasurementUnits(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.SearchForValidMeasurementUnitsByName(ctx, exampleQuery)
+		actual, err := c.SearchForValidMeasurementUnits(ctx, exampleQuery)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -352,7 +352,7 @@ func TestQuerier_SearchForValidMeasurementUnits(T *testing.T) {
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(buildErroneousMockRow())
 
-		actual, err := c.SearchForValidMeasurementUnitsByName(ctx, exampleQuery)
+		actual, err := c.SearchForValidMeasurementUnits(ctx, exampleQuery)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 

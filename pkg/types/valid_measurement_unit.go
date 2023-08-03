@@ -124,7 +124,7 @@ type (
 		ValidMeasurementUnitExists(ctx context.Context, validMeasurementUnitID string) (bool, error)
 		GetValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) (*ValidMeasurementUnit, error)
 		GetValidMeasurementUnits(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[ValidMeasurementUnit], error)
-		SearchForValidMeasurementUnitsByName(ctx context.Context, query string) ([]*ValidMeasurementUnit, error)
+		SearchForValidMeasurementUnits(ctx context.Context, query string) ([]*ValidMeasurementUnit, error)
 		ValidMeasurementUnitsForIngredientID(ctx context.Context, validIngredientID string, filter *QueryFilter) (*QueryFilteredResult[ValidMeasurementUnit], error)
 		CreateValidMeasurementUnit(ctx context.Context, input *ValidMeasurementUnitDatabaseCreationInput) (*ValidMeasurementUnit, error)
 		UpdateValidMeasurementUnit(ctx context.Context, updated *ValidMeasurementUnit) error

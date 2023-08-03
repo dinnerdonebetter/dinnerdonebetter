@@ -31,7 +31,7 @@ func (m *UserDataManagerMock) UpdateUserEmailAddress(ctx context.Context, userID
 }
 
 // UpdateUserDetails is a mock function.
-func (m *UserDataManagerMock) UpdateUserDetails(ctx context.Context, userID string, input *types.UserDetailsUpdateInput) error {
+func (m *UserDataManagerMock) UpdateUserDetails(ctx context.Context, userID string, input *types.UserDetailsDatabaseUpdateInput) error {
 	return m.Called(ctx, userID, input).Error(0)
 }
 
@@ -44,13 +44,6 @@ func (m *UserDataManagerMock) GetUserByEmailAddressVerificationToken(ctx context
 // MarkUserEmailAddressAsVerified is a mock function.
 func (m *UserDataManagerMock) MarkUserEmailAddressAsVerified(ctx context.Context, userID, token string) error {
 	return m.Called(ctx, userID, token).Error(0)
-}
-
-// UserHasStatus is a mock function.
-func (m *UserDataManagerMock) UserHasStatus(ctx context.Context, userID string, statuses ...string) (bool, error) {
-	args := m.Called(ctx, userID, statuses)
-
-	return args.Bool(0), args.Error(1)
 }
 
 // GetUser is a mock function.

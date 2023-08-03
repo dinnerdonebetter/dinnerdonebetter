@@ -18,6 +18,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random/mock"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	testutils "github.com/dinnerdonebetter/backend/tests/utils"
 
@@ -2411,7 +2412,7 @@ func TestService_UpdateUserDetailsHandler(T *testing.T) {
 			"UpdateUserDetails",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			exampleInput,
+			converters.ConvertUserDetailsUpdateRequestInputToUserDetailsUpdateInput(exampleInput),
 		).Return(nil)
 		helper.service.userDataManager = mockDB
 

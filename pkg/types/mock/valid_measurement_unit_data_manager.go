@@ -34,7 +34,7 @@ func (m *ValidMeasurementUnitDataManagerMock) GetValidMeasurementUnit(ctx contex
 }
 
 // SearchForValidMeasurementUnitsByName is a mock function.
-func (m *ValidMeasurementUnitDataManagerMock) SearchForValidMeasurementUnitsByName(ctx context.Context, query string) ([]*types.ValidMeasurementUnit, error) {
+func (m *ValidMeasurementUnitDataManagerMock) SearchForValidMeasurementUnits(ctx context.Context, query string) ([]*types.ValidMeasurementUnit, error) {
 	args := m.Called(ctx, query)
 	return args.Get(0).([]*types.ValidMeasurementUnit), args.Error(1)
 }

@@ -110,76 +110,6 @@ func TestQuerier_ScanUsers(T *testing.T) {
 	})
 }
 
-func TestQuerier_UserHasStatus(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		c, db := buildTestClient(t)
-		ctx := context.Background()
-		exampleUserID := fakes.BuildFakeID()
-		exampleStatus := string(types.GoodStandingUserAccountStatus)
-
-		args := []any{exampleUserID, exampleStatus}
-
-		db.ExpectQuery(formatQueryForSQLMock(userHasStatusQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
-
-		actual, err := c.UserHasStatus(ctx, exampleUserID, exampleStatus)
-		assert.NoError(t, err)
-		assert.True(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with invalid user ID", func(t *testing.T) {
-		t.Parallel()
-
-		c, _ := buildTestClient(t)
-		ctx := context.Background()
-		exampleStatus := string(types.GoodStandingUserAccountStatus)
-
-		actual, err := c.UserHasStatus(ctx, "", exampleStatus)
-		assert.Error(t, err)
-		assert.False(t, actual)
-	})
-
-	T.Run("with empty statuses list", func(t *testing.T) {
-		t.Parallel()
-
-		c, _ := buildTestClient(t)
-		ctx := context.Background()
-		exampleUserID := fakes.BuildFakeID()
-
-		actual, err := c.UserHasStatus(ctx, exampleUserID)
-		assert.NoError(t, err)
-		assert.True(t, actual)
-	})
-
-	T.Run("with error performing query", func(t *testing.T) {
-		t.Parallel()
-
-		c, db := buildTestClient(t)
-		ctx := context.Background()
-		exampleUserID := fakes.BuildFakeID()
-		exampleStatus := string(types.GoodStandingUserAccountStatus)
-
-		args := []any{exampleUserID, exampleStatus}
-
-		db.ExpectQuery(formatQueryForSQLMock(userHasStatusQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.UserHasStatus(ctx, exampleUserID, exampleStatus)
-		assert.Error(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
 func TestQuerier_getUser(T *testing.T) {
 	T.Parallel()
 
@@ -856,7 +786,6 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleUser := fakes.BuildFakeUser()
 		exampleUser.TwoFactorSecretVerifiedAt = nil
 		exampleUser.CreatedAt = exampleCreationTime
-		exampleUser.AccountStatus = ""
 		exampleUserCreationInput := converters.ConvertUserToUserDatabaseCreationInput(exampleUser)
 
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
@@ -1134,7 +1063,6 @@ func TestQuerier_CreateUser(T *testing.T) {
 		exampleUser := fakes.BuildFakeUser()
 		exampleUser.TwoFactorSecretVerifiedAt = nil
 		exampleUser.CreatedAt = exampleCreationTime
-		exampleUser.AccountStatus = ""
 		exampleUserCreationInput := converters.ConvertUserToUserDatabaseCreationInput(exampleUser)
 
 		exampleHousehold := fakes.BuildFakeHouseholdForUser(exampleUser)
@@ -2093,7 +2021,7 @@ func TestQuerier_UpdateUserDetails(T *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleInput := fakes.BuildFakeUserDetailsUpdateInput()
+		exampleInput := fakes.BuildFakeUserDetailsDatabaseUpdateInput()
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
@@ -2118,7 +2046,7 @@ func TestQuerier_UpdateUserDetails(T *testing.T) {
 		t.Parallel()
 
 		exampleUser := fakes.BuildFakeUser()
-		exampleInput := fakes.BuildFakeUserDetailsUpdateInput()
+		exampleInput := fakes.BuildFakeUserDetailsDatabaseUpdateInput()
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)

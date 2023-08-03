@@ -7,6 +7,18 @@ import (
 	fake "github.com/brianvoe/gofakeit/v5"
 )
 
+// BuildFakeHouseholdUserMembership builds a faked HouseholdUserMembership.
+func BuildFakeHouseholdUserMembership() *types.HouseholdUserMembership {
+	return &types.HouseholdUserMembership{
+		ID:                 BuildFakeID(),
+		BelongsToUser:      BuildFakeID(),
+		BelongsToHousehold: fake.UUID(),
+		HouseholdRole:      authorization.HouseholdMemberRole.String(),
+		CreatedAt:          BuildFakeTime(),
+		ArchivedAt:         nil,
+	}
+}
+
 // BuildFakeHouseholdUserMembershipWithUser builds a faked HouseholdUserMembershipWithUser.
 func BuildFakeHouseholdUserMembershipWithUser() *types.HouseholdUserMembershipWithUser {
 	u := BuildFakeUser()

@@ -207,7 +207,7 @@ func (q *Querier) GetRandomValidMeasurementUnit(ctx context.Context) (*types.Val
 var validMeasurementUnitSearchQuery string
 
 // SearchForValidMeasurementUnitsByName fetches a valid measurement unit from the database.
-func (q *Querier) SearchForValidMeasurementUnitsByName(ctx context.Context, query string) ([]*types.ValidMeasurementUnit, error) {
+func (q *Querier) SearchForValidMeasurementUnits(ctx context.Context, query string) ([]*types.ValidMeasurementUnit, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 

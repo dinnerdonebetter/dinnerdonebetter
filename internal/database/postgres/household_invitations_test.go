@@ -19,7 +19,57 @@ import (
 )
 
 func buildMockRowsFromHouseholdInvitations(includeCounts bool, filteredCount uint64, householdInvitations ...*types.HouseholdInvitation) *sqlmock.Rows {
-	columns := householdInvitationsTableColumns
+	columns := []string{
+		"household_invitations.id",
+		"households.id",
+		"households.name",
+		"households.billing_status",
+		"households.contact_phone",
+		"households.address_line_1",
+		"households.address_line_2",
+		"households.city",
+		"households.state",
+		"households.zip_code",
+		"households.country",
+		"households.latitude",
+		"households.longitude",
+		"households.payment_processor_customer_id",
+		"households.subscription_plan_id",
+		"households.created_at",
+		"households.last_updated_at",
+		"households.archived_at",
+		"households.belongs_to_user",
+		"household_invitations.to_email",
+		"household_invitations.to_user",
+		"users.id",
+		"users.first_name",
+		"users.last_name",
+		"users.username",
+		"users.email_address",
+		"users.email_address_verified_at",
+		"users.avatar_src",
+		"users.hashed_password",
+		"users.requires_password_change",
+		"users.password_last_changed_at",
+		"users.two_factor_secret",
+		"users.two_factor_secret_verified_at",
+		"users.service_role",
+		"users.user_account_status",
+		"users.user_account_status_explanation",
+		"users.birthday",
+		"users.created_at",
+		"users.last_updated_at",
+		"users.archived_at",
+		"household_invitations.to_name",
+		"household_invitations.status",
+		"household_invitations.note",
+		"household_invitations.status_note",
+		"household_invitations.token",
+		"household_invitations.expires_at",
+		"household_invitations.created_at",
+		"household_invitations.last_updated_at",
+		"household_invitations.archived_at",
+	}
 
 	if includeCounts {
 		columns = append(columns, "filtered_count", "total_count")
@@ -473,224 +523,6 @@ func TestQuerier_CreateHouseholdInvitation(T *testing.T) {
 		}
 
 		actual, err := c.CreateHouseholdInvitation(ctx, exampleInput)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
-func TestSQLQuerier_BuildGetPendingHouseholdInvitationsFromUserQuery(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		userID := fakes.BuildFakeID()
-		filter := types.DefaultQueryFilter()
-
-		expectedQuery := "SELECT household_invitations.id, households.id, households.name, households.billing_status, households.contact_phone, households.address_line_1, households.address_line_2, households.city, households.state, households.zip_code, households.country, households.latitude, households.longitude, households.payment_processor_customer_id, households.subscription_plan_id, households.created_at, households.last_updated_at, households.archived_at, households.belongs_to_user, household_invitations.to_email, household_invitations.to_user, users.id, users.first_name, users.last_name, users.username, users.email_address, users.email_address_verified_at, users.avatar_src, users.hashed_password, users.requires_password_change, users.password_last_changed_at, users.two_factor_secret, users.two_factor_secret_verified_at, users.service_role, users.user_account_status, users.user_account_status_explanation, users.birthday, users.created_at, users.last_updated_at, users.archived_at, household_invitations.to_name, household_invitations.status, household_invitations.note, household_invitations.status_note, household_invitations.token, household_invitations.expires_at, household_invitations.created_at, household_invitations.last_updated_at, household_invitations.archived_at, (SELECT COUNT(household_invitations.id) FROM household_invitations JOIN households ON household_invitations.destination_household = households.id JOIN users ON household_invitations.from_user = users.id WHERE household_invitations.archived_at IS NULL AND household_invitations.from_user = $1 AND household_invitations.status = $2) as filtered_count, (SELECT COUNT(household_invitations.id) FROM household_invitations JOIN households ON household_invitations.destination_household = households.id JOIN users ON household_invitations.from_user = users.id WHERE household_invitations.archived_at IS NULL AND household_invitations.from_user = $3 AND household_invitations.status = $4) as total_count FROM household_invitations JOIN households ON household_invitations.destination_household = households.id JOIN users ON household_invitations.from_user = users.id WHERE household_invitations.archived_at IS NULL AND household_invitations.from_user = $5 AND household_invitations.status = $6 LIMIT 20"
-		expectedArgs := []any{
-			userID,
-			types.PendingHouseholdInvitationStatus,
-			userID,
-			types.PendingHouseholdInvitationStatus,
-			userID,
-			types.PendingHouseholdInvitationStatus,
-		}
-
-		c, _ := buildTestClient(t)
-
-		actualQuery, actualArgs := c.BuildGetPendingHouseholdInvitationsFromUserQuery(ctx, userID, filter)
-
-		assert.Equal(t, expectedQuery, actualQuery)
-		assert.Equal(t, expectedArgs, actualArgs)
-	})
-}
-
-func TestSQLQuerier_GetPendingHouseholdInvitationsFromUser(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		filter := types.DefaultQueryFilter()
-		exampleUserID := fakes.BuildFakeID()
-		exampleHouseholdInvitationList := fakes.BuildFakeHouseholdInvitationList()
-		for i := range exampleHouseholdInvitationList.Data {
-			exampleHouseholdInvitationList.Data[i].DestinationHousehold.Members = nil
-		}
-
-		c, db := buildTestClient(t)
-
-		query, args := c.BuildGetPendingHouseholdInvitationsFromUserQuery(ctx, exampleUserID, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromHouseholdInvitations(true, exampleHouseholdInvitationList.FilteredCount, exampleHouseholdInvitationList.Data...))
-
-		actual, err := c.GetPendingHouseholdInvitationsFromUser(ctx, exampleUserID, filter)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleHouseholdInvitationList, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		filter := types.DefaultQueryFilter()
-		exampleUserID := fakes.BuildFakeID()
-		exampleHouseholdInvitationList := fakes.BuildFakeHouseholdInvitationList()
-		for i := range exampleHouseholdInvitationList.Data {
-			exampleHouseholdInvitationList.Data[i].DestinationHousehold.Members = nil
-		}
-
-		c, db := buildTestClient(t)
-
-		query, args := c.BuildGetPendingHouseholdInvitationsFromUserQuery(ctx, exampleUserID, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetPendingHouseholdInvitationsFromUser(ctx, exampleUserID, filter)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with invalid response", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		filter := types.DefaultQueryFilter()
-		exampleUserID := fakes.BuildFakeID()
-		exampleHouseholdInvitationList := fakes.BuildFakeHouseholdInvitationList()
-		for i := range exampleHouseholdInvitationList.Data {
-			exampleHouseholdInvitationList.Data[i].DestinationHousehold.Members = nil
-		}
-
-		c, db := buildTestClient(t)
-
-		query, args := c.BuildGetPendingHouseholdInvitationsFromUserQuery(ctx, exampleUserID, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildErroneousMockRow())
-
-		actual, err := c.GetPendingHouseholdInvitationsFromUser(ctx, exampleUserID, filter)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
-func TestSQLQuerier_BuildGetPendingHouseholdInvitationsForUserQuery(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		userID := fakes.BuildFakeID()
-		filter := types.DefaultQueryFilter()
-
-		expectedQuery := "SELECT household_invitations.id, households.id, households.name, households.billing_status, households.contact_phone, households.address_line_1, households.address_line_2, households.city, households.state, households.zip_code, households.country, households.latitude, households.longitude, households.payment_processor_customer_id, households.subscription_plan_id, households.created_at, households.last_updated_at, households.archived_at, households.belongs_to_user, household_invitations.to_email, household_invitations.to_user, users.id, users.first_name, users.last_name, users.username, users.email_address, users.email_address_verified_at, users.avatar_src, users.hashed_password, users.requires_password_change, users.password_last_changed_at, users.two_factor_secret, users.two_factor_secret_verified_at, users.service_role, users.user_account_status, users.user_account_status_explanation, users.birthday, users.created_at, users.last_updated_at, users.archived_at, household_invitations.to_name, household_invitations.status, household_invitations.note, household_invitations.status_note, household_invitations.token, household_invitations.expires_at, household_invitations.created_at, household_invitations.last_updated_at, household_invitations.archived_at, (SELECT COUNT(household_invitations.id) FROM household_invitations JOIN households ON household_invitations.destination_household = households.id JOIN users ON household_invitations.from_user = users.id WHERE household_invitations.archived_at IS NULL AND household_invitations.status = $1 AND household_invitations.to_user = $2) as filtered_count, (SELECT COUNT(household_invitations.id) FROM household_invitations JOIN households ON household_invitations.destination_household = households.id JOIN users ON household_invitations.from_user = users.id WHERE household_invitations.archived_at IS NULL AND household_invitations.status = $3 AND household_invitations.to_user = $4) as total_count FROM household_invitations JOIN households ON household_invitations.destination_household = households.id JOIN users ON household_invitations.from_user = users.id WHERE household_invitations.archived_at IS NULL AND household_invitations.status = $5 AND household_invitations.to_user = $6 LIMIT 20"
-		expectedArgs := []any{
-			types.PendingHouseholdInvitationStatus,
-			userID,
-			types.PendingHouseholdInvitationStatus,
-			userID,
-			types.PendingHouseholdInvitationStatus,
-			userID,
-		}
-
-		c, _ := buildTestClient(t)
-
-		actualQuery, actualArgs := c.BuildGetPendingHouseholdInvitationsForUserQuery(ctx, userID, filter)
-
-		assert.Equal(t, expectedQuery, actualQuery)
-		assert.Equal(t, expectedArgs, actualArgs)
-	})
-}
-
-func TestSQLQuerier_GetPendingHouseholdInvitationsForUser(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		filter := types.DefaultQueryFilter()
-		exampleUserID := fakes.BuildFakeID()
-		exampleHouseholdInvitationList := fakes.BuildFakeHouseholdInvitationList()
-		for i := range exampleHouseholdInvitationList.Data {
-			exampleHouseholdInvitationList.Data[i].DestinationHousehold.Members = nil
-		}
-
-		c, db := buildTestClient(t)
-
-		query, args := c.BuildGetPendingHouseholdInvitationsForUserQuery(ctx, exampleUserID, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromHouseholdInvitations(true, exampleHouseholdInvitationList.FilteredCount, exampleHouseholdInvitationList.Data...))
-
-		actual, err := c.GetPendingHouseholdInvitationsForUser(ctx, exampleUserID, filter)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleHouseholdInvitationList, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleUserID := fakes.BuildFakeID()
-		filter := types.DefaultQueryFilter()
-
-		c, db := buildTestClient(t)
-
-		query, args := c.BuildGetPendingHouseholdInvitationsForUserQuery(ctx, exampleUserID, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetPendingHouseholdInvitationsForUser(ctx, exampleUserID, filter)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with invalid response", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		filter := types.DefaultQueryFilter()
-		exampleUserID := fakes.BuildFakeID()
-		exampleHouseholdInvitationList := fakes.BuildFakeHouseholdInvitationList()
-		for i := range exampleHouseholdInvitationList.Data {
-			exampleHouseholdInvitationList.Data[i].DestinationHousehold.Members = nil
-		}
-
-		c, db := buildTestClient(t)
-
-		query, args := c.BuildGetPendingHouseholdInvitationsForUserQuery(ctx, exampleUserID, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildErroneousMockRow())
-
-		actual, err := c.GetPendingHouseholdInvitationsForUser(ctx, exampleUserID, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 

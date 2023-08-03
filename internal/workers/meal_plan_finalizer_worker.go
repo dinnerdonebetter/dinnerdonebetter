@@ -52,7 +52,9 @@ func (w *MealPlanFinalizationWorker) finalizeExpiredMealPlans(ctx context.Contex
 		return -1, observability.PrepareAndLogError(fetchMealPlansErr, logger, span, "fetching unfinalized and expired meal plan")
 	}
 
-	logger.WithValue("quantity", len(mealPlans)).Info("finalizing expired meal plans")
+	if len(mealPlans) > 0 {
+		logger.WithValue("quantity", len(mealPlans)).Info("finalizing expired meal plans")
+	}
 
 	var changedCount int
 	for _, mealPlan := range mealPlans {

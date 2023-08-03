@@ -109,8 +109,10 @@ func (w *MealPlanTaskCreatorWorker) DetermineCreatableMealPlanTasks(ctx context.
 		return nil, observability.PrepareAndLogError(err, logger, span, "getting finalized meal plan data for the next week")
 	}
 
-	logger = logger.WithValue("steps_to_create", len(results))
-	logger.Info("determining creatable steps")
+	if len(results) > 0 {
+		logger = logger.WithValue("steps_to_create", len(results))
+		logger.Info("determining creatable steps")
+	}
 
 	inputs := map[string][]*types.MealPlanTaskDatabaseCreationInput{}
 	for _, result := range results {

@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"errors"
+	"fmt"
+	"hash/fnv"
 	"io"
 	"log"
 	"regexp"
@@ -28,6 +30,14 @@ import (
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
 	"github.com/testcontainers/testcontainers-go/wait"
+)
+
+const (
+	exampleQuantity = 3
+)
+
+var (
+	runningContainerTests = true // strings.ToLower(os.Getenv("RUN_DATABASE_CONTAINER_TESTS")) == "true"
 )
 
 var _ sqlmock.Argument = (*idMatcher)(nil)
@@ -131,23 +141,63 @@ func buildTestClient(t *testing.T) (*Querier, *sqlmockExpecterWrapper) {
 }
 
 const (
-	defaultImage            = "postgres:15"
-	defaultDatabaseName     = "dinner-done-better"
-	defaultDatabaseUsername = "dbuser"
-	defaultDatabasePassword = "hunter2"
+	defaultImage = "postgres:15"
 )
+
+func hashStringToNumber(s string) uint64 {
+	// Create a new FNV-1a 64-bit hash object
+	h := fnv.New64a()
+
+	// Write the bytes of the string into the hash object
+	_, err := h.Write([]byte(s))
+	if err != nil {
+		// Handle error if necessary
+		panic(err)
+	}
+
+	// Return the resulting hash value as a number (uint64)
+	return h.Sum64()
+}
+
+func reverseString(input string) string {
+	runes := []rune(input)
+	length := len(runes)
+
+	for i, j := 0, length-1; i < j; i, j = i+1, j-1 {
+		runes[i], runes[j] = runes[j], runes[i]
+	}
+
+	return string(runes)
+}
+
+func splitReverseConcat(input string) string {
+	length := len(input)
+	halfLength := length / 2
+
+	firstHalf := input[:halfLength]
+	secondHalf := input[halfLength:]
+
+	reversedFirstHalf := reverseString(firstHalf)
+	reversedSecondHalf := reverseString(secondHalf)
+
+	return reversedSecondHalf + reversedFirstHalf
+}
 
 func buildDatabaseClientForTest(t *testing.T, ctx context.Context) (*Querier, *postgres.PostgresContainer) {
 	t.Helper()
+
+	dbUsername := fmt.Sprintf("%d", hashStringToNumber(t.Name()))
+	dbName := splitReverseConcat(dbUsername)
+	dbPassword := reverseString(dbUsername)
 
 	testcontainers.Logger = log.New(io.Discard, "", log.LstdFlags)
 
 	container, err := postgres.RunContainer(
 		ctx,
 		testcontainers.WithImage(defaultImage),
-		postgres.WithDatabase(defaultDatabaseName),
-		postgres.WithUsername(defaultDatabaseUsername),
-		postgres.WithPassword(defaultDatabasePassword),
+		postgres.WithDatabase(dbName),
+		postgres.WithUsername(dbUsername),
+		postgres.WithPassword(dbPassword),
 		testcontainers.WithWaitStrategyAndDeadline(
 			time.Minute,
 			wait.ForLog("database system is ready to accept connections").

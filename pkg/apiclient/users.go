@@ -204,7 +204,7 @@ func (c *Client) UpdateUserUsername(ctx context.Context, input *types.UsernameUp
 }
 
 // UpdateUserDetails updates a user's details.
-func (c *Client) UpdateUserDetails(ctx context.Context, input *types.UserDetailsUpdateInput) error {
+func (c *Client) UpdateUserDetails(ctx context.Context, input *types.UserDetailsUpdateRequestInput) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 

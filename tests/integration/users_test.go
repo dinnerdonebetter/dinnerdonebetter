@@ -141,21 +141,6 @@ func (s *TestSuite) TestUsers_PermissionsChecking() {
 	})
 }
 
-func (s *TestSuite) TestUsers_Searching_ReturnsEmptyWhenSearchingForUsernameThatIsNotPresentInTheDatabase() {
-	s.runForEachClient("it should return empty slice when searching for a username that does not exist", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			actual, err := testClients.admin.SearchForUsersByUsername(ctx, "   this is a really long string that contains characters unlikely to yield any real results   ")
-			assert.Nil(t, actual)
-			assert.NoError(t, err)
-		}
-	})
-}
-
 func (s *TestSuite) TestUsers_Searching_OnlyAccessibleToAdmins() {
 	s.runForEachClient("it should only be accessible to admins", func(testClients *testClientWrapper) func() {
 		return func() {

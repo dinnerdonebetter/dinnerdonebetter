@@ -100,9 +100,13 @@ services:
         container_name: integration_tests_server
         depends_on:
             - postgres
+            - redis
             - queue_loader
             - meal_plan_finalizer
             - meal_plan_task_creator
+        links:
+            - postgres
+            - redis
         environment:
             USE_NOOP_LOGGER: 'nope'
             CONFIGURATION_FILEPATH: '/etc/config'
@@ -121,10 +125,12 @@ services:
             TARGET_DATABASE: 'postgres://dbuser:hunter2@pgdatabase:5432/dinner-done-better?sslmode=disable'
         depends_on:
             - postgres
+            - redis
             - queue_loader
             - meal_plan_finalizer
             - meal_plan_task_creator
         links:
+            - postgres
             - api_server
         build:
             context: '../../../'

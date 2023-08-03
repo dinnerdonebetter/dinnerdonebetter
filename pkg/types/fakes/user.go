@@ -23,9 +23,9 @@ func BuildFakeUser() *types.User {
 		FirstName:                 fake.FirstName(),
 		LastName:                  fake.LastName(),
 		EmailAddress:              fake.Email(),
-		Username:                  fake.Password(true, true, true, false, false, 32),
+		Username:                  fmt.Sprintf("%s_%d_%s", fake.Username(), fake.Uint8(), fake.Username()),
 		Birthday:                  pointers.Pointer(BuildFakeTime()),
-		AccountStatus:             string(types.GoodStandingUserAccountStatus),
+		AccountStatus:             string(types.UnverifiedHouseholdStatus),
 		TwoFactorSecret:           base32.StdEncoding.EncodeToString([]byte(fake.Password(false, true, true, false, false, 32))),
 		TwoFactorSecretVerifiedAt: &fakeDate,
 		ServiceRole:               authorization.ServiceUserRole.String(),
@@ -213,12 +213,20 @@ func BuildFakeUserEmailAddressUpdateInput() *types.UserEmailAddressUpdateInput {
 	}
 }
 
-func BuildFakeUserDetailsUpdateInput() *types.UserDetailsUpdateInput {
-	return &types.UserDetailsUpdateInput{
+func BuildFakeUserDetailsUpdateInput() *types.UserDetailsUpdateRequestInput {
+	return &types.UserDetailsUpdateRequestInput{
 		FirstName:       buildUniqueString(),
 		LastName:        buildUniqueString(),
 		Birthday:        BuildFakeTime(),
 		CurrentPassword: fake.Password(true, true, true, false, false, 32),
 		TOTPToken:       "123456",
+	}
+}
+
+func BuildFakeUserDetailsDatabaseUpdateInput() *types.UserDetailsDatabaseUpdateInput {
+	return &types.UserDetailsDatabaseUpdateInput{
+		FirstName: buildUniqueString(),
+		LastName:  buildUniqueString(),
+		Birthday:  BuildFakeTime(),
 	}
 }

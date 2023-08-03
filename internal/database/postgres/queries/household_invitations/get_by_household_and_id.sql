@@ -51,9 +51,10 @@ SELECT
 	household_invitations.last_updated_at,
 	household_invitations.archived_at
 FROM household_invitations
-	JOIN households ON household_invitations.destination_household = households.id
-	JOIN users ON household_invitations.from_user = users.id
+	LEFT JOIN households ON household_invitations.destination_household = households.id
+	LEFT JOIN users ON household_invitations.from_user = users.id
 WHERE household_invitations.archived_at IS NULL
-	AND household_invitations.expires_at > NOW()
+      AND household_invitations.expires_at > NOW()
+      AND household_invitations.expires_at > NOW()
 	AND household_invitations.destination_household = $1
 	AND household_invitations.id = $2;
