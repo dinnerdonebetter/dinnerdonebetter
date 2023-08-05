@@ -29,9 +29,9 @@ func (s *oauth2TokenStoreImpl) Create(ctx context.Context, info oauth2.TokenInfo
 	logger.Debug("Create invoked")
 
 	input := &types.OAuth2ClientTokenDatabaseCreationInput{
-		RefreshCreateAt:     info.GetRefreshCreateAt(),
-		AccessCreateAt:      info.GetAccessCreateAt(),
-		CodeCreateAt:        info.GetCodeCreateAt(),
+		RefreshCreatedAt:    info.GetRefreshCreateAt(),
+		AccessCreatedAt:     info.GetAccessCreateAt(),
+		CodeCreatedAt:       info.GetCodeCreateAt(),
 		RedirectURI:         info.GetRedirectURI(),
 		Scope:               info.GetScope(),
 		Code:                info.GetCode(),
@@ -47,7 +47,7 @@ func (s *oauth2TokenStoreImpl) Create(ctx context.Context, info oauth2.TokenInfo
 		RefreshExpiresIn:    info.GetRefreshExpiresIn(),
 	}
 
-	if err := s.dataManager.CreateOAuth2ClientToken(ctx, input); err != nil {
+	if _, err := s.dataManager.CreateOAuth2ClientToken(ctx, input); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "creating oauth2 client token")
 	}
 

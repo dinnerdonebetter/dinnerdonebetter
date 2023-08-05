@@ -439,7 +439,7 @@ func AttachRecipeRatingIDToSpan(span trace.Span, id string) {
 	AttachStringToSpan(span, keys.RecipeRatingIDKey, id)
 }
 
-// AttachOAuth2ClientIDToSpan attaches a recipe rating ID to a given span.
+// AttachOAuth2ClientIDToSpan attaches an oauth2 client's ID to a given span.
 func AttachOAuth2ClientIDToSpan(span trace.Span, id string) {
 	AttachStringToSpan(span, keys.OAuth2ClientIDKey, id)
 }

@@ -22,9 +22,9 @@ func BuildFakeOAuth2Client() *types.OAuth2Client {
 // BuildFakeOAuth2ClientToken builds a faked OAuth2ClientToken.
 func BuildFakeOAuth2ClientToken() *types.OAuth2ClientToken {
 	return &types.OAuth2ClientToken{
-		RefreshCreateAt:     BuildFakeTime(),
-		AccessCreateAt:      BuildFakeTime(),
-		CodeCreateAt:        BuildFakeTime(),
+		RefreshCreatedAt:    BuildFakeTime(),
+		AccessCreatedAt:     BuildFakeTime(),
+		CodeCreatedAt:       BuildFakeTime(),
 		RedirectURI:         fake.URL(),
 		Scope:               "*",
 		Code:                buildUniqueString(),

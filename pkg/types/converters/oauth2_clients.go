@@ -41,3 +41,24 @@ func ConvertOAuth2ClientToOAuth2ClientCreationResponse(client *types.OAuth2Clien
 		Description: client.Description,
 	}
 }
+
+func ConvertOAuth2ClientTokenToOAuth2ClientTokenDatabaseCreationInput(x *types.OAuth2ClientToken) *types.OAuth2ClientTokenDatabaseCreationInput {
+	return &types.OAuth2ClientTokenDatabaseCreationInput{
+		RefreshCreatedAt:    x.RefreshCreatedAt,
+		AccessCreatedAt:     x.AccessCreatedAt,
+		CodeCreatedAt:       x.CodeCreatedAt,
+		RedirectURI:         x.RedirectURI,
+		Scope:               x.Scope,
+		Code:                x.Code,
+		CodeChallenge:       x.CodeChallenge,
+		CodeChallengeMethod: x.CodeChallengeMethod,
+		BelongsToUser:       x.BelongsToUser,
+		Access:              x.Access,
+		ClientID:            x.ClientID,
+		Refresh:             x.Refresh,
+		ID:                  x.ID,
+		CodeExpiresIn:       x.CodeExpiresIn,
+		AccessExpiresIn:     x.AccessExpiresIn,
+		RefreshExpiresIn:    x.RefreshExpiresIn,
+	}
+}
