@@ -8,16 +8,12 @@ import (
 
 // Config manages our body validation.
 type Config struct {
-	DataChangesTopicName  string `json:"dataChangesTopicName,omitempty" toml:"data_changes_topic_name,omitempty"`
-	CreationEnabled       bool   `json:"creationEnabled"                toml:"creation_enabled"`
-	MinimumUsernameLength uint8  `json:"minimumUsernameLength"          toml:"minimum_username_length"`
-	MinimumPasswordLength uint8  `json:"minimumPasswordLength"          toml:"minimum_password_length"`
+	DataChangesTopicName string `json:"dataChangesTopicName,omitempty" toml:"data_changes_topic_name,omitempty"`
+	CreationEnabled      bool   `json:"creationEnabled"                toml:"creation_enabled"`
 }
 
 func (c *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, c,
 		validation.Field(&c.DataChangesTopicName, validation.Required),
-		validation.Field(&c.MinimumUsernameLength, validation.Required),
-		validation.Field(&c.MinimumPasswordLength, validation.Required),
 	)
 }

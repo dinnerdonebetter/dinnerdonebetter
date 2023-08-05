@@ -17,8 +17,6 @@ var (
 // ProvideConfig converts an auth Config to a local Config.
 func ProvideConfig(cfg *authservice.Config) *Config {
 	return &Config{
-		DataChangesTopicName:  cfg.DataChangesTopicName,
-		MinimumUsernameLength: cfg.MinimumUsernameLength,
-		MinimumPasswordLength: cfg.MinimumPasswordLength,
+		DataChangesTopicName: cfg.DataChangesTopicName,
 	}
 }

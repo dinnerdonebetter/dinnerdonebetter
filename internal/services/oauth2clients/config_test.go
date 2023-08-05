@@ -15,10 +15,8 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		cfg := &Config{
-			CreationEnabled:       true,
-			DataChangesTopicName:  "blah",
-			MinimumUsernameLength: 1,
-			MinimumPasswordLength: 1,
+			CreationEnabled:      true,
+			DataChangesTopicName: "blah",
 		}
 
 		assert.NoError(t, cfg.ValidateWithContext(ctx))

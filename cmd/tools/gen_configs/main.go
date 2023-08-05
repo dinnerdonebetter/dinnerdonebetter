@@ -581,9 +581,7 @@ func buildDevConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			OAuth2Clients: oauth2clientsservice.Config{
-				DataChangesTopicName:  dataChangesTopicName,
-				MinimumUsernameLength: 3,
-				MinimumPasswordLength: 8,
+				DataChangesTopicName: dataChangesTopicName,
 			},
 		},
 	}
