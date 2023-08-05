@@ -196,7 +196,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.RespondWithData(ctx, res, serviceSettings)
 }
 
-// ArchiveHandler returns a handler that archives a valid vessel.
+// ArchiveHandler returns a handler that archives a service setting.
 func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -215,14 +215,14 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	// determine valid vessel ID.
+	// determine service setting ID.
 	serviceSettingID := s.serviceSettingIDFetcher(req)
 	tracing.AttachServiceSettingIDToSpan(span, serviceSettingID)
 	logger = logger.WithValue(keys.ServiceSettingIDKey, serviceSettingID)
 
 	exists, existenceCheckErr := s.serviceSettingDataManager.ServiceSettingExists(ctx, serviceSettingID)
 	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
-		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking valid vessel existence")
+		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking service setting existence")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
@@ -231,7 +231,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	if err = s.serviceSettingDataManager.ArchiveServiceSetting(ctx, serviceSettingID); err != nil {
-		observability.AcknowledgeError(err, logger, span, "archiving valid vessel")
+		observability.AcknowledgeError(err, logger, span, "archiving service setting")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
