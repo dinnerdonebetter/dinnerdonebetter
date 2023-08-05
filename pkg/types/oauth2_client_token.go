@@ -10,9 +10,9 @@ type (
 	OAuth2ClientToken struct {
 		_ struct{}
 
-		RefreshCreateAt     time.Time     `json:"refreshCreateAt"`
-		AccessCreateAt      time.Time     `json:"accessCreateAt"`
-		CodeCreateAt        time.Time     `json:"codeCreateAt"`
+		RefreshCreatedAt    time.Time     `json:"refreshCreatedAt"`
+		AccessCreatedAt     time.Time     `json:"accessCreatedAt"`
+		CodeCreatedAt       time.Time     `json:"codeCreatedAt"`
 		RedirectURI         string        `json:"redirectURI"`
 		Scope               string        `json:"scope"`
 		Code                string        `json:"code"`
@@ -32,9 +32,9 @@ type (
 	OAuth2ClientTokenDatabaseCreationInput struct {
 		_ struct{}
 
-		RefreshCreateAt     time.Time
-		AccessCreateAt      time.Time
-		CodeCreateAt        time.Time
+		RefreshCreatedAt    time.Time
+		AccessCreatedAt     time.Time
+		CodeCreatedAt       time.Time
 		RedirectURI         string
 		Scope               string
 		Code                string
@@ -54,7 +54,7 @@ type (
 		GetOAuth2ClientTokenByCode(ctx context.Context, code string) (*OAuth2ClientToken, error)
 		GetOAuth2ClientTokenByAccess(ctx context.Context, access string) (*OAuth2ClientToken, error)
 		GetOAuth2ClientTokenByRefresh(ctx context.Context, refresh string) (*OAuth2ClientToken, error)
-		CreateOAuth2ClientToken(ctx context.Context, input *OAuth2ClientTokenDatabaseCreationInput) error
+		CreateOAuth2ClientToken(ctx context.Context, input *OAuth2ClientTokenDatabaseCreationInput) (*OAuth2ClientToken, error)
 		ArchiveOAuth2ClientTokenByAccess(ctx context.Context, access string) error
 		ArchiveOAuth2ClientTokenByCode(ctx context.Context, code string) error
 		ArchiveOAuth2ClientTokenByRefresh(ctx context.Context, refresh string) error

@@ -5,7 +5,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 )
 
-// BuildFakeServiceSettingConfiguration builds a faked valid preparation.
+// BuildFakeServiceSettingConfiguration builds a faked service setting.
 func BuildFakeServiceSettingConfiguration() *types.ServiceSettingConfiguration {
 	return &types.ServiceSettingConfiguration{
 		ID:                 BuildFakeID(),
@@ -36,14 +36,14 @@ func BuildFakeServiceSettingConfigurationList() *types.QueryFilteredResult[types
 	}
 }
 
-// BuildFakeServiceSettingConfigurationUpdateRequestInput builds a faked ServiceSettingConfigurationUpdateRequestInput from a valid preparation.
+// BuildFakeServiceSettingConfigurationUpdateRequestInput builds a faked ServiceSettingConfigurationUpdateRequestInput from a service setting.
 func BuildFakeServiceSettingConfigurationUpdateRequestInput() *types.ServiceSettingConfigurationUpdateRequestInput {
-	validPreparation := BuildFakeServiceSettingConfiguration()
-	return converters.ConvertServiceSettingConfigurationToServiceSettingConfigurationUpdateRequestInput(validPreparation)
+	serviceSetting := BuildFakeServiceSettingConfiguration()
+	return converters.ConvertServiceSettingConfigurationToServiceSettingConfigurationUpdateRequestInput(serviceSetting)
 }
 
 // BuildFakeServiceSettingConfigurationCreationRequestInput builds a faked ServiceSettingConfigurationCreationRequestInput.
 func BuildFakeServiceSettingConfigurationCreationRequestInput() *types.ServiceSettingConfigurationCreationRequestInput {
-	validPreparation := BuildFakeServiceSettingConfiguration()
-	return converters.ConvertServiceSettingConfigurationToServiceSettingConfigurationCreationRequestInput(validPreparation)
+	serviceSetting := BuildFakeServiceSettingConfiguration()
+	return converters.ConvertServiceSettingConfigurationToServiceSettingConfigurationCreationRequestInput(serviceSetting)
 }

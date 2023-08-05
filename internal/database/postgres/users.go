@@ -377,20 +377,20 @@ func (q *Querier) GetUserIDsThatNeedSearchIndexing(ctx context.Context) ([]strin
 var updateUserLastIndexedAtQuery string
 
 // MarkUserAsIndexed updates a particular user's last_indexed_at value.
-func (q *Querier) MarkUserAsIndexed(ctx context.Context, validVesselID string) error {
+func (q *Querier) MarkUserAsIndexed(ctx context.Context, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
 
-	if validVesselID == "" {
+	if userID == "" {
 		return ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.UserIDKey, validVesselID)
-	tracing.AttachUserIDToSpan(span, validVesselID)
+	logger = logger.WithValue(keys.UserIDKey, userID)
+	tracing.AttachUserIDToSpan(span, userID)
 
 	args := []any{
-		validVesselID,
+		userID,
 	}
 
 	if err := q.performWriteQuery(ctx, q.db, "set user last_indexed_at", updateUserLastIndexedAtQuery, args); err != nil {

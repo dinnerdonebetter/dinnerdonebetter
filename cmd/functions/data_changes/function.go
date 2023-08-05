@@ -145,7 +145,7 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 	return nil
 }
 
-var errRequiredDataIsNil = errors.New("recipe is nil")
+var errRequiredDataIsNil = errors.New("required data is nil")
 
 func handleSearchIndexUpdates(
 	ctx context.Context,
@@ -160,6 +160,25 @@ func handleSearchIndexUpdates(
 	logger := l.WithValue("event_type", changeMessage.EventType)
 
 	switch changeMessage.EventType {
+	case types.UserSignedUpCustomerEventType,
+		types.UserArchivedCustomerEventType,
+		types.EmailAddressChangedEventType,
+		types.UsernameChangedEventType,
+		types.UserDetailsChangedEventType,
+		types.UserEmailAddressVerifiedEventType:
+		if changeMessage.UserID == "" {
+			observability.AcknowledgeError(errRequiredDataIsNil, logger, span, "updating search index for User")
+		}
+
+		if err := searchDataIndexPublisher.Publish(ctx, &indexing.IndexRequest{
+			RowID:     changeMessage.UserID,
+			IndexType: search.IndexTypeUsers,
+			Delete:    changeMessage.EventType == types.UserArchivedCustomerEventType,
+		}); err != nil {
+			return observability.PrepareAndLogError(err, logger, span, "publishing search index update")
+		}
+
+		return nil
 	case types.RecipeCreatedCustomerEventType,
 		types.RecipeUpdatedCustomerEventType,
 		types.RecipeArchivedCustomerEventType:

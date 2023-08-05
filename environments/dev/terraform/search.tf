@@ -71,3 +71,11 @@ resource "algolia_index" "valid_ingredient_states_index" {
     "description",
   ]
 }
+
+resource "algolia_index" "users_index" {
+  name = "users"
+
+  searchable_attributes = [
+    "username",
+  ]
+}

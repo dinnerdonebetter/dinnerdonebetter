@@ -15,9 +15,9 @@ type OAuth2ClientTokenDataManagerMock struct {
 	mock.Mock
 }
 
-func (m *OAuth2ClientTokenDataManagerMock) CreateOAuth2ClientToken(ctx context.Context, input *types.OAuth2ClientTokenDatabaseCreationInput) error {
+func (m *OAuth2ClientTokenDataManagerMock) CreateOAuth2ClientToken(ctx context.Context, input *types.OAuth2ClientTokenDatabaseCreationInput) (*types.OAuth2ClientToken, error) {
 	returnVals := m.Called(ctx, input)
-	return returnVals.Error(1)
+	return returnVals.Get(0).(*types.OAuth2ClientToken), returnVals.Error(1)
 }
 
 func (m *OAuth2ClientTokenDataManagerMock) GetOAuth2ClientTokenByCode(ctx context.Context, code string) (*types.OAuth2ClientToken, error) {

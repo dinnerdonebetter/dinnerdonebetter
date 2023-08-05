@@ -58,11 +58,11 @@ func (t *tokenImpl) SetCode(s string) {
 }
 
 func (t *tokenImpl) GetCodeCreateAt() time.Time {
-	return t.CodeCreateAt
+	return t.CodeCreatedAt
 }
 
 func (t *tokenImpl) SetCodeCreateAt(x time.Time) {
-	t.CodeCreateAt = x
+	t.CodeCreatedAt = x
 }
 
 func (t *tokenImpl) GetCodeExpiresIn() time.Duration {
@@ -98,11 +98,11 @@ func (t *tokenImpl) SetAccess(s string) {
 }
 
 func (t *tokenImpl) GetAccessCreateAt() time.Time {
-	return t.AccessCreateAt
+	return t.AccessCreatedAt
 }
 
 func (t *tokenImpl) SetAccessCreateAt(x time.Time) {
-	t.AccessCreateAt = x
+	t.AccessCreatedAt = x
 }
 
 func (t *tokenImpl) GetAccessExpiresIn() time.Duration {
@@ -122,11 +122,11 @@ func (t *tokenImpl) SetRefresh(s string) {
 }
 
 func (t *tokenImpl) GetRefreshCreateAt() time.Time {
-	return t.RefreshCreateAt
+	return t.RefreshCreatedAt
 }
 
 func (t *tokenImpl) SetRefreshCreateAt(x time.Time) {
-	t.RefreshCreateAt = x
+	t.RefreshCreatedAt = x
 }
 
 func (t *tokenImpl) GetRefreshExpiresIn() time.Duration {

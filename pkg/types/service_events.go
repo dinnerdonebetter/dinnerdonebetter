@@ -8,7 +8,7 @@ const (
 )
 
 type (
-	// CustomerEventType is the type to use/compare against when checking meal plan status.
+	// CustomerEventType enumerates valid customer event types.
 	CustomerEventType string
 
 	// DataChangeMessage represents an event that asks a worker to write data to the datastore.
