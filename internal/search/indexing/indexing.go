@@ -59,7 +59,7 @@ func HandleIndexRequest(ctx context.Context, l logging.Logger, tracerProvider tr
 		var recipe *types.Recipe
 		recipe, err = dataManager.GetRecipe(ctx, indexReq.RowID)
 		if err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "getting meal")
+			return observability.PrepareAndLogError(err, logger, span, "getting recipe")
 		}
 
 		toBeIndexed = converters.ConvertRecipeToRecipeSearchSubset(recipe)
@@ -157,7 +157,7 @@ func HandleIndexRequest(ctx context.Context, l logging.Logger, tracerProvider tr
 		var validVessel *types.ValidVessel
 		validVessel, err = dataManager.GetValidVessel(ctx, indexReq.RowID)
 		if err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "getting valid ingredient state")
+			return observability.PrepareAndLogError(err, logger, span, "getting valid vessel")
 		}
 
 		toBeIndexed = converters.ConvertValidVesselToValidVesselSearchSubset(validVessel)
@@ -168,13 +168,13 @@ func HandleIndexRequest(ctx context.Context, l logging.Logger, tracerProvider tr
 			return observability.PrepareAndLogError(err, logger, span, "initializing index manager")
 		}
 
-		var validVessel *types.User
-		validVessel, err = dataManager.GetUser(ctx, indexReq.RowID)
+		var user *types.User
+		user, err = dataManager.GetUser(ctx, indexReq.RowID)
 		if err != nil {
-			return observability.PrepareAndLogError(err, logger, span, "getting valid ingredient state")
+			return observability.PrepareAndLogError(err, logger, span, "getting user")
 		}
 
-		toBeIndexed = converters.ConvertUserToUserSearchSubset(validVessel)
+		toBeIndexed = converters.ConvertUserToUserSearchSubset(user)
 		markAsIndexedFunc = func() error { return dataManager.MarkUserAsIndexed(ctx, indexReq.RowID) }
 	default:
 		logger.Info("invalid index type specified, exiting")
