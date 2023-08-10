@@ -615,9 +615,6 @@ func (q *Querier) MarkValidIngredientAsIndexed(ctx context.Context, validIngredi
 	return nil
 }
 
-//go:embed queries/valid_ingredients/archive.sql
-var archiveValidIngredientQuery string
-
 // ArchiveValidIngredient archives a valid ingredient from the database by its ID.
 func (q *Querier) ArchiveValidIngredient(ctx context.Context, validIngredientID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
