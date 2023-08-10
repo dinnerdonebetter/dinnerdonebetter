@@ -480,9 +480,6 @@ func (q *Querier) MarkValidMeasurementUnitAsIndexed(ctx context.Context, validMe
 	return nil
 }
 
-//go:embed queries/valid_measurement_units/archive.sql
-var archiveValidMeasurementUnitQuery string
-
 // ArchiveValidMeasurementUnit archives a valid measurement unit from the database by its ID.
 func (q *Querier) ArchiveValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -496,12 +493,8 @@ func (q *Querier) ArchiveValidMeasurementUnit(ctx context.Context, validMeasurem
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
 
-	args := []any{
-		validMeasurementUnitID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "valid measurement unit archive", archiveValidMeasurementUnitQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating valid measurement unit")
+	if err := q.generatedQuerier.ArchiveValidMeasurementUnit(ctx, q.db, validMeasurementUnitID); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving valid measurement unit")
 	}
 
 	logger.Info("valid measurement unit archived")

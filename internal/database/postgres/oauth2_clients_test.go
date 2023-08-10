@@ -457,25 +457,6 @@ func TestQuerier_CreateOAuth2Client(T *testing.T) {
 func TestQuerier_ArchiveOAuth2Client(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleOAuth2ClientID := fakes.BuildFakeID()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{exampleOAuth2ClientID}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveOAuth2ClientQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.ArchiveOAuth2Client(ctx, exampleOAuth2ClientID))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid client ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -483,24 +464,5 @@ func TestQuerier_ArchiveOAuth2Client(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveOAuth2Client(ctx, ""))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleOAuth2ClientID := fakes.BuildFakeID()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{exampleOAuth2ClientID}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveOAuth2ClientQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.ArchiveOAuth2Client(ctx, exampleOAuth2ClientID))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }

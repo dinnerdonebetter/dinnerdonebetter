@@ -408,9 +408,6 @@ func (q *Querier) UpdateRecipePrepTask(ctx context.Context, updated *types.Recip
 	return nil
 }
 
-//go:embed queries/recipe_prep_tasks/archive.sql
-var archiveRecipePrepStepTaskQuery string
-
 // ArchiveRecipePrepTask marks a recipe prep task as archived.
 func (q *Querier) ArchiveRecipePrepTask(ctx context.Context, recipeID, recipePrepTaskID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -430,11 +427,7 @@ func (q *Querier) ArchiveRecipePrepTask(ctx context.Context, recipeID, recipePre
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
 	tracing.AttachRecipePrepTaskIDToSpan(span, recipePrepTaskID)
 
-	args := []any{
-		recipePrepTaskID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "recipe prep task archive", archiveRecipePrepStepTaskQuery, args); err != nil {
+	if err := q.generatedQuerier.ArchiveRecipePrepTask(ctx, q.db, recipePrepTaskID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe prep task")
 	}
 

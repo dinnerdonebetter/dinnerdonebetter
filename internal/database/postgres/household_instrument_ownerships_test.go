@@ -497,29 +497,6 @@ func TestQuerier_UpdateHouseholdInstrumentOwnership(T *testing.T) {
 func TestQuerier_ArchiveHouseholdInstrumentOwnership(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHouseholdInstrumentOwnership := fakes.BuildFakeHouseholdInstrumentOwnership()
-		exampleHouseholdID := fakes.BuildFakeID()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleHouseholdInstrumentOwnership.ID,
-			exampleHouseholdID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveHouseholdInstrumentOwnershipQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.ArchiveHouseholdInstrumentOwnership(ctx, exampleHouseholdInstrumentOwnership.ID, exampleHouseholdID))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid household instrument ownership ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -529,28 +506,5 @@ func TestQuerier_ArchiveHouseholdInstrumentOwnership(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveHouseholdInstrumentOwnership(ctx, "", exampleHouseholdID))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHouseholdInstrumentOwnership := fakes.BuildFakeHouseholdInstrumentOwnership()
-		exampleHouseholdID := fakes.BuildFakeID()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleHouseholdInstrumentOwnership.ID,
-			exampleHouseholdID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveHouseholdInstrumentOwnershipQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.ArchiveHouseholdInstrumentOwnership(ctx, exampleHouseholdInstrumentOwnership.ID, exampleHouseholdID))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }

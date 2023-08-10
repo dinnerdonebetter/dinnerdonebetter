@@ -290,24 +290,15 @@ func TestQuerier_UpdateRecipePrepTask(T *testing.T) {
 func TestQuerier_ArchiveRecipePrepTask(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
+	T.Run("with missing recipe ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		exampleRecipe := fakes.BuildFakeRecipe()
 		exampleRecipePrepTask := fakes.BuildFakeRecipePrepTask()
 
 		c, db := buildTestClient(t)
 
-		args := []any{
-			exampleRecipePrepTask.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveRecipePrepStepTaskQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.ArchiveRecipePrepTask(ctx, exampleRecipe.ID, exampleRecipePrepTask.ID))
+		assert.Error(t, c.ArchiveRecipePrepTask(ctx, "", exampleRecipePrepTask.ID))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})

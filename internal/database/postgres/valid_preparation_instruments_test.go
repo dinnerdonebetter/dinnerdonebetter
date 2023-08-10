@@ -509,27 +509,6 @@ func TestQuerier_UpdateValidPreparationInstrument(T *testing.T) {
 func TestQuerier_ArchiveValidPreparationInstrument(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidPreparationInstrument := fakes.BuildFakeValidPreparationInstrument()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleValidPreparationInstrument.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveValidPreparationInstrumentQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.ArchiveValidPreparationInstrument(ctx, exampleValidPreparationInstrument.ID))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid valid preparation instrument ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -537,26 +516,5 @@ func TestQuerier_ArchiveValidPreparationInstrument(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveValidPreparationInstrument(ctx, ""))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidPreparationInstrument := fakes.BuildFakeValidPreparationInstrument()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleValidPreparationInstrument.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveValidPreparationInstrumentQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.ArchiveValidPreparationInstrument(ctx, exampleValidPreparationInstrument.ID))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }

@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	_ "embed"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -438,9 +439,6 @@ func (q *Querier) UpdateRecipeStepProduct(ctx context.Context, updated *types.Re
 	return nil
 }
 
-//go:embed queries/recipe_step_products/archive.sql
-var archiveRecipeStepProductQuery string
-
 // ArchiveRecipeStepProduct archives a recipe step product from the database by its ID.
 func (q *Querier) ArchiveRecipeStepProduct(ctx context.Context, recipeStepID, recipeStepProductID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -460,12 +458,10 @@ func (q *Querier) ArchiveRecipeStepProduct(ctx context.Context, recipeStepID, re
 	logger = logger.WithValue(keys.RecipeStepProductIDKey, recipeStepProductID)
 	tracing.AttachRecipeStepProductIDToSpan(span, recipeStepProductID)
 
-	args := []any{
-		recipeStepID,
-		recipeStepProductID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "recipe step product archive", archiveRecipeStepProductQuery, args); err != nil {
+	if err := q.generatedQuerier.ArchiveRecipeStepProduct(ctx, q.db, &generated.ArchiveRecipeStepProductParams{
+		BelongsToRecipeStep: recipeStepID,
+		ID:                  recipeStepProductID,
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step product")
 	}
 

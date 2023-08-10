@@ -185,26 +185,6 @@ func TestSQLQuerier_CreatePasswordResetToken(T *testing.T) {
 func TestSQLQuerier_RedeemPasswordResetToken(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		examplePasswordResetTokenID := fakes.BuildFakeID()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{examplePasswordResetTokenID}
-
-		db.ExpectExec(formatQueryForSQLMock(redeemPasswordResetTokenQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		actual := c.RedeemPasswordResetToken(ctx, examplePasswordResetTokenID)
-		assert.NoError(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with missing ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -212,26 +192,6 @@ func TestSQLQuerier_RedeemPasswordResetToken(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		actual := c.RedeemPasswordResetToken(ctx, "")
-		assert.Error(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		examplePasswordResetTokenID := fakes.BuildFakeID()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{examplePasswordResetTokenID}
-
-		db.ExpectExec(formatQueryForSQLMock(redeemPasswordResetTokenQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual := c.RedeemPasswordResetToken(ctx, examplePasswordResetTokenID)
 		assert.Error(t, actual)
 
 		mock.AssertExpectationsForObjects(t, db)

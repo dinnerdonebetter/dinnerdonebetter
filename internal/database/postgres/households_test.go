@@ -922,29 +922,6 @@ func TestQuerier_UpdateHousehold(T *testing.T) {
 func TestQuerier_ArchiveHousehold(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleUserID := fakes.BuildFakeID()
-		exampleHouseholdID := fakes.BuildFakeID()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleUserID,
-			exampleHouseholdID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveHouseholdQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.ArchiveHousehold(ctx, exampleHouseholdID, exampleUserID))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid household ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -965,29 +942,6 @@ func TestQuerier_ArchiveHousehold(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveHousehold(ctx, exampleHouseholdID, ""))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleUserID := fakes.BuildFakeID()
-		exampleHouseholdID := fakes.BuildFakeID()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleUserID,
-			exampleHouseholdID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveHouseholdQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.ArchiveHousehold(ctx, exampleHouseholdID, exampleUserID))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

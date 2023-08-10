@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	_ "embed"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/identifiers"
@@ -466,9 +467,6 @@ func (q *Querier) MarkMealAsIndexed(ctx context.Context, mealID string) error {
 	return nil
 }
 
-//go:embed queries/meals/archive.sql
-var archiveMealQuery string
-
 // ArchiveMeal archives a meal from the database by its ID.
 func (q *Querier) ArchiveMeal(ctx context.Context, mealID, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -488,13 +486,11 @@ func (q *Querier) ArchiveMeal(ctx context.Context, mealID, userID string) error 
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachUserIDToSpan(span, userID)
 
-	args := []any{
-		userID,
-		mealID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "meal archive", archiveMealQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating meal")
+	if err := q.generatedQuerier.ArchiveMeal(ctx, q.db, &generated.ArchiveMealParams{
+		CreatedByUser: userID,
+		ID:            mealID,
+	}); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving meal")
 	}
 
 	logger.Info("meal archived")

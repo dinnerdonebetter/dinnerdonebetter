@@ -485,9 +485,6 @@ func (q *Querier) UpdateValidPreparationVessel(ctx context.Context, updated *typ
 	return nil
 }
 
-//go:embed queries/valid_preparation_vessels/archive.sql
-var archiveValidPreparationVesselQuery string
-
 // ArchiveValidPreparationVessel archives a valid preparation vessel from the database by its ID.
 func (q *Querier) ArchiveValidPreparationVessel(ctx context.Context, validPreparationVesselID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -499,11 +496,7 @@ func (q *Querier) ArchiveValidPreparationVessel(ctx context.Context, validPrepar
 	logger := q.logger.WithValue(keys.ValidPreparationVesselIDKey, validPreparationVesselID)
 	tracing.AttachValidPreparationVesselIDToSpan(span, validPreparationVesselID)
 
-	args := []any{
-		validPreparationVesselID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "valid preparation vessel archive", archiveValidPreparationVesselQuery, args); err != nil {
+	if err := q.generatedQuerier.ArchiveValidPreparationVessel(ctx, q.db, validPreparationVesselID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation vessel")
 	}
 

@@ -499,9 +499,6 @@ func (q *Querier) UpdateValidIngredientMeasurementUnit(ctx context.Context, upda
 	return nil
 }
 
-//go:embed queries/valid_ingredient_measurement_units/archive.sql
-var archiveValidIngredientMeasurementUnitQuery string
-
 // ArchiveValidIngredientMeasurementUnit archives a valid ingredient measurement unit from the database by its ID.
 func (q *Querier) ArchiveValidIngredientMeasurementUnit(ctx context.Context, validIngredientMeasurementUnitID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -515,12 +512,8 @@ func (q *Querier) ArchiveValidIngredientMeasurementUnit(ctx context.Context, val
 	logger = logger.WithValue(keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
 	tracing.AttachValidIngredientMeasurementUnitIDToSpan(span, validIngredientMeasurementUnitID)
 
-	args := []any{
-		validIngredientMeasurementUnitID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "valid ingredient measurement unit archive", archiveValidIngredientMeasurementUnitQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient measurement unit")
+	if err := q.generatedQuerier.ArchiveValidIngredientMeasurementUnit(ctx, q.db, validIngredientMeasurementUnitID); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient measurement unit")
 	}
 
 	logger.Info("valid ingredient measurement unit archived")

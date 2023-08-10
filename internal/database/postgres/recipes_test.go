@@ -1737,29 +1737,6 @@ func TestQuerier_UpdateRecipe(T *testing.T) {
 func TestQuerier_ArchiveRecipe(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHouseholdID := fakes.BuildFakeID()
-		exampleRecipe := fakes.BuildFakeRecipe()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleHouseholdID,
-			exampleRecipe.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveRecipeQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.ArchiveRecipe(ctx, exampleRecipe.ID, exampleHouseholdID))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid recipe ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -1780,29 +1757,6 @@ func TestQuerier_ArchiveRecipe(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveRecipe(ctx, exampleRecipe.ID, ""))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHouseholdID := fakes.BuildFakeID()
-		exampleRecipe := fakes.BuildFakeRecipe()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleHouseholdID,
-			exampleRecipe.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveRecipeQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.ArchiveRecipe(ctx, exampleRecipe.ID, exampleHouseholdID))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

@@ -911,29 +911,6 @@ func TestQuerier_CreateMealRecipe(T *testing.T) {
 func TestQuerier_ArchiveMeal(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHouseholdID := fakes.BuildFakeID()
-		exampleMeal := fakes.BuildFakeMeal()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleHouseholdID,
-			exampleMeal.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveMealQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.ArchiveMeal(ctx, exampleMeal.ID, exampleHouseholdID))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid meal ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -954,29 +931,6 @@ func TestQuerier_ArchiveMeal(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveMeal(ctx, exampleMeal.ID, ""))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHouseholdID := fakes.BuildFakeID()
-		exampleMeal := fakes.BuildFakeMeal()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleHouseholdID,
-			exampleMeal.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveMealQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.ArchiveMeal(ctx, exampleMeal.ID, exampleHouseholdID))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

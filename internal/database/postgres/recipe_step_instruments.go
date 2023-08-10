@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	_ "embed"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -414,9 +415,6 @@ func (q *Querier) UpdateRecipeStepInstrument(ctx context.Context, updated *types
 	return nil
 }
 
-//go:embed queries/recipe_step_instruments/archive.sql
-var archiveRecipeStepInstrumentQuery string
-
 // ArchiveRecipeStepInstrument archives a recipe step instrument from the database by its ID.
 func (q *Querier) ArchiveRecipeStepInstrument(ctx context.Context, recipeStepID, recipeStepInstrumentID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -436,13 +434,11 @@ func (q *Querier) ArchiveRecipeStepInstrument(ctx context.Context, recipeStepID,
 	logger = logger.WithValue(keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
 	tracing.AttachRecipeStepInstrumentIDToSpan(span, recipeStepInstrumentID)
 
-	args := []any{
-		recipeStepID,
-		recipeStepInstrumentID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "recipe step instrument archive", archiveRecipeStepInstrumentQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating recipe step instrument")
+	if err := q.generatedQuerier.ArchiveRecipeStepInstrument(ctx, q.db, &generated.ArchiveRecipeStepInstrumentParams{
+		BelongsToRecipeStep: recipeStepID,
+		ID:                  recipeStepInstrumentID,
+	}); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step instrument")
 	}
 
 	logger.Info("recipe step instrument archived")

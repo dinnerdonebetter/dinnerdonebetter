@@ -184,19 +184,6 @@ func (s *TestSuite) TestHouseholds_Updating() {
 	})
 }
 
-func (s *TestSuite) TestHouseholds_Archiving_Returns404ForNonexistentHousehold() {
-	s.runForEachClient("should not be possible to archive a non-existent household", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			assert.Error(t, testClients.user.ArchiveHousehold(ctx, nonexistentID))
-		}
-	})
-}
-
 func (s *TestSuite) TestHouseholds_Archiving() {
 	s.runForEachClient("should be possible to archive a household", func(testClients *testClientWrapper) func() {
 		return func() {

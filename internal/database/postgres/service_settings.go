@@ -276,9 +276,6 @@ func (q *Querier) CreateServiceSetting(ctx context.Context, input *types.Service
 	return x, nil
 }
 
-//go:embed queries/service_settings/archive.sql
-var archiveServiceSettingQuery string
-
 // ArchiveServiceSetting archives a service setting from the database by its ID.
 func (q *Querier) ArchiveServiceSetting(ctx context.Context, serviceSettingID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -292,11 +289,7 @@ func (q *Querier) ArchiveServiceSetting(ctx context.Context, serviceSettingID st
 	logger = logger.WithValue(keys.ServiceSettingIDKey, serviceSettingID)
 	tracing.AttachServiceSettingIDToSpan(span, serviceSettingID)
 
-	args := []any{
-		serviceSettingID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "service setting archive", archiveServiceSettingQuery, args); err != nil {
+	if err := q.generatedQuerier.ArchiveServiceSetting(ctx, q.db, serviceSettingID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating service setting")
 	}
 

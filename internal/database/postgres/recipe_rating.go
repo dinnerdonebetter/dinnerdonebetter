@@ -275,9 +275,6 @@ func (q *Querier) UpdateRecipeRating(ctx context.Context, updated *types.RecipeR
 	return nil
 }
 
-//go:embed queries/recipe_ratings/archive.sql
-var archiveRecipeRatingQuery string
-
 // ArchiveRecipeRating archives a recipe rating from the database by its ID.
 func (q *Querier) ArchiveRecipeRating(ctx context.Context, recipeRatingID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -291,12 +288,8 @@ func (q *Querier) ArchiveRecipeRating(ctx context.Context, recipeRatingID string
 	logger = logger.WithValue(keys.RecipeRatingIDKey, recipeRatingID)
 	tracing.AttachRecipeRatingIDToSpan(span, recipeRatingID)
 
-	args := []any{
-		recipeRatingID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "recipe rating archive", archiveRecipeRatingQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating recipe rating")
+	if err := q.generatedQuerier.ArchiveRecipeRating(ctx, q.db, recipeRatingID); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving recipe rating")
 	}
 
 	logger.Info("recipe rating archived")

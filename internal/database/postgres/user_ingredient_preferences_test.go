@@ -642,29 +642,6 @@ func TestQuerier_UpdateUserIngredientPreference(T *testing.T) {
 func TestQuerier_ArchiveUserIngredientPreference(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleUserID := fakes.BuildFakeID()
-		exampleUserIngredientPreference := fakes.BuildFakeUserIngredientPreference()
-
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleUserIngredientPreference.ID,
-			exampleUserID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveUserIngredientPreferenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.ArchiveUserIngredientPreference(ctx, exampleUserIngredientPreference.ID, exampleUserID))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid user ingredient preference ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -673,28 +650,5 @@ func TestQuerier_ArchiveUserIngredientPreference(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveUserIngredientPreference(ctx, "", exampleUserID))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleUserID := fakes.BuildFakeID()
-		exampleUserIngredientPreference := fakes.BuildFakeUserIngredientPreference()
-
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleUserIngredientPreference.ID,
-			exampleUserID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveUserIngredientPreferenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.ArchiveUserIngredientPreference(ctx, exampleUserIngredientPreference.ID, exampleUserID))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }

@@ -221,9 +221,6 @@ func (q *Querier) CreateOAuth2Client(ctx context.Context, input *types.OAuth2Cli
 	return client, nil
 }
 
-//go:embed queries/oauth2_clients/archive.sql
-var archiveOAuth2ClientQuery string
-
 // ArchiveOAuth2Client archives an OAuth2 client.
 func (q *Querier) ArchiveOAuth2Client(ctx context.Context, clientID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -232,16 +229,13 @@ func (q *Querier) ArchiveOAuth2Client(ctx context.Context, clientID string) erro
 	if clientID == "" {
 		return ErrNilInputProvided
 	}
-
 	tracing.AttachOAuth2ClientIDToSpan(span, clientID)
+	logger := q.logger.WithValue(keys.OAuth2ClientIDKey, clientID)
 
-	logger := q.logger.WithValues(map[string]any{
-		keys.OAuth2ClientIDKey: clientID,
-	})
-
-	args := []any{clientID}
-
-	if err := q.performWriteQuery(ctx, q.db, "OAuth2 client archive", archiveOAuth2ClientQuery, args); err != nil {
+	if err := q.generatedQuerier.ArchiveOAuth2Client(ctx, q.db, clientID); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return err
+		}
 		return observability.PrepareAndLogError(err, logger, span, "archiving OAuth2 client")
 	}
 

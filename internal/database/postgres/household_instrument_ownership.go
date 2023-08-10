@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	_ "embed"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -298,9 +299,6 @@ func (q *Querier) UpdateHouseholdInstrumentOwnership(ctx context.Context, update
 	return nil
 }
 
-//go:embed queries/household_instrument_ownerships/archive.sql
-var archiveHouseholdInstrumentOwnershipQuery string
-
 // ArchiveHouseholdInstrumentOwnership archives a household instrument ownership from the database by its ID.
 func (q *Querier) ArchiveHouseholdInstrumentOwnership(ctx context.Context, householdInstrumentOwnershipID, householdID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -320,13 +318,11 @@ func (q *Querier) ArchiveHouseholdInstrumentOwnership(ctx context.Context, house
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	args := []any{
-		householdInstrumentOwnershipID,
-		householdID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "household instrument ownership archive", archiveHouseholdInstrumentOwnershipQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating household instrument ownership")
+	if err := q.generatedQuerier.ArchiveHouseholdInstrumentOwnership(ctx, q.db, &generated.ArchiveHouseholdInstrumentOwnershipParams{
+		ID:                 householdInstrumentOwnershipID,
+		BelongsToHousehold: householdID,
+	}); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving household instrument ownership")
 	}
 
 	logger.Info("household instrument ownership archived")

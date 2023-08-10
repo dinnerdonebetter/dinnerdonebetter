@@ -480,9 +480,6 @@ func (q *Querier) UpdateValidIngredientPreparation(ctx context.Context, updated 
 	return nil
 }
 
-//go:embed queries/valid_ingredient_preparations/archive.sql
-var archiveValidIngredientPreparationQuery string
-
 // ArchiveValidIngredientPreparation archives a valid ingredient preparation from the database by its ID.
 func (q *Querier) ArchiveValidIngredientPreparation(ctx context.Context, validIngredientPreparationID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -496,12 +493,8 @@ func (q *Querier) ArchiveValidIngredientPreparation(ctx context.Context, validIn
 	logger = logger.WithValue(keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 	tracing.AttachValidIngredientPreparationIDToSpan(span, validIngredientPreparationID)
 
-	args := []any{
-		validIngredientPreparationID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "valid ingredient preparation archive", archiveValidIngredientPreparationQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient preparation")
+	if err := q.generatedQuerier.ArchiveValidIngredientPreparation(ctx, q.db, validIngredientPreparationID); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient preparation")
 	}
 
 	logger.Info("valid ingredient preparation archived")

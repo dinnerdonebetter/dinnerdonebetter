@@ -4,6 +4,7 @@ import (
 	"context"
 	_ "embed"
 	"errors"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
@@ -339,9 +340,6 @@ func (q *Querier) UpdateMealPlan(ctx context.Context, updated *types.MealPlan) e
 	return nil
 }
 
-//go:embed queries/meal_plans/archive.sql
-var archiveMealPlanQuery string
-
 // ArchiveMealPlan archives a meal plan from the database by its ID.
 func (q *Querier) ArchiveMealPlan(ctx context.Context, mealPlanID, householdID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -361,12 +359,10 @@ func (q *Querier) ArchiveMealPlan(ctx context.Context, mealPlanID, householdID s
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	args := []any{
-		householdID,
-		mealPlanID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "meal plan archive", archiveMealPlanQuery, args); err != nil {
+	if err := q.generatedQuerier.ArchiveMealPlan(ctx, q.db, &generated.ArchiveMealPlanParams{
+		BelongsToHousehold: householdID,
+		ID:                 mealPlanID,
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating meal plan")
 	}
 

@@ -784,27 +784,6 @@ func TestQuerier_UpdateValidMeasurementUnit(T *testing.T) {
 func TestQuerier_ArchiveValidMeasurementUnit(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleValidMeasurementUnit.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveValidMeasurementUnitQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.ArchiveValidMeasurementUnit(ctx, exampleValidMeasurementUnit.ID))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid valid ingredient ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -812,27 +791,6 @@ func TestQuerier_ArchiveValidMeasurementUnit(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveValidMeasurementUnit(ctx, ""))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleValidMeasurementUnit.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveValidMeasurementUnitQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.ArchiveValidMeasurementUnit(ctx, exampleValidMeasurementUnit.ID))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

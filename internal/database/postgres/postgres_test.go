@@ -6,6 +6,7 @@ import (
 	"database/sql/driver"
 	"errors"
 	"fmt"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"hash/fnv"
 	"io"
 	"log"
@@ -132,6 +133,7 @@ func buildTestClient(t *testing.T) (*Querier, *sqlmockExpecterWrapper) {
 		db:                      fakeDB,
 		logQueries:              false,
 		logger:                  logging.NewNoopLogger(),
+		generatedQuerier:        generated.New(),
 		timeFunc:                defaultTimeFunc,
 		tracer:                  tracing.NewTracerForTest("test"),
 		sqlBuilder:              squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),

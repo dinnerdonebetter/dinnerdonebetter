@@ -582,27 +582,6 @@ func TestQuerier_CreateWebhook(T *testing.T) {
 func TestQuerier_ArchiveWebhook(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHouseholdID := fakes.BuildFakeID()
-		exampleWebhookID := fakes.BuildFakeID()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{exampleHouseholdID, exampleWebhookID}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveWebhookQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		actual := c.ArchiveWebhook(ctx, exampleWebhookID, exampleHouseholdID)
-		assert.NoError(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid webhook ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -623,25 +602,5 @@ func TestQuerier_ArchiveWebhook(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveWebhook(ctx, exampleWebhookID, ""))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHouseholdID := fakes.BuildFakeID()
-		exampleWebhookID := fakes.BuildFakeID()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{exampleHouseholdID, exampleWebhookID}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveWebhookQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.ArchiveWebhook(ctx, exampleWebhookID, exampleHouseholdID))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }

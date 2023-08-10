@@ -286,9 +286,6 @@ func (q *Querier) UpdateRecipeMedia(ctx context.Context, updated *types.RecipeMe
 	return nil
 }
 
-//go:embed queries/recipe_media/archive.sql
-var archiveRecipeMediaQuery string
-
 // ArchiveRecipeMedia archives a recipe media from the database by its ID.
 func (q *Querier) ArchiveRecipeMedia(ctx context.Context, recipeMediaID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -302,12 +299,8 @@ func (q *Querier) ArchiveRecipeMedia(ctx context.Context, recipeMediaID string) 
 	logger = logger.WithValue(keys.RecipeMediaIDKey, recipeMediaID)
 	tracing.AttachRecipeMediaIDToSpan(span, recipeMediaID)
 
-	args := []any{
-		recipeMediaID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "recipe media archive", archiveRecipeMediaQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating recipe media")
+	if err := q.generatedQuerier.ArchiveRecipeMedia(ctx, q.db, recipeMediaID); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving recipe media")
 	}
 
 	logger.Info("recipe media archived")

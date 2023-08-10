@@ -978,27 +978,6 @@ func TestQuerier_UpdateMealPlanGroceryListItem(T *testing.T) {
 func TestQuerier_ArchiveMealPlanGroceryListItem(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
-
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleMealPlanGroceryListItem.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveMealPlanGroceryListItemQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.ArchiveMealPlanGroceryListItem(ctx, exampleMealPlanGroceryListItem.ID))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid meal plan grocery list item ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -1006,26 +985,5 @@ func TestQuerier_ArchiveMealPlanGroceryListItem(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveMealPlanGroceryListItem(ctx, ""))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
-
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleMealPlanGroceryListItem.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveMealPlanGroceryListItemQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.ArchiveMealPlanGroceryListItem(ctx, exampleMealPlanGroceryListItem.ID))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }

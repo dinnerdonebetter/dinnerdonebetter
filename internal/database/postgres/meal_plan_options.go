@@ -2,7 +2,9 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 	_ "embed"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"math/rand"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
@@ -438,9 +440,6 @@ func (q *Querier) UpdateMealPlanOption(ctx context.Context, updated *types.MealP
 	return nil
 }
 
-//go:embed queries/meal_plan_options/archive.sql
-var archiveMealPlanOptionQuery string
-
 // ArchiveMealPlanOption archives a meal plan option from the database by its ID.
 func (q *Querier) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -466,13 +465,11 @@ func (q *Querier) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPla
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
-	args := []any{
-		mealPlanEventID,
-		mealPlanOptionID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "meal plan option archive", archiveMealPlanOptionQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating meal plan option")
+	if err := q.generatedQuerier.ArchiveMealPlanOption(ctx, q.db, &generated.ArchiveMealPlanOptionParams{
+		ID:                     mealPlanOptionID,
+		BelongsToMealPlanEvent: sql.NullString{String: mealPlanEventID, Valid: true},
+	}); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan option")
 	}
 
 	logger.Info("meal plan option archived")

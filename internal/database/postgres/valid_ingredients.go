@@ -631,11 +631,7 @@ func (q *Querier) ArchiveValidIngredient(ctx context.Context, validIngredientID 
 	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
 	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
 
-	args := []any{
-		validIngredientID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "valid ingredient archive", archiveValidIngredientQuery, args); err != nil {
+	if err := q.generatedQuerier.ArchiveValidIngredient(ctx, q.db, validIngredientID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient")
 	}
 

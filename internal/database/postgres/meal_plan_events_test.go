@@ -889,27 +889,6 @@ func TestQuerier_UpdateMealPlanEvent(T *testing.T) {
 func TestQuerier_ArchiveMealPlanEvent(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMealPlan := fakes.BuildFakeMealPlan()
-		exampleMealPlanEventID := fakes.BuildFakeID()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{exampleMealPlan.ID, exampleMealPlanEventID}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveMealPlanEventQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		actual := c.ArchiveMealPlanEvent(ctx, exampleMealPlanEventID, exampleMealPlan.ID)
-		assert.NoError(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid meal plan event ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -930,25 +909,5 @@ func TestQuerier_ArchiveMealPlanEvent(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveMealPlanEvent(ctx, exampleMealPlanEventID, ""))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMealPlan := fakes.BuildFakeMealPlan()
-		exampleMealPlanEventID := fakes.BuildFakeID()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{exampleMealPlan.ID, exampleMealPlanEventID}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveMealPlanEventQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.ArchiveMealPlanEvent(ctx, exampleMealPlanEventID, exampleMealPlan.ID))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }

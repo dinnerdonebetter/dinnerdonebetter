@@ -435,9 +435,6 @@ func (q *Querier) MarkValidInstrumentAsIndexed(ctx context.Context, validInstrum
 	return nil
 }
 
-//go:embed queries/valid_instruments/archive.sql
-var archiveValidInstrumentQuery string
-
 // ArchiveValidInstrument archives a valid instrument from the database by its ID.
 func (q *Querier) ArchiveValidInstrument(ctx context.Context, validInstrumentID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -451,12 +448,8 @@ func (q *Querier) ArchiveValidInstrument(ctx context.Context, validInstrumentID 
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
 	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
 
-	args := []any{
-		validInstrumentID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "valid instrument archive", archiveValidInstrumentQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating valid instrument")
+	if err := q.generatedQuerier.ArchiveValidInstrument(ctx, q.db, validInstrumentID); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving valid instrument")
 	}
 
 	logger.Info("valid instrument archived")

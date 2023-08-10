@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	_ "embed"
 	"fmt"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/database"
@@ -487,9 +488,6 @@ func (q *Querier) UpdateHousehold(ctx context.Context, updated *types.Household)
 	return nil
 }
 
-//go:embed queries/households/archive.sql
-var archiveHouseholdQuery string
-
 // ArchiveHousehold archives a household from the database by its ID.
 func (q *Querier) ArchiveHousehold(ctx context.Context, householdID, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -498,7 +496,6 @@ func (q *Querier) ArchiveHousehold(ctx context.Context, householdID, userID stri
 	if householdID == "" || userID == "" {
 		return ErrInvalidIDProvided
 	}
-
 	tracing.AttachUserIDToSpan(span, userID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
@@ -507,12 +504,10 @@ func (q *Querier) ArchiveHousehold(ctx context.Context, householdID, userID stri
 		keys.UserIDKey:      userID,
 	})
 
-	args := []any{
-		userID,
-		householdID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "household archive", archiveHouseholdQuery, args); err != nil {
+	if err := q.generatedQuerier.ArchiveHousehold(ctx, q.db, &generated.ArchiveHouseholdParams{
+		BelongsToUser: userID,
+		ID:            householdID,
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving household")
 	}
 

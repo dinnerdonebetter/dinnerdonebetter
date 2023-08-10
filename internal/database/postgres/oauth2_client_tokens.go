@@ -256,9 +256,6 @@ func (q *Querier) CreateOAuth2ClientToken(ctx context.Context, input *types.OAut
 	return oauth2ClientToken, nil
 }
 
-//go:embed queries/oauth2_client_tokens/archive_by_access.sql
-var archiveOAuth2ClientTokenByAccessQuery string
-
 // ArchiveOAuth2ClientTokenByAccess archives an OAuth2 client token from the database by its ID.
 func (q *Querier) ArchiveOAuth2ClientTokenByAccess(ctx context.Context, access string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -277,21 +274,14 @@ func (q *Querier) ArchiveOAuth2ClientTokenByAccess(ctx context.Context, access s
 		return observability.PrepareError(err, span, "decrypting oauth2 token access")
 	}
 
-	args := []any{
-		encryptedAccess,
-	}
-
-	if err = q.performWriteQuery(ctx, q.db, "oauth2 client token archive by access", archiveOAuth2ClientTokenByAccessQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving oauth2 client token by access")
+	if err = q.generatedQuerier.ArchiveOAuth2ClientTokenByAccess(ctx, q.db, encryptedAccess); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving oauth2 client token by refresh")
 	}
 
 	logger.Info("oauth2 client token archived by access")
 
 	return nil
 }
-
-//go:embed queries/oauth2_client_tokens/archive_by_code.sql
-var archiveOAuth2ClientTokenByCodeQuery string
 
 // ArchiveOAuth2ClientTokenByCode archives an OAuth2 client token from the database by its ID.
 func (q *Querier) ArchiveOAuth2ClientTokenByCode(ctx context.Context, code string) error {
@@ -311,21 +301,14 @@ func (q *Querier) ArchiveOAuth2ClientTokenByCode(ctx context.Context, code strin
 		return observability.PrepareError(err, span, "decrypting oauth2 token access")
 	}
 
-	args := []any{
-		encryptedCode,
-	}
-
-	if err = q.performWriteQuery(ctx, q.db, "oauth2 client token archive by code", archiveOAuth2ClientTokenByCodeQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving oauth2 client token by code")
+	if err = q.generatedQuerier.ArchiveOAuth2ClientTokenByCode(ctx, q.db, encryptedCode); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving oauth2 client token by refresh")
 	}
 
 	logger.Info("oauth2 client token archived by code")
 
 	return nil
 }
-
-//go:embed queries/oauth2_client_tokens/archive_by_refresh.sql
-var archiveOAuth2ClientTokenByRefreshQuery string
 
 // ArchiveOAuth2ClientTokenByRefresh archives an OAuth2 client token from the database by its ID.
 func (q *Querier) ArchiveOAuth2ClientTokenByRefresh(ctx context.Context, refresh string) error {
@@ -345,11 +328,7 @@ func (q *Querier) ArchiveOAuth2ClientTokenByRefresh(ctx context.Context, refresh
 		return observability.PrepareError(err, span, "decrypting oauth2 token access")
 	}
 
-	args := []any{
-		encryptedRefresh,
-	}
-
-	if err = q.performWriteQuery(ctx, q.db, "oauth2 client token archive by refresh", archiveOAuth2ClientTokenByRefreshQuery, args); err != nil {
+	if err = q.generatedQuerier.ArchiveOAuth2ClientTokenByRefresh(ctx, q.db, encryptedRefresh); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving oauth2 client token by refresh")
 	}
 

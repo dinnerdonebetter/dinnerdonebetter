@@ -453,9 +453,6 @@ func (q *Querier) MarkValidPreparationAsIndexed(ctx context.Context, validPrepar
 	return nil
 }
 
-//go:embed queries/valid_preparations/archive.sql
-var archiveValidPreparationQuery string
-
 // ArchiveValidPreparation archives a valid preparation from the database by its ID.
 func (q *Querier) ArchiveValidPreparation(ctx context.Context, validPreparationID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -469,11 +466,7 @@ func (q *Querier) ArchiveValidPreparation(ctx context.Context, validPreparationI
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
 	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
 
-	args := []any{
-		validPreparationID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "valid preparation archive", archiveValidPreparationQuery, args); err != nil {
+	if err := q.generatedQuerier.ArchiveValidPreparation(ctx, q.db, validPreparationID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation")
 	}
 

@@ -116,9 +116,6 @@ func (q *Querier) CreatePasswordResetToken(ctx context.Context, input *types.Pas
 	return x, nil
 }
 
-//go:embed queries/password_reset_tokens/redeem.sql
-var redeemPasswordResetTokenQuery string
-
 // RedeemPasswordResetToken redeems a password reset token from the database by its ID.
 func (q *Querier) RedeemPasswordResetToken(ctx context.Context, passwordResetTokenID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -132,12 +129,8 @@ func (q *Querier) RedeemPasswordResetToken(ctx context.Context, passwordResetTok
 	logger = logger.WithValue(keys.PasswordResetTokenIDKey, passwordResetTokenID)
 	tracing.AttachPasswordResetTokenIDToSpan(span, passwordResetTokenID)
 
-	args := []any{
-		passwordResetTokenID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "password reset token archive", redeemPasswordResetTokenQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating password reset token")
+	if err := q.generatedQuerier.RedeemPasswordResetToken(ctx, q.db, passwordResetTokenID); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving password reset token")
 	}
 
 	logger.Info("password reset token archived")

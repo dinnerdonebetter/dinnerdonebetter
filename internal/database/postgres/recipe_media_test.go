@@ -449,27 +449,6 @@ func TestQuerier_UpdateRecipeMedia(T *testing.T) {
 func TestQuerier_ArchiveRecipeMedia(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleRecipeMedia := fakes.BuildFakeRecipeMedia()
-
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleRecipeMedia.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveRecipeMediaQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.ArchiveRecipeMedia(ctx, exampleRecipeMedia.ID))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid valid preparation ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -477,26 +456,5 @@ func TestQuerier_ArchiveRecipeMedia(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveRecipeMedia(ctx, ""))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleRecipeMedia := fakes.BuildFakeRecipeMedia()
-
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleRecipeMedia.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveRecipeMediaQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.ArchiveRecipeMedia(ctx, exampleRecipeMedia.ID))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }

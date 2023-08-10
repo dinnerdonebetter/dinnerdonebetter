@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	_ "embed"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -453,9 +454,6 @@ func (q *Querier) UpdateRecipeStepCompletionCondition(ctx context.Context, updat
 	return nil
 }
 
-//go:embed queries/recipe_step_completion_conditions/archive.sql
-var archiveRecipeStepCompletionConditionQuery string
-
 // ArchiveRecipeStepCompletionCondition archives a recipe step completion condition from the database by its ID.
 func (q *Querier) ArchiveRecipeStepCompletionCondition(ctx context.Context, recipeStepID, recipeStepCompletionConditionID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -475,12 +473,10 @@ func (q *Querier) ArchiveRecipeStepCompletionCondition(ctx context.Context, reci
 	logger = logger.WithValue(keys.RecipeStepCompletionConditionIDKey, recipeStepCompletionConditionID)
 	tracing.AttachRecipeStepCompletionConditionIDToSpan(span, recipeStepCompletionConditionID)
 
-	args := []any{
-		recipeStepID,
-		recipeStepCompletionConditionID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "recipe step completion condition archive", archiveRecipeStepCompletionConditionQuery, args); err != nil {
+	if err := q.generatedQuerier.ArchiveRecipeStepCompletionCondition(ctx, q.db, &generated.ArchiveRecipeStepCompletionConditionParams{
+		BelongsToRecipeStep: recipeStepID,
+		ID:                  recipeStepCompletionConditionID,
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step completion condition")
 	}
 

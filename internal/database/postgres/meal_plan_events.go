@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	_ "embed"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -33,7 +34,7 @@ var (
 	}
 )
 
-// scanMealPlanEvent takes a database Scanner (i.e. *sql.Row) and scans the result into a mealPlanEvent struct.
+// scanMealPlanEvent takes a database Scanner (i.e. *sql.Row) and scans the result into a meal plan event struct.
 func (q *Querier) scanMealPlanEvent(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.MealPlanEvent, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -97,7 +98,7 @@ func (q *Querier) scanMealPlanEvents(ctx context.Context, rows database.ResultIt
 //go:embed queries/meal_plan_events/exists.sql
 var mealPlanEventExistenceQuery string
 
-// MealPlanEventExists fetches whether a mealPlanEvent exists from the database.
+// MealPlanEventExists fetches whether a meal plan event exists from the database.
 func (q *Querier) MealPlanEventExists(ctx context.Context, mealPlanID, mealPlanEventID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -122,7 +123,7 @@ func (q *Querier) MealPlanEventExists(ctx context.Context, mealPlanID, mealPlanE
 
 	result, err := q.performBooleanQuery(ctx, q.db, mealPlanEventExistenceQuery, mealPlanEventExistenceArgs)
 	if err != nil {
-		return false, observability.PrepareAndLogError(err, logger, span, "performing mealPlanEvent existence check")
+		return false, observability.PrepareAndLogError(err, logger, span, "performing meal plan event existence check")
 	}
 
 	return result, nil
@@ -131,7 +132,7 @@ func (q *Querier) MealPlanEventExists(ctx context.Context, mealPlanID, mealPlanE
 //go:embed queries/meal_plan_events/get_one.sql
 var getMealPlanEventByIDQuery string
 
-// GetMealPlanEvent fetches a mealPlanEvent from the database.
+// GetMealPlanEvent fetches a meal plan event from the database.
 func (q *Querier) GetMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) (*types.MealPlanEvent, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -277,7 +278,7 @@ func (q *Querier) MealPlanEventIsEligibleForVoting(ctx context.Context, mealPlan
 
 	result, err := q.performBooleanQuery(ctx, q.db, mealPlanEventEligibleForVotingQuery, mealPlanEventExistenceArgs)
 	if err != nil {
-		return false, observability.PrepareAndLogError(err, logger, span, "performing mealPlanEvent existence check")
+		return false, observability.PrepareAndLogError(err, logger, span, "performing meal plan event existence check")
 	}
 
 	return result, nil
@@ -286,7 +287,7 @@ func (q *Querier) MealPlanEventIsEligibleForVoting(ctx context.Context, mealPlan
 //go:embed queries/meal_plan_events/create.sql
 var mealPlanEventCreationQuery string
 
-// createMealPlanEvent creates a mealPlanEvent in the database.
+// createMealPlanEvent creates a meal plan event in the database.
 func (q *Querier) createMealPlanEvent(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *types.MealPlanEventDatabaseCreationInput) (*types.MealPlanEvent, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -306,7 +307,7 @@ func (q *Querier) createMealPlanEvent(ctx context.Context, querier database.SQLQ
 		input.BelongsToMealPlan,
 	}
 
-	// create the mealPlanEvent.
+	// create the meal plan event.
 	if err := q.performWriteQuery(ctx, querier, "meal plan event creation", mealPlanEventCreationQuery, mealPlanEventCreationArgs); err != nil {
 		q.rollbackTransaction(ctx, querier)
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing meal plan event creation query")
@@ -398,10 +399,7 @@ func (q *Querier) UpdateMealPlanEvent(ctx context.Context, updated *types.MealPl
 	return nil
 }
 
-//go:embed queries/meal_plan_events/archive.sql
-var archiveMealPlanEventQuery string
-
-// ArchiveMealPlanEvent archives a mealPlanEvent from the database by its ID.
+// ArchiveMealPlanEvent archives a meal plan event from the database by its ID.
 func (q *Querier) ArchiveMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -420,13 +418,11 @@ func (q *Querier) ArchiveMealPlanEvent(ctx context.Context, mealPlanID, mealPlan
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
-	args := []any{
-		mealPlanEventID,
-		mealPlanID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "meal plan event archive", archiveMealPlanEventQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating mealPlanEvent")
+	if err := q.generatedQuerier.ArchiveMealPlanEvent(ctx, q.db, &generated.ArchiveMealPlanEventParams{
+		ID:                mealPlanEventID,
+		BelongsToMealPlan: mealPlanID,
+	}); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan event")
 	}
 
 	logger.Info("meal plan event archived")

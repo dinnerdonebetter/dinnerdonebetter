@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	_ "embed"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -386,9 +387,6 @@ func (q *Querier) UpdateMealPlanOptionVote(ctx context.Context, updated *types.M
 	return nil
 }
 
-//go:embed queries/meal_plan_option_votes/archive.sql
-var archiveMealPlanOptionVoteQuery string
-
 // ArchiveMealPlanOptionVote archives a meal plan option vote from the database by its ID.
 func (q *Querier) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -420,12 +418,10 @@ func (q *Querier) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanID, mea
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVoteID)
 
-	args := []any{
-		mealPlanOptionID,
-		mealPlanOptionVoteID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "meal plan option vote archive", archiveMealPlanOptionVoteQuery, args); err != nil {
+	if err := q.generatedQuerier.ArchiveMealPlanOptionVote(ctx, q.db, &generated.ArchiveMealPlanOptionVoteParams{
+		BelongsToMealPlanOption: mealPlanOptionID,
+		ID:                      mealPlanOptionVoteID,
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating meal plan option vote")
 	}
 

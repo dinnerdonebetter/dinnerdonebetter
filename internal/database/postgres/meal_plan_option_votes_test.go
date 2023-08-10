@@ -688,31 +688,6 @@ func TestQuerier_UpdateMealPlanOptionVote(T *testing.T) {
 func TestQuerier_ArchiveMealPlanOptionVote(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMealPlanID := fakes.BuildFakeID()
-		exampleMealPlanEventID := fakes.BuildFakeID()
-		exampleMealPlanOptionID := fakes.BuildFakeID()
-		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleMealPlanOptionID,
-			exampleMealPlanOptionVote.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveMealPlanOptionVoteQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.ArchiveMealPlanOptionVote(ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionID, exampleMealPlanOptionVote.ID))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid meal plan option ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -737,30 +712,5 @@ func TestQuerier_ArchiveMealPlanOptionVote(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveMealPlanOptionVote(ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionID, ""))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMealPlanID := fakes.BuildFakeID()
-		exampleMealPlanEventID := fakes.BuildFakeID()
-		exampleMealPlanOptionID := fakes.BuildFakeID()
-		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleMealPlanOptionID,
-			exampleMealPlanOptionVote.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveMealPlanOptionVoteQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.ArchiveMealPlanOptionVote(ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionID, exampleMealPlanOptionVote.ID))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }

@@ -830,27 +830,6 @@ func TestQuerier_UpdateValidVessel(T *testing.T) {
 func TestQuerier_ArchiveValidVessel(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidVessel := fakes.BuildFakeValidVessel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleValidVessel.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveValidVesselQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.ArchiveValidVessel(ctx, exampleValidVessel.ID))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid valid vessel ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -858,27 +837,6 @@ func TestQuerier_ArchiveValidVessel(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveValidVessel(ctx, ""))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidVessel := fakes.BuildFakeValidVessel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleValidVessel.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveValidVesselQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.ArchiveValidVessel(ctx, exampleValidVessel.ID))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

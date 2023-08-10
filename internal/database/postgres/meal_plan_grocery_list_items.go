@@ -394,9 +394,6 @@ func (q *Querier) UpdateMealPlanGroceryListItem(ctx context.Context, updated *ty
 	return nil
 }
 
-//go:embed queries/meal_plan_grocery_list_items/archive.sql
-var archiveMealPlanGroceryListItemQuery string
-
 // ArchiveMealPlanGroceryListItem archives a meal plan grocery list from the database by its ID.
 func (q *Querier) ArchiveMealPlanGroceryListItem(ctx context.Context, mealPlanGroceryListItemID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -410,12 +407,8 @@ func (q *Querier) ArchiveMealPlanGroceryListItem(ctx context.Context, mealPlanGr
 	logger = logger.WithValue(keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 	tracing.AttachMealPlanGroceryListItemIDToSpan(span, mealPlanGroceryListItemID)
 
-	args := []any{
-		mealPlanGroceryListItemID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "meal plan grocery list archive", archiveMealPlanGroceryListItemQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating meal plan grocery list")
+	if err := q.generatedQuerier.ArchiveMealPlanGroceryListItem(ctx, q.db, mealPlanGroceryListItemID); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan grocery list")
 	}
 
 	logger.Info("meal plan grocery list archived")

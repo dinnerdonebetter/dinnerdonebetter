@@ -531,9 +531,6 @@ func (q *Querier) UpdateValidIngredientGroup(ctx context.Context, updated *types
 	return nil
 }
 
-//go:embed queries/valid_ingredient_groups/archive.sql
-var archiveValidIngredientGroupQuery string
-
 // ArchiveValidIngredientGroup archives a valid ingredient group from the database by its ID.
 func (q *Querier) ArchiveValidIngredientGroup(ctx context.Context, validIngredientGroupID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -547,11 +544,7 @@ func (q *Querier) ArchiveValidIngredientGroup(ctx context.Context, validIngredie
 	logger = logger.WithValue(keys.ValidIngredientGroupIDKey, validIngredientGroupID)
 	tracing.AttachValidIngredientGroupIDToSpan(span, validIngredientGroupID)
 
-	args := []any{
-		validIngredientGroupID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "valid ingredient group archive", archiveValidIngredientGroupQuery, args); err != nil {
+	if err := q.generatedQuerier.ArchiveValidIngredientGroup(ctx, q.db, validIngredientGroupID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient group")
 	}
 

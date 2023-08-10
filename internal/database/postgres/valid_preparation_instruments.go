@@ -435,9 +435,6 @@ func (q *Querier) UpdateValidPreparationInstrument(ctx context.Context, updated 
 	return nil
 }
 
-//go:embed queries/valid_preparation_instruments/archive.sql
-var archiveValidPreparationInstrumentQuery string
-
 // ArchiveValidPreparationInstrument archives a valid preparation instrument from the database by its ID.
 func (q *Querier) ArchiveValidPreparationInstrument(ctx context.Context, validPreparationInstrumentID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -449,11 +446,7 @@ func (q *Querier) ArchiveValidPreparationInstrument(ctx context.Context, validPr
 	logger := q.logger.WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, validPreparationInstrumentID)
 
-	args := []any{
-		validPreparationInstrumentID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "valid preparation instrument archive", archiveValidPreparationInstrumentQuery, args); err != nil {
+	if err := q.generatedQuerier.ArchiveValidPreparationInstrument(ctx, q.db, validPreparationInstrumentID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation instrument")
 	}
 

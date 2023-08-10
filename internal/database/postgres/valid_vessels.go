@@ -518,9 +518,6 @@ func (q *Querier) MarkValidVesselAsIndexed(ctx context.Context, validVesselID st
 	return nil
 }
 
-//go:embed queries/valid_vessels/archive.sql
-var archiveValidVesselQuery string
-
 // ArchiveValidVessel archives a valid vessel from the database by its ID.
 func (q *Querier) ArchiveValidVessel(ctx context.Context, validVesselID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -534,12 +531,8 @@ func (q *Querier) ArchiveValidVessel(ctx context.Context, validVesselID string) 
 	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
 	tracing.AttachValidVesselIDToSpan(span, validVesselID)
 
-	args := []any{
-		validVesselID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "valid vessel archive", archiveValidVesselQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating valid vessel")
+	if err := q.generatedQuerier.ArchiveValidVessel(ctx, q.db, validVesselID); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving valid vessel")
 	}
 
 	logger.Info("valid vessel archived")

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	_ "embed"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -376,9 +377,6 @@ func (q *Querier) createWebhookTriggerEvent(ctx context.Context, querier databas
 	return x, nil
 }
 
-//go:embed queries/webhooks/archive.sql
-var archiveWebhookQuery string
-
 // ArchiveWebhook archives a webhook from the database.
 func (q *Querier) ArchiveWebhook(ctx context.Context, webhookID, householdID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -396,9 +394,10 @@ func (q *Querier) ArchiveWebhook(ctx context.Context, webhookID, householdID str
 		keys.HouseholdIDKey: householdID,
 	})
 
-	args := []any{householdID, webhookID}
-
-	if err := q.performWriteQuery(ctx, q.db, "webhook archive", archiveWebhookQuery, args); err != nil {
+	if err := q.generatedQuerier.ArchiveWebhook(ctx, q.db, &generated.ArchiveWebhookParams{
+		BelongsToHousehold: householdID,
+		ID:                 webhookID,
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving webhook")
 	}
 

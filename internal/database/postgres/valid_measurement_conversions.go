@@ -422,9 +422,6 @@ func (q *Querier) UpdateValidMeasurementConversion(ctx context.Context, updated 
 	return nil
 }
 
-//go:embed queries/valid_measurement_conversions/archive.sql
-var archiveValidMeasurementConversionQuery string
-
 // ArchiveValidMeasurementConversion archives a valid measurement conversion from the database by its ID.
 func (q *Querier) ArchiveValidMeasurementConversion(ctx context.Context, validMeasurementConversionID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -438,12 +435,8 @@ func (q *Querier) ArchiveValidMeasurementConversion(ctx context.Context, validMe
 	logger = logger.WithValue(keys.ValidMeasurementConversionIDKey, validMeasurementConversionID)
 	tracing.AttachValidMeasurementConversionIDToSpan(span, validMeasurementConversionID)
 
-	args := []any{
-		validMeasurementConversionID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "valid measurement conversion archive", archiveValidMeasurementConversionQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating valid measurement conversion")
+	if err := q.generatedQuerier.ArchiveValidMeasurementConversion(ctx, q.db, validMeasurementConversionID); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving valid measurement conversion")
 	}
 
 	logger.Info("valid measurement conversion archived")

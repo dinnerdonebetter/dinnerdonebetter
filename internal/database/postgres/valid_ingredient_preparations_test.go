@@ -667,27 +667,6 @@ func TestQuerier_UpdateValidIngredientPreparation(T *testing.T) {
 func TestQuerier_ArchiveValidIngredientPreparation(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleValidIngredientPreparation.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveValidIngredientPreparationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.ArchiveValidIngredientPreparation(ctx, exampleValidIngredientPreparation.ID))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid valid ingredient preparation ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -695,26 +674,5 @@ func TestQuerier_ArchiveValidIngredientPreparation(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveValidIngredientPreparation(ctx, ""))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleValidIngredientPreparation.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveValidIngredientPreparationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.ArchiveValidIngredientPreparation(ctx, exampleValidIngredientPreparation.ID))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }

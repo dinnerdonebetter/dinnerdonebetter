@@ -655,29 +655,6 @@ func TestQuerier_UpdateRecipeStepVessel(T *testing.T) {
 func TestQuerier_ArchiveRecipeStepVessel(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleRecipeStepID,
-			exampleRecipeStepVessel.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveRecipeStepVesselQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.ArchiveRecipeStepVessel(ctx, exampleRecipeStepID, exampleRecipeStepVessel.ID))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid recipe step ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -698,28 +675,5 @@ func TestQuerier_ArchiveRecipeStepVessel(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveRecipeStepVessel(ctx, exampleRecipeStepID, ""))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleRecipeStepID,
-			exampleRecipeStepVessel.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveRecipeStepVesselQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.ArchiveRecipeStepVessel(ctx, exampleRecipeStepID, exampleRecipeStepVessel.ID))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }

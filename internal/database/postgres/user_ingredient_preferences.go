@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	_ "embed"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/identifiers"
@@ -395,9 +396,6 @@ func (q *Querier) UpdateUserIngredientPreference(ctx context.Context, updated *t
 	return nil
 }
 
-//go:embed queries/user_ingredient_preferences/archive.sql
-var archiveUserIngredientPreferenceQuery string
-
 // ArchiveUserIngredientPreference archives a user ingredient preference from the database by its ID.
 func (q *Querier) ArchiveUserIngredientPreference(ctx context.Context, userIngredientPreferenceID, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -417,13 +415,11 @@ func (q *Querier) ArchiveUserIngredientPreference(ctx context.Context, userIngre
 	logger = logger.WithValue(keys.UserIngredientPreferenceIDKey, userIngredientPreferenceID)
 	tracing.AttachUserIngredientPreferenceIDToSpan(span, userIngredientPreferenceID)
 
-	args := []any{
-		userIngredientPreferenceID,
-		userID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "user ingredient preference archive", archiveUserIngredientPreferenceQuery, args); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating user ingredient preference")
+	if err := q.generatedQuerier.ArchiveUserIngredientPreference(ctx, q.db, &generated.ArchiveUserIngredientPreferenceParams{
+		ID:            userIngredientPreferenceID,
+		BelongsToUser: userID,
+	}); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving user ingredient preference")
 	}
 
 	logger.Info("user ingredient preference archived")

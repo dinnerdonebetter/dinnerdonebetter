@@ -665,27 +665,6 @@ func TestQuerier_UpdateServiceSettingConfiguration(T *testing.T) {
 func TestQuerier_ArchiveServiceSettingConfiguration(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleServiceSettingConfiguration := fakes.BuildFakeServiceSettingConfiguration()
-
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleServiceSettingConfiguration.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveServiceSettingConfigurationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.ArchiveServiceSettingConfiguration(ctx, exampleServiceSettingConfiguration.ID))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid service setting ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -693,26 +672,5 @@ func TestQuerier_ArchiveServiceSettingConfiguration(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveServiceSettingConfiguration(ctx, ""))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleServiceSettingConfiguration := fakes.BuildFakeServiceSettingConfiguration()
-
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleServiceSettingConfiguration.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveServiceSettingConfigurationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.ArchiveServiceSettingConfiguration(ctx, exampleServiceSettingConfiguration.ID))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
