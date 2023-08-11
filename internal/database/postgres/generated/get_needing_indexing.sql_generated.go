@@ -81,7 +81,7 @@ func (q *Queries) GetRecipesNeedingIndexing(ctx context.Context, db DBTX) ([]str
 	return items, nil
 }
 
-const GetUsersNeedingIndexing = `-- name: GetUsersNeedingIndexing :many
+const GetUserIDsNeedingIndexing = `-- name: GetUserIDsNeedingIndexing :many
 
 SELECT users.id
   FROM users
@@ -95,8 +95,8 @@ SELECT users.id
 		)
 `
 
-func (q *Queries) GetUsersNeedingIndexing(ctx context.Context, db DBTX) ([]string, error) {
-	rows, err := db.QueryContext(ctx, GetUsersNeedingIndexing)
+func (q *Queries) GetUserIDsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error) {
+	rows, err := db.QueryContext(ctx, GetUserIDsNeedingIndexing)
 	if err != nil {
 		return nil, err
 	}

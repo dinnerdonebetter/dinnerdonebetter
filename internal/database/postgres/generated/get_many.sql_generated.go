@@ -442,6 +442,163 @@ func (q *Queries) GetRecipeStepCompletionConditions(ctx context.Context, db DBTX
 	return items, nil
 }
 
+const GetUsers = `-- name: GetUsers :many
+
+SELECT
+	users.id,
+	users.first_name,
+	users.last_name,
+	users.username,
+	users.email_address,
+	users.email_address_verified_at,
+	users.avatar_src,
+	users.hashed_password,
+	users.requires_password_change,
+	users.password_last_changed_at,
+	users.two_factor_secret,
+	users.two_factor_secret_verified_at,
+	users.service_role,
+	users.user_account_status,
+	users.user_account_status_explanation,
+	users.birthday,
+	users.last_accepted_terms_of_service,
+    users.last_accepted_privacy_policy,
+	users.created_at,
+	users.last_updated_at,
+	users.archived_at,
+    (
+        SELECT
+            COUNT(users.id)
+        FROM
+            users
+        WHERE
+            users.archived_at IS NULL
+          AND users.created_at > COALESCE($1::TIMESTAMP, (SELECT NOW() - interval '999 years'))
+          AND users.created_at < COALESCE($2::TIMESTAMP, (SELECT NOW() + interval '999 years'))
+          AND (
+                users.last_updated_at IS NULL
+                OR users.last_updated_at > COALESCE($3::TIMESTAMP, (SELECT NOW() - interval '999 years'))
+            )
+          AND (
+                users.last_updated_at IS NULL
+                OR users.last_updated_at < COALESCE($4::TIMESTAMP, (SELECT NOW() + interval '999 years'))
+            )
+        OFFSET $5
+    ) as filtered_count,
+    (
+        SELECT
+            COUNT(users.id)
+        FROM
+            users
+        WHERE
+            users.archived_at IS NULL
+    ) as total_count
+FROM users
+WHERE
+    users.archived_at IS NULL
+  AND users.created_at > COALESCE($1::TIMESTAMP, (SELECT NOW() - interval '999 years'))
+  AND users.created_at < COALESCE($2::TIMESTAMP, (SELECT NOW() + interval '999 years'))
+  AND (
+        users.last_updated_at IS NULL
+        OR users.last_updated_at > COALESCE($3::TIMESTAMP, (SELECT NOW() - interval '999 years'))
+    )
+  AND (
+        users.last_updated_at IS NULL
+        OR users.last_updated_at < COALESCE($4::TIMESTAMP, (SELECT NOW() + interval '999 years'))
+    )
+OFFSET $5
+LIMIT $6
+`
+
+type GetUsersParams struct {
+	CreatedBefore sql.NullTime  `db:"created_before"`
+	CreatedAfter  sql.NullTime  `db:"created_after"`
+	UpdatedBefore sql.NullTime  `db:"updated_before"`
+	UpdatedAfter  sql.NullTime  `db:"updated_after"`
+	QueryOffset   sql.NullInt32 `db:"query_offset"`
+	QueryLimit    sql.NullInt32 `db:"query_limit"`
+}
+
+type GetUsersRow struct {
+	CreatedAt                    time.Time      `db:"created_at"`
+	Birthday                     sql.NullTime   `db:"birthday"`
+	PasswordLastChangedAt        sql.NullTime   `db:"password_last_changed_at"`
+	TwoFactorSecretVerifiedAt    sql.NullTime   `db:"two_factor_secret_verified_at"`
+	ArchivedAt                   sql.NullTime   `db:"archived_at"`
+	EmailAddressVerifiedAt       sql.NullTime   `db:"email_address_verified_at"`
+	LastUpdatedAt                sql.NullTime   `db:"last_updated_at"`
+	LastAcceptedPrivacyPolicy    sql.NullTime   `db:"last_accepted_privacy_policy"`
+	LastAcceptedTermsOfService   sql.NullTime   `db:"last_accepted_terms_of_service"`
+	HashedPassword               string         `db:"hashed_password"`
+	TwoFactorSecret              string         `db:"two_factor_secret"`
+	ServiceRole                  string         `db:"service_role"`
+	Username                     string         `db:"username"`
+	UserAccountStatus            string         `db:"user_account_status"`
+	UserAccountStatusExplanation string         `db:"user_account_status_explanation"`
+	ID                           string         `db:"id"`
+	EmailAddress                 string         `db:"email_address"`
+	LastName                     string         `db:"last_name"`
+	FirstName                    string         `db:"first_name"`
+	AvatarSrc                    sql.NullString `db:"avatar_src"`
+	FilteredCount                int64          `db:"filtered_count"`
+	TotalCount                   int64          `db:"total_count"`
+	RequiresPasswordChange       bool           `db:"requires_password_change"`
+}
+
+func (q *Queries) GetUsers(ctx context.Context, db DBTX, arg *GetUsersParams) ([]*GetUsersRow, error) {
+	rows, err := db.QueryContext(ctx, GetUsers,
+		arg.CreatedBefore,
+		arg.CreatedAfter,
+		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.QueryOffset,
+		arg.QueryLimit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetUsersRow{}
+	for rows.Next() {
+		var i GetUsersRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.FirstName,
+			&i.LastName,
+			&i.Username,
+			&i.EmailAddress,
+			&i.EmailAddressVerifiedAt,
+			&i.AvatarSrc,
+			&i.HashedPassword,
+			&i.RequiresPasswordChange,
+			&i.PasswordLastChangedAt,
+			&i.TwoFactorSecret,
+			&i.TwoFactorSecretVerifiedAt,
+			&i.ServiceRole,
+			&i.UserAccountStatus,
+			&i.UserAccountStatusExplanation,
+			&i.Birthday,
+			&i.LastAcceptedTermsOfService,
+			&i.LastAcceptedPrivacyPolicy,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+			&i.FilteredCount,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const GetValidIngredientGroups = `-- name: GetValidIngredientGroups :many
 
 SELECT

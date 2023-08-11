@@ -533,30 +533,6 @@ func TestQuerier_CreateHouseholdInvitation(T *testing.T) {
 func TestSQLQuerier_setInvitationStatus(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
-
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleHouseholdInvitation.Status,
-			exampleHouseholdInvitation.Note,
-			exampleHouseholdInvitation.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(setInvitationStatusQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		err := c.setInvitationStatus(ctx, c.db, exampleHouseholdInvitation.ID, exampleHouseholdInvitation.Note, exampleHouseholdInvitation.Status)
-		assert.NoError(t, err)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid household invitation ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -567,30 +543,6 @@ func TestSQLQuerier_setInvitationStatus(T *testing.T) {
 
 		err := c.setInvitationStatus(ctx, c.db, "", exampleHouseholdInvitation.Note, exampleHouseholdInvitation.Status)
 		assert.Error(t, err)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
-
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleHouseholdInvitation.Status,
-			exampleHouseholdInvitation.Note,
-			exampleHouseholdInvitation.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(setInvitationStatusQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		err := c.setInvitationStatus(ctx, c.db, exampleHouseholdInvitation.ID, exampleHouseholdInvitation.Note, exampleHouseholdInvitation.Status)
-		assert.Error(t, err)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

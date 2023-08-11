@@ -165,6 +165,49 @@ func stringPointerFromNullString(nt sql.NullString) *string {
 	return nil
 }
 
+func nullStringFromString(s string) sql.NullString {
+	return sql.NullString{
+		String: s,
+		Valid:  true,
+	}
+}
+
+func nullTimeFromTime(t time.Time) sql.NullTime {
+	return sql.NullTime{
+		Time:  t,
+		Valid: true,
+	}
+}
+
+func nullTimeFromTimePointer(t *time.Time) sql.NullTime {
+	if t == nil {
+		return sql.NullTime{}
+	}
+
+	return sql.NullTime{
+		Time:  *t,
+		Valid: true,
+	}
+}
+
+func nullInt32FromUint8Pointer(i *uint8) sql.NullInt32 {
+	if i == nil {
+		return sql.NullInt32{}
+	}
+
+	return sql.NullInt32{
+		Int32: int32(*i),
+		Valid: true,
+	}
+}
+
+func nullInt32FromUint16(i uint16) sql.NullInt32 {
+	return sql.NullInt32{
+		Int32: int32(i),
+		Valid: true,
+	}
+}
+
 func defaultTimeFunc() time.Time {
 	return time.Now()
 }

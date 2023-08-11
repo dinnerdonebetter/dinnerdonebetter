@@ -7,26 +7,24 @@ package generated
 
 import (
 	"context"
-	"database/sql"
 )
 
 const UpdateUserTwoFactorSecret = `-- name: UpdateUserTwoFactorSecret :exec
 
 UPDATE users SET
-	two_factor_secret_verified_at = $1,
-	two_factor_secret = $2,
+	two_factor_secret_verified_at = NULL,
+	two_factor_secret = $1,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND id = $3
+	AND id = $2
 `
 
 type UpdateUserTwoFactorSecretParams struct {
-	TwoFactorSecretVerifiedAt sql.NullTime `db:"two_factor_secret_verified_at"`
-	TwoFactorSecret           string       `db:"two_factor_secret"`
-	ID                        string       `db:"id"`
+	TwoFactorSecret string `db:"two_factor_secret"`
+	ID              string `db:"id"`
 }
 
 func (q *Queries) UpdateUserTwoFactorSecret(ctx context.Context, db DBTX, arg *UpdateUserTwoFactorSecretParams) error {
-	_, err := db.ExecContext(ctx, UpdateUserTwoFactorSecret, arg.TwoFactorSecretVerifiedAt, arg.TwoFactorSecret, arg.ID)
+	_, err := db.ExecContext(ctx, UpdateUserTwoFactorSecret, arg.TwoFactorSecret, arg.ID)
 	return err
 }

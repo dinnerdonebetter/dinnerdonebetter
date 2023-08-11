@@ -192,7 +192,7 @@ func (q *Queries) CheckMealPlanTaskExistence(ctx context.Context, db DBTX, arg *
 
 const CheckOAuth2ClientTokenExistence = `-- name: CheckOAuth2ClientTokenExistence :one
 
-SELECT EXISTS ( SELECT valid_instruments.id FROM valid_instruments WHERE valid_instruments.archived_at IS NULL AND valid_instruments.id = $1 )
+SELECT EXISTS ( SELECT oauth2_client_tokens.id FROM oauth2_client_tokens WHERE oauth2_client_tokens.archived_at IS NULL AND oauth2_client_tokens.id = $1 )
 `
 
 func (q *Queries) CheckOAuth2ClientTokenExistence(ctx context.Context, db DBTX, id string) (bool, error) {

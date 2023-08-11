@@ -1,4 +1,4 @@
--- name: SearchUsersByUsername :many
+-- name: GetUserWithUnverifiedTwoFactor :one
 
 SELECT
 	users.id,
@@ -23,5 +23,6 @@ SELECT
 	users.last_updated_at,
 	users.archived_at
 FROM users
-WHERE users.username ILIKE '%' || sqlc.arg(username)::text || '%'
-AND users.archived_at IS NULL;
+WHERE users.archived_at IS NULL
+	AND users.id = $1
+	AND users.two_factor_secret_verified_at IS NULL;

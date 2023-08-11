@@ -64,10 +64,11 @@ SELECT
 	household_invitations.last_updated_at,
 	household_invitations.archived_at
 FROM household_invitations
-	JOIN households ON household_invitations.destination_household = households.id
-	JOIN users ON household_invitations.from_user = users.id
+	LEFT JOIN households ON household_invitations.destination_household = households.id
+	LEFT JOIN users ON household_invitations.from_user = users.id
 WHERE household_invitations.archived_at IS NULL
-	AND household_invitations.expires_at > NOW()
+      AND household_invitations.expires_at > NOW()
+      AND household_invitations.expires_at > NOW()
 	AND household_invitations.destination_household = $1
 	AND household_invitations.id = $2
 `
@@ -78,55 +79,55 @@ type GetHouseholdInvitationByHouseholdAndIDParams struct {
 }
 
 type GetHouseholdInvitationByHouseholdAndIDRow struct {
-	ExpiresAt                    time.Time       `db:"expires_at"`
-	CreatedAt_2                  time.Time       `db:"created_at_2"`
-	CreatedAt                    time.Time       `db:"created_at"`
 	CreatedAt_3                  time.Time       `db:"created_at_3"`
-	LastUpdatedAt_2              sql.NullTime    `db:"last_updated_at_2"`
-	ArchivedAt_2                 sql.NullTime    `db:"archived_at_2"`
-	LastUpdatedAt_3              sql.NullTime    `db:"last_updated_at_3"`
-	ArchivedAt_3                 sql.NullTime    `db:"archived_at_3"`
-	Birthday                     sql.NullTime    `db:"birthday"`
-	TwoFactorSecretVerifiedAt    sql.NullTime    `db:"two_factor_secret_verified_at"`
-	PasswordLastChangedAt        sql.NullTime    `db:"password_last_changed_at"`
+	ExpiresAt                    time.Time       `db:"expires_at"`
+	CreatedAt                    sql.NullTime    `db:"created_at"`
 	EmailAddressVerifiedAt       sql.NullTime    `db:"email_address_verified_at"`
+	ArchivedAt_3                 sql.NullTime    `db:"archived_at_3"`
+	PasswordLastChangedAt        sql.NullTime    `db:"password_last_changed_at"`
+	TwoFactorSecretVerifiedAt    sql.NullTime    `db:"two_factor_secret_verified_at"`
 	ArchivedAt                   sql.NullTime    `db:"archived_at"`
 	LastUpdatedAt                sql.NullTime    `db:"last_updated_at"`
-	Username                     string          `db:"username"`
-	TwoFactorSecret              string          `db:"two_factor_secret"`
-	PaymentProcessorCustomerID   string          `db:"payment_processor_customer_id"`
-	ID_2                         string          `db:"id_2"`
-	BelongsToUser                string          `db:"belongs_to_user"`
-	ToEmail                      string          `db:"to_email"`
-	Name                         string          `db:"name"`
-	ID_3                         string          `db:"id_3"`
-	FirstName                    string          `db:"first_name"`
-	LastName                     string          `db:"last_name"`
+	LastUpdatedAt_3              sql.NullTime    `db:"last_updated_at_3"`
+	ArchivedAt_2                 sql.NullTime    `db:"archived_at_2"`
+	LastUpdatedAt_2              sql.NullTime    `db:"last_updated_at_2"`
+	Birthday                     sql.NullTime    `db:"birthday"`
+	CreatedAt_2                  sql.NullTime    `db:"created_at_2"`
 	ID                           string          `db:"id"`
-	EmailAddress                 string          `db:"email_address"`
-	BillingStatus                string          `db:"billing_status"`
-	ContactPhone                 string          `db:"contact_phone"`
-	HashedPassword               string          `db:"hashed_password"`
-	Token                        string          `db:"token"`
-	Country                      string          `db:"country"`
-	StatusNote                   string          `db:"status_note"`
-	ZipCode                      string          `db:"zip_code"`
-	ServiceRole                  string          `db:"service_role"`
-	UserAccountStatus            string          `db:"user_account_status"`
-	UserAccountStatusExplanation string          `db:"user_account_status_explanation"`
-	State                        string          `db:"state"`
-	City                         string          `db:"city"`
-	AddressLine2                 string          `db:"address_line_2"`
-	AddressLine1                 string          `db:"address_line_1"`
 	ToName                       string          `db:"to_name"`
 	Status                       InvitationState `db:"status"`
 	Note                         string          `db:"note"`
-	SubscriptionPlanID           sql.NullString  `db:"subscription_plan_id"`
-	AvatarSrc                    sql.NullString  `db:"avatar_src"`
-	Latitude                     sql.NullString  `db:"latitude"`
-	ToUser                       sql.NullString  `db:"to_user"`
+	StatusNote                   string          `db:"status_note"`
+	ToEmail                      string          `db:"to_email"`
+	Token                        string          `db:"token"`
 	Longitude                    sql.NullString  `db:"longitude"`
-	RequiresPasswordChange       bool            `db:"requires_password_change"`
+	UserAccountStatus            sql.NullString  `db:"user_account_status"`
+	LastName                     sql.NullString  `db:"last_name"`
+	Username                     sql.NullString  `db:"username"`
+	EmailAddress                 sql.NullString  `db:"email_address"`
+	ID_3                         sql.NullString  `db:"id_3"`
+	AvatarSrc                    sql.NullString  `db:"avatar_src"`
+	HashedPassword               sql.NullString  `db:"hashed_password"`
+	ID_2                         sql.NullString  `db:"id_2"`
+	ToUser                       sql.NullString  `db:"to_user"`
+	TwoFactorSecret              sql.NullString  `db:"two_factor_secret"`
+	BelongsToUser                sql.NullString  `db:"belongs_to_user"`
+	ServiceRole                  sql.NullString  `db:"service_role"`
+	FirstName                    sql.NullString  `db:"first_name"`
+	UserAccountStatusExplanation sql.NullString  `db:"user_account_status_explanation"`
+	SubscriptionPlanID           sql.NullString  `db:"subscription_plan_id"`
+	PaymentProcessorCustomerID   sql.NullString  `db:"payment_processor_customer_id"`
+	Latitude                     sql.NullString  `db:"latitude"`
+	Country                      sql.NullString  `db:"country"`
+	ZipCode                      sql.NullString  `db:"zip_code"`
+	State                        sql.NullString  `db:"state"`
+	City                         sql.NullString  `db:"city"`
+	AddressLine2                 sql.NullString  `db:"address_line_2"`
+	AddressLine1                 sql.NullString  `db:"address_line_1"`
+	ContactPhone                 sql.NullString  `db:"contact_phone"`
+	BillingStatus                sql.NullString  `db:"billing_status"`
+	Name                         sql.NullString  `db:"name"`
+	RequiresPasswordChange       sql.NullBool    `db:"requires_password_change"`
 }
 
 func (q *Queries) GetHouseholdInvitationByHouseholdAndID(ctx context.Context, db DBTX, arg *GetHouseholdInvitationByHouseholdAndIDParams) (*GetHouseholdInvitationByHouseholdAndIDRow, error) {

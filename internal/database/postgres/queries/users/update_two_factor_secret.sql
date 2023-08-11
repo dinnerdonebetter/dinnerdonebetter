@@ -1,8 +1,8 @@
 -- name: UpdateUserTwoFactorSecret :exec
 
 UPDATE users SET
-	two_factor_secret_verified_at = $1,
-	two_factor_secret = $2,
+	two_factor_secret_verified_at = NULL,
+	two_factor_secret = $1,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND id = $3;
+	AND id = $2;

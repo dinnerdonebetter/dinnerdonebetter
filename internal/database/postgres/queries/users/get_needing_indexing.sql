@@ -1,4 +1,4 @@
--- name: GetUsersNeedingIndexing :many
+-- name: GetUserIDsNeedingIndexing :many
 
 SELECT users.id
   FROM users

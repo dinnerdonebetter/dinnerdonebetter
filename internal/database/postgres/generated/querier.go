@@ -219,9 +219,11 @@ type Querier interface {
 	GetUserByEmailAddressVerificationToken(ctx context.Context, db DBTX, emailAddressVerificationToken sql.NullString) (*GetUserByEmailAddressVerificationTokenRow, error)
 	GetUserByID(ctx context.Context, db DBTX, id string) (*GetUserByIDRow, error)
 	GetUserByUsername(ctx context.Context, db DBTX, username string) (*GetUserByUsernameRow, error)
+	GetUserIDsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error)
 	GetUserIngredientPreferencesForUser(ctx context.Context, db DBTX, arg *GetUserIngredientPreferencesForUserParams) ([]*GetUserIngredientPreferencesForUserRow, error)
+	GetUserWithUnverifiedTwoFactor(ctx context.Context, db DBTX, id string) (*GetUserWithUnverifiedTwoFactorRow, error)
 	GetUserWithVerifiedTwoFactor(ctx context.Context, db DBTX, id string) (*GetUserWithVerifiedTwoFactorRow, error)
-	GetUsersNeedingIndexing(ctx context.Context, db DBTX) ([]string, error)
+	GetUsers(ctx context.Context, db DBTX, arg *GetUsersParams) ([]*GetUsersRow, error)
 	GetValidIngredient(ctx context.Context, db DBTX, id string) (*GetValidIngredientRow, error)
 	GetValidIngredientByID(ctx context.Context, db DBTX) (*GetValidIngredientByIDRow, error)
 	GetValidIngredientGroup(ctx context.Context, db DBTX, id string) ([]*GetValidIngredientGroupRow, error)
@@ -262,7 +264,7 @@ type Querier interface {
 	MarkMealPlanAsGroceryListInitialized(ctx context.Context, db DBTX, id string) error
 	MarkMealPlanAsPrepTasksCreated(ctx context.Context, db DBTX, id string) error
 	MarkTwoFactorSecretAsUnverified(ctx context.Context, db DBTX, arg *MarkTwoFactorSecretAsUnverifiedParams) error
-	MarkTwoFactorSecretAsVerified(ctx context.Context, db DBTX, arg *MarkTwoFactorSecretAsVerifiedParams) error
+	MarkTwoFactorSecretAsVerified(ctx context.Context, db DBTX, id string) error
 	ModifyHouseholdUserPermissions(ctx context.Context, db DBTX, arg *ModifyHouseholdUserPermissionsParams) error
 	RedeemPasswordResetToken(ctx context.Context, db DBTX, id string) error
 	RemoveUserFromHousehold(ctx context.Context, db DBTX, arg *RemoveUserFromHouseholdParams) error
@@ -330,7 +332,6 @@ type Querier interface {
 	UpdateValidPreparationVessel(ctx context.Context, db DBTX, arg *UpdateValidPreparationVesselParams) error
 	UpdateValidVessel(ctx context.Context, db DBTX, arg *UpdateValidVesselParams) error
 	UpdateValidVesselLastIndexedAt(ctx context.Context, db DBTX, id string) error
-	UserExistsWithStatus(ctx context.Context, db DBTX, arg *UserExistsWithStatusParams) (bool, error)
 	UserIsHouseholdMember(ctx context.Context, db DBTX, arg *UserIsHouseholdMemberParams) (bool, error)
 	ValidIngredientMeasurementUnitPairIsValid(ctx context.Context, db DBTX, arg *ValidIngredientMeasurementUnitPairIsValidParams) (bool, error)
 	ValidIngredientPreparationPairIsValid(ctx context.Context, db DBTX, arg *ValidIngredientPreparationPairIsValidParams) (bool, error)
