@@ -2,9 +2,11 @@ package postgres
 
 import (
 	"context"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestQuerier_Integration_Admin(t *testing.T) {
