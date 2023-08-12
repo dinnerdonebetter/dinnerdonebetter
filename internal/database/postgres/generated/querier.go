@@ -281,7 +281,7 @@ type Querier interface {
 	SearchValidIngredientsByPreparationAndIngredientName(ctx context.Context, db DBTX, arg *SearchValidIngredientsByPreparationAndIngredientNameParams) ([]*SearchValidIngredientsByPreparationAndIngredientNameRow, error)
 	SearchValidMeasurementUnitsByIngredientID(ctx context.Context, db DBTX, arg *SearchValidMeasurementUnitsByIngredientIDParams) ([]*SearchValidMeasurementUnitsByIngredientIDRow, error)
 	SetHouseholdInvitationStatus(ctx context.Context, db DBTX, arg *SetHouseholdInvitationStatusParams) error
-	SetUserAccountStatus(ctx context.Context, db DBTX, arg *SetUserAccountStatusParams) error
+	SetUserAccountStatus(ctx context.Context, db DBTX, arg *SetUserAccountStatusParams) (sql.Result, error)
 	TransferHouseholdMembership(ctx context.Context, db DBTX, arg *TransferHouseholdMembershipParams) error
 	TransferHouseholdOwnership(ctx context.Context, db DBTX, arg *TransferHouseholdOwnershipParams) error
 	UpdateHousehold(ctx context.Context, db DBTX, arg *UpdateHouseholdParams) error

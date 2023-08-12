@@ -2,15 +2,10 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"database/sql/driver"
-	"errors"
 	"testing"
-	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -116,66 +111,8 @@ func buildErroneousMockRowsFromWebhooks(includeCounts bool, filteredCount uint64
 	return exampleRows
 }
 
-func TestQuerier_scanWebhooks(T *testing.T) {
-	T.Parallel()
-
-	T.Run("surfaces row errs", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		q, _ := buildTestClient(t)
-		mockRows := &database.MockResultIterator{}
-
-		mockRows.On("Next").Return(false)
-		mockRows.On("Err").Return(errors.New("blah"))
-
-		_, _, _, err := q.scanWebhooks(ctx, mockRows, false)
-		assert.Error(t, err)
-	})
-
-	T.Run("logs row closing errs", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		q, _ := buildTestClient(t)
-		mockRows := &database.MockResultIterator{}
-
-		mockRows.On("Next").Return(false)
-		mockRows.On("Err").Return(nil)
-		mockRows.On("Close").Return(errors.New("blah"))
-
-		_, _, _, err := q.scanWebhooks(ctx, mockRows, false)
-		assert.Error(t, err)
-	})
-}
-
 func TestQuerier_WebhookExists(T *testing.T) {
 	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleHouseholdID := fakes.BuildFakeID()
-		exampleWebhookID := fakes.BuildFakeID()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleHouseholdID,
-			exampleWebhookID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(webhookExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
-
-		actual, err := c.WebhookExists(ctx, exampleWebhookID, exampleHouseholdID)
-		assert.NoError(t, err)
-		assert.True(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
 
 	T.Run("with invalid webhook ID", func(t *testing.T) {
 		t.Parallel()
@@ -206,82 +143,10 @@ func TestQuerier_WebhookExists(T *testing.T) {
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
-
-	T.Run("with sql.ErrNoRows", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleHouseholdID := fakes.BuildFakeID()
-		exampleWebhookID := fakes.BuildFakeID()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleHouseholdID,
-			exampleWebhookID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(webhookExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(sql.ErrNoRows)
-
-		actual, err := c.WebhookExists(ctx, exampleWebhookID, exampleHouseholdID)
-		assert.NoError(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleHouseholdID := fakes.BuildFakeID()
-		exampleWebhookID := fakes.BuildFakeID()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleHouseholdID,
-			exampleWebhookID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(webhookExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.WebhookExists(ctx, exampleWebhookID, exampleHouseholdID)
-		assert.Error(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
 }
 
 func TestQuerier_GetWebhook(T *testing.T) {
 	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHouseholdID := fakes.BuildFakeID()
-		exampleWebhook := fakes.BuildFakeWebhook()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{exampleHouseholdID, exampleWebhook.ID}
-
-		db.ExpectQuery(formatQueryForSQLMock(getWebhookQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromWebhooks(false, 0, exampleWebhook))
-
-		actual, err := c.GetWebhook(ctx, exampleWebhook.ID, exampleHouseholdID)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleWebhook, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
 
 	T.Run("with invalid webhook ID", func(t *testing.T) {
 		t.Parallel()
@@ -308,100 +173,10 @@ func TestQuerier_GetWebhook(T *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
-
-	T.Run("with invalid response from database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHouseholdID := fakes.BuildFakeID()
-		exampleWebhook := fakes.BuildFakeWebhook()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{exampleHouseholdID, exampleWebhook.ID}
-
-		db.ExpectQuery(formatQueryForSQLMock(getWebhookQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildErroneousMockRowsFromWebhooks(false, 0, exampleWebhook))
-
-		actual, err := c.GetWebhook(ctx, exampleWebhook.ID, exampleHouseholdID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
 }
 
 func TestQuerier_GetWebhooks(T *testing.T) {
 	T.Parallel()
-
-	exampleHouseholdID := fakes.BuildFakeID()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleWebhookList := fakes.BuildFakeWebhookList()
-		filter := types.DefaultQueryFilter()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		getWebhooksForHouseholdArgs := []any{
-			exampleHouseholdID,
-			filter.CreatedAfter,
-			filter.CreatedBefore,
-			filter.UpdatedAfter,
-			filter.UpdatedBefore,
-			filter.QueryOffset(),
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getWebhooksForHouseholdQuery)).
-			WithArgs(interfaceToDriverValue(getWebhooksForHouseholdArgs)...).
-			WillReturnRows(buildMockRowsFromWebhooks(
-				true,
-				exampleWebhookList.FilteredCount,
-				exampleWebhookList.Data...,
-			))
-
-		actual, err := c.GetWebhooks(ctx, exampleHouseholdID, filter)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleWebhookList, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with nil filter", func(t *testing.T) {
-		t.Parallel()
-
-		exampleWebhookList := fakes.BuildFakeWebhookList()
-		filter := types.DefaultQueryFilter()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		getWebhooksForHouseholdArgs := []any{
-			exampleHouseholdID,
-			filter.CreatedAfter,
-			filter.CreatedBefore,
-			filter.UpdatedAfter,
-			filter.UpdatedBefore,
-			filter.QueryOffset(),
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getWebhooksForHouseholdQuery)).
-			WithArgs(interfaceToDriverValue(getWebhooksForHouseholdArgs)...).
-			WillReturnRows(buildMockRowsFromWebhooks(
-				true,
-				exampleWebhookList.FilteredCount,
-				exampleWebhookList.Data...,
-			))
-
-		actual, err := c.GetWebhooks(ctx, exampleHouseholdID, nil)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleWebhookList, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
 
 	T.Run("with invalid household ID", func(t *testing.T) {
 		t.Parallel()
@@ -414,118 +189,10 @@ func TestQuerier_GetWebhooks(T *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		filter := types.DefaultQueryFilter()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		getWebhooksForHouseholdArgs := []any{
-			exampleHouseholdID,
-			filter.CreatedAfter,
-			filter.CreatedBefore,
-			filter.UpdatedAfter,
-			filter.UpdatedBefore,
-			filter.QueryOffset(),
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getWebhooksForHouseholdQuery)).
-			WithArgs(interfaceToDriverValue(getWebhooksForHouseholdArgs)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetWebhooks(ctx, exampleHouseholdID, filter)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with erroneous database response", func(t *testing.T) {
-		t.Parallel()
-
-		filter := types.DefaultQueryFilter()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		getWebhooksForHouseholdArgs := []any{
-			exampleHouseholdID,
-			filter.CreatedAfter,
-			filter.CreatedBefore,
-			filter.UpdatedAfter,
-			filter.UpdatedBefore,
-			filter.QueryOffset(),
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getWebhooksForHouseholdQuery)).
-			WithArgs(interfaceToDriverValue(getWebhooksForHouseholdArgs)...).
-			WillReturnRows(buildErroneousMockRow())
-
-		actual, err := c.GetWebhooks(ctx, exampleHouseholdID, filter)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
 }
 
 func TestQuerier_CreateWebhook(T *testing.T) {
 	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleWebhook := fakes.BuildFakeWebhook()
-		for i := range exampleWebhook.Events {
-			exampleWebhook.Events[i].CreatedAt = exampleWebhook.CreatedAt
-		}
-		exampleInput := converters.ConvertWebhookToWebhookDatabaseCreationInput(exampleWebhook)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-
-		createWebhookArgs := []any{
-			exampleInput.ID,
-			exampleInput.Name,
-			exampleInput.ContentType,
-			exampleInput.URL,
-			exampleInput.Method,
-			exampleInput.BelongsToHousehold,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(createWebhookQuery)).
-			WithArgs(interfaceToDriverValue(createWebhookArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		for _, evt := range exampleInput.Events {
-			createWebhookTriggerEventArgs := []any{
-				evt.ID,
-				evt.TriggerEvent,
-				evt.BelongsToWebhook,
-			}
-
-			db.ExpectExec(formatQueryForSQLMock(createWebhookTriggerEventQuery)).
-				WithArgs(interfaceToDriverValue(createWebhookTriggerEventArgs)...).
-				WillReturnResult(newArbitraryDatabaseResult())
-		}
-
-		db.ExpectCommit()
-
-		c.timeFunc = func() time.Time {
-			return exampleWebhook.CreatedAt
-		}
-
-		actual, err := c.CreateWebhook(ctx, exampleInput)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleWebhook, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
 
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
@@ -537,45 +204,20 @@ func TestQuerier_CreateWebhook(T *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
+}
 
-	T.Run("with error executing creation query", func(t *testing.T) {
+func TestQuerier_createWebhookTriggerEvent(T *testing.T) {
+	T.Parallel()
+
+	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		exampleWebhook := fakes.BuildFakeWebhook()
-		for i := range exampleWebhook.Events {
-			exampleWebhook.Events[i].CreatedAt = exampleWebhook.CreatedAt
-		}
-		exampleInput := converters.ConvertWebhookToWebhookDatabaseCreationInput(exampleWebhook)
-
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c, _ := buildTestClient(t)
 
-		args := []any{
-			exampleInput.ID,
-			exampleInput.Name,
-			exampleInput.ContentType,
-			exampleInput.URL,
-			exampleInput.Method,
-			exampleInput.BelongsToHousehold,
-		}
-
-		db.ExpectBegin()
-
-		db.ExpectExec(formatQueryForSQLMock(createWebhookQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		db.ExpectRollback()
-
-		c.timeFunc = func() time.Time {
-			return exampleWebhook.CreatedAt
-		}
-
-		actual, err := c.CreateWebhook(ctx, exampleInput)
+		created, err := c.createWebhookTriggerEvent(ctx, c.db, nil)
 		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
+		assert.Nil(t, created)
 	})
 }
 

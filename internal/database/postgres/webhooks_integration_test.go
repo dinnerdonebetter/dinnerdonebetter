@@ -88,6 +88,11 @@ func TestQuerier_Integration_Webhooks(t *testing.T) {
 	for _, webhook := range createdWebhooks {
 		assert.NoError(t, dbc.ArchiveWebhook(ctx, webhook.ID, householdID))
 
+		var exists bool
+		exists, err = dbc.WebhookExists(ctx, webhook.ID, householdID)
+		assert.NoError(t, err)
+		assert.False(t, exists)
+
 		var y *types.Webhook
 		y, err = dbc.GetWebhook(ctx, webhook.ID, householdID)
 		assert.Nil(t, y)

@@ -2,10 +2,11 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 	_ "embed"
+	"github.com/dinnerdonebetter/backend/internal/observability"
 
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
-	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -21,12 +22,20 @@ func (q *Querier) UpdateUserAccountStatus(ctx context.Context, userID string, in
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachUserIDToSpan(span, userID)
 
-	if err := q.generatedQuerier.SetUserAccountStatus(ctx, q.db, &generated.SetUserAccountStatusParams{
+	result, err := q.generatedQuerier.SetUserAccountStatus(ctx, q.db, &generated.SetUserAccountStatusParams{
 		UserAccountStatus:            input.NewStatus,
 		UserAccountStatusExplanation: input.Reason,
 		ID:                           input.TargetUserID,
-	}); err != nil {
+	})
+	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "user status update")
+	}
+
+	if rowsAffected, rowsAffectedErr := result.RowsAffected(); rowsAffected == 0 {
+		if rowsAffectedErr != nil {
+			logger.Error(rowsAffectedErr, "error checking rows affected")
+		}
+		return sql.ErrNoRows
 	}
 
 	logger.Info("user account status updated")
