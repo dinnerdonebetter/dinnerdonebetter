@@ -3,7 +3,7 @@ package postgres
 import (
 	"context"
 	_ "embed"
-
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -11,9 +11,6 @@ import (
 )
 
 var _ types.AdminUserDataManager = (*Querier)(nil)
-
-//go:embed queries/admin/set_user_account_status.sql
-var setUserAccountStatusQuery string
 
 // UpdateUserAccountStatus updates a user's household status.
 func (q *Querier) UpdateUserAccountStatus(ctx context.Context, userID string, input *types.UserAccountStatusUpdateInput) error {
@@ -23,13 +20,11 @@ func (q *Querier) UpdateUserAccountStatus(ctx context.Context, userID string, in
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachUserIDToSpan(span, userID)
 
-	args := []any{
-		input.NewStatus,
-		input.Reason,
-		input.TargetUserID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "user status update query", setUserAccountStatusQuery, args); err != nil {
+	if err := q.generatedQuerier.SetUserAccountStatus(ctx, q.db, &generated.SetUserAccountStatusParams{
+		UserAccountStatus:            input.NewStatus,
+		UserAccountStatusExplanation: input.Reason,
+		ID:                           input.TargetUserID,
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "user status update")
 	}
 
