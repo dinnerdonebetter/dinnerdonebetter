@@ -2,68 +2,11 @@ package postgres
 
 import (
 	"context"
-	"database/sql/driver"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
-
-	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
-
-func buildMockRowsFromValidVessels(includeCounts bool, filteredCount uint64, validVessels ...*types.ValidVessel) *sqlmock.Rows {
-	columns := validVesselsTableColumns
-
-	if includeCounts {
-		columns = append(columns, "filtered_count", "total_count")
-	}
-
-	exampleRows := sqlmock.NewRows(columns)
-
-	for _, x := range validVessels {
-		rowValues := []driver.Value{
-			&x.ID,
-			&x.Name,
-			&x.PluralName,
-			&x.Description,
-			&x.IconPath,
-			&x.UsableForStorage,
-			&x.Slug,
-			&x.DisplayInSummaryLists,
-			&x.IncludeInGeneratedInstructions,
-			&x.Capacity,
-			&x.CapacityUnit.ID,
-			&x.CapacityUnit.Name,
-			&x.CapacityUnit.Description,
-			&x.CapacityUnit.Volumetric,
-			&x.CapacityUnit.IconPath,
-			&x.CapacityUnit.Universal,
-			&x.CapacityUnit.Metric,
-			&x.CapacityUnit.Imperial,
-			&x.CapacityUnit.Slug,
-			&x.CapacityUnit.PluralName,
-			&x.CapacityUnit.CreatedAt,
-			&x.CapacityUnit.LastUpdatedAt,
-			&x.CapacityUnit.ArchivedAt,
-			&x.WidthInMillimeters,
-			&x.LengthInMillimeters,
-			&x.HeightInMillimeters,
-			&x.Shape,
-			&x.CreatedAt,
-			&x.LastUpdatedAt,
-			&x.ArchivedAt,
-		}
-
-		if includeCounts {
-			rowValues = append(rowValues, filteredCount, len(validVessels))
-		}
-
-		exampleRows.AddRow(rowValues...)
-	}
-
-	return exampleRows
-}
 
 func TestQuerier_ValidVesselExists(T *testing.T) {
 	T.Parallel()
