@@ -12,46 +12,8 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-const (
-	validVesselsTable = "valid_vessels"
-)
-
 var (
 	_ types.ValidVesselDataManager = (*Querier)(nil)
-
-	// validVesselsTableColumns are the columns for the valid_vessels table.
-	validVesselsTableColumns = []string{
-		"valid_vessels.id",
-		"valid_vessels.name",
-		"valid_vessels.plural_name",
-		"valid_vessels.description",
-		"valid_vessels.icon_path",
-		"valid_vessels.usable_for_storage",
-		"valid_vessels.slug",
-		"valid_vessels.display_in_summary_lists",
-		"valid_vessels.include_in_generated_instructions",
-		"valid_vessels.capacity",
-		"valid_measurement_units.id",
-		"valid_measurement_units.name",
-		"valid_measurement_units.description",
-		"valid_measurement_units.volumetric",
-		"valid_measurement_units.icon_path",
-		"valid_measurement_units.universal",
-		"valid_measurement_units.metric",
-		"valid_measurement_units.imperial",
-		"valid_measurement_units.slug",
-		"valid_measurement_units.plural_name",
-		"valid_measurement_units.created_at",
-		"valid_measurement_units.last_updated_at",
-		"valid_measurement_units.archived_at",
-		"valid_vessels.width_in_millimeters",
-		"valid_vessels.length_in_millimeters",
-		"valid_vessels.height_in_millimeters",
-		"valid_vessels.shape",
-		"valid_vessels.created_at",
-		"valid_vessels.last_updated_at",
-		"valid_vessels.archived_at",
-	}
 )
 
 // ValidVesselExists fetches whether a valid vessel exists from the database.
@@ -306,7 +268,7 @@ func (q *Querier) GetValidVesselsWithIDs(ctx context.Context, ids []string) ([]*
 
 	logger := q.logger.Clone()
 
-	if ids == nil || len(ids) == 0 {
+	if len(ids) == 0 {
 		return nil, sql.ErrNoRows
 	}
 
