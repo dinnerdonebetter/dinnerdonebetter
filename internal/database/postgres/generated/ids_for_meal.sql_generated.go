@@ -9,7 +9,7 @@ import (
 	"context"
 )
 
-const GetRecipeIDsForMeal = `-- name: GetRecipeIDsForMeal :many
+const getRecipeIDsForMeal = `-- name: GetRecipeIDsForMeal :many
 
 SELECT
 	recipes.id
@@ -27,7 +27,7 @@ ORDER BY
 `
 
 func (q *Queries) GetRecipeIDsForMeal(ctx context.Context, db DBTX, id string) ([]string, error) {
-	rows, err := db.QueryContext(ctx, GetRecipeIDsForMeal, id)
+	rows, err := db.QueryContext(ctx, getRecipeIDsForMeal, id)
 	if err != nil {
 		return nil, err
 	}

@@ -9,7 +9,7 @@ import (
 	"context"
 )
 
-const AcceptPrivacyPolicyForUser = `-- name: AcceptPrivacyPolicyForUser :exec
+const acceptPrivacyPolicyForUser = `-- name: AcceptPrivacyPolicyForUser :exec
 
 UPDATE users SET
 	last_accepted_privacy_policy = NOW()
@@ -18,6 +18,6 @@ WHERE archived_at IS NULL
 `
 
 func (q *Queries) AcceptPrivacyPolicyForUser(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, AcceptPrivacyPolicyForUser, id)
+	_, err := db.ExecContext(ctx, acceptPrivacyPolicyForUser, id)
 	return err
 }

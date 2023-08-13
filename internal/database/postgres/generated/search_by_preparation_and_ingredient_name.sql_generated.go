@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const SearchValidIngredientPreparationsByPreparationAndIngredientName = `-- name: SearchValidIngredientPreparationsByPreparationAndIngredientName :many
+const searchValidIngredientPreparationsByPreparationAndIngredientName = `-- name: SearchValidIngredientPreparationsByPreparationAndIngredientName :many
 
 SELECT
 	valid_ingredient_preparations.id,
@@ -90,80 +90,80 @@ WHERE valid_ingredient_preparations.archived_at IS NULL
 `
 
 type SearchValidIngredientPreparationsByPreparationAndIngredientNameParams struct {
-	ID   string `db:"id"`
-	Name string `db:"name"`
+	ID   string
+	Name string
 }
 
 type SearchValidIngredientPreparationsByPreparationAndIngredientNameRow struct {
-	CreatedAt_3                             time.Time      `db:"created_at_3"`
-	CreatedAt                               time.Time      `db:"created_at"`
-	CreatedAt_2                             time.Time      `db:"created_at_2"`
-	ArchivedAt                              sql.NullTime   `db:"archived_at"`
-	LastUpdatedAt                           sql.NullTime   `db:"last_updated_at"`
-	LastUpdatedAt_2                         sql.NullTime   `db:"last_updated_at_2"`
-	ArchivedAt_3                            sql.NullTime   `db:"archived_at_3"`
-	LastUpdatedAt_3                         sql.NullTime   `db:"last_updated_at_3"`
-	ArchivedAt_2                            sql.NullTime   `db:"archived_at_2"`
-	ID_3                                    string         `db:"id_3"`
-	ID_2                                    string         `db:"id_2"`
-	IconPath_2                              string         `db:"icon_path_2"`
-	PluralName                              string         `db:"plural_name"`
-	StorageInstructions                     string         `db:"storage_instructions"`
-	IconPath                                string         `db:"icon_path"`
-	ID                                      string         `db:"id"`
-	Description                             string         `db:"description"`
-	Slug_2                                  string         `db:"slug_2"`
-	ShoppingSuggestions                     string         `db:"shopping_suggestions"`
-	Slug                                    string         `db:"slug"`
-	PastTense                               string         `db:"past_tense"`
-	Name                                    string         `db:"name"`
-	Warning                                 string         `db:"warning"`
-	Notes                                   string         `db:"notes"`
-	Description_2                           string         `db:"description_2"`
-	Name_2                                  string         `db:"name_2"`
-	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
-	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
-	MaximumVesselCount                      sql.NullInt32  `db:"maximum_vessel_count"`
-	MaximumIngredientCount                  sql.NullInt32  `db:"maximum_ingredient_count"`
-	MaximumInstrumentCount                  sql.NullInt32  `db:"maximum_instrument_count"`
-	MinimumInstrumentCount                  int32          `db:"minimum_instrument_count"`
-	MinimumVesselCount                      int32          `db:"minimum_vessel_count"`
-	MinimumIngredientCount                  int32          `db:"minimum_ingredient_count"`
-	IsLiquid                                sql.NullBool   `db:"is_liquid"`
-	ConsumesVessel                          bool           `db:"consumes_vessel"`
-	ContainsFish                            bool           `db:"contains_fish"`
-	ContainsGluten                          bool           `db:"contains_gluten"`
-	AnimalFlesh                             bool           `db:"animal_flesh"`
-	Volumetric                              bool           `db:"volumetric"`
-	ContainsSesame                          bool           `db:"contains_sesame"`
-	ContainsShellfish                       bool           `db:"contains_shellfish"`
-	AnimalDerived                           bool           `db:"animal_derived"`
-	ContainsWheat                           bool           `db:"contains_wheat"`
-	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
-	ContainsSoy                             bool           `db:"contains_soy"`
-	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
-	ContainsPeanut                          bool           `db:"contains_peanut"`
-	ContainsDairy                           bool           `db:"contains_dairy"`
-	ContainsAlcohol                         bool           `db:"contains_alcohol"`
-	ContainsEgg                             bool           `db:"contains_egg"`
-	IsStarch                                bool           `db:"is_starch"`
-	IsProtein                               bool           `db:"is_protein"`
-	IsGrain                                 bool           `db:"is_grain"`
-	IsFruit                                 bool           `db:"is_fruit"`
-	IsSalt                                  bool           `db:"is_salt"`
-	IsFat                                   bool           `db:"is_fat"`
-	IsAcid                                  bool           `db:"is_acid"`
-	IsHeat                                  bool           `db:"is_heat"`
-	OnlyForVessels                          bool           `db:"only_for_vessels"`
-	ConditionExpressionRequired             bool           `db:"condition_expression_required"`
-	TimeEstimateRequired                    bool           `db:"time_estimate_required"`
-	TemperatureRequired                     bool           `db:"temperature_required"`
-	RestrictToIngredients                   bool           `db:"restrict_to_ingredients"`
-	YieldsNothing                           bool           `db:"yields_nothing"`
+	CreatedAt_3                             time.Time
+	CreatedAt                               time.Time
+	CreatedAt_2                             time.Time
+	ArchivedAt                              sql.NullTime
+	LastUpdatedAt                           sql.NullTime
+	LastUpdatedAt_2                         sql.NullTime
+	ArchivedAt_3                            sql.NullTime
+	LastUpdatedAt_3                         sql.NullTime
+	ArchivedAt_2                            sql.NullTime
+	ID_3                                    string
+	ID_2                                    string
+	IconPath_2                              string
+	PluralName                              string
+	StorageInstructions                     string
+	IconPath                                string
+	ID                                      string
+	Description                             string
+	Slug_2                                  string
+	ShoppingSuggestions                     string
+	Slug                                    string
+	PastTense                               string
+	Name                                    string
+	Warning                                 string
+	Notes                                   string
+	Description_2                           string
+	Name_2                                  string
+	MaximumIdealStorageTemperatureInCelsius sql.NullString
+	MinimumIdealStorageTemperatureInCelsius sql.NullString
+	MaximumVesselCount                      sql.NullInt32
+	MaximumIngredientCount                  sql.NullInt32
+	MaximumInstrumentCount                  sql.NullInt32
+	MinimumInstrumentCount                  int32
+	MinimumVesselCount                      int32
+	MinimumIngredientCount                  int32
+	IsLiquid                                sql.NullBool
+	ConsumesVessel                          bool
+	ContainsFish                            bool
+	ContainsGluten                          bool
+	AnimalFlesh                             bool
+	Volumetric                              bool
+	ContainsSesame                          bool
+	ContainsShellfish                       bool
+	AnimalDerived                           bool
+	ContainsWheat                           bool
+	RestrictToPreparations                  bool
+	ContainsSoy                             bool
+	ContainsTreeNut                         bool
+	ContainsPeanut                          bool
+	ContainsDairy                           bool
+	ContainsAlcohol                         bool
+	ContainsEgg                             bool
+	IsStarch                                bool
+	IsProtein                               bool
+	IsGrain                                 bool
+	IsFruit                                 bool
+	IsSalt                                  bool
+	IsFat                                   bool
+	IsAcid                                  bool
+	IsHeat                                  bool
+	OnlyForVessels                          bool
+	ConditionExpressionRequired             bool
+	TimeEstimateRequired                    bool
+	TemperatureRequired                     bool
+	RestrictToIngredients                   bool
+	YieldsNothing                           bool
 }
 
 func (q *Queries) SearchValidIngredientPreparationsByPreparationAndIngredientName(ctx context.Context, db DBTX, arg *SearchValidIngredientPreparationsByPreparationAndIngredientNameParams) ([]*SearchValidIngredientPreparationsByPreparationAndIngredientNameRow, error) {
-	rows, err := db.QueryContext(ctx, SearchValidIngredientPreparationsByPreparationAndIngredientName, arg.ID, arg.Name)
+	rows, err := db.QueryContext(ctx, searchValidIngredientPreparationsByPreparationAndIngredientName, arg.ID, arg.Name)
 	if err != nil {
 		return nil, err
 	}
@@ -251,7 +251,7 @@ func (q *Queries) SearchValidIngredientPreparationsByPreparationAndIngredientNam
 	return items, nil
 }
 
-const SearchValidIngredientsByPreparationAndIngredientName = `-- name: SearchValidIngredientsByPreparationAndIngredientName :many
+const searchValidIngredientsByPreparationAndIngredientName = `-- name: SearchValidIngredientsByPreparationAndIngredientName :many
 
 SELECT
 	DISTINCT(valid_ingredients.id),
@@ -302,53 +302,53 @@ WHERE valid_ingredient_preparations.archived_at IS NULL
 `
 
 type SearchValidIngredientsByPreparationAndIngredientNameParams struct {
-	ValidPreparationID string `db:"valid_preparation_id"`
-	Name               string `db:"name"`
+	ValidPreparationID string
+	Name               string
 }
 
 type SearchValidIngredientsByPreparationAndIngredientNameRow struct {
-	CreatedAt                               time.Time      `db:"created_at"`
-	ArchivedAt                              sql.NullTime   `db:"archived_at"`
-	LastUpdatedAt                           sql.NullTime   `db:"last_updated_at"`
-	Warning                                 string         `db:"warning"`
-	Description                             string         `db:"description"`
-	Name                                    string         `db:"name"`
-	ShoppingSuggestions                     string         `db:"shopping_suggestions"`
-	Slug                                    string         `db:"slug"`
-	StorageInstructions                     string         `db:"storage_instructions"`
-	PluralName                              string         `db:"plural_name"`
-	ID                                      string         `db:"id"`
-	IconPath                                string         `db:"icon_path"`
-	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
-	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
-	IsLiquid                                sql.NullBool   `db:"is_liquid"`
-	AnimalDerived                           bool           `db:"animal_derived"`
-	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
-	AnimalFlesh                             bool           `db:"animal_flesh"`
-	ContainsGluten                          bool           `db:"contains_gluten"`
-	ContainsFish                            bool           `db:"contains_fish"`
-	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
-	ContainsSesame                          bool           `db:"contains_sesame"`
-	ContainsShellfish                       bool           `db:"contains_shellfish"`
-	ContainsWheat                           bool           `db:"contains_wheat"`
-	ContainsSoy                             bool           `db:"contains_soy"`
-	ContainsAlcohol                         bool           `db:"contains_alcohol"`
-	Volumetric                              bool           `db:"volumetric"`
-	IsStarch                                bool           `db:"is_starch"`
-	IsProtein                               bool           `db:"is_protein"`
-	IsGrain                                 bool           `db:"is_grain"`
-	IsFruit                                 bool           `db:"is_fruit"`
-	IsSalt                                  bool           `db:"is_salt"`
-	IsFat                                   bool           `db:"is_fat"`
-	IsAcid                                  bool           `db:"is_acid"`
-	IsHeat                                  bool           `db:"is_heat"`
-	ContainsPeanut                          bool           `db:"contains_peanut"`
-	ContainsDairy                           bool           `db:"contains_dairy"`
-	ContainsEgg                             bool           `db:"contains_egg"`
+	CreatedAt                               time.Time
+	ArchivedAt                              sql.NullTime
+	LastUpdatedAt                           sql.NullTime
+	Warning                                 string
+	Description                             string
+	Name                                    string
+	ShoppingSuggestions                     string
+	Slug                                    string
+	StorageInstructions                     string
+	PluralName                              string
+	ID                                      string
+	IconPath                                string
+	MaximumIdealStorageTemperatureInCelsius sql.NullString
+	MinimumIdealStorageTemperatureInCelsius sql.NullString
+	IsLiquid                                sql.NullBool
+	AnimalDerived                           bool
+	ContainsTreeNut                         bool
+	AnimalFlesh                             bool
+	ContainsGluten                          bool
+	ContainsFish                            bool
+	RestrictToPreparations                  bool
+	ContainsSesame                          bool
+	ContainsShellfish                       bool
+	ContainsWheat                           bool
+	ContainsSoy                             bool
+	ContainsAlcohol                         bool
+	Volumetric                              bool
+	IsStarch                                bool
+	IsProtein                               bool
+	IsGrain                                 bool
+	IsFruit                                 bool
+	IsSalt                                  bool
+	IsFat                                   bool
+	IsAcid                                  bool
+	IsHeat                                  bool
+	ContainsPeanut                          bool
+	ContainsDairy                           bool
+	ContainsEgg                             bool
 }
 
 func (q *Queries) SearchValidIngredientsByPreparationAndIngredientName(ctx context.Context, db DBTX, arg *SearchValidIngredientsByPreparationAndIngredientNameParams) ([]*SearchValidIngredientsByPreparationAndIngredientNameRow, error) {
-	rows, err := db.QueryContext(ctx, SearchValidIngredientsByPreparationAndIngredientName, arg.ValidPreparationID, arg.Name)
+	rows, err := db.QueryContext(ctx, searchValidIngredientsByPreparationAndIngredientName, arg.ValidPreparationID, arg.Name)
 	if err != nil {
 		return nil, err
 	}

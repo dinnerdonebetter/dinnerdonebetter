@@ -9,92 +9,92 @@ import (
 	"context"
 )
 
-const UpdateMealLastIndexedAt = `-- name: UpdateMealLastIndexedAt :exec
+const updateMealLastIndexedAt = `-- name: UpdateMealLastIndexedAt :exec
 
 UPDATE meals SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 
 func (q *Queries) UpdateMealLastIndexedAt(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, UpdateMealLastIndexedAt, id)
+	_, err := db.ExecContext(ctx, updateMealLastIndexedAt, id)
 	return err
 }
 
-const UpdateRecipeLastIndexedAt = `-- name: UpdateRecipeLastIndexedAt :exec
+const updateRecipeLastIndexedAt = `-- name: UpdateRecipeLastIndexedAt :exec
 
 UPDATE recipes SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 
 func (q *Queries) UpdateRecipeLastIndexedAt(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, UpdateRecipeLastIndexedAt, id)
+	_, err := db.ExecContext(ctx, updateRecipeLastIndexedAt, id)
 	return err
 }
 
-const UpdateUserLastIndexedAt = `-- name: UpdateUserLastIndexedAt :exec
+const updateUserLastIndexedAt = `-- name: UpdateUserLastIndexedAt :exec
 
 UPDATE users SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 
 func (q *Queries) UpdateUserLastIndexedAt(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, UpdateUserLastIndexedAt, id)
+	_, err := db.ExecContext(ctx, updateUserLastIndexedAt, id)
 	return err
 }
 
-const UpdateValidIngredientLastIndexedAt = `-- name: UpdateValidIngredientLastIndexedAt :exec
+const updateValidIngredientLastIndexedAt = `-- name: UpdateValidIngredientLastIndexedAt :exec
 
 UPDATE valid_ingredients SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 
 func (q *Queries) UpdateValidIngredientLastIndexedAt(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, UpdateValidIngredientLastIndexedAt, id)
+	_, err := db.ExecContext(ctx, updateValidIngredientLastIndexedAt, id)
 	return err
 }
 
-const UpdateValidIngredientStateLastIndexedAt = `-- name: UpdateValidIngredientStateLastIndexedAt :exec
+const updateValidIngredientStateLastIndexedAt = `-- name: UpdateValidIngredientStateLastIndexedAt :exec
 
 UPDATE valid_ingredient_states SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 
 func (q *Queries) UpdateValidIngredientStateLastIndexedAt(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, UpdateValidIngredientStateLastIndexedAt, id)
+	_, err := db.ExecContext(ctx, updateValidIngredientStateLastIndexedAt, id)
 	return err
 }
 
-const UpdateValidInstrumentLastIndexedAt = `-- name: UpdateValidInstrumentLastIndexedAt :exec
+const updateValidInstrumentLastIndexedAt = `-- name: UpdateValidInstrumentLastIndexedAt :exec
 
 UPDATE valid_instruments SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 
 func (q *Queries) UpdateValidInstrumentLastIndexedAt(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, UpdateValidInstrumentLastIndexedAt, id)
+	_, err := db.ExecContext(ctx, updateValidInstrumentLastIndexedAt, id)
 	return err
 }
 
-const UpdateValidMeasurementUnitLastIndexedAt = `-- name: UpdateValidMeasurementUnitLastIndexedAt :exec
+const updateValidMeasurementUnitLastIndexedAt = `-- name: UpdateValidMeasurementUnitLastIndexedAt :exec
 
 UPDATE valid_measurement_units SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 
 func (q *Queries) UpdateValidMeasurementUnitLastIndexedAt(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, UpdateValidMeasurementUnitLastIndexedAt, id)
+	_, err := db.ExecContext(ctx, updateValidMeasurementUnitLastIndexedAt, id)
 	return err
 }
 
-const UpdateValidPreparationLastIndexedAt = `-- name: UpdateValidPreparationLastIndexedAt :exec
+const updateValidPreparationLastIndexedAt = `-- name: UpdateValidPreparationLastIndexedAt :exec
 
 UPDATE valid_preparations SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 
 func (q *Queries) UpdateValidPreparationLastIndexedAt(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, UpdateValidPreparationLastIndexedAt, id)
+	_, err := db.ExecContext(ctx, updateValidPreparationLastIndexedAt, id)
 	return err
 }
 
-const UpdateValidVesselLastIndexedAt = `-- name: UpdateValidVesselLastIndexedAt :exec
+const updateValidVesselLastIndexedAt = `-- name: UpdateValidVesselLastIndexedAt :exec
 
 UPDATE valid_vessels SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 
 func (q *Queries) UpdateValidVesselLastIndexedAt(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, UpdateValidVesselLastIndexedAt, id)
+	_, err := db.ExecContext(ctx, updateValidVesselLastIndexedAt, id)
 	return err
 }

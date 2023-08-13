@@ -9,7 +9,7 @@ import (
 	"context"
 )
 
-const GetOAuth2ClientTokenByCode = `-- name: GetOAuth2ClientTokenByCode :one
+const getOAuth2ClientTokenByCode = `-- name: GetOAuth2ClientTokenByCode :one
 
 SELECT
 	oauth2_client_tokens.id,
@@ -33,7 +33,7 @@ WHERE oauth2_client_tokens.code = $1
 `
 
 func (q *Queries) GetOAuth2ClientTokenByCode(ctx context.Context, db DBTX, code string) (*Oauth2ClientTokens, error) {
-	row := db.QueryRowContext(ctx, GetOAuth2ClientTokenByCode, code)
+	row := db.QueryRowContext(ctx, getOAuth2ClientTokenByCode, code)
 	var i Oauth2ClientTokens
 	err := row.Scan(
 		&i.ID,

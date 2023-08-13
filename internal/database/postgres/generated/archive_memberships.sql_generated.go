@@ -9,7 +9,7 @@ import (
 	"context"
 )
 
-const ArchiveUserMemberships = `-- name: ArchiveUserMemberships :exec
+const archiveUserMemberships = `-- name: ArchiveUserMemberships :exec
 
 UPDATE household_user_memberships SET
 	archived_at = NOW()
@@ -18,6 +18,6 @@ WHERE archived_at IS NULL
 `
 
 func (q *Queries) ArchiveUserMemberships(ctx context.Context, db DBTX, belongsToUser string) error {
-	_, err := db.ExecContext(ctx, ArchiveUserMemberships, belongsToUser)
+	_, err := db.ExecContext(ctx, archiveUserMemberships, belongsToUser)
 	return err
 }

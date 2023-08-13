@@ -10,7 +10,7 @@ import (
 	"database/sql"
 )
 
-const MarkEmailAddressAsVerified = `-- name: MarkEmailAddressAsVerified :exec
+const markEmailAddressAsVerified = `-- name: MarkEmailAddressAsVerified :exec
 
 UPDATE users SET
 	email_address_verified_at = NOW(),
@@ -21,11 +21,11 @@ WHERE email_address_verified_at IS NULL
 `
 
 type MarkEmailAddressAsVerifiedParams struct {
-	ID                            string         `db:"id"`
-	EmailAddressVerificationToken sql.NullString `db:"email_address_verification_token"`
+	ID                            string
+	EmailAddressVerificationToken sql.NullString
 }
 
 func (q *Queries) MarkEmailAddressAsVerified(ctx context.Context, db DBTX, arg *MarkEmailAddressAsVerifiedParams) error {
-	_, err := db.ExecContext(ctx, MarkEmailAddressAsVerified, arg.ID, arg.EmailAddressVerificationToken)
+	_, err := db.ExecContext(ctx, markEmailAddressAsVerified, arg.ID, arg.EmailAddressVerificationToken)
 	return err
 }

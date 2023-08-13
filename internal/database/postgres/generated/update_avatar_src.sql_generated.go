@@ -10,7 +10,7 @@ import (
 	"database/sql"
 )
 
-const UpdateUserAvatarSrc = `-- name: UpdateUserAvatarSrc :exec
+const updateUserAvatarSrc = `-- name: UpdateUserAvatarSrc :exec
 
 UPDATE users SET
 	avatar_src = $1,
@@ -20,11 +20,11 @@ WHERE archived_at IS NULL
 `
 
 type UpdateUserAvatarSrcParams struct {
-	ID        string         `db:"id"`
-	AvatarSrc sql.NullString `db:"avatar_src"`
+	ID        string
+	AvatarSrc sql.NullString
 }
 
 func (q *Queries) UpdateUserAvatarSrc(ctx context.Context, db DBTX, arg *UpdateUserAvatarSrcParams) error {
-	_, err := db.ExecContext(ctx, UpdateUserAvatarSrc, arg.AvatarSrc, arg.ID)
+	_, err := db.ExecContext(ctx, updateUserAvatarSrc, arg.AvatarSrc, arg.ID)
 	return err
 }

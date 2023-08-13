@@ -9,7 +9,7 @@ import (
 	"context"
 )
 
-const MarkTwoFactorSecretAsUnverified = `-- name: MarkTwoFactorSecretAsUnverified :exec
+const markTwoFactorSecretAsUnverified = `-- name: MarkTwoFactorSecretAsUnverified :exec
 
 UPDATE users SET
 	two_factor_secret_verified_at = NULL,
@@ -20,11 +20,11 @@ WHERE archived_at IS NULL
 `
 
 type MarkTwoFactorSecretAsUnverifiedParams struct {
-	TwoFactorSecret string `db:"two_factor_secret"`
-	ID              string `db:"id"`
+	TwoFactorSecret string
+	ID              string
 }
 
 func (q *Queries) MarkTwoFactorSecretAsUnverified(ctx context.Context, db DBTX, arg *MarkTwoFactorSecretAsUnverifiedParams) error {
-	_, err := db.ExecContext(ctx, MarkTwoFactorSecretAsUnverified, arg.TwoFactorSecret, arg.ID)
+	_, err := db.ExecContext(ctx, markTwoFactorSecretAsUnverified, arg.TwoFactorSecret, arg.ID)
 	return err
 }

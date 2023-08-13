@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const GetAllValidMeasurementConversionsFromMeasurementUnit = `-- name: GetAllValidMeasurementConversionsFromMeasurementUnit :many
+const getAllValidMeasurementConversionsFromMeasurementUnit = `-- name: GetAllValidMeasurementConversionsFromMeasurementUnit :many
 
 SELECT
 	valid_measurement_conversions.id,
@@ -95,80 +95,80 @@ WHERE valid_measurement_conversions.archived_at IS NULL
 `
 
 type GetAllValidMeasurementConversionsFromMeasurementUnitRow struct {
-	CreatedAt_4                             time.Time      `db:"created_at_4"`
-	CreatedAt_2                             time.Time      `db:"created_at_2"`
-	CreatedAt                               time.Time      `db:"created_at"`
-	LastUpdatedAt                           sql.NullTime   `db:"last_updated_at"`
-	ArchivedAt                              sql.NullTime   `db:"archived_at"`
-	ArchivedAt_2                            sql.NullTime   `db:"archived_at_2"`
-	LastUpdatedAt_4                         sql.NullTime   `db:"last_updated_at_4"`
-	LastUpdatedAt_2                         sql.NullTime   `db:"last_updated_at_2"`
-	CreatedAt_3                             sql.NullTime   `db:"created_at_3"`
-	ArchivedAt_4                            sql.NullTime   `db:"archived_at_4"`
-	LastUpdatedAt_3                         sql.NullTime   `db:"last_updated_at_3"`
-	ArchivedAt_3                            sql.NullTime   `db:"archived_at_3"`
-	Slug                                    string         `db:"slug"`
-	Name                                    string         `db:"name"`
-	ID_3                                    string         `db:"id_3"`
-	Name_2                                  string         `db:"name_2"`
-	Description_2                           string         `db:"description_2"`
-	Modifier                                string         `db:"modifier"`
-	IconPath_2                              string         `db:"icon_path_2"`
-	ID                                      string         `db:"id"`
-	PluralName                              string         `db:"plural_name"`
-	Notes                                   string         `db:"notes"`
-	Slug_2                                  string         `db:"slug_2"`
-	PluralName_2                            string         `db:"plural_name_2"`
-	ID_2                                    string         `db:"id_2"`
-	Description                             string         `db:"description"`
-	IconPath                                string         `db:"icon_path"`
-	Slug_3                                  sql.NullString `db:"slug_3"`
-	Name_3                                  sql.NullString `db:"name_3"`
-	Description_3                           sql.NullString `db:"description_3"`
-	Warning                                 sql.NullString `db:"warning"`
-	ShoppingSuggestions                     sql.NullString `db:"shopping_suggestions"`
-	ID_4                                    sql.NullString `db:"id_4"`
-	StorageInstructions                     sql.NullString `db:"storage_instructions"`
-	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
-	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
-	PluralName_3                            sql.NullString `db:"plural_name_3"`
-	IconPath_3                              sql.NullString `db:"icon_path_3"`
-	ContainsSesame                          sql.NullBool   `db:"contains_sesame"`
-	ContainsEgg                             sql.NullBool   `db:"contains_egg"`
-	ContainsGluten                          sql.NullBool   `db:"contains_gluten"`
-	AnimalFlesh                             sql.NullBool   `db:"animal_flesh"`
-	Volumetric_3                            sql.NullBool   `db:"volumetric_3"`
-	IsLiquid                                sql.NullBool   `db:"is_liquid"`
-	ContainsShellfish                       sql.NullBool   `db:"contains_shellfish"`
-	AnimalDerived                           sql.NullBool   `db:"animal_derived"`
-	ContainsWheat                           sql.NullBool   `db:"contains_wheat"`
-	RestrictToPreparations                  sql.NullBool   `db:"restrict_to_preparations"`
-	ContainsSoy                             sql.NullBool   `db:"contains_soy"`
-	ContainsTreeNut                         sql.NullBool   `db:"contains_tree_nut"`
-	ContainsPeanut                          sql.NullBool   `db:"contains_peanut"`
-	ContainsDairy                           sql.NullBool   `db:"contains_dairy"`
-	ContainsAlcohol                         sql.NullBool   `db:"contains_alcohol"`
-	ContainsFish                            sql.NullBool   `db:"contains_fish"`
-	IsStarch                                sql.NullBool   `db:"is_starch"`
-	IsProtein                               sql.NullBool   `db:"is_protein"`
-	IsGrain                                 sql.NullBool   `db:"is_grain"`
-	IsFruit                                 sql.NullBool   `db:"is_fruit"`
-	IsSalt                                  sql.NullBool   `db:"is_salt"`
-	IsFat                                   sql.NullBool   `db:"is_fat"`
-	IsAcid                                  sql.NullBool   `db:"is_acid"`
-	IsHeat                                  sql.NullBool   `db:"is_heat"`
-	Volumetric                              sql.NullBool   `db:"volumetric"`
-	Volumetric_2                            sql.NullBool   `db:"volumetric_2"`
-	Universal_2                             bool           `db:"universal_2"`
-	Metric_2                                bool           `db:"metric_2"`
-	Imperial                                bool           `db:"imperial"`
-	Metric                                  bool           `db:"metric"`
-	Universal                               bool           `db:"universal"`
-	Imperial_2                              bool           `db:"imperial_2"`
+	CreatedAt_4                             time.Time
+	CreatedAt_2                             time.Time
+	CreatedAt                               time.Time
+	LastUpdatedAt                           sql.NullTime
+	ArchivedAt                              sql.NullTime
+	ArchivedAt_2                            sql.NullTime
+	LastUpdatedAt_4                         sql.NullTime
+	LastUpdatedAt_2                         sql.NullTime
+	CreatedAt_3                             sql.NullTime
+	ArchivedAt_4                            sql.NullTime
+	LastUpdatedAt_3                         sql.NullTime
+	ArchivedAt_3                            sql.NullTime
+	Slug                                    string
+	Name                                    string
+	ID_3                                    string
+	Name_2                                  string
+	Description_2                           string
+	Modifier                                string
+	IconPath_2                              string
+	ID                                      string
+	PluralName                              string
+	Notes                                   string
+	Slug_2                                  string
+	PluralName_2                            string
+	ID_2                                    string
+	Description                             string
+	IconPath                                string
+	Slug_3                                  sql.NullString
+	Name_3                                  sql.NullString
+	Description_3                           sql.NullString
+	Warning                                 sql.NullString
+	ShoppingSuggestions                     sql.NullString
+	ID_4                                    sql.NullString
+	StorageInstructions                     sql.NullString
+	MaximumIdealStorageTemperatureInCelsius sql.NullString
+	MinimumIdealStorageTemperatureInCelsius sql.NullString
+	PluralName_3                            sql.NullString
+	IconPath_3                              sql.NullString
+	ContainsSesame                          sql.NullBool
+	ContainsEgg                             sql.NullBool
+	ContainsGluten                          sql.NullBool
+	AnimalFlesh                             sql.NullBool
+	Volumetric_3                            sql.NullBool
+	IsLiquid                                sql.NullBool
+	ContainsShellfish                       sql.NullBool
+	AnimalDerived                           sql.NullBool
+	ContainsWheat                           sql.NullBool
+	RestrictToPreparations                  sql.NullBool
+	ContainsSoy                             sql.NullBool
+	ContainsTreeNut                         sql.NullBool
+	ContainsPeanut                          sql.NullBool
+	ContainsDairy                           sql.NullBool
+	ContainsAlcohol                         sql.NullBool
+	ContainsFish                            sql.NullBool
+	IsStarch                                sql.NullBool
+	IsProtein                               sql.NullBool
+	IsGrain                                 sql.NullBool
+	IsFruit                                 sql.NullBool
+	IsSalt                                  sql.NullBool
+	IsFat                                   sql.NullBool
+	IsAcid                                  sql.NullBool
+	IsHeat                                  sql.NullBool
+	Volumetric                              sql.NullBool
+	Volumetric_2                            sql.NullBool
+	Universal_2                             bool
+	Metric_2                                bool
+	Imperial                                bool
+	Metric                                  bool
+	Universal                               bool
+	Imperial_2                              bool
 }
 
 func (q *Queries) GetAllValidMeasurementConversionsFromMeasurementUnit(ctx context.Context, db DBTX, id string) ([]*GetAllValidMeasurementConversionsFromMeasurementUnitRow, error) {
-	rows, err := db.QueryContext(ctx, GetAllValidMeasurementConversionsFromMeasurementUnit, id)
+	rows, err := db.QueryContext(ctx, getAllValidMeasurementConversionsFromMeasurementUnit, id)
 	if err != nil {
 		return nil, err
 	}

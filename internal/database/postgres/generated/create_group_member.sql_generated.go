@@ -9,7 +9,7 @@ import (
 	"context"
 )
 
-const CreateValidIngredientGroupMember = `-- name: CreateValidIngredientGroupMember :exec
+const createValidIngredientGroupMember = `-- name: CreateValidIngredientGroupMember :exec
 
 INSERT INTO valid_ingredient_group_members
 (
@@ -20,12 +20,12 @@ INSERT INTO valid_ingredient_group_members
 `
 
 type CreateValidIngredientGroupMemberParams struct {
-	ID              string `db:"id"`
-	BelongsToGroup  string `db:"belongs_to_group"`
-	ValidIngredient string `db:"valid_ingredient"`
+	ID              string
+	BelongsToGroup  string
+	ValidIngredient string
 }
 
 func (q *Queries) CreateValidIngredientGroupMember(ctx context.Context, db DBTX, arg *CreateValidIngredientGroupMemberParams) error {
-	_, err := db.ExecContext(ctx, CreateValidIngredientGroupMember, arg.ID, arg.BelongsToGroup, arg.ValidIngredient)
+	_, err := db.ExecContext(ctx, createValidIngredientGroupMember, arg.ID, arg.BelongsToGroup, arg.ValidIngredient)
 	return err
 }

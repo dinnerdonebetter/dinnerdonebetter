@@ -9,22 +9,22 @@ import (
 	"context"
 )
 
-const CreateHouseholdUserMembershipForNewUser = `-- name: CreateHouseholdUserMembershipForNewUser :exec
+const createHouseholdUserMembershipForNewUser = `-- name: CreateHouseholdUserMembershipForNewUser :exec
 
 INSERT INTO household_user_memberships (id,belongs_to_user,belongs_to_household,default_household,household_role)
 VALUES ($1,$2,$3,$4,$5)
 `
 
 type CreateHouseholdUserMembershipForNewUserParams struct {
-	ID                 string `db:"id"`
-	BelongsToUser      string `db:"belongs_to_user"`
-	BelongsToHousehold string `db:"belongs_to_household"`
-	HouseholdRole      string `db:"household_role"`
-	DefaultHousehold   bool   `db:"default_household"`
+	ID                 string
+	BelongsToUser      string
+	BelongsToHousehold string
+	HouseholdRole      string
+	DefaultHousehold   bool
 }
 
 func (q *Queries) CreateHouseholdUserMembershipForNewUser(ctx context.Context, db DBTX, arg *CreateHouseholdUserMembershipForNewUserParams) error {
-	_, err := db.ExecContext(ctx, CreateHouseholdUserMembershipForNewUser,
+	_, err := db.ExecContext(ctx, createHouseholdUserMembershipForNewUser,
 		arg.ID,
 		arg.BelongsToUser,
 		arg.BelongsToHousehold,

@@ -39,6 +39,7 @@ require (
 	github.com/kyleconroy/sqlc v1.19.1
 	github.com/launchdarkly/go-sdk-common/v3 v3.0.1
 	github.com/launchdarkly/go-server-sdk/v6 v6.1.0
+	github.com/lib/pq v1.10.9
 	github.com/luna-duclos/instrumentedsql v1.1.3
 	github.com/mailgun/mailgun-go/v4 v4.9.2
 	github.com/mailjet/mailjet-apiv3-go/v4 v4.0.1

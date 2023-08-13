@@ -9,7 +9,7 @@ import (
 	"context"
 )
 
-const GetMealPlanEventsEligibleForVoting = `-- name: GetMealPlanEventsEligibleForVoting :many
+const getMealPlanEventsEligibleForVoting = `-- name: GetMealPlanEventsEligibleForVoting :many
 
 SELECT
   EXISTS (
@@ -29,12 +29,12 @@ SELECT
 `
 
 type GetMealPlanEventsEligibleForVotingParams struct {
-	ID   string `db:"id"`
-	ID_2 string `db:"id_2"`
+	ID   string
+	ID_2 string
 }
 
 func (q *Queries) GetMealPlanEventsEligibleForVoting(ctx context.Context, db DBTX, arg *GetMealPlanEventsEligibleForVotingParams) ([]bool, error) {
-	rows, err := db.QueryContext(ctx, GetMealPlanEventsEligibleForVoting, arg.ID, arg.ID_2)
+	rows, err := db.QueryContext(ctx, getMealPlanEventsEligibleForVoting, arg.ID, arg.ID_2)
 	if err != nil {
 		return nil, err
 	}

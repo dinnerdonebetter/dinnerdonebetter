@@ -10,7 +10,7 @@ import (
 	"database/sql"
 )
 
-const GetFinalizedMealPlansForPlanning = `-- name: GetFinalizedMealPlansForPlanning :many
+const getFinalizedMealPlansForPlanning = `-- name: GetFinalizedMealPlansForPlanning :many
 
 SELECT
   meal_plans.id as meal_plan_id,
@@ -40,15 +40,15 @@ ORDER BY
 `
 
 type GetFinalizedMealPlansForPlanningRow struct {
-	MealPlanID       sql.NullString `db:"meal_plan_id"`
-	MealPlanOptionID sql.NullString `db:"meal_plan_option_id"`
-	MealID           sql.NullString `db:"meal_id"`
-	MealPlanEventID  sql.NullString `db:"meal_plan_event_id"`
-	RecipeID         sql.NullString `db:"recipe_id"`
+	MealPlanID       sql.NullString
+	MealPlanOptionID sql.NullString
+	MealID           sql.NullString
+	MealPlanEventID  sql.NullString
+	RecipeID         sql.NullString
 }
 
 func (q *Queries) GetFinalizedMealPlansForPlanning(ctx context.Context, db DBTX) ([]*GetFinalizedMealPlansForPlanningRow, error) {
-	rows, err := db.QueryContext(ctx, GetFinalizedMealPlansForPlanning)
+	rows, err := db.QueryContext(ctx, getFinalizedMealPlansForPlanning)
 	if err != nil {
 		return nil, err
 	}

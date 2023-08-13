@@ -10,7 +10,7 @@ import (
 	"database/sql"
 )
 
-const GetEmailVerificationTokenByUserID = `-- name: GetEmailVerificationTokenByUserID :one
+const getEmailVerificationTokenByUserID = `-- name: GetEmailVerificationTokenByUserID :one
 
 SELECT
 	users.email_address_verification_token
@@ -21,7 +21,7 @@ WHERE users.archived_at IS NULL
 `
 
 func (q *Queries) GetEmailVerificationTokenByUserID(ctx context.Context, db DBTX, id string) (sql.NullString, error) {
-	row := db.QueryRowContext(ctx, GetEmailVerificationTokenByUserID, id)
+	row := db.QueryRowContext(ctx, getEmailVerificationTokenByUserID, id)
 	var email_address_verification_token sql.NullString
 	err := row.Scan(&email_address_verification_token)
 	return email_address_verification_token, err

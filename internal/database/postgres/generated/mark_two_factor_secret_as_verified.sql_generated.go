@@ -9,7 +9,7 @@ import (
 	"context"
 )
 
-const MarkTwoFactorSecretAsVerified = `-- name: MarkTwoFactorSecretAsVerified :exec
+const markTwoFactorSecretAsVerified = `-- name: MarkTwoFactorSecretAsVerified :exec
 
 UPDATE users SET
 	two_factor_secret_verified_at = NOW(),
@@ -19,6 +19,6 @@ WHERE archived_at IS NULL
 `
 
 func (q *Queries) MarkTwoFactorSecretAsVerified(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, MarkTwoFactorSecretAsVerified, id)
+	_, err := db.ExecContext(ctx, markTwoFactorSecretAsVerified, id)
 	return err
 }

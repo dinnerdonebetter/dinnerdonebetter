@@ -9,7 +9,7 @@ import (
 	"context"
 )
 
-const AcceptTermsOfServiceForUser = `-- name: AcceptTermsOfServiceForUser :exec
+const acceptTermsOfServiceForUser = `-- name: AcceptTermsOfServiceForUser :exec
 
 UPDATE users SET
 	last_accepted_terms_of_service = NOW()
@@ -18,6 +18,6 @@ WHERE archived_at IS NULL
 `
 
 func (q *Queries) AcceptTermsOfServiceForUser(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, AcceptTermsOfServiceForUser, id)
+	_, err := db.ExecContext(ctx, acceptTermsOfServiceForUser, id)
 	return err
 }

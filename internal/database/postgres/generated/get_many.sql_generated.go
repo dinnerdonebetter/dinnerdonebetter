@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const GetHouseholdInstrumentOwnerships = `-- name: GetHouseholdInstrumentOwnerships :many
+const getHouseholdInstrumentOwnerships = `-- name: GetHouseholdInstrumentOwnerships :many
 
 SELECT
   household_instrument_ownerships.id,
@@ -86,41 +86,41 @@ LIMIT $7
 `
 
 type GetHouseholdInstrumentOwnershipsParams struct {
-	BelongsToHousehold string       `db:"belongs_to_household"`
-	CreatedAt          time.Time    `db:"created_at"`
-	CreatedAt_2        time.Time    `db:"created_at_2"`
-	LastUpdatedAt      sql.NullTime `db:"last_updated_at"`
-	LastUpdatedAt_2    sql.NullTime `db:"last_updated_at_2"`
-	Offset             int32        `db:"offset"`
-	Limit              int32        `db:"limit"`
+	BelongsToHousehold string
+	CreatedAt          time.Time
+	CreatedAt_2        time.Time
+	LastUpdatedAt      sql.NullTime
+	LastUpdatedAt_2    sql.NullTime
+	Offset             int32
+	Limit              int32
 }
 
 type GetHouseholdInstrumentOwnershipsRow struct {
-	CreatedAt                      time.Time    `db:"created_at"`
-	CreatedAt_2                    time.Time    `db:"created_at_2"`
-	ArchivedAt_2                   sql.NullTime `db:"archived_at_2"`
-	LastUpdatedAt_2                sql.NullTime `db:"last_updated_at_2"`
-	ArchivedAt                     sql.NullTime `db:"archived_at"`
-	LastUpdatedAt                  sql.NullTime `db:"last_updated_at"`
-	BelongsToHousehold             string       `db:"belongs_to_household"`
-	ID_2                           string       `db:"id_2"`
-	Notes                          string       `db:"notes"`
-	IconPath                       string       `db:"icon_path"`
-	ID                             string       `db:"id"`
-	Slug                           string       `db:"slug"`
-	Description                    string       `db:"description"`
-	PluralName                     string       `db:"plural_name"`
-	Name                           string       `db:"name"`
-	FilteredCount                  int64        `db:"filtered_count"`
-	TotalCount                     int64        `db:"total_count"`
-	Quantity                       int32        `db:"quantity"`
-	IncludeInGeneratedInstructions bool         `db:"include_in_generated_instructions"`
-	DisplayInSummaryLists          bool         `db:"display_in_summary_lists"`
-	UsableForStorage               bool         `db:"usable_for_storage"`
+	CreatedAt                      time.Time
+	CreatedAt_2                    time.Time
+	ArchivedAt_2                   sql.NullTime
+	LastUpdatedAt_2                sql.NullTime
+	ArchivedAt                     sql.NullTime
+	LastUpdatedAt                  sql.NullTime
+	BelongsToHousehold             string
+	ID_2                           string
+	Notes                          string
+	IconPath                       string
+	ID                             string
+	Slug                           string
+	Description                    string
+	PluralName                     string
+	Name                           string
+	FilteredCount                  int64
+	TotalCount                     int64
+	Quantity                       int32
+	IncludeInGeneratedInstructions bool
+	DisplayInSummaryLists          bool
+	UsableForStorage               bool
 }
 
 func (q *Queries) GetHouseholdInstrumentOwnerships(ctx context.Context, db DBTX, arg *GetHouseholdInstrumentOwnershipsParams) ([]*GetHouseholdInstrumentOwnershipsRow, error) {
-	rows, err := db.QueryContext(ctx, GetHouseholdInstrumentOwnerships,
+	rows, err := db.QueryContext(ctx, getHouseholdInstrumentOwnerships,
 		arg.BelongsToHousehold,
 		arg.CreatedAt,
 		arg.CreatedAt_2,
@@ -172,7 +172,7 @@ func (q *Queries) GetHouseholdInstrumentOwnerships(ctx context.Context, db DBTX,
 	return items, nil
 }
 
-const GetRecipeRatings = `-- name: GetRecipeRatings :many
+const getRecipeRatings = `-- name: GetRecipeRatings :many
 
 SELECT
 	recipe_ratings.id,
@@ -223,32 +223,32 @@ ORDER BY
 `
 
 type GetRecipeRatingsParams struct {
-	CreatedAt       time.Time    `db:"created_at"`
-	CreatedAt_2     time.Time    `db:"created_at_2"`
-	LastUpdatedAt   sql.NullTime `db:"last_updated_at"`
-	LastUpdatedAt_2 sql.NullTime `db:"last_updated_at_2"`
-	Limit           int32        `db:"limit"`
+	CreatedAt       time.Time
+	CreatedAt_2     time.Time
+	LastUpdatedAt   sql.NullTime
+	LastUpdatedAt_2 sql.NullTime
+	Limit           int32
 }
 
 type GetRecipeRatingsRow struct {
-	CreatedAt     time.Time      `db:"created_at"`
-	ArchivedAt    sql.NullTime   `db:"archived_at"`
-	LastUpdatedAt sql.NullTime   `db:"last_updated_at"`
-	Notes         string         `db:"notes"`
-	RecipeID      string         `db:"recipe_id"`
-	ID            string         `db:"id"`
-	ByUser        string         `db:"by_user"`
-	Difficulty    sql.NullString `db:"difficulty"`
-	Overall       sql.NullString `db:"overall"`
-	Instructions  sql.NullString `db:"instructions"`
-	Cleanup       sql.NullString `db:"cleanup"`
-	Taste         sql.NullString `db:"taste"`
-	FilteredCount int64          `db:"filtered_count"`
-	TotalCount    int64          `db:"total_count"`
+	CreatedAt     time.Time
+	ArchivedAt    sql.NullTime
+	LastUpdatedAt sql.NullTime
+	Notes         string
+	RecipeID      string
+	ID            string
+	ByUser        string
+	Difficulty    sql.NullString
+	Overall       sql.NullString
+	Instructions  sql.NullString
+	Cleanup       sql.NullString
+	Taste         sql.NullString
+	FilteredCount int64
+	TotalCount    int64
 }
 
 func (q *Queries) GetRecipeRatings(ctx context.Context, db DBTX, arg *GetRecipeRatingsParams) ([]*GetRecipeRatingsRow, error) {
-	rows, err := db.QueryContext(ctx, GetRecipeRatings,
+	rows, err := db.QueryContext(ctx, getRecipeRatings,
 		arg.CreatedAt,
 		arg.CreatedAt_2,
 		arg.LastUpdatedAt,
@@ -291,7 +291,7 @@ func (q *Queries) GetRecipeRatings(ctx context.Context, db DBTX, arg *GetRecipeR
 	return items, nil
 }
 
-const GetRecipeStepCompletionConditions = `-- name: GetRecipeStepCompletionConditions :many
+const getRecipeStepCompletionConditions = `-- name: GetRecipeStepCompletionConditions :many
 
 SELECT
 	recipe_step_completion_condition_ingredients.id,
@@ -356,41 +356,41 @@ ORDER BY
 `
 
 type GetRecipeStepCompletionConditionsParams struct {
-	CreatedAt       time.Time    `db:"created_at"`
-	CreatedAt_2     time.Time    `db:"created_at_2"`
-	LastUpdatedAt   sql.NullTime `db:"last_updated_at"`
-	LastUpdatedAt_2 sql.NullTime `db:"last_updated_at_2"`
-	Limit           int32        `db:"limit"`
-	Offset          int32        `db:"offset"`
+	CreatedAt       time.Time
+	CreatedAt_2     time.Time
+	LastUpdatedAt   sql.NullTime
+	LastUpdatedAt_2 sql.NullTime
+	Limit           int32
+	Offset          int32
 }
 
 type GetRecipeStepCompletionConditionsRow struct {
-	CreatedAt                              time.Time               `db:"created_at"`
-	CreatedAt_2                            time.Time               `db:"created_at_2"`
-	ArchivedAt_2                           sql.NullTime            `db:"archived_at_2"`
-	LastUpdatedAt_2                        sql.NullTime            `db:"last_updated_at_2"`
-	ArchivedAt                             sql.NullTime            `db:"archived_at"`
-	LastUpdatedAt                          sql.NullTime            `db:"last_updated_at"`
-	PastTense                              string                  `db:"past_tense"`
-	ID_3                                   string                  `db:"id_3"`
-	IconPath                               string                  `db:"icon_path"`
-	Slug                                   string                  `db:"slug"`
-	ID                                     string                  `db:"id"`
-	AttributeType                          IngredientAttributeType `db:"attribute_type"`
-	Name                                   string                  `db:"name"`
-	Description                            string                  `db:"description"`
-	BelongsToRecipeStep                    string                  `db:"belongs_to_recipe_step"`
-	BelongsToRecipeStepCompletionCondition string                  `db:"belongs_to_recipe_step_completion_condition"`
-	Notes                                  string                  `db:"notes"`
-	ID_2                                   string                  `db:"id_2"`
-	RecipeStepIngredient                   string                  `db:"recipe_step_ingredient"`
-	FilteredCount                          int64                   `db:"filtered_count"`
-	TotalCount                             int64                   `db:"total_count"`
-	Optional                               bool                    `db:"optional"`
+	CreatedAt                              time.Time
+	CreatedAt_2                            time.Time
+	ArchivedAt_2                           sql.NullTime
+	LastUpdatedAt_2                        sql.NullTime
+	ArchivedAt                             sql.NullTime
+	LastUpdatedAt                          sql.NullTime
+	PastTense                              string
+	ID_3                                   string
+	IconPath                               string
+	Slug                                   string
+	ID                                     string
+	AttributeType                          IngredientAttributeType
+	Name                                   string
+	Description                            string
+	BelongsToRecipeStep                    string
+	BelongsToRecipeStepCompletionCondition string
+	Notes                                  string
+	ID_2                                   string
+	RecipeStepIngredient                   string
+	FilteredCount                          int64
+	TotalCount                             int64
+	Optional                               bool
 }
 
 func (q *Queries) GetRecipeStepCompletionConditions(ctx context.Context, db DBTX, arg *GetRecipeStepCompletionConditionsParams) ([]*GetRecipeStepCompletionConditionsRow, error) {
-	rows, err := db.QueryContext(ctx, GetRecipeStepCompletionConditions,
+	rows, err := db.QueryContext(ctx, getRecipeStepCompletionConditions,
 		arg.CreatedAt,
 		arg.CreatedAt_2,
 		arg.LastUpdatedAt,
@@ -442,7 +442,7 @@ func (q *Queries) GetRecipeStepCompletionConditions(ctx context.Context, db DBTX
 	return items, nil
 }
 
-const GetUsers = `-- name: GetUsers :many
+const getUsers = `-- name: GetUsers :many
 
 SELECT
 	users.id,
@@ -511,42 +511,42 @@ LIMIT $6
 `
 
 type GetUsersParams struct {
-	CreatedBefore sql.NullTime  `db:"created_before"`
-	CreatedAfter  sql.NullTime  `db:"created_after"`
-	UpdatedBefore sql.NullTime  `db:"updated_before"`
-	UpdatedAfter  sql.NullTime  `db:"updated_after"`
-	QueryOffset   sql.NullInt32 `db:"query_offset"`
-	QueryLimit    sql.NullInt32 `db:"query_limit"`
+	CreatedBefore sql.NullTime
+	CreatedAfter  sql.NullTime
+	UpdatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
 }
 
 type GetUsersRow struct {
-	CreatedAt                    time.Time      `db:"created_at"`
-	Birthday                     sql.NullTime   `db:"birthday"`
-	PasswordLastChangedAt        sql.NullTime   `db:"password_last_changed_at"`
-	TwoFactorSecretVerifiedAt    sql.NullTime   `db:"two_factor_secret_verified_at"`
-	ArchivedAt                   sql.NullTime   `db:"archived_at"`
-	EmailAddressVerifiedAt       sql.NullTime   `db:"email_address_verified_at"`
-	LastUpdatedAt                sql.NullTime   `db:"last_updated_at"`
-	LastAcceptedPrivacyPolicy    sql.NullTime   `db:"last_accepted_privacy_policy"`
-	LastAcceptedTermsOfService   sql.NullTime   `db:"last_accepted_terms_of_service"`
-	HashedPassword               string         `db:"hashed_password"`
-	TwoFactorSecret              string         `db:"two_factor_secret"`
-	ServiceRole                  string         `db:"service_role"`
-	Username                     string         `db:"username"`
-	UserAccountStatus            string         `db:"user_account_status"`
-	UserAccountStatusExplanation string         `db:"user_account_status_explanation"`
-	ID                           string         `db:"id"`
-	EmailAddress                 string         `db:"email_address"`
-	LastName                     string         `db:"last_name"`
-	FirstName                    string         `db:"first_name"`
-	AvatarSrc                    sql.NullString `db:"avatar_src"`
-	FilteredCount                int64          `db:"filtered_count"`
-	TotalCount                   int64          `db:"total_count"`
-	RequiresPasswordChange       bool           `db:"requires_password_change"`
+	CreatedAt                    time.Time
+	Birthday                     sql.NullTime
+	PasswordLastChangedAt        sql.NullTime
+	TwoFactorSecretVerifiedAt    sql.NullTime
+	ArchivedAt                   sql.NullTime
+	EmailAddressVerifiedAt       sql.NullTime
+	LastUpdatedAt                sql.NullTime
+	LastAcceptedPrivacyPolicy    sql.NullTime
+	LastAcceptedTermsOfService   sql.NullTime
+	HashedPassword               string
+	TwoFactorSecret              string
+	ServiceRole                  string
+	Username                     string
+	UserAccountStatus            string
+	UserAccountStatusExplanation string
+	ID                           string
+	EmailAddress                 string
+	LastName                     string
+	FirstName                    string
+	AvatarSrc                    sql.NullString
+	FilteredCount                int64
+	TotalCount                   int64
+	RequiresPasswordChange       bool
 }
 
 func (q *Queries) GetUsers(ctx context.Context, db DBTX, arg *GetUsersParams) ([]*GetUsersRow, error) {
-	rows, err := db.QueryContext(ctx, GetUsers,
+	rows, err := db.QueryContext(ctx, getUsers,
 		arg.CreatedBefore,
 		arg.CreatedAfter,
 		arg.UpdatedBefore,
@@ -599,7 +599,7 @@ func (q *Queries) GetUsers(ctx context.Context, db DBTX, arg *GetUsersParams) ([
 	return items, nil
 }
 
-const GetValidIngredientGroups = `-- name: GetValidIngredientGroups :many
+const getValidIngredientGroups = `-- name: GetValidIngredientGroups :many
 
 SELECT
     valid_ingredient_groups.id,
@@ -698,69 +698,69 @@ WHERE
 `
 
 type GetValidIngredientGroupsParams struct {
-	CreatedAt       time.Time    `db:"created_at"`
-	CreatedAt_2     time.Time    `db:"created_at_2"`
-	LastUpdatedAt   sql.NullTime `db:"last_updated_at"`
-	LastUpdatedAt_2 sql.NullTime `db:"last_updated_at_2"`
-	Offset          int32        `db:"offset"`
+	CreatedAt       time.Time
+	CreatedAt_2     time.Time
+	LastUpdatedAt   sql.NullTime
+	LastUpdatedAt_2 sql.NullTime
+	Offset          int32
 }
 
 type GetValidIngredientGroupsRow struct {
-	CreatedAt_2                             time.Time      `db:"created_at_2"`
-	CreatedAt                               time.Time      `db:"created_at"`
-	CreatedAt_3                             time.Time      `db:"created_at_3"`
-	ArchivedAt_3                            sql.NullTime   `db:"archived_at_3"`
-	LastUpdatedAt_2                         sql.NullTime   `db:"last_updated_at_2"`
-	ArchivedAt_2                            sql.NullTime   `db:"archived_at_2"`
-	LastUpdatedAt                           sql.NullTime   `db:"last_updated_at"`
-	ArchivedAt                              sql.NullTime   `db:"archived_at"`
-	Slug_2                                  string         `db:"slug_2"`
-	PluralName                              string         `db:"plural_name"`
-	Name_2                                  string         `db:"name_2"`
-	Description_2                           string         `db:"description_2"`
-	Warning                                 string         `db:"warning"`
-	IconPath                                string         `db:"icon_path"`
-	ID                                      string         `db:"id"`
-	BelongsToGroup                          string         `db:"belongs_to_group"`
-	ID_2                                    string         `db:"id_2"`
-	Slug                                    string         `db:"slug"`
-	Description                             string         `db:"description"`
-	Name                                    string         `db:"name"`
-	ShoppingSuggestions                     string         `db:"shopping_suggestions"`
-	ID_3                                    string         `db:"id_3"`
-	StorageInstructions                     string         `db:"storage_instructions"`
-	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
-	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
-	FilteredCount                           int64          `db:"filtered_count"`
-	TotalCount                              int64          `db:"total_count"`
-	IsLiquid                                sql.NullBool   `db:"is_liquid"`
-	AnimalFlesh                             bool           `db:"animal_flesh"`
-	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
-	AnimalDerived                           bool           `db:"animal_derived"`
-	Volumetric                              bool           `db:"volumetric"`
-	ContainsGluten                          bool           `db:"contains_gluten"`
-	ContainsFish                            bool           `db:"contains_fish"`
-	ContainsAlcohol                         bool           `db:"contains_alcohol"`
-	ContainsSesame                          bool           `db:"contains_sesame"`
-	IsStarch                                bool           `db:"is_starch"`
-	IsProtein                               bool           `db:"is_protein"`
-	IsGrain                                 bool           `db:"is_grain"`
-	IsFruit                                 bool           `db:"is_fruit"`
-	IsSalt                                  bool           `db:"is_salt"`
-	IsFat                                   bool           `db:"is_fat"`
-	IsAcid                                  bool           `db:"is_acid"`
-	IsHeat                                  bool           `db:"is_heat"`
-	ContainsShellfish                       bool           `db:"contains_shellfish"`
-	ContainsWheat                           bool           `db:"contains_wheat"`
-	ContainsSoy                             bool           `db:"contains_soy"`
-	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
-	ContainsPeanut                          bool           `db:"contains_peanut"`
-	ContainsDairy                           bool           `db:"contains_dairy"`
-	ContainsEgg                             bool           `db:"contains_egg"`
+	CreatedAt_2                             time.Time
+	CreatedAt                               time.Time
+	CreatedAt_3                             time.Time
+	ArchivedAt_3                            sql.NullTime
+	LastUpdatedAt_2                         sql.NullTime
+	ArchivedAt_2                            sql.NullTime
+	LastUpdatedAt                           sql.NullTime
+	ArchivedAt                              sql.NullTime
+	Slug_2                                  string
+	PluralName                              string
+	Name_2                                  string
+	Description_2                           string
+	Warning                                 string
+	IconPath                                string
+	ID                                      string
+	BelongsToGroup                          string
+	ID_2                                    string
+	Slug                                    string
+	Description                             string
+	Name                                    string
+	ShoppingSuggestions                     string
+	ID_3                                    string
+	StorageInstructions                     string
+	MaximumIdealStorageTemperatureInCelsius sql.NullString
+	MinimumIdealStorageTemperatureInCelsius sql.NullString
+	FilteredCount                           int64
+	TotalCount                              int64
+	IsLiquid                                sql.NullBool
+	AnimalFlesh                             bool
+	RestrictToPreparations                  bool
+	AnimalDerived                           bool
+	Volumetric                              bool
+	ContainsGluten                          bool
+	ContainsFish                            bool
+	ContainsAlcohol                         bool
+	ContainsSesame                          bool
+	IsStarch                                bool
+	IsProtein                               bool
+	IsGrain                                 bool
+	IsFruit                                 bool
+	IsSalt                                  bool
+	IsFat                                   bool
+	IsAcid                                  bool
+	IsHeat                                  bool
+	ContainsShellfish                       bool
+	ContainsWheat                           bool
+	ContainsSoy                             bool
+	ContainsTreeNut                         bool
+	ContainsPeanut                          bool
+	ContainsDairy                           bool
+	ContainsEgg                             bool
 }
 
 func (q *Queries) GetValidIngredientGroups(ctx context.Context, db DBTX, arg *GetValidIngredientGroupsParams) ([]*GetValidIngredientGroupsRow, error) {
-	rows, err := db.QueryContext(ctx, GetValidIngredientGroups,
+	rows, err := db.QueryContext(ctx, getValidIngredientGroups,
 		arg.Offset,
 		arg.CreatedAt,
 		arg.CreatedAt_2,
@@ -840,7 +840,7 @@ func (q *Queries) GetValidIngredientGroups(ctx context.Context, db DBTX, arg *Ge
 	return items, nil
 }
 
-const GetValidIngredients = `-- name: GetValidIngredients :many
+const getValidIngredients = `-- name: GetValidIngredients :many
 
 SELECT
   valid_ingredients.id,
@@ -910,50 +910,50 @@ LIMIT
 `
 
 type GetValidIngredientsRow struct {
-	CreatedAt                               time.Time      `db:"created_at"`
-	ArchivedAt                              sql.NullTime   `db:"archived_at"`
-	LastUpdatedAt                           sql.NullTime   `db:"last_updated_at"`
-	IconPath                                string         `db:"icon_path"`
-	Name                                    string         `db:"name"`
-	Description                             string         `db:"description"`
-	Warning                                 string         `db:"warning"`
-	PluralName                              string         `db:"plural_name"`
-	ID                                      string         `db:"id"`
-	ShoppingSuggestions                     string         `db:"shopping_suggestions"`
-	Slug                                    string         `db:"slug"`
-	StorageInstructions                     string         `db:"storage_instructions"`
-	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
-	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
-	FilteredCount                           int64          `db:"filtered_count"`
-	TotalCount                              int64          `db:"total_count"`
-	IsLiquid                                sql.NullBool   `db:"is_liquid"`
-	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
-	IsProtein                               bool           `db:"is_protein"`
-	Volumetric                              bool           `db:"volumetric"`
-	AnimalFlesh                             bool           `db:"animal_flesh"`
-	ContainsGluten                          bool           `db:"contains_gluten"`
-	ContainsFish                            bool           `db:"contains_fish"`
-	ContainsSesame                          bool           `db:"contains_sesame"`
-	ContainsShellfish                       bool           `db:"contains_shellfish"`
-	ContainsAlcohol                         bool           `db:"contains_alcohol"`
-	ContainsWheat                           bool           `db:"contains_wheat"`
-	IsStarch                                bool           `db:"is_starch"`
-	AnimalDerived                           bool           `db:"animal_derived"`
-	IsGrain                                 bool           `db:"is_grain"`
-	IsFruit                                 bool           `db:"is_fruit"`
-	IsSalt                                  bool           `db:"is_salt"`
-	IsFat                                   bool           `db:"is_fat"`
-	IsAcid                                  bool           `db:"is_acid"`
-	IsHeat                                  bool           `db:"is_heat"`
-	ContainsSoy                             bool           `db:"contains_soy"`
-	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
-	ContainsPeanut                          bool           `db:"contains_peanut"`
-	ContainsDairy                           bool           `db:"contains_dairy"`
-	ContainsEgg                             bool           `db:"contains_egg"`
+	CreatedAt                               time.Time
+	ArchivedAt                              sql.NullTime
+	LastUpdatedAt                           sql.NullTime
+	IconPath                                string
+	Name                                    string
+	Description                             string
+	Warning                                 string
+	PluralName                              string
+	ID                                      string
+	ShoppingSuggestions                     string
+	Slug                                    string
+	StorageInstructions                     string
+	MaximumIdealStorageTemperatureInCelsius sql.NullString
+	MinimumIdealStorageTemperatureInCelsius sql.NullString
+	FilteredCount                           int64
+	TotalCount                              int64
+	IsLiquid                                sql.NullBool
+	RestrictToPreparations                  bool
+	IsProtein                               bool
+	Volumetric                              bool
+	AnimalFlesh                             bool
+	ContainsGluten                          bool
+	ContainsFish                            bool
+	ContainsSesame                          bool
+	ContainsShellfish                       bool
+	ContainsAlcohol                         bool
+	ContainsWheat                           bool
+	IsStarch                                bool
+	AnimalDerived                           bool
+	IsGrain                                 bool
+	IsFruit                                 bool
+	IsSalt                                  bool
+	IsFat                                   bool
+	IsAcid                                  bool
+	IsHeat                                  bool
+	ContainsSoy                             bool
+	ContainsTreeNut                         bool
+	ContainsPeanut                          bool
+	ContainsDairy                           bool
+	ContainsEgg                             bool
 }
 
 func (q *Queries) GetValidIngredients(ctx context.Context, db DBTX) ([]*GetValidIngredientsRow, error) {
-	rows, err := db.QueryContext(ctx, GetValidIngredients)
+	rows, err := db.QueryContext(ctx, getValidIngredients)
 	if err != nil {
 		return nil, err
 	}
@@ -1016,7 +1016,7 @@ func (q *Queries) GetValidIngredients(ctx context.Context, db DBTX) ([]*GetValid
 	return items, nil
 }
 
-const GetValidInstruments = `-- name: GetValidInstruments :many
+const getValidInstruments = `-- name: GetValidInstruments :many
 
 SELECT
 	valid_instruments.id,
@@ -1063,28 +1063,28 @@ ORDER BY
 `
 
 type GetValidInstrumentsParams struct {
-	CreatedAt       time.Time    `db:"created_at"`
-	CreatedAt_2     time.Time    `db:"created_at_2"`
-	LastUpdatedAt   sql.NullTime `db:"last_updated_at"`
-	LastUpdatedAt_2 sql.NullTime `db:"last_updated_at_2"`
-	Limit           int32        `db:"limit"`
+	CreatedAt       time.Time
+	CreatedAt_2     time.Time
+	LastUpdatedAt   sql.NullTime
+	LastUpdatedAt_2 sql.NullTime
+	Limit           int32
 }
 
 type GetValidInstrumentsRow struct {
-	ID            string       `db:"id"`
-	Name          string       `db:"name"`
-	PluralName    string       `db:"plural_name"`
-	Description   string       `db:"description"`
-	IconPath      string       `db:"icon_path"`
-	CreatedAt     time.Time    `db:"created_at"`
-	LastUpdatedAt sql.NullTime `db:"last_updated_at"`
-	ArchivedAt    sql.NullTime `db:"archived_at"`
-	FilteredCount int64        `db:"filtered_count"`
-	TotalCount    int64        `db:"total_count"`
+	ID            string
+	Name          string
+	PluralName    string
+	Description   string
+	IconPath      string
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
+	FilteredCount int64
+	TotalCount    int64
 }
 
 func (q *Queries) GetValidInstruments(ctx context.Context, db DBTX, arg *GetValidInstrumentsParams) ([]*GetValidInstrumentsRow, error) {
-	rows, err := db.QueryContext(ctx, GetValidInstruments,
+	rows, err := db.QueryContext(ctx, getValidInstruments,
 		arg.CreatedAt,
 		arg.CreatedAt_2,
 		arg.LastUpdatedAt,
@@ -1123,7 +1123,7 @@ func (q *Queries) GetValidInstruments(ctx context.Context, db DBTX, arg *GetVali
 	return items, nil
 }
 
-const GetValidVessels = `-- name: GetValidVessels :many
+const getValidVessels = `-- name: GetValidVessels :many
 
 SELECT
   valid_vessels.id,
@@ -1210,51 +1210,51 @@ LIMIT
 `
 
 type GetValidVesselsParams struct {
-	CreatedAt       time.Time    `db:"created_at"`
-	CreatedAt_2     time.Time    `db:"created_at_2"`
-	LastUpdatedAt   sql.NullTime `db:"last_updated_at"`
-	LastUpdatedAt_2 sql.NullTime `db:"last_updated_at_2"`
-	Offset          int32        `db:"offset"`
-	Limit           int32        `db:"limit"`
+	CreatedAt       time.Time
+	CreatedAt_2     time.Time
+	LastUpdatedAt   sql.NullTime
+	LastUpdatedAt_2 sql.NullTime
+	Offset          int32
+	Limit           int32
 }
 
 type GetValidVesselsRow struct {
-	CreatedAt_2                    time.Time      `db:"created_at_2"`
-	LastUpdatedAt_2                sql.NullTime   `db:"last_updated_at_2"`
-	CreatedAt                      sql.NullTime   `db:"created_at"`
-	ArchivedAt_2                   sql.NullTime   `db:"archived_at_2"`
-	LastUpdatedAt                  sql.NullTime   `db:"last_updated_at"`
-	ArchivedAt                     sql.NullTime   `db:"archived_at"`
-	Slug                           string         `db:"slug"`
-	IconPath                       string         `db:"icon_path"`
-	Description                    string         `db:"description"`
-	Capacity                       string         `db:"capacity"`
-	PluralName                     string         `db:"plural_name"`
-	Shape                          VesselShape    `db:"shape"`
-	ID                             string         `db:"id"`
-	Name                           string         `db:"name"`
-	Description_2                  sql.NullString `db:"description_2"`
-	IconPath_2                     sql.NullString `db:"icon_path_2"`
-	HeightInMillimeters            sql.NullString `db:"height_in_millimeters"`
-	Name_2                         sql.NullString `db:"name_2"`
-	Slug_2                         sql.NullString `db:"slug_2"`
-	PluralName_2                   sql.NullString `db:"plural_name_2"`
-	ID_2                           sql.NullString `db:"id_2"`
-	WidthInMillimeters             sql.NullString `db:"width_in_millimeters"`
-	LengthInMillimeters            sql.NullString `db:"length_in_millimeters"`
-	FilteredCount                  int64          `db:"filtered_count"`
-	TotalCount                     int64          `db:"total_count"`
-	Metric                         sql.NullBool   `db:"metric"`
-	Imperial                       sql.NullBool   `db:"imperial"`
-	Universal                      sql.NullBool   `db:"universal"`
-	Volumetric                     sql.NullBool   `db:"volumetric"`
-	IncludeInGeneratedInstructions bool           `db:"include_in_generated_instructions"`
-	DisplayInSummaryLists          bool           `db:"display_in_summary_lists"`
-	UsableForStorage               bool           `db:"usable_for_storage"`
+	CreatedAt_2                    time.Time
+	LastUpdatedAt_2                sql.NullTime
+	CreatedAt                      sql.NullTime
+	ArchivedAt_2                   sql.NullTime
+	LastUpdatedAt                  sql.NullTime
+	ArchivedAt                     sql.NullTime
+	Slug                           string
+	IconPath                       string
+	Description                    string
+	Capacity                       string
+	PluralName                     string
+	Shape                          VesselShape
+	ID                             string
+	Name                           string
+	Description_2                  sql.NullString
+	IconPath_2                     sql.NullString
+	HeightInMillimeters            sql.NullString
+	Name_2                         sql.NullString
+	Slug_2                         sql.NullString
+	PluralName_2                   sql.NullString
+	ID_2                           sql.NullString
+	WidthInMillimeters             sql.NullString
+	LengthInMillimeters            sql.NullString
+	FilteredCount                  int64
+	TotalCount                     int64
+	Metric                         sql.NullBool
+	Imperial                       sql.NullBool
+	Universal                      sql.NullBool
+	Volumetric                     sql.NullBool
+	IncludeInGeneratedInstructions bool
+	DisplayInSummaryLists          bool
+	UsableForStorage               bool
 }
 
 func (q *Queries) GetValidVessels(ctx context.Context, db DBTX, arg *GetValidVesselsParams) ([]*GetValidVesselsRow, error) {
-	rows, err := db.QueryContext(ctx, GetValidVessels,
+	rows, err := db.QueryContext(ctx, getValidVessels,
 		arg.CreatedAt,
 		arg.CreatedAt_2,
 		arg.LastUpdatedAt,
@@ -1316,7 +1316,7 @@ func (q *Queries) GetValidVessels(ctx context.Context, db DBTX, arg *GetValidVes
 	return items, nil
 }
 
-const GetWebhooks = `-- name: GetWebhooks :many
+const getWebhooks = `-- name: GetWebhooks :many
 
 SELECT
 	webhooks.id,
@@ -1376,31 +1376,31 @@ WHERE
 `
 
 type GetWebhooksParams struct {
-	CreatedBefore sql.NullTime  `db:"created_before"`
-	CreatedAfter  sql.NullTime  `db:"created_after"`
-	UpdatedBefore sql.NullTime  `db:"updated_before"`
-	UpdatedAfter  sql.NullTime  `db:"updated_after"`
-	HouseholdID   string        `db:"household_id"`
-	QueryOffset   sql.NullInt32 `db:"query_offset"`
-	QueryLimit    sql.NullInt32 `db:"query_limit"`
+	CreatedBefore sql.NullTime
+	CreatedAfter  sql.NullTime
+	UpdatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	HouseholdID   string
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
 }
 
 type GetWebhooksRow struct {
-	ID                 string       `db:"id"`
-	Name               string       `db:"name"`
-	ContentType        string       `db:"content_type"`
-	Url                string       `db:"url"`
-	Method             string       `db:"method"`
-	CreatedAt          time.Time    `db:"created_at"`
-	LastUpdatedAt      sql.NullTime `db:"last_updated_at"`
-	ArchivedAt         sql.NullTime `db:"archived_at"`
-	BelongsToHousehold string       `db:"belongs_to_household"`
-	FilteredCount      int64        `db:"filtered_count"`
-	TotalCount         int64        `db:"total_count"`
+	ID                 string
+	Name               string
+	ContentType        string
+	URL                string
+	Method             string
+	CreatedAt          time.Time
+	LastUpdatedAt      sql.NullTime
+	ArchivedAt         sql.NullTime
+	BelongsToHousehold string
+	FilteredCount      int64
+	TotalCount         int64
 }
 
 func (q *Queries) GetWebhooks(ctx context.Context, db DBTX, arg *GetWebhooksParams) ([]*GetWebhooksRow, error) {
-	rows, err := db.QueryContext(ctx, GetWebhooks,
+	rows, err := db.QueryContext(ctx, getWebhooks,
 		arg.CreatedBefore,
 		arg.CreatedAfter,
 		arg.UpdatedBefore,
@@ -1420,7 +1420,7 @@ func (q *Queries) GetWebhooks(ctx context.Context, db DBTX, arg *GetWebhooksPara
 			&i.ID,
 			&i.Name,
 			&i.ContentType,
-			&i.Url,
+			&i.URL,
 			&i.Method,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,

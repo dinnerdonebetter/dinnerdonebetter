@@ -10,92 +10,92 @@ import (
 	"database/sql"
 )
 
-const ArchiveHousehold = `-- name: ArchiveHousehold :exec
+const archiveHousehold = `-- name: ArchiveHousehold :exec
 
 UPDATE households SET last_updated_at = NOW(), archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_user = $1 AND id = $2
 `
 
 type ArchiveHouseholdParams struct {
-	BelongsToUser string `db:"belongs_to_user"`
-	ID            string `db:"id"`
+	BelongsToUser string
+	ID            string
 }
 
 func (q *Queries) ArchiveHousehold(ctx context.Context, db DBTX, arg *ArchiveHouseholdParams) error {
-	_, err := db.ExecContext(ctx, ArchiveHousehold, arg.BelongsToUser, arg.ID)
+	_, err := db.ExecContext(ctx, archiveHousehold, arg.BelongsToUser, arg.ID)
 	return err
 }
 
-const ArchiveHouseholdInstrumentOwnership = `-- name: ArchiveHouseholdInstrumentOwnership :exec
+const archiveHouseholdInstrumentOwnership = `-- name: ArchiveHouseholdInstrumentOwnership :exec
 
 UPDATE household_instrument_ownerships SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1 AND belongs_to_household = $2
 `
 
 type ArchiveHouseholdInstrumentOwnershipParams struct {
-	ID                 string `db:"id"`
-	BelongsToHousehold string `db:"belongs_to_household"`
+	ID                 string
+	BelongsToHousehold string
 }
 
 func (q *Queries) ArchiveHouseholdInstrumentOwnership(ctx context.Context, db DBTX, arg *ArchiveHouseholdInstrumentOwnershipParams) error {
-	_, err := db.ExecContext(ctx, ArchiveHouseholdInstrumentOwnership, arg.ID, arg.BelongsToHousehold)
+	_, err := db.ExecContext(ctx, archiveHouseholdInstrumentOwnership, arg.ID, arg.BelongsToHousehold)
 	return err
 }
 
-const ArchiveMeal = `-- name: ArchiveMeal :exec
+const archiveMeal = `-- name: ArchiveMeal :exec
 
 UPDATE meals SET archived_at = NOW() WHERE archived_at IS NULL AND created_by_user = $1 AND id = $2
 `
 
 type ArchiveMealParams struct {
-	CreatedByUser string `db:"created_by_user"`
-	ID            string `db:"id"`
+	CreatedByUser string
+	ID            string
 }
 
 func (q *Queries) ArchiveMeal(ctx context.Context, db DBTX, arg *ArchiveMealParams) error {
-	_, err := db.ExecContext(ctx, ArchiveMeal, arg.CreatedByUser, arg.ID)
+	_, err := db.ExecContext(ctx, archiveMeal, arg.CreatedByUser, arg.ID)
 	return err
 }
 
-const ArchiveMealPlan = `-- name: ArchiveMealPlan :exec
+const archiveMealPlan = `-- name: ArchiveMealPlan :exec
 
 UPDATE meal_plans SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_household = $1 AND id = $2
 `
 
 type ArchiveMealPlanParams struct {
-	BelongsToHousehold string `db:"belongs_to_household"`
-	ID                 string `db:"id"`
+	BelongsToHousehold string
+	ID                 string
 }
 
 func (q *Queries) ArchiveMealPlan(ctx context.Context, db DBTX, arg *ArchiveMealPlanParams) error {
-	_, err := db.ExecContext(ctx, ArchiveMealPlan, arg.BelongsToHousehold, arg.ID)
+	_, err := db.ExecContext(ctx, archiveMealPlan, arg.BelongsToHousehold, arg.ID)
 	return err
 }
 
-const ArchiveMealPlanEvent = `-- name: ArchiveMealPlanEvent :exec
+const archiveMealPlanEvent = `-- name: ArchiveMealPlanEvent :exec
 
 UPDATE meal_plan_events SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1 AND belongs_to_meal_plan = $2
 `
 
 type ArchiveMealPlanEventParams struct {
-	ID                string `db:"id"`
-	BelongsToMealPlan string `db:"belongs_to_meal_plan"`
+	ID                string
+	BelongsToMealPlan string
 }
 
 func (q *Queries) ArchiveMealPlanEvent(ctx context.Context, db DBTX, arg *ArchiveMealPlanEventParams) error {
-	_, err := db.ExecContext(ctx, ArchiveMealPlanEvent, arg.ID, arg.BelongsToMealPlan)
+	_, err := db.ExecContext(ctx, archiveMealPlanEvent, arg.ID, arg.BelongsToMealPlan)
 	return err
 }
 
-const ArchiveMealPlanGroceryListItem = `-- name: ArchiveMealPlanGroceryListItem :exec
+const archiveMealPlanGroceryListItem = `-- name: ArchiveMealPlanGroceryListItem :exec
 
 UPDATE meal_plan_grocery_list_items SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
 func (q *Queries) ArchiveMealPlanGroceryListItem(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, ArchiveMealPlanGroceryListItem, id)
+	_, err := db.ExecContext(ctx, archiveMealPlanGroceryListItem, id)
 	return err
 }
 
-const ArchiveMealPlanOption = `-- name: ArchiveMealPlanOption :exec
+const archiveMealPlanOption = `-- name: ArchiveMealPlanOption :exec
 
 UPDATE
 	meal_plan_options
@@ -108,31 +108,31 @@ WHERE
 `
 
 type ArchiveMealPlanOptionParams struct {
-	ID                     string         `db:"id"`
-	BelongsToMealPlanEvent sql.NullString `db:"belongs_to_meal_plan_event"`
+	ID                     string
+	BelongsToMealPlanEvent sql.NullString
 }
 
 func (q *Queries) ArchiveMealPlanOption(ctx context.Context, db DBTX, arg *ArchiveMealPlanOptionParams) error {
-	_, err := db.ExecContext(ctx, ArchiveMealPlanOption, arg.BelongsToMealPlanEvent, arg.ID)
+	_, err := db.ExecContext(ctx, archiveMealPlanOption, arg.BelongsToMealPlanEvent, arg.ID)
 	return err
 }
 
-const ArchiveMealPlanOptionVote = `-- name: ArchiveMealPlanOptionVote :exec
+const archiveMealPlanOptionVote = `-- name: ArchiveMealPlanOptionVote :exec
 
 UPDATE meal_plan_option_votes SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_meal_plan_option = $1 AND id = $2
 `
 
 type ArchiveMealPlanOptionVoteParams struct {
-	BelongsToMealPlanOption string `db:"belongs_to_meal_plan_option"`
-	ID                      string `db:"id"`
+	BelongsToMealPlanOption string
+	ID                      string
 }
 
 func (q *Queries) ArchiveMealPlanOptionVote(ctx context.Context, db DBTX, arg *ArchiveMealPlanOptionVoteParams) error {
-	_, err := db.ExecContext(ctx, ArchiveMealPlanOptionVote, arg.BelongsToMealPlanOption, arg.ID)
+	_, err := db.ExecContext(ctx, archiveMealPlanOptionVote, arg.BelongsToMealPlanOption, arg.ID)
 	return err
 }
 
-const ArchiveOAuth2Client = `-- name: ArchiveOAuth2Client :exec
+const archiveOAuth2Client = `-- name: ArchiveOAuth2Client :exec
 
 UPDATE oauth2_clients SET
 	archived_at = NOW()
@@ -141,146 +141,146 @@ WHERE archived_at IS NULL
 `
 
 func (q *Queries) ArchiveOAuth2Client(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, ArchiveOAuth2Client, id)
+	_, err := db.ExecContext(ctx, archiveOAuth2Client, id)
 	return err
 }
 
-const ArchiveRecipe = `-- name: ArchiveRecipe :exec
+const archiveRecipe = `-- name: ArchiveRecipe :exec
 
 UPDATE recipes SET archived_at = NOW() WHERE archived_at IS NULL AND created_by_user = $1 AND id = $2
 `
 
 type ArchiveRecipeParams struct {
-	CreatedByUser string `db:"created_by_user"`
-	ID            string `db:"id"`
+	CreatedByUser string
+	ID            string
 }
 
 func (q *Queries) ArchiveRecipe(ctx context.Context, db DBTX, arg *ArchiveRecipeParams) error {
-	_, err := db.ExecContext(ctx, ArchiveRecipe, arg.CreatedByUser, arg.ID)
+	_, err := db.ExecContext(ctx, archiveRecipe, arg.CreatedByUser, arg.ID)
 	return err
 }
 
-const ArchiveRecipeMedia = `-- name: ArchiveRecipeMedia :exec
+const archiveRecipeMedia = `-- name: ArchiveRecipeMedia :exec
 
 UPDATE recipe_media SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
 func (q *Queries) ArchiveRecipeMedia(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, ArchiveRecipeMedia, id)
+	_, err := db.ExecContext(ctx, archiveRecipeMedia, id)
 	return err
 }
 
-const ArchiveRecipePrepTask = `-- name: ArchiveRecipePrepTask :exec
+const archiveRecipePrepTask = `-- name: ArchiveRecipePrepTask :exec
 
 UPDATE recipe_prep_tasks SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
 func (q *Queries) ArchiveRecipePrepTask(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, ArchiveRecipePrepTask, id)
+	_, err := db.ExecContext(ctx, archiveRecipePrepTask, id)
 	return err
 }
 
-const ArchiveRecipeRating = `-- name: ArchiveRecipeRating :exec
+const archiveRecipeRating = `-- name: ArchiveRecipeRating :exec
 
 UPDATE recipe_ratings SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
 func (q *Queries) ArchiveRecipeRating(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, ArchiveRecipeRating, id)
+	_, err := db.ExecContext(ctx, archiveRecipeRating, id)
 	return err
 }
 
-const ArchiveRecipeStep = `-- name: ArchiveRecipeStep :exec
+const archiveRecipeStep = `-- name: ArchiveRecipeStep :exec
 
 UPDATE recipe_steps SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe = $1 AND id = $2
 `
 
 type ArchiveRecipeStepParams struct {
-	BelongsToRecipe string `db:"belongs_to_recipe"`
-	ID              string `db:"id"`
+	BelongsToRecipe string
+	ID              string
 }
 
 func (q *Queries) ArchiveRecipeStep(ctx context.Context, db DBTX, arg *ArchiveRecipeStepParams) error {
-	_, err := db.ExecContext(ctx, ArchiveRecipeStep, arg.BelongsToRecipe, arg.ID)
+	_, err := db.ExecContext(ctx, archiveRecipeStep, arg.BelongsToRecipe, arg.ID)
 	return err
 }
 
-const ArchiveRecipeStepCompletionCondition = `-- name: ArchiveRecipeStepCompletionCondition :exec
+const archiveRecipeStepCompletionCondition = `-- name: ArchiveRecipeStepCompletionCondition :exec
 
 UPDATE recipe_step_completion_conditions SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2
 `
 
 type ArchiveRecipeStepCompletionConditionParams struct {
-	BelongsToRecipeStep string `db:"belongs_to_recipe_step"`
-	ID                  string `db:"id"`
+	BelongsToRecipeStep string
+	ID                  string
 }
 
 func (q *Queries) ArchiveRecipeStepCompletionCondition(ctx context.Context, db DBTX, arg *ArchiveRecipeStepCompletionConditionParams) error {
-	_, err := db.ExecContext(ctx, ArchiveRecipeStepCompletionCondition, arg.BelongsToRecipeStep, arg.ID)
+	_, err := db.ExecContext(ctx, archiveRecipeStepCompletionCondition, arg.BelongsToRecipeStep, arg.ID)
 	return err
 }
 
-const ArchiveRecipeStepIngredient = `-- name: ArchiveRecipeStepIngredient :exec
+const archiveRecipeStepIngredient = `-- name: ArchiveRecipeStepIngredient :exec
 
 UPDATE recipe_step_ingredients SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2
 `
 
 type ArchiveRecipeStepIngredientParams struct {
-	BelongsToRecipeStep string `db:"belongs_to_recipe_step"`
-	ID                  string `db:"id"`
+	BelongsToRecipeStep string
+	ID                  string
 }
 
 func (q *Queries) ArchiveRecipeStepIngredient(ctx context.Context, db DBTX, arg *ArchiveRecipeStepIngredientParams) error {
-	_, err := db.ExecContext(ctx, ArchiveRecipeStepIngredient, arg.BelongsToRecipeStep, arg.ID)
+	_, err := db.ExecContext(ctx, archiveRecipeStepIngredient, arg.BelongsToRecipeStep, arg.ID)
 	return err
 }
 
-const ArchiveRecipeStepInstrument = `-- name: ArchiveRecipeStepInstrument :exec
+const archiveRecipeStepInstrument = `-- name: ArchiveRecipeStepInstrument :exec
 
 UPDATE recipe_step_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2
 `
 
 type ArchiveRecipeStepInstrumentParams struct {
-	BelongsToRecipeStep string `db:"belongs_to_recipe_step"`
-	ID                  string `db:"id"`
+	BelongsToRecipeStep string
+	ID                  string
 }
 
 func (q *Queries) ArchiveRecipeStepInstrument(ctx context.Context, db DBTX, arg *ArchiveRecipeStepInstrumentParams) error {
-	_, err := db.ExecContext(ctx, ArchiveRecipeStepInstrument, arg.BelongsToRecipeStep, arg.ID)
+	_, err := db.ExecContext(ctx, archiveRecipeStepInstrument, arg.BelongsToRecipeStep, arg.ID)
 	return err
 }
 
-const ArchiveRecipeStepProduct = `-- name: ArchiveRecipeStepProduct :exec
+const archiveRecipeStepProduct = `-- name: ArchiveRecipeStepProduct :exec
 
 UPDATE recipe_step_products SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2
 `
 
 type ArchiveRecipeStepProductParams struct {
-	BelongsToRecipeStep string `db:"belongs_to_recipe_step"`
-	ID                  string `db:"id"`
+	BelongsToRecipeStep string
+	ID                  string
 }
 
 func (q *Queries) ArchiveRecipeStepProduct(ctx context.Context, db DBTX, arg *ArchiveRecipeStepProductParams) error {
-	_, err := db.ExecContext(ctx, ArchiveRecipeStepProduct, arg.BelongsToRecipeStep, arg.ID)
+	_, err := db.ExecContext(ctx, archiveRecipeStepProduct, arg.BelongsToRecipeStep, arg.ID)
 	return err
 }
 
-const ArchiveRecipeStepVessel = `-- name: ArchiveRecipeStepVessel :exec
+const archiveRecipeStepVessel = `-- name: ArchiveRecipeStepVessel :exec
 
 UPDATE recipe_step_vessels SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2
 `
 
 type ArchiveRecipeStepVesselParams struct {
-	BelongsToRecipeStep string `db:"belongs_to_recipe_step"`
-	ID                  string `db:"id"`
+	BelongsToRecipeStep string
+	ID                  string
 }
 
 func (q *Queries) ArchiveRecipeStepVessel(ctx context.Context, db DBTX, arg *ArchiveRecipeStepVesselParams) error {
-	_, err := db.ExecContext(ctx, ArchiveRecipeStepVessel, arg.BelongsToRecipeStep, arg.ID)
+	_, err := db.ExecContext(ctx, archiveRecipeStepVessel, arg.BelongsToRecipeStep, arg.ID)
 	return err
 }
 
-const ArchiveServiceSetting = `-- name: ArchiveServiceSetting :exec
+const archiveServiceSetting = `-- name: ArchiveServiceSetting :exec
 
 UPDATE service_settings
 SET archived_at = NOW()
@@ -288,21 +288,21 @@ SET archived_at = NOW()
 `
 
 func (q *Queries) ArchiveServiceSetting(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, ArchiveServiceSetting, id)
+	_, err := db.ExecContext(ctx, archiveServiceSetting, id)
 	return err
 }
 
-const ArchiveServiceSettingConfiguration = `-- name: ArchiveServiceSettingConfiguration :exec
+const archiveServiceSettingConfiguration = `-- name: ArchiveServiceSettingConfiguration :exec
 
 UPDATE service_setting_configurations SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
 func (q *Queries) ArchiveServiceSettingConfiguration(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, ArchiveServiceSettingConfiguration, id)
+	_, err := db.ExecContext(ctx, archiveServiceSettingConfiguration, id)
 	return err
 }
 
-const ArchiveUser = `-- name: ArchiveUser :exec
+const archiveUser = `-- name: ArchiveUser :exec
 
 UPDATE users SET
 	archived_at = NOW()
@@ -311,156 +311,156 @@ WHERE archived_at IS NULL
 `
 
 func (q *Queries) ArchiveUser(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, ArchiveUser, id)
+	_, err := db.ExecContext(ctx, archiveUser, id)
 	return err
 }
 
-const ArchiveUserIngredientPreference = `-- name: ArchiveUserIngredientPreference :exec
+const archiveUserIngredientPreference = `-- name: ArchiveUserIngredientPreference :exec
 
 UPDATE user_ingredient_preferences SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1 AND belongs_to_user = $2
 `
 
 type ArchiveUserIngredientPreferenceParams struct {
-	ID            string `db:"id"`
-	BelongsToUser string `db:"belongs_to_user"`
+	ID            string
+	BelongsToUser string
 }
 
 func (q *Queries) ArchiveUserIngredientPreference(ctx context.Context, db DBTX, arg *ArchiveUserIngredientPreferenceParams) error {
-	_, err := db.ExecContext(ctx, ArchiveUserIngredientPreference, arg.ID, arg.BelongsToUser)
+	_, err := db.ExecContext(ctx, archiveUserIngredientPreference, arg.ID, arg.BelongsToUser)
 	return err
 }
 
-const ArchiveValidIngredient = `-- name: ArchiveValidIngredient :exec
+const archiveValidIngredient = `-- name: ArchiveValidIngredient :exec
 
 UPDATE valid_ingredients SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
 func (q *Queries) ArchiveValidIngredient(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, ArchiveValidIngredient, id)
+	_, err := db.ExecContext(ctx, archiveValidIngredient, id)
 	return err
 }
 
-const ArchiveValidIngredientGroup = `-- name: ArchiveValidIngredientGroup :exec
+const archiveValidIngredientGroup = `-- name: ArchiveValidIngredientGroup :exec
 
 UPDATE valid_ingredient_groups SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
 func (q *Queries) ArchiveValidIngredientGroup(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, ArchiveValidIngredientGroup, id)
+	_, err := db.ExecContext(ctx, archiveValidIngredientGroup, id)
 	return err
 }
 
-const ArchiveValidIngredientMeasurementUnit = `-- name: ArchiveValidIngredientMeasurementUnit :exec
+const archiveValidIngredientMeasurementUnit = `-- name: ArchiveValidIngredientMeasurementUnit :exec
 
 UPDATE valid_ingredient_measurement_units SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
 func (q *Queries) ArchiveValidIngredientMeasurementUnit(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, ArchiveValidIngredientMeasurementUnit, id)
+	_, err := db.ExecContext(ctx, archiveValidIngredientMeasurementUnit, id)
 	return err
 }
 
-const ArchiveValidIngredientPreparation = `-- name: ArchiveValidIngredientPreparation :exec
+const archiveValidIngredientPreparation = `-- name: ArchiveValidIngredientPreparation :exec
 
 UPDATE valid_ingredient_preparations SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
 func (q *Queries) ArchiveValidIngredientPreparation(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, ArchiveValidIngredientPreparation, id)
+	_, err := db.ExecContext(ctx, archiveValidIngredientPreparation, id)
 	return err
 }
 
-const ArchiveValidIngredientState = `-- name: ArchiveValidIngredientState :exec
+const archiveValidIngredientState = `-- name: ArchiveValidIngredientState :exec
 
 UPDATE valid_ingredient_states SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
 func (q *Queries) ArchiveValidIngredientState(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, ArchiveValidIngredientState, id)
+	_, err := db.ExecContext(ctx, archiveValidIngredientState, id)
 	return err
 }
 
-const ArchiveValidIngredientStateIngredient = `-- name: ArchiveValidIngredientStateIngredient :exec
+const archiveValidIngredientStateIngredient = `-- name: ArchiveValidIngredientStateIngredient :exec
 
 UPDATE valid_ingredient_state_ingredients SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
 func (q *Queries) ArchiveValidIngredientStateIngredient(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, ArchiveValidIngredientStateIngredient, id)
+	_, err := db.ExecContext(ctx, archiveValidIngredientStateIngredient, id)
 	return err
 }
 
-const ArchiveValidInstrument = `-- name: ArchiveValidInstrument :exec
+const archiveValidInstrument = `-- name: ArchiveValidInstrument :exec
 
 UPDATE valid_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
 func (q *Queries) ArchiveValidInstrument(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, ArchiveValidInstrument, id)
+	_, err := db.ExecContext(ctx, archiveValidInstrument, id)
 	return err
 }
 
-const ArchiveValidMeasurementConversion = `-- name: ArchiveValidMeasurementConversion :exec
+const archiveValidMeasurementConversion = `-- name: ArchiveValidMeasurementConversion :exec
 
 UPDATE valid_measurement_conversions SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
 func (q *Queries) ArchiveValidMeasurementConversion(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, ArchiveValidMeasurementConversion, id)
+	_, err := db.ExecContext(ctx, archiveValidMeasurementConversion, id)
 	return err
 }
 
-const ArchiveValidMeasurementUnit = `-- name: ArchiveValidMeasurementUnit :exec
+const archiveValidMeasurementUnit = `-- name: ArchiveValidMeasurementUnit :exec
 
 UPDATE valid_measurement_units SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
 func (q *Queries) ArchiveValidMeasurementUnit(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, ArchiveValidMeasurementUnit, id)
+	_, err := db.ExecContext(ctx, archiveValidMeasurementUnit, id)
 	return err
 }
 
-const ArchiveValidPreparation = `-- name: ArchiveValidPreparation :exec
+const archiveValidPreparation = `-- name: ArchiveValidPreparation :exec
 
 UPDATE valid_preparations SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
 func (q *Queries) ArchiveValidPreparation(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, ArchiveValidPreparation, id)
+	_, err := db.ExecContext(ctx, archiveValidPreparation, id)
 	return err
 }
 
-const ArchiveValidPreparationInstrument = `-- name: ArchiveValidPreparationInstrument :exec
+const archiveValidPreparationInstrument = `-- name: ArchiveValidPreparationInstrument :exec
 
 UPDATE valid_preparation_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
 func (q *Queries) ArchiveValidPreparationInstrument(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, ArchiveValidPreparationInstrument, id)
+	_, err := db.ExecContext(ctx, archiveValidPreparationInstrument, id)
 	return err
 }
 
-const ArchiveValidPreparationVessel = `-- name: ArchiveValidPreparationVessel :exec
+const archiveValidPreparationVessel = `-- name: ArchiveValidPreparationVessel :exec
 
 UPDATE valid_preparation_vessels SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
 func (q *Queries) ArchiveValidPreparationVessel(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, ArchiveValidPreparationVessel, id)
+	_, err := db.ExecContext(ctx, archiveValidPreparationVessel, id)
 	return err
 }
 
-const ArchiveValidVessel = `-- name: ArchiveValidVessel :exec
+const archiveValidVessel = `-- name: ArchiveValidVessel :exec
 
 UPDATE valid_vessels SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
 func (q *Queries) ArchiveValidVessel(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, ArchiveValidVessel, id)
+	_, err := db.ExecContext(ctx, archiveValidVessel, id)
 	return err
 }
 
-const ArchiveWebhook = `-- name: ArchiveWebhook :exec
+const archiveWebhook = `-- name: ArchiveWebhook :exec
 
 UPDATE webhooks
 SET
@@ -472,11 +472,11 @@ WHERE archived_at IS NULL
 `
 
 type ArchiveWebhookParams struct {
-	BelongsToHousehold string `db:"belongs_to_household"`
-	ID                 string `db:"id"`
+	BelongsToHousehold string
+	ID                 string
 }
 
 func (q *Queries) ArchiveWebhook(ctx context.Context, db DBTX, arg *ArchiveWebhookParams) error {
-	_, err := db.ExecContext(ctx, ArchiveWebhook, arg.BelongsToHousehold, arg.ID)
+	_, err := db.ExecContext(ctx, archiveWebhook, arg.BelongsToHousehold, arg.ID)
 	return err
 }

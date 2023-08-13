@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const GetServiceSettingConfigurationsForHousehold = `-- name: GetServiceSettingConfigurationsForHousehold :many
+const getServiceSettingConfigurationsForHousehold = `-- name: GetServiceSettingConfigurationsForHousehold :many
 
 SELECT
 	service_setting_configurations.id,
@@ -40,28 +40,28 @@ WHERE service_settings.archived_at IS NULL
 `
 
 type GetServiceSettingConfigurationsForHouseholdRow struct {
-	CreatedAt          time.Time      `db:"created_at"`
-	CreatedAt_2        time.Time      `db:"created_at_2"`
-	ArchivedAt_2       sql.NullTime   `db:"archived_at_2"`
-	LastUpdatedAt_2    sql.NullTime   `db:"last_updated_at_2"`
-	ArchivedAt         sql.NullTime   `db:"archived_at"`
-	LastUpdatedAt      sql.NullTime   `db:"last_updated_at"`
-	Name               string         `db:"name"`
-	Enumeration        string         `db:"enumeration"`
-	Description        string         `db:"description"`
-	Type               SettingType    `db:"type"`
-	ID                 string         `db:"id"`
-	BelongsToUser      string         `db:"belongs_to_user"`
-	BelongsToHousehold string         `db:"belongs_to_household"`
-	ID_2               string         `db:"id_2"`
-	Notes              string         `db:"notes"`
-	Value              string         `db:"value"`
-	DefaultValue       sql.NullString `db:"default_value"`
-	AdminsOnly         bool           `db:"admins_only"`
+	CreatedAt          time.Time
+	CreatedAt_2        time.Time
+	ArchivedAt_2       sql.NullTime
+	LastUpdatedAt_2    sql.NullTime
+	ArchivedAt         sql.NullTime
+	LastUpdatedAt      sql.NullTime
+	Name               string
+	Enumeration        string
+	Description        string
+	Type               SettingType
+	ID                 string
+	BelongsToUser      string
+	BelongsToHousehold string
+	ID_2               string
+	Notes              string
+	Value              string
+	DefaultValue       sql.NullString
+	AdminsOnly         bool
 }
 
 func (q *Queries) GetServiceSettingConfigurationsForHousehold(ctx context.Context, db DBTX, belongsToHousehold string) ([]*GetServiceSettingConfigurationsForHouseholdRow, error) {
-	rows, err := db.QueryContext(ctx, GetServiceSettingConfigurationsForHousehold, belongsToHousehold)
+	rows, err := db.QueryContext(ctx, getServiceSettingConfigurationsForHousehold, belongsToHousehold)
 	if err != nil {
 		return nil, err
 	}

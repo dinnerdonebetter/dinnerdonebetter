@@ -1,4 +1,4 @@
--- name: GetValidVesselsNeedingIndexing :many
+-- name: GetValidVesselIDsNeedingIndexing :many
 
 SELECT
 	valid_vessels.id

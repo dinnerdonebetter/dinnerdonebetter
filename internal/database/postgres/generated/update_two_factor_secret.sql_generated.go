@@ -9,7 +9,7 @@ import (
 	"context"
 )
 
-const UpdateUserTwoFactorSecret = `-- name: UpdateUserTwoFactorSecret :exec
+const updateUserTwoFactorSecret = `-- name: UpdateUserTwoFactorSecret :exec
 
 UPDATE users SET
 	two_factor_secret_verified_at = NULL,
@@ -20,11 +20,11 @@ WHERE archived_at IS NULL
 `
 
 type UpdateUserTwoFactorSecretParams struct {
-	TwoFactorSecret string `db:"two_factor_secret"`
-	ID              string `db:"id"`
+	TwoFactorSecret string
+	ID              string
 }
 
 func (q *Queries) UpdateUserTwoFactorSecret(ctx context.Context, db DBTX, arg *UpdateUserTwoFactorSecretParams) error {
-	_, err := db.ExecContext(ctx, UpdateUserTwoFactorSecret, arg.TwoFactorSecret, arg.ID)
+	_, err := db.ExecContext(ctx, updateUserTwoFactorSecret, arg.TwoFactorSecret, arg.ID)
 	return err
 }

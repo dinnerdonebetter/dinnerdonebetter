@@ -9,7 +9,7 @@ import (
 	"context"
 )
 
-const GetFinalizedMealPlansWithoutGroceryListInit = `-- name: GetFinalizedMealPlansWithoutGroceryListInit :many
+const getFinalizedMealPlansWithoutGroceryListInit = `-- name: GetFinalizedMealPlansWithoutGroceryListInit :many
 
 SELECT
 	meal_plans.id,
@@ -21,12 +21,12 @@ WHERE meal_plans.archived_at IS NULL
 `
 
 type GetFinalizedMealPlansWithoutGroceryListInitRow struct {
-	ID                 string `db:"id"`
-	BelongsToHousehold string `db:"belongs_to_household"`
+	ID                 string
+	BelongsToHousehold string
 }
 
 func (q *Queries) GetFinalizedMealPlansWithoutGroceryListInit(ctx context.Context, db DBTX) ([]*GetFinalizedMealPlansWithoutGroceryListInitRow, error) {
-	rows, err := db.QueryContext(ctx, GetFinalizedMealPlansWithoutGroceryListInit)
+	rows, err := db.QueryContext(ctx, getFinalizedMealPlansWithoutGroceryListInit)
 	if err != nil {
 		return nil, err
 	}

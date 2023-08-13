@@ -9,7 +9,7 @@ import (
 	"context"
 )
 
-const UserIsHouseholdMember = `-- name: UserIsHouseholdMember :one
+const userIsHouseholdMember = `-- name: UserIsHouseholdMember :one
 
 SELECT EXISTS (
    SELECT household_user_memberships.id
@@ -21,12 +21,12 @@ SELECT EXISTS (
 `
 
 type UserIsHouseholdMemberParams struct {
-	BelongsToHousehold string `db:"belongs_to_household"`
-	BelongsToUser      string `db:"belongs_to_user"`
+	BelongsToHousehold string
+	BelongsToUser      string
 }
 
 func (q *Queries) UserIsHouseholdMember(ctx context.Context, db DBTX, arg *UserIsHouseholdMemberParams) (bool, error) {
-	row := db.QueryRowContext(ctx, UserIsHouseholdMember, arg.BelongsToHousehold, arg.BelongsToUser)
+	row := db.QueryRowContext(ctx, userIsHouseholdMember, arg.BelongsToHousehold, arg.BelongsToUser)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err

@@ -9,18 +9,18 @@ import (
 	"context"
 )
 
-const TransferHouseholdOwnership = `-- name: TransferHouseholdOwnership :exec
+const transferHouseholdOwnership = `-- name: TransferHouseholdOwnership :exec
 
 UPDATE households SET belongs_to_user = $1 WHERE archived_at IS NULL AND belongs_to_user = $2 AND id = $3
 `
 
 type TransferHouseholdOwnershipParams struct {
-	BelongsToUser   string `db:"belongs_to_user"`
-	BelongsToUser_2 string `db:"belongs_to_user_2"`
-	ID              string `db:"id"`
+	BelongsToUser   string
+	BelongsToUser_2 string
+	ID              string
 }
 
 func (q *Queries) TransferHouseholdOwnership(ctx context.Context, db DBTX, arg *TransferHouseholdOwnershipParams) error {
-	_, err := db.ExecContext(ctx, TransferHouseholdOwnership, arg.BelongsToUser, arg.BelongsToUser_2, arg.ID)
+	_, err := db.ExecContext(ctx, transferHouseholdOwnership, arg.BelongsToUser, arg.BelongsToUser_2, arg.ID)
 	return err
 }

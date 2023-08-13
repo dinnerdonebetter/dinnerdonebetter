@@ -9,12 +9,12 @@ import (
 	"context"
 )
 
-const RedeemPasswordResetToken = `-- name: RedeemPasswordResetToken :exec
+const redeemPasswordResetToken = `-- name: RedeemPasswordResetToken :exec
 
 UPDATE password_reset_tokens SET redeemed_at = NOW() WHERE redeemed_at IS NULL AND id = $1
 `
 
 func (q *Queries) RedeemPasswordResetToken(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, RedeemPasswordResetToken, id)
+	_, err := db.ExecContext(ctx, redeemPasswordResetToken, id)
 	return err
 }

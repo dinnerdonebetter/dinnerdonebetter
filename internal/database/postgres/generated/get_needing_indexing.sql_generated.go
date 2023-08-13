@@ -7,11 +7,9 @@ package generated
 
 import (
 	"context"
-	"database/sql"
-	"time"
 )
 
-const GetMealsNeedingIndexing = `-- name: GetMealsNeedingIndexing :many
+const getMealsNeedingIndexing = `-- name: GetMealsNeedingIndexing :many
 
 SELECT meals.id
   FROM meals
@@ -24,7 +22,7 @@ SELECT meals.id
 `
 
 func (q *Queries) GetMealsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error) {
-	rows, err := db.QueryContext(ctx, GetMealsNeedingIndexing)
+	rows, err := db.QueryContext(ctx, getMealsNeedingIndexing)
 	if err != nil {
 		return nil, err
 	}
@@ -46,7 +44,7 @@ func (q *Queries) GetMealsNeedingIndexing(ctx context.Context, db DBTX) ([]strin
 	return items, nil
 }
 
-const GetRecipesNeedingIndexing = `-- name: GetRecipesNeedingIndexing :many
+const getRecipesNeedingIndexing = `-- name: GetRecipesNeedingIndexing :many
 
 SELECT recipes.id
   FROM recipes
@@ -59,7 +57,7 @@ SELECT recipes.id
 `
 
 func (q *Queries) GetRecipesNeedingIndexing(ctx context.Context, db DBTX) ([]string, error) {
-	rows, err := db.QueryContext(ctx, GetRecipesNeedingIndexing)
+	rows, err := db.QueryContext(ctx, getRecipesNeedingIndexing)
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +79,7 @@ func (q *Queries) GetRecipesNeedingIndexing(ctx context.Context, db DBTX) ([]str
 	return items, nil
 }
 
-const GetUserIDsNeedingIndexing = `-- name: GetUserIDsNeedingIndexing :many
+const getUserIDsNeedingIndexing = `-- name: GetUserIDsNeedingIndexing :many
 
 SELECT users.id
   FROM users
@@ -96,7 +94,7 @@ SELECT users.id
 `
 
 func (q *Queries) GetUserIDsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error) {
-	rows, err := db.QueryContext(ctx, GetUserIDsNeedingIndexing)
+	rows, err := db.QueryContext(ctx, getUserIDsNeedingIndexing)
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +116,7 @@ func (q *Queries) GetUserIDsNeedingIndexing(ctx context.Context, db DBTX) ([]str
 	return items, nil
 }
 
-const GetValidIngredientStatesNeedingIndexing = `-- name: GetValidIngredientStatesNeedingIndexing :many
+const getValidIngredientStatesNeedingIndexing = `-- name: GetValidIngredientStatesNeedingIndexing :many
 
 SELECT valid_ingredient_states.id
   FROM valid_ingredient_states
@@ -133,7 +131,7 @@ SELECT valid_ingredient_states.id
 `
 
 func (q *Queries) GetValidIngredientStatesNeedingIndexing(ctx context.Context, db DBTX) ([]string, error) {
-	rows, err := db.QueryContext(ctx, GetValidIngredientStatesNeedingIndexing)
+	rows, err := db.QueryContext(ctx, getValidIngredientStatesNeedingIndexing)
 	if err != nil {
 		return nil, err
 	}
@@ -155,7 +153,7 @@ func (q *Queries) GetValidIngredientStatesNeedingIndexing(ctx context.Context, d
 	return items, nil
 }
 
-const GetValidIngredientsNeedingIndexing = `-- name: GetValidIngredientsNeedingIndexing :many
+const getValidIngredientsNeedingIndexing = `-- name: GetValidIngredientsNeedingIndexing :many
 
 SELECT valid_ingredients.id
   FROM valid_ingredients
@@ -168,7 +166,7 @@ SELECT valid_ingredients.id
 `
 
 func (q *Queries) GetValidIngredientsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error) {
-	rows, err := db.QueryContext(ctx, GetValidIngredientsNeedingIndexing)
+	rows, err := db.QueryContext(ctx, getValidIngredientsNeedingIndexing)
 	if err != nil {
 		return nil, err
 	}
@@ -190,7 +188,7 @@ func (q *Queries) GetValidIngredientsNeedingIndexing(ctx context.Context, db DBT
 	return items, nil
 }
 
-const GetValidInstrumentsNeedingIndexing = `-- name: GetValidInstrumentsNeedingIndexing :many
+const getValidInstrumentsNeedingIndexing = `-- name: GetValidInstrumentsNeedingIndexing :many
 
 SELECT valid_instruments.id
   FROM valid_instruments
@@ -203,7 +201,7 @@ SELECT valid_instruments.id
 `
 
 func (q *Queries) GetValidInstrumentsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error) {
-	rows, err := db.QueryContext(ctx, GetValidInstrumentsNeedingIndexing)
+	rows, err := db.QueryContext(ctx, getValidInstrumentsNeedingIndexing)
 	if err != nil {
 		return nil, err
 	}
@@ -225,7 +223,7 @@ func (q *Queries) GetValidInstrumentsNeedingIndexing(ctx context.Context, db DBT
 	return items, nil
 }
 
-const GetValidMeasurementUnitsNeedingIndexing = `-- name: GetValidMeasurementUnitsNeedingIndexing :many
+const getValidMeasurementUnitsNeedingIndexing = `-- name: GetValidMeasurementUnitsNeedingIndexing :many
 
 SELECT valid_measurement_units.id
   FROM valid_measurement_units
@@ -240,7 +238,7 @@ SELECT valid_measurement_units.id
 `
 
 func (q *Queries) GetValidMeasurementUnitsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error) {
-	rows, err := db.QueryContext(ctx, GetValidMeasurementUnitsNeedingIndexing)
+	rows, err := db.QueryContext(ctx, getValidMeasurementUnitsNeedingIndexing)
 	if err != nil {
 		return nil, err
 	}
@@ -262,7 +260,7 @@ func (q *Queries) GetValidMeasurementUnitsNeedingIndexing(ctx context.Context, d
 	return items, nil
 }
 
-const GetValidPreparationsNeedingIndexing = `-- name: GetValidPreparationsNeedingIndexing :many
+const getValidPreparationsNeedingIndexing = `-- name: GetValidPreparationsNeedingIndexing :many
 
 SELECT valid_preparations.id
   FROM valid_preparations
@@ -275,7 +273,7 @@ SELECT valid_preparations.id
 `
 
 func (q *Queries) GetValidPreparationsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error) {
-	rows, err := db.QueryContext(ctx, GetValidPreparationsNeedingIndexing)
+	rows, err := db.QueryContext(ctx, getValidPreparationsNeedingIndexing)
 	if err != nil {
 		return nil, err
 	}
@@ -297,39 +295,10 @@ func (q *Queries) GetValidPreparationsNeedingIndexing(ctx context.Context, db DB
 	return items, nil
 }
 
-const GetValidVesselsNeedingIndexing = `-- name: GetValidVesselsNeedingIndexing :many
+const getValidVesselIDsNeedingIndexing = `-- name: GetValidVesselIDsNeedingIndexing :many
 
 SELECT
-	valid_vessels.id,
-    valid_vessels.name,
-    valid_vessels.plural_name,
-    valid_vessels.description,
-    valid_vessels.icon_path,
-    valid_vessels.usable_for_storage,
-    valid_vessels.slug,
-    valid_vessels.display_in_summary_lists,
-    valid_vessels.include_in_generated_instructions,
-    valid_vessels.capacity,
-	valid_measurement_units.id,
-	valid_measurement_units.name,
-	valid_measurement_units.description,
-	valid_measurement_units.volumetric,
-	valid_measurement_units.icon_path,
-	valid_measurement_units.universal,
-	valid_measurement_units.metric,
-	valid_measurement_units.imperial,
-	valid_measurement_units.slug,
-	valid_measurement_units.plural_name,
-	valid_measurement_units.created_at,
-	valid_measurement_units.last_updated_at,
-	valid_measurement_units.archived_at,
-    valid_vessels.width_in_millimeters,
-    valid_vessels.length_in_millimeters,
-    valid_vessels.height_in_millimeters,
-    valid_vessels.shape,
-    valid_vessels.created_at,
-    valid_vessels.last_updated_at,
-    valid_vessels.archived_at
+	valid_vessels.id
 FROM valid_vessels
 	 JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
 WHERE (valid_vessels.archived_at IS NULL AND valid_measurement_units.archived_at IS NULL)
@@ -340,83 +309,19 @@ WHERE (valid_vessels.archived_at IS NULL AND valid_measurement_units.archived_at
     )
 `
 
-type GetValidVesselsNeedingIndexingRow struct {
-	CreatedAt                      time.Time      `db:"created_at"`
-	CreatedAt_2                    time.Time      `db:"created_at_2"`
-	ArchivedAt_2                   sql.NullTime   `db:"archived_at_2"`
-	LastUpdatedAt_2                sql.NullTime   `db:"last_updated_at_2"`
-	ArchivedAt                     sql.NullTime   `db:"archived_at"`
-	LastUpdatedAt                  sql.NullTime   `db:"last_updated_at"`
-	IconPath_2                     string         `db:"icon_path_2"`
-	IconPath                       string         `db:"icon_path"`
-	Name                           string         `db:"name"`
-	Capacity                       string         `db:"capacity"`
-	ID_2                           string         `db:"id_2"`
-	Name_2                         string         `db:"name_2"`
-	Description_2                  string         `db:"description_2"`
-	PluralName                     string         `db:"plural_name"`
-	ID                             string         `db:"id"`
-	Description                    string         `db:"description"`
-	Shape                          VesselShape    `db:"shape"`
-	Slug                           string         `db:"slug"`
-	Slug_2                         string         `db:"slug_2"`
-	PluralName_2                   string         `db:"plural_name_2"`
-	WidthInMillimeters             sql.NullString `db:"width_in_millimeters"`
-	LengthInMillimeters            sql.NullString `db:"length_in_millimeters"`
-	HeightInMillimeters            sql.NullString `db:"height_in_millimeters"`
-	Volumetric                     sql.NullBool   `db:"volumetric"`
-	Imperial                       bool           `db:"imperial"`
-	UsableForStorage               bool           `db:"usable_for_storage"`
-	DisplayInSummaryLists          bool           `db:"display_in_summary_lists"`
-	Metric                         bool           `db:"metric"`
-	Universal                      bool           `db:"universal"`
-	IncludeInGeneratedInstructions bool           `db:"include_in_generated_instructions"`
-}
-
-func (q *Queries) GetValidVesselsNeedingIndexing(ctx context.Context, db DBTX) ([]*GetValidVesselsNeedingIndexingRow, error) {
-	rows, err := db.QueryContext(ctx, GetValidVesselsNeedingIndexing)
+func (q *Queries) GetValidVesselIDsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error) {
+	rows, err := db.QueryContext(ctx, getValidVesselIDsNeedingIndexing)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []*GetValidVesselsNeedingIndexingRow{}
+	items := []string{}
 	for rows.Next() {
-		var i GetValidVesselsNeedingIndexingRow
-		if err := rows.Scan(
-			&i.ID,
-			&i.Name,
-			&i.PluralName,
-			&i.Description,
-			&i.IconPath,
-			&i.UsableForStorage,
-			&i.Slug,
-			&i.DisplayInSummaryLists,
-			&i.IncludeInGeneratedInstructions,
-			&i.Capacity,
-			&i.ID_2,
-			&i.Name_2,
-			&i.Description_2,
-			&i.Volumetric,
-			&i.IconPath_2,
-			&i.Universal,
-			&i.Metric,
-			&i.Imperial,
-			&i.Slug_2,
-			&i.PluralName_2,
-			&i.CreatedAt,
-			&i.LastUpdatedAt,
-			&i.ArchivedAt,
-			&i.WidthInMillimeters,
-			&i.LengthInMillimeters,
-			&i.HeightInMillimeters,
-			&i.Shape,
-			&i.CreatedAt_2,
-			&i.LastUpdatedAt_2,
-			&i.ArchivedAt_2,
-		); err != nil {
+		var id string
+		if err := rows.Scan(&id); err != nil {
 			return nil, err
 		}
-		items = append(items, &i)
+		items = append(items, id)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err

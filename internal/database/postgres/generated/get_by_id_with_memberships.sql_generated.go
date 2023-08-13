@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const GetHouseholdByIDWithMemberships = `-- name: GetHouseholdByIDWithMemberships :many
+const getHouseholdByIDWithMemberships = `-- name: GetHouseholdByIDWithMemberships :many
 
 SELECT
 	households.id,
@@ -66,53 +66,53 @@ WHERE households.archived_at IS NULL
 `
 
 type GetHouseholdByIDWithMembershipsRow struct {
-	CreatedAt_2                  time.Time      `db:"created_at_2"`
-	CreatedAt_3                  time.Time      `db:"created_at_3"`
-	CreatedAt                    time.Time      `db:"created_at"`
-	ArchivedAt_3                 sql.NullTime   `db:"archived_at_3"`
-	LastUpdatedAt_3              sql.NullTime   `db:"last_updated_at_3"`
-	ArchivedAt_2                 sql.NullTime   `db:"archived_at_2"`
-	LastUpdatedAt_2              sql.NullTime   `db:"last_updated_at_2"`
-	Birthday                     sql.NullTime   `db:"birthday"`
-	TwoFactorSecretVerifiedAt    sql.NullTime   `db:"two_factor_secret_verified_at"`
-	PasswordLastChangedAt        sql.NullTime   `db:"password_last_changed_at"`
-	EmailAddressVerifiedAt       sql.NullTime   `db:"email_address_verified_at"`
-	ArchivedAt                   sql.NullTime   `db:"archived_at"`
-	LastUpdatedAt                sql.NullTime   `db:"last_updated_at"`
-	UserAccountStatusExplanation string         `db:"user_account_status_explanation"`
-	ServiceRole                  string         `db:"service_role"`
-	PaymentProcessorCustomerID   string         `db:"payment_processor_customer_id"`
-	Name                         string         `db:"name"`
-	BelongsToUser                string         `db:"belongs_to_user"`
-	ID_2                         string         `db:"id_2"`
-	FirstName                    string         `db:"first_name"`
-	LastName                     string         `db:"last_name"`
-	Username                     string         `db:"username"`
-	EmailAddress                 string         `db:"email_address"`
-	BillingStatus                string         `db:"billing_status"`
-	ContactPhone                 string         `db:"contact_phone"`
-	HouseholdRole                string         `db:"household_role"`
-	Country                      string         `db:"country"`
-	ZipCode                      string         `db:"zip_code"`
-	BelongsToHousehold           string         `db:"belongs_to_household"`
-	UserAccountStatus            string         `db:"user_account_status"`
-	ID                           string         `db:"id"`
-	State                        string         `db:"state"`
-	City                         string         `db:"city"`
-	AddressLine2                 string         `db:"address_line_2"`
-	AddressLine1                 string         `db:"address_line_1"`
-	ID_3                         string         `db:"id_3"`
-	BelongsToUser_2              string         `db:"belongs_to_user_2"`
-	SubscriptionPlanID           sql.NullString `db:"subscription_plan_id"`
-	AvatarSrc                    sql.NullString `db:"avatar_src"`
-	Latitude                     sql.NullString `db:"latitude"`
-	Longitude                    sql.NullString `db:"longitude"`
-	RequiresPasswordChange       bool           `db:"requires_password_change"`
-	DefaultHousehold             bool           `db:"default_household"`
+	CreatedAt_2                  time.Time
+	CreatedAt_3                  time.Time
+	CreatedAt                    time.Time
+	ArchivedAt_3                 sql.NullTime
+	LastUpdatedAt_3              sql.NullTime
+	ArchivedAt_2                 sql.NullTime
+	LastUpdatedAt_2              sql.NullTime
+	Birthday                     sql.NullTime
+	TwoFactorSecretVerifiedAt    sql.NullTime
+	PasswordLastChangedAt        sql.NullTime
+	EmailAddressVerifiedAt       sql.NullTime
+	ArchivedAt                   sql.NullTime
+	LastUpdatedAt                sql.NullTime
+	UserAccountStatusExplanation string
+	ServiceRole                  string
+	PaymentProcessorCustomerID   string
+	Name                         string
+	BelongsToUser                string
+	ID_2                         string
+	FirstName                    string
+	LastName                     string
+	Username                     string
+	EmailAddress                 string
+	BillingStatus                string
+	ContactPhone                 string
+	HouseholdRole                string
+	Country                      string
+	ZipCode                      string
+	BelongsToHousehold           string
+	UserAccountStatus            string
+	ID                           string
+	State                        string
+	City                         string
+	AddressLine2                 string
+	AddressLine1                 string
+	ID_3                         string
+	BelongsToUser_2              string
+	SubscriptionPlanID           sql.NullString
+	AvatarSrc                    sql.NullString
+	Latitude                     sql.NullString
+	Longitude                    sql.NullString
+	RequiresPasswordChange       bool
+	DefaultHousehold             bool
 }
 
 func (q *Queries) GetHouseholdByIDWithMemberships(ctx context.Context, db DBTX, id string) ([]*GetHouseholdByIDWithMembershipsRow, error) {
-	rows, err := db.QueryContext(ctx, GetHouseholdByIDWithMemberships, id)
+	rows, err := db.QueryContext(ctx, getHouseholdByIDWithMemberships, id)
 	if err != nil {
 		return nil, err
 	}

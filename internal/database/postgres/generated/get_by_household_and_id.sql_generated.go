@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const GetHouseholdInvitationByHouseholdAndID = `-- name: GetHouseholdInvitationByHouseholdAndID :one
+const getHouseholdInvitationByHouseholdAndID = `-- name: GetHouseholdInvitationByHouseholdAndID :one
 
 SELECT
 	household_invitations.id,
@@ -74,64 +74,64 @@ WHERE household_invitations.archived_at IS NULL
 `
 
 type GetHouseholdInvitationByHouseholdAndIDParams struct {
-	DestinationHousehold string `db:"destination_household"`
-	ID                   string `db:"id"`
+	DestinationHousehold string
+	ID                   string
 }
 
 type GetHouseholdInvitationByHouseholdAndIDRow struct {
-	CreatedAt_3                  time.Time       `db:"created_at_3"`
-	ExpiresAt                    time.Time       `db:"expires_at"`
-	CreatedAt                    sql.NullTime    `db:"created_at"`
-	EmailAddressVerifiedAt       sql.NullTime    `db:"email_address_verified_at"`
-	ArchivedAt_3                 sql.NullTime    `db:"archived_at_3"`
-	PasswordLastChangedAt        sql.NullTime    `db:"password_last_changed_at"`
-	TwoFactorSecretVerifiedAt    sql.NullTime    `db:"two_factor_secret_verified_at"`
-	ArchivedAt                   sql.NullTime    `db:"archived_at"`
-	LastUpdatedAt                sql.NullTime    `db:"last_updated_at"`
-	LastUpdatedAt_3              sql.NullTime    `db:"last_updated_at_3"`
-	ArchivedAt_2                 sql.NullTime    `db:"archived_at_2"`
-	LastUpdatedAt_2              sql.NullTime    `db:"last_updated_at_2"`
-	Birthday                     sql.NullTime    `db:"birthday"`
-	CreatedAt_2                  sql.NullTime    `db:"created_at_2"`
-	ID                           string          `db:"id"`
-	ToName                       string          `db:"to_name"`
-	Status                       InvitationState `db:"status"`
-	Note                         string          `db:"note"`
-	StatusNote                   string          `db:"status_note"`
-	ToEmail                      string          `db:"to_email"`
-	Token                        string          `db:"token"`
-	Longitude                    sql.NullString  `db:"longitude"`
-	UserAccountStatus            sql.NullString  `db:"user_account_status"`
-	LastName                     sql.NullString  `db:"last_name"`
-	Username                     sql.NullString  `db:"username"`
-	EmailAddress                 sql.NullString  `db:"email_address"`
-	ID_3                         sql.NullString  `db:"id_3"`
-	AvatarSrc                    sql.NullString  `db:"avatar_src"`
-	HashedPassword               sql.NullString  `db:"hashed_password"`
-	ID_2                         sql.NullString  `db:"id_2"`
-	ToUser                       sql.NullString  `db:"to_user"`
-	TwoFactorSecret              sql.NullString  `db:"two_factor_secret"`
-	BelongsToUser                sql.NullString  `db:"belongs_to_user"`
-	ServiceRole                  sql.NullString  `db:"service_role"`
-	FirstName                    sql.NullString  `db:"first_name"`
-	UserAccountStatusExplanation sql.NullString  `db:"user_account_status_explanation"`
-	SubscriptionPlanID           sql.NullString  `db:"subscription_plan_id"`
-	PaymentProcessorCustomerID   sql.NullString  `db:"payment_processor_customer_id"`
-	Latitude                     sql.NullString  `db:"latitude"`
-	Country                      sql.NullString  `db:"country"`
-	ZipCode                      sql.NullString  `db:"zip_code"`
-	State                        sql.NullString  `db:"state"`
-	City                         sql.NullString  `db:"city"`
-	AddressLine2                 sql.NullString  `db:"address_line_2"`
-	AddressLine1                 sql.NullString  `db:"address_line_1"`
-	ContactPhone                 sql.NullString  `db:"contact_phone"`
-	BillingStatus                sql.NullString  `db:"billing_status"`
-	Name                         sql.NullString  `db:"name"`
-	RequiresPasswordChange       sql.NullBool    `db:"requires_password_change"`
+	CreatedAt_3                  time.Time
+	ExpiresAt                    time.Time
+	CreatedAt                    sql.NullTime
+	EmailAddressVerifiedAt       sql.NullTime
+	ArchivedAt_3                 sql.NullTime
+	PasswordLastChangedAt        sql.NullTime
+	TwoFactorSecretVerifiedAt    sql.NullTime
+	ArchivedAt                   sql.NullTime
+	LastUpdatedAt                sql.NullTime
+	LastUpdatedAt_3              sql.NullTime
+	ArchivedAt_2                 sql.NullTime
+	LastUpdatedAt_2              sql.NullTime
+	Birthday                     sql.NullTime
+	CreatedAt_2                  sql.NullTime
+	ID                           string
+	ToName                       string
+	Status                       InvitationState
+	Note                         string
+	StatusNote                   string
+	ToEmail                      string
+	Token                        string
+	Longitude                    sql.NullString
+	UserAccountStatus            sql.NullString
+	LastName                     sql.NullString
+	Username                     sql.NullString
+	EmailAddress                 sql.NullString
+	ID_3                         sql.NullString
+	AvatarSrc                    sql.NullString
+	HashedPassword               sql.NullString
+	ID_2                         sql.NullString
+	ToUser                       sql.NullString
+	TwoFactorSecret              sql.NullString
+	BelongsToUser                sql.NullString
+	ServiceRole                  sql.NullString
+	FirstName                    sql.NullString
+	UserAccountStatusExplanation sql.NullString
+	SubscriptionPlanID           sql.NullString
+	PaymentProcessorCustomerID   sql.NullString
+	Latitude                     sql.NullString
+	Country                      sql.NullString
+	ZipCode                      sql.NullString
+	State                        sql.NullString
+	City                         sql.NullString
+	AddressLine2                 sql.NullString
+	AddressLine1                 sql.NullString
+	ContactPhone                 sql.NullString
+	BillingStatus                sql.NullString
+	Name                         sql.NullString
+	RequiresPasswordChange       sql.NullBool
 }
 
 func (q *Queries) GetHouseholdInvitationByHouseholdAndID(ctx context.Context, db DBTX, arg *GetHouseholdInvitationByHouseholdAndIDParams) (*GetHouseholdInvitationByHouseholdAndIDRow, error) {
-	row := db.QueryRowContext(ctx, GetHouseholdInvitationByHouseholdAndID, arg.DestinationHousehold, arg.ID)
+	row := db.QueryRowContext(ctx, getHouseholdInvitationByHouseholdAndID, arg.DestinationHousehold, arg.ID)
 	var i GetHouseholdInvitationByHouseholdAndIDRow
 	err := row.Scan(
 		&i.ID,

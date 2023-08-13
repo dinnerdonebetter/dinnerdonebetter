@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const GetHouseholdInvitationByTokenAndID = `-- name: GetHouseholdInvitationByTokenAndID :one
+const getHouseholdInvitationByTokenAndID = `-- name: GetHouseholdInvitationByTokenAndID :one
 
 SELECT
 	household_invitations.id,
@@ -73,64 +73,64 @@ WHERE household_invitations.archived_at IS NULL
 `
 
 type GetHouseholdInvitationByTokenAndIDParams struct {
-	Token string `db:"token"`
-	ID    string `db:"id"`
+	Token string
+	ID    string
 }
 
 type GetHouseholdInvitationByTokenAndIDRow struct {
-	ExpiresAt                    time.Time       `db:"expires_at"`
-	CreatedAt_2                  time.Time       `db:"created_at_2"`
-	CreatedAt                    time.Time       `db:"created_at"`
-	CreatedAt_3                  time.Time       `db:"created_at_3"`
-	LastUpdatedAt_2              sql.NullTime    `db:"last_updated_at_2"`
-	ArchivedAt_2                 sql.NullTime    `db:"archived_at_2"`
-	LastUpdatedAt_3              sql.NullTime    `db:"last_updated_at_3"`
-	ArchivedAt_3                 sql.NullTime    `db:"archived_at_3"`
-	Birthday                     sql.NullTime    `db:"birthday"`
-	TwoFactorSecretVerifiedAt    sql.NullTime    `db:"two_factor_secret_verified_at"`
-	PasswordLastChangedAt        sql.NullTime    `db:"password_last_changed_at"`
-	EmailAddressVerifiedAt       sql.NullTime    `db:"email_address_verified_at"`
-	ArchivedAt                   sql.NullTime    `db:"archived_at"`
-	LastUpdatedAt                sql.NullTime    `db:"last_updated_at"`
-	Username                     string          `db:"username"`
-	TwoFactorSecret              string          `db:"two_factor_secret"`
-	PaymentProcessorCustomerID   string          `db:"payment_processor_customer_id"`
-	ID_2                         string          `db:"id_2"`
-	BelongsToUser                string          `db:"belongs_to_user"`
-	ToEmail                      string          `db:"to_email"`
-	Name                         string          `db:"name"`
-	ID_3                         string          `db:"id_3"`
-	FirstName                    string          `db:"first_name"`
-	LastName                     string          `db:"last_name"`
-	ID                           string          `db:"id"`
-	EmailAddress                 string          `db:"email_address"`
-	BillingStatus                string          `db:"billing_status"`
-	ContactPhone                 string          `db:"contact_phone"`
-	HashedPassword               string          `db:"hashed_password"`
-	Token                        string          `db:"token"`
-	Country                      string          `db:"country"`
-	StatusNote                   string          `db:"status_note"`
-	ZipCode                      string          `db:"zip_code"`
-	ServiceRole                  string          `db:"service_role"`
-	UserAccountStatus            string          `db:"user_account_status"`
-	UserAccountStatusExplanation string          `db:"user_account_status_explanation"`
-	State                        string          `db:"state"`
-	City                         string          `db:"city"`
-	AddressLine2                 string          `db:"address_line_2"`
-	AddressLine1                 string          `db:"address_line_1"`
-	ToName                       string          `db:"to_name"`
-	Status                       InvitationState `db:"status"`
-	Note                         string          `db:"note"`
-	SubscriptionPlanID           sql.NullString  `db:"subscription_plan_id"`
-	AvatarSrc                    sql.NullString  `db:"avatar_src"`
-	Latitude                     sql.NullString  `db:"latitude"`
-	ToUser                       sql.NullString  `db:"to_user"`
-	Longitude                    sql.NullString  `db:"longitude"`
-	RequiresPasswordChange       bool            `db:"requires_password_change"`
+	ExpiresAt                    time.Time
+	CreatedAt_2                  time.Time
+	CreatedAt                    time.Time
+	CreatedAt_3                  time.Time
+	LastUpdatedAt_2              sql.NullTime
+	ArchivedAt_2                 sql.NullTime
+	LastUpdatedAt_3              sql.NullTime
+	ArchivedAt_3                 sql.NullTime
+	Birthday                     sql.NullTime
+	TwoFactorSecretVerifiedAt    sql.NullTime
+	PasswordLastChangedAt        sql.NullTime
+	EmailAddressVerifiedAt       sql.NullTime
+	ArchivedAt                   sql.NullTime
+	LastUpdatedAt                sql.NullTime
+	Username                     string
+	TwoFactorSecret              string
+	PaymentProcessorCustomerID   string
+	ID_2                         string
+	BelongsToUser                string
+	ToEmail                      string
+	Name                         string
+	ID_3                         string
+	FirstName                    string
+	LastName                     string
+	ID                           string
+	EmailAddress                 string
+	BillingStatus                string
+	ContactPhone                 string
+	HashedPassword               string
+	Token                        string
+	Country                      string
+	StatusNote                   string
+	ZipCode                      string
+	ServiceRole                  string
+	UserAccountStatus            string
+	UserAccountStatusExplanation string
+	State                        string
+	City                         string
+	AddressLine2                 string
+	AddressLine1                 string
+	ToName                       string
+	Status                       InvitationState
+	Note                         string
+	SubscriptionPlanID           sql.NullString
+	AvatarSrc                    sql.NullString
+	Latitude                     sql.NullString
+	ToUser                       sql.NullString
+	Longitude                    sql.NullString
+	RequiresPasswordChange       bool
 }
 
 func (q *Queries) GetHouseholdInvitationByTokenAndID(ctx context.Context, db DBTX, arg *GetHouseholdInvitationByTokenAndIDParams) (*GetHouseholdInvitationByTokenAndIDRow, error) {
-	row := db.QueryRowContext(ctx, GetHouseholdInvitationByTokenAndID, arg.Token, arg.ID)
+	row := db.QueryRowContext(ctx, getHouseholdInvitationByTokenAndID, arg.Token, arg.ID)
 	var i GetHouseholdInvitationByTokenAndIDRow
 	err := row.Scan(
 		&i.ID,

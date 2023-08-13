@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const GetOAuth2ClientByClientID = `-- name: GetOAuth2ClientByClientID :one
+const getOAuth2ClientByClientID = `-- name: GetOAuth2ClientByClientID :one
 
 SELECT
 	oauth2_clients.id,
@@ -26,16 +26,16 @@ WHERE oauth2_clients.archived_at IS NULL
 `
 
 type GetOAuth2ClientByClientIDRow struct {
-	ID           string       `db:"id"`
-	Name         string       `db:"name"`
-	ClientID     string       `db:"client_id"`
-	ClientSecret string       `db:"client_secret"`
-	CreatedAt    time.Time    `db:"created_at"`
-	ArchivedAt   sql.NullTime `db:"archived_at"`
+	ID           string
+	Name         string
+	ClientID     string
+	ClientSecret string
+	CreatedAt    time.Time
+	ArchivedAt   sql.NullTime
 }
 
 func (q *Queries) GetOAuth2ClientByClientID(ctx context.Context, db DBTX, clientID string) (*GetOAuth2ClientByClientIDRow, error) {
-	row := db.QueryRowContext(ctx, GetOAuth2ClientByClientID, clientID)
+	row := db.QueryRowContext(ctx, getOAuth2ClientByClientID, clientID)
 	var i GetOAuth2ClientByClientIDRow
 	err := row.Scan(
 		&i.ID,

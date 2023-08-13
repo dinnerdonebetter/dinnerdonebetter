@@ -9,7 +9,7 @@ import (
 	"context"
 )
 
-const CheckValidityOfValidIngredientStateIngredientPair = `-- name: CheckValidityOfValidIngredientStateIngredientPair :one
+const checkValidityOfValidIngredientStateIngredientPair = `-- name: CheckValidityOfValidIngredientStateIngredientPair :one
 
 SELECT EXISTS(
 	SELECT id
@@ -21,18 +21,18 @@ SELECT EXISTS(
 `
 
 type CheckValidityOfValidIngredientStateIngredientPairParams struct {
-	ValidIngredient      string `db:"valid_ingredient"`
-	ValidIngredientState string `db:"valid_ingredient_state"`
+	ValidIngredient      string
+	ValidIngredientState string
 }
 
 func (q *Queries) CheckValidityOfValidIngredientStateIngredientPair(ctx context.Context, db DBTX, arg *CheckValidityOfValidIngredientStateIngredientPairParams) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckValidityOfValidIngredientStateIngredientPair, arg.ValidIngredient, arg.ValidIngredientState)
+	row := db.QueryRowContext(ctx, checkValidityOfValidIngredientStateIngredientPair, arg.ValidIngredient, arg.ValidIngredientState)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const ValidIngredientMeasurementUnitPairIsValid = `-- name: ValidIngredientMeasurementUnitPairIsValid :one
+const validIngredientMeasurementUnitPairIsValid = `-- name: ValidIngredientMeasurementUnitPairIsValid :one
 
 SELECT EXISTS(
 	SELECT id
@@ -44,18 +44,18 @@ SELECT EXISTS(
 `
 
 type ValidIngredientMeasurementUnitPairIsValidParams struct {
-	ValidMeasurementUnitID string `db:"valid_measurement_unit_id"`
-	ValidIngredientID      string `db:"valid_ingredient_id"`
+	ValidMeasurementUnitID string
+	ValidIngredientID      string
 }
 
 func (q *Queries) ValidIngredientMeasurementUnitPairIsValid(ctx context.Context, db DBTX, arg *ValidIngredientMeasurementUnitPairIsValidParams) (bool, error) {
-	row := db.QueryRowContext(ctx, ValidIngredientMeasurementUnitPairIsValid, arg.ValidMeasurementUnitID, arg.ValidIngredientID)
+	row := db.QueryRowContext(ctx, validIngredientMeasurementUnitPairIsValid, arg.ValidMeasurementUnitID, arg.ValidIngredientID)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const ValidIngredientPreparationPairIsValid = `-- name: ValidIngredientPreparationPairIsValid :one
+const validIngredientPreparationPairIsValid = `-- name: ValidIngredientPreparationPairIsValid :one
 
 SELECT EXISTS(
 	SELECT id
@@ -67,18 +67,18 @@ SELECT EXISTS(
 `
 
 type ValidIngredientPreparationPairIsValidParams struct {
-	ValidIngredientID  string `db:"valid_ingredient_id"`
-	ValidPreparationID string `db:"valid_preparation_id"`
+	ValidIngredientID  string
+	ValidPreparationID string
 }
 
 func (q *Queries) ValidIngredientPreparationPairIsValid(ctx context.Context, db DBTX, arg *ValidIngredientPreparationPairIsValidParams) (bool, error) {
-	row := db.QueryRowContext(ctx, ValidIngredientPreparationPairIsValid, arg.ValidIngredientID, arg.ValidPreparationID)
+	row := db.QueryRowContext(ctx, validIngredientPreparationPairIsValid, arg.ValidIngredientID, arg.ValidPreparationID)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const ValidPreparationInstrumentPairIsValid = `-- name: ValidPreparationInstrumentPairIsValid :one
+const validPreparationInstrumentPairIsValid = `-- name: ValidPreparationInstrumentPairIsValid :one
 
 SELECT EXISTS(
 	SELECT id
@@ -90,18 +90,18 @@ SELECT EXISTS(
 `
 
 type ValidPreparationInstrumentPairIsValidParams struct {
-	ValidInstrumentID  string `db:"valid_instrument_id"`
-	ValidPreparationID string `db:"valid_preparation_id"`
+	ValidInstrumentID  string
+	ValidPreparationID string
 }
 
 func (q *Queries) ValidPreparationInstrumentPairIsValid(ctx context.Context, db DBTX, arg *ValidPreparationInstrumentPairIsValidParams) (bool, error) {
-	row := db.QueryRowContext(ctx, ValidPreparationInstrumentPairIsValid, arg.ValidInstrumentID, arg.ValidPreparationID)
+	row := db.QueryRowContext(ctx, validPreparationInstrumentPairIsValid, arg.ValidInstrumentID, arg.ValidPreparationID)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const ValidPreparationVesselPairIsValid = `-- name: ValidPreparationVesselPairIsValid :one
+const validPreparationVesselPairIsValid = `-- name: ValidPreparationVesselPairIsValid :one
 
 SELECT EXISTS(
 	SELECT id
@@ -113,12 +113,12 @@ SELECT EXISTS(
 `
 
 type ValidPreparationVesselPairIsValidParams struct {
-	ValidVesselID      string `db:"valid_vessel_id"`
-	ValidPreparationID string `db:"valid_preparation_id"`
+	ValidVesselID      string
+	ValidPreparationID string
 }
 
 func (q *Queries) ValidPreparationVesselPairIsValid(ctx context.Context, db DBTX, arg *ValidPreparationVesselPairIsValidParams) (bool, error) {
-	row := db.QueryRowContext(ctx, ValidPreparationVesselPairIsValid, arg.ValidVesselID, arg.ValidPreparationID)
+	row := db.QueryRowContext(ctx, validPreparationVesselPairIsValid, arg.ValidVesselID, arg.ValidPreparationID)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err

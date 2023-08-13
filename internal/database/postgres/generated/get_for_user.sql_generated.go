@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const GetHouseholdUserMembershipsForUser = `-- name: GetHouseholdUserMembershipsForUser :many
+const getHouseholdUserMembershipsForUser = `-- name: GetHouseholdUserMembershipsForUser :many
 
 SELECT
 	household_user_memberships.id,
@@ -29,18 +29,18 @@ WHERE household_user_memberships.archived_at IS NULL
 `
 
 type GetHouseholdUserMembershipsForUserRow struct {
-	CreatedAt          time.Time    `db:"created_at"`
-	LastUpdatedAt      sql.NullTime `db:"last_updated_at"`
-	ArchivedAt         sql.NullTime `db:"archived_at"`
-	ID                 string       `db:"id"`
-	BelongsToUser      string       `db:"belongs_to_user"`
-	BelongsToHousehold string       `db:"belongs_to_household"`
-	HouseholdRole      string       `db:"household_role"`
-	DefaultHousehold   bool         `db:"default_household"`
+	CreatedAt          time.Time
+	LastUpdatedAt      sql.NullTime
+	ArchivedAt         sql.NullTime
+	ID                 string
+	BelongsToUser      string
+	BelongsToHousehold string
+	HouseholdRole      string
+	DefaultHousehold   bool
 }
 
 func (q *Queries) GetHouseholdUserMembershipsForUser(ctx context.Context, db DBTX, belongsToUser string) ([]*GetHouseholdUserMembershipsForUserRow, error) {
-	rows, err := db.QueryContext(ctx, GetHouseholdUserMembershipsForUser, belongsToUser)
+	rows, err := db.QueryContext(ctx, getHouseholdUserMembershipsForUser, belongsToUser)
 	if err != nil {
 		return nil, err
 	}
@@ -71,7 +71,7 @@ func (q *Queries) GetHouseholdUserMembershipsForUser(ctx context.Context, db DBT
 	return items, nil
 }
 
-const GetUserIngredientPreferencesForUser = `-- name: GetUserIngredientPreferencesForUser :many
+const getUserIngredientPreferencesForUser = `-- name: GetUserIngredientPreferencesForUser :many
 
 SELECT
 	user_ingredient_preferences.id,
@@ -129,61 +129,61 @@ WHERE user_ingredient_preferences.archived_at IS NULL
 `
 
 type GetUserIngredientPreferencesForUserParams struct {
-	ID            string `db:"id"`
-	BelongsToUser string `db:"belongs_to_user"`
+	ID            string
+	BelongsToUser string
 }
 
 type GetUserIngredientPreferencesForUserRow struct {
-	CreatedAt                               time.Time      `db:"created_at"`
-	CreatedAt_2                             time.Time      `db:"created_at_2"`
-	ArchivedAt_2                            sql.NullTime   `db:"archived_at_2"`
-	LastUpdatedAt                           sql.NullTime   `db:"last_updated_at"`
-	ArchivedAt                              sql.NullTime   `db:"archived_at"`
-	LastUpdatedAt_2                         sql.NullTime   `db:"last_updated_at_2"`
-	ShoppingSuggestions                     string         `db:"shopping_suggestions"`
-	Slug                                    string         `db:"slug"`
-	Warning                                 string         `db:"warning"`
-	Notes                                   string         `db:"notes"`
-	PluralName                              string         `db:"plural_name"`
-	ID                                      string         `db:"id"`
-	Description                             string         `db:"description"`
-	Name                                    string         `db:"name"`
-	ID_2                                    string         `db:"id_2"`
-	StorageInstructions                     string         `db:"storage_instructions"`
-	BelongsToUser                           string         `db:"belongs_to_user"`
-	IconPath                                string         `db:"icon_path"`
-	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
-	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
-	Rating                                  int16          `db:"rating"`
-	IsLiquid                                sql.NullBool   `db:"is_liquid"`
-	ContainsShellfish                       bool           `db:"contains_shellfish"`
-	IsFat                                   bool           `db:"is_fat"`
-	AnimalDerived                           bool           `db:"animal_derived"`
-	Volumetric                              bool           `db:"volumetric"`
-	ContainsAlcohol                         bool           `db:"contains_alcohol"`
-	AnimalFlesh                             bool           `db:"animal_flesh"`
-	IsStarch                                bool           `db:"is_starch"`
-	IsProtein                               bool           `db:"is_protein"`
-	IsGrain                                 bool           `db:"is_grain"`
-	IsFruit                                 bool           `db:"is_fruit"`
-	IsSalt                                  bool           `db:"is_salt"`
-	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
-	IsAcid                                  bool           `db:"is_acid"`
-	IsHeat                                  bool           `db:"is_heat"`
-	ContainsGluten                          bool           `db:"contains_gluten"`
-	ContainsFish                            bool           `db:"contains_fish"`
-	ContainsSesame                          bool           `db:"contains_sesame"`
-	ContainsWheat                           bool           `db:"contains_wheat"`
-	ContainsSoy                             bool           `db:"contains_soy"`
-	Allergy                                 bool           `db:"allergy"`
-	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
-	ContainsPeanut                          bool           `db:"contains_peanut"`
-	ContainsDairy                           bool           `db:"contains_dairy"`
-	ContainsEgg                             bool           `db:"contains_egg"`
+	CreatedAt                               time.Time
+	CreatedAt_2                             time.Time
+	ArchivedAt_2                            sql.NullTime
+	LastUpdatedAt                           sql.NullTime
+	ArchivedAt                              sql.NullTime
+	LastUpdatedAt_2                         sql.NullTime
+	ShoppingSuggestions                     string
+	Slug                                    string
+	Warning                                 string
+	Notes                                   string
+	PluralName                              string
+	ID                                      string
+	Description                             string
+	Name                                    string
+	ID_2                                    string
+	StorageInstructions                     string
+	BelongsToUser                           string
+	IconPath                                string
+	MinimumIdealStorageTemperatureInCelsius sql.NullString
+	MaximumIdealStorageTemperatureInCelsius sql.NullString
+	Rating                                  int16
+	IsLiquid                                sql.NullBool
+	ContainsShellfish                       bool
+	IsFat                                   bool
+	AnimalDerived                           bool
+	Volumetric                              bool
+	ContainsAlcohol                         bool
+	AnimalFlesh                             bool
+	IsStarch                                bool
+	IsProtein                               bool
+	IsGrain                                 bool
+	IsFruit                                 bool
+	IsSalt                                  bool
+	RestrictToPreparations                  bool
+	IsAcid                                  bool
+	IsHeat                                  bool
+	ContainsGluten                          bool
+	ContainsFish                            bool
+	ContainsSesame                          bool
+	ContainsWheat                           bool
+	ContainsSoy                             bool
+	Allergy                                 bool
+	ContainsTreeNut                         bool
+	ContainsPeanut                          bool
+	ContainsDairy                           bool
+	ContainsEgg                             bool
 }
 
 func (q *Queries) GetUserIngredientPreferencesForUser(ctx context.Context, db DBTX, arg *GetUserIngredientPreferencesForUserParams) ([]*GetUserIngredientPreferencesForUserRow, error) {
-	rows, err := db.QueryContext(ctx, GetUserIngredientPreferencesForUser, arg.ID, arg.BelongsToUser)
+	rows, err := db.QueryContext(ctx, getUserIngredientPreferencesForUser, arg.ID, arg.BelongsToUser)
 	if err != nil {
 		return nil, err
 	}
@@ -252,7 +252,7 @@ func (q *Queries) GetUserIngredientPreferencesForUser(ctx context.Context, db DB
 	return items, nil
 }
 
-const GetWebhooksForUser = `-- name: GetWebhooksForUser :many
+const getWebhooksForUser = `-- name: GetWebhooksForUser :many
 
 SELECT webhooks.id,
        webhooks.name,
@@ -279,29 +279,29 @@ SELECT webhooks.id,
 `
 
 type GetWebhooksForUserParams struct {
-	BelongsToHousehold string `db:"belongs_to_household"`
-	ID                 string `db:"id"`
+	BelongsToHousehold string
+	ID                 string
 }
 
 type GetWebhooksForUserRow struct {
-	ID                 string       `db:"id"`
-	Name               string       `db:"name"`
-	ContentType        string       `db:"content_type"`
-	Url                string       `db:"url"`
-	Method             string       `db:"method"`
-	ID_2               string       `db:"id_2"`
-	TriggerEvent       WebhookEvent `db:"trigger_event"`
-	BelongsToWebhook   string       `db:"belongs_to_webhook"`
-	CreatedAt          time.Time    `db:"created_at"`
-	ArchivedAt         sql.NullTime `db:"archived_at"`
-	CreatedAt_2        time.Time    `db:"created_at_2"`
-	LastUpdatedAt      sql.NullTime `db:"last_updated_at"`
-	ArchivedAt_2       sql.NullTime `db:"archived_at_2"`
-	BelongsToHousehold string       `db:"belongs_to_household"`
+	ID                 string
+	Name               string
+	ContentType        string
+	URL                string
+	Method             string
+	ID_2               string
+	TriggerEvent       WebhookEvent
+	BelongsToWebhook   string
+	CreatedAt          time.Time
+	ArchivedAt         sql.NullTime
+	CreatedAt_2        time.Time
+	LastUpdatedAt      sql.NullTime
+	ArchivedAt_2       sql.NullTime
+	BelongsToHousehold string
 }
 
 func (q *Queries) GetWebhooksForUser(ctx context.Context, db DBTX, arg *GetWebhooksForUserParams) ([]*GetWebhooksForUserRow, error) {
-	rows, err := db.QueryContext(ctx, GetWebhooksForUser, arg.BelongsToHousehold, arg.ID)
+	rows, err := db.QueryContext(ctx, getWebhooksForUser, arg.BelongsToHousehold, arg.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -313,7 +313,7 @@ func (q *Queries) GetWebhooksForUser(ctx context.Context, db DBTX, arg *GetWebho
 			&i.ID,
 			&i.Name,
 			&i.ContentType,
-			&i.Url,
+			&i.URL,
 			&i.Method,
 			&i.ID_2,
 			&i.TriggerEvent,

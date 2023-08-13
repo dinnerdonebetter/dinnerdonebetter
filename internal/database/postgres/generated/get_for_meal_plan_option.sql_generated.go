@@ -10,7 +10,7 @@ import (
 	"database/sql"
 )
 
-const GetMealPlanOptionVotesForMealPlanOption = `-- name: GetMealPlanOptionVotesForMealPlanOption :many
+const getMealPlanOptionVotesForMealPlanOption = `-- name: GetMealPlanOptionVotesForMealPlanOption :many
 
 SELECT
 	meal_plan_option_votes.id,
@@ -39,13 +39,13 @@ WHERE meal_plan_option_votes.archived_at IS NULL
 `
 
 type GetMealPlanOptionVotesForMealPlanOptionParams struct {
-	BelongsToMealPlan       string         `db:"belongs_to_meal_plan"`
-	BelongsToMealPlanOption string         `db:"belongs_to_meal_plan_option"`
-	BelongsToMealPlanEvent  sql.NullString `db:"belongs_to_meal_plan_event"`
+	BelongsToMealPlan       string
+	BelongsToMealPlanOption string
+	BelongsToMealPlanEvent  sql.NullString
 }
 
 func (q *Queries) GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, db DBTX, arg *GetMealPlanOptionVotesForMealPlanOptionParams) ([]*MealPlanOptionVotes, error) {
-	rows, err := db.QueryContext(ctx, GetMealPlanOptionVotesForMealPlanOption, arg.BelongsToMealPlan, arg.BelongsToMealPlanEvent, arg.BelongsToMealPlanOption)
+	rows, err := db.QueryContext(ctx, getMealPlanOptionVotesForMealPlanOption, arg.BelongsToMealPlan, arg.BelongsToMealPlanEvent, arg.BelongsToMealPlanOption)
 	if err != nil {
 		return nil, err
 	}

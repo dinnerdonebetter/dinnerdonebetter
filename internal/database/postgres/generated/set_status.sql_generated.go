@@ -9,7 +9,7 @@ import (
 	"context"
 )
 
-const SetHouseholdInvitationStatus = `-- name: SetHouseholdInvitationStatus :exec
+const setHouseholdInvitationStatus = `-- name: SetHouseholdInvitationStatus :exec
 
 UPDATE household_invitations SET
 	status = $1,
@@ -21,12 +21,12 @@ WHERE archived_at IS NULL
 `
 
 type SetHouseholdInvitationStatusParams struct {
-	Status     InvitationState `db:"status"`
-	StatusNote string          `db:"status_note"`
-	ID         string          `db:"id"`
+	Status     InvitationState
+	StatusNote string
+	ID         string
 }
 
 func (q *Queries) SetHouseholdInvitationStatus(ctx context.Context, db DBTX, arg *SetHouseholdInvitationStatusParams) error {
-	_, err := db.ExecContext(ctx, SetHouseholdInvitationStatus, arg.Status, arg.StatusNote, arg.ID)
+	_, err := db.ExecContext(ctx, setHouseholdInvitationStatus, arg.Status, arg.StatusNote, arg.ID)
 	return err
 }

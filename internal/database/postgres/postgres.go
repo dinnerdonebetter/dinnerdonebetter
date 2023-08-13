@@ -172,6 +172,17 @@ func nullStringFromString(s string) sql.NullString {
 	}
 }
 
+func nullStringFromStringPointer(s *string) sql.NullString {
+	if s == nil {
+		return sql.NullString{}
+	}
+
+	return sql.NullString{
+		String: *s,
+		Valid:  true,
+	}
+}
+
 func nullTimeFromTime(t time.Time) sql.NullTime {
 	return sql.NullTime{
 		Time:  t,
@@ -206,6 +217,14 @@ func nullInt32FromUint16(i uint16) sql.NullInt32 {
 		Int32: int32(i),
 		Valid: true,
 	}
+}
+
+func boolFromNullBool(b sql.NullBool) bool {
+	if b.Valid {
+		return b.Bool
+	}
+
+	return false
 }
 
 func defaultTimeFunc() time.Time {

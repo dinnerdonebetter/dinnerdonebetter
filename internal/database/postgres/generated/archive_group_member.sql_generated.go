@@ -9,17 +9,17 @@ import (
 	"context"
 )
 
-const ArchiveValidIngredientGroupMember = `-- name: ArchiveValidIngredientGroupMember :exec
+const archiveValidIngredientGroupMember = `-- name: ArchiveValidIngredientGroupMember :exec
 
 UPDATE valid_ingredient_group_members SET archived_at = NOW() WHERE id = $1 AND belongs_to_group = $2
 `
 
 type ArchiveValidIngredientGroupMemberParams struct {
-	ID             string `db:"id"`
-	BelongsToGroup string `db:"belongs_to_group"`
+	ID             string
+	BelongsToGroup string
 }
 
 func (q *Queries) ArchiveValidIngredientGroupMember(ctx context.Context, db DBTX, arg *ArchiveValidIngredientGroupMemberParams) error {
-	_, err := db.ExecContext(ctx, ArchiveValidIngredientGroupMember, arg.ID, arg.BelongsToGroup)
+	_, err := db.ExecContext(ctx, archiveValidIngredientGroupMember, arg.ID, arg.BelongsToGroup)
 	return err
 }

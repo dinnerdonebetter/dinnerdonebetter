@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const SearchUsersByUsername = `-- name: SearchUsersByUsername :many
+const searchUsersByUsername = `-- name: SearchUsersByUsername :many
 
 SELECT
 	users.id,
@@ -41,31 +41,31 @@ AND users.archived_at IS NULL
 `
 
 type SearchUsersByUsernameRow struct {
-	CreatedAt                    time.Time      `db:"created_at"`
-	Birthday                     sql.NullTime   `db:"birthday"`
-	ArchivedAt                   sql.NullTime   `db:"archived_at"`
-	PasswordLastChangedAt        sql.NullTime   `db:"password_last_changed_at"`
-	LastUpdatedAt                sql.NullTime   `db:"last_updated_at"`
-	EmailAddressVerifiedAt       sql.NullTime   `db:"email_address_verified_at"`
-	LastAcceptedPrivacyPolicy    sql.NullTime   `db:"last_accepted_privacy_policy"`
-	LastAcceptedTermsOfService   sql.NullTime   `db:"last_accepted_terms_of_service"`
-	TwoFactorSecretVerifiedAt    sql.NullTime   `db:"two_factor_secret_verified_at"`
-	UserAccountStatusExplanation string         `db:"user_account_status_explanation"`
-	FirstName                    string         `db:"first_name"`
-	ServiceRole                  string         `db:"service_role"`
-	UserAccountStatus            string         `db:"user_account_status"`
-	LastName                     string         `db:"last_name"`
-	ID                           string         `db:"id"`
-	HashedPassword               string         `db:"hashed_password"`
-	TwoFactorSecret              string         `db:"two_factor_secret"`
-	EmailAddress                 string         `db:"email_address"`
-	Username                     string         `db:"username"`
-	AvatarSrc                    sql.NullString `db:"avatar_src"`
-	RequiresPasswordChange       bool           `db:"requires_password_change"`
+	CreatedAt                    time.Time
+	Birthday                     sql.NullTime
+	ArchivedAt                   sql.NullTime
+	PasswordLastChangedAt        sql.NullTime
+	LastUpdatedAt                sql.NullTime
+	EmailAddressVerifiedAt       sql.NullTime
+	LastAcceptedPrivacyPolicy    sql.NullTime
+	LastAcceptedTermsOfService   sql.NullTime
+	TwoFactorSecretVerifiedAt    sql.NullTime
+	UserAccountStatusExplanation string
+	FirstName                    string
+	ServiceRole                  string
+	UserAccountStatus            string
+	LastName                     string
+	ID                           string
+	HashedPassword               string
+	TwoFactorSecret              string
+	EmailAddress                 string
+	Username                     string
+	AvatarSrc                    sql.NullString
+	RequiresPasswordChange       bool
 }
 
 func (q *Queries) SearchUsersByUsername(ctx context.Context, db DBTX, username string) ([]*SearchUsersByUsernameRow, error) {
-	rows, err := db.QueryContext(ctx, SearchUsersByUsername, username)
+	rows, err := db.QueryContext(ctx, searchUsersByUsername, username)
 	if err != nil {
 		return nil, err
 	}

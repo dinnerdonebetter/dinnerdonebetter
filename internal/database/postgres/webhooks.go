@@ -86,7 +86,7 @@ func (q *Querier) GetWebhook(ctx context.Context, webhookID, householdID string)
 		webhook.ArchivedAt = timePointerFromNullTime(result.ArchivedAt)
 		webhook.LastUpdatedAt = timePointerFromNullTime(result.LastUpdatedAt)
 		webhook.Name = result.Name
-		webhook.URL = result.Url
+		webhook.URL = result.URL
 		webhook.Method = result.Method
 		webhook.ID = result.ID
 		webhook.BelongsToHousehold = result.BelongsToHousehold
@@ -144,7 +144,7 @@ func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *t
 			ArchivedAt:         timePointerFromNullTime(result.ArchivedAt),
 			LastUpdatedAt:      timePointerFromNullTime(result.LastUpdatedAt),
 			Name:               result.Name,
-			URL:                result.Url,
+			URL:                result.URL,
 			Method:             result.Method,
 			ID:                 result.ID,
 			BelongsToHousehold: result.BelongsToHousehold,
@@ -180,7 +180,7 @@ func (q *Querier) CreateWebhook(ctx context.Context, input *types.WebhookDatabas
 		ID:                 input.ID,
 		Name:               input.Name,
 		ContentType:        input.ContentType,
-		Url:                input.URL,
+		URL:                input.URL,
 		Method:             input.Method,
 		BelongsToHousehold: input.BelongsToHousehold,
 	}); err != nil {

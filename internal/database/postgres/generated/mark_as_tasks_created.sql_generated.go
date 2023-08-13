@@ -9,7 +9,7 @@ import (
 	"context"
 )
 
-const MarkMealPlanAsPrepTasksCreated = `-- name: MarkMealPlanAsPrepTasksCreated :exec
+const markMealPlanAsPrepTasksCreated = `-- name: MarkMealPlanAsPrepTasksCreated :exec
 
 UPDATE meal_plans
 SET
@@ -20,6 +20,6 @@ WHERE archived_at IS NULL
 `
 
 func (q *Queries) MarkMealPlanAsPrepTasksCreated(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, MarkMealPlanAsPrepTasksCreated, id)
+	_, err := db.ExecContext(ctx, markMealPlanAsPrepTasksCreated, id)
 	return err
 }

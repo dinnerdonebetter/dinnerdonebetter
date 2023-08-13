@@ -156,7 +156,6 @@ querier: queries_lint
 		--volume $(PWD):/src \
 		--workdir /src \
 	$(SQL_GENERATOR_IMAGE) generate
-	$(MAKE) format
 
 .PHONY: golang_lint
 golang_lint:

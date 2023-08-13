@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const GetExpiredAndUnresolvedMealPlans = `-- name: GetExpiredAndUnresolvedMealPlans :many
+const getExpiredAndUnresolvedMealPlans = `-- name: GetExpiredAndUnresolvedMealPlans :many
 
 SELECT
 	meal_plans.id,
@@ -35,22 +35,22 @@ ORDER BY meal_plans.id
 `
 
 type GetExpiredAndUnresolvedMealPlansRow struct {
-	VotingDeadline         time.Time           `db:"voting_deadline"`
-	CreatedAt              time.Time           `db:"created_at"`
-	LastUpdatedAt          sql.NullTime        `db:"last_updated_at"`
-	ArchivedAt             sql.NullTime        `db:"archived_at"`
-	ID                     string              `db:"id"`
-	Notes                  string              `db:"notes"`
-	Status                 MealPlanStatus      `db:"status"`
-	ElectionMethod         ValidElectionMethod `db:"election_method"`
-	BelongsToHousehold     string              `db:"belongs_to_household"`
-	CreatedByUser          string              `db:"created_by_user"`
-	GroceryListInitialized bool                `db:"grocery_list_initialized"`
-	TasksCreated           bool                `db:"tasks_created"`
+	VotingDeadline         time.Time
+	CreatedAt              time.Time
+	LastUpdatedAt          sql.NullTime
+	ArchivedAt             sql.NullTime
+	ID                     string
+	Notes                  string
+	Status                 MealPlanStatus
+	ElectionMethod         ValidElectionMethod
+	BelongsToHousehold     string
+	CreatedByUser          string
+	GroceryListInitialized bool
+	TasksCreated           bool
 }
 
 func (q *Queries) GetExpiredAndUnresolvedMealPlans(ctx context.Context, db DBTX) ([]*GetExpiredAndUnresolvedMealPlansRow, error) {
-	rows, err := db.QueryContext(ctx, GetExpiredAndUnresolvedMealPlans)
+	rows, err := db.QueryContext(ctx, getExpiredAndUnresolvedMealPlans)
 	if err != nil {
 		return nil, err
 	}

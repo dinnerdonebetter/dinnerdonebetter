@@ -10,20 +10,20 @@ import (
 	"database/sql"
 )
 
-const ChangeMealPlanTaskStatus = `-- name: ChangeMealPlanTaskStatus :exec
+const changeMealPlanTaskStatus = `-- name: ChangeMealPlanTaskStatus :exec
 
 UPDATE meal_plan_tasks SET completed_at = $4, status_explanation = $3, status = $2 WHERE id = $1
 `
 
 type ChangeMealPlanTaskStatusParams struct {
-	ID                string         `db:"id"`
-	Status            PrepStepStatus `db:"status"`
-	StatusExplanation string         `db:"status_explanation"`
-	CompletedAt       sql.NullTime   `db:"completed_at"`
+	ID                string
+	Status            PrepStepStatus
+	StatusExplanation string
+	CompletedAt       sql.NullTime
 }
 
 func (q *Queries) ChangeMealPlanTaskStatus(ctx context.Context, db DBTX, arg *ChangeMealPlanTaskStatusParams) error {
-	_, err := db.ExecContext(ctx, ChangeMealPlanTaskStatus,
+	_, err := db.ExecContext(ctx, changeMealPlanTaskStatus,
 		arg.ID,
 		arg.Status,
 		arg.StatusExplanation,

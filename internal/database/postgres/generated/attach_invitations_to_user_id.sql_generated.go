@@ -10,7 +10,7 @@ import (
 	"database/sql"
 )
 
-const AttachHouseholdInvitationsToUserID = `-- name: AttachHouseholdInvitationsToUserID :exec
+const attachHouseholdInvitationsToUserID = `-- name: AttachHouseholdInvitationsToUserID :exec
 
 UPDATE household_invitations SET
 	to_user = $1,
@@ -20,11 +20,11 @@ WHERE archived_at IS NULL
 `
 
 type AttachHouseholdInvitationsToUserIDParams struct {
-	Lower  string         `db:"lower"`
-	ToUser sql.NullString `db:"to_user"`
+	Lower  string
+	ToUser sql.NullString
 }
 
 func (q *Queries) AttachHouseholdInvitationsToUserID(ctx context.Context, db DBTX, arg *AttachHouseholdInvitationsToUserIDParams) error {
-	_, err := db.ExecContext(ctx, AttachHouseholdInvitationsToUserID, arg.ToUser, arg.Lower)
+	_, err := db.ExecContext(ctx, attachHouseholdInvitationsToUserID, arg.ToUser, arg.Lower)
 	return err
 }

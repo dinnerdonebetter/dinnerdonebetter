@@ -10,7 +10,7 @@ import (
 	"database/sql"
 )
 
-const ListAllRecipePrepTasksByRecipe = `-- name: ListAllRecipePrepTasksByRecipe :many
+const listAllRecipePrepTasksByRecipe = `-- name: ListAllRecipePrepTasksByRecipe :many
 
 SELECT
 	recipe_prep_tasks.id,
@@ -44,29 +44,29 @@ WHERE recipe_prep_tasks.archived_at IS NULL
 `
 
 type ListAllRecipePrepTasksByRecipeRow struct {
-	CreatedAt                              sql.NullTime             `db:"created_at"`
-	ArchivedAt                             sql.NullTime             `db:"archived_at"`
-	LastUpdatedAt                          sql.NullTime             `db:"last_updated_at"`
-	StorageType                            NullStorageContainerType `db:"storage_type"`
-	Description                            sql.NullString           `db:"description"`
-	ExplicitStorageInstructions            sql.NullString           `db:"explicit_storage_instructions"`
-	BelongsToRecipePrepTask                sql.NullString           `db:"belongs_to_recipe_prep_task"`
-	BelongsToRecipeStep                    sql.NullString           `db:"belongs_to_recipe_step"`
-	ID                                     sql.NullString           `db:"id"`
-	MinimumStorageTemperatureInCelsius     sql.NullString           `db:"minimum_storage_temperature_in_celsius"`
-	MaximumStorageTemperatureInCelsius     sql.NullString           `db:"maximum_storage_temperature_in_celsius"`
-	BelongsToRecipe                        sql.NullString           `db:"belongs_to_recipe"`
-	Notes                                  sql.NullString           `db:"notes"`
-	ID_2                                   sql.NullString           `db:"id_2"`
-	Name                                   sql.NullString           `db:"name"`
-	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32            `db:"maximum_time_buffer_before_recipe_in_seconds"`
-	MinimumTimeBufferBeforeRecipeInSeconds sql.NullInt32            `db:"minimum_time_buffer_before_recipe_in_seconds"`
-	Optional                               sql.NullBool             `db:"optional"`
-	SatisfiesRecipeStep                    sql.NullBool             `db:"satisfies_recipe_step"`
+	CreatedAt                              sql.NullTime
+	ArchivedAt                             sql.NullTime
+	LastUpdatedAt                          sql.NullTime
+	StorageType                            NullStorageContainerType
+	Description                            sql.NullString
+	ExplicitStorageInstructions            sql.NullString
+	BelongsToRecipePrepTask                sql.NullString
+	BelongsToRecipeStep                    sql.NullString
+	ID                                     sql.NullString
+	MinimumStorageTemperatureInCelsius     sql.NullString
+	MaximumStorageTemperatureInCelsius     sql.NullString
+	BelongsToRecipe                        sql.NullString
+	Notes                                  sql.NullString
+	ID_2                                   sql.NullString
+	Name                                   sql.NullString
+	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
+	MinimumTimeBufferBeforeRecipeInSeconds sql.NullInt32
+	Optional                               sql.NullBool
+	SatisfiesRecipeStep                    sql.NullBool
 }
 
 func (q *Queries) ListAllRecipePrepTasksByRecipe(ctx context.Context, db DBTX, id string) ([]*ListAllRecipePrepTasksByRecipeRow, error) {
-	rows, err := db.QueryContext(ctx, ListAllRecipePrepTasksByRecipe, id)
+	rows, err := db.QueryContext(ctx, listAllRecipePrepTasksByRecipe, id)
 	if err != nil {
 		return nil, err
 	}

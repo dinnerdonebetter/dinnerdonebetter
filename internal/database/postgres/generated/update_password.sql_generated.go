@@ -9,7 +9,7 @@ import (
 	"context"
 )
 
-const UpdateUserPassword = `-- name: UpdateUserPassword :exec
+const updateUserPassword = `-- name: UpdateUserPassword :exec
 
 UPDATE users SET
 	hashed_password = $1,
@@ -20,11 +20,11 @@ WHERE archived_at IS NULL
 `
 
 type UpdateUserPasswordParams struct {
-	HashedPassword string `db:"hashed_password"`
-	ID             string `db:"id"`
+	HashedPassword string
+	ID             string
 }
 
 func (q *Queries) UpdateUserPassword(ctx context.Context, db DBTX, arg *UpdateUserPasswordParams) error {
-	_, err := db.ExecContext(ctx, UpdateUserPassword, arg.HashedPassword, arg.ID)
+	_, err := db.ExecContext(ctx, updateUserPassword, arg.HashedPassword, arg.ID)
 	return err
 }

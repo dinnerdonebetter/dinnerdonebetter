@@ -9,12 +9,12 @@ import (
 	"context"
 )
 
-const ArchiveOAuth2ClientTokenByRefresh = `-- name: ArchiveOAuth2ClientTokenByRefresh :exec
+const archiveOAuth2ClientTokenByRefresh = `-- name: ArchiveOAuth2ClientTokenByRefresh :exec
 
 DELETE FROM oauth2_client_tokens WHERE refresh = $1
 `
 
 func (q *Queries) ArchiveOAuth2ClientTokenByRefresh(ctx context.Context, db DBTX, refresh string) error {
-	_, err := db.ExecContext(ctx, ArchiveOAuth2ClientTokenByRefresh, refresh)
+	_, err := db.ExecContext(ctx, archiveOAuth2ClientTokenByRefresh, refresh)
 	return err
 }

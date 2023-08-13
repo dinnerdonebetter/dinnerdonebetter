@@ -9,21 +9,21 @@ import (
 	"context"
 )
 
-const AddToHouseholdDuringCreation = `-- name: AddToHouseholdDuringCreation :exec
+const addToHouseholdDuringCreation = `-- name: AddToHouseholdDuringCreation :exec
 
 INSERT INTO household_user_memberships (id,belongs_to_user,belongs_to_household,household_role)
 VALUES ($1,$2,$3,$4)
 `
 
 type AddToHouseholdDuringCreationParams struct {
-	ID                 string `db:"id"`
-	BelongsToUser      string `db:"belongs_to_user"`
-	BelongsToHousehold string `db:"belongs_to_household"`
-	HouseholdRole      string `db:"household_role"`
+	ID                 string
+	BelongsToUser      string
+	BelongsToHousehold string
+	HouseholdRole      string
 }
 
 func (q *Queries) AddToHouseholdDuringCreation(ctx context.Context, db DBTX, arg *AddToHouseholdDuringCreationParams) error {
-	_, err := db.ExecContext(ctx, AddToHouseholdDuringCreation,
+	_, err := db.ExecContext(ctx, addToHouseholdDuringCreation,
 		arg.ID,
 		arg.BelongsToUser,
 		arg.BelongsToHousehold,

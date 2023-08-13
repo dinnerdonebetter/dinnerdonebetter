@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const GetRecipeByID = `-- name: GetRecipeByID :one
+const getRecipeByID = `-- name: GetRecipeByID :one
 
 SELECT
 	recipes.id,
@@ -77,64 +77,64 @@ ORDER BY recipe_steps.index
 `
 
 type GetRecipeByIDRow struct {
-	LastUpdatedAt_2               sql.NullTime      `db:"last_updated_at_2"`
-	CreatedAt                     sql.NullTime      `db:"created_at"`
-	ArchivedAt_3                  sql.NullTime      `db:"archived_at_3"`
-	LastUpdatedAt_3               sql.NullTime      `db:"last_updated_at_3"`
-	CreatedAt_3                   sql.NullTime      `db:"created_at_3"`
-	ArchivedAt_2                  sql.NullTime      `db:"archived_at_2"`
-	CreatedAt_2                   sql.NullTime      `db:"created_at_2"`
-	ArchivedAt                    sql.NullTime      `db:"archived_at"`
-	LastUpdatedAt                 sql.NullTime      `db:"last_updated_at"`
-	MaximumTemperatureInCelsius   sql.NullString    `db:"maximum_temperature_in_celsius"`
-	MinimumTemperatureInCelsius   sql.NullString    `db:"minimum_temperature_in_celsius"`
-	BelongsToRecipe               sql.NullString    `db:"belongs_to_recipe"`
-	YieldsComponentType           NullComponentType `db:"yields_component_type"`
-	PluralPortionName             sql.NullString    `db:"plural_portion_name"`
-	PortionName                   sql.NullString    `db:"portion_name"`
-	MaxEstimatedPortions          sql.NullString    `db:"max_estimated_portions"`
-	CreatedByUser                 sql.NullString    `db:"created_by_user"`
-	ID_2                          sql.NullString    `db:"id_2"`
-	Source                        sql.NullString    `db:"source"`
-	ID_3                          sql.NullString    `db:"id_3"`
-	Name_2                        sql.NullString    `db:"name_2"`
-	Description_2                 sql.NullString    `db:"description_2"`
-	IconPath                      sql.NullString    `db:"icon_path"`
-	Description                   sql.NullString    `db:"description"`
-	ConditionExpression           sql.NullString    `db:"condition_expression"`
-	ExplicitInstructions          sql.NullString    `db:"explicit_instructions"`
-	Slug                          sql.NullString    `db:"slug"`
-	Notes                         sql.NullString    `db:"notes"`
-	Name                          sql.NullString    `db:"name"`
-	InspiredByRecipeID            sql.NullString    `db:"inspired_by_recipe_id"`
-	ID                            sql.NullString    `db:"id"`
-	MinEstimatedPortions          sql.NullString    `db:"min_estimated_portions"`
-	PastTense                     sql.NullString    `db:"past_tense"`
-	Slug_2                        sql.NullString    `db:"slug_2"`
-	MinimumEstimatedTimeInSeconds sql.NullInt64     `db:"minimum_estimated_time_in_seconds"`
-	MaximumEstimatedTimeInSeconds sql.NullInt64     `db:"maximum_estimated_time_in_seconds"`
-	MinimumInstrumentCount        sql.NullInt32     `db:"minimum_instrument_count"`
-	MaximumInstrumentCount        sql.NullInt32     `db:"maximum_instrument_count"`
-	MaximumIngredientCount        sql.NullInt32     `db:"maximum_ingredient_count"`
-	Index                         sql.NullInt32     `db:"index"`
-	MinimumVesselCount            sql.NullInt32     `db:"minimum_vessel_count"`
-	MinimumIngredientCount        sql.NullInt32     `db:"minimum_ingredient_count"`
-	MaximumVesselCount            sql.NullInt32     `db:"maximum_vessel_count"`
-	OnlyForVessels                sql.NullBool      `db:"only_for_vessels"`
-	SealOfApproval                sql.NullBool      `db:"seal_of_approval"`
-	StartTimerAutomatically       sql.NullBool      `db:"start_timer_automatically"`
-	ConsumesVessel                sql.NullBool      `db:"consumes_vessel"`
-	RestrictToIngredients         sql.NullBool      `db:"restrict_to_ingredients"`
-	Optional                      sql.NullBool      `db:"optional"`
-	TemperatureRequired           sql.NullBool      `db:"temperature_required"`
-	YieldsNothing                 sql.NullBool      `db:"yields_nothing"`
-	TimeEstimateRequired          sql.NullBool      `db:"time_estimate_required"`
-	ConditionExpressionRequired   sql.NullBool      `db:"condition_expression_required"`
-	EligibleForMeals              sql.NullBool      `db:"eligible_for_meals"`
+	LastUpdatedAt_2               sql.NullTime
+	CreatedAt                     sql.NullTime
+	ArchivedAt_3                  sql.NullTime
+	LastUpdatedAt_3               sql.NullTime
+	CreatedAt_3                   sql.NullTime
+	ArchivedAt_2                  sql.NullTime
+	CreatedAt_2                   sql.NullTime
+	ArchivedAt                    sql.NullTime
+	LastUpdatedAt                 sql.NullTime
+	MaximumTemperatureInCelsius   sql.NullString
+	MinimumTemperatureInCelsius   sql.NullString
+	BelongsToRecipe               sql.NullString
+	YieldsComponentType           NullComponentType
+	PluralPortionName             sql.NullString
+	PortionName                   sql.NullString
+	MaxEstimatedPortions          sql.NullString
+	CreatedByUser                 sql.NullString
+	ID_2                          sql.NullString
+	Source                        sql.NullString
+	ID_3                          sql.NullString
+	Name_2                        sql.NullString
+	Description_2                 sql.NullString
+	IconPath                      sql.NullString
+	Description                   sql.NullString
+	ConditionExpression           sql.NullString
+	ExplicitInstructions          sql.NullString
+	Slug                          sql.NullString
+	Notes                         sql.NullString
+	Name                          sql.NullString
+	InspiredByRecipeID            sql.NullString
+	ID                            sql.NullString
+	MinEstimatedPortions          sql.NullString
+	PastTense                     sql.NullString
+	Slug_2                        sql.NullString
+	MinimumEstimatedTimeInSeconds sql.NullInt64
+	MaximumEstimatedTimeInSeconds sql.NullInt64
+	MinimumInstrumentCount        sql.NullInt32
+	MaximumInstrumentCount        sql.NullInt32
+	MaximumIngredientCount        sql.NullInt32
+	Index                         sql.NullInt32
+	MinimumVesselCount            sql.NullInt32
+	MinimumIngredientCount        sql.NullInt32
+	MaximumVesselCount            sql.NullInt32
+	OnlyForVessels                sql.NullBool
+	SealOfApproval                sql.NullBool
+	StartTimerAutomatically       sql.NullBool
+	ConsumesVessel                sql.NullBool
+	RestrictToIngredients         sql.NullBool
+	Optional                      sql.NullBool
+	TemperatureRequired           sql.NullBool
+	YieldsNothing                 sql.NullBool
+	TimeEstimateRequired          sql.NullBool
+	ConditionExpressionRequired   sql.NullBool
+	EligibleForMeals              sql.NullBool
 }
 
 func (q *Queries) GetRecipeByID(ctx context.Context, db DBTX, id string) (*GetRecipeByIDRow, error) {
-	row := db.QueryRowContext(ctx, GetRecipeByID, id)
+	row := db.QueryRowContext(ctx, getRecipeByID, id)
 	var i GetRecipeByIDRow
 	err := row.Scan(
 		&i.ID,
@@ -195,7 +195,7 @@ func (q *Queries) GetRecipeByID(ctx context.Context, db DBTX, id string) (*GetRe
 	return &i, err
 }
 
-const GetServiceSettingConfigurationByID = `-- name: GetServiceSettingConfigurationByID :one
+const getServiceSettingConfigurationByID = `-- name: GetServiceSettingConfigurationByID :one
 
 SELECT
 	service_setting_configurations.id,
@@ -224,28 +224,28 @@ WHERE service_settings.archived_at IS NULL
 `
 
 type GetServiceSettingConfigurationByIDRow struct {
-	CreatedAt          time.Time      `db:"created_at"`
-	CreatedAt_2        time.Time      `db:"created_at_2"`
-	ArchivedAt_2       sql.NullTime   `db:"archived_at_2"`
-	LastUpdatedAt_2    sql.NullTime   `db:"last_updated_at_2"`
-	ArchivedAt         sql.NullTime   `db:"archived_at"`
-	LastUpdatedAt      sql.NullTime   `db:"last_updated_at"`
-	Name               string         `db:"name"`
-	Enumeration        string         `db:"enumeration"`
-	Description        string         `db:"description"`
-	Type               SettingType    `db:"type"`
-	ID                 string         `db:"id"`
-	BelongsToUser      string         `db:"belongs_to_user"`
-	BelongsToHousehold string         `db:"belongs_to_household"`
-	ID_2               string         `db:"id_2"`
-	Notes              string         `db:"notes"`
-	Value              string         `db:"value"`
-	DefaultValue       sql.NullString `db:"default_value"`
-	AdminsOnly         bool           `db:"admins_only"`
+	CreatedAt          time.Time
+	CreatedAt_2        time.Time
+	ArchivedAt_2       sql.NullTime
+	LastUpdatedAt_2    sql.NullTime
+	ArchivedAt         sql.NullTime
+	LastUpdatedAt      sql.NullTime
+	Name               string
+	Enumeration        string
+	Description        string
+	Type               SettingType
+	ID                 string
+	BelongsToUser      string
+	BelongsToHousehold string
+	ID_2               string
+	Notes              string
+	Value              string
+	DefaultValue       sql.NullString
+	AdminsOnly         bool
 }
 
 func (q *Queries) GetServiceSettingConfigurationByID(ctx context.Context, db DBTX, id string) (*GetServiceSettingConfigurationByIDRow, error) {
-	row := db.QueryRowContext(ctx, GetServiceSettingConfigurationByID, id)
+	row := db.QueryRowContext(ctx, getServiceSettingConfigurationByID, id)
 	var i GetServiceSettingConfigurationByIDRow
 	err := row.Scan(
 		&i.ID,
@@ -270,7 +270,7 @@ func (q *Queries) GetServiceSettingConfigurationByID(ctx context.Context, db DBT
 	return &i, err
 }
 
-const GetUserByID = `-- name: GetUserByID :one
+const getUserByID = `-- name: GetUserByID :one
 
 SELECT
 	users.id,
@@ -300,31 +300,31 @@ WHERE users.archived_at IS NULL
 `
 
 type GetUserByIDRow struct {
-	CreatedAt                    time.Time      `db:"created_at"`
-	Birthday                     sql.NullTime   `db:"birthday"`
-	ArchivedAt                   sql.NullTime   `db:"archived_at"`
-	PasswordLastChangedAt        sql.NullTime   `db:"password_last_changed_at"`
-	LastUpdatedAt                sql.NullTime   `db:"last_updated_at"`
-	EmailAddressVerifiedAt       sql.NullTime   `db:"email_address_verified_at"`
-	LastAcceptedPrivacyPolicy    sql.NullTime   `db:"last_accepted_privacy_policy"`
-	LastAcceptedTermsOfService   sql.NullTime   `db:"last_accepted_terms_of_service"`
-	TwoFactorSecretVerifiedAt    sql.NullTime   `db:"two_factor_secret_verified_at"`
-	UserAccountStatusExplanation string         `db:"user_account_status_explanation"`
-	FirstName                    string         `db:"first_name"`
-	ServiceRole                  string         `db:"service_role"`
-	UserAccountStatus            string         `db:"user_account_status"`
-	LastName                     string         `db:"last_name"`
-	ID                           string         `db:"id"`
-	HashedPassword               string         `db:"hashed_password"`
-	TwoFactorSecret              string         `db:"two_factor_secret"`
-	EmailAddress                 string         `db:"email_address"`
-	Username                     string         `db:"username"`
-	AvatarSrc                    sql.NullString `db:"avatar_src"`
-	RequiresPasswordChange       bool           `db:"requires_password_change"`
+	CreatedAt                    time.Time
+	Birthday                     sql.NullTime
+	ArchivedAt                   sql.NullTime
+	PasswordLastChangedAt        sql.NullTime
+	LastUpdatedAt                sql.NullTime
+	EmailAddressVerifiedAt       sql.NullTime
+	LastAcceptedPrivacyPolicy    sql.NullTime
+	LastAcceptedTermsOfService   sql.NullTime
+	TwoFactorSecretVerifiedAt    sql.NullTime
+	UserAccountStatusExplanation string
+	FirstName                    string
+	ServiceRole                  string
+	UserAccountStatus            string
+	LastName                     string
+	ID                           string
+	HashedPassword               string
+	TwoFactorSecret              string
+	EmailAddress                 string
+	Username                     string
+	AvatarSrc                    sql.NullString
+	RequiresPasswordChange       bool
 }
 
 func (q *Queries) GetUserByID(ctx context.Context, db DBTX, id string) (*GetUserByIDRow, error) {
-	row := db.QueryRowContext(ctx, GetUserByID, id)
+	row := db.QueryRowContext(ctx, getUserByID, id)
 	var i GetUserByIDRow
 	err := row.Scan(
 		&i.ID,
@@ -352,7 +352,7 @@ func (q *Queries) GetUserByID(ctx context.Context, db DBTX, id string) (*GetUser
 	return &i, err
 }
 
-const GetValidIngredientByID = `-- name: GetValidIngredientByID :one
+const getValidIngredientByID = `-- name: GetValidIngredientByID :one
 
 SELECT valid_ingredients.id,
        valid_ingredients.name,
@@ -397,48 +397,48 @@ SELECT valid_ingredients.id,
 `
 
 type GetValidIngredientByIDRow struct {
-	CreatedAt                               time.Time      `db:"created_at"`
-	ArchivedAt                              sql.NullTime   `db:"archived_at"`
-	LastUpdatedAt                           sql.NullTime   `db:"last_updated_at"`
-	Warning                                 string         `db:"warning"`
-	Description                             string         `db:"description"`
-	Name                                    string         `db:"name"`
-	ShoppingSuggestions                     string         `db:"shopping_suggestions"`
-	Slug                                    string         `db:"slug"`
-	StorageInstructions                     string         `db:"storage_instructions"`
-	PluralName                              string         `db:"plural_name"`
-	ID                                      string         `db:"id"`
-	IconPath                                string         `db:"icon_path"`
-	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
-	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
-	IsLiquid                                sql.NullBool   `db:"is_liquid"`
-	AnimalDerived                           bool           `db:"animal_derived"`
-	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
-	AnimalFlesh                             bool           `db:"animal_flesh"`
-	ContainsGluten                          bool           `db:"contains_gluten"`
-	ContainsFish                            bool           `db:"contains_fish"`
-	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
-	ContainsSesame                          bool           `db:"contains_sesame"`
-	ContainsShellfish                       bool           `db:"contains_shellfish"`
-	ContainsWheat                           bool           `db:"contains_wheat"`
-	ContainsSoy                             bool           `db:"contains_soy"`
-	ContainsAlcohol                         bool           `db:"contains_alcohol"`
-	Volumetric                              bool           `db:"volumetric"`
-	IsStarch                                bool           `db:"is_starch"`
-	IsProtein                               bool           `db:"is_protein"`
-	IsGrain                                 bool           `db:"is_grain"`
-	IsFruit                                 bool           `db:"is_fruit"`
-	IsSalt                                  bool           `db:"is_salt"`
-	IsFat                                   bool           `db:"is_fat"`
-	IsAcid                                  bool           `db:"is_acid"`
-	IsHeat                                  bool           `db:"is_heat"`
-	ContainsPeanut                          bool           `db:"contains_peanut"`
-	ContainsDairy                           bool           `db:"contains_dairy"`
-	ContainsEgg                             bool           `db:"contains_egg"`
+	CreatedAt                               time.Time
+	ArchivedAt                              sql.NullTime
+	LastUpdatedAt                           sql.NullTime
+	Warning                                 string
+	Description                             string
+	Name                                    string
+	ShoppingSuggestions                     string
+	Slug                                    string
+	StorageInstructions                     string
+	PluralName                              string
+	ID                                      string
+	IconPath                                string
+	MaximumIdealStorageTemperatureInCelsius sql.NullString
+	MinimumIdealStorageTemperatureInCelsius sql.NullString
+	IsLiquid                                sql.NullBool
+	AnimalDerived                           bool
+	ContainsTreeNut                         bool
+	AnimalFlesh                             bool
+	ContainsGluten                          bool
+	ContainsFish                            bool
+	RestrictToPreparations                  bool
+	ContainsSesame                          bool
+	ContainsShellfish                       bool
+	ContainsWheat                           bool
+	ContainsSoy                             bool
+	ContainsAlcohol                         bool
+	Volumetric                              bool
+	IsStarch                                bool
+	IsProtein                               bool
+	IsGrain                                 bool
+	IsFruit                                 bool
+	IsSalt                                  bool
+	IsFat                                   bool
+	IsAcid                                  bool
+	IsHeat                                  bool
+	ContainsPeanut                          bool
+	ContainsDairy                           bool
+	ContainsEgg                             bool
 }
 
 func (q *Queries) GetValidIngredientByID(ctx context.Context, db DBTX) (*GetValidIngredientByIDRow, error) {
-	row := db.QueryRowContext(ctx, GetValidIngredientByID)
+	row := db.QueryRowContext(ctx, getValidIngredientByID)
 	var i GetValidIngredientByIDRow
 	err := row.Scan(
 		&i.ID,
@@ -483,7 +483,7 @@ func (q *Queries) GetValidIngredientByID(ctx context.Context, db DBTX) (*GetVali
 	return &i, err
 }
 
-const GetValidInstrumentByID = `-- name: GetValidInstrumentByID :one
+const getValidInstrumentByID = `-- name: GetValidInstrumentByID :one
 
 SELECT valid_instruments.id,
        valid_instruments.name,
@@ -502,22 +502,22 @@ SELECT valid_instruments.id,
 `
 
 type GetValidInstrumentByIDRow struct {
-	CreatedAt                      time.Time    `db:"created_at"`
-	LastUpdatedAt                  sql.NullTime `db:"last_updated_at"`
-	ArchivedAt                     sql.NullTime `db:"archived_at"`
-	ID                             string       `db:"id"`
-	Name                           string       `db:"name"`
-	PluralName                     string       `db:"plural_name"`
-	Description                    string       `db:"description"`
-	IconPath                       string       `db:"icon_path"`
-	Slug                           string       `db:"slug"`
-	UsableForStorage               bool         `db:"usable_for_storage"`
-	DisplayInSummaryLists          bool         `db:"display_in_summary_lists"`
-	IncludeInGeneratedInstructions bool         `db:"include_in_generated_instructions"`
+	CreatedAt                      time.Time
+	LastUpdatedAt                  sql.NullTime
+	ArchivedAt                     sql.NullTime
+	ID                             string
+	Name                           string
+	PluralName                     string
+	Description                    string
+	IconPath                       string
+	Slug                           string
+	UsableForStorage               bool
+	DisplayInSummaryLists          bool
+	IncludeInGeneratedInstructions bool
 }
 
 func (q *Queries) GetValidInstrumentByID(ctx context.Context, db DBTX) (*GetValidInstrumentByIDRow, error) {
-	row := db.QueryRowContext(ctx, GetValidInstrumentByID)
+	row := db.QueryRowContext(ctx, getValidInstrumentByID)
 	var i GetValidInstrumentByIDRow
 	err := row.Scan(
 		&i.ID,
@@ -536,7 +536,7 @@ func (q *Queries) GetValidInstrumentByID(ctx context.Context, db DBTX) (*GetVali
 	return &i, err
 }
 
-const GetValidMeasurementUnitByID = `-- name: GetValidMeasurementUnitByID :one
+const getValidMeasurementUnitByID = `-- name: GetValidMeasurementUnitByID :one
 
 SELECT valid_measurement_units.id,
        valid_measurement_units.name,
@@ -556,23 +556,23 @@ SELECT valid_measurement_units.id,
 `
 
 type GetValidMeasurementUnitByIDRow struct {
-	CreatedAt     time.Time    `db:"created_at"`
-	ArchivedAt    sql.NullTime `db:"archived_at"`
-	LastUpdatedAt sql.NullTime `db:"last_updated_at"`
-	PluralName    string       `db:"plural_name"`
-	Name          string       `db:"name"`
-	Description   string       `db:"description"`
-	ID            string       `db:"id"`
-	IconPath      string       `db:"icon_path"`
-	Slug          string       `db:"slug"`
-	Volumetric    sql.NullBool `db:"volumetric"`
-	Imperial      bool         `db:"imperial"`
-	Metric        bool         `db:"metric"`
-	Universal     bool         `db:"universal"`
+	CreatedAt     time.Time
+	ArchivedAt    sql.NullTime
+	LastUpdatedAt sql.NullTime
+	PluralName    string
+	Name          string
+	Description   string
+	ID            string
+	IconPath      string
+	Slug          string
+	Volumetric    sql.NullBool
+	Imperial      bool
+	Metric        bool
+	Universal     bool
 }
 
 func (q *Queries) GetValidMeasurementUnitByID(ctx context.Context, db DBTX) (*GetValidMeasurementUnitByIDRow, error) {
-	row := db.QueryRowContext(ctx, GetValidMeasurementUnitByID)
+	row := db.QueryRowContext(ctx, getValidMeasurementUnitByID)
 	var i GetValidMeasurementUnitByIDRow
 	err := row.Scan(
 		&i.ID,
@@ -592,7 +592,7 @@ func (q *Queries) GetValidMeasurementUnitByID(ctx context.Context, db DBTX) (*Ge
 	return &i, err
 }
 
-const GetValidPreparationByID = `-- name: GetValidPreparationByID :one
+const getValidPreparationByID = `-- name: GetValidPreparationByID :one
 
 SELECT valid_preparations.id,
        valid_preparations.name,
@@ -621,32 +621,32 @@ SELECT valid_preparations.id,
 `
 
 type GetValidPreparationByIDRow struct {
-	CreatedAt                   time.Time     `db:"created_at"`
-	LastUpdatedAt               sql.NullTime  `db:"last_updated_at"`
-	ArchivedAt                  sql.NullTime  `db:"archived_at"`
-	Name                        string        `db:"name"`
-	Description                 string        `db:"description"`
-	IconPath                    string        `db:"icon_path"`
-	ID                          string        `db:"id"`
-	Slug                        string        `db:"slug"`
-	PastTense                   string        `db:"past_tense"`
-	MaximumInstrumentCount      sql.NullInt32 `db:"maximum_instrument_count"`
-	MaximumIngredientCount      sql.NullInt32 `db:"maximum_ingredient_count"`
-	MaximumVesselCount          sql.NullInt32 `db:"maximum_vessel_count"`
-	MinimumVesselCount          int32         `db:"minimum_vessel_count"`
-	MinimumInstrumentCount      int32         `db:"minimum_instrument_count"`
-	MinimumIngredientCount      int32         `db:"minimum_ingredient_count"`
-	RestrictToIngredients       bool          `db:"restrict_to_ingredients"`
-	OnlyForVessels              bool          `db:"only_for_vessels"`
-	ConsumesVessel              bool          `db:"consumes_vessel"`
-	ConditionExpressionRequired bool          `db:"condition_expression_required"`
-	TimeEstimateRequired        bool          `db:"time_estimate_required"`
-	TemperatureRequired         bool          `db:"temperature_required"`
-	YieldsNothing               bool          `db:"yields_nothing"`
+	CreatedAt                   time.Time
+	LastUpdatedAt               sql.NullTime
+	ArchivedAt                  sql.NullTime
+	Name                        string
+	Description                 string
+	IconPath                    string
+	ID                          string
+	Slug                        string
+	PastTense                   string
+	MaximumInstrumentCount      sql.NullInt32
+	MaximumIngredientCount      sql.NullInt32
+	MaximumVesselCount          sql.NullInt32
+	MinimumVesselCount          int32
+	MinimumInstrumentCount      int32
+	MinimumIngredientCount      int32
+	RestrictToIngredients       bool
+	OnlyForVessels              bool
+	ConsumesVessel              bool
+	ConditionExpressionRequired bool
+	TimeEstimateRequired        bool
+	TemperatureRequired         bool
+	YieldsNothing               bool
 }
 
 func (q *Queries) GetValidPreparationByID(ctx context.Context, db DBTX) (*GetValidPreparationByIDRow, error) {
-	row := db.QueryRowContext(ctx, GetValidPreparationByID)
+	row := db.QueryRowContext(ctx, getValidPreparationByID)
 	var i GetValidPreparationByIDRow
 	err := row.Scan(
 		&i.ID,

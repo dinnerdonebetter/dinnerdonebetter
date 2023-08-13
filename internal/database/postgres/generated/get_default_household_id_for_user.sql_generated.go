@@ -9,7 +9,7 @@ import (
 	"context"
 )
 
-const GetDefaultHouseholdIDForUser = `-- name: GetDefaultHouseholdIDForUser :one
+const getDefaultHouseholdIDForUser = `-- name: GetDefaultHouseholdIDForUser :one
 
 SELECT households.id
 FROM households
@@ -19,12 +19,12 @@ WHERE household_user_memberships.belongs_to_user = $1
 `
 
 type GetDefaultHouseholdIDForUserParams struct {
-	BelongsToUser    string `db:"belongs_to_user"`
-	DefaultHousehold bool   `db:"default_household"`
+	BelongsToUser    string
+	DefaultHousehold bool
 }
 
 func (q *Queries) GetDefaultHouseholdIDForUser(ctx context.Context, db DBTX, arg *GetDefaultHouseholdIDForUserParams) (string, error) {
-	row := db.QueryRowContext(ctx, GetDefaultHouseholdIDForUser, arg.BelongsToUser, arg.DefaultHousehold)
+	row := db.QueryRowContext(ctx, getDefaultHouseholdIDForUser, arg.BelongsToUser, arg.DefaultHousehold)
 	var id string
 	err := row.Scan(&id)
 	return id, err

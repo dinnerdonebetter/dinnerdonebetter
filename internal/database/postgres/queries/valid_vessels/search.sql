@@ -36,5 +36,4 @@ FROM valid_vessels
 WHERE valid_vessels.archived_at IS NULL
 	AND valid_measurement_units.archived_at IS NULL
 	AND valid_vessels.name ILIKE $1
-
 	LIMIT 50;

@@ -9,7 +9,7 @@ import (
 	"context"
 )
 
-const RemoveUserFromHousehold = `-- name: RemoveUserFromHousehold :exec
+const removeUserFromHousehold = `-- name: RemoveUserFromHousehold :exec
 
 UPDATE household_user_memberships
 SET archived_at = NOW(),
@@ -20,11 +20,11 @@ WHERE household_user_memberships.archived_at IS NULL
 `
 
 type RemoveUserFromHouseholdParams struct {
-	BelongsToHousehold string `db:"belongs_to_household"`
-	BelongsToUser      string `db:"belongs_to_user"`
+	BelongsToHousehold string
+	BelongsToUser      string
 }
 
 func (q *Queries) RemoveUserFromHousehold(ctx context.Context, db DBTX, arg *RemoveUserFromHouseholdParams) error {
-	_, err := db.ExecContext(ctx, RemoveUserFromHousehold, arg.BelongsToHousehold, arg.BelongsToUser)
+	_, err := db.ExecContext(ctx, removeUserFromHousehold, arg.BelongsToHousehold, arg.BelongsToUser)
 	return err
 }

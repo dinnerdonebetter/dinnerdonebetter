@@ -10,33 +10,33 @@ import (
 	"database/sql"
 )
 
-const FinalizeMealPlan = `-- name: FinalizeMealPlan :exec
+const finalizeMealPlan = `-- name: FinalizeMealPlan :exec
 
 UPDATE meal_plans SET status = $1 WHERE archived_at IS NULL AND id = $2
 `
 
 type FinalizeMealPlanParams struct {
-	Status MealPlanStatus `db:"status"`
-	ID     string         `db:"id"`
+	Status MealPlanStatus
+	ID     string
 }
 
 func (q *Queries) FinalizeMealPlan(ctx context.Context, db DBTX, arg *FinalizeMealPlanParams) error {
-	_, err := db.ExecContext(ctx, FinalizeMealPlan, arg.Status, arg.ID)
+	_, err := db.ExecContext(ctx, finalizeMealPlan, arg.Status, arg.ID)
 	return err
 }
 
-const FinalizeMealPlanOption = `-- name: FinalizeMealPlanOption :exec
+const finalizeMealPlanOption = `-- name: FinalizeMealPlanOption :exec
 
 UPDATE meal_plan_options SET chosen = (belongs_to_meal_plan_event = $1 AND id = $2), tiebroken = $3 WHERE archived_at IS NULL AND belongs_to_meal_plan_event = $1 AND id = $2
 `
 
 type FinalizeMealPlanOptionParams struct {
-	ID                     string         `db:"id"`
-	BelongsToMealPlanEvent sql.NullString `db:"belongs_to_meal_plan_event"`
-	Tiebroken              bool           `db:"tiebroken"`
+	ID                     string
+	BelongsToMealPlanEvent sql.NullString
+	Tiebroken              bool
 }
 
 func (q *Queries) FinalizeMealPlanOption(ctx context.Context, db DBTX, arg *FinalizeMealPlanOptionParams) error {
-	_, err := db.ExecContext(ctx, FinalizeMealPlanOption, arg.BelongsToMealPlanEvent, arg.ID, arg.Tiebroken)
+	_, err := db.ExecContext(ctx, finalizeMealPlanOption, arg.BelongsToMealPlanEvent, arg.ID, arg.Tiebroken)
 	return err
 }

@@ -9,18 +9,18 @@ import (
 	"context"
 )
 
-const ModifyHouseholdUserPermissions = `-- name: ModifyHouseholdUserPermissions :exec
+const modifyHouseholdUserPermissions = `-- name: ModifyHouseholdUserPermissions :exec
 
 UPDATE household_user_memberships SET household_role = $1 WHERE belongs_to_household = $2 AND belongs_to_user = $3
 `
 
 type ModifyHouseholdUserPermissionsParams struct {
-	HouseholdRole      string `db:"household_role"`
-	BelongsToHousehold string `db:"belongs_to_household"`
-	BelongsToUser      string `db:"belongs_to_user"`
+	HouseholdRole      string
+	BelongsToHousehold string
+	BelongsToUser      string
 }
 
 func (q *Queries) ModifyHouseholdUserPermissions(ctx context.Context, db DBTX, arg *ModifyHouseholdUserPermissionsParams) error {
-	_, err := db.ExecContext(ctx, ModifyHouseholdUserPermissions, arg.HouseholdRole, arg.BelongsToHousehold, arg.BelongsToUser)
+	_, err := db.ExecContext(ctx, modifyHouseholdUserPermissions, arg.HouseholdRole, arg.BelongsToHousehold, arg.BelongsToUser)
 	return err
 }

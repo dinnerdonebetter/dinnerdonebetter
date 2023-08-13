@@ -9,7 +9,7 @@ import (
 	"context"
 )
 
-const MarkHouseholdUserMembershipAsUserDefault = `-- name: MarkHouseholdUserMembershipAsUserDefault :exec
+const markHouseholdUserMembershipAsUserDefault = `-- name: MarkHouseholdUserMembershipAsUserDefault :exec
 
 UPDATE household_user_memberships
 SET default_household = (belongs_to_user = $1 AND belongs_to_household = $2)
@@ -18,12 +18,12 @@ WHERE archived_at IS NULL
 `
 
 type MarkHouseholdUserMembershipAsUserDefaultParams struct {
-	BelongsToUser      string `db:"belongs_to_user"`
-	BelongsToHousehold string `db:"belongs_to_household"`
-	BelongsToUser_2    string `db:"belongs_to_user_2"`
+	BelongsToUser      string
+	BelongsToHousehold string
+	BelongsToUser_2    string
 }
 
 func (q *Queries) MarkHouseholdUserMembershipAsUserDefault(ctx context.Context, db DBTX, arg *MarkHouseholdUserMembershipAsUserDefaultParams) error {
-	_, err := db.ExecContext(ctx, MarkHouseholdUserMembershipAsUserDefault, arg.BelongsToUser, arg.BelongsToHousehold, arg.BelongsToUser_2)
+	_, err := db.ExecContext(ctx, markHouseholdUserMembershipAsUserDefault, arg.BelongsToUser, arg.BelongsToHousehold, arg.BelongsToUser_2)
 	return err
 }

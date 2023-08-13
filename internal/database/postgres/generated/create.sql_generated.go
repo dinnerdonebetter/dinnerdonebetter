@@ -11,29 +11,29 @@ import (
 	"time"
 )
 
-const CreateHousehold = `-- name: CreateHousehold :exec
+const createHousehold = `-- name: CreateHousehold :exec
 
 INSERT INTO households (id,"name",billing_status,contact_phone,address_line_1,address_line_2,city,state,zip_code,country,latitude,longitude,belongs_to_user) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
 `
 
 type CreateHouseholdParams struct {
-	City          string         `db:"city"`
-	Name          string         `db:"name"`
-	BillingStatus string         `db:"billing_status"`
-	ContactPhone  string         `db:"contact_phone"`
-	AddressLine1  string         `db:"address_line_1"`
-	AddressLine2  string         `db:"address_line_2"`
-	ID            string         `db:"id"`
-	State         string         `db:"state"`
-	ZipCode       string         `db:"zip_code"`
-	Country       string         `db:"country"`
-	BelongsToUser string         `db:"belongs_to_user"`
-	Latitude      sql.NullString `db:"latitude"`
-	Longitude     sql.NullString `db:"longitude"`
+	City          string
+	Name          string
+	BillingStatus string
+	ContactPhone  string
+	AddressLine1  string
+	AddressLine2  string
+	ID            string
+	State         string
+	ZipCode       string
+	Country       string
+	BelongsToUser string
+	Latitude      sql.NullString
+	Longitude     sql.NullString
 }
 
 func (q *Queries) CreateHousehold(ctx context.Context, db DBTX, arg *CreateHouseholdParams) error {
-	_, err := db.ExecContext(ctx, CreateHousehold,
+	_, err := db.ExecContext(ctx, createHousehold,
 		arg.ID,
 		arg.Name,
 		arg.BillingStatus,
@@ -51,21 +51,21 @@ func (q *Queries) CreateHousehold(ctx context.Context, db DBTX, arg *CreateHouse
 	return err
 }
 
-const CreateHouseholdInstrumentOwnership = `-- name: CreateHouseholdInstrumentOwnership :exec
+const createHouseholdInstrumentOwnership = `-- name: CreateHouseholdInstrumentOwnership :exec
 
 INSERT INTO household_instrument_ownerships (id,notes,quantity,valid_instrument_id,belongs_to_household) VALUES ($1,$2,$3,$4,$5)
 `
 
 type CreateHouseholdInstrumentOwnershipParams struct {
-	ID                 string `db:"id"`
-	Notes              string `db:"notes"`
-	ValidInstrumentID  string `db:"valid_instrument_id"`
-	BelongsToHousehold string `db:"belongs_to_household"`
-	Quantity           int32  `db:"quantity"`
+	ID                 string
+	Notes              string
+	ValidInstrumentID  string
+	BelongsToHousehold string
+	Quantity           int32
 }
 
 func (q *Queries) CreateHouseholdInstrumentOwnership(ctx context.Context, db DBTX, arg *CreateHouseholdInstrumentOwnershipParams) error {
-	_, err := db.ExecContext(ctx, CreateHouseholdInstrumentOwnership,
+	_, err := db.ExecContext(ctx, createHouseholdInstrumentOwnership,
 		arg.ID,
 		arg.Notes,
 		arg.Quantity,
@@ -75,25 +75,25 @@ func (q *Queries) CreateHouseholdInstrumentOwnership(ctx context.Context, db DBT
 	return err
 }
 
-const CreateHouseholdInvitation = `-- name: CreateHouseholdInvitation :exec
+const createHouseholdInvitation = `-- name: CreateHouseholdInvitation :exec
 
 INSERT INTO household_invitations (id,from_user,to_user,to_name,note,to_email,token,destination_household,expires_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
 `
 
 type CreateHouseholdInvitationParams struct {
-	ExpiresAt            time.Time      `db:"expires_at"`
-	ID                   string         `db:"id"`
-	FromUser             string         `db:"from_user"`
-	ToName               string         `db:"to_name"`
-	Note                 string         `db:"note"`
-	ToEmail              string         `db:"to_email"`
-	Token                string         `db:"token"`
-	DestinationHousehold string         `db:"destination_household"`
-	ToUser               sql.NullString `db:"to_user"`
+	ExpiresAt            time.Time
+	ID                   string
+	FromUser             string
+	ToName               string
+	Note                 string
+	ToEmail              string
+	Token                string
+	DestinationHousehold string
+	ToUser               sql.NullString
 }
 
 func (q *Queries) CreateHouseholdInvitation(ctx context.Context, db DBTX, arg *CreateHouseholdInvitationParams) error {
-	_, err := db.ExecContext(ctx, CreateHouseholdInvitation,
+	_, err := db.ExecContext(ctx, createHouseholdInvitation,
 		arg.ID,
 		arg.FromUser,
 		arg.ToUser,
@@ -107,23 +107,23 @@ func (q *Queries) CreateHouseholdInvitation(ctx context.Context, db DBTX, arg *C
 	return err
 }
 
-const CreateMeal = `-- name: CreateMeal :exec
+const createMeal = `-- name: CreateMeal :exec
 
 INSERT INTO meals (id,"name",description,min_estimated_portions,max_estimated_portions,eligible_for_meal_plans,created_by_user) VALUES ($1,$2,$3,$4,$5,$6,$7)
 `
 
 type CreateMealParams struct {
-	ID                   string         `db:"id"`
-	Name                 string         `db:"name"`
-	Description          string         `db:"description"`
-	MinEstimatedPortions string         `db:"min_estimated_portions"`
-	CreatedByUser        string         `db:"created_by_user"`
-	MaxEstimatedPortions sql.NullString `db:"max_estimated_portions"`
-	EligibleForMealPlans bool           `db:"eligible_for_meal_plans"`
+	ID                   string
+	Name                 string
+	Description          string
+	MinEstimatedPortions string
+	CreatedByUser        string
+	MaxEstimatedPortions sql.NullString
+	EligibleForMealPlans bool
 }
 
 func (q *Queries) CreateMeal(ctx context.Context, db DBTX, arg *CreateMealParams) error {
-	_, err := db.ExecContext(ctx, CreateMeal,
+	_, err := db.ExecContext(ctx, createMeal,
 		arg.ID,
 		arg.Name,
 		arg.Description,
@@ -135,21 +135,21 @@ func (q *Queries) CreateMeal(ctx context.Context, db DBTX, arg *CreateMealParams
 	return err
 }
 
-const CreateMealComponent = `-- name: CreateMealComponent :exec
+const createMealComponent = `-- name: CreateMealComponent :exec
 
 INSERT INTO meal_components (id,meal_id,recipe_id,meal_component_type,recipe_scale) VALUES ($1,$2,$3,$4,$5)
 `
 
 type CreateMealComponentParams struct {
-	ID                string        `db:"id"`
-	MealID            string        `db:"meal_id"`
-	RecipeID          string        `db:"recipe_id"`
-	MealComponentType ComponentType `db:"meal_component_type"`
-	RecipeScale       string        `db:"recipe_scale"`
+	ID                string
+	MealID            string
+	RecipeID          string
+	MealComponentType ComponentType
+	RecipeScale       string
 }
 
 func (q *Queries) CreateMealComponent(ctx context.Context, db DBTX, arg *CreateMealComponentParams) error {
-	_, err := db.ExecContext(ctx, CreateMealComponent,
+	_, err := db.ExecContext(ctx, createMealComponent,
 		arg.ID,
 		arg.MealID,
 		arg.RecipeID,
@@ -159,22 +159,22 @@ func (q *Queries) CreateMealComponent(ctx context.Context, db DBTX, arg *CreateM
 	return err
 }
 
-const CreateMealPlan = `-- name: CreateMealPlan :exec
+const createMealPlan = `-- name: CreateMealPlan :exec
 
 INSERT INTO meal_plans (id,notes,status,voting_deadline,belongs_to_household,created_by_user) VALUES ($1,$2,$3,$4,$5,$6)
 `
 
 type CreateMealPlanParams struct {
-	ID                 string         `db:"id"`
-	Notes              string         `db:"notes"`
-	Status             MealPlanStatus `db:"status"`
-	VotingDeadline     time.Time      `db:"voting_deadline"`
-	BelongsToHousehold string         `db:"belongs_to_household"`
-	CreatedByUser      string         `db:"created_by_user"`
+	ID                 string
+	Notes              string
+	Status             MealPlanStatus
+	VotingDeadline     time.Time
+	BelongsToHousehold string
+	CreatedByUser      string
 }
 
 func (q *Queries) CreateMealPlan(ctx context.Context, db DBTX, arg *CreateMealPlanParams) error {
-	_, err := db.ExecContext(ctx, CreateMealPlan,
+	_, err := db.ExecContext(ctx, createMealPlan,
 		arg.ID,
 		arg.Notes,
 		arg.Status,
@@ -185,7 +185,7 @@ func (q *Queries) CreateMealPlan(ctx context.Context, db DBTX, arg *CreateMealPl
 	return err
 }
 
-const CreateMealPlanEvent = `-- name: CreateMealPlanEvent :exec
+const createMealPlanEvent = `-- name: CreateMealPlanEvent :exec
 
 INSERT INTO
 	meal_plan_events (id, notes, starts_at, ends_at, meal_name, belongs_to_meal_plan)
@@ -194,16 +194,16 @@ VALUES
 `
 
 type CreateMealPlanEventParams struct {
-	ID                string    `db:"id"`
-	Notes             string    `db:"notes"`
-	StartsAt          time.Time `db:"starts_at"`
-	EndsAt            time.Time `db:"ends_at"`
-	MealName          MealName  `db:"meal_name"`
-	BelongsToMealPlan string    `db:"belongs_to_meal_plan"`
+	ID                string
+	Notes             string
+	StartsAt          time.Time
+	EndsAt            time.Time
+	MealName          MealName
+	BelongsToMealPlan string
 }
 
 func (q *Queries) CreateMealPlanEvent(ctx context.Context, db DBTX, arg *CreateMealPlanEventParams) error {
-	_, err := db.ExecContext(ctx, CreateMealPlanEvent,
+	_, err := db.ExecContext(ctx, createMealPlanEvent,
 		arg.ID,
 		arg.Notes,
 		arg.StartsAt,
@@ -214,7 +214,7 @@ func (q *Queries) CreateMealPlanEvent(ctx context.Context, db DBTX, arg *CreateM
 	return err
 }
 
-const CreateMealPlanGroceryListItem = `-- name: CreateMealPlanGroceryListItem :exec
+const createMealPlanGroceryListItem = `-- name: CreateMealPlanGroceryListItem :exec
 
 INSERT INTO meal_plan_grocery_list_items
 (id,belongs_to_meal_plan,valid_ingredient,valid_measurement_unit,minimum_quantity_needed,maximum_quantity_needed,quantity_purchased,purchased_measurement_unit,purchased_upc,purchase_price,status_explanation,status)
@@ -222,22 +222,22 @@ VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
 `
 
 type CreateMealPlanGroceryListItemParams struct {
-	ID                       string                `db:"id"`
-	BelongsToMealPlan        string                `db:"belongs_to_meal_plan"`
-	ValidIngredient          string                `db:"valid_ingredient"`
-	ValidMeasurementUnit     string                `db:"valid_measurement_unit"`
-	MinimumQuantityNeeded    string                `db:"minimum_quantity_needed"`
-	StatusExplanation        string                `db:"status_explanation"`
-	Status                   GroceryListItemStatus `db:"status"`
-	MaximumQuantityNeeded    sql.NullString        `db:"maximum_quantity_needed"`
-	QuantityPurchased        sql.NullString        `db:"quantity_purchased"`
-	PurchasedMeasurementUnit sql.NullString        `db:"purchased_measurement_unit"`
-	PurchasedUpc             sql.NullString        `db:"purchased_upc"`
-	PurchasePrice            sql.NullString        `db:"purchase_price"`
+	ID                       string
+	BelongsToMealPlan        string
+	ValidIngredient          string
+	ValidMeasurementUnit     string
+	MinimumQuantityNeeded    string
+	StatusExplanation        string
+	Status                   GroceryListItemStatus
+	MaximumQuantityNeeded    sql.NullString
+	QuantityPurchased        sql.NullString
+	PurchasedMeasurementUnit sql.NullString
+	PurchasedUpc             sql.NullString
+	PurchasePrice            sql.NullString
 }
 
 func (q *Queries) CreateMealPlanGroceryListItem(ctx context.Context, db DBTX, arg *CreateMealPlanGroceryListItemParams) error {
-	_, err := db.ExecContext(ctx, CreateMealPlanGroceryListItem,
+	_, err := db.ExecContext(ctx, createMealPlanGroceryListItem,
 		arg.ID,
 		arg.BelongsToMealPlan,
 		arg.ValidIngredient,
@@ -254,24 +254,24 @@ func (q *Queries) CreateMealPlanGroceryListItem(ctx context.Context, db DBTX, ar
 	return err
 }
 
-const CreateMealPlanOption = `-- name: CreateMealPlanOption :exec
+const createMealPlanOption = `-- name: CreateMealPlanOption :exec
 
 INSERT INTO meal_plan_options (id,assigned_cook,assigned_dishwasher,meal_id,notes,meal_scale,belongs_to_meal_plan_event,chosen) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
 `
 
 type CreateMealPlanOptionParams struct {
-	ID                     string         `db:"id"`
-	AssignedCook           sql.NullString `db:"assigned_cook"`
-	AssignedDishwasher     sql.NullString `db:"assigned_dishwasher"`
-	MealID                 string         `db:"meal_id"`
-	Notes                  string         `db:"notes"`
-	MealScale              string         `db:"meal_scale"`
-	BelongsToMealPlanEvent sql.NullString `db:"belongs_to_meal_plan_event"`
-	Chosen                 bool           `db:"chosen"`
+	ID                     string
+	AssignedCook           sql.NullString
+	AssignedDishwasher     sql.NullString
+	MealID                 string
+	Notes                  string
+	MealScale              string
+	BelongsToMealPlanEvent sql.NullString
+	Chosen                 bool
 }
 
 func (q *Queries) CreateMealPlanOption(ctx context.Context, db DBTX, arg *CreateMealPlanOptionParams) error {
-	_, err := db.ExecContext(ctx, CreateMealPlanOption,
+	_, err := db.ExecContext(ctx, createMealPlanOption,
 		arg.ID,
 		arg.AssignedCook,
 		arg.AssignedDishwasher,
@@ -284,22 +284,22 @@ func (q *Queries) CreateMealPlanOption(ctx context.Context, db DBTX, arg *Create
 	return err
 }
 
-const CreateMealPlanOptionVote = `-- name: CreateMealPlanOptionVote :exec
+const createMealPlanOptionVote = `-- name: CreateMealPlanOptionVote :exec
 
 INSERT INTO meal_plan_option_votes (id,rank,abstain,notes,by_user,belongs_to_meal_plan_option) VALUES ($1,$2,$3,$4,$5,$6)
 `
 
 type CreateMealPlanOptionVoteParams struct {
-	ID                      string `db:"id"`
-	Notes                   string `db:"notes"`
-	ByUser                  string `db:"by_user"`
-	BelongsToMealPlanOption string `db:"belongs_to_meal_plan_option"`
-	Rank                    int32  `db:"rank"`
-	Abstain                 bool   `db:"abstain"`
+	ID                      string
+	Notes                   string
+	ByUser                  string
+	BelongsToMealPlanOption string
+	Rank                    int32
+	Abstain                 bool
 }
 
 func (q *Queries) CreateMealPlanOptionVote(ctx context.Context, db DBTX, arg *CreateMealPlanOptionVoteParams) error {
-	_, err := db.ExecContext(ctx, CreateMealPlanOptionVote,
+	_, err := db.ExecContext(ctx, createMealPlanOptionVote,
 		arg.ID,
 		arg.Rank,
 		arg.Abstain,
@@ -310,24 +310,24 @@ func (q *Queries) CreateMealPlanOptionVote(ctx context.Context, db DBTX, arg *Cr
 	return err
 }
 
-const CreateMealPlanTask = `-- name: CreateMealPlanTask :exec
+const createMealPlanTask = `-- name: CreateMealPlanTask :exec
 
 INSERT INTO meal_plan_tasks (id,status,status_explanation,creation_explanation,belongs_to_meal_plan_option,belongs_to_recipe_prep_task,assigned_to_user)
 VALUES ($1,$2,$3,$4,$5,$6,$7)
 `
 
 type CreateMealPlanTaskParams struct {
-	ID                      string         `db:"id"`
-	Status                  PrepStepStatus `db:"status"`
-	StatusExplanation       string         `db:"status_explanation"`
-	CreationExplanation     string         `db:"creation_explanation"`
-	BelongsToMealPlanOption string         `db:"belongs_to_meal_plan_option"`
-	BelongsToRecipePrepTask string         `db:"belongs_to_recipe_prep_task"`
-	AssignedToUser          sql.NullString `db:"assigned_to_user"`
+	ID                      string
+	Status                  PrepStepStatus
+	StatusExplanation       string
+	CreationExplanation     string
+	BelongsToMealPlanOption string
+	BelongsToRecipePrepTask string
+	AssignedToUser          sql.NullString
 }
 
 func (q *Queries) CreateMealPlanTask(ctx context.Context, db DBTX, arg *CreateMealPlanTaskParams) error {
-	_, err := db.ExecContext(ctx, CreateMealPlanTask,
+	_, err := db.ExecContext(ctx, createMealPlanTask,
 		arg.ID,
 		arg.Status,
 		arg.StatusExplanation,
@@ -339,20 +339,20 @@ func (q *Queries) CreateMealPlanTask(ctx context.Context, db DBTX, arg *CreateMe
 	return err
 }
 
-const CreateOAuth2Client = `-- name: CreateOAuth2Client :exec
+const createOAuth2Client = `-- name: CreateOAuth2Client :exec
 
 INSERT INTO oauth2_clients (id,"name",client_id,client_secret) VALUES ($1,$2,$3,$4)
 `
 
 type CreateOAuth2ClientParams struct {
-	ID           string `db:"id"`
-	Name         string `db:"name"`
-	ClientID     string `db:"client_id"`
-	ClientSecret string `db:"client_secret"`
+	ID           string
+	Name         string
+	ClientID     string
+	ClientSecret string
 }
 
 func (q *Queries) CreateOAuth2Client(ctx context.Context, db DBTX, arg *CreateOAuth2ClientParams) error {
-	_, err := db.ExecContext(ctx, CreateOAuth2Client,
+	_, err := db.ExecContext(ctx, createOAuth2Client,
 		arg.ID,
 		arg.Name,
 		arg.ClientID,
@@ -361,32 +361,32 @@ func (q *Queries) CreateOAuth2Client(ctx context.Context, db DBTX, arg *CreateOA
 	return err
 }
 
-const CreateOAuth2ClientToken = `-- name: CreateOAuth2ClientToken :exec
+const createOAuth2ClientToken = `-- name: CreateOAuth2ClientToken :exec
 
 INSERT INTO oauth2_client_tokens (id,client_id,belongs_to_user,redirect_uri,scope,code,code_challenge,code_challenge_method,code_created_at,code_expires_at,access,access_created_at,access_expires_at,refresh,refresh_created_at,refresh_expires_at) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
 `
 
 type CreateOAuth2ClientTokenParams struct {
-	AccessExpiresAt     time.Time               `db:"access_expires_at"`
-	CodeExpiresAt       time.Time               `db:"code_expires_at"`
-	RefreshExpiresAt    time.Time               `db:"refresh_expires_at"`
-	RefreshCreatedAt    time.Time               `db:"refresh_created_at"`
-	CodeCreatedAt       time.Time               `db:"code_created_at"`
-	AccessCreatedAt     time.Time               `db:"access_created_at"`
-	CodeChallenge       string                  `db:"code_challenge"`
-	CodeChallengeMethod string                  `db:"code_challenge_method"`
-	Scope               Oauth2ClientTokenScopes `db:"scope"`
-	ClientID            string                  `db:"client_id"`
-	Access              string                  `db:"access"`
-	Code                string                  `db:"code"`
-	ID                  string                  `db:"id"`
-	Refresh             string                  `db:"refresh"`
-	RedirectUri         string                  `db:"redirect_uri"`
-	BelongsToUser       string                  `db:"belongs_to_user"`
+	AccessExpiresAt     time.Time
+	CodeExpiresAt       time.Time
+	RefreshExpiresAt    time.Time
+	RefreshCreatedAt    time.Time
+	CodeCreatedAt       time.Time
+	AccessCreatedAt     time.Time
+	CodeChallenge       string
+	CodeChallengeMethod string
+	Scope               Oauth2ClientTokenScopes
+	ClientID            string
+	Access              string
+	Code                string
+	ID                  string
+	Refresh             string
+	RedirectUri         string
+	BelongsToUser       string
 }
 
 func (q *Queries) CreateOAuth2ClientToken(ctx context.Context, db DBTX, arg *CreateOAuth2ClientTokenParams) error {
-	_, err := db.ExecContext(ctx, CreateOAuth2ClientToken,
+	_, err := db.ExecContext(ctx, createOAuth2ClientToken,
 		arg.ID,
 		arg.ClientID,
 		arg.BelongsToUser,
@@ -407,46 +407,46 @@ func (q *Queries) CreateOAuth2ClientToken(ctx context.Context, db DBTX, arg *Cre
 	return err
 }
 
-const CreatePasswordResetToken = `-- name: CreatePasswordResetToken :exec
+const createPasswordResetToken = `-- name: CreatePasswordResetToken :exec
 
 INSERT INTO password_reset_tokens (id,token,expires_at,belongs_to_user) VALUES ($1,$2,NOW() + (30 * interval '1 minutes'),$3)
 `
 
 type CreatePasswordResetTokenParams struct {
-	ID            string `db:"id"`
-	Token         string `db:"token"`
-	BelongsToUser string `db:"belongs_to_user"`
+	ID            string
+	Token         string
+	BelongsToUser string
 }
 
 func (q *Queries) CreatePasswordResetToken(ctx context.Context, db DBTX, arg *CreatePasswordResetTokenParams) error {
-	_, err := db.ExecContext(ctx, CreatePasswordResetToken, arg.ID, arg.Token, arg.BelongsToUser)
+	_, err := db.ExecContext(ctx, createPasswordResetToken, arg.ID, arg.Token, arg.BelongsToUser)
 	return err
 }
 
-const CreateRecipe = `-- name: CreateRecipe :exec
+const createRecipe = `-- name: CreateRecipe :exec
 
 INSERT INTO recipes (id,"name",slug,"source",description,inspired_by_recipe_id,min_estimated_portions,max_estimated_portions,portion_name,plural_portion_name,seal_of_approval,eligible_for_meals,yields_component_type,created_by_user) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
 `
 
 type CreateRecipeParams struct {
-	MinEstimatedPortions string         `db:"min_estimated_portions"`
-	ID                   string         `db:"id"`
-	Slug                 string         `db:"slug"`
-	Source               string         `db:"source"`
-	Description          string         `db:"description"`
-	CreatedByUser        string         `db:"created_by_user"`
-	Name                 string         `db:"name"`
-	YieldsComponentType  ComponentType  `db:"yields_component_type"`
-	PortionName          string         `db:"portion_name"`
-	PluralPortionName    string         `db:"plural_portion_name"`
-	MaxEstimatedPortions sql.NullString `db:"max_estimated_portions"`
-	InspiredByRecipeID   sql.NullString `db:"inspired_by_recipe_id"`
-	SealOfApproval       bool           `db:"seal_of_approval"`
-	EligibleForMeals     bool           `db:"eligible_for_meals"`
+	MinEstimatedPortions string
+	ID                   string
+	Slug                 string
+	Source               string
+	Description          string
+	CreatedByUser        string
+	Name                 string
+	YieldsComponentType  ComponentType
+	PortionName          string
+	PluralPortionName    string
+	MaxEstimatedPortions sql.NullString
+	InspiredByRecipeID   sql.NullString
+	SealOfApproval       bool
+	EligibleForMeals     bool
 }
 
 func (q *Queries) CreateRecipe(ctx context.Context, db DBTX, arg *CreateRecipeParams) error {
-	_, err := db.ExecContext(ctx, CreateRecipe,
+	_, err := db.ExecContext(ctx, createRecipe,
 		arg.ID,
 		arg.Name,
 		arg.Slug,
@@ -465,24 +465,24 @@ func (q *Queries) CreateRecipe(ctx context.Context, db DBTX, arg *CreateRecipePa
 	return err
 }
 
-const CreateRecipeMedia = `-- name: CreateRecipeMedia :exec
+const createRecipeMedia = `-- name: CreateRecipeMedia :exec
 
 INSERT INTO recipe_media (id,belongs_to_recipe,belongs_to_recipe_step,mime_type,internal_path,external_path,"index")
 	VALUES ($1,$2,$3,$4,$5,$6,$7)
 `
 
 type CreateRecipeMediaParams struct {
-	ID                  string         `db:"id"`
-	MimeType            string         `db:"mime_type"`
-	InternalPath        string         `db:"internal_path"`
-	ExternalPath        string         `db:"external_path"`
-	BelongsToRecipe     sql.NullString `db:"belongs_to_recipe"`
-	BelongsToRecipeStep sql.NullString `db:"belongs_to_recipe_step"`
-	Index               int32          `db:"index"`
+	ID                  string
+	MimeType            string
+	InternalPath        string
+	ExternalPath        string
+	BelongsToRecipe     sql.NullString
+	BelongsToRecipeStep sql.NullString
+	Index               int32
 }
 
 func (q *Queries) CreateRecipeMedia(ctx context.Context, db DBTX, arg *CreateRecipeMediaParams) error {
-	_, err := db.ExecContext(ctx, CreateRecipeMedia,
+	_, err := db.ExecContext(ctx, createRecipeMedia,
 		arg.ID,
 		arg.BelongsToRecipe,
 		arg.BelongsToRecipeStep,
@@ -494,29 +494,29 @@ func (q *Queries) CreateRecipeMedia(ctx context.Context, db DBTX, arg *CreateRec
 	return err
 }
 
-const CreateRecipePrepTask = `-- name: CreateRecipePrepTask :exec
+const createRecipePrepTask = `-- name: CreateRecipePrepTask :exec
 
 INSERT INTO recipe_prep_tasks (id,name,description,notes,optional,explicit_storage_instructions,minimum_time_buffer_before_recipe_in_seconds,maximum_time_buffer_before_recipe_in_seconds,storage_type,minimum_storage_temperature_in_celsius,maximum_storage_temperature_in_celsius,belongs_to_recipe)
 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
 `
 
 type CreateRecipePrepTaskParams struct {
-	ID                                     string                   `db:"id"`
-	Name                                   string                   `db:"name"`
-	Description                            string                   `db:"description"`
-	Notes                                  string                   `db:"notes"`
-	ExplicitStorageInstructions            string                   `db:"explicit_storage_instructions"`
-	BelongsToRecipe                        string                   `db:"belongs_to_recipe"`
-	StorageType                            NullStorageContainerType `db:"storage_type"`
-	MinimumStorageTemperatureInCelsius     sql.NullString           `db:"minimum_storage_temperature_in_celsius"`
-	MaximumStorageTemperatureInCelsius     sql.NullString           `db:"maximum_storage_temperature_in_celsius"`
-	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32            `db:"maximum_time_buffer_before_recipe_in_seconds"`
-	MinimumTimeBufferBeforeRecipeInSeconds int32                    `db:"minimum_time_buffer_before_recipe_in_seconds"`
-	Optional                               bool                     `db:"optional"`
+	ID                                     string
+	Name                                   string
+	Description                            string
+	Notes                                  string
+	ExplicitStorageInstructions            string
+	BelongsToRecipe                        string
+	StorageType                            NullStorageContainerType
+	MinimumStorageTemperatureInCelsius     sql.NullString
+	MaximumStorageTemperatureInCelsius     sql.NullString
+	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
+	MinimumTimeBufferBeforeRecipeInSeconds int32
+	Optional                               bool
 }
 
 func (q *Queries) CreateRecipePrepTask(ctx context.Context, db DBTX, arg *CreateRecipePrepTaskParams) error {
-	_, err := db.ExecContext(ctx, CreateRecipePrepTask,
+	_, err := db.ExecContext(ctx, createRecipePrepTask,
 		arg.ID,
 		arg.Name,
 		arg.Description,
@@ -533,21 +533,21 @@ func (q *Queries) CreateRecipePrepTask(ctx context.Context, db DBTX, arg *Create
 	return err
 }
 
-const CreateRecipePrepTaskStep = `-- name: CreateRecipePrepTaskStep :exec
+const createRecipePrepTaskStep = `-- name: CreateRecipePrepTaskStep :exec
 
 INSERT INTO recipe_prep_task_steps (id,belongs_to_recipe_prep_task,belongs_to_recipe_step,satisfies_recipe_step)
 VALUES ($1,$2,$3,$4)
 `
 
 type CreateRecipePrepTaskStepParams struct {
-	ID                      string `db:"id"`
-	BelongsToRecipePrepTask string `db:"belongs_to_recipe_prep_task"`
-	BelongsToRecipeStep     string `db:"belongs_to_recipe_step"`
-	SatisfiesRecipeStep     bool   `db:"satisfies_recipe_step"`
+	ID                      string
+	BelongsToRecipePrepTask string
+	BelongsToRecipeStep     string
+	SatisfiesRecipeStep     bool
 }
 
 func (q *Queries) CreateRecipePrepTaskStep(ctx context.Context, db DBTX, arg *CreateRecipePrepTaskStepParams) error {
-	_, err := db.ExecContext(ctx, CreateRecipePrepTaskStep,
+	_, err := db.ExecContext(ctx, createRecipePrepTaskStep,
 		arg.ID,
 		arg.BelongsToRecipePrepTask,
 		arg.BelongsToRecipeStep,
@@ -556,25 +556,25 @@ func (q *Queries) CreateRecipePrepTaskStep(ctx context.Context, db DBTX, arg *Cr
 	return err
 }
 
-const CreateRecipeRating = `-- name: CreateRecipeRating :exec
+const createRecipeRating = `-- name: CreateRecipeRating :exec
 
 INSERT INTO recipe_ratings (id,recipe_id,taste,difficulty,cleanup,instructions,overall,notes,by_user) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
 `
 
 type CreateRecipeRatingParams struct {
-	ID           string         `db:"id"`
-	RecipeID     string         `db:"recipe_id"`
-	Notes        string         `db:"notes"`
-	ByUser       string         `db:"by_user"`
-	Taste        sql.NullString `db:"taste"`
-	Difficulty   sql.NullString `db:"difficulty"`
-	Cleanup      sql.NullString `db:"cleanup"`
-	Instructions sql.NullString `db:"instructions"`
-	Overall      sql.NullString `db:"overall"`
+	ID           string
+	RecipeID     string
+	Notes        string
+	ByUser       string
+	Taste        sql.NullString
+	Difficulty   sql.NullString
+	Cleanup      sql.NullString
+	Instructions sql.NullString
+	Overall      sql.NullString
 }
 
 func (q *Queries) CreateRecipeRating(ctx context.Context, db DBTX, arg *CreateRecipeRatingParams) error {
-	_, err := db.ExecContext(ctx, CreateRecipeRating,
+	_, err := db.ExecContext(ctx, createRecipeRating,
 		arg.ID,
 		arg.RecipeID,
 		arg.Taste,
@@ -588,7 +588,7 @@ func (q *Queries) CreateRecipeRating(ctx context.Context, db DBTX, arg *CreateRe
 	return err
 }
 
-const CreateRecipeStep = `-- name: CreateRecipeStep :exec
+const createRecipeStep = `-- name: CreateRecipeStep :exec
 
 INSERT INTO recipe_steps
 (id,index,preparation_id,minimum_estimated_time_in_seconds,maximum_estimated_time_in_seconds,minimum_temperature_in_celsius,maximum_temperature_in_celsius,notes,explicit_instructions,condition_expression,optional,start_timer_automatically,belongs_to_recipe)
@@ -596,23 +596,23 @@ VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
 `
 
 type CreateRecipeStepParams struct {
-	ID                            string         `db:"id"`
-	BelongsToRecipe               string         `db:"belongs_to_recipe"`
-	PreparationID                 string         `db:"preparation_id"`
-	ConditionExpression           string         `db:"condition_expression"`
-	ExplicitInstructions          string         `db:"explicit_instructions"`
-	Notes                         string         `db:"notes"`
-	MaximumTemperatureInCelsius   sql.NullString `db:"maximum_temperature_in_celsius"`
-	MinimumTemperatureInCelsius   sql.NullString `db:"minimum_temperature_in_celsius"`
-	MaximumEstimatedTimeInSeconds sql.NullInt64  `db:"maximum_estimated_time_in_seconds"`
-	MinimumEstimatedTimeInSeconds sql.NullInt64  `db:"minimum_estimated_time_in_seconds"`
-	Index                         int32          `db:"index"`
-	Optional                      bool           `db:"optional"`
-	StartTimerAutomatically       bool           `db:"start_timer_automatically"`
+	ID                            string
+	BelongsToRecipe               string
+	PreparationID                 string
+	ConditionExpression           string
+	ExplicitInstructions          string
+	Notes                         string
+	MaximumTemperatureInCelsius   sql.NullString
+	MinimumTemperatureInCelsius   sql.NullString
+	MaximumEstimatedTimeInSeconds sql.NullInt64
+	MinimumEstimatedTimeInSeconds sql.NullInt64
+	Index                         int32
+	Optional                      bool
+	StartTimerAutomatically       bool
 }
 
 func (q *Queries) CreateRecipeStep(ctx context.Context, db DBTX, arg *CreateRecipeStepParams) error {
-	_, err := db.ExecContext(ctx, CreateRecipeStep,
+	_, err := db.ExecContext(ctx, createRecipeStep,
 		arg.ID,
 		arg.Index,
 		arg.PreparationID,
@@ -630,7 +630,7 @@ func (q *Queries) CreateRecipeStep(ctx context.Context, db DBTX, arg *CreateReci
 	return err
 }
 
-const CreateRecipeStepCompletionCondition = `-- name: CreateRecipeStepCompletionCondition :exec
+const createRecipeStepCompletionCondition = `-- name: CreateRecipeStepCompletionCondition :exec
 
 INSERT INTO recipe_step_completion_conditions (
 	id,
@@ -642,15 +642,15 @@ INSERT INTO recipe_step_completion_conditions (
 `
 
 type CreateRecipeStepCompletionConditionParams struct {
-	ID                  string `db:"id"`
-	BelongsToRecipeStep string `db:"belongs_to_recipe_step"`
-	IngredientState     string `db:"ingredient_state"`
-	Notes               string `db:"notes"`
-	Optional            bool   `db:"optional"`
+	ID                  string
+	BelongsToRecipeStep string
+	IngredientState     string
+	Notes               string
+	Optional            bool
 }
 
 func (q *Queries) CreateRecipeStepCompletionCondition(ctx context.Context, db DBTX, arg *CreateRecipeStepCompletionConditionParams) error {
-	_, err := db.ExecContext(ctx, CreateRecipeStepCompletionCondition,
+	_, err := db.ExecContext(ctx, createRecipeStepCompletionCondition,
 		arg.ID,
 		arg.BelongsToRecipeStep,
 		arg.IngredientState,
@@ -660,7 +660,7 @@ func (q *Queries) CreateRecipeStepCompletionCondition(ctx context.Context, db DB
 	return err
 }
 
-const CreateRecipeStepCompletionConditionIngredient = `-- name: CreateRecipeStepCompletionConditionIngredient :exec
+const createRecipeStepCompletionConditionIngredient = `-- name: CreateRecipeStepCompletionConditionIngredient :exec
 
 INSERT INTO recipe_step_completion_condition_ingredients (
 	id,
@@ -670,17 +670,17 @@ INSERT INTO recipe_step_completion_condition_ingredients (
 `
 
 type CreateRecipeStepCompletionConditionIngredientParams struct {
-	ID                                     string `db:"id"`
-	BelongsToRecipeStepCompletionCondition string `db:"belongs_to_recipe_step_completion_condition"`
-	RecipeStepIngredient                   string `db:"recipe_step_ingredient"`
+	ID                                     string
+	BelongsToRecipeStepCompletionCondition string
+	RecipeStepIngredient                   string
 }
 
 func (q *Queries) CreateRecipeStepCompletionConditionIngredient(ctx context.Context, db DBTX, arg *CreateRecipeStepCompletionConditionIngredientParams) error {
-	_, err := db.ExecContext(ctx, CreateRecipeStepCompletionConditionIngredient, arg.ID, arg.BelongsToRecipeStepCompletionCondition, arg.RecipeStepIngredient)
+	_, err := db.ExecContext(ctx, createRecipeStepCompletionConditionIngredient, arg.ID, arg.BelongsToRecipeStepCompletionCondition, arg.RecipeStepIngredient)
 	return err
 }
 
-const CreateRecipeStepIngredient = `-- name: CreateRecipeStepIngredient :exec
+const createRecipeStepIngredient = `-- name: CreateRecipeStepIngredient :exec
 
 INSERT INTO recipe_step_ingredients (
 	id,
@@ -703,26 +703,26 @@ INSERT INTO recipe_step_ingredients (
 `
 
 type CreateRecipeStepIngredientParams struct {
-	QuantityNotes             string         `db:"quantity_notes"`
-	Name                      string         `db:"name"`
-	BelongsToRecipeStep       string         `db:"belongs_to_recipe_step"`
-	IngredientNotes           string         `db:"ingredient_notes"`
-	ID                        string         `db:"id"`
-	MinimumQuantityValue      string         `db:"minimum_quantity_value"`
-	RecipeStepProductID       sql.NullString `db:"recipe_step_product_id"`
-	MaximumQuantityValue      sql.NullString `db:"maximum_quantity_value"`
-	MeasurementUnit           sql.NullString `db:"measurement_unit"`
-	IngredientID              sql.NullString `db:"ingredient_id"`
-	ProductPercentageToUse    sql.NullString `db:"product_percentage_to_use"`
-	RecipeStepProductRecipeID sql.NullString `db:"recipe_step_product_recipe_id"`
-	VesselIndex               sql.NullInt32  `db:"vessel_index"`
-	OptionIndex               int32          `db:"option_index"`
-	ToTaste                   bool           `db:"to_taste"`
-	Optional                  bool           `db:"optional"`
+	QuantityNotes             string
+	Name                      string
+	BelongsToRecipeStep       string
+	IngredientNotes           string
+	ID                        string
+	MinimumQuantityValue      string
+	RecipeStepProductID       sql.NullString
+	MaximumQuantityValue      sql.NullString
+	MeasurementUnit           sql.NullString
+	IngredientID              sql.NullString
+	ProductPercentageToUse    sql.NullString
+	RecipeStepProductRecipeID sql.NullString
+	VesselIndex               sql.NullInt32
+	OptionIndex               int32
+	ToTaste                   bool
+	Optional                  bool
 }
 
 func (q *Queries) CreateRecipeStepIngredient(ctx context.Context, db DBTX, arg *CreateRecipeStepIngredientParams) error {
-	_, err := db.ExecContext(ctx, CreateRecipeStepIngredient,
+	_, err := db.ExecContext(ctx, createRecipeStepIngredient,
 		arg.ID,
 		arg.Name,
 		arg.Optional,
@@ -743,7 +743,7 @@ func (q *Queries) CreateRecipeStepIngredient(ctx context.Context, db DBTX, arg *
 	return err
 }
 
-const CreateRecipeStepInstrument = `-- name: CreateRecipeStepInstrument :exec
+const createRecipeStepInstrument = `-- name: CreateRecipeStepInstrument :exec
 
 INSERT INTO recipe_step_instruments
 (id,instrument_id,recipe_step_product_id,"name",notes,preference_rank,optional,option_index,minimum_quantity,maximum_quantity,belongs_to_recipe_step)
@@ -751,21 +751,21 @@ VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
 `
 
 type CreateRecipeStepInstrumentParams struct {
-	ID                  string         `db:"id"`
-	Name                string         `db:"name"`
-	Notes               string         `db:"notes"`
-	BelongsToRecipeStep string         `db:"belongs_to_recipe_step"`
-	InstrumentID        sql.NullString `db:"instrument_id"`
-	RecipeStepProductID sql.NullString `db:"recipe_step_product_id"`
-	MaximumQuantity     sql.NullInt32  `db:"maximum_quantity"`
-	PreferenceRank      int32          `db:"preference_rank"`
-	OptionIndex         int32          `db:"option_index"`
-	MinimumQuantity     int32          `db:"minimum_quantity"`
-	Optional            bool           `db:"optional"`
+	ID                  string
+	Name                string
+	Notes               string
+	BelongsToRecipeStep string
+	InstrumentID        sql.NullString
+	RecipeStepProductID sql.NullString
+	MaximumQuantity     sql.NullInt32
+	PreferenceRank      int32
+	OptionIndex         int32
+	MinimumQuantity     int32
+	Optional            bool
 }
 
 func (q *Queries) CreateRecipeStepInstrument(ctx context.Context, db DBTX, arg *CreateRecipeStepInstrumentParams) error {
-	_, err := db.ExecContext(ctx, CreateRecipeStepInstrument,
+	_, err := db.ExecContext(ctx, createRecipeStepInstrument,
 		arg.ID,
 		arg.InstrumentID,
 		arg.RecipeStepProductID,
@@ -781,7 +781,7 @@ func (q *Queries) CreateRecipeStepInstrument(ctx context.Context, db DBTX, arg *
 	return err
 }
 
-const CreateRecipeStepProduct = `-- name: CreateRecipeStepProduct :exec
+const createRecipeStepProduct = `-- name: CreateRecipeStepProduct :exec
 
 INSERT INTO recipe_step_products
 (id,"name","type",measurement_unit,minimum_quantity_value,maximum_quantity_value,quantity_notes,compostable,maximum_storage_duration_in_seconds,minimum_storage_temperature_in_celsius,maximum_storage_temperature_in_celsius,storage_instructions,belongs_to_recipe_step,is_liquid,is_waste,"index",contained_in_vessel_index)
@@ -789,27 +789,27 @@ VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)
 `
 
 type CreateRecipeStepProductParams struct {
-	QuantityNotes                      string                `db:"quantity_notes"`
-	Name                               string                `db:"name"`
-	Type                               RecipeStepProductType `db:"type"`
-	BelongsToRecipeStep                string                `db:"belongs_to_recipe_step"`
-	ID                                 string                `db:"id"`
-	StorageInstructions                string                `db:"storage_instructions"`
-	MinimumQuantityValue               sql.NullString        `db:"minimum_quantity_value"`
-	MinimumStorageTemperatureInCelsius sql.NullString        `db:"minimum_storage_temperature_in_celsius"`
-	MaximumStorageTemperatureInCelsius sql.NullString        `db:"maximum_storage_temperature_in_celsius"`
-	MaximumQuantityValue               sql.NullString        `db:"maximum_quantity_value"`
-	MeasurementUnit                    sql.NullString        `db:"measurement_unit"`
-	MaximumStorageDurationInSeconds    sql.NullInt32         `db:"maximum_storage_duration_in_seconds"`
-	ContainedInVesselIndex             sql.NullInt32         `db:"contained_in_vessel_index"`
-	Index                              int32                 `db:"index"`
-	Compostable                        bool                  `db:"compostable"`
-	IsLiquid                           bool                  `db:"is_liquid"`
-	IsWaste                            bool                  `db:"is_waste"`
+	QuantityNotes                      string
+	Name                               string
+	Type                               RecipeStepProductType
+	BelongsToRecipeStep                string
+	ID                                 string
+	StorageInstructions                string
+	MinimumQuantityValue               sql.NullString
+	MinimumStorageTemperatureInCelsius sql.NullString
+	MaximumStorageTemperatureInCelsius sql.NullString
+	MaximumQuantityValue               sql.NullString
+	MeasurementUnit                    sql.NullString
+	MaximumStorageDurationInSeconds    sql.NullInt32
+	ContainedInVesselIndex             sql.NullInt32
+	Index                              int32
+	Compostable                        bool
+	IsLiquid                           bool
+	IsWaste                            bool
 }
 
 func (q *Queries) CreateRecipeStepProduct(ctx context.Context, db DBTX, arg *CreateRecipeStepProductParams) error {
-	_, err := db.ExecContext(ctx, CreateRecipeStepProduct,
+	_, err := db.ExecContext(ctx, createRecipeStepProduct,
 		arg.ID,
 		arg.Name,
 		arg.Type,
@@ -831,7 +831,7 @@ func (q *Queries) CreateRecipeStepProduct(ctx context.Context, db DBTX, arg *Cre
 	return err
 }
 
-const CreateRecipeStepVessel = `-- name: CreateRecipeStepVessel :exec
+const createRecipeStepVessel = `-- name: CreateRecipeStepVessel :exec
 
 INSERT INTO recipe_step_vessels
 (id,"name",notes,belongs_to_recipe_step,recipe_step_product_id,valid_vessel_id,vessel_predicate,minimum_quantity,maximum_quantity,unavailable_after_step)
@@ -839,20 +839,20 @@ VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
 `
 
 type CreateRecipeStepVesselParams struct {
-	ID                   string         `db:"id"`
-	Name                 string         `db:"name"`
-	Notes                string         `db:"notes"`
-	BelongsToRecipeStep  string         `db:"belongs_to_recipe_step"`
-	VesselPredicate      string         `db:"vessel_predicate"`
-	RecipeStepProductID  sql.NullString `db:"recipe_step_product_id"`
-	ValidVesselID        sql.NullString `db:"valid_vessel_id"`
-	MaximumQuantity      sql.NullInt32  `db:"maximum_quantity"`
-	MinimumQuantity      int32          `db:"minimum_quantity"`
-	UnavailableAfterStep bool           `db:"unavailable_after_step"`
+	ID                   string
+	Name                 string
+	Notes                string
+	BelongsToRecipeStep  string
+	VesselPredicate      string
+	RecipeStepProductID  sql.NullString
+	ValidVesselID        sql.NullString
+	MaximumQuantity      sql.NullInt32
+	MinimumQuantity      int32
+	UnavailableAfterStep bool
 }
 
 func (q *Queries) CreateRecipeStepVessel(ctx context.Context, db DBTX, arg *CreateRecipeStepVesselParams) error {
-	_, err := db.ExecContext(ctx, CreateRecipeStepVessel,
+	_, err := db.ExecContext(ctx, createRecipeStepVessel,
 		arg.ID,
 		arg.Name,
 		arg.Notes,
@@ -867,24 +867,24 @@ func (q *Queries) CreateRecipeStepVessel(ctx context.Context, db DBTX, arg *Crea
 	return err
 }
 
-const CreateServiceSetting = `-- name: CreateServiceSetting :exec
+const createServiceSetting = `-- name: CreateServiceSetting :exec
 
 INSERT INTO service_settings (id,name,type,description,default_value,admins_only,enumeration) VALUES
 ($1,$2,$3,$4,$5,$6,$7)
 `
 
 type CreateServiceSettingParams struct {
-	ID           string         `db:"id"`
-	Name         string         `db:"name"`
-	Type         SettingType    `db:"type"`
-	Description  string         `db:"description"`
-	Enumeration  string         `db:"enumeration"`
-	DefaultValue sql.NullString `db:"default_value"`
-	AdminsOnly   bool           `db:"admins_only"`
+	ID           string
+	Name         string
+	Type         SettingType
+	Description  string
+	Enumeration  string
+	DefaultValue sql.NullString
+	AdminsOnly   bool
 }
 
 func (q *Queries) CreateServiceSetting(ctx context.Context, db DBTX, arg *CreateServiceSettingParams) error {
-	_, err := db.ExecContext(ctx, CreateServiceSetting,
+	_, err := db.ExecContext(ctx, createServiceSetting,
 		arg.ID,
 		arg.Name,
 		arg.Type,
@@ -896,22 +896,22 @@ func (q *Queries) CreateServiceSetting(ctx context.Context, db DBTX, arg *Create
 	return err
 }
 
-const CreateServiceSettingConfiguration = `-- name: CreateServiceSettingConfiguration :exec
+const createServiceSettingConfiguration = `-- name: CreateServiceSettingConfiguration :exec
 
 INSERT INTO service_setting_configurations (id,value,notes,service_setting_id,belongs_to_user,belongs_to_household) VALUES ($1,$2,$3,$4,$5,$6)
 `
 
 type CreateServiceSettingConfigurationParams struct {
-	ID                 string `db:"id"`
-	Value              string `db:"value"`
-	Notes              string `db:"notes"`
-	ServiceSettingID   string `db:"service_setting_id"`
-	BelongsToUser      string `db:"belongs_to_user"`
-	BelongsToHousehold string `db:"belongs_to_household"`
+	ID                 string
+	Value              string
+	Notes              string
+	ServiceSettingID   string
+	BelongsToUser      string
+	BelongsToHousehold string
 }
 
 func (q *Queries) CreateServiceSettingConfiguration(ctx context.Context, db DBTX, arg *CreateServiceSettingConfigurationParams) error {
-	_, err := db.ExecContext(ctx, CreateServiceSettingConfiguration,
+	_, err := db.ExecContext(ctx, createServiceSettingConfiguration,
 		arg.ID,
 		arg.Value,
 		arg.Notes,
@@ -922,28 +922,28 @@ func (q *Queries) CreateServiceSettingConfiguration(ctx context.Context, db DBTX
 	return err
 }
 
-const CreateUser = `-- name: CreateUser :exec
+const createUser = `-- name: CreateUser :exec
 
 INSERT INTO users (id,first_name,last_name,username,email_address,hashed_password,two_factor_secret,avatar_src,user_account_status,birthday,service_role,email_address_verification_token) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
 `
 
 type CreateUserParams struct {
-	ID                            string         `db:"id"`
-	FirstName                     string         `db:"first_name"`
-	LastName                      string         `db:"last_name"`
-	Username                      string         `db:"username"`
-	EmailAddress                  string         `db:"email_address"`
-	HashedPassword                string         `db:"hashed_password"`
-	TwoFactorSecret               string         `db:"two_factor_secret"`
-	AvatarSrc                     sql.NullString `db:"avatar_src"`
-	UserAccountStatus             string         `db:"user_account_status"`
-	Birthday                      sql.NullTime   `db:"birthday"`
-	ServiceRole                   string         `db:"service_role"`
-	EmailAddressVerificationToken sql.NullString `db:"email_address_verification_token"`
+	ID                            string
+	FirstName                     string
+	LastName                      string
+	Username                      string
+	EmailAddress                  string
+	HashedPassword                string
+	TwoFactorSecret               string
+	AvatarSrc                     sql.NullString
+	UserAccountStatus             string
+	Birthday                      sql.NullTime
+	ServiceRole                   string
+	EmailAddressVerificationToken sql.NullString
 }
 
 func (q *Queries) CreateUser(ctx context.Context, db DBTX, arg *CreateUserParams) error {
-	_, err := db.ExecContext(ctx, CreateUser,
+	_, err := db.ExecContext(ctx, createUser,
 		arg.ID,
 		arg.FirstName,
 		arg.LastName,
@@ -960,22 +960,22 @@ func (q *Queries) CreateUser(ctx context.Context, db DBTX, arg *CreateUserParams
 	return err
 }
 
-const CreateUserIngredientPreference = `-- name: CreateUserIngredientPreference :exec
+const createUserIngredientPreference = `-- name: CreateUserIngredientPreference :exec
 
 INSERT INTO user_ingredient_preferences (id,ingredient,rating,notes,allergy,belongs_to_user) VALUES ($1,$2,$3,$4,$5,$6)
 `
 
 type CreateUserIngredientPreferenceParams struct {
-	ID            string `db:"id"`
-	Ingredient    string `db:"ingredient"`
-	Notes         string `db:"notes"`
-	BelongsToUser string `db:"belongs_to_user"`
-	Rating        int16  `db:"rating"`
-	Allergy       bool   `db:"allergy"`
+	ID            string
+	Ingredient    string
+	Notes         string
+	BelongsToUser string
+	Rating        int16
+	Allergy       bool
 }
 
 func (q *Queries) CreateUserIngredientPreference(ctx context.Context, db DBTX, arg *CreateUserIngredientPreferenceParams) error {
-	_, err := db.ExecContext(ctx, CreateUserIngredientPreference,
+	_, err := db.ExecContext(ctx, createUserIngredientPreference,
 		arg.ID,
 		arg.Ingredient,
 		arg.Rating,
@@ -986,7 +986,7 @@ func (q *Queries) CreateUserIngredientPreference(ctx context.Context, db DBTX, a
 	return err
 }
 
-const CreateValidIngredient = `-- name: CreateValidIngredient :exec
+const createValidIngredient = `-- name: CreateValidIngredient :exec
 
 INSERT INTO valid_ingredients
 (
@@ -1029,45 +1029,45 @@ INSERT INTO valid_ingredients
 `
 
 type CreateValidIngredientParams struct {
-	ID                                      string         `db:"id"`
-	Name                                    string         `db:"name"`
-	Description                             string         `db:"description"`
-	Warning                                 string         `db:"warning"`
-	ShoppingSuggestions                     string         `db:"shopping_suggestions"`
-	Slug                                    string         `db:"slug"`
-	StorageInstructions                     string         `db:"storage_instructions"`
-	PluralName                              string         `db:"plural_name"`
-	IconPath                                string         `db:"icon_path"`
-	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
-	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
-	IsLiquid                                sql.NullBool   `db:"is_liquid"`
-	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
-	IsHeat                                  bool           `db:"is_heat"`
-	ContainsFish                            bool           `db:"contains_fish"`
-	Volumetric                              bool           `db:"volumetric"`
-	ContainsSesame                          bool           `db:"contains_sesame"`
-	ContainsShellfish                       bool           `db:"contains_shellfish"`
-	AnimalDerived                           bool           `db:"animal_derived"`
-	ContainsWheat                           bool           `db:"contains_wheat"`
-	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
-	ContainsDairy                           bool           `db:"contains_dairy"`
-	AnimalFlesh                             bool           `db:"animal_flesh"`
-	ContainsGluten                          bool           `db:"contains_gluten"`
-	ContainsSoy                             bool           `db:"contains_soy"`
-	ContainsAlcohol                         bool           `db:"contains_alcohol"`
-	ContainsEgg                             bool           `db:"contains_egg"`
-	IsStarch                                bool           `db:"is_starch"`
-	IsProtein                               bool           `db:"is_protein"`
-	IsGrain                                 bool           `db:"is_grain"`
-	IsFruit                                 bool           `db:"is_fruit"`
-	IsSalt                                  bool           `db:"is_salt"`
-	IsFat                                   bool           `db:"is_fat"`
-	IsAcid                                  bool           `db:"is_acid"`
-	ContainsPeanut                          bool           `db:"contains_peanut"`
+	ID                                      string
+	Name                                    string
+	Description                             string
+	Warning                                 string
+	ShoppingSuggestions                     string
+	Slug                                    string
+	StorageInstructions                     string
+	PluralName                              string
+	IconPath                                string
+	MaximumIdealStorageTemperatureInCelsius sql.NullString
+	MinimumIdealStorageTemperatureInCelsius sql.NullString
+	IsLiquid                                sql.NullBool
+	ContainsTreeNut                         bool
+	IsHeat                                  bool
+	ContainsFish                            bool
+	Volumetric                              bool
+	ContainsSesame                          bool
+	ContainsShellfish                       bool
+	AnimalDerived                           bool
+	ContainsWheat                           bool
+	RestrictToPreparations                  bool
+	ContainsDairy                           bool
+	AnimalFlesh                             bool
+	ContainsGluten                          bool
+	ContainsSoy                             bool
+	ContainsAlcohol                         bool
+	ContainsEgg                             bool
+	IsStarch                                bool
+	IsProtein                               bool
+	IsGrain                                 bool
+	IsFruit                                 bool
+	IsSalt                                  bool
+	IsFat                                   bool
+	IsAcid                                  bool
+	ContainsPeanut                          bool
 }
 
 func (q *Queries) CreateValidIngredient(ctx context.Context, db DBTX, arg *CreateValidIngredientParams) error {
-	_, err := db.ExecContext(ctx, CreateValidIngredient,
+	_, err := db.ExecContext(ctx, createValidIngredient,
 		arg.ID,
 		arg.Name,
 		arg.Description,
@@ -1107,7 +1107,7 @@ func (q *Queries) CreateValidIngredient(ctx context.Context, db DBTX, arg *Creat
 	return err
 }
 
-const CreateValidIngredientGroup = `-- name: CreateValidIngredientGroup :exec
+const createValidIngredientGroup = `-- name: CreateValidIngredientGroup :exec
 
 INSERT INTO valid_ingredient_groups
 (
@@ -1119,14 +1119,14 @@ INSERT INTO valid_ingredient_groups
 `
 
 type CreateValidIngredientGroupParams struct {
-	ID          string `db:"id"`
-	Name        string `db:"name"`
-	Description string `db:"description"`
-	Slug        string `db:"slug"`
+	ID          string
+	Name        string
+	Description string
+	Slug        string
 }
 
 func (q *Queries) CreateValidIngredientGroup(ctx context.Context, db DBTX, arg *CreateValidIngredientGroupParams) error {
-	_, err := db.ExecContext(ctx, CreateValidIngredientGroup,
+	_, err := db.ExecContext(ctx, createValidIngredientGroup,
 		arg.ID,
 		arg.Name,
 		arg.Description,
@@ -1135,7 +1135,7 @@ func (q *Queries) CreateValidIngredientGroup(ctx context.Context, db DBTX, arg *
 	return err
 }
 
-const CreateValidIngredientMeasurementUnit = `-- name: CreateValidIngredientMeasurementUnit :exec
+const createValidIngredientMeasurementUnit = `-- name: CreateValidIngredientMeasurementUnit :exec
 
 INSERT INTO valid_ingredient_measurement_units
 (id,notes,valid_measurement_unit_id,valid_ingredient_id,minimum_allowable_quantity,maximum_allowable_quantity)
@@ -1143,16 +1143,16 @@ VALUES ($1,$2,$3,$4,$5,$6)
 `
 
 type CreateValidIngredientMeasurementUnitParams struct {
-	ID                       string         `db:"id"`
-	Notes                    string         `db:"notes"`
-	ValidMeasurementUnitID   string         `db:"valid_measurement_unit_id"`
-	ValidIngredientID        string         `db:"valid_ingredient_id"`
-	MinimumAllowableQuantity string         `db:"minimum_allowable_quantity"`
-	MaximumAllowableQuantity sql.NullString `db:"maximum_allowable_quantity"`
+	ID                       string
+	Notes                    string
+	ValidMeasurementUnitID   string
+	ValidIngredientID        string
+	MinimumAllowableQuantity string
+	MaximumAllowableQuantity sql.NullString
 }
 
 func (q *Queries) CreateValidIngredientMeasurementUnit(ctx context.Context, db DBTX, arg *CreateValidIngredientMeasurementUnitParams) error {
-	_, err := db.ExecContext(ctx, CreateValidIngredientMeasurementUnit,
+	_, err := db.ExecContext(ctx, createValidIngredientMeasurementUnit,
 		arg.ID,
 		arg.Notes,
 		arg.ValidMeasurementUnitID,
@@ -1163,20 +1163,20 @@ func (q *Queries) CreateValidIngredientMeasurementUnit(ctx context.Context, db D
 	return err
 }
 
-const CreateValidIngredientPreparation = `-- name: CreateValidIngredientPreparation :exec
+const createValidIngredientPreparation = `-- name: CreateValidIngredientPreparation :exec
 
 INSERT INTO valid_ingredient_preparations (id,notes,valid_preparation_id,valid_ingredient_id) VALUES ($1,$2,$3,$4)
 `
 
 type CreateValidIngredientPreparationParams struct {
-	ID                 string `db:"id"`
-	Notes              string `db:"notes"`
-	ValidPreparationID string `db:"valid_preparation_id"`
-	ValidIngredientID  string `db:"valid_ingredient_id"`
+	ID                 string
+	Notes              string
+	ValidPreparationID string
+	ValidIngredientID  string
 }
 
 func (q *Queries) CreateValidIngredientPreparation(ctx context.Context, db DBTX, arg *CreateValidIngredientPreparationParams) error {
-	_, err := db.ExecContext(ctx, CreateValidIngredientPreparation,
+	_, err := db.ExecContext(ctx, createValidIngredientPreparation,
 		arg.ID,
 		arg.Notes,
 		arg.ValidPreparationID,
@@ -1185,23 +1185,23 @@ func (q *Queries) CreateValidIngredientPreparation(ctx context.Context, db DBTX,
 	return err
 }
 
-const CreateValidIngredientState = `-- name: CreateValidIngredientState :exec
+const createValidIngredientState = `-- name: CreateValidIngredientState :exec
 
 INSERT INTO valid_ingredient_states (id,"name",description,icon_path,past_tense,slug,attribute_type) VALUES ($1,$2,$3,$4,$5,$6,$7)
 `
 
 type CreateValidIngredientStateParams struct {
-	ID            string                  `db:"id"`
-	Name          string                  `db:"name"`
-	Description   string                  `db:"description"`
-	IconPath      string                  `db:"icon_path"`
-	PastTense     string                  `db:"past_tense"`
-	Slug          string                  `db:"slug"`
-	AttributeType IngredientAttributeType `db:"attribute_type"`
+	ID            string
+	Name          string
+	Description   string
+	IconPath      string
+	PastTense     string
+	Slug          string
+	AttributeType IngredientAttributeType
 }
 
 func (q *Queries) CreateValidIngredientState(ctx context.Context, db DBTX, arg *CreateValidIngredientStateParams) error {
-	_, err := db.ExecContext(ctx, CreateValidIngredientState,
+	_, err := db.ExecContext(ctx, createValidIngredientState,
 		arg.ID,
 		arg.Name,
 		arg.Description,
@@ -1213,20 +1213,20 @@ func (q *Queries) CreateValidIngredientState(ctx context.Context, db DBTX, arg *
 	return err
 }
 
-const CreateValidIngredientStateIngredient = `-- name: CreateValidIngredientStateIngredient :exec
+const createValidIngredientStateIngredient = `-- name: CreateValidIngredientStateIngredient :exec
 
 INSERT INTO valid_ingredient_state_ingredients (id,notes,valid_ingredient_state,valid_ingredient) VALUES ($1,$2,$3,$4)
 `
 
 type CreateValidIngredientStateIngredientParams struct {
-	ID                   string `db:"id"`
-	Notes                string `db:"notes"`
-	ValidIngredientState string `db:"valid_ingredient_state"`
-	ValidIngredient      string `db:"valid_ingredient"`
+	ID                   string
+	Notes                string
+	ValidIngredientState string
+	ValidIngredient      string
 }
 
 func (q *Queries) CreateValidIngredientStateIngredient(ctx context.Context, db DBTX, arg *CreateValidIngredientStateIngredientParams) error {
-	_, err := db.ExecContext(ctx, CreateValidIngredientStateIngredient,
+	_, err := db.ExecContext(ctx, createValidIngredientStateIngredient,
 		arg.ID,
 		arg.Notes,
 		arg.ValidIngredientState,
@@ -1235,25 +1235,25 @@ func (q *Queries) CreateValidIngredientStateIngredient(ctx context.Context, db D
 	return err
 }
 
-const CreateValidInstrument = `-- name: CreateValidInstrument :exec
+const createValidInstrument = `-- name: CreateValidInstrument :exec
 
 INSERT INTO valid_instruments (id,"name",plural_name,description,icon_path,usable_for_storage,display_in_summary_lists,include_in_generated_instructions,slug) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
 `
 
 type CreateValidInstrumentParams struct {
-	ID                             string `db:"id"`
-	Name                           string `db:"name"`
-	PluralName                     string `db:"plural_name"`
-	Description                    string `db:"description"`
-	IconPath                       string `db:"icon_path"`
-	Slug                           string `db:"slug"`
-	UsableForStorage               bool   `db:"usable_for_storage"`
-	DisplayInSummaryLists          bool   `db:"display_in_summary_lists"`
-	IncludeInGeneratedInstructions bool   `db:"include_in_generated_instructions"`
+	ID                             string
+	Name                           string
+	PluralName                     string
+	Description                    string
+	IconPath                       string
+	Slug                           string
+	UsableForStorage               bool
+	DisplayInSummaryLists          bool
+	IncludeInGeneratedInstructions bool
 }
 
 func (q *Queries) CreateValidInstrument(ctx context.Context, db DBTX, arg *CreateValidInstrumentParams) error {
-	_, err := db.ExecContext(ctx, CreateValidInstrument,
+	_, err := db.ExecContext(ctx, createValidInstrument,
 		arg.ID,
 		arg.Name,
 		arg.PluralName,
@@ -1267,23 +1267,23 @@ func (q *Queries) CreateValidInstrument(ctx context.Context, db DBTX, arg *Creat
 	return err
 }
 
-const CreateValidMeasurementConversion = `-- name: CreateValidMeasurementConversion :exec
+const createValidMeasurementConversion = `-- name: CreateValidMeasurementConversion :exec
 
 INSERT INTO valid_measurement_conversions (id,from_unit,to_unit,only_for_ingredient,modifier,notes)
 VALUES ($1,$2,$3,$4,$5,$6)
 `
 
 type CreateValidMeasurementConversionParams struct {
-	ID                string         `db:"id"`
-	FromUnit          string         `db:"from_unit"`
-	ToUnit            string         `db:"to_unit"`
-	Modifier          string         `db:"modifier"`
-	Notes             string         `db:"notes"`
-	OnlyForIngredient sql.NullString `db:"only_for_ingredient"`
+	ID                string
+	FromUnit          string
+	ToUnit            string
+	Modifier          string
+	Notes             string
+	OnlyForIngredient sql.NullString
 }
 
 func (q *Queries) CreateValidMeasurementConversion(ctx context.Context, db DBTX, arg *CreateValidMeasurementConversionParams) error {
-	_, err := db.ExecContext(ctx, CreateValidMeasurementConversion,
+	_, err := db.ExecContext(ctx, createValidMeasurementConversion,
 		arg.ID,
 		arg.FromUnit,
 		arg.ToUnit,
@@ -1294,7 +1294,7 @@ func (q *Queries) CreateValidMeasurementConversion(ctx context.Context, db DBTX,
 	return err
 }
 
-const CreateValidMeasurementUnit = `-- name: CreateValidMeasurementUnit :exec
+const createValidMeasurementUnit = `-- name: CreateValidMeasurementUnit :exec
 
 INSERT INTO valid_measurement_units
 (id,"name",description,volumetric,icon_path,universal,metric,imperial,plural_name,slug)
@@ -1302,20 +1302,20 @@ VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
 `
 
 type CreateValidMeasurementUnitParams struct {
-	ID          string       `db:"id"`
-	Name        string       `db:"name"`
-	Description string       `db:"description"`
-	IconPath    string       `db:"icon_path"`
-	PluralName  string       `db:"plural_name"`
-	Slug        string       `db:"slug"`
-	Volumetric  sql.NullBool `db:"volumetric"`
-	Universal   bool         `db:"universal"`
-	Metric      bool         `db:"metric"`
-	Imperial    bool         `db:"imperial"`
+	ID          string
+	Name        string
+	Description string
+	IconPath    string
+	PluralName  string
+	Slug        string
+	Volumetric  sql.NullBool
+	Universal   bool
+	Metric      bool
+	Imperial    bool
 }
 
 func (q *Queries) CreateValidMeasurementUnit(ctx context.Context, db DBTX, arg *CreateValidMeasurementUnitParams) error {
-	_, err := db.ExecContext(ctx, CreateValidMeasurementUnit,
+	_, err := db.ExecContext(ctx, createValidMeasurementUnit,
 		arg.ID,
 		arg.Name,
 		arg.Description,
@@ -1330,35 +1330,35 @@ func (q *Queries) CreateValidMeasurementUnit(ctx context.Context, db DBTX, arg *
 	return err
 }
 
-const CreateValidPreparation = `-- name: CreateValidPreparation :exec
+const createValidPreparation = `-- name: CreateValidPreparation :exec
 
 INSERT INTO valid_preparations (id,"name",description,icon_path,yields_nothing,restrict_to_ingredients,minimum_ingredient_count,maximum_ingredient_count,minimum_instrument_count,maximum_instrument_count,temperature_required,time_estimate_required,condition_expression_required,consumes_vessel,only_for_vessels,minimum_vessel_count,maximum_vessel_count,past_tense,slug) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)
 `
 
 type CreateValidPreparationParams struct {
-	Name                        string        `db:"name"`
-	Description                 string        `db:"description"`
-	IconPath                    string        `db:"icon_path"`
-	ID                          string        `db:"id"`
-	Slug                        string        `db:"slug"`
-	PastTense                   string        `db:"past_tense"`
-	MaximumIngredientCount      sql.NullInt32 `db:"maximum_ingredient_count"`
-	MaximumInstrumentCount      sql.NullInt32 `db:"maximum_instrument_count"`
-	MaximumVesselCount          sql.NullInt32 `db:"maximum_vessel_count"`
-	MinimumVesselCount          int32         `db:"minimum_vessel_count"`
-	MinimumIngredientCount      int32         `db:"minimum_ingredient_count"`
-	MinimumInstrumentCount      int32         `db:"minimum_instrument_count"`
-	YieldsNothing               bool          `db:"yields_nothing"`
-	ConsumesVessel              bool          `db:"consumes_vessel"`
-	OnlyForVessels              bool          `db:"only_for_vessels"`
-	ConditionExpressionRequired bool          `db:"condition_expression_required"`
-	TimeEstimateRequired        bool          `db:"time_estimate_required"`
-	TemperatureRequired         bool          `db:"temperature_required"`
-	RestrictToIngredients       bool          `db:"restrict_to_ingredients"`
+	Name                        string
+	Description                 string
+	IconPath                    string
+	ID                          string
+	Slug                        string
+	PastTense                   string
+	MaximumIngredientCount      sql.NullInt32
+	MaximumInstrumentCount      sql.NullInt32
+	MaximumVesselCount          sql.NullInt32
+	MinimumVesselCount          int32
+	MinimumIngredientCount      int32
+	MinimumInstrumentCount      int32
+	YieldsNothing               bool
+	ConsumesVessel              bool
+	OnlyForVessels              bool
+	ConditionExpressionRequired bool
+	TimeEstimateRequired        bool
+	TemperatureRequired         bool
+	RestrictToIngredients       bool
 }
 
 func (q *Queries) CreateValidPreparation(ctx context.Context, db DBTX, arg *CreateValidPreparationParams) error {
-	_, err := db.ExecContext(ctx, CreateValidPreparation,
+	_, err := db.ExecContext(ctx, createValidPreparation,
 		arg.ID,
 		arg.Name,
 		arg.Description,
@@ -1382,20 +1382,20 @@ func (q *Queries) CreateValidPreparation(ctx context.Context, db DBTX, arg *Crea
 	return err
 }
 
-const CreateValidPreparationInstrument = `-- name: CreateValidPreparationInstrument :exec
+const createValidPreparationInstrument = `-- name: CreateValidPreparationInstrument :exec
 
 INSERT INTO valid_preparation_instruments (id,notes,valid_preparation_id,valid_instrument_id) VALUES ($1,$2,$3,$4)
 `
 
 type CreateValidPreparationInstrumentParams struct {
-	ID                 string `db:"id"`
-	Notes              string `db:"notes"`
-	ValidPreparationID string `db:"valid_preparation_id"`
-	ValidInstrumentID  string `db:"valid_instrument_id"`
+	ID                 string
+	Notes              string
+	ValidPreparationID string
+	ValidInstrumentID  string
 }
 
 func (q *Queries) CreateValidPreparationInstrument(ctx context.Context, db DBTX, arg *CreateValidPreparationInstrumentParams) error {
-	_, err := db.ExecContext(ctx, CreateValidPreparationInstrument,
+	_, err := db.ExecContext(ctx, createValidPreparationInstrument,
 		arg.ID,
 		arg.Notes,
 		arg.ValidPreparationID,
@@ -1404,20 +1404,20 @@ func (q *Queries) CreateValidPreparationInstrument(ctx context.Context, db DBTX,
 	return err
 }
 
-const CreateValidPreparationVessel = `-- name: CreateValidPreparationVessel :exec
+const createValidPreparationVessel = `-- name: CreateValidPreparationVessel :exec
 
 INSERT INTO valid_preparation_vessels (id,notes,valid_preparation_id,valid_vessel_id) VALUES ($1,$2,$3,$4)
 `
 
 type CreateValidPreparationVesselParams struct {
-	ID                 string `db:"id"`
-	Notes              string `db:"notes"`
-	ValidPreparationID string `db:"valid_preparation_id"`
-	ValidVesselID      string `db:"valid_vessel_id"`
+	ID                 string
+	Notes              string
+	ValidPreparationID string
+	ValidVesselID      string
 }
 
 func (q *Queries) CreateValidPreparationVessel(ctx context.Context, db DBTX, arg *CreateValidPreparationVesselParams) error {
-	_, err := db.ExecContext(ctx, CreateValidPreparationVessel,
+	_, err := db.ExecContext(ctx, createValidPreparationVessel,
 		arg.ID,
 		arg.Notes,
 		arg.ValidPreparationID,
@@ -1426,31 +1426,32 @@ func (q *Queries) CreateValidPreparationVessel(ctx context.Context, db DBTX, arg
 	return err
 }
 
-const CreateValidVessel = `-- name: CreateValidVessel :exec
+const createValidVessel = `-- name: CreateValidVessel :exec
 
-INSERT INTO valid_vessels (id,"name",plural_name,description,icon_path,usable_for_storage,slug,display_in_summary_lists,include_in_generated_instructions,capacity,capacity_unit,width_in_millimeters,length_in_millimeters,height_in_millimeters,shape) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)
+INSERT INTO valid_vessels (id,"name",plural_name,description,icon_path,usable_for_storage,slug,display_in_summary_lists,include_in_generated_instructions,capacity,capacity_unit,width_in_millimeters,length_in_millimeters,height_in_millimeters,shape)
+    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::float,$11,$12::float,$13::float,$14::float,$15)
 `
 
 type CreateValidVesselParams struct {
-	Slug                           string         `db:"slug"`
-	ID                             string         `db:"id"`
-	PluralName                     string         `db:"plural_name"`
-	Description                    string         `db:"description"`
-	IconPath                       string         `db:"icon_path"`
-	Shape                          VesselShape    `db:"shape"`
-	Name                           string         `db:"name"`
-	Capacity                       string         `db:"capacity"`
-	CapacityUnit                   sql.NullString `db:"capacity_unit"`
-	WidthInMillimeters             sql.NullString `db:"width_in_millimeters"`
-	LengthInMillimeters            sql.NullString `db:"length_in_millimeters"`
-	HeightInMillimeters            sql.NullString `db:"height_in_millimeters"`
-	IncludeInGeneratedInstructions bool           `db:"include_in_generated_instructions"`
-	DisplayInSummaryLists          bool           `db:"display_in_summary_lists"`
-	UsableForStorage               bool           `db:"usable_for_storage"`
+	Slug                           string
+	ID                             string
+	PluralName                     string
+	Description                    string
+	IconPath                       string
+	Shape                          VesselShape
+	Name                           string
+	CapacityUnit                   sql.NullString
+	Capacity                       float64
+	WidthInMillimeters             float64
+	LengthInMillimeters            float64
+	HeightInMillimeters            float64
+	IncludeInGeneratedInstructions bool
+	DisplayInSummaryLists          bool
+	UsableForStorage               bool
 }
 
 func (q *Queries) CreateValidVessel(ctx context.Context, db DBTX, arg *CreateValidVesselParams) error {
-	_, err := db.ExecContext(ctx, CreateValidVessel,
+	_, err := db.ExecContext(ctx, createValidVessel,
 		arg.ID,
 		arg.Name,
 		arg.PluralName,
@@ -1470,7 +1471,7 @@ func (q *Queries) CreateValidVessel(ctx context.Context, db DBTX, arg *CreateVal
 	return err
 }
 
-const CreateWebhook = `-- name: CreateWebhook :exec
+const createWebhook = `-- name: CreateWebhook :exec
 
 INSERT INTO webhooks (
 	id,
@@ -1485,27 +1486,27 @@ VALUES
 `
 
 type CreateWebhookParams struct {
-	ID                 string `db:"id"`
-	Name               string `db:"name"`
-	ContentType        string `db:"content_type"`
-	Url                string `db:"url"`
-	Method             string `db:"method"`
-	BelongsToHousehold string `db:"belongs_to_household"`
+	ID                 string
+	Name               string
+	ContentType        string
+	URL                string
+	Method             string
+	BelongsToHousehold string
 }
 
 func (q *Queries) CreateWebhook(ctx context.Context, db DBTX, arg *CreateWebhookParams) error {
-	_, err := db.ExecContext(ctx, CreateWebhook,
+	_, err := db.ExecContext(ctx, createWebhook,
 		arg.ID,
 		arg.Name,
 		arg.ContentType,
-		arg.Url,
+		arg.URL,
 		arg.Method,
 		arg.BelongsToHousehold,
 	)
 	return err
 }
 
-const CreateWebhookTriggerEvent = `-- name: CreateWebhookTriggerEvent :exec
+const createWebhookTriggerEvent = `-- name: CreateWebhookTriggerEvent :exec
 
 INSERT INTO webhook_trigger_events (
 	id,
@@ -1515,12 +1516,12 @@ INSERT INTO webhook_trigger_events (
 `
 
 type CreateWebhookTriggerEventParams struct {
-	ID               string       `db:"id"`
-	TriggerEvent     WebhookEvent `db:"trigger_event"`
-	BelongsToWebhook string       `db:"belongs_to_webhook"`
+	ID               string
+	TriggerEvent     WebhookEvent
+	BelongsToWebhook string
 }
 
 func (q *Queries) CreateWebhookTriggerEvent(ctx context.Context, db DBTX, arg *CreateWebhookTriggerEventParams) error {
-	_, err := db.ExecContext(ctx, CreateWebhookTriggerEvent, arg.ID, arg.TriggerEvent, arg.BelongsToWebhook)
+	_, err := db.ExecContext(ctx, createWebhookTriggerEvent, arg.ID, arg.TriggerEvent, arg.BelongsToWebhook)
 	return err
 }

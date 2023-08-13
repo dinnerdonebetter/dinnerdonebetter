@@ -9,7 +9,7 @@ import (
 	"context"
 )
 
-const UpdateUserUsername = `-- name: UpdateUserUsername :exec
+const updateUserUsername = `-- name: UpdateUserUsername :exec
 
 UPDATE users SET
 	username = $1,
@@ -19,11 +19,11 @@ WHERE archived_at IS NULL
 `
 
 type UpdateUserUsernameParams struct {
-	Username string `db:"username"`
-	ID       string `db:"id"`
+	Username string
+	ID       string
 }
 
 func (q *Queries) UpdateUserUsername(ctx context.Context, db DBTX, arg *UpdateUserUsernameParams) error {
-	_, err := db.ExecContext(ctx, UpdateUserUsername, arg.Username, arg.ID)
+	_, err := db.ExecContext(ctx, updateUserUsername, arg.Username, arg.ID)
 	return err
 }

@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const GetAllRecipeStepCompletionConditionsForRecipe = `-- name: GetAllRecipeStepCompletionConditionsForRecipe :many
+const getAllRecipeStepCompletionConditionsForRecipe = `-- name: GetAllRecipeStepCompletionConditionsForRecipe :many
 
 SELECT
 	recipe_step_completion_condition_ingredients.id,
@@ -50,30 +50,30 @@ GROUP BY recipe_step_completion_conditions.id,
 `
 
 type GetAllRecipeStepCompletionConditionsForRecipeRow struct {
-	CreatedAt                              time.Time               `db:"created_at"`
-	CreatedAt_2                            time.Time               `db:"created_at_2"`
-	ArchivedAt_2                           sql.NullTime            `db:"archived_at_2"`
-	LastUpdatedAt_2                        sql.NullTime            `db:"last_updated_at_2"`
-	ArchivedAt                             sql.NullTime            `db:"archived_at"`
-	LastUpdatedAt                          sql.NullTime            `db:"last_updated_at"`
-	PastTense                              string                  `db:"past_tense"`
-	ID_3                                   string                  `db:"id_3"`
-	IconPath                               string                  `db:"icon_path"`
-	Slug                                   string                  `db:"slug"`
-	ID                                     string                  `db:"id"`
-	AttributeType                          IngredientAttributeType `db:"attribute_type"`
-	Name                                   string                  `db:"name"`
-	Description                            string                  `db:"description"`
-	BelongsToRecipeStep                    string                  `db:"belongs_to_recipe_step"`
-	BelongsToRecipeStepCompletionCondition string                  `db:"belongs_to_recipe_step_completion_condition"`
-	Notes                                  string                  `db:"notes"`
-	ID_2                                   string                  `db:"id_2"`
-	RecipeStepIngredient                   string                  `db:"recipe_step_ingredient"`
-	Optional                               bool                    `db:"optional"`
+	CreatedAt                              time.Time
+	CreatedAt_2                            time.Time
+	ArchivedAt_2                           sql.NullTime
+	LastUpdatedAt_2                        sql.NullTime
+	ArchivedAt                             sql.NullTime
+	LastUpdatedAt                          sql.NullTime
+	PastTense                              string
+	ID_3                                   string
+	IconPath                               string
+	Slug                                   string
+	ID                                     string
+	AttributeType                          IngredientAttributeType
+	Name                                   string
+	Description                            string
+	BelongsToRecipeStep                    string
+	BelongsToRecipeStepCompletionCondition string
+	Notes                                  string
+	ID_2                                   string
+	RecipeStepIngredient                   string
+	Optional                               bool
 }
 
 func (q *Queries) GetAllRecipeStepCompletionConditionsForRecipe(ctx context.Context, db DBTX, id string) ([]*GetAllRecipeStepCompletionConditionsForRecipeRow, error) {
-	rows, err := db.QueryContext(ctx, GetAllRecipeStepCompletionConditionsForRecipe, id)
+	rows, err := db.QueryContext(ctx, getAllRecipeStepCompletionConditionsForRecipe, id)
 	if err != nil {
 		return nil, err
 	}

@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const SearchValidMeasurementUnitsByIngredientID = `-- name: SearchValidMeasurementUnitsByIngredientID :many
+const searchValidMeasurementUnitsByIngredientID = `-- name: SearchValidMeasurementUnitsByIngredientID :many
 
 SELECT
 	DISTINCT(valid_measurement_units.id),
@@ -72,35 +72,35 @@ WHERE
 `
 
 type SearchValidMeasurementUnitsByIngredientIDParams struct {
-	CreatedAt         time.Time    `db:"created_at"`
-	CreatedAt_2       time.Time    `db:"created_at_2"`
-	LastUpdatedAt     sql.NullTime `db:"last_updated_at"`
-	LastUpdatedAt_2   sql.NullTime `db:"last_updated_at_2"`
-	ValidIngredientID string       `db:"valid_ingredient_id"`
-	Limit             int32        `db:"limit"`
-	Offset            int32        `db:"offset"`
+	CreatedAt         time.Time
+	CreatedAt_2       time.Time
+	LastUpdatedAt     sql.NullTime
+	LastUpdatedAt_2   sql.NullTime
+	ValidIngredientID string
+	Limit             int32
+	Offset            int32
 }
 
 type SearchValidMeasurementUnitsByIngredientIDRow struct {
-	LastUpdatedAt sql.NullTime   `db:"last_updated_at"`
-	ArchivedAt    sql.NullTime   `db:"archived_at"`
-	CreatedAt     sql.NullTime   `db:"created_at"`
-	Name          sql.NullString `db:"name"`
-	Description   sql.NullString `db:"description"`
-	ID            sql.NullString `db:"id"`
-	IconPath      sql.NullString `db:"icon_path"`
-	Slug          sql.NullString `db:"slug"`
-	PluralName    sql.NullString `db:"plural_name"`
-	TotalCount    int64          `db:"total_count"`
-	FilteredCount int64          `db:"filtered_count"`
-	Volumetric    sql.NullBool   `db:"volumetric"`
-	Imperial      sql.NullBool   `db:"imperial"`
-	Metric        sql.NullBool   `db:"metric"`
-	Universal     sql.NullBool   `db:"universal"`
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
+	CreatedAt     sql.NullTime
+	Name          sql.NullString
+	Description   sql.NullString
+	ID            sql.NullString
+	IconPath      sql.NullString
+	Slug          sql.NullString
+	PluralName    sql.NullString
+	TotalCount    int64
+	FilteredCount int64
+	Volumetric    sql.NullBool
+	Imperial      sql.NullBool
+	Metric        sql.NullBool
+	Universal     sql.NullBool
 }
 
 func (q *Queries) SearchValidMeasurementUnitsByIngredientID(ctx context.Context, db DBTX, arg *SearchValidMeasurementUnitsByIngredientIDParams) ([]*SearchValidMeasurementUnitsByIngredientIDRow, error) {
-	rows, err := db.QueryContext(ctx, SearchValidMeasurementUnitsByIngredientID,
+	rows, err := db.QueryContext(ctx, searchValidMeasurementUnitsByIngredientID,
 		arg.CreatedAt,
 		arg.CreatedAt_2,
 		arg.LastUpdatedAt,

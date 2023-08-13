@@ -9,7 +9,7 @@ import (
 	"context"
 )
 
-const GetMealPlanEventsForMealPlan = `-- name: GetMealPlanEventsForMealPlan :many
+const getMealPlanEventsForMealPlan = `-- name: GetMealPlanEventsForMealPlan :many
 
 SELECT
 	meal_plan_events.id,
@@ -27,7 +27,7 @@ WHERE meal_plan_events.archived_at IS NULL
 `
 
 func (q *Queries) GetMealPlanEventsForMealPlan(ctx context.Context, db DBTX, belongsToMealPlan string) ([]*MealPlanEvents, error) {
-	rows, err := db.QueryContext(ctx, GetMealPlanEventsForMealPlan, belongsToMealPlan)
+	rows, err := db.QueryContext(ctx, getMealPlanEventsForMealPlan, belongsToMealPlan)
 	if err != nil {
 		return nil, err
 	}

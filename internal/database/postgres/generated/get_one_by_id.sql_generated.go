@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const GetMealPlanOptionByID = `-- name: GetMealPlanOptionByID :one
+const getMealPlanOptionByID = `-- name: GetMealPlanOptionByID :one
 
 SELECT
 	meal_plan_options.id,
@@ -45,32 +45,32 @@ WHERE meal_plan_options.archived_at IS NULL
 `
 
 type GetMealPlanOptionByIDRow struct {
-	CreatedAt              time.Time      `db:"created_at"`
-	CreatedAt_2            time.Time      `db:"created_at_2"`
-	ArchivedAt_2           sql.NullTime   `db:"archived_at_2"`
-	LastUpdatedAt_2        sql.NullTime   `db:"last_updated_at_2"`
-	ArchivedAt             sql.NullTime   `db:"archived_at"`
-	LastUpdatedAt          sql.NullTime   `db:"last_updated_at"`
-	MealScale              string         `db:"meal_scale"`
-	MinEstimatedPortions   string         `db:"min_estimated_portions"`
-	MealID                 string         `db:"meal_id"`
-	ID                     string         `db:"id"`
-	CreatedByUser          string         `db:"created_by_user"`
-	Notes                  string         `db:"notes"`
-	ID_2                   string         `db:"id_2"`
-	Name                   string         `db:"name"`
-	Description            string         `db:"description"`
-	MaxEstimatedPortions   sql.NullString `db:"max_estimated_portions"`
-	BelongsToMealPlanEvent sql.NullString `db:"belongs_to_meal_plan_event"`
-	AssignedDishwasher     sql.NullString `db:"assigned_dishwasher"`
-	AssignedCook           sql.NullString `db:"assigned_cook"`
-	EligibleForMealPlans   bool           `db:"eligible_for_meal_plans"`
-	Chosen                 bool           `db:"chosen"`
-	Tiebroken              bool           `db:"tiebroken"`
+	CreatedAt              time.Time
+	CreatedAt_2            time.Time
+	ArchivedAt_2           sql.NullTime
+	LastUpdatedAt_2        sql.NullTime
+	ArchivedAt             sql.NullTime
+	LastUpdatedAt          sql.NullTime
+	MealScale              string
+	MinEstimatedPortions   string
+	MealID                 string
+	ID                     string
+	CreatedByUser          string
+	Notes                  string
+	ID_2                   string
+	Name                   string
+	Description            string
+	MaxEstimatedPortions   sql.NullString
+	BelongsToMealPlanEvent sql.NullString
+	AssignedDishwasher     sql.NullString
+	AssignedCook           sql.NullString
+	EligibleForMealPlans   bool
+	Chosen                 bool
+	Tiebroken              bool
 }
 
 func (q *Queries) GetMealPlanOptionByID(ctx context.Context, db DBTX, id string) (*GetMealPlanOptionByIDRow, error) {
-	row := db.QueryRowContext(ctx, GetMealPlanOptionByID, id)
+	row := db.QueryRowContext(ctx, getMealPlanOptionByID, id)
 	var i GetMealPlanOptionByIDRow
 	err := row.Scan(
 		&i.ID,

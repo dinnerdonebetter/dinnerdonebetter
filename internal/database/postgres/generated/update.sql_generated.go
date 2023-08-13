@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const UpdateHousehold = `-- name: UpdateHousehold :exec
+const updateHousehold = `-- name: UpdateHousehold :exec
 
 UPDATE households
 SET
@@ -32,22 +32,22 @@ WHERE archived_at IS NULL
 `
 
 type UpdateHouseholdParams struct {
-	Name          string         `db:"name"`
-	ContactPhone  string         `db:"contact_phone"`
-	AddressLine1  string         `db:"address_line_1"`
-	AddressLine2  string         `db:"address_line_2"`
-	City          string         `db:"city"`
-	State         string         `db:"state"`
-	ZipCode       string         `db:"zip_code"`
-	Country       string         `db:"country"`
-	BelongsToUser string         `db:"belongs_to_user"`
-	ID            string         `db:"id"`
-	Latitude      sql.NullString `db:"latitude"`
-	Longitude     sql.NullString `db:"longitude"`
+	Name          string
+	ContactPhone  string
+	AddressLine1  string
+	AddressLine2  string
+	City          string
+	State         string
+	ZipCode       string
+	Country       string
+	BelongsToUser string
+	ID            string
+	Latitude      sql.NullString
+	Longitude     sql.NullString
 }
 
 func (q *Queries) UpdateHousehold(ctx context.Context, db DBTX, arg *UpdateHouseholdParams) error {
-	_, err := db.ExecContext(ctx, UpdateHousehold,
+	_, err := db.ExecContext(ctx, updateHousehold,
 		arg.Name,
 		arg.ContactPhone,
 		arg.AddressLine1,
@@ -64,7 +64,7 @@ func (q *Queries) UpdateHousehold(ctx context.Context, db DBTX, arg *UpdateHouse
 	return err
 }
 
-const UpdateHouseholdInstrumentOwnership = `-- name: UpdateHouseholdInstrumentOwnership :exec
+const updateHouseholdInstrumentOwnership = `-- name: UpdateHouseholdInstrumentOwnership :exec
 
 UPDATE household_instrument_ownerships
 SET
@@ -78,15 +78,15 @@ WHERE archived_at IS NULL
 `
 
 type UpdateHouseholdInstrumentOwnershipParams struct {
-	Notes              string `db:"notes"`
-	ValidInstrumentID  string `db:"valid_instrument_id"`
-	ID                 string `db:"id"`
-	BelongsToHousehold string `db:"belongs_to_household"`
-	Quantity           int32  `db:"quantity"`
+	Notes              string
+	ValidInstrumentID  string
+	ID                 string
+	BelongsToHousehold string
+	Quantity           int32
 }
 
 func (q *Queries) UpdateHouseholdInstrumentOwnership(ctx context.Context, db DBTX, arg *UpdateHouseholdInstrumentOwnershipParams) error {
-	_, err := db.ExecContext(ctx, UpdateHouseholdInstrumentOwnership,
+	_, err := db.ExecContext(ctx, updateHouseholdInstrumentOwnership,
 		arg.Notes,
 		arg.Quantity,
 		arg.ValidInstrumentID,
@@ -96,21 +96,21 @@ func (q *Queries) UpdateHouseholdInstrumentOwnership(ctx context.Context, db DBT
 	return err
 }
 
-const UpdateMealPlan = `-- name: UpdateMealPlan :exec
+const updateMealPlan = `-- name: UpdateMealPlan :exec
 
 UPDATE meal_plans SET notes = $1, status = $2, voting_deadline = $3, last_updated_at = NOW() WHERE archived_at IS NULL AND belongs_to_household = $4 AND id = $5
 `
 
 type UpdateMealPlanParams struct {
-	Notes              string         `db:"notes"`
-	Status             MealPlanStatus `db:"status"`
-	VotingDeadline     time.Time      `db:"voting_deadline"`
-	BelongsToHousehold string         `db:"belongs_to_household"`
-	ID                 string         `db:"id"`
+	Notes              string
+	Status             MealPlanStatus
+	VotingDeadline     time.Time
+	BelongsToHousehold string
+	ID                 string
 }
 
 func (q *Queries) UpdateMealPlan(ctx context.Context, db DBTX, arg *UpdateMealPlanParams) error {
-	_, err := db.ExecContext(ctx, UpdateMealPlan,
+	_, err := db.ExecContext(ctx, updateMealPlan,
 		arg.Notes,
 		arg.Status,
 		arg.VotingDeadline,
@@ -120,7 +120,7 @@ func (q *Queries) UpdateMealPlan(ctx context.Context, db DBTX, arg *UpdateMealPl
 	return err
 }
 
-const UpdateMealPlanEvent = `-- name: UpdateMealPlanEvent :exec
+const updateMealPlanEvent = `-- name: UpdateMealPlanEvent :exec
 
 UPDATE meal_plan_events
 SET notes = $1,
@@ -134,16 +134,16 @@ WHERE archived_at IS NULL
 `
 
 type UpdateMealPlanEventParams struct {
-	Notes             string    `db:"notes"`
-	StartsAt          time.Time `db:"starts_at"`
-	EndsAt            time.Time `db:"ends_at"`
-	MealName          MealName  `db:"meal_name"`
-	BelongsToMealPlan string    `db:"belongs_to_meal_plan"`
-	ID                string    `db:"id"`
+	Notes             string
+	StartsAt          time.Time
+	EndsAt            time.Time
+	MealName          MealName
+	BelongsToMealPlan string
+	ID                string
 }
 
 func (q *Queries) UpdateMealPlanEvent(ctx context.Context, db DBTX, arg *UpdateMealPlanEventParams) error {
-	_, err := db.ExecContext(ctx, UpdateMealPlanEvent,
+	_, err := db.ExecContext(ctx, updateMealPlanEvent,
 		arg.Notes,
 		arg.StartsAt,
 		arg.EndsAt,
@@ -154,7 +154,7 @@ func (q *Queries) UpdateMealPlanEvent(ctx context.Context, db DBTX, arg *UpdateM
 	return err
 }
 
-const UpdateMealPlanGroceryListItem = `-- name: UpdateMealPlanGroceryListItem :exec
+const updateMealPlanGroceryListItem = `-- name: UpdateMealPlanGroceryListItem :exec
 
 UPDATE meal_plan_grocery_list_items
 SET
@@ -175,22 +175,22 @@ WHERE archived_at IS NULL
 `
 
 type UpdateMealPlanGroceryListItemParams struct {
-	BelongsToMealPlan        string                `db:"belongs_to_meal_plan"`
-	ValidIngredient          string                `db:"valid_ingredient"`
-	ValidMeasurementUnit     string                `db:"valid_measurement_unit"`
-	MinimumQuantityNeeded    string                `db:"minimum_quantity_needed"`
-	StatusExplanation        string                `db:"status_explanation"`
-	Status                   GroceryListItemStatus `db:"status"`
-	ID                       string                `db:"id"`
-	MaximumQuantityNeeded    sql.NullString        `db:"maximum_quantity_needed"`
-	QuantityPurchased        sql.NullString        `db:"quantity_purchased"`
-	PurchasedMeasurementUnit sql.NullString        `db:"purchased_measurement_unit"`
-	PurchasedUpc             sql.NullString        `db:"purchased_upc"`
-	PurchasePrice            sql.NullString        `db:"purchase_price"`
+	BelongsToMealPlan        string
+	ValidIngredient          string
+	ValidMeasurementUnit     string
+	MinimumQuantityNeeded    string
+	StatusExplanation        string
+	Status                   GroceryListItemStatus
+	ID                       string
+	MaximumQuantityNeeded    sql.NullString
+	QuantityPurchased        sql.NullString
+	PurchasedMeasurementUnit sql.NullString
+	PurchasedUpc             sql.NullString
+	PurchasePrice            sql.NullString
 }
 
 func (q *Queries) UpdateMealPlanGroceryListItem(ctx context.Context, db DBTX, arg *UpdateMealPlanGroceryListItemParams) error {
-	_, err := db.ExecContext(ctx, UpdateMealPlanGroceryListItem,
+	_, err := db.ExecContext(ctx, updateMealPlanGroceryListItem,
 		arg.BelongsToMealPlan,
 		arg.ValidIngredient,
 		arg.ValidMeasurementUnit,
@@ -207,7 +207,7 @@ func (q *Queries) UpdateMealPlanGroceryListItem(ctx context.Context, db DBTX, ar
 	return err
 }
 
-const UpdateMealPlanOption = `-- name: UpdateMealPlanOption :exec
+const updateMealPlanOption = `-- name: UpdateMealPlanOption :exec
 
 UPDATE meal_plan_options
 SET
@@ -223,17 +223,17 @@ WHERE archived_at IS NULL
 `
 
 type UpdateMealPlanOptionParams struct {
-	MealID                 string         `db:"meal_id"`
-	Notes                  string         `db:"notes"`
-	MealScale              string         `db:"meal_scale"`
-	ID                     string         `db:"id"`
-	AssignedCook           sql.NullString `db:"assigned_cook"`
-	AssignedDishwasher     sql.NullString `db:"assigned_dishwasher"`
-	BelongsToMealPlanEvent sql.NullString `db:"belongs_to_meal_plan_event"`
+	MealID                 string
+	Notes                  string
+	MealScale              string
+	ID                     string
+	AssignedCook           sql.NullString
+	AssignedDishwasher     sql.NullString
+	BelongsToMealPlanEvent sql.NullString
 }
 
 func (q *Queries) UpdateMealPlanOption(ctx context.Context, db DBTX, arg *UpdateMealPlanOptionParams) error {
-	_, err := db.ExecContext(ctx, UpdateMealPlanOption,
+	_, err := db.ExecContext(ctx, updateMealPlanOption,
 		arg.AssignedCook,
 		arg.AssignedDishwasher,
 		arg.MealID,
@@ -245,22 +245,22 @@ func (q *Queries) UpdateMealPlanOption(ctx context.Context, db DBTX, arg *Update
 	return err
 }
 
-const UpdateMealPlanOptionVote = `-- name: UpdateMealPlanOptionVote :exec
+const updateMealPlanOptionVote = `-- name: UpdateMealPlanOptionVote :exec
 
 UPDATE meal_plan_option_votes SET rank = $1, abstain = $2, notes = $3, by_user = $4, last_updated_at = NOW() WHERE archived_at IS NULL AND belongs_to_meal_plan_option = $5 AND id = $6
 `
 
 type UpdateMealPlanOptionVoteParams struct {
-	Notes                   string `db:"notes"`
-	ByUser                  string `db:"by_user"`
-	BelongsToMealPlanOption string `db:"belongs_to_meal_plan_option"`
-	ID                      string `db:"id"`
-	Rank                    int32  `db:"rank"`
-	Abstain                 bool   `db:"abstain"`
+	Notes                   string
+	ByUser                  string
+	BelongsToMealPlanOption string
+	ID                      string
+	Rank                    int32
+	Abstain                 bool
 }
 
 func (q *Queries) UpdateMealPlanOptionVote(ctx context.Context, db DBTX, arg *UpdateMealPlanOptionVoteParams) error {
-	_, err := db.ExecContext(ctx, UpdateMealPlanOptionVote,
+	_, err := db.ExecContext(ctx, updateMealPlanOptionVote,
 		arg.Rank,
 		arg.Abstain,
 		arg.Notes,
@@ -271,7 +271,7 @@ func (q *Queries) UpdateMealPlanOptionVote(ctx context.Context, db DBTX, arg *Up
 	return err
 }
 
-const UpdateRecipe = `-- name: UpdateRecipe :exec
+const updateRecipe = `-- name: UpdateRecipe :exec
 
 UPDATE recipes SET
     name = $1,
@@ -293,24 +293,24 @@ WHERE archived_at IS NULL
 `
 
 type UpdateRecipeParams struct {
-	YieldsComponentType  ComponentType  `db:"yields_component_type"`
-	Slug                 string         `db:"slug"`
-	Source               string         `db:"source"`
-	Description          string         `db:"description"`
-	ID                   string         `db:"id"`
-	MinEstimatedPortions string         `db:"min_estimated_portions"`
-	Name                 string         `db:"name"`
-	PortionName          string         `db:"portion_name"`
-	PluralPortionName    string         `db:"plural_portion_name"`
-	CreatedByUser        string         `db:"created_by_user"`
-	MaxEstimatedPortions sql.NullString `db:"max_estimated_portions"`
-	InspiredByRecipeID   sql.NullString `db:"inspired_by_recipe_id"`
-	EligibleForMeals     bool           `db:"eligible_for_meals"`
-	SealOfApproval       bool           `db:"seal_of_approval"`
+	YieldsComponentType  ComponentType
+	Slug                 string
+	Source               string
+	Description          string
+	ID                   string
+	MinEstimatedPortions string
+	Name                 string
+	PortionName          string
+	PluralPortionName    string
+	CreatedByUser        string
+	MaxEstimatedPortions sql.NullString
+	InspiredByRecipeID   sql.NullString
+	EligibleForMeals     bool
+	SealOfApproval       bool
 }
 
 func (q *Queries) UpdateRecipe(ctx context.Context, db DBTX, arg *UpdateRecipeParams) error {
-	_, err := db.ExecContext(ctx, UpdateRecipe,
+	_, err := db.ExecContext(ctx, updateRecipe,
 		arg.Name,
 		arg.Slug,
 		arg.Source,
@@ -329,7 +329,7 @@ func (q *Queries) UpdateRecipe(ctx context.Context, db DBTX, arg *UpdateRecipePa
 	return err
 }
 
-const UpdateRecipeMedia = `-- name: UpdateRecipeMedia :exec
+const updateRecipeMedia = `-- name: UpdateRecipeMedia :exec
 
 UPDATE recipe_media
 SET
@@ -345,16 +345,16 @@ WHERE archived_at IS NULL
 `
 
 type UpdateRecipeMediaParams struct {
-	MimeType            string         `db:"mime_type"`
-	InternalPath        string         `db:"internal_path"`
-	ExternalPath        string         `db:"external_path"`
-	BelongsToRecipe     sql.NullString `db:"belongs_to_recipe"`
-	BelongsToRecipeStep sql.NullString `db:"belongs_to_recipe_step"`
-	Index               int32          `db:"index"`
+	MimeType            string
+	InternalPath        string
+	ExternalPath        string
+	BelongsToRecipe     sql.NullString
+	BelongsToRecipeStep sql.NullString
+	Index               int32
 }
 
 func (q *Queries) UpdateRecipeMedia(ctx context.Context, db DBTX, arg *UpdateRecipeMediaParams) error {
-	_, err := db.ExecContext(ctx, UpdateRecipeMedia,
+	_, err := db.ExecContext(ctx, updateRecipeMedia,
 		arg.BelongsToRecipe,
 		arg.BelongsToRecipeStep,
 		arg.MimeType,
@@ -365,7 +365,7 @@ func (q *Queries) UpdateRecipeMedia(ctx context.Context, db DBTX, arg *UpdateRec
 	return err
 }
 
-const UpdateRecipePrepTask = `-- name: UpdateRecipePrepTask :exec
+const updateRecipePrepTask = `-- name: UpdateRecipePrepTask :exec
 
 UPDATE recipe_prep_tasks SET
 	 name = $1,
@@ -384,22 +384,22 @@ WHERE archived_at IS NULL AND id = $12
 `
 
 type UpdateRecipePrepTaskParams struct {
-	Name                                   string                   `db:"name"`
-	Description                            string                   `db:"description"`
-	Notes                                  string                   `db:"notes"`
-	ExplicitStorageInstructions            string                   `db:"explicit_storage_instructions"`
-	BelongsToRecipe                        string                   `db:"belongs_to_recipe"`
-	ID                                     string                   `db:"id"`
-	StorageType                            NullStorageContainerType `db:"storage_type"`
-	MinimumStorageTemperatureInCelsius     sql.NullString           `db:"minimum_storage_temperature_in_celsius"`
-	MaximumStorageTemperatureInCelsius     sql.NullString           `db:"maximum_storage_temperature_in_celsius"`
-	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32            `db:"maximum_time_buffer_before_recipe_in_seconds"`
-	MinimumTimeBufferBeforeRecipeInSeconds int32                    `db:"minimum_time_buffer_before_recipe_in_seconds"`
-	Optional                               bool                     `db:"optional"`
+	Name                                   string
+	Description                            string
+	Notes                                  string
+	ExplicitStorageInstructions            string
+	BelongsToRecipe                        string
+	ID                                     string
+	StorageType                            NullStorageContainerType
+	MinimumStorageTemperatureInCelsius     sql.NullString
+	MaximumStorageTemperatureInCelsius     sql.NullString
+	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
+	MinimumTimeBufferBeforeRecipeInSeconds int32
+	Optional                               bool
 }
 
 func (q *Queries) UpdateRecipePrepTask(ctx context.Context, db DBTX, arg *UpdateRecipePrepTaskParams) error {
-	_, err := db.ExecContext(ctx, UpdateRecipePrepTask,
+	_, err := db.ExecContext(ctx, updateRecipePrepTask,
 		arg.Name,
 		arg.Description,
 		arg.Notes,
@@ -416,7 +416,7 @@ func (q *Queries) UpdateRecipePrepTask(ctx context.Context, db DBTX, arg *Update
 	return err
 }
 
-const UpdateRecipeRating = `-- name: UpdateRecipeRating :exec
+const updateRecipeRating = `-- name: UpdateRecipeRating :exec
 
 UPDATE recipe_ratings
 SET
@@ -433,18 +433,18 @@ WHERE archived_at IS NULL
 `
 
 type UpdateRecipeRatingParams struct {
-	RecipeID     string         `db:"recipe_id"`
-	Notes        string         `db:"notes"`
-	ID           string         `db:"id"`
-	Taste        sql.NullString `db:"taste"`
-	Difficulty   sql.NullString `db:"difficulty"`
-	Cleanup      sql.NullString `db:"cleanup"`
-	Instructions sql.NullString `db:"instructions"`
-	Overall      sql.NullString `db:"overall"`
+	RecipeID     string
+	Notes        string
+	ID           string
+	Taste        sql.NullString
+	Difficulty   sql.NullString
+	Cleanup      sql.NullString
+	Instructions sql.NullString
+	Overall      sql.NullString
 }
 
 func (q *Queries) UpdateRecipeRating(ctx context.Context, db DBTX, arg *UpdateRecipeRatingParams) error {
-	_, err := db.ExecContext(ctx, UpdateRecipeRating,
+	_, err := db.ExecContext(ctx, updateRecipeRating,
 		arg.RecipeID,
 		arg.Taste,
 		arg.Difficulty,
@@ -457,7 +457,7 @@ func (q *Queries) UpdateRecipeRating(ctx context.Context, db DBTX, arg *UpdateRe
 	return err
 }
 
-const UpdateRecipeStep = `-- name: UpdateRecipeStep :exec
+const updateRecipeStep = `-- name: UpdateRecipeStep :exec
 
 UPDATE recipe_steps SET
 	index = $1,
@@ -478,23 +478,23 @@ WHERE archived_at IS NULL
 `
 
 type UpdateRecipeStepParams struct {
-	ConditionExpression           string         `db:"condition_expression"`
-	PreparationID                 string         `db:"preparation_id"`
-	ID                            string         `db:"id"`
-	BelongsToRecipe               string         `db:"belongs_to_recipe"`
-	Notes                         string         `db:"notes"`
-	ExplicitInstructions          string         `db:"explicit_instructions"`
-	MinimumTemperatureInCelsius   sql.NullString `db:"minimum_temperature_in_celsius"`
-	MaximumTemperatureInCelsius   sql.NullString `db:"maximum_temperature_in_celsius"`
-	MaximumEstimatedTimeInSeconds sql.NullInt64  `db:"maximum_estimated_time_in_seconds"`
-	MinimumEstimatedTimeInSeconds sql.NullInt64  `db:"minimum_estimated_time_in_seconds"`
-	Index                         int32          `db:"index"`
-	Optional                      bool           `db:"optional"`
-	StartTimerAutomatically       bool           `db:"start_timer_automatically"`
+	ConditionExpression           string
+	PreparationID                 string
+	ID                            string
+	BelongsToRecipe               string
+	Notes                         string
+	ExplicitInstructions          string
+	MinimumTemperatureInCelsius   sql.NullString
+	MaximumTemperatureInCelsius   sql.NullString
+	MaximumEstimatedTimeInSeconds sql.NullInt64
+	MinimumEstimatedTimeInSeconds sql.NullInt64
+	Index                         int32
+	Optional                      bool
+	StartTimerAutomatically       bool
 }
 
 func (q *Queries) UpdateRecipeStep(ctx context.Context, db DBTX, arg *UpdateRecipeStepParams) error {
-	_, err := db.ExecContext(ctx, UpdateRecipeStep,
+	_, err := db.ExecContext(ctx, updateRecipeStep,
 		arg.Index,
 		arg.PreparationID,
 		arg.MinimumEstimatedTimeInSeconds,
@@ -512,7 +512,7 @@ func (q *Queries) UpdateRecipeStep(ctx context.Context, db DBTX, arg *UpdateReci
 	return err
 }
 
-const UpdateRecipeStepCompletionCondition = `-- name: UpdateRecipeStepCompletionCondition :exec
+const updateRecipeStepCompletionCondition = `-- name: UpdateRecipeStepCompletionCondition :exec
 
 UPDATE recipe_step_completion_conditions
 SET
@@ -526,15 +526,15 @@ WHERE archived_at IS NULL
 `
 
 type UpdateRecipeStepCompletionConditionParams struct {
-	Notes               string `db:"notes"`
-	BelongsToRecipeStep string `db:"belongs_to_recipe_step"`
-	IngredientState     string `db:"ingredient_state"`
-	ID                  string `db:"id"`
-	Optional            bool   `db:"optional"`
+	Notes               string
+	BelongsToRecipeStep string
+	IngredientState     string
+	ID                  string
+	Optional            bool
 }
 
 func (q *Queries) UpdateRecipeStepCompletionCondition(ctx context.Context, db DBTX, arg *UpdateRecipeStepCompletionConditionParams) error {
-	_, err := db.ExecContext(ctx, UpdateRecipeStepCompletionCondition,
+	_, err := db.ExecContext(ctx, updateRecipeStepCompletionCondition,
 		arg.Optional,
 		arg.Notes,
 		arg.BelongsToRecipeStep,
@@ -544,7 +544,7 @@ func (q *Queries) UpdateRecipeStepCompletionCondition(ctx context.Context, db DB
 	return err
 }
 
-const UpdateRecipeStepIngredient = `-- name: UpdateRecipeStepIngredient :exec
+const updateRecipeStepIngredient = `-- name: UpdateRecipeStepIngredient :exec
 
 UPDATE recipe_step_ingredients SET
 	ingredient_id = $1,
@@ -567,26 +567,26 @@ WHERE archived_at IS NULL AND belongs_to_recipe_step = $15
 `
 
 type UpdateRecipeStepIngredientParams struct {
-	IngredientNotes           string         `db:"ingredient_notes"`
-	Name                      string         `db:"name"`
-	ID                        string         `db:"id"`
-	BelongsToRecipeStep       string         `db:"belongs_to_recipe_step"`
-	MinimumQuantityValue      string         `db:"minimum_quantity_value"`
-	QuantityNotes             string         `db:"quantity_notes"`
-	IngredientID              sql.NullString `db:"ingredient_id"`
-	MaximumQuantityValue      sql.NullString `db:"maximum_quantity_value"`
-	RecipeStepProductID       sql.NullString `db:"recipe_step_product_id"`
-	ProductPercentageToUse    sql.NullString `db:"product_percentage_to_use"`
-	RecipeStepProductRecipeID sql.NullString `db:"recipe_step_product_recipe_id"`
-	MeasurementUnit           sql.NullString `db:"measurement_unit"`
-	VesselIndex               sql.NullInt32  `db:"vessel_index"`
-	OptionIndex               int32          `db:"option_index"`
-	ToTaste                   bool           `db:"to_taste"`
-	Optional                  bool           `db:"optional"`
+	IngredientNotes           string
+	Name                      string
+	ID                        string
+	BelongsToRecipeStep       string
+	MinimumQuantityValue      string
+	QuantityNotes             string
+	IngredientID              sql.NullString
+	MaximumQuantityValue      sql.NullString
+	RecipeStepProductID       sql.NullString
+	ProductPercentageToUse    sql.NullString
+	RecipeStepProductRecipeID sql.NullString
+	MeasurementUnit           sql.NullString
+	VesselIndex               sql.NullInt32
+	OptionIndex               int32
+	ToTaste                   bool
+	Optional                  bool
 }
 
 func (q *Queries) UpdateRecipeStepIngredient(ctx context.Context, db DBTX, arg *UpdateRecipeStepIngredientParams) error {
-	_, err := db.ExecContext(ctx, UpdateRecipeStepIngredient,
+	_, err := db.ExecContext(ctx, updateRecipeStepIngredient,
 		arg.IngredientID,
 		arg.Name,
 		arg.Optional,
@@ -607,7 +607,7 @@ func (q *Queries) UpdateRecipeStepIngredient(ctx context.Context, db DBTX, arg *
 	return err
 }
 
-const UpdateRecipeStepInstrument = `-- name: UpdateRecipeStepInstrument :exec
+const updateRecipeStepInstrument = `-- name: UpdateRecipeStepInstrument :exec
 
 UPDATE recipe_step_instruments SET
 	instrument_id = $1,
@@ -626,21 +626,21 @@ WHERE archived_at IS NULL
 `
 
 type UpdateRecipeStepInstrumentParams struct {
-	Name                string         `db:"name"`
-	Notes               string         `db:"notes"`
-	BelongsToRecipeStep string         `db:"belongs_to_recipe_step"`
-	ID                  string         `db:"id"`
-	InstrumentID        sql.NullString `db:"instrument_id"`
-	RecipeStepProductID sql.NullString `db:"recipe_step_product_id"`
-	MaximumQuantity     sql.NullInt32  `db:"maximum_quantity"`
-	PreferenceRank      int32          `db:"preference_rank"`
-	OptionIndex         int32          `db:"option_index"`
-	MinimumQuantity     int32          `db:"minimum_quantity"`
-	Optional            bool           `db:"optional"`
+	Name                string
+	Notes               string
+	BelongsToRecipeStep string
+	ID                  string
+	InstrumentID        sql.NullString
+	RecipeStepProductID sql.NullString
+	MaximumQuantity     sql.NullInt32
+	PreferenceRank      int32
+	OptionIndex         int32
+	MinimumQuantity     int32
+	Optional            bool
 }
 
 func (q *Queries) UpdateRecipeStepInstrument(ctx context.Context, db DBTX, arg *UpdateRecipeStepInstrumentParams) error {
-	_, err := db.ExecContext(ctx, UpdateRecipeStepInstrument,
+	_, err := db.ExecContext(ctx, updateRecipeStepInstrument,
 		arg.InstrumentID,
 		arg.RecipeStepProductID,
 		arg.Name,
@@ -656,7 +656,7 @@ func (q *Queries) UpdateRecipeStepInstrument(ctx context.Context, db DBTX, arg *
 	return err
 }
 
-const UpdateRecipeStepProduct = `-- name: UpdateRecipeStepProduct :exec
+const updateRecipeStepProduct = `-- name: UpdateRecipeStepProduct :exec
 
 UPDATE recipe_step_products
 SET
@@ -682,27 +682,27 @@ WHERE archived_at IS NULL
 `
 
 type UpdateRecipeStepProductParams struct {
-	Name                               string                `db:"name"`
-	Type                               RecipeStepProductType `db:"type"`
-	ID                                 string                `db:"id"`
-	BelongsToRecipeStep                string                `db:"belongs_to_recipe_step"`
-	StorageInstructions                string                `db:"storage_instructions"`
-	QuantityNotes                      string                `db:"quantity_notes"`
-	MinimumStorageTemperatureInCelsius sql.NullString        `db:"minimum_storage_temperature_in_celsius"`
-	MaximumStorageTemperatureInCelsius sql.NullString        `db:"maximum_storage_temperature_in_celsius"`
-	MaximumQuantityValue               sql.NullString        `db:"maximum_quantity_value"`
-	MinimumQuantityValue               sql.NullString        `db:"minimum_quantity_value"`
-	MeasurementUnit                    sql.NullString        `db:"measurement_unit"`
-	MaximumStorageDurationInSeconds    sql.NullInt32         `db:"maximum_storage_duration_in_seconds"`
-	ContainedInVesselIndex             sql.NullInt32         `db:"contained_in_vessel_index"`
-	Index                              int32                 `db:"index"`
-	Compostable                        bool                  `db:"compostable"`
-	IsLiquid                           bool                  `db:"is_liquid"`
-	IsWaste                            bool                  `db:"is_waste"`
+	Name                               string
+	Type                               RecipeStepProductType
+	ID                                 string
+	BelongsToRecipeStep                string
+	StorageInstructions                string
+	QuantityNotes                      string
+	MinimumStorageTemperatureInCelsius sql.NullString
+	MaximumStorageTemperatureInCelsius sql.NullString
+	MaximumQuantityValue               sql.NullString
+	MinimumQuantityValue               sql.NullString
+	MeasurementUnit                    sql.NullString
+	MaximumStorageDurationInSeconds    sql.NullInt32
+	ContainedInVesselIndex             sql.NullInt32
+	Index                              int32
+	Compostable                        bool
+	IsLiquid                           bool
+	IsWaste                            bool
 }
 
 func (q *Queries) UpdateRecipeStepProduct(ctx context.Context, db DBTX, arg *UpdateRecipeStepProductParams) error {
-	_, err := db.ExecContext(ctx, UpdateRecipeStepProduct,
+	_, err := db.ExecContext(ctx, updateRecipeStepProduct,
 		arg.Name,
 		arg.Type,
 		arg.MeasurementUnit,
@@ -724,7 +724,7 @@ func (q *Queries) UpdateRecipeStepProduct(ctx context.Context, db DBTX, arg *Upd
 	return err
 }
 
-const UpdateRecipeStepVessel = `-- name: UpdateRecipeStepVessel :exec
+const updateRecipeStepVessel = `-- name: UpdateRecipeStepVessel :exec
 
 UPDATE recipe_step_vessels SET
 	name = $1,
@@ -743,21 +743,21 @@ WHERE archived_at IS NULL
 `
 
 type UpdateRecipeStepVesselParams struct {
-	Name                  string         `db:"name"`
-	Notes                 string         `db:"notes"`
-	BelongsToRecipeStep   string         `db:"belongs_to_recipe_step"`
-	VesselPredicate       string         `db:"vessel_predicate"`
-	BelongsToRecipeStep_2 string         `db:"belongs_to_recipe_step_2"`
-	ID                    string         `db:"id"`
-	RecipeStepProductID   sql.NullString `db:"recipe_step_product_id"`
-	ValidVesselID         sql.NullString `db:"valid_vessel_id"`
-	MaximumQuantity       sql.NullInt32  `db:"maximum_quantity"`
-	MinimumQuantity       int32          `db:"minimum_quantity"`
-	UnavailableAfterStep  bool           `db:"unavailable_after_step"`
+	Name                  string
+	Notes                 string
+	BelongsToRecipeStep   string
+	VesselPredicate       string
+	BelongsToRecipeStep_2 string
+	ID                    string
+	RecipeStepProductID   sql.NullString
+	ValidVesselID         sql.NullString
+	MaximumQuantity       sql.NullInt32
+	MinimumQuantity       int32
+	UnavailableAfterStep  bool
 }
 
 func (q *Queries) UpdateRecipeStepVessel(ctx context.Context, db DBTX, arg *UpdateRecipeStepVesselParams) error {
-	_, err := db.ExecContext(ctx, UpdateRecipeStepVessel,
+	_, err := db.ExecContext(ctx, updateRecipeStepVessel,
 		arg.Name,
 		arg.Notes,
 		arg.BelongsToRecipeStep,
@@ -773,7 +773,7 @@ func (q *Queries) UpdateRecipeStepVessel(ctx context.Context, db DBTX, arg *Upda
 	return err
 }
 
-const UpdateServiceSettingConfiguration = `-- name: UpdateServiceSettingConfiguration :exec
+const updateServiceSettingConfiguration = `-- name: UpdateServiceSettingConfiguration :exec
 
 UPDATE service_setting_configurations
 SET
@@ -788,16 +788,16 @@ WHERE archived_at IS NULL
 `
 
 type UpdateServiceSettingConfigurationParams struct {
-	Value              string `db:"value"`
-	Notes              string `db:"notes"`
-	ServiceSettingID   string `db:"service_setting_id"`
-	BelongsToUser      string `db:"belongs_to_user"`
-	BelongsToHousehold string `db:"belongs_to_household"`
-	ID                 string `db:"id"`
+	Value              string
+	Notes              string
+	ServiceSettingID   string
+	BelongsToUser      string
+	BelongsToHousehold string
+	ID                 string
 }
 
 func (q *Queries) UpdateServiceSettingConfiguration(ctx context.Context, db DBTX, arg *UpdateServiceSettingConfigurationParams) error {
-	_, err := db.ExecContext(ctx, UpdateServiceSettingConfiguration,
+	_, err := db.ExecContext(ctx, updateServiceSettingConfiguration,
 		arg.Value,
 		arg.Notes,
 		arg.ServiceSettingID,
@@ -808,7 +808,7 @@ func (q *Queries) UpdateServiceSettingConfiguration(ctx context.Context, db DBTX
 	return err
 }
 
-const UpdateUser = `-- name: UpdateUser :exec
+const updateUser = `-- name: UpdateUser :exec
 
 UPDATE users SET
 	username = $1,
@@ -823,17 +823,17 @@ WHERE archived_at IS NULL
 `
 
 type UpdateUserParams struct {
-	Birthday       sql.NullTime   `db:"birthday"`
-	Username       string         `db:"username"`
-	FirstName      string         `db:"first_name"`
-	LastName       string         `db:"last_name"`
-	HashedPassword string         `db:"hashed_password"`
-	ID             string         `db:"id"`
-	AvatarSrc      sql.NullString `db:"avatar_src"`
+	Birthday       sql.NullTime
+	Username       string
+	FirstName      string
+	LastName       string
+	HashedPassword string
+	ID             string
+	AvatarSrc      sql.NullString
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, db DBTX, arg *UpdateUserParams) error {
-	_, err := db.ExecContext(ctx, UpdateUser,
+	_, err := db.ExecContext(ctx, updateUser,
 		arg.Username,
 		arg.FirstName,
 		arg.LastName,
@@ -845,7 +845,7 @@ func (q *Queries) UpdateUser(ctx context.Context, db DBTX, arg *UpdateUserParams
 	return err
 }
 
-const UpdateUserIngredientPreference = `-- name: UpdateUserIngredientPreference :exec
+const updateUserIngredientPreference = `-- name: UpdateUserIngredientPreference :exec
 
 UPDATE user_ingredient_preferences
 SET
@@ -860,16 +860,16 @@ WHERE archived_at IS NULL
 `
 
 type UpdateUserIngredientPreferenceParams struct {
-	Ingredient    string `db:"ingredient"`
-	Notes         string `db:"notes"`
-	ID            string `db:"id"`
-	BelongsToUser string `db:"belongs_to_user"`
-	Rating        int16  `db:"rating"`
-	Allergy       bool   `db:"allergy"`
+	Ingredient    string
+	Notes         string
+	ID            string
+	BelongsToUser string
+	Rating        int16
+	Allergy       bool
 }
 
 func (q *Queries) UpdateUserIngredientPreference(ctx context.Context, db DBTX, arg *UpdateUserIngredientPreferenceParams) error {
-	_, err := db.ExecContext(ctx, UpdateUserIngredientPreference,
+	_, err := db.ExecContext(ctx, updateUserIngredientPreference,
 		arg.Ingredient,
 		arg.Rating,
 		arg.Notes,
@@ -880,7 +880,7 @@ func (q *Queries) UpdateUserIngredientPreference(ctx context.Context, db DBTX, a
 	return err
 }
 
-const UpdateValidIngredient = `-- name: UpdateValidIngredient :exec
+const updateValidIngredient = `-- name: UpdateValidIngredient :exec
 
 UPDATE valid_ingredients SET
 	name = $1,
@@ -922,45 +922,45 @@ WHERE archived_at IS NULL AND id = $35
 `
 
 type UpdateValidIngredientParams struct {
-	Description                             string         `db:"description"`
-	Warning                                 string         `db:"warning"`
-	ID                                      string         `db:"id"`
-	ShoppingSuggestions                     string         `db:"shopping_suggestions"`
-	Slug                                    string         `db:"slug"`
-	StorageInstructions                     string         `db:"storage_instructions"`
-	Name                                    string         `db:"name"`
-	PluralName                              string         `db:"plural_name"`
-	IconPath                                string         `db:"icon_path"`
-	MaximumIdealStorageTemperatureInCelsius sql.NullString `db:"maximum_ideal_storage_temperature_in_celsius"`
-	MinimumIdealStorageTemperatureInCelsius sql.NullString `db:"minimum_ideal_storage_temperature_in_celsius"`
-	IsLiquid                                sql.NullBool   `db:"is_liquid"`
-	ContainsWheat                           bool           `db:"contains_wheat"`
-	ContainsPeanut                          bool           `db:"contains_peanut"`
-	Volumetric                              bool           `db:"volumetric"`
-	ContainsGluten                          bool           `db:"contains_gluten"`
-	ContainsFish                            bool           `db:"contains_fish"`
-	AnimalDerived                           bool           `db:"animal_derived"`
-	ContainsSesame                          bool           `db:"contains_sesame"`
-	RestrictToPreparations                  bool           `db:"restrict_to_preparations"`
-	ContainsShellfish                       bool           `db:"contains_shellfish"`
-	ContainsSoy                             bool           `db:"contains_soy"`
-	ContainsTreeNut                         bool           `db:"contains_tree_nut"`
-	AnimalFlesh                             bool           `db:"animal_flesh"`
-	ContainsAlcohol                         bool           `db:"contains_alcohol"`
-	ContainsDairy                           bool           `db:"contains_dairy"`
-	IsStarch                                bool           `db:"is_starch"`
-	IsProtein                               bool           `db:"is_protein"`
-	IsGrain                                 bool           `db:"is_grain"`
-	IsFruit                                 bool           `db:"is_fruit"`
-	IsSalt                                  bool           `db:"is_salt"`
-	IsFat                                   bool           `db:"is_fat"`
-	IsAcid                                  bool           `db:"is_acid"`
-	IsHeat                                  bool           `db:"is_heat"`
-	ContainsEgg                             bool           `db:"contains_egg"`
+	Description                             string
+	Warning                                 string
+	ID                                      string
+	ShoppingSuggestions                     string
+	Slug                                    string
+	StorageInstructions                     string
+	Name                                    string
+	PluralName                              string
+	IconPath                                string
+	MaximumIdealStorageTemperatureInCelsius sql.NullString
+	MinimumIdealStorageTemperatureInCelsius sql.NullString
+	IsLiquid                                sql.NullBool
+	ContainsWheat                           bool
+	ContainsPeanut                          bool
+	Volumetric                              bool
+	ContainsGluten                          bool
+	ContainsFish                            bool
+	AnimalDerived                           bool
+	ContainsSesame                          bool
+	RestrictToPreparations                  bool
+	ContainsShellfish                       bool
+	ContainsSoy                             bool
+	ContainsTreeNut                         bool
+	AnimalFlesh                             bool
+	ContainsAlcohol                         bool
+	ContainsDairy                           bool
+	IsStarch                                bool
+	IsProtein                               bool
+	IsGrain                                 bool
+	IsFruit                                 bool
+	IsSalt                                  bool
+	IsFat                                   bool
+	IsAcid                                  bool
+	IsHeat                                  bool
+	ContainsEgg                             bool
 }
 
 func (q *Queries) UpdateValidIngredient(ctx context.Context, db DBTX, arg *UpdateValidIngredientParams) error {
-	_, err := db.ExecContext(ctx, UpdateValidIngredient,
+	_, err := db.ExecContext(ctx, updateValidIngredient,
 		arg.Name,
 		arg.Description,
 		arg.Warning,
@@ -1000,7 +1000,7 @@ func (q *Queries) UpdateValidIngredient(ctx context.Context, db DBTX, arg *Updat
 	return err
 }
 
-const UpdateValidIngredientGroup = `-- name: UpdateValidIngredientGroup :exec
+const updateValidIngredientGroup = `-- name: UpdateValidIngredientGroup :exec
 
 UPDATE valid_ingredient_groups SET
 	name = $1,
@@ -1011,14 +1011,14 @@ WHERE archived_at IS NULL AND id = $4
 `
 
 type UpdateValidIngredientGroupParams struct {
-	Name        string `db:"name"`
-	Description string `db:"description"`
-	Slug        string `db:"slug"`
-	ID          string `db:"id"`
+	Name        string
+	Description string
+	Slug        string
+	ID          string
 }
 
 func (q *Queries) UpdateValidIngredientGroup(ctx context.Context, db DBTX, arg *UpdateValidIngredientGroupParams) error {
-	_, err := db.ExecContext(ctx, UpdateValidIngredientGroup,
+	_, err := db.ExecContext(ctx, updateValidIngredientGroup,
 		arg.Name,
 		arg.Description,
 		arg.Slug,
@@ -1027,7 +1027,7 @@ func (q *Queries) UpdateValidIngredientGroup(ctx context.Context, db DBTX, arg *
 	return err
 }
 
-const UpdateValidIngredientMeasurementUnit = `-- name: UpdateValidIngredientMeasurementUnit :exec
+const updateValidIngredientMeasurementUnit = `-- name: UpdateValidIngredientMeasurementUnit :exec
 
 UPDATE valid_ingredient_measurement_units
 SET
@@ -1042,16 +1042,16 @@ WHERE archived_at IS NULL
 `
 
 type UpdateValidIngredientMeasurementUnitParams struct {
-	Notes                    string         `db:"notes"`
-	ValidMeasurementUnitID   string         `db:"valid_measurement_unit_id"`
-	ValidIngredientID        string         `db:"valid_ingredient_id"`
-	MinimumAllowableQuantity string         `db:"minimum_allowable_quantity"`
-	ID                       string         `db:"id"`
-	MaximumAllowableQuantity sql.NullString `db:"maximum_allowable_quantity"`
+	Notes                    string
+	ValidMeasurementUnitID   string
+	ValidIngredientID        string
+	MinimumAllowableQuantity string
+	ID                       string
+	MaximumAllowableQuantity sql.NullString
 }
 
 func (q *Queries) UpdateValidIngredientMeasurementUnit(ctx context.Context, db DBTX, arg *UpdateValidIngredientMeasurementUnitParams) error {
-	_, err := db.ExecContext(ctx, UpdateValidIngredientMeasurementUnit,
+	_, err := db.ExecContext(ctx, updateValidIngredientMeasurementUnit,
 		arg.Notes,
 		arg.ValidMeasurementUnitID,
 		arg.ValidIngredientID,
@@ -1062,20 +1062,20 @@ func (q *Queries) UpdateValidIngredientMeasurementUnit(ctx context.Context, db D
 	return err
 }
 
-const UpdateValidIngredientPreparation = `-- name: UpdateValidIngredientPreparation :exec
+const updateValidIngredientPreparation = `-- name: UpdateValidIngredientPreparation :exec
 
 UPDATE valid_ingredient_preparations SET notes = $1, valid_preparation_id = $2, valid_ingredient_id = $3, last_updated_at = NOW() WHERE archived_at IS NULL AND id = $4
 `
 
 type UpdateValidIngredientPreparationParams struct {
-	Notes              string `db:"notes"`
-	ValidPreparationID string `db:"valid_preparation_id"`
-	ValidIngredientID  string `db:"valid_ingredient_id"`
-	ID                 string `db:"id"`
+	Notes              string
+	ValidPreparationID string
+	ValidIngredientID  string
+	ID                 string
 }
 
 func (q *Queries) UpdateValidIngredientPreparation(ctx context.Context, db DBTX, arg *UpdateValidIngredientPreparationParams) error {
-	_, err := db.ExecContext(ctx, UpdateValidIngredientPreparation,
+	_, err := db.ExecContext(ctx, updateValidIngredientPreparation,
 		arg.Notes,
 		arg.ValidPreparationID,
 		arg.ValidIngredientID,
@@ -1084,7 +1084,7 @@ func (q *Queries) UpdateValidIngredientPreparation(ctx context.Context, db DBTX,
 	return err
 }
 
-const UpdateValidIngredientState = `-- name: UpdateValidIngredientState :exec
+const updateValidIngredientState = `-- name: UpdateValidIngredientState :exec
 
 UPDATE valid_ingredient_states
 SET
@@ -1100,17 +1100,17 @@ WHERE archived_at IS NULL
 `
 
 type UpdateValidIngredientStateParams struct {
-	Name          string                  `db:"name"`
-	Description   string                  `db:"description"`
-	IconPath      string                  `db:"icon_path"`
-	Slug          string                  `db:"slug"`
-	PastTense     string                  `db:"past_tense"`
-	AttributeType IngredientAttributeType `db:"attribute_type"`
-	ID            string                  `db:"id"`
+	Name          string
+	Description   string
+	IconPath      string
+	Slug          string
+	PastTense     string
+	AttributeType IngredientAttributeType
+	ID            string
 }
 
 func (q *Queries) UpdateValidIngredientState(ctx context.Context, db DBTX, arg *UpdateValidIngredientStateParams) error {
-	_, err := db.ExecContext(ctx, UpdateValidIngredientState,
+	_, err := db.ExecContext(ctx, updateValidIngredientState,
 		arg.Name,
 		arg.Description,
 		arg.IconPath,
@@ -1122,20 +1122,20 @@ func (q *Queries) UpdateValidIngredientState(ctx context.Context, db DBTX, arg *
 	return err
 }
 
-const UpdateValidIngredientStateIngredient = `-- name: UpdateValidIngredientStateIngredient :exec
+const updateValidIngredientStateIngredient = `-- name: UpdateValidIngredientStateIngredient :exec
 
 UPDATE valid_ingredient_state_ingredients SET notes = $1, valid_ingredient_state = $2, valid_ingredient = $3, last_updated_at = NOW() WHERE archived_at IS NULL AND id = $4
 `
 
 type UpdateValidIngredientStateIngredientParams struct {
-	Notes                string `db:"notes"`
-	ValidIngredientState string `db:"valid_ingredient_state"`
-	ValidIngredient      string `db:"valid_ingredient"`
-	ID                   string `db:"id"`
+	Notes                string
+	ValidIngredientState string
+	ValidIngredient      string
+	ID                   string
 }
 
 func (q *Queries) UpdateValidIngredientStateIngredient(ctx context.Context, db DBTX, arg *UpdateValidIngredientStateIngredientParams) error {
-	_, err := db.ExecContext(ctx, UpdateValidIngredientStateIngredient,
+	_, err := db.ExecContext(ctx, updateValidIngredientStateIngredient,
 		arg.Notes,
 		arg.ValidIngredientState,
 		arg.ValidIngredient,
@@ -1144,7 +1144,7 @@ func (q *Queries) UpdateValidIngredientStateIngredient(ctx context.Context, db D
 	return err
 }
 
-const UpdateValidInstrument = `-- name: UpdateValidInstrument :exec
+const updateValidInstrument = `-- name: UpdateValidInstrument :exec
 
 UPDATE valid_instruments
 SET
@@ -1162,19 +1162,19 @@ WHERE archived_at IS NULL
 `
 
 type UpdateValidInstrumentParams struct {
-	Name                           string `db:"name"`
-	PluralName                     string `db:"plural_name"`
-	Description                    string `db:"description"`
-	IconPath                       string `db:"icon_path"`
-	Slug                           string `db:"slug"`
-	ID                             string `db:"id"`
-	UsableForStorage               bool   `db:"usable_for_storage"`
-	DisplayInSummaryLists          bool   `db:"display_in_summary_lists"`
-	IncludeInGeneratedInstructions bool   `db:"include_in_generated_instructions"`
+	Name                           string
+	PluralName                     string
+	Description                    string
+	IconPath                       string
+	Slug                           string
+	ID                             string
+	UsableForStorage               bool
+	DisplayInSummaryLists          bool
+	IncludeInGeneratedInstructions bool
 }
 
 func (q *Queries) UpdateValidInstrument(ctx context.Context, db DBTX, arg *UpdateValidInstrumentParams) error {
-	_, err := db.ExecContext(ctx, UpdateValidInstrument,
+	_, err := db.ExecContext(ctx, updateValidInstrument,
 		arg.Name,
 		arg.PluralName,
 		arg.Description,
@@ -1188,7 +1188,7 @@ func (q *Queries) UpdateValidInstrument(ctx context.Context, db DBTX, arg *Updat
 	return err
 }
 
-const UpdateValidMeasurementConversion = `-- name: UpdateValidMeasurementConversion :exec
+const updateValidMeasurementConversion = `-- name: UpdateValidMeasurementConversion :exec
 
 UPDATE valid_measurement_conversions
 SET
@@ -1203,16 +1203,16 @@ WHERE archived_at IS NULL
 `
 
 type UpdateValidMeasurementConversionParams struct {
-	FromUnit          string         `db:"from_unit"`
-	ToUnit            string         `db:"to_unit"`
-	Modifier          string         `db:"modifier"`
-	Notes             string         `db:"notes"`
-	ID                string         `db:"id"`
-	OnlyForIngredient sql.NullString `db:"only_for_ingredient"`
+	FromUnit          string
+	ToUnit            string
+	Modifier          string
+	Notes             string
+	ID                string
+	OnlyForIngredient sql.NullString
 }
 
 func (q *Queries) UpdateValidMeasurementConversion(ctx context.Context, db DBTX, arg *UpdateValidMeasurementConversionParams) error {
-	_, err := db.ExecContext(ctx, UpdateValidMeasurementConversion,
+	_, err := db.ExecContext(ctx, updateValidMeasurementConversion,
 		arg.FromUnit,
 		arg.ToUnit,
 		arg.OnlyForIngredient,
@@ -1223,7 +1223,7 @@ func (q *Queries) UpdateValidMeasurementConversion(ctx context.Context, db DBTX,
 	return err
 }
 
-const UpdateValidMeasurementUnit = `-- name: UpdateValidMeasurementUnit :exec
+const updateValidMeasurementUnit = `-- name: UpdateValidMeasurementUnit :exec
 
 UPDATE valid_measurement_units SET
 	name = $1,
@@ -1240,20 +1240,20 @@ WHERE archived_at IS NULL AND id = $10
 `
 
 type UpdateValidMeasurementUnitParams struct {
-	Name        string       `db:"name"`
-	Description string       `db:"description"`
-	IconPath    string       `db:"icon_path"`
-	Slug        string       `db:"slug"`
-	PluralName  string       `db:"plural_name"`
-	ID          string       `db:"id"`
-	Volumetric  sql.NullBool `db:"volumetric"`
-	Universal   bool         `db:"universal"`
-	Metric      bool         `db:"metric"`
-	Imperial    bool         `db:"imperial"`
+	Name        string
+	Description string
+	IconPath    string
+	Slug        string
+	PluralName  string
+	ID          string
+	Volumetric  sql.NullBool
+	Universal   bool
+	Metric      bool
+	Imperial    bool
 }
 
 func (q *Queries) UpdateValidMeasurementUnit(ctx context.Context, db DBTX, arg *UpdateValidMeasurementUnitParams) error {
-	_, err := db.ExecContext(ctx, UpdateValidMeasurementUnit,
+	_, err := db.ExecContext(ctx, updateValidMeasurementUnit,
 		arg.Name,
 		arg.Description,
 		arg.Volumetric,
@@ -1268,7 +1268,7 @@ func (q *Queries) UpdateValidMeasurementUnit(ctx context.Context, db DBTX, arg *
 	return err
 }
 
-const UpdateValidPreparation = `-- name: UpdateValidPreparation :exec
+const updateValidPreparation = `-- name: UpdateValidPreparation :exec
 
 UPDATE valid_preparations
 SET
@@ -1296,29 +1296,29 @@ WHERE archived_at IS NULL
 `
 
 type UpdateValidPreparationParams struct {
-	Description                 string        `db:"description"`
-	IconPath                    string        `db:"icon_path"`
-	ID                          string        `db:"id"`
-	Name                        string        `db:"name"`
-	PastTense                   string        `db:"past_tense"`
-	Slug                        string        `db:"slug"`
-	MaximumIngredientCount      sql.NullInt32 `db:"maximum_ingredient_count"`
-	MaximumInstrumentCount      sql.NullInt32 `db:"maximum_instrument_count"`
-	MaximumVesselCount          sql.NullInt32 `db:"maximum_vessel_count"`
-	MinimumVesselCount          int32         `db:"minimum_vessel_count"`
-	MinimumIngredientCount      int32         `db:"minimum_ingredient_count"`
-	MinimumInstrumentCount      int32         `db:"minimum_instrument_count"`
-	RestrictToIngredients       bool          `db:"restrict_to_ingredients"`
-	OnlyForVessels              bool          `db:"only_for_vessels"`
-	ConsumesVessel              bool          `db:"consumes_vessel"`
-	ConditionExpressionRequired bool          `db:"condition_expression_required"`
-	TimeEstimateRequired        bool          `db:"time_estimate_required"`
-	TemperatureRequired         bool          `db:"temperature_required"`
-	YieldsNothing               bool          `db:"yields_nothing"`
+	Description                 string
+	IconPath                    string
+	ID                          string
+	Name                        string
+	PastTense                   string
+	Slug                        string
+	MaximumIngredientCount      sql.NullInt32
+	MaximumInstrumentCount      sql.NullInt32
+	MaximumVesselCount          sql.NullInt32
+	MinimumVesselCount          int32
+	MinimumIngredientCount      int32
+	MinimumInstrumentCount      int32
+	RestrictToIngredients       bool
+	OnlyForVessels              bool
+	ConsumesVessel              bool
+	ConditionExpressionRequired bool
+	TimeEstimateRequired        bool
+	TemperatureRequired         bool
+	YieldsNothing               bool
 }
 
 func (q *Queries) UpdateValidPreparation(ctx context.Context, db DBTX, arg *UpdateValidPreparationParams) error {
-	_, err := db.ExecContext(ctx, UpdateValidPreparation,
+	_, err := db.ExecContext(ctx, updateValidPreparation,
 		arg.Name,
 		arg.Description,
 		arg.IconPath,
@@ -1342,20 +1342,20 @@ func (q *Queries) UpdateValidPreparation(ctx context.Context, db DBTX, arg *Upda
 	return err
 }
 
-const UpdateValidPreparationInstrument = `-- name: UpdateValidPreparationInstrument :exec
+const updateValidPreparationInstrument = `-- name: UpdateValidPreparationInstrument :exec
 
 UPDATE valid_preparation_instruments SET notes = $1, valid_preparation_id = $2, valid_instrument_id = $3, last_updated_at = NOW() WHERE archived_at IS NULL AND id = $4
 `
 
 type UpdateValidPreparationInstrumentParams struct {
-	Notes              string `db:"notes"`
-	ValidPreparationID string `db:"valid_preparation_id"`
-	ValidInstrumentID  string `db:"valid_instrument_id"`
-	ID                 string `db:"id"`
+	Notes              string
+	ValidPreparationID string
+	ValidInstrumentID  string
+	ID                 string
 }
 
 func (q *Queries) UpdateValidPreparationInstrument(ctx context.Context, db DBTX, arg *UpdateValidPreparationInstrumentParams) error {
-	_, err := db.ExecContext(ctx, UpdateValidPreparationInstrument,
+	_, err := db.ExecContext(ctx, updateValidPreparationInstrument,
 		arg.Notes,
 		arg.ValidPreparationID,
 		arg.ValidInstrumentID,
@@ -1364,20 +1364,20 @@ func (q *Queries) UpdateValidPreparationInstrument(ctx context.Context, db DBTX,
 	return err
 }
 
-const UpdateValidPreparationVessel = `-- name: UpdateValidPreparationVessel :exec
+const updateValidPreparationVessel = `-- name: UpdateValidPreparationVessel :exec
 
 UPDATE valid_preparation_vessels SET notes = $1, valid_preparation_id = $2, valid_vessel_id = $3, last_updated_at = NOW() WHERE archived_at IS NULL AND id = $4
 `
 
 type UpdateValidPreparationVesselParams struct {
-	Notes              string `db:"notes"`
-	ValidPreparationID string `db:"valid_preparation_id"`
-	ValidVesselID      string `db:"valid_vessel_id"`
-	ID                 string `db:"id"`
+	Notes              string
+	ValidPreparationID string
+	ValidVesselID      string
+	ID                 string
 }
 
 func (q *Queries) UpdateValidPreparationVessel(ctx context.Context, db DBTX, arg *UpdateValidPreparationVesselParams) error {
-	_, err := db.ExecContext(ctx, UpdateValidPreparationVessel,
+	_, err := db.ExecContext(ctx, updateValidPreparationVessel,
 		arg.Notes,
 		arg.ValidPreparationID,
 		arg.ValidVesselID,
@@ -1386,7 +1386,7 @@ func (q *Queries) UpdateValidPreparationVessel(ctx context.Context, db DBTX, arg
 	return err
 }
 
-const UpdateValidVessel = `-- name: UpdateValidVessel :exec
+const updateValidVessel = `-- name: UpdateValidVessel :exec
 
 UPDATE valid_vessels
 SET
@@ -1398,11 +1398,11 @@ SET
     slug = $6,
     display_in_summary_lists = $7,
     include_in_generated_instructions = $8,
-    capacity = $9,
+    capacity = $9::float,
     capacity_unit = $10,
-    width_in_millimeters = $11,
-    length_in_millimeters = $12,
-    height_in_millimeters = $13,
+    width_in_millimeters = $11::float,
+    length_in_millimeters = $12::float,
+    height_in_millimeters = $13::float,
     shape = $14,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
@@ -1410,25 +1410,25 @@ WHERE archived_at IS NULL
 `
 
 type UpdateValidVesselParams struct {
-	Capacity                       string         `db:"capacity"`
-	PluralName                     string         `db:"plural_name"`
-	Description                    string         `db:"description"`
-	IconPath                       string         `db:"icon_path"`
-	ID                             string         `db:"id"`
-	Slug                           string         `db:"slug"`
-	Shape                          VesselShape    `db:"shape"`
-	Name                           string         `db:"name"`
-	CapacityUnit                   sql.NullString `db:"capacity_unit"`
-	WidthInMillimeters             sql.NullString `db:"width_in_millimeters"`
-	LengthInMillimeters            sql.NullString `db:"length_in_millimeters"`
-	HeightInMillimeters            sql.NullString `db:"height_in_millimeters"`
-	IncludeInGeneratedInstructions bool           `db:"include_in_generated_instructions"`
-	DisplayInSummaryLists          bool           `db:"display_in_summary_lists"`
-	UsableForStorage               bool           `db:"usable_for_storage"`
+	Name                           string
+	PluralName                     string
+	Description                    string
+	IconPath                       string
+	ID                             string
+	Slug                           string
+	Shape                          VesselShape
+	CapacityUnit                   sql.NullString
+	Capacity                       float64
+	WidthInMillimeters             float64
+	LengthInMillimeters            float64
+	HeightInMillimeters            float64
+	IncludeInGeneratedInstructions bool
+	DisplayInSummaryLists          bool
+	UsableForStorage               bool
 }
 
 func (q *Queries) UpdateValidVessel(ctx context.Context, db DBTX, arg *UpdateValidVesselParams) error {
-	_, err := db.ExecContext(ctx, UpdateValidVessel,
+	_, err := db.ExecContext(ctx, updateValidVessel,
 		arg.Name,
 		arg.PluralName,
 		arg.Description,

@@ -122,6 +122,7 @@ require (
 	github.com/launchdarkly/go-semver v1.0.2 // indirect
 	github.com/launchdarkly/go-server-sdk-evaluation/v2 v2.0.2 // indirect
 	github.com/launchdarkly/go-server-sdk/v6 v6.1.0 // indirect
+	github.com/lib/pq v1.10.9 // indirect
 	github.com/luna-duclos/instrumentedsql v1.1.3 // indirect
 	github.com/mailgun/mailgun-go/v4 v4.9.2 // indirect
 	github.com/mailjet/mailjet-apiv3-go/v3 v3.2.0 // indirect

@@ -10,84 +10,84 @@ import (
 	"database/sql"
 )
 
-const CheckHouseholdInstrumentOwnershipExistence = `-- name: CheckHouseholdInstrumentOwnershipExistence :one
+const checkHouseholdInstrumentOwnershipExistence = `-- name: CheckHouseholdInstrumentOwnershipExistence :one
 
 SELECT EXISTS ( SELECT household_instrument_ownerships.id FROM household_instrument_ownerships WHERE household_instrument_ownerships.archived_at IS NULL AND household_instrument_ownerships.id = $1 AND household_instrument_ownerships.belongs_to_household = $2 )
 `
 
 type CheckHouseholdInstrumentOwnershipExistenceParams struct {
-	ID                 string `db:"id"`
-	BelongsToHousehold string `db:"belongs_to_household"`
+	ID                 string
+	BelongsToHousehold string
 }
 
 func (q *Queries) CheckHouseholdInstrumentOwnershipExistence(ctx context.Context, db DBTX, arg *CheckHouseholdInstrumentOwnershipExistenceParams) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckHouseholdInstrumentOwnershipExistence, arg.ID, arg.BelongsToHousehold)
+	row := db.QueryRowContext(ctx, checkHouseholdInstrumentOwnershipExistence, arg.ID, arg.BelongsToHousehold)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckHouseholdInvitationExistence = `-- name: CheckHouseholdInvitationExistence :one
+const checkHouseholdInvitationExistence = `-- name: CheckHouseholdInvitationExistence :one
 
 SELECT EXISTS ( SELECT household_invitations.id FROM household_invitations WHERE household_invitations.archived_at IS NULL AND household_invitations.id = $1 )
 `
 
 func (q *Queries) CheckHouseholdInvitationExistence(ctx context.Context, db DBTX, id string) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckHouseholdInvitationExistence, id)
+	row := db.QueryRowContext(ctx, checkHouseholdInvitationExistence, id)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckMealExistence = `-- name: CheckMealExistence :one
+const checkMealExistence = `-- name: CheckMealExistence :one
 
 SELECT EXISTS ( SELECT meals.id FROM meals WHERE meals.archived_at IS NULL AND meals.id = $1 )
 `
 
 func (q *Queries) CheckMealExistence(ctx context.Context, db DBTX, id string) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckMealExistence, id)
+	row := db.QueryRowContext(ctx, checkMealExistence, id)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckMealPlanEventExistence = `-- name: CheckMealPlanEventExistence :one
+const checkMealPlanEventExistence = `-- name: CheckMealPlanEventExistence :one
 
 SELECT EXISTS ( SELECT meal_plan_events.id FROM meal_plan_events WHERE meal_plan_events.archived_at IS NULL AND meal_plan_events.id = $1 )
 `
 
 func (q *Queries) CheckMealPlanEventExistence(ctx context.Context, db DBTX, id string) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckMealPlanEventExistence, id)
+	row := db.QueryRowContext(ctx, checkMealPlanEventExistence, id)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckMealPlanExistence = `-- name: CheckMealPlanExistence :one
+const checkMealPlanExistence = `-- name: CheckMealPlanExistence :one
 
 SELECT EXISTS ( SELECT meal_plans.id FROM meal_plans WHERE meal_plans.archived_at IS NULL AND meal_plans.id = $1 )
 `
 
 func (q *Queries) CheckMealPlanExistence(ctx context.Context, db DBTX, id string) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckMealPlanExistence, id)
+	row := db.QueryRowContext(ctx, checkMealPlanExistence, id)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckMealPlanGroceryListItemExistence = `-- name: CheckMealPlanGroceryListItemExistence :one
+const checkMealPlanGroceryListItemExistence = `-- name: CheckMealPlanGroceryListItemExistence :one
 
 SELECT EXISTS ( SELECT meal_plan_grocery_list_items.id FROM meal_plan_grocery_list_items WHERE meal_plan_grocery_list_items.archived_at IS NULL AND meal_plan_grocery_list_items.id = $1 )
 `
 
 func (q *Queries) CheckMealPlanGroceryListItemExistence(ctx context.Context, db DBTX, id string) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckMealPlanGroceryListItemExistence, id)
+	row := db.QueryRowContext(ctx, checkMealPlanGroceryListItemExistence, id)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckMealPlanOptionExistence = `-- name: CheckMealPlanOptionExistence :one
+const checkMealPlanOptionExistence = `-- name: CheckMealPlanOptionExistence :one
 
 SELECT EXISTS (
 	SELECT
@@ -109,19 +109,19 @@ SELECT EXISTS (
 `
 
 type CheckMealPlanOptionExistenceParams struct {
-	BelongsToMealPlan      string         `db:"belongs_to_meal_plan"`
-	ID                     string         `db:"id"`
-	BelongsToMealPlanEvent sql.NullString `db:"belongs_to_meal_plan_event"`
+	BelongsToMealPlan      string
+	ID                     string
+	BelongsToMealPlanEvent sql.NullString
 }
 
 func (q *Queries) CheckMealPlanOptionExistence(ctx context.Context, db DBTX, arg *CheckMealPlanOptionExistenceParams) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckMealPlanOptionExistence, arg.BelongsToMealPlan, arg.BelongsToMealPlanEvent, arg.ID)
+	row := db.QueryRowContext(ctx, checkMealPlanOptionExistence, arg.BelongsToMealPlan, arg.BelongsToMealPlanEvent, arg.ID)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckMealPlanOptionVoteExistence = `-- name: CheckMealPlanOptionVoteExistence :one
+const checkMealPlanOptionVoteExistence = `-- name: CheckMealPlanOptionVoteExistence :one
 
 SELECT EXISTS (
 	SELECT
@@ -145,14 +145,14 @@ SELECT EXISTS (
 `
 
 type CheckMealPlanOptionVoteExistenceParams struct {
-	BelongsToMealPlanOption string         `db:"belongs_to_meal_plan_option"`
-	ID                      string         `db:"id"`
-	BelongsToMealPlan       string         `db:"belongs_to_meal_plan"`
-	BelongsToMealPlanEvent  sql.NullString `db:"belongs_to_meal_plan_event"`
+	BelongsToMealPlanOption string
+	ID                      string
+	BelongsToMealPlan       string
+	BelongsToMealPlanEvent  sql.NullString
 }
 
 func (q *Queries) CheckMealPlanOptionVoteExistence(ctx context.Context, db DBTX, arg *CheckMealPlanOptionVoteExistenceParams) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckMealPlanOptionVoteExistence,
+	row := db.QueryRowContext(ctx, checkMealPlanOptionVoteExistence,
 		arg.BelongsToMealPlanOption,
 		arg.ID,
 		arg.BelongsToMealPlanEvent,
@@ -163,7 +163,7 @@ func (q *Queries) CheckMealPlanOptionVoteExistence(ctx context.Context, db DBTX,
 	return exists, err
 }
 
-const CheckMealPlanTaskExistence = `-- name: CheckMealPlanTaskExistence :one
+const checkMealPlanTaskExistence = `-- name: CheckMealPlanTaskExistence :one
 
 SELECT EXISTS (
 	SELECT meal_plan_tasks.id
@@ -179,54 +179,54 @@ SELECT EXISTS (
 `
 
 type CheckMealPlanTaskExistenceParams struct {
-	ID   string `db:"id"`
-	ID_2 string `db:"id_2"`
+	ID   string
+	ID_2 string
 }
 
 func (q *Queries) CheckMealPlanTaskExistence(ctx context.Context, db DBTX, arg *CheckMealPlanTaskExistenceParams) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckMealPlanTaskExistence, arg.ID, arg.ID_2)
+	row := db.QueryRowContext(ctx, checkMealPlanTaskExistence, arg.ID, arg.ID_2)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckOAuth2ClientTokenExistence = `-- name: CheckOAuth2ClientTokenExistence :one
+const checkOAuth2ClientTokenExistence = `-- name: CheckOAuth2ClientTokenExistence :one
 
 SELECT EXISTS ( SELECT oauth2_client_tokens.id FROM oauth2_client_tokens WHERE oauth2_client_tokens.archived_at IS NULL AND oauth2_client_tokens.id = $1 )
 `
 
 func (q *Queries) CheckOAuth2ClientTokenExistence(ctx context.Context, db DBTX, id string) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckOAuth2ClientTokenExistence, id)
+	row := db.QueryRowContext(ctx, checkOAuth2ClientTokenExistence, id)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckRecipeExistence = `-- name: CheckRecipeExistence :one
+const checkRecipeExistence = `-- name: CheckRecipeExistence :one
 
 SELECT EXISTS ( SELECT recipes.id FROM recipes WHERE recipes.archived_at IS NULL AND recipes.id = $1 )
 `
 
 func (q *Queries) CheckRecipeExistence(ctx context.Context, db DBTX, id string) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckRecipeExistence, id)
+	row := db.QueryRowContext(ctx, checkRecipeExistence, id)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckRecipeMediaExistence = `-- name: CheckRecipeMediaExistence :one
+const checkRecipeMediaExistence = `-- name: CheckRecipeMediaExistence :one
 
 SELECT EXISTS ( SELECT recipe_media.id FROM recipe_media WHERE recipe_media.archived_at IS NULL AND recipe_media.id = $1 )
 `
 
 func (q *Queries) CheckRecipeMediaExistence(ctx context.Context, db DBTX, id string) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckRecipeMediaExistence, id)
+	row := db.QueryRowContext(ctx, checkRecipeMediaExistence, id)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckRecipePrepTaskExistence = `-- name: CheckRecipePrepTaskExistence :one
+const checkRecipePrepTaskExistence = `-- name: CheckRecipePrepTaskExistence :one
 
 SELECT EXISTS (
 	SELECT recipe_prep_tasks.id
@@ -241,44 +241,44 @@ SELECT EXISTS (
 `
 
 type CheckRecipePrepTaskExistenceParams struct {
-	BelongsToRecipe string `db:"belongs_to_recipe"`
-	ID              string `db:"id"`
+	BelongsToRecipe string
+	ID              string
 }
 
 func (q *Queries) CheckRecipePrepTaskExistence(ctx context.Context, db DBTX, arg *CheckRecipePrepTaskExistenceParams) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckRecipePrepTaskExistence, arg.BelongsToRecipe, arg.ID)
+	row := db.QueryRowContext(ctx, checkRecipePrepTaskExistence, arg.BelongsToRecipe, arg.ID)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckRecipeRatingExistence = `-- name: CheckRecipeRatingExistence :one
+const checkRecipeRatingExistence = `-- name: CheckRecipeRatingExistence :one
 
 SELECT EXISTS ( SELECT recipe_ratings.id FROM recipe_ratings WHERE recipe_ratings.archived_at IS NULL AND recipe_ratings.id = $1 )
 `
 
 func (q *Queries) CheckRecipeRatingExistence(ctx context.Context, db DBTX, id string) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckRecipeRatingExistence, id)
+	row := db.QueryRowContext(ctx, checkRecipeRatingExistence, id)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckRecipeStepCompletionConditionExistence = `-- name: CheckRecipeStepCompletionConditionExistence :one
+const checkRecipeStepCompletionConditionExistence = `-- name: CheckRecipeStepCompletionConditionExistence :one
 
 SELECT EXISTS ( SELECT recipe_step_completion_conditions.id FROM recipe_step_completion_conditions JOIN recipe_steps ON recipe_step_completion_conditions.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_completion_conditions.archived_at IS NULL AND recipe_step_completion_conditions.belongs_to_recipe_step = $1 AND recipe_step_completion_conditions.id = $2 AND recipe_steps.archived_at IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $4 AND recipes.archived_at IS NULL AND recipes.id = $5 )
 `
 
 type CheckRecipeStepCompletionConditionExistenceParams struct {
-	BelongsToRecipeStep string `db:"belongs_to_recipe_step"`
-	ID                  string `db:"id"`
-	BelongsToRecipe     string `db:"belongs_to_recipe"`
-	ID_2                string `db:"id_2"`
-	ID_3                string `db:"id_3"`
+	BelongsToRecipeStep string
+	ID                  string
+	BelongsToRecipe     string
+	ID_2                string
+	ID_3                string
 }
 
 func (q *Queries) CheckRecipeStepCompletionConditionExistence(ctx context.Context, db DBTX, arg *CheckRecipeStepCompletionConditionExistenceParams) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckRecipeStepCompletionConditionExistence,
+	row := db.QueryRowContext(ctx, checkRecipeStepCompletionConditionExistence,
 		arg.BelongsToRecipeStep,
 		arg.ID,
 		arg.BelongsToRecipe,
@@ -290,7 +290,7 @@ func (q *Queries) CheckRecipeStepCompletionConditionExistence(ctx context.Contex
 	return exists, err
 }
 
-const CheckRecipeStepExistence = `-- name: CheckRecipeStepExistence :one
+const checkRecipeStepExistence = `-- name: CheckRecipeStepExistence :one
 
 SELECT EXISTS (
 	SELECT recipe_steps.id
@@ -305,32 +305,32 @@ SELECT EXISTS (
 `
 
 type CheckRecipeStepExistenceParams struct {
-	BelongsToRecipe string `db:"belongs_to_recipe"`
-	ID              string `db:"id"`
+	BelongsToRecipe string
+	ID              string
 }
 
 func (q *Queries) CheckRecipeStepExistence(ctx context.Context, db DBTX, arg *CheckRecipeStepExistenceParams) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckRecipeStepExistence, arg.BelongsToRecipe, arg.ID)
+	row := db.QueryRowContext(ctx, checkRecipeStepExistence, arg.BelongsToRecipe, arg.ID)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckRecipeStepIngredientExistence = `-- name: CheckRecipeStepIngredientExistence :one
+const checkRecipeStepIngredientExistence = `-- name: CheckRecipeStepIngredientExistence :one
 
 SELECT EXISTS ( SELECT recipe_step_ingredients.id FROM recipe_step_ingredients JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_ingredients.archived_at IS NULL AND recipe_step_ingredients.belongs_to_recipe_step = $1 AND recipe_step_ingredients.id = $2 AND recipe_steps.archived_at IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $4 AND recipes.archived_at IS NULL AND recipes.id = $5 )
 `
 
 type CheckRecipeStepIngredientExistenceParams struct {
-	BelongsToRecipeStep string `db:"belongs_to_recipe_step"`
-	ID                  string `db:"id"`
-	BelongsToRecipe     string `db:"belongs_to_recipe"`
-	ID_2                string `db:"id_2"`
-	ID_3                string `db:"id_3"`
+	BelongsToRecipeStep string
+	ID                  string
+	BelongsToRecipe     string
+	ID_2                string
+	ID_3                string
 }
 
 func (q *Queries) CheckRecipeStepIngredientExistence(ctx context.Context, db DBTX, arg *CheckRecipeStepIngredientExistenceParams) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckRecipeStepIngredientExistence,
+	row := db.QueryRowContext(ctx, checkRecipeStepIngredientExistence,
 		arg.BelongsToRecipeStep,
 		arg.ID,
 		arg.BelongsToRecipe,
@@ -342,21 +342,21 @@ func (q *Queries) CheckRecipeStepIngredientExistence(ctx context.Context, db DBT
 	return exists, err
 }
 
-const CheckRecipeStepInstrumentExistence = `-- name: CheckRecipeStepInstrumentExistence :one
+const checkRecipeStepInstrumentExistence = `-- name: CheckRecipeStepInstrumentExistence :one
 
 SELECT EXISTS ( SELECT recipe_step_instruments.id FROM recipe_step_instruments JOIN recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_instruments.archived_at IS NULL AND recipe_step_instruments.belongs_to_recipe_step = $1 AND recipe_step_instruments.id = $2 AND recipe_steps.archived_at IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $4 AND recipes.archived_at IS NULL AND recipes.id = $5 )
 `
 
 type CheckRecipeStepInstrumentExistenceParams struct {
-	BelongsToRecipeStep string `db:"belongs_to_recipe_step"`
-	ID                  string `db:"id"`
-	BelongsToRecipe     string `db:"belongs_to_recipe"`
-	ID_2                string `db:"id_2"`
-	ID_3                string `db:"id_3"`
+	BelongsToRecipeStep string
+	ID                  string
+	BelongsToRecipe     string
+	ID_2                string
+	ID_3                string
 }
 
 func (q *Queries) CheckRecipeStepInstrumentExistence(ctx context.Context, db DBTX, arg *CheckRecipeStepInstrumentExistenceParams) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckRecipeStepInstrumentExistence,
+	row := db.QueryRowContext(ctx, checkRecipeStepInstrumentExistence,
 		arg.BelongsToRecipeStep,
 		arg.ID,
 		arg.BelongsToRecipe,
@@ -368,21 +368,21 @@ func (q *Queries) CheckRecipeStepInstrumentExistence(ctx context.Context, db DBT
 	return exists, err
 }
 
-const CheckRecipeStepProductExistence = `-- name: CheckRecipeStepProductExistence :one
+const checkRecipeStepProductExistence = `-- name: CheckRecipeStepProductExistence :one
 
 SELECT EXISTS ( SELECT recipe_step_products.id FROM recipe_step_products JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_products.archived_at IS NULL AND recipe_step_products.belongs_to_recipe_step = $1 AND recipe_step_products.id = $2 AND recipe_steps.archived_at IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $4 AND recipes.archived_at IS NULL AND recipes.id = $5 )
 `
 
 type CheckRecipeStepProductExistenceParams struct {
-	BelongsToRecipeStep string `db:"belongs_to_recipe_step"`
-	ID                  string `db:"id"`
-	BelongsToRecipe     string `db:"belongs_to_recipe"`
-	ID_2                string `db:"id_2"`
-	ID_3                string `db:"id_3"`
+	BelongsToRecipeStep string
+	ID                  string
+	BelongsToRecipe     string
+	ID_2                string
+	ID_3                string
 }
 
 func (q *Queries) CheckRecipeStepProductExistence(ctx context.Context, db DBTX, arg *CheckRecipeStepProductExistenceParams) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckRecipeStepProductExistence,
+	row := db.QueryRowContext(ctx, checkRecipeStepProductExistence,
 		arg.BelongsToRecipeStep,
 		arg.ID,
 		arg.BelongsToRecipe,
@@ -394,21 +394,21 @@ func (q *Queries) CheckRecipeStepProductExistence(ctx context.Context, db DBTX, 
 	return exists, err
 }
 
-const CheckRecipeStepVesselExistence = `-- name: CheckRecipeStepVesselExistence :one
+const checkRecipeStepVesselExistence = `-- name: CheckRecipeStepVesselExistence :one
 
 SELECT EXISTS ( SELECT recipe_step_vessels.id FROM recipe_step_vessels JOIN recipe_steps ON recipe_step_vessels.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_vessels.archived_at IS NULL AND recipe_step_vessels.belongs_to_recipe_step = $1 AND recipe_step_vessels.id = $2 AND recipe_steps.archived_at IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $4 AND recipes.archived_at IS NULL AND recipes.id = $5 )
 `
 
 type CheckRecipeStepVesselExistenceParams struct {
-	BelongsToRecipeStep string `db:"belongs_to_recipe_step"`
-	ID                  string `db:"id"`
-	BelongsToRecipe     string `db:"belongs_to_recipe"`
-	ID_2                string `db:"id_2"`
-	ID_3                string `db:"id_3"`
+	BelongsToRecipeStep string
+	ID                  string
+	BelongsToRecipe     string
+	ID_2                string
+	ID_3                string
 }
 
 func (q *Queries) CheckRecipeStepVesselExistence(ctx context.Context, db DBTX, arg *CheckRecipeStepVesselExistenceParams) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckRecipeStepVesselExistence,
+	row := db.QueryRowContext(ctx, checkRecipeStepVesselExistence,
 		arg.BelongsToRecipeStep,
 		arg.ID,
 		arg.BelongsToRecipe,
@@ -420,199 +420,199 @@ func (q *Queries) CheckRecipeStepVesselExistence(ctx context.Context, db DBTX, a
 	return exists, err
 }
 
-const CheckServiceSettingConfigurationExistence = `-- name: CheckServiceSettingConfigurationExistence :one
+const checkServiceSettingConfigurationExistence = `-- name: CheckServiceSettingConfigurationExistence :one
 
 SELECT EXISTS ( SELECT service_setting_configurations.id FROM service_setting_configurations WHERE service_setting_configurations.archived_at IS NULL AND service_setting_configurations.id = $1 )
 `
 
 func (q *Queries) CheckServiceSettingConfigurationExistence(ctx context.Context, db DBTX, id string) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckServiceSettingConfigurationExistence, id)
+	row := db.QueryRowContext(ctx, checkServiceSettingConfigurationExistence, id)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckServiceSettingExistence = `-- name: CheckServiceSettingExistence :one
+const checkServiceSettingExistence = `-- name: CheckServiceSettingExistence :one
 
 SELECT EXISTS ( SELECT service_settings.id FROM service_settings WHERE service_settings.archived_at IS NULL AND service_settings.id = $1 )
 `
 
 func (q *Queries) CheckServiceSettingExistence(ctx context.Context, db DBTX, id string) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckServiceSettingExistence, id)
+	row := db.QueryRowContext(ctx, checkServiceSettingExistence, id)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckUserIngredientPreferenceExistence = `-- name: CheckUserIngredientPreferenceExistence :one
+const checkUserIngredientPreferenceExistence = `-- name: CheckUserIngredientPreferenceExistence :one
 
 SELECT EXISTS ( SELECT user_ingredient_preferences.id FROM user_ingredient_preferences WHERE user_ingredient_preferences.archived_at IS NULL AND user_ingredient_preferences.id = $1 )
 `
 
 func (q *Queries) CheckUserIngredientPreferenceExistence(ctx context.Context, db DBTX, id string) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckUserIngredientPreferenceExistence, id)
+	row := db.QueryRowContext(ctx, checkUserIngredientPreferenceExistence, id)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckValidIngredientExistence = `-- name: CheckValidIngredientExistence :one
+const checkValidIngredientExistence = `-- name: CheckValidIngredientExistence :one
 
 SELECT EXISTS ( SELECT valid_ingredients.id FROM valid_ingredients WHERE valid_ingredients.archived_at IS NULL AND valid_ingredients.id = $1 )
 `
 
 func (q *Queries) CheckValidIngredientExistence(ctx context.Context, db DBTX, id string) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckValidIngredientExistence, id)
+	row := db.QueryRowContext(ctx, checkValidIngredientExistence, id)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckValidIngredientGroupExistence = `-- name: CheckValidIngredientGroupExistence :one
+const checkValidIngredientGroupExistence = `-- name: CheckValidIngredientGroupExistence :one
 
 SELECT EXISTS ( SELECT valid_ingredient_groups.id FROM valid_ingredient_groups WHERE valid_ingredient_groups.archived_at IS NULL AND valid_ingredient_groups.id = $1 )
 `
 
 func (q *Queries) CheckValidIngredientGroupExistence(ctx context.Context, db DBTX, id string) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckValidIngredientGroupExistence, id)
+	row := db.QueryRowContext(ctx, checkValidIngredientGroupExistence, id)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckValidIngredientMeasurementUnitExistence = `-- name: CheckValidIngredientMeasurementUnitExistence :one
+const checkValidIngredientMeasurementUnitExistence = `-- name: CheckValidIngredientMeasurementUnitExistence :one
 
 SELECT EXISTS ( SELECT valid_ingredient_measurement_units.id FROM valid_ingredient_measurement_units WHERE valid_ingredient_measurement_units.archived_at IS NULL AND valid_ingredient_measurement_units.id = $1 )
 `
 
 func (q *Queries) CheckValidIngredientMeasurementUnitExistence(ctx context.Context, db DBTX, id string) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckValidIngredientMeasurementUnitExistence, id)
+	row := db.QueryRowContext(ctx, checkValidIngredientMeasurementUnitExistence, id)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckValidIngredientPreparationExistence = `-- name: CheckValidIngredientPreparationExistence :one
+const checkValidIngredientPreparationExistence = `-- name: CheckValidIngredientPreparationExistence :one
 
 SELECT EXISTS ( SELECT valid_ingredient_preparations.id FROM valid_ingredient_preparations WHERE valid_ingredient_preparations.archived_at IS NULL AND valid_ingredient_preparations.id = $1 )
 `
 
 func (q *Queries) CheckValidIngredientPreparationExistence(ctx context.Context, db DBTX, id string) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckValidIngredientPreparationExistence, id)
+	row := db.QueryRowContext(ctx, checkValidIngredientPreparationExistence, id)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckValidIngredientStateExistence = `-- name: CheckValidIngredientStateExistence :one
+const checkValidIngredientStateExistence = `-- name: CheckValidIngredientStateExistence :one
 
 SELECT EXISTS ( SELECT valid_ingredient_states.id FROM valid_ingredient_states WHERE valid_ingredient_states.archived_at IS NULL AND valid_ingredient_states.id = $1 )
 `
 
 func (q *Queries) CheckValidIngredientStateExistence(ctx context.Context, db DBTX, id string) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckValidIngredientStateExistence, id)
+	row := db.QueryRowContext(ctx, checkValidIngredientStateExistence, id)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckValidIngredientStateIngredientExistence = `-- name: CheckValidIngredientStateIngredientExistence :one
+const checkValidIngredientStateIngredientExistence = `-- name: CheckValidIngredientStateIngredientExistence :one
 
 SELECT EXISTS ( SELECT valid_ingredient_state_ingredients.id FROM valid_ingredient_state_ingredients WHERE valid_ingredient_state_ingredients.archived_at IS NULL AND valid_ingredient_state_ingredients.id = $1 )
 `
 
 func (q *Queries) CheckValidIngredientStateIngredientExistence(ctx context.Context, db DBTX, id string) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckValidIngredientStateIngredientExistence, id)
+	row := db.QueryRowContext(ctx, checkValidIngredientStateIngredientExistence, id)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckValidInstrumentExistence = `-- name: CheckValidInstrumentExistence :one
+const checkValidInstrumentExistence = `-- name: CheckValidInstrumentExistence :one
 
 SELECT EXISTS ( SELECT valid_instruments.id FROM valid_instruments WHERE valid_instruments.archived_at IS NULL AND valid_instruments.id = $1 )
 `
 
 func (q *Queries) CheckValidInstrumentExistence(ctx context.Context, db DBTX, id string) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckValidInstrumentExistence, id)
+	row := db.QueryRowContext(ctx, checkValidInstrumentExistence, id)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckValidMeasurementConversionExistence = `-- name: CheckValidMeasurementConversionExistence :one
+const checkValidMeasurementConversionExistence = `-- name: CheckValidMeasurementConversionExistence :one
 
 SELECT EXISTS ( SELECT valid_measurement_conversions.id FROM valid_measurement_conversions WHERE valid_measurement_conversions.archived_at IS NULL AND valid_measurement_conversions.id = $1 )
 `
 
 func (q *Queries) CheckValidMeasurementConversionExistence(ctx context.Context, db DBTX, id string) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckValidMeasurementConversionExistence, id)
+	row := db.QueryRowContext(ctx, checkValidMeasurementConversionExistence, id)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckValidMeasurementUnitExistence = `-- name: CheckValidMeasurementUnitExistence :one
+const checkValidMeasurementUnitExistence = `-- name: CheckValidMeasurementUnitExistence :one
 
 SELECT EXISTS ( SELECT valid_measurement_units.id FROM valid_measurement_units WHERE valid_measurement_units.archived_at IS NULL AND valid_measurement_units.id = $1 )
 `
 
 func (q *Queries) CheckValidMeasurementUnitExistence(ctx context.Context, db DBTX, id string) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckValidMeasurementUnitExistence, id)
+	row := db.QueryRowContext(ctx, checkValidMeasurementUnitExistence, id)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckValidPreparationExistence = `-- name: CheckValidPreparationExistence :one
+const checkValidPreparationExistence = `-- name: CheckValidPreparationExistence :one
 
 SELECT EXISTS ( SELECT valid_preparations.id FROM valid_preparations WHERE valid_preparations.archived_at IS NULL AND valid_preparations.id = $1 )
 `
 
 func (q *Queries) CheckValidPreparationExistence(ctx context.Context, db DBTX, id string) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckValidPreparationExistence, id)
+	row := db.QueryRowContext(ctx, checkValidPreparationExistence, id)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckValidPreparationInstrumentExistence = `-- name: CheckValidPreparationInstrumentExistence :one
+const checkValidPreparationInstrumentExistence = `-- name: CheckValidPreparationInstrumentExistence :one
 
 SELECT EXISTS ( SELECT valid_preparation_instruments.id FROM valid_preparation_instruments WHERE valid_preparation_instruments.archived_at IS NULL AND valid_preparation_instruments.id = $1 )
 `
 
 func (q *Queries) CheckValidPreparationInstrumentExistence(ctx context.Context, db DBTX, id string) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckValidPreparationInstrumentExistence, id)
+	row := db.QueryRowContext(ctx, checkValidPreparationInstrumentExistence, id)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckValidPreparationVesselExistence = `-- name: CheckValidPreparationVesselExistence :one
+const checkValidPreparationVesselExistence = `-- name: CheckValidPreparationVesselExistence :one
 
 SELECT EXISTS ( SELECT valid_preparation_vessels.id FROM valid_preparation_vessels WHERE valid_preparation_vessels.archived_at IS NULL AND valid_preparation_vessels.id = $1 )
 `
 
 func (q *Queries) CheckValidPreparationVesselExistence(ctx context.Context, db DBTX, id string) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckValidPreparationVesselExistence, id)
+	row := db.QueryRowContext(ctx, checkValidPreparationVesselExistence, id)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckValidVesselExistence = `-- name: CheckValidVesselExistence :one
+const checkValidVesselExistence = `-- name: CheckValidVesselExistence :one
 
 SELECT EXISTS ( SELECT valid_vessels.id FROM valid_vessels WHERE valid_vessels.archived_at IS NULL AND valid_vessels.id = $1 )
 `
 
 func (q *Queries) CheckValidVesselExistence(ctx context.Context, db DBTX, id string) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckValidVesselExistence, id)
+	row := db.QueryRowContext(ctx, checkValidVesselExistence, id)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
 }
 
-const CheckWebhookExistence = `-- name: CheckWebhookExistence :one
+const checkWebhookExistence = `-- name: CheckWebhookExistence :one
 
 SELECT EXISTS (
 	SELECT webhooks.id
@@ -624,12 +624,12 @@ SELECT EXISTS (
 `
 
 type CheckWebhookExistenceParams struct {
-	BelongsToHousehold string `db:"belongs_to_household"`
-	ID                 string `db:"id"`
+	BelongsToHousehold string
+	ID                 string
 }
 
 func (q *Queries) CheckWebhookExistence(ctx context.Context, db DBTX, arg *CheckWebhookExistenceParams) (bool, error) {
-	row := db.QueryRowContext(ctx, CheckWebhookExistence, arg.BelongsToHousehold, arg.ID)
+	row := db.QueryRowContext(ctx, checkWebhookExistence, arg.BelongsToHousehold, arg.ID)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
