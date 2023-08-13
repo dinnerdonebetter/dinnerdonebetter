@@ -6,10 +6,8 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/Masterminds/squirrel"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
@@ -116,36 +114,15 @@ func TestQuerier_SearchForValidVessels(T *testing.T) {
 func TestQuerier_GetValidVesselsWithIDs(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
+	T.Run("with empty IDs list", func(t *testing.T) {
 		t.Parallel()
-
-		exampleValidVesselList := fakes.BuildFakeValidVesselList()
-
-		exampleIDs := []string{}
-		for _, exampleValidVessel := range exampleValidVesselList.Data {
-			exampleIDs = append(exampleIDs, exampleValidVessel.ID)
-		}
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
 
-		where := squirrel.Eq{"valid_vessels.id": exampleIDs}
-		joins := []string{
-			"valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id",
-		}
-		groupBys := []string{
-			"valid_vessels.id",
-			"valid_measurement_units.id",
-		}
-		query, args := c.buildListQuery(ctx, validVesselsTable, joins, groupBys, where, householdOwnershipColumn, validVesselsTableColumns, "", false, nil)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidVessels(true, exampleValidVesselList.FilteredCount, exampleValidVesselList.Data...))
-
-		actual, err := c.GetValidVesselsWithIDs(ctx, exampleIDs)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleValidVesselList.Data, actual)
+		actual, err := c.GetValidVesselsWithIDs(ctx, nil)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})

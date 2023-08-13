@@ -3525,19 +3525,19 @@ SELECT
     valid_vessels.display_in_summary_lists,
     valid_vessels.include_in_generated_instructions,
     valid_vessels.capacity::float,
-	valid_measurement_units.id,
-	valid_measurement_units.name,
-	valid_measurement_units.description,
-	valid_measurement_units.volumetric,
-	valid_measurement_units.icon_path,
-	valid_measurement_units.universal,
-	valid_measurement_units.metric,
-	valid_measurement_units.imperial,
-	valid_measurement_units.slug,
-	valid_measurement_units.plural_name,
-	valid_measurement_units.created_at,
-	valid_measurement_units.last_updated_at,
-	valid_measurement_units.archived_at,
+	valid_measurement_units.id as valid_measurement_unit_id,
+	valid_measurement_units.name as valid_measurement_unit_name,
+	valid_measurement_units.description as valid_measurement_unit_description,
+	valid_measurement_units.volumetric as valid_measurement_unit_volumetric,
+	valid_measurement_units.icon_path as valid_measurement_unit_icon_path,
+	valid_measurement_units.universal as valid_measurement_unit_universal,
+	valid_measurement_units.metric as valid_measurement_unit_metric,
+	valid_measurement_units.imperial as valid_measurement_unit_imperial,
+	valid_measurement_units.slug as valid_measurement_unit_slug,
+	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.created_at as valid_measurement_unit_created_at,
+	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
+	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
     valid_vessels.width_in_millimeters::float,
     valid_vessels.length_in_millimeters::float,
     valid_vessels.height_in_millimeters::float,
@@ -3553,36 +3553,36 @@ WHERE valid_vessels.archived_at IS NULL
 `
 
 type GetValidVesselRow struct {
-	CreatedAt                       time.Time
-	CreatedAt_2                     time.Time
-	ArchivedAt_2                    sql.NullTime
-	LastUpdatedAt_2                 sql.NullTime
-	ArchivedAt                      sql.NullTime
-	LastUpdatedAt                   sql.NullTime
-	IconPath_2                      string
-	IconPath                        string
-	Name                            string
-	PluralName                      string
-	ID_2                            string
-	Name_2                          string
-	Description_2                   string
-	Description                     string
-	ID                              string
-	Shape                           VesselShape
-	Slug                            string
-	PluralName_2                    string
-	Slug_2                          string
-	ValidVesselsWidthInMillimeters  float64
-	ValidVesselsLengthInMillimeters float64
-	ValidVesselsHeightInMillimeters float64
-	ValidVesselsCapacity            float64
-	Volumetric                      sql.NullBool
-	Imperial                        bool
-	Metric                          bool
-	UsableForStorage                bool
-	DisplayInSummaryLists           bool
-	Universal                       bool
-	IncludeInGeneratedInstructions  bool
+	ValidMeasurementUnitCreatedAt     time.Time
+	CreatedAt                         time.Time
+	ArchivedAt                        sql.NullTime
+	LastUpdatedAt                     sql.NullTime
+	ValidMeasurementUnitArchivedAt    sql.NullTime
+	ValidMeasurementUnitLastUpdatedAt sql.NullTime
+	ValidMeasurementUnitIconPath      string
+	IconPath                          string
+	Name                              string
+	PluralName                        string
+	ValidMeasurementUnitID            string
+	ValidMeasurementUnitName          string
+	ValidMeasurementUnitDescription   string
+	Description                       string
+	ID                                string
+	Shape                             VesselShape
+	Slug                              string
+	ValidMeasurementUnitPluralName    string
+	ValidMeasurementUnitSlug          string
+	ValidVesselsWidthInMillimeters    float64
+	ValidVesselsLengthInMillimeters   float64
+	ValidVesselsHeightInMillimeters   float64
+	ValidVesselsCapacity              float64
+	ValidMeasurementUnitVolumetric    sql.NullBool
+	ValidMeasurementUnitImperial      bool
+	ValidMeasurementUnitMetric        bool
+	UsableForStorage                  bool
+	DisplayInSummaryLists             bool
+	ValidMeasurementUnitUniversal     bool
+	IncludeInGeneratedInstructions    bool
 }
 
 func (q *Queries) GetValidVessel(ctx context.Context, db DBTX, id string) (*GetValidVesselRow, error) {
@@ -3599,26 +3599,26 @@ func (q *Queries) GetValidVessel(ctx context.Context, db DBTX, id string) (*GetV
 		&i.DisplayInSummaryLists,
 		&i.IncludeInGeneratedInstructions,
 		&i.ValidVesselsCapacity,
-		&i.ID_2,
-		&i.Name_2,
-		&i.Description_2,
-		&i.Volumetric,
-		&i.IconPath_2,
-		&i.Universal,
-		&i.Metric,
-		&i.Imperial,
-		&i.Slug_2,
-		&i.PluralName_2,
-		&i.CreatedAt,
-		&i.LastUpdatedAt,
-		&i.ArchivedAt,
+		&i.ValidMeasurementUnitID,
+		&i.ValidMeasurementUnitName,
+		&i.ValidMeasurementUnitDescription,
+		&i.ValidMeasurementUnitVolumetric,
+		&i.ValidMeasurementUnitIconPath,
+		&i.ValidMeasurementUnitUniversal,
+		&i.ValidMeasurementUnitMetric,
+		&i.ValidMeasurementUnitImperial,
+		&i.ValidMeasurementUnitSlug,
+		&i.ValidMeasurementUnitPluralName,
+		&i.ValidMeasurementUnitCreatedAt,
+		&i.ValidMeasurementUnitLastUpdatedAt,
+		&i.ValidMeasurementUnitArchivedAt,
 		&i.ValidVesselsWidthInMillimeters,
 		&i.ValidVesselsLengthInMillimeters,
 		&i.ValidVesselsHeightInMillimeters,
 		&i.Shape,
-		&i.CreatedAt_2,
-		&i.LastUpdatedAt_2,
-		&i.ArchivedAt_2,
+		&i.CreatedAt,
+		&i.LastUpdatedAt,
+		&i.ArchivedAt,
 	)
 	return &i, err
 }
