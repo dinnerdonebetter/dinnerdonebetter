@@ -739,70 +739,44 @@ SELECT
     valid_vessels.slug,
     valid_vessels.display_in_summary_lists,
     valid_vessels.include_in_generated_instructions,
-    valid_vessels.capacity,
-	valid_measurement_units.id,
-	valid_measurement_units.name,
-	valid_measurement_units.description,
-	valid_measurement_units.volumetric,
-	valid_measurement_units.icon_path,
-	valid_measurement_units.universal,
-	valid_measurement_units.metric,
-	valid_measurement_units.imperial,
-	valid_measurement_units.slug,
-	valid_measurement_units.plural_name,
-	valid_measurement_units.created_at,
-	valid_measurement_units.last_updated_at,
-	valid_measurement_units.archived_at,
-    valid_vessels.width_in_millimeters,
-    valid_vessels.length_in_millimeters,
-    valid_vessels.height_in_millimeters,
+    valid_vessels.capacity::float,
+    valid_vessels.capacity_unit,
+    valid_vessels.width_in_millimeters::float,
+    valid_vessels.length_in_millimeters::float,
+    valid_vessels.height_in_millimeters::float,
     valid_vessels.shape,
     valid_vessels.created_at,
     valid_vessels.last_updated_at,
     valid_vessels.archived_at
 FROM valid_vessels
-	 JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
 WHERE valid_vessels.archived_at IS NULL
-	AND valid_measurement_units.archived_at IS NULL
-	AND valid_vessels.name ILIKE $1
+    AND valid_vessels.name ILIKE '%' || $1::text || '%'
 	LIMIT 50
 `
 
 type SearchForValidVesselsRow struct {
-	CreatedAt                      time.Time
-	CreatedAt_2                    time.Time
-	ArchivedAt_2                   sql.NullTime
-	LastUpdatedAt_2                sql.NullTime
-	ArchivedAt                     sql.NullTime
-	LastUpdatedAt                  sql.NullTime
-	IconPath_2                     string
-	IconPath                       string
-	Name                           string
-	Capacity                       string
-	ID_2                           string
-	Name_2                         string
-	Description_2                  string
-	PluralName                     string
-	ID                             string
-	Description                    string
-	Shape                          VesselShape
-	Slug                           string
-	Slug_2                         string
-	PluralName_2                   string
-	WidthInMillimeters             sql.NullString
-	LengthInMillimeters            sql.NullString
-	HeightInMillimeters            sql.NullString
-	Volumetric                     sql.NullBool
-	Imperial                       bool
-	UsableForStorage               bool
-	DisplayInSummaryLists          bool
-	Metric                         bool
-	Universal                      bool
-	IncludeInGeneratedInstructions bool
+	CreatedAt                       time.Time
+	ArchivedAt                      sql.NullTime
+	LastUpdatedAt                   sql.NullTime
+	ID                              string
+	Name                            string
+	PluralName                      string
+	Description                     string
+	IconPath                        string
+	Slug                            string
+	Shape                           VesselShape
+	CapacityUnit                    sql.NullString
+	ValidVesselsLengthInMillimeters float64
+	ValidVesselsWidthInMillimeters  float64
+	ValidVesselsHeightInMillimeters float64
+	ValidVesselsCapacity            float64
+	IncludeInGeneratedInstructions  bool
+	DisplayInSummaryLists           bool
+	UsableForStorage                bool
 }
 
-func (q *Queries) SearchForValidVessels(ctx context.Context, db DBTX, name string) ([]*SearchForValidVesselsRow, error) {
-	rows, err := db.QueryContext(ctx, searchForValidVessels, name)
+func (q *Queries) SearchForValidVessels(ctx context.Context, db DBTX, query string) ([]*SearchForValidVesselsRow, error) {
+	rows, err := db.QueryContext(ctx, searchForValidVessels, query)
 	if err != nil {
 		return nil, err
 	}
@@ -820,27 +794,15 @@ func (q *Queries) SearchForValidVessels(ctx context.Context, db DBTX, name strin
 			&i.Slug,
 			&i.DisplayInSummaryLists,
 			&i.IncludeInGeneratedInstructions,
-			&i.Capacity,
-			&i.ID_2,
-			&i.Name_2,
-			&i.Description_2,
-			&i.Volumetric,
-			&i.IconPath_2,
-			&i.Universal,
-			&i.Metric,
-			&i.Imperial,
-			&i.Slug_2,
-			&i.PluralName_2,
+			&i.ValidVesselsCapacity,
+			&i.CapacityUnit,
+			&i.ValidVesselsWidthInMillimeters,
+			&i.ValidVesselsLengthInMillimeters,
+			&i.ValidVesselsHeightInMillimeters,
+			&i.Shape,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
-			&i.WidthInMillimeters,
-			&i.LengthInMillimeters,
-			&i.HeightInMillimeters,
-			&i.Shape,
-			&i.CreatedAt_2,
-			&i.LastUpdatedAt_2,
-			&i.ArchivedAt_2,
 		); err != nil {
 			return nil, err
 		}

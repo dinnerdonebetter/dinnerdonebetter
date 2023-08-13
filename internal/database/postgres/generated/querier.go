@@ -276,7 +276,7 @@ type Querier interface {
 	SearchForValidInstruments(ctx context.Context, db DBTX, name string) ([]*SearchForValidInstrumentsRow, error)
 	SearchForValidMeasurementUnits(ctx context.Context, db DBTX, name string) ([]*SearchForValidMeasurementUnitsRow, error)
 	SearchForValidPreparations(ctx context.Context, db DBTX, name string) ([]*SearchForValidPreparationsRow, error)
-	SearchForValidVessels(ctx context.Context, db DBTX, name string) ([]*SearchForValidVesselsRow, error)
+	SearchForValidVessels(ctx context.Context, db DBTX, query string) ([]*SearchForValidVesselsRow, error)
 	SearchUsersByUsername(ctx context.Context, db DBTX, username string) ([]*SearchUsersByUsernameRow, error)
 	SearchValidIngredientPreparationsByPreparationAndIngredientName(ctx context.Context, db DBTX, arg *SearchValidIngredientPreparationsByPreparationAndIngredientNameParams) ([]*SearchValidIngredientPreparationsByPreparationAndIngredientNameRow, error)
 	SearchValidIngredientsByPreparationAndIngredientName(ctx context.Context, db DBTX, arg *SearchValidIngredientsByPreparationAndIngredientNameParams) ([]*SearchValidIngredientsByPreparationAndIngredientNameRow, error)

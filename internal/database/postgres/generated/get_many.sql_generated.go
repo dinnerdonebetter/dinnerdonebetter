@@ -1135,23 +1135,11 @@ SELECT
   valid_vessels.slug,
   valid_vessels.display_in_summary_lists,
   valid_vessels.include_in_generated_instructions,
-  valid_vessels.capacity,
-  valid_measurement_units.id,
-  valid_measurement_units.name,
-  valid_measurement_units.description,
-  valid_measurement_units.volumetric,
-  valid_measurement_units.icon_path,
-  valid_measurement_units.universal,
-  valid_measurement_units.metric,
-  valid_measurement_units.imperial,
-  valid_measurement_units.slug,
-  valid_measurement_units.plural_name,
-  valid_measurement_units.created_at,
-  valid_measurement_units.last_updated_at,
-  valid_measurement_units.archived_at,
-  valid_vessels.width_in_millimeters,
-  valid_vessels.length_in_millimeters,
-  valid_vessels.height_in_millimeters,
+  valid_vessels.capacity::float,
+  valid_vessels.capacity_unit,
+  valid_vessels.width_in_millimeters::float,
+  valid_vessels.length_in_millimeters::float,
+  valid_vessels.height_in_millimeters::float,
   valid_vessels.shape,
   valid_vessels.created_at,
   valid_vessels.last_updated_at,
@@ -1184,10 +1172,8 @@ SELECT
   ) as total_count
 FROM
   valid_vessels
-  LEFT JOIN valid_measurement_units ON valid_vessels.capacity_unit = valid_measurement_units.id
 WHERE
   valid_vessels.archived_at IS NULL
-  AND valid_measurement_units.archived_at IS NULL
   AND valid_vessels.created_at > (COALESCE($1, (SELECT NOW() - interval '999 years')))
   AND valid_vessels.created_at < (COALESCE($2, (SELECT NOW() + interval '999 years')))
   AND (
@@ -1199,68 +1185,55 @@ WHERE
     OR valid_vessels.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
   )
 GROUP BY
-  valid_vessels.id,
-  valid_measurement_units.id
+  valid_vessels.id
 ORDER BY
   valid_vessels.id
 OFFSET
-  $5
+    $5
 LIMIT
-  $6
+    $6
 `
 
 type GetValidVesselsParams struct {
-	CreatedAt       time.Time
-	CreatedAt_2     time.Time
-	LastUpdatedAt   sql.NullTime
-	LastUpdatedAt_2 sql.NullTime
-	Offset          int32
-	Limit           int32
+	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	UpdatedBefore sql.NullTime
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
 }
 
 type GetValidVesselsRow struct {
-	CreatedAt_2                    time.Time
-	LastUpdatedAt_2                sql.NullTime
-	CreatedAt                      sql.NullTime
-	ArchivedAt_2                   sql.NullTime
-	LastUpdatedAt                  sql.NullTime
-	ArchivedAt                     sql.NullTime
-	Slug                           string
-	IconPath                       string
-	Description                    string
-	Capacity                       string
-	PluralName                     string
-	Shape                          VesselShape
-	ID                             string
-	Name                           string
-	Description_2                  sql.NullString
-	IconPath_2                     sql.NullString
-	HeightInMillimeters            sql.NullString
-	Name_2                         sql.NullString
-	Slug_2                         sql.NullString
-	PluralName_2                   sql.NullString
-	ID_2                           sql.NullString
-	WidthInMillimeters             sql.NullString
-	LengthInMillimeters            sql.NullString
-	FilteredCount                  int64
-	TotalCount                     int64
-	Metric                         sql.NullBool
-	Imperial                       sql.NullBool
-	Universal                      sql.NullBool
-	Volumetric                     sql.NullBool
-	IncludeInGeneratedInstructions bool
-	DisplayInSummaryLists          bool
-	UsableForStorage               bool
+	CreatedAt                       time.Time
+	ArchivedAt                      sql.NullTime
+	LastUpdatedAt                   sql.NullTime
+	ID                              string
+	Name                            string
+	PluralName                      string
+	Description                     string
+	IconPath                        string
+	Slug                            string
+	Shape                           VesselShape
+	CapacityUnit                    sql.NullString
+	ValidVesselsWidthInMillimeters  float64
+	ValidVesselsLengthInMillimeters float64
+	ValidVesselsHeightInMillimeters float64
+	ValidVesselsCapacity            float64
+	FilteredCount                   int64
+	TotalCount                      int64
+	IncludeInGeneratedInstructions  bool
+	DisplayInSummaryLists           bool
+	UsableForStorage                bool
 }
 
 func (q *Queries) GetValidVessels(ctx context.Context, db DBTX, arg *GetValidVesselsParams) ([]*GetValidVesselsRow, error) {
 	rows, err := db.QueryContext(ctx, getValidVessels,
-		arg.CreatedAt,
-		arg.CreatedAt_2,
-		arg.LastUpdatedAt,
-		arg.LastUpdatedAt_2,
-		arg.Offset,
-		arg.Limit,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedAfter,
+		arg.UpdatedBefore,
+		arg.QueryOffset,
+		arg.QueryLimit,
 	)
 	if err != nil {
 		return nil, err
@@ -1279,27 +1252,15 @@ func (q *Queries) GetValidVessels(ctx context.Context, db DBTX, arg *GetValidVes
 			&i.Slug,
 			&i.DisplayInSummaryLists,
 			&i.IncludeInGeneratedInstructions,
-			&i.Capacity,
-			&i.ID_2,
-			&i.Name_2,
-			&i.Description_2,
-			&i.Volumetric,
-			&i.IconPath_2,
-			&i.Universal,
-			&i.Metric,
-			&i.Imperial,
-			&i.Slug_2,
-			&i.PluralName_2,
+			&i.ValidVesselsCapacity,
+			&i.CapacityUnit,
+			&i.ValidVesselsWidthInMillimeters,
+			&i.ValidVesselsLengthInMillimeters,
+			&i.ValidVesselsHeightInMillimeters,
+			&i.Shape,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
-			&i.WidthInMillimeters,
-			&i.LengthInMillimeters,
-			&i.HeightInMillimeters,
-			&i.Shape,
-			&i.CreatedAt_2,
-			&i.LastUpdatedAt_2,
-			&i.ArchivedAt_2,
 			&i.FilteredCount,
 			&i.TotalCount,
 		); err != nil {

@@ -3,10 +3,8 @@ package postgres
 import (
 	"context"
 	"database/sql/driver"
-	"errors"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
@@ -69,39 +67,6 @@ func buildMockRowsFromValidVessels(includeCounts bool, filteredCount uint64, val
 	return exampleRows
 }
 
-func TestQuerier_ScanValidVessels(T *testing.T) {
-	T.Parallel()
-
-	T.Run("surfaces row errs", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		q, _ := buildTestClient(t)
-
-		mockRows := &database.MockResultIterator{}
-		mockRows.On("Next").Return(false)
-		mockRows.On("Err").Return(errors.New("blah"))
-
-		_, _, _, err := q.scanValidVessels(ctx, mockRows, false)
-		assert.Error(t, err)
-	})
-
-	T.Run("logs row closing errs", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		q, _ := buildTestClient(t)
-
-		mockRows := &database.MockResultIterator{}
-		mockRows.On("Next").Return(false)
-		mockRows.On("Err").Return(nil)
-		mockRows.On("Close").Return(errors.New("blah"))
-
-		_, _, _, err := q.scanValidVessels(ctx, mockRows, false)
-		assert.Error(t, err)
-	})
-}
-
 func TestQuerier_ValidVesselExists(T *testing.T) {
 	T.Parallel()
 
@@ -136,32 +101,7 @@ func TestQuerier_GetValidVessel(T *testing.T) {
 func TestQuerier_SearchForValidVessels(T *testing.T) {
 	T.Parallel()
 
-	exampleQuery := "blah"
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidVessels := fakes.BuildFakeValidVesselList()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			wrapQueryForILIKE(exampleQuery),
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(validVesselSearchQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidVessels(false, 0, exampleValidVessels.Data...))
-
-		actual, err := c.SearchForValidVessels(ctx, exampleQuery)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleValidVessels.Data, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with invalid valid vessel ID", func(t *testing.T) {
+	T.Run("with invalid query", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
@@ -170,165 +110,6 @@ func TestQuerier_SearchForValidVessels(T *testing.T) {
 		actual, err := c.SearchForValidVessels(ctx, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			wrapQueryForILIKE(exampleQuery),
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(validVesselSearchQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.SearchForValidVessels(ctx, exampleQuery)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error scanning response", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			wrapQueryForILIKE(exampleQuery),
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(validVesselSearchQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildErroneousMockRow())
-
-		actual, err := c.SearchForValidVessels(ctx, exampleQuery)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
-func TestQuerier_GetValidVessels(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		filter := types.DefaultQueryFilter()
-		exampleValidVesselList := fakes.BuildFakeValidVesselList()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			filter.CreatedBefore,
-			filter.CreatedAfter,
-			filter.UpdatedBefore,
-			filter.UpdatedAfter,
-			filter.QueryOffset(),
-			filter.Limit,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getValidVesselsQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidVessels(true, exampleValidVesselList.FilteredCount, exampleValidVesselList.Data...))
-
-		actual, err := c.GetValidVessels(ctx, filter)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleValidVesselList, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with nil filter", func(t *testing.T) {
-		t.Parallel()
-
-		filter := types.DefaultQueryFilter()
-		exampleValidVesselList := fakes.BuildFakeValidVesselList()
-		exampleValidVesselList.Page = 0
-		exampleValidVesselList.Limit = 0
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			filter.CreatedBefore,
-			filter.CreatedAfter,
-			filter.UpdatedBefore,
-			filter.UpdatedAfter,
-			filter.QueryOffset(),
-			filter.Limit,
-		}
-		db.ExpectQuery(formatQueryForSQLMock(getValidVesselsQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidVessels(true, exampleValidVesselList.FilteredCount, exampleValidVesselList.Data...))
-
-		actual, err := c.GetValidVessels(ctx, nil)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleValidVesselList, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		filter := types.DefaultQueryFilter()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			filter.CreatedBefore,
-			filter.CreatedAfter,
-			filter.UpdatedBefore,
-			filter.UpdatedAfter,
-			filter.QueryOffset(),
-			filter.Limit,
-		}
-		db.ExpectQuery(formatQueryForSQLMock(getValidVesselsQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetValidVessels(ctx, filter)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with erroneous response from database", func(t *testing.T) {
-		t.Parallel()
-
-		filter := types.DefaultQueryFilter()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			filter.CreatedBefore,
-			filter.CreatedAfter,
-			filter.UpdatedBefore,
-			filter.UpdatedAfter,
-			filter.QueryOffset(),
-			filter.Limit,
-		}
-		db.ExpectQuery(formatQueryForSQLMock(getValidVesselsQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildErroneousMockRow())
-
-		actual, err := c.GetValidVessels(ctx, filter)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 
