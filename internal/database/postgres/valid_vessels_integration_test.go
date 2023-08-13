@@ -100,9 +100,23 @@ func TestQuerier_Integration_ValidVessels(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, validVessels.Data, byName)
 
+	random, err := dbc.GetRandomValidVessel(ctx)
+	assert.NoError(t, err)
+	assert.NotNil(t, random)
+
+	results, err := dbc.GetValidVesselIDsThatNeedSearchIndexing(ctx)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, results)
+
 	// delete
 	for _, validVessel := range createdValidVessels {
+		assert.NoError(t, dbc.MarkValidVesselAsIndexed(ctx, validVessel.ID))
 		assert.NoError(t, dbc.ArchiveValidVessel(ctx, validVessel.ID))
+
+		var exists bool
+		exists, err = dbc.ValidVesselExists(ctx, validVessel.ID)
+		assert.NoError(t, err)
+		assert.False(t, exists)
 
 		var y *types.ValidVessel
 		y, err = dbc.GetValidVessel(ctx, validVessel.ID)

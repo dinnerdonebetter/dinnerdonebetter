@@ -35,4 +35,6 @@ FROM valid_vessels
 	 JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
 WHERE valid_vessels.archived_at IS NULL
 	AND valid_measurement_units.archived_at IS NULL
-	AND valid_vessels.name ILIKE $1 LIMIT 50;
+	AND valid_vessels.name ILIKE $1
+
+	LIMIT 50;

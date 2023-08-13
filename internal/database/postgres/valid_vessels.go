@@ -257,38 +257,6 @@ func (q *Querier) SearchForValidVessels(ctx context.Context, query string) ([]*t
 	return validVessels, nil
 }
 
-// SearchForValidVesselsForPreparation fetches a valid vessel from the database.
-func (q *Querier) SearchForValidVesselsForPreparation(ctx context.Context, preparationID, query string) ([]*types.ValidVessel, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	if query == "" {
-		return nil, ErrEmptyInputProvided
-	}
-	logger = logger.WithValue(keys.SearchQueryKey, query)
-	tracing.AttachValidVesselIDToSpan(span, query)
-
-	// TODO: restrict results by preparation ID
-
-	args := []any{
-		wrapQueryForILIKE(query),
-	}
-
-	rows, err := q.getRows(ctx, q.db, "valid ingredients search", validVesselSearchQuery, args)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredients list retrieval query")
-	}
-
-	validVessels, _, _, err := q.scanValidVessels(ctx, rows, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning validVessel")
-	}
-
-	return validVessels, nil
-}
-
 //go:embed queries/valid_vessels/get_many.sql
 var getValidVesselsQuery string
 
