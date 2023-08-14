@@ -228,6 +228,8 @@ func (q *Querier) GetValidVessels(ctx context.Context, filter *types.QueryFilter
 	}
 
 	for _, result := range results {
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
 		validVessel := &types.ValidVessel{
 			CreatedAt:                      result.CreatedAt,
 			ArchivedAt:                     timePointerFromNullTime(result.ArchivedAt),

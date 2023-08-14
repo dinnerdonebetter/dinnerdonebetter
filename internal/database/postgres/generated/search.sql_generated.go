@@ -652,7 +652,7 @@ SELECT
 	valid_preparations.archived_at
 FROM valid_preparations
 WHERE valid_preparations.archived_at IS NULL
-	AND valid_preparations.name ILIKE $1
+	AND valid_preparations.name ILIKE '%' || $1::text || '%'
 LIMIT 50
 `
 
@@ -681,8 +681,8 @@ type SearchForValidPreparationsRow struct {
 	YieldsNothing               bool
 }
 
-func (q *Queries) SearchForValidPreparations(ctx context.Context, db DBTX, name string) ([]*SearchForValidPreparationsRow, error) {
-	rows, err := db.QueryContext(ctx, searchForValidPreparations, name)
+func (q *Queries) SearchForValidPreparations(ctx context.Context, db DBTX, query string) ([]*SearchForValidPreparationsRow, error) {
+	rows, err := db.QueryContext(ctx, searchForValidPreparations, query)
 	if err != nil {
 		return nil, err
 	}

@@ -1,4 +1,4 @@
--- name: SearchForValidPreparations :many
+-- name: GetValidPreparationsWithIDs :many
 
 SELECT
 	valid_preparations.id,
@@ -13,7 +13,7 @@ SELECT
 	valid_preparations.maximum_instrument_count,
 	valid_preparations.temperature_required,
 	valid_preparations.time_estimate_required,
-	valid_preparations.condition_expression_required,
+    valid_preparations.condition_expression_required,
     valid_preparations.consumes_vessel,
     valid_preparations.only_for_vessels,
     valid_preparations.minimum_vessel_count,
@@ -25,5 +25,4 @@ SELECT
 	valid_preparations.archived_at
 FROM valid_preparations
 WHERE valid_preparations.archived_at IS NULL
-	AND valid_preparations.name ILIKE '%' || sqlc.arg(query)::text || '%'
-LIMIT 50;
+	AND valid_preparations.id = ANY($1::text[]);

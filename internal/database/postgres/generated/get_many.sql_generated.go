@@ -1123,6 +1123,171 @@ func (q *Queries) GetValidInstruments(ctx context.Context, db DBTX, arg *GetVali
 	return items, nil
 }
 
+const getValidPreparations = `-- name: GetValidPreparations :many
+
+SELECT
+	valid_preparations.id,
+	valid_preparations.name,
+	valid_preparations.description,
+	valid_preparations.icon_path,
+	valid_preparations.yields_nothing,
+	valid_preparations.restrict_to_ingredients,
+	valid_preparations.minimum_ingredient_count,
+	valid_preparations.maximum_ingredient_count,
+	valid_preparations.minimum_instrument_count,
+	valid_preparations.maximum_instrument_count,
+	valid_preparations.temperature_required,
+	valid_preparations.time_estimate_required,
+    valid_preparations.condition_expression_required,
+    valid_preparations.consumes_vessel,
+    valid_preparations.only_for_vessels,
+    valid_preparations.minimum_vessel_count,
+    valid_preparations.maximum_vessel_count,
+	valid_preparations.slug,
+	valid_preparations.past_tense,
+	valid_preparations.created_at,
+	valid_preparations.last_updated_at,
+	valid_preparations.archived_at,
+    (
+        SELECT
+            COUNT(valid_preparations.id)
+        FROM
+            valid_preparations
+        WHERE
+            valid_preparations.archived_at IS NULL
+          AND valid_preparations.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+          AND valid_preparations.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+          AND (
+                valid_preparations.last_updated_at IS NULL
+                OR valid_preparations.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+            )
+          AND (
+                valid_preparations.last_updated_at IS NULL
+                OR valid_preparations.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+            )
+    ) as filtered_count,
+    (
+        SELECT
+            COUNT(valid_preparations.id)
+        FROM
+            valid_preparations
+        WHERE
+            valid_preparations.archived_at IS NULL
+    ) as total_count
+FROM valid_preparations
+WHERE
+    valid_preparations.archived_at IS NULL
+  AND valid_preparations.created_at > (COALESCE($1, (SELECT NOW() - interval '999 years')))
+  AND valid_preparations.created_at < (COALESCE($2, (SELECT NOW() + interval '999 years')))
+  AND (
+        valid_preparations.last_updated_at IS NULL
+        OR valid_preparations.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+    )
+  AND (
+        valid_preparations.last_updated_at IS NULL
+        OR valid_preparations.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+    )
+GROUP BY
+    valid_preparations.id
+ORDER BY
+    valid_preparations.id
+OFFSET
+    $5
+    LIMIT
+    $6
+`
+
+type GetValidPreparationsParams struct {
+	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	UpdatedBefore sql.NullTime
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
+}
+
+type GetValidPreparationsRow struct {
+	CreatedAt                   time.Time
+	ArchivedAt                  sql.NullTime
+	LastUpdatedAt               sql.NullTime
+	ID                          string
+	IconPath                    string
+	Description                 string
+	Name                        string
+	PastTense                   string
+	Slug                        string
+	TotalCount                  int64
+	FilteredCount               int64
+	MaximumVesselCount          sql.NullInt32
+	MaximumIngredientCount      sql.NullInt32
+	MaximumInstrumentCount      sql.NullInt32
+	MinimumIngredientCount      int32
+	MinimumVesselCount          int32
+	MinimumInstrumentCount      int32
+	OnlyForVessels              bool
+	ConsumesVessel              bool
+	ConditionExpressionRequired bool
+	TimeEstimateRequired        bool
+	TemperatureRequired         bool
+	RestrictToIngredients       bool
+	YieldsNothing               bool
+}
+
+func (q *Queries) GetValidPreparations(ctx context.Context, db DBTX, arg *GetValidPreparationsParams) ([]*GetValidPreparationsRow, error) {
+	rows, err := db.QueryContext(ctx, getValidPreparations,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedAfter,
+		arg.UpdatedBefore,
+		arg.QueryOffset,
+		arg.QueryLimit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetValidPreparationsRow{}
+	for rows.Next() {
+		var i GetValidPreparationsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.IconPath,
+			&i.YieldsNothing,
+			&i.RestrictToIngredients,
+			&i.MinimumIngredientCount,
+			&i.MaximumIngredientCount,
+			&i.MinimumInstrumentCount,
+			&i.MaximumInstrumentCount,
+			&i.TemperatureRequired,
+			&i.TimeEstimateRequired,
+			&i.ConditionExpressionRequired,
+			&i.ConsumesVessel,
+			&i.OnlyForVessels,
+			&i.MinimumVesselCount,
+			&i.MaximumVesselCount,
+			&i.Slug,
+			&i.PastTense,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+			&i.FilteredCount,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getValidVessels = `-- name: GetValidVessels :many
 
 SELECT

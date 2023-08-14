@@ -13,6 +13,107 @@ import (
 	"github.com/lib/pq"
 )
 
+const getValidPreparationsWithIDs = `-- name: GetValidPreparationsWithIDs :many
+
+SELECT
+	valid_preparations.id,
+	valid_preparations.name,
+	valid_preparations.description,
+	valid_preparations.icon_path,
+	valid_preparations.yields_nothing,
+	valid_preparations.restrict_to_ingredients,
+	valid_preparations.minimum_ingredient_count,
+	valid_preparations.maximum_ingredient_count,
+	valid_preparations.minimum_instrument_count,
+	valid_preparations.maximum_instrument_count,
+	valid_preparations.temperature_required,
+	valid_preparations.time_estimate_required,
+    valid_preparations.condition_expression_required,
+    valid_preparations.consumes_vessel,
+    valid_preparations.only_for_vessels,
+    valid_preparations.minimum_vessel_count,
+    valid_preparations.maximum_vessel_count,
+	valid_preparations.slug,
+	valid_preparations.past_tense,
+	valid_preparations.created_at,
+	valid_preparations.last_updated_at,
+	valid_preparations.archived_at
+FROM valid_preparations
+WHERE valid_preparations.archived_at IS NULL
+	AND valid_preparations.id = ANY($1::text[])
+`
+
+type GetValidPreparationsWithIDsRow struct {
+	CreatedAt                   time.Time
+	LastUpdatedAt               sql.NullTime
+	ArchivedAt                  sql.NullTime
+	Name                        string
+	Description                 string
+	IconPath                    string
+	ID                          string
+	Slug                        string
+	PastTense                   string
+	MaximumInstrumentCount      sql.NullInt32
+	MaximumIngredientCount      sql.NullInt32
+	MaximumVesselCount          sql.NullInt32
+	MinimumVesselCount          int32
+	MinimumInstrumentCount      int32
+	MinimumIngredientCount      int32
+	RestrictToIngredients       bool
+	OnlyForVessels              bool
+	ConsumesVessel              bool
+	ConditionExpressionRequired bool
+	TimeEstimateRequired        bool
+	TemperatureRequired         bool
+	YieldsNothing               bool
+}
+
+func (q *Queries) GetValidPreparationsWithIDs(ctx context.Context, db DBTX, dollar_1 []string) ([]*GetValidPreparationsWithIDsRow, error) {
+	rows, err := db.QueryContext(ctx, getValidPreparationsWithIDs, pq.Array(dollar_1))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetValidPreparationsWithIDsRow{}
+	for rows.Next() {
+		var i GetValidPreparationsWithIDsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.IconPath,
+			&i.YieldsNothing,
+			&i.RestrictToIngredients,
+			&i.MinimumIngredientCount,
+			&i.MaximumIngredientCount,
+			&i.MinimumInstrumentCount,
+			&i.MaximumInstrumentCount,
+			&i.TemperatureRequired,
+			&i.TimeEstimateRequired,
+			&i.ConditionExpressionRequired,
+			&i.ConsumesVessel,
+			&i.OnlyForVessels,
+			&i.MinimumVesselCount,
+			&i.MaximumVesselCount,
+			&i.Slug,
+			&i.PastTense,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getValidVesselsWithIDs = `-- name: GetValidVesselsWithIDs :many
 
 SELECT

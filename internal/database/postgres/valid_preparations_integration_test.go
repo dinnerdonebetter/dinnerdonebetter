@@ -88,9 +88,24 @@ func TestQuerier_Integration_ValidPreparations(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, validPreparations.Data, byName)
 
+	whatever, err := dbc.GetValidPreparationIDsThatNeedSearchIndexing(ctx)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, whatever)
+
+	assert.NoError(t, dbc.MarkValidPreparationAsIndexed(ctx, updatedValidPreparation.ID))
+
+	randomPreparation, err := dbc.GetRandomValidPreparation(ctx)
+	assert.NoError(t, err)
+	assert.NotNil(t, randomPreparation)
+
 	// delete
 	for _, validPreparation := range createdValidPreparations {
 		assert.NoError(t, dbc.ArchiveValidPreparation(ctx, validPreparation.ID))
+
+		var exists bool
+		exists, err = dbc.ValidPreparationExists(ctx, validPreparation.ID)
+		assert.NoError(t, err)
+		assert.False(t, exists)
 
 		var y *types.ValidPreparation
 		y, err = dbc.GetValidPreparation(ctx, validPreparation.ID)

@@ -227,6 +227,25 @@ func boolFromNullBool(b sql.NullBool) bool {
 	return false
 }
 
+func nullInt32FromInt32Pointer(i *int32) sql.NullInt32 {
+	if i == nil {
+		return sql.NullInt32{}
+	}
+
+	return sql.NullInt32{
+		Int32: *i,
+		Valid: true,
+	}
+}
+
+func int32PointerFromNullInt32(i sql.NullInt32) *int32 {
+	if i.Valid {
+		return &i.Int32
+	}
+
+	return nil
+}
+
 func defaultTimeFunc() time.Time {
 	return time.Now()
 }
