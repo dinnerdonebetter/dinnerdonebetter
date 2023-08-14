@@ -411,7 +411,7 @@ func (q *Querier) CreateValidIngredientGroup(ctx context.Context, input *types.V
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-
+	tracing.AttachValidIngredientGroupIDToSpan(span, input.ID)
 	logger := q.logger.WithValue(keys.ValidIngredientGroupIDKey, input.ID)
 
 	tx, err := q.db.BeginTx(ctx, nil)
@@ -456,7 +456,6 @@ func (q *Querier) CreateValidIngredientGroup(ctx context.Context, input *types.V
 		return nil, observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
-	tracing.AttachValidIngredientGroupIDToSpan(span, x.ID)
 	logger.WithValue("member_count", len(input.Members)).Info("valid ingredient group created")
 
 	return x, nil

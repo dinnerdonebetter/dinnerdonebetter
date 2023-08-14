@@ -92,6 +92,11 @@ func TestQuerier_Integration_ValidInstruments(t *testing.T) {
 	for _, validInstrument := range createdValidInstruments {
 		assert.NoError(t, dbc.ArchiveValidInstrument(ctx, validInstrument.ID))
 
+		var exists bool
+		exists, err = dbc.ValidInstrumentExists(ctx, validInstrument.ID)
+		assert.NoError(t, err)
+		assert.False(t, exists)
+
 		var y *types.ValidInstrument
 		y, err = dbc.GetValidInstrument(ctx, validInstrument.ID)
 		assert.Nil(t, y)

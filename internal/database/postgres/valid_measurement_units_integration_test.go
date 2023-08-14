@@ -92,6 +92,11 @@ func TestQuerier_Integration_ValidMeasurementUnits(t *testing.T) {
 	for _, validMeasurementUnit := range createdValidMeasurementUnits {
 		assert.NoError(t, dbc.ArchiveValidMeasurementUnit(ctx, validMeasurementUnit.ID))
 
+		var exists bool
+		exists, err = dbc.ValidMeasurementUnitExists(ctx, validMeasurementUnit.ID)
+		assert.NoError(t, err)
+		assert.False(t, exists)
+
 		var y *types.ValidMeasurementUnit
 		y, err = dbc.GetValidMeasurementUnit(ctx, validMeasurementUnit.ID)
 		assert.Nil(t, y)

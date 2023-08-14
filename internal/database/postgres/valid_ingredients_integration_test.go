@@ -92,6 +92,11 @@ func TestQuerier_Integration_ValidIngredients(t *testing.T) {
 	for _, validIngredient := range createdValidIngredients {
 		assert.NoError(t, dbc.ArchiveValidIngredient(ctx, validIngredient.ID))
 
+		var exists bool
+		exists, err = dbc.ValidIngredientExists(ctx, validIngredient.ID)
+		assert.NoError(t, err)
+		assert.False(t, exists)
+
 		var y *types.ValidIngredient
 		y, err = dbc.GetValidIngredient(ctx, validIngredient.ID)
 		assert.Nil(t, y)

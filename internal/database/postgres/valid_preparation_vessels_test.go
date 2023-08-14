@@ -248,8 +248,8 @@ func TestQuerier_GetValidPreparationVessels(T *testing.T) {
 
 		filter := (*types.QueryFilter)(nil)
 		exampleValidPreparationVesselList := fakes.BuildFakeValidPreparationVesselList()
-		exampleValidPreparationVesselList.Page = 0
-		exampleValidPreparationVesselList.Limit = 0
+		exampleValidPreparationVesselList.Page = 1
+		exampleValidPreparationVesselList.Limit = 20
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)

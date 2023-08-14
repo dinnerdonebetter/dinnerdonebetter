@@ -99,39 +99,6 @@ func TestQuerier_Integration_ValidVessels(t *testing.T) {
 		validVessels.Data[i].LastUpdatedAt = v.LastUpdatedAt
 		validVessels.Data[i].CapacityUnit.CreatedAt = v.CapacityUnit.CreatedAt
 		validVessels.Data[i].CapacityUnit.LastUpdatedAt = v.CapacityUnit.LastUpdatedAt
-
-		assert.Equal(t, validVessels.Data[i].CapacityUnit.CreatedAt, v.CapacityUnit.CreatedAt)
-		assert.Equal(t, validVessels.Data[i].CapacityUnit.LastUpdatedAt, v.CapacityUnit.LastUpdatedAt)
-		assert.Equal(t, validVessels.Data[i].CapacityUnit.ArchivedAt, v.CapacityUnit.ArchivedAt)
-		assert.Equal(t, validVessels.Data[i].CapacityUnit.Name, v.CapacityUnit.Name)
-		assert.Equal(t, validVessels.Data[i].CapacityUnit.IconPath, v.CapacityUnit.IconPath)
-		assert.Equal(t, validVessels.Data[i].CapacityUnit.ID, v.CapacityUnit.ID)
-		assert.Equal(t, validVessels.Data[i].CapacityUnit.Description, v.CapacityUnit.Description)
-		assert.Equal(t, validVessels.Data[i].CapacityUnit.PluralName, v.CapacityUnit.PluralName)
-		assert.Equal(t, validVessels.Data[i].CapacityUnit.Slug, v.CapacityUnit.Slug)
-		assert.Equal(t, validVessels.Data[i].CapacityUnit.Volumetric, v.CapacityUnit.Volumetric)
-		assert.Equal(t, validVessels.Data[i].CapacityUnit.Universal, v.CapacityUnit.Universal)
-		assert.Equal(t, validVessels.Data[i].CapacityUnit.Metric, v.CapacityUnit.Metric)
-		assert.Equal(t, validVessels.Data[i].CapacityUnit.Imperial, v.CapacityUnit.Imperial)
-
-		assert.Equal(t, validVessels.Data[i].CreatedAt, v.CreatedAt)
-		assert.Equal(t, validVessels.Data[i].ArchivedAt, v.ArchivedAt)
-		assert.Equal(t, validVessels.Data[i].LastUpdatedAt, v.LastUpdatedAt)
-		assert.Equal(t, validVessels.Data[i].CapacityUnit, v.CapacityUnit)
-		assert.Equal(t, validVessels.Data[i].IconPath, v.IconPath)
-		assert.Equal(t, validVessels.Data[i].PluralName, v.PluralName)
-		assert.Equal(t, validVessels.Data[i].Description, v.Description)
-		assert.Equal(t, validVessels.Data[i].Name, v.Name)
-		assert.Equal(t, validVessels.Data[i].Slug, v.Slug)
-		assert.Equal(t, validVessels.Data[i].Shape, v.Shape)
-		assert.Equal(t, validVessels.Data[i].ID, v.ID)
-		assert.Equal(t, validVessels.Data[i].WidthInMillimeters, v.WidthInMillimeters)
-		assert.Equal(t, validVessels.Data[i].LengthInMillimeters, v.LengthInMillimeters)
-		assert.Equal(t, validVessels.Data[i].HeightInMillimeters, v.HeightInMillimeters)
-		assert.Equal(t, validVessels.Data[i].Capacity, v.Capacity)
-		assert.Equal(t, validVessels.Data[i].IncludeInGeneratedInstructions, v.IncludeInGeneratedInstructions)
-		assert.Equal(t, validVessels.Data[i].DisplayInSummaryLists, v.DisplayInSummaryLists)
-		assert.Equal(t, validVessels.Data[i].UsableForStorage, v.UsableForStorage)
 	}
 
 	assert.Equal(t, validVessels.Data, byIDs)
