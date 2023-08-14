@@ -14,51 +14,51 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
-func TestValidMeasurementConversions(t *testing.T) {
+func TestValidMeasurementUnitConversions(t *testing.T) {
 	t.Parallel()
 
-	suite.Run(t, new(validMeasurementConversionsTestSuite))
+	suite.Run(t, new(validMeasurementUnitConversionsTestSuite))
 }
 
-type validMeasurementConversionsBaseSuite struct {
+type validMeasurementUnitConversionsBaseSuite struct {
 	suite.Suite
 
-	ctx                                   context.Context
-	exampleValidMeasurementUnit           *types.ValidMeasurementUnit
-	exampleValidMeasurementConversion     *types.ValidMeasurementUnitConversion
-	exampleValidMeasurementConversionList []*types.ValidMeasurementUnitConversion
+	ctx                                       context.Context
+	exampleValidMeasurementUnit               *types.ValidMeasurementUnit
+	exampleValidMeasurementUnitConversion     *types.ValidMeasurementUnitConversion
+	exampleValidMeasurementUnitConversionList []*types.ValidMeasurementUnitConversion
 }
 
-var _ suite.SetupTestSuite = (*validMeasurementConversionsBaseSuite)(nil)
+var _ suite.SetupTestSuite = (*validMeasurementUnitConversionsBaseSuite)(nil)
 
-func (s *validMeasurementConversionsBaseSuite) SetupTest() {
+func (s *validMeasurementUnitConversionsBaseSuite) SetupTest() {
 	s.ctx = context.Background()
 	s.exampleValidMeasurementUnit = fakes.BuildFakeValidMeasurementUnit()
-	s.exampleValidMeasurementConversion = fakes.BuildFakeValidMeasurementConversion()
-	s.exampleValidMeasurementConversionList = []*types.ValidMeasurementUnitConversion{
-		s.exampleValidMeasurementConversion,
+	s.exampleValidMeasurementUnitConversion = fakes.BuildFakeValidMeasurementUnitConversion()
+	s.exampleValidMeasurementUnitConversionList = []*types.ValidMeasurementUnitConversion{
+		s.exampleValidMeasurementUnitConversion,
 	}
 }
 
-type validMeasurementConversionsTestSuite struct {
+type validMeasurementUnitConversionsTestSuite struct {
 	suite.Suite
 
-	validMeasurementConversionsBaseSuite
+	validMeasurementUnitConversionsBaseSuite
 }
 
-func (s *validMeasurementConversionsTestSuite) TestClient_GetValidMeasurementUnitConversion() {
+func (s *validMeasurementUnitConversionsTestSuite) TestClient_GetValidMeasurementUnitConversion() {
 	const expectedPathFormat = "/api/v1/valid_measurement_conversions/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
 
-		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleValidMeasurementConversion.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidMeasurementConversion)
-		actual, err := c.GetValidMeasurementUnitConversion(s.ctx, s.exampleValidMeasurementConversion.ID)
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleValidMeasurementUnitConversion.ID)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidMeasurementUnitConversion)
+		actual, err := c.GetValidMeasurementUnitConversion(s.ctx, s.exampleValidMeasurementUnitConversion.ID)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, s.exampleValidMeasurementConversion, actual)
+		assert.Equal(t, s.exampleValidMeasurementUnitConversion, actual)
 	})
 
 	s.Run("with invalid valid preparation ID", func() {
@@ -75,7 +75,7 @@ func (s *validMeasurementConversionsTestSuite) TestClient_GetValidMeasurementUni
 		t := s.T()
 
 		c := buildTestClientWithInvalidURL(t)
-		actual, err := c.GetValidMeasurementUnitConversion(s.ctx, s.exampleValidMeasurementConversion.ID)
+		actual, err := c.GetValidMeasurementUnitConversion(s.ctx, s.exampleValidMeasurementUnitConversion.ID)
 
 		assert.Nil(t, actual)
 		assert.Error(t, err)
@@ -84,28 +84,28 @@ func (s *validMeasurementConversionsTestSuite) TestClient_GetValidMeasurementUni
 	s.Run("with error executing request", func() {
 		t := s.T()
 
-		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleValidMeasurementConversion.ID)
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleValidMeasurementUnitConversion.ID)
 		c := buildTestClientWithInvalidResponse(t, spec)
-		actual, err := c.GetValidMeasurementUnitConversion(s.ctx, s.exampleValidMeasurementConversion.ID)
+		actual, err := c.GetValidMeasurementUnitConversion(s.ctx, s.exampleValidMeasurementUnitConversion.ID)
 
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }
 
-func (s *validMeasurementConversionsTestSuite) TestClient_GetValidMeasurementUnitConversionsFromUnit() {
+func (s *validMeasurementUnitConversionsTestSuite) TestClient_GetValidMeasurementUnitConversionsFromUnit() {
 	const expectedPathFormat = "/api/v1/valid_measurement_conversions/from_unit/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleValidMeasurementUnit.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidMeasurementConversionList)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidMeasurementUnitConversionList)
 		actual, err := c.GetValidMeasurementUnitConversionsFromUnit(s.ctx, s.exampleValidMeasurementUnit.ID)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, s.exampleValidMeasurementConversionList, actual)
+		assert.Equal(t, s.exampleValidMeasurementUnitConversionList, actual)
 	})
 
 	s.Run("with invalid valid preparation ID", func() {
@@ -140,22 +140,22 @@ func (s *validMeasurementConversionsTestSuite) TestClient_GetValidMeasurementUni
 	})
 }
 
-func (s *validMeasurementConversionsTestSuite) TestClient_CreateValidMeasurementConversion() {
+func (s *validMeasurementUnitConversionsTestSuite) TestClient_CreateValidMeasurementUnitConversion() {
 	const expectedPath = "/api/v1/valid_measurement_conversions"
 
 	s.Run("standard", func() {
 		t := s.T()
 
-		exampleInput := fakes.BuildFakeValidMeasurementConversionCreationRequestInput()
+		exampleInput := fakes.BuildFakeValidMeasurementUnitConversionCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidMeasurementConversion)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidMeasurementUnitConversion)
 
-		actual, err := c.CreateValidMeasurementConversion(s.ctx, exampleInput)
+		actual, err := c.CreateValidMeasurementUnitConversion(s.ctx, exampleInput)
 		require.NotEmpty(t, actual)
 		assert.NoError(t, err)
 
-		assert.Equal(t, s.exampleValidMeasurementConversion, actual)
+		assert.Equal(t, s.exampleValidMeasurementUnitConversion, actual)
 	})
 
 	s.Run("with nil input", func() {
@@ -163,7 +163,7 @@ func (s *validMeasurementConversionsTestSuite) TestClient_CreateValidMeasurement
 
 		c, _ := buildSimpleTestClient(t)
 
-		actual, err := c.CreateValidMeasurementConversion(s.ctx, nil)
+		actual, err := c.CreateValidMeasurementUnitConversion(s.ctx, nil)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -174,7 +174,7 @@ func (s *validMeasurementConversionsTestSuite) TestClient_CreateValidMeasurement
 		c, _ := buildSimpleTestClient(t)
 		exampleInput := &types.ValidMeasurementUnitConversionCreationRequestInput{}
 
-		actual, err := c.CreateValidMeasurementConversion(s.ctx, exampleInput)
+		actual, err := c.CreateValidMeasurementUnitConversion(s.ctx, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -182,11 +182,11 @@ func (s *validMeasurementConversionsTestSuite) TestClient_CreateValidMeasurement
 	s.Run("with error building request", func() {
 		t := s.T()
 
-		exampleInput := converters.ConvertValidMeasurementConversionToValidMeasurementConversionCreationRequestInput(s.exampleValidMeasurementConversion)
+		exampleInput := converters.ConvertValidMeasurementUnitConversionToValidMeasurementUnitConversionCreationRequestInput(s.exampleValidMeasurementUnitConversion)
 
 		c := buildTestClientWithInvalidURL(t)
 
-		actual, err := c.CreateValidMeasurementConversion(s.ctx, exampleInput)
+		actual, err := c.CreateValidMeasurementUnitConversion(s.ctx, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -194,25 +194,25 @@ func (s *validMeasurementConversionsTestSuite) TestClient_CreateValidMeasurement
 	s.Run("with error executing request", func() {
 		t := s.T()
 
-		exampleInput := converters.ConvertValidMeasurementConversionToValidMeasurementConversionCreationRequestInput(s.exampleValidMeasurementConversion)
+		exampleInput := converters.ConvertValidMeasurementUnitConversionToValidMeasurementUnitConversionCreationRequestInput(s.exampleValidMeasurementUnitConversion)
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
-		actual, err := c.CreateValidMeasurementConversion(s.ctx, exampleInput)
+		actual, err := c.CreateValidMeasurementUnitConversion(s.ctx, exampleInput)
 		assert.Empty(t, actual)
 		assert.Error(t, err)
 	})
 }
 
-func (s *validMeasurementConversionsTestSuite) TestClient_UpdateValidMeasurementConversion() {
+func (s *validMeasurementUnitConversionsTestSuite) TestClient_UpdateValidMeasurementUnitConversion() {
 	const expectedPathFormat = "/api/v1/valid_measurement_conversions/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
 
-		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, s.exampleValidMeasurementConversion.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidMeasurementConversion)
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, s.exampleValidMeasurementUnitConversion.ID)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidMeasurementUnitConversion)
 
-		err := c.UpdateValidMeasurementConversion(s.ctx, s.exampleValidMeasurementConversion)
+		err := c.UpdateValidMeasurementUnitConversion(s.ctx, s.exampleValidMeasurementUnitConversion)
 		assert.NoError(t, err)
 	})
 
@@ -221,7 +221,7 @@ func (s *validMeasurementConversionsTestSuite) TestClient_UpdateValidMeasurement
 
 		c, _ := buildSimpleTestClient(t)
 
-		err := c.UpdateValidMeasurementConversion(s.ctx, nil)
+		err := c.UpdateValidMeasurementUnitConversion(s.ctx, nil)
 		assert.Error(t, err)
 	})
 
@@ -230,7 +230,7 @@ func (s *validMeasurementConversionsTestSuite) TestClient_UpdateValidMeasurement
 
 		c := buildTestClientWithInvalidURL(t)
 
-		err := c.UpdateValidMeasurementConversion(s.ctx, s.exampleValidMeasurementConversion)
+		err := c.UpdateValidMeasurementUnitConversion(s.ctx, s.exampleValidMeasurementUnitConversion)
 		assert.Error(t, err)
 	})
 
@@ -239,21 +239,21 @@ func (s *validMeasurementConversionsTestSuite) TestClient_UpdateValidMeasurement
 
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
-		err := c.UpdateValidMeasurementConversion(s.ctx, s.exampleValidMeasurementConversion)
+		err := c.UpdateValidMeasurementUnitConversion(s.ctx, s.exampleValidMeasurementUnitConversion)
 		assert.Error(t, err)
 	})
 }
 
-func (s *validMeasurementConversionsTestSuite) TestClient_ArchiveValidMeasurementConversion() {
+func (s *validMeasurementUnitConversionsTestSuite) TestClient_ArchiveValidMeasurementUnitConversion() {
 	const expectedPathFormat = "/api/v1/valid_measurement_conversions/%s"
 
 	s.Run("standard", func() {
 		t := s.T()
 
-		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, s.exampleValidMeasurementConversion.ID)
+		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, s.exampleValidMeasurementUnitConversion.ID)
 		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
 
-		err := c.ArchiveValidMeasurementConversion(s.ctx, s.exampleValidMeasurementConversion.ID)
+		err := c.ArchiveValidMeasurementUnitConversion(s.ctx, s.exampleValidMeasurementUnitConversion.ID)
 		assert.NoError(t, err)
 	})
 
@@ -262,7 +262,7 @@ func (s *validMeasurementConversionsTestSuite) TestClient_ArchiveValidMeasuremen
 
 		c, _ := buildSimpleTestClient(t)
 
-		err := c.ArchiveValidMeasurementConversion(s.ctx, "")
+		err := c.ArchiveValidMeasurementUnitConversion(s.ctx, "")
 		assert.Error(t, err)
 	})
 
@@ -271,7 +271,7 @@ func (s *validMeasurementConversionsTestSuite) TestClient_ArchiveValidMeasuremen
 
 		c := buildTestClientWithInvalidURL(t)
 
-		err := c.ArchiveValidMeasurementConversion(s.ctx, s.exampleValidMeasurementConversion.ID)
+		err := c.ArchiveValidMeasurementUnitConversion(s.ctx, s.exampleValidMeasurementUnitConversion.ID)
 		assert.Error(t, err)
 	})
 
@@ -280,7 +280,7 @@ func (s *validMeasurementConversionsTestSuite) TestClient_ArchiveValidMeasuremen
 
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
-		err := c.ArchiveValidMeasurementConversion(s.ctx, s.exampleValidMeasurementConversion.ID)
+		err := c.ArchiveValidMeasurementUnitConversion(s.ctx, s.exampleValidMeasurementUnitConversion.ID)
 		assert.Error(t, err)
 	})
 }

@@ -399,9 +399,9 @@ func AttachMealPlanGroceryListItemIDToSpan(span trace.Span, id string) {
 	AttachStringToSpan(span, keys.MealPlanGroceryListItemIDKey, id)
 }
 
-// AttachValidMeasurementConversionIDToSpan attaches a valid measurement conversion ID to a given span.
-func AttachValidMeasurementConversionIDToSpan(span trace.Span, id string) {
-	AttachStringToSpan(span, keys.ValidMeasurementConversionIDKey, id)
+// AttachValidMeasurementUnitConversionIDToSpan attaches a valid measurement conversion ID to a given span.
+func AttachValidMeasurementUnitConversionIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.ValidMeasurementUnitConversionIDKey, id)
 }
 
 // AttachRecipeMediaIDToSpan attaches a recipe media ID to a given span.

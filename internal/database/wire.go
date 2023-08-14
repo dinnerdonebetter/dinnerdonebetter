@@ -36,7 +36,7 @@ var (
 		ProvideWebhookDataManager,
 		ProvideRecipePrepTaskDataManager,
 		ProvideMealPlanGroceryListItemDataManager,
-		ProvideValidMeasurementConversionDataManager,
+		ProvideValidMeasurementUnitConversionDataManager,
 		ProvideRecipeMediaDataManager,
 		ProvideValidIngredientStateDataManager,
 		ProvideRecipeStepCompletionConditionDataManager,
@@ -189,8 +189,8 @@ func ProvideMealPlanGroceryListItemDataManager(db DataManager) types.MealPlanGro
 	return db
 }
 
-// ProvideValidMeasurementConversionDataManager is an arbitrary function for dependency injection's sake.
-func ProvideValidMeasurementConversionDataManager(db DataManager) types.ValidMeasurementConversionDataManager {
+// ProvideValidMeasurementUnitConversionDataManager is an arbitrary function for dependency injection's sake.
+func ProvideValidMeasurementUnitConversionDataManager(db DataManager) types.ValidMeasurementUnitConversionDataManager {
 	return db
 }
 

@@ -1188,7 +1188,7 @@ func (q *Queries) UpdateValidInstrument(ctx context.Context, db DBTX, arg *Updat
 	return err
 }
 
-const updateValidMeasurementConversion = `-- name: UpdateValidMeasurementConversion :exec
+const updateValidMeasurementUnitConversion = `-- name: UpdateValidMeasurementUnitConversion :exec
 
 UPDATE valid_measurement_conversions
 SET
@@ -1202,7 +1202,7 @@ WHERE archived_at IS NULL
 	AND id = $6
 `
 
-type UpdateValidMeasurementConversionParams struct {
+type UpdateValidMeasurementUnitConversionParams struct {
 	FromUnit          string
 	ToUnit            string
 	Modifier          string
@@ -1211,8 +1211,8 @@ type UpdateValidMeasurementConversionParams struct {
 	OnlyForIngredient sql.NullString
 }
 
-func (q *Queries) UpdateValidMeasurementConversion(ctx context.Context, db DBTX, arg *UpdateValidMeasurementConversionParams) error {
-	_, err := db.ExecContext(ctx, updateValidMeasurementConversion,
+func (q *Queries) UpdateValidMeasurementUnitConversion(ctx context.Context, db DBTX, arg *UpdateValidMeasurementUnitConversionParams) error {
+	_, err := db.ExecContext(ctx, updateValidMeasurementUnitConversion,
 		arg.FromUnit,
 		arg.ToUnit,
 		arg.OnlyForIngredient,

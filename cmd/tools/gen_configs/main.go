@@ -562,7 +562,7 @@ func buildDevConfig() *config.InstanceConfig {
 			MealPlanGroceryListItems: mealplangrocerylistitems.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
-			ValidMeasurementConversions: validmeasurementconversionsservice.Config{
+			ValidMeasurementUnitConversions: validmeasurementconversionsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			VendorProxy: vendorproxy.Config{
@@ -812,7 +812,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			MealPlanGroceryListItems: mealplangrocerylistitems.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
-			ValidMeasurementConversions: validmeasurementconversionsservice.Config{
+			ValidMeasurementUnitConversions: validmeasurementconversionsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			VendorProxy: vendorproxy.Config{

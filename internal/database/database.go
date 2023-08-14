@@ -91,7 +91,7 @@ type (
 		types.ValidIngredientMeasurementUnitDataManager
 		types.RecipePrepTaskDataManager
 		types.MealPlanGroceryListItemDataManager
-		types.ValidMeasurementConversionDataManager
+		types.ValidMeasurementUnitConversionDataManager
 		types.RecipeMediaDataManager
 		types.ValidIngredientStateDataManager
 		types.RecipeStepCompletionConditionDataManager

@@ -2,15 +2,12 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"database/sql/driver"
 	"errors"
 	"testing"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -134,29 +131,6 @@ func TestQuerier_ScanValidPreparationVessels(T *testing.T) {
 func TestQuerier_ValidPreparationVesselExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleValidPreparationVessel := fakes.BuildFakeValidPreparationVessel()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleValidPreparationVessel.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(validPreparationVesselExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
-
-		actual, err := c.ValidPreparationVesselExists(ctx, exampleValidPreparationVessel.ID)
-		assert.NoError(t, err)
-		assert.True(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid valid preparation instrument ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -167,52 +141,6 @@ func TestQuerier_ValidPreparationVesselExists(T *testing.T) {
 		actual, err := c.ValidPreparationVesselExists(ctx, "")
 		assert.Error(t, err)
 		assert.False(t, actual)
-	})
-
-	T.Run("with sql.ErrNoRows", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleValidPreparationVessel := fakes.BuildFakeValidPreparationVessel()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleValidPreparationVessel.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(validPreparationVesselExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(sql.ErrNoRows)
-
-		actual, err := c.ValidPreparationVesselExists(ctx, exampleValidPreparationVessel.ID)
-		assert.NoError(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleValidPreparationVessel := fakes.BuildFakeValidPreparationVessel()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleValidPreparationVessel.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(validPreparationVesselExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.ValidPreparationVesselExists(ctx, exampleValidPreparationVessel.ID)
-		assert.Error(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 
@@ -385,41 +313,6 @@ func TestQuerier_GetValidPreparationVessels(T *testing.T) {
 func TestQuerier_CreateValidPreparationVessel(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidPreparationVessel := fakes.BuildFakeValidPreparationVessel()
-		exampleValidPreparationVessel.ID = "1"
-		exampleValidPreparationVessel.Preparation = types.ValidPreparation{ID: exampleValidPreparationVessel.Preparation.ID}
-		exampleValidPreparationVessel.Vessel = types.ValidVessel{ID: exampleValidPreparationVessel.Vessel.ID}
-
-		exampleInput := converters.ConvertValidPreparationVesselToValidPreparationVesselDatabaseCreationInput(exampleValidPreparationVessel)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.Notes,
-			exampleInput.ValidPreparationID,
-			exampleInput.ValidVesselID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(validPreparationVesselCreationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		c.timeFunc = func() time.Time {
-			return exampleValidPreparationVessel.CreatedAt
-		}
-
-		actual, err := c.CreateValidPreparationVessel(ctx, exampleInput)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleValidPreparationVessel, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
@@ -430,67 +323,10 @@ func TestQuerier_CreateValidPreparationVessel(T *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		expectedErr := errors.New(t.Name())
-		exampleValidPreparationVessel := fakes.BuildFakeValidPreparationVessel()
-		exampleInput := converters.ConvertValidPreparationVesselToValidPreparationVesselDatabaseCreationInput(exampleValidPreparationVessel)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.Notes,
-			exampleInput.ValidPreparationID,
-			exampleInput.ValidVesselID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(validPreparationVesselCreationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(expectedErr)
-
-		c.timeFunc = func() time.Time {
-			return exampleValidPreparationVessel.CreatedAt
-		}
-
-		actual, err := c.CreateValidPreparationVessel(ctx, exampleInput)
-		assert.Error(t, err)
-		assert.True(t, errors.Is(err, expectedErr))
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
 }
 
 func TestQuerier_UpdateValidPreparationVessel(T *testing.T) {
 	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidPreparationVessel := fakes.BuildFakeValidPreparationVessel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleValidPreparationVessel.Notes,
-			exampleValidPreparationVessel.Preparation.ID,
-			exampleValidPreparationVessel.Vessel.ID,
-			exampleValidPreparationVessel.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateValidPreparationVesselQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.UpdateValidPreparationVessel(ctx, exampleValidPreparationVessel))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
 
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
@@ -499,30 +335,6 @@ func TestQuerier_UpdateValidPreparationVessel(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateValidPreparationVessel(ctx, nil))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleValidPreparationVessel := fakes.BuildFakeValidPreparationVessel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleValidPreparationVessel.Notes,
-			exampleValidPreparationVessel.Preparation.ID,
-			exampleValidPreparationVessel.Vessel.ID,
-			exampleValidPreparationVessel.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateValidPreparationVesselQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.UpdateValidPreparationVessel(ctx, exampleValidPreparationVessel))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

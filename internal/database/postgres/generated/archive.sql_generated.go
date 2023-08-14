@@ -400,13 +400,13 @@ func (q *Queries) ArchiveValidInstrument(ctx context.Context, db DBTX, id string
 	return err
 }
 
-const archiveValidMeasurementConversion = `-- name: ArchiveValidMeasurementConversion :exec
+const archiveValidMeasurementUnitConversion = `-- name: ArchiveValidMeasurementUnitConversion :exec
 
 UPDATE valid_measurement_conversions SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
-func (q *Queries) ArchiveValidMeasurementConversion(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, archiveValidMeasurementConversion, id)
+func (q *Queries) ArchiveValidMeasurementUnitConversion(ctx context.Context, db DBTX, id string) error {
+	_, err := db.ExecContext(ctx, archiveValidMeasurementUnitConversion, id)
 	return err
 }
 

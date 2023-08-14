@@ -17,8 +17,8 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
-func buildMockRowsFromValidMeasurementConversions(includeCounts bool, filteredCount uint64, validMeasurementConversions ...*types.ValidMeasurementUnitConversion) *sqlmock.Rows {
-	columns := validMeasurementConversionsTableColumns
+func buildMockRowsFromValidMeasurementUnitConversions(includeCounts bool, filteredCount uint64, validMeasurementUnitConversions ...*types.ValidMeasurementUnitConversion) *sqlmock.Rows {
+	columns := validMeasurementUnitConversionsTableColumns
 
 	if includeCounts {
 		columns = append(columns, "filtered_count", "total_count")
@@ -26,7 +26,7 @@ func buildMockRowsFromValidMeasurementConversions(includeCounts bool, filteredCo
 
 	exampleRows := sqlmock.NewRows(columns)
 
-	for _, x := range validMeasurementConversions {
+	for _, x := range validMeasurementUnitConversions {
 		ingredient := &types.NullableValidIngredient{}
 		if x.OnlyForIngredient != nil {
 			ingredient = converters.ConvertValidIngredientToNullableValidIngredient(x.OnlyForIngredient)
@@ -114,7 +114,7 @@ func buildMockRowsFromValidMeasurementConversions(includeCounts bool, filteredCo
 		}
 
 		if includeCounts {
-			rowValues = append(rowValues, filteredCount, len(validMeasurementConversions))
+			rowValues = append(rowValues, filteredCount, len(validMeasurementUnitConversions))
 		}
 
 		exampleRows.AddRow(rowValues...)
@@ -123,25 +123,25 @@ func buildMockRowsFromValidMeasurementConversions(includeCounts bool, filteredCo
 	return exampleRows
 }
 
-func TestQuerier_ValidMeasurementConversionExists(T *testing.T) {
+func TestQuerier_ValidMeasurementUnitConversionExists(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		exampleValidMeasurementConversion := fakes.BuildFakeValidMeasurementConversion()
+		exampleValidMeasurementUnitConversion := fakes.BuildFakeValidMeasurementUnitConversion()
 
 		c, db := buildTestClient(t)
 		args := []any{
-			exampleValidMeasurementConversion.ID,
+			exampleValidMeasurementUnitConversion.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(validMeasurementConversionExistenceQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(validMeasurementUnitConversionExistenceQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
 
-		actual, err := c.ValidMeasurementConversionExists(ctx, exampleValidMeasurementConversion.ID)
+		actual, err := c.ValidMeasurementUnitConversionExists(ctx, exampleValidMeasurementUnitConversion.ID)
 		assert.NoError(t, err)
 		assert.True(t, actual)
 
@@ -155,7 +155,7 @@ func TestQuerier_ValidMeasurementConversionExists(T *testing.T) {
 
 		c, _ := buildTestClient(t)
 
-		actual, err := c.ValidMeasurementConversionExists(ctx, "")
+		actual, err := c.ValidMeasurementUnitConversionExists(ctx, "")
 		assert.Error(t, err)
 		assert.False(t, actual)
 	})
@@ -164,18 +164,18 @@ func TestQuerier_ValidMeasurementConversionExists(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		exampleValidMeasurementConversion := fakes.BuildFakeValidMeasurementConversion()
+		exampleValidMeasurementUnitConversion := fakes.BuildFakeValidMeasurementUnitConversion()
 
 		c, db := buildTestClient(t)
 		args := []any{
-			exampleValidMeasurementConversion.ID,
+			exampleValidMeasurementUnitConversion.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(validMeasurementConversionExistenceQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(validMeasurementUnitConversionExistenceQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(sql.ErrNoRows)
 
-		actual, err := c.ValidMeasurementConversionExists(ctx, exampleValidMeasurementConversion.ID)
+		actual, err := c.ValidMeasurementUnitConversionExists(ctx, exampleValidMeasurementUnitConversion.ID)
 		assert.NoError(t, err)
 		assert.False(t, actual)
 
@@ -186,18 +186,18 @@ func TestQuerier_ValidMeasurementConversionExists(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		exampleValidMeasurementConversion := fakes.BuildFakeValidMeasurementConversion()
+		exampleValidMeasurementUnitConversion := fakes.BuildFakeValidMeasurementUnitConversion()
 
 		c, db := buildTestClient(t)
 		args := []any{
-			exampleValidMeasurementConversion.ID,
+			exampleValidMeasurementUnitConversion.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(validMeasurementConversionExistenceQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(validMeasurementUnitConversionExistenceQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.ValidMeasurementConversionExists(ctx, exampleValidMeasurementConversion.ID)
+		actual, err := c.ValidMeasurementUnitConversionExists(ctx, exampleValidMeasurementUnitConversion.ID)
 		assert.Error(t, err)
 		assert.False(t, actual)
 
@@ -212,21 +212,21 @@ func TestQuerier_GetValidMeasurementUnitConversion(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		exampleValidMeasurementConversion := fakes.BuildFakeValidMeasurementConversion()
+		exampleValidMeasurementUnitConversion := fakes.BuildFakeValidMeasurementUnitConversion()
 
 		c, db := buildTestClient(t)
 
 		args := []any{
-			exampleValidMeasurementConversion.ID,
+			exampleValidMeasurementUnitConversion.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(getValidMeasurementConversionQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getValidMeasurementUnitConversionQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidMeasurementConversions(false, 0, exampleValidMeasurementConversion))
+			WillReturnRows(buildMockRowsFromValidMeasurementUnitConversions(false, 0, exampleValidMeasurementUnitConversion))
 
-		actual, err := c.GetValidMeasurementUnitConversion(ctx, exampleValidMeasurementConversion.ID)
+		actual, err := c.GetValidMeasurementUnitConversion(ctx, exampleValidMeasurementUnitConversion.ID)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidMeasurementConversion, actual)
+		assert.Equal(t, exampleValidMeasurementUnitConversion, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -246,19 +246,19 @@ func TestQuerier_GetValidMeasurementUnitConversion(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		exampleValidMeasurementConversion := fakes.BuildFakeValidMeasurementConversion()
+		exampleValidMeasurementUnitConversion := fakes.BuildFakeValidMeasurementUnitConversion()
 
 		c, db := buildTestClient(t)
 
 		args := []any{
-			exampleValidMeasurementConversion.ID,
+			exampleValidMeasurementUnitConversion.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(getValidMeasurementConversionQuery)).
+		db.ExpectQuery(formatQueryForSQLMock(getValidMeasurementUnitConversionQuery)).
 			WithArgs(interfaceToDriverValue(args)...).
 			WillReturnError(errors.New("blah"))
 
-		actual, err := c.GetValidMeasurementUnitConversion(ctx, exampleValidMeasurementConversion.ID)
+		actual, err := c.GetValidMeasurementUnitConversion(ctx, exampleValidMeasurementUnitConversion.ID)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -274,21 +274,21 @@ func TestQuerier_GetValidMeasurementUnitConversionsFromUnit(T *testing.T) {
 
 		ctx := context.Background()
 		exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
-		exampleValidMeasurementConversions := fakes.BuildFakeValidMeasurementConversionList().Data
+		exampleValidMeasurementUnitConversions := fakes.BuildFakeValidMeasurementUnitConversionList().Data
 
 		c, db := buildTestClient(t)
 
-		getValidMeasurementConversionsFromUnitArgs := []any{
+		getValidMeasurementUnitConversionsFromUnitArgs := []any{
 			exampleValidMeasurementUnit.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(getValidMeasurementConversionsFromUnitQuery)).
-			WithArgs(interfaceToDriverValue(getValidMeasurementConversionsFromUnitArgs)...).
-			WillReturnRows(buildMockRowsFromValidMeasurementConversions(false, 0, exampleValidMeasurementConversions...))
+		db.ExpectQuery(formatQueryForSQLMock(getValidMeasurementUnitConversionsFromUnitQuery)).
+			WithArgs(interfaceToDriverValue(getValidMeasurementUnitConversionsFromUnitArgs)...).
+			WillReturnRows(buildMockRowsFromValidMeasurementUnitConversions(false, 0, exampleValidMeasurementUnitConversions...))
 
 		actual, err := c.GetValidMeasurementUnitConversionsFromUnit(ctx, exampleValidMeasurementUnit.ID)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidMeasurementConversions, actual)
+		assert.Equal(t, exampleValidMeasurementUnitConversions, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -302,45 +302,45 @@ func TestQuerier_GetValidMeasurementUnitConversionsToUnit(T *testing.T) {
 
 		ctx := context.Background()
 		exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
-		exampleValidMeasurementConversions := fakes.BuildFakeValidMeasurementConversionList().Data
+		exampleValidMeasurementUnitConversions := fakes.BuildFakeValidMeasurementUnitConversionList().Data
 
 		c, db := buildTestClient(t)
 
-		getValidMeasurementConversionsToUnitArgs := []any{
+		getValidMeasurementUnitConversionsToUnitArgs := []any{
 			exampleValidMeasurementUnit.ID,
 		}
 
-		db.ExpectQuery(formatQueryForSQLMock(getValidMeasurementConversionsToUnitQuery)).
-			WithArgs(interfaceToDriverValue(getValidMeasurementConversionsToUnitArgs)...).
-			WillReturnRows(buildMockRowsFromValidMeasurementConversions(false, 0, exampleValidMeasurementConversions...))
+		db.ExpectQuery(formatQueryForSQLMock(getValidMeasurementUnitConversionsToUnitQuery)).
+			WithArgs(interfaceToDriverValue(getValidMeasurementUnitConversionsToUnitArgs)...).
+			WillReturnRows(buildMockRowsFromValidMeasurementUnitConversions(false, 0, exampleValidMeasurementUnitConversions...))
 
 		actual, err := c.GetValidMeasurementUnitConversionsToUnit(ctx, exampleValidMeasurementUnit.ID)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidMeasurementConversions, actual)
+		assert.Equal(t, exampleValidMeasurementUnitConversions, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 
-func TestQuerier_CreateValidMeasurementConversion(T *testing.T) {
+func TestQuerier_CreateValidMeasurementUnitConversion(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		exampleValidMeasurementConversion := fakes.BuildFakeValidMeasurementConversion()
-		exampleValidMeasurementConversion.ID = "1"
-		exampleValidMeasurementConversion.From = types.ValidMeasurementUnit{ID: exampleValidMeasurementConversion.From.ID}
-		exampleValidMeasurementConversion.To = types.ValidMeasurementUnit{ID: exampleValidMeasurementConversion.To.ID}
-		if exampleValidMeasurementConversion.OnlyForIngredient != nil {
-			exampleValidMeasurementConversion.OnlyForIngredient = &types.ValidIngredient{ID: exampleValidMeasurementConversion.OnlyForIngredient.ID}
+		exampleValidMeasurementUnitConversion := fakes.BuildFakeValidMeasurementUnitConversion()
+		exampleValidMeasurementUnitConversion.ID = "1"
+		exampleValidMeasurementUnitConversion.From = types.ValidMeasurementUnit{ID: exampleValidMeasurementUnitConversion.From.ID}
+		exampleValidMeasurementUnitConversion.To = types.ValidMeasurementUnit{ID: exampleValidMeasurementUnitConversion.To.ID}
+		if exampleValidMeasurementUnitConversion.OnlyForIngredient != nil {
+			exampleValidMeasurementUnitConversion.OnlyForIngredient = &types.ValidIngredient{ID: exampleValidMeasurementUnitConversion.OnlyForIngredient.ID}
 		}
-		exampleInput := converters.ConvertValidMeasurementConversionToValidMeasurementConversionDatabaseCreationInput(exampleValidMeasurementConversion)
+		exampleInput := converters.ConvertValidMeasurementUnitConversionToValidMeasurementUnitConversionDatabaseCreationInput(exampleValidMeasurementUnitConversion)
 
 		c, db := buildTestClient(t)
 
-		validMeasurementConversionCreationArgs := []any{
+		validMeasurementUnitConversionCreationArgs := []any{
 			exampleInput.ID,
 			exampleInput.From,
 			exampleInput.To,
@@ -349,17 +349,17 @@ func TestQuerier_CreateValidMeasurementConversion(T *testing.T) {
 			exampleInput.Notes,
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(validMeasurementConversionCreationQuery)).
-			WithArgs(interfaceToDriverValue(validMeasurementConversionCreationArgs)...).
+		db.ExpectExec(formatQueryForSQLMock(validMeasurementUnitConversionCreationQuery)).
+			WithArgs(interfaceToDriverValue(validMeasurementUnitConversionCreationArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
 		c.timeFunc = func() time.Time {
-			return exampleValidMeasurementConversion.CreatedAt
+			return exampleValidMeasurementUnitConversion.CreatedAt
 		}
 
-		actual, err := c.CreateValidMeasurementConversion(ctx, exampleInput)
+		actual, err := c.CreateValidMeasurementUnitConversion(ctx, exampleInput)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidMeasurementConversion, actual)
+		assert.Equal(t, exampleValidMeasurementUnitConversion, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -370,7 +370,7 @@ func TestQuerier_CreateValidMeasurementConversion(T *testing.T) {
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.CreateValidMeasurementConversion(ctx, nil)
+		actual, err := c.CreateValidMeasurementUnitConversion(ctx, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -380,12 +380,12 @@ func TestQuerier_CreateValidMeasurementConversion(T *testing.T) {
 
 		ctx := context.Background()
 		expectedErr := errors.New(t.Name())
-		exampleValidMeasurementConversion := fakes.BuildFakeValidMeasurementConversion()
-		exampleInput := converters.ConvertValidMeasurementConversionToValidMeasurementConversionDatabaseCreationInput(exampleValidMeasurementConversion)
+		exampleValidMeasurementUnitConversion := fakes.BuildFakeValidMeasurementUnitConversion()
+		exampleInput := converters.ConvertValidMeasurementUnitConversionToValidMeasurementUnitConversionDatabaseCreationInput(exampleValidMeasurementUnitConversion)
 
 		c, db := buildTestClient(t)
 
-		validMeasurementConversionCreationArgs := []any{
+		validMeasurementUnitConversionCreationArgs := []any{
 			exampleInput.ID,
 			exampleInput.From,
 			exampleInput.To,
@@ -394,15 +394,15 @@ func TestQuerier_CreateValidMeasurementConversion(T *testing.T) {
 			exampleInput.Notes,
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(validMeasurementConversionCreationQuery)).
-			WithArgs(interfaceToDriverValue(validMeasurementConversionCreationArgs)...).
+		db.ExpectExec(formatQueryForSQLMock(validMeasurementUnitConversionCreationQuery)).
+			WithArgs(interfaceToDriverValue(validMeasurementUnitConversionCreationArgs)...).
 			WillReturnError(expectedErr)
 
 		c.timeFunc = func() time.Time {
-			return exampleValidMeasurementConversion.CreatedAt
+			return exampleValidMeasurementUnitConversion.CreatedAt
 		}
 
-		actual, err := c.CreateValidMeasurementConversion(ctx, exampleInput)
+		actual, err := c.CreateValidMeasurementUnitConversion(ctx, exampleInput)
 		assert.Error(t, err)
 		assert.True(t, errors.Is(err, expectedErr))
 		assert.Nil(t, actual)
@@ -411,36 +411,36 @@ func TestQuerier_CreateValidMeasurementConversion(T *testing.T) {
 	})
 }
 
-func TestQuerier_UpdateValidMeasurementConversion(T *testing.T) {
+func TestQuerier_UpdateValidMeasurementUnitConversion(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		exampleValidMeasurementConversion := fakes.BuildFakeValidMeasurementConversion()
+		exampleValidMeasurementUnitConversion := fakes.BuildFakeValidMeasurementUnitConversion()
 
 		c, db := buildTestClient(t)
 
 		var ingredientID *string
-		if exampleValidMeasurementConversion.OnlyForIngredient != nil {
-			ingredientID = &exampleValidMeasurementConversion.OnlyForIngredient.ID
+		if exampleValidMeasurementUnitConversion.OnlyForIngredient != nil {
+			ingredientID = &exampleValidMeasurementUnitConversion.OnlyForIngredient.ID
 		}
 
-		updateValidMeasurementConversionArgs := []any{
-			exampleValidMeasurementConversion.From.ID,
-			exampleValidMeasurementConversion.To.ID,
+		updateValidMeasurementUnitConversionArgs := []any{
+			exampleValidMeasurementUnitConversion.From.ID,
+			exampleValidMeasurementUnitConversion.To.ID,
 			ingredientID,
-			exampleValidMeasurementConversion.Modifier,
-			exampleValidMeasurementConversion.Notes,
-			exampleValidMeasurementConversion.ID,
+			exampleValidMeasurementUnitConversion.Modifier,
+			exampleValidMeasurementUnitConversion.Notes,
+			exampleValidMeasurementUnitConversion.ID,
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(updateValidMeasurementConversionQuery)).
-			WithArgs(interfaceToDriverValue(updateValidMeasurementConversionArgs)...).
+		db.ExpectExec(formatQueryForSQLMock(updateValidMeasurementUnitConversionQuery)).
+			WithArgs(interfaceToDriverValue(updateValidMeasurementUnitConversionArgs)...).
 			WillReturnResult(newArbitraryDatabaseResult())
 
-		assert.NoError(t, c.UpdateValidMeasurementConversion(ctx, exampleValidMeasurementConversion))
+		assert.NoError(t, c.UpdateValidMeasurementUnitConversion(ctx, exampleValidMeasurementUnitConversion))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -451,42 +451,42 @@ func TestQuerier_UpdateValidMeasurementConversion(T *testing.T) {
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.UpdateValidMeasurementConversion(ctx, nil))
+		assert.Error(t, c.UpdateValidMeasurementUnitConversion(ctx, nil))
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		exampleValidMeasurementConversion := fakes.BuildFakeValidMeasurementConversion()
+		exampleValidMeasurementUnitConversion := fakes.BuildFakeValidMeasurementUnitConversion()
 
 		c, db := buildTestClient(t)
 
 		var ingredientID *string
-		if exampleValidMeasurementConversion.OnlyForIngredient != nil {
-			ingredientID = &exampleValidMeasurementConversion.OnlyForIngredient.ID
+		if exampleValidMeasurementUnitConversion.OnlyForIngredient != nil {
+			ingredientID = &exampleValidMeasurementUnitConversion.OnlyForIngredient.ID
 		}
 
-		updateValidMeasurementConversionArgs := []any{
-			exampleValidMeasurementConversion.From.ID,
-			exampleValidMeasurementConversion.To.ID,
+		updateValidMeasurementUnitConversionArgs := []any{
+			exampleValidMeasurementUnitConversion.From.ID,
+			exampleValidMeasurementUnitConversion.To.ID,
 			ingredientID,
-			exampleValidMeasurementConversion.Modifier,
-			exampleValidMeasurementConversion.Notes,
-			exampleValidMeasurementConversion.ID,
+			exampleValidMeasurementUnitConversion.Modifier,
+			exampleValidMeasurementUnitConversion.Notes,
+			exampleValidMeasurementUnitConversion.ID,
 		}
 
-		db.ExpectExec(formatQueryForSQLMock(updateValidMeasurementConversionQuery)).
-			WithArgs(interfaceToDriverValue(updateValidMeasurementConversionArgs)...).
+		db.ExpectExec(formatQueryForSQLMock(updateValidMeasurementUnitConversionQuery)).
+			WithArgs(interfaceToDriverValue(updateValidMeasurementUnitConversionArgs)...).
 			WillReturnError(errors.New("blah"))
 
-		assert.Error(t, c.UpdateValidMeasurementConversion(ctx, exampleValidMeasurementConversion))
+		assert.Error(t, c.UpdateValidMeasurementUnitConversion(ctx, exampleValidMeasurementUnitConversion))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 
-func TestQuerier_ArchiveValidMeasurementConversion(T *testing.T) {
+func TestQuerier_ArchiveValidMeasurementUnitConversion(T *testing.T) {
 	T.Parallel()
 
 	T.Run("with invalid valid measurement conversion ID", func(t *testing.T) {
@@ -495,6 +495,6 @@ func TestQuerier_ArchiveValidMeasurementConversion(T *testing.T) {
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.ArchiveValidMeasurementConversion(ctx, ""))
+		assert.Error(t, c.ArchiveValidMeasurementUnitConversion(ctx, ""))
 	})
 }

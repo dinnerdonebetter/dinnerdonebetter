@@ -326,19 +326,15 @@ func (q *Querier) GetValidIngredientStateIngredientsForIngredientState(ctx conte
 	logger = logger.WithValue(keys.ValidPreparationIDKey, ingredientStateID)
 	tracing.AttachValidIngredientStateIngredientIDToSpan(span, ingredientStateID)
 
-	x = &types.QueryFilteredResult[types.ValidIngredientStateIngredient]{}
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+
+	x = &types.QueryFilteredResult[types.ValidIngredientStateIngredient]{
+		Pagination: filter.ToPagination(),
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
-
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
-
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
-	}
 
 	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
 	query, args := q.buildGetValidIngredientStateIngredientsWithPreparationIDsQuery(ctx, *filter.Limit, []string{ingredientStateID})

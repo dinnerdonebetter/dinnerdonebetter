@@ -23,7 +23,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestValidMeasurementConversionsService_CreateHandler(T *testing.T) {
+func TestValidMeasurementUnitConversionsService_CreateHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -32,7 +32,7 @@ func TestValidMeasurementConversionsService_CreateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidMeasurementConversionCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidMeasurementUnitConversionCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -41,12 +41,12 @@ func TestValidMeasurementConversionsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementConversionDataManagerMock.On(
-			"CreateValidMeasurementConversion",
+		dbManager.ValidMeasurementUnitConversionDataManagerMock.On(
+			"CreateValidMeasurementUnitConversion",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.ValidMeasurementConversionDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleValidMeasurementConversion, nil)
-		helper.service.validMeasurementConversionDataManager = dbManager
+			mock.MatchedBy(func(*types.ValidMeasurementUnitConversionDatabaseCreationInput) bool { return true }),
+		).Return(helper.exampleValidMeasurementUnitConversion, nil)
+		helper.service.validMeasurementUnitConversionDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -104,7 +104,7 @@ func TestValidMeasurementConversionsService_CreateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidMeasurementConversionCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidMeasurementUnitConversionCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -125,7 +125,7 @@ func TestValidMeasurementConversionsService_CreateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidMeasurementConversionCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidMeasurementUnitConversionCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -134,12 +134,12 @@ func TestValidMeasurementConversionsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementConversionDataManagerMock.On(
-			"CreateValidMeasurementConversion",
+		dbManager.ValidMeasurementUnitConversionDataManagerMock.On(
+			"CreateValidMeasurementUnitConversion",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.ValidMeasurementConversionDatabaseCreationInput) bool { return true }),
+			mock.MatchedBy(func(*types.ValidMeasurementUnitConversionDatabaseCreationInput) bool { return true }),
 		).Return((*types.ValidMeasurementUnitConversion)(nil), errors.New("blah"))
-		helper.service.validMeasurementConversionDataManager = dbManager
+		helper.service.validMeasurementUnitConversionDataManager = dbManager
 
 		helper.service.CreateHandler(helper.res, helper.req)
 
@@ -154,7 +154,7 @@ func TestValidMeasurementConversionsService_CreateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidMeasurementConversionCreationRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidMeasurementUnitConversionCreationRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -163,12 +163,12 @@ func TestValidMeasurementConversionsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementConversionDataManagerMock.On(
-			"CreateValidMeasurementConversion",
+		dbManager.ValidMeasurementUnitConversionDataManagerMock.On(
+			"CreateValidMeasurementUnitConversion",
 			testutils.ContextMatcher,
-			mock.MatchedBy(func(*types.ValidMeasurementConversionDatabaseCreationInput) bool { return true }),
-		).Return(helper.exampleValidMeasurementConversion, nil)
-		helper.service.validMeasurementConversionDataManager = dbManager
+			mock.MatchedBy(func(*types.ValidMeasurementUnitConversionDatabaseCreationInput) bool { return true }),
+		).Return(helper.exampleValidMeasurementUnitConversion, nil)
+		helper.service.validMeasurementUnitConversionDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -186,7 +186,7 @@ func TestValidMeasurementConversionsService_CreateHandler(T *testing.T) {
 	})
 }
 
-func TestValidMeasurementConversionsService_ReadHandler(T *testing.T) {
+func TestValidMeasurementUnitConversionsService_ReadHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -194,13 +194,13 @@ func TestValidMeasurementConversionsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManagerMock{}
-		validMeasurementConversionDataManager.On(
+		validMeasurementUnitConversionDataManager := &mocktypes.ValidMeasurementUnitConversionDataManagerMock{}
+		validMeasurementUnitConversionDataManager.On(
 			"GetValidMeasurementUnitConversion",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementConversion.ID,
-		).Return(helper.exampleValidMeasurementConversion, nil)
-		helper.service.validMeasurementConversionDataManager = validMeasurementConversionDataManager
+			helper.exampleValidMeasurementUnitConversion.ID,
+		).Return(helper.exampleValidMeasurementUnitConversion, nil)
+		helper.service.validMeasurementUnitConversionDataManager = validMeasurementUnitConversionDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
@@ -215,7 +215,7 @@ func TestValidMeasurementConversionsService_ReadHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, validMeasurementConversionDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitConversionDataManager, encoderDecoder)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -247,13 +247,13 @@ func TestValidMeasurementConversionsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManagerMock{}
-		validMeasurementConversionDataManager.On(
+		validMeasurementUnitConversionDataManager := &mocktypes.ValidMeasurementUnitConversionDataManagerMock{}
+		validMeasurementUnitConversionDataManager.On(
 			"GetValidMeasurementUnitConversion",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementConversion.ID,
+			helper.exampleValidMeasurementUnitConversion.ID,
 		).Return((*types.ValidMeasurementUnitConversion)(nil), sql.ErrNoRows)
-		helper.service.validMeasurementConversionDataManager = validMeasurementConversionDataManager
+		helper.service.validMeasurementUnitConversionDataManager = validMeasurementUnitConversionDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
@@ -267,7 +267,7 @@ func TestValidMeasurementConversionsService_ReadHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, validMeasurementConversionDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitConversionDataManager, encoderDecoder)
 	})
 
 	T.Run("with error fetching from database", func(t *testing.T) {
@@ -275,13 +275,13 @@ func TestValidMeasurementConversionsService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManagerMock{}
-		validMeasurementConversionDataManager.On(
+		validMeasurementUnitConversionDataManager := &mocktypes.ValidMeasurementUnitConversionDataManagerMock{}
+		validMeasurementUnitConversionDataManager.On(
 			"GetValidMeasurementUnitConversion",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementConversion.ID,
+			helper.exampleValidMeasurementUnitConversion.ID,
 		).Return((*types.ValidMeasurementUnitConversion)(nil), errors.New("blah"))
-		helper.service.validMeasurementConversionDataManager = validMeasurementConversionDataManager
+		helper.service.validMeasurementUnitConversionDataManager = validMeasurementUnitConversionDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
@@ -295,11 +295,11 @@ func TestValidMeasurementConversionsService_ReadHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, validMeasurementConversionDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitConversionDataManager, encoderDecoder)
 	})
 }
 
-func TestValidMeasurementConversionsService_UpdateHandler(T *testing.T) {
+func TestValidMeasurementUnitConversionsService_UpdateHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -308,7 +308,7 @@ func TestValidMeasurementConversionsService_UpdateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidMeasurementConversionUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidMeasurementUnitConversionUnitUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -317,18 +317,18 @@ func TestValidMeasurementConversionsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementConversionDataManagerMock.On(
+		dbManager.ValidMeasurementUnitConversionDataManagerMock.On(
 			"GetValidMeasurementUnitConversion",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementConversion.ID,
-		).Return(helper.exampleValidMeasurementConversion, nil)
+			helper.exampleValidMeasurementUnitConversion.ID,
+		).Return(helper.exampleValidMeasurementUnitConversion, nil)
 
-		dbManager.ValidMeasurementConversionDataManagerMock.On(
-			"UpdateValidMeasurementConversion",
+		dbManager.ValidMeasurementUnitConversionDataManagerMock.On(
+			"UpdateValidMeasurementUnitConversion",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidMeasurementUnitConversion) bool { return true }),
 		).Return(nil)
-		helper.service.validMeasurementConversionDataManager = dbManager
+		helper.service.validMeasurementUnitConversionDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -397,7 +397,7 @@ func TestValidMeasurementConversionsService_UpdateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidMeasurementConversionUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidMeasurementUnitConversionUnitUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -405,19 +405,19 @@ func TestValidMeasurementConversionsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManagerMock{}
-		validMeasurementConversionDataManager.On(
+		validMeasurementUnitConversionDataManager := &mocktypes.ValidMeasurementUnitConversionDataManagerMock{}
+		validMeasurementUnitConversionDataManager.On(
 			"GetValidMeasurementUnitConversion",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementConversion.ID,
+			helper.exampleValidMeasurementUnitConversion.ID,
 		).Return((*types.ValidMeasurementUnitConversion)(nil), sql.ErrNoRows)
-		helper.service.validMeasurementConversionDataManager = validMeasurementConversionDataManager
+		helper.service.validMeasurementUnitConversionDataManager = validMeasurementUnitConversionDataManager
 
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, validMeasurementConversionDataManager)
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitConversionDataManager)
 	})
 
 	T.Run("with error retrieving valid measurement conversion from database", func(t *testing.T) {
@@ -426,7 +426,7 @@ func TestValidMeasurementConversionsService_UpdateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidMeasurementConversionUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidMeasurementUnitConversionUnitUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -434,19 +434,19 @@ func TestValidMeasurementConversionsService_UpdateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManagerMock{}
-		validMeasurementConversionDataManager.On(
+		validMeasurementUnitConversionDataManager := &mocktypes.ValidMeasurementUnitConversionDataManagerMock{}
+		validMeasurementUnitConversionDataManager.On(
 			"GetValidMeasurementUnitConversion",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementConversion.ID,
+			helper.exampleValidMeasurementUnitConversion.ID,
 		).Return((*types.ValidMeasurementUnitConversion)(nil), errors.New("blah"))
-		helper.service.validMeasurementConversionDataManager = validMeasurementConversionDataManager
+		helper.service.validMeasurementUnitConversionDataManager = validMeasurementUnitConversionDataManager
 
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, validMeasurementConversionDataManager)
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitConversionDataManager)
 	})
 
 	T.Run("with problem writing to database", func(t *testing.T) {
@@ -455,7 +455,7 @@ func TestValidMeasurementConversionsService_UpdateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidMeasurementConversionUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidMeasurementUnitConversionUnitUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -464,18 +464,18 @@ func TestValidMeasurementConversionsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementConversionDataManagerMock.On(
+		dbManager.ValidMeasurementUnitConversionDataManagerMock.On(
 			"GetValidMeasurementUnitConversion",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementConversion.ID,
-		).Return(helper.exampleValidMeasurementConversion, nil)
+			helper.exampleValidMeasurementUnitConversion.ID,
+		).Return(helper.exampleValidMeasurementUnitConversion, nil)
 
-		dbManager.ValidMeasurementConversionDataManagerMock.On(
-			"UpdateValidMeasurementConversion",
+		dbManager.ValidMeasurementUnitConversionDataManagerMock.On(
+			"UpdateValidMeasurementUnitConversion",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidMeasurementUnitConversion) bool { return true }),
 		).Return(errors.New("blah"))
-		helper.service.validMeasurementConversionDataManager = dbManager
+		helper.service.validMeasurementUnitConversionDataManager = dbManager
 
 		helper.service.UpdateHandler(helper.res, helper.req)
 
@@ -490,7 +490,7 @@ func TestValidMeasurementConversionsService_UpdateHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-		exampleCreationInput := fakes.BuildFakeValidMeasurementConversionUpdateRequestInput()
+		exampleCreationInput := fakes.BuildFakeValidMeasurementUnitConversionUnitUpdateRequestInput()
 		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleCreationInput)
 
 		var err error
@@ -499,18 +499,18 @@ func TestValidMeasurementConversionsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementConversionDataManagerMock.On(
+		dbManager.ValidMeasurementUnitConversionDataManagerMock.On(
 			"GetValidMeasurementUnitConversion",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementConversion.ID,
-		).Return(helper.exampleValidMeasurementConversion, nil)
+			helper.exampleValidMeasurementUnitConversion.ID,
+		).Return(helper.exampleValidMeasurementUnitConversion, nil)
 
-		dbManager.ValidMeasurementConversionDataManagerMock.On(
-			"UpdateValidMeasurementConversion",
+		dbManager.ValidMeasurementUnitConversionDataManagerMock.On(
+			"UpdateValidMeasurementUnitConversion",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.ValidMeasurementUnitConversion) bool { return true }),
 		).Return(nil)
-		helper.service.validMeasurementConversionDataManager = dbManager
+		helper.service.validMeasurementUnitConversionDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -528,7 +528,7 @@ func TestValidMeasurementConversionsService_UpdateHandler(T *testing.T) {
 	})
 }
 
-func TestValidMeasurementConversionsService_ArchiveHandler(T *testing.T) {
+func TestValidMeasurementUnitConversionsService_ArchiveHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -537,18 +537,18 @@ func TestValidMeasurementConversionsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementConversionDataManagerMock.On(
-			"ValidMeasurementConversionExists",
+		dbManager.ValidMeasurementUnitConversionDataManagerMock.On(
+			"ValidMeasurementUnitConversionExists",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementConversion.ID,
+			helper.exampleValidMeasurementUnitConversion.ID,
 		).Return(true, nil)
 
-		dbManager.ValidMeasurementConversionDataManagerMock.On(
-			"ArchiveValidMeasurementConversion",
+		dbManager.ValidMeasurementUnitConversionDataManagerMock.On(
+			"ArchiveValidMeasurementUnitConversion",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementConversion.ID,
+			helper.exampleValidMeasurementUnitConversion.ID,
 		).Return(nil)
-		helper.service.validMeasurementConversionDataManager = dbManager
+		helper.service.validMeasurementUnitConversionDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -594,13 +594,13 @@ func TestValidMeasurementConversionsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManagerMock{}
-		validMeasurementConversionDataManager.On(
-			"ValidMeasurementConversionExists",
+		validMeasurementUnitConversionDataManager := &mocktypes.ValidMeasurementUnitConversionDataManagerMock{}
+		validMeasurementUnitConversionDataManager.On(
+			"ValidMeasurementUnitConversionExists",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementConversion.ID,
+			helper.exampleValidMeasurementUnitConversion.ID,
 		).Return(false, nil)
-		helper.service.validMeasurementConversionDataManager = validMeasurementConversionDataManager
+		helper.service.validMeasurementUnitConversionDataManager = validMeasurementUnitConversionDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
@@ -614,7 +614,7 @@ func TestValidMeasurementConversionsService_ArchiveHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, validMeasurementConversionDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitConversionDataManager, encoderDecoder)
 	})
 
 	T.Run("with error checking for item in database", func(t *testing.T) {
@@ -622,19 +622,19 @@ func TestValidMeasurementConversionsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManagerMock{}
-		validMeasurementConversionDataManager.On(
-			"ValidMeasurementConversionExists",
+		validMeasurementUnitConversionDataManager := &mocktypes.ValidMeasurementUnitConversionDataManagerMock{}
+		validMeasurementUnitConversionDataManager.On(
+			"ValidMeasurementUnitConversionExists",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementConversion.ID,
+			helper.exampleValidMeasurementUnitConversion.ID,
 		).Return(false, errors.New("blah"))
-		helper.service.validMeasurementConversionDataManager = validMeasurementConversionDataManager
+		helper.service.validMeasurementUnitConversionDataManager = validMeasurementUnitConversionDataManager
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, validMeasurementConversionDataManager)
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitConversionDataManager)
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
@@ -643,18 +643,18 @@ func TestValidMeasurementConversionsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementConversionDataManagerMock.On(
-			"ValidMeasurementConversionExists",
+		dbManager.ValidMeasurementUnitConversionDataManagerMock.On(
+			"ValidMeasurementUnitConversionExists",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementConversion.ID,
+			helper.exampleValidMeasurementUnitConversion.ID,
 		).Return(true, nil)
 
-		dbManager.ValidMeasurementConversionDataManagerMock.On(
-			"ArchiveValidMeasurementConversion",
+		dbManager.ValidMeasurementUnitConversionDataManagerMock.On(
+			"ArchiveValidMeasurementUnitConversion",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementConversion.ID,
+			helper.exampleValidMeasurementUnitConversion.ID,
 		).Return(errors.New("blah"))
-		helper.service.validMeasurementConversionDataManager = dbManager
+		helper.service.validMeasurementUnitConversionDataManager = dbManager
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
@@ -669,18 +669,18 @@ func TestValidMeasurementConversionsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		dbManager := database.NewMockDatabase()
-		dbManager.ValidMeasurementConversionDataManagerMock.On(
-			"ValidMeasurementConversionExists",
+		dbManager.ValidMeasurementUnitConversionDataManagerMock.On(
+			"ValidMeasurementUnitConversionExists",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementConversion.ID,
+			helper.exampleValidMeasurementUnitConversion.ID,
 		).Return(true, nil)
 
-		dbManager.ValidMeasurementConversionDataManagerMock.On(
-			"ArchiveValidMeasurementConversion",
+		dbManager.ValidMeasurementUnitConversionDataManagerMock.On(
+			"ArchiveValidMeasurementUnitConversion",
 			testutils.ContextMatcher,
-			helper.exampleValidMeasurementConversion.ID,
+			helper.exampleValidMeasurementUnitConversion.ID,
 		).Return(nil)
-		helper.service.validMeasurementConversionDataManager = dbManager
+		helper.service.validMeasurementUnitConversionDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
 		dataChangesPublisher.On(
@@ -698,7 +698,7 @@ func TestValidMeasurementConversionsService_ArchiveHandler(T *testing.T) {
 	})
 }
 
-func TestValidMeasurementConversionsService_FromMeasurementUnitHandler(T *testing.T) {
+func TestValidMeasurementUnitConversionsService_FromMeasurementUnitHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -706,13 +706,13 @@ func TestValidMeasurementConversionsService_FromMeasurementUnitHandler(T *testin
 
 		helper := buildTestHelper(t)
 
-		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManagerMock{}
-		validMeasurementConversionDataManager.On(
+		validMeasurementUnitConversionDataManager := &mocktypes.ValidMeasurementUnitConversionDataManagerMock{}
+		validMeasurementUnitConversionDataManager.On(
 			"GetValidMeasurementUnitConversionsFromUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementUnit.ID,
-		).Return([]*types.ValidMeasurementUnitConversion{helper.exampleValidMeasurementConversion}, nil)
-		helper.service.validMeasurementConversionDataManager = validMeasurementConversionDataManager
+		).Return([]*types.ValidMeasurementUnitConversion{helper.exampleValidMeasurementUnitConversion}, nil)
+		helper.service.validMeasurementUnitConversionDataManager = validMeasurementUnitConversionDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
@@ -727,7 +727,7 @@ func TestValidMeasurementConversionsService_FromMeasurementUnitHandler(T *testin
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, validMeasurementConversionDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitConversionDataManager, encoderDecoder)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -759,13 +759,13 @@ func TestValidMeasurementConversionsService_FromMeasurementUnitHandler(T *testin
 
 		helper := buildTestHelper(t)
 
-		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManagerMock{}
-		validMeasurementConversionDataManager.On(
+		validMeasurementUnitConversionDataManager := &mocktypes.ValidMeasurementUnitConversionDataManagerMock{}
+		validMeasurementUnitConversionDataManager.On(
 			"GetValidMeasurementUnitConversionsFromUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementUnit.ID,
 		).Return([]*types.ValidMeasurementUnitConversion(nil), sql.ErrNoRows)
-		helper.service.validMeasurementConversionDataManager = validMeasurementConversionDataManager
+		helper.service.validMeasurementUnitConversionDataManager = validMeasurementUnitConversionDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
@@ -779,7 +779,7 @@ func TestValidMeasurementConversionsService_FromMeasurementUnitHandler(T *testin
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, validMeasurementConversionDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitConversionDataManager, encoderDecoder)
 	})
 
 	T.Run("with error fetching from database", func(t *testing.T) {
@@ -787,13 +787,13 @@ func TestValidMeasurementConversionsService_FromMeasurementUnitHandler(T *testin
 
 		helper := buildTestHelper(t)
 
-		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManagerMock{}
-		validMeasurementConversionDataManager.On(
+		validMeasurementUnitConversionDataManager := &mocktypes.ValidMeasurementUnitConversionDataManagerMock{}
+		validMeasurementUnitConversionDataManager.On(
 			"GetValidMeasurementUnitConversionsFromUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementUnit.ID,
 		).Return([]*types.ValidMeasurementUnitConversion(nil), errors.New("blah"))
-		helper.service.validMeasurementConversionDataManager = validMeasurementConversionDataManager
+		helper.service.validMeasurementUnitConversionDataManager = validMeasurementUnitConversionDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
@@ -807,11 +807,11 @@ func TestValidMeasurementConversionsService_FromMeasurementUnitHandler(T *testin
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, validMeasurementConversionDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitConversionDataManager, encoderDecoder)
 	})
 }
 
-func TestValidMeasurementConversionsService_ToMeasurementUnitHandler(T *testing.T) {
+func TestValidMeasurementUnitConversionsService_ToMeasurementUnitHandler(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -819,13 +819,13 @@ func TestValidMeasurementConversionsService_ToMeasurementUnitHandler(T *testing.
 
 		helper := buildTestHelper(t)
 
-		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManagerMock{}
-		validMeasurementConversionDataManager.On(
+		validMeasurementUnitConversionDataManager := &mocktypes.ValidMeasurementUnitConversionDataManagerMock{}
+		validMeasurementUnitConversionDataManager.On(
 			"GetValidMeasurementUnitConversionsToUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementUnit.ID,
-		).Return([]*types.ValidMeasurementUnitConversion{helper.exampleValidMeasurementConversion}, nil)
-		helper.service.validMeasurementConversionDataManager = validMeasurementConversionDataManager
+		).Return([]*types.ValidMeasurementUnitConversion{helper.exampleValidMeasurementUnitConversion}, nil)
+		helper.service.validMeasurementUnitConversionDataManager = validMeasurementUnitConversionDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
@@ -840,7 +840,7 @@ func TestValidMeasurementConversionsService_ToMeasurementUnitHandler(T *testing.
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, validMeasurementConversionDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitConversionDataManager, encoderDecoder)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -872,13 +872,13 @@ func TestValidMeasurementConversionsService_ToMeasurementUnitHandler(T *testing.
 
 		helper := buildTestHelper(t)
 
-		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManagerMock{}
-		validMeasurementConversionDataManager.On(
+		validMeasurementUnitConversionDataManager := &mocktypes.ValidMeasurementUnitConversionDataManagerMock{}
+		validMeasurementUnitConversionDataManager.On(
 			"GetValidMeasurementUnitConversionsToUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementUnit.ID,
 		).Return([]*types.ValidMeasurementUnitConversion(nil), sql.ErrNoRows)
-		helper.service.validMeasurementConversionDataManager = validMeasurementConversionDataManager
+		helper.service.validMeasurementUnitConversionDataManager = validMeasurementUnitConversionDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
@@ -892,7 +892,7 @@ func TestValidMeasurementConversionsService_ToMeasurementUnitHandler(T *testing.
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, validMeasurementConversionDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitConversionDataManager, encoderDecoder)
 	})
 
 	T.Run("with error fetching from database", func(t *testing.T) {
@@ -900,13 +900,13 @@ func TestValidMeasurementConversionsService_ToMeasurementUnitHandler(T *testing.
 
 		helper := buildTestHelper(t)
 
-		validMeasurementConversionDataManager := &mocktypes.ValidMeasurementConversionDataManagerMock{}
-		validMeasurementConversionDataManager.On(
+		validMeasurementUnitConversionDataManager := &mocktypes.ValidMeasurementUnitConversionDataManagerMock{}
+		validMeasurementUnitConversionDataManager.On(
 			"GetValidMeasurementUnitConversionsToUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementUnit.ID,
 		).Return([]*types.ValidMeasurementUnitConversion(nil), errors.New("blah"))
-		helper.service.validMeasurementConversionDataManager = validMeasurementConversionDataManager
+		helper.service.validMeasurementUnitConversionDataManager = validMeasurementUnitConversionDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
 		encoderDecoder.On(
@@ -920,6 +920,6 @@ func TestValidMeasurementConversionsService_ToMeasurementUnitHandler(T *testing.
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, validMeasurementConversionDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, validMeasurementUnitConversionDataManager, encoderDecoder)
 	})
 }

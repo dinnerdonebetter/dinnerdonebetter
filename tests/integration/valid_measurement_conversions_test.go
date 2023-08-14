@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func checkValidMeasurementConversionEquality(t *testing.T, expected, actual *types.ValidMeasurementUnitConversion) {
+func checkValidMeasurementUnitConversionEquality(t *testing.T, expected, actual *types.ValidMeasurementUnitConversion) {
 	t.Helper()
 
 	require.NotZero(t, actual.ID)
@@ -25,7 +25,7 @@ func checkValidMeasurementConversionEquality(t *testing.T, expected, actual *typ
 	require.NotZero(t, actual.CreatedAt)
 }
 
-func (s *TestSuite) TestValidMeasurementConversions_CompleteLifecycle() {
+func (s *TestSuite) TestValidMeasurementUnitConversions_CompleteLifecycle() {
 	s.runForEachClient("should be creatable and readable and updatable and deletable without ingredient", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
@@ -36,36 +36,36 @@ func (s *TestSuite) TestValidMeasurementConversions_CompleteLifecycle() {
 			createdValidMeasurementUnit1 := createValidMeasurementUnitForTest(t, ctx, testClients.admin)
 			createdValidMeasurementUnit2 := createValidMeasurementUnitForTest(t, ctx, testClients.admin)
 
-			exampleValidMeasurementConversion := fakes.BuildFakeValidMeasurementConversion()
-			exampleValidMeasurementConversion.From = *createdValidMeasurementUnit1
-			exampleValidMeasurementConversion.To = *createdValidMeasurementUnit2
-			exampleValidMeasurementConversionInput := converters.ConvertValidMeasurementConversionToValidMeasurementConversionCreationRequestInput(exampleValidMeasurementConversion)
+			exampleValidMeasurementUnitConversion := fakes.BuildFakeValidMeasurementUnitConversion()
+			exampleValidMeasurementUnitConversion.From = *createdValidMeasurementUnit1
+			exampleValidMeasurementUnitConversion.To = *createdValidMeasurementUnit2
+			exampleValidMeasurementUnitConversionInput := converters.ConvertValidMeasurementUnitConversionToValidMeasurementUnitConversionCreationRequestInput(exampleValidMeasurementUnitConversion)
 
-			createdValidMeasurementConversion, err := testClients.admin.CreateValidMeasurementConversion(ctx, exampleValidMeasurementConversionInput)
+			createdValidMeasurementUnitConversion, err := testClients.admin.CreateValidMeasurementUnitConversion(ctx, exampleValidMeasurementUnitConversionInput)
 			require.NoError(t, err)
-			checkValidMeasurementConversionEquality(t, exampleValidMeasurementConversion, createdValidMeasurementConversion)
+			checkValidMeasurementUnitConversionEquality(t, exampleValidMeasurementUnitConversion, createdValidMeasurementUnitConversion)
 
-			createdValidMeasurementConversion, err = testClients.admin.GetValidMeasurementUnitConversion(ctx, createdValidMeasurementConversion.ID)
-			requireNotNilAndNoProblems(t, createdValidMeasurementConversion, err)
+			createdValidMeasurementUnitConversion, err = testClients.admin.GetValidMeasurementUnitConversion(ctx, createdValidMeasurementUnitConversion.ID)
+			requireNotNilAndNoProblems(t, createdValidMeasurementUnitConversion, err)
 
-			checkValidMeasurementConversionEquality(t, exampleValidMeasurementConversion, createdValidMeasurementConversion)
+			checkValidMeasurementUnitConversionEquality(t, exampleValidMeasurementUnitConversion, createdValidMeasurementUnitConversion)
 
-			createdValidMeasurementConversion.Modifier = fakes.BuildFakeValidMeasurementConversion().Modifier
-			require.NoError(t, testClients.admin.UpdateValidMeasurementConversion(ctx, createdValidMeasurementConversion))
+			createdValidMeasurementUnitConversion.Modifier = fakes.BuildFakeValidMeasurementUnitConversion().Modifier
+			require.NoError(t, testClients.admin.UpdateValidMeasurementUnitConversion(ctx, createdValidMeasurementUnitConversion))
 
-			actual, err := testClients.admin.GetValidMeasurementUnitConversion(ctx, createdValidMeasurementConversion.ID)
+			actual, err := testClients.admin.GetValidMeasurementUnitConversion(ctx, createdValidMeasurementUnitConversion.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert valid measurement conversion equality
-			checkValidMeasurementConversionEquality(t, createdValidMeasurementConversion, actual)
+			checkValidMeasurementUnitConversionEquality(t, createdValidMeasurementUnitConversion, actual)
 			require.NotNil(t, actual.LastUpdatedAt)
 
-			require.NoError(t, testClients.admin.ArchiveValidMeasurementConversion(ctx, createdValidMeasurementConversion.ID))
+			require.NoError(t, testClients.admin.ArchiveValidMeasurementUnitConversion(ctx, createdValidMeasurementUnitConversion.ID))
 		}
 	})
 }
 
-func (s *TestSuite) TestValidMeasurementConversions_GetFromUnits() {
+func (s *TestSuite) TestValidMeasurementUnitConversions_GetFromUnits() {
 	s.runForEachClient("should be able to get what a unit converts from", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
@@ -76,29 +76,29 @@ func (s *TestSuite) TestValidMeasurementConversions_GetFromUnits() {
 			createdValidMeasurementUnit1 := createValidMeasurementUnitForTest(t, ctx, testClients.admin)
 			createdValidMeasurementUnit2 := createValidMeasurementUnitForTest(t, ctx, testClients.admin)
 
-			exampleValidMeasurementConversion := fakes.BuildFakeValidMeasurementConversion()
-			exampleValidMeasurementConversion.From = *createdValidMeasurementUnit1
-			exampleValidMeasurementConversion.To = *createdValidMeasurementUnit2
-			exampleValidMeasurementConversionInput := converters.ConvertValidMeasurementConversionToValidMeasurementConversionCreationRequestInput(exampleValidMeasurementConversion)
+			exampleValidMeasurementUnitConversion := fakes.BuildFakeValidMeasurementUnitConversion()
+			exampleValidMeasurementUnitConversion.From = *createdValidMeasurementUnit1
+			exampleValidMeasurementUnitConversion.To = *createdValidMeasurementUnit2
+			exampleValidMeasurementUnitConversionInput := converters.ConvertValidMeasurementUnitConversionToValidMeasurementUnitConversionCreationRequestInput(exampleValidMeasurementUnitConversion)
 
-			createdValidMeasurementConversion, err := testClients.admin.CreateValidMeasurementConversion(ctx, exampleValidMeasurementConversionInput)
+			createdValidMeasurementUnitConversion, err := testClients.admin.CreateValidMeasurementUnitConversion(ctx, exampleValidMeasurementUnitConversionInput)
 			require.NoError(t, err)
-			checkValidMeasurementConversionEquality(t, exampleValidMeasurementConversion, createdValidMeasurementConversion)
+			checkValidMeasurementUnitConversionEquality(t, exampleValidMeasurementUnitConversion, createdValidMeasurementUnitConversion)
 
-			createdValidMeasurementConversion, err = testClients.admin.GetValidMeasurementUnitConversion(ctx, createdValidMeasurementConversion.ID)
-			requireNotNilAndNoProblems(t, createdValidMeasurementConversion, err)
-			checkValidMeasurementConversionEquality(t, exampleValidMeasurementConversion, createdValidMeasurementConversion)
+			createdValidMeasurementUnitConversion, err = testClients.admin.GetValidMeasurementUnitConversion(ctx, createdValidMeasurementUnitConversion.ID)
+			requireNotNilAndNoProblems(t, createdValidMeasurementUnitConversion, err)
+			checkValidMeasurementUnitConversionEquality(t, exampleValidMeasurementUnitConversion, createdValidMeasurementUnitConversion)
 
 			fromUnits, err := testClients.admin.GetValidMeasurementUnitConversionsFromUnit(ctx, createdValidMeasurementUnit1.ID)
 			requireNotNilAndNoProblems(t, fromUnits, err)
 			require.Equal(t, 1, len(fromUnits))
 
-			require.NoError(t, testClients.admin.ArchiveValidMeasurementConversion(ctx, createdValidMeasurementConversion.ID))
+			require.NoError(t, testClients.admin.ArchiveValidMeasurementUnitConversion(ctx, createdValidMeasurementUnitConversion.ID))
 		}
 	})
 }
 
-func (s *TestSuite) TestValidMeasurementConversions_GetToUnits() {
+func (s *TestSuite) TestValidMeasurementUnitConversions_GetToUnits() {
 	s.runForEachClient("should be able to get what a unit converts to", func(testClients *testClientWrapper) func() {
 		return func() {
 			t := s.T()
@@ -109,24 +109,24 @@ func (s *TestSuite) TestValidMeasurementConversions_GetToUnits() {
 			createdValidMeasurementUnit1 := createValidMeasurementUnitForTest(t, ctx, testClients.admin)
 			createdValidMeasurementUnit2 := createValidMeasurementUnitForTest(t, ctx, testClients.admin)
 
-			exampleValidMeasurementConversion := fakes.BuildFakeValidMeasurementConversion()
-			exampleValidMeasurementConversion.From = *createdValidMeasurementUnit1
-			exampleValidMeasurementConversion.To = *createdValidMeasurementUnit2
-			exampleValidMeasurementConversionInput := converters.ConvertValidMeasurementConversionToValidMeasurementConversionCreationRequestInput(exampleValidMeasurementConversion)
+			exampleValidMeasurementUnitConversion := fakes.BuildFakeValidMeasurementUnitConversion()
+			exampleValidMeasurementUnitConversion.From = *createdValidMeasurementUnit1
+			exampleValidMeasurementUnitConversion.To = *createdValidMeasurementUnit2
+			exampleValidMeasurementUnitConversionInput := converters.ConvertValidMeasurementUnitConversionToValidMeasurementUnitConversionCreationRequestInput(exampleValidMeasurementUnitConversion)
 
-			createdValidMeasurementConversion, err := testClients.admin.CreateValidMeasurementConversion(ctx, exampleValidMeasurementConversionInput)
+			createdValidMeasurementUnitConversion, err := testClients.admin.CreateValidMeasurementUnitConversion(ctx, exampleValidMeasurementUnitConversionInput)
 			require.NoError(t, err)
-			checkValidMeasurementConversionEquality(t, exampleValidMeasurementConversion, createdValidMeasurementConversion)
+			checkValidMeasurementUnitConversionEquality(t, exampleValidMeasurementUnitConversion, createdValidMeasurementUnitConversion)
 
-			createdValidMeasurementConversion, err = testClients.admin.GetValidMeasurementUnitConversion(ctx, createdValidMeasurementConversion.ID)
-			requireNotNilAndNoProblems(t, createdValidMeasurementConversion, err)
-			checkValidMeasurementConversionEquality(t, exampleValidMeasurementConversion, createdValidMeasurementConversion)
+			createdValidMeasurementUnitConversion, err = testClients.admin.GetValidMeasurementUnitConversion(ctx, createdValidMeasurementUnitConversion.ID)
+			requireNotNilAndNoProblems(t, createdValidMeasurementUnitConversion, err)
+			checkValidMeasurementUnitConversionEquality(t, exampleValidMeasurementUnitConversion, createdValidMeasurementUnitConversion)
 
 			fromUnits, err := testClients.admin.GetValidMeasurementUnitConversionToUnit(ctx, createdValidMeasurementUnit2.ID)
 			requireNotNilAndNoProblems(t, fromUnits, err)
 			require.Equal(t, 1, len(fromUnits))
 
-			require.NoError(t, testClients.admin.ArchiveValidMeasurementConversion(ctx, createdValidMeasurementConversion.ID))
+			require.NoError(t, testClients.admin.ArchiveValidMeasurementUnitConversion(ctx, createdValidMeasurementUnitConversion.ID))
 		}
 	})
 }

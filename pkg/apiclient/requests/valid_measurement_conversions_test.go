@@ -20,11 +20,11 @@ func TestBuilder_BuildGetValidMeasurementUnitConversionRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		exampleValidMeasurementConversion := fakes.BuildFakeValidMeasurementConversion()
+		exampleValidMeasurementUnitConversion := fakes.BuildFakeValidMeasurementUnitConversion()
 
-		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, exampleValidMeasurementConversion.ID)
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, exampleValidMeasurementUnitConversion.ID)
 
-		actual, err := helper.builder.BuildGetValidMeasurementUnitConversionRequest(helper.ctx, exampleValidMeasurementConversion.ID)
+		actual, err := helper.builder.BuildGetValidMeasurementUnitConversionRequest(helper.ctx, exampleValidMeasurementUnitConversion.ID)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -46,9 +46,9 @@ func TestBuilder_BuildGetValidMeasurementUnitConversionRequest(T *testing.T) {
 		helper := buildTestHelper()
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
 
-		exampleValidMeasurementConversion := fakes.BuildFakeValidMeasurementConversion()
+		exampleValidMeasurementUnitConversion := fakes.BuildFakeValidMeasurementUnitConversion()
 
-		actual, err := helper.builder.BuildGetValidMeasurementUnitConversionRequest(helper.ctx, exampleValidMeasurementConversion.ID)
+		actual, err := helper.builder.BuildGetValidMeasurementUnitConversionRequest(helper.ctx, exampleValidMeasurementUnitConversion.ID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -142,7 +142,7 @@ func TestBuilder_BuildGetValidMeasurementUnitConversionsToUnitRequest(T *testing
 	})
 }
 
-func TestBuilder_BuildCreateValidMeasurementConversionRequest(T *testing.T) {
+func TestBuilder_BuildCreateValidMeasurementUnitConversionRequest(T *testing.T) {
 	T.Parallel()
 
 	const expectedPath = "/api/v1/valid_measurement_conversions"
@@ -152,11 +152,11 @@ func TestBuilder_BuildCreateValidMeasurementConversionRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		exampleInput := fakes.BuildFakeValidMeasurementConversionCreationRequestInput()
+		exampleInput := fakes.BuildFakeValidMeasurementUnitConversionCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
 
-		actual, err := helper.builder.BuildCreateValidMeasurementConversionRequest(helper.ctx, exampleInput)
+		actual, err := helper.builder.BuildCreateValidMeasurementUnitConversionRequest(helper.ctx, exampleInput)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -167,7 +167,7 @@ func TestBuilder_BuildCreateValidMeasurementConversionRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildCreateValidMeasurementConversionRequest(helper.ctx, nil)
+		actual, err := helper.builder.BuildCreateValidMeasurementUnitConversionRequest(helper.ctx, nil)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -177,7 +177,7 @@ func TestBuilder_BuildCreateValidMeasurementConversionRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildCreateValidMeasurementConversionRequest(helper.ctx, &types.ValidMeasurementUnitConversionCreationRequestInput{})
+		actual, err := helper.builder.BuildCreateValidMeasurementUnitConversionRequest(helper.ctx, &types.ValidMeasurementUnitConversionCreationRequestInput{})
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -188,15 +188,15 @@ func TestBuilder_BuildCreateValidMeasurementConversionRequest(T *testing.T) {
 		helper := buildTestHelper()
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
 
-		exampleInput := fakes.BuildFakeValidMeasurementConversionCreationRequestInput()
+		exampleInput := fakes.BuildFakeValidMeasurementUnitConversionCreationRequestInput()
 
-		actual, err := helper.builder.BuildCreateValidMeasurementConversionRequest(helper.ctx, exampleInput)
+		actual, err := helper.builder.BuildCreateValidMeasurementUnitConversionRequest(helper.ctx, exampleInput)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }
 
-func TestBuilder_BuildUpdateValidMeasurementConversionRequest(T *testing.T) {
+func TestBuilder_BuildUpdateValidMeasurementUnitConversionRequest(T *testing.T) {
 	T.Parallel()
 
 	const expectedPathFormat = "/api/v1/valid_measurement_conversions/%s"
@@ -206,11 +206,11 @@ func TestBuilder_BuildUpdateValidMeasurementConversionRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		exampleValidMeasurementConversion := fakes.BuildFakeValidMeasurementConversion()
+		exampleValidMeasurementUnitConversion := fakes.BuildFakeValidMeasurementUnitConversion()
 
-		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, exampleValidMeasurementConversion.ID)
+		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, exampleValidMeasurementUnitConversion.ID)
 
-		actual, err := helper.builder.BuildUpdateValidMeasurementConversionRequest(helper.ctx, exampleValidMeasurementConversion)
+		actual, err := helper.builder.BuildUpdateValidMeasurementUnitConversionRequest(helper.ctx, exampleValidMeasurementUnitConversion)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -221,7 +221,7 @@ func TestBuilder_BuildUpdateValidMeasurementConversionRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildUpdateValidMeasurementConversionRequest(helper.ctx, nil)
+		actual, err := helper.builder.BuildUpdateValidMeasurementUnitConversionRequest(helper.ctx, nil)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -232,15 +232,15 @@ func TestBuilder_BuildUpdateValidMeasurementConversionRequest(T *testing.T) {
 		helper := buildTestHelper()
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
 
-		exampleValidMeasurementConversion := fakes.BuildFakeValidMeasurementConversion()
+		exampleValidMeasurementUnitConversion := fakes.BuildFakeValidMeasurementUnitConversion()
 
-		actual, err := helper.builder.BuildUpdateValidMeasurementConversionRequest(helper.ctx, exampleValidMeasurementConversion)
+		actual, err := helper.builder.BuildUpdateValidMeasurementUnitConversionRequest(helper.ctx, exampleValidMeasurementUnitConversion)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
 }
 
-func TestBuilder_BuildArchiveValidMeasurementConversionRequest(T *testing.T) {
+func TestBuilder_BuildArchiveValidMeasurementUnitConversionRequest(T *testing.T) {
 	T.Parallel()
 
 	const expectedPathFormat = "/api/v1/valid_measurement_conversions/%s"
@@ -250,11 +250,11 @@ func TestBuilder_BuildArchiveValidMeasurementConversionRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		exampleValidMeasurementConversion := fakes.BuildFakeValidMeasurementConversion()
+		exampleValidMeasurementUnitConversion := fakes.BuildFakeValidMeasurementUnitConversion()
 
-		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, exampleValidMeasurementConversion.ID)
+		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, exampleValidMeasurementUnitConversion.ID)
 
-		actual, err := helper.builder.BuildArchiveValidMeasurementConversionRequest(helper.ctx, exampleValidMeasurementConversion.ID)
+		actual, err := helper.builder.BuildArchiveValidMeasurementUnitConversionRequest(helper.ctx, exampleValidMeasurementUnitConversion.ID)
 		assert.NoError(t, err)
 
 		assertRequestQuality(t, actual, spec)
@@ -265,7 +265,7 @@ func TestBuilder_BuildArchiveValidMeasurementConversionRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		actual, err := helper.builder.BuildArchiveValidMeasurementConversionRequest(helper.ctx, "")
+		actual, err := helper.builder.BuildArchiveValidMeasurementUnitConversionRequest(helper.ctx, "")
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})
@@ -276,9 +276,9 @@ func TestBuilder_BuildArchiveValidMeasurementConversionRequest(T *testing.T) {
 		helper := buildTestHelper()
 		helper.builder = buildTestRequestBuilderWithInvalidURL()
 
-		exampleValidMeasurementConversion := fakes.BuildFakeValidMeasurementConversion()
+		exampleValidMeasurementUnitConversion := fakes.BuildFakeValidMeasurementUnitConversion()
 
-		actual, err := helper.builder.BuildArchiveValidMeasurementConversionRequest(helper.ctx, exampleValidMeasurementConversion.ID)
+		actual, err := helper.builder.BuildArchiveValidMeasurementUnitConversionRequest(helper.ctx, exampleValidMeasurementUnitConversion.ID)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})

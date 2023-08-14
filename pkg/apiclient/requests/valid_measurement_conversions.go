@@ -11,24 +11,24 @@ import (
 )
 
 const (
-	validMeasurementConversionsBasePath = "valid_measurement_conversions"
+	validMeasurementUnitConversionsBasePath = "valid_measurement_conversions"
 )
 
 // BuildGetValidMeasurementUnitConversionRequest builds an HTTP request for fetching a valid measurement conversion.
-func (b *Builder) BuildGetValidMeasurementUnitConversionRequest(ctx context.Context, validMeasurementConversionID string) (*http.Request, error) {
+func (b *Builder) BuildGetValidMeasurementUnitConversionRequest(ctx context.Context, validMeasurementUnitConversionID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if validMeasurementConversionID == "" {
+	if validMeasurementUnitConversionID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidMeasurementConversionIDToSpan(span, validMeasurementConversionID)
+	tracing.AttachValidMeasurementUnitConversionIDToSpan(span, validMeasurementUnitConversionID)
 
 	uri := b.BuildURL(
 		ctx,
 		nil,
-		validMeasurementConversionsBasePath,
-		validMeasurementConversionID,
+		validMeasurementUnitConversionsBasePath,
+		validMeasurementUnitConversionID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
@@ -53,7 +53,7 @@ func (b *Builder) BuildGetValidMeasurementUnitConversionsFromUnitRequest(ctx con
 	uri := b.BuildURL(
 		ctx,
 		nil,
-		validMeasurementConversionsBasePath,
+		validMeasurementUnitConversionsBasePath,
 		"from_unit",
 		validMeasurementUnitID,
 	)
@@ -80,7 +80,7 @@ func (b *Builder) BuildGetValidMeasurementUnitConversionsToUnitRequest(ctx conte
 	uri := b.BuildURL(
 		ctx,
 		nil,
-		validMeasurementConversionsBasePath,
+		validMeasurementUnitConversionsBasePath,
 		"to_unit",
 		validMeasurementUnitID,
 	)
@@ -94,8 +94,8 @@ func (b *Builder) BuildGetValidMeasurementUnitConversionsToUnitRequest(ctx conte
 	return req, nil
 }
 
-// BuildCreateValidMeasurementConversionRequest builds an HTTP request for creating a valid measurement conversion.
-func (b *Builder) BuildCreateValidMeasurementConversionRequest(ctx context.Context, input *types.ValidMeasurementUnitConversionCreationRequestInput) (*http.Request, error) {
+// BuildCreateValidMeasurementUnitConversionRequest builds an HTTP request for creating a valid measurement conversion.
+func (b *Builder) BuildCreateValidMeasurementUnitConversionRequest(ctx context.Context, input *types.ValidMeasurementUnitConversionCreationRequestInput) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -110,7 +110,7 @@ func (b *Builder) BuildCreateValidMeasurementConversionRequest(ctx context.Conte
 	uri := b.BuildURL(
 		ctx,
 		nil,
-		validMeasurementConversionsBasePath,
+		validMeasurementUnitConversionsBasePath,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
@@ -122,25 +122,25 @@ func (b *Builder) BuildCreateValidMeasurementConversionRequest(ctx context.Conte
 	return req, nil
 }
 
-// BuildUpdateValidMeasurementConversionRequest builds an HTTP request for updating a valid measurement conversion.
-func (b *Builder) BuildUpdateValidMeasurementConversionRequest(ctx context.Context, validMeasurementConversion *types.ValidMeasurementUnitConversion) (*http.Request, error) {
+// BuildUpdateValidMeasurementUnitConversionRequest builds an HTTP request for updating a valid measurement conversion.
+func (b *Builder) BuildUpdateValidMeasurementUnitConversionRequest(ctx context.Context, validMeasurementUnitConversion *types.ValidMeasurementUnitConversion) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if validMeasurementConversion == nil {
+	if validMeasurementUnitConversion == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachValidMeasurementConversionIDToSpan(span, validMeasurementConversion.ID)
+	tracing.AttachValidMeasurementUnitConversionIDToSpan(span, validMeasurementUnitConversion.ID)
 
 	uri := b.BuildURL(
 		ctx,
 		nil,
-		validMeasurementConversionsBasePath,
-		validMeasurementConversion.ID,
+		validMeasurementUnitConversionsBasePath,
+		validMeasurementUnitConversion.ID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 
-	input := converters.ConvertValidMeasurementConversionToValidMeasurementConversionUpdateRequestInput(validMeasurementConversion)
+	input := converters.ConvertValidMeasurementUnitConversionToValidMeasurementUnitConversionUpdateRequestInput(validMeasurementUnitConversion)
 
 	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
 	if err != nil {
@@ -150,21 +150,21 @@ func (b *Builder) BuildUpdateValidMeasurementConversionRequest(ctx context.Conte
 	return req, nil
 }
 
-// BuildArchiveValidMeasurementConversionRequest builds an HTTP request for archiving a valid measurement conversion.
-func (b *Builder) BuildArchiveValidMeasurementConversionRequest(ctx context.Context, validMeasurementConversionID string) (*http.Request, error) {
+// BuildArchiveValidMeasurementUnitConversionRequest builds an HTTP request for archiving a valid measurement conversion.
+func (b *Builder) BuildArchiveValidMeasurementUnitConversionRequest(ctx context.Context, validMeasurementUnitConversionID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if validMeasurementConversionID == "" {
+	if validMeasurementUnitConversionID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidMeasurementConversionIDToSpan(span, validMeasurementConversionID)
+	tracing.AttachValidMeasurementUnitConversionIDToSpan(span, validMeasurementUnitConversionID)
 
 	uri := b.BuildURL(
 		ctx,
 		nil,
-		validMeasurementConversionsBasePath,
-		validMeasurementConversionID,
+		validMeasurementUnitConversionsBasePath,
+		validMeasurementUnitConversionID,
 	)
 	tracing.AttachRequestURIToSpan(span, uri)
 

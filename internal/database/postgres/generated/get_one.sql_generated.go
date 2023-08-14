@@ -2797,7 +2797,7 @@ func (q *Queries) GetValidInstrument(ctx context.Context, db DBTX, id string) (*
 	return &i, err
 }
 
-const getValidMeasurementConversion = `-- name: GetValidMeasurementConversion :one
+const getValidMeasurementUnitConversion = `-- name: GetValidMeasurementUnitConversion :one
 
 SELECT
 	valid_measurement_conversions.id,
@@ -2880,7 +2880,7 @@ WHERE valid_measurement_conversions.id = $1
   AND valid_measurement_units_to.archived_at IS NULL
 `
 
-type GetValidMeasurementConversionRow struct {
+type GetValidMeasurementUnitConversionRow struct {
 	CreatedAt_4                             time.Time
 	CreatedAt_2                             time.Time
 	CreatedAt                               time.Time
@@ -2953,9 +2953,9 @@ type GetValidMeasurementConversionRow struct {
 	Imperial_2                              bool
 }
 
-func (q *Queries) GetValidMeasurementConversion(ctx context.Context, db DBTX, id string) (*GetValidMeasurementConversionRow, error) {
-	row := db.QueryRowContext(ctx, getValidMeasurementConversion, id)
-	var i GetValidMeasurementConversionRow
+func (q *Queries) GetValidMeasurementUnitConversion(ctx context.Context, db DBTX, id string) (*GetValidMeasurementUnitConversionRow, error) {
+	row := db.QueryRowContext(ctx, getValidMeasurementUnitConversion, id)
+	var i GetValidMeasurementUnitConversionRow
 	err := row.Scan(
 		&i.ID,
 		&i.ID_2,

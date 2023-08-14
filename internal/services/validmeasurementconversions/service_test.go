@@ -19,16 +19,16 @@ import (
 
 func buildTestService() *service {
 	return &service{
-		logger:                                logging.NewNoopLogger(),
-		validMeasurementConversionDataManager: &mocktypes.ValidMeasurementConversionDataManagerMock{},
-		validMeasurementConversionIDFetcher:   func(req *http.Request) string { return "" },
-		validMeasurementUnitIDFetcher:         func(req *http.Request) string { return "" },
-		encoderDecoder:                        mockencoding.NewMockEncoderDecoder(),
-		tracer:                                tracing.NewTracerForTest("test"),
+		logger: logging.NewNoopLogger(),
+		validMeasurementUnitConversionDataManager: &mocktypes.ValidMeasurementUnitConversionDataManagerMock{},
+		validMeasurementUnitConversionIDFetcher:   func(req *http.Request) string { return "" },
+		validMeasurementUnitIDFetcher:             func(req *http.Request) string { return "" },
+		encoderDecoder:                            mockencoding.NewMockEncoderDecoder(),
+		tracer:                                    tracing.NewTracerForTest("test"),
 	}
 }
 
-func TestProvideValidMeasurementConversionsService(T *testing.T) {
+func TestProvideValidMeasurementUnitConversionsService(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -40,7 +40,7 @@ func TestProvideValidMeasurementConversionsService(T *testing.T) {
 		rpm := mockrouting.NewRouteParamManager()
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
-			ValidMeasurementConversionIDURIParamKey,
+			ValidMeasurementUnitConversionIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
@@ -58,7 +58,7 @@ func TestProvideValidMeasurementConversionsService(T *testing.T) {
 			ctx,
 			logger,
 			&cfg,
-			&mocktypes.ValidMeasurementConversionDataManagerMock{},
+			&mocktypes.ValidMeasurementUnitConversionDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			pp,
@@ -88,7 +88,7 @@ func TestProvideValidMeasurementConversionsService(T *testing.T) {
 			ctx,
 			logger,
 			&cfg,
-			&mocktypes.ValidMeasurementConversionDataManagerMock{},
+			&mocktypes.ValidMeasurementUnitConversionDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			nil,
 			pp,

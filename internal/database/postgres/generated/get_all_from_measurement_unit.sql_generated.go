@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const getAllValidMeasurementConversionsFromMeasurementUnit = `-- name: GetAllValidMeasurementConversionsFromMeasurementUnit :many
+const getAllValidMeasurementUnitConversionsFromMeasurementUnit = `-- name: GetAllValidMeasurementUnitConversionsFromMeasurementUnit :many
 
 SELECT
 	valid_measurement_conversions.id,
@@ -94,7 +94,7 @@ WHERE valid_measurement_conversions.archived_at IS NULL
   AND valid_measurement_units_to.archived_at IS NULL
 `
 
-type GetAllValidMeasurementConversionsFromMeasurementUnitRow struct {
+type GetAllValidMeasurementUnitConversionsFromMeasurementUnitRow struct {
 	CreatedAt_4                             time.Time
 	CreatedAt_2                             time.Time
 	CreatedAt                               time.Time
@@ -167,15 +167,15 @@ type GetAllValidMeasurementConversionsFromMeasurementUnitRow struct {
 	Imperial_2                              bool
 }
 
-func (q *Queries) GetAllValidMeasurementConversionsFromMeasurementUnit(ctx context.Context, db DBTX, id string) ([]*GetAllValidMeasurementConversionsFromMeasurementUnitRow, error) {
-	rows, err := db.QueryContext(ctx, getAllValidMeasurementConversionsFromMeasurementUnit, id)
+func (q *Queries) GetAllValidMeasurementUnitConversionsFromMeasurementUnit(ctx context.Context, db DBTX, id string) ([]*GetAllValidMeasurementUnitConversionsFromMeasurementUnitRow, error) {
+	rows, err := db.QueryContext(ctx, getAllValidMeasurementUnitConversionsFromMeasurementUnit, id)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []*GetAllValidMeasurementConversionsFromMeasurementUnitRow{}
+	items := []*GetAllValidMeasurementUnitConversionsFromMeasurementUnitRow{}
 	for rows.Next() {
-		var i GetAllValidMeasurementConversionsFromMeasurementUnitRow
+		var i GetAllValidMeasurementUnitConversionsFromMeasurementUnitRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.ID_2,

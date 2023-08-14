@@ -49,7 +49,7 @@ var (
 			"MealPlanTasks",
 			"RecipePrepTasks",
 			"MealPlanGroceryListItems",
-			"ValidMeasurementConversions",
+			"ValidMeasurementUnitConversions",
 			"ValidIngredientStates",
 			"ValidIngredientGroups",
 			"RecipeStepCompletionConditions",

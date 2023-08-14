@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -204,9 +205,6 @@ func (q *Querier) scanValidPreparationVessels(ctx context.Context, rows database
 	return validPreparationVessels, filteredCount, totalCount, nil
 }
 
-//go:embed queries/valid_preparation_vessels/exists.sql
-var validPreparationVesselExistenceQuery string
-
 // ValidPreparationVesselExists fetches whether a valid preparation vessel exists from the database.
 func (q *Querier) ValidPreparationVesselExists(ctx context.Context, validPreparationVesselID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -217,16 +215,12 @@ func (q *Querier) ValidPreparationVesselExists(ctx context.Context, validPrepara
 	}
 	tracing.AttachValidPreparationVesselIDToSpan(span, validPreparationVesselID)
 
-	args := []any{
-		validPreparationVesselID,
-	}
-
-	result, err := q.performBooleanQuery(ctx, q.db, validPreparationVesselExistenceQuery, args)
+	exists, err = q.generatedQuerier.CheckValidPreparationVesselExistence(ctx, q.db, validPreparationVesselID)
 	if err != nil {
 		return false, observability.PrepareError(err, span, "performing valid preparation vessel existence check")
 	}
 
-	return result, nil
+	return exists, nil
 }
 
 //go:embed queries/valid_preparation_vessels/get_one.sql
@@ -261,18 +255,14 @@ func (q *Querier) GetValidPreparationVessels(ctx context.Context, filter *types.
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	x = &types.QueryFilteredResult[types.ValidPreparationVessel]{}
-	tracing.AttachQueryFilterToSpan(span, filter)
-
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
-
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
 	}
+
+	x = &types.QueryFilteredResult[types.ValidPreparationVessel]{
+		Pagination: filter.ToPagination(),
+	}
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	joins := []string{
 		validInstrumentsOnValidPreparationVesselsJoinClause,
@@ -334,22 +324,14 @@ func (q *Querier) GetValidPreparationVesselsForPreparation(ctx context.Context, 
 	}
 	tracing.AttachValidPreparationVesselIDToSpan(span, preparationID)
 
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+
 	x = &types.QueryFilteredResult[types.ValidPreparationVessel]{
-		Pagination: types.Pagination{
-			Limit: 20,
-		},
+		Pagination: filter.ToPagination(),
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
-
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
-
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
-	}
 
 	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
 	query, args := q.buildGetValidPreparationVesselsWithPreparationIDsQuery(ctx, x.Limit, []string{preparationID})
@@ -380,22 +362,14 @@ func (q *Querier) GetValidPreparationVesselsForVessel(ctx context.Context, vesse
 	}
 	tracing.AttachValidVesselIDToSpan(span, vesselID)
 
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+
 	x = &types.QueryFilteredResult[types.ValidPreparationVessel]{
-		Pagination: types.Pagination{
-			Limit: 20,
-		},
+		Pagination: filter.ToPagination(),
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
-
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
-
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
-	}
 
 	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
 	query, args := q.buildGetValidPreparationVesselsWithVesselIDsQuery(ctx, x.Limit, []string{vesselID})
@@ -414,9 +388,6 @@ func (q *Querier) GetValidPreparationVesselsForVessel(ctx context.Context, vesse
 	return x, nil
 }
 
-//go:embed queries/valid_preparation_vessels/create.sql
-var validPreparationVesselCreationQuery string
-
 // CreateValidPreparationVessel creates a valid preparation vessel in the database.
 func (q *Querier) CreateValidPreparationVessel(ctx context.Context, input *types.ValidPreparationVesselDatabaseCreationInput) (*types.ValidPreparationVessel, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -425,18 +396,16 @@ func (q *Querier) CreateValidPreparationVessel(ctx context.Context, input *types
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-
 	logger := q.logger.WithValue(keys.ValidPreparationVesselIDKey, input.ID)
-
-	args := []any{
-		input.ID,
-		input.Notes,
-		input.ValidPreparationID,
-		input.ValidVesselID,
-	}
+	tracing.AttachValidPreparationVesselIDToSpan(span, input.ID)
 
 	// create the valid preparation vessel.
-	if err := q.performWriteQuery(ctx, q.db, "valid preparation vessel creation", validPreparationVesselCreationQuery, args); err != nil {
+	if err := q.generatedQuerier.CreateValidPreparationVessel(ctx, q.db, &generated.CreateValidPreparationVesselParams{
+		ID:                 input.ID,
+		Notes:              input.Notes,
+		ValidPreparationID: input.ValidPreparationID,
+		ValidVesselID:      input.ValidVesselID,
+	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing valid preparation vessel creation query")
 	}
 
@@ -448,14 +417,10 @@ func (q *Querier) CreateValidPreparationVessel(ctx context.Context, input *types
 		CreatedAt:   q.currentTime(),
 	}
 
-	tracing.AttachValidPreparationVesselIDToSpan(span, x.ID)
 	logger.Info("valid preparation vessel created")
 
 	return x, nil
 }
-
-//go:embed queries/valid_preparation_vessels/update.sql
-var updateValidPreparationVesselQuery string
 
 // UpdateValidPreparationVessel updates a particular valid preparation vessel.
 func (q *Querier) UpdateValidPreparationVessel(ctx context.Context, updated *types.ValidPreparationVessel) error {
@@ -465,18 +430,15 @@ func (q *Querier) UpdateValidPreparationVessel(ctx context.Context, updated *typ
 	if updated == nil {
 		return ErrNilInputProvided
 	}
-
 	logger := q.logger.WithValue(keys.ValidPreparationVesselIDKey, updated.ID)
 	tracing.AttachValidPreparationVesselIDToSpan(span, updated.ID)
 
-	args := []any{
-		updated.Notes,
-		updated.Preparation.ID,
-		updated.Vessel.ID,
-		updated.ID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "valid preparation vessel update", updateValidPreparationVesselQuery, args); err != nil {
+	if err := q.generatedQuerier.UpdateValidPreparationVessel(ctx, q.db, &generated.UpdateValidPreparationVesselParams{
+		Notes:              updated.Notes,
+		ValidPreparationID: updated.Preparation.ID,
+		ValidVesselID:      updated.Vessel.ID,
+		ID:                 updated.ID,
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation vessel")
 	}
 
