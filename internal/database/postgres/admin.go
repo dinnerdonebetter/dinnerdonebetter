@@ -18,6 +18,10 @@ func (q *Querier) UpdateUserAccountStatus(ctx context.Context, userID string, in
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if userID == "" {
+		return ErrInvalidIDProvided
+	}
+
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachUserIDToSpan(span, userID)
 

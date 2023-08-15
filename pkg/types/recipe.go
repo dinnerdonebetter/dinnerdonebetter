@@ -29,7 +29,8 @@ func init() {
 type (
 	// Recipe represents a recipe.
 	Recipe struct {
-		_                        struct{}
+		_ struct{}
+
 		CreatedAt                time.Time         `json:"createdAt"`
 		InspiredByRecipeID       *string           `json:"inspiredByRecipeID"`
 		LastUpdatedAt            *time.Time        `json:"lastUpdatedAt"`

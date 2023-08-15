@@ -983,8 +983,8 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 
 		exampleRecipe := fakes.BuildFakeRecipe()
 		exampleRecipe.ID = "1"
-		exampleRecipe.Media = nil
-		exampleRecipe.SupportingRecipes = nil
+		exampleRecipe.Media = []*types.RecipeMedia{}
+		exampleRecipe.SupportingRecipes = []*types.Recipe{}
 		for i, step := range exampleRecipe.Steps {
 			exampleRecipe.Steps[i].ID = "2"
 			exampleRecipe.Steps[i].BelongsToRecipe = "1"

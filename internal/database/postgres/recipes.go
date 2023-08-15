@@ -546,6 +546,10 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 		PluralPortionName:        input.PluralPortionName,
 		YieldsComponentType:      input.YieldsComponentType,
 		CreatedAt:                q.currentTime(),
+		PrepTasks:                []*types.RecipePrepTask{},
+		Steps:                    []*types.RecipeStep{},
+		Media:                    []*types.RecipeMedia{},
+		SupportingRecipes:        []*types.Recipe{},
 	}
 
 	findCreatedRecipeStepProductsForIngredients(input)
