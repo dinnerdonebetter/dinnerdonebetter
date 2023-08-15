@@ -1247,10 +1247,10 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 		t.Parallel()
 
 		exampleRecipe := fakes.BuildFakeRecipe()
-		exampleRecipe.Steps = nil
-		exampleRecipe.PrepTasks = nil
-		exampleRecipe.Media = nil
-		exampleRecipe.SupportingRecipes = nil
+		exampleRecipe.Steps = []*types.RecipeStep{}
+		exampleRecipe.PrepTasks = []*types.RecipePrepTask{}
+		exampleRecipe.Media = []*types.RecipeMedia{}
+		exampleRecipe.SupportingRecipes = []*types.Recipe{}
 		exampleRecipe.ID = "1"
 
 		exampleInput := converters.ConvertRecipeToRecipeDatabaseCreationInput(exampleRecipe)
