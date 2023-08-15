@@ -257,17 +257,25 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID, userID string) (*type
 		return nil, sql.ErrNoRows
 	}
 
+	x.PrepTasks = []*types.RecipePrepTask{}
+	x.SupportingRecipes = []*types.Recipe{}
+	x.Media = []*types.RecipeMedia{}
+
 	prepTasks, err := q.getRecipePrepTasksForRecipe(ctx, recipeID)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "fetching recipe step prep tasks for recipe")
 	}
-	x.PrepTasks = prepTasks
+	if prepTasks != nil {
+		x.PrepTasks = prepTasks
+	}
 
 	recipeMedia, err := q.getRecipeMediaForRecipe(ctx, recipeID)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "fetching recipe step ingredients for recipe")
 	}
-	x.Media = recipeMedia
+	if recipeMedia != nil {
+		x.Media = recipeMedia
+	}
 
 	ingredients, err := q.getRecipeStepIngredientsForRecipe(ctx, recipeID)
 	if err != nil {
@@ -499,8 +507,8 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-
 	logger := q.logger.WithValue(keys.RecipeIDKey, input.ID)
+	tracing.AttachRecipeIDToSpan(span, input.ID)
 
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -560,20 +568,22 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 		stepInput.Index = uint32(i)
 		stepInput.BelongsToRecipe = x.ID
 
-		s, createErr := q.createRecipeStep(ctx, tx, stepInput)
-		if createErr != nil {
+		var s *types.RecipeStep
+		s, err = q.createRecipeStep(ctx, tx, stepInput)
+		if err != nil {
 			q.rollbackTransaction(ctx, tx)
-			return nil, observability.PrepareError(createErr, span, "creating recipe step #%d", i+1)
+			return nil, observability.PrepareError(err, span, "creating recipe step #%d", i+1)
 		}
 
 		x.Steps = append(x.Steps, s)
 	}
 
 	for i, prepTaskInput := range input.PrepTasks {
-		pt, createPrepTaskErr := q.createRecipePrepTask(ctx, tx, prepTaskInput)
-		if createPrepTaskErr != nil {
+		var pt *types.RecipePrepTask
+		pt, err = q.createRecipePrepTask(ctx, tx, prepTaskInput)
+		if err != nil {
 			q.rollbackTransaction(ctx, tx)
-			return nil, observability.PrepareError(createPrepTaskErr, span, "creating recipe prep task #%d", i+1)
+			return nil, observability.PrepareError(err, span, "creating recipe prep task #%d", i+1)
 		}
 
 		x.PrepTasks = append(x.PrepTasks, pt)
@@ -607,7 +617,6 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 		return nil, observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
-	tracing.AttachRecipeIDToSpan(span, x.ID)
 	logger.Info("recipe created")
 
 	return x, nil
