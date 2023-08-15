@@ -222,18 +222,14 @@ func (q *Querier) GetMeals(ctx context.Context, filter *types.QueryFilter) (x *t
 
 	logger := q.logger.Clone()
 
-	x = &types.QueryFilteredResult[types.Meal]{}
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
-
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
+	x = &types.QueryFilteredResult[types.Meal]{
+		Pagination: filter.ToPagination(),
 	}
 
 	query, args := q.buildListQuery(ctx, "meals", nil, nil, nil, "", mealsTableColumns, "", false, filter)
@@ -293,18 +289,14 @@ func (q *Querier) SearchForMeals(ctx context.Context, mealNameQuery string, filt
 
 	logger := q.logger.Clone()
 
-	x = &types.QueryFilteredResult[types.Meal]{}
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
-
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
+	x = &types.QueryFilteredResult[types.Meal]{
+		Pagination: filter.ToPagination(),
 	}
 
 	where := squirrel.ILike{"name": wrapQueryForILIKE(mealNameQuery)}

@@ -196,17 +196,16 @@ func (q *Querier) GetMealPlans(ctx context.Context, householdID string, filter *
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	x = &types.QueryFilteredResult[types.MealPlan]{}
+	logger := q.logger.Clone()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
-
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
+	x = &types.QueryFilteredResult[types.MealPlan]{
+		Pagination: filter.ToPagination(),
 	}
 
 	query, args := q.buildListQuery(ctx, "meal_plans", nil, nil, nil, householdOwnershipColumn, mealPlansTableColumns, householdID, false, filter)
@@ -217,7 +216,7 @@ func (q *Querier) GetMealPlans(ctx context.Context, householdID string, filter *
 	}
 
 	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanMealPlans(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning meal plans")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal plans")
 	}
 
 	fullMealPlans := []*types.MealPlan{}

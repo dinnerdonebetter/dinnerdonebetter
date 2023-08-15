@@ -271,18 +271,14 @@ func (q *Querier) GetValidIngredientPreparations(ctx context.Context, filter *ty
 
 	logger := q.logger.Clone()
 
-	x = &types.QueryFilteredResult[types.ValidIngredientPreparation]{}
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
-
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
+	x = &types.QueryFilteredResult[types.ValidIngredientPreparation]{
+		Pagination: filter.ToPagination(),
 	}
 
 	joins := []string{
@@ -326,23 +322,14 @@ func (q *Querier) GetValidIngredientPreparationsForPreparation(ctx context.Conte
 	logger = logger.WithValue(keys.ValidPreparationIDKey, preparationID)
 	tracing.AttachValidIngredientPreparationIDToSpan(span, preparationID)
 
-	x = &types.QueryFilteredResult[types.ValidIngredientPreparation]{}
-
 	if filter == nil {
 		filter = types.DefaultQueryFilter()
 	}
-
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
-
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
+	x = &types.QueryFilteredResult[types.ValidIngredientPreparation]{
+		Pagination: filter.ToPagination(),
 	}
 
 	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
@@ -376,22 +363,14 @@ func (q *Querier) GetValidIngredientPreparationsForIngredient(ctx context.Contex
 	logger = logger.WithValue(keys.ValidIngredientIDKey, ingredientID)
 	tracing.AttachValidIngredientPreparationIDToSpan(span, ingredientID)
 
-	x = &types.QueryFilteredResult[types.ValidIngredientPreparation]{
-		Pagination: types.Pagination{},
-	}
-
 	if filter == nil {
 		filter = types.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if filter.Page != nil {
-		x.Page = *filter.Page
-	}
-
-	if filter.Limit != nil {
-		x.Limit = *filter.Limit
+	x = &types.QueryFilteredResult[types.ValidIngredientPreparation]{
+		Pagination: filter.ToPagination(),
 	}
 
 	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?

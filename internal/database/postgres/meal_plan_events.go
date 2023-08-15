@@ -214,24 +214,21 @@ func (q *Querier) GetMealPlanEvents(ctx context.Context, mealPlanID string, filt
 
 	logger := q.logger.Clone()
 
-	x = &types.QueryFilteredResult[types.MealPlanEvent]{}
-	logger = filter.AttachToLogger(logger)
-	tracing.AttachQueryFilterToSpan(span, filter)
-
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
-
 	if filter == nil {
 		filter = types.DefaultQueryFilter()
 	}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if filter.Page != nil {
-		x.Page = *filter.Page
+	x = &types.QueryFilteredResult[types.MealPlanEvent]{
+		Pagination: filter.ToPagination(),
 	}
 
-	if filter.Limit != nil {
-		x.Limit = *filter.Limit
+	if mealPlanID == "" {
+		return nil, ErrInvalidIDProvided
 	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
 	query, args := q.buildListQuery(ctx, "meal_plan_events", nil, nil, nil, "", mealPlanEventsTableColumns, "", false, filter)
 

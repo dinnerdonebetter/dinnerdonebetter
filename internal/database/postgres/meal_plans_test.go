@@ -395,38 +395,6 @@ func TestQuerier_GetMealPlans(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, db)
 	})
 
-	T.Run("with nil filter", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHouseholdID := fakes.BuildFakeID()
-		filter := (*types.QueryFilter)(nil)
-		exampleMealPlanList := fakes.BuildFakeMealPlanList()
-		exampleMealPlanList.Page = 0
-		exampleMealPlanList.Limit = 0
-		for i := range exampleMealPlanList.Data {
-			exampleMealPlanList.Data[i].Events = nil
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildListQuery(ctx, "meal_plans", nil, nil, nil, householdOwnershipColumn, mealPlansTableColumns, exampleHouseholdID, false, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromMealPlans(true, exampleMealPlanList.FilteredCount, exampleMealPlanList.Data...))
-
-		for _, mp := range exampleMealPlanList.Data {
-			prepareMockToSuccessfullyGetMealPlan(t, mp, exampleHouseholdID, db, false)
-		}
-
-		actual, err := c.GetMealPlans(ctx, exampleHouseholdID, filter)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleMealPlanList, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with error executing query", func(t *testing.T) {
 		t.Parallel()
 

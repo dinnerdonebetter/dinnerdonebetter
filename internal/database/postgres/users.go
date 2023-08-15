@@ -292,10 +292,17 @@ func (q *Querier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x *t
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := q.logger.Clone()
+
 	if filter == nil {
 		filter = types.DefaultQueryFilter()
 	}
 	tracing.AttachQueryFilterToSpan(span, filter)
+	filter.AttachToLogger(logger)
+
+	x = &types.QueryFilteredResult[types.User]{
+		Pagination: filter.ToPagination(),
+	}
 
 	results, err := q.generatedQuerier.GetUsers(ctx, q.db, &generated.GetUsersParams{
 		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
@@ -307,10 +314,6 @@ func (q *Querier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x *t
 	})
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "scanning user")
-	}
-
-	x = &types.QueryFilteredResult[types.User]{
-		Pagination: filter.ToPagination(),
 	}
 
 	for _, result := range results {

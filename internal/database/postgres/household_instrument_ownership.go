@@ -189,27 +189,21 @@ func (q *Querier) GetHouseholdInstrumentOwnerships(ctx context.Context, househol
 
 	logger := q.logger.Clone()
 
-	x = &types.QueryFilteredResult[types.HouseholdInstrumentOwnership]{}
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
+
+	x = &types.QueryFilteredResult[types.HouseholdInstrumentOwnership]{
+		Pagination: filter.ToPagination(),
+	}
 
 	if householdID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
-
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
-
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
-	} else {
-		filter = types.DefaultQueryFilter()
-	}
 
 	query, args := q.buildListQuery(ctx, "household_instrument_ownerships", []string{"valid_instruments ON valid_instruments.id = household_instrument_ownerships.valid_instrument_id"}, []string{"household_instrument_ownerships.id", "valid_instruments.id"}, nil, householdOwnershipColumn, householdInstrumentOwnershipsTableColumns, householdID, false, filter)
 

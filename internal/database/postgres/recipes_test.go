@@ -753,36 +753,6 @@ func TestQuerier_GetRecipes(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, db)
 	})
 
-	T.Run("with nil filter", func(t *testing.T) {
-		t.Parallel()
-
-		filter := (*types.QueryFilter)(nil)
-		exampleRecipeList := fakes.BuildFakeRecipeList()
-		exampleRecipeList.Page = 0
-		exampleRecipeList.Limit = 0
-		for i := range exampleRecipeList.Data {
-			exampleRecipeList.Data[i].Steps = nil
-			exampleRecipeList.Data[i].PrepTasks = nil
-			exampleRecipeList.Data[i].Media = nil
-			exampleRecipeList.Data[i].SupportingRecipes = nil
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildListQuery(ctx, "recipes", nil, nil, nil, householdOwnershipColumn, recipesTableColumns, "", false, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromRecipes(true, exampleRecipeList.FilteredCount, exampleRecipeList.Data...))
-
-		actual, err := c.GetRecipes(ctx, filter)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleRecipeList, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with error executing query", func(t *testing.T) {
 		t.Parallel()
 

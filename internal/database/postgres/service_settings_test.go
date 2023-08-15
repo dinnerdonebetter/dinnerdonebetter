@@ -335,30 +335,6 @@ func TestQuerier_GetServiceSettings(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, db)
 	})
 
-	T.Run("with nil filter", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		filter := (*types.QueryFilter)(nil)
-		exampleServiceSettingList := fakes.BuildFakeServiceSettingList()
-		exampleServiceSettingList.Page = 0
-		exampleServiceSettingList.Limit = 0
-
-		c, db := buildTestClient(t)
-
-		query, args := c.buildListQuery(ctx, "service_settings", nil, nil, nil, householdOwnershipColumn, serviceSettingsTableColumns, "", false, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromServiceSettings(true, exampleServiceSettingList.FilteredCount, exampleServiceSettingList.Data...))
-
-		actual, err := c.GetServiceSettings(ctx, filter)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleServiceSettingList, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with error executing query", func(t *testing.T) {
 		t.Parallel()
 

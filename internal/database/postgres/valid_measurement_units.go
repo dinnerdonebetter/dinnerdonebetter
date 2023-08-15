@@ -295,18 +295,14 @@ func (q *Querier) GetValidMeasurementUnits(ctx context.Context, filter *types.Qu
 
 	logger := q.logger.Clone()
 
-	x = &types.QueryFilteredResult[types.ValidMeasurementUnit]{}
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
-
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
+	x = &types.QueryFilteredResult[types.ValidMeasurementUnit]{
+		Pagination: filter.ToPagination(),
 	}
 
 	query, args := q.buildListQuery(ctx, validMeasurementUnitsTable, nil, nil, nil, householdOwnershipColumn, validMeasurementUnitsTableColumns, "", false, filter)

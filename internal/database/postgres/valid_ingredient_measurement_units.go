@@ -290,22 +290,14 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Co
 	logger = logger.WithValue(keys.ValidIngredientIDKey, ingredientID)
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, ingredientID)
 
-	x = &types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]{
-		Pagination: types.Pagination{
-			Limit: 20,
-		},
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
-
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
+	x = &types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]{
+		Pagination: filter.ToPagination(),
 	}
 
 	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
@@ -340,25 +332,14 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx conte
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, validMeasurementUnitID)
 
-	x = &types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]{
-		Pagination: types.Pagination{
-			Limit: 20,
-		},
-	}
-
 	if filter == nil {
 		filter = types.DefaultQueryFilter()
 	}
-
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if filter.Page != nil {
-		x.Page = *filter.Page
-	}
-
-	if filter.Limit != nil {
-		x.Limit = *filter.Limit
+	x = &types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]{
+		Pagination: filter.ToPagination(),
 	}
 
 	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?

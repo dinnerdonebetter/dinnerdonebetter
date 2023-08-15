@@ -149,16 +149,16 @@ func (q *Querier) GetOAuth2Clients(ctx context.Context, filter *types.QueryFilte
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	tracing.AttachQueryFilterToSpan(span, filter)
-	x = &types.QueryFilteredResult[types.OAuth2Client]{}
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
+	logger := q.logger.Clone()
 
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
+
+	x = &types.QueryFilteredResult[types.OAuth2Client]{
+		Pagination: filter.ToPagination(),
 	}
 
 	query, args := q.buildListQuery(ctx, "oauth2_clients", nil, nil, nil, userOwnershipColumn, oauth2ClientsTableColumns, "", false, filter)
@@ -169,7 +169,7 @@ func (q *Querier) GetOAuth2Clients(ctx context.Context, filter *types.QueryFilte
 			return nil, err
 		}
 
-		return nil, observability.PrepareError(err, span, "querying for OAuth2 clients")
+		return nil, observability.PrepareAndLogError(err, logger, span, "querying for OAuth2 clients")
 	}
 
 	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanOAuth2Clients(ctx, rows, true); err != nil {

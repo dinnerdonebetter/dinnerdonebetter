@@ -195,18 +195,14 @@ func (q *Querier) GetValidIngredientStates(ctx context.Context, filter *types.Qu
 
 	logger := q.logger.Clone()
 
-	x = &types.QueryFilteredResult[types.ValidIngredientState]{}
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
-
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
+	x = &types.QueryFilteredResult[types.ValidIngredientState]{
+		Pagination: filter.ToPagination(),
 	}
 
 	query, args := q.buildListQuery(ctx, validIngredientStatesTable, nil, nil, nil, householdOwnershipColumn, validIngredientStatesTableColumns, "", false, filter)

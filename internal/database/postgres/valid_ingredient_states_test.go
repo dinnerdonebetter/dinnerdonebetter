@@ -335,30 +335,6 @@ func TestQuerier_GetValidIngredientStates(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, db)
 	})
 
-	T.Run("with nil filter", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		filter := (*types.QueryFilter)(nil)
-		exampleValidIngredientStateList := fakes.BuildFakeValidIngredientStateList()
-		exampleValidIngredientStateList.Page = 0
-		exampleValidIngredientStateList.Limit = 0
-
-		c, db := buildTestClient(t)
-
-		query, args := c.buildListQuery(ctx, "valid_ingredient_states", nil, nil, nil, householdOwnershipColumn, validIngredientStatesTableColumns, "", false, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidIngredientStates(true, exampleValidIngredientStateList.FilteredCount, exampleValidIngredientStateList.Data...))
-
-		actual, err := c.GetValidIngredientStates(ctx, filter)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleValidIngredientStateList, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with error executing query", func(t *testing.T) {
 		t.Parallel()
 

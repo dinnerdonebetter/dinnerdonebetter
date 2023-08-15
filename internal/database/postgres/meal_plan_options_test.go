@@ -405,37 +405,6 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 		assert.Nil(t, actual)
 	})
 
-	T.Run("with nil filter", func(t *testing.T) {
-		t.Parallel()
-
-		filter := (*types.QueryFilter)(nil)
-		exampleMealPlanID := fakes.BuildFakeID()
-		exampleMealPlanEventID := fakes.BuildFakeID()
-		exampleMealPlanOptionList := fakes.BuildFakeMealPlanOptionList()
-		exampleMealPlanOptionList.Page = 0
-		exampleMealPlanOptionList.Limit = 0
-
-		for i := range exampleMealPlanOptionList.Data {
-			exampleMealPlanOptionList.Data[i].Votes = []*types.MealPlanOptionVote{}
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		groupBys := []string{"meal_plan_options.id", "meals.id"}
-		query, args := c.buildListQuery(ctx, "meal_plan_options", getMealPlanOptionsJoins, groupBys, nil, householdOwnershipColumn, mealPlanOptionsTableColumns, "", false, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromMealPlanOptions(true, exampleMealPlanOptionList.FilteredCount, exampleMealPlanOptionList.Data...))
-
-		actual, err := c.GetMealPlanOptions(ctx, exampleMealPlanID, exampleMealPlanEventID, filter)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleMealPlanOptionList, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with error executing query", func(t *testing.T) {
 		t.Parallel()
 

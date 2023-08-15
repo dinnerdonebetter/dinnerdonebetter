@@ -249,18 +249,14 @@ func (q *Querier) GetUserIngredientPreferences(ctx context.Context, userID strin
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachUserIDToSpan(span, userID)
 
-	x = &types.QueryFilteredResult[types.UserIngredientPreference]{}
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
-
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
+	x = &types.QueryFilteredResult[types.UserIngredientPreference]{
+		Pagination: filter.ToPagination(),
 	}
 
 	query, args := q.buildListQuery(ctx, "user_ingredient_preferences", []string{validIngredientsOnUserIngredientPreferencesJoin}, []string{"user_ingredient_preferences.id", "valid_ingredients.id"}, nil, userOwnershipColumn, userIngredientPreferencesTableColumns, userID, false, filter)
@@ -276,9 +272,6 @@ func (q *Querier) GetUserIngredientPreferences(ctx context.Context, userID strin
 
 	return x, nil
 }
-
-//go:embed queries/user_ingredient_preferences/create.sql
-var userIngredientPreferenceCreationQuery string
 
 // CreateUserIngredientPreference creates a user ingredient preference in the database.
 func (q *Querier) CreateUserIngredientPreference(ctx context.Context, input *types.UserIngredientPreferenceDatabaseCreationInput) ([]*types.UserIngredientPreference, error) {

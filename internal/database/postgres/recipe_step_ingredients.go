@@ -407,9 +407,15 @@ func (q *Querier) GetRecipeStepIngredients(ctx context.Context, recipeID, recipe
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
-	x = &types.QueryFilteredResult[types.RecipeStepIngredient]{}
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
+
+	x = &types.QueryFilteredResult[types.RecipeStepIngredient]{
+		Pagination: filter.ToPagination(),
+	}
 
 	if filter != nil {
 		if filter.Page != nil {

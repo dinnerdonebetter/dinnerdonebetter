@@ -255,9 +255,13 @@ func (q *Querier) GetValidPreparationVessels(ctx context.Context, filter *types.
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := q.logger.Clone()
+
 	if filter == nil {
 		filter = types.DefaultQueryFilter()
 	}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	x = &types.QueryFilteredResult[types.ValidPreparationVessel]{
 		Pagination: filter.ToPagination(),
@@ -279,7 +283,7 @@ func (q *Querier) GetValidPreparationVessels(ctx context.Context, filter *types.
 
 	rows, err := q.getRows(ctx, q.db, "valid preparation instruments", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing valid preparation vessels list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparation vessels list retrieval query")
 	}
 
 	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidPreparationVessels(ctx, rows, true); err != nil {
@@ -319,14 +323,19 @@ func (q *Querier) GetValidPreparationVesselsForPreparation(ctx context.Context, 
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := q.logger.Clone()
+
 	if preparationID == "" {
 		return nil, ErrInvalidIDProvided
 	}
+	logger = logger.WithValue(keys.ValidPreparationIDKey, preparationID)
 	tracing.AttachValidPreparationVesselIDToSpan(span, preparationID)
 
 	if filter == nil {
 		filter = types.DefaultQueryFilter()
 	}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	x = &types.QueryFilteredResult[types.ValidPreparationVessel]{
 		Pagination: filter.ToPagination(),
@@ -338,7 +347,7 @@ func (q *Querier) GetValidPreparationVesselsForPreparation(ctx context.Context, 
 
 	rows, err := q.getRows(ctx, q.db, "valid preparation instruments for preparation", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing valid preparation vessels list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparation vessels list retrieval query")
 	}
 
 	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidPreparationVessels(ctx, rows, false); err != nil {
@@ -357,14 +366,19 @@ func (q *Querier) GetValidPreparationVesselsForVessel(ctx context.Context, vesse
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := q.logger.Clone()
+
 	if vesselID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	tracing.AttachValidVesselIDToSpan(span, vesselID)
+	logger = logger.WithValue(keys.ValidVesselIDKey, vesselID)
 
 	if filter == nil {
 		filter = types.DefaultQueryFilter()
 	}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	x = &types.QueryFilteredResult[types.ValidPreparationVessel]{
 		Pagination: filter.ToPagination(),
@@ -378,7 +392,7 @@ func (q *Querier) GetValidPreparationVesselsForVessel(ctx context.Context, vesse
 
 	rows, err := q.getRows(ctx, q.db, "valid preparation instruments for instrument", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing valid preparation vessels list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparation vessels list retrieval query")
 	}
 
 	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidPreparationVessels(ctx, rows, false); err != nil {

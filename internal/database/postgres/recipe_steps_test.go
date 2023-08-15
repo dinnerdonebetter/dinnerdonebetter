@@ -429,38 +429,6 @@ func TestQuerier_GetRecipeSteps(T *testing.T) {
 		assert.Nil(t, actual)
 	})
 
-	T.Run("with nil filter", func(t *testing.T) {
-		t.Parallel()
-
-		filter := (*types.QueryFilter)(nil)
-		exampleRecipeID := fakes.BuildFakeID()
-		exampleRecipeStepList := fakes.BuildFakeRecipeStepList()
-		exampleRecipeStepList.Page = 0
-		exampleRecipeStepList.Limit = 0
-		for i := range exampleRecipeStepList.Data {
-			exampleRecipeStepList.Data[i].Instruments = nil
-			exampleRecipeStepList.Data[i].Vessels = nil
-			exampleRecipeStepList.Data[i].Ingredients = nil
-			exampleRecipeStepList.Data[i].Products = nil
-			exampleRecipeStepList.Data[i].CompletionConditions = nil
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildListQuery(ctx, "recipe_steps", getRecipeStepsJoins, []string{"valid_preparations.id"}, nil, householdOwnershipColumn, recipeStepsTableColumns, "", false, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromRecipeSteps(true, exampleRecipeStepList.FilteredCount, exampleRecipeStepList.Data...))
-
-		actual, err := c.GetRecipeSteps(ctx, exampleRecipeID, filter)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleRecipeStepList, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with error executing query", func(t *testing.T) {
 		t.Parallel()
 

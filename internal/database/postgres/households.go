@@ -317,22 +317,21 @@ func (q *Querier) getHouseholdsForUser(ctx context.Context, querier database.SQL
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := q.logger.Clone()
+
 	if userID == "" && !forAdmin {
 		return nil, ErrInvalidIDProvided
 	}
-
-	tracing.AttachQueryFilterToSpan(span, filter)
 	tracing.AttachUserIDToSpan(span, userID)
 
-	x = &types.QueryFilteredResult[types.Household]{}
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
+	x = &types.QueryFilteredResult[types.Household]{
+		Pagination: filter.ToPagination(),
 	}
 
 	query, args := q.buildGetHouseholdsQuery(ctx, userID, forAdmin, filter)
@@ -343,7 +342,7 @@ func (q *Querier) getHouseholdsForUser(ctx context.Context, querier database.SQL
 	}
 
 	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanHouseholds(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning households from database")
+		return nil, observability.PrepareAndLogError(err, logger, span, "scanning households from database")
 	}
 
 	return x, nil

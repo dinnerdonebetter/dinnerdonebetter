@@ -214,17 +214,16 @@ func (q *Querier) GetValidPreparationInstruments(ctx context.Context, filter *ty
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	x = &types.QueryFilteredResult[types.ValidPreparationInstrument]{}
+	logger := q.logger.Clone()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
-
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
+	x = &types.QueryFilteredResult[types.ValidPreparationInstrument]{
+		Pagination: filter.ToPagination(),
 	}
 
 	joins := []string{
@@ -242,7 +241,7 @@ func (q *Querier) GetValidPreparationInstruments(ctx context.Context, filter *ty
 
 	rows, err := q.getRows(ctx, q.db, "valid preparation instruments", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing valid preparation instruments list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparation instruments list retrieval query")
 	}
 
 	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidPreparationInstruments(ctx, rows, true); err != nil {
@@ -281,26 +280,21 @@ func (q *Querier) GetValidPreparationInstrumentsForPreparation(ctx context.Conte
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := q.logger.Clone()
+
 	if preparationID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, preparationID)
 
-	x = &types.QueryFilteredResult[types.ValidPreparationInstrument]{
-		Pagination: types.Pagination{
-			Limit: 20,
-		},
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
 	}
+	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
-
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
+	x = &types.QueryFilteredResult[types.ValidPreparationInstrument]{
+		Pagination: filter.ToPagination(),
 	}
 
 	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
@@ -308,7 +302,7 @@ func (q *Querier) GetValidPreparationInstrumentsForPreparation(ctx context.Conte
 
 	rows, err := q.getRows(ctx, q.db, "valid preparation instruments for preparation", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing valid preparation instruments list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparation instruments list retrieval query")
 	}
 
 	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidPreparationInstruments(ctx, rows, false); err != nil {
@@ -327,34 +321,30 @@ func (q *Querier) GetValidPreparationInstrumentsForInstrument(ctx context.Contex
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := q.logger.Clone()
+
 	if instrumentID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, instrumentID)
 
-	x = &types.QueryFilteredResult[types.ValidPreparationInstrument]{
-		Pagination: types.Pagination{
-			Limit: 20,
-		},
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
 	}
+	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
-
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
+	x = &types.QueryFilteredResult[types.ValidPreparationInstrument]{
+		Pagination: filter.ToPagination(),
 	}
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
 	query, args := q.buildGetValidPreparationInstrumentsWithInstrumentIDsQuery(ctx, x.Limit, []string{instrumentID})
 
 	rows, err := q.getRows(ctx, q.db, "valid preparation instruments for instrument", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing valid preparation instruments list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparation instruments list retrieval query")
 	}
 
 	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidPreparationInstruments(ctx, rows, false); err != nil {

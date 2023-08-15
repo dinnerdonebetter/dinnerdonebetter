@@ -279,9 +279,6 @@ func (q *Querier) GetRecipeStepCompletionConditions(ctx context.Context, recipeI
 	defer span.End()
 
 	logger := q.logger.Clone()
-	if filter == nil {
-		filter = types.DefaultQueryFilter()
-	}
 
 	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
@@ -295,16 +292,14 @@ func (q *Querier) GetRecipeStepCompletionConditions(ctx context.Context, recipeI
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
-	x = &types.QueryFilteredResult[types.RecipeStepCompletionCondition]{}
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if filter.Page != nil {
-		x.Page = *filter.Page
-	}
-
-	if filter.Limit != nil {
-		x.Limit = *filter.Limit
+	x = &types.QueryFilteredResult[types.RecipeStepCompletionCondition]{
+		Pagination: filter.ToPagination(),
 	}
 
 	args := []any{
@@ -321,14 +316,10 @@ func (q *Querier) GetRecipeStepCompletionConditions(ctx context.Context, recipeI
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe step completion conditions list retrieval query")
 	}
 
-	data, filteredCount, totalCount, err := q.scanRecipeStepCompletionConditionsWithIngredients(ctx, rows, true)
+	x.Data, x.FilteredCount, x.TotalCount, err = q.scanRecipeStepCompletionConditionsWithIngredients(ctx, rows, true)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning recipe step completion conditions")
 	}
-
-	x.FilteredCount = filteredCount
-	x.TotalCount = totalCount
-	x.Data = data
 
 	return x, nil
 }

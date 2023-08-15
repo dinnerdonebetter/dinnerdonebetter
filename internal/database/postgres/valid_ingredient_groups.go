@@ -367,10 +367,12 @@ func (q *Querier) GetValidIngredientGroups(ctx context.Context, filter *types.Qu
 	if filter == nil {
 		filter = types.DefaultQueryFilter()
 	}
-
-	x = &types.QueryFilteredResult[types.ValidIngredientGroup]{}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
+
+	x = &types.QueryFilteredResult[types.ValidIngredientGroup]{
+		Pagination: filter.ToPagination(),
+	}
 
 	if filter.Page != nil {
 		x.Page = *filter.Page

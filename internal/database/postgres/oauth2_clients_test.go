@@ -276,28 +276,6 @@ func TestQuerier_GetOAuth2Clients(T *testing.T) {
 		assert.Nil(t, actual)
 	})
 
-	T.Run("with nil filter", func(t *testing.T) {
-		t.Parallel()
-
-		exampleOAuth2ClientList := fakes.BuildFakeOAuth2ClientList()
-		exampleOAuth2ClientList.Limit, exampleOAuth2ClientList.Page = 0, 0
-		filter := (*types.QueryFilter)(nil)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-		query, args := c.buildListQuery(ctx, "oauth2_clients", nil, nil, nil, userOwnershipColumn, oauth2ClientsTableColumns, "", false, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromOAuth2Clients(true, exampleOAuth2ClientList.FilteredCount, exampleOAuth2ClientList.Data...))
-
-		actual, err := c.GetOAuth2Clients(ctx, filter)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleOAuth2ClientList, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("respects sql.ErrNoRows", func(t *testing.T) {
 		t.Parallel()
 

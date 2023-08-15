@@ -250,18 +250,14 @@ func (q *Querier) GetValidIngredientStateIngredients(ctx context.Context, filter
 
 	logger := q.logger.Clone()
 
-	x = &types.QueryFilteredResult[types.ValidIngredientStateIngredient]{}
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
-
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
+	x = &types.QueryFilteredResult[types.ValidIngredientStateIngredient]{
+		Pagination: filter.ToPagination(),
 	}
 
 	joins := []string{
@@ -329,6 +325,8 @@ func (q *Querier) GetValidIngredientStateIngredientsForIngredientState(ctx conte
 	if filter == nil {
 		filter = types.DefaultQueryFilter()
 	}
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachQueryFilterToSpan(span, filter)
 
 	x = &types.QueryFilteredResult[types.ValidIngredientStateIngredient]{
 		Pagination: filter.ToPagination(),
@@ -368,22 +366,14 @@ func (q *Querier) GetValidIngredientStateIngredientsForIngredient(ctx context.Co
 	logger = logger.WithValue(keys.ValidIngredientIDKey, ingredientID)
 	tracing.AttachValidIngredientStateIngredientIDToSpan(span, ingredientID)
 
-	x = &types.QueryFilteredResult[types.ValidIngredientStateIngredient]{
-		Pagination: types.Pagination{
-			Limit: 20,
-		},
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
 	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
-
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
+	x = &types.QueryFilteredResult[types.ValidIngredientStateIngredient]{
+		Pagination: filter.ToPagination(),
 	}
 
 	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?

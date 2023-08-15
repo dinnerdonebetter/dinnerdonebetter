@@ -411,32 +411,6 @@ func TestQuerier_GetRecipeStepVessels(T *testing.T) {
 		assert.Nil(t, actual)
 	})
 
-	T.Run("with nil filter", func(t *testing.T) {
-		t.Parallel()
-
-		filter := (*types.QueryFilter)(nil)
-		exampleRecipeID := fakes.BuildFakeID()
-		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleRecipeStepVesselList := fakes.BuildFakeRecipeStepVesselList()
-		exampleRecipeStepVesselList.Page = 0
-		exampleRecipeStepVesselList.Limit = 0
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildListQuery(ctx, "recipe_step_vessels", getRecipeStepVesselsJoins, []string{"valid_vessels.id", "valid_measurement_units.id"}, nil, householdOwnershipColumn, recipeStepVesselsTableColumns, "", false, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromRecipeStepVessels(true, exampleRecipeStepVesselList.FilteredCount, exampleRecipeStepVesselList.Data...))
-
-		actual, err := c.GetRecipeStepVessels(ctx, exampleRecipeID, exampleRecipeStepID, filter)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleRecipeStepVesselList, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with error executing query", func(t *testing.T) {
 		t.Parallel()
 

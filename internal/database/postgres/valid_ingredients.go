@@ -292,13 +292,8 @@ func (q *Querier) SearchForValidIngredientsForPreparation(ctx context.Context, p
 	tracing.AttachQueryFilterToSpan(span, filter)
 	logger = filter.AttachToLogger(logger)
 
-	x = &types.QueryFilteredResult[types.ValidIngredient]{}
-	if filter.Page != nil {
-		x.Page = *filter.Page
-	}
-
-	if filter.Limit != nil {
-		x.Limit = *filter.Limit
+	x = &types.QueryFilteredResult[types.ValidIngredient]{
+		Pagination: filter.ToPagination(),
 	}
 
 	searchForIngredientsByPreparationAndIngredientNameArgs := []any{
@@ -355,18 +350,14 @@ func (q *Querier) GetValidIngredients(ctx context.Context, filter *types.QueryFi
 
 	logger := q.logger.Clone()
 
-	x = &types.QueryFilteredResult[types.ValidIngredient]{}
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
-
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
+	x = &types.QueryFilteredResult[types.ValidIngredient]{
+		Pagination: filter.ToPagination(),
 	}
 
 	query, args := q.buildListQuery(ctx, validIngredientsTable, nil, nil, nil, householdOwnershipColumn, validIngredientsTableColumns, "", false, filter)

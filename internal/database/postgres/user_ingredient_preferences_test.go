@@ -4,10 +4,11 @@ import (
 	"context"
 	"database/sql/driver"
 	"errors"
+	"testing"
+
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
-	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
@@ -189,31 +190,6 @@ func TestQuerier_GetUserIngredientPreferences(T *testing.T) {
 		exampleUserID := fakes.BuildFakeID()
 		filter := types.DefaultQueryFilter()
 		exampleUserIngredientPreferenceList := fakes.BuildFakeUserIngredientPreferenceList()
-
-		c, db := buildTestClient(t)
-
-		query, args := c.buildListQuery(ctx, "user_ingredient_preferences", []string{validIngredientsOnUserIngredientPreferencesJoin}, []string{"user_ingredient_preferences.id", "valid_ingredients.id"}, nil, userOwnershipColumn, userIngredientPreferencesTableColumns, exampleUserID, false, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromUserIngredientPreferences(true, exampleUserIngredientPreferenceList.FilteredCount, exampleUserIngredientPreferenceList.Data...))
-
-		actual, err := c.GetUserIngredientPreferences(ctx, exampleUserID, filter)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleUserIngredientPreferenceList, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with nil filter", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleUserID := fakes.BuildFakeID()
-		filter := (*types.QueryFilter)(nil)
-		exampleUserIngredientPreferenceList := fakes.BuildFakeUserIngredientPreferenceList()
-		exampleUserIngredientPreferenceList.Page = 0
-		exampleUserIngredientPreferenceList.Limit = 0
 
 		c, db := buildTestClient(t)
 

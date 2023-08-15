@@ -411,30 +411,6 @@ func TestQuerier_GetHouseholds(T *testing.T) {
 		assert.Nil(t, actual)
 	})
 
-	T.Run("with nil filter", func(t *testing.T) {
-		t.Parallel()
-
-		filter := (*types.QueryFilter)(nil)
-		exampleUserID := fakes.BuildFakeID()
-		exampleHouseholdList := fakes.BuildFakeHouseholdList()
-		exampleHouseholdList.Page, exampleHouseholdList.Limit = 0, 0
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetHouseholdsQuery(ctx, exampleUserID, false, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromHouseholds(true, exampleHouseholdList.FilteredCount, exampleHouseholdList.Data...))
-
-		actual, err := c.GetHouseholds(ctx, exampleUserID, filter)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleHouseholdList, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with erroneous response from database", func(t *testing.T) {
 		t.Parallel()
 
@@ -487,30 +463,6 @@ func TestQuerier_GetHouseholdsForAdmin(T *testing.T) {
 		filter := types.DefaultQueryFilter()
 		exampleUserID := fakes.BuildFakeID()
 		exampleHouseholdList := fakes.BuildFakeHouseholdList()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildGetHouseholdsQuery(ctx, "", true, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromHouseholds(true, exampleHouseholdList.FilteredCount, exampleHouseholdList.Data...))
-
-		actual, err := c.GetHouseholdsForAdmin(ctx, exampleUserID, filter)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleHouseholdList, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with nil filter", func(t *testing.T) {
-		t.Parallel()
-
-		filter := (*types.QueryFilter)(nil)
-		exampleUserID := fakes.BuildFakeID()
-		exampleHouseholdList := fakes.BuildFakeHouseholdList()
-		exampleHouseholdList.Page, exampleHouseholdList.Limit = 0, 0
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)

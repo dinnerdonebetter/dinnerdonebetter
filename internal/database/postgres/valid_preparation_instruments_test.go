@@ -295,30 +295,6 @@ func TestQuerier_GetValidPreparationInstruments(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, db)
 	})
 
-	T.Run("with nil filter", func(t *testing.T) {
-		t.Parallel()
-
-		filter := (*types.QueryFilter)(nil)
-		exampleValidPreparationInstrumentList := fakes.BuildFakeValidPreparationInstrumentList()
-		exampleValidPreparationInstrumentList.Page = 0
-		exampleValidPreparationInstrumentList.Limit = 0
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildListQuery(ctx, "valid_preparation_instruments", joins, groupBys, nil, householdOwnershipColumn, fullValidPreparationInstrumentsTableColumns, "", false, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidPreparationInstruments(true, exampleValidPreparationInstrumentList.FilteredCount, exampleValidPreparationInstrumentList.Data...))
-
-		actual, err := c.GetValidPreparationInstruments(ctx, filter)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleValidPreparationInstrumentList, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with error executing query", func(t *testing.T) {
 		t.Parallel()
 

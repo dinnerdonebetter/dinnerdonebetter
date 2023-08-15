@@ -365,24 +365,23 @@ func (q *Querier) GetRecipes(ctx context.Context, filter *types.QueryFilter) (x 
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	x = &types.QueryFilteredResult[types.Recipe]{}
+	logger := q.logger.Clone()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
-
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
+	x = &types.QueryFilteredResult[types.Recipe]{
+		Pagination: filter.ToPagination(),
 	}
 
 	query, args := q.buildListQuery(ctx, "recipes", nil, nil, nil, "", recipesTableColumns, "", false, filter)
 
 	rows, err := q.getRows(ctx, q.db, "recipes", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing recipes list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipes list retrieval query")
 	}
 
 	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanRecipes(ctx, rows, true); err != nil {
@@ -462,17 +461,16 @@ func (q *Querier) SearchForRecipes(ctx context.Context, recipeNameQuery string, 
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	x = &types.QueryFilteredResult[types.Recipe]{}
+	logger := q.logger.Clone()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
-
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
+	x = &types.QueryFilteredResult[types.Recipe]{
+		Pagination: filter.ToPagination(),
 	}
 
 	where := squirrel.ILike{"name": wrapQueryForILIKE(recipeNameQuery)}
@@ -480,7 +478,7 @@ func (q *Querier) SearchForRecipes(ctx context.Context, recipeNameQuery string, 
 
 	rows, err := q.getRows(ctx, q.db, "recipes search", query, args)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing recipes search query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipes search query")
 	}
 
 	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanRecipes(ctx, rows, true); err != nil {

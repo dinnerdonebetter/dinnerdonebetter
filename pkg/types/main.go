@@ -36,6 +36,8 @@ type (
 	}
 
 	QueryFilteredResult[T any] struct {
+		_ struct{} `json:"-"`
+
 		Data []*T `json:"data"`
 		Pagination
 	}

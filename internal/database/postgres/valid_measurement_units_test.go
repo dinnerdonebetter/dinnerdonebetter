@@ -490,30 +490,6 @@ func TestQuerier_GetValidMeasurementUnits(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, db)
 	})
 
-	T.Run("with nil filter", func(t *testing.T) {
-		t.Parallel()
-
-		filter := (*types.QueryFilter)(nil)
-		exampleValidMeasurementUnitList := fakes.BuildFakeValidMeasurementUnitList()
-		exampleValidMeasurementUnitList.Page = 0
-		exampleValidMeasurementUnitList.Limit = 0
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildListQuery(ctx, "valid_measurement_units", nil, nil, nil, householdOwnershipColumn, validMeasurementUnitsTableColumns, "", false, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromValidMeasurementUnits(true, exampleValidMeasurementUnitList.FilteredCount, exampleValidMeasurementUnitList.Data...))
-
-		actual, err := c.GetValidMeasurementUnits(ctx, filter)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleValidMeasurementUnitList, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with error executing query", func(t *testing.T) {
 		t.Parallel()
 

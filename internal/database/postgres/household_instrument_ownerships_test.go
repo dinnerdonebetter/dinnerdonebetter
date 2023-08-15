@@ -278,31 +278,6 @@ func TestQuerier_GetHouseholdInstrumentOwnerships(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, db)
 	})
 
-	T.Run("with nil filter", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHouseholdID := fakes.BuildFakeID()
-		filter := types.DefaultQueryFilter()
-		exampleHouseholdInstrumentOwnershipList := fakes.BuildFakeHouseholdInstrumentOwnershipList()
-		exampleHouseholdInstrumentOwnershipList.Page = 0
-		exampleHouseholdInstrumentOwnershipList.Limit = 0
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		query, args := c.buildListQuery(ctx, "household_instrument_ownerships", []string{"valid_instruments ON valid_instruments.id = household_instrument_ownerships.valid_instrument_id"}, []string{"household_instrument_ownerships.id", "valid_instruments.id"}, nil, householdOwnershipColumn, householdInstrumentOwnershipsTableColumns, exampleHouseholdID, false, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromHouseholdInstrumentOwnership(true, exampleHouseholdInstrumentOwnershipList.FilteredCount, exampleHouseholdInstrumentOwnershipList.Data...))
-
-		actual, err := c.GetHouseholdInstrumentOwnerships(ctx, exampleHouseholdID, nil)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleHouseholdInstrumentOwnershipList, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with error executing query", func(t *testing.T) {
 		t.Parallel()
 

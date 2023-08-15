@@ -160,20 +160,14 @@ func (q *Querier) GetRecipeRatings(ctx context.Context, filter *types.QueryFilte
 
 	logger := q.logger.Clone()
 
-	x = &types.QueryFilteredResult[types.RecipeRating]{}
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
-
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
-	} else {
-		filter = types.DefaultQueryFilter()
+	x = &types.QueryFilteredResult[types.RecipeRating]{
+		Pagination: filter.ToPagination(),
 	}
 
 	query, args := q.buildListQuery(ctx, "recipe_ratings", nil, nil, nil, "", recipeRatingsTableColumns, "", false, filter)
