@@ -152,6 +152,7 @@ queries_lint:
 
 .PHONY: querier
 querier: queries_lint
+	rm -rf internal/database/postgres/generated
 	docker run --rm \
 		--volume $(PWD):/src \
 		--workdir /src \

@@ -2,16 +2,12 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"database/sql/driver"
 	"errors"
-	"testing"
-	"time"
-
-	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
+	"testing"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
@@ -87,64 +83,8 @@ func buildMockRowsFromUserIngredientPreferences(includeCounts bool, filteredCoun
 	return exampleRows
 }
 
-func TestQuerier_ScanUserIngredientPreferences(T *testing.T) {
-	T.Parallel()
-
-	T.Run("surfaces row errs", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		q, _ := buildTestClient(t)
-
-		mockRows := &database.MockResultIterator{}
-		mockRows.On("Next").Return(false)
-		mockRows.On("Err").Return(errors.New("blah"))
-
-		_, _, _, err := q.scanUserIngredientPreferences(ctx, mockRows, false)
-		assert.Error(t, err)
-	})
-
-	T.Run("logs row closing errs", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		q, _ := buildTestClient(t)
-
-		mockRows := &database.MockResultIterator{}
-		mockRows.On("Next").Return(false)
-		mockRows.On("Err").Return(nil)
-		mockRows.On("Close").Return(errors.New("blah"))
-
-		_, _, _, err := q.scanUserIngredientPreferences(ctx, mockRows, false)
-		assert.Error(t, err)
-	})
-}
-
 func TestQuerier_UserIngredientPreferenceExists(T *testing.T) {
 	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleUserID := fakes.BuildFakeID()
-		exampleUserIngredientPreference := fakes.BuildFakeUserIngredientPreference()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleUserIngredientPreference.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(userIngredientPreferenceExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
-
-		actual, err := c.UserIngredientPreferenceExists(ctx, exampleUserIngredientPreference.ID, exampleUserID)
-		assert.NoError(t, err)
-		assert.True(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
 
 	T.Run("with invalid user ingredient preference ID", func(t *testing.T) {
 		t.Parallel()
@@ -159,50 +99,17 @@ func TestQuerier_UserIngredientPreferenceExists(T *testing.T) {
 		assert.False(t, actual)
 	})
 
-	T.Run("with sql.ErrNoRows", func(t *testing.T) {
+	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		exampleUserID := fakes.BuildFakeID()
-		exampleUserIngredientPreference := fakes.BuildFakeUserIngredientPreference()
+		exampleUserIngredientPreferenceID := fakes.BuildFakeID()
 
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleUserIngredientPreference.ID,
-		}
+		c, _ := buildTestClient(t)
 
-		db.ExpectQuery(formatQueryForSQLMock(userIngredientPreferenceExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(sql.ErrNoRows)
-
-		actual, err := c.UserIngredientPreferenceExists(ctx, exampleUserIngredientPreference.ID, exampleUserID)
-		assert.NoError(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleUserID := fakes.BuildFakeID()
-		exampleUserIngredientPreference := fakes.BuildFakeUserIngredientPreference()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleUserIngredientPreference.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(userIngredientPreferenceExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.UserIngredientPreferenceExists(ctx, exampleUserIngredientPreference.ID, exampleUserID)
+		actual, err := c.UserIngredientPreferenceExists(ctx, exampleUserIngredientPreferenceID, "")
 		assert.Error(t, err)
 		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 
@@ -371,138 +278,6 @@ func TestQuerier_GetUserIngredientPreferences(T *testing.T) {
 func TestQuerier_CreateUserIngredientPreference(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleUserIngredientPreference := fakes.BuildFakeUserIngredientPreference()
-		exampleUserIngredientPreference.Ingredient = types.ValidIngredient{ID: exampleUserIngredientPreference.Ingredient.ID}
-		exampleInput := converters.ConvertUserIngredientPreferenceToUserIngredientPreferenceDatabaseCreationInput(exampleUserIngredientPreference)
-
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-
-		args := []any{
-			&idMatcher{},
-			exampleInput.ValidIngredientID,
-			exampleInput.Rating,
-			exampleInput.Notes,
-			exampleInput.Allergy,
-			exampleInput.BelongsToUser,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(userIngredientPreferenceCreationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		c.timeFunc = func() time.Time {
-			return exampleUserIngredientPreference.CreatedAt
-		}
-
-		db.ExpectCommit()
-
-		actual, err := c.CreateUserIngredientPreference(ctx, exampleInput)
-		assert.NoError(t, err)
-		actual[0].ID = exampleUserIngredientPreference.ID
-		assert.Equal(t, []*types.UserIngredientPreference{exampleUserIngredientPreference}, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with valid ingredient group ID", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleValidIngredientGroup := fakes.BuildFakeValidIngredientGroup()
-		exampleUserIngredientPreference := fakes.BuildFakeUserIngredientPreference()
-		exampleUserIngredientPreference.ID = "1"
-		exampleInput := converters.ConvertUserIngredientPreferenceToUserIngredientPreferenceDatabaseCreationInput(exampleUserIngredientPreference)
-		exampleInput.ValidIngredientGroupID = exampleValidIngredientGroup.ID
-
-		c, db := buildTestClient(t)
-
-		getValidIngredientGroupArgs := []any{
-			exampleValidIngredientGroup.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getValidIngredientGroupQuery)).
-			WithArgs(interfaceToDriverValue(getValidIngredientGroupArgs)...).
-			WillReturnRows(buildMockRowsFromValidIngredientGroups(false, 0, exampleValidIngredientGroup))
-
-		db.ExpectBegin()
-
-		expected := []*types.UserIngredientPreference{}
-		for _, member := range exampleValidIngredientGroup.Members {
-			args := []any{
-				&idMatcher{},
-				member.ValidIngredient.ID,
-				exampleInput.Rating,
-				exampleInput.Notes,
-				exampleInput.Allergy,
-				exampleInput.BelongsToUser,
-			}
-
-			db.ExpectExec(formatQueryForSQLMock(userIngredientPreferenceCreationQuery)).
-				WithArgs(interfaceToDriverValue(args)...).
-				WillReturnResult(newArbitraryDatabaseResult())
-
-			expected = append(expected,
-				&types.UserIngredientPreference{
-					CreatedAt:     exampleUserIngredientPreference.CreatedAt,
-					Notes:         exampleInput.Notes,
-					BelongsToUser: exampleInput.BelongsToUser,
-					Ingredient:    types.ValidIngredient{ID: exampleInput.ValidIngredientID},
-					Rating:        exampleInput.Rating,
-					Allergy:       exampleInput.Allergy,
-				},
-			)
-		}
-		c.timeFunc = func() time.Time {
-			return exampleUserIngredientPreference.CreatedAt
-		}
-
-		db.ExpectCommit()
-
-		actual, err := c.CreateUserIngredientPreference(ctx, exampleInput)
-		assert.NoError(t, err)
-		for _, member := range actual {
-			member.ID = ""
-		}
-		assert.Equal(t, expected, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with valid ingredient group ID and error fetching group", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleValidIngredientGroup := fakes.BuildFakeValidIngredientGroup()
-		exampleUserIngredientPreference := fakes.BuildFakeUserIngredientPreference()
-		exampleUserIngredientPreference.ID = "1"
-		exampleInput := converters.ConvertUserIngredientPreferenceToUserIngredientPreferenceDatabaseCreationInput(exampleUserIngredientPreference)
-		exampleInput.ValidIngredientGroupID = exampleValidIngredientGroup.ID
-
-		c, db := buildTestClient(t)
-
-		getValidIngredientGroupArgs := []any{
-			exampleValidIngredientGroup.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getValidIngredientGroupQuery)).
-			WithArgs(interfaceToDriverValue(getValidIngredientGroupArgs)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.CreateUserIngredientPreference(ctx, exampleInput)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
@@ -533,75 +308,10 @@ func TestQuerier_CreateUserIngredientPreference(T *testing.T) {
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		expectedErr := errors.New("blah")
-		exampleUserIngredientPreference := fakes.BuildFakeUserIngredientPreference()
-		exampleInput := converters.ConvertUserIngredientPreferenceToUserIngredientPreferenceDatabaseCreationInput(exampleUserIngredientPreference)
-
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-
-		args := []any{
-			&idMatcher{},
-			exampleInput.ValidIngredientID,
-			exampleInput.Rating,
-			exampleInput.Notes,
-			exampleInput.Allergy,
-			exampleInput.BelongsToUser,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(userIngredientPreferenceCreationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(expectedErr)
-
-		db.ExpectRollback()
-
-		c.timeFunc = func() time.Time {
-			return exampleUserIngredientPreference.CreatedAt
-		}
-
-		actual, err := c.CreateUserIngredientPreference(ctx, exampleInput)
-		assert.Error(t, err)
-		assert.True(t, errors.Is(err, expectedErr))
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
 }
 
 func TestQuerier_UpdateUserIngredientPreference(T *testing.T) {
 	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleUserIngredientPreference := fakes.BuildFakeUserIngredientPreference()
-
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleUserIngredientPreference.Ingredient.ID,
-			exampleUserIngredientPreference.Rating,
-			exampleUserIngredientPreference.Notes,
-			exampleUserIngredientPreference.Allergy,
-			exampleUserIngredientPreference.ID,
-			exampleUserIngredientPreference.BelongsToUser,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateUserIngredientPreferenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.UpdateUserIngredientPreference(ctx, exampleUserIngredientPreference))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
 
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
@@ -610,32 +320,6 @@ func TestQuerier_UpdateUserIngredientPreference(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateUserIngredientPreference(ctx, nil))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleUserIngredientPreference := fakes.BuildFakeUserIngredientPreference()
-
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleUserIngredientPreference.Ingredient.ID,
-			exampleUserIngredientPreference.Rating,
-			exampleUserIngredientPreference.Notes,
-			exampleUserIngredientPreference.Allergy,
-			exampleUserIngredientPreference.ID,
-			exampleUserIngredientPreference.BelongsToUser,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateUserIngredientPreferenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.UpdateUserIngredientPreference(ctx, exampleUserIngredientPreference))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

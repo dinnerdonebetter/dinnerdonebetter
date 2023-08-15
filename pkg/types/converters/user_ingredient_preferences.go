@@ -1,7 +1,6 @@
 package converters
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -20,7 +19,6 @@ func ConvertUserIngredientPreferenceToUserIngredientPreferenceUpdateRequestInput
 // ConvertUserIngredientPreferenceCreationRequestInputToUserIngredientPreferenceDatabaseCreationInput creates a UserIngredientPreferenceDatabaseCreationInput from a UserIngredientPreferenceCreationRequestInput.
 func ConvertUserIngredientPreferenceCreationRequestInputToUserIngredientPreferenceDatabaseCreationInput(input *types.UserIngredientPreferenceCreationRequestInput) *types.UserIngredientPreferenceDatabaseCreationInput {
 	x := &types.UserIngredientPreferenceDatabaseCreationInput{
-		ID:                     identifiers.New(),
 		ValidIngredientGroupID: input.ValidIngredientGroupID,
 		ValidIngredientID:      input.ValidIngredientID,
 		Rating:                 input.Rating,
@@ -44,10 +42,10 @@ func ConvertUserIngredientPreferenceToUserIngredientPreferenceCreationRequestInp
 // ConvertUserIngredientPreferenceToUserIngredientPreferenceDatabaseCreationInput builds a UserIngredientPreferenceDatabaseCreationInput from a UserIngredientPreferences.
 func ConvertUserIngredientPreferenceToUserIngredientPreferenceDatabaseCreationInput(x *types.UserIngredientPreference) *types.UserIngredientPreferenceDatabaseCreationInput {
 	return &types.UserIngredientPreferenceDatabaseCreationInput{
-		ID:                x.ID,
 		ValidIngredientID: x.Ingredient.ID,
 		Rating:            x.Rating,
 		Notes:             x.Notes,
 		Allergy:           x.Allergy,
+		BelongsToUser:     x.BelongsToUser,
 	}
 }

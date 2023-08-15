@@ -400,16 +400,6 @@ func (q *Queries) ArchiveValidInstrument(ctx context.Context, db DBTX, id string
 	return err
 }
 
-const archiveValidMeasurementUnitConversion = `-- name: ArchiveValidMeasurementUnitConversion :exec
-
-UPDATE valid_measurement_conversions SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
-`
-
-func (q *Queries) ArchiveValidMeasurementUnitConversion(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, archiveValidMeasurementUnitConversion, id)
-	return err
-}
-
 const archiveValidMeasurementUnit = `-- name: ArchiveValidMeasurementUnit :exec
 
 UPDATE valid_measurement_units SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
@@ -417,6 +407,16 @@ UPDATE valid_measurement_units SET archived_at = NOW() WHERE archived_at IS NULL
 
 func (q *Queries) ArchiveValidMeasurementUnit(ctx context.Context, db DBTX, id string) error {
 	_, err := db.ExecContext(ctx, archiveValidMeasurementUnit, id)
+	return err
+}
+
+const archiveValidMeasurementUnitConversion = `-- name: ArchiveValidMeasurementUnitConversion :exec
+
+UPDATE valid_measurement_conversions SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
+`
+
+func (q *Queries) ArchiveValidMeasurementUnitConversion(ctx context.Context, db DBTX, id string) error {
+	_, err := db.ExecContext(ctx, archiveValidMeasurementUnitConversion, id)
 	return err
 }
 

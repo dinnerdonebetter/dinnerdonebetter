@@ -446,11 +446,16 @@ func (q *Queries) CheckServiceSettingExistence(ctx context.Context, db DBTX, id 
 
 const checkUserIngredientPreferenceExistence = `-- name: CheckUserIngredientPreferenceExistence :one
 
-SELECT EXISTS ( SELECT user_ingredient_preferences.id FROM user_ingredient_preferences WHERE user_ingredient_preferences.archived_at IS NULL AND user_ingredient_preferences.id = $1 )
+SELECT EXISTS ( SELECT user_ingredient_preferences.id FROM user_ingredient_preferences WHERE user_ingredient_preferences.archived_at IS NULL AND user_ingredient_preferences.id = $1 AND user_ingredient_preferences.belongs_to_user = $2 )
 `
 
-func (q *Queries) CheckUserIngredientPreferenceExistence(ctx context.Context, db DBTX, id string) (bool, error) {
-	row := db.QueryRowContext(ctx, checkUserIngredientPreferenceExistence, id)
+type CheckUserIngredientPreferenceExistenceParams struct {
+	ID            string
+	BelongsToUser string
+}
+
+func (q *Queries) CheckUserIngredientPreferenceExistence(ctx context.Context, db DBTX, arg *CheckUserIngredientPreferenceExistenceParams) (bool, error) {
+	row := db.QueryRowContext(ctx, checkUserIngredientPreferenceExistence, arg.ID, arg.BelongsToUser)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
@@ -540,13 +545,13 @@ func (q *Queries) CheckValidInstrumentExistence(ctx context.Context, db DBTX, id
 	return exists, err
 }
 
-const checkValidMeasurementUnitConversionExistence = `-- name: CheckValidMeasurementUnitConversionExistence :one
+const checkValidMeasurementConversionExistence = `-- name: CheckValidMeasurementConversionExistence :one
 
 SELECT EXISTS ( SELECT valid_measurement_conversions.id FROM valid_measurement_conversions WHERE valid_measurement_conversions.archived_at IS NULL AND valid_measurement_conversions.id = $1 )
 `
 
-func (q *Queries) CheckValidMeasurementUnitConversionExistence(ctx context.Context, db DBTX, id string) (bool, error) {
-	row := db.QueryRowContext(ctx, checkValidMeasurementUnitConversionExistence, id)
+func (q *Queries) CheckValidMeasurementConversionExistence(ctx context.Context, db DBTX, id string) (bool, error) {
+	row := db.QueryRowContext(ctx, checkValidMeasurementConversionExistence, id)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err

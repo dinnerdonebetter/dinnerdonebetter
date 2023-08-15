@@ -58,7 +58,6 @@ type (
 	UserIngredientPreferenceDatabaseCreationInput struct {
 		_ struct{}
 
-		ID                     string
 		ValidIngredientGroupID string
 		ValidIngredientID      string
 		Notes                  string
@@ -135,7 +134,6 @@ func (x *UserIngredientPreferenceDatabaseCreationInput) ValidateWithContext(ctx 
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.ValidIngredientID, validation.Required),
 		validation.Field(&x.Rating, validation.Min(minRating), validation.Max(maxRating)),
 		validation.Field(&x.BelongsToUser, validation.Required),

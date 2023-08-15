@@ -49,8 +49,8 @@ type Querier interface {
 	ArchiveValidIngredientState(ctx context.Context, db DBTX, id string) error
 	ArchiveValidIngredientStateIngredient(ctx context.Context, db DBTX, id string) error
 	ArchiveValidInstrument(ctx context.Context, db DBTX, id string) error
-	ArchiveValidMeasurementUnitConversion(ctx context.Context, db DBTX, id string) error
 	ArchiveValidMeasurementUnit(ctx context.Context, db DBTX, id string) error
+	ArchiveValidMeasurementUnitConversion(ctx context.Context, db DBTX, id string) error
 	ArchiveValidPreparation(ctx context.Context, db DBTX, id string) error
 	ArchiveValidPreparationInstrument(ctx context.Context, db DBTX, id string) error
 	ArchiveValidPreparationVessel(ctx context.Context, db DBTX, id string) error
@@ -80,7 +80,7 @@ type Querier interface {
 	CheckRecipeStepVesselExistence(ctx context.Context, db DBTX, arg *CheckRecipeStepVesselExistenceParams) (bool, error)
 	CheckServiceSettingConfigurationExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckServiceSettingExistence(ctx context.Context, db DBTX, id string) (bool, error)
-	CheckUserIngredientPreferenceExistence(ctx context.Context, db DBTX, id string) (bool, error)
+	CheckUserIngredientPreferenceExistence(ctx context.Context, db DBTX, arg *CheckUserIngredientPreferenceExistenceParams) (bool, error)
 	CheckValidIngredientExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckValidIngredientGroupExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckValidIngredientMeasurementUnitExistence(ctx context.Context, db DBTX, id string) (bool, error)
@@ -88,7 +88,7 @@ type Querier interface {
 	CheckValidIngredientStateExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckValidIngredientStateIngredientExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckValidInstrumentExistence(ctx context.Context, db DBTX, id string) (bool, error)
-	CheckValidMeasurementUnitConversionExistence(ctx context.Context, db DBTX, id string) (bool, error)
+	CheckValidMeasurementConversionExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckValidMeasurementUnitExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckValidPreparationExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckValidPreparationInstrumentExistence(ctx context.Context, db DBTX, id string) (bool, error)
@@ -135,7 +135,7 @@ type Querier interface {
 	CreateValidIngredientState(ctx context.Context, db DBTX, arg *CreateValidIngredientStateParams) error
 	CreateValidIngredientStateIngredient(ctx context.Context, db DBTX, arg *CreateValidIngredientStateIngredientParams) error
 	CreateValidInstrument(ctx context.Context, db DBTX, arg *CreateValidInstrumentParams) error
-	CreateValidMeasurementUnitConversion(ctx context.Context, db DBTX, arg *CreateValidMeasurementUnitConversionParams) error
+	CreateValidMeasurementConversion(ctx context.Context, db DBTX, arg *CreateValidMeasurementConversionParams) error
 	CreateValidMeasurementUnit(ctx context.Context, db DBTX, arg *CreateValidMeasurementUnitParams) error
 	CreateValidPreparation(ctx context.Context, db DBTX, arg *CreateValidPreparationParams) error
 	CreateValidPreparationInstrument(ctx context.Context, db DBTX, arg *CreateValidPreparationInstrumentParams) error
@@ -147,8 +147,8 @@ type Querier interface {
 	FinalizeMealPlanOption(ctx context.Context, db DBTX, arg *FinalizeMealPlanOptionParams) error
 	GetAdminUserByUsername(ctx context.Context, db DBTX, username string) (*GetAdminUserByUsernameRow, error)
 	GetAllRecipeStepCompletionConditionsForRecipe(ctx context.Context, db DBTX, id string) ([]*GetAllRecipeStepCompletionConditionsForRecipeRow, error)
-	GetAllValidMeasurementUnitConversionsFromMeasurementUnit(ctx context.Context, db DBTX, id string) ([]*GetAllValidMeasurementUnitConversionsFromMeasurementUnitRow, error)
-	GetAllValidMeasurementUnitConversionsToMeasurementUnit(ctx context.Context, db DBTX, id string) ([]*GetAllValidMeasurementUnitConversionsToMeasurementUnitRow, error)
+	GetAllValidMeasurementConversionsFromMeasurementUnit(ctx context.Context, db DBTX, id string) ([]*GetAllValidMeasurementConversionsFromMeasurementUnitRow, error)
+	GetAllValidMeasurementConversionsToMeasurementUnit(ctx context.Context, db DBTX, id string) ([]*GetAllValidMeasurementConversionsToMeasurementUnitRow, error)
 	GetDefaultHouseholdIDForUser(ctx context.Context, db DBTX, arg *GetDefaultHouseholdIDForUserParams) (string, error)
 	GetEmailVerificationTokenByUserID(ctx context.Context, db DBTX, id string) (sql.NullString, error)
 	GetExpiredAndUnresolvedMealPlans(ctx context.Context, db DBTX) ([]*GetExpiredAndUnresolvedMealPlansRow, error)
@@ -241,7 +241,7 @@ type Querier interface {
 	GetValidInstrumentByID(ctx context.Context, db DBTX) (*GetValidInstrumentByIDRow, error)
 	GetValidInstruments(ctx context.Context, db DBTX, arg *GetValidInstrumentsParams) ([]*GetValidInstrumentsRow, error)
 	GetValidInstrumentsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error)
-	GetValidMeasurementUnitConversion(ctx context.Context, db DBTX, id string) (*GetValidMeasurementUnitConversionRow, error)
+	GetValidMeasurementConversion(ctx context.Context, db DBTX, id string) (*GetValidMeasurementConversionRow, error)
 	GetValidMeasurementUnit(ctx context.Context, db DBTX, id string) (*GetValidMeasurementUnitRow, error)
 	GetValidMeasurementUnitByID(ctx context.Context, db DBTX) (*GetValidMeasurementUnitByIDRow, error)
 	GetValidMeasurementUnitsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error)
@@ -326,7 +326,7 @@ type Querier interface {
 	UpdateValidIngredientStateLastIndexedAt(ctx context.Context, db DBTX, id string) error
 	UpdateValidInstrument(ctx context.Context, db DBTX, arg *UpdateValidInstrumentParams) error
 	UpdateValidInstrumentLastIndexedAt(ctx context.Context, db DBTX, id string) error
-	UpdateValidMeasurementUnitConversion(ctx context.Context, db DBTX, arg *UpdateValidMeasurementUnitConversionParams) error
+	UpdateValidMeasurementConversion(ctx context.Context, db DBTX, arg *UpdateValidMeasurementConversionParams) error
 	UpdateValidMeasurementUnit(ctx context.Context, db DBTX, arg *UpdateValidMeasurementUnitParams) error
 	UpdateValidMeasurementUnitLastIndexedAt(ctx context.Context, db DBTX, id string) error
 	UpdateValidPreparation(ctx context.Context, db DBTX, arg *UpdateValidPreparationParams) error

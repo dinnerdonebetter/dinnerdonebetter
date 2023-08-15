@@ -169,9 +169,6 @@ func (q *Querier) scanUserIngredientPreferences(ctx context.Context, rows databa
 	return userIngredientPreferences, filteredCount, totalCount, nil
 }
 
-//go:embed queries/user_ingredient_preferences/exists.sql
-var userIngredientPreferenceExistenceQuery string
-
 // UserIngredientPreferenceExists fetches whether a user ingredient preference exists from the database.
 func (q *Querier) UserIngredientPreferenceExists(ctx context.Context, userIngredientPreferenceID, userID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -191,16 +188,15 @@ func (q *Querier) UserIngredientPreferenceExists(ctx context.Context, userIngred
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachUserIDToSpan(span, userID)
 
-	args := []any{
-		userIngredientPreferenceID,
-	}
-
-	result, err := q.performBooleanQuery(ctx, q.db, userIngredientPreferenceExistenceQuery, args)
+	exists, err = q.generatedQuerier.CheckUserIngredientPreferenceExistence(ctx, q.db, &generated.CheckUserIngredientPreferenceExistenceParams{
+		ID:            userIngredientPreferenceID,
+		BelongsToUser: userID,
+	})
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing user ingredient preference existence check")
 	}
 
-	return result, nil
+	return exists, nil
 }
 
 //go:embed queries/user_ingredient_preferences/get_for_user.sql
@@ -293,7 +289,7 @@ func (q *Querier) CreateUserIngredientPreference(ctx context.Context, input *typ
 		return nil, ErrNilInputProvided
 	}
 
-	logger := q.logger.WithValue(keys.UserIngredientPreferenceIDKey, input.ID)
+	logger := q.logger.WithValue(keys.ValidIngredientIDKey, input.ValidIngredientID)
 
 	validIngredientIDs := []string{}
 	if input.ValidIngredientGroupID != "" {
@@ -325,17 +321,16 @@ func (q *Querier) CreateUserIngredientPreference(ctx context.Context, input *typ
 		}
 
 		id := identifiers.New()
-		args := []any{
-			id,
-			validIngredientID,
-			input.Rating,
-			input.Notes,
-			input.Allergy,
-			input.BelongsToUser,
-		}
 
 		// create the user ingredient preference.
-		if err = q.performWriteQuery(ctx, tx, "user ingredient preference creation", userIngredientPreferenceCreationQuery, args); err != nil {
+		if err = q.generatedQuerier.CreateUserIngredientPreference(ctx, tx, &generated.CreateUserIngredientPreferenceParams{
+			ID:            id,
+			Ingredient:    validIngredientID,
+			Notes:         input.Notes,
+			BelongsToUser: input.BelongsToUser,
+			Rating:        int16(input.Rating),
+			Allergy:       input.Allergy,
+		}); err != nil {
 			q.rollbackTransaction(ctx, tx)
 			return nil, observability.PrepareAndLogError(err, l, span, "performing user ingredient preference creation query")
 		}
@@ -363,9 +358,6 @@ func (q *Querier) CreateUserIngredientPreference(ctx context.Context, input *typ
 	return output, nil
 }
 
-//go:embed queries/user_ingredient_preferences/update.sql
-var updateUserIngredientPreferenceQuery string
-
 // UpdateUserIngredientPreference updates a particular user ingredient preference.
 func (q *Querier) UpdateUserIngredientPreference(ctx context.Context, updated *types.UserIngredientPreference) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -374,20 +366,17 @@ func (q *Querier) UpdateUserIngredientPreference(ctx context.Context, updated *t
 	if updated == nil {
 		return ErrNilInputProvided
 	}
-
 	logger := q.logger.WithValue(keys.UserIngredientPreferenceIDKey, updated.ID)
 	tracing.AttachUserIngredientPreferenceIDToSpan(span, updated.ID)
 
-	args := []any{
-		updated.Ingredient.ID,
-		updated.Rating,
-		updated.Notes,
-		updated.Allergy,
-		updated.ID,
-		updated.BelongsToUser,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "user ingredient preference update", updateUserIngredientPreferenceQuery, args); err != nil {
+	if err := q.generatedQuerier.UpdateUserIngredientPreference(ctx, q.db, &generated.UpdateUserIngredientPreferenceParams{
+		Ingredient:    updated.Ingredient.ID,
+		Notes:         updated.Notes,
+		ID:            updated.ID,
+		BelongsToUser: updated.BelongsToUser,
+		Rating:        int16(updated.Rating),
+		Allergy:       updated.Allergy,
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating user ingredient preference")
 	}
 
