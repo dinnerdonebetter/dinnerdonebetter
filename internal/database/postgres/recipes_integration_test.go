@@ -25,7 +25,11 @@ func buildRecipeForTestCreation(t *testing.T, ctx context.Context, userID string
 
 	recipeStepID := identifiers.New()
 
+	validIngredientState := createValidIngredientStateForTest(t, ctx, nil, dbc)
+
 	exampleRecipe := fakes.BuildFakeRecipe()
+	exampleRecipe.Media = []*types.RecipeMedia{}
+
 	preparation := createValidPreparationForTest(t, ctx, nil, dbc)
 	ingredient := createValidIngredientForTest(t, ctx, nil, dbc)
 	measurementUnit1 := createValidMeasurementUnitForTest(t, ctx, nil, dbc)
@@ -47,6 +51,42 @@ func buildRecipeForTestCreation(t *testing.T, ctx context.Context, userID string
 	recipeStepVessel.Vessel = vessel
 	recipeStepVessel.BelongsToRecipeStep = recipeStepID
 
+	exampleRecipeMedia := fakes.BuildFakeRecipeMedia()
+	exampleRecipeMedia.BelongsToRecipe = &exampleRecipe.ID
+	exampleRecipe.Media = []*types.RecipeMedia{
+		exampleRecipeMedia,
+	}
+
+	exampleRecipePrepTask := fakes.BuildFakeRecipePrepTask()
+	exampleRecipePrepTask.BelongsToRecipe = exampleRecipe.ID
+	exampleRecipePrepTask.TaskSteps = []*types.RecipePrepTaskStep{
+		{
+			ID:                      identifiers.New(),
+			BelongsToRecipeStep:     recipeStepID,
+			BelongsToRecipePrepTask: exampleRecipePrepTask.ID,
+			SatisfiesRecipeStep:     true,
+		},
+	}
+
+	exampleRecipe.PrepTasks = []*types.RecipePrepTask{
+		exampleRecipePrepTask,
+	}
+
+	exampleRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
+	exampleRecipeStepProduct.BelongsToRecipeStep = recipeStepID
+	exampleRecipeStepProduct.MeasurementUnit = measurementUnit1
+
+	exampleRecipeStepCompletionCondition := fakes.BuildFakeRecipeStepCompletionCondition()
+	exampleRecipeStepCompletionCondition.BelongsToRecipeStep = recipeStepID
+	exampleRecipeStepCompletionCondition.IngredientState = *validIngredientState
+	exampleRecipeStepCompletionCondition.Ingredients = []*types.RecipeStepCompletionConditionIngredient{
+		{
+			ID:                                     identifiers.New(),
+			BelongsToRecipeStepCompletionCondition: exampleRecipeStepCompletionCondition.ID,
+			RecipeStepIngredient:                   recipeStepIngredient.ID,
+		},
+	}
+
 	exampleRecipe.Steps = []*types.RecipeStep{
 		{
 			BelongsToRecipe: exampleRecipe.ID,
@@ -62,16 +102,29 @@ func buildRecipeForTestCreation(t *testing.T, ctx context.Context, userID string
 			Vessels: []*types.RecipeStepVessel{
 				recipeStepVessel,
 			},
+			Media: []*types.RecipeMedia{
+				exampleRecipeMedia,
+			},
+			Products: []*types.RecipeStepProduct{
+				exampleRecipeStepProduct,
+			},
+			CompletionConditions: []*types.RecipeStepCompletionCondition{
+				exampleRecipeStepCompletionCondition,
+			},
 		},
 	}
-	exampleRecipe.Media = []*types.RecipeMedia{}
-	exampleRecipe.PrepTasks = []*types.RecipePrepTask{}
 	exampleRecipe.CreatedByUser = userID
+
+	exampleRecipe.Media = []*types.RecipeMedia{}
+	for i := range exampleRecipe.Steps {
+		exampleRecipe.Steps[i].Media = nil                // []*types.RecipeMedia{}
+		exampleRecipe.Steps[i].CompletionConditions = nil // []*types.RecipeStepCompletionCondition{}
+	}
 
 	return exampleRecipe
 }
 
-func createRecipeForTest(t *testing.T, ctx context.Context, exampleRecipe *types.Recipe, dbc *Querier) *types.Recipe {
+func createRecipeForTest(t *testing.T, ctx context.Context, exampleRecipe *types.Recipe, dbc *Querier, alsoCreateMeal bool) *types.Recipe {
 	t.Helper()
 
 	// create
@@ -79,7 +132,7 @@ func createRecipeForTest(t *testing.T, ctx context.Context, exampleRecipe *types
 		exampleRecipe = buildRecipeForTestCreation(t, ctx, "", dbc)
 	}
 	dbInput := converters.ConvertRecipeToRecipeDatabaseCreationInput(exampleRecipe)
-	dbInput.AlsoCreateMeal = true
+	dbInput.AlsoCreateMeal = alsoCreateMeal
 
 	created, err := dbc.CreateRecipe(ctx, dbInput)
 	require.NoError(t, err)
@@ -88,8 +141,12 @@ func createRecipeForTest(t *testing.T, ctx context.Context, exampleRecipe *types
 	recipe, err := dbc.GetRecipe(ctx, created.ID)
 	require.NoError(t, err)
 	require.NotNil(t, recipe)
-
 	exampleRecipe.CreatedAt = recipe.CreatedAt
+
+	for i := range recipe.PrepTasks {
+		exampleRecipe.PrepTasks[i].CreatedAt = recipe.PrepTasks[i].CreatedAt
+	}
+
 	for i := range recipe.Steps {
 		assert.Equal(t, exampleRecipe.Steps[i].Preparation.ID, recipe.Steps[i].Preparation.ID)
 		exampleRecipe.Steps[i].Preparation = recipe.Steps[i].Preparation
@@ -126,6 +183,7 @@ func createRecipeForTest(t *testing.T, ctx context.Context, exampleRecipe *types
 
 			assert.Equal(t, exampleRecipe.Steps[i].CompletionConditions[j].IngredientState.ID, recipe.Steps[i].CompletionConditions[j].IngredientState.ID)
 			exampleRecipe.Steps[i].CompletionConditions[j].IngredientState = recipe.Steps[i].CompletionConditions[j].IngredientState
+
 			for k := range recipe.Steps[i].CompletionConditions[j].Ingredients {
 				assert.Equal(t, exampleRecipe.Steps[i].CompletionConditions[j].Ingredients[k].ID, recipe.Steps[i].CompletionConditions[j].Ingredients[k].ID)
 				exampleRecipe.Steps[i].CompletionConditions[j].Ingredients[k] = recipe.Steps[i].CompletionConditions[j].Ingredients[k]
@@ -137,11 +195,21 @@ func createRecipeForTest(t *testing.T, ctx context.Context, exampleRecipe *types
 			exampleRecipe.Steps[i].Products[j].MeasurementUnit = recipe.Steps[i].Products[j].MeasurementUnit
 		}
 		for j := range recipe.Steps[i].Media {
-			exampleRecipe.Steps[i].Media[j].CreatedAt = recipe.Steps[i].Media[j].CreatedAt
+			assert.Equal(t, exampleRecipe.Steps[i].Media[j].ID, recipe.Steps[i].Media[j].ID)
+			exampleRecipe.Steps[i].Media[j] = recipe.Steps[i].Media[j]
 		}
+
+		require.Equal(t, exampleRecipe.Steps[i].Products, recipe.Steps[i].Products)
+		require.Equal(t, exampleRecipe.Steps[i].Instruments, recipe.Steps[i].Instruments)
+		require.Equal(t, exampleRecipe.Steps[i].Vessels, recipe.Steps[i].Vessels)
+		require.Equal(t, exampleRecipe.Steps[i].Ingredients, recipe.Steps[i].Ingredients)
+		require.Equal(t, exampleRecipe.Steps[i].Media, recipe.Steps[i].Media)
+		require.Equal(t, exampleRecipe.Steps[i].CompletionConditions, recipe.Steps[i].CompletionConditions)
+
+		require.Equal(t, exampleRecipe.Steps[i], recipe.Steps[i])
 	}
 
-	assert.Equal(t, exampleRecipe, recipe)
+	require.Equal(t, exampleRecipe, recipe)
 
 	return recipe
 }
@@ -165,7 +233,7 @@ func TestQuerier_Integration_Recipes(t *testing.T) {
 
 	// create
 	exampleRecipe := buildRecipeForTestCreation(t, ctx, user.ID, dbc)
-	createdRecipes = append(createdRecipes, createRecipeForTest(t, ctx, exampleRecipe, dbc))
+	createdRecipes = append(createdRecipes, createRecipeForTest(t, ctx, exampleRecipe, dbc, true))
 
 	// update
 	updatedRecipe := buildRecipeForTestCreation(t, ctx, user.ID, dbc)
@@ -176,7 +244,7 @@ func TestQuerier_Integration_Recipes(t *testing.T) {
 	for i := 0; i < exampleQuantity; i++ {
 		exampleRecipe = buildRecipeForTestCreation(t, ctx, user.ID, dbc)
 		exampleRecipe.Name = fmt.Sprintf("%s %d", exampleRecipe.Name, i)
-		createdRecipes = append(createdRecipes, createRecipeForTest(t, ctx, exampleRecipe, dbc))
+		createdRecipes = append(createdRecipes, createRecipeForTest(t, ctx, exampleRecipe, dbc, true))
 	}
 
 	// fetch as list
@@ -194,6 +262,11 @@ func TestQuerier_Integration_Recipes(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, searchResults)
 
+	byIDs, err := dbc.GetRecipesWithIDs(ctx, []string{createdRecipes[0].ID})
+	assert.NoError(t, err)
+	assert.NotEmpty(t, byIDs)
+	assert.Equal(t, createdRecipes[0].ID, byIDs[0].ID)
+
 	// delete
 	for _, recipe := range createdRecipes {
 		assert.NoError(t, dbc.MarkRecipeAsIndexed(ctx, recipe.ID))
@@ -205,7 +278,7 @@ func TestQuerier_Integration_Recipes(t *testing.T) {
 		assert.False(t, exists)
 
 		var y *types.Recipe
-		y, err = dbc.GetRecipe(ctx, recipe.ID)
+		y, err = dbc.GetRecipeByIDAndUser(ctx, recipe.ID, recipe.CreatedByUser)
 		assert.Nil(t, y)
 		assert.Error(t, err)
 		assert.ErrorIs(t, err, sql.ErrNoRows)

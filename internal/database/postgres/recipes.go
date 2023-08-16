@@ -590,7 +590,7 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 	}
 
 	if input.AlsoCreateMeal {
-		_, mealCreateErr := q.createMeal(ctx, tx, &types.MealDatabaseCreationInput{
+		if _, err = q.createMeal(ctx, tx, &types.MealDatabaseCreationInput{
 			ID:                       identifiers.New(),
 			Name:                     x.Name,
 			Description:              x.Description,
@@ -605,11 +605,9 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 					ComponentType: types.MealComponentTypesMain,
 				},
 			},
-		})
-
-		if mealCreateErr != nil {
+		}); err != nil {
 			q.rollbackTransaction(ctx, tx)
-			return nil, observability.PrepareError(mealCreateErr, span, "creating meal from recipe")
+			return nil, observability.PrepareError(err, span, "creating meal from recipe")
 		}
 	}
 

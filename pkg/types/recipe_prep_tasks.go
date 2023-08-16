@@ -37,7 +37,8 @@ func init() {
 type (
 	// RecipePrepTask represents a recipe prep task.
 	RecipePrepTask struct {
-		_                                      struct{}
+		_ struct{}
+
 		CreatedAt                              time.Time             `json:"createdAt"`
 		MaximumStorageTemperatureInCelsius     *float32              `json:"maximumStorageTemperatureInCelsius"`
 		ArchivedAt                             *time.Time            `json:"archivedAt"`
@@ -58,7 +59,8 @@ type (
 
 	// RecipePrepTaskCreationRequestInput represents what a user could set as input for creating recipes.
 	RecipePrepTaskCreationRequestInput struct {
-		_                                      struct{}
+		_ struct{}
+
 		MaximumTimeBufferBeforeRecipeInSeconds *uint32                                   `json:"maximumTimeBufferBeforeRecipeInSeconds"`
 		MinimumStorageTemperatureInCelsius     *float32                                  `json:"minimumStorageTemperatureInCelsius"`
 		MaximumStorageTemperatureInCelsius     *float32                                  `json:"maximumStorageTemperatureInCelsius"`
@@ -75,7 +77,8 @@ type (
 
 	// RecipePrepTaskWithinRecipeCreationRequestInput represents what a user could set as input for creating recipes.
 	RecipePrepTaskWithinRecipeCreationRequestInput struct {
-		_                                      struct{}
+		_ struct{}
+
 		MaximumTimeBufferBeforeRecipeInSeconds *uint32                                               `json:"maximumTimeBufferBeforeRecipeInSeconds"`
 		MinimumStorageTemperatureInCelsius     *float32                                              `json:"minimumStorageTemperatureInCelsius"`
 		MaximumStorageTemperatureInCelsius     *float32                                              `json:"maximumStorageTemperatureInCelsius"`
@@ -92,7 +95,8 @@ type (
 
 	// RecipePrepTaskDatabaseCreationInput represents what a user could set as input for creating recipes.
 	RecipePrepTaskDatabaseCreationInput struct {
-		_                                      struct{}
+		_ struct{}
+
 		MaximumTimeBufferBeforeRecipeInSeconds *uint32
 		MinimumStorageTemperatureInCelsius     *float32
 		MaximumStorageTemperatureInCelsius     *float32
