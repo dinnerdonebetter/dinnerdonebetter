@@ -342,6 +342,7 @@ func (q *Querier) createRecipeStep(ctx context.Context, db database.SQLQueryExec
 		BelongsToRecipe:               input.BelongsToRecipe,
 		StartTimerAutomatically:       input.StartTimerAutomatically,
 		CreatedAt:                     q.currentTime(),
+		Media:                         []*types.RecipeMedia{},
 	}
 
 	for i, ingredientInput := range input.Ingredients {

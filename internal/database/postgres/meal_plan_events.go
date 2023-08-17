@@ -326,7 +326,7 @@ func (q *Querier) createMealPlanEvent(ctx context.Context, querier database.SQLQ
 		opt, createErr := q.createMealPlanOption(ctx, querier, option, len(input.Options) == 1)
 		if createErr != nil {
 			q.rollbackTransaction(ctx, querier)
-			return nil, observability.PrepareError(createErr, span, "creating meal plan option for meal plan")
+			return nil, observability.PrepareError(createErr, span, "creating meal plan option for meal plan event")
 		}
 		x.Options = append(x.Options, opt)
 	}

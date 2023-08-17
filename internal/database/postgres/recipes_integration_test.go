@@ -24,32 +24,7 @@ func buildRecipeForTestCreation(t *testing.T, ctx context.Context, userID string
 	}
 
 	recipeStepID := identifiers.New()
-
-	validIngredientState := createValidIngredientStateForTest(t, ctx, nil, dbc)
-
 	exampleRecipe := fakes.BuildFakeRecipe()
-	exampleRecipe.Media = []*types.RecipeMedia{}
-
-	preparation := createValidPreparationForTest(t, ctx, nil, dbc)
-	ingredient := createValidIngredientForTest(t, ctx, nil, dbc)
-	measurementUnit1 := createValidMeasurementUnitForTest(t, ctx, nil, dbc)
-	recipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
-	recipeStepIngredient.Ingredient = ingredient
-	recipeStepIngredient.MeasurementUnit = *measurementUnit1
-	recipeStepIngredient.BelongsToRecipeStep = recipeStepID
-
-	instrument := createValidInstrumentForTest(t, ctx, nil, dbc)
-	recipeStepInstrument := fakes.BuildFakeRecipeStepInstrument()
-	recipeStepInstrument.Instrument = instrument
-	recipeStepInstrument.BelongsToRecipeStep = recipeStepID
-
-	measurementUnit2 := createValidMeasurementUnitForTest(t, ctx, nil, dbc)
-	exampleVessel := fakes.BuildFakeValidVessel()
-	exampleVessel.CapacityUnit = measurementUnit2
-	vessel := createValidVesselForTest(t, ctx, exampleVessel, dbc)
-	recipeStepVessel := fakes.BuildFakeRecipeStepVessel()
-	recipeStepVessel.Vessel = vessel
-	recipeStepVessel.BelongsToRecipeStep = recipeStepID
 
 	exampleRecipeMedia := fakes.BuildFakeRecipeMedia()
 	exampleRecipeMedia.BelongsToRecipe = &exampleRecipe.ID
@@ -67,52 +42,14 @@ func buildRecipeForTestCreation(t *testing.T, ctx context.Context, userID string
 			SatisfiesRecipeStep:     true,
 		},
 	}
-
 	exampleRecipe.PrepTasks = []*types.RecipePrepTask{
 		exampleRecipePrepTask,
 	}
 
-	exampleRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
-	exampleRecipeStepProduct.BelongsToRecipeStep = recipeStepID
-	exampleRecipeStepProduct.MeasurementUnit = measurementUnit1
-
-	exampleRecipeStepCompletionCondition := fakes.BuildFakeRecipeStepCompletionCondition()
-	exampleRecipeStepCompletionCondition.BelongsToRecipeStep = recipeStepID
-	exampleRecipeStepCompletionCondition.IngredientState = *validIngredientState
-	exampleRecipeStepCompletionCondition.Ingredients = []*types.RecipeStepCompletionConditionIngredient{
-		{
-			ID:                                     identifiers.New(),
-			BelongsToRecipeStepCompletionCondition: exampleRecipeStepCompletionCondition.ID,
-			RecipeStepIngredient:                   recipeStepIngredient.ID,
-		},
-	}
-
 	exampleRecipe.Steps = []*types.RecipeStep{
-		{
-			BelongsToRecipe: exampleRecipe.ID,
-			ID:              recipeStepID,
-			Preparation:     *preparation,
-			Index:           0,
-			Ingredients: []*types.RecipeStepIngredient{
-				recipeStepIngredient,
-			},
-			Instruments: []*types.RecipeStepInstrument{
-				recipeStepInstrument,
-			},
-			Vessels: []*types.RecipeStepVessel{
-				recipeStepVessel,
-			},
-			Media: []*types.RecipeMedia{
-				exampleRecipeMedia,
-			},
-			Products: []*types.RecipeStepProduct{
-				exampleRecipeStepProduct,
-			},
-			CompletionConditions: []*types.RecipeStepCompletionCondition{
-				exampleRecipeStepCompletionCondition,
-			},
-		},
+		buildRecipeStepForTestCreation(t, ctx, exampleRecipe.ID, dbc),
 	}
+	exampleRecipePrepTask.TaskSteps[0].BelongsToRecipeStep = exampleRecipe.Steps[0].ID
 	exampleRecipe.CreatedByUser = userID
 
 	exampleRecipe.Media = []*types.RecipeMedia{}

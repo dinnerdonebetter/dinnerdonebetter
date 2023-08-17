@@ -1,4 +1,6 @@
 PWD                           := $(shell pwd)
+ME                            := $(shell id -u)
+MY_GROUP					  := $(shell id -g)
 GOPATH                        := $(GOPATH)
 ARTIFACTS_DIR                 := artifacts
 COVERAGE_OUT                  := $(ARTIFACTS_DIR)/coverage.out
@@ -136,7 +138,7 @@ pre_lint:
 .PHONY: lint_docker
 lint_docker:
 	@docker pull --quiet $(CONTAINER_LINTER_IMAGE)
-	docker run --rm --volume $(PWD):$(PWD) --workdir=$(PWD) $(CONTAINER_LINTER_IMAGE) test --policy docker_security.rego `find . -type f -name "*.Dockerfile"`
+	docker run --rm --volume $(PWD):$(PWD) --workdir=$(PWD) --user $(ME):$(MY_GROUP) $(CONTAINER_LINTER_IMAGE) test --policy docker_security.rego `find . -type f -name "*.Dockerfile"`
 
 .PHONY: queries_lint
 queries_lint:
@@ -144,10 +146,12 @@ queries_lint:
 	docker run --rm \
 		--volume $(PWD):/src \
 		--workdir /src \
+		--user $(ME):$(MY_GROUP) \
 		$(SQL_GENERATOR_IMAGE) compile --no-database --no-remote
 	docker run --rm \
 		--volume $(PWD):/src \
 		--workdir /src \
+		--user $(ME):$(MY_GROUP) \
 		$(SQL_GENERATOR_IMAGE) vet --no-database --no-remote
 
 .PHONY: querier
@@ -156,6 +160,7 @@ querier: queries_lint
 	docker run --rm \
 		--volume $(PWD):/src \
 		--workdir /src \
+		--user $(ME):$(MY_GROUP) \
 	$(SQL_GENERATOR_IMAGE) generate
 
 .PHONY: golang_lint
