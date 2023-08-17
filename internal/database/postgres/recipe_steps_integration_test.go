@@ -109,7 +109,7 @@ func createRecipeStepForTest(t *testing.T, ctx context.Context, recipeID string,
 	assert.NoError(t, err)
 	require.NotNil(t, created)
 
-	exampleRecipeStep.Media = []*types.RecipeMedia{}
+	exampleRecipeStep.Media = nil
 	exampleRecipeStep.CreatedAt = created.CreatedAt
 	exampleRecipeStep.Preparation = types.ValidPreparation{ID: created.Preparation.ID}
 
