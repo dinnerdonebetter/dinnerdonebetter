@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 	_ "embed"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
@@ -41,13 +42,13 @@ var (
 )
 
 // scanRecipeStepCompletionConditionWithIngredients takes a database Scanner (i.e. *sql.Row) and scans the result into a recipe step completion condition struct.
-func (q *Querier) scanRecipeStepCompletionConditionWithIngredients(ctx context.Context, scan database.ResultIterator, includeCounts bool) (x *types.RecipeStepCompletionCondition, filteredCount, totalCount uint64, err error) {
+func (q *Querier) scanRecipeStepCompletionConditionWithIngredients(ctx context.Context, rows database.ResultIterator, includeCounts bool) (x *types.RecipeStepCompletionCondition, filteredCount, totalCount uint64, err error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	x = &types.RecipeStepCompletionCondition{}
 
-	for scan.Next() {
+	for rows.Next() {
 		y := &types.RecipeStepCompletionConditionIngredient{}
 
 		targetVars := []any{
@@ -77,11 +78,15 @@ func (q *Querier) scanRecipeStepCompletionConditionWithIngredients(ctx context.C
 			targetVars = append(targetVars, &filteredCount, &totalCount)
 		}
 
-		if err = scan.Scan(targetVars...); err != nil {
+		if err = rows.Scan(targetVars...); err != nil {
 			return nil, filteredCount, totalCount, observability.PrepareError(err, span, "")
 		}
 
 		x.Ingredients = append(x.Ingredients, y)
+	}
+
+	if x.ID == "" {
+		return nil, 0, 0, sql.ErrNoRows
 	}
 
 	return x, filteredCount, totalCount, nil
