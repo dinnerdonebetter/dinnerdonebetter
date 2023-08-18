@@ -991,13 +991,14 @@ SELECT
 	recipe_step_completion_conditions.created_at,
 	recipe_step_completion_conditions.last_updated_at,
 	recipe_step_completion_conditions.archived_at
-FROM recipe_step_completion_condition_ingredients
-	     JOIN recipe_step_completion_conditions ON recipe_step_completion_condition_ingredients.belongs_to_recipe_step_completion_condition = recipe_step_completion_conditions.id
-	     JOIN recipe_steps ON recipe_step_completion_conditions.belongs_to_recipe_step = recipe_steps.id
-	     JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
-	     JOIN valid_ingredient_states ON recipe_step_completion_conditions.ingredient_state = valid_ingredient_states.id
+FROM recipe_step_completion_conditions
+    JOIN recipe_step_completion_condition_ingredients ON recipe_step_completion_condition_ingredients.belongs_to_recipe_step_completion_condition = recipe_step_completion_conditions.id
+    JOIN recipe_steps ON recipe_step_completion_conditions.belongs_to_recipe_step = recipe_steps.id
+    JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
+    JOIN valid_ingredient_states ON recipe_step_completion_conditions.ingredient_state = valid_ingredient_states.id
 WHERE recipe_step_completion_conditions.archived_at IS NULL
-	AND recipe_step_completion_condition_ingredients.archived_at IS NULL
+      AND recipe_step_completion_condition_ingredients.archived_at IS NULL
+      AND recipe_step_completion_condition_ingredients.archived_at IS NULL
 	AND recipe_step_completion_conditions.belongs_to_recipe_step = $2
 	AND recipe_step_completion_conditions.id = $3
 	AND recipe_steps.archived_at IS NULL

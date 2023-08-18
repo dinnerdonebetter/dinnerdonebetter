@@ -19,15 +19,21 @@ func createRecipeStepCompletionConditionForTest(t *testing.T, ctx context.Contex
 
 	// create
 	if exampleRecipeStepCompletionCondition == nil {
-		user := createUserForTest(t, ctx, nil, dbc)
-		exampleRecipe := buildRecipeForTestCreation(t, ctx, user.ID, dbc)
-		createdRecipe := createRecipeForTest(t, ctx, exampleRecipe, dbc, true)
-		exampleRecipeStep := createdRecipe.Steps[0]
-
-		exampleRecipeStepCompletionCondition = fakes.BuildFakeRecipeStepCompletionCondition()
-		exampleRecipeStepCompletionCondition.BelongsToRecipeStep = exampleRecipeStep.ID
+		t.Fatal("exampleRecipeStepCompletionCondition must not be nil")
 	}
 	dbInput := converters.ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionDatabaseCreationInput(exampleRecipeStepCompletionCondition)
+
+	recipe, getRecipeErr := dbc.GetRecipe(ctx, recipeID)
+	require.NoError(t, getRecipeErr)
+	require.NotNil(t, recipe)
+
+	recipeStep, getRecipeStepErr := dbc.GetRecipeStep(ctx, recipeID, exampleRecipeStepCompletionCondition.BelongsToRecipeStep)
+	require.NoError(t, getRecipeStepErr)
+	require.NotNil(t, recipeStep)
+
+	ingredientState, getIngredientStateErr := dbc.GetValidIngredientState(ctx, dbInput.IngredientStateID)
+	require.NoError(t, getIngredientStateErr)
+	require.NotNil(t, ingredientState)
 
 	created, err := dbc.CreateRecipeStepCompletionCondition(ctx, dbInput)
 	assert.NoError(t, err)
@@ -38,7 +44,7 @@ func createRecipeStepCompletionConditionForTest(t *testing.T, ctx context.Contex
 	exampleRecipeStepCompletionCondition.Ingredients = created.Ingredients
 	assert.Equal(t, exampleRecipeStepCompletionCondition, created)
 
-	recipeStepCompletionCondition, err := dbc.GetRecipeStepCompletionCondition(ctx, recipeID, created.BelongsToRecipeStep, created.ID)
+	recipeStepCompletionCondition, err := dbc.GetRecipeStepCompletionCondition(ctx, recipe.ID, recipeStep.ID, created.ID)
 	require.NoError(t, err)
 	require.NotNil(t, recipeStepCompletionCondition)
 
@@ -48,7 +54,7 @@ func createRecipeStepCompletionConditionForTest(t *testing.T, ctx context.Contex
 
 	require.Equal(t, exampleRecipeStepCompletionCondition, recipeStepCompletionCondition)
 
-	return created
+	return recipeStepCompletionCondition
 }
 
 func TestQuerier_Integration_RecipeStepCompletionConditions(t *testing.T) {
@@ -85,9 +91,8 @@ func TestQuerier_Integration_RecipeStepCompletionConditions(t *testing.T) {
 		},
 	}
 
-	createdRecipeStepCompletionConditions := []*types.RecipeStepCompletionCondition{}
-
 	// create
+	createdRecipeStepCompletionConditions := []*types.RecipeStepCompletionCondition{}
 	createdRecipeStepCompletionConditions = append(createdRecipeStepCompletionConditions, createRecipeStepCompletionConditionForTest(t, ctx, exampleRecipe.ID, exampleRecipeStepCompletionCondition, dbc))
 
 	// fetch as list

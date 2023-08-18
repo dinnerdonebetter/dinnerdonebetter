@@ -10,15 +10,18 @@ import (
 // BuildFakeRecipeStepCompletionCondition builds a faked recipe step ingredient.
 // NOTE: this currently represents a typical recipe step ingredient with a valid ingredient and not a product.
 func BuildFakeRecipeStepCompletionCondition() *types.RecipeStepCompletionCondition {
+	id := BuildFakeID()
 	var ingredients []*types.RecipeStepCompletionConditionIngredient
 	for i := 0; i < exampleQuantity; i++ {
-		ingredients = append(ingredients, BuildFakeRecipeStepCompletionConditionIngredient())
+		ingredient := BuildFakeRecipeStepCompletionConditionIngredient()
+		ingredient.BelongsToRecipeStepCompletionCondition = id
+		ingredients = append(ingredients, ingredient)
 	}
 
 	return &types.RecipeStepCompletionCondition{
 		Optional:            fake.Bool(),
 		IngredientState:     *BuildFakeValidIngredientState(),
-		ID:                  BuildFakeID(),
+		ID:                  id,
 		BelongsToRecipeStep: BuildFakeID(),
 		Notes:               buildUniqueString(),
 		Ingredients:         ingredients,

@@ -31,13 +31,13 @@ func (s *TestSuite) TestRecipeStepCompletionConditions_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
+			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.user, testClients.user, nil)
 
 			createdRecipeStep := createdRecipe.Steps[0]
 			require.NotEmpty(t, createdRecipeStep.ID, "created recipe step ID must not be empty")
 
 			// create ingredient state
-			createdValidIngredientState := createValidIngredientStateForTest(t, ctx, testClients.admin)
+			createdValidIngredientState := createValidIngredientStateForTest(t, ctx, testClients.user)
 
 			input := &types.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput{
 				IngredientStateID:   createdValidIngredientState.ID,
@@ -51,12 +51,12 @@ func (s *TestSuite) TestRecipeStepCompletionConditions_CompleteLifecycle() {
 				},
 			}
 
-			createdRecipeStepCompletionCondition, err := testClients.admin.CreateRecipeStepCompletionCondition(ctx, createdRecipe.ID, createdRecipeStep.ID, input)
+			createdRecipeStepCompletionCondition, err := testClients.user.CreateRecipeStepCompletionCondition(ctx, createdRecipe.ID, createdRecipeStep.ID, input)
 			requireNotNilAndNoProblems(t, createdRecipeStepCompletionCondition, err)
 
 			createdRecipeStepCompletionCondition.Notes = t.Name() + " updated"
 
-			require.NoError(t, testClients.admin.UpdateRecipeStepCompletionCondition(ctx, createdRecipe.ID, createdRecipeStepCompletionCondition))
+			require.NoError(t, testClients.user.UpdateRecipeStepCompletionCondition(ctx, createdRecipe.ID, createdRecipeStepCompletionCondition))
 
 			actual, err := testClients.user.GetRecipeStepCompletionCondition(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepCompletionCondition.ID)
 			requireNotNilAndNoProblems(t, actual, err)
@@ -80,7 +80,7 @@ func (s *TestSuite) TestRecipeStepCompletionConditions_CompleteLifecycle() {
 
 			assert.NoError(t, testClients.user.ArchiveRecipeStep(ctx, createdRecipe.ID, createdRecipeStep.ID))
 
-			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
+			assert.NoError(t, testClients.user.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
 }
