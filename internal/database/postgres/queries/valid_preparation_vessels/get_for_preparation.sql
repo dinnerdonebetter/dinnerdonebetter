@@ -1,5 +1,4 @@
--- name: GetValidPreparationVessel :one
-
+-- name: GetValidPreparationVesselsForPreparation :many
 SELECT
     valid_preparation_vessels.id as valid_preparation_vessel_id,
     valid_preparation_vessels.notes as valid_preparation_vessel_notes,
@@ -57,15 +56,53 @@ SELECT
     valid_vessels.archived_at as valid_vessel_archived_at,
     valid_preparation_vessels.created_at as valid_preparation_vessel_created_at,
     valid_preparation_vessels.last_updated_at as valid_preparation_vessel_last_updated_at,
-    valid_preparation_vessels.archived_at as valid_preparation_vessel_archived_at
+    valid_preparation_vessels.archived_at as valid_preparation_vessel_archived_at,
+    (
+        SELECT
+            COUNT(valid_preparation_vessels.id)
+        FROM
+            valid_preparation_vessels
+        WHERE
+            valid_preparation_vessels.archived_at IS NULL
+            AND valid_preparation_vessels.created_at > COALESCE(sqlc.narg(created_before), (SELECT NOW() - interval '999 years'))
+            AND valid_preparation_vessels.created_at < COALESCE(sqlc.narg(created_after), (SELECT NOW() + interval '999 years'))
+            AND (
+                valid_preparation_vessels.last_updated_at IS NULL
+                OR valid_preparation_vessels.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - interval '999 years'))
+            )
+            AND (
+                valid_preparation_vessels.last_updated_at IS NULL
+                OR valid_preparation_vessels.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + interval '999 years'))
+            )
+    ) as filtered_count,
+    (
+        SELECT
+            COUNT(valid_preparation_vessels.id)
+        FROM
+            valid_preparation_vessels
+        WHERE
+            valid_preparation_vessels.archived_at IS NULL
+    ) as total_count
 FROM
-	valid_preparation_vessels
-	 JOIN valid_vessels ON valid_preparation_vessels.valid_vessel_id = valid_vessels.id
-	 LEFT JOIN valid_measurement_units ON valid_vessels.capacity_unit = valid_measurement_units.id
-	 JOIN valid_preparations ON valid_preparation_vessels.valid_preparation_id = valid_preparations.id
+    valid_preparation_vessels
+        JOIN valid_vessels ON valid_preparation_vessels.valid_vessel_id = valid_vessels.id
+        JOIN valid_preparations ON valid_preparation_vessels.valid_preparation_id = valid_preparations.id
+        LEFT JOIN valid_measurement_units ON valid_vessels.capacity_unit = valid_measurement_units.id
 WHERE
-	valid_preparation_vessels.archived_at IS NULL
-	AND valid_vessels.archived_at IS NULL
-	AND valid_measurement_units.archived_at IS NULL
-	AND valid_preparations.archived_at IS NULL
-	AND valid_preparation_vessels.id = $1;
+    valid_preparation_vessels.archived_at IS NULL
+    AND valid_vessels.archived_at IS NULL
+    AND valid_preparations.archived_at IS NULL
+    AND valid_measurement_units.archived_at IS NULL
+    AND valid_preparation_vessels.created_at > COALESCE(sqlc.narg(created_before), (SELECT NOW() - interval '999 years'))
+    AND valid_preparation_vessels.created_at < COALESCE(sqlc.narg(created_after), (SELECT NOW() + interval '999 years'))
+    AND (
+        valid_preparation_vessels.last_updated_at IS NULL
+        OR valid_preparation_vessels.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - interval '999 years'))
+    )
+    AND (
+        valid_preparation_vessels.last_updated_at IS NULL
+        OR valid_preparation_vessels.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + interval '999 years'))
+    )
+    AND valid_preparation_vessels.valid_preparation_id = ANY(sqlc.arg(ids)::text[])
+OFFSET sqlc.narg(query_offset)
+LIMIT sqlc.narg(query_limit);

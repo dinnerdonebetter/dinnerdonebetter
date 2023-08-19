@@ -246,6 +246,14 @@ func int32PointerFromNullInt32(i sql.NullInt32) *int32 {
 	return nil
 }
 
+func float32FromNullFloat64(f sql.NullFloat64) float32 {
+	if f.Valid {
+		return float32(f.Float64)
+	}
+
+	return 0
+}
+
 func defaultTimeFunc() time.Time {
 	return time.Now()
 }

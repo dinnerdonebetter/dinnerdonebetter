@@ -131,6 +131,7 @@ func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *t
 		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
 		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
 		HouseholdID:   householdID,
 	})
 	if err != nil {
