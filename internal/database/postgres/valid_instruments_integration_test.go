@@ -88,8 +88,17 @@ func TestQuerier_Integration_ValidInstruments(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, validInstruments.Data, byName)
 
+	random, err := dbc.GetRandomValidInstrument(ctx)
+	assert.NoError(t, err)
+	assert.NotNil(t, random)
+
+	needingIndexing, err := dbc.GetValidInstrumentIDsThatNeedSearchIndexing(ctx)
+	assert.NoError(t, err)
+	assert.NotNil(t, needingIndexing)
+
 	// delete
 	for _, validInstrument := range createdValidInstruments {
+		assert.NoError(t, dbc.MarkValidInstrumentAsIndexed(ctx, validInstrument.ID))
 		assert.NoError(t, dbc.ArchiveValidInstrument(ctx, validInstrument.ID))
 
 		var exists bool

@@ -13,6 +13,77 @@ import (
 	"github.com/lib/pq"
 )
 
+const getValidInstrumentWithIDs = `-- name: GetValidInstrumentWithIDs :many
+
+SELECT
+    valid_instruments.id,
+    valid_instruments.name,
+    valid_instruments.plural_name,
+    valid_instruments.description,
+    valid_instruments.icon_path,
+    valid_instruments.usable_for_storage,
+    valid_instruments.display_in_summary_lists,
+    valid_instruments.include_in_generated_instructions,
+    valid_instruments.slug,
+    valid_instruments.created_at,
+    valid_instruments.last_updated_at,
+    valid_instruments.archived_at
+FROM valid_instruments
+WHERE valid_instruments.archived_at IS NULL
+    AND valid_instruments.id = ANY($1::text[])
+`
+
+type GetValidInstrumentWithIDsRow struct {
+	CreatedAt                      time.Time
+	LastUpdatedAt                  sql.NullTime
+	ArchivedAt                     sql.NullTime
+	ID                             string
+	Name                           string
+	PluralName                     string
+	Description                    string
+	IconPath                       string
+	Slug                           string
+	UsableForStorage               bool
+	DisplayInSummaryLists          bool
+	IncludeInGeneratedInstructions bool
+}
+
+func (q *Queries) GetValidInstrumentWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetValidInstrumentWithIDsRow, error) {
+	rows, err := db.QueryContext(ctx, getValidInstrumentWithIDs, pq.Array(ids))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetValidInstrumentWithIDsRow{}
+	for rows.Next() {
+		var i GetValidInstrumentWithIDsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.PluralName,
+			&i.Description,
+			&i.IconPath,
+			&i.UsableForStorage,
+			&i.DisplayInSummaryLists,
+			&i.IncludeInGeneratedInstructions,
+			&i.Slug,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getValidMeasurementUnitsWithIDs = `-- name: GetValidMeasurementUnitsWithIDs :many
 
 SELECT

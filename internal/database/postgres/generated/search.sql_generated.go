@@ -496,7 +496,8 @@ SELECT
 	valid_instruments.archived_at
 FROM valid_instruments
 WHERE valid_instruments.archived_at IS NULL
-	AND valid_instruments.name ILIKE $1 LIMIT 50
+	AND valid_instruments.name ILIKE '%' || $1::text || '%'
+    LIMIT 50
 `
 
 type SearchForValidInstrumentsRow struct {
@@ -514,8 +515,8 @@ type SearchForValidInstrumentsRow struct {
 	IncludeInGeneratedInstructions bool
 }
 
-func (q *Queries) SearchForValidInstruments(ctx context.Context, db DBTX, name string) ([]*SearchForValidInstrumentsRow, error) {
-	rows, err := db.QueryContext(ctx, searchForValidInstruments, name)
+func (q *Queries) SearchForValidInstruments(ctx context.Context, db DBTX, query string) ([]*SearchForValidInstrumentsRow, error) {
+	rows, err := db.QueryContext(ctx, searchForValidInstruments, query)
 	if err != nil {
 		return nil, err
 	}

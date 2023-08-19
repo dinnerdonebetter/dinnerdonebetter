@@ -1019,13 +1019,17 @@ func (q *Queries) GetValidIngredients(ctx context.Context, db DBTX) ([]*GetValid
 const getValidInstruments = `-- name: GetValidInstruments :many
 
 SELECT
-	valid_instruments.id,
-	valid_instruments.name,
-	valid_instruments.plural_name,
-	valid_instruments.description,
-	valid_instruments.icon_path,
-	valid_instruments.created_at,
-	valid_instruments.last_updated_at,
+    valid_instruments.id,
+    valid_instruments.name,
+    valid_instruments.plural_name,
+    valid_instruments.description,
+    valid_instruments.icon_path,
+    valid_instruments.usable_for_storage,
+    valid_instruments.display_in_summary_lists,
+    valid_instruments.include_in_generated_instructions,
+    valid_instruments.slug,
+    valid_instruments.created_at,
+    valid_instruments.last_updated_at,
 	valid_instruments.archived_at,
 	(
 	 SELECT
@@ -1059,37 +1063,44 @@ GROUP BY
 	valid_instruments.id
 ORDER BY
 	valid_instruments.id
-	LIMIT $5
+    OFFSET $5
+	LIMIT $6
 `
 
 type GetValidInstrumentsParams struct {
-	CreatedAt       time.Time
-	CreatedAt_2     time.Time
-	LastUpdatedAt   sql.NullTime
-	LastUpdatedAt_2 sql.NullTime
-	Limit           int32
+	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	UpdatedBefore sql.NullTime
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
 }
 
 type GetValidInstrumentsRow struct {
-	ID            string
-	Name          string
-	PluralName    string
-	Description   string
-	IconPath      string
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	ArchivedAt    sql.NullTime
-	FilteredCount int64
-	TotalCount    int64
+	CreatedAt                      time.Time
+	ArchivedAt                     sql.NullTime
+	LastUpdatedAt                  sql.NullTime
+	Description                    string
+	IconPath                       string
+	Slug                           string
+	ID                             string
+	PluralName                     string
+	Name                           string
+	FilteredCount                  int64
+	TotalCount                     int64
+	UsableForStorage               bool
+	DisplayInSummaryLists          bool
+	IncludeInGeneratedInstructions bool
 }
 
 func (q *Queries) GetValidInstruments(ctx context.Context, db DBTX, arg *GetValidInstrumentsParams) ([]*GetValidInstrumentsRow, error) {
 	rows, err := db.QueryContext(ctx, getValidInstruments,
-		arg.CreatedAt,
-		arg.CreatedAt_2,
-		arg.LastUpdatedAt,
-		arg.LastUpdatedAt_2,
-		arg.Limit,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedAfter,
+		arg.UpdatedBefore,
+		arg.QueryOffset,
+		arg.QueryLimit,
 	)
 	if err != nil {
 		return nil, err
@@ -1104,6 +1115,10 @@ func (q *Queries) GetValidInstruments(ctx context.Context, db DBTX, arg *GetVali
 			&i.PluralName,
 			&i.Description,
 			&i.IconPath,
+			&i.UsableForStorage,
+			&i.DisplayInSummaryLists,
+			&i.IncludeInGeneratedInstructions,
+			&i.Slug,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,

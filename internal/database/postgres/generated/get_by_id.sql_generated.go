@@ -483,59 +483,6 @@ func (q *Queries) GetValidIngredientByID(ctx context.Context, db DBTX) (*GetVali
 	return &i, err
 }
 
-const getValidInstrumentByID = `-- name: GetValidInstrumentByID :one
-
-SELECT valid_instruments.id,
-       valid_instruments.name,
-       valid_instruments.plural_name,
-       valid_instruments.description,
-       valid_instruments.icon_path,
-       valid_instruments.usable_for_storage,
-       valid_instruments.display_in_summary_lists,
-       valid_instruments.include_in_generated_instructions,
-       valid_instruments.slug,
-       valid_instruments.created_at,
-       valid_instruments.last_updated_at,
-       valid_instruments.archived_at
-  FROM valid_instruments
- WHERE valid_instruments.archived_at IS NULL
-`
-
-type GetValidInstrumentByIDRow struct {
-	CreatedAt                      time.Time
-	LastUpdatedAt                  sql.NullTime
-	ArchivedAt                     sql.NullTime
-	ID                             string
-	Name                           string
-	PluralName                     string
-	Description                    string
-	IconPath                       string
-	Slug                           string
-	UsableForStorage               bool
-	DisplayInSummaryLists          bool
-	IncludeInGeneratedInstructions bool
-}
-
-func (q *Queries) GetValidInstrumentByID(ctx context.Context, db DBTX) (*GetValidInstrumentByIDRow, error) {
-	row := db.QueryRowContext(ctx, getValidInstrumentByID)
-	var i GetValidInstrumentByIDRow
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.PluralName,
-		&i.Description,
-		&i.IconPath,
-		&i.UsableForStorage,
-		&i.DisplayInSummaryLists,
-		&i.IncludeInGeneratedInstructions,
-		&i.Slug,
-		&i.CreatedAt,
-		&i.LastUpdatedAt,
-		&i.ArchivedAt,
-	)
-	return &i, err
-}
-
 const getValidMeasurementUnitByID = `-- name: GetValidMeasurementUnitByID :one
 
 SELECT valid_measurement_units.id,
