@@ -499,5 +499,10 @@ var (
 			Description: "user indexing",
 			Script:      fetchMigration("00090_add_indexing_to_users"),
 		},
+		{
+			Version:     91,
+			Description: "non-nullable volumetric measurement unit",
+			Script:      fetchMigration("00091_non_nullable_volumetric_measurement_units"),
+		},
 	}
 )

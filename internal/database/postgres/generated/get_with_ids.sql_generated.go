@@ -13,6 +13,80 @@ import (
 	"github.com/lib/pq"
 )
 
+const getValidMeasurementUnitsWithIDs = `-- name: GetValidMeasurementUnitsWithIDs :many
+
+SELECT
+	valid_measurement_units.id,
+	valid_measurement_units.name,
+	valid_measurement_units.description,
+	valid_measurement_units.volumetric,
+	valid_measurement_units.icon_path,
+	valid_measurement_units.universal,
+	valid_measurement_units.metric,
+	valid_measurement_units.imperial,
+	valid_measurement_units.slug,
+	valid_measurement_units.plural_name,
+	valid_measurement_units.created_at,
+	valid_measurement_units.last_updated_at,
+	valid_measurement_units.archived_at
+FROM valid_measurement_units
+WHERE valid_measurement_units.archived_at IS NULL
+	AND valid_measurement_units.id = ANY($1::text[])
+`
+
+type GetValidMeasurementUnitsWithIDsRow struct {
+	CreatedAt     time.Time
+	ArchivedAt    sql.NullTime
+	LastUpdatedAt sql.NullTime
+	PluralName    string
+	Name          string
+	Description   string
+	ID            string
+	IconPath      string
+	Slug          string
+	Volumetric    sql.NullBool
+	Imperial      bool
+	Metric        bool
+	Universal     bool
+}
+
+func (q *Queries) GetValidMeasurementUnitsWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetValidMeasurementUnitsWithIDsRow, error) {
+	rows, err := db.QueryContext(ctx, getValidMeasurementUnitsWithIDs, pq.Array(ids))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetValidMeasurementUnitsWithIDsRow{}
+	for rows.Next() {
+		var i GetValidMeasurementUnitsWithIDsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.Volumetric,
+			&i.IconPath,
+			&i.Universal,
+			&i.Metric,
+			&i.Imperial,
+			&i.Slug,
+			&i.PluralName,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getValidPreparationsWithIDs = `-- name: GetValidPreparationsWithIDs :many
 
 SELECT

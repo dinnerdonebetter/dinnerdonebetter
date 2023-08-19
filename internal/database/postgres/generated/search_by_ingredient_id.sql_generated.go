@@ -34,16 +34,16 @@ SELECT
 	  valid_measurement_units
 	WHERE
 	    valid_measurement_units.archived_at IS NULL
-	    AND valid_measurement_units.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-	    AND valid_measurement_units.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-	    AND (
-	        valid_measurement_units.last_updated_at IS NULL
-	        OR valid_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-	    )
-	    AND (
-	        valid_measurement_units.last_updated_at IS NULL
-	        OR valid_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-	    )
+        AND valid_measurement_units.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+        AND valid_measurement_units.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+        AND (
+            valid_measurement_units.last_updated_at IS NULL
+            OR valid_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+        )
+        AND (
+            valid_measurement_units.last_updated_at IS NULL
+            OR valid_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+        )
 	    AND (
 	        valid_ingredient_measurement_units.valid_ingredient_id = $5
 	        OR valid_measurement_units.universal = true
@@ -58,56 +58,67 @@ SELECT
 	        valid_measurement_units.archived_at IS NULL
 	) as total_count
 FROM valid_measurement_units
-	FULL OUTER JOIN valid_ingredient_measurement_units ON valid_ingredient_measurement_units.valid_measurement_unit_id = valid_measurement_units.id
-	FULL OUTER JOIN valid_ingredients ON valid_ingredient_measurement_units.valid_ingredient_id = valid_ingredients.id
+	JOIN valid_ingredient_measurement_units ON valid_ingredient_measurement_units.valid_measurement_unit_id = valid_measurement_units.id
+	JOIN valid_ingredients ON valid_ingredient_measurement_units.valid_ingredient_id = valid_ingredients.id
 WHERE
 	(
 	    valid_ingredient_measurement_units.valid_ingredient_id = $5
 	    OR valid_measurement_units.universal = true
 	)
-	AND valid_measurement_units.archived_at IS NULL
-	AND valid_ingredient_measurement_units.archived_at IS NULL
-	LIMIT $6
-	OFFSET $7
+    AND valid_measurement_units.archived_at IS NULL
+    AND valid_ingredients.archived_at IS NULL
+    AND valid_ingredient_measurement_units.archived_at IS NULL
+    AND valid_measurement_units.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+    AND valid_measurement_units.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+    AND (
+        valid_measurement_units.last_updated_at IS NULL
+        OR valid_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+    )
+    AND (
+        valid_measurement_units.last_updated_at IS NULL
+        OR valid_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+    )
+	LIMIT $7
+	OFFSET $6
 `
 
 type SearchValidMeasurementUnitsByIngredientIDParams struct {
-	CreatedAt         time.Time
-	CreatedAt_2       time.Time
-	LastUpdatedAt     sql.NullTime
-	LastUpdatedAt_2   sql.NullTime
+	CreatedBefore     sql.NullTime
+	CreatedAfter      sql.NullTime
+	UpdatedBefore     sql.NullTime
+	UpdatedAfter      sql.NullTime
 	ValidIngredientID string
-	Limit             int32
-	Offset            int32
+	QueryOffset       sql.NullInt32
+	QueryLimit        sql.NullInt32
 }
 
 type SearchValidMeasurementUnitsByIngredientIDRow struct {
+	CreatedAt     time.Time
 	LastUpdatedAt sql.NullTime
 	ArchivedAt    sql.NullTime
-	CreatedAt     sql.NullTime
-	Name          sql.NullString
-	Description   sql.NullString
-	ID            sql.NullString
-	IconPath      sql.NullString
-	Slug          sql.NullString
-	PluralName    sql.NullString
+	Name          string
+	Description   string
+	ID            string
+	IconPath      string
+	Slug          string
+	PluralName    string
 	TotalCount    int64
 	FilteredCount int64
 	Volumetric    sql.NullBool
-	Imperial      sql.NullBool
-	Metric        sql.NullBool
-	Universal     sql.NullBool
+	Imperial      bool
+	Metric        bool
+	Universal     bool
 }
 
 func (q *Queries) SearchValidMeasurementUnitsByIngredientID(ctx context.Context, db DBTX, arg *SearchValidMeasurementUnitsByIngredientIDParams) ([]*SearchValidMeasurementUnitsByIngredientIDRow, error) {
 	rows, err := db.QueryContext(ctx, searchValidMeasurementUnitsByIngredientID,
-		arg.CreatedAt,
-		arg.CreatedAt_2,
-		arg.LastUpdatedAt,
-		arg.LastUpdatedAt_2,
+		arg.CreatedBefore,
+		arg.CreatedAfter,
+		arg.UpdatedBefore,
+		arg.UpdatedAfter,
 		arg.ValidIngredientID,
-		arg.Limit,
-		arg.Offset,
+		arg.QueryOffset,
+		arg.QueryLimit,
 	)
 	if err != nil {
 		return nil, err

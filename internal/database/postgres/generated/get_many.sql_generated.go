@@ -1123,6 +1123,372 @@ func (q *Queries) GetValidInstruments(ctx context.Context, db DBTX, arg *GetVali
 	return items, nil
 }
 
+const getValidMeasurementUnits = `-- name: GetValidMeasurementUnits :many
+
+SELECT
+    valid_measurement_units.id,
+    valid_measurement_units.name,
+    valid_measurement_units.description,
+    valid_measurement_units.volumetric,
+    valid_measurement_units.icon_path,
+    valid_measurement_units.universal,
+    valid_measurement_units.metric,
+    valid_measurement_units.imperial,
+    valid_measurement_units.slug,
+    valid_measurement_units.plural_name,
+    valid_measurement_units.created_at,
+    valid_measurement_units.last_updated_at,
+    valid_measurement_units.archived_at,
+    (
+        SELECT
+            COUNT(valid_measurement_units.id)
+        FROM
+            valid_measurement_units
+        WHERE
+            valid_measurement_units.archived_at IS NULL
+            AND valid_measurement_units.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+            AND valid_measurement_units.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+            AND (
+                valid_measurement_units.last_updated_at IS NULL
+                OR valid_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+            )
+            AND (
+                valid_measurement_units.last_updated_at IS NULL
+                OR valid_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+            )
+    ) as filtered_count,
+    (
+        SELECT
+            COUNT(valid_measurement_units.id)
+        FROM
+            valid_measurement_units
+        WHERE
+            valid_measurement_units.archived_at IS NULL
+    ) as total_count
+FROM
+    valid_measurement_units
+WHERE
+    valid_measurement_units.archived_at IS NULL
+    AND valid_measurement_units.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+    AND valid_measurement_units.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+    AND (
+        valid_measurement_units.last_updated_at IS NULL
+        OR valid_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+    )
+    AND (
+        valid_measurement_units.last_updated_at IS NULL
+        OR valid_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+    )
+GROUP BY
+    valid_measurement_units.id
+ORDER BY
+    valid_measurement_units.id
+OFFSET $5
+LIMIT $6
+`
+
+type GetValidMeasurementUnitsParams struct {
+	CreatedBefore sql.NullTime
+	CreatedAfter  sql.NullTime
+	UpdatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
+}
+
+type GetValidMeasurementUnitsRow struct {
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
+	Name          string
+	Description   string
+	ID            string
+	IconPath      string
+	Slug          string
+	PluralName    string
+	TotalCount    int64
+	FilteredCount int64
+	Volumetric    sql.NullBool
+	Imperial      bool
+	Metric        bool
+	Universal     bool
+}
+
+func (q *Queries) GetValidMeasurementUnits(ctx context.Context, db DBTX, arg *GetValidMeasurementUnitsParams) ([]*GetValidMeasurementUnitsRow, error) {
+	rows, err := db.QueryContext(ctx, getValidMeasurementUnits,
+		arg.CreatedBefore,
+		arg.CreatedAfter,
+		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.QueryOffset,
+		arg.QueryLimit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetValidMeasurementUnitsRow{}
+	for rows.Next() {
+		var i GetValidMeasurementUnitsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.Volumetric,
+			&i.IconPath,
+			&i.Universal,
+			&i.Metric,
+			&i.Imperial,
+			&i.Slug,
+			&i.PluralName,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+			&i.FilteredCount,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getValidPreparationInstruments = `-- name: GetValidPreparationInstruments :many
+
+SELECT
+    valid_preparation_instruments.id as valid_preparation_instrument_id,
+    valid_preparation_instruments.notes as valid_preparation_instrument_notes,
+    valid_preparations.id as valid_preparation_id,
+    valid_preparations.name as valid_preparation_name,
+    valid_preparations.description as valid_preparation_description,
+    valid_preparations.icon_path as valid_preparation_icon_path,
+    valid_preparations.yields_nothing as valid_preparation_yields_nothing,
+    valid_preparations.restrict_to_ingredients as valid_preparation_restrict_to_ingredients,
+    valid_preparations.minimum_ingredient_count as valid_preparation_minimum_ingredient_count,
+    valid_preparations.maximum_ingredient_count as valid_preparation_maximum_ingredient_count,
+    valid_preparations.minimum_instrument_count as valid_preparation_minimum_instrument_count,
+    valid_preparations.maximum_instrument_count as valid_preparation_maximum_instrument_count,
+    valid_preparations.temperature_required as valid_preparation_temperature_required,
+    valid_preparations.time_estimate_required as valid_preparation_time_estimate_required,
+    valid_preparations.condition_expression_required as valid_preparation_condition_expression_required,
+    valid_preparations.consumes_vessel as valid_preparation_consumes_vessel,
+    valid_preparations.only_for_vessels as valid_preparation_only_for_vessels,
+    valid_preparations.minimum_vessel_count as valid_preparation_minimum_vessel_count,
+    valid_preparations.maximum_vessel_count as valid_preparation_maximum_vessel_count,
+    valid_preparations.slug as valid_preparation_slug,
+    valid_preparations.past_tense as valid_preparation_past_tense,
+    valid_preparations.created_at as valid_preparation_created_at,
+    valid_preparations.last_updated_at as valid_preparation_last_updated_at,
+    valid_preparations.archived_at as valid_preparation_archived_at,
+    valid_instruments.id as valid_instrument_id,
+    valid_instruments.name as valid_instrument_name,
+    valid_instruments.plural_name as valid_instrument_plural_name,
+    valid_instruments.description as valid_instrument_description,
+    valid_instruments.icon_path as valid_instrument_icon_path,
+    valid_instruments.usable_for_storage as valid_instrument_usable_for_storage,
+    valid_instruments.display_in_summary_lists as valid_instrument_display_in_summary_lists,
+    valid_instruments.include_in_generated_instructions as valid_instrument_include_in_generated_instructions,
+    valid_instruments.slug as valid_instrument_slug,
+    valid_instruments.created_at as valid_instrument_created_at,
+    valid_instruments.last_updated_at as valid_instrument_last_updated_at,
+    valid_instruments.archived_at as valid_instrument_archived_at,
+    valid_preparation_instruments.created_at as valid_preparation_instrument_created_at,
+    valid_preparation_instruments.last_updated_at as valid_preparation_instrument_last_updated_at,
+    valid_preparation_instruments.archived_at as valid_preparation_instrument_archived_at,
+    (
+        SELECT
+            COUNT(valid_preparation_instruments.id)
+        FROM
+            valid_preparation_instruments
+                JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+                JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+        WHERE
+            valid_preparation_instruments.archived_at IS NULL
+            AND valid_instruments.archived_at IS NULL
+            AND valid_preparations.archived_at IS NULL
+            AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+            AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+            AND (
+                valid_preparation_instruments.last_updated_at IS NULL
+                OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+            )
+            AND (
+                valid_preparation_instruments.last_updated_at IS NULL
+                OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+            )
+    ) as filtered_count,
+    (
+        SELECT
+            COUNT(valid_preparation_instruments.id)
+        FROM
+            valid_preparation_instruments
+                JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+                JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+        WHERE
+            valid_preparation_instruments.archived_at IS NULL
+            AND valid_instruments.archived_at IS NULL
+            AND valid_preparations.archived_at IS NULL
+    ) as total_count
+FROM
+    valid_preparation_instruments
+    JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+    JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+WHERE
+    valid_preparation_instruments.archived_at IS NULL
+    AND valid_instruments.archived_at IS NULL
+    AND valid_preparations.archived_at IS NULL
+    AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+    AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+    AND (
+        valid_preparation_instruments.last_updated_at IS NULL
+        OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+    )
+    AND (
+        valid_preparation_instruments.last_updated_at IS NULL
+        OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+    )
+GROUP BY
+    valid_preparation_instruments.id,
+    valid_preparations.id,
+    valid_instruments.id
+ORDER BY
+    valid_preparation_instruments.id
+    LIMIT $6
+    OFFSET $5
+`
+
+type GetValidPreparationInstrumentsParams struct {
+	CreatedBefore sql.NullTime
+	CreatedAfter  sql.NullTime
+	UpdatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
+}
+
+type GetValidPreparationInstrumentsRow struct {
+	ValidPreparationInstrumentCreatedAt           time.Time
+	ValidPreparationCreatedAt                     time.Time
+	ValidInstrumentCreatedAt                      time.Time
+	ValidInstrumentArchivedAt                     sql.NullTime
+	ValidPreparationInstrumentLastUpdatedAt       sql.NullTime
+	ValidPreparationArchivedAt                    sql.NullTime
+	ValidPreparationLastUpdatedAt                 sql.NullTime
+	ValidInstrumentLastUpdatedAt                  sql.NullTime
+	ValidPreparationInstrumentArchivedAt          sql.NullTime
+	ValidPreparationInstrumentID                  string
+	ValidPreparationID                            string
+	ValidInstrumentDescription                    string
+	ValidInstrumentPluralName                     string
+	ValidPreparationName                          string
+	ValidInstrumentIconPath                       string
+	ValidInstrumentName                           string
+	ValidPreparationIconPath                      string
+	ValidInstrumentSlug                           string
+	ValidInstrumentID                             string
+	ValidPreparationSlug                          string
+	ValidPreparationPastTense                     string
+	ValidPreparationInstrumentNotes               string
+	ValidPreparationDescription                   string
+	TotalCount                                    int64
+	FilteredCount                                 int64
+	ValidPreparationMaximumVesselCount            sql.NullInt32
+	ValidPreparationMaximumIngredientCount        sql.NullInt32
+	ValidPreparationMaximumInstrumentCount        sql.NullInt32
+	ValidPreparationMinimumInstrumentCount        int32
+	ValidPreparationMinimumVesselCount            int32
+	ValidPreparationMinimumIngredientCount        int32
+	ValidInstrumentUsableForStorage               bool
+	ValidInstrumentDisplayInSummaryLists          bool
+	ValidInstrumentIncludeInGeneratedInstructions bool
+	ValidPreparationOnlyForVessels                bool
+	ValidPreparationConsumesVessel                bool
+	ValidPreparationConditionExpressionRequired   bool
+	ValidPreparationTimeEstimateRequired          bool
+	ValidPreparationTemperatureRequired           bool
+	ValidPreparationRestrictToIngredients         bool
+	ValidPreparationYieldsNothing                 bool
+}
+
+func (q *Queries) GetValidPreparationInstruments(ctx context.Context, db DBTX, arg *GetValidPreparationInstrumentsParams) ([]*GetValidPreparationInstrumentsRow, error) {
+	rows, err := db.QueryContext(ctx, getValidPreparationInstruments,
+		arg.CreatedBefore,
+		arg.CreatedAfter,
+		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.QueryOffset,
+		arg.QueryLimit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetValidPreparationInstrumentsRow{}
+	for rows.Next() {
+		var i GetValidPreparationInstrumentsRow
+		if err := rows.Scan(
+			&i.ValidPreparationInstrumentID,
+			&i.ValidPreparationInstrumentNotes,
+			&i.ValidPreparationID,
+			&i.ValidPreparationName,
+			&i.ValidPreparationDescription,
+			&i.ValidPreparationIconPath,
+			&i.ValidPreparationYieldsNothing,
+			&i.ValidPreparationRestrictToIngredients,
+			&i.ValidPreparationMinimumIngredientCount,
+			&i.ValidPreparationMaximumIngredientCount,
+			&i.ValidPreparationMinimumInstrumentCount,
+			&i.ValidPreparationMaximumInstrumentCount,
+			&i.ValidPreparationTemperatureRequired,
+			&i.ValidPreparationTimeEstimateRequired,
+			&i.ValidPreparationConditionExpressionRequired,
+			&i.ValidPreparationConsumesVessel,
+			&i.ValidPreparationOnlyForVessels,
+			&i.ValidPreparationMinimumVesselCount,
+			&i.ValidPreparationMaximumVesselCount,
+			&i.ValidPreparationSlug,
+			&i.ValidPreparationPastTense,
+			&i.ValidPreparationCreatedAt,
+			&i.ValidPreparationLastUpdatedAt,
+			&i.ValidPreparationArchivedAt,
+			&i.ValidInstrumentID,
+			&i.ValidInstrumentName,
+			&i.ValidInstrumentPluralName,
+			&i.ValidInstrumentDescription,
+			&i.ValidInstrumentIconPath,
+			&i.ValidInstrumentUsableForStorage,
+			&i.ValidInstrumentDisplayInSummaryLists,
+			&i.ValidInstrumentIncludeInGeneratedInstructions,
+			&i.ValidInstrumentSlug,
+			&i.ValidInstrumentCreatedAt,
+			&i.ValidInstrumentLastUpdatedAt,
+			&i.ValidInstrumentArchivedAt,
+			&i.ValidPreparationInstrumentCreatedAt,
+			&i.ValidPreparationInstrumentLastUpdatedAt,
+			&i.ValidPreparationInstrumentArchivedAt,
+			&i.FilteredCount,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getValidPreparationVessels = `-- name: GetValidPreparationVessels :many
 
 SELECT

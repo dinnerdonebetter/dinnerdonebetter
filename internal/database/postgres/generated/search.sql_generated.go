@@ -567,7 +567,7 @@ SELECT
 	valid_measurement_units.last_updated_at,
 	valid_measurement_units.archived_at
 FROM valid_measurement_units
-WHERE (valid_measurement_units.name ILIKE $1 OR valid_measurement_units.universal is TRUE)
+WHERE (valid_measurement_units.name ILIKE '%' || $1::text || '%' OR valid_measurement_units.universal is TRUE)
 AND valid_measurement_units.archived_at IS NULL
 LIMIT 50
 `
@@ -588,8 +588,8 @@ type SearchForValidMeasurementUnitsRow struct {
 	Universal     bool
 }
 
-func (q *Queries) SearchForValidMeasurementUnits(ctx context.Context, db DBTX, name string) ([]*SearchForValidMeasurementUnitsRow, error) {
-	rows, err := db.QueryContext(ctx, searchForValidMeasurementUnits, name)
+func (q *Queries) SearchForValidMeasurementUnits(ctx context.Context, db DBTX, query string) ([]*SearchForValidMeasurementUnitsRow, error) {
+	rows, err := db.QueryContext(ctx, searchForValidMeasurementUnits, query)
 	if err != nil {
 		return nil, err
 	}

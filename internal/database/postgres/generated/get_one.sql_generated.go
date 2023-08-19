@@ -3177,139 +3177,141 @@ func (q *Queries) GetValidPreparation(ctx context.Context, db DBTX, id string) (
 const getValidPreparationInstrument = `-- name: GetValidPreparationInstrument :one
 
 SELECT
-	valid_preparation_instruments.id,
-	valid_preparation_instruments.notes,
-	valid_preparations.id,
-	valid_preparations.name,
-	valid_preparations.description,
-	valid_preparations.icon_path,
-	valid_preparations.yields_nothing,
-	valid_preparations.restrict_to_ingredients,
-	valid_preparations.minimum_ingredient_count,
-	valid_preparations.maximum_ingredient_count,
-	valid_preparations.minimum_instrument_count,
-	valid_preparations.maximum_instrument_count,
-	valid_preparations.temperature_required,
-	valid_preparations.time_estimate_required,
-	valid_preparations.condition_expression_required,
-    valid_preparations.consumes_vessel,
-    valid_preparations.only_for_vessels,
-    valid_preparations.minimum_vessel_count,
-    valid_preparations.maximum_vessel_count,
-	valid_preparations.slug,
-	valid_preparations.past_tense,
-	valid_preparations.created_at,
-	valid_preparations.last_updated_at,
-	valid_preparations.archived_at,
-	valid_instruments.id,
-	valid_instruments.name,
-	valid_instruments.plural_name,
-	valid_instruments.description,
-	valid_instruments.icon_path,
-	valid_instruments.usable_for_storage,
-	valid_instruments.display_in_summary_lists,
-	valid_instruments.include_in_generated_instructions,
-	valid_instruments.slug,
-	valid_instruments.created_at,
-	valid_instruments.last_updated_at,
-	valid_instruments.archived_at,
-	valid_preparation_instruments.created_at,
-	valid_preparation_instruments.last_updated_at,
-	valid_preparation_instruments.archived_at
+	valid_preparation_instruments.id as valid_preparation_instrument_id,
+	valid_preparation_instruments.notes as valid_preparation_instrument_notes,
+	valid_preparations.id as valid_preparation_id,
+	valid_preparations.name as valid_preparation_name,
+	valid_preparations.description as valid_preparation_description,
+	valid_preparations.icon_path as valid_preparation_icon_path,
+	valid_preparations.yields_nothing as valid_preparation_yields_nothing,
+	valid_preparations.restrict_to_ingredients as valid_preparation_restrict_to_ingredients,
+	valid_preparations.minimum_ingredient_count as valid_preparation_minimum_ingredient_count,
+	valid_preparations.maximum_ingredient_count as valid_preparation_maximum_ingredient_count,
+	valid_preparations.minimum_instrument_count as valid_preparation_minimum_instrument_count,
+	valid_preparations.maximum_instrument_count as valid_preparation_maximum_instrument_count,
+	valid_preparations.temperature_required as valid_preparation_temperature_required,
+	valid_preparations.time_estimate_required as valid_preparation_time_estimate_required,
+	valid_preparations.condition_expression_required as valid_preparation_condition_expression_required,
+    valid_preparations.consumes_vessel as valid_preparation_consumes_vessel,
+    valid_preparations.only_for_vessels as valid_preparation_only_for_vessels,
+    valid_preparations.minimum_vessel_count as valid_preparation_minimum_vessel_count,
+    valid_preparations.maximum_vessel_count as valid_preparation_maximum_vessel_count,
+	valid_preparations.slug as valid_preparation_slug,
+	valid_preparations.past_tense as valid_preparation_past_tense,
+	valid_preparations.created_at as valid_preparation_created_at,
+	valid_preparations.last_updated_at as valid_preparation_last_updated_at,
+	valid_preparations.archived_at as valid_preparation_archived_at,
+	valid_instruments.id as valid_instrument_id,
+	valid_instruments.name as valid_instrument_name,
+	valid_instruments.plural_name as valid_instrument_plural_name,
+	valid_instruments.description as valid_instrument_description,
+	valid_instruments.icon_path as valid_instrument_icon_path,
+	valid_instruments.usable_for_storage as valid_instrument_usable_for_storage,
+	valid_instruments.display_in_summary_lists as valid_instrument_display_in_summary_lists,
+	valid_instruments.include_in_generated_instructions as valid_instrument_include_in_generated_instructions,
+	valid_instruments.slug as valid_instrument_slug,
+	valid_instruments.created_at as valid_instrument_created_at,
+	valid_instruments.last_updated_at as valid_instrument_last_updated_at,
+	valid_instruments.archived_at as valid_instrument_archived_at,
+	valid_preparation_instruments.created_at as valid_preparation_instrument_created_at,
+	valid_preparation_instruments.last_updated_at as valid_preparation_instrument_last_updated_at,
+	valid_preparation_instruments.archived_at as valid_preparation_instrument_archived_at
 FROM
 	valid_preparation_instruments
 	 JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
 	 JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 WHERE
-	valid_preparation_instruments.archived_at IS NULL
+    valid_preparation_instruments.archived_at IS NULL
+    AND valid_instruments.archived_at IS NULL
+    AND valid_preparations.archived_at IS NULL
 	AND valid_preparation_instruments.id = $1
 `
 
 type GetValidPreparationInstrumentRow struct {
-	CreatedAt                      time.Time
-	CreatedAt_2                    time.Time
-	CreatedAt_3                    time.Time
-	ArchivedAt_2                   sql.NullTime
-	LastUpdatedAt                  sql.NullTime
-	LastUpdatedAt_2                sql.NullTime
-	ArchivedAt                     sql.NullTime
-	ArchivedAt_3                   sql.NullTime
-	LastUpdatedAt_3                sql.NullTime
-	IconPath                       string
-	PluralName                     string
-	Description                    string
-	Name                           string
-	Slug_2                         string
-	IconPath_2                     string
-	Description_2                  string
-	ID                             string
-	Name_2                         string
-	ID_3                           string
-	Slug                           string
-	PastTense                      string
-	ID_2                           string
-	Notes                          string
-	MaximumIngredientCount         sql.NullInt32
-	MaximumVesselCount             sql.NullInt32
-	MaximumInstrumentCount         sql.NullInt32
-	MinimumVesselCount             int32
-	MinimumIngredientCount         int32
-	MinimumInstrumentCount         int32
-	DisplayInSummaryLists          bool
-	UsableForStorage               bool
-	IncludeInGeneratedInstructions bool
-	TimeEstimateRequired           bool
-	TemperatureRequired            bool
-	ConditionExpressionRequired    bool
-	ConsumesVessel                 bool
-	OnlyForVessels                 bool
-	RestrictToIngredients          bool
-	YieldsNothing                  bool
+	ValidPreparationCreatedAt                     time.Time
+	ValidInstrumentCreatedAt                      time.Time
+	ValidPreparationInstrumentCreatedAt           time.Time
+	ValidInstrumentArchivedAt                     sql.NullTime
+	ValidPreparationLastUpdatedAt                 sql.NullTime
+	ValidInstrumentLastUpdatedAt                  sql.NullTime
+	ValidPreparationArchivedAt                    sql.NullTime
+	ValidPreparationInstrumentArchivedAt          sql.NullTime
+	ValidPreparationInstrumentLastUpdatedAt       sql.NullTime
+	ValidPreparationIconPath                      string
+	ValidInstrumentPluralName                     string
+	ValidPreparationDescription                   string
+	ValidPreparationName                          string
+	ValidInstrumentSlug                           string
+	ValidInstrumentIconPath                       string
+	ValidInstrumentDescription                    string
+	ValidPreparationInstrumentID                  string
+	ValidInstrumentName                           string
+	ValidInstrumentID                             string
+	ValidPreparationSlug                          string
+	ValidPreparationPastTense                     string
+	ValidPreparationID                            string
+	ValidPreparationInstrumentNotes               string
+	ValidPreparationMaximumIngredientCount        sql.NullInt32
+	ValidPreparationMaximumVesselCount            sql.NullInt32
+	ValidPreparationMaximumInstrumentCount        sql.NullInt32
+	ValidPreparationMinimumVesselCount            int32
+	ValidPreparationMinimumIngredientCount        int32
+	ValidPreparationMinimumInstrumentCount        int32
+	ValidInstrumentDisplayInSummaryLists          bool
+	ValidInstrumentUsableForStorage               bool
+	ValidInstrumentIncludeInGeneratedInstructions bool
+	ValidPreparationTimeEstimateRequired          bool
+	ValidPreparationTemperatureRequired           bool
+	ValidPreparationConditionExpressionRequired   bool
+	ValidPreparationConsumesVessel                bool
+	ValidPreparationOnlyForVessels                bool
+	ValidPreparationRestrictToIngredients         bool
+	ValidPreparationYieldsNothing                 bool
 }
 
 func (q *Queries) GetValidPreparationInstrument(ctx context.Context, db DBTX, id string) (*GetValidPreparationInstrumentRow, error) {
 	row := db.QueryRowContext(ctx, getValidPreparationInstrument, id)
 	var i GetValidPreparationInstrumentRow
 	err := row.Scan(
-		&i.ID,
-		&i.Notes,
-		&i.ID_2,
-		&i.Name,
-		&i.Description,
-		&i.IconPath,
-		&i.YieldsNothing,
-		&i.RestrictToIngredients,
-		&i.MinimumIngredientCount,
-		&i.MaximumIngredientCount,
-		&i.MinimumInstrumentCount,
-		&i.MaximumInstrumentCount,
-		&i.TemperatureRequired,
-		&i.TimeEstimateRequired,
-		&i.ConditionExpressionRequired,
-		&i.ConsumesVessel,
-		&i.OnlyForVessels,
-		&i.MinimumVesselCount,
-		&i.MaximumVesselCount,
-		&i.Slug,
-		&i.PastTense,
-		&i.CreatedAt,
-		&i.LastUpdatedAt,
-		&i.ArchivedAt,
-		&i.ID_3,
-		&i.Name_2,
-		&i.PluralName,
-		&i.Description_2,
-		&i.IconPath_2,
-		&i.UsableForStorage,
-		&i.DisplayInSummaryLists,
-		&i.IncludeInGeneratedInstructions,
-		&i.Slug_2,
-		&i.CreatedAt_2,
-		&i.LastUpdatedAt_2,
-		&i.ArchivedAt_2,
-		&i.CreatedAt_3,
-		&i.LastUpdatedAt_3,
-		&i.ArchivedAt_3,
+		&i.ValidPreparationInstrumentID,
+		&i.ValidPreparationInstrumentNotes,
+		&i.ValidPreparationID,
+		&i.ValidPreparationName,
+		&i.ValidPreparationDescription,
+		&i.ValidPreparationIconPath,
+		&i.ValidPreparationYieldsNothing,
+		&i.ValidPreparationRestrictToIngredients,
+		&i.ValidPreparationMinimumIngredientCount,
+		&i.ValidPreparationMaximumIngredientCount,
+		&i.ValidPreparationMinimumInstrumentCount,
+		&i.ValidPreparationMaximumInstrumentCount,
+		&i.ValidPreparationTemperatureRequired,
+		&i.ValidPreparationTimeEstimateRequired,
+		&i.ValidPreparationConditionExpressionRequired,
+		&i.ValidPreparationConsumesVessel,
+		&i.ValidPreparationOnlyForVessels,
+		&i.ValidPreparationMinimumVesselCount,
+		&i.ValidPreparationMaximumVesselCount,
+		&i.ValidPreparationSlug,
+		&i.ValidPreparationPastTense,
+		&i.ValidPreparationCreatedAt,
+		&i.ValidPreparationLastUpdatedAt,
+		&i.ValidPreparationArchivedAt,
+		&i.ValidInstrumentID,
+		&i.ValidInstrumentName,
+		&i.ValidInstrumentPluralName,
+		&i.ValidInstrumentDescription,
+		&i.ValidInstrumentIconPath,
+		&i.ValidInstrumentUsableForStorage,
+		&i.ValidInstrumentDisplayInSummaryLists,
+		&i.ValidInstrumentIncludeInGeneratedInstructions,
+		&i.ValidInstrumentSlug,
+		&i.ValidInstrumentCreatedAt,
+		&i.ValidInstrumentLastUpdatedAt,
+		&i.ValidInstrumentArchivedAt,
+		&i.ValidPreparationInstrumentCreatedAt,
+		&i.ValidPreparationInstrumentLastUpdatedAt,
+		&i.ValidPreparationInstrumentArchivedAt,
 	)
 	return &i, err
 }

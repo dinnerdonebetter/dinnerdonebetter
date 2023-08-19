@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	"database/sql/driver"
 	"errors"
 	"testing"
 	"time"
@@ -18,49 +17,6 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
-
-func buildMockRowsFromMealPlanGroceryListItems(includeCounts bool, filteredCount uint64, mealPlanGroceryListItems ...*types.MealPlanGroceryListItem) *sqlmock.Rows {
-	columns := mealPlanGroceryListItemsTableColumns
-
-	if includeCounts {
-		columns = append(columns, "filtered_count", "total_count")
-	}
-
-	exampleRows := sqlmock.NewRows(columns)
-
-	for _, x := range mealPlanGroceryListItems {
-		var purchasedMeasurementUnitID *string
-		if x.PurchasedMeasurementUnit != nil {
-			purchasedMeasurementUnitID = &x.PurchasedMeasurementUnit.ID
-		}
-
-		rowValues := []driver.Value{
-			x.ID,
-			x.BelongsToMealPlan,
-			x.Ingredient.ID,
-			x.MeasurementUnit.ID,
-			x.MinimumQuantityNeeded,
-			x.MaximumQuantityNeeded,
-			x.QuantityPurchased,
-			purchasedMeasurementUnitID,
-			x.PurchasedUPC,
-			x.PurchasePrice,
-			x.StatusExplanation,
-			x.Status,
-			x.CreatedAt,
-			x.LastUpdatedAt,
-			x.ArchivedAt,
-		}
-
-		if includeCounts {
-			rowValues = append(rowValues, filteredCount, len(mealPlanGroceryListItems))
-		}
-
-		exampleRows.AddRow(rowValues...)
-	}
-
-	return exampleRows
-}
 
 func TestQuerier_ScanMealPlanGroceryListItems(T *testing.T) {
 	T.Parallel()
@@ -184,37 +140,6 @@ func TestQuerier_MealPlanGroceryListItemExists(T *testing.T) {
 func TestQuerier_fleshOutMealPlanGroceryListItem(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
-
-		c, db := buildTestClient(t)
-
-		getValidIngredientArgs := []any{
-			exampleMealPlanGroceryListItem.Ingredient.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getValidIngredientQuery)).
-			WithArgs(interfaceToDriverValue(getValidIngredientArgs)...).
-			WillReturnRows(buildMockRowsFromValidIngredients(false, 0, &exampleMealPlanGroceryListItem.Ingredient))
-
-		getValidMeasurementUnitArgs := []any{
-			exampleMealPlanGroceryListItem.MeasurementUnit.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getValidMeasurementUnitQuery)).
-			WithArgs(interfaceToDriverValue(getValidMeasurementUnitArgs)...).
-			WillReturnRows(buildMockRowsFromValidMeasurementUnits(false, 0, &exampleMealPlanGroceryListItem.MeasurementUnit))
-
-		actual, err := c.fleshOutMealPlanGroceryListItem(ctx, exampleMealPlanGroceryListItem)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleMealPlanGroceryListItem, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
@@ -227,111 +152,10 @@ func TestQuerier_fleshOutMealPlanGroceryListItem(T *testing.T) {
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
-
-	T.Run("with error fetching ingredient data", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
-
-		c, db := buildTestClient(t)
-
-		getValidIngredientArgs := []any{
-			exampleMealPlanGroceryListItem.Ingredient.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getValidIngredientQuery)).
-			WithArgs(interfaceToDriverValue(getValidIngredientArgs)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.fleshOutMealPlanGroceryListItem(ctx, exampleMealPlanGroceryListItem)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error fetching measurement unit data", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
-
-		c, db := buildTestClient(t)
-
-		getValidIngredientArgs := []any{
-			exampleMealPlanGroceryListItem.Ingredient.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getValidIngredientQuery)).
-			WithArgs(interfaceToDriverValue(getValidIngredientArgs)...).
-			WillReturnRows(buildMockRowsFromValidIngredients(false, 0, &exampleMealPlanGroceryListItem.Ingredient))
-
-		getValidMeasurementUnitArgs := []any{
-			exampleMealPlanGroceryListItem.MeasurementUnit.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getValidMeasurementUnitQuery)).
-			WithArgs(interfaceToDriverValue(getValidMeasurementUnitArgs)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.fleshOutMealPlanGroceryListItem(ctx, exampleMealPlanGroceryListItem)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
-func prepareForMealPlanGroceryListItemDataHydration(t *testing.T, db sqlmock.Sqlmock, exampleMealPlanGroceryListItem *types.MealPlanGroceryListItem) {
-	t.Helper()
-
-	getValidIngredientArgs := []any{
-		exampleMealPlanGroceryListItem.Ingredient.ID,
-	}
-
-	db.ExpectQuery(formatQueryForSQLMock(getValidIngredientQuery)).
-		WithArgs(interfaceToDriverValue(getValidIngredientArgs)...).
-		WillReturnRows(buildMockRowsFromValidIngredients(false, 0, &exampleMealPlanGroceryListItem.Ingredient))
-
-	getValidMeasurementUnitArgs := []any{
-		exampleMealPlanGroceryListItem.MeasurementUnit.ID,
-	}
-
-	db.ExpectQuery(formatQueryForSQLMock(getValidMeasurementUnitQuery)).
-		WithArgs(interfaceToDriverValue(getValidMeasurementUnitArgs)...).
-		WillReturnRows(buildMockRowsFromValidMeasurementUnits(false, 0, &exampleMealPlanGroceryListItem.MeasurementUnit))
 }
 
 func TestQuerier_GetMealPlanGroceryListItem(T *testing.T) {
 	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleMealPlan := fakes.BuildFakeMealPlan()
-		exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
-
-		c, db := buildTestClient(t)
-
-		getMealPlanGroceryListItemArgs := []any{
-			exampleMealPlan.ID,
-			exampleMealPlanGroceryListItem.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getMealPlanGroceryListItemQuery)).
-			WithArgs(interfaceToDriverValue(getMealPlanGroceryListItemArgs)...).
-			WillReturnRows(buildMockRowsFromMealPlanGroceryListItems(false, 0, exampleMealPlanGroceryListItem))
-
-		prepareForMealPlanGroceryListItemDataHydration(t, db, exampleMealPlanGroceryListItem)
-
-		actual, err := c.GetMealPlanGroceryListItem(ctx, exampleMealPlan.ID, exampleMealPlanGroceryListItem.ID)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleMealPlanGroceryListItem, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
 
 	T.Run("with invalid meal plan grocery list item ID", func(t *testing.T) {
 		t.Parallel()
@@ -343,114 +167,6 @@ func TestQuerier_GetMealPlanGroceryListItem(T *testing.T) {
 		actual, err := c.GetMealPlanGroceryListItem(ctx, exampleMealPlan.ID, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleMealPlan := fakes.BuildFakeMealPlan()
-		exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
-
-		c, db := buildTestClient(t)
-
-		getMealPlanGroceryListItemArgs := []any{
-			exampleMealPlan.ID,
-			exampleMealPlanGroceryListItem.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getMealPlanGroceryListItemQuery)).
-			WithArgs(interfaceToDriverValue(getMealPlanGroceryListItemArgs)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetMealPlanGroceryListItem(ctx, exampleMealPlan.ID, exampleMealPlanGroceryListItem.ID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
-func TestQuerier_GetMealPlanGroceryListItemsForMealPlan(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleMealPlan := fakes.BuildFakeMealPlan()
-		exampleMealPlanGroceryListItemList := fakes.BuildFakeMealPlanGroceryListItemList().Data
-		for i := range exampleMealPlanGroceryListItemList {
-			exampleMealPlanGroceryListItemList[i].Ingredient = types.ValidIngredient{
-				ID: exampleMealPlanGroceryListItemList[i].Ingredient.ID,
-			}
-			exampleMealPlanGroceryListItemList[i].MeasurementUnit = types.ValidMeasurementUnit{
-				ID: exampleMealPlanGroceryListItemList[i].MeasurementUnit.ID,
-			}
-		}
-
-		c, db := buildTestClient(t)
-
-		getMealPlanGroceryListItemsForMealPlanArgs := []any{
-			exampleMealPlan.ID,
-		}
-		db.ExpectQuery(formatQueryForSQLMock(getMealPlanGroceryListItemsForMealPlanQuery)).
-			WithArgs(interfaceToDriverValue(getMealPlanGroceryListItemsForMealPlanArgs)...).
-			WillReturnRows(buildMockRowsFromMealPlanGroceryListItems(false, 0, exampleMealPlanGroceryListItemList...))
-
-		for i := range exampleMealPlanGroceryListItemList {
-			prepareForMealPlanGroceryListItemDataHydration(t, db, exampleMealPlanGroceryListItemList[i])
-		}
-
-		actual, err := c.GetMealPlanGroceryListItemsForMealPlan(ctx, exampleMealPlan.ID)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleMealPlanGroceryListItemList, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleMealPlan := fakes.BuildFakeMealPlan()
-
-		c, db := buildTestClient(t)
-
-		getMealPlanGroceryListItemsForMealPlanArgs := []any{
-			exampleMealPlan.ID,
-		}
-		db.ExpectQuery(formatQueryForSQLMock(getMealPlanGroceryListItemsForMealPlanQuery)).
-			WithArgs(interfaceToDriverValue(getMealPlanGroceryListItemsForMealPlanArgs)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetMealPlanGroceryListItemsForMealPlan(ctx, exampleMealPlan.ID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with erroneous response from database", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleMealPlan := fakes.BuildFakeMealPlan()
-
-		c, db := buildTestClient(t)
-
-		getMealPlanGroceryListItemsForMealPlanArgs := []any{
-			exampleMealPlan.ID,
-		}
-		db.ExpectQuery(formatQueryForSQLMock(getMealPlanGroceryListItemsForMealPlanQuery)).
-			WithArgs(interfaceToDriverValue(getMealPlanGroceryListItemsForMealPlanArgs)...).
-			WillReturnRows(buildErroneousMockRow())
-
-		actual, err := c.GetMealPlanGroceryListItemsForMealPlan(ctx, exampleMealPlan.ID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

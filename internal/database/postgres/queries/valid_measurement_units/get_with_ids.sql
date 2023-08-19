@@ -1,4 +1,4 @@
--- name: SearchForValidMeasurementUnits :many
+-- name: GetValidMeasurementUnitsWithIDs :many
 
 SELECT
 	valid_measurement_units.id,
@@ -15,6 +15,5 @@ SELECT
 	valid_measurement_units.last_updated_at,
 	valid_measurement_units.archived_at
 FROM valid_measurement_units
-WHERE (valid_measurement_units.name ILIKE '%' || sqlc.arg(query)::text || '%' OR valid_measurement_units.universal is TRUE)
-AND valid_measurement_units.archived_at IS NULL
-LIMIT 50;
+WHERE valid_measurement_units.archived_at IS NULL
+	AND valid_measurement_units.id = ANY(sqlc.arg(ids)::text[]);

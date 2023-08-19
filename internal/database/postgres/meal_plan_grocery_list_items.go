@@ -13,25 +13,6 @@ import (
 
 var (
 	_ types.MealPlanGroceryListItemDataManager = (*Querier)(nil)
-
-	// mealPlanGroceryListItemsTableColumns are the columns for the meal_plan_grocery_list_items table.
-	mealPlanGroceryListItemsTableColumns = []string{
-		"meal_plan_grocery_list_items.id",
-		"meal_plan_grocery_list_items.belongs_to_meal_plan_option",
-		"meal_plan_grocery_list_items.valid_ingredient",
-		"meal_plan_grocery_list_items.valid_measurement_unit",
-		"meal_plan_grocery_list_items.minimum_quantity_needed",
-		"meal_plan_grocery_list_items.maximum_quantity_needed",
-		"meal_plan_grocery_list_items.quantity_purchased",
-		"meal_plan_grocery_list_items.purchased_measurement_unit",
-		"meal_plan_grocery_list_items.purchased_upc",
-		"meal_plan_grocery_list_items.purchase_price",
-		"meal_plan_grocery_list_items.status_explanation",
-		"meal_plan_grocery_list_items.status",
-		"meal_plan_grocery_list_items.created_at",
-		"meal_plan_grocery_list_items.last_updated_at",
-		"meal_plan_grocery_list_items.archived_at",
-	}
 )
 
 // scanMealPlanGroceryListItem takes a database Scanner (i.e. *sql.Row) and scans the result into a meal plan grocery list struct.
