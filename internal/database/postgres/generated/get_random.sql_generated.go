@@ -35,8 +35,8 @@ SELECT
 	valid_ingredients.animal_derived,
 	valid_ingredients.plural_name,
 	valid_ingredients.restrict_to_preparations,
-	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
-	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
+    valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
+    valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions,
 	valid_ingredients.slug,
 	valid_ingredients.contains_alcohol,
@@ -58,33 +58,33 @@ ORDER BY random() LIMIT 1
 `
 
 type GetRandomValidIngredientRow struct {
-	CreatedAt                               time.Time
-	ArchivedAt                              sql.NullTime
-	LastUpdatedAt                           sql.NullTime
-	Warning                                 string
-	Description                             string
-	Name                                    string
-	ShoppingSuggestions                     string
-	Slug                                    string
-	StorageInstructions                     string
-	PluralName                              string
 	ID                                      string
-	IconPath                                string
-	MaximumIdealStorageTemperatureInCelsius sql.NullString
-	MinimumIdealStorageTemperatureInCelsius sql.NullString
-	IsLiquid                                sql.NullBool
-	AnimalDerived                           bool
+	Name                                    string
+	Description                             string
+	Warning                                 string
+	ContainsEgg                             bool
+	ContainsDairy                           bool
+	ContainsPeanut                          bool
 	ContainsTreeNut                         bool
-	AnimalFlesh                             bool
-	ContainsGluten                          bool
-	ContainsFish                            bool
-	RestrictToPreparations                  bool
-	ContainsSesame                          bool
-	ContainsShellfish                       bool
-	ContainsWheat                           bool
 	ContainsSoy                             bool
-	ContainsAlcohol                         bool
+	ContainsWheat                           bool
+	ContainsShellfish                       bool
+	ContainsSesame                          bool
+	ContainsFish                            bool
+	ContainsGluten                          bool
+	AnimalFlesh                             bool
 	Volumetric                              bool
+	IsLiquid                                sql.NullBool
+	IconPath                                string
+	AnimalDerived                           bool
+	PluralName                              string
+	RestrictToPreparations                  bool
+	MinimumIdealStorageTemperatureInCelsius sql.NullString
+	MaximumIdealStorageTemperatureInCelsius sql.NullString
+	StorageInstructions                     string
+	Slug                                    string
+	ContainsAlcohol                         bool
+	ShoppingSuggestions                     string
 	IsStarch                                bool
 	IsProtein                               bool
 	IsGrain                                 bool
@@ -93,9 +93,9 @@ type GetRandomValidIngredientRow struct {
 	IsFat                                   bool
 	IsAcid                                  bool
 	IsHeat                                  bool
-	ContainsPeanut                          bool
-	ContainsDairy                           bool
-	ContainsEgg                             bool
+	CreatedAt                               time.Time
+	LastUpdatedAt                           sql.NullTime
+	ArchivedAt                              sql.NullTime
 }
 
 func (q *Queries) GetRandomValidIngredient(ctx context.Context, db DBTX) (*GetRandomValidIngredientRow, error) {
@@ -165,18 +165,18 @@ WHERE valid_instruments.archived_at IS NULL
 `
 
 type GetRandomValidInstrumentRow struct {
-	CreatedAt                      time.Time
-	LastUpdatedAt                  sql.NullTime
-	ArchivedAt                     sql.NullTime
 	ID                             string
 	Name                           string
 	PluralName                     string
 	Description                    string
 	IconPath                       string
-	Slug                           string
 	UsableForStorage               bool
 	DisplayInSummaryLists          bool
 	IncludeInGeneratedInstructions bool
+	Slug                           string
+	CreatedAt                      time.Time
+	LastUpdatedAt                  sql.NullTime
+	ArchivedAt                     sql.NullTime
 }
 
 func (q *Queries) GetRandomValidInstrument(ctx context.Context, db DBTX) (*GetRandomValidInstrumentRow, error) {
@@ -221,19 +221,19 @@ WHERE valid_measurement_units.archived_at IS NULL
 `
 
 type GetRandomValidMeasurementUnitRow struct {
-	CreatedAt     time.Time
-	ArchivedAt    sql.NullTime
-	LastUpdatedAt sql.NullTime
-	PluralName    string
+	ID            string
 	Name          string
 	Description   string
-	ID            string
-	IconPath      string
-	Slug          string
 	Volumetric    sql.NullBool
-	Imperial      bool
-	Metric        bool
+	IconPath      string
 	Universal     bool
+	Metric        bool
+	Imperial      bool
+	Slug          string
+	PluralName    string
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
 }
 
 func (q *Queries) GetRandomValidMeasurementUnit(ctx context.Context, db DBTX) (*GetRandomValidMeasurementUnitRow, error) {
@@ -288,28 +288,28 @@ WHERE valid_preparations.archived_at IS NULL
 `
 
 type GetRandomValidPreparationRow struct {
-	CreatedAt                   time.Time
-	LastUpdatedAt               sql.NullTime
-	ArchivedAt                  sql.NullTime
+	ID                          string
 	Name                        string
 	Description                 string
 	IconPath                    string
-	ID                          string
+	YieldsNothing               bool
+	RestrictToIngredients       bool
+	MinimumIngredientCount      int32
+	MaximumIngredientCount      sql.NullInt32
+	MinimumInstrumentCount      int32
+	MaximumInstrumentCount      sql.NullInt32
+	TemperatureRequired         bool
+	TimeEstimateRequired        bool
+	ConditionExpressionRequired bool
+	ConsumesVessel              bool
+	OnlyForVessels              bool
+	MinimumVesselCount          int32
+	MaximumVesselCount          sql.NullInt32
 	Slug                        string
 	PastTense                   string
-	MaximumInstrumentCount      sql.NullInt32
-	MaximumIngredientCount      sql.NullInt32
-	MaximumVesselCount          sql.NullInt32
-	MinimumVesselCount          int32
-	MinimumInstrumentCount      int32
-	MinimumIngredientCount      int32
-	RestrictToIngredients       bool
-	OnlyForVessels              bool
-	ConsumesVessel              bool
-	ConditionExpressionRequired bool
-	TimeEstimateRequired        bool
-	TemperatureRequired         bool
-	YieldsNothing               bool
+	CreatedAt                   time.Time
+	LastUpdatedAt               sql.NullTime
+	ArchivedAt                  sql.NullTime
 }
 
 func (q *Queries) GetRandomValidPreparation(ctx context.Context, db DBTX) (*GetRandomValidPreparationRow, error) {
@@ -383,36 +383,36 @@ WHERE valid_vessels.archived_at IS NULL
 `
 
 type GetRandomValidVesselRow struct {
-	ValidMeasurementUnitCreatedAt     time.Time
-	CreatedAt                         time.Time
-	ArchivedAt                        sql.NullTime
-	LastUpdatedAt                     sql.NullTime
-	ValidMeasurementUnitArchivedAt    sql.NullTime
-	ValidMeasurementUnitLastUpdatedAt sql.NullTime
-	ValidMeasurementUnitIconPath      string
-	IconPath                          string
+	ID                                string
 	Name                              string
 	PluralName                        string
+	Description                       string
+	IconPath                          string
+	UsableForStorage                  bool
+	Slug                              string
+	DisplayInSummaryLists             bool
+	IncludeInGeneratedInstructions    bool
+	ValidVesselsCapacity              float64
 	ValidMeasurementUnitID            string
 	ValidMeasurementUnitName          string
 	ValidMeasurementUnitDescription   string
-	Description                       string
-	ID                                string
-	Shape                             VesselShape
-	Slug                              string
-	ValidMeasurementUnitPluralName    string
+	ValidMeasurementUnitVolumetric    sql.NullBool
+	ValidMeasurementUnitIconPath      string
+	ValidMeasurementUnitUniversal     bool
+	ValidMeasurementUnitMetric        bool
+	ValidMeasurementUnitImperial      bool
 	ValidMeasurementUnitSlug          string
+	ValidMeasurementUnitPluralName    string
+	ValidMeasurementUnitCreatedAt     time.Time
+	ValidMeasurementUnitLastUpdatedAt sql.NullTime
+	ValidMeasurementUnitArchivedAt    sql.NullTime
 	ValidVesselsWidthInMillimeters    float64
 	ValidVesselsLengthInMillimeters   float64
 	ValidVesselsHeightInMillimeters   float64
-	ValidVesselsCapacity              float64
-	ValidMeasurementUnitVolumetric    sql.NullBool
-	ValidMeasurementUnitImperial      bool
-	ValidMeasurementUnitMetric        bool
-	UsableForStorage                  bool
-	DisplayInSummaryLists             bool
-	ValidMeasurementUnitUniversal     bool
-	IncludeInGeneratedInstructions    bool
+	Shape                             VesselShape
+	CreatedAt                         time.Time
+	LastUpdatedAt                     sql.NullTime
+	ArchivedAt                        sql.NullTime
 }
 
 func (q *Queries) GetRandomValidVessel(ctx context.Context, db DBTX) (*GetRandomValidVesselRow, error) {

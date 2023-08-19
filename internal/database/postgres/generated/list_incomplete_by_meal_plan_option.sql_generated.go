@@ -81,62 +81,62 @@ AND meal_plan_tasks.completed_at IS NULL
 `
 
 type ListIncompleteMealPlanTasksByMealPlanOptionRow struct {
-	CreatedAt_3                   time.Time
-	CreatedAt_2                   time.Time
-	ArchivedAt                    sql.NullTime
-	CompletedAt                   sql.NullTime
-	CreatedAt_4                   sql.NullTime
-	ArchivedAt_3                  sql.NullTime
-	LastUpdatedAt_3               sql.NullTime
-	ArchivedAt_2                  sql.NullTime
-	LastUpdatedAt_2               sql.NullTime
+	ID                            sql.NullString
+	ID_2                          sql.NullString
+	AssignedCook                  sql.NullString
+	AssignedDishwasher            sql.NullString
+	Chosen                        sql.NullBool
+	Tiebroken                     sql.NullBool
+	MealScale                     sql.NullString
+	MealID                        sql.NullString
+	Notes                         sql.NullString
 	CreatedAt                     sql.NullTime
 	LastUpdatedAt                 sql.NullTime
-	ExplicitInstructions          string
-	BelongsToRecipe               string
+	ArchivedAt                    sql.NullTime
+	BelongsToMealPlanEvent        sql.NullString
 	ID_3                          string
-	PastTense                     string
+	Index                         int32
 	ID_4                          string
 	Name                          string
 	Description                   string
 	IconPath                      string
-	Notes_2                       string
-	Slug                          string
-	ConditionExpression           string
-	AssignedCook                  sql.NullString
-	StatusExplanation             sql.NullString
-	MaximumTemperatureInCelsius   sql.NullString
-	Status                        NullPrepStepStatus
-	AssignedToUser                sql.NullString
-	BelongsToMealPlanEvent        sql.NullString
-	AssignedDishwasher            sql.NullString
-	MealScale                     sql.NullString
-	ID                            sql.NullString
-	MinimumTemperatureInCelsius   sql.NullString
-	CreationExplanation           sql.NullString
-	ID_2                          sql.NullString
-	Notes                         sql.NullString
-	MealID                        sql.NullString
-	MaximumEstimatedTimeInSeconds sql.NullInt64
-	MinimumEstimatedTimeInSeconds sql.NullInt64
-	MaximumIngredientCount        sql.NullInt32
-	MaximumVesselCount            sql.NullInt32
-	MaximumInstrumentCount        sql.NullInt32
-	MinimumInstrumentCount        int32
-	Index                         int32
-	MinimumIngredientCount        int32
-	MinimumVesselCount            int32
-	Chosen                        sql.NullBool
-	Tiebroken                     sql.NullBool
-	ConsumesVessel                bool
-	StartTimerAutomatically       bool
-	ConditionExpressionRequired   bool
-	TimeEstimateRequired          bool
-	TemperatureRequired           bool
-	Optional                      bool
-	RestrictToIngredients         bool
 	YieldsNothing                 bool
+	RestrictToIngredients         bool
+	MinimumIngredientCount        int32
+	MaximumIngredientCount        sql.NullInt32
+	MinimumInstrumentCount        int32
+	MaximumInstrumentCount        sql.NullInt32
+	TemperatureRequired           bool
+	TimeEstimateRequired          bool
+	ConditionExpressionRequired   bool
+	ConsumesVessel                bool
 	OnlyForVessels                bool
+	MinimumVesselCount            int32
+	MaximumVesselCount            sql.NullInt32
+	Slug                          string
+	PastTense                     string
+	CreatedAt_2                   time.Time
+	LastUpdatedAt_2               sql.NullTime
+	ArchivedAt_2                  sql.NullTime
+	MinimumEstimatedTimeInSeconds sql.NullInt64
+	MaximumEstimatedTimeInSeconds sql.NullInt64
+	MinimumTemperatureInCelsius   sql.NullString
+	MaximumTemperatureInCelsius   sql.NullString
+	Notes_2                       string
+	ExplicitInstructions          string
+	ConditionExpression           string
+	Optional                      bool
+	StartTimerAutomatically       bool
+	CreatedAt_3                   time.Time
+	LastUpdatedAt_3               sql.NullTime
+	ArchivedAt_3                  sql.NullTime
+	BelongsToRecipe               string
+	AssignedToUser                sql.NullString
+	Status                        NullPrepStepStatus
+	StatusExplanation             sql.NullString
+	CreationExplanation           sql.NullString
+	CreatedAt_4                   sql.NullTime
+	CompletedAt                   sql.NullTime
 }
 
 func (q *Queries) ListIncompleteMealPlanTasksByMealPlanOption(ctx context.Context, db DBTX, belongsToMealPlanOption string) ([]*ListIncompleteMealPlanTasksByMealPlanOptionRow, error) {

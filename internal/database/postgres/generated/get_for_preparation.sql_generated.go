@@ -129,47 +129,47 @@ type GetValidPreparationInstrumentsForPreparationParams struct {
 }
 
 type GetValidPreparationInstrumentsForPreparationRow struct {
-	ValidPreparationInstrumentCreatedAt           time.Time
-	ValidPreparationCreatedAt                     time.Time
-	ValidInstrumentCreatedAt                      time.Time
-	ValidInstrumentArchivedAt                     sql.NullTime
-	ValidPreparationInstrumentLastUpdatedAt       sql.NullTime
-	ValidPreparationArchivedAt                    sql.NullTime
-	ValidPreparationLastUpdatedAt                 sql.NullTime
-	ValidInstrumentLastUpdatedAt                  sql.NullTime
-	ValidPreparationInstrumentArchivedAt          sql.NullTime
 	ValidPreparationInstrumentID                  string
+	ValidPreparationInstrumentNotes               string
 	ValidPreparationID                            string
-	ValidInstrumentDescription                    string
-	ValidInstrumentPluralName                     string
 	ValidPreparationName                          string
-	ValidInstrumentIconPath                       string
-	ValidInstrumentName                           string
+	ValidPreparationDescription                   string
 	ValidPreparationIconPath                      string
-	ValidInstrumentSlug                           string
-	ValidInstrumentID                             string
+	ValidPreparationYieldsNothing                 bool
+	ValidPreparationRestrictToIngredients         bool
+	ValidPreparationMinimumIngredientCount        int32
+	ValidPreparationMaximumIngredientCount        sql.NullInt32
+	ValidPreparationMinimumInstrumentCount        int32
+	ValidPreparationMaximumInstrumentCount        sql.NullInt32
+	ValidPreparationTemperatureRequired           bool
+	ValidPreparationTimeEstimateRequired          bool
+	ValidPreparationConditionExpressionRequired   bool
+	ValidPreparationConsumesVessel                bool
+	ValidPreparationOnlyForVessels                bool
+	ValidPreparationMinimumVesselCount            int32
+	ValidPreparationMaximumVesselCount            sql.NullInt32
 	ValidPreparationSlug                          string
 	ValidPreparationPastTense                     string
-	ValidPreparationInstrumentNotes               string
-	ValidPreparationDescription                   string
-	TotalCount                                    int64
-	FilteredCount                                 int64
-	ValidPreparationMaximumVesselCount            sql.NullInt32
-	ValidPreparationMaximumIngredientCount        sql.NullInt32
-	ValidPreparationMaximumInstrumentCount        sql.NullInt32
-	ValidPreparationMinimumInstrumentCount        int32
-	ValidPreparationMinimumVesselCount            int32
-	ValidPreparationMinimumIngredientCount        int32
+	ValidPreparationCreatedAt                     time.Time
+	ValidPreparationLastUpdatedAt                 sql.NullTime
+	ValidPreparationArchivedAt                    sql.NullTime
+	ValidInstrumentID                             string
+	ValidInstrumentName                           string
+	ValidInstrumentPluralName                     string
+	ValidInstrumentDescription                    string
+	ValidInstrumentIconPath                       string
 	ValidInstrumentUsableForStorage               bool
 	ValidInstrumentDisplayInSummaryLists          bool
 	ValidInstrumentIncludeInGeneratedInstructions bool
-	ValidPreparationOnlyForVessels                bool
-	ValidPreparationConsumesVessel                bool
-	ValidPreparationConditionExpressionRequired   bool
-	ValidPreparationTimeEstimateRequired          bool
-	ValidPreparationTemperatureRequired           bool
-	ValidPreparationRestrictToIngredients         bool
-	ValidPreparationYieldsNothing                 bool
+	ValidInstrumentSlug                           string
+	ValidInstrumentCreatedAt                      time.Time
+	ValidInstrumentLastUpdatedAt                  sql.NullTime
+	ValidInstrumentArchivedAt                     sql.NullTime
+	ValidPreparationInstrumentCreatedAt           time.Time
+	ValidPreparationInstrumentLastUpdatedAt       sql.NullTime
+	ValidPreparationInstrumentArchivedAt          sql.NullTime
+	FilteredCount                                 int64
+	TotalCount                                    int64
 }
 
 func (q *Queries) GetValidPreparationInstrumentsForPreparation(ctx context.Context, db DBTX, arg *GetValidPreparationInstrumentsForPreparationParams) ([]*GetValidPreparationInstrumentsForPreparationRow, error) {
@@ -366,65 +366,65 @@ type GetValidPreparationVesselsForPreparationParams struct {
 }
 
 type GetValidPreparationVesselsForPreparationRow struct {
-	ValidPreparationCreatedAt                   time.Time
-	ValidPreparationVesselCreatedAt             time.Time
-	ValidVesselCreatedAt                        time.Time
-	ValidMeasurementUnitArchivedAt              sql.NullTime
-	ValidPreparationArchivedAt                  sql.NullTime
-	ValidPreparationLastUpdatedAt               sql.NullTime
-	ValidMeasurementUnitCreatedAt               sql.NullTime
-	ValidMeasurementUnitLastUpdatedAt           sql.NullTime
-	ValidPreparationVesselArchivedAt            sql.NullTime
-	ValidPreparationVesselLastUpdatedAt         sql.NullTime
-	ValidVesselArchivedAt                       sql.NullTime
-	ValidVesselLastUpdatedAt                    sql.NullTime
-	ValidVesselShape                            VesselShape
-	ValidPreparationSlug                        string
-	ValidPreparationIconPath                    string
-	ValidPreparationDescription                 string
 	ValidPreparationVesselID                    string
-	ValidVesselSlug                             string
-	ValidVesselIconPath                         string
-	ValidVesselDescription                      string
-	ValidPreparationPastTense                   string
-	ValidPreparationName                        string
-	ValidPreparationID                          string
 	ValidPreparationVesselNotes                 string
+	ValidPreparationID                          string
+	ValidPreparationName                        string
+	ValidPreparationDescription                 string
+	ValidPreparationIconPath                    string
+	ValidPreparationYieldsNothing               bool
+	ValidPreparationRestrictToIngredients       bool
+	ValidPreparationMinimumIngredientCount      int32
+	ValidPreparationMaximumIngredientCount      sql.NullInt32
+	ValidPreparationMinimumInstrumentCount      int32
+	ValidPreparationMaximumInstrumentCount      sql.NullInt32
+	ValidPreparationTemperatureRequired         bool
+	ValidPreparationTimeEstimateRequired        bool
+	ValidPreparationConditionExpressionRequired bool
+	ValidPreparationConsumesVessel              bool
+	ValidPreparationOnlyForVessels              bool
+	ValidPreparationMinimumVesselCount          int32
+	ValidPreparationMaximumVesselCount          sql.NullInt32
+	ValidPreparationSlug                        string
+	ValidPreparationPastTense                   string
+	ValidPreparationCreatedAt                   time.Time
+	ValidPreparationLastUpdatedAt               sql.NullTime
+	ValidPreparationArchivedAt                  sql.NullTime
 	ValidVesselID                               string
 	ValidVesselName                             string
 	ValidVesselPluralName                       string
-	ValidMeasurementUnitPluralName              sql.NullString
-	ValidMeasurementUnitSlug                    sql.NullString
-	ValidMeasurementUnitIconPath                sql.NullString
-	ValidMeasurementUnitDescription             sql.NullString
-	ValidMeasurementUnitName                    sql.NullString
-	ValidMeasurementUnitID                      sql.NullString
-	ValidVesselWidthInMillimeters               float64
-	TotalCount                                  int64
-	FilteredCount                               int64
-	ValidVesselCapacity                         float64
-	ValidVesselHeightInMillimeters              float64
-	ValidVesselLengthInMillimeters              float64
-	ValidPreparationMaximumIngredientCount      sql.NullInt32
-	ValidPreparationMaximumInstrumentCount      sql.NullInt32
-	ValidPreparationMaximumVesselCount          sql.NullInt32
-	ValidPreparationMinimumVesselCount          int32
-	ValidPreparationMinimumIngredientCount      int32
-	ValidPreparationMinimumInstrumentCount      int32
-	ValidMeasurementUnitUniversal               sql.NullBool
-	ValidMeasurementUnitImperial                sql.NullBool
-	ValidMeasurementUnitVolumetric              sql.NullBool
-	ValidMeasurementUnitMetric                  sql.NullBool
-	ValidPreparationOnlyForVessels              bool
-	ValidPreparationTemperatureRequired         bool
-	ValidPreparationTimeEstimateRequired        bool
-	ValidPreparationConsumesVessel              bool
+	ValidVesselDescription                      string
+	ValidVesselIconPath                         string
 	ValidVesselUsableForStorage                 bool
-	ValidPreparationConditionExpressionRequired bool
-	ValidPreparationRestrictToIngredients       bool
-	ValidPreparationYieldsNothing               bool
+	ValidVesselSlug                             string
 	ValidVesselDisplayInSummaryLists            bool
 	ValidVesselIncludeInGeneratedInstructions   bool
+	ValidVesselCapacity                         float64
+	ValidMeasurementUnitID                      sql.NullString
+	ValidMeasurementUnitName                    sql.NullString
+	ValidMeasurementUnitDescription             sql.NullString
+	ValidMeasurementUnitVolumetric              sql.NullBool
+	ValidMeasurementUnitIconPath                sql.NullString
+	ValidMeasurementUnitUniversal               sql.NullBool
+	ValidMeasurementUnitMetric                  sql.NullBool
+	ValidMeasurementUnitImperial                sql.NullBool
+	ValidMeasurementUnitSlug                    sql.NullString
+	ValidMeasurementUnitPluralName              sql.NullString
+	ValidMeasurementUnitCreatedAt               sql.NullTime
+	ValidMeasurementUnitLastUpdatedAt           sql.NullTime
+	ValidMeasurementUnitArchivedAt              sql.NullTime
+	ValidVesselWidthInMillimeters               float64
+	ValidVesselLengthInMillimeters              float64
+	ValidVesselHeightInMillimeters              float64
+	ValidVesselShape                            VesselShape
+	ValidVesselCreatedAt                        time.Time
+	ValidVesselLastUpdatedAt                    sql.NullTime
+	ValidVesselArchivedAt                       sql.NullTime
+	ValidPreparationVesselCreatedAt             time.Time
+	ValidPreparationVesselLastUpdatedAt         sql.NullTime
+	ValidPreparationVesselArchivedAt            sql.NullTime
+	FilteredCount                               int64
+	TotalCount                                  int64
 }
 
 func (q *Queries) GetValidPreparationVesselsForPreparation(ctx context.Context, db DBTX, arg *GetValidPreparationVesselsForPreparationParams) ([]*GetValidPreparationVesselsForPreparationRow, error) {

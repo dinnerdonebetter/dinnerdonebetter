@@ -78,55 +78,55 @@ type GetHouseholdInvitationByEmailAndTokenParams struct {
 }
 
 type GetHouseholdInvitationByEmailAndTokenRow struct {
-	ExpiresAt                    time.Time
-	CreatedAt_2                  time.Time
-	CreatedAt                    time.Time
-	CreatedAt_3                  time.Time
-	LastUpdatedAt_2              sql.NullTime
-	ArchivedAt_2                 sql.NullTime
-	LastUpdatedAt_3              sql.NullTime
-	ArchivedAt_3                 sql.NullTime
-	Birthday                     sql.NullTime
-	TwoFactorSecretVerifiedAt    sql.NullTime
-	PasswordLastChangedAt        sql.NullTime
-	EmailAddressVerifiedAt       sql.NullTime
-	ArchivedAt                   sql.NullTime
-	LastUpdatedAt                sql.NullTime
-	Username                     string
-	TwoFactorSecret              string
-	PaymentProcessorCustomerID   string
+	ID                           string
 	ID_2                         string
+	Name                         string
+	BillingStatus                string
+	ContactPhone                 string
+	AddressLine1                 string
+	AddressLine2                 string
+	City                         string
+	State                        string
+	ZipCode                      string
+	Country                      string
+	Latitude                     sql.NullString
+	Longitude                    sql.NullString
+	PaymentProcessorCustomerID   string
+	SubscriptionPlanID           sql.NullString
+	CreatedAt                    time.Time
+	LastUpdatedAt                sql.NullTime
+	ArchivedAt                   sql.NullTime
 	BelongsToUser                string
 	ToEmail                      string
-	Name                         string
+	ToUser                       sql.NullString
 	ID_3                         string
 	FirstName                    string
 	LastName                     string
-	ID                           string
+	Username                     string
 	EmailAddress                 string
-	BillingStatus                string
-	ContactPhone                 string
+	EmailAddressVerifiedAt       sql.NullTime
+	AvatarSrc                    sql.NullString
 	HashedPassword               string
-	Token                        string
-	Country                      string
-	StatusNote                   string
-	ZipCode                      string
+	RequiresPasswordChange       bool
+	PasswordLastChangedAt        sql.NullTime
+	TwoFactorSecret              string
+	TwoFactorSecretVerifiedAt    sql.NullTime
 	ServiceRole                  string
 	UserAccountStatus            string
 	UserAccountStatusExplanation string
-	State                        string
-	City                         string
-	AddressLine2                 string
-	AddressLine1                 string
+	Birthday                     sql.NullTime
+	CreatedAt_2                  time.Time
+	LastUpdatedAt_2              sql.NullTime
+	ArchivedAt_2                 sql.NullTime
 	ToName                       string
 	Status                       InvitationState
 	Note                         string
-	SubscriptionPlanID           sql.NullString
-	AvatarSrc                    sql.NullString
-	Latitude                     sql.NullString
-	ToUser                       sql.NullString
-	Longitude                    sql.NullString
-	RequiresPasswordChange       bool
+	StatusNote                   string
+	Token                        string
+	ExpiresAt                    time.Time
+	CreatedAt_3                  time.Time
+	LastUpdatedAt_3              sql.NullTime
+	ArchivedAt_3                 sql.NullTime
 }
 
 func (q *Queries) GetHouseholdInvitationByEmailAndToken(ctx context.Context, db DBTX, arg *GetHouseholdInvitationByEmailAndTokenParams) (*GetHouseholdInvitationByEmailAndTokenRow, error) {

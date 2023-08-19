@@ -46,24 +46,24 @@ type GetServiceSettingConfigurationsForHouseholdBySettingNameParams struct {
 }
 
 type GetServiceSettingConfigurationsForHouseholdBySettingNameRow struct {
-	CreatedAt          time.Time
-	CreatedAt_2        time.Time
-	ArchivedAt_2       sql.NullTime
-	LastUpdatedAt_2    sql.NullTime
-	ArchivedAt         sql.NullTime
-	LastUpdatedAt      sql.NullTime
-	Name               string
-	Enumeration        string
-	Description        string
-	Type               SettingType
 	ID                 string
+	Value              string
+	Notes              string
+	ID_2               string
+	Name               string
+	Type               SettingType
+	Description        string
+	DefaultValue       sql.NullString
+	Enumeration        string
+	AdminsOnly         bool
+	CreatedAt          time.Time
+	LastUpdatedAt      sql.NullTime
+	ArchivedAt         sql.NullTime
 	BelongsToUser      string
 	BelongsToHousehold string
-	ID_2               string
-	Notes              string
-	Value              string
-	DefaultValue       sql.NullString
-	AdminsOnly         bool
+	CreatedAt_2        time.Time
+	LastUpdatedAt_2    sql.NullTime
+	ArchivedAt_2       sql.NullTime
 }
 
 func (q *Queries) GetServiceSettingConfigurationsForHouseholdBySettingName(ctx context.Context, db DBTX, arg *GetServiceSettingConfigurationsForHouseholdBySettingNameParams) ([]*GetServiceSettingConfigurationsForHouseholdBySettingNameRow, error) {

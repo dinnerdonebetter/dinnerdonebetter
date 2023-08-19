@@ -22,8 +22,8 @@ SELECT
 	valid_ingredients.animal_derived,
 	valid_ingredients.plural_name,
 	valid_ingredients.restrict_to_preparations,
-	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
-	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
+	valid_ingredients.minimum_ideal_storage_temperature_in_celsius::float,
+	valid_ingredients.maximum_ideal_storage_temperature_in_celsius::float,
 	valid_ingredients.storage_instructions,
 	valid_ingredients.slug,
 	valid_ingredients.contains_alcohol,
@@ -40,6 +40,6 @@ SELECT
 	valid_ingredients.last_updated_at,
 	valid_ingredients.archived_at
 FROM valid_ingredients
-WHERE valid_ingredients.name ILIKE $1
+WHERE valid_ingredients.name ILIKE '%' || $1::text || '%'
 	AND valid_ingredients.archived_at IS NULL
 LIMIT 50;

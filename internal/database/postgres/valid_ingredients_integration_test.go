@@ -11,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func createValidIngredientForTest(t *testing.T, ctx context.Context, exampleValidIngredient *types.ValidIngredient, dbc *Querier) *types.ValidIngredient {
@@ -59,6 +60,7 @@ func TestQuerier_Integration_ValidIngredients(t *testing.T) {
 	updatedValidIngredient := fakes.BuildFakeValidIngredient()
 	updatedValidIngredient.ID = createdValidIngredients[0].ID
 	assert.NoError(t, dbc.UpdateValidIngredient(ctx, updatedValidIngredient))
+	createdValidIngredients[0] = updatedValidIngredient
 
 	// create more
 	for i := 0; i < exampleQuantity; i++ {
@@ -88,8 +90,44 @@ func TestQuerier_Integration_ValidIngredients(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, validIngredients.Data, byName)
 
+	random, err := dbc.GetRandomValidIngredient(ctx)
+	require.NoError(t, err)
+	require.NotNil(t, random)
+
+	needToIndex, err := dbc.GetValidIngredientIDsThatNeedSearchIndexing(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, needToIndex)
+
+	validPreparation := fakes.BuildFakeValidPreparation()
+	validPreparation.RestrictToIngredients = false
+	preparation := createValidPreparationForTest(t, ctx, validPreparation, dbc)
+	validIngredientPreparation := fakes.BuildFakeValidIngredientPreparation()
+	validIngredientPreparation.Ingredient = *createdValidIngredients[0]
+	validIngredientPreparation.Preparation = *preparation
+	ingredientPrepDBInput := converters.ConvertValidIngredientPreparationToValidIngredientPreparationDatabaseCreationInput(validIngredientPreparation)
+	createdIngredientPreparation, err := dbc.CreateValidIngredientPreparation(ctx, ingredientPrepDBInput)
+	require.NoError(t, err)
+	require.NotNil(t, createdIngredientPreparation)
+	validIngredientPreparations, err := dbc.SearchForValidIngredientsForPreparation(ctx, preparation.ID, updatedValidIngredient.Name[0:2], nil)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, validIngredientPreparations.Data)
+
+	validIngredientStateIngredient := fakes.BuildFakeValidIngredientStateIngredient()
+	validIngredientStateIngredient.Ingredient = *createdValidIngredients[0]
+	ingredientState := createValidIngredientStateForTest(t, ctx, nil, dbc)
+	validIngredientStateIngredient.IngredientState = *ingredientState
+	ingredientStateIngredientDBInput := converters.ConvertValidIngredientStateIngredientToValidIngredientStateIngredientDatabaseCreationInput(validIngredientStateIngredient)
+	createdIngredientStateIngredient, err := dbc.CreateValidIngredientStateIngredient(ctx, ingredientStateIngredientDBInput)
+	require.NoError(t, err)
+	require.NotNil(t, createdIngredientStateIngredient)
+
+	validIngredientStateIngredients, err := dbc.SearchForValidIngredientsForIngredientState(ctx, ingredientState.ID, updatedValidIngredient.Name[0:2], nil)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, validIngredientStateIngredients)
+
 	// delete
 	for _, validIngredient := range createdValidIngredients {
+		assert.NoError(t, dbc.MarkValidIngredientAsIndexed(ctx, validIngredient.ID))
 		assert.NoError(t, dbc.ArchiveValidIngredient(ctx, validIngredient.ID))
 
 		var exists bool

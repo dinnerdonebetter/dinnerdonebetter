@@ -282,7 +282,7 @@ type Querier interface {
 	SearchForServiceSettings(ctx context.Context, db DBTX, name string) ([]*SearchForServiceSettingsRow, error)
 	SearchForValidIngredientGroups(ctx context.Context, db DBTX, name string) ([]*SearchForValidIngredientGroupsRow, error)
 	SearchForValidIngredientStates(ctx context.Context, db DBTX, name string) ([]*SearchForValidIngredientStatesRow, error)
-	SearchForValidIngredients(ctx context.Context, db DBTX, name string) ([]*SearchForValidIngredientsRow, error)
+	SearchForValidIngredients(ctx context.Context, db DBTX, dollar_1 string) ([]*SearchForValidIngredientsRow, error)
 	SearchForValidInstruments(ctx context.Context, db DBTX, query string) ([]*SearchForValidInstrumentsRow, error)
 	SearchForValidMeasurementUnits(ctx context.Context, db DBTX, query string) ([]*SearchForValidMeasurementUnitsRow, error)
 	SearchForValidPreparations(ctx context.Context, db DBTX, query string) ([]*SearchForValidPreparationsRow, error)

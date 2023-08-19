@@ -50,26 +50,26 @@ GROUP BY recipe_step_completion_conditions.id,
 `
 
 type GetAllRecipeStepCompletionConditionsForRecipeRow struct {
-	ArchivedAt                                               sql.NullTime
-	LastUpdatedAt                                            sql.NullTime
-	CreatedAt                                                sql.NullTime
-	ValidIngredientStateArchivedAt                           sql.NullTime
-	ValidIngredientStateLastUpdatedAt                        sql.NullTime
-	ValidIngredientStateCreatedAt                            sql.NullTime
 	RecipeStepCompletionConditionIngredientID                string
 	RecipeStepCompletionConditionIngredientBelongsToRecipeS  string
 	RecipeStepCompletionConditionIngredientRecipeStepIngredi string
-	ValidIngredientStatePastTense                            sql.NullString
-	ValidIngredientStateSlug                                 sql.NullString
-	ValidIngredientStateAttributeType                        NullIngredientAttributeType
-	ValidIngredientStateIconPath                             sql.NullString
-	ValidIngredientStateDescription                          sql.NullString
-	ValidIngredientStateName                                 sql.NullString
-	Notes                                                    sql.NullString
-	ValidIngredientStateID                                   sql.NullString
-	BelongsToRecipeStep                                      sql.NullString
 	ID                                                       sql.NullString
+	BelongsToRecipeStep                                      sql.NullString
+	ValidIngredientStateID                                   sql.NullString
+	ValidIngredientStateName                                 sql.NullString
+	ValidIngredientStateDescription                          sql.NullString
+	ValidIngredientStateIconPath                             sql.NullString
+	ValidIngredientStateSlug                                 sql.NullString
+	ValidIngredientStatePastTense                            sql.NullString
+	ValidIngredientStateAttributeType                        NullIngredientAttributeType
+	ValidIngredientStateCreatedAt                            sql.NullTime
+	ValidIngredientStateLastUpdatedAt                        sql.NullTime
+	ValidIngredientStateArchivedAt                           sql.NullTime
 	Optional                                                 sql.NullBool
+	Notes                                                    sql.NullString
+	CreatedAt                                                sql.NullTime
+	LastUpdatedAt                                            sql.NullTime
+	ArchivedAt                                               sql.NullTime
 }
 
 func (q *Queries) GetAllRecipeStepCompletionConditionsForRecipe(ctx context.Context, db DBTX, id string) ([]*GetAllRecipeStepCompletionConditionsForRecipeRow, error) {

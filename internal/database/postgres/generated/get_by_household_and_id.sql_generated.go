@@ -79,55 +79,55 @@ type GetHouseholdInvitationByHouseholdAndIDParams struct {
 }
 
 type GetHouseholdInvitationByHouseholdAndIDRow struct {
-	CreatedAt_3                  time.Time
-	ExpiresAt                    time.Time
+	ID                           string
+	ID_2                         sql.NullString
+	Name                         sql.NullString
+	BillingStatus                sql.NullString
+	ContactPhone                 sql.NullString
+	AddressLine1                 sql.NullString
+	AddressLine2                 sql.NullString
+	City                         sql.NullString
+	State                        sql.NullString
+	ZipCode                      sql.NullString
+	Country                      sql.NullString
+	Latitude                     sql.NullString
+	Longitude                    sql.NullString
+	PaymentProcessorCustomerID   sql.NullString
+	SubscriptionPlanID           sql.NullString
 	CreatedAt                    sql.NullTime
-	EmailAddressVerifiedAt       sql.NullTime
-	ArchivedAt_3                 sql.NullTime
-	PasswordLastChangedAt        sql.NullTime
-	TwoFactorSecretVerifiedAt    sql.NullTime
-	ArchivedAt                   sql.NullTime
 	LastUpdatedAt                sql.NullTime
-	LastUpdatedAt_3              sql.NullTime
-	ArchivedAt_2                 sql.NullTime
-	LastUpdatedAt_2              sql.NullTime
+	ArchivedAt                   sql.NullTime
+	BelongsToUser                sql.NullString
+	ToEmail                      string
+	ToUser                       sql.NullString
+	ID_3                         sql.NullString
+	FirstName                    sql.NullString
+	LastName                     sql.NullString
+	Username                     sql.NullString
+	EmailAddress                 sql.NullString
+	EmailAddressVerifiedAt       sql.NullTime
+	AvatarSrc                    sql.NullString
+	HashedPassword               sql.NullString
+	RequiresPasswordChange       sql.NullBool
+	PasswordLastChangedAt        sql.NullTime
+	TwoFactorSecret              sql.NullString
+	TwoFactorSecretVerifiedAt    sql.NullTime
+	ServiceRole                  sql.NullString
+	UserAccountStatus            sql.NullString
+	UserAccountStatusExplanation sql.NullString
 	Birthday                     sql.NullTime
 	CreatedAt_2                  sql.NullTime
-	ID                           string
+	LastUpdatedAt_2              sql.NullTime
+	ArchivedAt_2                 sql.NullTime
 	ToName                       string
 	Status                       InvitationState
 	Note                         string
 	StatusNote                   string
-	ToEmail                      string
 	Token                        string
-	Longitude                    sql.NullString
-	UserAccountStatus            sql.NullString
-	LastName                     sql.NullString
-	Username                     sql.NullString
-	EmailAddress                 sql.NullString
-	ID_3                         sql.NullString
-	AvatarSrc                    sql.NullString
-	HashedPassword               sql.NullString
-	ID_2                         sql.NullString
-	ToUser                       sql.NullString
-	TwoFactorSecret              sql.NullString
-	BelongsToUser                sql.NullString
-	ServiceRole                  sql.NullString
-	FirstName                    sql.NullString
-	UserAccountStatusExplanation sql.NullString
-	SubscriptionPlanID           sql.NullString
-	PaymentProcessorCustomerID   sql.NullString
-	Latitude                     sql.NullString
-	Country                      sql.NullString
-	ZipCode                      sql.NullString
-	State                        sql.NullString
-	City                         sql.NullString
-	AddressLine2                 sql.NullString
-	AddressLine1                 sql.NullString
-	ContactPhone                 sql.NullString
-	BillingStatus                sql.NullString
-	Name                         sql.NullString
-	RequiresPasswordChange       sql.NullBool
+	ExpiresAt                    time.Time
+	CreatedAt_3                  time.Time
+	LastUpdatedAt_3              sql.NullTime
+	ArchivedAt_3                 sql.NullTime
 }
 
 func (q *Queries) GetHouseholdInvitationByHouseholdAndID(ctx context.Context, db DBTX, arg *GetHouseholdInvitationByHouseholdAndIDParams) (*GetHouseholdInvitationByHouseholdAndIDRow, error) {

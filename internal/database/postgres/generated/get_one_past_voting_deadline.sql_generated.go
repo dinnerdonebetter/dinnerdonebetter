@@ -40,18 +40,18 @@ type GetOnePastVotingDeadlineParams struct {
 }
 
 type GetOnePastVotingDeadlineRow struct {
-	VotingDeadline         time.Time
-	CreatedAt              time.Time
-	LastUpdatedAt          sql.NullTime
-	ArchivedAt             sql.NullTime
 	ID                     string
 	Notes                  string
 	Status                 MealPlanStatus
-	ElectionMethod         ValidElectionMethod
-	BelongsToHousehold     string
-	CreatedByUser          string
+	VotingDeadline         time.Time
 	GroceryListInitialized bool
 	TasksCreated           bool
+	ElectionMethod         ValidElectionMethod
+	CreatedAt              time.Time
+	LastUpdatedAt          sql.NullTime
+	ArchivedAt             sql.NullTime
+	BelongsToHousehold     string
+	CreatedByUser          string
 }
 
 func (q *Queries) GetOnePastVotingDeadline(ctx context.Context, db DBTX, arg *GetOnePastVotingDeadlineParams) (*GetOnePastVotingDeadlineRow, error) {

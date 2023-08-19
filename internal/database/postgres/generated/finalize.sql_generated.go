@@ -31,8 +31,8 @@ UPDATE meal_plan_options SET chosen = (belongs_to_meal_plan_event = $1 AND id = 
 `
 
 type FinalizeMealPlanOptionParams struct {
-	ID                     string
 	BelongsToMealPlanEvent sql.NullString
+	ID                     string
 	Tiebroken              bool
 }
 

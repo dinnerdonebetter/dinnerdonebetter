@@ -95,57 +95,57 @@ type SearchValidIngredientPreparationsByPreparationAndIngredientNameParams struc
 }
 
 type SearchValidIngredientPreparationsByPreparationAndIngredientNameRow struct {
-	CreatedAt_3                             time.Time
-	CreatedAt                               time.Time
-	CreatedAt_2                             time.Time
-	ArchivedAt                              sql.NullTime
-	LastUpdatedAt                           sql.NullTime
-	LastUpdatedAt_2                         sql.NullTime
-	ArchivedAt_3                            sql.NullTime
-	LastUpdatedAt_3                         sql.NullTime
-	ArchivedAt_2                            sql.NullTime
-	ID_3                                    string
-	ID_2                                    string
-	IconPath_2                              string
-	PluralName                              string
-	StorageInstructions                     string
-	IconPath                                string
 	ID                                      string
+	Notes                                   string
+	ID_2                                    string
+	Name                                    string
 	Description                             string
-	Slug_2                                  string
-	ShoppingSuggestions                     string
+	IconPath                                string
+	YieldsNothing                           bool
+	RestrictToIngredients                   bool
+	MinimumIngredientCount                  int32
+	MaximumIngredientCount                  sql.NullInt32
+	MinimumInstrumentCount                  int32
+	MaximumInstrumentCount                  sql.NullInt32
+	TemperatureRequired                     bool
+	TimeEstimateRequired                    bool
+	ConditionExpressionRequired             bool
+	ConsumesVessel                          bool
+	OnlyForVessels                          bool
+	MinimumVesselCount                      int32
+	MaximumVesselCount                      sql.NullInt32
 	Slug                                    string
 	PastTense                               string
-	Name                                    string
-	Warning                                 string
-	Notes                                   string
-	Description_2                           string
+	CreatedAt                               time.Time
+	LastUpdatedAt                           sql.NullTime
+	ArchivedAt                              sql.NullTime
+	ID_3                                    string
 	Name_2                                  string
-	MaximumIdealStorageTemperatureInCelsius sql.NullString
-	MinimumIdealStorageTemperatureInCelsius sql.NullString
-	MaximumVesselCount                      sql.NullInt32
-	MaximumIngredientCount                  sql.NullInt32
-	MaximumInstrumentCount                  sql.NullInt32
-	MinimumInstrumentCount                  int32
-	MinimumVesselCount                      int32
-	MinimumIngredientCount                  int32
-	IsLiquid                                sql.NullBool
-	ConsumesVessel                          bool
+	Description_2                           string
+	Warning                                 string
+	ContainsEgg                             bool
+	ContainsDairy                           bool
+	ContainsPeanut                          bool
+	ContainsTreeNut                         bool
+	ContainsSoy                             bool
+	ContainsWheat                           bool
+	ContainsShellfish                       bool
+	ContainsSesame                          bool
 	ContainsFish                            bool
 	ContainsGluten                          bool
 	AnimalFlesh                             bool
 	Volumetric                              bool
-	ContainsSesame                          bool
-	ContainsShellfish                       bool
+	IsLiquid                                sql.NullBool
+	IconPath_2                              string
 	AnimalDerived                           bool
-	ContainsWheat                           bool
+	PluralName                              string
 	RestrictToPreparations                  bool
-	ContainsSoy                             bool
-	ContainsTreeNut                         bool
-	ContainsPeanut                          bool
-	ContainsDairy                           bool
+	MinimumIdealStorageTemperatureInCelsius sql.NullString
+	MaximumIdealStorageTemperatureInCelsius sql.NullString
+	StorageInstructions                     string
+	Slug_2                                  string
 	ContainsAlcohol                         bool
-	ContainsEgg                             bool
+	ShoppingSuggestions                     string
 	IsStarch                                bool
 	IsProtein                               bool
 	IsGrain                                 bool
@@ -154,12 +154,12 @@ type SearchValidIngredientPreparationsByPreparationAndIngredientNameRow struct {
 	IsFat                                   bool
 	IsAcid                                  bool
 	IsHeat                                  bool
-	OnlyForVessels                          bool
-	ConditionExpressionRequired             bool
-	TimeEstimateRequired                    bool
-	TemperatureRequired                     bool
-	RestrictToIngredients                   bool
-	YieldsNothing                           bool
+	CreatedAt_2                             time.Time
+	LastUpdatedAt_2                         sql.NullTime
+	ArchivedAt_2                            sql.NullTime
+	CreatedAt_3                             time.Time
+	LastUpdatedAt_3                         sql.NullTime
+	ArchivedAt_3                            sql.NullTime
 }
 
 func (q *Queries) SearchValidIngredientPreparationsByPreparationAndIngredientName(ctx context.Context, db DBTX, arg *SearchValidIngredientPreparationsByPreparationAndIngredientNameParams) ([]*SearchValidIngredientPreparationsByPreparationAndIngredientNameRow, error) {
@@ -297,43 +297,44 @@ FROM valid_ingredient_preparations
 	JOIN valid_preparations ON valid_ingredient_preparations.valid_preparation_id = valid_preparations.id
 WHERE valid_ingredient_preparations.archived_at IS NULL
     AND valid_ingredients.archived_at IS NULL
+    AND valid_preparations.archived_at IS NULL
 	AND (valid_ingredient_preparations.valid_preparation_id = $1 OR valid_preparations.restrict_to_ingredients IS FALSE)
-	AND valid_ingredients.name ILIKE $2
+	AND valid_ingredients.name ILIKE '%' || $2::text || '%'
 `
 
 type SearchValidIngredientsByPreparationAndIngredientNameParams struct {
 	ValidPreparationID string
-	Name               string
+	Column2            string
 }
 
 type SearchValidIngredientsByPreparationAndIngredientNameRow struct {
-	CreatedAt                               time.Time
-	ArchivedAt                              sql.NullTime
-	LastUpdatedAt                           sql.NullTime
-	Warning                                 string
-	Description                             string
-	Name                                    string
-	ShoppingSuggestions                     string
-	Slug                                    string
-	StorageInstructions                     string
-	PluralName                              string
 	ID                                      string
-	IconPath                                string
-	MaximumIdealStorageTemperatureInCelsius sql.NullString
-	MinimumIdealStorageTemperatureInCelsius sql.NullString
-	IsLiquid                                sql.NullBool
-	AnimalDerived                           bool
+	Name                                    string
+	Description                             string
+	Warning                                 string
+	ContainsEgg                             bool
+	ContainsDairy                           bool
+	ContainsPeanut                          bool
 	ContainsTreeNut                         bool
-	AnimalFlesh                             bool
-	ContainsGluten                          bool
-	ContainsFish                            bool
-	RestrictToPreparations                  bool
-	ContainsSesame                          bool
-	ContainsShellfish                       bool
-	ContainsWheat                           bool
 	ContainsSoy                             bool
-	ContainsAlcohol                         bool
+	ContainsWheat                           bool
+	ContainsShellfish                       bool
+	ContainsSesame                          bool
+	ContainsFish                            bool
+	ContainsGluten                          bool
+	AnimalFlesh                             bool
 	Volumetric                              bool
+	IsLiquid                                sql.NullBool
+	IconPath                                string
+	AnimalDerived                           bool
+	PluralName                              string
+	RestrictToPreparations                  bool
+	MinimumIdealStorageTemperatureInCelsius sql.NullString
+	MaximumIdealStorageTemperatureInCelsius sql.NullString
+	StorageInstructions                     string
+	Slug                                    string
+	ContainsAlcohol                         bool
+	ShoppingSuggestions                     string
 	IsStarch                                bool
 	IsProtein                               bool
 	IsGrain                                 bool
@@ -342,13 +343,13 @@ type SearchValidIngredientsByPreparationAndIngredientNameRow struct {
 	IsFat                                   bool
 	IsAcid                                  bool
 	IsHeat                                  bool
-	ContainsPeanut                          bool
-	ContainsDairy                           bool
-	ContainsEgg                             bool
+	CreatedAt                               time.Time
+	LastUpdatedAt                           sql.NullTime
+	ArchivedAt                              sql.NullTime
 }
 
 func (q *Queries) SearchValidIngredientsByPreparationAndIngredientName(ctx context.Context, db DBTX, arg *SearchValidIngredientsByPreparationAndIngredientNameParams) ([]*SearchValidIngredientsByPreparationAndIngredientNameRow, error) {
-	rows, err := db.QueryContext(ctx, searchValidIngredientsByPreparationAndIngredientName, arg.ValidPreparationID, arg.Name)
+	rows, err := db.QueryContext(ctx, searchValidIngredientsByPreparationAndIngredientName, arg.ValidPreparationID, arg.Column2)
 	if err != nil {
 		return nil, err
 	}

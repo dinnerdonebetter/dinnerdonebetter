@@ -82,7 +82,10 @@ sql:
         rename:
           url: "URL"
         overrides:
-          - db_type: "numeric"
+          - db_type: "valid_ingredients.minimum_ideal_storage_temperature_in_celsius"
+            go_type: "database/sql.NullFloat64"
+            nullable: true
+          - db_type: "valid_ingredients.maximum_ideal_storage_temperature_in_celsius"
             go_type: "database/sql.NullFloat64"
             nullable: true
 rules:

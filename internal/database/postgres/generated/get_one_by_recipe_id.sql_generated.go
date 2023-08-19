@@ -59,43 +59,43 @@ WHERE recipe_steps.archived_at IS NULL
 `
 
 type GetRecipeStepByRecipeIDRow struct {
-	CreatedAt                     time.Time
-	CreatedAt_2                   time.Time
-	ArchivedAt_2                  sql.NullTime
-	LastUpdatedAt                 sql.NullTime
-	ArchivedAt                    sql.NullTime
-	LastUpdatedAt_2               sql.NullTime
-	ConditionExpression           string
-	ID_2                          string
-	Description                   string
 	ID                            string
-	Name                          string
-	ExplicitInstructions          string
-	Notes                         string
-	IconPath                      string
-	PastTense                     string
-	Slug                          string
-	BelongsToRecipe               string
-	MaximumTemperatureInCelsius   sql.NullString
-	MinimumTemperatureInCelsius   sql.NullString
-	MinimumEstimatedTimeInSeconds sql.NullInt64
-	MaximumEstimatedTimeInSeconds sql.NullInt64
-	MaximumIngredientCount        sql.NullInt32
-	MaximumVesselCount            sql.NullInt32
-	MaximumInstrumentCount        sql.NullInt32
-	MinimumVesselCount            int32
 	Index                         int32
+	ID_2                          string
+	Name                          string
+	Description                   string
+	IconPath                      string
+	YieldsNothing                 bool
+	RestrictToIngredients         bool
 	MinimumIngredientCount        int32
+	MaximumIngredientCount        sql.NullInt32
 	MinimumInstrumentCount        int32
+	MaximumInstrumentCount        sql.NullInt32
 	TemperatureRequired           bool
 	TimeEstimateRequired          bool
 	ConditionExpressionRequired   bool
+	ConsumesVessel                bool
+	OnlyForVessels                bool
+	MinimumVesselCount            int32
+	MaximumVesselCount            sql.NullInt32
+	Slug                          string
+	PastTense                     string
+	CreatedAt                     time.Time
+	LastUpdatedAt                 sql.NullTime
+	ArchivedAt                    sql.NullTime
+	MinimumEstimatedTimeInSeconds sql.NullInt64
+	MaximumEstimatedTimeInSeconds sql.NullInt64
+	MinimumTemperatureInCelsius   sql.NullString
+	MaximumTemperatureInCelsius   sql.NullString
+	Notes                         string
+	ExplicitInstructions          string
+	ConditionExpression           string
 	Optional                      bool
 	StartTimerAutomatically       bool
-	ConsumesVessel                bool
-	RestrictToIngredients         bool
-	YieldsNothing                 bool
-	OnlyForVessels                bool
+	CreatedAt_2                   time.Time
+	LastUpdatedAt_2               sql.NullTime
+	ArchivedAt_2                  sql.NullTime
+	BelongsToRecipe               string
 }
 
 func (q *Queries) GetRecipeStepByRecipeID(ctx context.Context, db DBTX, id string) (*GetRecipeStepByRecipeIDRow, error) {

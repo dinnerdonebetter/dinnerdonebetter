@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"database/sql"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
 	"time"
 )
 
@@ -107,4 +108,23 @@ func nullBoolFromBool(b bool) sql.NullBool {
 		Bool:  b,
 		Valid: true,
 	}
+}
+
+func nullFloat64FromFloat32Pointer(f *float32) sql.NullFloat64 {
+	if f == nil {
+		return sql.NullFloat64{}
+	}
+
+	return sql.NullFloat64{
+		Float64: float64(*f),
+		Valid:   true,
+	}
+}
+
+func float32PointerFromNullFloat64(f sql.NullFloat64) *float32 {
+	if f.Valid {
+		return pointers.Pointer(float32(f.Float64))
+	}
+
+	return nil
 }

@@ -82,60 +82,60 @@ type GetRecipeByIDAndAuthorIDParams struct {
 }
 
 type GetRecipeByIDAndAuthorIDRow struct {
-	LastUpdatedAt_2               sql.NullTime
-	CreatedAt                     sql.NullTime
-	ArchivedAt_3                  sql.NullTime
-	LastUpdatedAt_3               sql.NullTime
-	CreatedAt_3                   sql.NullTime
-	ArchivedAt_2                  sql.NullTime
-	CreatedAt_2                   sql.NullTime
-	ArchivedAt                    sql.NullTime
-	LastUpdatedAt                 sql.NullTime
-	MaximumTemperatureInCelsius   sql.NullString
-	MinimumTemperatureInCelsius   sql.NullString
-	BelongsToRecipe               sql.NullString
-	YieldsComponentType           NullComponentType
-	PluralPortionName             sql.NullString
-	PortionName                   sql.NullString
+	ID                            sql.NullString
+	Name                          sql.NullString
+	Slug                          sql.NullString
+	Source                        sql.NullString
+	Description                   sql.NullString
+	InspiredByRecipeID            sql.NullString
+	MinEstimatedPortions          sql.NullString
 	MaxEstimatedPortions          sql.NullString
+	PortionName                   sql.NullString
+	PluralPortionName             sql.NullString
+	SealOfApproval                sql.NullBool
+	EligibleForMeals              sql.NullBool
+	YieldsComponentType           NullComponentType
+	CreatedAt                     sql.NullTime
+	LastUpdatedAt                 sql.NullTime
+	ArchivedAt                    sql.NullTime
 	CreatedByUser                 sql.NullString
 	ID_2                          sql.NullString
-	Source                        sql.NullString
+	Index                         sql.NullInt32
 	ID_3                          sql.NullString
 	Name_2                        sql.NullString
 	Description_2                 sql.NullString
 	IconPath                      sql.NullString
-	Description                   sql.NullString
-	ConditionExpression           sql.NullString
-	ExplicitInstructions          sql.NullString
-	Slug                          sql.NullString
-	Notes                         sql.NullString
-	Name                          sql.NullString
-	InspiredByRecipeID            sql.NullString
-	ID                            sql.NullString
-	MinEstimatedPortions          sql.NullString
-	PastTense                     sql.NullString
-	Slug_2                        sql.NullString
-	MinimumEstimatedTimeInSeconds sql.NullInt64
-	MaximumEstimatedTimeInSeconds sql.NullInt64
+	YieldsNothing                 sql.NullBool
+	RestrictToIngredients         sql.NullBool
+	MinimumIngredientCount        sql.NullInt32
+	MaximumIngredientCount        sql.NullInt32
 	MinimumInstrumentCount        sql.NullInt32
 	MaximumInstrumentCount        sql.NullInt32
-	MaximumIngredientCount        sql.NullInt32
-	Index                         sql.NullInt32
-	MinimumVesselCount            sql.NullInt32
-	MinimumIngredientCount        sql.NullInt32
-	MaximumVesselCount            sql.NullInt32
-	OnlyForVessels                sql.NullBool
-	SealOfApproval                sql.NullBool
-	StartTimerAutomatically       sql.NullBool
-	ConsumesVessel                sql.NullBool
-	RestrictToIngredients         sql.NullBool
-	Optional                      sql.NullBool
 	TemperatureRequired           sql.NullBool
-	YieldsNothing                 sql.NullBool
 	TimeEstimateRequired          sql.NullBool
 	ConditionExpressionRequired   sql.NullBool
-	EligibleForMeals              sql.NullBool
+	ConsumesVessel                sql.NullBool
+	OnlyForVessels                sql.NullBool
+	MinimumVesselCount            sql.NullInt32
+	MaximumVesselCount            sql.NullInt32
+	Slug_2                        sql.NullString
+	PastTense                     sql.NullString
+	CreatedAt_2                   sql.NullTime
+	LastUpdatedAt_2               sql.NullTime
+	ArchivedAt_2                  sql.NullTime
+	MinimumEstimatedTimeInSeconds sql.NullInt64
+	MaximumEstimatedTimeInSeconds sql.NullInt64
+	MinimumTemperatureInCelsius   sql.NullString
+	MaximumTemperatureInCelsius   sql.NullString
+	Notes                         sql.NullString
+	ExplicitInstructions          sql.NullString
+	ConditionExpression           sql.NullString
+	Optional                      sql.NullBool
+	StartTimerAutomatically       sql.NullBool
+	CreatedAt_3                   sql.NullTime
+	LastUpdatedAt_3               sql.NullTime
+	ArchivedAt_3                  sql.NullTime
+	BelongsToRecipe               sql.NullString
 }
 
 func (q *Queries) GetRecipeByIDAndAuthorID(ctx context.Context, db DBTX, arg *GetRecipeByIDAndAuthorIDParams) ([]*GetRecipeByIDAndAuthorIDRow, error) {

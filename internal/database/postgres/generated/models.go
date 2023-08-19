@@ -953,34 +953,34 @@ type MealPlanEvents struct {
 }
 
 type MealPlanOptionVotes struct {
+	ID                      string
+	Rank                    int32
+	Abstain                 bool
+	Notes                   string
+	ByUser                  string
 	CreatedAt               time.Time
 	LastUpdatedAt           sql.NullTime
 	ArchivedAt              sql.NullTime
-	ID                      string
-	Notes                   string
-	ByUser                  string
 	BelongsToMealPlanOption string
-	Rank                    int32
-	Abstain                 bool
 }
 
 type Oauth2ClientTokens struct {
-	AccessExpiresAt     time.Time
-	CodeExpiresAt       time.Time
-	RefreshExpiresAt    time.Time
-	RefreshCreatedAt    time.Time
-	CodeCreatedAt       time.Time
-	AccessCreatedAt     time.Time
+	ID                  string
+	ClientID            string
+	BelongsToUser       string
+	RedirectUri         string
+	Scope               Oauth2ClientTokenScopes
+	Code                string
 	CodeChallenge       string
 	CodeChallengeMethod string
-	Scope               Oauth2ClientTokenScopes
-	ClientID            string
+	CodeCreatedAt       time.Time
+	CodeExpiresAt       time.Time
 	Access              string
-	Code                string
-	ID                  string
+	AccessCreatedAt     time.Time
+	AccessExpiresAt     time.Time
 	Refresh             string
-	RedirectUri         string
-	BelongsToUser       string
+	RefreshCreatedAt    time.Time
+	RefreshExpiresAt    time.Time
 }
 
 type PasswordResetTokens struct {
@@ -994,16 +994,16 @@ type PasswordResetTokens struct {
 }
 
 type RecipeRatings struct {
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	ArchivedAt    sql.NullTime
 	ID            string
 	RecipeID      string
-	Notes         string
-	ByUser        string
 	Taste         sql.NullString
 	Difficulty    sql.NullString
 	Cleanup       sql.NullString
 	Instructions  sql.NullString
 	Overall       sql.NullString
+	Notes         string
+	ByUser        string
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
 }

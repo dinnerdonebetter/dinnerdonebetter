@@ -77,60 +77,60 @@ ORDER BY recipe_steps.index
 `
 
 type GetRecipeByIDRow struct {
-	LastUpdatedAt_2               sql.NullTime
-	CreatedAt                     sql.NullTime
-	ArchivedAt_3                  sql.NullTime
-	LastUpdatedAt_3               sql.NullTime
-	CreatedAt_3                   sql.NullTime
-	ArchivedAt_2                  sql.NullTime
-	CreatedAt_2                   sql.NullTime
-	ArchivedAt                    sql.NullTime
-	LastUpdatedAt                 sql.NullTime
-	MaximumTemperatureInCelsius   sql.NullString
-	MinimumTemperatureInCelsius   sql.NullString
-	BelongsToRecipe               sql.NullString
-	YieldsComponentType           NullComponentType
-	PluralPortionName             sql.NullString
-	PortionName                   sql.NullString
+	ID                            sql.NullString
+	Name                          sql.NullString
+	Slug                          sql.NullString
+	Source                        sql.NullString
+	Description                   sql.NullString
+	InspiredByRecipeID            sql.NullString
+	MinEstimatedPortions          sql.NullString
 	MaxEstimatedPortions          sql.NullString
+	PortionName                   sql.NullString
+	PluralPortionName             sql.NullString
+	SealOfApproval                sql.NullBool
+	EligibleForMeals              sql.NullBool
+	YieldsComponentType           NullComponentType
+	CreatedAt                     sql.NullTime
+	LastUpdatedAt                 sql.NullTime
+	ArchivedAt                    sql.NullTime
 	CreatedByUser                 sql.NullString
 	ID_2                          sql.NullString
-	Source                        sql.NullString
+	Index                         sql.NullInt32
 	ID_3                          sql.NullString
 	Name_2                        sql.NullString
 	Description_2                 sql.NullString
 	IconPath                      sql.NullString
-	Description                   sql.NullString
-	ConditionExpression           sql.NullString
-	ExplicitInstructions          sql.NullString
-	Slug                          sql.NullString
-	Notes                         sql.NullString
-	Name                          sql.NullString
-	InspiredByRecipeID            sql.NullString
-	ID                            sql.NullString
-	MinEstimatedPortions          sql.NullString
-	PastTense                     sql.NullString
-	Slug_2                        sql.NullString
-	MinimumEstimatedTimeInSeconds sql.NullInt64
-	MaximumEstimatedTimeInSeconds sql.NullInt64
+	YieldsNothing                 sql.NullBool
+	RestrictToIngredients         sql.NullBool
+	MinimumIngredientCount        sql.NullInt32
+	MaximumIngredientCount        sql.NullInt32
 	MinimumInstrumentCount        sql.NullInt32
 	MaximumInstrumentCount        sql.NullInt32
-	MaximumIngredientCount        sql.NullInt32
-	Index                         sql.NullInt32
-	MinimumVesselCount            sql.NullInt32
-	MinimumIngredientCount        sql.NullInt32
-	MaximumVesselCount            sql.NullInt32
-	OnlyForVessels                sql.NullBool
-	SealOfApproval                sql.NullBool
-	StartTimerAutomatically       sql.NullBool
-	ConsumesVessel                sql.NullBool
-	RestrictToIngredients         sql.NullBool
-	Optional                      sql.NullBool
 	TemperatureRequired           sql.NullBool
-	YieldsNothing                 sql.NullBool
 	TimeEstimateRequired          sql.NullBool
 	ConditionExpressionRequired   sql.NullBool
-	EligibleForMeals              sql.NullBool
+	ConsumesVessel                sql.NullBool
+	OnlyForVessels                sql.NullBool
+	MinimumVesselCount            sql.NullInt32
+	MaximumVesselCount            sql.NullInt32
+	Slug_2                        sql.NullString
+	PastTense                     sql.NullString
+	CreatedAt_2                   sql.NullTime
+	LastUpdatedAt_2               sql.NullTime
+	ArchivedAt_2                  sql.NullTime
+	MinimumEstimatedTimeInSeconds sql.NullInt64
+	MaximumEstimatedTimeInSeconds sql.NullInt64
+	MinimumTemperatureInCelsius   sql.NullString
+	MaximumTemperatureInCelsius   sql.NullString
+	Notes                         sql.NullString
+	ExplicitInstructions          sql.NullString
+	ConditionExpression           sql.NullString
+	Optional                      sql.NullBool
+	StartTimerAutomatically       sql.NullBool
+	CreatedAt_3                   sql.NullTime
+	LastUpdatedAt_3               sql.NullTime
+	ArchivedAt_3                  sql.NullTime
+	BelongsToRecipe               sql.NullString
 }
 
 func (q *Queries) GetRecipeByID(ctx context.Context, db DBTX, id string) (*GetRecipeByIDRow, error) {
@@ -224,24 +224,24 @@ WHERE service_settings.archived_at IS NULL
 `
 
 type GetServiceSettingConfigurationByIDRow struct {
-	CreatedAt          time.Time
-	CreatedAt_2        time.Time
-	ArchivedAt_2       sql.NullTime
-	LastUpdatedAt_2    sql.NullTime
-	ArchivedAt         sql.NullTime
-	LastUpdatedAt      sql.NullTime
-	Name               string
-	Enumeration        string
-	Description        string
-	Type               SettingType
 	ID                 string
+	Value              string
+	Notes              string
+	ID_2               string
+	Name               string
+	Type               SettingType
+	Description        string
+	DefaultValue       sql.NullString
+	Enumeration        string
+	AdminsOnly         bool
+	CreatedAt          time.Time
+	LastUpdatedAt      sql.NullTime
+	ArchivedAt         sql.NullTime
 	BelongsToUser      string
 	BelongsToHousehold string
-	ID_2               string
-	Notes              string
-	Value              string
-	DefaultValue       sql.NullString
-	AdminsOnly         bool
+	CreatedAt_2        time.Time
+	LastUpdatedAt_2    sql.NullTime
+	ArchivedAt_2       sql.NullTime
 }
 
 func (q *Queries) GetServiceSettingConfigurationByID(ctx context.Context, db DBTX, id string) (*GetServiceSettingConfigurationByIDRow, error) {
@@ -300,27 +300,27 @@ WHERE users.archived_at IS NULL
 `
 
 type GetUserByIDRow struct {
-	CreatedAt                    time.Time
-	Birthday                     sql.NullTime
-	ArchivedAt                   sql.NullTime
-	PasswordLastChangedAt        sql.NullTime
-	LastUpdatedAt                sql.NullTime
-	EmailAddressVerifiedAt       sql.NullTime
-	LastAcceptedPrivacyPolicy    sql.NullTime
-	LastAcceptedTermsOfService   sql.NullTime
-	TwoFactorSecretVerifiedAt    sql.NullTime
-	UserAccountStatusExplanation string
+	ID                           string
 	FirstName                    string
+	LastName                     string
+	Username                     string
+	EmailAddress                 string
+	EmailAddressVerifiedAt       sql.NullTime
+	AvatarSrc                    sql.NullString
+	HashedPassword               string
+	RequiresPasswordChange       bool
+	PasswordLastChangedAt        sql.NullTime
+	TwoFactorSecret              string
+	TwoFactorSecretVerifiedAt    sql.NullTime
 	ServiceRole                  string
 	UserAccountStatus            string
-	LastName                     string
-	ID                           string
-	HashedPassword               string
-	TwoFactorSecret              string
-	EmailAddress                 string
-	Username                     string
-	AvatarSrc                    sql.NullString
-	RequiresPasswordChange       bool
+	UserAccountStatusExplanation string
+	Birthday                     sql.NullTime
+	LastAcceptedTermsOfService   sql.NullTime
+	LastAcceptedPrivacyPolicy    sql.NullTime
+	CreatedAt                    time.Time
+	LastUpdatedAt                sql.NullTime
+	ArchivedAt                   sql.NullTime
 }
 
 func (q *Queries) GetUserByID(ctx context.Context, db DBTX, id string) (*GetUserByIDRow, error) {
@@ -354,87 +354,88 @@ func (q *Queries) GetUserByID(ctx context.Context, db DBTX, id string) (*GetUser
 
 const getValidIngredientByID = `-- name: GetValidIngredientByID :one
 
-SELECT valid_ingredients.id,
-       valid_ingredients.name,
-       valid_ingredients.description,
-       valid_ingredients.warning,
-       valid_ingredients.contains_egg,
-       valid_ingredients.contains_dairy,
-       valid_ingredients.contains_peanut,
-       valid_ingredients.contains_tree_nut,
-       valid_ingredients.contains_soy,
-       valid_ingredients.contains_wheat,
-       valid_ingredients.contains_shellfish,
-       valid_ingredients.contains_sesame,
-       valid_ingredients.contains_fish,
-       valid_ingredients.contains_gluten,
-       valid_ingredients.animal_flesh,
-       valid_ingredients.volumetric,
-       valid_ingredients.is_liquid,
-       valid_ingredients.icon_path,
-       valid_ingredients.animal_derived,
-       valid_ingredients.plural_name,
-       valid_ingredients.restrict_to_preparations,
-       valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
-       valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
-       valid_ingredients.storage_instructions,
-       valid_ingredients.slug,
-       valid_ingredients.contains_alcohol,
-       valid_ingredients.shopping_suggestions,
-       valid_ingredients.is_starch,
-       valid_ingredients.is_protein,
-       valid_ingredients.is_grain,
-       valid_ingredients.is_fruit,
-       valid_ingredients.is_salt,
-       valid_ingredients.is_fat,
-       valid_ingredients.is_acid,
-       valid_ingredients.is_heat,
-       valid_ingredients.created_at,
-       valid_ingredients.last_updated_at,
-       valid_ingredients.archived_at
-  FROM valid_ingredients
- WHERE valid_ingredients.archived_at IS NULL
+SELECT
+    valid_ingredients.id,
+    valid_ingredients.name,
+    valid_ingredients.description,
+    valid_ingredients.warning,
+    valid_ingredients.contains_egg,
+    valid_ingredients.contains_dairy,
+    valid_ingredients.contains_peanut,
+    valid_ingredients.contains_tree_nut,
+    valid_ingredients.contains_soy,
+    valid_ingredients.contains_wheat,
+    valid_ingredients.contains_shellfish,
+    valid_ingredients.contains_sesame,
+    valid_ingredients.contains_fish,
+    valid_ingredients.contains_gluten,
+    valid_ingredients.animal_flesh,
+    valid_ingredients.volumetric,
+    valid_ingredients.is_liquid,
+    valid_ingredients.icon_path,
+    valid_ingredients.animal_derived,
+    valid_ingredients.plural_name,
+    valid_ingredients.restrict_to_preparations,
+    valid_ingredients.minimum_ideal_storage_temperature_in_celsius::float,
+    valid_ingredients.maximum_ideal_storage_temperature_in_celsius::float,
+    valid_ingredients.storage_instructions,
+    valid_ingredients.slug,
+    valid_ingredients.contains_alcohol,
+    valid_ingredients.shopping_suggestions,
+    valid_ingredients.is_starch,
+    valid_ingredients.is_protein,
+    valid_ingredients.is_grain,
+    valid_ingredients.is_fruit,
+    valid_ingredients.is_salt,
+    valid_ingredients.is_fat,
+    valid_ingredients.is_acid,
+    valid_ingredients.is_heat,
+    valid_ingredients.created_at,
+    valid_ingredients.last_updated_at,
+    valid_ingredients.archived_at
+    FROM valid_ingredients
+    WHERE valid_ingredients.archived_at IS NULL
 `
 
 type GetValidIngredientByIDRow struct {
-	CreatedAt                               time.Time
-	ArchivedAt                              sql.NullTime
-	LastUpdatedAt                           sql.NullTime
-	Warning                                 string
-	Description                             string
-	Name                                    string
-	ShoppingSuggestions                     string
-	Slug                                    string
-	StorageInstructions                     string
-	PluralName                              string
-	ID                                      string
-	IconPath                                string
-	MaximumIdealStorageTemperatureInCelsius sql.NullString
-	MinimumIdealStorageTemperatureInCelsius sql.NullString
-	IsLiquid                                sql.NullBool
-	AnimalDerived                           bool
-	ContainsTreeNut                         bool
-	AnimalFlesh                             bool
-	ContainsGluten                          bool
-	ContainsFish                            bool
-	RestrictToPreparations                  bool
-	ContainsSesame                          bool
-	ContainsShellfish                       bool
-	ContainsWheat                           bool
-	ContainsSoy                             bool
-	ContainsAlcohol                         bool
-	Volumetric                              bool
-	IsStarch                                bool
-	IsProtein                               bool
-	IsGrain                                 bool
-	IsFruit                                 bool
-	IsSalt                                  bool
-	IsFat                                   bool
-	IsAcid                                  bool
-	IsHeat                                  bool
-	ContainsPeanut                          bool
-	ContainsDairy                           bool
-	ContainsEgg                             bool
+	ID                                                      string
+	Name                                                    string
+	Description                                             string
+	Warning                                                 string
+	ContainsEgg                                             bool
+	ContainsDairy                                           bool
+	ContainsPeanut                                          bool
+	ContainsTreeNut                                         bool
+	ContainsSoy                                             bool
+	ContainsWheat                                           bool
+	ContainsShellfish                                       bool
+	ContainsSesame                                          bool
+	ContainsFish                                            bool
+	ContainsGluten                                          bool
+	AnimalFlesh                                             bool
+	Volumetric                                              bool
+	IsLiquid                                                sql.NullBool
+	IconPath                                                string
+	AnimalDerived                                           bool
+	PluralName                                              string
+	RestrictToPreparations                                  bool
+	ValidIngredientsMinimumIdealStorageTemperatureInCelsius float64
+	ValidIngredientsMaximumIdealStorageTemperatureInCelsius float64
+	StorageInstructions                                     string
+	Slug                                                    string
+	ContainsAlcohol                                         bool
+	ShoppingSuggestions                                     string
+	IsStarch                                                bool
+	IsProtein                                               bool
+	IsGrain                                                 bool
+	IsFruit                                                 bool
+	IsSalt                                                  bool
+	IsFat                                                   bool
+	IsAcid                                                  bool
+	IsHeat                                                  bool
+	CreatedAt                                               time.Time
+	LastUpdatedAt                                           sql.NullTime
+	ArchivedAt                                              sql.NullTime
 }
 
 func (q *Queries) GetValidIngredientByID(ctx context.Context, db DBTX) (*GetValidIngredientByIDRow, error) {
@@ -462,8 +463,8 @@ func (q *Queries) GetValidIngredientByID(ctx context.Context, db DBTX) (*GetVali
 		&i.AnimalDerived,
 		&i.PluralName,
 		&i.RestrictToPreparations,
-		&i.MinimumIdealStorageTemperatureInCelsius,
-		&i.MaximumIdealStorageTemperatureInCelsius,
+		&i.ValidIngredientsMinimumIdealStorageTemperatureInCelsius,
+		&i.ValidIngredientsMaximumIdealStorageTemperatureInCelsius,
 		&i.StorageInstructions,
 		&i.Slug,
 		&i.ContainsAlcohol,
@@ -503,19 +504,19 @@ SELECT valid_measurement_units.id,
 `
 
 type GetValidMeasurementUnitByIDRow struct {
-	CreatedAt     time.Time
-	ArchivedAt    sql.NullTime
-	LastUpdatedAt sql.NullTime
-	PluralName    string
+	ID            string
 	Name          string
 	Description   string
-	ID            string
-	IconPath      string
-	Slug          string
 	Volumetric    sql.NullBool
-	Imperial      bool
-	Metric        bool
+	IconPath      string
 	Universal     bool
+	Metric        bool
+	Imperial      bool
+	Slug          string
+	PluralName    string
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
 }
 
 func (q *Queries) GetValidMeasurementUnitByID(ctx context.Context, db DBTX) (*GetValidMeasurementUnitByIDRow, error) {
@@ -568,28 +569,28 @@ SELECT valid_preparations.id,
 `
 
 type GetValidPreparationByIDRow struct {
-	CreatedAt                   time.Time
-	LastUpdatedAt               sql.NullTime
-	ArchivedAt                  sql.NullTime
+	ID                          string
 	Name                        string
 	Description                 string
 	IconPath                    string
-	ID                          string
+	YieldsNothing               bool
+	RestrictToIngredients       bool
+	MinimumIngredientCount      int32
+	MaximumIngredientCount      sql.NullInt32
+	MinimumInstrumentCount      int32
+	MaximumInstrumentCount      sql.NullInt32
+	TemperatureRequired         bool
+	TimeEstimateRequired        bool
+	ConditionExpressionRequired bool
+	ConsumesVessel              bool
+	OnlyForVessels              bool
+	MinimumVesselCount          int32
+	MaximumVesselCount          sql.NullInt32
 	Slug                        string
 	PastTense                   string
-	MaximumInstrumentCount      sql.NullInt32
-	MaximumIngredientCount      sql.NullInt32
-	MaximumVesselCount          sql.NullInt32
-	MinimumVesselCount          int32
-	MinimumInstrumentCount      int32
-	MinimumIngredientCount      int32
-	RestrictToIngredients       bool
-	OnlyForVessels              bool
-	ConsumesVessel              bool
-	ConditionExpressionRequired bool
-	TimeEstimateRequired        bool
-	TemperatureRequired         bool
-	YieldsNothing               bool
+	CreatedAt                   time.Time
+	LastUpdatedAt               sql.NullTime
+	ArchivedAt                  sql.NullTime
 }
 
 func (q *Queries) GetValidPreparationByID(ctx context.Context, db DBTX) (*GetValidPreparationByIDRow, error) {

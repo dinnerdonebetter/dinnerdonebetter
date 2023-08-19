@@ -33,16 +33,16 @@ ORDER BY recipe_media.id
 `
 
 type GetRecipeMediaForRecipeRow struct {
-	CreatedAt           time.Time
-	LastUpdatedAt       sql.NullTime
-	ArchivedAt          sql.NullTime
 	ID                  string
+	BelongsToRecipe     sql.NullString
+	BelongsToRecipeStep sql.NullString
 	MimeType            string
 	InternalPath        string
 	ExternalPath        string
-	BelongsToRecipe     sql.NullString
-	BelongsToRecipeStep sql.NullString
 	Index               int32
+	CreatedAt           time.Time
+	LastUpdatedAt       sql.NullTime
+	ArchivedAt          sql.NullTime
 }
 
 func (q *Queries) GetRecipeMediaForRecipe(ctx context.Context, db DBTX, belongsToRecipe sql.NullString) ([]*GetRecipeMediaForRecipeRow, error) {

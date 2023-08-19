@@ -70,45 +70,45 @@ WHERE meal_plan_options.archived_at IS NULL
 `
 
 type ListAllMealPlanTasksByMealPlanRow struct {
-	CreatedAt_2                            time.Time
-	ArchivedAt_2                           sql.NullTime
-	LastUpdatedAt                          sql.NullTime
-	CompletedAt                            sql.NullTime
-	LastUpdatedAt_3                        sql.NullTime
-	CreatedAt_3                            sql.NullTime
-	LastUpdatedAt_2                        sql.NullTime
+	ID                                     sql.NullString
+	ID_2                                   sql.NullString
+	AssignedCook                           sql.NullString
+	AssignedDishwasher                     sql.NullString
+	Chosen                                 sql.NullBool
+	Tiebroken                              sql.NullBool
+	MealScale                              sql.NullString
+	MealID                                 sql.NullString
+	Notes                                  sql.NullString
 	CreatedAt                              sql.NullTime
+	LastUpdatedAt                          sql.NullTime
 	ArchivedAt                             sql.NullTime
-	BelongsToRecipeStep                    string
-	ID_4                                   string
-	BelongsToRecipePrepTask                string
-	BelongsToRecipe                        string
+	BelongsToMealPlanEvent                 sql.NullString
 	ID_3                                   string
 	Name                                   string
 	Description                            string
 	Notes_2                                string
-	ExplicitStorageInstructions            string
-	MinimumStorageTemperatureInCelsius     sql.NullString
-	ID_2                                   sql.NullString
-	BelongsToMealPlanEvent                 sql.NullString
-	CreationExplanation                    sql.NullString
-	AssignedDishwasher                     sql.NullString
-	ID                                     sql.NullString
-	MaximumStorageTemperatureInCelsius     sql.NullString
-	MealScale                              sql.NullString
-	StatusExplanation                      sql.NullString
-	MealID                                 sql.NullString
-	AssignedCook                           sql.NullString
-	Status                                 NullPrepStepStatus
-	Notes                                  sql.NullString
-	AssignedToUser                         sql.NullString
-	StorageType                            NullStorageContainerType
-	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
-	MinimumTimeBufferBeforeRecipeInSeconds int32
-	Chosen                                 sql.NullBool
-	Tiebroken                              sql.NullBool
 	Optional                               bool
+	ExplicitStorageInstructions            string
+	MinimumTimeBufferBeforeRecipeInSeconds int32
+	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
+	StorageType                            NullStorageContainerType
+	MinimumStorageTemperatureInCelsius     sql.NullString
+	MaximumStorageTemperatureInCelsius     sql.NullString
+	BelongsToRecipe                        string
+	CreatedAt_2                            time.Time
+	LastUpdatedAt_2                        sql.NullTime
+	ArchivedAt_2                           sql.NullTime
+	ID_4                                   string
+	BelongsToRecipeStep                    string
+	BelongsToRecipePrepTask                string
 	SatisfiesRecipeStep                    bool
+	CreatedAt_3                            sql.NullTime
+	LastUpdatedAt_3                        sql.NullTime
+	CompletedAt                            sql.NullTime
+	Status                                 NullPrepStepStatus
+	CreationExplanation                    sql.NullString
+	StatusExplanation                      sql.NullString
+	AssignedToUser                         sql.NullString
 }
 
 func (q *Queries) ListAllMealPlanTasksByMealPlan(ctx context.Context, db DBTX, id string) ([]*ListAllMealPlanTasksByMealPlanRow, error) {

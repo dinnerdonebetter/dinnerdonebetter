@@ -108,8 +108,8 @@ WHERE
 `
 
 type ArchiveMealPlanOptionParams struct {
-	ID                     string
 	BelongsToMealPlanEvent sql.NullString
+	ID                     string
 }
 
 func (q *Queries) ArchiveMealPlanOption(ctx context.Context, db DBTX, arg *ArchiveMealPlanOptionParams) error {

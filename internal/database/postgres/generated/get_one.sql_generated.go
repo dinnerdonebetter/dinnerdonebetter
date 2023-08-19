@@ -46,25 +46,25 @@ type GetHouseholdInstrumentOwnershipParams struct {
 }
 
 type GetHouseholdInstrumentOwnershipRow struct {
-	CreatedAt                      time.Time
-	CreatedAt_2                    time.Time
-	ArchivedAt_2                   sql.NullTime
-	LastUpdatedAt_2                sql.NullTime
-	ArchivedAt                     sql.NullTime
-	LastUpdatedAt                  sql.NullTime
-	Name                           string
-	IconPath                       string
-	Slug                           string
-	Description                    string
-	PluralName                     string
 	ID                             string
-	BelongsToHousehold             string
-	ID_2                           string
 	Notes                          string
 	Quantity                       int32
+	ID_2                           string
+	Name                           string
+	PluralName                     string
+	Description                    string
+	IconPath                       string
 	UsableForStorage               bool
 	DisplayInSummaryLists          bool
 	IncludeInGeneratedInstructions bool
+	Slug                           string
+	CreatedAt                      time.Time
+	LastUpdatedAt                  sql.NullTime
+	ArchivedAt                     sql.NullTime
+	BelongsToHousehold             string
+	CreatedAt_2                    time.Time
+	LastUpdatedAt_2                sql.NullTime
+	ArchivedAt_2                   sql.NullTime
 }
 
 func (q *Queries) GetHouseholdInstrumentOwnership(ctx context.Context, db DBTX, arg *GetHouseholdInstrumentOwnershipParams) (*GetHouseholdInstrumentOwnershipRow, error) {
@@ -118,19 +118,19 @@ WHERE meals.archived_at IS NULL
 `
 
 type GetMealRow struct {
-	CreatedAt            sql.NullTime
-	ArchivedAt           sql.NullTime
-	LastUpdatedAt        sql.NullTime
+	ID                   sql.NullString
+	Name                 sql.NullString
+	Description          sql.NullString
 	MinEstimatedPortions sql.NullString
 	MaxEstimatedPortions sql.NullString
-	ID                   sql.NullString
-	Description          sql.NullString
-	Name                 sql.NullString
+	EligibleForMealPlans sql.NullBool
+	CreatedAt            sql.NullTime
+	LastUpdatedAt        sql.NullTime
+	ArchivedAt           sql.NullTime
 	CreatedByUser        sql.NullString
 	RecipeID             sql.NullString
 	RecipeScale          sql.NullString
 	MealComponentType    NullComponentType
-	EligibleForMealPlans sql.NullBool
 }
 
 func (q *Queries) GetMeal(ctx context.Context, db DBTX, id string) (*GetMealRow, error) {
@@ -181,18 +181,18 @@ type GetMealPlanParams struct {
 }
 
 type GetMealPlanRow struct {
-	VotingDeadline         time.Time
-	CreatedAt              time.Time
-	LastUpdatedAt          sql.NullTime
-	ArchivedAt             sql.NullTime
 	ID                     string
 	Notes                  string
 	Status                 MealPlanStatus
-	ElectionMethod         ValidElectionMethod
-	BelongsToHousehold     string
-	CreatedByUser          string
+	VotingDeadline         time.Time
 	GroceryListInitialized bool
 	TasksCreated           bool
+	ElectionMethod         ValidElectionMethod
+	CreatedAt              time.Time
+	LastUpdatedAt          sql.NullTime
+	ArchivedAt             sql.NullTime
+	BelongsToHousehold     string
+	CreatedByUser          string
 }
 
 func (q *Queries) GetMealPlan(ctx context.Context, db DBTX, arg *GetMealPlanParams) (*GetMealPlanRow, error) {
@@ -286,21 +286,21 @@ type GetMealPlanGroceryListItemParams struct {
 }
 
 type GetMealPlanGroceryListItemRow struct {
-	CreatedAt                sql.NullTime
-	ArchivedAt               sql.NullTime
-	LastUpdatedAt            sql.NullTime
-	QuantityPurchased        sql.NullString
+	ID                       sql.NullString
+	BelongsToMealPlan        sql.NullString
+	ValidIngredient          sql.NullString
+	ValidMeasurementUnit     sql.NullString
 	MinimumQuantityNeeded    sql.NullString
 	MaximumQuantityNeeded    sql.NullString
-	ID                       sql.NullString
+	QuantityPurchased        sql.NullString
 	PurchasedMeasurementUnit sql.NullString
 	PurchasedUpc             sql.NullString
 	PurchasePrice            sql.NullString
 	StatusExplanation        sql.NullString
 	Status                   NullGroceryListItemStatus
-	ValidMeasurementUnit     sql.NullString
-	ValidIngredient          sql.NullString
-	BelongsToMealPlan        sql.NullString
+	CreatedAt                sql.NullTime
+	LastUpdatedAt            sql.NullTime
+	ArchivedAt               sql.NullTime
 }
 
 func (q *Queries) GetMealPlanGroceryListItem(ctx context.Context, db DBTX, arg *GetMealPlanGroceryListItemParams) (*GetMealPlanGroceryListItemRow, error) {
@@ -366,33 +366,33 @@ WHERE meal_plan_options.archived_at IS NULL
 
 type GetMealPlanOptionParams struct {
 	BelongsToMealPlan      string
-	ID                     string
 	BelongsToMealPlanEvent sql.NullString
+	ID                     string
 }
 
 type GetMealPlanOptionRow struct {
-	CreatedAt              time.Time
-	CreatedAt_2            time.Time
-	ArchivedAt_2           sql.NullTime
-	LastUpdatedAt_2        sql.NullTime
-	ArchivedAt             sql.NullTime
-	LastUpdatedAt          sql.NullTime
-	MealScale              string
-	MinEstimatedPortions   string
-	MealID                 string
 	ID                     string
-	CreatedByUser          string
+	AssignedCook           sql.NullString
+	AssignedDishwasher     sql.NullString
+	Chosen                 bool
+	Tiebroken              bool
+	MealScale              string
+	MealID                 string
 	Notes                  string
+	CreatedAt              time.Time
+	LastUpdatedAt          sql.NullTime
+	ArchivedAt             sql.NullTime
+	BelongsToMealPlanEvent sql.NullString
 	ID_2                   string
 	Name                   string
 	Description            string
+	MinEstimatedPortions   string
 	MaxEstimatedPortions   sql.NullString
-	BelongsToMealPlanEvent sql.NullString
-	AssignedDishwasher     sql.NullString
-	AssignedCook           sql.NullString
 	EligibleForMealPlans   bool
-	Chosen                 bool
-	Tiebroken              bool
+	CreatedAt_2            time.Time
+	LastUpdatedAt_2        sql.NullTime
+	ArchivedAt_2           sql.NullTime
+	CreatedByUser          string
 }
 
 func (q *Queries) GetMealPlanOption(ctx context.Context, db DBTX, arg *GetMealPlanOptionParams) (*GetMealPlanOptionRow, error) {
@@ -457,8 +457,8 @@ WHERE meal_plan_option_votes.archived_at IS NULL
 type GetMealPlanOptionVoteParams struct {
 	BelongsToMealPlanOption string
 	ID                      string
-	BelongsToMealPlan       string
 	BelongsToMealPlanEvent  sql.NullString
+	BelongsToMealPlan       string
 }
 
 func (q *Queries) GetMealPlanOptionVote(ctx context.Context, db DBTX, arg *GetMealPlanOptionVoteParams) (*MealPlanOptionVotes, error) {
@@ -542,45 +542,45 @@ WHERE meal_plan_options.archived_at IS NULL
 `
 
 type GetMealPlanTaskRow struct {
-	CreatedAt_2                            time.Time
-	ArchivedAt_2                           sql.NullTime
-	LastUpdatedAt                          sql.NullTime
-	CompletedAt                            sql.NullTime
-	LastUpdatedAt_3                        sql.NullTime
-	CreatedAt_3                            sql.NullTime
-	LastUpdatedAt_2                        sql.NullTime
+	ID                                     sql.NullString
+	ID_2                                   sql.NullString
+	AssignedCook                           sql.NullString
+	AssignedDishwasher                     sql.NullString
+	Chosen                                 sql.NullBool
+	Tiebroken                              sql.NullBool
+	MealScale                              sql.NullString
+	MealID                                 sql.NullString
+	Notes                                  sql.NullString
 	CreatedAt                              sql.NullTime
+	LastUpdatedAt                          sql.NullTime
 	ArchivedAt                             sql.NullTime
-	BelongsToRecipeStep                    string
-	ID_4                                   string
-	BelongsToRecipePrepTask                string
-	BelongsToRecipe                        string
+	BelongsToMealPlanEvent                 sql.NullString
 	ID_3                                   string
 	Name                                   string
 	Description                            string
 	Notes_2                                string
-	ExplicitStorageInstructions            string
-	MinimumStorageTemperatureInCelsius     sql.NullString
-	ID_2                                   sql.NullString
-	BelongsToMealPlanEvent                 sql.NullString
-	CreationExplanation                    sql.NullString
-	AssignedDishwasher                     sql.NullString
-	ID                                     sql.NullString
-	MaximumStorageTemperatureInCelsius     sql.NullString
-	MealScale                              sql.NullString
-	StatusExplanation                      sql.NullString
-	MealID                                 sql.NullString
-	AssignedCook                           sql.NullString
-	Status                                 NullPrepStepStatus
-	Notes                                  sql.NullString
-	AssignedToUser                         sql.NullString
-	StorageType                            NullStorageContainerType
-	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
-	MinimumTimeBufferBeforeRecipeInSeconds int32
-	Chosen                                 sql.NullBool
-	Tiebroken                              sql.NullBool
 	Optional                               bool
+	ExplicitStorageInstructions            string
+	MinimumTimeBufferBeforeRecipeInSeconds int32
+	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
+	StorageType                            NullStorageContainerType
+	MinimumStorageTemperatureInCelsius     sql.NullString
+	MaximumStorageTemperatureInCelsius     sql.NullString
+	BelongsToRecipe                        string
+	CreatedAt_2                            time.Time
+	LastUpdatedAt_2                        sql.NullTime
+	ArchivedAt_2                           sql.NullTime
+	ID_4                                   string
+	BelongsToRecipeStep                    string
+	BelongsToRecipePrepTask                string
 	SatisfiesRecipeStep                    bool
+	CreatedAt_3                            sql.NullTime
+	LastUpdatedAt_3                        sql.NullTime
+	CompletedAt                            sql.NullTime
+	Status                                 NullPrepStepStatus
+	CreationExplanation                    sql.NullString
+	StatusExplanation                      sql.NullString
+	AssignedToUser                         sql.NullString
 }
 
 func (q *Queries) GetMealPlanTask(ctx context.Context, db DBTX, id string) (*GetMealPlanTaskRow, error) {
@@ -680,16 +680,16 @@ WHERE recipe_media.archived_at IS NULL
 `
 
 type GetRecipeMediaRow struct {
-	CreatedAt           time.Time
-	LastUpdatedAt       sql.NullTime
-	ArchivedAt          sql.NullTime
 	ID                  string
+	BelongsToRecipe     sql.NullString
+	BelongsToRecipeStep sql.NullString
 	MimeType            string
 	InternalPath        string
 	ExternalPath        string
-	BelongsToRecipe     sql.NullString
-	BelongsToRecipeStep sql.NullString
 	Index               int32
+	CreatedAt           time.Time
+	LastUpdatedAt       sql.NullTime
+	ArchivedAt          sql.NullTime
 }
 
 func (q *Queries) GetRecipeMedia(ctx context.Context, db DBTX, id string) (*GetRecipeMediaRow, error) {
@@ -740,24 +740,24 @@ WHERE recipe_prep_tasks.archived_at IS NULL
 `
 
 type GetRecipePrepTaskRow struct {
-	CreatedAt                              sql.NullTime
-	ArchivedAt                             sql.NullTime
-	LastUpdatedAt                          sql.NullTime
-	StorageType                            NullStorageContainerType
-	Description                            sql.NullString
-	ExplicitStorageInstructions            sql.NullString
-	BelongsToRecipePrepTask                sql.NullString
-	BelongsToRecipeStep                    sql.NullString
 	ID                                     sql.NullString
+	Name                                   sql.NullString
+	Description                            sql.NullString
+	Notes                                  sql.NullString
+	Optional                               sql.NullBool
+	ExplicitStorageInstructions            sql.NullString
+	MinimumTimeBufferBeforeRecipeInSeconds sql.NullInt32
+	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
+	StorageType                            NullStorageContainerType
 	MinimumStorageTemperatureInCelsius     sql.NullString
 	MaximumStorageTemperatureInCelsius     sql.NullString
 	BelongsToRecipe                        sql.NullString
-	Notes                                  sql.NullString
+	CreatedAt                              sql.NullTime
+	LastUpdatedAt                          sql.NullTime
+	ArchivedAt                             sql.NullTime
 	ID_2                                   sql.NullString
-	Name                                   sql.NullString
-	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
-	MinimumTimeBufferBeforeRecipeInSeconds sql.NullInt32
-	Optional                               sql.NullBool
+	BelongsToRecipeStep                    sql.NullString
+	BelongsToRecipePrepTask                sql.NullString
 	SatisfiesRecipeStep                    sql.NullBool
 }
 
@@ -884,43 +884,43 @@ type GetRecipeStepParams struct {
 }
 
 type GetRecipeStepRow struct {
-	CreatedAt                     time.Time
-	CreatedAt_2                   time.Time
-	ArchivedAt_2                  sql.NullTime
-	LastUpdatedAt                 sql.NullTime
-	ArchivedAt                    sql.NullTime
-	LastUpdatedAt_2               sql.NullTime
-	ConditionExpression           string
-	ID_2                          string
-	Description                   string
 	ID                            string
-	Name                          string
-	ExplicitInstructions          string
-	Notes                         string
-	IconPath                      string
-	PastTense                     string
-	Slug                          string
-	BelongsToRecipe               string
-	MaximumTemperatureInCelsius   sql.NullString
-	MinimumTemperatureInCelsius   sql.NullString
-	MinimumEstimatedTimeInSeconds sql.NullInt64
-	MaximumEstimatedTimeInSeconds sql.NullInt64
-	MaximumIngredientCount        sql.NullInt32
-	MaximumVesselCount            sql.NullInt32
-	MaximumInstrumentCount        sql.NullInt32
-	MinimumVesselCount            int32
 	Index                         int32
+	ID_2                          string
+	Name                          string
+	Description                   string
+	IconPath                      string
+	YieldsNothing                 bool
+	RestrictToIngredients         bool
 	MinimumIngredientCount        int32
+	MaximumIngredientCount        sql.NullInt32
 	MinimumInstrumentCount        int32
+	MaximumInstrumentCount        sql.NullInt32
 	TemperatureRequired           bool
 	TimeEstimateRequired          bool
 	ConditionExpressionRequired   bool
+	ConsumesVessel                bool
+	OnlyForVessels                bool
+	MinimumVesselCount            int32
+	MaximumVesselCount            sql.NullInt32
+	Slug                          string
+	PastTense                     string
+	CreatedAt                     time.Time
+	LastUpdatedAt                 sql.NullTime
+	ArchivedAt                    sql.NullTime
+	MinimumEstimatedTimeInSeconds sql.NullInt64
+	MaximumEstimatedTimeInSeconds sql.NullInt64
+	MinimumTemperatureInCelsius   sql.NullString
+	MaximumTemperatureInCelsius   sql.NullString
+	Notes                         string
+	ExplicitInstructions          string
+	ConditionExpression           string
 	Optional                      bool
 	StartTimerAutomatically       bool
-	ConsumesVessel                bool
-	RestrictToIngredients         bool
-	YieldsNothing                 bool
-	OnlyForVessels                bool
+	CreatedAt_2                   time.Time
+	LastUpdatedAt_2               sql.NullTime
+	ArchivedAt_2                  sql.NullTime
+	BelongsToRecipe               string
 }
 
 func (q *Queries) GetRecipeStep(ctx context.Context, db DBTX, arg *GetRecipeStepParams) (*GetRecipeStepRow, error) {
@@ -1014,26 +1014,26 @@ type GetRecipeStepCompletionConditionParams struct {
 }
 
 type GetRecipeStepCompletionConditionRow struct {
-	CreatedAt                              time.Time
-	CreatedAt_2                            time.Time
-	ArchivedAt_2                           sql.NullTime
-	LastUpdatedAt_2                        sql.NullTime
-	ArchivedAt                             sql.NullTime
-	LastUpdatedAt                          sql.NullTime
-	PastTense                              string
-	ID_3                                   string
-	IconPath                               string
-	Slug                                   string
 	ID                                     string
-	AttributeType                          IngredientAttributeType
+	BelongsToRecipeStepCompletionCondition string
+	RecipeStepIngredient                   string
+	ID_2                                   string
+	BelongsToRecipeStep                    string
+	ID_3                                   string
 	Name                                   string
 	Description                            string
-	BelongsToRecipeStep                    string
-	BelongsToRecipeStepCompletionCondition string
-	Notes                                  string
-	ID_2                                   string
-	RecipeStepIngredient                   string
+	IconPath                               string
+	Slug                                   string
+	PastTense                              string
+	AttributeType                          IngredientAttributeType
+	CreatedAt                              time.Time
+	LastUpdatedAt                          sql.NullTime
+	ArchivedAt                             sql.NullTime
 	Optional                               bool
+	Notes                                  string
+	CreatedAt_2                            time.Time
+	LastUpdatedAt_2                        sql.NullTime
+	ArchivedAt_2                           sql.NullTime
 }
 
 func (q *Queries) GetRecipeStepCompletionCondition(ctx context.Context, db DBTX, arg *GetRecipeStepCompletionConditionParams) (*GetRecipeStepCompletionConditionRow, error) {
@@ -1159,74 +1159,74 @@ type GetRecipeStepIngredientParams struct {
 }
 
 type GetRecipeStepIngredientRow struct {
-	CreatedAt_3                             time.Time
-	CreatedAt                               time.Time
-	CreatedAt_2                             time.Time
-	LastUpdatedAt                           sql.NullTime
-	LastUpdatedAt_2                         sql.NullTime
-	ArchivedAt_2                            sql.NullTime
-	ArchivedAt                              sql.NullTime
-	ArchivedAt_3                            sql.NullTime
-	LastUpdatedAt_3                         sql.NullTime
-	IconPath                                string
-	PluralName_2                            string
-	Name                                    string
-	BelongsToRecipeStep                     string
-	ID_3                                    string
-	IngredientNotes                         string
-	Name_3                                  string
-	QuantityNotes                           string
 	ID                                      string
-	Description_2                           string
-	IconPath_2                              string
-	Warning                                 string
-	MinimumQuantityValue                    string
-	PluralName                              string
-	Description                             string
-	Slug_2                                  string
+	Name                                    string
+	Optional                                bool
 	ID_2                                    string
+	Name_2                                  string
+	Description                             string
+	Warning                                 string
+	ContainsEgg                             bool
+	ContainsDairy                           bool
+	ContainsPeanut                          bool
+	ContainsTreeNut                         bool
+	ContainsSoy                             bool
+	ContainsWheat                           bool
+	ContainsShellfish                       bool
+	ContainsSesame                          bool
+	ContainsFish                            bool
+	ContainsGluten                          bool
+	AnimalFlesh                             bool
+	Volumetric                              bool
+	IsLiquid                                sql.NullBool
+	IconPath                                string
+	AnimalDerived                           bool
+	PluralName                              string
+	RestrictToPreparations                  bool
+	MinimumIdealStorageTemperatureInCelsius sql.NullString
+	MaximumIdealStorageTemperatureInCelsius sql.NullString
 	StorageInstructions                     string
 	Slug                                    string
-	Name_2                                  string
+	ContainsAlcohol                         bool
 	ShoppingSuggestions                     string
-	MaximumIdealStorageTemperatureInCelsius sql.NullString
-	RecipeStepProductRecipeID               sql.NullString
-	MinimumIdealStorageTemperatureInCelsius sql.NullString
-	MaximumQuantityValue                    sql.NullString
-	RecipeStepProductID                     sql.NullString
-	ProductPercentageToUse                  sql.NullString
-	VesselIndex                             sql.NullInt32
-	OptionIndex                             int32
-	IsLiquid                                sql.NullBool
-	Volumetric_2                            sql.NullBool
-	AnimalFlesh                             bool
-	IsHeat                                  bool
-	IsAcid                                  bool
-	IsFat                                   bool
-	IsSalt                                  bool
+	IsStarch                                bool
+	IsProtein                               bool
+	IsGrain                                 bool
 	IsFruit                                 bool
+	IsSalt                                  bool
+	IsFat                                   bool
+	IsAcid                                  bool
+	IsHeat                                  bool
+	CreatedAt                               time.Time
+	LastUpdatedAt                           sql.NullTime
+	ArchivedAt                              sql.NullTime
+	ID_3                                    string
+	Name_3                                  string
+	Description_2                           string
+	Volumetric_2                            sql.NullBool
+	IconPath_2                              string
 	Universal                               bool
 	Metric                                  bool
 	Imperial                                bool
-	IsGrain                                 bool
-	IsProtein                               bool
-	IsStarch                                bool
-	ContainsAlcohol                         bool
-	RestrictToPreparations                  bool
-	AnimalDerived                           bool
-	Volumetric                              bool
-	ContainsGluten                          bool
-	ContainsFish                            bool
-	ContainsSesame                          bool
-	ContainsShellfish                       bool
+	Slug_2                                  string
+	PluralName_2                            string
+	CreatedAt_2                             time.Time
+	LastUpdatedAt_2                         sql.NullTime
+	ArchivedAt_2                            sql.NullTime
+	MinimumQuantityValue                    string
+	MaximumQuantityValue                    sql.NullString
+	QuantityNotes                           string
+	RecipeStepProductID                     sql.NullString
+	IngredientNotes                         string
+	OptionIndex                             int32
 	ToTaste                                 bool
-	ContainsWheat                           bool
-	ContainsSoy                             bool
-	ContainsTreeNut                         bool
-	ContainsPeanut                          bool
-	ContainsDairy                           bool
-	ContainsEgg                             bool
-	Optional                                bool
+	ProductPercentageToUse                  sql.NullString
+	VesselIndex                             sql.NullInt32
+	RecipeStepProductRecipeID               sql.NullString
+	CreatedAt_3                             time.Time
+	LastUpdatedAt_3                         sql.NullTime
+	ArchivedAt_3                            sql.NullTime
+	BelongsToRecipeStep                     string
 }
 
 func (q *Queries) GetRecipeStepIngredient(ctx context.Context, db DBTX, arg *GetRecipeStepIngredientParams) (*GetRecipeStepIngredientRow, error) {
@@ -1362,31 +1362,31 @@ type GetRecipeStepInstrumentParams struct {
 }
 
 type GetRecipeStepInstrumentRow struct {
-	CreatedAt_2                    time.Time
-	ArchivedAt                     sql.NullTime
-	ArchivedAt_2                   sql.NullTime
-	LastUpdatedAt_2                sql.NullTime
-	LastUpdatedAt                  sql.NullTime
-	CreatedAt                      sql.NullTime
-	Name_2                         string
-	BelongsToRecipeStep            string
 	ID                             string
-	Notes                          string
-	Description                    sql.NullString
-	PluralName                     sql.NullString
-	IconPath                       sql.NullString
-	Slug                           sql.NullString
-	RecipeStepProductID            sql.NullString
-	Name                           sql.NullString
 	ID_2                           sql.NullString
-	MaximumQuantity                sql.NullInt32
-	MinimumQuantity                int32
-	OptionIndex                    int32
-	PreferenceRank                 int32
-	IncludeInGeneratedInstructions sql.NullBool
-	DisplayInSummaryLists          sql.NullBool
+	Name                           sql.NullString
+	PluralName                     sql.NullString
+	Description                    sql.NullString
+	IconPath                       sql.NullString
 	UsableForStorage               sql.NullBool
+	DisplayInSummaryLists          sql.NullBool
+	IncludeInGeneratedInstructions sql.NullBool
+	Slug                           sql.NullString
+	CreatedAt                      sql.NullTime
+	LastUpdatedAt                  sql.NullTime
+	ArchivedAt                     sql.NullTime
+	RecipeStepProductID            sql.NullString
+	Name_2                         string
+	Notes                          string
+	PreferenceRank                 int32
 	Optional                       bool
+	MinimumQuantity                int32
+	MaximumQuantity                sql.NullInt32
+	OptionIndex                    int32
+	CreatedAt_2                    time.Time
+	LastUpdatedAt_2                sql.NullTime
+	ArchivedAt_2                   sql.NullTime
+	BelongsToRecipeStep            string
 }
 
 func (q *Queries) GetRecipeStepInstrument(ctx context.Context, db DBTX, arg *GetRecipeStepInstrumentParams) (*GetRecipeStepInstrumentRow, error) {
@@ -1486,38 +1486,38 @@ type GetRecipeStepProductParams struct {
 }
 
 type GetRecipeStepProductRow struct {
-	CreatedAt_2                        time.Time
-	CreatedAt                          time.Time
-	ArchivedAt_2                       sql.NullTime
-	LastUpdatedAt_2                    sql.NullTime
-	ArchivedAt                         sql.NullTime
-	LastUpdatedAt                      sql.NullTime
-	QuantityNotes                      string
-	ID_2                               string
 	ID                                 string
-	BelongsToRecipeStep                string
 	Name                               string
+	Type                               RecipeStepProductType
+	ID_2                               string
+	Name_2                             string
+	Description                        string
+	Volumetric                         sql.NullBool
+	IconPath                           string
+	Universal                          bool
+	Metric                             bool
+	Imperial                           bool
 	Slug                               string
 	PluralName                         string
-	Description                        string
-	Name_2                             string
-	IconPath                           string
-	StorageInstructions                string
-	Type                               RecipeStepProductType
+	CreatedAt                          time.Time
+	LastUpdatedAt                      sql.NullTime
+	ArchivedAt                         sql.NullTime
+	MinimumQuantityValue               sql.NullString
 	MaximumQuantityValue               sql.NullString
+	QuantityNotes                      string
+	Compostable                        bool
+	MaximumStorageDurationInSeconds    sql.NullInt32
 	MinimumStorageTemperatureInCelsius sql.NullString
 	MaximumStorageTemperatureInCelsius sql.NullString
-	MinimumQuantityValue               sql.NullString
-	MaximumStorageDurationInSeconds    sql.NullInt32
-	ContainedInVesselIndex             sql.NullInt32
-	Index                              int32
-	Volumetric                         sql.NullBool
-	Universal                          bool
-	IsWaste                            bool
+	StorageInstructions                string
 	IsLiquid                           bool
-	Compostable                        bool
-	Imperial                           bool
-	Metric                             bool
+	IsWaste                            bool
+	Index                              int32
+	ContainedInVesselIndex             sql.NullInt32
+	CreatedAt_2                        time.Time
+	LastUpdatedAt_2                    sql.NullTime
+	ArchivedAt_2                       sql.NullTime
+	BelongsToRecipeStep                string
 }
 
 func (q *Queries) GetRecipeStepProduct(ctx context.Context, db DBTX, arg *GetRecipeStepProductParams) (*GetRecipeStepProductRow, error) {
@@ -1635,48 +1635,48 @@ type GetRecipeStepVesselParams struct {
 }
 
 type GetRecipeStepVesselRow struct {
-	CreatedAt_3                    time.Time
-	LastUpdatedAt_2                sql.NullTime
-	LastUpdatedAt_3                sql.NullTime
-	ArchivedAt_3                   sql.NullTime
-	ArchivedAt_2                   sql.NullTime
-	CreatedAt                      sql.NullTime
-	CreatedAt_2                    sql.NullTime
-	ArchivedAt                     sql.NullTime
-	LastUpdatedAt                  sql.NullTime
-	VesselPredicate                string
-	BelongsToRecipeStep            string
-	Notes                          string
-	Name_3                         string
 	ID                             string
-	Capacity                       sql.NullString
-	IconPath                       sql.NullString
 	ID_2                           sql.NullString
 	Name                           sql.NullString
 	PluralName                     sql.NullString
+	Description                    sql.NullString
+	IconPath                       sql.NullString
+	UsableForStorage               sql.NullBool
+	Slug                           sql.NullString
+	DisplayInSummaryLists          sql.NullBool
+	IncludeInGeneratedInstructions sql.NullBool
+	Capacity                       sql.NullString
+	ID_3                           sql.NullString
+	Name_2                         sql.NullString
+	Description_2                  sql.NullString
+	Volumetric                     sql.NullBool
+	IconPath_2                     sql.NullString
+	Universal                      sql.NullBool
+	Metric                         sql.NullBool
+	Imperial                       sql.NullBool
 	Slug_2                         sql.NullString
 	PluralName_2                   sql.NullString
-	Description                    sql.NullString
-	Description_2                  sql.NullString
-	Name_2                         sql.NullString
+	CreatedAt                      sql.NullTime
+	LastUpdatedAt                  sql.NullTime
+	ArchivedAt                     sql.NullTime
 	WidthInMillimeters             sql.NullString
 	LengthInMillimeters            sql.NullString
 	HeightInMillimeters            sql.NullString
 	Shape                          NullVesselShape
-	ID_3                           sql.NullString
+	CreatedAt_2                    sql.NullTime
+	LastUpdatedAt_2                sql.NullTime
+	ArchivedAt_2                   sql.NullTime
+	Name_3                         string
+	Notes                          string
+	BelongsToRecipeStep            string
 	RecipeStepProductID            sql.NullString
-	IconPath_2                     sql.NullString
-	Slug                           sql.NullString
-	MaximumQuantity                sql.NullInt32
+	VesselPredicate                string
 	MinimumQuantity                int32
-	UsableForStorage               sql.NullBool
-	DisplayInSummaryLists          sql.NullBool
-	IncludeInGeneratedInstructions sql.NullBool
-	Volumetric                     sql.NullBool
-	Imperial                       sql.NullBool
-	Metric                         sql.NullBool
-	Universal                      sql.NullBool
+	MaximumQuantity                sql.NullInt32
 	UnavailableAfterStep           bool
+	CreatedAt_3                    time.Time
+	LastUpdatedAt_3                sql.NullTime
+	ArchivedAt_3                   sql.NullTime
 }
 
 func (q *Queries) GetRecipeStepVessel(ctx context.Context, db DBTX, arg *GetRecipeStepVesselParams) (*GetRecipeStepVesselRow, error) {
@@ -1754,16 +1754,16 @@ WHERE service_settings.archived_at IS NULL
 `
 
 type GetServiceSettingRow struct {
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	ArchivedAt    sql.NullTime
 	ID            string
 	Name          string
 	Type          SettingType
 	Description   string
-	Enumeration   string
 	DefaultValue  sql.NullString
 	AdminsOnly    bool
+	Enumeration   string
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
 }
 
 func (q *Queries) GetServiceSetting(ctx context.Context, db DBTX, id string) (*GetServiceSettingRow, error) {
@@ -1808,8 +1808,8 @@ SELECT
 	valid_ingredients.animal_derived,
 	valid_ingredients.plural_name,
 	valid_ingredients.restrict_to_preparations,
-	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
-	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
+    valid_ingredients.minimum_ideal_storage_temperature_in_celsius::float,
+    valid_ingredients.maximum_ideal_storage_temperature_in_celsius::float,
 	valid_ingredients.storage_instructions,
 	valid_ingredients.slug,
 	valid_ingredients.contains_alcohol,
@@ -1831,44 +1831,44 @@ AND valid_ingredients.id = $1
 `
 
 type GetValidIngredientRow struct {
-	CreatedAt                               time.Time
-	ArchivedAt                              sql.NullTime
-	LastUpdatedAt                           sql.NullTime
-	Warning                                 string
-	Description                             string
-	Name                                    string
-	ShoppingSuggestions                     string
-	Slug                                    string
-	StorageInstructions                     string
-	PluralName                              string
-	ID                                      string
-	IconPath                                string
-	MaximumIdealStorageTemperatureInCelsius sql.NullString
-	MinimumIdealStorageTemperatureInCelsius sql.NullString
-	IsLiquid                                sql.NullBool
-	AnimalDerived                           bool
-	ContainsTreeNut                         bool
-	AnimalFlesh                             bool
-	ContainsGluten                          bool
-	ContainsFish                            bool
-	RestrictToPreparations                  bool
-	ContainsSesame                          bool
-	ContainsShellfish                       bool
-	ContainsWheat                           bool
-	ContainsSoy                             bool
-	ContainsAlcohol                         bool
-	Volumetric                              bool
-	IsStarch                                bool
-	IsProtein                               bool
-	IsGrain                                 bool
-	IsFruit                                 bool
-	IsSalt                                  bool
-	IsFat                                   bool
-	IsAcid                                  bool
-	IsHeat                                  bool
-	ContainsPeanut                          bool
-	ContainsDairy                           bool
-	ContainsEgg                             bool
+	ID                                                      string
+	Name                                                    string
+	Description                                             string
+	Warning                                                 string
+	ContainsEgg                                             bool
+	ContainsDairy                                           bool
+	ContainsPeanut                                          bool
+	ContainsTreeNut                                         bool
+	ContainsSoy                                             bool
+	ContainsWheat                                           bool
+	ContainsShellfish                                       bool
+	ContainsSesame                                          bool
+	ContainsFish                                            bool
+	ContainsGluten                                          bool
+	AnimalFlesh                                             bool
+	Volumetric                                              bool
+	IsLiquid                                                sql.NullBool
+	IconPath                                                string
+	AnimalDerived                                           bool
+	PluralName                                              string
+	RestrictToPreparations                                  bool
+	ValidIngredientsMinimumIdealStorageTemperatureInCelsius float64
+	ValidIngredientsMaximumIdealStorageTemperatureInCelsius float64
+	StorageInstructions                                     string
+	Slug                                                    string
+	ContainsAlcohol                                         bool
+	ShoppingSuggestions                                     string
+	IsStarch                                                bool
+	IsProtein                                               bool
+	IsGrain                                                 bool
+	IsFruit                                                 bool
+	IsSalt                                                  bool
+	IsFat                                                   bool
+	IsAcid                                                  bool
+	IsHeat                                                  bool
+	CreatedAt                                               time.Time
+	LastUpdatedAt                                           sql.NullTime
+	ArchivedAt                                              sql.NullTime
 }
 
 func (q *Queries) GetValidIngredient(ctx context.Context, db DBTX, id string) (*GetValidIngredientRow, error) {
@@ -1896,8 +1896,8 @@ func (q *Queries) GetValidIngredient(ctx context.Context, db DBTX, id string) (*
 		&i.AnimalDerived,
 		&i.PluralName,
 		&i.RestrictToPreparations,
-		&i.MinimumIdealStorageTemperatureInCelsius,
-		&i.MaximumIdealStorageTemperatureInCelsius,
+		&i.ValidIngredientsMinimumIdealStorageTemperatureInCelsius,
+		&i.ValidIngredientsMaximumIdealStorageTemperatureInCelsius,
 		&i.StorageInstructions,
 		&i.Slug,
 		&i.ContainsAlcohol,
@@ -1978,42 +1978,42 @@ AND valid_ingredient_groups.id = $1
 `
 
 type GetValidIngredientGroupRow struct {
-	CreatedAt_2                             time.Time
+	ID                                      string
+	Name                                    string
+	Description                             string
+	Slug                                    string
 	CreatedAt                               time.Time
-	CreatedAt_3                             time.Time
-	ArchivedAt_3                            sql.NullTime
-	LastUpdatedAt_2                         sql.NullTime
-	ArchivedAt_2                            sql.NullTime
 	LastUpdatedAt                           sql.NullTime
 	ArchivedAt                              sql.NullTime
-	Warning                                 string
-	Name                                    string
+	ID_2                                    string
+	BelongsToGroup                          string
+	ID_3                                    string
 	Name_2                                  string
 	Description_2                           string
+	Warning                                 string
+	ContainsEgg                             bool
+	ContainsDairy                           bool
+	ContainsPeanut                          bool
+	ContainsTreeNut                         bool
+	ContainsSoy                             bool
+	ContainsWheat                           bool
+	ContainsShellfish                       bool
+	ContainsSesame                          bool
+	ContainsFish                            bool
+	ContainsGluten                          bool
+	AnimalFlesh                             bool
+	Volumetric                              bool
+	IsLiquid                                sql.NullBool
 	IconPath                                string
-	BelongsToGroup                          string
-	ID_2                                    string
-	Slug                                    string
-	Description                             string
-	ID_3                                    string
-	ShoppingSuggestions                     string
-	Slug_2                                  string
-	StorageInstructions                     string
-	ID                                      string
+	AnimalDerived                           bool
 	PluralName                              string
+	RestrictToPreparations                  bool
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
 	MaximumIdealStorageTemperatureInCelsius sql.NullString
-	IsLiquid                                sql.NullBool
-	Volumetric                              bool
-	AnimalDerived                           bool
-	AnimalFlesh                             bool
-	RestrictToPreparations                  bool
-	ContainsGluten                          bool
-	ContainsFish                            bool
-	ContainsSesame                          bool
-	ContainsShellfish                       bool
+	StorageInstructions                     string
+	Slug_2                                  string
 	ContainsAlcohol                         bool
-	ContainsWheat                           bool
+	ShoppingSuggestions                     string
 	IsStarch                                bool
 	IsProtein                               bool
 	IsGrain                                 bool
@@ -2022,11 +2022,11 @@ type GetValidIngredientGroupRow struct {
 	IsFat                                   bool
 	IsAcid                                  bool
 	IsHeat                                  bool
-	ContainsSoy                             bool
-	ContainsTreeNut                         bool
-	ContainsPeanut                          bool
-	ContainsDairy                           bool
-	ContainsEgg                             bool
+	CreatedAt_2                             time.Time
+	LastUpdatedAt_2                         sql.NullTime
+	ArchivedAt_2                            sql.NullTime
+	CreatedAt_3                             time.Time
+	ArchivedAt_3                            sql.NullTime
 }
 
 func (q *Queries) GetValidIngredientGroup(ctx context.Context, db DBTX, id string) ([]*GetValidIngredientGroupRow, error) {
@@ -2171,48 +2171,48 @@ WHERE valid_ingredient_measurement_units.archived_at IS NULL
 `
 
 type GetValidIngredientMeasurementUnitRow struct {
-	CreatedAt                               time.Time
-	CreatedAt_2                             time.Time
-	CreatedAt_3                             time.Time
-	ArchivedAt                              sql.NullTime
-	LastUpdatedAt                           sql.NullTime
-	LastUpdatedAt_2                         sql.NullTime
-	ArchivedAt_2                            sql.NullTime
-	LastUpdatedAt_3                         sql.NullTime
-	ArchivedAt_3                            sql.NullTime
+	ID                                      string
+	Notes                                   string
+	ID_2                                    string
+	Name                                    string
+	Description                             string
+	Volumetric                              sql.NullBool
+	IconPath                                string
+	Universal                               bool
+	Metric                                  bool
+	Imperial                                bool
 	Slug                                    string
-	Slug_2                                  string
+	PluralName                              string
+	CreatedAt                               time.Time
+	LastUpdatedAt                           sql.NullTime
+	ArchivedAt                              sql.NullTime
 	ID_3                                    string
 	Name_2                                  string
 	Description_2                           string
 	Warning                                 string
-	PluralName_2                            string
-	IconPath_2                              string
-	IconPath                                string
-	Description                             string
-	ID                                      string
-	MinimumAllowableQuantity                string
-	Name                                    string
-	ID_2                                    string
-	Notes                                   string
-	ShoppingSuggestions                     string
-	PluralName                              string
-	StorageInstructions                     string
-	MaximumIdealStorageTemperatureInCelsius sql.NullString
-	MaximumAllowableQuantity                sql.NullString
-	MinimumIdealStorageTemperatureInCelsius sql.NullString
-	Volumetric                              sql.NullBool
-	IsLiquid                                sql.NullBool
-	ContainsGluten                          bool
-	AnimalDerived                           bool
-	Volumetric_2                            bool
-	RestrictToPreparations                  bool
-	AnimalFlesh                             bool
-	ContainsFish                            bool
-	ContainsSesame                          bool
-	ContainsShellfish                       bool
-	ContainsAlcohol                         bool
+	ContainsEgg                             bool
+	ContainsDairy                           bool
+	ContainsPeanut                          bool
+	ContainsTreeNut                         bool
+	ContainsSoy                             bool
 	ContainsWheat                           bool
+	ContainsShellfish                       bool
+	ContainsSesame                          bool
+	ContainsFish                            bool
+	ContainsGluten                          bool
+	AnimalFlesh                             bool
+	Volumetric_2                            bool
+	IsLiquid                                sql.NullBool
+	IconPath_2                              string
+	AnimalDerived                           bool
+	PluralName_2                            string
+	RestrictToPreparations                  bool
+	MinimumIdealStorageTemperatureInCelsius sql.NullString
+	MaximumIdealStorageTemperatureInCelsius sql.NullString
+	StorageInstructions                     string
+	Slug_2                                  string
+	ContainsAlcohol                         bool
+	ShoppingSuggestions                     string
 	IsStarch                                bool
 	IsProtein                               bool
 	IsGrain                                 bool
@@ -2221,14 +2221,14 @@ type GetValidIngredientMeasurementUnitRow struct {
 	IsFat                                   bool
 	IsAcid                                  bool
 	IsHeat                                  bool
-	ContainsSoy                             bool
-	ContainsTreeNut                         bool
-	ContainsPeanut                          bool
-	ContainsDairy                           bool
-	ContainsEgg                             bool
-	Imperial                                bool
-	Metric                                  bool
-	Universal                               bool
+	CreatedAt_2                             time.Time
+	LastUpdatedAt_2                         sql.NullTime
+	ArchivedAt_2                            sql.NullTime
+	MinimumAllowableQuantity                string
+	MaximumAllowableQuantity                sql.NullString
+	CreatedAt_3                             time.Time
+	LastUpdatedAt_3                         sql.NullTime
+	ArchivedAt_3                            sql.NullTime
 }
 
 func (q *Queries) GetValidIngredientMeasurementUnit(ctx context.Context, db DBTX, id string) (*GetValidIngredientMeasurementUnitRow, error) {
@@ -2373,57 +2373,57 @@ WHERE valid_ingredient_preparations.archived_at IS NULL
 `
 
 type GetValidIngredientPreparationRow struct {
-	CreatedAt_3                             time.Time
-	CreatedAt                               time.Time
-	CreatedAt_2                             time.Time
-	ArchivedAt                              sql.NullTime
-	LastUpdatedAt                           sql.NullTime
-	LastUpdatedAt_2                         sql.NullTime
-	ArchivedAt_3                            sql.NullTime
-	LastUpdatedAt_3                         sql.NullTime
-	ArchivedAt_2                            sql.NullTime
-	ID_3                                    string
-	ID_2                                    string
-	IconPath_2                              string
-	PluralName                              string
-	StorageInstructions                     string
-	IconPath                                string
 	ID                                      string
+	Notes                                   string
+	ID_2                                    string
+	Name                                    string
 	Description                             string
-	Slug_2                                  string
-	ShoppingSuggestions                     string
+	IconPath                                string
+	YieldsNothing                           bool
+	RestrictToIngredients                   bool
+	MinimumIngredientCount                  int32
+	MaximumIngredientCount                  sql.NullInt32
+	MinimumInstrumentCount                  int32
+	MaximumInstrumentCount                  sql.NullInt32
+	TemperatureRequired                     bool
+	TimeEstimateRequired                    bool
+	ConditionExpressionRequired             bool
+	ConsumesVessel                          bool
+	OnlyForVessels                          bool
+	MinimumVesselCount                      int32
+	MaximumVesselCount                      sql.NullInt32
 	Slug                                    string
 	PastTense                               string
-	Name                                    string
-	Warning                                 string
-	Notes                                   string
-	Description_2                           string
+	CreatedAt                               time.Time
+	LastUpdatedAt                           sql.NullTime
+	ArchivedAt                              sql.NullTime
+	ID_3                                    string
 	Name_2                                  string
-	MaximumIdealStorageTemperatureInCelsius sql.NullString
-	MinimumIdealStorageTemperatureInCelsius sql.NullString
-	MaximumVesselCount                      sql.NullInt32
-	MaximumIngredientCount                  sql.NullInt32
-	MaximumInstrumentCount                  sql.NullInt32
-	MinimumInstrumentCount                  int32
-	MinimumVesselCount                      int32
-	MinimumIngredientCount                  int32
-	IsLiquid                                sql.NullBool
-	ConsumesVessel                          bool
+	Description_2                           string
+	Warning                                 string
+	ContainsEgg                             bool
+	ContainsDairy                           bool
+	ContainsPeanut                          bool
+	ContainsTreeNut                         bool
+	ContainsSoy                             bool
+	ContainsWheat                           bool
+	ContainsShellfish                       bool
+	ContainsSesame                          bool
 	ContainsFish                            bool
 	ContainsGluten                          bool
 	AnimalFlesh                             bool
 	Volumetric                              bool
-	ContainsSesame                          bool
-	ContainsShellfish                       bool
+	IsLiquid                                sql.NullBool
+	IconPath_2                              string
 	AnimalDerived                           bool
-	ContainsWheat                           bool
+	PluralName                              string
 	RestrictToPreparations                  bool
-	ContainsSoy                             bool
-	ContainsTreeNut                         bool
-	ContainsPeanut                          bool
-	ContainsDairy                           bool
+	MinimumIdealStorageTemperatureInCelsius sql.NullString
+	MaximumIdealStorageTemperatureInCelsius sql.NullString
+	StorageInstructions                     string
+	Slug_2                                  string
 	ContainsAlcohol                         bool
-	ContainsEgg                             bool
+	ShoppingSuggestions                     string
 	IsStarch                                bool
 	IsProtein                               bool
 	IsGrain                                 bool
@@ -2432,12 +2432,12 @@ type GetValidIngredientPreparationRow struct {
 	IsFat                                   bool
 	IsAcid                                  bool
 	IsHeat                                  bool
-	OnlyForVessels                          bool
-	ConditionExpressionRequired             bool
-	TimeEstimateRequired                    bool
-	TemperatureRequired                     bool
-	RestrictToIngredients                   bool
-	YieldsNothing                           bool
+	CreatedAt_2                             time.Time
+	LastUpdatedAt_2                         sql.NullTime
+	ArchivedAt_2                            sql.NullTime
+	CreatedAt_3                             time.Time
+	LastUpdatedAt_3                         sql.NullTime
+	ArchivedAt_3                            sql.NullTime
 }
 
 func (q *Queries) GetValidIngredientPreparation(ctx context.Context, db DBTX, id string) (*GetValidIngredientPreparationRow, error) {
@@ -2626,45 +2626,45 @@ WHERE valid_ingredient_state_ingredients.archived_at IS NULL
 `
 
 type GetValidIngredientStateIngredientRow struct {
+	ID                                      string
+	Notes                                   string
+	ID_2                                    string
+	Name                                    string
+	Description                             string
+	IconPath                                string
+	Slug                                    string
+	PastTense                               string
+	AttributeType                           IngredientAttributeType
 	CreatedAt                               time.Time
-	CreatedAt_2                             time.Time
-	CreatedAt_3                             time.Time
-	ArchivedAt_3                            sql.NullTime
 	LastUpdatedAt                           sql.NullTime
 	ArchivedAt                              sql.NullTime
-	LastUpdatedAt_2                         sql.NullTime
-	ArchivedAt_2                            sql.NullTime
-	LastUpdatedAt_3                         sql.NullTime
-	Description                             string
-	PluralName                              string
-	AttributeType                           IngredientAttributeType
 	ID_3                                    string
 	Name_2                                  string
 	Description_2                           string
 	Warning                                 string
-	IconPath_2                              string
-	StorageInstructions                     string
-	Slug                                    string
-	IconPath                                string
-	PastTense                               string
-	Name                                    string
-	ID_2                                    string
-	Notes                                   string
-	ShoppingSuggestions                     string
-	Slug_2                                  string
-	ID                                      string
-	MaximumIdealStorageTemperatureInCelsius sql.NullString
-	MinimumIdealStorageTemperatureInCelsius sql.NullString
-	IsLiquid                                sql.NullBool
-	ContainsFish                            bool
-	AnimalDerived                           bool
-	RestrictToPreparations                  bool
-	Volumetric                              bool
-	AnimalFlesh                             bool
-	ContainsGluten                          bool
-	ContainsSesame                          bool
-	ContainsAlcohol                         bool
+	ContainsEgg                             bool
+	ContainsDairy                           bool
+	ContainsPeanut                          bool
+	ContainsTreeNut                         bool
+	ContainsSoy                             bool
+	ContainsWheat                           bool
 	ContainsShellfish                       bool
+	ContainsSesame                          bool
+	ContainsFish                            bool
+	ContainsGluten                          bool
+	AnimalFlesh                             bool
+	Volumetric                              bool
+	IsLiquid                                sql.NullBool
+	IconPath_2                              string
+	AnimalDerived                           bool
+	PluralName                              string
+	RestrictToPreparations                  bool
+	MinimumIdealStorageTemperatureInCelsius sql.NullString
+	MaximumIdealStorageTemperatureInCelsius sql.NullString
+	StorageInstructions                     string
+	Slug_2                                  string
+	ContainsAlcohol                         bool
+	ShoppingSuggestions                     string
 	IsStarch                                bool
 	IsProtein                               bool
 	IsGrain                                 bool
@@ -2673,12 +2673,12 @@ type GetValidIngredientStateIngredientRow struct {
 	IsFat                                   bool
 	IsAcid                                  bool
 	IsHeat                                  bool
-	ContainsWheat                           bool
-	ContainsSoy                             bool
-	ContainsTreeNut                         bool
-	ContainsPeanut                          bool
-	ContainsDairy                           bool
-	ContainsEgg                             bool
+	CreatedAt_2                             time.Time
+	LastUpdatedAt_2                         sql.NullTime
+	ArchivedAt_2                            sql.NullTime
+	CreatedAt_3                             time.Time
+	LastUpdatedAt_3                         sql.NullTime
+	ArchivedAt_3                            sql.NullTime
 }
 
 func (q *Queries) GetValidIngredientStateIngredient(ctx context.Context, db DBTX, id string) (*GetValidIngredientStateIngredientRow, error) {
@@ -2763,18 +2763,18 @@ WHERE valid_instruments.archived_at IS NULL
 `
 
 type GetValidInstrumentRow struct {
-	CreatedAt                      time.Time
-	LastUpdatedAt                  sql.NullTime
-	ArchivedAt                     sql.NullTime
 	ID                             string
 	Name                           string
 	PluralName                     string
 	Description                    string
 	IconPath                       string
-	Slug                           string
 	UsableForStorage               bool
 	DisplayInSummaryLists          bool
 	IncludeInGeneratedInstructions bool
+	Slug                           string
+	CreatedAt                      time.Time
+	LastUpdatedAt                  sql.NullTime
+	ArchivedAt                     sql.NullTime
 }
 
 func (q *Queries) GetValidInstrument(ctx context.Context, db DBTX, id string) (*GetValidInstrumentRow, error) {
@@ -2819,19 +2819,19 @@ WHERE valid_measurement_units.archived_at IS NULL
 `
 
 type GetValidMeasurementUnitRow struct {
-	CreatedAt     time.Time
-	ArchivedAt    sql.NullTime
-	LastUpdatedAt sql.NullTime
-	PluralName    string
+	ID            string
 	Name          string
 	Description   string
-	ID            string
-	IconPath      string
-	Slug          string
 	Volumetric    sql.NullBool
-	Imperial      bool
-	Metric        bool
+	IconPath      string
 	Universal     bool
+	Metric        bool
+	Imperial      bool
+	Slug          string
+	PluralName    string
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
 }
 
 func (q *Queries) GetValidMeasurementUnit(ctx context.Context, db DBTX, id string) (*GetValidMeasurementUnitRow, error) {
@@ -2939,60 +2939,60 @@ WHERE valid_measurement_conversions.id = $1
 `
 
 type GetValidMeasurementUnitConversionRow struct {
-	CreatedAt                                              time.Time
-	ToUnitCreatedAt                                        time.Time
+	ID                                                     string
+	FromUnitID                                             string
+	FromUnitName                                           string
+	FromUnitDescription                                    string
+	FromUnitVolumetric                                     sql.NullBool
+	FromUnitIconPath                                       string
+	FromUnitUniversal                                      bool
+	FromUnitMetric                                         bool
+	FromUnitImperial                                       bool
+	FromUnitSlug                                           string
+	FromUnitPluralName                                     string
 	FromUnitCreatedAt                                      time.Time
 	FromUnitLastUpdatedAt                                  sql.NullTime
-	ToUnitArchivedAt                                       sql.NullTime
-	ToUnitLastUpdatedAt                                    sql.NullTime
-	LastUpdatedAt                                          sql.NullTime
-	ValidIngredientCreatedAt                               sql.NullTime
-	ValidIngredientLastUpdatedAt                           sql.NullTime
-	ArchivedAt                                             sql.NullTime
-	ValidIngredientArchivedAt                              sql.NullTime
 	FromUnitArchivedAt                                     sql.NullTime
-	FromUnitSlug                                           string
-	Notes                                                  string
 	ToUnitID                                               string
 	ToUnitName                                             string
 	ToUnitDescription                                      string
-	FromUnitPluralName                                     string
+	ToUnitVolumetric                                       sql.NullBool
 	ToUnitIconPath                                         string
-	FromUnitName                                           string
-	FromUnitDescription                                    string
-	ID                                                     string
+	ToUnitUniversal                                        bool
+	ToUnitMetric                                           bool
+	ToUnitImperial                                         bool
 	ToUnitSlug                                             string
 	ToUnitPluralName                                       string
-	FromUnitID                                             string
-	FromUnitIconPath                                       string
-	ValidIngredientSlug                                    sql.NullString
-	ValidIngredientIconPath                                sql.NullString
+	ToUnitCreatedAt                                        time.Time
+	ToUnitLastUpdatedAt                                    sql.NullTime
+	ToUnitArchivedAt                                       sql.NullTime
+	ValidIngredientID                                      sql.NullString
 	ValidIngredientName                                    sql.NullString
 	ValidIngredientDescription                             sql.NullString
 	ValidIngredientWarning                                 sql.NullString
-	ValidIngredientShoppingSuggestions                     sql.NullString
-	ValidIngredientStorageInstructions                     sql.NullString
-	ValidIngredientID                                      sql.NullString
-	ValidIngredientPluralName                              sql.NullString
-	ValidMeasurementConversionsModifier                    float64
-	ValidIngredientMaximumIdealStorageTemperatureInCelsius float64
-	ValidIngredientMinimumIdealStorageTemperatureInCelsius float64
-	ValidIngredientRestrictToPreparations                  sql.NullBool
+	ValidIngredientContainsEgg                             sql.NullBool
 	ValidIngredientContainsDairy                           sql.NullBool
+	ValidIngredientContainsPeanut                          sql.NullBool
+	ValidIngredientContainsTreeNut                         sql.NullBool
+	ValidIngredientContainsSoy                             sql.NullBool
+	ValidIngredientContainsWheat                           sql.NullBool
+	ValidIngredientContainsShellfish                       sql.NullBool
+	ValidIngredientContainsSesame                          sql.NullBool
+	ValidIngredientContainsFish                            sql.NullBool
 	ValidIngredientContainsGluten                          sql.NullBool
 	ValidIngredientAnimalFlesh                             sql.NullBool
 	ValidIngredientVolumetric                              sql.NullBool
 	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientContainsSesame                          sql.NullBool
+	ValidIngredientIconPath                                sql.NullString
 	ValidIngredientAnimalDerived                           sql.NullBool
-	ValidIngredientContainsShellfish                       sql.NullBool
-	ValidIngredientContainsWheat                           sql.NullBool
-	ValidIngredientContainsSoy                             sql.NullBool
-	ValidIngredientContainsTreeNut                         sql.NullBool
-	ValidIngredientContainsPeanut                          sql.NullBool
-	FromUnitVolumetric                                     sql.NullBool
+	ValidIngredientPluralName                              sql.NullString
+	ValidIngredientRestrictToPreparations                  sql.NullBool
+	ValidIngredientMinimumIdealStorageTemperatureInCelsius float64
+	ValidIngredientMaximumIdealStorageTemperatureInCelsius float64
+	ValidIngredientStorageInstructions                     sql.NullString
+	ValidIngredientSlug                                    sql.NullString
 	ValidIngredientContainsAlcohol                         sql.NullBool
-	ValidIngredientContainsFish                            sql.NullBool
+	ValidIngredientShoppingSuggestions                     sql.NullString
 	ValidIngredientIsStarch                                sql.NullBool
 	ValidIngredientIsProtein                               sql.NullBool
 	ValidIngredientIsGrain                                 sql.NullBool
@@ -3001,14 +3001,14 @@ type GetValidMeasurementUnitConversionRow struct {
 	ValidIngredientIsFat                                   sql.NullBool
 	ValidIngredientIsAcid                                  sql.NullBool
 	ValidIngredientIsHeat                                  sql.NullBool
-	ValidIngredientContainsEgg                             sql.NullBool
-	ToUnitVolumetric                                       sql.NullBool
-	ToUnitUniversal                                        bool
-	ToUnitMetric                                           bool
-	FromUnitImperial                                       bool
-	FromUnitMetric                                         bool
-	FromUnitUniversal                                      bool
-	ToUnitImperial                                         bool
+	ValidIngredientCreatedAt                               sql.NullTime
+	ValidIngredientLastUpdatedAt                           sql.NullTime
+	ValidIngredientArchivedAt                              sql.NullTime
+	ValidMeasurementConversionsModifier                    float64
+	Notes                                                  string
+	CreatedAt                                              time.Time
+	LastUpdatedAt                                          sql.NullTime
+	ArchivedAt                                             sql.NullTime
 }
 
 func (q *Queries) GetValidMeasurementUnitConversion(ctx context.Context, db DBTX, id string) (*GetValidMeasurementUnitConversionRow, error) {
@@ -3120,28 +3120,28 @@ WHERE valid_preparations.archived_at IS NULL
 `
 
 type GetValidPreparationRow struct {
-	CreatedAt                   time.Time
-	LastUpdatedAt               sql.NullTime
-	ArchivedAt                  sql.NullTime
+	ID                          string
 	Name                        string
 	Description                 string
 	IconPath                    string
-	ID                          string
+	YieldsNothing               bool
+	RestrictToIngredients       bool
+	MinimumIngredientCount      int32
+	MaximumIngredientCount      sql.NullInt32
+	MinimumInstrumentCount      int32
+	MaximumInstrumentCount      sql.NullInt32
+	TemperatureRequired         bool
+	TimeEstimateRequired        bool
+	ConditionExpressionRequired bool
+	ConsumesVessel              bool
+	OnlyForVessels              bool
+	MinimumVesselCount          int32
+	MaximumVesselCount          sql.NullInt32
 	Slug                        string
 	PastTense                   string
-	MaximumInstrumentCount      sql.NullInt32
-	MaximumIngredientCount      sql.NullInt32
-	MaximumVesselCount          sql.NullInt32
-	MinimumVesselCount          int32
-	MinimumInstrumentCount      int32
-	MinimumIngredientCount      int32
-	RestrictToIngredients       bool
-	OnlyForVessels              bool
-	ConsumesVessel              bool
-	ConditionExpressionRequired bool
-	TimeEstimateRequired        bool
-	TemperatureRequired         bool
-	YieldsNothing               bool
+	CreatedAt                   time.Time
+	LastUpdatedAt               sql.NullTime
+	ArchivedAt                  sql.NullTime
 }
 
 func (q *Queries) GetValidPreparation(ctx context.Context, db DBTX, id string) (*GetValidPreparationRow, error) {
@@ -3228,45 +3228,45 @@ WHERE
 `
 
 type GetValidPreparationInstrumentRow struct {
-	ValidPreparationCreatedAt                     time.Time
-	ValidInstrumentCreatedAt                      time.Time
-	ValidPreparationInstrumentCreatedAt           time.Time
-	ValidInstrumentArchivedAt                     sql.NullTime
-	ValidPreparationLastUpdatedAt                 sql.NullTime
-	ValidInstrumentLastUpdatedAt                  sql.NullTime
-	ValidPreparationArchivedAt                    sql.NullTime
-	ValidPreparationInstrumentArchivedAt          sql.NullTime
-	ValidPreparationInstrumentLastUpdatedAt       sql.NullTime
-	ValidPreparationIconPath                      string
-	ValidInstrumentPluralName                     string
-	ValidPreparationDescription                   string
-	ValidPreparationName                          string
-	ValidInstrumentSlug                           string
-	ValidInstrumentIconPath                       string
-	ValidInstrumentDescription                    string
 	ValidPreparationInstrumentID                  string
-	ValidInstrumentName                           string
-	ValidInstrumentID                             string
-	ValidPreparationSlug                          string
-	ValidPreparationPastTense                     string
-	ValidPreparationID                            string
 	ValidPreparationInstrumentNotes               string
-	ValidPreparationMaximumIngredientCount        sql.NullInt32
-	ValidPreparationMaximumVesselCount            sql.NullInt32
-	ValidPreparationMaximumInstrumentCount        sql.NullInt32
-	ValidPreparationMinimumVesselCount            int32
+	ValidPreparationID                            string
+	ValidPreparationName                          string
+	ValidPreparationDescription                   string
+	ValidPreparationIconPath                      string
+	ValidPreparationYieldsNothing                 bool
+	ValidPreparationRestrictToIngredients         bool
 	ValidPreparationMinimumIngredientCount        int32
+	ValidPreparationMaximumIngredientCount        sql.NullInt32
 	ValidPreparationMinimumInstrumentCount        int32
-	ValidInstrumentDisplayInSummaryLists          bool
-	ValidInstrumentUsableForStorage               bool
-	ValidInstrumentIncludeInGeneratedInstructions bool
-	ValidPreparationTimeEstimateRequired          bool
+	ValidPreparationMaximumInstrumentCount        sql.NullInt32
 	ValidPreparationTemperatureRequired           bool
+	ValidPreparationTimeEstimateRequired          bool
 	ValidPreparationConditionExpressionRequired   bool
 	ValidPreparationConsumesVessel                bool
 	ValidPreparationOnlyForVessels                bool
-	ValidPreparationRestrictToIngredients         bool
-	ValidPreparationYieldsNothing                 bool
+	ValidPreparationMinimumVesselCount            int32
+	ValidPreparationMaximumVesselCount            sql.NullInt32
+	ValidPreparationSlug                          string
+	ValidPreparationPastTense                     string
+	ValidPreparationCreatedAt                     time.Time
+	ValidPreparationLastUpdatedAt                 sql.NullTime
+	ValidPreparationArchivedAt                    sql.NullTime
+	ValidInstrumentID                             string
+	ValidInstrumentName                           string
+	ValidInstrumentPluralName                     string
+	ValidInstrumentDescription                    string
+	ValidInstrumentIconPath                       string
+	ValidInstrumentUsableForStorage               bool
+	ValidInstrumentDisplayInSummaryLists          bool
+	ValidInstrumentIncludeInGeneratedInstructions bool
+	ValidInstrumentSlug                           string
+	ValidInstrumentCreatedAt                      time.Time
+	ValidInstrumentLastUpdatedAt                  sql.NullTime
+	ValidInstrumentArchivedAt                     sql.NullTime
+	ValidPreparationInstrumentCreatedAt           time.Time
+	ValidPreparationInstrumentLastUpdatedAt       sql.NullTime
+	ValidPreparationInstrumentArchivedAt          sql.NullTime
 }
 
 func (q *Queries) GetValidPreparationInstrument(ctx context.Context, db DBTX, id string) (*GetValidPreparationInstrumentRow, error) {
@@ -3390,63 +3390,63 @@ WHERE
 `
 
 type GetValidPreparationVesselRow struct {
-	ValidPreparationCreatedAt                   time.Time
-	ValidPreparationVesselCreatedAt             time.Time
-	ValidVesselCreatedAt                        time.Time
-	ValidMeasurementUnitArchivedAt              sql.NullTime
-	ValidPreparationArchivedAt                  sql.NullTime
-	ValidPreparationLastUpdatedAt               sql.NullTime
-	ValidMeasurementUnitCreatedAt               sql.NullTime
-	ValidMeasurementUnitLastUpdatedAt           sql.NullTime
-	ValidPreparationVesselArchivedAt            sql.NullTime
-	ValidPreparationVesselLastUpdatedAt         sql.NullTime
-	ValidVesselArchivedAt                       sql.NullTime
-	ValidVesselLastUpdatedAt                    sql.NullTime
-	ValidVesselShape                            VesselShape
-	ValidPreparationSlug                        string
-	ValidPreparationIconPath                    string
-	ValidPreparationDescription                 string
 	ValidPreparationVesselID                    string
-	ValidVesselSlug                             string
-	ValidVesselIconPath                         string
-	ValidVesselDescription                      string
-	ValidPreparationPastTense                   string
-	ValidPreparationName                        string
-	ValidPreparationID                          string
 	ValidPreparationVesselNotes                 string
+	ValidPreparationID                          string
+	ValidPreparationName                        string
+	ValidPreparationDescription                 string
+	ValidPreparationIconPath                    string
+	ValidPreparationYieldsNothing               bool
+	ValidPreparationRestrictToIngredients       bool
+	ValidPreparationMinimumIngredientCount      int32
+	ValidPreparationMaximumIngredientCount      sql.NullInt32
+	ValidPreparationMinimumInstrumentCount      int32
+	ValidPreparationMaximumInstrumentCount      sql.NullInt32
+	ValidPreparationTemperatureRequired         bool
+	ValidPreparationTimeEstimateRequired        bool
+	ValidPreparationConditionExpressionRequired bool
+	ValidPreparationConsumesVessel              bool
+	ValidPreparationOnlyForVessels              bool
+	ValidPreparationMinimumVesselCount          int32
+	ValidPreparationMaximumVesselCount          sql.NullInt32
+	ValidPreparationSlug                        string
+	ValidPreparationPastTense                   string
+	ValidPreparationCreatedAt                   time.Time
+	ValidPreparationLastUpdatedAt               sql.NullTime
+	ValidPreparationArchivedAt                  sql.NullTime
 	ValidVesselID                               string
 	ValidVesselName                             string
 	ValidVesselPluralName                       string
-	ValidMeasurementUnitPluralName              sql.NullString
-	ValidMeasurementUnitSlug                    sql.NullString
-	ValidMeasurementUnitIconPath                sql.NullString
-	ValidMeasurementUnitDescription             sql.NullString
-	ValidMeasurementUnitName                    sql.NullString
-	ValidMeasurementUnitID                      sql.NullString
-	ValidVesselWidthInMillimeters               float64
-	ValidVesselCapacity                         float64
-	ValidVesselHeightInMillimeters              float64
-	ValidVesselLengthInMillimeters              float64
-	ValidPreparationMaximumIngredientCount      sql.NullInt32
-	ValidPreparationMaximumInstrumentCount      sql.NullInt32
-	ValidPreparationMaximumVesselCount          sql.NullInt32
-	ValidPreparationMinimumIngredientCount      int32
-	ValidPreparationMinimumVesselCount          int32
-	ValidPreparationMinimumInstrumentCount      int32
-	ValidMeasurementUnitUniversal               sql.NullBool
-	ValidMeasurementUnitImperial                sql.NullBool
-	ValidMeasurementUnitVolumetric              sql.NullBool
-	ValidMeasurementUnitMetric                  sql.NullBool
-	ValidPreparationTemperatureRequired         bool
-	ValidPreparationOnlyForVessels              bool
-	ValidPreparationTimeEstimateRequired        bool
-	ValidPreparationConsumesVessel              bool
+	ValidVesselDescription                      string
+	ValidVesselIconPath                         string
 	ValidVesselUsableForStorage                 bool
-	ValidPreparationConditionExpressionRequired bool
+	ValidVesselSlug                             string
 	ValidVesselDisplayInSummaryLists            bool
 	ValidVesselIncludeInGeneratedInstructions   bool
-	ValidPreparationRestrictToIngredients       bool
-	ValidPreparationYieldsNothing               bool
+	ValidVesselCapacity                         float64
+	ValidMeasurementUnitID                      sql.NullString
+	ValidMeasurementUnitName                    sql.NullString
+	ValidMeasurementUnitDescription             sql.NullString
+	ValidMeasurementUnitVolumetric              sql.NullBool
+	ValidMeasurementUnitIconPath                sql.NullString
+	ValidMeasurementUnitUniversal               sql.NullBool
+	ValidMeasurementUnitMetric                  sql.NullBool
+	ValidMeasurementUnitImperial                sql.NullBool
+	ValidMeasurementUnitSlug                    sql.NullString
+	ValidMeasurementUnitPluralName              sql.NullString
+	ValidMeasurementUnitCreatedAt               sql.NullTime
+	ValidMeasurementUnitLastUpdatedAt           sql.NullTime
+	ValidMeasurementUnitArchivedAt              sql.NullTime
+	ValidVesselWidthInMillimeters               float64
+	ValidVesselLengthInMillimeters              float64
+	ValidVesselHeightInMillimeters              float64
+	ValidVesselShape                            VesselShape
+	ValidVesselCreatedAt                        time.Time
+	ValidVesselLastUpdatedAt                    sql.NullTime
+	ValidVesselArchivedAt                       sql.NullTime
+	ValidPreparationVesselCreatedAt             time.Time
+	ValidPreparationVesselLastUpdatedAt         sql.NullTime
+	ValidPreparationVesselArchivedAt            sql.NullTime
 }
 
 func (q *Queries) GetValidPreparationVessel(ctx context.Context, db DBTX, id string) (*GetValidPreparationVesselRow, error) {
@@ -3555,36 +3555,36 @@ WHERE valid_vessels.archived_at IS NULL
 `
 
 type GetValidVesselRow struct {
-	ValidMeasurementUnitCreatedAt     time.Time
-	CreatedAt                         time.Time
-	ArchivedAt                        sql.NullTime
-	LastUpdatedAt                     sql.NullTime
-	ValidMeasurementUnitArchivedAt    sql.NullTime
-	ValidMeasurementUnitLastUpdatedAt sql.NullTime
-	ValidMeasurementUnitIconPath      string
-	IconPath                          string
+	ID                                string
 	Name                              string
 	PluralName                        string
+	Description                       string
+	IconPath                          string
+	UsableForStorage                  bool
+	Slug                              string
+	DisplayInSummaryLists             bool
+	IncludeInGeneratedInstructions    bool
+	ValidVesselsCapacity              float64
 	ValidMeasurementUnitID            string
 	ValidMeasurementUnitName          string
 	ValidMeasurementUnitDescription   string
-	Description                       string
-	ID                                string
-	Shape                             VesselShape
-	Slug                              string
-	ValidMeasurementUnitPluralName    string
+	ValidMeasurementUnitVolumetric    sql.NullBool
+	ValidMeasurementUnitIconPath      string
+	ValidMeasurementUnitUniversal     bool
+	ValidMeasurementUnitMetric        bool
+	ValidMeasurementUnitImperial      bool
 	ValidMeasurementUnitSlug          string
+	ValidMeasurementUnitPluralName    string
+	ValidMeasurementUnitCreatedAt     time.Time
+	ValidMeasurementUnitLastUpdatedAt sql.NullTime
+	ValidMeasurementUnitArchivedAt    sql.NullTime
 	ValidVesselsWidthInMillimeters    float64
 	ValidVesselsLengthInMillimeters   float64
 	ValidVesselsHeightInMillimeters   float64
-	ValidVesselsCapacity              float64
-	ValidMeasurementUnitVolumetric    sql.NullBool
-	ValidMeasurementUnitImperial      bool
-	ValidMeasurementUnitMetric        bool
-	UsableForStorage                  bool
-	DisplayInSummaryLists             bool
-	ValidMeasurementUnitUniversal     bool
-	IncludeInGeneratedInstructions    bool
+	Shape                             VesselShape
+	CreatedAt                         time.Time
+	LastUpdatedAt                     sql.NullTime
+	ArchivedAt                        sql.NullTime
 }
 
 func (q *Queries) GetValidVessel(ctx context.Context, db DBTX, id string) (*GetValidVesselRow, error) {

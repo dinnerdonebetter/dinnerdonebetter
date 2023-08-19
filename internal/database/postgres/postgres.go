@@ -200,6 +200,10 @@ func (q *Querier) getOneRow(ctx context.Context, querier database.SQLQueryExecut
 		logger = logger.WithValue("args", args)
 	}
 
+	if args == nil {
+		args = []any{}
+	}
+
 	tracing.AttachDatabaseQueryToSpan(span, fmt.Sprintf("%s single row fetch query", queryDescription), query, args)
 
 	row := querier.QueryRowContext(ctx, query, args...)

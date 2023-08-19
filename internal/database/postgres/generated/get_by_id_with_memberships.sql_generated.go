@@ -66,49 +66,49 @@ WHERE households.archived_at IS NULL
 `
 
 type GetHouseholdByIDWithMembershipsRow struct {
-	CreatedAt_2                  time.Time
-	CreatedAt_3                  time.Time
-	CreatedAt                    time.Time
-	ArchivedAt_3                 sql.NullTime
-	LastUpdatedAt_3              sql.NullTime
-	ArchivedAt_2                 sql.NullTime
-	LastUpdatedAt_2              sql.NullTime
-	Birthday                     sql.NullTime
-	TwoFactorSecretVerifiedAt    sql.NullTime
-	PasswordLastChangedAt        sql.NullTime
-	EmailAddressVerifiedAt       sql.NullTime
-	ArchivedAt                   sql.NullTime
-	LastUpdatedAt                sql.NullTime
-	UserAccountStatusExplanation string
-	ServiceRole                  string
-	PaymentProcessorCustomerID   string
+	ID                           string
 	Name                         string
+	BillingStatus                string
+	ContactPhone                 string
+	AddressLine1                 string
+	AddressLine2                 string
+	City                         string
+	State                        string
+	ZipCode                      string
+	Country                      string
+	Latitude                     sql.NullString
+	Longitude                    sql.NullString
+	PaymentProcessorCustomerID   string
+	SubscriptionPlanID           sql.NullString
+	CreatedAt                    time.Time
+	LastUpdatedAt                sql.NullTime
+	ArchivedAt                   sql.NullTime
 	BelongsToUser                string
 	ID_2                         string
 	FirstName                    string
 	LastName                     string
 	Username                     string
 	EmailAddress                 string
-	BillingStatus                string
-	ContactPhone                 string
-	HouseholdRole                string
-	Country                      string
-	ZipCode                      string
-	BelongsToHousehold           string
+	EmailAddressVerifiedAt       sql.NullTime
+	AvatarSrc                    sql.NullString
+	RequiresPasswordChange       bool
+	PasswordLastChangedAt        sql.NullTime
+	TwoFactorSecretVerifiedAt    sql.NullTime
+	ServiceRole                  string
 	UserAccountStatus            string
-	ID                           string
-	State                        string
-	City                         string
-	AddressLine2                 string
-	AddressLine1                 string
+	UserAccountStatusExplanation string
+	Birthday                     sql.NullTime
+	CreatedAt_2                  time.Time
+	LastUpdatedAt_2              sql.NullTime
+	ArchivedAt_2                 sql.NullTime
 	ID_3                         string
 	BelongsToUser_2              string
-	SubscriptionPlanID           sql.NullString
-	AvatarSrc                    sql.NullString
-	Latitude                     sql.NullString
-	Longitude                    sql.NullString
-	RequiresPasswordChange       bool
+	BelongsToHousehold           string
+	HouseholdRole                string
 	DefaultHousehold             bool
+	CreatedAt_3                  time.Time
+	LastUpdatedAt_3              sql.NullTime
+	ArchivedAt_3                 sql.NullTime
 }
 
 func (q *Queries) GetHouseholdByIDWithMemberships(ctx context.Context, db DBTX, id string) ([]*GetHouseholdByIDWithMembershipsRow, error) {

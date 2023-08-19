@@ -43,27 +43,27 @@ WHERE users.archived_at IS NULL
 `
 
 type GetAdminUserByUsernameRow struct {
-	CreatedAt                    time.Time
-	Birthday                     sql.NullTime
-	ArchivedAt                   sql.NullTime
-	PasswordLastChangedAt        sql.NullTime
-	LastUpdatedAt                sql.NullTime
-	EmailAddressVerifiedAt       sql.NullTime
-	LastAcceptedPrivacyPolicy    sql.NullTime
-	LastAcceptedTermsOfService   sql.NullTime
-	TwoFactorSecretVerifiedAt    sql.NullTime
-	UserAccountStatusExplanation string
+	ID                           string
 	FirstName                    string
+	LastName                     string
+	Username                     string
+	EmailAddress                 string
+	EmailAddressVerifiedAt       sql.NullTime
+	AvatarSrc                    sql.NullString
+	HashedPassword               string
+	RequiresPasswordChange       bool
+	PasswordLastChangedAt        sql.NullTime
+	TwoFactorSecret              string
+	TwoFactorSecretVerifiedAt    sql.NullTime
 	ServiceRole                  string
 	UserAccountStatus            string
-	LastName                     string
-	ID                           string
-	HashedPassword               string
-	TwoFactorSecret              string
-	EmailAddress                 string
-	Username                     string
-	AvatarSrc                    sql.NullString
-	RequiresPasswordChange       bool
+	UserAccountStatusExplanation string
+	Birthday                     sql.NullTime
+	LastAcceptedTermsOfService   sql.NullTime
+	LastAcceptedPrivacyPolicy    sql.NullTime
+	CreatedAt                    time.Time
+	LastUpdatedAt                sql.NullTime
+	ArchivedAt                   sql.NullTime
 }
 
 func (q *Queries) GetAdminUserByUsername(ctx context.Context, db DBTX, username string) (*GetAdminUserByUsernameRow, error) {

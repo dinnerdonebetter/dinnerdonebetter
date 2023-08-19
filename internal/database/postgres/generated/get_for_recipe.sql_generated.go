@@ -100,74 +100,74 @@ ORDER BY
 `
 
 type GetRecipeStepIngredientsForRecipeRow struct {
-	CreatedAt_3                             time.Time
-	CreatedAt_2                             time.Time
-	LastUpdatedAt_2                         sql.NullTime
-	CreatedAt                               sql.NullTime
-	LastUpdatedAt                           sql.NullTime
-	ArchivedAt                              sql.NullTime
-	ArchivedAt_2                            sql.NullTime
-	ArchivedAt_3                            sql.NullTime
-	LastUpdatedAt_3                         sql.NullTime
-	ID_3                                    string
-	Description_2                           string
-	IconPath_2                              string
-	Slug_2                                  string
-	PluralName_2                            string
-	IngredientNotes                         string
-	Name_3                                  string
-	QuantityNotes                           string
 	ID                                      string
-	BelongsToRecipeStep                     string
-	MinimumQuantityValue                    string
 	Name                                    string
-	MaximumQuantityValue                    sql.NullString
+	Optional                                bool
+	ID_2                                    sql.NullString
+	Name_2                                  sql.NullString
+	Description                             sql.NullString
 	Warning                                 sql.NullString
+	ContainsEgg                             sql.NullBool
+	ContainsDairy                           sql.NullBool
+	ContainsPeanut                          sql.NullBool
+	ContainsTreeNut                         sql.NullBool
+	ContainsSoy                             sql.NullBool
+	ContainsWheat                           sql.NullBool
+	ContainsShellfish                       sql.NullBool
+	ContainsSesame                          sql.NullBool
+	ContainsFish                            sql.NullBool
+	ContainsGluten                          sql.NullBool
+	AnimalFlesh                             sql.NullBool
+	Volumetric                              sql.NullBool
+	IsLiquid                                sql.NullBool
 	IconPath                                sql.NullString
+	AnimalDerived                           sql.NullBool
+	PluralName                              sql.NullString
+	RestrictToPreparations                  sql.NullBool
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
 	MaximumIdealStorageTemperatureInCelsius sql.NullString
 	StorageInstructions                     sql.NullString
 	Slug                                    sql.NullString
-	RecipeStepProductID                     sql.NullString
-	ShoppingSuggestions                     sql.NullString
-	ID_2                                    sql.NullString
-	ProductPercentageToUse                  sql.NullString
-	Name_2                                  sql.NullString
-	RecipeStepProductRecipeID               sql.NullString
-	PluralName                              sql.NullString
-	Description                             sql.NullString
-	VesselIndex                             sql.NullInt32
-	OptionIndex                             int32
-	AnimalFlesh                             sql.NullBool
 	ContainsAlcohol                         sql.NullBool
-	IsAcid                                  sql.NullBool
-	IsFat                                   sql.NullBool
-	IsSalt                                  sql.NullBool
-	IsFruit                                 sql.NullBool
-	Volumetric_2                            sql.NullBool
-	IsGrain                                 sql.NullBool
-	IsHeat                                  sql.NullBool
-	ContainsEgg                             sql.NullBool
-	ContainsDairy                           sql.NullBool
-	IsProtein                               sql.NullBool
+	ShoppingSuggestions                     sql.NullString
 	IsStarch                                sql.NullBool
-	ContainsTreeNut                         sql.NullBool
-	RestrictToPreparations                  sql.NullBool
-	AnimalDerived                           sql.NullBool
-	IsLiquid                                sql.NullBool
-	Volumetric                              sql.NullBool
-	ContainsGluten                          sql.NullBool
-	ContainsFish                            sql.NullBool
-	ContainsSesame                          sql.NullBool
-	ContainsShellfish                       sql.NullBool
-	ContainsPeanut                          sql.NullBool
-	ContainsWheat                           sql.NullBool
-	ContainsSoy                             sql.NullBool
+	IsProtein                               sql.NullBool
+	IsGrain                                 sql.NullBool
+	IsFruit                                 sql.NullBool
+	IsSalt                                  sql.NullBool
+	IsFat                                   sql.NullBool
+	IsAcid                                  sql.NullBool
+	IsHeat                                  sql.NullBool
+	CreatedAt                               sql.NullTime
+	LastUpdatedAt                           sql.NullTime
+	ArchivedAt                              sql.NullTime
+	ID_3                                    string
+	Name_3                                  string
+	Description_2                           string
+	Volumetric_2                            sql.NullBool
+	IconPath_2                              string
 	Universal                               bool
-	ToTaste                                 bool
-	Imperial                                bool
 	Metric                                  bool
-	Optional                                bool
+	Imperial                                bool
+	Slug_2                                  string
+	PluralName_2                            string
+	CreatedAt_2                             time.Time
+	LastUpdatedAt_2                         sql.NullTime
+	ArchivedAt_2                            sql.NullTime
+	MinimumQuantityValue                    string
+	MaximumQuantityValue                    sql.NullString
+	QuantityNotes                           string
+	RecipeStepProductID                     sql.NullString
+	IngredientNotes                         string
+	OptionIndex                             int32
+	ToTaste                                 bool
+	ProductPercentageToUse                  sql.NullString
+	VesselIndex                             sql.NullInt32
+	RecipeStepProductRecipeID               sql.NullString
+	CreatedAt_3                             time.Time
+	LastUpdatedAt_3                         sql.NullTime
+	ArchivedAt_3                            sql.NullTime
+	BelongsToRecipeStep                     string
 }
 
 func (q *Queries) GetRecipeStepIngredientsForRecipe(ctx context.Context, db DBTX, id string) ([]*GetRecipeStepIngredientsForRecipeRow, error) {
@@ -302,31 +302,31 @@ WHERE recipe_step_instruments.archived_at IS NULL
 `
 
 type GetRecipeStepInstrumentsForRecipeRow struct {
-	CreatedAt_2                    time.Time
-	ArchivedAt                     sql.NullTime
-	ArchivedAt_2                   sql.NullTime
-	LastUpdatedAt_2                sql.NullTime
-	LastUpdatedAt                  sql.NullTime
-	CreatedAt                      sql.NullTime
-	Name_2                         string
-	BelongsToRecipeStep            string
 	ID                             string
-	Notes                          string
-	Description                    sql.NullString
-	PluralName                     sql.NullString
-	IconPath                       sql.NullString
-	Slug                           sql.NullString
-	RecipeStepProductID            sql.NullString
-	Name                           sql.NullString
 	ID_2                           sql.NullString
-	MaximumQuantity                sql.NullInt32
-	MinimumQuantity                int32
-	OptionIndex                    int32
-	PreferenceRank                 int32
-	IncludeInGeneratedInstructions sql.NullBool
-	DisplayInSummaryLists          sql.NullBool
+	Name                           sql.NullString
+	PluralName                     sql.NullString
+	Description                    sql.NullString
+	IconPath                       sql.NullString
 	UsableForStorage               sql.NullBool
+	DisplayInSummaryLists          sql.NullBool
+	IncludeInGeneratedInstructions sql.NullBool
+	Slug                           sql.NullString
+	CreatedAt                      sql.NullTime
+	LastUpdatedAt                  sql.NullTime
+	ArchivedAt                     sql.NullTime
+	RecipeStepProductID            sql.NullString
+	Name_2                         string
+	Notes                          string
+	PreferenceRank                 int32
 	Optional                       bool
+	MinimumQuantity                int32
+	MaximumQuantity                sql.NullInt32
+	OptionIndex                    int32
+	CreatedAt_2                    time.Time
+	LastUpdatedAt_2                sql.NullTime
+	ArchivedAt_2                   sql.NullTime
+	BelongsToRecipeStep            string
 }
 
 func (q *Queries) GetRecipeStepInstrumentsForRecipe(ctx context.Context, db DBTX, belongsToRecipe string) ([]*GetRecipeStepInstrumentsForRecipeRow, error) {
@@ -425,38 +425,38 @@ WHERE recipe_step_products.archived_at IS NULL
 `
 
 type GetRecipeStepProductsForRecipeRow struct {
-	CreatedAt_2                        time.Time
-	ArchivedAt_2                       sql.NullTime
-	ArchivedAt                         sql.NullTime
-	LastUpdatedAt                      sql.NullTime
-	CreatedAt                          sql.NullTime
-	LastUpdatedAt_2                    sql.NullTime
-	QuantityNotes                      string
-	Name                               string
 	ID                                 string
-	BelongsToRecipeStep                string
-	StorageInstructions                string
+	Name                               string
 	Type                               RecipeStepProductType
-	MinimumStorageTemperatureInCelsius sql.NullString
-	Name_2                             sql.NullString
 	ID_2                               sql.NullString
+	Name_2                             sql.NullString
+	Description                        sql.NullString
+	Volumetric                         sql.NullBool
+	IconPath                           sql.NullString
+	Universal                          sql.NullBool
+	Metric                             sql.NullBool
+	Imperial                           sql.NullBool
 	Slug                               sql.NullString
+	PluralName                         sql.NullString
+	CreatedAt                          sql.NullTime
+	LastUpdatedAt                      sql.NullTime
+	ArchivedAt                         sql.NullTime
 	MinimumQuantityValue               sql.NullString
 	MaximumQuantityValue               sql.NullString
-	IconPath                           sql.NullString
-	PluralName                         sql.NullString
-	MaximumStorageTemperatureInCelsius sql.NullString
-	Description                        sql.NullString
-	MaximumStorageDurationInSeconds    sql.NullInt32
-	ContainedInVesselIndex             sql.NullInt32
-	Index                              int32
-	Universal                          sql.NullBool
-	Imperial                           sql.NullBool
-	Metric                             sql.NullBool
-	Volumetric                         sql.NullBool
-	IsWaste                            bool
-	IsLiquid                           bool
+	QuantityNotes                      string
 	Compostable                        bool
+	MaximumStorageDurationInSeconds    sql.NullInt32
+	MinimumStorageTemperatureInCelsius sql.NullString
+	MaximumStorageTemperatureInCelsius sql.NullString
+	StorageInstructions                string
+	IsLiquid                           bool
+	IsWaste                            bool
+	Index                              int32
+	ContainedInVesselIndex             sql.NullInt32
+	CreatedAt_2                        time.Time
+	LastUpdatedAt_2                    sql.NullTime
+	ArchivedAt_2                       sql.NullTime
+	BelongsToRecipeStep                string
 }
 
 func (q *Queries) GetRecipeStepProductsForRecipe(ctx context.Context, db DBTX, belongsToRecipe string) ([]*GetRecipeStepProductsForRecipeRow, error) {
@@ -573,48 +573,48 @@ WHERE recipe_step_vessels.archived_at IS NULL
 `
 
 type GetRecipeStepVesselsForRecipeRow struct {
-	CreatedAt_3                    time.Time
-	LastUpdatedAt_2                sql.NullTime
-	LastUpdatedAt_3                sql.NullTime
-	ArchivedAt_3                   sql.NullTime
-	ArchivedAt_2                   sql.NullTime
-	CreatedAt                      sql.NullTime
-	CreatedAt_2                    sql.NullTime
-	ArchivedAt                     sql.NullTime
-	LastUpdatedAt                  sql.NullTime
-	VesselPredicate                string
-	BelongsToRecipeStep            string
-	Notes                          string
-	Name_3                         string
 	ID                             string
-	Capacity                       sql.NullString
-	IconPath                       sql.NullString
 	ID_2                           sql.NullString
 	Name                           sql.NullString
 	PluralName                     sql.NullString
+	Description                    sql.NullString
+	IconPath                       sql.NullString
+	UsableForStorage               sql.NullBool
+	Slug                           sql.NullString
+	DisplayInSummaryLists          sql.NullBool
+	IncludeInGeneratedInstructions sql.NullBool
+	Capacity                       sql.NullString
+	ID_3                           sql.NullString
+	Name_2                         sql.NullString
+	Description_2                  sql.NullString
+	Volumetric                     sql.NullBool
+	IconPath_2                     sql.NullString
+	Universal                      sql.NullBool
+	Metric                         sql.NullBool
+	Imperial                       sql.NullBool
 	Slug_2                         sql.NullString
 	PluralName_2                   sql.NullString
-	Description                    sql.NullString
-	Description_2                  sql.NullString
-	Name_2                         sql.NullString
+	CreatedAt                      sql.NullTime
+	LastUpdatedAt                  sql.NullTime
+	ArchivedAt                     sql.NullTime
 	WidthInMillimeters             sql.NullString
 	LengthInMillimeters            sql.NullString
 	HeightInMillimeters            sql.NullString
 	Shape                          NullVesselShape
-	ID_3                           sql.NullString
+	CreatedAt_2                    sql.NullTime
+	LastUpdatedAt_2                sql.NullTime
+	ArchivedAt_2                   sql.NullTime
+	Name_3                         string
+	Notes                          string
+	BelongsToRecipeStep            string
 	RecipeStepProductID            sql.NullString
-	IconPath_2                     sql.NullString
-	Slug                           sql.NullString
-	MaximumQuantity                sql.NullInt32
+	VesselPredicate                string
 	MinimumQuantity                int32
-	UsableForStorage               sql.NullBool
-	DisplayInSummaryLists          sql.NullBool
-	IncludeInGeneratedInstructions sql.NullBool
-	Volumetric                     sql.NullBool
-	Imperial                       sql.NullBool
-	Metric                         sql.NullBool
-	Universal                      sql.NullBool
+	MaximumQuantity                sql.NullInt32
 	UnavailableAfterStep           bool
+	CreatedAt_3                    time.Time
+	LastUpdatedAt_3                sql.NullTime
+	ArchivedAt_3                   sql.NullTime
 }
 
 func (q *Queries) GetRecipeStepVesselsForRecipe(ctx context.Context, db DBTX, belongsToRecipe string) ([]*GetRecipeStepVesselsForRecipeRow, error) {

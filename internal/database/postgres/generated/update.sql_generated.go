@@ -40,10 +40,10 @@ type UpdateHouseholdParams struct {
 	State         string
 	ZipCode       string
 	Country       string
-	BelongsToUser string
-	ID            string
 	Latitude      sql.NullString
 	Longitude     sql.NullString
+	BelongsToUser string
+	ID            string
 }
 
 func (q *Queries) UpdateHousehold(ctx context.Context, db DBTX, arg *UpdateHouseholdParams) error {
@@ -79,10 +79,10 @@ WHERE archived_at IS NULL
 
 type UpdateHouseholdInstrumentOwnershipParams struct {
 	Notes              string
+	Quantity           int32
 	ValidInstrumentID  string
 	ID                 string
 	BelongsToHousehold string
-	Quantity           int32
 }
 
 func (q *Queries) UpdateHouseholdInstrumentOwnership(ctx context.Context, db DBTX, arg *UpdateHouseholdInstrumentOwnershipParams) error {
@@ -179,14 +179,14 @@ type UpdateMealPlanGroceryListItemParams struct {
 	ValidIngredient          string
 	ValidMeasurementUnit     string
 	MinimumQuantityNeeded    string
-	StatusExplanation        string
-	Status                   GroceryListItemStatus
-	ID                       string
 	MaximumQuantityNeeded    sql.NullString
 	QuantityPurchased        sql.NullString
 	PurchasedMeasurementUnit sql.NullString
 	PurchasedUpc             sql.NullString
 	PurchasePrice            sql.NullString
+	StatusExplanation        string
+	Status                   GroceryListItemStatus
+	ID                       string
 }
 
 func (q *Queries) UpdateMealPlanGroceryListItem(ctx context.Context, db DBTX, arg *UpdateMealPlanGroceryListItemParams) error {
@@ -223,13 +223,13 @@ WHERE archived_at IS NULL
 `
 
 type UpdateMealPlanOptionParams struct {
+	AssignedCook           sql.NullString
+	AssignedDishwasher     sql.NullString
 	MealID                 string
 	Notes                  string
 	MealScale              string
-	ID                     string
-	AssignedCook           sql.NullString
-	AssignedDishwasher     sql.NullString
 	BelongsToMealPlanEvent sql.NullString
+	ID                     string
 }
 
 func (q *Queries) UpdateMealPlanOption(ctx context.Context, db DBTX, arg *UpdateMealPlanOptionParams) error {
@@ -251,12 +251,12 @@ UPDATE meal_plan_option_votes SET rank = $1, abstain = $2, notes = $3, by_user =
 `
 
 type UpdateMealPlanOptionVoteParams struct {
+	Rank                    int32
+	Abstain                 bool
 	Notes                   string
 	ByUser                  string
 	BelongsToMealPlanOption string
 	ID                      string
-	Rank                    int32
-	Abstain                 bool
 }
 
 func (q *Queries) UpdateMealPlanOptionVote(ctx context.Context, db DBTX, arg *UpdateMealPlanOptionVoteParams) error {
@@ -293,20 +293,20 @@ WHERE archived_at IS NULL
 `
 
 type UpdateRecipeParams struct {
-	YieldsComponentType  ComponentType
+	Name                 string
 	Slug                 string
 	Source               string
 	Description          string
-	ID                   string
+	InspiredByRecipeID   sql.NullString
 	MinEstimatedPortions string
-	Name                 string
+	MaxEstimatedPortions sql.NullString
 	PortionName          string
 	PluralPortionName    string
-	CreatedByUser        string
-	MaxEstimatedPortions sql.NullString
-	InspiredByRecipeID   sql.NullString
-	EligibleForMeals     bool
 	SealOfApproval       bool
+	EligibleForMeals     bool
+	YieldsComponentType  ComponentType
+	CreatedByUser        string
+	ID                   string
 }
 
 func (q *Queries) UpdateRecipe(ctx context.Context, db DBTX, arg *UpdateRecipeParams) error {
@@ -345,11 +345,11 @@ WHERE archived_at IS NULL
 `
 
 type UpdateRecipeMediaParams struct {
+	BelongsToRecipe     sql.NullString
+	BelongsToRecipeStep sql.NullString
 	MimeType            string
 	InternalPath        string
 	ExternalPath        string
-	BelongsToRecipe     sql.NullString
-	BelongsToRecipeStep sql.NullString
 	Index               int32
 }
 
@@ -387,15 +387,15 @@ type UpdateRecipePrepTaskParams struct {
 	Name                                   string
 	Description                            string
 	Notes                                  string
+	Optional                               bool
 	ExplicitStorageInstructions            string
-	BelongsToRecipe                        string
-	ID                                     string
+	MinimumTimeBufferBeforeRecipeInSeconds int32
+	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
 	StorageType                            NullStorageContainerType
 	MinimumStorageTemperatureInCelsius     sql.NullString
 	MaximumStorageTemperatureInCelsius     sql.NullString
-	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
-	MinimumTimeBufferBeforeRecipeInSeconds int32
-	Optional                               bool
+	BelongsToRecipe                        string
+	ID                                     string
 }
 
 func (q *Queries) UpdateRecipePrepTask(ctx context.Context, db DBTX, arg *UpdateRecipePrepTaskParams) error {
@@ -434,13 +434,13 @@ WHERE archived_at IS NULL
 
 type UpdateRecipeRatingParams struct {
 	RecipeID     string
-	Notes        string
-	ID           string
 	Taste        sql.NullString
 	Difficulty   sql.NullString
 	Cleanup      sql.NullString
 	Instructions sql.NullString
 	Overall      sql.NullString
+	Notes        string
+	ID           string
 }
 
 func (q *Queries) UpdateRecipeRating(ctx context.Context, db DBTX, arg *UpdateRecipeRatingParams) error {
@@ -478,19 +478,19 @@ WHERE archived_at IS NULL
 `
 
 type UpdateRecipeStepParams struct {
-	ConditionExpression           string
+	Index                         int32
 	PreparationID                 string
-	ID                            string
-	BelongsToRecipe               string
-	Notes                         string
-	ExplicitInstructions          string
+	MinimumEstimatedTimeInSeconds sql.NullInt64
+	MaximumEstimatedTimeInSeconds sql.NullInt64
 	MinimumTemperatureInCelsius   sql.NullString
 	MaximumTemperatureInCelsius   sql.NullString
-	MaximumEstimatedTimeInSeconds sql.NullInt64
-	MinimumEstimatedTimeInSeconds sql.NullInt64
-	Index                         int32
+	Notes                         string
+	ExplicitInstructions          string
+	ConditionExpression           string
 	Optional                      bool
 	StartTimerAutomatically       bool
+	BelongsToRecipe               string
+	ID                            string
 }
 
 func (q *Queries) UpdateRecipeStep(ctx context.Context, db DBTX, arg *UpdateRecipeStepParams) error {
@@ -526,11 +526,11 @@ WHERE archived_at IS NULL
 `
 
 type UpdateRecipeStepCompletionConditionParams struct {
+	Optional            bool
 	Notes               string
 	BelongsToRecipeStep string
 	IngredientState     string
 	ID                  string
-	Optional            bool
 }
 
 func (q *Queries) UpdateRecipeStepCompletionCondition(ctx context.Context, db DBTX, arg *UpdateRecipeStepCompletionConditionParams) error {
@@ -567,22 +567,22 @@ WHERE archived_at IS NULL AND belongs_to_recipe_step = $15
 `
 
 type UpdateRecipeStepIngredientParams struct {
-	IngredientNotes           string
-	Name                      string
-	ID                        string
-	BelongsToRecipeStep       string
-	MinimumQuantityValue      string
-	QuantityNotes             string
 	IngredientID              sql.NullString
-	MaximumQuantityValue      sql.NullString
-	RecipeStepProductID       sql.NullString
-	ProductPercentageToUse    sql.NullString
-	RecipeStepProductRecipeID sql.NullString
+	Name                      string
+	Optional                  bool
 	MeasurementUnit           sql.NullString
-	VesselIndex               sql.NullInt32
+	MinimumQuantityValue      string
+	MaximumQuantityValue      sql.NullString
+	QuantityNotes             string
+	RecipeStepProductID       sql.NullString
+	IngredientNotes           string
 	OptionIndex               int32
 	ToTaste                   bool
-	Optional                  bool
+	ProductPercentageToUse    sql.NullString
+	VesselIndex               sql.NullInt32
+	RecipeStepProductRecipeID sql.NullString
+	BelongsToRecipeStep       string
+	ID                        string
 }
 
 func (q *Queries) UpdateRecipeStepIngredient(ctx context.Context, db DBTX, arg *UpdateRecipeStepIngredientParams) error {
@@ -626,17 +626,17 @@ WHERE archived_at IS NULL
 `
 
 type UpdateRecipeStepInstrumentParams struct {
-	Name                string
-	Notes               string
-	BelongsToRecipeStep string
-	ID                  string
 	InstrumentID        sql.NullString
 	RecipeStepProductID sql.NullString
-	MaximumQuantity     sql.NullInt32
+	Name                string
+	Notes               string
 	PreferenceRank      int32
+	Optional            bool
 	OptionIndex         int32
 	MinimumQuantity     int32
-	Optional            bool
+	MaximumQuantity     sql.NullInt32
+	BelongsToRecipeStep string
+	ID                  string
 }
 
 func (q *Queries) UpdateRecipeStepInstrument(ctx context.Context, db DBTX, arg *UpdateRecipeStepInstrumentParams) error {
@@ -684,21 +684,21 @@ WHERE archived_at IS NULL
 type UpdateRecipeStepProductParams struct {
 	Name                               string
 	Type                               RecipeStepProductType
-	ID                                 string
-	BelongsToRecipeStep                string
-	StorageInstructions                string
+	MeasurementUnit                    sql.NullString
+	MinimumQuantityValue               sql.NullString
+	MaximumQuantityValue               sql.NullString
 	QuantityNotes                      string
+	Compostable                        bool
+	MaximumStorageDurationInSeconds    sql.NullInt32
 	MinimumStorageTemperatureInCelsius sql.NullString
 	MaximumStorageTemperatureInCelsius sql.NullString
-	MaximumQuantityValue               sql.NullString
-	MinimumQuantityValue               sql.NullString
-	MeasurementUnit                    sql.NullString
-	MaximumStorageDurationInSeconds    sql.NullInt32
-	ContainedInVesselIndex             sql.NullInt32
-	Index                              int32
-	Compostable                        bool
+	StorageInstructions                string
 	IsLiquid                           bool
 	IsWaste                            bool
+	Index                              int32
+	ContainedInVesselIndex             sql.NullInt32
+	BelongsToRecipeStep                string
+	ID                                 string
 }
 
 func (q *Queries) UpdateRecipeStepProduct(ctx context.Context, db DBTX, arg *UpdateRecipeStepProductParams) error {
@@ -746,14 +746,14 @@ type UpdateRecipeStepVesselParams struct {
 	Name                  string
 	Notes                 string
 	BelongsToRecipeStep   string
-	VesselPredicate       string
-	BelongsToRecipeStep_2 string
-	ID                    string
 	RecipeStepProductID   sql.NullString
 	ValidVesselID         sql.NullString
-	MaximumQuantity       sql.NullInt32
+	VesselPredicate       string
 	MinimumQuantity       int32
+	MaximumQuantity       sql.NullInt32
 	UnavailableAfterStep  bool
+	BelongsToRecipeStep_2 string
+	ID                    string
 }
 
 func (q *Queries) UpdateRecipeStepVessel(ctx context.Context, db DBTX, arg *UpdateRecipeStepVesselParams) error {
@@ -823,13 +823,13 @@ WHERE archived_at IS NULL
 `
 
 type UpdateUserParams struct {
-	Birthday       sql.NullTime
 	Username       string
 	FirstName      string
 	LastName       string
 	HashedPassword string
-	ID             string
 	AvatarSrc      sql.NullString
+	Birthday       sql.NullTime
+	ID             string
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, db DBTX, arg *UpdateUserParams) error {
@@ -861,11 +861,11 @@ WHERE archived_at IS NULL
 
 type UpdateUserIngredientPreferenceParams struct {
 	Ingredient    string
+	Rating        int16
 	Notes         string
+	Allergy       bool
 	ID            string
 	BelongsToUser string
-	Rating        int16
-	Allergy       bool
 }
 
 func (q *Queries) UpdateUserIngredientPreference(ctx context.Context, db DBTX, arg *UpdateUserIngredientPreferenceParams) error {
@@ -897,14 +897,14 @@ UPDATE valid_ingredients SET
 	contains_fish = $12,
 	contains_gluten = $13,
 	animal_flesh = $14,
-	volumetric = $15,
+	volumetric = $15::bool,
 	is_liquid = $16,
 	icon_path = $17,
 	animal_derived = $18,
 	plural_name = $19,
 	restrict_to_preparations = $20,
-	minimum_ideal_storage_temperature_in_celsius = $21,
-	maximum_ideal_storage_temperature_in_celsius = $22,
+	minimum_ideal_storage_temperature_in_celsius = $21::float,
+	maximum_ideal_storage_temperature_in_celsius = $22::float,
 	storage_instructions = $23,
 	slug = $24,
 	contains_alcohol = $25,
@@ -922,32 +922,32 @@ WHERE archived_at IS NULL AND id = $35
 `
 
 type UpdateValidIngredientParams struct {
+	Name                                    string
 	Description                             string
 	Warning                                 string
-	ID                                      string
-	ShoppingSuggestions                     string
-	Slug                                    string
-	StorageInstructions                     string
-	Name                                    string
-	PluralName                              string
-	IconPath                                string
-	MaximumIdealStorageTemperatureInCelsius sql.NullString
-	MinimumIdealStorageTemperatureInCelsius sql.NullString
-	IsLiquid                                sql.NullBool
-	ContainsWheat                           bool
-	ContainsPeanut                          bool
-	Volumetric                              bool
-	ContainsGluten                          bool
-	ContainsFish                            bool
-	AnimalDerived                           bool
-	ContainsSesame                          bool
-	RestrictToPreparations                  bool
-	ContainsShellfish                       bool
-	ContainsSoy                             bool
-	ContainsTreeNut                         bool
-	AnimalFlesh                             bool
-	ContainsAlcohol                         bool
+	ContainsEgg                             bool
 	ContainsDairy                           bool
+	ContainsPeanut                          bool
+	ContainsTreeNut                         bool
+	ContainsSoy                             bool
+	ContainsWheat                           bool
+	ContainsShellfish                       bool
+	ContainsSesame                          bool
+	ContainsFish                            bool
+	ContainsGluten                          bool
+	AnimalFlesh                             bool
+	Volumetric                              bool
+	IsLiquid                                sql.NullBool
+	IconPath                                string
+	AnimalDerived                           bool
+	PluralName                              string
+	RestrictToPreparations                  bool
+	MinimumIdealStorageTemperatureInCelsius sql.NullFloat64
+	MaximumIdealStorageTemperatureInCelsius sql.NullFloat64
+	StorageInstructions                     string
+	Slug                                    string
+	ContainsAlcohol                         bool
+	ShoppingSuggestions                     string
 	IsStarch                                bool
 	IsProtein                               bool
 	IsGrain                                 bool
@@ -956,7 +956,7 @@ type UpdateValidIngredientParams struct {
 	IsFat                                   bool
 	IsAcid                                  bool
 	IsHeat                                  bool
-	ContainsEgg                             bool
+	ID                                      string
 }
 
 func (q *Queries) UpdateValidIngredient(ctx context.Context, db DBTX, arg *UpdateValidIngredientParams) error {
@@ -1046,8 +1046,8 @@ type UpdateValidIngredientMeasurementUnitParams struct {
 	ValidMeasurementUnitID   string
 	ValidIngredientID        string
 	MinimumAllowableQuantity string
-	ID                       string
 	MaximumAllowableQuantity sql.NullString
+	ID                       string
 }
 
 func (q *Queries) UpdateValidIngredientMeasurementUnit(ctx context.Context, db DBTX, arg *UpdateValidIngredientMeasurementUnitParams) error {
@@ -1166,11 +1166,11 @@ type UpdateValidInstrumentParams struct {
 	PluralName                     string
 	Description                    string
 	IconPath                       string
-	Slug                           string
-	ID                             string
 	UsableForStorage               bool
 	DisplayInSummaryLists          bool
 	IncludeInGeneratedInstructions bool
+	Slug                           string
+	ID                             string
 }
 
 func (q *Queries) UpdateValidInstrument(ctx context.Context, db DBTX, arg *UpdateValidInstrumentParams) error {
@@ -1207,14 +1207,14 @@ WHERE archived_at IS NULL AND id = $10
 type UpdateValidMeasurementUnitParams struct {
 	Name        string
 	Description string
-	IconPath    string
-	Slug        string
-	PluralName  string
-	ID          string
 	Volumetric  sql.NullBool
+	IconPath    string
 	Universal   bool
 	Metric      bool
 	Imperial    bool
+	Slug        string
+	PluralName  string
+	ID          string
 }
 
 func (q *Queries) UpdateValidMeasurementUnit(ctx context.Context, db DBTX, arg *UpdateValidMeasurementUnitParams) error {
@@ -1250,10 +1250,10 @@ WHERE archived_at IS NULL
 type UpdateValidMeasurementUnitConversionParams struct {
 	FromUnit          string
 	ToUnit            string
-	Notes             string
-	ID                string
 	OnlyForIngredient sql.NullString
 	Modifier          float64
+	Notes             string
+	ID                string
 }
 
 func (q *Queries) UpdateValidMeasurementUnitConversion(ctx context.Context, db DBTX, arg *UpdateValidMeasurementUnitConversionParams) error {
@@ -1296,25 +1296,25 @@ WHERE archived_at IS NULL
 `
 
 type UpdateValidPreparationParams struct {
+	Name                        string
 	Description                 string
 	IconPath                    string
-	ID                          string
-	Name                        string
-	PastTense                   string
-	Slug                        string
-	MaximumIngredientCount      sql.NullInt32
-	MaximumInstrumentCount      sql.NullInt32
-	MaximumVesselCount          sql.NullInt32
-	MinimumVesselCount          int32
-	MinimumIngredientCount      int32
-	MinimumInstrumentCount      int32
-	RestrictToIngredients       bool
-	OnlyForVessels              bool
-	ConsumesVessel              bool
-	ConditionExpressionRequired bool
-	TimeEstimateRequired        bool
-	TemperatureRequired         bool
 	YieldsNothing               bool
+	RestrictToIngredients       bool
+	MinimumIngredientCount      int32
+	MaximumIngredientCount      sql.NullInt32
+	MinimumInstrumentCount      int32
+	MaximumInstrumentCount      sql.NullInt32
+	TemperatureRequired         bool
+	TimeEstimateRequired        bool
+	ConditionExpressionRequired bool
+	ConsumesVessel              bool
+	OnlyForVessels              bool
+	MinimumVesselCount          int32
+	MaximumVesselCount          sql.NullInt32
+	Slug                        string
+	PastTense                   string
+	ID                          string
 }
 
 func (q *Queries) UpdateValidPreparation(ctx context.Context, db DBTX, arg *UpdateValidPreparationParams) error {
@@ -1414,17 +1414,17 @@ type UpdateValidVesselParams struct {
 	PluralName                     string
 	Description                    string
 	IconPath                       string
-	ID                             string
+	UsableForStorage               bool
 	Slug                           string
-	Shape                          VesselShape
-	CapacityUnit                   sql.NullString
+	DisplayInSummaryLists          bool
+	IncludeInGeneratedInstructions bool
 	Capacity                       float64
+	CapacityUnit                   sql.NullString
 	WidthInMillimeters             float64
 	LengthInMillimeters            float64
 	HeightInMillimeters            float64
-	IncludeInGeneratedInstructions bool
-	DisplayInSummaryLists          bool
-	UsableForStorage               bool
+	Shape                          VesselShape
+	ID                             string
 }
 
 func (q *Queries) UpdateValidVessel(ctx context.Context, db DBTX, arg *UpdateValidVesselParams) error {
