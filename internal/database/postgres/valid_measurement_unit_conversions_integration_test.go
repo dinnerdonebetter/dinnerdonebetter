@@ -27,11 +27,16 @@ func createValidMeasurementUnitConversionForTest(t *testing.T, ctx context.Conte
 	require.NotNil(t, created)
 
 	validMeasurementUnitConversion, err := dbc.GetValidMeasurementUnitConversion(ctx, created.ID)
-	exampleValidMeasurementUnitConversion.CreatedAt = validMeasurementUnitConversion.CreatedAt
-	exampleValidMeasurementUnitConversion.From.CreatedAt = validMeasurementUnitConversion.From.CreatedAt
-	exampleValidMeasurementUnitConversion.To.CreatedAt = validMeasurementUnitConversion.To.CreatedAt
+	require.NoError(t, err)
+	require.NotNil(t, validMeasurementUnitConversion)
 
-	assert.NoError(t, err)
+	exampleValidMeasurementUnitConversion.CreatedAt = validMeasurementUnitConversion.CreatedAt
+	assert.Equal(t, exampleValidMeasurementUnitConversion.From.ID, validMeasurementUnitConversion.From.ID)
+	exampleValidMeasurementUnitConversion.From.CreatedAt = validMeasurementUnitConversion.From.CreatedAt
+	assert.Equal(t, exampleValidMeasurementUnitConversion.To.ID, validMeasurementUnitConversion.To.ID)
+	exampleValidMeasurementUnitConversion.To.CreatedAt = validMeasurementUnitConversion.To.CreatedAt
+	exampleValidMeasurementUnitConversion.OnlyForIngredient = validMeasurementUnitConversion.OnlyForIngredient
+
 	assert.Equal(t, validMeasurementUnitConversion, exampleValidMeasurementUnitConversion)
 
 	return created

@@ -42,7 +42,7 @@ sql:
         - "internal/database/postgres/queries/valid_ingredient_state_ingredients"
         - "internal/database/postgres/queries/valid_ingredient_states"
         - "internal/database/postgres/queries/valid_instruments"
-        - "internal/database/postgres/queries/valid_measurement_conversions"
+        - "internal/database/postgres/queries/valid_measurement_unit_conversions"
         - "internal/database/postgres/queries/valid_measurement_units"
         - "internal/database/postgres/queries/valid_preparation_instruments"
         - "internal/database/postgres/queries/valid_preparations"
@@ -50,6 +50,9 @@ sql:
         - "internal/database/postgres/queries/valid_vessels"
         - "internal/database/postgres/queries/webhooks"
         - "internal/database/postgres/queries/webhook_trigger_events"
+    strict_function_checks: true
+    rules:
+      - no-delete
     gen:
       go:
         package: "generated"
@@ -78,9 +81,10 @@ sql:
         query_parameter_limit: 1
         rename:
           url: "URL"
-    strict_function_checks: true
-    rules:
-      - no-delete
+        overrides:
+          - db_type: "numeric"
+            go_type: "database/sql.NullFloat64"
+            nullable: true
 rules:
   - name: no-delete
     message: "don't use delete statements"

@@ -1277,33 +1277,6 @@ func (q *Queries) CreateValidInstrument(ctx context.Context, db DBTX, arg *Creat
 	return err
 }
 
-const createValidMeasurementConversion = `-- name: CreateValidMeasurementConversion :exec
-
-INSERT INTO valid_measurement_conversions (id,from_unit,to_unit,only_for_ingredient,modifier,notes)
-VALUES ($1,$2,$3,$4,$5,$6)
-`
-
-type CreateValidMeasurementConversionParams struct {
-	ID                string
-	FromUnit          string
-	ToUnit            string
-	Modifier          string
-	Notes             string
-	OnlyForIngredient sql.NullString
-}
-
-func (q *Queries) CreateValidMeasurementConversion(ctx context.Context, db DBTX, arg *CreateValidMeasurementConversionParams) error {
-	_, err := db.ExecContext(ctx, createValidMeasurementConversion,
-		arg.ID,
-		arg.FromUnit,
-		arg.ToUnit,
-		arg.OnlyForIngredient,
-		arg.Modifier,
-		arg.Notes,
-	)
-	return err
-}
-
 const createValidMeasurementUnit = `-- name: CreateValidMeasurementUnit :exec
 
 INSERT INTO valid_measurement_units
@@ -1336,6 +1309,33 @@ func (q *Queries) CreateValidMeasurementUnit(ctx context.Context, db DBTX, arg *
 		arg.Imperial,
 		arg.PluralName,
 		arg.Slug,
+	)
+	return err
+}
+
+const createValidMeasurementUnitConversion = `-- name: CreateValidMeasurementUnitConversion :exec
+
+INSERT INTO valid_measurement_conversions (id,from_unit,to_unit,only_for_ingredient,modifier,notes)
+VALUES ($1,$2,$3,$4,$5::float,$6)
+`
+
+type CreateValidMeasurementUnitConversionParams struct {
+	ID                string
+	FromUnit          string
+	ToUnit            string
+	Notes             string
+	OnlyForIngredient sql.NullString
+	Modifier          float64
+}
+
+func (q *Queries) CreateValidMeasurementUnitConversion(ctx context.Context, db DBTX, arg *CreateValidMeasurementUnitConversionParams) error {
+	_, err := db.ExecContext(ctx, createValidMeasurementUnitConversion,
+		arg.ID,
+		arg.FromUnit,
+		arg.ToUnit,
+		arg.OnlyForIngredient,
+		arg.Modifier,
+		arg.Notes,
 	)
 	return err
 }

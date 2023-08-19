@@ -558,13 +558,13 @@ func (q *Queries) CheckValidInstrumentExistence(ctx context.Context, db DBTX, id
 	return exists, err
 }
 
-const checkValidMeasurementConversionExistence = `-- name: CheckValidMeasurementConversionExistence :one
+const checkValidMeasurementUnitConversionExistence = `-- name: CheckValidMeasurementUnitConversionExistence :one
 
 SELECT EXISTS ( SELECT valid_measurement_conversions.id FROM valid_measurement_conversions WHERE valid_measurement_conversions.archived_at IS NULL AND valid_measurement_conversions.id = $1 )
 `
 
-func (q *Queries) CheckValidMeasurementConversionExistence(ctx context.Context, db DBTX, id string) (bool, error) {
-	row := db.QueryRowContext(ctx, checkValidMeasurementConversionExistence, id)
+func (q *Queries) CheckValidMeasurementUnitConversionExistence(ctx context.Context, db DBTX, id string) (bool, error) {
+	row := db.QueryRowContext(ctx, checkValidMeasurementUnitConversionExistence, id)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err

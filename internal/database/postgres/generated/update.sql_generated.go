@@ -1188,41 +1188,6 @@ func (q *Queries) UpdateValidInstrument(ctx context.Context, db DBTX, arg *Updat
 	return err
 }
 
-const updateValidMeasurementConversion = `-- name: UpdateValidMeasurementConversion :exec
-
-UPDATE valid_measurement_conversions
-SET
-	from_unit = $1,
-	to_unit = $2,
-	only_for_ingredient = $3,
-	modifier = $4,
-	notes = $5,
-	last_updated_at = NOW()
-WHERE archived_at IS NULL
-	AND id = $6
-`
-
-type UpdateValidMeasurementConversionParams struct {
-	FromUnit          string
-	ToUnit            string
-	Modifier          string
-	Notes             string
-	ID                string
-	OnlyForIngredient sql.NullString
-}
-
-func (q *Queries) UpdateValidMeasurementConversion(ctx context.Context, db DBTX, arg *UpdateValidMeasurementConversionParams) error {
-	_, err := db.ExecContext(ctx, updateValidMeasurementConversion,
-		arg.FromUnit,
-		arg.ToUnit,
-		arg.OnlyForIngredient,
-		arg.Modifier,
-		arg.Notes,
-		arg.ID,
-	)
-	return err
-}
-
 const updateValidMeasurementUnit = `-- name: UpdateValidMeasurementUnit :exec
 
 UPDATE valid_measurement_units SET
@@ -1263,6 +1228,41 @@ func (q *Queries) UpdateValidMeasurementUnit(ctx context.Context, db DBTX, arg *
 		arg.Imperial,
 		arg.Slug,
 		arg.PluralName,
+		arg.ID,
+	)
+	return err
+}
+
+const updateValidMeasurementUnitConversion = `-- name: UpdateValidMeasurementUnitConversion :exec
+
+UPDATE valid_measurement_conversions
+SET
+	from_unit = $1,
+	to_unit = $2,
+	only_for_ingredient = $3,
+	modifier = $4::float,
+	notes = $5,
+	last_updated_at = NOW()
+WHERE archived_at IS NULL
+	AND id = $6
+`
+
+type UpdateValidMeasurementUnitConversionParams struct {
+	FromUnit          string
+	ToUnit            string
+	Notes             string
+	ID                string
+	OnlyForIngredient sql.NullString
+	Modifier          float64
+}
+
+func (q *Queries) UpdateValidMeasurementUnitConversion(ctx context.Context, db DBTX, arg *UpdateValidMeasurementUnitConversionParams) error {
+	_, err := db.ExecContext(ctx, updateValidMeasurementUnitConversion,
+		arg.FromUnit,
+		arg.ToUnit,
+		arg.OnlyForIngredient,
+		arg.Modifier,
+		arg.Notes,
 		arg.ID,
 	)
 	return err
