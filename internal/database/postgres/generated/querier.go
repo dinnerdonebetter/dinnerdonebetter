@@ -226,9 +226,13 @@ type Querier interface {
 	GetUsers(ctx context.Context, db DBTX, arg *GetUsersParams) ([]*GetUsersRow, error)
 	GetValidIngredient(ctx context.Context, db DBTX, id string) (*GetValidIngredientRow, error)
 	GetValidIngredientByID(ctx context.Context, db DBTX) (*GetValidIngredientByIDRow, error)
-	GetValidIngredientGroup(ctx context.Context, db DBTX, id string) ([]*GetValidIngredientGroupRow, error)
+	GetValidIngredientGroup(ctx context.Context, db DBTX, id string) (*GetValidIngredientGroupRow, error)
+	GetValidIngredientGroupMembers(ctx context.Context, db DBTX, belongsToGroup string) ([]*GetValidIngredientGroupMembersRow, error)
 	GetValidIngredientGroups(ctx context.Context, db DBTX, arg *GetValidIngredientGroupsParams) ([]*GetValidIngredientGroupsRow, error)
 	GetValidIngredientMeasurementUnit(ctx context.Context, db DBTX, id string) (*GetValidIngredientMeasurementUnitRow, error)
+	GetValidIngredientMeasurementUnits(ctx context.Context, db DBTX, arg *GetValidIngredientMeasurementUnitsParams) ([]*GetValidIngredientMeasurementUnitsRow, error)
+	GetValidIngredientMeasurementUnitsForIngredient(ctx context.Context, db DBTX, arg *GetValidIngredientMeasurementUnitsForIngredientParams) ([]*GetValidIngredientMeasurementUnitsForIngredientRow, error)
+	GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx context.Context, db DBTX, arg *GetValidIngredientMeasurementUnitsForMeasurementUnitParams) ([]*GetValidIngredientMeasurementUnitsForMeasurementUnitRow, error)
 	GetValidIngredientPreparation(ctx context.Context, db DBTX, id string) (*GetValidIngredientPreparationRow, error)
 	GetValidIngredientPreparations(ctx context.Context, db DBTX, arg *GetValidIngredientPreparationsParams) ([]*GetValidIngredientPreparationsRow, error)
 	GetValidIngredientPreparationsForIngredient(ctx context.Context, db DBTX, arg *GetValidIngredientPreparationsForIngredientParams) ([]*GetValidIngredientPreparationsForIngredientRow, error)
@@ -288,7 +292,7 @@ type Querier interface {
 	RedeemPasswordResetToken(ctx context.Context, db DBTX, id string) error
 	RemoveUserFromHousehold(ctx context.Context, db DBTX, arg *RemoveUserFromHouseholdParams) error
 	SearchForServiceSettings(ctx context.Context, db DBTX, name string) ([]*SearchForServiceSettingsRow, error)
-	SearchForValidIngredientGroups(ctx context.Context, db DBTX, name string) ([]*SearchForValidIngredientGroupsRow, error)
+	SearchForValidIngredientGroups(ctx context.Context, db DBTX, arg *SearchForValidIngredientGroupsParams) ([]*SearchForValidIngredientGroupsRow, error)
 	SearchForValidIngredientStates(ctx context.Context, db DBTX, query string) ([]*SearchForValidIngredientStatesRow, error)
 	SearchForValidIngredients(ctx context.Context, db DBTX, dollar_1 string) ([]*SearchForValidIngredientsRow, error)
 	SearchForValidInstruments(ctx context.Context, db DBTX, query string) ([]*SearchForValidInstrumentsRow, error)

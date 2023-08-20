@@ -132,3 +132,26 @@ func float32PointerFromNullString(f sql.NullString) *float32 {
 
 	return nil
 }
+
+func stringFromFloat32(f float32) string {
+	return strconv.FormatFloat(float64(f), 'f', -1, 32)
+}
+
+func float32FromString(s string) float32 {
+	if parsedFloat, err := strconv.ParseFloat(s, 64); err == nil {
+		return float32(parsedFloat)
+	}
+
+	return 0
+}
+
+func nullStringFromFloat32Pointer(f *float32) sql.NullString {
+	if f == nil {
+		return sql.NullString{}
+	}
+
+	return sql.NullString{
+		String: stringFromFloat32(*f),
+		Valid:  true,
+	}
+}

@@ -47,7 +47,6 @@ type (
 		CreatedAt       time.Time       `json:"createdAt"`
 		ArchivedAt      *time.Time      `json:"archivedAt"`
 		ID              string          `json:"id"`
-		Notes           string          `json:"notes"`
 		BelongsToGroup  string          `json:"belongsToGroup"`
 		ValidIngredient ValidIngredient `json:"validIngredient"`
 	}

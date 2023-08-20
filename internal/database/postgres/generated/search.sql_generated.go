@@ -80,118 +80,90 @@ func (q *Queries) SearchForServiceSettings(ctx context.Context, db DBTX, name st
 const searchForValidIngredientGroups = `-- name: SearchForValidIngredientGroups :many
 
 SELECT
-	valid_ingredient_groups.id,
-	valid_ingredient_groups.name,
-	valid_ingredient_groups.description,
-	valid_ingredient_groups.slug,
-	valid_ingredient_groups.created_at,
-	valid_ingredient_groups.last_updated_at,
-	valid_ingredient_groups.archived_at,
-	valid_ingredient_group_members.id,
-    valid_ingredient_group_members.belongs_to_group,
-    valid_ingredients.id,
-    valid_ingredients.name,
-    valid_ingredients.description,
-    valid_ingredients.warning,
-    valid_ingredients.contains_egg,
-    valid_ingredients.contains_dairy,
-    valid_ingredients.contains_peanut,
-    valid_ingredients.contains_tree_nut,
-    valid_ingredients.contains_soy,
-    valid_ingredients.contains_wheat,
-    valid_ingredients.contains_shellfish,
-    valid_ingredients.contains_sesame,
-    valid_ingredients.contains_fish,
-    valid_ingredients.contains_gluten,
-    valid_ingredients.animal_flesh,
-    valid_ingredients.volumetric,
-    valid_ingredients.is_liquid,
-    valid_ingredients.icon_path,
-    valid_ingredients.animal_derived,
-    valid_ingredients.plural_name,
-    valid_ingredients.restrict_to_preparations,
-    valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
-    valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
-    valid_ingredients.storage_instructions,
-    valid_ingredients.slug,
-    valid_ingredients.contains_alcohol,
-    valid_ingredients.shopping_suggestions,
-    valid_ingredients.is_starch,
-    valid_ingredients.is_protein,
-    valid_ingredients.is_grain,
-    valid_ingredients.is_fruit,
-    valid_ingredients.is_salt,
-    valid_ingredients.is_fat,
-    valid_ingredients.is_acid,
-    valid_ingredients.is_heat,
-    valid_ingredients.created_at,
-    valid_ingredients.last_updated_at,
-    valid_ingredients.archived_at,
-    valid_ingredient_group_members.created_at,
-    valid_ingredient_group_members.archived_at
+    valid_ingredient_groups.id,
+    valid_ingredient_groups.name,
+    valid_ingredient_groups.description,
+    valid_ingredient_groups.slug,
+    valid_ingredient_groups.created_at,
+    valid_ingredient_groups.last_updated_at,
+    valid_ingredient_groups.archived_at,
+    (
+        SELECT
+            COUNT(valid_ingredient_groups.id)
+        FROM
+            valid_ingredient_groups
+        WHERE
+            valid_ingredient_groups.archived_at IS NULL
+          AND valid_ingredient_groups.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+          AND valid_ingredient_groups.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+          AND (
+                valid_ingredient_groups.last_updated_at IS NULL
+                OR valid_ingredient_groups.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+            )
+          AND (
+                valid_ingredient_groups.last_updated_at IS NULL
+                OR valid_ingredient_groups.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+            )
+        OFFSET $5
+    ) AS filtered_count,
+    (
+        SELECT
+            COUNT(valid_ingredient_groups.id)
+        FROM
+            valid_ingredient_groups
+        WHERE
+            valid_ingredient_groups.archived_at IS NULL
+    ) AS total_count
 FROM valid_ingredient_groups
- JOIN valid_ingredient_group_members ON valid_ingredient_group_members.belongs_to_group=valid_ingredient_groups.id
-  JOIN valid_ingredients ON valid_ingredients.id = valid_ingredient_group_members.valid_ingredient
-WHERE valid_ingredient_groups.name ILIKE $1
-AND valid_ingredient_groups.archived_at IS NULL
-AND valid_ingredient_group_members.archived_at IS NULL
-LIMIT 50
+WHERE
+    valid_ingredient_groups.archived_at IS NULL
+  AND valid_ingredient_groups.name ILIKE '%' || $6::text || '%'
+  AND valid_ingredient_groups.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+  AND valid_ingredient_groups.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+  AND (
+    valid_ingredient_groups.last_updated_at IS NULL
+   OR valid_ingredient_groups.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+    )
+  AND (
+    valid_ingredient_groups.last_updated_at IS NULL
+   OR valid_ingredient_groups.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+    )
+OFFSET $5
+    LIMIT $7
 `
 
-type SearchForValidIngredientGroupsRow struct {
-	CreatedAt_2                             time.Time
-	CreatedAt                               time.Time
-	CreatedAt_3                             time.Time
-	ArchivedAt_3                            sql.NullTime
-	LastUpdatedAt_2                         sql.NullTime
-	ArchivedAt_2                            sql.NullTime
-	LastUpdatedAt                           sql.NullTime
-	ArchivedAt                              sql.NullTime
-	Warning                                 string
-	Name                                    string
-	Name_2                                  string
-	Description_2                           string
-	IconPath                                string
-	BelongsToGroup                          string
-	ID_2                                    string
-	Slug                                    string
-	Description                             string
-	ID_3                                    string
-	ShoppingSuggestions                     string
-	Slug_2                                  string
-	StorageInstructions                     string
-	ID                                      string
-	PluralName                              string
-	MinimumIdealStorageTemperatureInCelsius sql.NullString
-	MaximumIdealStorageTemperatureInCelsius sql.NullString
-	IsLiquid                                sql.NullBool
-	Volumetric                              bool
-	AnimalDerived                           bool
-	AnimalFlesh                             bool
-	RestrictToPreparations                  bool
-	ContainsGluten                          bool
-	ContainsFish                            bool
-	ContainsSesame                          bool
-	ContainsShellfish                       bool
-	ContainsAlcohol                         bool
-	ContainsWheat                           bool
-	IsStarch                                bool
-	IsProtein                               bool
-	IsGrain                                 bool
-	IsFruit                                 bool
-	IsSalt                                  bool
-	IsFat                                   bool
-	IsAcid                                  bool
-	IsHeat                                  bool
-	ContainsSoy                             bool
-	ContainsTreeNut                         bool
-	ContainsPeanut                          bool
-	ContainsDairy                           bool
-	ContainsEgg                             bool
+type SearchForValidIngredientGroupsParams struct {
+	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	UpdatedBefore sql.NullTime
+	Name          string
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
 }
 
-func (q *Queries) SearchForValidIngredientGroups(ctx context.Context, db DBTX, name string) ([]*SearchForValidIngredientGroupsRow, error) {
-	rows, err := db.QueryContext(ctx, searchForValidIngredientGroups, name)
+type SearchForValidIngredientGroupsRow struct {
+	ID            string
+	Name          string
+	Description   string
+	Slug          string
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
+	FilteredCount int64
+	TotalCount    int64
+}
+
+func (q *Queries) SearchForValidIngredientGroups(ctx context.Context, db DBTX, arg *SearchForValidIngredientGroupsParams) ([]*SearchForValidIngredientGroupsRow, error) {
+	rows, err := db.QueryContext(ctx, searchForValidIngredientGroups,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedAfter,
+		arg.UpdatedBefore,
+		arg.QueryOffset,
+		arg.Name,
+		arg.QueryLimit,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -207,48 +179,8 @@ func (q *Queries) SearchForValidIngredientGroups(ctx context.Context, db DBTX, n
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
-			&i.ID_2,
-			&i.BelongsToGroup,
-			&i.ID_3,
-			&i.Name_2,
-			&i.Description_2,
-			&i.Warning,
-			&i.ContainsEgg,
-			&i.ContainsDairy,
-			&i.ContainsPeanut,
-			&i.ContainsTreeNut,
-			&i.ContainsSoy,
-			&i.ContainsWheat,
-			&i.ContainsShellfish,
-			&i.ContainsSesame,
-			&i.ContainsFish,
-			&i.ContainsGluten,
-			&i.AnimalFlesh,
-			&i.Volumetric,
-			&i.IsLiquid,
-			&i.IconPath,
-			&i.AnimalDerived,
-			&i.PluralName,
-			&i.RestrictToPreparations,
-			&i.MinimumIdealStorageTemperatureInCelsius,
-			&i.MaximumIdealStorageTemperatureInCelsius,
-			&i.StorageInstructions,
-			&i.Slug_2,
-			&i.ContainsAlcohol,
-			&i.ShoppingSuggestions,
-			&i.IsStarch,
-			&i.IsProtein,
-			&i.IsGrain,
-			&i.IsFruit,
-			&i.IsSalt,
-			&i.IsFat,
-			&i.IsAcid,
-			&i.IsHeat,
-			&i.CreatedAt_2,
-			&i.LastUpdatedAt_2,
-			&i.ArchivedAt_2,
-			&i.CreatedAt_3,
-			&i.ArchivedAt_3,
+			&i.FilteredCount,
+			&i.TotalCount,
 		); err != nil {
 			return nil, err
 		}

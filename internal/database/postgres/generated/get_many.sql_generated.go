@@ -609,48 +609,6 @@ SELECT
     valid_ingredient_groups.created_at,
     valid_ingredient_groups.last_updated_at,
     valid_ingredient_groups.archived_at,
-    valid_ingredient_group_members.id,
-    valid_ingredient_group_members.belongs_to_group,
-    valid_ingredients.id,
-    valid_ingredients.name,
-    valid_ingredients.description,
-    valid_ingredients.warning,
-    valid_ingredients.contains_egg,
-    valid_ingredients.contains_dairy,
-    valid_ingredients.contains_peanut,
-    valid_ingredients.contains_tree_nut,
-    valid_ingredients.contains_soy,
-    valid_ingredients.contains_wheat,
-    valid_ingredients.contains_shellfish,
-    valid_ingredients.contains_sesame,
-    valid_ingredients.contains_fish,
-    valid_ingredients.contains_gluten,
-    valid_ingredients.animal_flesh,
-    valid_ingredients.volumetric,
-    valid_ingredients.is_liquid,
-    valid_ingredients.icon_path,
-    valid_ingredients.animal_derived,
-    valid_ingredients.plural_name,
-    valid_ingredients.restrict_to_preparations,
-    valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
-    valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
-    valid_ingredients.storage_instructions,
-    valid_ingredients.slug,
-    valid_ingredients.contains_alcohol,
-    valid_ingredients.shopping_suggestions,
-    valid_ingredients.is_starch,
-    valid_ingredients.is_protein,
-    valid_ingredients.is_grain,
-    valid_ingredients.is_fruit,
-    valid_ingredients.is_salt,
-    valid_ingredients.is_fat,
-    valid_ingredients.is_acid,
-    valid_ingredients.is_heat,
-    valid_ingredients.created_at,
-    valid_ingredients.last_updated_at,
-    valid_ingredients.archived_at,
-    valid_ingredient_group_members.created_at,
-    valid_ingredient_group_members.archived_at,
     (
         SELECT
             COUNT(valid_ingredient_groups.id)
@@ -658,17 +616,17 @@ SELECT
             valid_ingredient_groups
         WHERE
             valid_ingredient_groups.archived_at IS NULL
-          AND valid_ingredient_groups.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
-          AND valid_ingredient_groups.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
+          AND valid_ingredient_groups.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+          AND valid_ingredient_groups.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
           AND (
                 valid_ingredient_groups.last_updated_at IS NULL
-                OR valid_ingredient_groups.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years'))
+                OR valid_ingredient_groups.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
             )
           AND (
                 valid_ingredient_groups.last_updated_at IS NULL
-                OR valid_ingredient_groups.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
+                OR valid_ingredient_groups.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
             )
-        OFFSET $1
+        OFFSET $5
     ) AS filtered_count,
     (
         SELECT
@@ -679,93 +637,51 @@ SELECT
             valid_ingredient_groups.archived_at IS NULL
     ) AS total_count
 FROM valid_ingredient_groups
-  JOIN valid_ingredient_group_members ON valid_ingredient_groups.id = valid_ingredient_group_members.belongs_to_group
-  JOIN valid_ingredients ON valid_ingredients.id = valid_ingredient_group_members.valid_ingredient
 WHERE
 	valid_ingredient_groups.archived_at IS NULL
-	AND valid_ingredient_group_members.archived_at IS NULL
-	AND valid_ingredient_groups.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
-	AND valid_ingredient_groups.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
+	AND valid_ingredient_groups.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+	AND valid_ingredient_groups.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
 	AND (
 	    valid_ingredient_groups.last_updated_at IS NULL
-	    OR valid_ingredient_groups.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years'))
+	    OR valid_ingredient_groups.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
 	)
 	AND (
 	    valid_ingredient_groups.last_updated_at IS NULL
-	    OR valid_ingredient_groups.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
+	    OR valid_ingredient_groups.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
 	)
-	OFFSET $1
+	OFFSET $5
+    LIMIT $6
 `
 
 type GetValidIngredientGroupsParams struct {
-	CreatedAt       time.Time
-	CreatedAt_2     time.Time
-	LastUpdatedAt   sql.NullTime
-	LastUpdatedAt_2 sql.NullTime
-	Offset          int32
+	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	UpdatedBefore sql.NullTime
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
 }
 
 type GetValidIngredientGroupsRow struct {
-	CreatedAt_2                             time.Time
-	CreatedAt                               time.Time
-	CreatedAt_3                             time.Time
-	ArchivedAt_3                            sql.NullTime
-	LastUpdatedAt_2                         sql.NullTime
-	ArchivedAt_2                            sql.NullTime
-	LastUpdatedAt                           sql.NullTime
-	ArchivedAt                              sql.NullTime
-	Slug_2                                  string
-	PluralName                              string
-	Name_2                                  string
-	Description_2                           string
-	Warning                                 string
-	IconPath                                string
-	ID                                      string
-	BelongsToGroup                          string
-	ID_2                                    string
-	Slug                                    string
-	Description                             string
-	Name                                    string
-	ShoppingSuggestions                     string
-	ID_3                                    string
-	StorageInstructions                     string
-	MaximumIdealStorageTemperatureInCelsius sql.NullString
-	MinimumIdealStorageTemperatureInCelsius sql.NullString
-	FilteredCount                           int64
-	TotalCount                              int64
-	IsLiquid                                sql.NullBool
-	AnimalFlesh                             bool
-	RestrictToPreparations                  bool
-	AnimalDerived                           bool
-	Volumetric                              bool
-	ContainsGluten                          bool
-	ContainsFish                            bool
-	ContainsAlcohol                         bool
-	ContainsSesame                          bool
-	IsStarch                                bool
-	IsProtein                               bool
-	IsGrain                                 bool
-	IsFruit                                 bool
-	IsSalt                                  bool
-	IsFat                                   bool
-	IsAcid                                  bool
-	IsHeat                                  bool
-	ContainsShellfish                       bool
-	ContainsWheat                           bool
-	ContainsSoy                             bool
-	ContainsTreeNut                         bool
-	ContainsPeanut                          bool
-	ContainsDairy                           bool
-	ContainsEgg                             bool
+	ID            string
+	Name          string
+	Description   string
+	Slug          string
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
+	FilteredCount int64
+	TotalCount    int64
 }
 
 func (q *Queries) GetValidIngredientGroups(ctx context.Context, db DBTX, arg *GetValidIngredientGroupsParams) ([]*GetValidIngredientGroupsRow, error) {
 	rows, err := db.QueryContext(ctx, getValidIngredientGroups,
-		arg.Offset,
-		arg.CreatedAt,
-		arg.CreatedAt_2,
-		arg.LastUpdatedAt,
-		arg.LastUpdatedAt_2,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedAfter,
+		arg.UpdatedBefore,
+		arg.QueryOffset,
+		arg.QueryLimit,
 	)
 	if err != nil {
 		return nil, err
@@ -782,48 +698,264 @@ func (q *Queries) GetValidIngredientGroups(ctx context.Context, db DBTX, arg *Ge
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
-			&i.ID_2,
-			&i.BelongsToGroup,
-			&i.ID_3,
-			&i.Name_2,
-			&i.Description_2,
-			&i.Warning,
-			&i.ContainsEgg,
-			&i.ContainsDairy,
-			&i.ContainsPeanut,
-			&i.ContainsTreeNut,
-			&i.ContainsSoy,
-			&i.ContainsWheat,
-			&i.ContainsShellfish,
-			&i.ContainsSesame,
-			&i.ContainsFish,
-			&i.ContainsGluten,
-			&i.AnimalFlesh,
-			&i.Volumetric,
-			&i.IsLiquid,
-			&i.IconPath,
-			&i.AnimalDerived,
-			&i.PluralName,
-			&i.RestrictToPreparations,
-			&i.MinimumIdealStorageTemperatureInCelsius,
-			&i.MaximumIdealStorageTemperatureInCelsius,
-			&i.StorageInstructions,
-			&i.Slug_2,
-			&i.ContainsAlcohol,
-			&i.ShoppingSuggestions,
-			&i.IsStarch,
-			&i.IsProtein,
-			&i.IsGrain,
-			&i.IsFruit,
-			&i.IsSalt,
-			&i.IsFat,
-			&i.IsAcid,
-			&i.IsHeat,
-			&i.CreatedAt_2,
-			&i.LastUpdatedAt_2,
-			&i.ArchivedAt_2,
-			&i.CreatedAt_3,
-			&i.ArchivedAt_3,
+			&i.FilteredCount,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getValidIngredientMeasurementUnits = `-- name: GetValidIngredientMeasurementUnits :many
+
+SELECT
+	valid_ingredient_measurement_units.id as valid_ingredient_measurement_unit_id,
+	valid_ingredient_measurement_units.notes as valid_ingredient_measurement_unit_notes,
+	valid_measurement_units.id as valid_measurement_unit_id,
+	valid_measurement_units.name as valid_measurement_unit_name,
+	valid_measurement_units.description as valid_measurement_unit_description,
+	valid_measurement_units.volumetric as valid_measurement_unit_volumetric,
+	valid_measurement_units.icon_path as valid_measurement_unit_icon_path,
+	valid_measurement_units.universal as valid_measurement_unit_universal,
+	valid_measurement_units.metric as valid_measurement_unit_metric,
+	valid_measurement_units.imperial as valid_measurement_unit_imperial,
+	valid_measurement_units.slug as valid_measurement_unit_slug,
+	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.created_at as valid_measurement_unit_created_at,
+	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
+	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
+	valid_ingredients.id as valid_ingredient_id,
+	valid_ingredients.name as valid_ingredient_name,
+	valid_ingredients.description as valid_ingredient_description,
+	valid_ingredients.warning as valid_ingredient_warning,
+	valid_ingredients.contains_egg as valid_ingredient_contains_egg,
+	valid_ingredients.contains_dairy as valid_ingredient_contains_dairy,
+	valid_ingredients.contains_peanut as valid_ingredient_contains_peanut,
+	valid_ingredients.contains_tree_nut as valid_ingredient_contains_tree_nut,
+	valid_ingredients.contains_soy as valid_ingredient_contains_soy,
+	valid_ingredients.contains_wheat as valid_ingredient_contains_wheat,
+	valid_ingredients.contains_shellfish as valid_ingredient_contains_shellfish,
+	valid_ingredients.contains_sesame as valid_ingredient_contains_sesame,
+	valid_ingredients.contains_fish as valid_ingredient_contains_fish,
+	valid_ingredients.contains_gluten as valid_ingredient_contains_gluten,
+	valid_ingredients.animal_flesh as valid_ingredient_animal_flesh,
+	valid_ingredients.volumetric as valid_ingredient_volumetric,
+	valid_ingredients.is_liquid as valid_ingredient_is_liquid,
+	valid_ingredients.icon_path as valid_ingredient_icon_path,
+	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
+	valid_ingredients.plural_name as valid_ingredient_plural_name,
+	valid_ingredients.restrict_to_preparations as valid_ingredient_restrict_to_preparations,
+	valid_ingredients.minimum_ideal_storage_temperature_in_celsius as valid_ingredient_minimum_ideal_storage_temperature_in_celsius,
+	valid_ingredients.maximum_ideal_storage_temperature_in_celsius as valid_ingredient_maximum_ideal_storage_temperature_in_celsius,
+	valid_ingredients.storage_instructions as valid_ingredient_storage_instructions,
+	valid_ingredients.slug as valid_ingredient_slug,
+	valid_ingredients.contains_alcohol as valid_ingredient_contains_alcohol,
+	valid_ingredients.shopping_suggestions as valid_ingredient_shopping_suggestions,
+    valid_ingredients.is_starch as valid_ingredient_is_starch,
+    valid_ingredients.is_protein as valid_ingredient_is_protein,
+    valid_ingredients.is_grain as valid_ingredient_is_grain,
+    valid_ingredients.is_fruit as valid_ingredient_is_fruit,
+    valid_ingredients.is_salt as valid_ingredient_is_salt,
+    valid_ingredients.is_fat as valid_ingredient_is_fat,
+    valid_ingredients.is_acid as valid_ingredient_is_acid,
+    valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.created_at as valid_ingredient_created_at,
+	valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
+	valid_ingredients.archived_at as valid_ingredient_archived_at,
+	valid_ingredient_measurement_units.minimum_allowable_quantity as valid_ingredient_measurement_unit_minimum_allowable_quantity,
+	valid_ingredient_measurement_units.maximum_allowable_quantity as valid_ingredient_measurement_unit_maximum_allowable_quantity,
+	valid_ingredient_measurement_units.created_at as valid_ingredient_measurement_unit_created_at,
+	valid_ingredient_measurement_units.last_updated_at as valid_ingredient_measurement_unit_last_updated_at,
+	valid_ingredient_measurement_units.archived_at as valid_ingredient_measurement_unit_archived_at,
+    (
+        SELECT
+            COUNT(valid_ingredient_measurement_units.id)
+        FROM
+            valid_ingredient_measurement_units
+        WHERE
+            valid_ingredient_measurement_units.archived_at IS NULL
+          AND valid_ingredient_measurement_units.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+          AND valid_ingredient_measurement_units.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+          AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+          AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+    ) as filtered_count,
+    (
+        SELECT
+            COUNT(valid_ingredient_measurement_units.id)
+        FROM
+            valid_ingredient_measurement_units
+        WHERE
+            valid_ingredient_measurement_units.archived_at IS NULL
+    ) as total_count
+FROM valid_ingredient_measurement_units
+	JOIN valid_measurement_units ON valid_ingredient_measurement_units.valid_measurement_unit_id = valid_measurement_units.id
+	JOIN valid_ingredients ON valid_ingredient_measurement_units.valid_ingredient_id = valid_ingredients.id
+WHERE valid_ingredient_measurement_units.archived_at IS NULL
+    AND valid_measurement_units.archived_at IS NULL
+    AND valid_ingredients.archived_at IS NULL
+    AND valid_ingredient_measurement_units.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+    AND valid_ingredient_measurement_units.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+    AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+    AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+OFFSET $5
+LIMIT $6
+`
+
+type GetValidIngredientMeasurementUnitsParams struct {
+	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	UpdatedBefore sql.NullTime
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
+}
+
+type GetValidIngredientMeasurementUnitsRow struct {
+	ValidIngredientCreatedAt                               time.Time
+	ValidIngredientMeasurementUnitCreatedAt                time.Time
+	ValidMeasurementUnitCreatedAt                          time.Time
+	ValidIngredientMeasurementUnitArchivedAt               sql.NullTime
+	ValidIngredientLastUpdatedAt                           sql.NullTime
+	ValidIngredientArchivedAt                              sql.NullTime
+	ValidIngredientMeasurementUnitLastUpdatedAt            sql.NullTime
+	ValidMeasurementUnitArchivedAt                         sql.NullTime
+	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
+	ValidIngredientName                                    string
+	ValidIngredientMeasurementUnitMinimumAllowableQuantity string
+	ValidMeasurementUnitPluralName                         string
+	ValidIngredientIconPath                                string
+	ValidIngredientMeasurementUnitID                       string
+	ValidMeasurementUnitIconPath                           string
+	ValidIngredientID                                      string
+	ValidIngredientPluralName                              string
+	ValidIngredientDescription                             string
+	ValidIngredientWarning                                 string
+	ValidIngredientStorageInstructions                     string
+	ValidMeasurementUnitDescription                        string
+	ValidIngredientSlug                                    string
+	ValidMeasurementUnitSlug                               string
+	ValidMeasurementUnitName                               string
+	ValidMeasurementUnitID                                 string
+	ValidIngredientMeasurementUnitNotes                    string
+	ValidIngredientShoppingSuggestions                     string
+	ValidIngredientMeasurementUnitMaximumAllowableQuantity sql.NullString
+	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
+	TotalCount                                             int64
+	FilteredCount                                          int64
+	ValidMeasurementUnitVolumetric                         sql.NullBool
+	ValidIngredientIsLiquid                                sql.NullBool
+	ValidIngredientAnimalFlesh                             bool
+	ValidIngredientRestrictToPreparations                  bool
+	ValidIngredientAnimalDerived                           bool
+	ValidIngredientVolumetric                              bool
+	ValidIngredientContainsGluten                          bool
+	ValidIngredientContainsFish                            bool
+	ValidIngredientContainsAlcohol                         bool
+	ValidIngredientContainsSesame                          bool
+	ValidIngredientIsStarch                                bool
+	ValidIngredientIsProtein                               bool
+	ValidIngredientIsGrain                                 bool
+	ValidIngredientIsFruit                                 bool
+	ValidIngredientIsSalt                                  bool
+	ValidIngredientIsFat                                   bool
+	ValidIngredientIsAcid                                  bool
+	ValidIngredientIsHeat                                  bool
+	ValidIngredientContainsShellfish                       bool
+	ValidIngredientContainsWheat                           bool
+	ValidIngredientContainsSoy                             bool
+	ValidIngredientContainsTreeNut                         bool
+	ValidIngredientContainsPeanut                          bool
+	ValidIngredientContainsDairy                           bool
+	ValidIngredientContainsEgg                             bool
+	ValidMeasurementUnitImperial                           bool
+	ValidMeasurementUnitMetric                             bool
+	ValidMeasurementUnitUniversal                          bool
+}
+
+func (q *Queries) GetValidIngredientMeasurementUnits(ctx context.Context, db DBTX, arg *GetValidIngredientMeasurementUnitsParams) ([]*GetValidIngredientMeasurementUnitsRow, error) {
+	rows, err := db.QueryContext(ctx, getValidIngredientMeasurementUnits,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedAfter,
+		arg.UpdatedBefore,
+		arg.QueryOffset,
+		arg.QueryLimit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetValidIngredientMeasurementUnitsRow{}
+	for rows.Next() {
+		var i GetValidIngredientMeasurementUnitsRow
+		if err := rows.Scan(
+			&i.ValidIngredientMeasurementUnitID,
+			&i.ValidIngredientMeasurementUnitNotes,
+			&i.ValidMeasurementUnitID,
+			&i.ValidMeasurementUnitName,
+			&i.ValidMeasurementUnitDescription,
+			&i.ValidMeasurementUnitVolumetric,
+			&i.ValidMeasurementUnitIconPath,
+			&i.ValidMeasurementUnitUniversal,
+			&i.ValidMeasurementUnitMetric,
+			&i.ValidMeasurementUnitImperial,
+			&i.ValidMeasurementUnitSlug,
+			&i.ValidMeasurementUnitPluralName,
+			&i.ValidMeasurementUnitCreatedAt,
+			&i.ValidMeasurementUnitLastUpdatedAt,
+			&i.ValidMeasurementUnitArchivedAt,
+			&i.ValidIngredientID,
+			&i.ValidIngredientName,
+			&i.ValidIngredientDescription,
+			&i.ValidIngredientWarning,
+			&i.ValidIngredientContainsEgg,
+			&i.ValidIngredientContainsDairy,
+			&i.ValidIngredientContainsPeanut,
+			&i.ValidIngredientContainsTreeNut,
+			&i.ValidIngredientContainsSoy,
+			&i.ValidIngredientContainsWheat,
+			&i.ValidIngredientContainsShellfish,
+			&i.ValidIngredientContainsSesame,
+			&i.ValidIngredientContainsFish,
+			&i.ValidIngredientContainsGluten,
+			&i.ValidIngredientAnimalFlesh,
+			&i.ValidIngredientVolumetric,
+			&i.ValidIngredientIsLiquid,
+			&i.ValidIngredientIconPath,
+			&i.ValidIngredientAnimalDerived,
+			&i.ValidIngredientPluralName,
+			&i.ValidIngredientRestrictToPreparations,
+			&i.ValidIngredientMinimumIdealStorageTemperatureInCelsius,
+			&i.ValidIngredientMaximumIdealStorageTemperatureInCelsius,
+			&i.ValidIngredientStorageInstructions,
+			&i.ValidIngredientSlug,
+			&i.ValidIngredientContainsAlcohol,
+			&i.ValidIngredientShoppingSuggestions,
+			&i.ValidIngredientIsStarch,
+			&i.ValidIngredientIsProtein,
+			&i.ValidIngredientIsGrain,
+			&i.ValidIngredientIsFruit,
+			&i.ValidIngredientIsSalt,
+			&i.ValidIngredientIsFat,
+			&i.ValidIngredientIsAcid,
+			&i.ValidIngredientIsHeat,
+			&i.ValidIngredientCreatedAt,
+			&i.ValidIngredientLastUpdatedAt,
+			&i.ValidIngredientArchivedAt,
+			&i.ValidIngredientMeasurementUnitMinimumAllowableQuantity,
+			&i.ValidIngredientMeasurementUnitMaximumAllowableQuantity,
+			&i.ValidIngredientMeasurementUnitCreatedAt,
+			&i.ValidIngredientMeasurementUnitLastUpdatedAt,
+			&i.ValidIngredientMeasurementUnitArchivedAt,
 			&i.FilteredCount,
 			&i.TotalCount,
 		); err != nil {

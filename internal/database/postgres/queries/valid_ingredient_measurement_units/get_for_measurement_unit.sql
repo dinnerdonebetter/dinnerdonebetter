@@ -1,4 +1,4 @@
--- name: GetValidIngredientMeasurementUnit :one
+-- name: GetValidIngredientMeasurementUnitsForMeasurementUnit :many
 
 SELECT
 	valid_ingredient_measurement_units.id as valid_ingredient_measurement_unit_id,
@@ -58,9 +58,37 @@ SELECT
 	valid_ingredient_measurement_units.maximum_allowable_quantity as valid_ingredient_measurement_unit_maximum_allowable_quantity,
 	valid_ingredient_measurement_units.created_at as valid_ingredient_measurement_unit_created_at,
 	valid_ingredient_measurement_units.last_updated_at as valid_ingredient_measurement_unit_last_updated_at,
-	valid_ingredient_measurement_units.archived_at as valid_ingredient_measurement_unit_archived_at
+	valid_ingredient_measurement_units.archived_at as valid_ingredient_measurement_unit_archived_at,
+    (
+        SELECT
+            COUNT(valid_ingredient_measurement_units.id)
+        FROM
+            valid_ingredient_measurement_units
+        WHERE
+            valid_ingredient_measurement_units.archived_at IS NULL
+          AND valid_ingredient_measurement_units.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
+          AND valid_ingredient_measurement_units.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+          AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years')))
+          AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
+    ) as filtered_count,
+    (
+        SELECT
+            COUNT(valid_ingredient_measurement_units.id)
+        FROM
+            valid_ingredient_measurement_units
+        WHERE
+            valid_ingredient_measurement_units.archived_at IS NULL
+    ) as total_count
 FROM valid_ingredient_measurement_units
 	JOIN valid_measurement_units ON valid_ingredient_measurement_units.valid_measurement_unit_id = valid_measurement_units.id
 	JOIN valid_ingredients ON valid_ingredient_measurement_units.valid_ingredient_id = valid_ingredients.id
 WHERE valid_ingredient_measurement_units.archived_at IS NULL
-	AND valid_ingredient_measurement_units.id = $1;
+    AND valid_measurement_units.archived_at IS NULL
+    AND valid_ingredients.archived_at IS NULL
+    AND valid_ingredient_measurement_units.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
+    AND valid_ingredient_measurement_units.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+    AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years')))
+    AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
+    AND valid_ingredient_measurement_units.valid_measurement_unit_id = sqlc.arg(valid_measurement_unit_id)
+OFFSET sqlc.narg(query_offset)
+LIMIT sqlc.narg(query_limit);

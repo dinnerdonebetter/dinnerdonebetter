@@ -417,14 +417,8 @@ func (q *Querier) GetRecipeStepIngredients(ctx context.Context, recipeID, recipe
 		Pagination: filter.ToPagination(),
 	}
 
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
-
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
 	}
 
 	query, args := q.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"valid_measurement_units.id", "valid_ingredients.id"}, nil, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", false, filter)

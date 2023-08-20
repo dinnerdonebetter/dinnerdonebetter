@@ -64,7 +64,6 @@ func TestQuerier_Integration_ValidIngredientGroups(t *testing.T) {
 	for i := 0; i < exampleQuantity; i++ {
 		exampleValidIngredientGroup.Members = append(exampleValidIngredientGroup.Members, &types.ValidIngredientGroupMember{
 			ID:              identifiers.New(),
-			Notes:           "",
 			BelongsToGroup:  exampleValidIngredientGroup.ID,
 			ValidIngredient: *createValidIngredientForTest(t, ctx, nil, dbc),
 		})
