@@ -13,6 +13,71 @@ import (
 	"github.com/lib/pq"
 )
 
+const getValidIngredientStatesWithIDs = `-- name: GetValidIngredientStatesWithIDs :many
+
+SELECT
+	valid_ingredient_states.id,
+	valid_ingredient_states.name,
+	valid_ingredient_states.description,
+	valid_ingredient_states.icon_path,
+	valid_ingredient_states.slug,
+	valid_ingredient_states.past_tense,
+	valid_ingredient_states.attribute_type,
+	valid_ingredient_states.created_at,
+	valid_ingredient_states.last_updated_at,
+	valid_ingredient_states.archived_at
+FROM valid_ingredient_states
+WHERE valid_ingredient_states.archived_at IS NULL
+	AND valid_ingredient_states.id = ANY($1::text[])
+`
+
+type GetValidIngredientStatesWithIDsRow struct {
+	ID            string
+	Name          string
+	Description   string
+	IconPath      string
+	Slug          string
+	PastTense     string
+	AttributeType IngredientAttributeType
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
+}
+
+func (q *Queries) GetValidIngredientStatesWithIDs(ctx context.Context, db DBTX, dollar_1 []string) ([]*GetValidIngredientStatesWithIDsRow, error) {
+	rows, err := db.QueryContext(ctx, getValidIngredientStatesWithIDs, pq.Array(dollar_1))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetValidIngredientStatesWithIDsRow{}
+	for rows.Next() {
+		var i GetValidIngredientStatesWithIDsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.IconPath,
+			&i.Slug,
+			&i.PastTense,
+			&i.AttributeType,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getValidIngredientsWithIDs = `-- name: GetValidIngredientsWithIDs :many
 
 SELECT

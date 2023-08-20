@@ -278,7 +278,7 @@ SELECT
 	valid_ingredient_states.archived_at
 FROM valid_ingredient_states
 WHERE valid_ingredient_states.archived_at IS NULL
-	AND valid_ingredient_states.name ILIKE $1
+	AND valid_ingredient_states.name ILIKE '%' || $1::text || '%'
 LIMIT 50
 `
 
@@ -295,8 +295,8 @@ type SearchForValidIngredientStatesRow struct {
 	ArchivedAt    sql.NullTime
 }
 
-func (q *Queries) SearchForValidIngredientStates(ctx context.Context, db DBTX, name string) ([]*SearchForValidIngredientStatesRow, error) {
-	rows, err := db.QueryContext(ctx, searchForValidIngredientStates, name)
+func (q *Queries) SearchForValidIngredientStates(ctx context.Context, db DBTX, query string) ([]*SearchForValidIngredientStatesRow, error) {
+	rows, err := db.QueryContext(ctx, searchForValidIngredientStates, query)
 	if err != nil {
 		return nil, err
 	}

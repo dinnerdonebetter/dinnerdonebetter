@@ -2,103 +2,17 @@ package postgres
 
 import (
 	"context"
-	_ "embed"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-
-	"github.com/Masterminds/squirrel"
-)
-
-const (
-	validIngredientStatesTable = "valid_ingredient_states"
 )
 
 var (
 	_ types.ValidIngredientStateDataManager = (*Querier)(nil)
-
-	// validIngredientStatesTableColumns are the columns for the valid_ingredient_states table.
-	validIngredientStatesTableColumns = []string{
-		"valid_ingredient_states.id",
-		"valid_ingredient_states.name",
-		"valid_ingredient_states.description",
-		"valid_ingredient_states.icon_path",
-		"valid_ingredient_states.slug",
-		"valid_ingredient_states.past_tense",
-		"valid_ingredient_states.attribute_type",
-		"valid_ingredient_states.created_at",
-		"valid_ingredient_states.last_updated_at",
-		"valid_ingredient_states.archived_at",
-	}
 )
-
-// scanValidIngredientState takes a database Scanner (i.e. *sql.Row) and scans the result into a valid ingredient state struct.
-func (q *Querier) scanValidIngredientState(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.ValidIngredientState, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	x = &types.ValidIngredientState{}
-
-	targetVars := []any{
-		&x.ID,
-		&x.Name,
-		&x.Description,
-		&x.IconPath,
-		&x.Slug,
-		&x.PastTense,
-		&x.AttributeType,
-		&x.CreatedAt,
-		&x.LastUpdatedAt,
-		&x.ArchivedAt,
-	}
-
-	if includeCounts {
-		targetVars = append(targetVars, &filteredCount, &totalCount)
-	}
-
-	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "")
-	}
-
-	return x, filteredCount, totalCount, nil
-}
-
-// scanValidIngredientStates takes some database rows and turns them into a slice of valid ingredient states.
-func (q *Querier) scanValidIngredientStates(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validIngredientStates []*types.ValidIngredientState, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	for rows.Next() {
-		x, fc, tc, scanErr := q.scanValidIngredientState(ctx, rows, includeCounts)
-		if scanErr != nil {
-			return nil, 0, 0, scanErr
-		}
-
-		if includeCounts {
-			if filteredCount == 0 {
-				filteredCount = fc
-			}
-
-			if totalCount == 0 {
-				totalCount = tc
-			}
-		}
-
-		validIngredientStates = append(validIngredientStates, x)
-	}
-
-	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
-	}
-
-	return validIngredientStates, filteredCount, totalCount, nil
-}
-
-//go:embed queries/valid_ingredient_states/exists.sql
-var validIngredientStateExistenceQuery string
 
 // ValidIngredientStateExists fetches whether a valid ingredient state exists from the database.
 func (q *Querier) ValidIngredientStateExists(ctx context.Context, validIngredientStateID string) (exists bool, err error) {
@@ -113,20 +27,13 @@ func (q *Querier) ValidIngredientStateExists(ctx context.Context, validIngredien
 	logger = logger.WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
 	tracing.AttachValidIngredientStateIDToSpan(span, validIngredientStateID)
 
-	args := []any{
-		validIngredientStateID,
-	}
-
-	result, err := q.performBooleanQuery(ctx, q.db, validIngredientStateExistenceQuery, args)
+	result, err := q.generatedQuerier.CheckValidIngredientStateExistence(ctx, q.db, validIngredientStateID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing valid ingredient state existence check")
 	}
 
 	return result, nil
 }
-
-//go:embed queries/valid_ingredient_states/get_one.sql
-var getValidIngredientStateQuery string
 
 // GetValidIngredientState fetches a valid ingredient state from the database.
 func (q *Querier) GetValidIngredientState(ctx context.Context, validIngredientStateID string) (*types.ValidIngredientState, error) {
@@ -141,22 +48,26 @@ func (q *Querier) GetValidIngredientState(ctx context.Context, validIngredientSt
 	logger = logger.WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
 	tracing.AttachValidIngredientStateIDToSpan(span, validIngredientStateID)
 
-	args := []any{
-		validIngredientStateID,
+	result, err := q.generatedQuerier.GetValidIngredientState(ctx, q.db, validIngredientStateID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient state retrieval query")
 	}
 
-	row := q.getOneRow(ctx, q.db, "validIngredientState", getValidIngredientStateQuery, args)
-
-	validIngredientState, _, _, err := q.scanValidIngredientState(ctx, row, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning validIngredientState")
+	validIngredientState := &types.ValidIngredientState{
+		CreatedAt:     result.CreatedAt,
+		ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+		LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
+		PastTense:     result.PastTense,
+		Description:   result.Description,
+		IconPath:      result.IconPath,
+		ID:            result.ID,
+		Name:          result.Name,
+		AttributeType: string(result.AttributeType),
+		Slug:          result.Slug,
 	}
 
 	return validIngredientState, nil
 }
-
-//go:embed queries/valid_ingredient_states/search.sql
-var validIngredientStateSearchQuery string
 
 // SearchForValidIngredientStates fetches a valid ingredient state from the database.
 func (q *Querier) SearchForValidIngredientStates(ctx context.Context, query string) ([]*types.ValidIngredientState, error) {
@@ -171,18 +82,25 @@ func (q *Querier) SearchForValidIngredientStates(ctx context.Context, query stri
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachValidIngredientStateIDToSpan(span, query)
 
-	args := []any{
-		wrapQueryForILIKE(query),
-	}
-
-	rows, err := q.getRows(ctx, q.db, "valid ingredient states", validIngredientStateSearchQuery, args)
+	results, err := q.generatedQuerier.SearchForValidIngredientStates(ctx, q.db, query)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient states list retrieval query")
 	}
 
-	x, _, _, err := q.scanValidIngredientStates(ctx, rows, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredient states")
+	x := []*types.ValidIngredientState{}
+	for _, result := range results {
+		x = append(x, &types.ValidIngredientState{
+			CreatedAt:     result.CreatedAt,
+			ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
+			PastTense:     result.PastTense,
+			Description:   result.Description,
+			IconPath:      result.IconPath,
+			ID:            result.ID,
+			Name:          result.Name,
+			AttributeType: string(result.AttributeType),
+			Slug:          result.Slug,
+		})
 	}
 
 	return x, nil
@@ -205,15 +123,33 @@ func (q *Querier) GetValidIngredientStates(ctx context.Context, filter *types.Qu
 		Pagination: filter.ToPagination(),
 	}
 
-	query, args := q.buildListQuery(ctx, validIngredientStatesTable, nil, nil, nil, householdOwnershipColumn, validIngredientStatesTableColumns, "", false, filter)
-
-	rows, err := q.getRows(ctx, q.db, "valid ingredient states", query, args)
+	results, err := q.generatedQuerier.GetValidIngredientStates(ctx, q.db, &generated.GetValidIngredientStatesParams{
+		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient states list retrieval query")
 	}
 
-	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidIngredientStates(ctx, rows, true); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredient states")
+	for _, result := range results {
+		x.Data = append(x.Data, &types.ValidIngredientState{
+			CreatedAt:     result.CreatedAt,
+			ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
+			PastTense:     result.PastTense,
+			Description:   result.Description,
+			IconPath:      result.IconPath,
+			ID:            result.ID,
+			Name:          result.Name,
+			AttributeType: string(result.AttributeType),
+			Slug:          result.Slug,
+		})
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
 	}
 
 	return x, nil
@@ -226,40 +162,42 @@ func (q *Querier) GetValidIngredientStatesWithIDs(ctx context.Context, ids []str
 
 	logger := q.logger.Clone()
 
-	where := squirrel.Eq{"valid_ingredient_states.id": ids}
-	query, args := q.buildListQuery(ctx, validIngredientStatesTable, nil, nil, where, householdOwnershipColumn, validIngredientStatesTableColumns, "", false, nil)
-
-	rows, err := q.getRows(ctx, q.db, "valid ingredient states with IDs", query, args)
+	results, err := q.generatedQuerier.GetValidIngredientStatesWithIDs(ctx, q.db, ids)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient states id list retrieval query")
 	}
 
-	ingredientStates, _, _, err := q.scanValidIngredientStates(ctx, rows, true)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredient states")
+	ingredientStates := []*types.ValidIngredientState{}
+	for _, result := range results {
+		ingredientStates = append(ingredientStates, &types.ValidIngredientState{
+			CreatedAt:     result.CreatedAt,
+			ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
+			PastTense:     result.PastTense,
+			Description:   result.Description,
+			IconPath:      result.IconPath,
+			ID:            result.ID,
+			Name:          result.Name,
+			AttributeType: string(result.AttributeType),
+			Slug:          result.Slug,
+		})
 	}
 
 	return ingredientStates, nil
 }
-
-//go:embed queries/valid_ingredient_states/get_needing_indexing.sql
-var validIngredientStatesNeedingIndexingQuery string
 
 // GetValidIngredientStateIDsThatNeedSearchIndexing fetches a list of valid ingredientStates from the database that meet a particular filter.
 func (q *Querier) GetValidIngredientStateIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	rows, err := q.getRows(ctx, q.db, "valid ingredient states needing indexing", validIngredientStatesNeedingIndexingQuery, nil)
+	results, err := q.generatedQuerier.GetValidIngredientStatesNeedingIndexing(ctx, q.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing valid ingredient states list retrieval query")
 	}
 
-	return q.scanIDs(ctx, rows)
+	return results, nil
 }
-
-//go:embed queries/valid_ingredient_states/create.sql
-var validIngredientStateCreationQuery string
 
 // CreateValidIngredientState creates a valid ingredient state in the database.
 func (q *Querier) CreateValidIngredientState(ctx context.Context, input *types.ValidIngredientStateDatabaseCreationInput) (*types.ValidIngredientState, error) {
@@ -269,21 +207,19 @@ func (q *Querier) CreateValidIngredientState(ctx context.Context, input *types.V
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-
+	tracing.AttachValidIngredientStateIDToSpan(span, input.ID)
 	logger := q.logger.WithValue(keys.ValidIngredientStateIDKey, input.ID)
 
-	args := []any{
-		input.ID,
-		input.Name,
-		input.Description,
-		input.IconPath,
-		input.PastTense,
-		input.Slug,
-		input.AttributeType,
-	}
-
 	// create the valid ingredient state.
-	if err := q.performWriteQuery(ctx, q.db, "valid ingredient state creation", validIngredientStateCreationQuery, args); err != nil {
+	if err := q.generatedQuerier.CreateValidIngredientState(ctx, q.db, &generated.CreateValidIngredientStateParams{
+		ID:            input.ID,
+		Name:          input.Name,
+		Description:   input.Description,
+		IconPath:      input.IconPath,
+		PastTense:     input.PastTense,
+		Slug:          input.Slug,
+		AttributeType: generated.IngredientAttributeType(input.AttributeType),
+	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing valid ingredient state creation query")
 	}
 
@@ -304,9 +240,6 @@ func (q *Querier) CreateValidIngredientState(ctx context.Context, input *types.V
 	return x, nil
 }
 
-//go:embed queries/valid_ingredient_states/update.sql
-var updateValidIngredientStateQuery string
-
 // UpdateValidIngredientState updates a particular valid ingredient state.
 func (q *Querier) UpdateValidIngredientState(ctx context.Context, updated *types.ValidIngredientState) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -315,21 +248,18 @@ func (q *Querier) UpdateValidIngredientState(ctx context.Context, updated *types
 	if updated == nil {
 		return ErrNilInputProvided
 	}
-
 	logger := q.logger.WithValue(keys.ValidIngredientStateIDKey, updated.ID)
 	tracing.AttachValidIngredientStateIDToSpan(span, updated.ID)
 
-	args := []any{
-		updated.Name,
-		updated.Description,
-		updated.IconPath,
-		updated.Slug,
-		updated.PastTense,
-		updated.AttributeType,
-		updated.ID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "valid ingredient state update", updateValidIngredientStateQuery, args); err != nil {
+	if err := q.generatedQuerier.UpdateValidIngredientState(ctx, q.db, &generated.UpdateValidIngredientStateParams{
+		Name:          updated.Name,
+		Description:   updated.Description,
+		IconPath:      updated.IconPath,
+		Slug:          updated.Slug,
+		PastTense:     updated.PastTense,
+		AttributeType: generated.IngredientAttributeType(updated.AttributeType),
+		ID:            updated.ID,
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient state")
 	}
 
@@ -337,9 +267,6 @@ func (q *Querier) UpdateValidIngredientState(ctx context.Context, updated *types
 
 	return nil
 }
-
-//go:embed queries/valid_ingredient_states/update_last_indexed_at.sql
-var updateValidIngredientStateLastIndexedAtQuery string
 
 // MarkValidIngredientStateAsIndexed updates a particular valid ingredient state's last_indexed_at value.
 func (q *Querier) MarkValidIngredientStateAsIndexed(ctx context.Context, validIngredientStateID string) error {

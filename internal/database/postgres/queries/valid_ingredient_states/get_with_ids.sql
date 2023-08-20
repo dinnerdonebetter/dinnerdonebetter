@@ -1,4 +1,4 @@
--- name: SearchForValidIngredientStates :many
+-- name: GetValidIngredientStatesWithIDs :many
 
 SELECT
 	valid_ingredient_states.id,
@@ -13,5 +13,4 @@ SELECT
 	valid_ingredient_states.archived_at
 FROM valid_ingredient_states
 WHERE valid_ingredient_states.archived_at IS NULL
-	AND valid_ingredient_states.name ILIKE '%' || sqlc.arg(query)::text || '%'
-LIMIT 50;
+	AND valid_ingredient_states.id = ANY($1::text[]);

@@ -234,7 +234,9 @@ type Querier interface {
 	GetValidIngredientPreparationsForPreparation(ctx context.Context, db DBTX, validPreparationID string) ([]*GetValidIngredientPreparationsForPreparationRow, error)
 	GetValidIngredientState(ctx context.Context, db DBTX, id string) (*GetValidIngredientStateRow, error)
 	GetValidIngredientStateIngredient(ctx context.Context, db DBTX, id string) (*GetValidIngredientStateIngredientRow, error)
+	GetValidIngredientStates(ctx context.Context, db DBTX, arg *GetValidIngredientStatesParams) ([]*GetValidIngredientStatesRow, error)
 	GetValidIngredientStatesNeedingIndexing(ctx context.Context, db DBTX) ([]string, error)
+	GetValidIngredientStatesWithIDs(ctx context.Context, db DBTX, dollar_1 []string) ([]*GetValidIngredientStatesWithIDsRow, error)
 	GetValidIngredients(ctx context.Context, db DBTX, arg *GetValidIngredientsParams) ([]*GetValidIngredientsRow, error)
 	GetValidIngredientsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error)
 	GetValidIngredientsWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetValidIngredientsWithIDsRow, error)
@@ -282,7 +284,7 @@ type Querier interface {
 	RemoveUserFromHousehold(ctx context.Context, db DBTX, arg *RemoveUserFromHouseholdParams) error
 	SearchForServiceSettings(ctx context.Context, db DBTX, name string) ([]*SearchForServiceSettingsRow, error)
 	SearchForValidIngredientGroups(ctx context.Context, db DBTX, name string) ([]*SearchForValidIngredientGroupsRow, error)
-	SearchForValidIngredientStates(ctx context.Context, db DBTX, name string) ([]*SearchForValidIngredientStatesRow, error)
+	SearchForValidIngredientStates(ctx context.Context, db DBTX, query string) ([]*SearchForValidIngredientStatesRow, error)
 	SearchForValidIngredients(ctx context.Context, db DBTX, dollar_1 string) ([]*SearchForValidIngredientsRow, error)
 	SearchForValidInstruments(ctx context.Context, db DBTX, query string) ([]*SearchForValidInstrumentsRow, error)
 	SearchForValidMeasurementUnits(ctx context.Context, db DBTX, query string) ([]*SearchForValidMeasurementUnitsRow, error)

@@ -840,6 +840,113 @@ func (q *Queries) GetValidIngredientGroups(ctx context.Context, db DBTX, arg *Ge
 	return items, nil
 }
 
+const getValidIngredientStates = `-- name: GetValidIngredientStates :many
+
+SELECT
+	valid_ingredient_states.id,
+	valid_ingredient_states.name,
+	valid_ingredient_states.description,
+	valid_ingredient_states.icon_path,
+	valid_ingredient_states.slug,
+	valid_ingredient_states.past_tense,
+	valid_ingredient_states.attribute_type,
+	valid_ingredient_states.created_at,
+	valid_ingredient_states.last_updated_at,
+	valid_ingredient_states.archived_at,
+    (
+        SELECT COUNT(valid_ingredient_states.id)
+        FROM valid_ingredient_states
+        WHERE valid_ingredient_states.archived_at IS NULL
+        AND valid_ingredient_states.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+        AND valid_ingredient_states.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+        AND (valid_ingredient_states.last_updated_at IS NULL OR valid_ingredient_states.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+        AND (valid_ingredient_states.last_updated_at IS NULL OR valid_ingredient_states.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+    ) as filtered_count,
+    (
+        SELECT
+            COUNT(valid_ingredient_states.id)
+        FROM
+            valid_ingredient_states
+        WHERE
+            valid_ingredient_states.archived_at IS NULL
+    ) as total_count
+FROM valid_ingredient_states
+WHERE valid_ingredient_states.archived_at IS NULL
+    AND valid_ingredient_states.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+    AND valid_ingredient_states.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+    AND (valid_ingredient_states.last_updated_at IS NULL OR valid_ingredient_states.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+    AND (valid_ingredient_states.last_updated_at IS NULL OR valid_ingredient_states.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+LIMIT $6
+OFFSET $5
+`
+
+type GetValidIngredientStatesParams struct {
+	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	UpdatedBefore sql.NullTime
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
+}
+
+type GetValidIngredientStatesRow struct {
+	ID            string
+	Name          string
+	Description   string
+	IconPath      string
+	Slug          string
+	PastTense     string
+	AttributeType IngredientAttributeType
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
+	FilteredCount int64
+	TotalCount    int64
+}
+
+func (q *Queries) GetValidIngredientStates(ctx context.Context, db DBTX, arg *GetValidIngredientStatesParams) ([]*GetValidIngredientStatesRow, error) {
+	rows, err := db.QueryContext(ctx, getValidIngredientStates,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedAfter,
+		arg.UpdatedBefore,
+		arg.QueryOffset,
+		arg.QueryLimit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetValidIngredientStatesRow{}
+	for rows.Next() {
+		var i GetValidIngredientStatesRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.IconPath,
+			&i.Slug,
+			&i.PastTense,
+			&i.AttributeType,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+			&i.FilteredCount,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getValidIngredients = `-- name: GetValidIngredients :many
 
 SELECT

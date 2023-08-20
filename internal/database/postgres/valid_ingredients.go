@@ -50,7 +50,7 @@ func (q *Querier) GetValidIngredient(ctx context.Context, validIngredientID stri
 
 	result, err := q.generatedQuerier.GetValidIngredient(ctx, q.db, validIngredientID)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "fetching valid ingredient")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredient")
 	}
 
 	validIngredient := &types.ValidIngredient{
@@ -174,7 +174,7 @@ func (q *Querier) SearchForValidIngredients(ctx context.Context, query string, f
 
 	results, err := q.generatedQuerier.SearchForValidIngredients(ctx, q.db, query)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "fetching valid ingredient")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredient")
 	}
 
 	for _, result := range results {
@@ -258,6 +258,9 @@ func (q *Querier) SearchForValidIngredientsForPreparation(ctx context.Context, p
 		ValidPreparationID: preparationID,
 		Column2:            query,
 	})
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredients for preparation")
+	}
 
 	for _, result := range results {
 		validIngredient := &types.ValidIngredient{

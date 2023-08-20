@@ -88,8 +88,13 @@ func TestQuerier_Integration_ValidIngredientStates(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, validIngredientStates.Data, byName)
 
+	needingIndexing, err := dbc.GetValidIngredientStateIDsThatNeedSearchIndexing(ctx)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, needingIndexing)
+
 	// delete
 	for _, validIngredientState := range createdValidIngredientStates {
+		assert.NoError(t, dbc.MarkValidIngredientStateAsIndexed(ctx, validIngredientState.ID))
 		assert.NoError(t, dbc.ArchiveValidIngredientState(ctx, validIngredientState.ID))
 
 		var exists bool
