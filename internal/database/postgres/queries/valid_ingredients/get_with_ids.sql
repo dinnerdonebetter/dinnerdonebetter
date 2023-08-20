@@ -1,4 +1,4 @@
--- name: GetValidIngredientByID :one
+-- name: GetValidIngredientsWithIDs :many
 
 SELECT
     valid_ingredients.id,
@@ -39,5 +39,8 @@ SELECT
     valid_ingredients.created_at,
     valid_ingredients.last_updated_at,
     valid_ingredients.archived_at
-    FROM valid_ingredients
-    WHERE valid_ingredients.archived_at IS NULL;
+FROM
+  valid_ingredients
+WHERE
+  valid_ingredients.archived_at IS NULL
+    AND valid_ingredients.id = ANY(sqlc.arg(ids)::text[]);

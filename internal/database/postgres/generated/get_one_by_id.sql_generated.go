@@ -45,28 +45,28 @@ WHERE meal_plan_options.archived_at IS NULL
 `
 
 type GetMealPlanOptionByIDRow struct {
-	ID                     string
-	AssignedCook           sql.NullString
-	AssignedDishwasher     sql.NullString
-	Chosen                 bool
-	Tiebroken              bool
-	MealScale              string
-	MealID                 string
-	Notes                  string
 	CreatedAt              time.Time
-	LastUpdatedAt          sql.NullTime
+	CreatedAt_2            time.Time
+	ArchivedAt_2           sql.NullTime
+	LastUpdatedAt_2        sql.NullTime
 	ArchivedAt             sql.NullTime
-	BelongsToMealPlanEvent sql.NullString
+	LastUpdatedAt          sql.NullTime
+	MealScale              string
+	MinEstimatedPortions   string
+	MealID                 string
+	ID                     string
+	CreatedByUser          string
+	Notes                  string
 	ID_2                   string
 	Name                   string
 	Description            string
-	MinEstimatedPortions   string
 	MaxEstimatedPortions   sql.NullString
+	BelongsToMealPlanEvent sql.NullString
+	AssignedDishwasher     sql.NullString
+	AssignedCook           sql.NullString
 	EligibleForMealPlans   bool
-	CreatedAt_2            time.Time
-	LastUpdatedAt_2        sql.NullTime
-	ArchivedAt_2           sql.NullTime
-	CreatedByUser          string
+	Chosen                 bool
+	Tiebroken              bool
 }
 
 func (q *Queries) GetMealPlanOptionByID(ctx context.Context, db DBTX, id string) (*GetMealPlanOptionByIDRow, error) {

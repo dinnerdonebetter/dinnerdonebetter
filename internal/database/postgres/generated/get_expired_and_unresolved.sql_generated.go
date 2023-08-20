@@ -35,18 +35,18 @@ ORDER BY meal_plans.id
 `
 
 type GetExpiredAndUnresolvedMealPlansRow struct {
-	ID                     string
-	Notes                  string
-	Status                 MealPlanStatus
 	VotingDeadline         time.Time
-	GroceryListInitialized bool
-	TasksCreated           bool
-	ElectionMethod         ValidElectionMethod
 	CreatedAt              time.Time
 	LastUpdatedAt          sql.NullTime
 	ArchivedAt             sql.NullTime
+	ID                     string
+	Notes                  string
+	Status                 MealPlanStatus
+	ElectionMethod         ValidElectionMethod
 	BelongsToHousehold     string
 	CreatedByUser          string
+	GroceryListInitialized bool
+	TasksCreated           bool
 }
 
 func (q *Queries) GetExpiredAndUnresolvedMealPlans(ctx context.Context, db DBTX) ([]*GetExpiredAndUnresolvedMealPlansRow, error) {

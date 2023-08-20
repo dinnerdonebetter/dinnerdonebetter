@@ -13,6 +13,157 @@ import (
 	"github.com/lib/pq"
 )
 
+const getValidIngredientsWithIDs = `-- name: GetValidIngredientsWithIDs :many
+
+SELECT
+    valid_ingredients.id,
+    valid_ingredients.name,
+    valid_ingredients.description,
+    valid_ingredients.warning,
+    valid_ingredients.contains_egg,
+    valid_ingredients.contains_dairy,
+    valid_ingredients.contains_peanut,
+    valid_ingredients.contains_tree_nut,
+    valid_ingredients.contains_soy,
+    valid_ingredients.contains_wheat,
+    valid_ingredients.contains_shellfish,
+    valid_ingredients.contains_sesame,
+    valid_ingredients.contains_fish,
+    valid_ingredients.contains_gluten,
+    valid_ingredients.animal_flesh,
+    valid_ingredients.volumetric,
+    valid_ingredients.is_liquid,
+    valid_ingredients.icon_path,
+    valid_ingredients.animal_derived,
+    valid_ingredients.plural_name,
+    valid_ingredients.restrict_to_preparations,
+    valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
+    valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
+    valid_ingredients.storage_instructions,
+    valid_ingredients.slug,
+    valid_ingredients.contains_alcohol,
+    valid_ingredients.shopping_suggestions,
+    valid_ingredients.is_starch,
+    valid_ingredients.is_protein,
+    valid_ingredients.is_grain,
+    valid_ingredients.is_fruit,
+    valid_ingredients.is_salt,
+    valid_ingredients.is_fat,
+    valid_ingredients.is_acid,
+    valid_ingredients.is_heat,
+    valid_ingredients.created_at,
+    valid_ingredients.last_updated_at,
+    valid_ingredients.archived_at
+FROM
+  valid_ingredients
+WHERE
+  valid_ingredients.archived_at IS NULL
+    AND valid_ingredients.id = ANY($1::text[])
+`
+
+type GetValidIngredientsWithIDsRow struct {
+	CreatedAt                               time.Time
+	ArchivedAt                              sql.NullTime
+	LastUpdatedAt                           sql.NullTime
+	Warning                                 string
+	Description                             string
+	Name                                    string
+	ShoppingSuggestions                     string
+	Slug                                    string
+	StorageInstructions                     string
+	PluralName                              string
+	ID                                      string
+	IconPath                                string
+	MaximumIdealStorageTemperatureInCelsius sql.NullString
+	MinimumIdealStorageTemperatureInCelsius sql.NullString
+	IsLiquid                                sql.NullBool
+	AnimalDerived                           bool
+	ContainsTreeNut                         bool
+	AnimalFlesh                             bool
+	ContainsGluten                          bool
+	ContainsFish                            bool
+	RestrictToPreparations                  bool
+	ContainsSesame                          bool
+	ContainsShellfish                       bool
+	ContainsWheat                           bool
+	ContainsSoy                             bool
+	ContainsAlcohol                         bool
+	Volumetric                              bool
+	IsStarch                                bool
+	IsProtein                               bool
+	IsGrain                                 bool
+	IsFruit                                 bool
+	IsSalt                                  bool
+	IsFat                                   bool
+	IsAcid                                  bool
+	IsHeat                                  bool
+	ContainsPeanut                          bool
+	ContainsDairy                           bool
+	ContainsEgg                             bool
+}
+
+func (q *Queries) GetValidIngredientsWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetValidIngredientsWithIDsRow, error) {
+	rows, err := db.QueryContext(ctx, getValidIngredientsWithIDs, pq.Array(ids))
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetValidIngredientsWithIDsRow{}
+	for rows.Next() {
+		var i GetValidIngredientsWithIDsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.Warning,
+			&i.ContainsEgg,
+			&i.ContainsDairy,
+			&i.ContainsPeanut,
+			&i.ContainsTreeNut,
+			&i.ContainsSoy,
+			&i.ContainsWheat,
+			&i.ContainsShellfish,
+			&i.ContainsSesame,
+			&i.ContainsFish,
+			&i.ContainsGluten,
+			&i.AnimalFlesh,
+			&i.Volumetric,
+			&i.IsLiquid,
+			&i.IconPath,
+			&i.AnimalDerived,
+			&i.PluralName,
+			&i.RestrictToPreparations,
+			&i.MinimumIdealStorageTemperatureInCelsius,
+			&i.MaximumIdealStorageTemperatureInCelsius,
+			&i.StorageInstructions,
+			&i.Slug,
+			&i.ContainsAlcohol,
+			&i.ShoppingSuggestions,
+			&i.IsStarch,
+			&i.IsProtein,
+			&i.IsGrain,
+			&i.IsFruit,
+			&i.IsSalt,
+			&i.IsFat,
+			&i.IsAcid,
+			&i.IsHeat,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getValidInstrumentWithIDs = `-- name: GetValidInstrumentWithIDs :many
 
 SELECT
@@ -34,18 +185,18 @@ WHERE valid_instruments.archived_at IS NULL
 `
 
 type GetValidInstrumentWithIDsRow struct {
+	CreatedAt                      time.Time
+	LastUpdatedAt                  sql.NullTime
+	ArchivedAt                     sql.NullTime
 	ID                             string
 	Name                           string
 	PluralName                     string
 	Description                    string
 	IconPath                       string
+	Slug                           string
 	UsableForStorage               bool
 	DisplayInSummaryLists          bool
 	IncludeInGeneratedInstructions bool
-	Slug                           string
-	CreatedAt                      time.Time
-	LastUpdatedAt                  sql.NullTime
-	ArchivedAt                     sql.NullTime
 }
 
 func (q *Queries) GetValidInstrumentWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetValidInstrumentWithIDsRow, error) {
@@ -106,19 +257,19 @@ WHERE valid_measurement_units.archived_at IS NULL
 `
 
 type GetValidMeasurementUnitsWithIDsRow struct {
-	ID            string
+	CreatedAt     time.Time
+	ArchivedAt    sql.NullTime
+	LastUpdatedAt sql.NullTime
+	PluralName    string
 	Name          string
 	Description   string
-	Volumetric    sql.NullBool
+	ID            string
 	IconPath      string
-	Universal     bool
-	Metric        bool
-	Imperial      bool
 	Slug          string
-	PluralName    string
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	ArchivedAt    sql.NullTime
+	Volumetric    sql.NullBool
+	Imperial      bool
+	Metric        bool
+	Universal     bool
 }
 
 func (q *Queries) GetValidMeasurementUnitsWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetValidMeasurementUnitsWithIDsRow, error) {
@@ -189,28 +340,28 @@ WHERE valid_preparations.archived_at IS NULL
 `
 
 type GetValidPreparationsWithIDsRow struct {
-	ID                          string
-	Name                        string
-	Description                 string
-	IconPath                    string
-	YieldsNothing               bool
-	RestrictToIngredients       bool
-	MinimumIngredientCount      int32
-	MaximumIngredientCount      sql.NullInt32
-	MinimumInstrumentCount      int32
-	MaximumInstrumentCount      sql.NullInt32
-	TemperatureRequired         bool
-	TimeEstimateRequired        bool
-	ConditionExpressionRequired bool
-	ConsumesVessel              bool
-	OnlyForVessels              bool
-	MinimumVesselCount          int32
-	MaximumVesselCount          sql.NullInt32
-	Slug                        string
-	PastTense                   string
 	CreatedAt                   time.Time
 	LastUpdatedAt               sql.NullTime
 	ArchivedAt                  sql.NullTime
+	Name                        string
+	Description                 string
+	IconPath                    string
+	ID                          string
+	Slug                        string
+	PastTense                   string
+	MaximumInstrumentCount      sql.NullInt32
+	MaximumIngredientCount      sql.NullInt32
+	MaximumVesselCount          sql.NullInt32
+	MinimumVesselCount          int32
+	MinimumInstrumentCount      int32
+	MinimumIngredientCount      int32
+	RestrictToIngredients       bool
+	OnlyForVessels              bool
+	ConsumesVessel              bool
+	ConditionExpressionRequired bool
+	TimeEstimateRequired        bool
+	TemperatureRequired         bool
+	YieldsNothing               bool
 }
 
 func (q *Queries) GetValidPreparationsWithIDs(ctx context.Context, db DBTX, dollar_1 []string) ([]*GetValidPreparationsWithIDsRow, error) {
@@ -300,36 +451,36 @@ WHERE valid_vessels.archived_at IS NULL
 `
 
 type GetValidVesselsWithIDsRow struct {
-	ID                                string
+	ValidMeasurementUnitCreatedAt     time.Time
+	CreatedAt                         time.Time
+	ArchivedAt                        sql.NullTime
+	LastUpdatedAt                     sql.NullTime
+	ValidMeasurementUnitArchivedAt    sql.NullTime
+	ValidMeasurementUnitLastUpdatedAt sql.NullTime
+	ValidMeasurementUnitIconPath      string
+	IconPath                          string
 	Name                              string
 	PluralName                        string
-	Description                       string
-	IconPath                          string
-	UsableForStorage                  bool
-	Slug                              string
-	DisplayInSummaryLists             bool
-	IncludeInGeneratedInstructions    bool
-	ValidVesselsCapacity              float64
 	ValidMeasurementUnitID            string
 	ValidMeasurementUnitName          string
 	ValidMeasurementUnitDescription   string
-	ValidMeasurementUnitVolumetric    sql.NullBool
-	ValidMeasurementUnitIconPath      string
-	ValidMeasurementUnitUniversal     bool
-	ValidMeasurementUnitMetric        bool
-	ValidMeasurementUnitImperial      bool
-	ValidMeasurementUnitSlug          string
+	Description                       string
+	ID                                string
+	Shape                             VesselShape
+	Slug                              string
 	ValidMeasurementUnitPluralName    string
-	ValidMeasurementUnitCreatedAt     time.Time
-	ValidMeasurementUnitLastUpdatedAt sql.NullTime
-	ValidMeasurementUnitArchivedAt    sql.NullTime
+	ValidMeasurementUnitSlug          string
 	ValidVesselsWidthInMillimeters    float64
 	ValidVesselsLengthInMillimeters   float64
 	ValidVesselsHeightInMillimeters   float64
-	Shape                             VesselShape
-	CreatedAt                         time.Time
-	LastUpdatedAt                     sql.NullTime
-	ArchivedAt                        sql.NullTime
+	ValidVesselsCapacity              float64
+	ValidMeasurementUnitVolumetric    sql.NullBool
+	ValidMeasurementUnitImperial      bool
+	ValidMeasurementUnitMetric        bool
+	UsableForStorage                  bool
+	DisplayInSummaryLists             bool
+	ValidMeasurementUnitUniversal     bool
+	IncludeInGeneratedInstructions    bool
 }
 
 func (q *Queries) GetValidVesselsWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetValidVesselsWithIDsRow, error) {

@@ -129,47 +129,47 @@ type GetValidPreparationInstrumentsForInstrumentParams struct {
 }
 
 type GetValidPreparationInstrumentsForInstrumentRow struct {
+	ValidPreparationInstrumentCreatedAt           time.Time
+	ValidPreparationCreatedAt                     time.Time
+	ValidInstrumentCreatedAt                      time.Time
+	ValidInstrumentArchivedAt                     sql.NullTime
+	ValidPreparationInstrumentLastUpdatedAt       sql.NullTime
+	ValidPreparationArchivedAt                    sql.NullTime
+	ValidPreparationLastUpdatedAt                 sql.NullTime
+	ValidInstrumentLastUpdatedAt                  sql.NullTime
+	ValidPreparationInstrumentArchivedAt          sql.NullTime
 	ValidPreparationInstrumentID                  string
-	ValidPreparationInstrumentNotes               string
 	ValidPreparationID                            string
+	ValidInstrumentDescription                    string
+	ValidInstrumentPluralName                     string
 	ValidPreparationName                          string
-	ValidPreparationDescription                   string
+	ValidInstrumentIconPath                       string
+	ValidInstrumentName                           string
 	ValidPreparationIconPath                      string
-	ValidPreparationYieldsNothing                 bool
-	ValidPreparationRestrictToIngredients         bool
-	ValidPreparationMinimumIngredientCount        int32
-	ValidPreparationMaximumIngredientCount        sql.NullInt32
-	ValidPreparationMinimumInstrumentCount        int32
-	ValidPreparationMaximumInstrumentCount        sql.NullInt32
-	ValidPreparationTemperatureRequired           bool
-	ValidPreparationTimeEstimateRequired          bool
-	ValidPreparationConditionExpressionRequired   bool
-	ValidPreparationConsumesVessel                bool
-	ValidPreparationOnlyForVessels                bool
-	ValidPreparationMinimumVesselCount            int32
-	ValidPreparationMaximumVesselCount            sql.NullInt32
+	ValidInstrumentSlug                           string
+	ValidInstrumentID                             string
 	ValidPreparationSlug                          string
 	ValidPreparationPastTense                     string
-	ValidPreparationCreatedAt                     time.Time
-	ValidPreparationLastUpdatedAt                 sql.NullTime
-	ValidPreparationArchivedAt                    sql.NullTime
-	ValidInstrumentID                             string
-	ValidInstrumentName                           string
-	ValidInstrumentPluralName                     string
-	ValidInstrumentDescription                    string
-	ValidInstrumentIconPath                       string
+	ValidPreparationInstrumentNotes               string
+	ValidPreparationDescription                   string
+	TotalCount                                    int64
+	FilteredCount                                 int64
+	ValidPreparationMaximumVesselCount            sql.NullInt32
+	ValidPreparationMaximumIngredientCount        sql.NullInt32
+	ValidPreparationMaximumInstrumentCount        sql.NullInt32
+	ValidPreparationMinimumInstrumentCount        int32
+	ValidPreparationMinimumVesselCount            int32
+	ValidPreparationMinimumIngredientCount        int32
 	ValidInstrumentUsableForStorage               bool
 	ValidInstrumentDisplayInSummaryLists          bool
 	ValidInstrumentIncludeInGeneratedInstructions bool
-	ValidInstrumentSlug                           string
-	ValidInstrumentCreatedAt                      time.Time
-	ValidInstrumentLastUpdatedAt                  sql.NullTime
-	ValidInstrumentArchivedAt                     sql.NullTime
-	ValidPreparationInstrumentCreatedAt           time.Time
-	ValidPreparationInstrumentLastUpdatedAt       sql.NullTime
-	ValidPreparationInstrumentArchivedAt          sql.NullTime
-	FilteredCount                                 int64
-	TotalCount                                    int64
+	ValidPreparationOnlyForVessels                bool
+	ValidPreparationConsumesVessel                bool
+	ValidPreparationConditionExpressionRequired   bool
+	ValidPreparationTimeEstimateRequired          bool
+	ValidPreparationTemperatureRequired           bool
+	ValidPreparationRestrictToIngredients         bool
+	ValidPreparationYieldsNothing                 bool
 }
 
 func (q *Queries) GetValidPreparationInstrumentsForInstrument(ctx context.Context, db DBTX, arg *GetValidPreparationInstrumentsForInstrumentParams) ([]*GetValidPreparationInstrumentsForInstrumentRow, error) {

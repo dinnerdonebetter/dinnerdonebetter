@@ -38,16 +38,16 @@ type GetRecipeMediaForRecipeStepParams struct {
 }
 
 type GetRecipeMediaForRecipeStepRow struct {
-	ID                  string
-	BelongsToRecipe     sql.NullString
-	BelongsToRecipeStep sql.NullString
-	MimeType            string
-	InternalPath        string
-	ExternalPath        string
-	Index               int32
 	CreatedAt           time.Time
 	LastUpdatedAt       sql.NullTime
 	ArchivedAt          sql.NullTime
+	ID                  string
+	MimeType            string
+	InternalPath        string
+	ExternalPath        string
+	BelongsToRecipe     sql.NullString
+	BelongsToRecipeStep sql.NullString
+	Index               int32
 }
 
 func (q *Queries) GetRecipeMediaForRecipeStep(ctx context.Context, db DBTX, arg *GetRecipeMediaForRecipeStepParams) ([]*GetRecipeMediaForRecipeStepRow, error) {

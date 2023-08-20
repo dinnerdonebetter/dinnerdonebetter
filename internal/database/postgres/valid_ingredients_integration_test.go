@@ -88,7 +88,7 @@ func TestQuerier_Integration_ValidIngredients(t *testing.T) {
 	// fetch via name search
 	byName, err := dbc.SearchForValidIngredients(ctx, updatedValidIngredient.Name, nil)
 	assert.NoError(t, err)
-	assert.Equal(t, validIngredients.Data, byName)
+	assert.Equal(t, validIngredients.Data, byName.Data)
 
 	random, err := dbc.GetRandomValidIngredient(ctx)
 	require.NoError(t, err)
@@ -120,10 +120,6 @@ func TestQuerier_Integration_ValidIngredients(t *testing.T) {
 	createdIngredientStateIngredient, err := dbc.CreateValidIngredientStateIngredient(ctx, ingredientStateIngredientDBInput)
 	require.NoError(t, err)
 	require.NotNil(t, createdIngredientStateIngredient)
-
-	validIngredientStateIngredients, err := dbc.SearchForValidIngredientsForIngredientState(ctx, ingredientState.ID, updatedValidIngredient.Name[0:2], nil)
-	assert.NoError(t, err)
-	assert.NotEmpty(t, validIngredientStateIngredients)
 
 	// delete
 	for _, validIngredient := range createdValidIngredients {

@@ -20,8 +20,8 @@ WHERE archived_at IS NULL
 `
 
 type UpdateUserAvatarSrcParams struct {
-	AvatarSrc sql.NullString
 	ID        string
+	AvatarSrc sql.NullString
 }
 
 func (q *Queries) UpdateUserAvatarSrc(ctx context.Context, db DBTX, arg *UpdateUserAvatarSrcParams) error {

@@ -91,57 +91,57 @@ LIMIT
 `
 
 type GetValidIngredientPreparationsForPreparationRow struct {
-	ID                                      string
-	Notes                                   string
+	CreatedAt_3                             time.Time
+	CreatedAt                               time.Time
+	CreatedAt_2                             time.Time
+	ArchivedAt                              sql.NullTime
+	LastUpdatedAt                           sql.NullTime
+	LastUpdatedAt_2                         sql.NullTime
+	ArchivedAt_3                            sql.NullTime
+	LastUpdatedAt_3                         sql.NullTime
+	ArchivedAt_2                            sql.NullTime
+	ID_3                                    string
 	ID_2                                    string
-	Name                                    string
-	Description                             string
+	IconPath_2                              string
+	PluralName                              string
+	StorageInstructions                     string
 	IconPath                                string
-	YieldsNothing                           bool
-	RestrictToIngredients                   bool
-	MinimumIngredientCount                  int32
-	MaximumIngredientCount                  sql.NullInt32
-	MinimumInstrumentCount                  int32
-	MaximumInstrumentCount                  sql.NullInt32
-	TemperatureRequired                     bool
-	TimeEstimateRequired                    bool
-	ConditionExpressionRequired             bool
-	ConsumesVessel                          bool
-	OnlyForVessels                          bool
-	MinimumVesselCount                      int32
-	MaximumVesselCount                      sql.NullInt32
+	ID                                      string
+	Description                             string
+	Slug_2                                  string
+	ShoppingSuggestions                     string
 	Slug                                    string
 	PastTense                               string
-	CreatedAt                               time.Time
-	LastUpdatedAt                           sql.NullTime
-	ArchivedAt                              sql.NullTime
-	ID_3                                    string
-	Name_2                                  string
-	Description_2                           string
+	Name                                    string
 	Warning                                 string
-	ContainsEgg                             bool
-	ContainsDairy                           bool
-	ContainsPeanut                          bool
-	ContainsTreeNut                         bool
-	ContainsSoy                             bool
-	ContainsWheat                           bool
-	ContainsShellfish                       bool
-	ContainsSesame                          bool
+	Notes                                   string
+	Description_2                           string
+	Name_2                                  string
+	MaximumIdealStorageTemperatureInCelsius sql.NullString
+	MinimumIdealStorageTemperatureInCelsius sql.NullString
+	MaximumVesselCount                      sql.NullInt32
+	MaximumIngredientCount                  sql.NullInt32
+	MaximumInstrumentCount                  sql.NullInt32
+	MinimumInstrumentCount                  int32
+	MinimumVesselCount                      int32
+	MinimumIngredientCount                  int32
+	IsLiquid                                sql.NullBool
+	ConsumesVessel                          bool
 	ContainsFish                            bool
 	ContainsGluten                          bool
 	AnimalFlesh                             bool
 	Volumetric                              bool
-	IsLiquid                                sql.NullBool
-	IconPath_2                              string
+	ContainsSesame                          bool
+	ContainsShellfish                       bool
 	AnimalDerived                           bool
-	PluralName                              string
+	ContainsWheat                           bool
 	RestrictToPreparations                  bool
-	MinimumIdealStorageTemperatureInCelsius sql.NullString
-	MaximumIdealStorageTemperatureInCelsius sql.NullString
-	StorageInstructions                     string
-	Slug_2                                  string
+	ContainsSoy                             bool
+	ContainsTreeNut                         bool
+	ContainsPeanut                          bool
+	ContainsDairy                           bool
 	ContainsAlcohol                         bool
-	ShoppingSuggestions                     string
+	ContainsEgg                             bool
 	IsStarch                                bool
 	IsProtein                               bool
 	IsGrain                                 bool
@@ -150,12 +150,12 @@ type GetValidIngredientPreparationsForPreparationRow struct {
 	IsFat                                   bool
 	IsAcid                                  bool
 	IsHeat                                  bool
-	CreatedAt_2                             time.Time
-	LastUpdatedAt_2                         sql.NullTime
-	ArchivedAt_2                            sql.NullTime
-	CreatedAt_3                             time.Time
-	LastUpdatedAt_3                         sql.NullTime
-	ArchivedAt_3                            sql.NullTime
+	OnlyForVessels                          bool
+	ConditionExpressionRequired             bool
+	TimeEstimateRequired                    bool
+	TemperatureRequired                     bool
+	RestrictToIngredients                   bool
+	YieldsNothing                           bool
 }
 
 func (q *Queries) GetValidIngredientPreparationsForPreparation(ctx context.Context, db DBTX, validPreparationID string) ([]*GetValidIngredientPreparationsForPreparationRow, error) {

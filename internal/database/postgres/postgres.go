@@ -22,6 +22,7 @@ import (
 	"github.com/Masterminds/squirrel"
 	"github.com/alexedwards/scs/postgresstore"
 	"github.com/alexedwards/scs/v2"
+	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
@@ -45,6 +46,7 @@ type Querier struct {
 	timeFunc                func() time.Time
 	config                  *dbconfig.Config
 	db                      *sql.DB
+	pgxDB                   *pgxpool.Pool
 	connectionURL           string
 	migrateOnce             sync.Once
 	logQueries              bool
@@ -76,8 +78,14 @@ func ProvideDatabaseClient(
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating encryptor/decryptor with secret length %d", len(cfg.OAuth2TokenEncryptionKey))
 	}
 
+	pgxDB, err := pgxpool.New(ctx, cfg.ConnectionDetails)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "initializing PGX pool")
+	}
+
 	c := &Querier{
 		db:                      db,
+		pgxDB:                   pgxDB,
 		config:                  cfg,
 		tracer:                  tracer,
 		logQueries:              cfg.LogQueries,

@@ -29,15 +29,15 @@ SELECT
             users
         WHERE
             users.archived_at IS NULL
-          AND users.created_at > COALESCE(sqlc.narg(created_before)::TIMESTAMP, (SELECT NOW() - interval '999 years'))
-          AND users.created_at < COALESCE(sqlc.narg(created_after)::TIMESTAMP, (SELECT NOW() + interval '999 years'))
+          AND users.created_at > COALESCE(sqlc.narg(created_before), (SELECT NOW() - interval '999 years'))
+          AND users.created_at < COALESCE(sqlc.narg(created_after), (SELECT NOW() + interval '999 years'))
           AND (
                 users.last_updated_at IS NULL
-                OR users.last_updated_at > COALESCE(sqlc.narg(updated_before)::TIMESTAMP, (SELECT NOW() - interval '999 years'))
+                OR users.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - interval '999 years'))
             )
           AND (
                 users.last_updated_at IS NULL
-                OR users.last_updated_at < COALESCE(sqlc.narg(updated_after)::TIMESTAMP, (SELECT NOW() + interval '999 years'))
+                OR users.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + interval '999 years'))
             )
         OFFSET sqlc.narg(query_offset)
     ) as filtered_count,
@@ -52,15 +52,15 @@ SELECT
 FROM users
 WHERE
     users.archived_at IS NULL
-  AND users.created_at > COALESCE(sqlc.narg(created_before)::TIMESTAMP, (SELECT NOW() - interval '999 years'))
-  AND users.created_at < COALESCE(sqlc.narg(created_after)::TIMESTAMP, (SELECT NOW() + interval '999 years'))
+  AND users.created_at > COALESCE(sqlc.narg(created_before), (SELECT NOW() - interval '999 years'))
+  AND users.created_at < COALESCE(sqlc.narg(created_after), (SELECT NOW() + interval '999 years'))
   AND (
         users.last_updated_at IS NULL
-        OR users.last_updated_at > COALESCE(sqlc.narg(updated_before)::TIMESTAMP, (SELECT NOW() - interval '999 years'))
+        OR users.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - interval '999 years'))
     )
   AND (
         users.last_updated_at IS NULL
-        OR users.last_updated_at < COALESCE(sqlc.narg(updated_after)::TIMESTAMP, (SELECT NOW() + interval '999 years'))
+        OR users.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + interval '999 years'))
     )
 OFFSET sqlc.narg(query_offset)
 LIMIT sqlc.narg(query_limit);

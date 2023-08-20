@@ -96,27 +96,27 @@ type GetHouseholdInstrumentOwnershipsParams struct {
 }
 
 type GetHouseholdInstrumentOwnershipsRow struct {
-	ID                             string
-	Notes                          string
-	Quantity                       int32
-	ID_2                           string
-	Name                           string
-	PluralName                     string
-	Description                    string
-	IconPath                       string
-	UsableForStorage               bool
-	DisplayInSummaryLists          bool
-	IncludeInGeneratedInstructions bool
-	Slug                           string
 	CreatedAt                      time.Time
-	LastUpdatedAt                  sql.NullTime
-	ArchivedAt                     sql.NullTime
-	BelongsToHousehold             string
 	CreatedAt_2                    time.Time
-	LastUpdatedAt_2                sql.NullTime
 	ArchivedAt_2                   sql.NullTime
+	LastUpdatedAt_2                sql.NullTime
+	ArchivedAt                     sql.NullTime
+	LastUpdatedAt                  sql.NullTime
+	BelongsToHousehold             string
+	ID_2                           string
+	Notes                          string
+	IconPath                       string
+	ID                             string
+	Slug                           string
+	Description                    string
+	PluralName                     string
+	Name                           string
 	FilteredCount                  int64
 	TotalCount                     int64
+	Quantity                       int32
+	IncludeInGeneratedInstructions bool
+	DisplayInSummaryLists          bool
+	UsableForStorage               bool
 }
 
 func (q *Queries) GetHouseholdInstrumentOwnerships(ctx context.Context, db DBTX, arg *GetHouseholdInstrumentOwnershipsParams) ([]*GetHouseholdInstrumentOwnershipsRow, error) {
@@ -231,18 +231,18 @@ type GetRecipeRatingsParams struct {
 }
 
 type GetRecipeRatingsRow struct {
-	ID            string
-	RecipeID      string
-	Taste         sql.NullString
-	Difficulty    sql.NullString
-	Cleanup       sql.NullString
-	Instructions  sql.NullString
-	Overall       sql.NullString
-	Notes         string
-	ByUser        string
 	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
 	ArchivedAt    sql.NullTime
+	LastUpdatedAt sql.NullTime
+	Notes         string
+	RecipeID      string
+	ID            string
+	ByUser        string
+	Difficulty    sql.NullString
+	Overall       sql.NullString
+	Instructions  sql.NullString
+	Cleanup       sql.NullString
+	Taste         sql.NullString
 	FilteredCount int64
 	TotalCount    int64
 }
@@ -365,28 +365,28 @@ type GetRecipeStepCompletionConditionsParams struct {
 }
 
 type GetRecipeStepCompletionConditionsRow struct {
-	ID                                     string
-	BelongsToRecipeStepCompletionCondition string
-	RecipeStepIngredient                   string
-	ID_2                                   string
-	BelongsToRecipeStep                    string
+	CreatedAt                              time.Time
+	CreatedAt_2                            time.Time
+	ArchivedAt_2                           sql.NullTime
+	LastUpdatedAt_2                        sql.NullTime
+	ArchivedAt                             sql.NullTime
+	LastUpdatedAt                          sql.NullTime
+	PastTense                              string
 	ID_3                                   string
-	Name                                   string
-	Description                            string
 	IconPath                               string
 	Slug                                   string
-	PastTense                              string
+	ID                                     string
 	AttributeType                          IngredientAttributeType
-	CreatedAt                              time.Time
-	LastUpdatedAt                          sql.NullTime
-	ArchivedAt                             sql.NullTime
-	Optional                               bool
+	Name                                   string
+	Description                            string
+	BelongsToRecipeStep                    string
+	BelongsToRecipeStepCompletionCondition string
 	Notes                                  string
-	CreatedAt_2                            time.Time
-	LastUpdatedAt_2                        sql.NullTime
-	ArchivedAt_2                           sql.NullTime
+	ID_2                                   string
+	RecipeStepIngredient                   string
 	FilteredCount                          int64
 	TotalCount                             int64
+	Optional                               bool
 }
 
 func (q *Queries) GetRecipeStepCompletionConditions(ctx context.Context, db DBTX, arg *GetRecipeStepCompletionConditionsParams) ([]*GetRecipeStepCompletionConditionsRow, error) {
@@ -473,15 +473,15 @@ SELECT
             users
         WHERE
             users.archived_at IS NULL
-          AND users.created_at > COALESCE($1::TIMESTAMP, (SELECT NOW() - interval '999 years'))
-          AND users.created_at < COALESCE($2::TIMESTAMP, (SELECT NOW() + interval '999 years'))
+          AND users.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+          AND users.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
           AND (
                 users.last_updated_at IS NULL
-                OR users.last_updated_at > COALESCE($3::TIMESTAMP, (SELECT NOW() - interval '999 years'))
+                OR users.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
             )
           AND (
                 users.last_updated_at IS NULL
-                OR users.last_updated_at < COALESCE($4::TIMESTAMP, (SELECT NOW() + interval '999 years'))
+                OR users.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
             )
         OFFSET $5
     ) as filtered_count,
@@ -496,15 +496,15 @@ SELECT
 FROM users
 WHERE
     users.archived_at IS NULL
-  AND users.created_at > COALESCE($1::TIMESTAMP, (SELECT NOW() - interval '999 years'))
-  AND users.created_at < COALESCE($2::TIMESTAMP, (SELECT NOW() + interval '999 years'))
+  AND users.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+  AND users.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
   AND (
         users.last_updated_at IS NULL
-        OR users.last_updated_at > COALESCE($3::TIMESTAMP, (SELECT NOW() - interval '999 years'))
+        OR users.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
     )
   AND (
         users.last_updated_at IS NULL
-        OR users.last_updated_at < COALESCE($4::TIMESTAMP, (SELECT NOW() + interval '999 years'))
+        OR users.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
     )
 OFFSET $5
 LIMIT $6
@@ -520,29 +520,29 @@ type GetUsersParams struct {
 }
 
 type GetUsersRow struct {
-	ID                           string
-	FirstName                    string
-	LastName                     string
-	Username                     string
-	EmailAddress                 string
-	EmailAddressVerifiedAt       sql.NullTime
-	AvatarSrc                    sql.NullString
-	HashedPassword               string
-	RequiresPasswordChange       bool
+	CreatedAt                    time.Time
+	Birthday                     sql.NullTime
 	PasswordLastChangedAt        sql.NullTime
-	TwoFactorSecret              string
 	TwoFactorSecretVerifiedAt    sql.NullTime
+	ArchivedAt                   sql.NullTime
+	EmailAddressVerifiedAt       sql.NullTime
+	LastUpdatedAt                sql.NullTime
+	LastAcceptedPrivacyPolicy    sql.NullTime
+	LastAcceptedTermsOfService   sql.NullTime
+	HashedPassword               string
+	TwoFactorSecret              string
 	ServiceRole                  string
+	Username                     string
 	UserAccountStatus            string
 	UserAccountStatusExplanation string
-	Birthday                     sql.NullTime
-	LastAcceptedTermsOfService   sql.NullTime
-	LastAcceptedPrivacyPolicy    sql.NullTime
-	CreatedAt                    time.Time
-	LastUpdatedAt                sql.NullTime
-	ArchivedAt                   sql.NullTime
+	ID                           string
+	EmailAddress                 string
+	LastName                     string
+	FirstName                    string
+	AvatarSrc                    sql.NullString
 	FilteredCount                int64
 	TotalCount                   int64
+	RequiresPasswordChange       bool
 }
 
 func (q *Queries) GetUsers(ctx context.Context, db DBTX, arg *GetUsersParams) ([]*GetUsersRow, error) {
@@ -698,50 +698,50 @@ WHERE
 `
 
 type GetValidIngredientGroupsParams struct {
-	Offset          int32
 	CreatedAt       time.Time
 	CreatedAt_2     time.Time
 	LastUpdatedAt   sql.NullTime
 	LastUpdatedAt_2 sql.NullTime
+	Offset          int32
 }
 
 type GetValidIngredientGroupsRow struct {
-	ID                                      string
-	Name                                    string
-	Description                             string
-	Slug                                    string
+	CreatedAt_2                             time.Time
 	CreatedAt                               time.Time
+	CreatedAt_3                             time.Time
+	ArchivedAt_3                            sql.NullTime
+	LastUpdatedAt_2                         sql.NullTime
+	ArchivedAt_2                            sql.NullTime
 	LastUpdatedAt                           sql.NullTime
 	ArchivedAt                              sql.NullTime
-	ID_2                                    string
-	BelongsToGroup                          string
-	ID_3                                    string
+	Slug_2                                  string
+	PluralName                              string
 	Name_2                                  string
 	Description_2                           string
 	Warning                                 string
-	ContainsEgg                             bool
-	ContainsDairy                           bool
-	ContainsPeanut                          bool
-	ContainsTreeNut                         bool
-	ContainsSoy                             bool
-	ContainsWheat                           bool
-	ContainsShellfish                       bool
-	ContainsSesame                          bool
-	ContainsFish                            bool
-	ContainsGluten                          bool
-	AnimalFlesh                             bool
-	Volumetric                              bool
-	IsLiquid                                sql.NullBool
 	IconPath                                string
-	AnimalDerived                           bool
-	PluralName                              string
-	RestrictToPreparations                  bool
-	MinimumIdealStorageTemperatureInCelsius sql.NullString
-	MaximumIdealStorageTemperatureInCelsius sql.NullString
-	StorageInstructions                     string
-	Slug_2                                  string
-	ContainsAlcohol                         bool
+	ID                                      string
+	BelongsToGroup                          string
+	ID_2                                    string
+	Slug                                    string
+	Description                             string
+	Name                                    string
 	ShoppingSuggestions                     string
+	ID_3                                    string
+	StorageInstructions                     string
+	MaximumIdealStorageTemperatureInCelsius sql.NullString
+	MinimumIdealStorageTemperatureInCelsius sql.NullString
+	FilteredCount                           int64
+	TotalCount                              int64
+	IsLiquid                                sql.NullBool
+	AnimalFlesh                             bool
+	RestrictToPreparations                  bool
+	AnimalDerived                           bool
+	Volumetric                              bool
+	ContainsGluten                          bool
+	ContainsFish                            bool
+	ContainsAlcohol                         bool
+	ContainsSesame                          bool
 	IsStarch                                bool
 	IsProtein                               bool
 	IsGrain                                 bool
@@ -750,13 +750,13 @@ type GetValidIngredientGroupsRow struct {
 	IsFat                                   bool
 	IsAcid                                  bool
 	IsHeat                                  bool
-	CreatedAt_2                             time.Time
-	LastUpdatedAt_2                         sql.NullTime
-	ArchivedAt_2                            sql.NullTime
-	CreatedAt_3                             time.Time
-	ArchivedAt_3                            sql.NullTime
-	FilteredCount                           int64
-	TotalCount                              int64
+	ContainsShellfish                       bool
+	ContainsWheat                           bool
+	ContainsSoy                             bool
+	ContainsTreeNut                         bool
+	ContainsPeanut                          bool
+	ContainsDairy                           bool
+	ContainsEgg                             bool
 }
 
 func (q *Queries) GetValidIngredientGroups(ctx context.Context, db DBTX, arg *GetValidIngredientGroupsParams) ([]*GetValidIngredientGroupsRow, error) {
@@ -864,8 +864,8 @@ SELECT
     valid_ingredients.animal_derived,
     valid_ingredients.plural_name,
     valid_ingredients.restrict_to_preparations,
-    valid_ingredients.minimum_ideal_storage_temperature_in_celsius::float,
-    valid_ingredients.maximum_ideal_storage_temperature_in_celsius::float,
+    valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
+    valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
     valid_ingredients.storage_instructions,
     valid_ingredients.slug,
     valid_ingredients.contains_alcohol,
@@ -883,77 +883,101 @@ SELECT
     valid_ingredients.archived_at,
     (
         SELECT
-          COUNT(valid_ingredients.id)
+            COUNT(valid_ingredients.id)
         FROM
-          valid_ingredients
+            valid_ingredients
         WHERE
-          valid_ingredients.archived_at IS NULL
+            valid_ingredients.archived_at IS NULL
+          AND valid_ingredients.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+          AND valid_ingredients.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+          AND (valid_ingredients.last_updated_at IS NULL OR valid_ingredients.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+          AND (valid_ingredients.last_updated_at IS NULL OR valid_ingredients.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
     ) as filtered_count,
     (
         SELECT
-          COUNT(valid_ingredients.id)
+            COUNT(valid_ingredients.id)
         FROM
-          valid_ingredients
+            valid_ingredients
         WHERE
-          valid_ingredients.archived_at IS NULL
+            valid_ingredients.archived_at IS NULL
     ) as total_count
 FROM
   valid_ingredients
 WHERE
   valid_ingredients.archived_at IS NULL
+  AND valid_ingredients.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+  AND valid_ingredients.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+  AND (valid_ingredients.last_updated_at IS NULL OR valid_ingredients.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+  AND (valid_ingredients.last_updated_at IS NULL OR valid_ingredients.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
 GROUP BY
   valid_ingredients.id
 ORDER BY
   valid_ingredients.id
-LIMIT
-  20
+LIMIT $6
+OFFSET $5
 `
 
-type GetValidIngredientsRow struct {
-	ID                                                      string
-	Name                                                    string
-	Description                                             string
-	Warning                                                 string
-	ContainsEgg                                             bool
-	ContainsDairy                                           bool
-	ContainsPeanut                                          bool
-	ContainsTreeNut                                         bool
-	ContainsSoy                                             bool
-	ContainsWheat                                           bool
-	ContainsShellfish                                       bool
-	ContainsSesame                                          bool
-	ContainsFish                                            bool
-	ContainsGluten                                          bool
-	AnimalFlesh                                             bool
-	Volumetric                                              bool
-	IsLiquid                                                sql.NullBool
-	IconPath                                                string
-	AnimalDerived                                           bool
-	PluralName                                              string
-	RestrictToPreparations                                  bool
-	ValidIngredientsMinimumIdealStorageTemperatureInCelsius float64
-	ValidIngredientsMaximumIdealStorageTemperatureInCelsius float64
-	StorageInstructions                                     string
-	Slug                                                    string
-	ContainsAlcohol                                         bool
-	ShoppingSuggestions                                     string
-	IsStarch                                                bool
-	IsProtein                                               bool
-	IsGrain                                                 bool
-	IsFruit                                                 bool
-	IsSalt                                                  bool
-	IsFat                                                   bool
-	IsAcid                                                  bool
-	IsHeat                                                  bool
-	CreatedAt                                               time.Time
-	LastUpdatedAt                                           sql.NullTime
-	ArchivedAt                                              sql.NullTime
-	FilteredCount                                           int64
-	TotalCount                                              int64
+type GetValidIngredientsParams struct {
+	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	UpdatedBefore sql.NullTime
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
 }
 
-func (q *Queries) GetValidIngredients(ctx context.Context, db DBTX) ([]*GetValidIngredientsRow, error) {
-	rows, err := db.QueryContext(ctx, getValidIngredients)
+type GetValidIngredientsRow struct {
+	CreatedAt                               time.Time
+	ArchivedAt                              sql.NullTime
+	LastUpdatedAt                           sql.NullTime
+	IconPath                                string
+	Name                                    string
+	Description                             string
+	Warning                                 string
+	PluralName                              string
+	ID                                      string
+	ShoppingSuggestions                     string
+	Slug                                    string
+	StorageInstructions                     string
+	MaximumIdealStorageTemperatureInCelsius sql.NullString
+	MinimumIdealStorageTemperatureInCelsius sql.NullString
+	FilteredCount                           int64
+	TotalCount                              int64
+	IsLiquid                                sql.NullBool
+	RestrictToPreparations                  bool
+	IsProtein                               bool
+	Volumetric                              bool
+	AnimalFlesh                             bool
+	ContainsGluten                          bool
+	ContainsFish                            bool
+	ContainsSesame                          bool
+	ContainsShellfish                       bool
+	ContainsAlcohol                         bool
+	ContainsWheat                           bool
+	IsStarch                                bool
+	AnimalDerived                           bool
+	IsGrain                                 bool
+	IsFruit                                 bool
+	IsSalt                                  bool
+	IsFat                                   bool
+	IsAcid                                  bool
+	IsHeat                                  bool
+	ContainsSoy                             bool
+	ContainsTreeNut                         bool
+	ContainsPeanut                          bool
+	ContainsDairy                           bool
+	ContainsEgg                             bool
+}
+
+func (q *Queries) GetValidIngredients(ctx context.Context, db DBTX, arg *GetValidIngredientsParams) ([]*GetValidIngredientsRow, error) {
+	rows, err := db.QueryContext(ctx, getValidIngredients,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedAfter,
+		arg.UpdatedBefore,
+		arg.QueryOffset,
+		arg.QueryLimit,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -983,8 +1007,8 @@ func (q *Queries) GetValidIngredients(ctx context.Context, db DBTX) ([]*GetValid
 			&i.AnimalDerived,
 			&i.PluralName,
 			&i.RestrictToPreparations,
-			&i.ValidIngredientsMinimumIdealStorageTemperatureInCelsius,
-			&i.ValidIngredientsMaximumIdealStorageTemperatureInCelsius,
+			&i.MinimumIdealStorageTemperatureInCelsius,
+			&i.MaximumIdealStorageTemperatureInCelsius,
 			&i.StorageInstructions,
 			&i.Slug,
 			&i.ContainsAlcohol,
@@ -1077,20 +1101,20 @@ type GetValidInstrumentsParams struct {
 }
 
 type GetValidInstrumentsRow struct {
-	ID                             string
-	Name                           string
-	PluralName                     string
+	CreatedAt                      time.Time
+	ArchivedAt                     sql.NullTime
+	LastUpdatedAt                  sql.NullTime
 	Description                    string
 	IconPath                       string
+	Slug                           string
+	ID                             string
+	PluralName                     string
+	Name                           string
+	FilteredCount                  int64
+	TotalCount                     int64
 	UsableForStorage               bool
 	DisplayInSummaryLists          bool
 	IncludeInGeneratedInstructions bool
-	Slug                           string
-	CreatedAt                      time.Time
-	LastUpdatedAt                  sql.NullTime
-	ArchivedAt                     sql.NullTime
-	FilteredCount                  int64
-	TotalCount                     int64
 }
 
 func (q *Queries) GetValidInstruments(ctx context.Context, db DBTX, arg *GetValidInstrumentsParams) ([]*GetValidInstrumentsRow, error) {
@@ -1212,21 +1236,21 @@ type GetValidMeasurementUnitsParams struct {
 }
 
 type GetValidMeasurementUnitsRow struct {
-	ID            string
-	Name          string
-	Description   string
-	Volumetric    sql.NullBool
-	IconPath      string
-	Universal     bool
-	Metric        bool
-	Imperial      bool
-	Slug          string
-	PluralName    string
 	CreatedAt     time.Time
 	LastUpdatedAt sql.NullTime
 	ArchivedAt    sql.NullTime
-	FilteredCount int64
+	Name          string
+	Description   string
+	ID            string
+	IconPath      string
+	Slug          string
+	PluralName    string
 	TotalCount    int64
+	FilteredCount int64
+	Volumetric    sql.NullBool
+	Imperial      bool
+	Metric        bool
+	Universal     bool
 }
 
 func (q *Queries) GetValidMeasurementUnits(ctx context.Context, db DBTX, arg *GetValidMeasurementUnitsParams) ([]*GetValidMeasurementUnitsRow, error) {
@@ -1389,47 +1413,47 @@ type GetValidPreparationInstrumentsParams struct {
 }
 
 type GetValidPreparationInstrumentsRow struct {
+	ValidPreparationInstrumentCreatedAt           time.Time
+	ValidPreparationCreatedAt                     time.Time
+	ValidInstrumentCreatedAt                      time.Time
+	ValidInstrumentArchivedAt                     sql.NullTime
+	ValidPreparationInstrumentLastUpdatedAt       sql.NullTime
+	ValidPreparationArchivedAt                    sql.NullTime
+	ValidPreparationLastUpdatedAt                 sql.NullTime
+	ValidInstrumentLastUpdatedAt                  sql.NullTime
+	ValidPreparationInstrumentArchivedAt          sql.NullTime
 	ValidPreparationInstrumentID                  string
-	ValidPreparationInstrumentNotes               string
 	ValidPreparationID                            string
+	ValidInstrumentDescription                    string
+	ValidInstrumentPluralName                     string
 	ValidPreparationName                          string
-	ValidPreparationDescription                   string
+	ValidInstrumentIconPath                       string
+	ValidInstrumentName                           string
 	ValidPreparationIconPath                      string
-	ValidPreparationYieldsNothing                 bool
-	ValidPreparationRestrictToIngredients         bool
-	ValidPreparationMinimumIngredientCount        int32
-	ValidPreparationMaximumIngredientCount        sql.NullInt32
-	ValidPreparationMinimumInstrumentCount        int32
-	ValidPreparationMaximumInstrumentCount        sql.NullInt32
-	ValidPreparationTemperatureRequired           bool
-	ValidPreparationTimeEstimateRequired          bool
-	ValidPreparationConditionExpressionRequired   bool
-	ValidPreparationConsumesVessel                bool
-	ValidPreparationOnlyForVessels                bool
-	ValidPreparationMinimumVesselCount            int32
-	ValidPreparationMaximumVesselCount            sql.NullInt32
+	ValidInstrumentSlug                           string
+	ValidInstrumentID                             string
 	ValidPreparationSlug                          string
 	ValidPreparationPastTense                     string
-	ValidPreparationCreatedAt                     time.Time
-	ValidPreparationLastUpdatedAt                 sql.NullTime
-	ValidPreparationArchivedAt                    sql.NullTime
-	ValidInstrumentID                             string
-	ValidInstrumentName                           string
-	ValidInstrumentPluralName                     string
-	ValidInstrumentDescription                    string
-	ValidInstrumentIconPath                       string
+	ValidPreparationInstrumentNotes               string
+	ValidPreparationDescription                   string
+	TotalCount                                    int64
+	FilteredCount                                 int64
+	ValidPreparationMaximumVesselCount            sql.NullInt32
+	ValidPreparationMaximumIngredientCount        sql.NullInt32
+	ValidPreparationMaximumInstrumentCount        sql.NullInt32
+	ValidPreparationMinimumInstrumentCount        int32
+	ValidPreparationMinimumVesselCount            int32
+	ValidPreparationMinimumIngredientCount        int32
 	ValidInstrumentUsableForStorage               bool
 	ValidInstrumentDisplayInSummaryLists          bool
 	ValidInstrumentIncludeInGeneratedInstructions bool
-	ValidInstrumentSlug                           string
-	ValidInstrumentCreatedAt                      time.Time
-	ValidInstrumentLastUpdatedAt                  sql.NullTime
-	ValidInstrumentArchivedAt                     sql.NullTime
-	ValidPreparationInstrumentCreatedAt           time.Time
-	ValidPreparationInstrumentLastUpdatedAt       sql.NullTime
-	ValidPreparationInstrumentArchivedAt          sql.NullTime
-	FilteredCount                                 int64
-	TotalCount                                    int64
+	ValidPreparationOnlyForVessels                bool
+	ValidPreparationConsumesVessel                bool
+	ValidPreparationConditionExpressionRequired   bool
+	ValidPreparationTimeEstimateRequired          bool
+	ValidPreparationTemperatureRequired           bool
+	ValidPreparationRestrictToIngredients         bool
+	ValidPreparationYieldsNothing                 bool
 }
 
 func (q *Queries) GetValidPreparationInstruments(ctx context.Context, db DBTX, arg *GetValidPreparationInstrumentsParams) ([]*GetValidPreparationInstrumentsRow, error) {
@@ -1631,65 +1655,65 @@ type GetValidPreparationVesselsParams struct {
 }
 
 type GetValidPreparationVesselsRow struct {
-	ValidPreparationVesselID                    string
-	ValidPreparationVesselNotes                 string
-	ValidPreparationID                          string
-	ValidPreparationName                        string
-	ValidPreparationDescription                 string
-	ValidPreparationIconPath                    string
-	ValidPreparationYieldsNothing               bool
-	ValidPreparationRestrictToIngredients       bool
-	ValidPreparationMinimumIngredientCount      int32
-	ValidPreparationMaximumIngredientCount      sql.NullInt32
-	ValidPreparationMinimumInstrumentCount      int32
-	ValidPreparationMaximumInstrumentCount      sql.NullInt32
-	ValidPreparationTemperatureRequired         bool
-	ValidPreparationTimeEstimateRequired        bool
-	ValidPreparationConditionExpressionRequired bool
-	ValidPreparationConsumesVessel              bool
-	ValidPreparationOnlyForVessels              bool
-	ValidPreparationMinimumVesselCount          int32
-	ValidPreparationMaximumVesselCount          sql.NullInt32
-	ValidPreparationSlug                        string
-	ValidPreparationPastTense                   string
 	ValidPreparationCreatedAt                   time.Time
-	ValidPreparationLastUpdatedAt               sql.NullTime
+	ValidPreparationVesselCreatedAt             time.Time
+	ValidVesselCreatedAt                        time.Time
+	ValidMeasurementUnitArchivedAt              sql.NullTime
 	ValidPreparationArchivedAt                  sql.NullTime
+	ValidPreparationLastUpdatedAt               sql.NullTime
+	ValidMeasurementUnitCreatedAt               sql.NullTime
+	ValidMeasurementUnitLastUpdatedAt           sql.NullTime
+	ValidPreparationVesselArchivedAt            sql.NullTime
+	ValidPreparationVesselLastUpdatedAt         sql.NullTime
+	ValidVesselArchivedAt                       sql.NullTime
+	ValidVesselLastUpdatedAt                    sql.NullTime
+	ValidVesselShape                            VesselShape
+	ValidPreparationSlug                        string
+	ValidPreparationIconPath                    string
+	ValidPreparationDescription                 string
+	ValidPreparationVesselID                    string
+	ValidVesselSlug                             string
+	ValidVesselIconPath                         string
+	ValidVesselDescription                      string
+	ValidPreparationPastTense                   string
+	ValidPreparationName                        string
+	ValidPreparationID                          string
+	ValidPreparationVesselNotes                 string
 	ValidVesselID                               string
 	ValidVesselName                             string
 	ValidVesselPluralName                       string
-	ValidVesselDescription                      string
-	ValidVesselIconPath                         string
+	ValidMeasurementUnitPluralName              sql.NullString
+	ValidMeasurementUnitSlug                    sql.NullString
+	ValidMeasurementUnitIconPath                sql.NullString
+	ValidMeasurementUnitDescription             sql.NullString
+	ValidMeasurementUnitName                    sql.NullString
+	ValidMeasurementUnitID                      sql.NullString
+	ValidVesselWidthInMillimeters               float64
+	TotalCount                                  int64
+	FilteredCount                               int64
+	ValidVesselCapacity                         float64
+	ValidVesselHeightInMillimeters              float64
+	ValidVesselLengthInMillimeters              float64
+	ValidPreparationMaximumIngredientCount      sql.NullInt32
+	ValidPreparationMaximumInstrumentCount      sql.NullInt32
+	ValidPreparationMaximumVesselCount          sql.NullInt32
+	ValidPreparationMinimumVesselCount          int32
+	ValidPreparationMinimumIngredientCount      int32
+	ValidPreparationMinimumInstrumentCount      int32
+	ValidMeasurementUnitUniversal               sql.NullBool
+	ValidMeasurementUnitImperial                sql.NullBool
+	ValidMeasurementUnitVolumetric              sql.NullBool
+	ValidMeasurementUnitMetric                  sql.NullBool
+	ValidPreparationOnlyForVessels              bool
+	ValidPreparationTemperatureRequired         bool
+	ValidPreparationTimeEstimateRequired        bool
+	ValidPreparationConsumesVessel              bool
 	ValidVesselUsableForStorage                 bool
-	ValidVesselSlug                             string
+	ValidPreparationConditionExpressionRequired bool
+	ValidPreparationRestrictToIngredients       bool
+	ValidPreparationYieldsNothing               bool
 	ValidVesselDisplayInSummaryLists            bool
 	ValidVesselIncludeInGeneratedInstructions   bool
-	ValidVesselCapacity                         float64
-	ValidMeasurementUnitID                      sql.NullString
-	ValidMeasurementUnitName                    sql.NullString
-	ValidMeasurementUnitDescription             sql.NullString
-	ValidMeasurementUnitVolumetric              sql.NullBool
-	ValidMeasurementUnitIconPath                sql.NullString
-	ValidMeasurementUnitUniversal               sql.NullBool
-	ValidMeasurementUnitMetric                  sql.NullBool
-	ValidMeasurementUnitImperial                sql.NullBool
-	ValidMeasurementUnitSlug                    sql.NullString
-	ValidMeasurementUnitPluralName              sql.NullString
-	ValidMeasurementUnitCreatedAt               sql.NullTime
-	ValidMeasurementUnitLastUpdatedAt           sql.NullTime
-	ValidMeasurementUnitArchivedAt              sql.NullTime
-	ValidVesselWidthInMillimeters               float64
-	ValidVesselLengthInMillimeters              float64
-	ValidVesselHeightInMillimeters              float64
-	ValidVesselShape                            VesselShape
-	ValidVesselCreatedAt                        time.Time
-	ValidVesselLastUpdatedAt                    sql.NullTime
-	ValidVesselArchivedAt                       sql.NullTime
-	ValidPreparationVesselCreatedAt             time.Time
-	ValidPreparationVesselLastUpdatedAt         sql.NullTime
-	ValidPreparationVesselArchivedAt            sql.NullTime
-	FilteredCount                               int64
-	TotalCount                                  int64
 }
 
 func (q *Queries) GetValidPreparationVessels(ctx context.Context, db DBTX, arg *GetValidPreparationVesselsParams) ([]*GetValidPreparationVesselsRow, error) {
@@ -1866,30 +1890,30 @@ type GetValidPreparationsParams struct {
 }
 
 type GetValidPreparationsRow struct {
-	ID                          string
-	Name                        string
-	Description                 string
-	IconPath                    string
-	YieldsNothing               bool
-	RestrictToIngredients       bool
-	MinimumIngredientCount      int32
-	MaximumIngredientCount      sql.NullInt32
-	MinimumInstrumentCount      int32
-	MaximumInstrumentCount      sql.NullInt32
-	TemperatureRequired         bool
-	TimeEstimateRequired        bool
-	ConditionExpressionRequired bool
-	ConsumesVessel              bool
-	OnlyForVessels              bool
-	MinimumVesselCount          int32
-	MaximumVesselCount          sql.NullInt32
-	Slug                        string
-	PastTense                   string
 	CreatedAt                   time.Time
-	LastUpdatedAt               sql.NullTime
 	ArchivedAt                  sql.NullTime
-	FilteredCount               int64
+	LastUpdatedAt               sql.NullTime
+	ID                          string
+	IconPath                    string
+	Description                 string
+	Name                        string
+	PastTense                   string
+	Slug                        string
 	TotalCount                  int64
+	FilteredCount               int64
+	MaximumVesselCount          sql.NullInt32
+	MaximumIngredientCount      sql.NullInt32
+	MaximumInstrumentCount      sql.NullInt32
+	MinimumIngredientCount      int32
+	MinimumVesselCount          int32
+	MinimumInstrumentCount      int32
+	OnlyForVessels              bool
+	ConsumesVessel              bool
+	ConditionExpressionRequired bool
+	TimeEstimateRequired        bool
+	TemperatureRequired         bool
+	RestrictToIngredients       bool
+	YieldsNothing               bool
 }
 
 func (q *Queries) GetValidPreparations(ctx context.Context, db DBTX, arg *GetValidPreparationsParams) ([]*GetValidPreparationsRow, error) {
@@ -2028,26 +2052,26 @@ type GetValidVesselsParams struct {
 }
 
 type GetValidVesselsRow struct {
+	CreatedAt                       time.Time
+	ArchivedAt                      sql.NullTime
+	LastUpdatedAt                   sql.NullTime
 	ID                              string
 	Name                            string
 	PluralName                      string
 	Description                     string
 	IconPath                        string
-	UsableForStorage                bool
 	Slug                            string
-	DisplayInSummaryLists           bool
-	IncludeInGeneratedInstructions  bool
-	ValidVesselsCapacity            float64
+	Shape                           VesselShape
 	CapacityUnit                    sql.NullString
 	ValidVesselsWidthInMillimeters  float64
 	ValidVesselsLengthInMillimeters float64
 	ValidVesselsHeightInMillimeters float64
-	Shape                           VesselShape
-	CreatedAt                       time.Time
-	LastUpdatedAt                   sql.NullTime
-	ArchivedAt                      sql.NullTime
+	ValidVesselsCapacity            float64
 	FilteredCount                   int64
 	TotalCount                      int64
+	IncludeInGeneratedInstructions  bool
+	DisplayInSummaryLists           bool
+	UsableForStorage                bool
 }
 
 func (q *Queries) GetValidVessels(ctx context.Context, db DBTX, arg *GetValidVesselsParams) ([]*GetValidVesselsRow, error) {

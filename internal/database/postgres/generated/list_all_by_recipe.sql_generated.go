@@ -44,24 +44,24 @@ WHERE recipe_prep_tasks.archived_at IS NULL
 `
 
 type ListAllRecipePrepTasksByRecipeRow struct {
-	ID                                     sql.NullString
-	Name                                   sql.NullString
-	Description                            sql.NullString
-	Notes                                  sql.NullString
-	Optional                               sql.NullBool
-	ExplicitStorageInstructions            sql.NullString
-	MinimumTimeBufferBeforeRecipeInSeconds sql.NullInt32
-	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
+	CreatedAt                              sql.NullTime
+	ArchivedAt                             sql.NullTime
+	LastUpdatedAt                          sql.NullTime
 	StorageType                            NullStorageContainerType
+	Description                            sql.NullString
+	ExplicitStorageInstructions            sql.NullString
+	BelongsToRecipePrepTask                sql.NullString
+	BelongsToRecipeStep                    sql.NullString
+	ID                                     sql.NullString
 	MinimumStorageTemperatureInCelsius     sql.NullString
 	MaximumStorageTemperatureInCelsius     sql.NullString
 	BelongsToRecipe                        sql.NullString
-	CreatedAt                              sql.NullTime
-	LastUpdatedAt                          sql.NullTime
-	ArchivedAt                             sql.NullTime
+	Notes                                  sql.NullString
 	ID_2                                   sql.NullString
-	BelongsToRecipeStep                    sql.NullString
-	BelongsToRecipePrepTask                sql.NullString
+	Name                                   sql.NullString
+	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
+	MinimumTimeBufferBeforeRecipeInSeconds sql.NullInt32
+	Optional                               sql.NullBool
 	SatisfiesRecipeStep                    sql.NullBool
 }
 

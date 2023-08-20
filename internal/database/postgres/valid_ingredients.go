@@ -2,156 +2,17 @@ package postgres
 
 import (
 	"context"
-	_ "embed"
-	"github.com/dinnerdonebetter/backend/internal/database"
+
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-
-	"github.com/Masterminds/squirrel"
-)
-
-const (
-	validIngredientsTable = "valid_ingredients"
 )
 
 var (
 	_ types.ValidIngredientDataManager = (*Querier)(nil)
-
-	// validIngredientsTableColumns are the columns for the valid_ingredients table.
-	validIngredientsTableColumns = []string{
-		"valid_ingredients.id",
-		"valid_ingredients.name",
-		"valid_ingredients.description",
-		"valid_ingredients.warning",
-		"valid_ingredients.contains_egg",
-		"valid_ingredients.contains_dairy",
-		"valid_ingredients.contains_peanut",
-		"valid_ingredients.contains_tree_nut",
-		"valid_ingredients.contains_soy",
-		"valid_ingredients.contains_wheat",
-		"valid_ingredients.contains_shellfish",
-		"valid_ingredients.contains_sesame",
-		"valid_ingredients.contains_fish",
-		"valid_ingredients.contains_gluten",
-		"valid_ingredients.animal_flesh",
-		"valid_ingredients.volumetric",
-		"valid_ingredients.is_liquid",
-		"valid_ingredients.icon_path",
-		"valid_ingredients.animal_derived",
-		"valid_ingredients.plural_name",
-		"valid_ingredients.restrict_to_preparations",
-		"valid_ingredients.minimum_ideal_storage_temperature_in_celsius",
-		"valid_ingredients.maximum_ideal_storage_temperature_in_celsius",
-		"valid_ingredients.storage_instructions",
-		"valid_ingredients.slug",
-		"valid_ingredients.contains_alcohol",
-		"valid_ingredients.shopping_suggestions",
-		"valid_ingredients.is_starch",
-		"valid_ingredients.is_protein",
-		"valid_ingredients.is_grain",
-		"valid_ingredients.is_fruit",
-		"valid_ingredients.is_salt",
-		"valid_ingredients.is_fat",
-		"valid_ingredients.is_acid",
-		"valid_ingredients.is_heat",
-		"valid_ingredients.created_at",
-		"valid_ingredients.last_updated_at",
-		"valid_ingredients.archived_at",
-	}
 )
-
-// scanValidIngredient takes a database Scanner (i.e. *sql.Row) and scans the result into a valid ingredient struct.
-func (q *Querier) scanValidIngredient(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.ValidIngredient, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	x = &types.ValidIngredient{}
-
-	targetVars := []any{
-		&x.ID,
-		&x.Name,
-		&x.Description,
-		&x.Warning,
-		&x.ContainsEgg,
-		&x.ContainsDairy,
-		&x.ContainsPeanut,
-		&x.ContainsTreeNut,
-		&x.ContainsSoy,
-		&x.ContainsWheat,
-		&x.ContainsShellfish,
-		&x.ContainsSesame,
-		&x.ContainsFish,
-		&x.ContainsGluten,
-		&x.AnimalFlesh,
-		&x.IsMeasuredVolumetrically,
-		&x.IsLiquid,
-		&x.IconPath,
-		&x.AnimalDerived,
-		&x.PluralName,
-		&x.RestrictToPreparations,
-		&x.MinimumIdealStorageTemperatureInCelsius,
-		&x.MaximumIdealStorageTemperatureInCelsius,
-		&x.StorageInstructions,
-		&x.Slug,
-		&x.ContainsAlcohol,
-		&x.ShoppingSuggestions,
-		&x.IsStarch,
-		&x.IsProtein,
-		&x.IsGrain,
-		&x.IsFruit,
-		&x.IsSalt,
-		&x.IsFat,
-		&x.IsAcid,
-		&x.IsHeat,
-		&x.CreatedAt,
-		&x.LastUpdatedAt,
-		&x.ArchivedAt,
-	}
-
-	if includeCounts {
-		targetVars = append(targetVars, &filteredCount, &totalCount)
-	}
-
-	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "")
-	}
-
-	return x, filteredCount, totalCount, nil
-}
-
-// scanValidIngredients takes some database rows and turns them into a slice of valid ingredients.
-func (q *Querier) scanValidIngredients(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validIngredients []*types.ValidIngredient, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	for rows.Next() {
-		x, fc, tc, scanErr := q.scanValidIngredient(ctx, rows, includeCounts)
-		if scanErr != nil {
-			return nil, 0, 0, scanErr
-		}
-
-		if includeCounts {
-			if filteredCount == 0 {
-				filteredCount = fc
-			}
-
-			if totalCount == 0 {
-				totalCount = tc
-			}
-		}
-
-		validIngredients = append(validIngredients, x)
-	}
-
-	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
-	}
-
-	return validIngredients, filteredCount, totalCount, nil
-}
 
 // ValidIngredientExists fetches whether a valid ingredient exists from the database.
 func (q *Querier) ValidIngredientExists(ctx context.Context, validIngredientID string) (exists bool, err error) {
@@ -174,9 +35,6 @@ func (q *Querier) ValidIngredientExists(ctx context.Context, validIngredientID s
 	return result, nil
 }
 
-//go:embed queries/valid_ingredients/get_one.sql
-var getValidIngredientQuery string
-
 // GetValidIngredient fetches a valid ingredient from the database.
 func (q *Querier) GetValidIngredient(ctx context.Context, validIngredientID string) (*types.ValidIngredient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -190,43 +48,111 @@ func (q *Querier) GetValidIngredient(ctx context.Context, validIngredientID stri
 	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
 	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
 
-	args := []any{
-		validIngredientID,
+	result, err := q.generatedQuerier.GetValidIngredient(ctx, q.db, validIngredientID)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "fetching valid ingredient")
 	}
 
-	row := q.getOneRow(ctx, q.db, "valid ingredient", getValidIngredientQuery, args)
-
-	validIngredient, _, _, err := q.scanValidIngredient(ctx, row, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredient")
+	validIngredient := &types.ValidIngredient{
+		CreatedAt:                               result.CreatedAt,
+		LastUpdatedAt:                           timePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:                              timePointerFromNullTime(result.ArchivedAt),
+		MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
+		MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
+		IconPath:                                result.IconPath,
+		Warning:                                 result.Warning,
+		PluralName:                              result.PluralName,
+		StorageInstructions:                     result.StorageInstructions,
+		Name:                                    result.Name,
+		ID:                                      result.ID,
+		Description:                             result.Description,
+		Slug:                                    result.Slug,
+		ShoppingSuggestions:                     result.ShoppingSuggestions,
+		ContainsShellfish:                       result.ContainsShellfish,
+		IsMeasuredVolumetrically:                result.Volumetric,
+		IsLiquid:                                boolFromNullBool(result.IsLiquid),
+		ContainsPeanut:                          result.ContainsPeanut,
+		ContainsTreeNut:                         result.ContainsTreeNut,
+		ContainsEgg:                             result.ContainsEgg,
+		ContainsWheat:                           result.ContainsWheat,
+		ContainsSoy:                             result.ContainsSoy,
+		AnimalDerived:                           result.AnimalDerived,
+		RestrictToPreparations:                  result.RestrictToPreparations,
+		ContainsSesame:                          result.ContainsSesame,
+		ContainsFish:                            result.ContainsFish,
+		ContainsGluten:                          result.ContainsGluten,
+		ContainsDairy:                           result.ContainsDairy,
+		ContainsAlcohol:                         result.ContainsAlcohol,
+		AnimalFlesh:                             result.AnimalFlesh,
+		IsStarch:                                result.IsStarch,
+		IsProtein:                               result.IsProtein,
+		IsGrain:                                 result.IsGrain,
+		IsFruit:                                 result.IsFruit,
+		IsSalt:                                  result.IsSalt,
+		IsFat:                                   result.IsFat,
+		IsAcid:                                  result.IsAcid,
+		IsHeat:                                  result.IsHeat,
 	}
 
 	return validIngredient, nil
 }
-
-//go:embed queries/valid_ingredients/get_random.sql
-var getRandomValidIngredientQuery string
 
 // GetRandomValidIngredient fetches a valid ingredient from the database.
 func (q *Querier) GetRandomValidIngredient(ctx context.Context) (*types.ValidIngredient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	row := q.getOneRow(ctx, q.db, "valid ingredient", getRandomValidIngredientQuery, nil)
-
-	validIngredient, _, _, err := q.scanValidIngredient(ctx, row, false)
+	result, err := q.generatedQuerier.GetRandomValidIngredient(ctx, q.db)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "scanning valid ingredient")
+		return nil, observability.PrepareError(err, span, "fetching random valid ingredient")
+	}
+
+	validIngredient := &types.ValidIngredient{
+		CreatedAt:                               result.CreatedAt,
+		LastUpdatedAt:                           timePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:                              timePointerFromNullTime(result.ArchivedAt),
+		MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
+		MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
+		IconPath:                                result.IconPath,
+		Warning:                                 result.Warning,
+		PluralName:                              result.PluralName,
+		StorageInstructions:                     result.StorageInstructions,
+		Name:                                    result.Name,
+		ID:                                      result.ID,
+		Description:                             result.Description,
+		Slug:                                    result.Slug,
+		ShoppingSuggestions:                     result.ShoppingSuggestions,
+		ContainsShellfish:                       result.ContainsShellfish,
+		IsMeasuredVolumetrically:                result.Volumetric,
+		IsLiquid:                                boolFromNullBool(result.IsLiquid),
+		ContainsPeanut:                          result.ContainsPeanut,
+		ContainsTreeNut:                         result.ContainsTreeNut,
+		ContainsEgg:                             result.ContainsEgg,
+		ContainsWheat:                           result.ContainsWheat,
+		ContainsSoy:                             result.ContainsSoy,
+		AnimalDerived:                           result.AnimalDerived,
+		RestrictToPreparations:                  result.RestrictToPreparations,
+		ContainsSesame:                          result.ContainsSesame,
+		ContainsFish:                            result.ContainsFish,
+		ContainsGluten:                          result.ContainsGluten,
+		ContainsDairy:                           result.ContainsDairy,
+		ContainsAlcohol:                         result.ContainsAlcohol,
+		AnimalFlesh:                             result.AnimalFlesh,
+		IsStarch:                                result.IsStarch,
+		IsProtein:                               result.IsProtein,
+		IsGrain:                                 result.IsGrain,
+		IsFruit:                                 result.IsFruit,
+		IsSalt:                                  result.IsSalt,
+		IsFat:                                   result.IsFat,
+		IsAcid:                                  result.IsAcid,
+		IsHeat:                                  result.IsHeat,
 	}
 
 	return validIngredient, nil
 }
 
-//go:embed queries/valid_ingredients/search.sql
-var validIngredientSearchQuery string
-
 // SearchForValidIngredients fetches a valid ingredient from the database.
-func (q *Querier) SearchForValidIngredients(ctx context.Context, query string, filter *types.QueryFilter) ([]*types.ValidIngredient, error) {
+func (q *Querier) SearchForValidIngredients(ctx context.Context, query string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredient], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -242,25 +168,62 @@ func (q *Querier) SearchForValidIngredients(ctx context.Context, query string, f
 		filter = types.DefaultQueryFilter()
 	}
 
-	args := []any{
-		query,
+	x := &types.QueryFilteredResult[types.ValidIngredient]{
+		Pagination: filter.ToPagination(),
 	}
 
-	rows, err := q.getRows(ctx, q.db, "valid ingredients", validIngredientSearchQuery, args)
+	results, err := q.generatedQuerier.SearchForValidIngredients(ctx, q.db, query)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredients list retrieval query")
+		return nil, observability.PrepareError(err, span, "fetching valid ingredient")
 	}
 
-	x, _, _, err := q.scanValidIngredients(ctx, rows, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredients")
+	for _, result := range results {
+		validIngredient := &types.ValidIngredient{
+			CreatedAt:                               result.CreatedAt,
+			LastUpdatedAt:                           timePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:                              timePointerFromNullTime(result.ArchivedAt),
+			MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
+			MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
+			IconPath:                                result.IconPath,
+			Warning:                                 result.Warning,
+			PluralName:                              result.PluralName,
+			StorageInstructions:                     result.StorageInstructions,
+			Name:                                    result.Name,
+			ID:                                      result.ID,
+			Description:                             result.Description,
+			Slug:                                    result.Slug,
+			ShoppingSuggestions:                     result.ShoppingSuggestions,
+			ContainsShellfish:                       result.ContainsShellfish,
+			IsMeasuredVolumetrically:                result.Volumetric,
+			IsLiquid:                                boolFromNullBool(result.IsLiquid),
+			ContainsPeanut:                          result.ContainsPeanut,
+			ContainsTreeNut:                         result.ContainsTreeNut,
+			ContainsEgg:                             result.ContainsEgg,
+			ContainsWheat:                           result.ContainsWheat,
+			ContainsSoy:                             result.ContainsSoy,
+			AnimalDerived:                           result.AnimalDerived,
+			RestrictToPreparations:                  result.RestrictToPreparations,
+			ContainsSesame:                          result.ContainsSesame,
+			ContainsFish:                            result.ContainsFish,
+			ContainsGluten:                          result.ContainsGluten,
+			ContainsDairy:                           result.ContainsDairy,
+			ContainsAlcohol:                         result.ContainsAlcohol,
+			AnimalFlesh:                             result.AnimalFlesh,
+			IsStarch:                                result.IsStarch,
+			IsProtein:                               result.IsProtein,
+			IsGrain:                                 result.IsGrain,
+			IsFruit:                                 result.IsFruit,
+			IsSalt:                                  result.IsSalt,
+			IsFat:                                   result.IsFat,
+			IsAcid:                                  result.IsAcid,
+			IsHeat:                                  result.IsHeat,
+		}
+
+		x.Data = append(x.Data, validIngredient)
 	}
 
 	return x, nil
 }
-
-//go:embed queries/valid_ingredients/search_by_preparation_and_ingredient_name.sql
-var searchForIngredientsByPreparationAndIngredientNameQuery string
 
 // SearchForValidIngredientsForPreparation fetches a list of valid ingredient preparations from the database that meet a particular filter.
 func (q *Querier) SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidIngredient], err error) {
@@ -291,52 +254,54 @@ func (q *Querier) SearchForValidIngredientsForPreparation(ctx context.Context, p
 		Pagination: filter.ToPagination(),
 	}
 
-	searchForIngredientsByPreparationAndIngredientNameArgs := []any{
-		preparationID,
-		query,
-	}
+	results, err := q.generatedQuerier.SearchValidIngredientsByPreparationAndIngredientName(ctx, q.db, &generated.SearchValidIngredientsByPreparationAndIngredientNameParams{
+		ValidPreparationID: preparationID,
+		Column2:            query,
+	})
 
-	rows, err := q.getRows(ctx, q.db, "valid ingredient preparations search by ingredient name", searchForIngredientsByPreparationAndIngredientNameQuery, searchForIngredientsByPreparationAndIngredientNameArgs)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient preparations search by ingredient name retrieval query")
-	}
+	for _, result := range results {
+		validIngredient := &types.ValidIngredient{
+			CreatedAt:                               result.CreatedAt,
+			LastUpdatedAt:                           timePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:                              timePointerFromNullTime(result.ArchivedAt),
+			MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
+			MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
+			IconPath:                                result.IconPath,
+			Warning:                                 result.Warning,
+			PluralName:                              result.PluralName,
+			StorageInstructions:                     result.StorageInstructions,
+			Name:                                    result.Name,
+			ID:                                      result.ID,
+			Description:                             result.Description,
+			Slug:                                    result.Slug,
+			ShoppingSuggestions:                     result.ShoppingSuggestions,
+			ContainsShellfish:                       result.ContainsShellfish,
+			IsMeasuredVolumetrically:                result.Volumetric,
+			IsLiquid:                                boolFromNullBool(result.IsLiquid),
+			ContainsPeanut:                          result.ContainsPeanut,
+			ContainsTreeNut:                         result.ContainsTreeNut,
+			ContainsEgg:                             result.ContainsEgg,
+			ContainsWheat:                           result.ContainsWheat,
+			ContainsSoy:                             result.ContainsSoy,
+			AnimalDerived:                           result.AnimalDerived,
+			RestrictToPreparations:                  result.RestrictToPreparations,
+			ContainsSesame:                          result.ContainsSesame,
+			ContainsFish:                            result.ContainsFish,
+			ContainsGluten:                          result.ContainsGluten,
+			ContainsDairy:                           result.ContainsDairy,
+			ContainsAlcohol:                         result.ContainsAlcohol,
+			AnimalFlesh:                             result.AnimalFlesh,
+			IsStarch:                                result.IsStarch,
+			IsProtein:                               result.IsProtein,
+			IsGrain:                                 result.IsGrain,
+			IsFruit:                                 result.IsFruit,
+			IsSalt:                                  result.IsSalt,
+			IsFat:                                   result.IsFat,
+			IsAcid:                                  result.IsAcid,
+			IsHeat:                                  result.IsHeat,
+		}
 
-	if x.Data, _, _, err = q.scanValidIngredients(ctx, rows, false); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredient preparations")
-	}
-
-	return x, nil
-}
-
-// SearchForValidIngredientsForIngredientState searches for valid ingredient sates.
-func (q *Querier) SearchForValidIngredientsForIngredientState(ctx context.Context, ingredientStateID, query string, filter *types.QueryFilter) ([]*types.ValidIngredient, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	if ingredientStateID == "" {
-		return nil, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.ValidIngredientStateIDKey, ingredientStateID)
-	tracing.AttachValidIngredientStateIDToSpan(span, ingredientStateID)
-
-	if filter == nil {
-		filter = types.DefaultQueryFilter()
-	}
-
-	args := []any{
-		wrapQueryForILIKE(query),
-	}
-
-	rows, err := q.getRows(ctx, q.db, "valid ingredients search by ingredient state", validIngredientSearchQuery, args)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredients list retrieval query")
-	}
-
-	x, _, _, err := q.scanValidIngredients(ctx, rows, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredients")
+		x.Data = append(x.Data, validIngredient)
 	}
 
 	return x, nil
@@ -359,15 +324,63 @@ func (q *Querier) GetValidIngredients(ctx context.Context, filter *types.QueryFi
 		Pagination: filter.ToPagination(),
 	}
 
-	query, args := q.buildListQuery(ctx, validIngredientsTable, nil, nil, nil, householdOwnershipColumn, validIngredientsTableColumns, "", false, filter)
-
-	rows, err := q.getRows(ctx, q.db, "valid ingredients", query, args)
+	results, err := q.generatedQuerier.GetValidIngredients(ctx, q.db, &generated.GetValidIngredientsParams{
+		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredients list retrieval query")
 	}
 
-	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidIngredients(ctx, rows, true); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredients")
+	for _, result := range results {
+		validIngredient := &types.ValidIngredient{
+			CreatedAt:                               result.CreatedAt,
+			LastUpdatedAt:                           timePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:                              timePointerFromNullTime(result.ArchivedAt),
+			MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
+			MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
+			IconPath:                                result.IconPath,
+			Warning:                                 result.Warning,
+			PluralName:                              result.PluralName,
+			StorageInstructions:                     result.StorageInstructions,
+			Name:                                    result.Name,
+			ID:                                      result.ID,
+			Description:                             result.Description,
+			Slug:                                    result.Slug,
+			ShoppingSuggestions:                     result.ShoppingSuggestions,
+			ContainsShellfish:                       result.ContainsShellfish,
+			IsMeasuredVolumetrically:                result.Volumetric,
+			IsLiquid:                                boolFromNullBool(result.IsLiquid),
+			ContainsPeanut:                          result.ContainsPeanut,
+			ContainsTreeNut:                         result.ContainsTreeNut,
+			ContainsEgg:                             result.ContainsEgg,
+			ContainsWheat:                           result.ContainsWheat,
+			ContainsSoy:                             result.ContainsSoy,
+			AnimalDerived:                           result.AnimalDerived,
+			RestrictToPreparations:                  result.RestrictToPreparations,
+			ContainsSesame:                          result.ContainsSesame,
+			ContainsFish:                            result.ContainsFish,
+			ContainsGluten:                          result.ContainsGluten,
+			ContainsDairy:                           result.ContainsDairy,
+			ContainsAlcohol:                         result.ContainsAlcohol,
+			AnimalFlesh:                             result.AnimalFlesh,
+			IsStarch:                                result.IsStarch,
+			IsProtein:                               result.IsProtein,
+			IsGrain:                                 result.IsGrain,
+			IsFruit:                                 result.IsFruit,
+			IsSalt:                                  result.IsSalt,
+			IsFat:                                   result.IsFat,
+			IsAcid:                                  result.IsAcid,
+			IsHeat:                                  result.IsHeat,
+		}
+
+		x.Data = append(x.Data, validIngredient)
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
 	}
 
 	return x, nil
@@ -380,17 +393,59 @@ func (q *Querier) GetValidIngredientsWithIDs(ctx context.Context, ids []string) 
 
 	logger := q.logger.Clone()
 
-	where := squirrel.Eq{"valid_ingredients.id": ids}
-	query, args := q.buildListQuery(ctx, validIngredientsTable, nil, nil, where, householdOwnershipColumn, validIngredientsTableColumns, "", false, nil)
+	if ids == nil {
+		return nil, ErrEmptyInputProvided
+	}
 
-	rows, err := q.getRows(ctx, q.db, "valid ingredients", query, args)
+	results, err := q.generatedQuerier.GetValidIngredientsWithIDs(ctx, q.db, ids)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredients id list retrieval query")
 	}
 
-	ingredients, _, _, err := q.scanValidIngredients(ctx, rows, true)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredients")
+	var ingredients []*types.ValidIngredient
+	for _, result := range results {
+		validIngredient := &types.ValidIngredient{
+			CreatedAt:                               result.CreatedAt,
+			LastUpdatedAt:                           timePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:                              timePointerFromNullTime(result.ArchivedAt),
+			MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
+			MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
+			IconPath:                                result.IconPath,
+			Warning:                                 result.Warning,
+			PluralName:                              result.PluralName,
+			StorageInstructions:                     result.StorageInstructions,
+			Name:                                    result.Name,
+			ID:                                      result.ID,
+			Description:                             result.Description,
+			Slug:                                    result.Slug,
+			ShoppingSuggestions:                     result.ShoppingSuggestions,
+			ContainsShellfish:                       result.ContainsShellfish,
+			IsMeasuredVolumetrically:                result.Volumetric,
+			IsLiquid:                                boolFromNullBool(result.IsLiquid),
+			ContainsPeanut:                          result.ContainsPeanut,
+			ContainsTreeNut:                         result.ContainsTreeNut,
+			ContainsEgg:                             result.ContainsEgg,
+			ContainsWheat:                           result.ContainsWheat,
+			ContainsSoy:                             result.ContainsSoy,
+			AnimalDerived:                           result.AnimalDerived,
+			RestrictToPreparations:                  result.RestrictToPreparations,
+			ContainsSesame:                          result.ContainsSesame,
+			ContainsFish:                            result.ContainsFish,
+			ContainsGluten:                          result.ContainsGluten,
+			ContainsDairy:                           result.ContainsDairy,
+			ContainsAlcohol:                         result.ContainsAlcohol,
+			AnimalFlesh:                             result.AnimalFlesh,
+			IsStarch:                                result.IsStarch,
+			IsProtein:                               result.IsProtein,
+			IsGrain:                                 result.IsGrain,
+			IsFruit:                                 result.IsFruit,
+			IsSalt:                                  result.IsSalt,
+			IsFat:                                   result.IsFat,
+			IsAcid:                                  result.IsAcid,
+			IsHeat:                                  result.IsHeat,
+		}
+
+		ingredients = append(ingredients, validIngredient)
 	}
 
 	return ingredients, nil

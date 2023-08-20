@@ -19,8 +19,8 @@ type CreateHouseholdUserMembershipForNewUserParams struct {
 	ID                 string
 	BelongsToUser      string
 	BelongsToHousehold string
-	DefaultHousehold   bool
 	HouseholdRole      string
+	DefaultHousehold   bool
 }
 
 func (q *Queries) CreateHouseholdUserMembershipForNewUser(ctx context.Context, db DBTX, arg *CreateHouseholdUserMembershipForNewUserParams) error {

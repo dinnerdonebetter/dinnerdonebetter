@@ -41,27 +41,27 @@ AND users.archived_at IS NULL
 `
 
 type SearchUsersByUsernameRow struct {
-	ID                           string
-	FirstName                    string
-	LastName                     string
-	Username                     string
-	EmailAddress                 string
-	EmailAddressVerifiedAt       sql.NullTime
-	AvatarSrc                    sql.NullString
-	HashedPassword               string
-	RequiresPasswordChange       bool
+	CreatedAt                    time.Time
+	Birthday                     sql.NullTime
+	ArchivedAt                   sql.NullTime
 	PasswordLastChangedAt        sql.NullTime
-	TwoFactorSecret              string
+	LastUpdatedAt                sql.NullTime
+	EmailAddressVerifiedAt       sql.NullTime
+	LastAcceptedPrivacyPolicy    sql.NullTime
+	LastAcceptedTermsOfService   sql.NullTime
 	TwoFactorSecretVerifiedAt    sql.NullTime
+	UserAccountStatusExplanation string
+	FirstName                    string
 	ServiceRole                  string
 	UserAccountStatus            string
-	UserAccountStatusExplanation string
-	Birthday                     sql.NullTime
-	LastAcceptedTermsOfService   sql.NullTime
-	LastAcceptedPrivacyPolicy    sql.NullTime
-	CreatedAt                    time.Time
-	LastUpdatedAt                sql.NullTime
-	ArchivedAt                   sql.NullTime
+	LastName                     string
+	ID                           string
+	HashedPassword               string
+	TwoFactorSecret              string
+	EmailAddress                 string
+	Username                     string
+	AvatarSrc                    sql.NullString
+	RequiresPasswordChange       bool
 }
 
 func (q *Queries) SearchUsersByUsername(ctx context.Context, db DBTX, username string) ([]*SearchUsersByUsernameRow, error) {

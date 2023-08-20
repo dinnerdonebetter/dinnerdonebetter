@@ -31,16 +31,16 @@ LIMIT 50
 `
 
 type SearchForServiceSettingsRow struct {
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
 	ID            string
 	Name          string
 	Type          SettingType
 	Description   string
+	Enumeration   string
 	DefaultValue  sql.NullString
 	AdminsOnly    bool
-	Enumeration   string
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	ArchivedAt    sql.NullTime
 }
 
 func (q *Queries) SearchForServiceSettings(ctx context.Context, db DBTX, name string) ([]*SearchForServiceSettingsRow, error) {
@@ -139,42 +139,42 @@ LIMIT 50
 `
 
 type SearchForValidIngredientGroupsRow struct {
-	ID                                      string
-	Name                                    string
-	Description                             string
-	Slug                                    string
+	CreatedAt_2                             time.Time
 	CreatedAt                               time.Time
+	CreatedAt_3                             time.Time
+	ArchivedAt_3                            sql.NullTime
+	LastUpdatedAt_2                         sql.NullTime
+	ArchivedAt_2                            sql.NullTime
 	LastUpdatedAt                           sql.NullTime
 	ArchivedAt                              sql.NullTime
-	ID_2                                    string
-	BelongsToGroup                          string
-	ID_3                                    string
+	Warning                                 string
+	Name                                    string
 	Name_2                                  string
 	Description_2                           string
-	Warning                                 string
-	ContainsEgg                             bool
-	ContainsDairy                           bool
-	ContainsPeanut                          bool
-	ContainsTreeNut                         bool
-	ContainsSoy                             bool
-	ContainsWheat                           bool
-	ContainsShellfish                       bool
-	ContainsSesame                          bool
-	ContainsFish                            bool
-	ContainsGluten                          bool
-	AnimalFlesh                             bool
-	Volumetric                              bool
-	IsLiquid                                sql.NullBool
 	IconPath                                string
-	AnimalDerived                           bool
+	BelongsToGroup                          string
+	ID_2                                    string
+	Slug                                    string
+	Description                             string
+	ID_3                                    string
+	ShoppingSuggestions                     string
+	Slug_2                                  string
+	StorageInstructions                     string
+	ID                                      string
 	PluralName                              string
-	RestrictToPreparations                  bool
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
 	MaximumIdealStorageTemperatureInCelsius sql.NullString
-	StorageInstructions                     string
-	Slug_2                                  string
+	IsLiquid                                sql.NullBool
+	Volumetric                              bool
+	AnimalDerived                           bool
+	AnimalFlesh                             bool
+	RestrictToPreparations                  bool
+	ContainsGluten                          bool
+	ContainsFish                            bool
+	ContainsSesame                          bool
+	ContainsShellfish                       bool
 	ContainsAlcohol                         bool
-	ShoppingSuggestions                     string
+	ContainsWheat                           bool
 	IsStarch                                bool
 	IsProtein                               bool
 	IsGrain                                 bool
@@ -183,11 +183,11 @@ type SearchForValidIngredientGroupsRow struct {
 	IsFat                                   bool
 	IsAcid                                  bool
 	IsHeat                                  bool
-	CreatedAt_2                             time.Time
-	LastUpdatedAt_2                         sql.NullTime
-	ArchivedAt_2                            sql.NullTime
-	CreatedAt_3                             time.Time
-	ArchivedAt_3                            sql.NullTime
+	ContainsSoy                             bool
+	ContainsTreeNut                         bool
+	ContainsPeanut                          bool
+	ContainsDairy                           bool
+	ContainsEgg                             bool
 }
 
 func (q *Queries) SearchForValidIngredientGroups(ctx context.Context, db DBTX, name string) ([]*SearchForValidIngredientGroupsRow, error) {
@@ -353,8 +353,8 @@ SELECT
 	valid_ingredients.animal_derived,
 	valid_ingredients.plural_name,
 	valid_ingredients.restrict_to_preparations,
-	valid_ingredients.minimum_ideal_storage_temperature_in_celsius::float,
-	valid_ingredients.maximum_ideal_storage_temperature_in_celsius::float,
+	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
+	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions,
 	valid_ingredients.slug,
 	valid_ingredients.contains_alcohol,
@@ -377,44 +377,44 @@ LIMIT 50
 `
 
 type SearchForValidIngredientsRow struct {
-	ID                                                      string
-	Name                                                    string
-	Description                                             string
-	Warning                                                 string
-	ContainsEgg                                             bool
-	ContainsDairy                                           bool
-	ContainsPeanut                                          bool
-	ContainsTreeNut                                         bool
-	ContainsSoy                                             bool
-	ContainsWheat                                           bool
-	ContainsShellfish                                       bool
-	ContainsSesame                                          bool
-	ContainsFish                                            bool
-	ContainsGluten                                          bool
-	AnimalFlesh                                             bool
-	Volumetric                                              bool
-	IsLiquid                                                sql.NullBool
-	IconPath                                                string
-	AnimalDerived                                           bool
-	PluralName                                              string
-	RestrictToPreparations                                  bool
-	ValidIngredientsMinimumIdealStorageTemperatureInCelsius float64
-	ValidIngredientsMaximumIdealStorageTemperatureInCelsius float64
-	StorageInstructions                                     string
-	Slug                                                    string
-	ContainsAlcohol                                         bool
-	ShoppingSuggestions                                     string
-	IsStarch                                                bool
-	IsProtein                                               bool
-	IsGrain                                                 bool
-	IsFruit                                                 bool
-	IsSalt                                                  bool
-	IsFat                                                   bool
-	IsAcid                                                  bool
-	IsHeat                                                  bool
-	CreatedAt                                               time.Time
-	LastUpdatedAt                                           sql.NullTime
-	ArchivedAt                                              sql.NullTime
+	CreatedAt                               time.Time
+	ArchivedAt                              sql.NullTime
+	LastUpdatedAt                           sql.NullTime
+	Warning                                 string
+	Description                             string
+	Name                                    string
+	ShoppingSuggestions                     string
+	Slug                                    string
+	StorageInstructions                     string
+	PluralName                              string
+	ID                                      string
+	IconPath                                string
+	MaximumIdealStorageTemperatureInCelsius sql.NullString
+	MinimumIdealStorageTemperatureInCelsius sql.NullString
+	IsLiquid                                sql.NullBool
+	AnimalDerived                           bool
+	ContainsTreeNut                         bool
+	AnimalFlesh                             bool
+	ContainsGluten                          bool
+	ContainsFish                            bool
+	RestrictToPreparations                  bool
+	ContainsSesame                          bool
+	ContainsShellfish                       bool
+	ContainsWheat                           bool
+	ContainsSoy                             bool
+	ContainsAlcohol                         bool
+	Volumetric                              bool
+	IsStarch                                bool
+	IsProtein                               bool
+	IsGrain                                 bool
+	IsFruit                                 bool
+	IsSalt                                  bool
+	IsFat                                   bool
+	IsAcid                                  bool
+	IsHeat                                  bool
+	ContainsPeanut                          bool
+	ContainsDairy                           bool
+	ContainsEgg                             bool
 }
 
 func (q *Queries) SearchForValidIngredients(ctx context.Context, db DBTX, dollar_1 string) ([]*SearchForValidIngredientsRow, error) {
@@ -448,8 +448,8 @@ func (q *Queries) SearchForValidIngredients(ctx context.Context, db DBTX, dollar
 			&i.AnimalDerived,
 			&i.PluralName,
 			&i.RestrictToPreparations,
-			&i.ValidIngredientsMinimumIdealStorageTemperatureInCelsius,
-			&i.ValidIngredientsMaximumIdealStorageTemperatureInCelsius,
+			&i.MinimumIdealStorageTemperatureInCelsius,
+			&i.MaximumIdealStorageTemperatureInCelsius,
 			&i.StorageInstructions,
 			&i.Slug,
 			&i.ContainsAlcohol,
@@ -501,18 +501,18 @@ WHERE valid_instruments.archived_at IS NULL
 `
 
 type SearchForValidInstrumentsRow struct {
+	CreatedAt                      time.Time
+	LastUpdatedAt                  sql.NullTime
+	ArchivedAt                     sql.NullTime
 	ID                             string
 	Name                           string
 	PluralName                     string
 	Description                    string
 	IconPath                       string
+	Slug                           string
 	UsableForStorage               bool
 	DisplayInSummaryLists          bool
 	IncludeInGeneratedInstructions bool
-	Slug                           string
-	CreatedAt                      time.Time
-	LastUpdatedAt                  sql.NullTime
-	ArchivedAt                     sql.NullTime
 }
 
 func (q *Queries) SearchForValidInstruments(ctx context.Context, db DBTX, query string) ([]*SearchForValidInstrumentsRow, error) {
@@ -574,19 +574,19 @@ LIMIT 50
 `
 
 type SearchForValidMeasurementUnitsRow struct {
-	ID            string
+	CreatedAt     time.Time
+	ArchivedAt    sql.NullTime
+	LastUpdatedAt sql.NullTime
+	PluralName    string
 	Name          string
 	Description   string
-	Volumetric    sql.NullBool
+	ID            string
 	IconPath      string
-	Universal     bool
-	Metric        bool
-	Imperial      bool
 	Slug          string
-	PluralName    string
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	ArchivedAt    sql.NullTime
+	Volumetric    sql.NullBool
+	Imperial      bool
+	Metric        bool
+	Universal     bool
 }
 
 func (q *Queries) SearchForValidMeasurementUnits(ctx context.Context, db DBTX, query string) ([]*SearchForValidMeasurementUnitsRow, error) {
@@ -658,28 +658,28 @@ LIMIT 50
 `
 
 type SearchForValidPreparationsRow struct {
-	ID                          string
-	Name                        string
-	Description                 string
-	IconPath                    string
-	YieldsNothing               bool
-	RestrictToIngredients       bool
-	MinimumIngredientCount      int32
-	MaximumIngredientCount      sql.NullInt32
-	MinimumInstrumentCount      int32
-	MaximumInstrumentCount      sql.NullInt32
-	TemperatureRequired         bool
-	TimeEstimateRequired        bool
-	ConditionExpressionRequired bool
-	ConsumesVessel              bool
-	OnlyForVessels              bool
-	MinimumVesselCount          int32
-	MaximumVesselCount          sql.NullInt32
-	Slug                        string
-	PastTense                   string
 	CreatedAt                   time.Time
 	LastUpdatedAt               sql.NullTime
 	ArchivedAt                  sql.NullTime
+	Name                        string
+	Description                 string
+	IconPath                    string
+	ID                          string
+	Slug                        string
+	PastTense                   string
+	MaximumInstrumentCount      sql.NullInt32
+	MaximumIngredientCount      sql.NullInt32
+	MaximumVesselCount          sql.NullInt32
+	MinimumVesselCount          int32
+	MinimumInstrumentCount      int32
+	MinimumIngredientCount      int32
+	RestrictToIngredients       bool
+	OnlyForVessels              bool
+	ConsumesVessel              bool
+	ConditionExpressionRequired bool
+	TimeEstimateRequired        bool
+	TemperatureRequired         bool
+	YieldsNothing               bool
 }
 
 func (q *Queries) SearchForValidPreparations(ctx context.Context, db DBTX, query string) ([]*SearchForValidPreparationsRow, error) {
@@ -756,24 +756,24 @@ WHERE valid_vessels.archived_at IS NULL
 `
 
 type SearchForValidVesselsRow struct {
+	CreatedAt                       time.Time
+	ArchivedAt                      sql.NullTime
+	LastUpdatedAt                   sql.NullTime
 	ID                              string
 	Name                            string
 	PluralName                      string
 	Description                     string
 	IconPath                        string
-	UsableForStorage                bool
 	Slug                            string
-	DisplayInSummaryLists           bool
-	IncludeInGeneratedInstructions  bool
-	ValidVesselsCapacity            float64
-	CapacityUnit                    sql.NullString
-	ValidVesselsWidthInMillimeters  float64
-	ValidVesselsLengthInMillimeters float64
-	ValidVesselsHeightInMillimeters float64
 	Shape                           VesselShape
-	CreatedAt                       time.Time
-	LastUpdatedAt                   sql.NullTime
-	ArchivedAt                      sql.NullTime
+	CapacityUnit                    sql.NullString
+	ValidVesselsLengthInMillimeters float64
+	ValidVesselsWidthInMillimeters  float64
+	ValidVesselsHeightInMillimeters float64
+	ValidVesselsCapacity            float64
+	IncludeInGeneratedInstructions  bool
+	DisplayInSummaryLists           bool
+	UsableForStorage                bool
 }
 
 func (q *Queries) SearchForValidVessels(ctx context.Context, db DBTX, query string) ([]*SearchForValidVesselsRow, error) {

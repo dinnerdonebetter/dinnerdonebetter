@@ -39,21 +39,21 @@ ORDER BY meal_plan_grocery_list_items.id
 `
 
 type GetMealPlanGroceryListItemsForMealPlanRow struct {
-	ID                       sql.NullString
-	BelongsToMealPlan        sql.NullString
-	ValidIngredient          sql.NullString
-	ValidMeasurementUnit     sql.NullString
+	CreatedAt                sql.NullTime
+	ArchivedAt               sql.NullTime
+	LastUpdatedAt            sql.NullTime
+	QuantityPurchased        sql.NullString
 	MinimumQuantityNeeded    sql.NullString
 	MaximumQuantityNeeded    sql.NullString
-	QuantityPurchased        sql.NullString
+	ID                       sql.NullString
 	PurchasedMeasurementUnit sql.NullString
 	PurchasedUpc             sql.NullString
 	PurchasePrice            sql.NullString
 	StatusExplanation        sql.NullString
 	Status                   NullGroceryListItemStatus
-	CreatedAt                sql.NullTime
-	LastUpdatedAt            sql.NullTime
-	ArchivedAt               sql.NullTime
+	ValidMeasurementUnit     sql.NullString
+	ValidIngredient          sql.NullString
+	BelongsToMealPlan        sql.NullString
 }
 
 func (q *Queries) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, db DBTX, belongsToMealPlan string) ([]*GetMealPlanGroceryListItemsForMealPlanRow, error) {

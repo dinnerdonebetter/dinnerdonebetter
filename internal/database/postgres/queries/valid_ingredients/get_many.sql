@@ -22,8 +22,8 @@ SELECT
     valid_ingredients.animal_derived,
     valid_ingredients.plural_name,
     valid_ingredients.restrict_to_preparations,
-    valid_ingredients.minimum_ideal_storage_temperature_in_celsius::float,
-    valid_ingredients.maximum_ideal_storage_temperature_in_celsius::float,
+    valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
+    valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
     valid_ingredients.storage_instructions,
     valid_ingredients.slug,
     valid_ingredients.contains_alcohol,
@@ -41,27 +41,35 @@ SELECT
     valid_ingredients.archived_at,
     (
         SELECT
-          COUNT(valid_ingredients.id)
+            COUNT(valid_ingredients.id)
         FROM
-          valid_ingredients
+            valid_ingredients
         WHERE
-          valid_ingredients.archived_at IS NULL
+            valid_ingredients.archived_at IS NULL
+          AND valid_ingredients.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
+          AND valid_ingredients.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+          AND (valid_ingredients.last_updated_at IS NULL OR valid_ingredients.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years')))
+          AND (valid_ingredients.last_updated_at IS NULL OR valid_ingredients.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
     ) as filtered_count,
     (
         SELECT
-          COUNT(valid_ingredients.id)
+            COUNT(valid_ingredients.id)
         FROM
-          valid_ingredients
+            valid_ingredients
         WHERE
-          valid_ingredients.archived_at IS NULL
+            valid_ingredients.archived_at IS NULL
     ) as total_count
 FROM
   valid_ingredients
 WHERE
   valid_ingredients.archived_at IS NULL
+  AND valid_ingredients.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
+  AND valid_ingredients.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+  AND (valid_ingredients.last_updated_at IS NULL OR valid_ingredients.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years')))
+  AND (valid_ingredients.last_updated_at IS NULL OR valid_ingredients.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
 GROUP BY
   valid_ingredients.id
 ORDER BY
   valid_ingredients.id
-LIMIT
-  20;
+LIMIT sqlc.narg(query_limit)
+OFFSET sqlc.narg(query_offset);

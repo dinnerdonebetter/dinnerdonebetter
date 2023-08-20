@@ -66,8 +66,8 @@ func (q *Querier) GetWebhook(ctx context.Context, webhookID, householdID string)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	results, err := q.generatedQuerier.GetWebhook(ctx, q.db, &generated.GetWebhookParams{
-		BelongsToHousehold: householdID,
-		ID:                 webhookID,
+		HouseholdID: householdID,
+		WebhookID:   webhookID,
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching webhook")
@@ -81,22 +81,22 @@ func (q *Querier) GetWebhook(ctx context.Context, webhookID, householdID string)
 		Events: []*types.WebhookTriggerEvent{},
 	}
 	for _, result := range results {
-		webhook.CreatedAt = result.CreatedAt
-		webhook.ArchivedAt = timePointerFromNullTime(result.ArchivedAt)
-		webhook.LastUpdatedAt = timePointerFromNullTime(result.LastUpdatedAt)
-		webhook.Name = result.Name
-		webhook.URL = result.URL
-		webhook.Method = result.Method
-		webhook.ID = result.ID
-		webhook.BelongsToHousehold = result.BelongsToHousehold
-		webhook.ContentType = result.ContentType
+		webhook.CreatedAt = result.WebhookCreatedAt
+		webhook.ArchivedAt = timePointerFromNullTime(result.WebhookArchivedAt)
+		webhook.LastUpdatedAt = timePointerFromNullTime(result.WebhookLastUpdatedAt)
+		webhook.Name = result.WebhookName
+		webhook.URL = result.WebhookUrl
+		webhook.Method = result.WebhookMethod
+		webhook.ID = result.WebhookID
+		webhook.BelongsToHousehold = result.WebhookBelongsToHousehold
+		webhook.ContentType = result.WebhookContentType
 
 		webhook.Events = append(webhook.Events, &types.WebhookTriggerEvent{
-			CreatedAt:        result.CreatedAt_2,
-			ArchivedAt:       timePointerFromNullTime(result.ArchivedAt_2),
-			ID:               result.ID_2,
-			BelongsToWebhook: result.BelongsToWebhook,
-			TriggerEvent:     string(result.TriggerEvent),
+			CreatedAt:        result.WebhookTriggerEventCreatedAt,
+			ArchivedAt:       timePointerFromNullTime(result.WebhookTriggerEventArchivedAt),
+			ID:               result.WebhookTriggerEventID,
+			BelongsToWebhook: result.WebhookTriggerEventBelongsToWebhook,
+			TriggerEvent:     string(result.WebhookTriggerEventTriggerEvent),
 		})
 	}
 

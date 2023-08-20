@@ -2,8 +2,10 @@ package postgres
 
 import (
 	"database/sql"
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"strconv"
 	"time"
+
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
 )
 
 func timePointerFromNullTime(nt sql.NullTime) *time.Time {
@@ -121,9 +123,19 @@ func nullFloat64FromFloat32Pointer(f *float32) sql.NullFloat64 {
 	}
 }
 
-func float32PointerFromNullFloat64(f sql.NullFloat64) *float32 {
+func float64PointerFromFloat32Pointer(f *float32) *float64 {
+	if f == nil {
+		return nil
+	}
+
+	return pointers.Pointer(float64(*f))
+}
+
+func float32PointerFromNullString(f sql.NullString) *float32 {
 	if f.Valid {
-		return pointers.Pointer(float32(f.Float64))
+		if parsedFloat, err := strconv.ParseFloat(f.String, 64); err == nil {
+			return pointers.Pointer(float32(parsedFloat))
+		}
 	}
 
 	return nil

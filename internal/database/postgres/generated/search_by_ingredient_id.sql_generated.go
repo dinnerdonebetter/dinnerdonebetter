@@ -93,21 +93,21 @@ type SearchValidMeasurementUnitsByIngredientIDParams struct {
 }
 
 type SearchValidMeasurementUnitsByIngredientIDRow struct {
-	ID            string
-	Name          string
-	Description   string
-	Volumetric    sql.NullBool
-	IconPath      string
-	Universal     bool
-	Metric        bool
-	Imperial      bool
-	Slug          string
-	PluralName    string
 	CreatedAt     time.Time
 	LastUpdatedAt sql.NullTime
 	ArchivedAt    sql.NullTime
-	FilteredCount int64
+	Name          string
+	Description   string
+	ID            string
+	IconPath      string
+	Slug          string
+	PluralName    string
 	TotalCount    int64
+	FilteredCount int64
+	Volumetric    sql.NullBool
+	Imperial      bool
+	Metric        bool
+	Universal     bool
 }
 
 func (q *Queries) SearchValidMeasurementUnitsByIngredientID(ctx context.Context, db DBTX, arg *SearchValidMeasurementUnitsByIngredientIDParams) ([]*SearchValidMeasurementUnitsByIngredientIDRow, error) {

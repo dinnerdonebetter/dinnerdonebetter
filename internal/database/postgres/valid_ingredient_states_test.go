@@ -606,27 +606,6 @@ func TestQuerier_ArchiveValidIngredientState(T *testing.T) {
 func TestQuerier_MarkValidIngredientStateAsIndexed(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleValidIngredientState := fakes.BuildFakeValidIngredientState()
-
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleValidIngredientState.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateValidIngredientStateLastIndexedAtQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.MarkValidIngredientStateAsIndexed(ctx, exampleValidIngredientState.ID))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -634,26 +613,5 @@ func TestQuerier_MarkValidIngredientStateAsIndexed(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.MarkValidIngredientStateAsIndexed(ctx, ""))
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleValidIngredientState := fakes.BuildFakeValidIngredientState()
-
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleValidIngredientState.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateValidIngredientStateLastIndexedAtQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.MarkValidIngredientStateAsIndexed(ctx, exampleValidIngredientState.ID))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }

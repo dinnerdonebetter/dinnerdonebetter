@@ -110,8 +110,8 @@ SELECT EXISTS (
 
 type CheckMealPlanOptionExistenceParams struct {
 	BelongsToMealPlan      string
-	BelongsToMealPlanEvent sql.NullString
 	ID                     string
+	BelongsToMealPlanEvent sql.NullString
 }
 
 func (q *Queries) CheckMealPlanOptionExistence(ctx context.Context, db DBTX, arg *CheckMealPlanOptionExistenceParams) (bool, error) {
@@ -147,8 +147,8 @@ SELECT EXISTS (
 type CheckMealPlanOptionVoteExistenceParams struct {
 	BelongsToMealPlanOption string
 	ID                      string
-	BelongsToMealPlanEvent  sql.NullString
 	BelongsToMealPlan       string
+	BelongsToMealPlanEvent  sql.NullString
 }
 
 func (q *Queries) CheckMealPlanOptionVoteExistence(ctx context.Context, db DBTX, arg *CheckMealPlanOptionVoteExistenceParams) (bool, error) {

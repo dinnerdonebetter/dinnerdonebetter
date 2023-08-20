@@ -29,14 +29,14 @@ WHERE household_user_memberships.archived_at IS NULL
 `
 
 type GetHouseholdUserMembershipsForUserRow struct {
+	CreatedAt          time.Time
+	LastUpdatedAt      sql.NullTime
+	ArchivedAt         sql.NullTime
 	ID                 string
 	BelongsToUser      string
 	BelongsToHousehold string
 	HouseholdRole      string
 	DefaultHousehold   bool
-	CreatedAt          time.Time
-	LastUpdatedAt      sql.NullTime
-	ArchivedAt         sql.NullTime
 }
 
 func (q *Queries) GetHouseholdUserMembershipsForUser(ctx context.Context, db DBTX, belongsToUser string) ([]*GetHouseholdUserMembershipsForUserRow, error) {
@@ -134,52 +134,52 @@ type GetUserIngredientPreferencesForUserParams struct {
 }
 
 type GetUserIngredientPreferencesForUserRow struct {
-	ID                                      string
-	ID_2                                    string
-	Name                                    string
-	Description                             string
+	CreatedAt                               time.Time
+	CreatedAt_2                             time.Time
+	ArchivedAt_2                            sql.NullTime
+	LastUpdatedAt                           sql.NullTime
+	ArchivedAt                              sql.NullTime
+	LastUpdatedAt_2                         sql.NullTime
+	ShoppingSuggestions                     string
+	Slug                                    string
 	Warning                                 string
-	ContainsEgg                             bool
-	ContainsDairy                           bool
-	ContainsPeanut                          bool
-	ContainsTreeNut                         bool
-	ContainsSoy                             bool
-	ContainsWheat                           bool
-	ContainsShellfish                       bool
-	ContainsSesame                          bool
-	ContainsFish                            bool
-	ContainsGluten                          bool
-	AnimalFlesh                             bool
-	Volumetric                              bool
-	IsLiquid                                sql.NullBool
-	IconPath                                string
-	AnimalDerived                           bool
+	Notes                                   string
 	PluralName                              string
-	RestrictToPreparations                  bool
+	ID                                      string
+	Description                             string
+	Name                                    string
+	ID_2                                    string
+	StorageInstructions                     string
+	BelongsToUser                           string
+	IconPath                                string
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
 	MaximumIdealStorageTemperatureInCelsius sql.NullString
-	StorageInstructions                     string
-	Slug                                    string
+	Rating                                  int16
+	IsLiquid                                sql.NullBool
+	ContainsShellfish                       bool
+	IsFat                                   bool
+	AnimalDerived                           bool
+	Volumetric                              bool
 	ContainsAlcohol                         bool
-	ShoppingSuggestions                     string
+	AnimalFlesh                             bool
 	IsStarch                                bool
 	IsProtein                               bool
 	IsGrain                                 bool
 	IsFruit                                 bool
 	IsSalt                                  bool
-	IsFat                                   bool
+	RestrictToPreparations                  bool
 	IsAcid                                  bool
 	IsHeat                                  bool
-	CreatedAt                               time.Time
-	LastUpdatedAt                           sql.NullTime
-	ArchivedAt                              sql.NullTime
-	Rating                                  int16
-	Notes                                   string
+	ContainsGluten                          bool
+	ContainsFish                            bool
+	ContainsSesame                          bool
+	ContainsWheat                           bool
+	ContainsSoy                             bool
 	Allergy                                 bool
-	CreatedAt_2                             time.Time
-	LastUpdatedAt_2                         sql.NullTime
-	ArchivedAt_2                            sql.NullTime
-	BelongsToUser                           string
+	ContainsTreeNut                         bool
+	ContainsPeanut                          bool
+	ContainsDairy                           bool
+	ContainsEgg                             bool
 }
 
 func (q *Queries) GetUserIngredientPreferencesForUser(ctx context.Context, db DBTX, arg *GetUserIngredientPreferencesForUserParams) ([]*GetUserIngredientPreferencesForUserRow, error) {

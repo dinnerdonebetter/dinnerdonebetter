@@ -40,8 +40,8 @@ WHERE meal_plan_option_votes.archived_at IS NULL
 
 type GetMealPlanOptionVotesForMealPlanOptionParams struct {
 	BelongsToMealPlan       string
-	BelongsToMealPlanEvent  sql.NullString
 	BelongsToMealPlanOption string
+	BelongsToMealPlanEvent  sql.NullString
 }
 
 func (q *Queries) GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, db DBTX, arg *GetMealPlanOptionVotesForMealPlanOptionParams) ([]*MealPlanOptionVotes, error) {

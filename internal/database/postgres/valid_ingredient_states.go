@@ -354,11 +354,7 @@ func (q *Querier) MarkValidIngredientStateAsIndexed(ctx context.Context, validIn
 	logger = logger.WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
 	tracing.AttachValidIngredientStateIDToSpan(span, validIngredientStateID)
 
-	args := []any{
-		validIngredientStateID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "valid ingredient state last_indexed_at", updateValidIngredientStateLastIndexedAtQuery, args); err != nil {
+	if err := q.generatedQuerier.UpdateValidIngredientStateLastIndexedAt(ctx, q.db, validIngredientStateID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking valid ingredient state as indexed")
 	}
 
