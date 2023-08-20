@@ -128,7 +128,7 @@ type GetValidPreparationVesselsForVesselParams struct {
 	CreatedAfter  sql.NullTime
 	UpdatedBefore sql.NullTime
 	UpdatedAfter  sql.NullTime
-	Ids           []string
+	IDs           []string
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
@@ -201,7 +201,7 @@ func (q *Queries) GetValidPreparationVesselsForVessel(ctx context.Context, db DB
 		arg.CreatedAfter,
 		arg.UpdatedBefore,
 		arg.UpdatedAfter,
-		pq.Array(arg.Ids),
+		pq.Array(arg.IDs),
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)

@@ -1,4 +1,4 @@
--- name: GetValidIngredientStateIngredient :one
+-- name: GetValidIngredientStateIngredients :many
 
 SELECT
 	valid_ingredient_state_ingredients.id as valid_ingredient_state_ingredient_id,
@@ -53,9 +53,34 @@ SELECT
 	valid_ingredients.archived_at as valid_ingredient_archived_at,
 	valid_ingredient_state_ingredients.created_at as valid_ingredient_state_ingredient_created_at,
 	valid_ingredient_state_ingredients.last_updated_at as valid_ingredient_state_ingredient_last_updated_at,
-	valid_ingredient_state_ingredients.archived_at as valid_ingredient_state_ingredient_archived_at
+	valid_ingredient_state_ingredients.archived_at as valid_ingredient_state_ingredient_archived_at,
+    (
+        SELECT
+            COUNT(valid_ingredient_state_ingredients.id)
+        FROM
+            valid_ingredient_state_ingredients
+        WHERE
+            valid_ingredient_state_ingredients.archived_at IS NULL
+          AND valid_ingredient_state_ingredients.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
+          AND valid_ingredient_state_ingredients.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+          AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years')))
+          AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
+    ) as filtered_count,
+    (
+        SELECT
+            COUNT(valid_ingredient_state_ingredients.id)
+        FROM
+            valid_ingredient_state_ingredients
+        WHERE
+            valid_ingredient_state_ingredients.archived_at IS NULL
+    ) as total_count
 FROM valid_ingredient_state_ingredients
 	JOIN valid_ingredients ON valid_ingredient_state_ingredients.valid_ingredient = valid_ingredients.id
 	JOIN valid_ingredient_states ON valid_ingredient_state_ingredients.valid_ingredient_state = valid_ingredient_states.id
 WHERE valid_ingredient_state_ingredients.archived_at IS NULL
-	AND valid_ingredient_state_ingredients.id = $1;
+  AND valid_ingredient_state_ingredients.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
+  AND valid_ingredient_state_ingredients.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+  AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years')))
+  AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
+OFFSET sqlc.narg(query_offset)
+LIMIT sqlc.narg(query_limit);

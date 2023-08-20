@@ -1,4 +1,4 @@
--- name: GetValidIngredientPreparation :one
+-- name: GetValidIngredientPreparationsForPreparation :many
 
 SELECT
     valid_ingredient_preparations.id as valid_ingredient_preparation_id,
@@ -65,9 +65,38 @@ SELECT
     valid_ingredients.archived_at as valid_ingredient_archived_at,
     valid_ingredient_preparations.created_at as valid_ingredient_preparation_created_at,
     valid_ingredient_preparations.last_updated_at as valid_ingredient_preparation_last_updated_at,
-    valid_ingredient_preparations.archived_at as valid_ingredient_preparation_archived_at
-FROM valid_ingredient_preparations
-	JOIN valid_ingredients ON valid_ingredient_preparations.valid_ingredient_id = valid_ingredients.id
-	JOIN valid_preparations ON valid_ingredient_preparations.valid_preparation_id = valid_preparations.id
-WHERE valid_ingredient_preparations.archived_at IS NULL
-	AND valid_ingredient_preparations.id = $1;
+    valid_ingredient_preparations.archived_at as valid_ingredient_preparation_archived_at,
+    (
+        SELECT
+            COUNT(valid_ingredient_preparations.id)
+        FROM
+            valid_ingredient_preparations
+        WHERE
+            valid_ingredient_preparations.archived_at IS NULL
+          AND valid_ingredient_preparations.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
+          AND valid_ingredient_preparations.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+          AND (valid_ingredient_preparations.last_updated_at IS NULL OR valid_ingredient_preparations.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years')))
+          AND (valid_ingredient_preparations.last_updated_at IS NULL OR valid_ingredient_preparations.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
+          AND valid_ingredient_preparations.valid_preparation_id = ANY(sqlc.arg(ids)::text[])
+    ) as filtered_count,
+    (
+        SELECT
+            COUNT(valid_ingredient_preparations.id)
+        FROM
+            valid_ingredient_preparations
+        WHERE
+            valid_ingredient_preparations.archived_at IS NULL
+    ) as total_count
+FROM
+    valid_ingredient_preparations
+        JOIN valid_ingredients ON valid_ingredient_preparations.valid_ingredient_id = valid_ingredients.id
+        JOIN valid_preparations ON valid_ingredient_preparations.valid_preparation_id = valid_preparations.id
+WHERE
+    valid_ingredient_preparations.archived_at IS NULL
+  AND valid_ingredient_preparations.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
+  AND valid_ingredient_preparations.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+  AND (valid_ingredient_preparations.last_updated_at IS NULL OR valid_ingredient_preparations.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years')))
+  AND (valid_ingredient_preparations.last_updated_at IS NULL OR valid_ingredient_preparations.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
+  AND valid_ingredient_preparations.valid_preparation_id = ANY(sqlc.arg(ids)::text[])
+OFFSET sqlc.narg(query_offset)
+LIMIT sqlc.narg(query_limit);

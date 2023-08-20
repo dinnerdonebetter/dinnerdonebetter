@@ -81,6 +81,7 @@ sql:
         query_parameter_limit: 1
         rename:
           url: "URL"
+          ids: "IDs"
         overrides:
           - db_type: "pg_catalog.timestamp"
             go_type:

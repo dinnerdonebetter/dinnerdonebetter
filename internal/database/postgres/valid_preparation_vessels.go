@@ -254,7 +254,7 @@ func (q *Querier) GetValidPreparationVesselsForPreparation(ctx context.Context, 
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	results, err := q.generatedQuerier.GetValidPreparationVesselsForPreparation(ctx, q.db, &generated.GetValidPreparationVesselsForPreparationParams{
-		Ids:           []string{preparationID},
+		IDs:           []string{preparationID},
 		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
@@ -373,7 +373,7 @@ func (q *Querier) GetValidPreparationVesselsForVessel(ctx context.Context, vesse
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	results, err := q.generatedQuerier.GetValidPreparationVesselsForVessel(ctx, q.db, &generated.GetValidPreparationVesselsForVesselParams{
-		Ids:           []string{vesselID},
+		IDs:           []string{vesselID},
 		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),

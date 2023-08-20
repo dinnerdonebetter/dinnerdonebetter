@@ -1,4 +1,4 @@
--- name: GetValidIngredientStateIngredient :one
+-- name: GetValidIngredientStateIngredientsWithIDs :many
 
 SELECT
 	valid_ingredient_state_ingredients.id as valid_ingredient_state_ingredient_id,
@@ -58,4 +58,4 @@ FROM valid_ingredient_state_ingredients
 	JOIN valid_ingredients ON valid_ingredient_state_ingredients.valid_ingredient = valid_ingredients.id
 	JOIN valid_ingredient_states ON valid_ingredient_state_ingredients.valid_ingredient_state = valid_ingredient_states.id
 WHERE valid_ingredient_state_ingredients.archived_at IS NULL
-	AND valid_ingredient_state_ingredients.id = $1;
+  AND valid_ingredient_states_ingredients.id = ANY(sqlc.arg(ids)::text[]);

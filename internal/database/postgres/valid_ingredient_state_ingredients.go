@@ -2,191 +2,17 @@ package postgres
 
 import (
 	"context"
-	_ "embed"
-	"fmt"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-
-	"github.com/Masterminds/squirrel"
-)
-
-const (
-	validIngredientsOnValidIngredientStateIngredientsJoinClause      = "valid_ingredients ON valid_ingredient_state_ingredients.valid_ingredient = valid_ingredients.id"
-	validIngredientStatesOnValidIngredientStateIngredientsJoinClause = "valid_ingredient_states ON valid_ingredient_state_ingredients.valid_ingredient_state = valid_ingredient_states.id"
 )
 
 var (
 	_ types.ValidIngredientStateIngredientDataManager = (*Querier)(nil)
-
-	// validIngredientStateIngredientsTableColumns are the columns for the valid_ingredient_state_ingredients table.
-	validIngredientStateIngredientsTableColumns = []string{
-		"valid_ingredient_state_ingredients.id",
-		"valid_ingredient_state_ingredients.notes",
-		"valid_ingredient_states.id",
-		"valid_ingredient_states.name",
-		"valid_ingredient_states.description",
-		"valid_ingredient_states.icon_path",
-		"valid_ingredient_states.slug",
-		"valid_ingredient_states.past_tense",
-		"valid_ingredient_states.attribute_type",
-		"valid_ingredient_states.created_at",
-		"valid_ingredient_states.last_updated_at",
-		"valid_ingredient_states.archived_at",
-		"valid_ingredients.id",
-		"valid_ingredients.name",
-		"valid_ingredients.description",
-		"valid_ingredients.warning",
-		"valid_ingredients.contains_egg",
-		"valid_ingredients.contains_dairy",
-		"valid_ingredients.contains_peanut",
-		"valid_ingredients.contains_tree_nut",
-		"valid_ingredients.contains_soy",
-		"valid_ingredients.contains_wheat",
-		"valid_ingredients.contains_shellfish",
-		"valid_ingredients.contains_sesame",
-		"valid_ingredients.contains_fish",
-		"valid_ingredients.contains_gluten",
-		"valid_ingredients.animal_flesh",
-		"valid_ingredients.volumetric",
-		"valid_ingredients.is_liquid",
-		"valid_ingredients.icon_path",
-		"valid_ingredients.animal_derived",
-		"valid_ingredients.plural_name",
-		"valid_ingredients.restrict_to_preparations",
-		"valid_ingredients.minimum_ideal_storage_temperature_in_celsius",
-		"valid_ingredients.maximum_ideal_storage_temperature_in_celsius",
-		"valid_ingredients.storage_instructions",
-		"valid_ingredients.slug",
-		"valid_ingredients.contains_alcohol",
-		"valid_ingredients.shopping_suggestions",
-		"valid_ingredients.is_starch",
-		"valid_ingredients.is_protein",
-		"valid_ingredients.is_grain",
-		"valid_ingredients.is_fruit",
-		"valid_ingredients.is_salt",
-		"valid_ingredients.is_fat",
-		"valid_ingredients.is_acid",
-		"valid_ingredients.is_heat",
-		"valid_ingredients.created_at",
-		"valid_ingredients.last_updated_at",
-		"valid_ingredients.archived_at",
-		"valid_ingredient_state_ingredients.created_at",
-		"valid_ingredient_state_ingredients.last_updated_at",
-		"valid_ingredient_state_ingredients.archived_at",
-	}
 )
-
-// scanValidIngredientStateIngredient takes a database Scanner (i.e. *sql.Row) and scans the result into a valid ingredient state ingredient struct.
-func (q *Querier) scanValidIngredientStateIngredient(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.ValidIngredientStateIngredient, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	x = &types.ValidIngredientStateIngredient{}
-
-	targetVars := []any{
-		&x.ID,
-		&x.Notes,
-		&x.IngredientState.ID,
-		&x.IngredientState.Name,
-		&x.IngredientState.Description,
-		&x.IngredientState.IconPath,
-		&x.IngredientState.Slug,
-		&x.IngredientState.PastTense,
-		&x.IngredientState.AttributeType,
-		&x.IngredientState.CreatedAt,
-		&x.IngredientState.LastUpdatedAt,
-		&x.IngredientState.ArchivedAt,
-		&x.Ingredient.ID,
-		&x.Ingredient.Name,
-		&x.Ingredient.Description,
-		&x.Ingredient.Warning,
-		&x.Ingredient.ContainsEgg,
-		&x.Ingredient.ContainsDairy,
-		&x.Ingredient.ContainsPeanut,
-		&x.Ingredient.ContainsTreeNut,
-		&x.Ingredient.ContainsSoy,
-		&x.Ingredient.ContainsWheat,
-		&x.Ingredient.ContainsShellfish,
-		&x.Ingredient.ContainsSesame,
-		&x.Ingredient.ContainsFish,
-		&x.Ingredient.ContainsGluten,
-		&x.Ingredient.AnimalFlesh,
-		&x.Ingredient.IsMeasuredVolumetrically,
-		&x.Ingredient.IsLiquid,
-		&x.Ingredient.IconPath,
-		&x.Ingredient.AnimalDerived,
-		&x.Ingredient.PluralName,
-		&x.Ingredient.RestrictToPreparations,
-		&x.Ingredient.MinimumIdealStorageTemperatureInCelsius,
-		&x.Ingredient.MaximumIdealStorageTemperatureInCelsius,
-		&x.Ingredient.StorageInstructions,
-		&x.Ingredient.Slug,
-		&x.Ingredient.ContainsAlcohol,
-		&x.Ingredient.ShoppingSuggestions,
-		&x.Ingredient.IsStarch,
-		&x.Ingredient.IsProtein,
-		&x.Ingredient.IsGrain,
-		&x.Ingredient.IsFruit,
-		&x.Ingredient.IsSalt,
-		&x.Ingredient.IsFat,
-		&x.Ingredient.IsAcid,
-		&x.Ingredient.IsHeat,
-		&x.Ingredient.CreatedAt,
-		&x.Ingredient.LastUpdatedAt,
-		&x.Ingredient.ArchivedAt,
-		&x.CreatedAt,
-		&x.LastUpdatedAt,
-		&x.ArchivedAt,
-	}
-
-	if includeCounts {
-		targetVars = append(targetVars, &filteredCount, &totalCount)
-	}
-
-	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "")
-	}
-
-	return x, filteredCount, totalCount, nil
-}
-
-// scanValidIngredientStateIngredients takes some database rows and turns them into a slice of valid ingredient state ingredients.
-func (q *Querier) scanValidIngredientStateIngredients(ctx context.Context, rows database.ResultIterator, includeCounts bool) (validIngredientStateIngredients []*types.ValidIngredientStateIngredient, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	for rows.Next() {
-		x, fc, tc, scanErr := q.scanValidIngredientStateIngredient(ctx, rows, includeCounts)
-		if scanErr != nil {
-			return nil, 0, 0, scanErr
-		}
-
-		if includeCounts {
-			if filteredCount == 0 {
-				filteredCount = fc
-			}
-
-			if totalCount == 0 {
-				totalCount = tc
-			}
-		}
-
-		validIngredientStateIngredients = append(validIngredientStateIngredients, x)
-	}
-
-	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
-	}
-
-	return validIngredientStateIngredients, filteredCount, totalCount, nil
-}
-
-//go:embed queries/valid_ingredient_state_ingredients/exists.sql
-var validIngredientStateIngredientExistenceQuery string
 
 // ValidIngredientStateIngredientExists fetches whether a valid ingredient state ingredient exists from the database.
 func (q *Querier) ValidIngredientStateIngredientExists(ctx context.Context, validIngredientStateIngredientID string) (exists bool, err error) {
@@ -201,20 +27,13 @@ func (q *Querier) ValidIngredientStateIngredientExists(ctx context.Context, vali
 	logger = logger.WithValue(keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
 	tracing.AttachValidIngredientStateIngredientIDToSpan(span, validIngredientStateIngredientID)
 
-	args := []any{
-		validIngredientStateIngredientID,
-	}
-
-	result, err := q.performBooleanQuery(ctx, q.db, validIngredientStateIngredientExistenceQuery, args)
+	result, err := q.generatedQuerier.CheckValidIngredientStateIngredientExistence(ctx, q.db, validIngredientStateIngredientID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing valid ingredient state ingredient existence check")
 	}
 
 	return result, nil
 }
-
-//go:embed queries/valid_ingredient_state_ingredients/get_one.sql
-var getValidIngredientStateIngredientQuery string
 
 // GetValidIngredientStateIngredient fetches a valid ingredient state ingredient from the database.
 func (q *Querier) GetValidIngredientStateIngredient(ctx context.Context, validIngredientStateIngredientID string) (*types.ValidIngredientStateIngredient, error) {
@@ -229,15 +48,69 @@ func (q *Querier) GetValidIngredientStateIngredient(ctx context.Context, validIn
 	logger = logger.WithValue(keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
 	tracing.AttachValidIngredientStateIngredientIDToSpan(span, validIngredientStateIngredientID)
 
-	args := []any{
-		validIngredientStateIngredientID,
+	result, err := q.generatedQuerier.GetValidIngredientStateIngredient(ctx, q.db, validIngredientStateIngredientID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting valid ingredient state ingredient")
 	}
 
-	row := q.getOneRow(ctx, q.db, "valid ingredient state ingredient", getValidIngredientStateIngredientQuery, args)
-
-	validIngredientStateIngredient, _, _, err := q.scanValidIngredientStateIngredient(ctx, row, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredient state ingredient")
+	validIngredientStateIngredient := &types.ValidIngredientStateIngredient{
+		CreatedAt:     result.ValidIngredientStateIngredientCreatedAt,
+		LastUpdatedAt: timePointerFromNullTime(result.ValidIngredientStateIngredientLastUpdatedAt),
+		ArchivedAt:    timePointerFromNullTime(result.ValidIngredientStateIngredientArchivedAt),
+		Notes:         result.ValidIngredientStateIngredientNotes,
+		ID:            result.ValidIngredientStateIngredientID,
+		IngredientState: types.ValidIngredientState{
+			CreatedAt:     result.ValidIngredientStateCreatedAt,
+			LastUpdatedAt: timePointerFromNullTime(result.ValidIngredientStateLastUpdatedAt),
+			ArchivedAt:    timePointerFromNullTime(result.ValidIngredientStateArchivedAt),
+			PastTense:     result.ValidIngredientStatePastTense,
+			Description:   result.ValidIngredientStateDescription,
+			IconPath:      result.ValidIngredientStateIconPath,
+			ID:            result.ValidIngredientStateID,
+			Name:          result.ValidIngredientStateName,
+			AttributeType: string(result.ValidIngredientStateAttributeType),
+			Slug:          result.ValidIngredientStateSlug,
+		},
+		Ingredient: types.ValidIngredient{
+			CreatedAt:                               result.ValidIngredientCreatedAt,
+			LastUpdatedAt:                           timePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
+			ArchivedAt:                              timePointerFromNullTime(result.ValidIngredientArchivedAt),
+			MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
+			MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
+			IconPath:                                result.ValidIngredientIconPath,
+			Warning:                                 result.ValidIngredientWarning,
+			PluralName:                              result.ValidIngredientPluralName,
+			StorageInstructions:                     result.ValidIngredientStorageInstructions,
+			Name:                                    result.ValidIngredientName,
+			ID:                                      result.ValidIngredientID,
+			Description:                             result.ValidIngredientDescription,
+			Slug:                                    result.ValidIngredientSlug,
+			ShoppingSuggestions:                     result.ValidIngredientShoppingSuggestions,
+			ContainsShellfish:                       result.ValidIngredientContainsShellfish,
+			IsMeasuredVolumetrically:                result.ValidIngredientVolumetric,
+			IsLiquid:                                boolFromNullBool(result.ValidIngredientIsLiquid),
+			ContainsPeanut:                          result.ValidIngredientContainsPeanut,
+			ContainsTreeNut:                         result.ValidIngredientContainsTreeNut,
+			ContainsEgg:                             result.ValidIngredientContainsEgg,
+			ContainsWheat:                           result.ValidIngredientContainsWheat,
+			ContainsSoy:                             result.ValidIngredientContainsSoy,
+			AnimalDerived:                           result.ValidIngredientAnimalDerived,
+			RestrictToPreparations:                  result.ValidIngredientRestrictToPreparations,
+			ContainsSesame:                          result.ValidIngredientContainsSesame,
+			ContainsFish:                            result.ValidIngredientContainsFish,
+			ContainsGluten:                          result.ValidIngredientContainsGluten,
+			ContainsDairy:                           result.ValidIngredientContainsDairy,
+			ContainsAlcohol:                         result.ValidIngredientContainsAlcohol,
+			AnimalFlesh:                             result.ValidIngredientAnimalFlesh,
+			IsStarch:                                result.ValidIngredientIsStarch,
+			IsProtein:                               result.ValidIngredientIsProtein,
+			IsGrain:                                 result.ValidIngredientIsGrain,
+			IsFruit:                                 result.ValidIngredientIsFruit,
+			IsSalt:                                  result.ValidIngredientIsSalt,
+			IsFat:                                   result.ValidIngredientIsFat,
+			IsAcid:                                  result.ValidIngredientIsAcid,
+			IsHeat:                                  result.ValidIngredientIsHeat,
+		},
 	}
 
 	return validIngredientStateIngredient, nil
@@ -260,53 +133,85 @@ func (q *Querier) GetValidIngredientStateIngredients(ctx context.Context, filter
 		Pagination: filter.ToPagination(),
 	}
 
-	joins := []string{
-		validIngredientsOnValidIngredientStateIngredientsJoinClause,
-		validIngredientStatesOnValidIngredientStateIngredientsJoinClause,
-	}
-
-	groupBys := []string{
-		"valid_ingredients.id",
-		"valid_ingredient_states.id",
-		"valid_ingredient_state_ingredients.id",
-	}
-
-	query, args := q.buildListQuery(ctx, "valid_ingredient_state_ingredients", joins, groupBys, nil, householdOwnershipColumn, validIngredientStateIngredientsTableColumns, "", false, filter)
-
-	rows, err := q.getRows(ctx, q.db, "valid ingredient state ingredients", query, args)
+	results, err := q.generatedQuerier.GetValidIngredientStateIngredients(ctx, q.db, &generated.GetValidIngredientStateIngredientsParams{
+		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient state ingredients list retrieval query")
 	}
 
-	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidIngredientStateIngredients(ctx, rows, true); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredient state ingredients")
+	for _, result := range results {
+		validIngredientStateIngredient := &types.ValidIngredientStateIngredient{
+			CreatedAt:     result.ValidIngredientStateIngredientCreatedAt,
+			LastUpdatedAt: timePointerFromNullTime(result.ValidIngredientStateIngredientLastUpdatedAt),
+			ArchivedAt:    timePointerFromNullTime(result.ValidIngredientStateIngredientArchivedAt),
+			Notes:         result.ValidIngredientStateIngredientNotes,
+			ID:            result.ValidIngredientStateIngredientID,
+			IngredientState: types.ValidIngredientState{
+				CreatedAt:     result.ValidIngredientStateCreatedAt,
+				LastUpdatedAt: timePointerFromNullTime(result.ValidIngredientStateLastUpdatedAt),
+				ArchivedAt:    timePointerFromNullTime(result.ValidIngredientStateArchivedAt),
+				PastTense:     result.ValidIngredientStatePastTense,
+				Description:   result.ValidIngredientStateDescription,
+				IconPath:      result.ValidIngredientStateIconPath,
+				ID:            result.ValidIngredientStateID,
+				Name:          result.ValidIngredientStateName,
+				AttributeType: string(result.ValidIngredientStateAttributeType),
+				Slug:          result.ValidIngredientStateSlug,
+			},
+			Ingredient: types.ValidIngredient{
+				CreatedAt:                               result.ValidIngredientCreatedAt,
+				LastUpdatedAt:                           timePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
+				ArchivedAt:                              timePointerFromNullTime(result.ValidIngredientArchivedAt),
+				MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
+				MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
+				IconPath:                                result.ValidIngredientIconPath,
+				Warning:                                 result.ValidIngredientWarning,
+				PluralName:                              result.ValidIngredientPluralName,
+				StorageInstructions:                     result.ValidIngredientStorageInstructions,
+				Name:                                    result.ValidIngredientName,
+				ID:                                      result.ValidIngredientID,
+				Description:                             result.ValidIngredientDescription,
+				Slug:                                    result.ValidIngredientSlug,
+				ShoppingSuggestions:                     result.ValidIngredientShoppingSuggestions,
+				ContainsShellfish:                       result.ValidIngredientContainsShellfish,
+				IsMeasuredVolumetrically:                result.ValidIngredientVolumetric,
+				IsLiquid:                                boolFromNullBool(result.ValidIngredientIsLiquid),
+				ContainsPeanut:                          result.ValidIngredientContainsPeanut,
+				ContainsTreeNut:                         result.ValidIngredientContainsTreeNut,
+				ContainsEgg:                             result.ValidIngredientContainsEgg,
+				ContainsWheat:                           result.ValidIngredientContainsWheat,
+				ContainsSoy:                             result.ValidIngredientContainsSoy,
+				AnimalDerived:                           result.ValidIngredientAnimalDerived,
+				RestrictToPreparations:                  result.ValidIngredientRestrictToPreparations,
+				ContainsSesame:                          result.ValidIngredientContainsSesame,
+				ContainsFish:                            result.ValidIngredientContainsFish,
+				ContainsGluten:                          result.ValidIngredientContainsGluten,
+				ContainsDairy:                           result.ValidIngredientContainsDairy,
+				ContainsAlcohol:                         result.ValidIngredientContainsAlcohol,
+				AnimalFlesh:                             result.ValidIngredientAnimalFlesh,
+				IsStarch:                                result.ValidIngredientIsStarch,
+				IsProtein:                               result.ValidIngredientIsProtein,
+				IsGrain:                                 result.ValidIngredientIsGrain,
+				IsFruit:                                 result.ValidIngredientIsFruit,
+				IsSalt:                                  result.ValidIngredientIsSalt,
+				IsFat:                                   result.ValidIngredientIsFat,
+				IsAcid:                                  result.ValidIngredientIsAcid,
+				IsHeat:                                  result.ValidIngredientIsHeat,
+			},
+		}
+
+		x.Data = append(x.Data, validIngredientStateIngredient)
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
 	}
 
 	return x, nil
-}
-
-func (q *Querier) buildGetValidIngredientStateIngredientsRestrictedByIDsQuery(ctx context.Context, column string, limit uint8, ids []string) (query string, args []any) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	query, args, err := q.sqlBuilder.Select(validIngredientStateIngredientsTableColumns...).
-		From("valid_ingredient_state_ingredients").
-		Join(validIngredientsOnValidIngredientStateIngredientsJoinClause).
-		Join(validIngredientStatesOnValidIngredientStateIngredientsJoinClause).
-		Where(squirrel.Eq{
-			fmt.Sprintf("valid_ingredient_state_ingredients.%s", column): ids,
-			"valid_ingredient_state_ingredients.archived_at":             nil,
-		}).
-		Limit(uint64(limit)).
-		ToSql()
-
-	q.logQueryBuildingError(span, err)
-
-	return query, args
-}
-
-func (q *Querier) buildGetValidIngredientStateIngredientsWithPreparationIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []any) {
-	return q.buildGetValidIngredientStateIngredientsRestrictedByIDsQuery(ctx, "valid_ingredient_state", limit, ids)
 }
 
 // GetValidIngredientStateIngredientsForIngredientState fetches a list of valid ingredient state ingredients from the database that meet a particular filter.
@@ -319,7 +224,7 @@ func (q *Querier) GetValidIngredientStateIngredientsForIngredientState(ctx conte
 	if ingredientStateID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.ValidPreparationIDKey, ingredientStateID)
+	logger = logger.WithValue(keys.ValidIngredientStateIDKey, ingredientStateID)
 	tracing.AttachValidIngredientStateIngredientIDToSpan(span, ingredientStateID)
 
 	if filter == nil {
@@ -334,23 +239,86 @@ func (q *Querier) GetValidIngredientStateIngredientsForIngredientState(ctx conte
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
-	query, args := q.buildGetValidIngredientStateIngredientsWithPreparationIDsQuery(ctx, *filter.Limit, []string{ingredientStateID})
-
-	rows, err := q.getRows(ctx, q.db, "valid ingredient state ingredients for preparation", query, args)
+	results, err := q.generatedQuerier.GetValidIngredientStateIngredientsForIngredientState(ctx, q.db, &generated.GetValidIngredientStateIngredientsForIngredientStateParams{
+		CreatedBefore:        nullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:         nullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:        nullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:         nullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:          nullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:           nullInt32FromUint8Pointer(filter.Limit),
+		ValidIngredientState: ingredientStateID,
+	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient state ingredients list retrieval query")
 	}
 
-	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidIngredientStateIngredients(ctx, rows, false); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredient state ingredients")
+	for _, result := range results {
+		validIngredientStateIngredient := &types.ValidIngredientStateIngredient{
+			CreatedAt:     result.ValidIngredientStateIngredientCreatedAt,
+			LastUpdatedAt: timePointerFromNullTime(result.ValidIngredientStateIngredientLastUpdatedAt),
+			ArchivedAt:    timePointerFromNullTime(result.ValidIngredientStateIngredientArchivedAt),
+			Notes:         result.ValidIngredientStateIngredientNotes,
+			ID:            result.ValidIngredientStateIngredientID,
+			IngredientState: types.ValidIngredientState{
+				CreatedAt:     result.ValidIngredientStateCreatedAt,
+				LastUpdatedAt: timePointerFromNullTime(result.ValidIngredientStateLastUpdatedAt),
+				ArchivedAt:    timePointerFromNullTime(result.ValidIngredientStateArchivedAt),
+				PastTense:     result.ValidIngredientStatePastTense,
+				Description:   result.ValidIngredientStateDescription,
+				IconPath:      result.ValidIngredientStateIconPath,
+				ID:            result.ValidIngredientStateID,
+				Name:          result.ValidIngredientStateName,
+				AttributeType: string(result.ValidIngredientStateAttributeType),
+				Slug:          result.ValidIngredientStateSlug,
+			},
+			Ingredient: types.ValidIngredient{
+				CreatedAt:                               result.ValidIngredientCreatedAt,
+				LastUpdatedAt:                           timePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
+				ArchivedAt:                              timePointerFromNullTime(result.ValidIngredientArchivedAt),
+				MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
+				MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
+				IconPath:                                result.ValidIngredientIconPath,
+				Warning:                                 result.ValidIngredientWarning,
+				PluralName:                              result.ValidIngredientPluralName,
+				StorageInstructions:                     result.ValidIngredientStorageInstructions,
+				Name:                                    result.ValidIngredientName,
+				ID:                                      result.ValidIngredientID,
+				Description:                             result.ValidIngredientDescription,
+				Slug:                                    result.ValidIngredientSlug,
+				ShoppingSuggestions:                     result.ValidIngredientShoppingSuggestions,
+				ContainsShellfish:                       result.ValidIngredientContainsShellfish,
+				IsMeasuredVolumetrically:                result.ValidIngredientVolumetric,
+				IsLiquid:                                boolFromNullBool(result.ValidIngredientIsLiquid),
+				ContainsPeanut:                          result.ValidIngredientContainsPeanut,
+				ContainsTreeNut:                         result.ValidIngredientContainsTreeNut,
+				ContainsEgg:                             result.ValidIngredientContainsEgg,
+				ContainsWheat:                           result.ValidIngredientContainsWheat,
+				ContainsSoy:                             result.ValidIngredientContainsSoy,
+				AnimalDerived:                           result.ValidIngredientAnimalDerived,
+				RestrictToPreparations:                  result.ValidIngredientRestrictToPreparations,
+				ContainsSesame:                          result.ValidIngredientContainsSesame,
+				ContainsFish:                            result.ValidIngredientContainsFish,
+				ContainsGluten:                          result.ValidIngredientContainsGluten,
+				ContainsDairy:                           result.ValidIngredientContainsDairy,
+				ContainsAlcohol:                         result.ValidIngredientContainsAlcohol,
+				AnimalFlesh:                             result.ValidIngredientAnimalFlesh,
+				IsStarch:                                result.ValidIngredientIsStarch,
+				IsProtein:                               result.ValidIngredientIsProtein,
+				IsGrain:                                 result.ValidIngredientIsGrain,
+				IsFruit:                                 result.ValidIngredientIsFruit,
+				IsSalt:                                  result.ValidIngredientIsSalt,
+				IsFat:                                   result.ValidIngredientIsFat,
+				IsAcid:                                  result.ValidIngredientIsAcid,
+				IsHeat:                                  result.ValidIngredientIsHeat,
+			},
+		}
+
+		x.Data = append(x.Data, validIngredientStateIngredient)
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
 	}
 
 	return x, nil
-}
-
-func (q *Querier) buildGetValidIngredientStateIngredientsWithIngredientIDsQuery(ctx context.Context, limit uint8, ids []string) (query string, args []any) {
-	return q.buildGetValidIngredientStateIngredientsRestrictedByIDsQuery(ctx, "valid_ingredient", limit, ids)
 }
 
 // GetValidIngredientStateIngredientsForIngredient fetches a list of valid ingredient state ingredients from the database that meet a particular filter.
@@ -376,23 +344,87 @@ func (q *Querier) GetValidIngredientStateIngredientsForIngredient(ctx context.Co
 		Pagination: filter.ToPagination(),
 	}
 
-	// the use of filter here is so weird, since we only respect the limit, but I'm trying to get this done, okay?
-	query, args := q.buildGetValidIngredientStateIngredientsWithIngredientIDsQuery(ctx, x.Limit, []string{ingredientID})
-
-	rows, err := q.getRows(ctx, q.db, "valid ingredient state ingredients for ingredient", query, args)
+	results, err := q.generatedQuerier.GetValidIngredientStateIngredientsForIngredient(ctx, q.db, &generated.GetValidIngredientStateIngredientsForIngredientParams{
+		CreatedBefore:   nullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    nullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   nullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    nullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:     nullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:      nullInt32FromUint8Pointer(filter.Limit),
+		ValidIngredient: ingredientID,
+	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient state ingredients list retrieval query")
 	}
 
-	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanValidIngredientStateIngredients(ctx, rows, false); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning valid ingredient state ingredients")
+	for _, result := range results {
+		validIngredientStateIngredient := &types.ValidIngredientStateIngredient{
+			CreatedAt:     result.ValidIngredientStateIngredientCreatedAt,
+			LastUpdatedAt: timePointerFromNullTime(result.ValidIngredientStateIngredientLastUpdatedAt),
+			ArchivedAt:    timePointerFromNullTime(result.ValidIngredientStateIngredientArchivedAt),
+			Notes:         result.ValidIngredientStateIngredientNotes,
+			ID:            result.ValidIngredientStateIngredientID,
+			IngredientState: types.ValidIngredientState{
+				CreatedAt:     result.ValidIngredientStateCreatedAt,
+				LastUpdatedAt: timePointerFromNullTime(result.ValidIngredientStateLastUpdatedAt),
+				ArchivedAt:    timePointerFromNullTime(result.ValidIngredientStateArchivedAt),
+				PastTense:     result.ValidIngredientStatePastTense,
+				Description:   result.ValidIngredientStateDescription,
+				IconPath:      result.ValidIngredientStateIconPath,
+				ID:            result.ValidIngredientStateID,
+				Name:          result.ValidIngredientStateName,
+				AttributeType: string(result.ValidIngredientStateAttributeType),
+				Slug:          result.ValidIngredientStateSlug,
+			},
+			Ingredient: types.ValidIngredient{
+				CreatedAt:                               result.ValidIngredientCreatedAt,
+				LastUpdatedAt:                           timePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
+				ArchivedAt:                              timePointerFromNullTime(result.ValidIngredientArchivedAt),
+				MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
+				MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
+				IconPath:                                result.ValidIngredientIconPath,
+				Warning:                                 result.ValidIngredientWarning,
+				PluralName:                              result.ValidIngredientPluralName,
+				StorageInstructions:                     result.ValidIngredientStorageInstructions,
+				Name:                                    result.ValidIngredientName,
+				ID:                                      result.ValidIngredientID,
+				Description:                             result.ValidIngredientDescription,
+				Slug:                                    result.ValidIngredientSlug,
+				ShoppingSuggestions:                     result.ValidIngredientShoppingSuggestions,
+				ContainsShellfish:                       result.ValidIngredientContainsShellfish,
+				IsMeasuredVolumetrically:                result.ValidIngredientVolumetric,
+				IsLiquid:                                boolFromNullBool(result.ValidIngredientIsLiquid),
+				ContainsPeanut:                          result.ValidIngredientContainsPeanut,
+				ContainsTreeNut:                         result.ValidIngredientContainsTreeNut,
+				ContainsEgg:                             result.ValidIngredientContainsEgg,
+				ContainsWheat:                           result.ValidIngredientContainsWheat,
+				ContainsSoy:                             result.ValidIngredientContainsSoy,
+				AnimalDerived:                           result.ValidIngredientAnimalDerived,
+				RestrictToPreparations:                  result.ValidIngredientRestrictToPreparations,
+				ContainsSesame:                          result.ValidIngredientContainsSesame,
+				ContainsFish:                            result.ValidIngredientContainsFish,
+				ContainsGluten:                          result.ValidIngredientContainsGluten,
+				ContainsDairy:                           result.ValidIngredientContainsDairy,
+				ContainsAlcohol:                         result.ValidIngredientContainsAlcohol,
+				AnimalFlesh:                             result.ValidIngredientAnimalFlesh,
+				IsStarch:                                result.ValidIngredientIsStarch,
+				IsProtein:                               result.ValidIngredientIsProtein,
+				IsGrain:                                 result.ValidIngredientIsGrain,
+				IsFruit:                                 result.ValidIngredientIsFruit,
+				IsSalt:                                  result.ValidIngredientIsSalt,
+				IsFat:                                   result.ValidIngredientIsFat,
+				IsAcid:                                  result.ValidIngredientIsAcid,
+				IsHeat:                                  result.ValidIngredientIsHeat,
+			},
+		}
+
+		x.Data = append(x.Data, validIngredientStateIngredient)
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
 	}
 
 	return x, nil
 }
-
-//go:embed queries/valid_ingredient_state_ingredients/create.sql
-var validIngredientStateIngredientCreationQuery string
 
 // CreateValidIngredientStateIngredient creates a valid ingredient state ingredient in the database.
 func (q *Querier) CreateValidIngredientStateIngredient(ctx context.Context, input *types.ValidIngredientStateIngredientDatabaseCreationInput) (*types.ValidIngredientStateIngredient, error) {
@@ -402,18 +434,16 @@ func (q *Querier) CreateValidIngredientStateIngredient(ctx context.Context, inpu
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-
+	tracing.AttachValidIngredientStateIngredientIDToSpan(span, input.ID)
 	logger := q.logger.WithValue(keys.ValidIngredientStateIngredientIDKey, input.ID)
 
-	args := []any{
-		input.ID,
-		input.Notes,
-		input.ValidIngredientStateID,
-		input.ValidIngredientID,
-	}
-
 	// create the valid ingredient state ingredient.
-	if err := q.performWriteQuery(ctx, q.db, "valid ingredient state ingredient creation", validIngredientStateIngredientCreationQuery, args); err != nil {
+	if err := q.generatedQuerier.CreateValidIngredientStateIngredient(ctx, q.db, &generated.CreateValidIngredientStateIngredientParams{
+		ID:                   input.ID,
+		Notes:                input.Notes,
+		ValidIngredientState: input.ValidIngredientStateID,
+		ValidIngredient:      input.ValidIngredientID,
+	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing valid ingredient state ingredient creation query")
 	}
 
@@ -431,9 +461,6 @@ func (q *Querier) CreateValidIngredientStateIngredient(ctx context.Context, inpu
 	return x, nil
 }
 
-//go:embed queries/valid_ingredient_state_ingredients/update.sql
-var updateValidIngredientStateIngredientQuery string
-
 // UpdateValidIngredientStateIngredient updates a particular valid ingredient state ingredient.
 func (q *Querier) UpdateValidIngredientStateIngredient(ctx context.Context, updated *types.ValidIngredientStateIngredient) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -442,18 +469,15 @@ func (q *Querier) UpdateValidIngredientStateIngredient(ctx context.Context, upda
 	if updated == nil {
 		return ErrNilInputProvided
 	}
-
 	logger := q.logger.WithValue(keys.ValidIngredientStateIngredientIDKey, updated.ID)
 	tracing.AttachValidIngredientStateIngredientIDToSpan(span, updated.ID)
 
-	args := []any{
-		updated.Notes,
-		updated.IngredientState.ID,
-		updated.Ingredient.ID,
-		updated.ID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "valid ingredient state ingredient update", updateValidIngredientStateIngredientQuery, args); err != nil {
+	if err := q.generatedQuerier.UpdateValidIngredientStateIngredient(ctx, q.db, &generated.UpdateValidIngredientStateIngredientParams{
+		Notes:                updated.Notes,
+		ValidIngredientState: updated.IngredientState.ID,
+		ValidIngredient:      updated.Ingredient.ID,
+		ID:                   updated.ID,
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient state ingredient")
 	}
 

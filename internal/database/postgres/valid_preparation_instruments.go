@@ -203,7 +203,7 @@ func (q *Querier) GetValidPreparationInstrumentsForPreparation(ctx context.Conte
 	}
 
 	results, err := q.generatedQuerier.GetValidPreparationInstrumentsForPreparation(ctx, q.db, &generated.GetValidPreparationInstrumentsForPreparationParams{
-		Ids:           []string{preparationID},
+		IDs:           []string{preparationID},
 		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
@@ -294,7 +294,7 @@ func (q *Querier) GetValidPreparationInstrumentsForInstrument(ctx context.Contex
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	results, err := q.generatedQuerier.GetValidPreparationInstrumentsForInstrument(ctx, q.db, &generated.GetValidPreparationInstrumentsForInstrumentParams{
-		Ids:           []string{instrumentID},
+		IDs:           []string{instrumentID},
 		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
