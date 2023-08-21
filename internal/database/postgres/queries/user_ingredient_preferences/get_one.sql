@@ -1,4 +1,4 @@
--- name: GetUserIngredientPreferencesForUser :many
+-- name: GetUserIngredientPreference :one
 
 SELECT
 	user_ingredient_preferences.id,
@@ -46,48 +46,10 @@ SELECT
     user_ingredient_preferences.created_at,
     user_ingredient_preferences.last_updated_at,
     user_ingredient_preferences.archived_at,
-    user_ingredient_preferences.belongs_to_user,
-    (
-        SELECT
-            COUNT(user_ingredient_preferences.id)
-        FROM
-            user_ingredient_preferences
-        WHERE
-            user_ingredient_preferences.archived_at IS NULL
-          AND user_ingredient_preferences.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
-          AND user_ingredient_preferences.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
-          AND (
-                user_ingredient_preferences.last_updated_at IS NULL
-                OR user_ingredient_preferences.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years'))
-            )
-          AND (
-                user_ingredient_preferences.last_updated_at IS NULL
-                OR user_ingredient_preferences.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
-            )
-        OFFSET sqlc.narg(query_offset)
-    ) AS filtered_count,
-    (
-        SELECT
-            COUNT(user_ingredient_preferences.id)
-        FROM
-            user_ingredient_preferences
-        WHERE
-            user_ingredient_preferences.archived_at IS NULL
-    ) AS total_count
+    user_ingredient_preferences.belongs_to_user
 FROM user_ingredient_preferences
   JOIN valid_ingredients ON valid_ingredients.id = user_ingredient_preferences.ingredient
 WHERE user_ingredient_preferences.archived_at IS NULL
 	AND valid_ingredients.archived_at IS NULL
-    AND user_ingredient_preferences.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
-    AND user_ingredient_preferences.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
-    AND (
-        user_ingredient_preferences.last_updated_at IS NULL
-        OR user_ingredient_preferences.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years'))
-    )
-    AND (
-        user_ingredient_preferences.last_updated_at IS NULL
-        OR user_ingredient_preferences.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
-    )
-	AND user_ingredient_preferences.belongs_to_user = sqlc.arg(user_id)
-    OFFSET sqlc.narg(query_offset)
-    LIMIT sqlc.narg(query_limit);
+	AND user_ingredient_preferences.id = sqlc.arg(user_ingredient_preference_id)
+	AND user_ingredient_preferences.belongs_to_user = sqlc.arg(user_id);
