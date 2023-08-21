@@ -80,7 +80,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, serviceSettingConfiguration, http.StatusCreated)
 }
 
-// ByNameHandler returns a GET handler that returns a service setting configuration.
+// ForUserByNameHandler returns a GET handler that returns a service setting configuration.
 func (s *service) ForUserByNameHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -136,8 +136,10 @@ func (s *service) ForUserHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
+	filter := types.ExtractQueryFilterFromRequest(req)
+
 	// fetch service setting configurations from database.
-	x, err := s.serviceSettingConfigurationDataManager.GetServiceSettingConfigurationsForUser(ctx, sessionCtxData.Requester.UserID)
+	x, err := s.serviceSettingConfigurationDataManager.GetServiceSettingConfigurationsForUser(ctx, sessionCtxData.Requester.UserID, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
@@ -170,13 +172,15 @@ func (s *service) ForHouseholdHandler(res http.ResponseWriter, req *http.Request
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
+	filter := types.ExtractQueryFilterFromRequest(req)
+
 	// determine service setting ID.
 	serviceSettingConfigurationID := s.serviceSettingConfigurationIDFetcher(req)
 	tracing.AttachServiceSettingConfigurationIDToSpan(span, serviceSettingConfigurationID)
 	logger = logger.WithValue(keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
 
 	// fetch service setting configurations from database.
-	x, err := s.serviceSettingConfigurationDataManager.GetServiceSettingConfigurationsForHousehold(ctx, sessionCtxData.ActiveHouseholdID)
+	x, err := s.serviceSettingConfigurationDataManager.GetServiceSettingConfigurationsForHousehold(ctx, sessionCtxData.ActiveHouseholdID, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return

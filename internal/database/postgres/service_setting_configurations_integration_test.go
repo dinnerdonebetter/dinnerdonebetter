@@ -72,6 +72,10 @@ func TestQuerier_Integration_ServiceSettingConfigurations(t *testing.T) {
 	// create
 	createdServiceSettingConfigurations = append(createdServiceSettingConfigurations, createServiceSettingConfigurationForTest(t, ctx, exampleServiceSettingConfiguration, dbc))
 
+	// update
+	createdServiceSettingConfigurations[0].Value = "new value"
+	require.NoError(t, dbc.UpdateServiceSettingConfiguration(ctx, createdServiceSettingConfigurations[0]))
+
 	// delete
 	for _, serviceSettingConfiguration := range createdServiceSettingConfigurations {
 		assert.NoError(t, dbc.ArchiveServiceSettingConfiguration(ctx, serviceSettingConfiguration.ID))

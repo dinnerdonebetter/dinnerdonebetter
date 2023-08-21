@@ -251,7 +251,7 @@ SELECT
     service_settings.archived_at
 FROM service_settings
 WHERE service_settings.archived_at IS NULL
-	AND service_settings.name ILIKE $1
+	AND service_settings.name ILIKE '%' || $1::text || '%'
 LIMIT 50
 `
 
@@ -268,8 +268,8 @@ type SearchForServiceSettingsRow struct {
 	AdminsOnly    bool
 }
 
-func (q *Queries) SearchForServiceSettings(ctx context.Context, db DBTX, name string) ([]*SearchForServiceSettingsRow, error) {
-	rows, err := db.QueryContext(ctx, searchForServiceSettings, name)
+func (q *Queries) SearchForServiceSettings(ctx context.Context, db DBTX, nameQuery string) ([]*SearchForServiceSettingsRow, error) {
+	rows, err := db.QueryContext(ctx, searchForServiceSettings, nameQuery)
 	if err != nil {
 		return nil, err
 	}

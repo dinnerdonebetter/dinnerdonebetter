@@ -3,7 +3,7 @@ sql:
   - engine: "postgresql"
     schema: "internal/database/postgres/migrations"
     queries:
-      - "internal/database/postgres/queries2"
+      - "internal/database/postgres/sqlc_queries"
     strict_function_checks: true
     rules:
       - no-delete

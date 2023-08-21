@@ -210,10 +210,10 @@ type Querier interface {
 	GetRecipesNeedingIndexing(ctx context.Context, db DBTX) ([]string, error)
 	GetServiceSetting(ctx context.Context, db DBTX, id string) (*GetServiceSettingRow, error)
 	GetServiceSettingConfigurationByID(ctx context.Context, db DBTX, id string) (*GetServiceSettingConfigurationByIDRow, error)
+	GetServiceSettingConfigurationForHouseholdBySettingName(ctx context.Context, db DBTX, arg *GetServiceSettingConfigurationForHouseholdBySettingNameParams) (*GetServiceSettingConfigurationForHouseholdBySettingNameRow, error)
+	GetServiceSettingConfigurationForUserBySettingName(ctx context.Context, db DBTX, arg *GetServiceSettingConfigurationForUserBySettingNameParams) (*GetServiceSettingConfigurationForUserBySettingNameRow, error)
 	GetServiceSettingConfigurationsForHousehold(ctx context.Context, db DBTX, belongsToHousehold string) ([]*GetServiceSettingConfigurationsForHouseholdRow, error)
-	GetServiceSettingConfigurationsForHouseholdBySettingName(ctx context.Context, db DBTX, arg *GetServiceSettingConfigurationsForHouseholdBySettingNameParams) ([]*GetServiceSettingConfigurationsForHouseholdBySettingNameRow, error)
 	GetServiceSettingConfigurationsForUser(ctx context.Context, db DBTX, belongsToUser string) ([]*GetServiceSettingConfigurationsForUserRow, error)
-	GetServiceSettingConfigurationsForUserBySettingName(ctx context.Context, db DBTX, arg *GetServiceSettingConfigurationsForUserBySettingNameParams) ([]*GetServiceSettingConfigurationsForUserBySettingNameRow, error)
 	GetServiceSettings(ctx context.Context, db DBTX, arg *GetServiceSettingsParams) ([]*GetServiceSettingsRow, error)
 	GetUserByEmail(ctx context.Context, db DBTX, emailAddress string) (*GetUserByEmailRow, error)
 	GetUserByEmailAddressVerificationToken(ctx context.Context, db DBTX, emailAddressVerificationToken sql.NullString) (*GetUserByEmailAddressVerificationTokenRow, error)
@@ -293,7 +293,7 @@ type Querier interface {
 	ModifyHouseholdUserPermissions(ctx context.Context, db DBTX, arg *ModifyHouseholdUserPermissionsParams) error
 	RedeemPasswordResetToken(ctx context.Context, db DBTX, id string) error
 	RemoveUserFromHousehold(ctx context.Context, db DBTX, arg *RemoveUserFromHouseholdParams) error
-	SearchForServiceSettings(ctx context.Context, db DBTX, name string) ([]*SearchForServiceSettingsRow, error)
+	SearchForServiceSettings(ctx context.Context, db DBTX, nameQuery string) ([]*SearchForServiceSettingsRow, error)
 	SearchForValidIngredientGroups(ctx context.Context, db DBTX, arg *SearchForValidIngredientGroupsParams) ([]*SearchForValidIngredientGroupsRow, error)
 	SearchForValidIngredientStates(ctx context.Context, db DBTX, query string) ([]*SearchForValidIngredientStatesRow, error)
 	SearchForValidIngredients(ctx context.Context, db DBTX, dollar_1 string) ([]*SearchForValidIngredientsRow, error)

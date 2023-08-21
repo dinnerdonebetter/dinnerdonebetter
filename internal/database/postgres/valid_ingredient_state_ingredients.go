@@ -236,8 +236,6 @@ func (q *Querier) GetValidIngredientStateIngredientsForIngredientState(ctx conte
 	x = &types.QueryFilteredResult[types.ValidIngredientStateIngredient]{
 		Pagination: filter.ToPagination(),
 	}
-	logger = filter.AttachToLogger(logger)
-	tracing.AttachQueryFilterToSpan(span, filter)
 
 	results, err := q.generatedQuerier.GetValidIngredientStateIngredientsForIngredientState(ctx, q.db, &generated.GetValidIngredientStateIngredientsForIngredientStateParams{
 		CreatedBefore:        nullTimeFromTimePointer(filter.CreatedBefore),

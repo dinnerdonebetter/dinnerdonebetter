@@ -13,5 +13,5 @@ SELECT
     service_settings.archived_at
 FROM service_settings
 WHERE service_settings.archived_at IS NULL
-	AND service_settings.name ILIKE $1
+	AND service_settings.name ILIKE '%' || sqlc.arg(name_query)::text || '%'
 LIMIT 50;
