@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"database/sql/driver"
 	"errors"
 	"testing"
@@ -126,29 +125,6 @@ func TestQuerier_ScanMeals(T *testing.T) {
 func TestQuerier_MealExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleMeal := fakes.BuildFakeMeal()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleMeal.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(mealExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
-
-		actual, err := c.MealExists(ctx, exampleMeal.ID)
-		assert.NoError(t, err)
-		assert.True(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid meal ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -159,52 +135,6 @@ func TestQuerier_MealExists(T *testing.T) {
 		actual, err := c.MealExists(ctx, "")
 		assert.Error(t, err)
 		assert.False(t, actual)
-	})
-
-	T.Run("with sql.ErrNoRows", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleMeal := fakes.BuildFakeMeal()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleMeal.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(mealExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(sql.ErrNoRows)
-
-		actual, err := c.MealExists(ctx, exampleMeal.ID)
-		assert.NoError(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleMeal := fakes.BuildFakeMeal()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleMeal.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(mealExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.MealExists(ctx, exampleMeal.ID)
-		assert.Error(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

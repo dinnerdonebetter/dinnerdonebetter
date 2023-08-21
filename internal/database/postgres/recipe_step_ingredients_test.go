@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"database/sql/driver"
 	"errors"
 	"testing"
@@ -150,35 +149,6 @@ func TestQuerier_ScanRecipeStepIngredients(T *testing.T) {
 func TestQuerier_RecipeStepIngredientExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleRecipeID := fakes.BuildFakeID()
-		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleRecipeStepID,
-			exampleRecipeStepIngredient.ID,
-			exampleRecipeID,
-			exampleRecipeStepID,
-			exampleRecipeID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(recipeStepIngredientExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
-
-		actual, err := c.RecipeStepIngredientExists(ctx, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepIngredient.ID)
-		assert.NoError(t, err)
-		assert.True(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid recipe ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -222,64 +192,6 @@ func TestQuerier_RecipeStepIngredientExists(T *testing.T) {
 		actual, err := c.RecipeStepIngredientExists(ctx, exampleRecipeID, exampleRecipeStepID, "")
 		assert.Error(t, err)
 		assert.False(t, actual)
-	})
-
-	T.Run("with sql.ErrNoRows", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleRecipeID := fakes.BuildFakeID()
-		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleRecipeStepID,
-			exampleRecipeStepIngredient.ID,
-			exampleRecipeID,
-			exampleRecipeStepID,
-			exampleRecipeID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(recipeStepIngredientExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(sql.ErrNoRows)
-
-		actual, err := c.RecipeStepIngredientExists(ctx, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepIngredient.ID)
-		assert.NoError(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleRecipeID := fakes.BuildFakeID()
-		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleRecipeStepID,
-			exampleRecipeStepIngredient.ID,
-			exampleRecipeID,
-			exampleRecipeStepID,
-			exampleRecipeID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(recipeStepIngredientExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.RecipeStepIngredientExists(ctx, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepIngredient.ID)
-		assert.Error(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

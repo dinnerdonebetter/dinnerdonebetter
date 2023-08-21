@@ -95,9 +95,6 @@ func (q *Querier) scanMealPlanEvents(ctx context.Context, rows database.ResultIt
 	return mealPlanEvents, filteredCount, totalCount, nil
 }
 
-//go:embed queries/meal_plan_events/exists.sql
-var mealPlanEventExistenceQuery string
-
 // MealPlanEventExists fetches whether a meal plan event exists from the database.
 func (q *Querier) MealPlanEventExists(ctx context.Context, mealPlanID, mealPlanEventID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -117,11 +114,10 @@ func (q *Querier) MealPlanEventExists(ctx context.Context, mealPlanID, mealPlanE
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
-	mealPlanEventExistenceArgs := []any{
-		mealPlanEventID,
-	}
-
-	result, err := q.performBooleanQuery(ctx, q.db, mealPlanEventExistenceQuery, mealPlanEventExistenceArgs)
+	result, err := q.generatedQuerier.CheckMealPlanEventExistence(ctx, q.db, &generated.CheckMealPlanEventExistenceParams{
+		MealPlanEventID: mealPlanEventID,
+		MealPlanID:      mealPlanID,
+	})
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing meal plan event existence check")
 	}
@@ -246,10 +242,7 @@ func (q *Querier) GetMealPlanEvents(ctx context.Context, mealPlanID string, filt
 	return x, nil
 }
 
-//go:embed queries/meal_plan_events/eligible_for_voting.sql
-var mealPlanEventEligibleForVotingQuery string
-
-// MealPlanEventIsEligibleForVoting returns whether or not a meal plan can be voted on.
+// MealPlanEventIsEligibleForVoting returns if a meal plan can be voted on.
 func (q *Querier) MealPlanEventIsEligibleForVoting(ctx context.Context, mealPlanID, mealPlanEventID string) (bool, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -268,12 +261,10 @@ func (q *Querier) MealPlanEventIsEligibleForVoting(ctx context.Context, mealPlan
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
-	mealPlanEventExistenceArgs := []any{
-		mealPlanID,
-		mealPlanEventID,
-	}
-
-	result, err := q.performBooleanQuery(ctx, q.db, mealPlanEventEligibleForVotingQuery, mealPlanEventExistenceArgs)
+	result, err := q.generatedQuerier.MealPlanEventIsEligibleForVoting(ctx, q.db, &generated.MealPlanEventIsEligibleForVotingParams{
+		MealPlanID:      mealPlanID,
+		MealPlanEventID: mealPlanEventID,
+	})
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing meal plan event existence check")
 	}

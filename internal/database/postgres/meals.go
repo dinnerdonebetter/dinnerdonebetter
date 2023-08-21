@@ -137,9 +137,6 @@ func (q *Querier) scanMealWithRecipes(ctx context.Context, rows database.ResultI
 	return x, mealComponents, nil
 }
 
-//go:embed queries/meals/exists.sql
-var mealExistenceQuery string
-
 // MealExists fetches whether a meal exists from the database.
 func (q *Querier) MealExists(ctx context.Context, mealID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -153,11 +150,7 @@ func (q *Querier) MealExists(ctx context.Context, mealID string) (exists bool, e
 	logger = logger.WithValue(keys.MealIDKey, mealID)
 	tracing.AttachMealIDToSpan(span, mealID)
 
-	args := []any{
-		mealID,
-	}
-
-	result, err := q.performBooleanQuery(ctx, q.db, mealExistenceQuery, args)
+	result, err := q.generatedQuerier.CheckMealExistence(ctx, q.db, mealID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing meal existence check")
 	}

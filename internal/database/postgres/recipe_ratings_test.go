@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"database/sql/driver"
 	"errors"
 	"testing"
@@ -89,29 +88,6 @@ func TestQuerier_ScanRecipeRatings(T *testing.T) {
 func TestQuerier_RecipeRatingExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleRecipeRating := fakes.BuildFakeRecipeRating()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleRecipeRating.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(recipeRatingExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
-
-		actual, err := c.RecipeRatingExists(ctx, exampleRecipeRating.ID)
-		assert.NoError(t, err)
-		assert.True(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid household instrument ownership ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -121,52 +97,6 @@ func TestQuerier_RecipeRatingExists(T *testing.T) {
 		actual, err := c.RecipeRatingExists(ctx, "")
 		assert.Error(t, err)
 		assert.False(t, actual)
-	})
-
-	T.Run("with sql.ErrNoRows", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleRecipeRating := fakes.BuildFakeRecipeRating()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleRecipeRating.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(recipeRatingExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(sql.ErrNoRows)
-
-		actual, err := c.RecipeRatingExists(ctx, exampleRecipeRating.ID)
-		assert.NoError(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleRecipeRating := fakes.BuildFakeRecipeRating()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleRecipeRating.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(recipeRatingExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.RecipeRatingExists(ctx, exampleRecipeRating.ID)
-		assert.Error(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

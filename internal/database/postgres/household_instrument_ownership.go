@@ -110,9 +110,6 @@ func (q *Querier) scanHouseholdInstrumentOwnerships(ctx context.Context, rows da
 	return householdInstrumentOwnerships, filteredCount, totalCount, nil
 }
 
-//go:embed queries/household_instrument_ownerships/exists.sql
-var householdInstrumentOwnershipExistenceQuery string
-
 // HouseholdInstrumentOwnershipExists fetches whether a household instrument ownership exists from the database.
 func (q *Querier) HouseholdInstrumentOwnershipExists(ctx context.Context, householdInstrumentOwnershipID, householdID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -132,12 +129,10 @@ func (q *Querier) HouseholdInstrumentOwnershipExists(ctx context.Context, househ
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	args := []any{
-		householdInstrumentOwnershipID,
-		householdID,
-	}
-
-	result, err := q.performBooleanQuery(ctx, q.db, householdInstrumentOwnershipExistenceQuery, args)
+	result, err := q.generatedQuerier.CheckHouseholdInstrumentOwnershipExistence(ctx, q.db, &generated.CheckHouseholdInstrumentOwnershipExistenceParams{
+		ID:                 householdInstrumentOwnershipID,
+		BelongsToHousehold: householdID,
+	})
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing household instrument ownership existence check")
 	}

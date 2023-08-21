@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"database/sql/driver"
 	"errors"
 	"testing"
@@ -176,28 +175,6 @@ func TestQuerier_ScanHouseholdInvitations(T *testing.T) {
 func TestQuerier_HouseholdInvitationExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleHouseholdInvitationID := fakes.BuildFakeID()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleHouseholdInvitationID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(householdInvitationExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
-
-		actual, err := c.HouseholdInvitationExists(ctx, exampleHouseholdInvitationID)
-		assert.NoError(t, err)
-		assert.True(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid household invitation ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -205,50 +182,6 @@ func TestQuerier_HouseholdInvitationExists(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		actual, err := c.HouseholdInvitationExists(ctx, "")
-		assert.Error(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with sql.ErrNoRows", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleHouseholdInvitationID := fakes.BuildFakeID()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleHouseholdInvitationID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(householdInvitationExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(sql.ErrNoRows)
-
-		actual, err := c.HouseholdInvitationExists(ctx, exampleHouseholdInvitationID)
-		assert.NoError(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleHouseholdInvitationID := fakes.BuildFakeID()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleHouseholdInvitationID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(householdInvitationExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.HouseholdInvitationExists(ctx, exampleHouseholdInvitationID)
 		assert.Error(t, err)
 		assert.False(t, actual)
 

@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"database/sql/driver"
 	"errors"
 	"testing"
@@ -119,35 +118,6 @@ func TestQuerier_ScanRecipeStepVessels(T *testing.T) {
 func TestQuerier_RecipeStepVesselExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleRecipeID := fakes.BuildFakeID()
-		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleRecipeStepID,
-			exampleRecipeStepVessel.ID,
-			exampleRecipeID,
-			exampleRecipeStepID,
-			exampleRecipeID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(recipeStepVesselExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
-
-		actual, err := c.RecipeStepVesselExists(ctx, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepVessel.ID)
-		assert.NoError(t, err)
-		assert.True(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid recipe ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -191,64 +161,6 @@ func TestQuerier_RecipeStepVesselExists(T *testing.T) {
 		actual, err := c.RecipeStepVesselExists(ctx, exampleRecipeID, exampleRecipeStepID, "")
 		assert.Error(t, err)
 		assert.False(t, actual)
-	})
-
-	T.Run("with sql.ErrNoRows", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleRecipeID := fakes.BuildFakeID()
-		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleRecipeStepID,
-			exampleRecipeStepVessel.ID,
-			exampleRecipeID,
-			exampleRecipeStepID,
-			exampleRecipeID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(recipeStepVesselExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(sql.ErrNoRows)
-
-		actual, err := c.RecipeStepVesselExists(ctx, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepVessel.ID)
-		assert.NoError(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleRecipeID := fakes.BuildFakeID()
-		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleRecipeStepID,
-			exampleRecipeStepVessel.ID,
-			exampleRecipeID,
-			exampleRecipeStepID,
-			exampleRecipeID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(recipeStepVesselExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.RecipeStepVesselExists(ctx, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepVessel.ID)
-		assert.Error(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

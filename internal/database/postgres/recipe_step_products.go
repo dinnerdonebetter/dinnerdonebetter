@@ -154,9 +154,6 @@ func (q *Querier) scanRecipeStepProducts(ctx context.Context, rows database.Resu
 	return recipeStepProducts, filteredCount, totalCount, nil
 }
 
-//go:embed queries/recipe_step_products/exists.sql
-var recipeStepProductExistenceQuery string
-
 // RecipeStepProductExists fetches whether a recipe step product exists from the database.
 func (q *Querier) RecipeStepProductExists(ctx context.Context, recipeID, recipeStepID, recipeStepProductID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -182,15 +179,11 @@ func (q *Querier) RecipeStepProductExists(ctx context.Context, recipeID, recipeS
 	logger = logger.WithValue(keys.RecipeStepProductIDKey, recipeStepProductID)
 	tracing.AttachRecipeStepProductIDToSpan(span, recipeStepProductID)
 
-	args := []any{
-		recipeStepID,
-		recipeStepProductID,
-		recipeID,
-		recipeStepID,
-		recipeID,
-	}
-
-	result, err := q.performBooleanQuery(ctx, q.db, recipeStepProductExistenceQuery, args)
+	result, err := q.generatedQuerier.CheckRecipeStepProductExistence(ctx, q.db, &generated.CheckRecipeStepProductExistenceParams{
+		RecipeStepID:        recipeStepID,
+		RecipeStepProductID: recipeStepProductID,
+		RecipeID:            recipeID,
+	})
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing recipe step product existence check")
 	}

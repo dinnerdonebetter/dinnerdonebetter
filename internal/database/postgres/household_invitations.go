@@ -125,9 +125,6 @@ func (q *Querier) scanHouseholdInvitations(ctx context.Context, rows database.Re
 	return householdInvitations, filteredCount, totalCount, nil
 }
 
-//go:embed queries/household_invitations/exists.sql
-var householdInvitationExistenceQuery string
-
 // HouseholdInvitationExists fetches whether a household invitation exists from the database.
 func (q *Querier) HouseholdInvitationExists(ctx context.Context, householdInvitationID string) (bool, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -141,11 +138,7 @@ func (q *Querier) HouseholdInvitationExists(ctx context.Context, householdInvita
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
 	tracing.AttachHouseholdInvitationIDToSpan(span, householdInvitationID)
 
-	args := []any{
-		householdInvitationID,
-	}
-
-	result, err := q.performBooleanQuery(ctx, q.db, householdInvitationExistenceQuery, args)
+	result, err := q.generatedQuerier.CheckHouseholdInvitationExistence(ctx, q.db, householdInvitationID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing household invitation existence check")
 	}

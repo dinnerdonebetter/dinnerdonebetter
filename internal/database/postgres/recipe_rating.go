@@ -95,9 +95,6 @@ func (q *Querier) scanRecipeRatings(ctx context.Context, rows database.ResultIte
 	return recipeRatings, filteredCount, totalCount, nil
 }
 
-//go:embed queries/recipe_ratings/exists.sql
-var recipeRatingExistenceQuery string
-
 // RecipeRatingExists fetches whether a recipe rating exists from the database.
 func (q *Querier) RecipeRatingExists(ctx context.Context, recipeRatingID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -111,11 +108,7 @@ func (q *Querier) RecipeRatingExists(ctx context.Context, recipeRatingID string)
 	logger = logger.WithValue(keys.RecipeRatingIDKey, recipeRatingID)
 	tracing.AttachRecipeRatingIDToSpan(span, recipeRatingID)
 
-	args := []any{
-		recipeRatingID,
-	}
-
-	result, err := q.performBooleanQuery(ctx, q.db, recipeRatingExistenceQuery, args)
+	result, err := q.generatedQuerier.CheckRecipeRatingExistence(ctx, q.db, recipeRatingID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing recipe rating existence check")
 	}

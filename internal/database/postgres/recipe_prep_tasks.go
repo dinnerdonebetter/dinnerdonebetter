@@ -5,6 +5,7 @@ import (
 	_ "embed"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -113,9 +114,6 @@ func (q *Querier) scanRecipePrepTasksWithSteps(ctx context.Context, rows databas
 	return recipePrepTasks, nil
 }
 
-//go:embed queries/recipe_prep_tasks/exists.sql
-var recipePrepTasksExistsQuery string
-
 // RecipePrepTaskExists checks if a recipe prep task exists.
 func (q *Querier) RecipePrepTaskExists(ctx context.Context, recipeID, recipePrepTaskID string) (bool, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -135,12 +133,10 @@ func (q *Querier) RecipePrepTaskExists(ctx context.Context, recipeID, recipePrep
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
 	tracing.AttachRecipePrepTaskIDToSpan(span, recipePrepTaskID)
 
-	args := []any{
-		recipeID,
-		recipePrepTaskID,
-	}
-
-	result, err := q.performBooleanQuery(ctx, q.db, recipePrepTasksExistsQuery, args)
+	result, err := q.generatedQuerier.CheckRecipePrepTaskExistence(ctx, q.db, &generated.CheckRecipePrepTaskExistenceParams{
+		BelongsToRecipe: recipeID,
+		ID:              recipePrepTaskID,
+	})
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing recipe prep task existence check")
 	}

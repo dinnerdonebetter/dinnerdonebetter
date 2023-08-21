@@ -61,9 +61,9 @@ type Querier interface {
 	CheckHouseholdInstrumentOwnershipExistence(ctx context.Context, db DBTX, arg *CheckHouseholdInstrumentOwnershipExistenceParams) (bool, error)
 	CheckHouseholdInvitationExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckMealExistence(ctx context.Context, db DBTX, id string) (bool, error)
-	CheckMealPlanEventExistence(ctx context.Context, db DBTX, id string) (bool, error)
-	CheckMealPlanExistence(ctx context.Context, db DBTX, id string) (bool, error)
-	CheckMealPlanGroceryListItemExistence(ctx context.Context, db DBTX, id string) (bool, error)
+	CheckMealPlanEventExistence(ctx context.Context, db DBTX, arg *CheckMealPlanEventExistenceParams) (bool, error)
+	CheckMealPlanExistence(ctx context.Context, db DBTX, arg *CheckMealPlanExistenceParams) (bool, error)
+	CheckMealPlanGroceryListItemExistence(ctx context.Context, db DBTX, arg *CheckMealPlanGroceryListItemExistenceParams) (bool, error)
 	CheckMealPlanOptionExistence(ctx context.Context, db DBTX, arg *CheckMealPlanOptionExistenceParams) (bool, error)
 	CheckMealPlanOptionVoteExistence(ctx context.Context, db DBTX, arg *CheckMealPlanOptionVoteExistenceParams) (bool, error)
 	CheckMealPlanTaskExistence(ctx context.Context, db DBTX, arg *CheckMealPlanTaskExistenceParams) (bool, error)
@@ -149,7 +149,7 @@ type Querier interface {
 	GetAllRecipeStepCompletionConditionsForRecipe(ctx context.Context, db DBTX, id string) ([]*GetAllRecipeStepCompletionConditionsForRecipeRow, error)
 	GetAllValidMeasurementUnitConversionsFromMeasurementUnit(ctx context.Context, db DBTX, fromUnit string) ([]*GetAllValidMeasurementUnitConversionsFromMeasurementUnitRow, error)
 	GetAllValidMeasurementUnitConversionsToMeasurementUnit(ctx context.Context, db DBTX, id string) ([]*GetAllValidMeasurementUnitConversionsToMeasurementUnitRow, error)
-	GetDefaultHouseholdIDForUser(ctx context.Context, db DBTX, arg *GetDefaultHouseholdIDForUserParams) (string, error)
+	GetDefaultHouseholdIDForUser(ctx context.Context, db DBTX, belongsToUser string) (string, error)
 	GetEmailVerificationTokenByUserID(ctx context.Context, db DBTX, id string) (sql.NullString, error)
 	GetExpiredAndUnresolvedMealPlans(ctx context.Context, db DBTX) ([]*GetExpiredAndUnresolvedMealPlansRow, error)
 	GetFinalizedMealPlansForPlanning(ctx context.Context, db DBTX) ([]*GetFinalizedMealPlansForPlanningRow, error)
@@ -164,7 +164,6 @@ type Querier interface {
 	GetMeal(ctx context.Context, db DBTX, id string) (*GetMealRow, error)
 	GetMealPlan(ctx context.Context, db DBTX, arg *GetMealPlanParams) (*GetMealPlanRow, error)
 	GetMealPlanEvent(ctx context.Context, db DBTX, arg *GetMealPlanEventParams) (*MealPlanEvents, error)
-	GetMealPlanEventsEligibleForVoting(ctx context.Context, db DBTX, arg *GetMealPlanEventsEligibleForVotingParams) ([]bool, error)
 	GetMealPlanEventsForMealPlan(ctx context.Context, db DBTX, belongsToMealPlan string) ([]*MealPlanEvents, error)
 	GetMealPlanGroceryListItem(ctx context.Context, db DBTX, arg *GetMealPlanGroceryListItemParams) (*GetMealPlanGroceryListItemRow, error)
 	GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, db DBTX, belongsToMealPlan string) ([]*GetMealPlanGroceryListItemsForMealPlanRow, error)
@@ -288,6 +287,7 @@ type Querier interface {
 	MarkMealPlanAsPrepTasksCreated(ctx context.Context, db DBTX, id string) error
 	MarkTwoFactorSecretAsUnverified(ctx context.Context, db DBTX, arg *MarkTwoFactorSecretAsUnverifiedParams) error
 	MarkTwoFactorSecretAsVerified(ctx context.Context, db DBTX, id string) error
+	MealPlanEventIsEligibleForVoting(ctx context.Context, db DBTX, arg *MealPlanEventIsEligibleForVotingParams) (bool, error)
 	ModifyHouseholdUserPermissions(ctx context.Context, db DBTX, arg *ModifyHouseholdUserPermissionsParams) error
 	RedeemPasswordResetToken(ctx context.Context, db DBTX, id string) error
 	RemoveUserFromHousehold(ctx context.Context, db DBTX, arg *RemoveUserFromHouseholdParams) error

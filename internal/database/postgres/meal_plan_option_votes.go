@@ -100,9 +100,6 @@ func (q *Querier) scanMealPlanOptionVotes(ctx context.Context, rows database.Res
 	return mealPlanOptionVotes, filteredCount, totalCount, nil
 }
 
-//go:embed queries/meal_plan_option_votes/exists.sql
-var mealPlanOptionVoteExistenceQuery string
-
 // MealPlanOptionVoteExists fetches whether a meal plan option vote exists from the database.
 func (q *Querier) MealPlanOptionVoteExists(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -134,14 +131,12 @@ func (q *Querier) MealPlanOptionVoteExists(ctx context.Context, mealPlanID, meal
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVoteID)
 
-	args := []any{
-		mealPlanOptionID,
-		mealPlanOptionVoteID,
-		mealPlanEventID,
-		mealPlanID,
-	}
-
-	result, err := q.performBooleanQuery(ctx, q.db, mealPlanOptionVoteExistenceQuery, args)
+	result, err := q.generatedQuerier.CheckMealPlanOptionVoteExistence(ctx, q.db, &generated.CheckMealPlanOptionVoteExistenceParams{
+		MealPlanOptionID:     mealPlanOptionID,
+		MealPlanOptionVoteID: mealPlanOptionVoteID,
+		MealPlanEventID:      nullStringFromString(mealPlanEventID),
+		MealPlanID:           mealPlanID,
+	})
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing meal plan option vote existence check")
 	}

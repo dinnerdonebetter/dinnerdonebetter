@@ -132,9 +132,6 @@ func (q *Querier) scanMealPlanOptions(ctx context.Context, rows database.ResultI
 	return mealPlanOptions, filteredCount, totalCount, nil
 }
 
-//go:embed queries/meal_plan_options/exists.sql
-var mealPlanOptionExistenceQuery string
-
 // MealPlanOptionExists fetches whether a meal plan option exists from the database.
 func (q *Querier) MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -160,13 +157,11 @@ func (q *Querier) MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlan
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
-	args := []any{
-		mealPlanID,
-		mealPlanEventID,
-		mealPlanOptionID,
-	}
-
-	result, err := q.performBooleanQuery(ctx, q.db, mealPlanOptionExistenceQuery, args)
+	result, err := q.generatedQuerier.CheckMealPlanOptionExistence(ctx, q.db, &generated.CheckMealPlanOptionExistenceParams{
+		MealPlanEventID:  nullStringFromString(mealPlanEventID),
+		MealPlanOptionID: mealPlanOptionID,
+		MealPlanID:       mealPlanID,
+	})
 	if err != nil {
 		logger.Error(err, "performing meal plan option existence check")
 		return false, observability.PrepareAndLogError(err, logger, span, "performing meal plan option existence check")

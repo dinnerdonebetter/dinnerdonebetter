@@ -176,9 +176,6 @@ func (q *Querier) scanRecipeStepVessels(ctx context.Context, rows database.Resul
 	return recipeStepVessels, filteredCount, totalCount, nil
 }
 
-//go:embed queries/recipe_step_vessels/exists.sql
-var recipeStepVesselExistenceQuery string
-
 // RecipeStepVesselExists fetches whether a recipe step vessel exists from the database.
 func (q *Querier) RecipeStepVesselExists(ctx context.Context, recipeID, recipeStepID, recipeStepVesselID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -204,15 +201,11 @@ func (q *Querier) RecipeStepVesselExists(ctx context.Context, recipeID, recipeSt
 	logger = logger.WithValue(keys.RecipeStepVesselIDKey, recipeStepVesselID)
 	tracing.AttachRecipeStepVesselIDToSpan(span, recipeStepVesselID)
 
-	args := []any{
-		recipeStepID,
-		recipeStepVesselID,
-		recipeID,
-		recipeStepID,
-		recipeID,
-	}
-
-	result, err := q.performBooleanQuery(ctx, q.db, recipeStepVesselExistenceQuery, args)
+	result, err := q.generatedQuerier.CheckRecipeStepVesselExistence(ctx, q.db, &generated.CheckRecipeStepVesselExistenceParams{
+		RecipeStepID:       recipeStepID,
+		RecipeStepVesselID: recipeStepVesselID,
+		RecipeID:           recipeID,
+	})
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing recipe step vessel existence check")
 	}

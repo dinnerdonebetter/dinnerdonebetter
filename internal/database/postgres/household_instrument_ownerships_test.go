@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"database/sql/driver"
 	"errors"
 	"testing"
@@ -96,31 +95,6 @@ func TestQuerier_ScanHouseholdInstrumentOwnerships(T *testing.T) {
 func TestQuerier_HouseholdInstrumentOwnershipExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleHouseholdInstrumentOwnership := fakes.BuildFakeHouseholdInstrumentOwnership()
-		exampleHouseholdID := fakes.BuildFakeID()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleHouseholdInstrumentOwnership.ID,
-			exampleHouseholdID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(householdInstrumentOwnershipExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
-
-		actual, err := c.HouseholdInstrumentOwnershipExists(ctx, exampleHouseholdInstrumentOwnership.ID, exampleHouseholdID)
-		assert.NoError(t, err)
-		assert.True(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid household instrument ownership ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -132,56 +106,6 @@ func TestQuerier_HouseholdInstrumentOwnershipExists(T *testing.T) {
 		actual, err := c.HouseholdInstrumentOwnershipExists(ctx, "", exampleHouseholdID)
 		assert.Error(t, err)
 		assert.False(t, actual)
-	})
-
-	T.Run("with sql.ErrNoRows", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleHouseholdInstrumentOwnership := fakes.BuildFakeHouseholdInstrumentOwnership()
-		exampleHouseholdID := fakes.BuildFakeID()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleHouseholdInstrumentOwnership.ID,
-			exampleHouseholdID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(householdInstrumentOwnershipExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(sql.ErrNoRows)
-
-		actual, err := c.HouseholdInstrumentOwnershipExists(ctx, exampleHouseholdInstrumentOwnership.ID, exampleHouseholdID)
-		assert.NoError(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleHouseholdInstrumentOwnership := fakes.BuildFakeHouseholdInstrumentOwnership()
-		exampleHouseholdID := fakes.BuildFakeID()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleHouseholdInstrumentOwnership.ID,
-			exampleHouseholdID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(householdInstrumentOwnershipExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.HouseholdInstrumentOwnershipExists(ctx, exampleHouseholdInstrumentOwnership.ID, exampleHouseholdID)
-		assert.Error(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

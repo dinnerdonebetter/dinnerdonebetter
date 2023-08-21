@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
@@ -59,39 +58,6 @@ func buildInvalidRowsFromHouseholdUserMembershipsWithUsers(memberships ...*types
 	return exampleRows
 }
 
-func TestQuerier_ScanHouseholdUserMemberships(T *testing.T) {
-	T.Parallel()
-
-	T.Run("surfaces row errs", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		q, _ := buildTestClient(t)
-
-		mockRows := &database.MockResultIterator{}
-		mockRows.On("Next").Return(false)
-		mockRows.On("Err").Return(errors.New("blah"))
-
-		_, _, err := q.scanHouseholdUserMemberships(ctx, mockRows)
-		assert.Error(t, err)
-	})
-
-	T.Run("logs row closing errs", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		q, _ := buildTestClient(t)
-
-		mockRows := &database.MockResultIterator{}
-		mockRows.On("Next").Return(false)
-		mockRows.On("Err").Return(nil)
-		mockRows.On("Close").Return(errors.New("blah"))
-
-		_, _, err := q.scanHouseholdUserMemberships(ctx, mockRows)
-		assert.Error(t, err)
-	})
-}
-
 func TestQuerier_BuildSessionContextDataForUser(T *testing.T) {
 	T.Parallel()
 
@@ -110,29 +76,6 @@ func TestQuerier_BuildSessionContextDataForUser(T *testing.T) {
 func TestQuerier_GetDefaultHouseholdIDForUser(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleUserID := fakes.BuildFakeID()
-		exampleHouseholdID := fakes.BuildFakeID()
-		expected := exampleHouseholdID
-
-		c, db := buildTestClient(t)
-
-		args := []any{exampleUserID, true}
-
-		db.ExpectQuery(formatQueryForSQLMock(getDefaultHouseholdIDForUserQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(exampleHouseholdID))
-
-		actual, err := c.GetDefaultHouseholdIDForUser(ctx, exampleUserID)
-		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
-
-		assert.NoError(t, db.ExpectationsWereMet())
-	})
-
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -142,27 +85,6 @@ func TestQuerier_GetDefaultHouseholdIDForUser(T *testing.T) {
 		actual, err := c.GetDefaultHouseholdIDForUser(ctx, "")
 		assert.Error(t, err)
 		assert.Zero(t, actual)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleUserID := fakes.BuildFakeID()
-
-		c, db := buildTestClient(t)
-
-		args := []any{exampleUserID, true}
-
-		db.ExpectQuery(formatQueryForSQLMock(getDefaultHouseholdIDForUserQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetDefaultHouseholdIDForUser(ctx, exampleUserID)
-		assert.Error(t, err)
-		assert.Zero(t, actual)
-
-		assert.NoError(t, db.ExpectationsWereMet())
 	})
 }
 
@@ -239,29 +161,6 @@ func TestQuerier_MarkHouseholdAsUserDefault(T *testing.T) {
 func TestQuerier_UserIsMemberOfHousehold(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleUserID := fakes.BuildFakeID()
-		exampleHouseholdID := fakes.BuildFakeID()
-
-		c, db := buildTestClient(t)
-
-		userIsMemberOfHouseholdArgs := []any{
-			exampleHouseholdID,
-			exampleUserID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(userIsMemberOfHouseholdQuery)).
-			WithArgs(interfaceToDriverValue(userIsMemberOfHouseholdArgs)...).
-			WillReturnRows(sqlmock.NewRows([]string{"result"}).AddRow(true))
-
-		actual, err := c.UserIsMemberOfHousehold(ctx, exampleUserID, exampleHouseholdID)
-		assert.True(t, actual)
-		assert.NoError(t, err)
-	})
-
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -284,29 +183,6 @@ func TestQuerier_UserIsMemberOfHousehold(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		actual, err := c.UserIsMemberOfHousehold(ctx, exampleUserID, "")
-		assert.False(t, actual)
-		assert.Error(t, err)
-	})
-
-	T.Run("with error performing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleUserID := fakes.BuildFakeID()
-		exampleHouseholdID := fakes.BuildFakeID()
-
-		c, db := buildTestClient(t)
-
-		userIsMemberOfHouseholdArgs := []any{
-			exampleHouseholdID,
-			exampleUserID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(userIsMemberOfHouseholdQuery)).
-			WithArgs(interfaceToDriverValue(userIsMemberOfHouseholdArgs)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.UserIsMemberOfHousehold(ctx, exampleUserID, exampleHouseholdID)
 		assert.False(t, actual)
 		assert.Error(t, err)
 	})

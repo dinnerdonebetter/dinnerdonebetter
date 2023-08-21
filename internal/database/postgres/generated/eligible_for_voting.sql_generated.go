@@ -9,7 +9,7 @@ import (
 	"context"
 )
 
-const getMealPlanEventsEligibleForVoting = `-- name: GetMealPlanEventsEligibleForVoting :many
+const mealPlanEventIsEligibleForVoting = `-- name: MealPlanEventIsEligibleForVoting :one
 
 SELECT
   EXISTS (
@@ -28,30 +28,14 @@ SELECT
   )
 `
 
-type GetMealPlanEventsEligibleForVotingParams struct {
-	ID   string
-	ID_2 string
+type MealPlanEventIsEligibleForVotingParams struct {
+	MealPlanID      string
+	MealPlanEventID string
 }
 
-func (q *Queries) GetMealPlanEventsEligibleForVoting(ctx context.Context, db DBTX, arg *GetMealPlanEventsEligibleForVotingParams) ([]bool, error) {
-	rows, err := db.QueryContext(ctx, getMealPlanEventsEligibleForVoting, arg.ID, arg.ID_2)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []bool{}
-	for rows.Next() {
-		var exists bool
-		if err := rows.Scan(&exists); err != nil {
-			return nil, err
-		}
-		items = append(items, exists)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+func (q *Queries) MealPlanEventIsEligibleForVoting(ctx context.Context, db DBTX, arg *MealPlanEventIsEligibleForVotingParams) (bool, error) {
+	row := db.QueryRowContext(ctx, mealPlanEventIsEligibleForVoting, arg.MealPlanID, arg.MealPlanEventID)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
 }

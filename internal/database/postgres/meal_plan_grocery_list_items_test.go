@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"testing"
 	"time"
@@ -12,7 +11,6 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
-	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -54,29 +52,6 @@ func TestQuerier_ScanMealPlanGroceryListItems(T *testing.T) {
 func TestQuerier_MealPlanGroceryListItemExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleMealPlan := fakes.BuildFakeMealPlan()
-		exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleMealPlanGroceryListItem.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(mealPlanGroceryListItemExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
-
-		actual, err := c.MealPlanGroceryListItemExists(ctx, exampleMealPlan.ID, exampleMealPlanGroceryListItem.ID)
-		assert.NoError(t, err)
-		assert.True(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid meal plan grocery list item ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -88,52 +63,6 @@ func TestQuerier_MealPlanGroceryListItemExists(T *testing.T) {
 		actual, err := c.MealPlanGroceryListItemExists(ctx, exampleMealPlan.ID, "")
 		assert.Error(t, err)
 		assert.False(t, actual)
-	})
-
-	T.Run("with sql.ErrNoRows", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleMealPlan := fakes.BuildFakeMealPlan()
-		exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleMealPlanGroceryListItem.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(mealPlanGroceryListItemExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(sql.ErrNoRows)
-
-		actual, err := c.MealPlanGroceryListItemExists(ctx, exampleMealPlan.ID, exampleMealPlanGroceryListItem.ID)
-		assert.NoError(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleMealPlan := fakes.BuildFakeMealPlan()
-		exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleMealPlanGroceryListItem.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(mealPlanGroceryListItemExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.MealPlanGroceryListItemExists(ctx, exampleMealPlan.ID, exampleMealPlanGroceryListItem.ID)
-		assert.Error(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

@@ -75,28 +75,17 @@ func buildMockRowsFromRecipePrepTasks(recipePrepTasks ...*types.RecipePrepTask) 
 func TestQuerier_RecipePrepTaskExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
+	T.Run("with invalid recipe ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		exampleRecipe := fakes.BuildFakeRecipe()
 		exampleRecipePrepTask := fakes.BuildFakeRecipePrepTask()
 
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleRecipe.ID,
-			exampleRecipePrepTask.ID,
-		}
+		c, _ := buildTestClient(t)
 
-		db.ExpectQuery(formatQueryForSQLMock(recipePrepTasksExistsQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
-
-		actual, err := c.RecipePrepTaskExists(ctx, exampleRecipe.ID, exampleRecipePrepTask.ID)
-		assert.NoError(t, err)
-		assert.True(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
+		actual, err := c.RecipePrepTaskExists(ctx, "", exampleRecipePrepTask.ID)
+		assert.Error(t, err)
+		assert.False(t, actual)
 	})
 }
 

@@ -8,6 +8,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
@@ -36,61 +37,6 @@ var (
 	}
 )
 
-// scanHouseholdUserMembership takes a database Scanner (i.e. *sql.Row) and scans the result into a householdUserMembership struct.
-func (q *Querier) scanHouseholdUserMembership(ctx context.Context, scan database.Scanner) (x *types.HouseholdUserMembership, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	x = &types.HouseholdUserMembership{}
-
-	targetVars := []any{
-		&x.ID,
-		&x.BelongsToUser,
-		&x.BelongsToHousehold,
-		&x.HouseholdRole,
-		&x.DefaultHousehold,
-		&x.CreatedAt,
-		&x.LastUpdatedAt,
-		&x.ArchivedAt,
-	}
-
-	if err = scan.Scan(targetVars...); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning household user memberships")
-	}
-
-	return x, nil
-}
-
-// scanHouseholdUserMemberships takes some database rows and turns them into a slice of memberships.
-func (q *Querier) scanHouseholdUserMemberships(ctx context.Context, rows database.ResultIterator) (defaultHousehold string, householdRolesMap map[string]string, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	householdRolesMap = map[string]string{}
-
-	for rows.Next() {
-		x, scanErr := q.scanHouseholdUserMembership(ctx, rows)
-		if scanErr != nil {
-			return "", nil, scanErr
-		}
-
-		if x.DefaultHousehold && defaultHousehold == "" {
-			defaultHousehold = x.BelongsToHousehold
-		}
-
-		householdRolesMap[x.BelongsToHousehold] = x.HouseholdRole
-	}
-
-	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return "", nil, observability.PrepareError(err, span, "handling rows")
-	}
-
-	return defaultHousehold, householdRolesMap, nil
-}
-
-//go:embed queries/household_user_memberships/get_for_user.sql
-var getHouseholdMembershipsForUserQuery string
-
 // BuildSessionContextDataForUser queries the database for the memberships of a user and constructs a SessionContextData struct from the results.
 func (q *Querier) BuildSessionContextDataForUser(ctx context.Context, userID string) (*types.SessionContextData, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -103,38 +49,35 @@ func (q *Querier) BuildSessionContextDataForUser(ctx context.Context, userID str
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachUserIDToSpan(span, userID)
 
+	results, err := q.generatedQuerier.GetHouseholdUserMembershipsForUser(ctx, q.db, userID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching user's memberships from database")
+	}
+
+	householdRolesMap := map[string]authorization.HouseholdRolePermissionsChecker{}
+	defaultHouseholdID := ""
+	for _, result := range results {
+		householdRolesMap[result.BelongsToHousehold] = authorization.NewHouseholdRolePermissionChecker(result.HouseholdRole)
+		if result.DefaultHousehold {
+			defaultHouseholdID = result.BelongsToHousehold
+		}
+	}
+
 	user, err := q.GetUser(ctx, userID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching user from database")
 	}
 
-	getHouseholdMembershipsArgs := []any{userID}
-
-	membershipRows, membershipReadErr := q.getRows(ctx, q.db, "household memberships for user", getHouseholdMembershipsForUserQuery, getHouseholdMembershipsArgs)
-	if membershipReadErr != nil {
-		return nil, observability.PrepareError(membershipReadErr, span, "fetching user's memberships from database")
-	}
-
-	defaultHouseholdID, householdRolesMap, membershipsScanErr := q.scanHouseholdUserMemberships(ctx, membershipRows)
-	if membershipsScanErr != nil {
-		return nil, observability.PrepareError(membershipsScanErr, span, "scanning user's memberships from database")
-	}
-
-	actualHouseholdRolesMap := map[string]authorization.HouseholdRolePermissionsChecker{}
-	for householdID, roles := range householdRolesMap {
-		actualHouseholdRolesMap[householdID] = authorization.NewHouseholdRolePermissionChecker(roles)
-	}
-
 	sessionCtxData := &types.SessionContextData{
 		Requester: types.RequesterInfo{
+			UserID:                   user.ID,
 			Username:                 user.Username,
 			EmailAddress:             user.EmailAddress,
-			UserID:                   user.ID,
 			AccountStatus:            user.AccountStatus,
 			AccountStatusExplanation: user.AccountStatusExplanation,
 			ServicePermissions:       authorization.NewServiceRolePermissionChecker(user.ServiceRole),
 		},
-		HouseholdPermissions: actualHouseholdRolesMap,
+		HouseholdPermissions: householdRolesMap,
 		ActiveHouseholdID:    defaultHouseholdID,
 	}
 
@@ -143,23 +86,22 @@ func (q *Querier) BuildSessionContextDataForUser(ctx context.Context, userID str
 	return sessionCtxData, nil
 }
 
-//go:embed queries/household_user_memberships/get_default_household_id_for_user.sql
-var getDefaultHouseholdIDForUserQuery string
-
 // GetDefaultHouseholdIDForUser retrieves the default household ID for a user.
 func (q *Querier) GetDefaultHouseholdIDForUser(ctx context.Context, userID string) (string, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := q.logger.Clone()
+
 	if userID == "" {
 		return "", ErrInvalidIDProvided
 	}
+	tracing.AttachUserIDToSpan(span, userID)
+	logger = logger.WithValue(keys.UserIDKey, userID)
 
-	args := []any{userID, true}
-
-	var id string
-	if err := q.getOneRow(ctx, q.db, "default household ID query", getDefaultHouseholdIDForUserQuery, args).Scan(&id); err != nil {
-		return "", observability.PrepareError(err, span, "executing default household ID query")
+	id, err := q.generatedQuerier.GetDefaultHouseholdIDForUser(ctx, q.db, userID)
+	if err != nil {
+		return "", observability.PrepareAndLogError(err, logger, span, "fetching default household ID for user")
 	}
 
 	return id, nil
@@ -206,9 +148,6 @@ func (q *Querier) MarkHouseholdAsUserDefault(ctx context.Context, userID, househ
 	return q.markHouseholdAsUserDefault(ctx, q.db, userID, householdID)
 }
 
-//go:embed queries/household_user_memberships/user_is_member.sql
-var userIsMemberOfHouseholdQuery string
-
 // UserIsMemberOfHousehold does a thing.
 func (q *Querier) UserIsMemberOfHousehold(ctx context.Context, userID, householdID string) (bool, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -217,16 +156,13 @@ func (q *Querier) UserIsMemberOfHousehold(ctx context.Context, userID, household
 	if userID == "" || householdID == "" {
 		return false, ErrInvalidIDProvided
 	}
-
 	tracing.AttachUserIDToSpan(span, userID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	args := []any{
-		householdID,
-		userID,
-	}
-
-	result, err := q.performBooleanQuery(ctx, q.db, userIsMemberOfHouseholdQuery, args)
+	result, err := q.generatedQuerier.UserIsHouseholdMember(ctx, q.db, &generated.UserIsHouseholdMemberParams{
+		BelongsToHousehold: householdID,
+		BelongsToUser:      userID,
+	})
 	if err != nil {
 		return false, observability.PrepareError(err, span, "performing user membership check query")
 	}

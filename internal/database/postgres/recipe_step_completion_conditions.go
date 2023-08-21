@@ -151,9 +151,6 @@ func (q *Querier) scanRecipeStepCompletionConditionsWithIngredients(ctx context.
 	return recipeStepConditions, filteredCount, totalCount, nil
 }
 
-//go:embed queries/recipe_step_completion_conditions/exists.sql
-var recipeStepCompletionConditionExistenceQuery string
-
 // RecipeStepCompletionConditionExists fetches whether a recipe step completion condition exists from the database.
 func (q *Querier) RecipeStepCompletionConditionExists(ctx context.Context, recipeID, recipeStepID, recipeStepCompletionConditionID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -179,15 +176,11 @@ func (q *Querier) RecipeStepCompletionConditionExists(ctx context.Context, recip
 	logger = logger.WithValue(keys.RecipeStepCompletionConditionIDKey, recipeStepCompletionConditionID)
 	tracing.AttachRecipeStepCompletionConditionIDToSpan(span, recipeStepCompletionConditionID)
 
-	args := []any{
-		recipeStepID,
-		recipeStepCompletionConditionID,
-		recipeID,
-		recipeStepID,
-		recipeID,
-	}
-
-	result, err := q.performBooleanQuery(ctx, q.db, recipeStepCompletionConditionExistenceQuery, args)
+	result, err := q.generatedQuerier.CheckRecipeStepCompletionConditionExistence(ctx, q.db, &generated.CheckRecipeStepCompletionConditionExistenceParams{
+		RecipeStepID:                    recipeStepID,
+		RecipeStepCompletionConditionID: recipeStepCompletionConditionID,
+		RecipeID:                        recipeID,
+	})
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing recipe step completion condition existence check")
 	}

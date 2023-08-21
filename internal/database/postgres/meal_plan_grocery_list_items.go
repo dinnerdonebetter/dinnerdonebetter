@@ -5,6 +5,7 @@ import (
 	_ "embed"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -76,9 +77,6 @@ func (q *Querier) scanMealPlanGroceryListItems(ctx context.Context, rows databas
 	return mealPlanGroceryListItems, nil
 }
 
-//go:embed queries/meal_plan_grocery_list_items/exists.sql
-var mealPlanGroceryListItemExistenceQuery string
-
 // MealPlanGroceryListItemExists fetches whether a meal plan grocery list exists from the database.
 func (q *Querier) MealPlanGroceryListItemExists(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -98,11 +96,10 @@ func (q *Querier) MealPlanGroceryListItemExists(ctx context.Context, mealPlanID,
 	logger = logger.WithValue(keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 	tracing.AttachMealPlanGroceryListItemIDToSpan(span, mealPlanGroceryListItemID)
 
-	args := []any{
-		mealPlanGroceryListItemID,
-	}
-
-	result, err := q.performBooleanQuery(ctx, q.db, mealPlanGroceryListItemExistenceQuery, args)
+	result, err := q.generatedQuerier.CheckMealPlanGroceryListItemExistence(ctx, q.db, &generated.CheckMealPlanGroceryListItemExistenceParams{
+		MealPlanGroceryListItemID: mealPlanGroceryListItemID,
+		MealPlanID:                mealPlanID,
+	})
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing meal plan grocery list existence check")
 	}

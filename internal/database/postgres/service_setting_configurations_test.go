@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"database/sql/driver"
 	"errors"
 	"strings"
@@ -98,28 +97,6 @@ func TestQuerier_ScanServiceSettingConfigurations(T *testing.T) {
 func TestQuerier_ServiceSettingConfigurationExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleServiceSettingConfiguration := fakes.BuildFakeServiceSettingConfiguration()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleServiceSettingConfiguration.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(serviceSettingConfigurationExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
-
-		actual, err := c.ServiceSettingConfigurationExists(ctx, exampleServiceSettingConfiguration.ID)
-		assert.NoError(t, err)
-		assert.True(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid service setting ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -130,50 +107,6 @@ func TestQuerier_ServiceSettingConfigurationExists(T *testing.T) {
 		actual, err := c.ServiceSettingConfigurationExists(ctx, "")
 		assert.Error(t, err)
 		assert.False(t, actual)
-	})
-
-	T.Run("with sql.ErrNoRows", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleServiceSettingConfiguration := fakes.BuildFakeServiceSettingConfiguration()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleServiceSettingConfiguration.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(serviceSettingConfigurationExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(sql.ErrNoRows)
-
-		actual, err := c.ServiceSettingConfigurationExists(ctx, exampleServiceSettingConfiguration.ID)
-		assert.NoError(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleServiceSettingConfiguration := fakes.BuildFakeServiceSettingConfiguration()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleServiceSettingConfiguration.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(serviceSettingConfigurationExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.ServiceSettingConfigurationExists(ctx, exampleServiceSettingConfiguration.ID)
-		assert.Error(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

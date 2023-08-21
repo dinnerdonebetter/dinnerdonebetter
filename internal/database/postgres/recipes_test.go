@@ -220,29 +220,6 @@ func TestQuerier_ScanRecipes(T *testing.T) {
 func TestQuerier_RecipeExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleRecipe := fakes.BuildFakeRecipe()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleRecipe.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(recipeExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
-
-		actual, err := c.RecipeExists(ctx, exampleRecipe.ID)
-		assert.NoError(t, err)
-		assert.True(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid recipe ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -253,52 +230,6 @@ func TestQuerier_RecipeExists(T *testing.T) {
 		actual, err := c.RecipeExists(ctx, "")
 		assert.Error(t, err)
 		assert.False(t, actual)
-	})
-
-	T.Run("with sql.ErrNoRows", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleRecipe := fakes.BuildFakeRecipe()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleRecipe.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(recipeExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(sql.ErrNoRows)
-
-		actual, err := c.RecipeExists(ctx, exampleRecipe.ID)
-		assert.NoError(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleRecipe := fakes.BuildFakeRecipe()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleRecipe.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(recipeExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.RecipeExists(ctx, exampleRecipe.ID)
-		assert.Error(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"database/sql/driver"
 	"errors"
 	"testing"
@@ -89,30 +88,6 @@ func TestQuerier_ScanMealPlans(T *testing.T) {
 func TestQuerier_MealPlanExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleHouseholdID := fakes.BuildFakeID()
-		exampleMealPlan := fakes.BuildFakeMealPlan()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleMealPlan.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(mealPlanExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
-
-		actual, err := c.MealPlanExists(ctx, exampleMealPlan.ID, exampleHouseholdID)
-		assert.NoError(t, err)
-		assert.True(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid meal plan ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -137,54 +112,6 @@ func TestQuerier_MealPlanExists(T *testing.T) {
 		actual, err := c.MealPlanExists(ctx, exampleMealPlanID, "")
 		assert.Error(t, err)
 		assert.False(t, actual)
-	})
-
-	T.Run("with sql.ErrNoRows", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleHouseholdID := fakes.BuildFakeID()
-		exampleMealPlan := fakes.BuildFakeMealPlan()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleMealPlan.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(mealPlanExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(sql.ErrNoRows)
-
-		actual, err := c.MealPlanExists(ctx, exampleMealPlan.ID, exampleHouseholdID)
-		assert.NoError(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		exampleHouseholdID := fakes.BuildFakeID()
-		exampleMealPlan := fakes.BuildFakeMealPlan()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleMealPlan.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(mealPlanExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.MealPlanExists(ctx, exampleMealPlan.ID, exampleHouseholdID)
-		assert.Error(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

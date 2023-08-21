@@ -9,11 +9,11 @@ SELECT EXISTS (
 		JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan = meal_plans.id
 	WHERE
 	 meal_plan_options.archived_at IS NULL
-	AND meal_plan_options.belongs_to_meal_plan_event = $2
-	AND meal_plan_options.id = $3
+	AND meal_plan_options.belongs_to_meal_plan_event = sqlc.arg(meal_plan_event_id)
+	AND meal_plan_options.id = sqlc.arg(meal_plan_option_id)
 	AND meal_plan_events.archived_at IS NULL
-	AND meal_plan_events.belongs_to_meal_plan = $1
-	AND meal_plan_events.id = $2
+	AND meal_plan_events.belongs_to_meal_plan = sqlc.arg(meal_plan_id)
+	AND meal_plan_events.id = sqlc.arg(meal_plan_event_id)
 	AND meal_plans.archived_at IS NULL
-	AND meal_plans.id = $1
+	AND meal_plans.id = sqlc.arg(meal_plan_id)
 );

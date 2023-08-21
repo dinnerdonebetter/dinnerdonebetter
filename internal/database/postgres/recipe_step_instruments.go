@@ -139,9 +139,6 @@ func (q *Querier) scanRecipeStepInstruments(ctx context.Context, rows database.R
 	return recipeStepInstruments, filteredCount, totalCount, nil
 }
 
-//go:embed queries/recipe_step_instruments/exists.sql
-var recipeStepInstrumentExistenceQuery string
-
 // RecipeStepInstrumentExists fetches whether a recipe step instrument exists from the database.
 func (q *Querier) RecipeStepInstrumentExists(ctx context.Context, recipeID, recipeStepID, recipeStepInstrumentID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -167,15 +164,11 @@ func (q *Querier) RecipeStepInstrumentExists(ctx context.Context, recipeID, reci
 	logger = logger.WithValue(keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
 	tracing.AttachRecipeStepInstrumentIDToSpan(span, recipeStepInstrumentID)
 
-	args := []any{
-		recipeStepID,
-		recipeStepInstrumentID,
-		recipeID,
-		recipeStepID,
-		recipeID,
-	}
-
-	result, err := q.performBooleanQuery(ctx, q.db, recipeStepInstrumentExistenceQuery, args)
+	result, err := q.generatedQuerier.CheckRecipeStepInstrumentExistence(ctx, q.db, &generated.CheckRecipeStepInstrumentExistenceParams{
+		RecipeStepID:           recipeStepID,
+		RecipeStepInstrumentID: recipeStepInstrumentID,
+		RecipeID:               recipeID,
+	})
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing recipe step instrument existence check")
 	}

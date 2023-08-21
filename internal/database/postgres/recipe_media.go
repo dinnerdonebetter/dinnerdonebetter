@@ -77,9 +77,6 @@ func (q *Querier) scanRecipeMedia(ctx context.Context, rows database.ResultItera
 	return recipeMedias, nil
 }
 
-//go:embed queries/recipe_media/exists.sql
-var recipeMediaExistenceQuery string
-
 // RecipeMediaExists fetches whether a recipe media exists from the database.
 func (q *Querier) RecipeMediaExists(ctx context.Context, recipeMediaID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -93,11 +90,7 @@ func (q *Querier) RecipeMediaExists(ctx context.Context, recipeMediaID string) (
 	logger = logger.WithValue(keys.RecipeMediaIDKey, recipeMediaID)
 	tracing.AttachRecipeMediaIDToSpan(span, recipeMediaID)
 
-	args := []any{
-		recipeMediaID,
-	}
-
-	result, err := q.performBooleanQuery(ctx, q.db, recipeMediaExistenceQuery, args)
+	result, err := q.generatedQuerier.CheckRecipeMediaExistence(ctx, q.db, recipeMediaID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing recipe media existence check")
 	}

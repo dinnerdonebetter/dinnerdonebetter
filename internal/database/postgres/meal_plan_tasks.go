@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -164,9 +165,6 @@ func (q *Querier) scanMealPlanTasksForMealPlan(ctx context.Context, rows databas
 	return mealPlanTasks, nil
 }
 
-//go:embed queries/meal_plan_tasks/exists.sql
-var mealPlanTasksExistsQuery string
-
 // MealPlanTaskExists checks if a meal plan task exists.
 func (q *Querier) MealPlanTaskExists(ctx context.Context, mealPlanID, mealPlanTaskID string) (bool, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -186,12 +184,10 @@ func (q *Querier) MealPlanTaskExists(ctx context.Context, mealPlanID, mealPlanTa
 	logger = logger.WithValue(keys.MealPlanTaskIDKey, mealPlanTaskID)
 	tracing.AttachMealPlanTaskIDToSpan(span, mealPlanTaskID)
 
-	args := []any{
-		mealPlanID,
-		mealPlanTaskID,
-	}
-
-	result, err := q.performBooleanQuery(ctx, q.db, mealPlanTasksExistsQuery, args)
+	result, err := q.generatedQuerier.CheckMealPlanTaskExistence(ctx, q.db, &generated.CheckMealPlanTaskExistenceParams{
+		MealPlanID:     mealPlanID,
+		MealPlanTaskID: mealPlanTaskID,
+	})
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing meal plan task existence check")
 	}

@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"database/sql/driver"
 	"errors"
 	"testing"
@@ -79,28 +78,6 @@ func TestQuerier_ScanRecipeMedias(T *testing.T) {
 func TestQuerier_RecipeMediaExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleRecipeMedia := fakes.BuildFakeRecipeMedia()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleRecipeMedia.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(recipeMediaExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
-
-		actual, err := c.RecipeMediaExists(ctx, exampleRecipeMedia.ID)
-		assert.NoError(t, err)
-		assert.True(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid valid preparation ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -111,50 +88,6 @@ func TestQuerier_RecipeMediaExists(T *testing.T) {
 		actual, err := c.RecipeMediaExists(ctx, "")
 		assert.Error(t, err)
 		assert.False(t, actual)
-	})
-
-	T.Run("with sql.ErrNoRows", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleRecipeMedia := fakes.BuildFakeRecipeMedia()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleRecipeMedia.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(recipeMediaExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(sql.ErrNoRows)
-
-		actual, err := c.RecipeMediaExists(ctx, exampleRecipeMedia.ID)
-		assert.NoError(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleRecipeMedia := fakes.BuildFakeRecipeMedia()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleRecipeMedia.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(recipeMediaExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.RecipeMediaExists(ctx, exampleRecipeMedia.ID)
-		assert.Error(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

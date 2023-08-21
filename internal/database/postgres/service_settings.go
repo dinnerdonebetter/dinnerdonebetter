@@ -104,9 +104,6 @@ func (q *Querier) scanServiceSettings(ctx context.Context, rows database.ResultI
 	return serviceSettings, filteredCount, totalCount, nil
 }
 
-//go:embed queries/service_settings/exists.sql
-var serviceSettingExistenceQuery string
-
 // ServiceSettingExists fetches whether a service setting exists from the database.
 func (q *Querier) ServiceSettingExists(ctx context.Context, serviceSettingID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -120,11 +117,7 @@ func (q *Querier) ServiceSettingExists(ctx context.Context, serviceSettingID str
 	logger = logger.WithValue(keys.ServiceSettingIDKey, serviceSettingID)
 	tracing.AttachServiceSettingIDToSpan(span, serviceSettingID)
 
-	args := []any{
-		serviceSettingID,
-	}
-
-	result, err := q.performBooleanQuery(ctx, q.db, serviceSettingExistenceQuery, args)
+	result, err := q.generatedQuerier.CheckServiceSettingExistence(ctx, q.db, serviceSettingID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing service setting existence check")
 	}

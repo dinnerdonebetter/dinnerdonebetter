@@ -111,9 +111,6 @@ func (q *Querier) scanRecipes(ctx context.Context, rows database.ResultIterator,
 	return recipes, filteredCount, totalCount, nil
 }
 
-//go:embed queries/recipes/exists.sql
-var recipeExistenceQuery string
-
 // RecipeExists fetches whether a recipe exists from the database.
 func (q *Querier) RecipeExists(ctx context.Context, recipeID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -124,11 +121,7 @@ func (q *Querier) RecipeExists(ctx context.Context, recipeID string) (exists boo
 	}
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	args := []any{
-		recipeID,
-	}
-
-	result, err := q.performBooleanQuery(ctx, q.db, recipeExistenceQuery, args)
+	result, err := q.generatedQuerier.CheckRecipeExistence(ctx, q.db, recipeID)
 	if err != nil {
 		return false, observability.PrepareError(err, span, "performing recipe existence check")
 	}

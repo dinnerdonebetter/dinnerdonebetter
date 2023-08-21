@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"database/sql/driver"
 	"errors"
 	"strings"
@@ -88,28 +87,6 @@ func TestQuerier_ScanServiceSettings(T *testing.T) {
 func TestQuerier_ServiceSettingExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleServiceSetting := fakes.BuildFakeServiceSetting()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleServiceSetting.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(serviceSettingExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(sqlmock.NewRows([]string{"exists"}).AddRow(true))
-
-		actual, err := c.ServiceSettingExists(ctx, exampleServiceSetting.ID)
-		assert.NoError(t, err)
-		assert.True(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid service setting ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -120,50 +97,6 @@ func TestQuerier_ServiceSettingExists(T *testing.T) {
 		actual, err := c.ServiceSettingExists(ctx, "")
 		assert.Error(t, err)
 		assert.False(t, actual)
-	})
-
-	T.Run("with sql.ErrNoRows", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleServiceSetting := fakes.BuildFakeServiceSetting()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleServiceSetting.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(serviceSettingExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(sql.ErrNoRows)
-
-		actual, err := c.ServiceSettingExists(ctx, exampleServiceSetting.ID)
-		assert.NoError(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleServiceSetting := fakes.BuildFakeServiceSetting()
-
-		c, db := buildTestClient(t)
-		args := []any{
-			exampleServiceSetting.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(serviceSettingExistenceQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.ServiceSettingExists(ctx, exampleServiceSetting.ID)
-		assert.Error(t, err)
-		assert.False(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

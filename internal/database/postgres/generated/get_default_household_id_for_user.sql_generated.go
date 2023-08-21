@@ -15,16 +15,11 @@ SELECT households.id
 FROM households
  JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
 WHERE household_user_memberships.belongs_to_user = $1
-	AND household_user_memberships.default_household = $2
+	AND household_user_memberships.default_household = TRUE
 `
 
-type GetDefaultHouseholdIDForUserParams struct {
-	BelongsToUser    string
-	DefaultHousehold bool
-}
-
-func (q *Queries) GetDefaultHouseholdIDForUser(ctx context.Context, db DBTX, arg *GetDefaultHouseholdIDForUserParams) (string, error) {
-	row := db.QueryRowContext(ctx, getDefaultHouseholdIDForUser, arg.BelongsToUser, arg.DefaultHousehold)
+func (q *Queries) GetDefaultHouseholdIDForUser(ctx context.Context, db DBTX, belongsToUser string) (string, error) {
+	row := db.QueryRowContext(ctx, getDefaultHouseholdIDForUser, belongsToUser)
 	var id string
 	err := row.Scan(&id)
 	return id, err

@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -12,7 +11,6 @@ import (
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/cryptography"
@@ -248,29 +246,6 @@ func (q *Querier) getRows(ctx context.Context, querier database.SQLQueryExecutor
 	}
 
 	return rows, nil
-}
-
-func (q *Querier) performBooleanQuery(ctx context.Context, querier database.SQLQueryExecutor, query string, args []any) (bool, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.WithValue(keys.DatabaseQueryKey, query).WithValue("args", args)
-	tracing.AttachDatabaseQueryToSpan(span, "boolean query", query, args)
-
-	var exists bool
-	err := querier.QueryRowContext(ctx, query, args...).Scan(&exists)
-	if errors.Is(err, sql.ErrNoRows) {
-		return false, nil
-	}
-	if err != nil {
-		return false, observability.PrepareAndLogError(err, logger, span, "executing boolean query")
-	}
-
-	if q.logQueries {
-		logger.Debug("boolean query performed")
-	}
-
-	return exists, nil
 }
 
 func (q *Querier) performWriteQuery(ctx context.Context, querier database.SQLQueryExecutor, queryDescription, query string, args []any) error {
