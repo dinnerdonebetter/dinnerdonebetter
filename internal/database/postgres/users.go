@@ -756,12 +756,6 @@ func (q *Querier) MarkUserTwoFactorSecretAsUnverified(ctx context.Context, userI
 	return nil
 }
 
-//go:embed queries/users/archive.sql
-var archiveUserQuery string
-
-//go:embed queries/users/archive_memberships.sql
-var archiveMembershipsQuery string
-
 // ArchiveUser archives a user.
 func (q *Querier) ArchiveUser(ctx context.Context, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -780,16 +774,12 @@ func (q *Querier) ArchiveUser(ctx context.Context, userID string) error {
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	archiveUserArgs := []any{userID}
-
-	if err = q.performWriteQuery(ctx, tx, "user archive", archiveUserQuery, archiveUserArgs); err != nil {
+	if err = q.generatedQuerier.ArchiveUser(ctx, tx, userID); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "archiving user")
 	}
 
-	archiveMembershipsArgs := []any{userID}
-
-	if err = q.performWriteQuery(ctx, tx, "user memberships archive", archiveMembershipsQuery, archiveMembershipsArgs); err != nil {
+	if err = q.generatedQuerier.ArchiveUserMemberships(ctx, tx, userID); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "archiving user household memberships")
 	}

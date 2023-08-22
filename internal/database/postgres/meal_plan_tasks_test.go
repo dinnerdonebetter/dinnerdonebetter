@@ -372,27 +372,6 @@ func TestQuerier_GetMealPlanTasksForMealPlan(T *testing.T) {
 func TestQuerier_MarkMealPlanAsHavingTasksCreated(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		exampleMealPlan := fakes.BuildFakeMealPlan()
-
-		markMealPlanOptionAsHavingStepsCreatedArgs := []any{
-			exampleMealPlan.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(markMealPlanAsHavingStepsCreatedQuery)).
-			WithArgs(interfaceToDriverValue(markMealPlanOptionAsHavingStepsCreatedArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.MarkMealPlanAsHavingTasksCreated(ctx, exampleMealPlan.ID))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with empty meal plan ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -400,27 +379,6 @@ func TestQuerier_MarkMealPlanAsHavingTasksCreated(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		assert.Error(t, c.MarkMealPlanAsHavingTasksCreated(ctx, ""))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		exampleMealPlan := fakes.BuildFakeMealPlan()
-
-		markMealPlanOptionAsHavingStepsCreatedArgs := []any{
-			exampleMealPlan.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(markMealPlanAsHavingStepsCreatedQuery)).
-			WithArgs(interfaceToDriverValue(markMealPlanOptionAsHavingStepsCreatedArgs)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.MarkMealPlanAsHavingTasksCreated(ctx, exampleMealPlan.ID))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})

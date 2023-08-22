@@ -22,7 +22,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/cryptography/aes"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/Masterminds/squirrel"
@@ -395,83 +394,6 @@ func TestQuerier_handleRows(T *testing.T) {
 		err := c.checkRowsForErrorAndClose(ctx, mockRows)
 		assert.Error(t, err)
 		assert.True(t, errors.Is(err, expected))
-	})
-}
-
-func TestQuerier_performCreateQueryIgnoringReturn(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-
-		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
-			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		err := c.performWriteQuery(ctx, c.db, "example", fakeQuery, fakeArgs)
-
-		assert.NoError(t, err)
-	})
-}
-
-func TestQuerier_performCreateQuery(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-
-		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
-			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		err := c.performWriteQuery(ctx, c.db, "example", fakeQuery, fakeArgs)
-
-		assert.NoError(t, err)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-
-		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
-			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnError(errors.New("blah"))
-
-		err := c.performWriteQuery(ctx, c.db, "example", fakeQuery, fakeArgs)
-
-		assert.Error(t, err)
-	})
-
-	T.Run("with no rows returned", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-
-		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
-			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnResult(sqlmock.NewResult(int64(1), 0))
-
-		err := c.performWriteQuery(ctx, c.db, "example", fakeQuery, fakeArgs)
-
-		assert.Error(t, err)
-		assert.True(t, errors.Is(err, sql.ErrNoRows))
 	})
 }
 

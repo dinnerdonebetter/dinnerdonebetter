@@ -247,37 +247,3 @@ func (q *Querier) getRows(ctx context.Context, querier database.SQLQueryExecutor
 
 	return rows, nil
 }
-
-func (q *Querier) performWriteQuery(ctx context.Context, querier database.SQLQueryExecutor, queryDescription, query string, args []any) error {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.WithValue("query_desc", queryDescription)
-	if q.logQueries {
-		logger = logger.WithValue("args", args)
-	}
-
-	tracing.AttachDatabaseQueryToSpan(span, queryDescription, query, args)
-
-	res, err := querier.ExecContext(ctx, query, args...)
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "executing %s query", queryDescription)
-	}
-
-	var affectedRowCount int64
-	if affectedRowCount, err = res.RowsAffected(); affectedRowCount == 0 || err != nil {
-		// the only errors returned by the currently supported drivers are either
-		// always nil or simply indicate that no rows were affected by the query.
-
-		logger.Debug("no rows modified by query")
-		span.AddEvent("no_rows_modified")
-
-		return sql.ErrNoRows
-	}
-
-	if q.logQueries {
-		logger.Debug("query executed")
-	}
-
-	return nil
-}

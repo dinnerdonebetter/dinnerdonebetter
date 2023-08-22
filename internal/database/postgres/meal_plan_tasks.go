@@ -376,9 +376,6 @@ func (q *Querier) CreateMealPlanTasksForMealPlanOption(ctx context.Context, inpu
 	return outputs, nil
 }
 
-//go:embed queries/meal_plans/mark_as_tasks_created.sql
-var markMealPlanAsHavingStepsCreatedQuery string
-
 // MarkMealPlanAsHavingTasksCreated marks a meal plan as having all its tasks created.
 func (q *Querier) MarkMealPlanAsHavingTasksCreated(ctx context.Context, mealPlanID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -392,12 +389,7 @@ func (q *Querier) MarkMealPlanAsHavingTasksCreated(ctx context.Context, mealPlan
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
-	// mark prep steps as created for step
-	markMealPlanOptionAsHavingStepsCreatedArgs := []any{
-		mealPlanID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "mark meal plan task as having tasks created", markMealPlanAsHavingStepsCreatedQuery, markMealPlanOptionAsHavingStepsCreatedArgs); err != nil {
+	if err := q.generatedQuerier.MarkMealPlanAsPrepTasksCreated(ctx, q.db, mealPlanID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking meal plan as having tasks created")
 	}
 

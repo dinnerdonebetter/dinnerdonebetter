@@ -341,9 +341,6 @@ func (q *Querier) createRecipeStepCompletionCondition(ctx context.Context, db da
 	return x, nil
 }
 
-//go:embed queries/recipe_step_completion_condition_ingredients/create.sql
-var recipeStepCompletionConditionIngredientCreationQuery string
-
 // createRecipeStepCompletionConditionIngredient creates a recipe step completion condition ingredient in the database.
 func (q *Querier) createRecipeStepCompletionConditionIngredient(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepCompletionConditionIngredientDatabaseCreationInput) (*types.RecipeStepCompletionConditionIngredient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -353,14 +350,12 @@ func (q *Querier) createRecipeStepCompletionConditionIngredient(ctx context.Cont
 		return nil, ErrNilInputProvided
 	}
 
-	args := []any{
-		input.ID,
-		input.BelongsToRecipeStepCompletionCondition,
-		input.RecipeStepIngredient,
-	}
-
 	// create the recipe step completion condition.
-	if err := q.performWriteQuery(ctx, db, "recipe step completion condition ingredient creation", recipeStepCompletionConditionIngredientCreationQuery, args); err != nil {
+	if err := q.generatedQuerier.CreateRecipeStepCompletionConditionIngredient(ctx, db, &generated.CreateRecipeStepCompletionConditionIngredientParams{
+		ID:                                     input.ID,
+		BelongsToRecipeStepCompletionCondition: input.BelongsToRecipeStepCompletionCondition,
+		RecipeStepIngredient:                   input.RecipeStepIngredient,
+	}); err != nil {
 		return nil, observability.PrepareError(err, span, "performing recipe step completion condition ingredient creation query")
 	}
 

@@ -285,35 +285,6 @@ func TestQuerier_MarkUserTwoFactorSecretAsUnverified(T *testing.T) {
 func TestQuerier_ArchiveUser(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleUserID := fakes.BuildFakeID()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-
-		archiveUserArgs := []any{exampleUserID}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveUserQuery)).
-			WithArgs(interfaceToDriverValue(archiveUserArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		archiveMembershipsArgs := []any{exampleUserID}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveMembershipsQuery)).
-			WithArgs(interfaceToDriverValue(archiveMembershipsArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		db.ExpectCommit()
-
-		assert.NoError(t, c.ArchiveUser(ctx, exampleUserID))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid user ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -332,87 +303,6 @@ func TestQuerier_ArchiveUser(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		db.ExpectBegin().WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.ArchiveUser(ctx, exampleUserID))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing user archive query", func(t *testing.T) {
-		t.Parallel()
-
-		exampleUserID := fakes.BuildFakeID()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-
-		archiveUserArgs := []any{exampleUserID}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveUserQuery)).
-			WithArgs(interfaceToDriverValue(archiveUserArgs)...).
-			WillReturnError(errors.New("blah"))
-
-		db.ExpectRollback()
-
-		assert.Error(t, c.ArchiveUser(ctx, exampleUserID))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing memberships archive query", func(t *testing.T) {
-		t.Parallel()
-
-		exampleUserID := fakes.BuildFakeID()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-
-		archiveUserArgs := []any{exampleUserID}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveUserQuery)).
-			WithArgs(interfaceToDriverValue(archiveUserArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		archiveMembershipsArgs := []any{exampleUserID}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveMembershipsQuery)).
-			WithArgs(interfaceToDriverValue(archiveMembershipsArgs)...).
-			WillReturnError(errors.New("blah"))
-
-		db.ExpectRollback()
-
-		assert.Error(t, c.ArchiveUser(ctx, exampleUserID))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error committing transaction", func(t *testing.T) {
-		t.Parallel()
-
-		exampleUserID := fakes.BuildFakeID()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-
-		archiveUserArgs := []any{exampleUserID}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveUserQuery)).
-			WithArgs(interfaceToDriverValue(archiveUserArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		archiveMembershipsArgs := []any{exampleUserID}
-
-		db.ExpectExec(formatQueryForSQLMock(archiveMembershipsQuery)).
-			WithArgs(interfaceToDriverValue(archiveMembershipsArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		db.ExpectCommit().WillReturnError(errors.New("blah"))
 
 		assert.Error(t, c.ArchiveUser(ctx, exampleUserID))
 
