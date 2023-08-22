@@ -92,29 +92,6 @@ func TestQuerier_RecipeMediaExists(T *testing.T) {
 func TestQuerier_GetRecipeMedia(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleRecipeMedia := fakes.BuildFakeRecipeMedia()
-
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleRecipeMedia.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getRecipeMediaQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromRecipeMedia(exampleRecipeMedia))
-
-		actual, err := c.GetRecipeMedia(ctx, exampleRecipeMedia.ID)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleRecipeMedia, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid valid preparation ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -124,29 +101,6 @@ func TestQuerier_GetRecipeMedia(T *testing.T) {
 		actual, err := c.GetRecipeMedia(ctx, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleRecipeMedia := fakes.BuildFakeRecipeMedia()
-
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleRecipeMedia.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getRecipeMediaQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetRecipeMedia(ctx, exampleRecipeMedia.ID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

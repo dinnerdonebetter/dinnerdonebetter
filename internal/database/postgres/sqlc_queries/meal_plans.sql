@@ -93,7 +93,7 @@ WHERE meal_plans.archived_at IS NULL
 	AND meal_plans.id = $1
 	AND meal_plans.belongs_to_household = $2;
 
--- name: GetOnePastVotingDeadline :one
+-- name: GetMealPlanPastVotingDeadline :one
 
 SELECT
 	meal_plans.id,
@@ -110,8 +110,8 @@ SELECT
 	meal_plans.created_by_user
 FROM meal_plans
 WHERE meal_plans.archived_at IS NULL
-	AND meal_plans.id = $1
-	AND meal_plans.belongs_to_household = $2
+	AND meal_plans.id = sqlc.arg(meal_plan_id)
+	AND meal_plans.belongs_to_household = sqlc.arg(household_id)
 	AND meal_plans.status = 'awaiting_votes'
 	AND NOW() > meal_plans.voting_deadline;
 

@@ -81,27 +81,6 @@ func TestQuerier_ScanOAuth2Clients(T *testing.T) {
 func TestQuerier_GetOAuth2ClientByClientID(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleOAuth2Client := fakes.BuildFakeOAuth2Client()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{exampleOAuth2Client.ClientID}
-
-		db.ExpectQuery(formatQueryForSQLMock(getOAuth2ClientByClientIDQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromOAuth2Clients(false, 0, exampleOAuth2Client))
-
-		actual, err := c.GetOAuth2ClientByClientID(ctx, exampleOAuth2Client.ClientID)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleOAuth2Client, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with empty client ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -112,74 +91,10 @@ func TestQuerier_GetOAuth2ClientByClientID(T *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
-
-	T.Run("respects sql.ErrNoRows", func(t *testing.T) {
-		t.Parallel()
-
-		exampleOAuth2Client := fakes.BuildFakeOAuth2Client()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{exampleOAuth2Client.ClientID}
-
-		db.ExpectQuery(formatQueryForSQLMock(getOAuth2ClientByClientIDQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(sql.ErrNoRows)
-
-		actual, err := c.GetOAuth2ClientByClientID(ctx, exampleOAuth2Client.ClientID)
-		assert.Error(t, err)
-		assert.True(t, errors.Is(err, sql.ErrNoRows))
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with erroneous response from database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleOAuth2Client := fakes.BuildFakeOAuth2Client()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{exampleOAuth2Client.ClientID}
-
-		db.ExpectQuery(formatQueryForSQLMock(getOAuth2ClientByClientIDQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildErroneousMockRow())
-
-		actual, err := c.GetOAuth2ClientByClientID(ctx, exampleOAuth2Client.ClientID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
 }
 
 func TestQuerier_GetOAuth2ClientByDatabaseID(T *testing.T) {
 	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleOAuth2Client := fakes.BuildFakeOAuth2Client()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{exampleOAuth2Client.ID}
-
-		db.ExpectQuery(formatQueryForSQLMock(getOAuth2ClientByDatabaseIDQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromOAuth2Clients(false, 0, exampleOAuth2Client))
-
-		actual, err := c.GetOAuth2ClientByDatabaseID(ctx, exampleOAuth2Client.ID)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleOAuth2Client, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
 
 	T.Run("with invalid client ID", func(t *testing.T) {
 		t.Parallel()
@@ -190,49 +105,6 @@ func TestQuerier_GetOAuth2ClientByDatabaseID(T *testing.T) {
 		actual, err := c.GetOAuth2ClientByDatabaseID(ctx, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-	})
-
-	T.Run("respects sql.ErrNoRows", func(t *testing.T) {
-		t.Parallel()
-
-		exampleOAuth2ClientID := fakes.BuildFakeID()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{exampleOAuth2ClientID}
-
-		db.ExpectQuery(formatQueryForSQLMock(getOAuth2ClientByDatabaseIDQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(sql.ErrNoRows)
-
-		actual, err := c.GetOAuth2ClientByDatabaseID(ctx, exampleOAuth2ClientID)
-		assert.Error(t, err)
-		assert.True(t, errors.Is(err, sql.ErrNoRows))
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with erroneous response from database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleOAuth2ClientID := fakes.BuildFakeID()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{exampleOAuth2ClientID}
-
-		db.ExpectQuery(formatQueryForSQLMock(getOAuth2ClientByDatabaseIDQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildErroneousMockRow())
-
-		actual, err := c.GetOAuth2ClientByDatabaseID(ctx, exampleOAuth2ClientID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

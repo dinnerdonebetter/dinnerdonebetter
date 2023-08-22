@@ -125,9 +125,6 @@ func (q *Querier) MealPlanEventExists(ctx context.Context, mealPlanID, mealPlanE
 	return result, nil
 }
 
-//go:embed queries/meal_plan_events/get_one.sql
-var getMealPlanEventByIDQuery string
-
 // GetMealPlanEvent fetches a meal plan event from the database.
 func (q *Querier) GetMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) (*types.MealPlanEvent, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -147,18 +144,33 @@ func (q *Querier) GetMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEven
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
-	getMealPlanEventByIDArgs := []any{
-		mealPlanEventID,
-		mealPlanID,
-	}
-
-	row := q.getOneRow(ctx, q.db, "meal plan event", getMealPlanEventByIDQuery, getMealPlanEventByIDArgs)
-	m, _, _, err := q.scanMealPlanEvent(ctx, row, false)
+	result, err := q.generatedQuerier.GetMealPlanEvent(ctx, q.db, &generated.GetMealPlanEventParams{
+		ID:                mealPlanEventID,
+		BelongsToMealPlan: mealPlanID,
+	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan event retrieval query")
 	}
 
-	return m, nil
+	mealPlanEvent := &types.MealPlanEvent{
+		CreatedAt:         result.CreatedAt,
+		StartsAt:          result.StartsAt,
+		EndsAt:            result.EndsAt,
+		ArchivedAt:        timePointerFromNullTime(result.ArchivedAt),
+		LastUpdatedAt:     timePointerFromNullTime(result.LastUpdatedAt),
+		MealName:          string(result.MealName),
+		Notes:             result.Notes,
+		BelongsToMealPlan: result.BelongsToMealPlan,
+		ID:                result.ID,
+	}
+
+	options, err := q.getMealPlanOptionsForMealPlanEvent(ctx, mealPlanID, mealPlanEventID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting meal plan options for meal plan event")
+	}
+	mealPlanEvent.Options = options
+
+	return mealPlanEvent, nil
 }
 
 //go:embed queries/meal_plan_events/get_for_meal_plan.sql

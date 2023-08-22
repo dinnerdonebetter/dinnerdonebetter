@@ -63,19 +63,19 @@ SELECT
 	recipe_step_products.id,
 	recipe_step_products.name,
 	recipe_step_products.type,
-	valid_measurement_units.id,
-	valid_measurement_units.name,
-	valid_measurement_units.description,
-	valid_measurement_units.volumetric,
-	valid_measurement_units.icon_path,
-	valid_measurement_units.universal,
-	valid_measurement_units.metric,
-	valid_measurement_units.imperial,
-	valid_measurement_units.slug,
-	valid_measurement_units.plural_name,
-	valid_measurement_units.created_at,
-	valid_measurement_units.last_updated_at,
-	valid_measurement_units.archived_at,
+	valid_measurement_units.id as valid_measurement_unit_id,
+	valid_measurement_units.name as valid_measurement_unit_name,
+	valid_measurement_units.description as valid_measurement_unit_description,
+	valid_measurement_units.volumetric as valid_measurement_unit_volumetric,
+	valid_measurement_units.icon_path as valid_measurement_unit_icon_path,
+	valid_measurement_units.universal as valid_measurement_unit_universal,
+	valid_measurement_units.metric as valid_measurement_unit_metric,
+	valid_measurement_units.imperial as valid_measurement_unit_imperial,
+	valid_measurement_units.slug as valid_measurement_unit_slug,
+	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.created_at as valid_measurement_unit_created_at,
+	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
+	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
 	recipe_step_products.minimum_quantity_value,
 	recipe_step_products.maximum_quantity_value,
 	recipe_step_products.quantity_notes,
@@ -97,13 +97,13 @@ FROM recipe_step_products
 	JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
 	JOIN valid_measurement_units ON recipe_step_products.measurement_unit=valid_measurement_units.id
 WHERE recipe_step_products.archived_at IS NULL
-	AND recipe_step_products.belongs_to_recipe_step = $1
-	AND recipe_step_products.id = $2
+	AND recipe_step_products.belongs_to_recipe_step = sqlc.arg(recipe_step_id)
+	AND recipe_step_products.id = sqlc.arg(recipe_step_product_id)
 	AND recipe_steps.archived_at IS NULL
-	AND recipe_steps.belongs_to_recipe = $3
-	AND recipe_steps.id = $4
+	AND recipe_steps.belongs_to_recipe = sqlc.arg(recipe_id)
+	AND recipe_steps.id = sqlc.arg(recipe_step_id)
 	AND recipes.archived_at IS NULL
-	AND recipes.id = $5;
+	AND recipes.id = sqlc.arg(recipe_id);
 
 -- name: UpdateRecipeStepProduct :exec
 

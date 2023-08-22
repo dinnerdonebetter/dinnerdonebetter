@@ -324,7 +324,7 @@ func (q *Queries) GetMealPlan(ctx context.Context, db DBTX, arg *GetMealPlanPara
 	return &i, err
 }
 
-const getOnePastVotingDeadline = `-- name: GetOnePastVotingDeadline :one
+const getMealPlanPastVotingDeadline = `-- name: GetMealPlanPastVotingDeadline :one
 
 SELECT
 	meal_plans.id,
@@ -347,12 +347,12 @@ WHERE meal_plans.archived_at IS NULL
 	AND NOW() > meal_plans.voting_deadline
 `
 
-type GetOnePastVotingDeadlineParams struct {
-	ID                 string
-	BelongsToHousehold string
+type GetMealPlanPastVotingDeadlineParams struct {
+	MealPlanID  string
+	HouseholdID string
 }
 
-type GetOnePastVotingDeadlineRow struct {
+type GetMealPlanPastVotingDeadlineRow struct {
 	VotingDeadline         time.Time
 	CreatedAt              time.Time
 	LastUpdatedAt          sql.NullTime
@@ -367,9 +367,9 @@ type GetOnePastVotingDeadlineRow struct {
 	TasksCreated           bool
 }
 
-func (q *Queries) GetOnePastVotingDeadline(ctx context.Context, db DBTX, arg *GetOnePastVotingDeadlineParams) (*GetOnePastVotingDeadlineRow, error) {
-	row := db.QueryRowContext(ctx, getOnePastVotingDeadline, arg.ID, arg.BelongsToHousehold)
-	var i GetOnePastVotingDeadlineRow
+func (q *Queries) GetMealPlanPastVotingDeadline(ctx context.Context, db DBTX, arg *GetMealPlanPastVotingDeadlineParams) (*GetMealPlanPastVotingDeadlineRow, error) {
+	row := db.QueryRowContext(ctx, getMealPlanPastVotingDeadline, arg.MealPlanID, arg.HouseholdID)
+	var i GetMealPlanPastVotingDeadlineRow
 	err := row.Scan(
 		&i.ID,
 		&i.Notes,

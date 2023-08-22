@@ -85,61 +85,63 @@ func (q *Querier) scanOAuth2Clients(ctx context.Context, rows database.ResultIte
 	return clients, filteredCount, totalCount, nil
 }
 
-//go:embed queries/oauth2_clients/get_by_client_id.sql
-var getOAuth2ClientByClientIDQuery string
-
 // GetOAuth2ClientByClientID gets an OAuth2 client from the database.
 func (q *Querier) GetOAuth2ClientByClientID(ctx context.Context, clientID string) (*types.OAuth2Client, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := q.logger.Clone()
+
 	if clientID == "" {
 		return nil, ErrEmptyInputProvided
 	}
+	logger = logger.WithValue(keys.OAuth2ClientClientIDKey, clientID)
+	tracing.AttachOAuth2ClientClientIDToSpan(span, clientID)
 
-	tracing.AttachOAuth2ClientIDToSpan(span, clientID)
-
-	args := []any{clientID}
-
-	row := q.getOneRow(ctx, q.db, "OAuth2 client", getOAuth2ClientByClientIDQuery, args)
-
-	client, _, _, err := q.scanOAuth2Client(ctx, row, false)
+	result, err := q.generatedQuerier.GetOAuth2ClientByClientID(ctx, q.db, clientID)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, err
-		}
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching oauth2 client")
+	}
 
-		return nil, observability.PrepareError(err, span, "querying for OAuth2 client")
+	client := &types.OAuth2Client{
+		CreatedAt:    result.CreatedAt,
+		ArchivedAt:   timePointerFromNullTime(result.ArchivedAt),
+		Name:         result.Name,
+		Description:  result.Description,
+		ClientID:     result.ClientID,
+		ID:           result.ID,
+		ClientSecret: result.ClientSecret,
 	}
 
 	return client, nil
 }
-
-//go:embed queries/oauth2_clients/get_by_database_id.sql
-var getOAuth2ClientByDatabaseIDQuery string
 
 // GetOAuth2ClientByDatabaseID gets an OAuth2 client from the database.
 func (q *Querier) GetOAuth2ClientByDatabaseID(ctx context.Context, clientID string) (*types.OAuth2Client, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if clientID == "" {
-		return nil, ErrInvalidIDProvided
-	}
+	logger := q.logger.Clone()
 
+	if clientID == "" {
+		return nil, ErrEmptyInputProvided
+	}
+	logger = logger.WithValue(keys.OAuth2ClientClientIDKey, clientID)
 	tracing.AttachOAuth2ClientIDToSpan(span, clientID)
 
-	args := []any{clientID}
-
-	row := q.getOneRow(ctx, q.db, "OAuth2 client", getOAuth2ClientByDatabaseIDQuery, args)
-
-	client, _, _, err := q.scanOAuth2Client(ctx, row, false)
+	result, err := q.generatedQuerier.GetOAuth2ClientByDatabaseID(ctx, q.db, clientID)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, err
-		}
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching oauth2 client")
+	}
 
-		return nil, observability.PrepareError(err, span, "querying for OAuth2 client")
+	client := &types.OAuth2Client{
+		CreatedAt:    result.CreatedAt,
+		ArchivedAt:   timePointerFromNullTime(result.ArchivedAt),
+		Name:         result.Name,
+		Description:  result.Description,
+		ClientID:     result.ClientID,
+		ID:           result.ID,
+		ClientSecret: result.ClientSecret,
 	}
 
 	return client, nil

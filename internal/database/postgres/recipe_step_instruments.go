@@ -176,9 +176,6 @@ func (q *Querier) RecipeStepInstrumentExists(ctx context.Context, recipeID, reci
 	return result, nil
 }
 
-//go:embed queries/recipe_step_instruments/get_one.sql
-var getRecipeStepInstrumentQuery string
-
 // GetRecipeStepInstrument fetches a recipe step instrument from the database.
 func (q *Querier) GetRecipeStepInstrument(ctx context.Context, recipeID, recipeStepID, recipeStepInstrumentID string) (*types.RecipeStepInstrument, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -204,19 +201,47 @@ func (q *Querier) GetRecipeStepInstrument(ctx context.Context, recipeID, recipeS
 	logger = logger.WithValue(keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
 	tracing.AttachRecipeStepInstrumentIDToSpan(span, recipeStepInstrumentID)
 
-	args := []any{
-		recipeStepID,
-		recipeStepInstrumentID,
-		recipeID,
-		recipeStepID,
-		recipeID,
+	result, err := q.generatedQuerier.GetRecipeStepInstrument(ctx, q.db, &generated.GetRecipeStepInstrumentParams{
+		RecipeStepID:           recipeStepID,
+		RecipeStepInstrumentID: recipeStepInstrumentID,
+		RecipeID:               recipeID,
+	})
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing recipe step instrument get")
 	}
 
-	row := q.getOneRow(ctx, q.db, "recipe step instrument", getRecipeStepInstrumentQuery, args)
+	recipeStepInstrument := &types.RecipeStepInstrument{
+		CreatedAt:           result.CreatedAt,
+		Instrument:          nil,
+		LastUpdatedAt:       timePointerFromNullTime(result.LastUpdatedAt),
+		RecipeStepProductID: stringPointerFromNullString(result.RecipeStepProductID),
+		ArchivedAt:          timePointerFromNullTime(result.ArchivedAt),
+		MaximumQuantity:     uint32PointerFromNullInt32(result.MaximumQuantity),
+		Notes:               result.Notes,
+		Name:                result.Name,
+		BelongsToRecipeStep: result.BelongsToRecipeStep,
+		ID:                  result.ID,
+		MinimumQuantity:     uint32(result.MinimumQuantity),
+		OptionIndex:         uint16(result.OptionIndex),
+		PreferenceRank:      uint8(result.PreferenceRank),
+		Optional:            result.Optional,
+	}
 
-	recipeStepInstrument, _, _, err := q.scanRecipeStepInstrument(ctx, row, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning recipeStepInstrument")
+	if result.ValidInstrumentID.Valid {
+		recipeStepInstrument.Instrument = &types.ValidInstrument{
+			CreatedAt:                      result.ValidInstrumentCreatedAt.Time,
+			LastUpdatedAt:                  timePointerFromNullTime(result.ValidInstrumentLastUpdatedAt),
+			ArchivedAt:                     timePointerFromNullTime(result.ValidInstrumentArchivedAt),
+			IconPath:                       result.ValidInstrumentIconPath.String,
+			ID:                             result.ValidInstrumentID.String,
+			Name:                           result.ValidInstrumentName.String,
+			PluralName:                     result.ValidInstrumentPluralName.String,
+			Description:                    result.ValidInstrumentDescription.String,
+			Slug:                           result.ValidInstrumentSlug.String,
+			DisplayInSummaryLists:          result.ValidInstrumentDisplayInSummaryLists.Bool,
+			IncludeInGeneratedInstructions: result.ValidInstrumentIncludeInGeneratedInstructions.Bool,
+			UsableForStorage:               result.ValidInstrumentUsableForStorage.Bool,
+		}
 	}
 
 	return recipeStepInstrument, nil

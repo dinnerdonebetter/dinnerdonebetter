@@ -86,18 +86,18 @@ const getRecipeStepInstrument = `-- name: GetRecipeStepInstrument :one
 
 SELECT
 	recipe_step_instruments.id,
-	valid_instruments.id,
-	valid_instruments.name,
-	valid_instruments.plural_name,
-	valid_instruments.description,
-	valid_instruments.icon_path,
-	valid_instruments.usable_for_storage,
-    valid_instruments.display_in_summary_lists,
-	valid_instruments.include_in_generated_instructions,
-	valid_instruments.slug,
-	valid_instruments.created_at,
-	valid_instruments.last_updated_at,
-	valid_instruments.archived_at,
+	valid_instruments.id as valid_instrument_id,
+	valid_instruments.name as valid_instrument_name,
+	valid_instruments.plural_name as valid_instrument_plural_name,
+	valid_instruments.description as valid_instrument_description,
+	valid_instruments.icon_path as valid_instrument_icon_path,
+	valid_instruments.usable_for_storage as valid_instrument_usable_for_storage,
+    valid_instruments.display_in_summary_lists as valid_instrument_display_in_summary_lists,
+	valid_instruments.include_in_generated_instructions as valid_instrument_include_in_generated_instructions,
+	valid_instruments.slug as valid_instrument_slug,
+	valid_instruments.created_at as valid_instrument_created_at,
+	valid_instruments.last_updated_at as valid_instrument_last_updated_at,
+	valid_instruments.archived_at as valid_instrument_archived_at,
 	recipe_step_instruments.recipe_step_product_id,
 	recipe_step_instruments.name,
 	recipe_step_instruments.notes,
@@ -119,81 +119,73 @@ WHERE recipe_step_instruments.archived_at IS NULL
 	AND recipe_step_instruments.id = $2
 	AND recipe_steps.archived_at IS NULL
 	AND recipe_steps.belongs_to_recipe = $3
-	AND recipe_steps.id = $4
+	AND recipe_steps.id = $1
 	AND recipes.archived_at IS NULL
-	AND recipes.id = $5
+	AND recipes.id = $3
 `
 
 type GetRecipeStepInstrumentParams struct {
-	BelongsToRecipeStep string
-	ID                  string
-	BelongsToRecipe     string
-	ID_2                string
-	ID_3                string
+	RecipeStepID           string
+	RecipeStepInstrumentID string
+	RecipeID               string
 }
 
 type GetRecipeStepInstrumentRow struct {
-	CreatedAt_2                    time.Time
-	ArchivedAt                     sql.NullTime
-	ArchivedAt_2                   sql.NullTime
-	LastUpdatedAt_2                sql.NullTime
-	LastUpdatedAt                  sql.NullTime
-	CreatedAt                      sql.NullTime
-	Name_2                         string
-	BelongsToRecipeStep            string
-	ID                             string
-	Notes                          string
-	Description                    sql.NullString
-	PluralName                     sql.NullString
-	IconPath                       sql.NullString
-	Slug                           sql.NullString
-	RecipeStepProductID            sql.NullString
-	Name                           sql.NullString
-	ID_2                           sql.NullString
-	MaximumQuantity                sql.NullInt32
-	MinimumQuantity                int32
-	OptionIndex                    int32
-	PreferenceRank                 int32
-	IncludeInGeneratedInstructions sql.NullBool
-	DisplayInSummaryLists          sql.NullBool
-	UsableForStorage               sql.NullBool
-	Optional                       bool
+	CreatedAt                                     time.Time
+	ValidInstrumentArchivedAt                     sql.NullTime
+	ArchivedAt                                    sql.NullTime
+	LastUpdatedAt                                 sql.NullTime
+	ValidInstrumentLastUpdatedAt                  sql.NullTime
+	ValidInstrumentCreatedAt                      sql.NullTime
+	Name                                          string
+	BelongsToRecipeStep                           string
+	ID                                            string
+	Notes                                         string
+	ValidInstrumentDescription                    sql.NullString
+	ValidInstrumentPluralName                     sql.NullString
+	ValidInstrumentIconPath                       sql.NullString
+	ValidInstrumentSlug                           sql.NullString
+	RecipeStepProductID                           sql.NullString
+	ValidInstrumentName                           sql.NullString
+	ValidInstrumentID                             sql.NullString
+	MaximumQuantity                               sql.NullInt32
+	MinimumQuantity                               int32
+	OptionIndex                                   int32
+	PreferenceRank                                int32
+	ValidInstrumentIncludeInGeneratedInstructions sql.NullBool
+	ValidInstrumentDisplayInSummaryLists          sql.NullBool
+	ValidInstrumentUsableForStorage               sql.NullBool
+	Optional                                      bool
 }
 
 func (q *Queries) GetRecipeStepInstrument(ctx context.Context, db DBTX, arg *GetRecipeStepInstrumentParams) (*GetRecipeStepInstrumentRow, error) {
-	row := db.QueryRowContext(ctx, getRecipeStepInstrument,
-		arg.BelongsToRecipeStep,
-		arg.ID,
-		arg.BelongsToRecipe,
-		arg.ID_2,
-		arg.ID_3,
-	)
+	row := db.QueryRowContext(ctx, getRecipeStepInstrument, arg.RecipeStepID, arg.RecipeStepInstrumentID, arg.RecipeID)
 	var i GetRecipeStepInstrumentRow
 	err := row.Scan(
 		&i.ID,
-		&i.ID_2,
-		&i.Name,
-		&i.PluralName,
-		&i.Description,
-		&i.IconPath,
-		&i.UsableForStorage,
-		&i.DisplayInSummaryLists,
-		&i.IncludeInGeneratedInstructions,
-		&i.Slug,
-		&i.CreatedAt,
-		&i.LastUpdatedAt,
-		&i.ArchivedAt,
+		&i.ValidInstrumentID,
+		&i.ValidInstrumentName,
+		&i.ValidInstrumentPluralName,
+		&i.ValidInstrumentDescription,
+		&i.ValidInstrumentIconPath,
+		&i.ValidInstrumentUsableForStorage,
+		&i.ValidInstrumentDisplayInSummaryLists,
+		&i.ValidInstrumentIncludeInGeneratedInstructions,
+		&i.ValidInstrumentSlug,
+		&i.ValidInstrumentCreatedAt,
+		&i.ValidInstrumentLastUpdatedAt,
+		&i.ValidInstrumentArchivedAt,
 		&i.RecipeStepProductID,
-		&i.Name_2,
+		&i.Name,
 		&i.Notes,
 		&i.PreferenceRank,
 		&i.Optional,
 		&i.MinimumQuantity,
 		&i.MaximumQuantity,
 		&i.OptionIndex,
-		&i.CreatedAt_2,
-		&i.LastUpdatedAt_2,
-		&i.ArchivedAt_2,
+		&i.CreatedAt,
+		&i.LastUpdatedAt,
+		&i.ArchivedAt,
 		&i.BelongsToRecipeStep,
 	)
 	return &i, err

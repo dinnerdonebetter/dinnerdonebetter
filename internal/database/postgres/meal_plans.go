@@ -131,12 +131,6 @@ func (q *Querier) MealPlanExists(ctx context.Context, mealPlanID, householdID st
 	return result, nil
 }
 
-//go:embed queries/meal_plans/get_one.sql
-var getMealPlanQuery string
-
-//go:embed queries/meal_plans/get_one_past_voting_deadline.sql
-var getMealPlanPastVotingDeadlineQuery string
-
 // GetMealPlan fetches a meal plan from the database.
 func (q *Querier) getMealPlan(ctx context.Context, mealPlanID, householdID string, restrictToPastVotingDeadline bool) (*types.MealPlan, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -156,24 +150,53 @@ func (q *Querier) getMealPlan(ctx context.Context, mealPlanID, householdID strin
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	args := []any{
-		mealPlanID,
-		householdID,
-	}
-
-	query := getMealPlanQuery
+	var mealPlan *types.MealPlan
 	if restrictToPastVotingDeadline {
-		query = getMealPlanPastVotingDeadlineQuery
-	}
+		result, err := q.generatedQuerier.GetMealPlanPastVotingDeadline(ctx, q.db, &generated.GetMealPlanPastVotingDeadlineParams{
+			MealPlanID:  mealPlanID,
+			HouseholdID: householdID,
+		})
+		if err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "performing meal plan retrieval")
+		}
 
-	row := q.getOneRow(ctx, q.db, "meal plan", query, args)
-	if err := row.Err(); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan with options retrieval query")
-	}
+		mealPlan = &types.MealPlan{
+			CreatedAt:              result.CreatedAt,
+			VotingDeadline:         result.VotingDeadline,
+			ArchivedAt:             timePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt:          timePointerFromNullTime(result.LastUpdatedAt),
+			ID:                     result.ID,
+			Status:                 string(result.Status),
+			Notes:                  result.Notes,
+			ElectionMethod:         string(result.ElectionMethod),
+			BelongsToHousehold:     result.BelongsToHousehold,
+			CreatedByUser:          result.CreatedByUser,
+			GroceryListInitialized: result.GroceryListInitialized,
+			TasksCreated:           result.TasksCreated,
+		}
+	} else {
+		result, err := q.generatedQuerier.GetMealPlan(ctx, q.db, &generated.GetMealPlanParams{
+			ID:                 mealPlanID,
+			BelongsToHousehold: householdID,
+		})
+		if err != nil {
+			return nil, observability.PrepareAndLogError(err, logger, span, "performing meal plan retrieval")
+		}
 
-	mealPlan, _, _, err := q.scanMealPlan(ctx, row, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal plan")
+		mealPlan = &types.MealPlan{
+			CreatedAt:              result.CreatedAt,
+			VotingDeadline:         result.VotingDeadline,
+			ArchivedAt:             timePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt:          timePointerFromNullTime(result.LastUpdatedAt),
+			ID:                     result.ID,
+			Status:                 string(result.Status),
+			Notes:                  result.Notes,
+			ElectionMethod:         string(result.ElectionMethod),
+			BelongsToHousehold:     result.BelongsToHousehold,
+			CreatedByUser:          result.CreatedByUser,
+			GroceryListInitialized: result.GroceryListInitialized,
+			TasksCreated:           result.TasksCreated,
+		}
 	}
 
 	events, err := q.getMealPlanEventsForMealPlan(ctx, mealPlanID)

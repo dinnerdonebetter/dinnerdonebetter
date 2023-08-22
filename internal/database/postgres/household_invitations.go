@@ -147,9 +147,6 @@ func (q *Querier) HouseholdInvitationExists(ctx context.Context, householdInvita
 	return result, nil
 }
 
-//go:embed queries/household_invitations/get_by_household_and_id.sql
-var getHouseholdInvitationByHouseholdAndIDQuery string
-
 // GetHouseholdInvitationByHouseholdAndID fetches an invitation from the database.
 func (q *Querier) GetHouseholdInvitationByHouseholdAndID(ctx context.Context, householdID, householdInvitationID string) (*types.HouseholdInvitation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -239,10 +236,6 @@ func (q *Querier) GetHouseholdInvitationByHouseholdAndID(ctx context.Context, ho
 	return householdInvitation, nil
 }
 
-/* #nosec G101 */
-//go:embed queries/household_invitations/get_by_token_and_id.sql
-var getHouseholdInvitationByTokenAndIDQuery string
-
 // GetHouseholdInvitationByTokenAndID fetches an invitation from the database.
 func (q *Querier) GetHouseholdInvitationByTokenAndID(ctx context.Context, token, invitationID string) (*types.HouseholdInvitation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -331,10 +324,6 @@ func (q *Querier) GetHouseholdInvitationByTokenAndID(ctx context.Context, token,
 
 	return householdInvitation, nil
 }
-
-/* #nosec G101 */
-//go:embed queries/household_invitations/get_by_email_and_token.sql
-var getHouseholdInvitationByEmailAndTokenQuery string
 
 // GetHouseholdInvitationByEmailAndToken fetches an invitation from the database.
 func (q *Querier) GetHouseholdInvitationByEmailAndToken(ctx context.Context, emailAddress, token string) (*types.HouseholdInvitation, error) {

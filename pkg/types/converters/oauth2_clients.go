@@ -57,8 +57,8 @@ func ConvertOAuth2ClientTokenToOAuth2ClientTokenDatabaseCreationInput(x *types.O
 		ClientID:            x.ClientID,
 		Refresh:             x.Refresh,
 		ID:                  x.ID,
-		CodeExpiresIn:       x.CodeExpiresIn,
-		AccessExpiresIn:     x.AccessExpiresIn,
-		RefreshExpiresIn:    x.RefreshExpiresIn,
+		CodeExpiresIn:       x.CodeExpiresAt,
+		AccessExpiresIn:     x.AccessExpiresAt,
+		RefreshExpiresIn:    x.RefreshExpiresAt,
 	}
 }

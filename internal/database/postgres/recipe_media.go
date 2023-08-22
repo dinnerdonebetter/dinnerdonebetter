@@ -99,9 +99,6 @@ func (q *Querier) RecipeMediaExists(ctx context.Context, recipeMediaID string) (
 	return result, nil
 }
 
-//go:embed queries/recipe_media/get_one.sql
-var getRecipeMediaQuery string
-
 // GetRecipeMedia fetches a recipe media from the database.
 func (q *Querier) GetRecipeMedia(ctx context.Context, recipeMediaID string) (*types.RecipeMedia, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -115,15 +112,22 @@ func (q *Querier) GetRecipeMedia(ctx context.Context, recipeMediaID string) (*ty
 	logger = logger.WithValue(keys.RecipeMediaIDKey, recipeMediaID)
 	tracing.AttachRecipeMediaIDToSpan(span, recipeMediaID)
 
-	args := []any{
-		recipeMediaID,
+	result, err := q.generatedQuerier.GetRecipeMedia(ctx, q.db, recipeMediaID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting recipe media")
 	}
 
-	row := q.getOneRow(ctx, q.db, "recipeMedia", getRecipeMediaQuery, args)
-
-	recipeMedia, err := q.scanPieceOfRecipeMedia(ctx, row)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning recipeMedia")
+	recipeMedia := &types.RecipeMedia{
+		CreatedAt:           result.CreatedAt,
+		ArchivedAt:          timePointerFromNullTime(result.ArchivedAt),
+		LastUpdatedAt:       timePointerFromNullTime(result.LastUpdatedAt),
+		ID:                  result.ID,
+		BelongsToRecipe:     stringPointerFromNullString(result.BelongsToRecipe),
+		BelongsToRecipeStep: stringPointerFromNullString(result.BelongsToRecipeStep),
+		MimeType:            result.MimeType,
+		InternalPath:        result.InternalPath,
+		ExternalPath:        result.ExternalPath,
+		Index:               uint16(result.Index),
 	}
 
 	return recipeMedia, nil

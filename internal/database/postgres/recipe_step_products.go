@@ -191,9 +191,6 @@ func (q *Querier) RecipeStepProductExists(ctx context.Context, recipeID, recipeS
 	return result, nil
 }
 
-//go:embed queries/recipe_step_products/get_one.sql
-var getRecipeStepProductQuery string
-
 // GetRecipeStepProduct fetches a recipe step product from the database.
 func (q *Querier) GetRecipeStepProduct(ctx context.Context, recipeID, recipeStepID, recipeStepProductID string) (*types.RecipeStepProduct, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -219,19 +216,54 @@ func (q *Querier) GetRecipeStepProduct(ctx context.Context, recipeID, recipeStep
 	logger = logger.WithValue(keys.RecipeStepProductIDKey, recipeStepProductID)
 	tracing.AttachRecipeStepProductIDToSpan(span, recipeStepProductID)
 
-	args := []any{
-		recipeStepID,
-		recipeStepProductID,
-		recipeID,
-		recipeStepID,
-		recipeID,
+	result, err := q.generatedQuerier.GetRecipeStepProduct(ctx, q.db, &generated.GetRecipeStepProductParams{
+		RecipeStepID:        recipeStepID,
+		RecipeStepProductID: recipeStepProductID,
+		RecipeID:            recipeID,
+	})
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting recipe step product")
 	}
 
-	row := q.getOneRow(ctx, q.db, "recipeStepProduct", getRecipeStepProductQuery, args)
+	recipeStepProduct := &types.RecipeStepProduct{
+		CreatedAt:                          result.CreatedAt,
+		MaximumStorageTemperatureInCelsius: float32PointerFromNullString(result.MaximumStorageTemperatureInCelsius),
+		MaximumStorageDurationInSeconds:    uint32PointerFromNullInt32(result.MaximumStorageDurationInSeconds),
+		MinimumStorageTemperatureInCelsius: float32PointerFromNullString(result.MinimumStorageTemperatureInCelsius),
+		ArchivedAt:                         timePointerFromNullTime(result.ArchivedAt),
+		LastUpdatedAt:                      timePointerFromNullTime(result.LastUpdatedAt),
+		MinimumQuantity:                    float32PointerFromNullString(result.MinimumQuantityValue),
+		MeasurementUnit:                    nil,
+		MaximumQuantity:                    float32PointerFromNullString(result.MaximumQuantityValue),
+		ContainedInVesselIndex:             uint16PointerFromNullInt32(result.ContainedInVesselIndex),
+		Name:                               result.Name,
+		BelongsToRecipeStep:                result.BelongsToRecipeStep,
+		Type:                               string(result.Type),
+		ID:                                 result.ID,
+		StorageInstructions:                result.StorageInstructions,
+		QuantityNotes:                      result.QuantityNotes,
+		Index:                              uint16(result.Index),
+		IsWaste:                            result.IsWaste,
+		IsLiquid:                           result.IsLiquid,
+		Compostable:                        result.Compostable,
+	}
 
-	recipeStepProduct, _, _, err := q.scanRecipeStepProduct(ctx, row, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning recipeStepProduct")
+	if result.ValidMeasurementUnitID != "" {
+		recipeStepProduct.MeasurementUnit = &types.ValidMeasurementUnit{
+			CreatedAt:     result.ValidMeasurementUnitCreatedAt,
+			LastUpdatedAt: timePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
+			ArchivedAt:    timePointerFromNullTime(result.ValidMeasurementUnitArchivedAt),
+			Name:          result.ValidMeasurementUnitName,
+			IconPath:      result.ValidMeasurementUnitIconPath,
+			ID:            result.ValidMeasurementUnitID,
+			Description:   result.ValidMeasurementUnitDescription,
+			PluralName:    result.ValidMeasurementUnitPluralName,
+			Slug:          result.ValidMeasurementUnitSlug,
+			Volumetric:    boolFromNullBool(result.ValidMeasurementUnitVolumetric),
+			Universal:     result.ValidMeasurementUnitUniversal,
+			Metric:        result.ValidMeasurementUnitMetric,
+			Imperial:      result.ValidMeasurementUnitImperial,
+		}
 	}
 
 	return recipeStepProduct, nil

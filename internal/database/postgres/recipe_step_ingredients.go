@@ -302,9 +302,6 @@ func (q *Querier) RecipeStepIngredientExists(ctx context.Context, recipeID, reci
 	return result, nil
 }
 
-//go:embed queries/recipe_step_ingredients/get_one.sql
-var getRecipeStepIngredientQuery string
-
 // GetRecipeStepIngredient fetches a recipe step ingredient from the database.
 func (q *Querier) GetRecipeStepIngredient(ctx context.Context, recipeID, recipeStepID, recipeStepIngredientID string) (*types.RecipeStepIngredient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -330,19 +327,91 @@ func (q *Querier) GetRecipeStepIngredient(ctx context.Context, recipeID, recipeS
 	logger = logger.WithValue(keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 	tracing.AttachRecipeStepIngredientIDToSpan(span, recipeStepIngredientID)
 
-	args := []any{
-		recipeStepID,
-		recipeStepIngredientID,
-		recipeID,
-		recipeStepID,
-		recipeID,
+	result, err := q.generatedQuerier.GetRecipeStepIngredient(ctx, q.db, &generated.GetRecipeStepIngredientParams{
+		RecipeStepID:           recipeStepID,
+		RecipeStepIngredientID: recipeStepIngredientID,
+		RecipeID:               recipeID,
+	})
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting recipe step ingredient")
 	}
 
-	row := q.getOneRow(ctx, q.db, "get recipe step ingredient", getRecipeStepIngredientQuery, args)
+	recipeStepIngredient := &types.RecipeStepIngredient{
+		CreatedAt:                 result.CreatedAt,
+		RecipeStepProductID:       stringPointerFromNullString(result.RecipeStepProductID),
+		ArchivedAt:                timePointerFromNullTime(result.ArchivedAt),
+		LastUpdatedAt:             timePointerFromNullTime(result.LastUpdatedAt),
+		MaximumQuantity:           float32PointerFromNullString(result.MaximumQuantityValue),
+		VesselIndex:               uint16PointerFromNullInt32(result.VesselIndex),
+		ProductPercentageToUse:    float32PointerFromNullString(result.ProductPercentageToUse),
+		RecipeStepProductRecipeID: stringPointerFromNullString(result.RecipeStepProductRecipeID),
+		QuantityNotes:             result.QuantityNotes,
+		ID:                        result.ID,
+		BelongsToRecipeStep:       result.BelongsToRecipeStep,
+		IngredientNotes:           result.IngredientNotes,
+		Name:                      result.Name,
+		MeasurementUnit: types.ValidMeasurementUnit{
+			CreatedAt:     result.ValidMeasurementUnitCreatedAt,
+			LastUpdatedAt: timePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
+			ArchivedAt:    timePointerFromNullTime(result.ValidMeasurementUnitArchivedAt),
+			Name:          result.ValidMeasurementUnitName,
+			IconPath:      result.ValidMeasurementUnitIconPath,
+			ID:            result.ValidMeasurementUnitID,
+			Description:   result.ValidMeasurementUnitDescription,
+			PluralName:    result.ValidMeasurementUnitPluralName,
+			Slug:          result.ValidMeasurementUnitSlug,
+			Volumetric:    boolFromNullBool(result.ValidMeasurementUnitVolumetric),
+			Universal:     result.ValidMeasurementUnitUniversal,
+			Metric:        result.ValidMeasurementUnitMetric,
+			Imperial:      result.ValidMeasurementUnitImperial,
+		},
+		MinimumQuantity: float32FromString(result.MinimumQuantityValue),
+		OptionIndex:     uint16(result.OptionIndex),
+		Optional:        result.Optional,
+		ToTaste:         result.ToTaste,
+	}
 
-	recipeStepIngredient, _, _, err := q.scanRecipeStepIngredient(ctx, row, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning recipeStepIngredient")
+	if result.ValidIngredientID != "" {
+		recipeStepIngredient.Ingredient = &types.ValidIngredient{
+			CreatedAt:                               result.ValidIngredientCreatedAt,
+			LastUpdatedAt:                           timePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
+			ArchivedAt:                              timePointerFromNullTime(result.ValidIngredientArchivedAt),
+			MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
+			MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
+			IconPath:                                result.ValidIngredientIconPath,
+			Warning:                                 result.ValidIngredientWarning,
+			PluralName:                              result.ValidIngredientPluralName,
+			StorageInstructions:                     result.ValidIngredientStorageInstructions,
+			Name:                                    result.ValidIngredientName,
+			ID:                                      result.ValidIngredientID,
+			Description:                             result.ValidIngredientDescription,
+			Slug:                                    result.ValidIngredientSlug,
+			ShoppingSuggestions:                     result.ValidIngredientShoppingSuggestions,
+			ContainsShellfish:                       result.ValidIngredientContainsShellfish,
+			IsMeasuredVolumetrically:                result.ValidIngredientVolumetric,
+			IsLiquid:                                boolFromNullBool(result.ValidIngredientIsLiquid),
+			ContainsPeanut:                          result.ValidIngredientContainsPeanut,
+			ContainsTreeNut:                         result.ValidIngredientContainsTreeNut,
+			ContainsEgg:                             result.ValidIngredientContainsEgg,
+			ContainsWheat:                           result.ValidIngredientContainsWheat,
+			ContainsSoy:                             result.ValidIngredientContainsSoy,
+			AnimalDerived:                           result.ValidIngredientAnimalDerived,
+			RestrictToPreparations:                  result.ValidIngredientRestrictToPreparations,
+			ContainsSesame:                          result.ValidIngredientContainsSesame,
+			ContainsFish:                            result.ValidIngredientContainsFish,
+			ContainsGluten:                          result.ValidIngredientContainsGluten,
+			ContainsDairy:                           result.ValidIngredientContainsDairy,
+			ContainsAlcohol:                         result.ValidIngredientContainsAlcohol,
+			AnimalFlesh:                             result.ValidIngredientAnimalFlesh,
+			IsStarch:                                result.ValidIngredientIsStarch,
+			IsProtein:                               result.ValidIngredientIsProtein,
+			IsGrain:                                 result.ValidIngredientIsGrain,
+			IsFruit:                                 result.ValidIngredientIsFruit,
+			IsSalt:                                  result.ValidIngredientIsSalt,
+			IsFat:                                   result.ValidIngredientIsFat,
+			IsAcid:                                  result.ValidIngredientIsAcid,
+			IsHeat:                                  result.ValidIngredientIsHeat,
+		}
 	}
 
 	return recipeStepIngredient, nil

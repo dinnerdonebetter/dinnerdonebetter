@@ -245,7 +245,6 @@ func TestQuerier_GetHouseholdInvitationByHouseholdAndID(T *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
-
 }
 
 func TestQuerier_GetHouseholdInvitationByEmailAndToken(T *testing.T) {

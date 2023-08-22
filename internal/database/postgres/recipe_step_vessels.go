@@ -213,9 +213,6 @@ func (q *Querier) RecipeStepVesselExists(ctx context.Context, recipeID, recipeSt
 	return result, nil
 }
 
-//go:embed queries/recipe_step_vessels/get_one.sql
-var getRecipeStepVesselQuery string
-
 // GetRecipeStepVessel fetches a recipe step vessel from the database.
 func (q *Querier) GetRecipeStepVessel(ctx context.Context, recipeID, recipeStepID, recipeStepVesselID string) (*types.RecipeStepVessel, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -241,19 +238,70 @@ func (q *Querier) GetRecipeStepVessel(ctx context.Context, recipeID, recipeStepI
 	logger = logger.WithValue(keys.RecipeStepVesselIDKey, recipeStepVesselID)
 	tracing.AttachRecipeStepVesselIDToSpan(span, recipeStepVesselID)
 
-	args := []any{
-		recipeStepID,
-		recipeStepVesselID,
-		recipeID,
-		recipeStepID,
-		recipeID,
+	result, err := q.generatedQuerier.GetRecipeStepVessel(ctx, q.db, &generated.GetRecipeStepVesselParams{
+		RecipeStepID:       recipeStepID,
+		RecipeStepVesselID: recipeStepVesselID,
+		RecipeID:           recipeID,
+	})
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting recipe step vessel")
 	}
 
-	row := q.getOneRow(ctx, q.db, "recipe step vessel", getRecipeStepVesselQuery, args)
+	recipeStepVessel := &types.RecipeStepVessel{
+		CreatedAt:            result.CreatedAt,
+		MaximumQuantity:      uint32PointerFromNullInt32(result.MaximumQuantity),
+		LastUpdatedAt:        timePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:           timePointerFromNullTime(result.ArchivedAt),
+		RecipeStepProductID:  stringPointerFromNullString(result.RecipeStepProductID),
+		Vessel:               nil,
+		ID:                   result.ID,
+		Notes:                result.Notes,
+		BelongsToRecipeStep:  result.BelongsToRecipeStep,
+		VesselPreposition:    result.VesselPredicate,
+		Name:                 result.Name,
+		MinimumQuantity:      uint32(result.MinimumQuantity),
+		UnavailableAfterStep: result.UnavailableAfterStep,
+	}
 
-	recipeStepVessel, _, _, err := q.scanRecipeStepVessel(ctx, row, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning recipeStepVessel")
+	if result.ValidVesselID.Valid {
+		recipeStepVessel.Vessel = &types.ValidVessel{
+			CreatedAt:                      result.ValidVesselCreatedAt.Time,
+			ArchivedAt:                     timePointerFromNullTime(result.ValidVesselArchivedAt),
+			LastUpdatedAt:                  timePointerFromNullTime(result.ValidVesselLastUpdatedAt),
+			CapacityUnit:                   nil,
+			IconPath:                       result.ValidVesselIconPath.String,
+			PluralName:                     result.ValidVesselPluralName.String,
+			Description:                    result.ValidVesselDescription.String,
+			Name:                           result.ValidVesselName.String,
+			Slug:                           result.ValidVesselSlug.String,
+			Shape:                          string(result.ValidVesselShape.VesselShape),
+			ID:                             result.ValidVesselID.String,
+			WidthInMillimeters:             float32FromNullString(result.ValidVesselWidthInMillimeters),
+			LengthInMillimeters:            float32FromNullString(result.ValidVesselLengthInMillimeters),
+			HeightInMillimeters:            float32FromNullString(result.ValidVesselHeightInMillimeters),
+			Capacity:                       float32FromNullString(result.ValidVesselCapacity),
+			IncludeInGeneratedInstructions: result.ValidVesselIncludeInGeneratedInstructions.Bool,
+			DisplayInSummaryLists:          result.ValidVesselDisplayInSummaryLists.Bool,
+			UsableForStorage:               result.ValidVesselUsableForStorage.Bool,
+		}
+
+		if result.ValidMeasurementUnitID.Valid {
+			recipeStepVessel.Vessel.CapacityUnit = &types.ValidMeasurementUnit{
+				CreatedAt:     result.ValidMeasurementUnitCreatedAt.Time,
+				LastUpdatedAt: timePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
+				ArchivedAt:    timePointerFromNullTime(result.ValidMeasurementUnitArchivedAt),
+				Name:          result.ValidMeasurementUnitName.String,
+				IconPath:      result.ValidMeasurementUnitIconPath.String,
+				ID:            result.ValidMeasurementUnitID.String,
+				Description:   result.ValidMeasurementUnitDescription.String,
+				PluralName:    result.ValidMeasurementUnitPluralName.String,
+				Slug:          result.ValidMeasurementUnitSlug.String,
+				Volumetric:    result.ValidMeasurementUnitVolumetric.Bool,
+				Universal:     result.ValidMeasurementUnitUniversal.Bool,
+				Metric:        result.ValidMeasurementUnitMetric.Bool,
+				Imperial:      result.ValidMeasurementUnitImperial.Bool,
+			}
+		}
 	}
 
 	return recipeStepVessel, nil

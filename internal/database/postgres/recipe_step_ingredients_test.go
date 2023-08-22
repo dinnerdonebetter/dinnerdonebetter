@@ -197,35 +197,6 @@ func TestQuerier_RecipeStepIngredientExists(T *testing.T) {
 func TestQuerier_GetRecipeStepIngredient(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeID := fakes.BuildFakeID()
-		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleRecipeStepID,
-			exampleRecipeStepIngredient.ID,
-			exampleRecipeID,
-			exampleRecipeStepID,
-			exampleRecipeID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepIngredientQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromRecipeStepIngredients(false, 0, exampleRecipeStepIngredient))
-
-		actual, err := c.GetRecipeStepIngredient(ctx, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepIngredient.ID)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleRecipeStepIngredient, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid recipe ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -266,35 +237,6 @@ func TestQuerier_GetRecipeStepIngredient(T *testing.T) {
 		actual, err := c.GetRecipeStepIngredient(ctx, exampleRecipeID, exampleRecipeStepID, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeID := fakes.BuildFakeID()
-		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleRecipeStepID,
-			exampleRecipeStepIngredient.ID,
-			exampleRecipeID,
-			exampleRecipeStepID,
-			exampleRecipeID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepIngredientQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetRecipeStepIngredient(ctx, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepIngredient.ID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

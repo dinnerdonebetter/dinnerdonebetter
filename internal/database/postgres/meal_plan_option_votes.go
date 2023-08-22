@@ -144,9 +144,6 @@ func (q *Querier) MealPlanOptionVoteExists(ctx context.Context, mealPlanID, meal
 	return result, nil
 }
 
-//go:embed queries/meal_plan_option_votes/get_one.sql
-var getMealPlanOptionVoteQuery string
-
 // GetMealPlanOptionVote fetches a meal plan option vote from the database.
 func (q *Querier) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) (*types.MealPlanOptionVote, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -172,18 +169,26 @@ func (q *Querier) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPla
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVoteID)
 
-	args := []any{
-		mealPlanOptionID,
-		mealPlanOptionVoteID,
-		mealPlanEventID,
-		mealPlanID,
+	result, err := q.generatedQuerier.GetMealPlanOptionVote(ctx, q.db, &generated.GetMealPlanOptionVoteParams{
+		BelongsToMealPlanOption: mealPlanOptionID,
+		ID:                      mealPlanOptionVoteID,
+		BelongsToMealPlan:       mealPlanID,
+		BelongsToMealPlanEvent:  nullStringFromString(mealPlanEventID),
+	})
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting meal plan option vote")
 	}
 
-	row := q.getOneRow(ctx, q.db, "meal plan option vote", getMealPlanOptionVoteQuery, args)
-
-	mealPlanOptionVote, _, _, err := q.scanMealPlanOptionVote(ctx, row, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning mealPlanOptionVote")
+	mealPlanOptionVote := &types.MealPlanOptionVote{
+		CreatedAt:               result.CreatedAt,
+		ArchivedAt:              timePointerFromNullTime(result.ArchivedAt),
+		LastUpdatedAt:           timePointerFromNullTime(result.LastUpdatedAt),
+		ID:                      result.ID,
+		Notes:                   result.Notes,
+		BelongsToMealPlanOption: result.BelongsToMealPlanOption,
+		ByUser:                  result.ByUser,
+		Rank:                    uint8(result.Rank),
+		Abstain:                 result.Abstain,
 	}
 
 	return mealPlanOptionVote, nil

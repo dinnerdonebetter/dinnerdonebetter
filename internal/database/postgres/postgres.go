@@ -197,30 +197,6 @@ func (q *Querier) rollbackTransaction(ctx context.Context, tx database.SQLQueryE
 	q.logger.Debug("transaction rolled back")
 }
 
-func (q *Querier) getOneRow(ctx context.Context, querier database.SQLQueryExecutor, queryDescription, query string, args []any) *sql.Row {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.WithValue("query_desc", queryDescription)
-	if q.logQueries {
-		logger = logger.WithValue("args", args)
-	}
-
-	if args == nil {
-		args = []any{}
-	}
-
-	tracing.AttachDatabaseQueryToSpan(span, fmt.Sprintf("%s single row fetch query", queryDescription), query, args)
-
-	row := querier.QueryRowContext(ctx, query, args...)
-
-	if q.logQueries {
-		logger.Debug("single row query performed")
-	}
-
-	return row
-}
-
 func (q *Querier) getRows(ctx context.Context, querier database.SQLQueryExecutor, queryDescription, query string, args []any) (*sql.Rows, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()

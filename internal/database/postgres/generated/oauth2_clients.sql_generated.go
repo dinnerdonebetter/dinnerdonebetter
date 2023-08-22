@@ -7,8 +7,6 @@ package generated
 
 import (
 	"context"
-	"database/sql"
-	"time"
 )
 
 const archiveOAuth2Client = `-- name: ArchiveOAuth2Client :exec
@@ -50,7 +48,8 @@ const getOAuth2ClientByClientID = `-- name: GetOAuth2ClientByClientID :one
 
 SELECT
 	oauth2_clients.id,
-	oauth2_clients.name,
+    oauth2_clients.name,
+    oauth2_clients.description,
 	oauth2_clients.client_id,
 	oauth2_clients.client_secret,
 	oauth2_clients.created_at,
@@ -60,21 +59,13 @@ WHERE oauth2_clients.archived_at IS NULL
 	AND oauth2_clients.client_id = $1
 `
 
-type GetOAuth2ClientByClientIDRow struct {
-	ID           string
-	Name         string
-	ClientID     string
-	ClientSecret string
-	CreatedAt    time.Time
-	ArchivedAt   sql.NullTime
-}
-
-func (q *Queries) GetOAuth2ClientByClientID(ctx context.Context, db DBTX, clientID string) (*GetOAuth2ClientByClientIDRow, error) {
+func (q *Queries) GetOAuth2ClientByClientID(ctx context.Context, db DBTX, clientID string) (*Oauth2Clients, error) {
 	row := db.QueryRowContext(ctx, getOAuth2ClientByClientID, clientID)
-	var i GetOAuth2ClientByClientIDRow
+	var i Oauth2Clients
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
+		&i.Description,
 		&i.ClientID,
 		&i.ClientSecret,
 		&i.CreatedAt,
@@ -88,6 +79,7 @@ const getOAuth2ClientByDatabaseID = `-- name: GetOAuth2ClientByDatabaseID :one
 SELECT
 	oauth2_clients.id,
 	oauth2_clients.name,
+    oauth2_clients.description,
 	oauth2_clients.client_id,
 	oauth2_clients.client_secret,
 	oauth2_clients.created_at,
@@ -97,21 +89,13 @@ WHERE oauth2_clients.archived_at IS NULL
 	AND oauth2_clients.id = $1
 `
 
-type GetOAuth2ClientByDatabaseIDRow struct {
-	ID           string
-	Name         string
-	ClientID     string
-	ClientSecret string
-	CreatedAt    time.Time
-	ArchivedAt   sql.NullTime
-}
-
-func (q *Queries) GetOAuth2ClientByDatabaseID(ctx context.Context, db DBTX, id string) (*GetOAuth2ClientByDatabaseIDRow, error) {
+func (q *Queries) GetOAuth2ClientByDatabaseID(ctx context.Context, db DBTX, id string) (*Oauth2Clients, error) {
 	row := db.QueryRowContext(ctx, getOAuth2ClientByDatabaseID, id)
-	var i GetOAuth2ClientByDatabaseIDRow
+	var i Oauth2Clients
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
+		&i.Description,
 		&i.ClientID,
 		&i.ClientSecret,
 		&i.CreatedAt,

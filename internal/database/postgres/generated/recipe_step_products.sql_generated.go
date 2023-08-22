@@ -100,19 +100,19 @@ SELECT
 	recipe_step_products.id,
 	recipe_step_products.name,
 	recipe_step_products.type,
-	valid_measurement_units.id,
-	valid_measurement_units.name,
-	valid_measurement_units.description,
-	valid_measurement_units.volumetric,
-	valid_measurement_units.icon_path,
-	valid_measurement_units.universal,
-	valid_measurement_units.metric,
-	valid_measurement_units.imperial,
-	valid_measurement_units.slug,
-	valid_measurement_units.plural_name,
-	valid_measurement_units.created_at,
-	valid_measurement_units.last_updated_at,
-	valid_measurement_units.archived_at,
+	valid_measurement_units.id as valid_measurement_unit_id,
+	valid_measurement_units.name as valid_measurement_unit_name,
+	valid_measurement_units.description as valid_measurement_unit_description,
+	valid_measurement_units.volumetric as valid_measurement_unit_volumetric,
+	valid_measurement_units.icon_path as valid_measurement_unit_icon_path,
+	valid_measurement_units.universal as valid_measurement_unit_universal,
+	valid_measurement_units.metric as valid_measurement_unit_metric,
+	valid_measurement_units.imperial as valid_measurement_unit_imperial,
+	valid_measurement_units.slug as valid_measurement_unit_slug,
+	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.created_at as valid_measurement_unit_created_at,
+	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
+	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
 	recipe_step_products.minimum_quantity_value,
 	recipe_step_products.maximum_quantity_value,
 	recipe_step_products.quantity_notes,
@@ -138,36 +138,34 @@ WHERE recipe_step_products.archived_at IS NULL
 	AND recipe_step_products.id = $2
 	AND recipe_steps.archived_at IS NULL
 	AND recipe_steps.belongs_to_recipe = $3
-	AND recipe_steps.id = $4
+	AND recipe_steps.id = $1
 	AND recipes.archived_at IS NULL
-	AND recipes.id = $5
+	AND recipes.id = $3
 `
 
 type GetRecipeStepProductParams struct {
-	BelongsToRecipeStep string
-	ID                  string
-	BelongsToRecipe     string
-	ID_2                string
-	ID_3                string
+	RecipeStepID        string
+	RecipeStepProductID string
+	RecipeID            string
 }
 
 type GetRecipeStepProductRow struct {
-	CreatedAt_2                        time.Time
 	CreatedAt                          time.Time
-	ArchivedAt_2                       sql.NullTime
-	LastUpdatedAt_2                    sql.NullTime
+	ValidMeasurementUnitCreatedAt      time.Time
 	ArchivedAt                         sql.NullTime
 	LastUpdatedAt                      sql.NullTime
+	ValidMeasurementUnitArchivedAt     sql.NullTime
+	ValidMeasurementUnitLastUpdatedAt  sql.NullTime
 	QuantityNotes                      string
-	ID_2                               string
+	ValidMeasurementUnitID             string
 	ID                                 string
 	BelongsToRecipeStep                string
 	Name                               string
-	Slug                               string
-	PluralName                         string
-	Description                        string
-	Name_2                             string
-	IconPath                           string
+	ValidMeasurementUnitSlug           string
+	ValidMeasurementUnitPluralName     string
+	ValidMeasurementUnitDescription    string
+	ValidMeasurementUnitName           string
+	ValidMeasurementUnitIconPath       string
 	StorageInstructions                string
 	Type                               RecipeStepProductType
 	MaximumQuantityValue               sql.NullString
@@ -177,41 +175,35 @@ type GetRecipeStepProductRow struct {
 	MaximumStorageDurationInSeconds    sql.NullInt32
 	ContainedInVesselIndex             sql.NullInt32
 	Index                              int32
-	Volumetric                         sql.NullBool
-	Universal                          bool
+	ValidMeasurementUnitVolumetric     sql.NullBool
+	ValidMeasurementUnitUniversal      bool
 	IsWaste                            bool
 	IsLiquid                           bool
 	Compostable                        bool
-	Imperial                           bool
-	Metric                             bool
+	ValidMeasurementUnitImperial       bool
+	ValidMeasurementUnitMetric         bool
 }
 
 func (q *Queries) GetRecipeStepProduct(ctx context.Context, db DBTX, arg *GetRecipeStepProductParams) (*GetRecipeStepProductRow, error) {
-	row := db.QueryRowContext(ctx, getRecipeStepProduct,
-		arg.BelongsToRecipeStep,
-		arg.ID,
-		arg.BelongsToRecipe,
-		arg.ID_2,
-		arg.ID_3,
-	)
+	row := db.QueryRowContext(ctx, getRecipeStepProduct, arg.RecipeStepID, arg.RecipeStepProductID, arg.RecipeID)
 	var i GetRecipeStepProductRow
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
 		&i.Type,
-		&i.ID_2,
-		&i.Name_2,
-		&i.Description,
-		&i.Volumetric,
-		&i.IconPath,
-		&i.Universal,
-		&i.Metric,
-		&i.Imperial,
-		&i.Slug,
-		&i.PluralName,
-		&i.CreatedAt,
-		&i.LastUpdatedAt,
-		&i.ArchivedAt,
+		&i.ValidMeasurementUnitID,
+		&i.ValidMeasurementUnitName,
+		&i.ValidMeasurementUnitDescription,
+		&i.ValidMeasurementUnitVolumetric,
+		&i.ValidMeasurementUnitIconPath,
+		&i.ValidMeasurementUnitUniversal,
+		&i.ValidMeasurementUnitMetric,
+		&i.ValidMeasurementUnitImperial,
+		&i.ValidMeasurementUnitSlug,
+		&i.ValidMeasurementUnitPluralName,
+		&i.ValidMeasurementUnitCreatedAt,
+		&i.ValidMeasurementUnitLastUpdatedAt,
+		&i.ValidMeasurementUnitArchivedAt,
 		&i.MinimumQuantityValue,
 		&i.MaximumQuantityValue,
 		&i.QuantityNotes,
@@ -224,9 +216,9 @@ func (q *Queries) GetRecipeStepProduct(ctx context.Context, db DBTX, arg *GetRec
 		&i.IsWaste,
 		&i.Index,
 		&i.ContainedInVesselIndex,
-		&i.CreatedAt_2,
-		&i.LastUpdatedAt_2,
-		&i.ArchivedAt_2,
+		&i.CreatedAt,
+		&i.LastUpdatedAt,
+		&i.ArchivedAt,
 		&i.BelongsToRecipeStep,
 	)
 	return &i, err

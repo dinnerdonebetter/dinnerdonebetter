@@ -99,28 +99,28 @@ const getRecipeStep = `-- name: GetRecipeStep :one
 SELECT
 	recipe_steps.id,
 	recipe_steps.index,
-	valid_preparations.id,
-	valid_preparations.name,
-	valid_preparations.description,
-	valid_preparations.icon_path,
-	valid_preparations.yields_nothing,
-	valid_preparations.restrict_to_ingredients,
-	valid_preparations.minimum_ingredient_count,
-	valid_preparations.maximum_ingredient_count,
-	valid_preparations.minimum_instrument_count,
-	valid_preparations.maximum_instrument_count,
-	valid_preparations.temperature_required,
-	valid_preparations.time_estimate_required,
-	valid_preparations.condition_expression_required,
-    valid_preparations.consumes_vessel,
-    valid_preparations.only_for_vessels,
-    valid_preparations.minimum_vessel_count,
-    valid_preparations.maximum_vessel_count,
-	valid_preparations.slug,
-	valid_preparations.past_tense,
-	valid_preparations.created_at,
-	valid_preparations.last_updated_at,
-	valid_preparations.archived_at,
+	valid_preparations.id as valid_preparation_id,
+	valid_preparations.name as valid_preparation_name,
+	valid_preparations.description as valid_preparation_description,
+	valid_preparations.icon_path as valid_preparation_icon_path,
+	valid_preparations.yields_nothing as valid_preparation_yields_nothing,
+	valid_preparations.restrict_to_ingredients as valid_preparation_restrict_to_ingredients,
+	valid_preparations.minimum_ingredient_count as valid_preparation_minimum_ingredient_count,
+	valid_preparations.maximum_ingredient_count as valid_preparation_maximum_ingredient_count,
+	valid_preparations.minimum_instrument_count as valid_preparation_minimum_instrument_count,
+	valid_preparations.maximum_instrument_count as valid_preparation_maximum_instrument_count,
+	valid_preparations.temperature_required as valid_preparation_temperature_required,
+	valid_preparations.time_estimate_required as valid_preparation_time_estimate_required,
+	valid_preparations.condition_expression_required as valid_preparation_condition_expression_required,
+    valid_preparations.consumes_vessel as valid_preparation_consumes_vessel,
+    valid_preparations.only_for_vessels as valid_preparation_only_for_vessels,
+    valid_preparations.minimum_vessel_count as valid_preparation_minimum_vessel_count,
+    valid_preparations.maximum_vessel_count as valid_preparation_maximum_vessel_count,
+	valid_preparations.slug as valid_preparation_slug,
+	valid_preparations.past_tense as valid_preparation_past_tense,
+	valid_preparations.created_at as valid_preparation_created_at,
+	valid_preparations.last_updated_at as valid_preparation_last_updated_at,
+	valid_preparations.archived_at as valid_preparation_archived_at,
 	recipe_steps.minimum_estimated_time_in_seconds,
 	recipe_steps.maximum_estimated_time_in_seconds,
 	recipe_steps.minimum_temperature_in_celsius,
@@ -150,43 +150,43 @@ type GetRecipeStepParams struct {
 }
 
 type GetRecipeStepRow struct {
-	CreatedAt                     time.Time
-	CreatedAt_2                   time.Time
-	ArchivedAt_2                  sql.NullTime
-	LastUpdatedAt                 sql.NullTime
-	ArchivedAt                    sql.NullTime
-	LastUpdatedAt_2               sql.NullTime
-	ConditionExpression           string
-	ID_2                          string
-	Description                   string
-	ID                            string
-	Name                          string
-	ExplicitInstructions          string
-	Notes                         string
-	IconPath                      string
-	PastTense                     string
-	Slug                          string
-	BelongsToRecipe               string
-	MaximumTemperatureInCelsius   sql.NullString
-	MinimumTemperatureInCelsius   sql.NullString
-	MinimumEstimatedTimeInSeconds sql.NullInt64
-	MaximumEstimatedTimeInSeconds sql.NullInt64
-	MaximumIngredientCount        sql.NullInt32
-	MaximumVesselCount            sql.NullInt32
-	MaximumInstrumentCount        sql.NullInt32
-	MinimumVesselCount            int32
-	Index                         int32
-	MinimumIngredientCount        int32
-	MinimumInstrumentCount        int32
-	TemperatureRequired           bool
-	TimeEstimateRequired          bool
-	ConditionExpressionRequired   bool
-	Optional                      bool
-	StartTimerAutomatically       bool
-	ConsumesVessel                bool
-	RestrictToIngredients         bool
-	YieldsNothing                 bool
-	OnlyForVessels                bool
+	ValidPreparationCreatedAt                   time.Time
+	CreatedAt                                   time.Time
+	ArchivedAt                                  sql.NullTime
+	ValidPreparationLastUpdatedAt               sql.NullTime
+	ValidPreparationArchivedAt                  sql.NullTime
+	LastUpdatedAt                               sql.NullTime
+	ConditionExpression                         string
+	ValidPreparationID                          string
+	ValidPreparationDescription                 string
+	ID                                          string
+	ValidPreparationName                        string
+	ExplicitInstructions                        string
+	Notes                                       string
+	ValidPreparationIconPath                    string
+	ValidPreparationPastTense                   string
+	ValidPreparationSlug                        string
+	BelongsToRecipe                             string
+	MaximumTemperatureInCelsius                 sql.NullString
+	MinimumTemperatureInCelsius                 sql.NullString
+	MinimumEstimatedTimeInSeconds               sql.NullInt64
+	MaximumEstimatedTimeInSeconds               sql.NullInt64
+	ValidPreparationMaximumIngredientCount      sql.NullInt32
+	ValidPreparationMaximumVesselCount          sql.NullInt32
+	ValidPreparationMaximumInstrumentCount      sql.NullInt32
+	ValidPreparationMinimumVesselCount          int32
+	Index                                       int32
+	ValidPreparationMinimumIngredientCount      int32
+	ValidPreparationMinimumInstrumentCount      int32
+	ValidPreparationTemperatureRequired         bool
+	ValidPreparationTimeEstimateRequired        bool
+	ValidPreparationConditionExpressionRequired bool
+	Optional                                    bool
+	StartTimerAutomatically                     bool
+	ValidPreparationConsumesVessel              bool
+	ValidPreparationRestrictToIngredients       bool
+	ValidPreparationYieldsNothing               bool
+	ValidPreparationOnlyForVessels              bool
 }
 
 func (q *Queries) GetRecipeStep(ctx context.Context, db DBTX, arg *GetRecipeStepParams) (*GetRecipeStepRow, error) {
@@ -195,28 +195,28 @@ func (q *Queries) GetRecipeStep(ctx context.Context, db DBTX, arg *GetRecipeStep
 	err := row.Scan(
 		&i.ID,
 		&i.Index,
-		&i.ID_2,
-		&i.Name,
-		&i.Description,
-		&i.IconPath,
-		&i.YieldsNothing,
-		&i.RestrictToIngredients,
-		&i.MinimumIngredientCount,
-		&i.MaximumIngredientCount,
-		&i.MinimumInstrumentCount,
-		&i.MaximumInstrumentCount,
-		&i.TemperatureRequired,
-		&i.TimeEstimateRequired,
-		&i.ConditionExpressionRequired,
-		&i.ConsumesVessel,
-		&i.OnlyForVessels,
-		&i.MinimumVesselCount,
-		&i.MaximumVesselCount,
-		&i.Slug,
-		&i.PastTense,
-		&i.CreatedAt,
-		&i.LastUpdatedAt,
-		&i.ArchivedAt,
+		&i.ValidPreparationID,
+		&i.ValidPreparationName,
+		&i.ValidPreparationDescription,
+		&i.ValidPreparationIconPath,
+		&i.ValidPreparationYieldsNothing,
+		&i.ValidPreparationRestrictToIngredients,
+		&i.ValidPreparationMinimumIngredientCount,
+		&i.ValidPreparationMaximumIngredientCount,
+		&i.ValidPreparationMinimumInstrumentCount,
+		&i.ValidPreparationMaximumInstrumentCount,
+		&i.ValidPreparationTemperatureRequired,
+		&i.ValidPreparationTimeEstimateRequired,
+		&i.ValidPreparationConditionExpressionRequired,
+		&i.ValidPreparationConsumesVessel,
+		&i.ValidPreparationOnlyForVessels,
+		&i.ValidPreparationMinimumVesselCount,
+		&i.ValidPreparationMaximumVesselCount,
+		&i.ValidPreparationSlug,
+		&i.ValidPreparationPastTense,
+		&i.ValidPreparationCreatedAt,
+		&i.ValidPreparationLastUpdatedAt,
+		&i.ValidPreparationArchivedAt,
 		&i.MinimumEstimatedTimeInSeconds,
 		&i.MaximumEstimatedTimeInSeconds,
 		&i.MinimumTemperatureInCelsius,
@@ -226,9 +226,9 @@ func (q *Queries) GetRecipeStep(ctx context.Context, db DBTX, arg *GetRecipeStep
 		&i.ConditionExpression,
 		&i.Optional,
 		&i.StartTimerAutomatically,
-		&i.CreatedAt_2,
-		&i.LastUpdatedAt_2,
-		&i.ArchivedAt_2,
+		&i.CreatedAt,
+		&i.LastUpdatedAt,
+		&i.ArchivedAt,
 		&i.BelongsToRecipe,
 	)
 	return &i, err
@@ -239,28 +239,28 @@ const getRecipeStepByRecipeID = `-- name: GetRecipeStepByRecipeID :one
 SELECT
 	recipe_steps.id,
 	recipe_steps.index,
-	valid_preparations.id,
-	valid_preparations.name,
-	valid_preparations.description,
-	valid_preparations.icon_path,
-	valid_preparations.yields_nothing,
-	valid_preparations.restrict_to_ingredients,
-	valid_preparations.minimum_ingredient_count,
-	valid_preparations.maximum_ingredient_count,
-	valid_preparations.minimum_instrument_count,
-	valid_preparations.maximum_instrument_count,
-	valid_preparations.temperature_required,
-	valid_preparations.time_estimate_required,
-	valid_preparations.condition_expression_required,
-    valid_preparations.consumes_vessel,
-    valid_preparations.only_for_vessels,
-    valid_preparations.minimum_vessel_count,
-    valid_preparations.maximum_vessel_count,
-	valid_preparations.slug,
-	valid_preparations.past_tense,
-	valid_preparations.created_at,
-	valid_preparations.last_updated_at,
-	valid_preparations.archived_at,
+    valid_preparations.id as valid_preparation_id,
+    valid_preparations.name as valid_preparation_name,
+    valid_preparations.description as valid_preparation_description,
+    valid_preparations.icon_path as valid_preparation_icon_path,
+    valid_preparations.yields_nothing as valid_preparation_yields_nothing,
+    valid_preparations.restrict_to_ingredients as valid_preparation_restrict_to_ingredients,
+    valid_preparations.minimum_ingredient_count as valid_preparation_minimum_ingredient_count,
+    valid_preparations.maximum_ingredient_count as valid_preparation_maximum_ingredient_count,
+    valid_preparations.minimum_instrument_count as valid_preparation_minimum_instrument_count,
+    valid_preparations.maximum_instrument_count as valid_preparation_maximum_instrument_count,
+    valid_preparations.temperature_required as valid_preparation_temperature_required,
+    valid_preparations.time_estimate_required as valid_preparation_time_estimate_required,
+    valid_preparations.condition_expression_required as valid_preparation_condition_expression_required,
+    valid_preparations.consumes_vessel as valid_preparation_consumes_vessel,
+    valid_preparations.only_for_vessels as valid_preparation_only_for_vessels,
+    valid_preparations.minimum_vessel_count as valid_preparation_minimum_vessel_count,
+    valid_preparations.maximum_vessel_count as valid_preparation_maximum_vessel_count,
+    valid_preparations.slug as valid_preparation_slug,
+    valid_preparations.past_tense as valid_preparation_past_tense,
+    valid_preparations.created_at as valid_preparation_created_at,
+    valid_preparations.last_updated_at as valid_preparation_last_updated_at,
+    valid_preparations.archived_at as valid_preparation_archived_at,
 	recipe_steps.minimum_estimated_time_in_seconds,
 	recipe_steps.maximum_estimated_time_in_seconds,
 	recipe_steps.minimum_temperature_in_celsius,
@@ -282,43 +282,43 @@ WHERE recipe_steps.archived_at IS NULL
 `
 
 type GetRecipeStepByRecipeIDRow struct {
-	CreatedAt                     time.Time
-	CreatedAt_2                   time.Time
-	ArchivedAt_2                  sql.NullTime
-	LastUpdatedAt                 sql.NullTime
-	ArchivedAt                    sql.NullTime
-	LastUpdatedAt_2               sql.NullTime
-	ConditionExpression           string
-	ID_2                          string
-	Description                   string
-	ID                            string
-	Name                          string
-	ExplicitInstructions          string
-	Notes                         string
-	IconPath                      string
-	PastTense                     string
-	Slug                          string
-	BelongsToRecipe               string
-	MaximumTemperatureInCelsius   sql.NullString
-	MinimumTemperatureInCelsius   sql.NullString
-	MinimumEstimatedTimeInSeconds sql.NullInt64
-	MaximumEstimatedTimeInSeconds sql.NullInt64
-	MaximumIngredientCount        sql.NullInt32
-	MaximumVesselCount            sql.NullInt32
-	MaximumInstrumentCount        sql.NullInt32
-	MinimumVesselCount            int32
-	Index                         int32
-	MinimumIngredientCount        int32
-	MinimumInstrumentCount        int32
-	TemperatureRequired           bool
-	TimeEstimateRequired          bool
-	ConditionExpressionRequired   bool
-	Optional                      bool
-	StartTimerAutomatically       bool
-	ConsumesVessel                bool
-	RestrictToIngredients         bool
-	YieldsNothing                 bool
-	OnlyForVessels                bool
+	ValidPreparationCreatedAt                   time.Time
+	CreatedAt                                   time.Time
+	ArchivedAt                                  sql.NullTime
+	ValidPreparationLastUpdatedAt               sql.NullTime
+	ValidPreparationArchivedAt                  sql.NullTime
+	LastUpdatedAt                               sql.NullTime
+	ConditionExpression                         string
+	ValidPreparationID                          string
+	ValidPreparationDescription                 string
+	ID                                          string
+	ValidPreparationName                        string
+	ExplicitInstructions                        string
+	Notes                                       string
+	ValidPreparationIconPath                    string
+	ValidPreparationPastTense                   string
+	ValidPreparationSlug                        string
+	BelongsToRecipe                             string
+	MaximumTemperatureInCelsius                 sql.NullString
+	MinimumTemperatureInCelsius                 sql.NullString
+	MinimumEstimatedTimeInSeconds               sql.NullInt64
+	MaximumEstimatedTimeInSeconds               sql.NullInt64
+	ValidPreparationMaximumIngredientCount      sql.NullInt32
+	ValidPreparationMaximumVesselCount          sql.NullInt32
+	ValidPreparationMaximumInstrumentCount      sql.NullInt32
+	ValidPreparationMinimumVesselCount          int32
+	Index                                       int32
+	ValidPreparationMinimumIngredientCount      int32
+	ValidPreparationMinimumInstrumentCount      int32
+	ValidPreparationTemperatureRequired         bool
+	ValidPreparationTimeEstimateRequired        bool
+	ValidPreparationConditionExpressionRequired bool
+	Optional                                    bool
+	StartTimerAutomatically                     bool
+	ValidPreparationConsumesVessel              bool
+	ValidPreparationRestrictToIngredients       bool
+	ValidPreparationYieldsNothing               bool
+	ValidPreparationOnlyForVessels              bool
 }
 
 func (q *Queries) GetRecipeStepByRecipeID(ctx context.Context, db DBTX, id string) (*GetRecipeStepByRecipeIDRow, error) {
@@ -327,28 +327,28 @@ func (q *Queries) GetRecipeStepByRecipeID(ctx context.Context, db DBTX, id strin
 	err := row.Scan(
 		&i.ID,
 		&i.Index,
-		&i.ID_2,
-		&i.Name,
-		&i.Description,
-		&i.IconPath,
-		&i.YieldsNothing,
-		&i.RestrictToIngredients,
-		&i.MinimumIngredientCount,
-		&i.MaximumIngredientCount,
-		&i.MinimumInstrumentCount,
-		&i.MaximumInstrumentCount,
-		&i.TemperatureRequired,
-		&i.TimeEstimateRequired,
-		&i.ConditionExpressionRequired,
-		&i.ConsumesVessel,
-		&i.OnlyForVessels,
-		&i.MinimumVesselCount,
-		&i.MaximumVesselCount,
-		&i.Slug,
-		&i.PastTense,
-		&i.CreatedAt,
-		&i.LastUpdatedAt,
-		&i.ArchivedAt,
+		&i.ValidPreparationID,
+		&i.ValidPreparationName,
+		&i.ValidPreparationDescription,
+		&i.ValidPreparationIconPath,
+		&i.ValidPreparationYieldsNothing,
+		&i.ValidPreparationRestrictToIngredients,
+		&i.ValidPreparationMinimumIngredientCount,
+		&i.ValidPreparationMaximumIngredientCount,
+		&i.ValidPreparationMinimumInstrumentCount,
+		&i.ValidPreparationMaximumInstrumentCount,
+		&i.ValidPreparationTemperatureRequired,
+		&i.ValidPreparationTimeEstimateRequired,
+		&i.ValidPreparationConditionExpressionRequired,
+		&i.ValidPreparationConsumesVessel,
+		&i.ValidPreparationOnlyForVessels,
+		&i.ValidPreparationMinimumVesselCount,
+		&i.ValidPreparationMaximumVesselCount,
+		&i.ValidPreparationSlug,
+		&i.ValidPreparationPastTense,
+		&i.ValidPreparationCreatedAt,
+		&i.ValidPreparationLastUpdatedAt,
+		&i.ValidPreparationArchivedAt,
 		&i.MinimumEstimatedTimeInSeconds,
 		&i.MaximumEstimatedTimeInSeconds,
 		&i.MinimumTemperatureInCelsius,
@@ -358,9 +358,9 @@ func (q *Queries) GetRecipeStepByRecipeID(ctx context.Context, db DBTX, id strin
 		&i.ConditionExpression,
 		&i.Optional,
 		&i.StartTimerAutomatically,
-		&i.CreatedAt_2,
-		&i.LastUpdatedAt_2,
-		&i.ArchivedAt_2,
+		&i.CreatedAt,
+		&i.LastUpdatedAt,
+		&i.ArchivedAt,
 		&i.BelongsToRecipe,
 	)
 	return &i, err

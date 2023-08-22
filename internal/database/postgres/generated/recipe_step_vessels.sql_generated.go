@@ -97,36 +97,36 @@ const getRecipeStepVessel = `-- name: GetRecipeStepVessel :one
 
 SELECT
     recipe_step_vessels.id,
-	valid_vessels.id,
-    valid_vessels.name,
-    valid_vessels.plural_name,
-    valid_vessels.description,
-    valid_vessels.icon_path,
-    valid_vessels.usable_for_storage,
-    valid_vessels.slug,
-    valid_vessels.display_in_summary_lists,
-    valid_vessels.include_in_generated_instructions,
-    valid_vessels.capacity,
-	valid_measurement_units.id,
-	valid_measurement_units.name,
-	valid_measurement_units.description,
-	valid_measurement_units.volumetric,
-	valid_measurement_units.icon_path,
-	valid_measurement_units.universal,
-	valid_measurement_units.metric,
-	valid_measurement_units.imperial,
-	valid_measurement_units.slug,
-	valid_measurement_units.plural_name,
-	valid_measurement_units.created_at,
-	valid_measurement_units.last_updated_at,
-	valid_measurement_units.archived_at,
-    valid_vessels.width_in_millimeters,
-    valid_vessels.length_in_millimeters,
-    valid_vessels.height_in_millimeters,
-    valid_vessels.shape,
-    valid_vessels.created_at,
-    valid_vessels.last_updated_at,
-    valid_vessels.archived_at,
+	valid_vessels.id as valid_vessel_id,
+    valid_vessels.name as valid_vessel_name,
+    valid_vessels.plural_name as valid_vessel_plural_name,
+    valid_vessels.description as valid_vessel_description,
+    valid_vessels.icon_path as valid_vessel_icon_path,
+    valid_vessels.usable_for_storage as valid_vessel_usable_for_storage,
+    valid_vessels.slug as valid_vessel_slug,
+    valid_vessels.display_in_summary_lists as valid_vessel_display_in_summary_lists,
+    valid_vessels.include_in_generated_instructions as valid_vessel_include_in_generated_instructions,
+    valid_vessels.capacity as valid_vessel_capacity,
+	valid_measurement_units.id as valid_measurement_unit_id,
+	valid_measurement_units.name as valid_measurement_unit_name,
+	valid_measurement_units.description as valid_measurement_unit_description,
+	valid_measurement_units.volumetric as valid_measurement_unit_volumetric,
+	valid_measurement_units.icon_path as valid_measurement_unit_icon_path,
+	valid_measurement_units.universal as valid_measurement_unit_universal,
+	valid_measurement_units.metric as valid_measurement_unit_metric,
+	valid_measurement_units.imperial as valid_measurement_unit_imperial,
+	valid_measurement_units.slug as valid_measurement_unit_slug,
+	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.created_at as valid_measurement_unit_created_at,
+	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
+	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
+    valid_vessels.width_in_millimeters as valid_vessel_width_in_millimeters,
+    valid_vessels.length_in_millimeters as valid_vessel_length_in_millimeters,
+    valid_vessels.height_in_millimeters as valid_vessel_height_in_millimeters,
+    valid_vessels.shape as valid_vessel_shape,
+    valid_vessels.created_at as valid_vessel_created_at,
+    valid_vessels.last_updated_at as valid_vessel_last_updated_at,
+    valid_vessels.archived_at as valid_vessel_archived_at,
     recipe_step_vessels.name,
     recipe_step_vessels.notes,
     recipe_step_vessels.belongs_to_recipe_step,
@@ -148,106 +148,98 @@ WHERE recipe_step_vessels.archived_at IS NULL
 	AND recipe_step_vessels.id = $2
 	AND recipe_steps.archived_at IS NULL
 	AND recipe_steps.belongs_to_recipe = $3
-	AND recipe_steps.id = $4
+	AND recipe_steps.id = $1
 	AND recipes.archived_at IS NULL
-	AND recipes.id = $5
+	AND recipes.id = $3
 `
 
 type GetRecipeStepVesselParams struct {
-	BelongsToRecipeStep string
-	ID                  string
-	BelongsToRecipe     string
-	ID_2                string
-	ID_3                string
+	RecipeStepID       string
+	RecipeStepVesselID string
+	RecipeID           string
 }
 
 type GetRecipeStepVesselRow struct {
-	CreatedAt_3                    time.Time
-	LastUpdatedAt_2                sql.NullTime
-	LastUpdatedAt_3                sql.NullTime
-	ArchivedAt_3                   sql.NullTime
-	ArchivedAt_2                   sql.NullTime
-	CreatedAt                      sql.NullTime
-	CreatedAt_2                    sql.NullTime
-	ArchivedAt                     sql.NullTime
-	LastUpdatedAt                  sql.NullTime
-	VesselPredicate                string
-	BelongsToRecipeStep            string
-	Notes                          string
-	Name_3                         string
-	ID                             string
-	Capacity                       sql.NullString
-	IconPath                       sql.NullString
-	ID_2                           sql.NullString
-	Name                           sql.NullString
-	PluralName                     sql.NullString
-	Slug_2                         sql.NullString
-	PluralName_2                   sql.NullString
-	Description                    sql.NullString
-	Description_2                  sql.NullString
-	Name_2                         sql.NullString
-	WidthInMillimeters             sql.NullString
-	LengthInMillimeters            sql.NullString
-	HeightInMillimeters            sql.NullString
-	Shape                          NullVesselShape
-	ID_3                           sql.NullString
-	RecipeStepProductID            sql.NullString
-	IconPath_2                     sql.NullString
-	Slug                           sql.NullString
-	MaximumQuantity                sql.NullInt32
-	MinimumQuantity                int32
-	UsableForStorage               sql.NullBool
-	DisplayInSummaryLists          sql.NullBool
-	IncludeInGeneratedInstructions sql.NullBool
-	Volumetric                     sql.NullBool
-	Imperial                       sql.NullBool
-	Metric                         sql.NullBool
-	Universal                      sql.NullBool
-	UnavailableAfterStep           bool
+	CreatedAt                                 time.Time
+	ValidVesselLastUpdatedAt                  sql.NullTime
+	LastUpdatedAt                             sql.NullTime
+	ArchivedAt                                sql.NullTime
+	ValidVesselArchivedAt                     sql.NullTime
+	ValidMeasurementUnitCreatedAt             sql.NullTime
+	ValidVesselCreatedAt                      sql.NullTime
+	ValidMeasurementUnitArchivedAt            sql.NullTime
+	ValidMeasurementUnitLastUpdatedAt         sql.NullTime
+	VesselPredicate                           string
+	BelongsToRecipeStep                       string
+	Notes                                     string
+	Name                                      string
+	ID                                        string
+	ValidVesselCapacity                       sql.NullString
+	ValidVesselIconPath                       sql.NullString
+	ValidVesselID                             sql.NullString
+	ValidVesselName                           sql.NullString
+	ValidVesselPluralName                     sql.NullString
+	ValidMeasurementUnitSlug                  sql.NullString
+	ValidMeasurementUnitPluralName            sql.NullString
+	ValidVesselDescription                    sql.NullString
+	ValidMeasurementUnitDescription           sql.NullString
+	ValidMeasurementUnitName                  sql.NullString
+	ValidVesselWidthInMillimeters             sql.NullString
+	ValidVesselLengthInMillimeters            sql.NullString
+	ValidVesselHeightInMillimeters            sql.NullString
+	ValidVesselShape                          NullVesselShape
+	ValidMeasurementUnitID                    sql.NullString
+	RecipeStepProductID                       sql.NullString
+	ValidMeasurementUnitIconPath              sql.NullString
+	ValidVesselSlug                           sql.NullString
+	MaximumQuantity                           sql.NullInt32
+	MinimumQuantity                           int32
+	ValidVesselUsableForStorage               sql.NullBool
+	ValidVesselDisplayInSummaryLists          sql.NullBool
+	ValidVesselIncludeInGeneratedInstructions sql.NullBool
+	ValidMeasurementUnitVolumetric            sql.NullBool
+	ValidMeasurementUnitImperial              sql.NullBool
+	ValidMeasurementUnitMetric                sql.NullBool
+	ValidMeasurementUnitUniversal             sql.NullBool
+	UnavailableAfterStep                      bool
 }
 
 func (q *Queries) GetRecipeStepVessel(ctx context.Context, db DBTX, arg *GetRecipeStepVesselParams) (*GetRecipeStepVesselRow, error) {
-	row := db.QueryRowContext(ctx, getRecipeStepVessel,
-		arg.BelongsToRecipeStep,
-		arg.ID,
-		arg.BelongsToRecipe,
-		arg.ID_2,
-		arg.ID_3,
-	)
+	row := db.QueryRowContext(ctx, getRecipeStepVessel, arg.RecipeStepID, arg.RecipeStepVesselID, arg.RecipeID)
 	var i GetRecipeStepVesselRow
 	err := row.Scan(
 		&i.ID,
-		&i.ID_2,
+		&i.ValidVesselID,
+		&i.ValidVesselName,
+		&i.ValidVesselPluralName,
+		&i.ValidVesselDescription,
+		&i.ValidVesselIconPath,
+		&i.ValidVesselUsableForStorage,
+		&i.ValidVesselSlug,
+		&i.ValidVesselDisplayInSummaryLists,
+		&i.ValidVesselIncludeInGeneratedInstructions,
+		&i.ValidVesselCapacity,
+		&i.ValidMeasurementUnitID,
+		&i.ValidMeasurementUnitName,
+		&i.ValidMeasurementUnitDescription,
+		&i.ValidMeasurementUnitVolumetric,
+		&i.ValidMeasurementUnitIconPath,
+		&i.ValidMeasurementUnitUniversal,
+		&i.ValidMeasurementUnitMetric,
+		&i.ValidMeasurementUnitImperial,
+		&i.ValidMeasurementUnitSlug,
+		&i.ValidMeasurementUnitPluralName,
+		&i.ValidMeasurementUnitCreatedAt,
+		&i.ValidMeasurementUnitLastUpdatedAt,
+		&i.ValidMeasurementUnitArchivedAt,
+		&i.ValidVesselWidthInMillimeters,
+		&i.ValidVesselLengthInMillimeters,
+		&i.ValidVesselHeightInMillimeters,
+		&i.ValidVesselShape,
+		&i.ValidVesselCreatedAt,
+		&i.ValidVesselLastUpdatedAt,
+		&i.ValidVesselArchivedAt,
 		&i.Name,
-		&i.PluralName,
-		&i.Description,
-		&i.IconPath,
-		&i.UsableForStorage,
-		&i.Slug,
-		&i.DisplayInSummaryLists,
-		&i.IncludeInGeneratedInstructions,
-		&i.Capacity,
-		&i.ID_3,
-		&i.Name_2,
-		&i.Description_2,
-		&i.Volumetric,
-		&i.IconPath_2,
-		&i.Universal,
-		&i.Metric,
-		&i.Imperial,
-		&i.Slug_2,
-		&i.PluralName_2,
-		&i.CreatedAt,
-		&i.LastUpdatedAt,
-		&i.ArchivedAt,
-		&i.WidthInMillimeters,
-		&i.LengthInMillimeters,
-		&i.HeightInMillimeters,
-		&i.Shape,
-		&i.CreatedAt_2,
-		&i.LastUpdatedAt_2,
-		&i.ArchivedAt_2,
-		&i.Name_3,
 		&i.Notes,
 		&i.BelongsToRecipeStep,
 		&i.RecipeStepProductID,
@@ -255,9 +247,9 @@ func (q *Queries) GetRecipeStepVessel(ctx context.Context, db DBTX, arg *GetReci
 		&i.MinimumQuantity,
 		&i.MaximumQuantity,
 		&i.UnavailableAfterStep,
-		&i.CreatedAt_3,
-		&i.LastUpdatedAt_3,
-		&i.ArchivedAt_3,
+		&i.CreatedAt,
+		&i.LastUpdatedAt,
+		&i.ArchivedAt,
 	)
 	return &i, err
 }
@@ -266,36 +258,36 @@ const getRecipeStepVesselsForRecipe = `-- name: GetRecipeStepVesselsForRecipe :m
 
 SELECT
 	recipe_step_vessels.id,
-	valid_vessels.id,
-    valid_vessels.name,
-    valid_vessels.plural_name,
-    valid_vessels.description,
-    valid_vessels.icon_path,
-    valid_vessels.usable_for_storage,
-    valid_vessels.slug,
-    valid_vessels.display_in_summary_lists,
-    valid_vessels.include_in_generated_instructions,
-    valid_vessels.capacity,
-	valid_measurement_units.id,
-	valid_measurement_units.name,
-	valid_measurement_units.description,
-	valid_measurement_units.volumetric,
-	valid_measurement_units.icon_path,
-	valid_measurement_units.universal,
-	valid_measurement_units.metric,
-	valid_measurement_units.imperial,
-	valid_measurement_units.slug,
-	valid_measurement_units.plural_name,
-	valid_measurement_units.created_at,
-	valid_measurement_units.last_updated_at,
-	valid_measurement_units.archived_at,
-    valid_vessels.width_in_millimeters,
-    valid_vessels.length_in_millimeters,
-    valid_vessels.height_in_millimeters,
-    valid_vessels.shape,
-    valid_vessels.created_at,
-    valid_vessels.last_updated_at,
-    valid_vessels.archived_at,
+	valid_vessels.id as valid_vessel_id,
+    valid_vessels.name as valid_vessel_name,
+    valid_vessels.plural_name as valid_vessel_plural_name,
+    valid_vessels.description as valid_vessel_description,
+    valid_vessels.icon_path as valid_vessel_icon_path,
+    valid_vessels.usable_for_storage as valid_vessel_usable_for_storage,
+    valid_vessels.slug as valid_vessel_slug,
+    valid_vessels.display_in_summary_lists as valid_vessel_display_in_summary_lists,
+    valid_vessels.include_in_generated_instructions as valid_vessel_include_in_generated_instructions,
+    valid_vessels.capacity as valid_vessel_capacity,
+	valid_measurement_units.id as valid_measurement_unit_id,
+	valid_measurement_units.name as valid_measurement_unit_name,
+	valid_measurement_units.description as valid_measurement_unit_description,
+	valid_measurement_units.volumetric as valid_measurement_unit_volumetric,
+	valid_measurement_units.icon_path as valid_measurement_unit_icon_path,
+	valid_measurement_units.universal as valid_measurement_unit_universal,
+	valid_measurement_units.metric as valid_measurement_unit_metric,
+	valid_measurement_units.imperial as valid_measurement_unit_imperial,
+	valid_measurement_units.slug as valid_measurement_unit_slug,
+	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.created_at as valid_measurement_unit_created_at,
+	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
+	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
+    valid_vessels.width_in_millimeters as valid_vessel_width_in_millimeters,
+    valid_vessels.length_in_millimeters as valid_vessel_length_in_millimeters,
+    valid_vessels.height_in_millimeters as valid_vessel_height_in_millimeters,
+    valid_vessels.shape as valid_vessel_shape,
+    valid_vessels.created_at as valid_vessel_created_at,
+    valid_vessels.last_updated_at as valid_vessel_last_updated_at,
+    valid_vessels.archived_at as valid_vessel_archived_at,
     recipe_step_vessels.name,
     recipe_step_vessels.notes,
     recipe_step_vessels.belongs_to_recipe_step,
@@ -320,48 +312,48 @@ WHERE recipe_step_vessels.archived_at IS NULL
 `
 
 type GetRecipeStepVesselsForRecipeRow struct {
-	CreatedAt_3                    time.Time
-	LastUpdatedAt_2                sql.NullTime
-	LastUpdatedAt_3                sql.NullTime
-	ArchivedAt_3                   sql.NullTime
-	ArchivedAt_2                   sql.NullTime
-	CreatedAt                      sql.NullTime
-	CreatedAt_2                    sql.NullTime
-	ArchivedAt                     sql.NullTime
-	LastUpdatedAt                  sql.NullTime
-	VesselPredicate                string
-	BelongsToRecipeStep            string
-	Notes                          string
-	Name_3                         string
-	ID                             string
-	Capacity                       sql.NullString
-	IconPath                       sql.NullString
-	ID_2                           sql.NullString
-	Name                           sql.NullString
-	PluralName                     sql.NullString
-	Slug_2                         sql.NullString
-	PluralName_2                   sql.NullString
-	Description                    sql.NullString
-	Description_2                  sql.NullString
-	Name_2                         sql.NullString
-	WidthInMillimeters             sql.NullString
-	LengthInMillimeters            sql.NullString
-	HeightInMillimeters            sql.NullString
-	Shape                          NullVesselShape
-	ID_3                           sql.NullString
-	RecipeStepProductID            sql.NullString
-	IconPath_2                     sql.NullString
-	Slug                           sql.NullString
-	MaximumQuantity                sql.NullInt32
-	MinimumQuantity                int32
-	UsableForStorage               sql.NullBool
-	DisplayInSummaryLists          sql.NullBool
-	IncludeInGeneratedInstructions sql.NullBool
-	Volumetric                     sql.NullBool
-	Imperial                       sql.NullBool
-	Metric                         sql.NullBool
-	Universal                      sql.NullBool
-	UnavailableAfterStep           bool
+	CreatedAt                                 time.Time
+	ValidVesselLastUpdatedAt                  sql.NullTime
+	LastUpdatedAt                             sql.NullTime
+	ArchivedAt                                sql.NullTime
+	ValidVesselArchivedAt                     sql.NullTime
+	ValidMeasurementUnitCreatedAt             sql.NullTime
+	ValidVesselCreatedAt                      sql.NullTime
+	ValidMeasurementUnitArchivedAt            sql.NullTime
+	ValidMeasurementUnitLastUpdatedAt         sql.NullTime
+	VesselPredicate                           string
+	BelongsToRecipeStep                       string
+	Notes                                     string
+	Name                                      string
+	ID                                        string
+	ValidVesselCapacity                       sql.NullString
+	ValidVesselIconPath                       sql.NullString
+	ValidVesselID                             sql.NullString
+	ValidVesselName                           sql.NullString
+	ValidVesselPluralName                     sql.NullString
+	ValidMeasurementUnitSlug                  sql.NullString
+	ValidMeasurementUnitPluralName            sql.NullString
+	ValidVesselDescription                    sql.NullString
+	ValidMeasurementUnitDescription           sql.NullString
+	ValidMeasurementUnitName                  sql.NullString
+	ValidVesselWidthInMillimeters             sql.NullString
+	ValidVesselLengthInMillimeters            sql.NullString
+	ValidVesselHeightInMillimeters            sql.NullString
+	ValidVesselShape                          NullVesselShape
+	ValidMeasurementUnitID                    sql.NullString
+	RecipeStepProductID                       sql.NullString
+	ValidMeasurementUnitIconPath              sql.NullString
+	ValidVesselSlug                           sql.NullString
+	MaximumQuantity                           sql.NullInt32
+	MinimumQuantity                           int32
+	ValidVesselUsableForStorage               sql.NullBool
+	ValidVesselDisplayInSummaryLists          sql.NullBool
+	ValidVesselIncludeInGeneratedInstructions sql.NullBool
+	ValidMeasurementUnitVolumetric            sql.NullBool
+	ValidMeasurementUnitImperial              sql.NullBool
+	ValidMeasurementUnitMetric                sql.NullBool
+	ValidMeasurementUnitUniversal             sql.NullBool
+	UnavailableAfterStep                      bool
 }
 
 func (q *Queries) GetRecipeStepVesselsForRecipe(ctx context.Context, db DBTX, belongsToRecipe string) ([]*GetRecipeStepVesselsForRecipeRow, error) {
@@ -375,37 +367,37 @@ func (q *Queries) GetRecipeStepVesselsForRecipe(ctx context.Context, db DBTX, be
 		var i GetRecipeStepVesselsForRecipeRow
 		if err := rows.Scan(
 			&i.ID,
-			&i.ID_2,
+			&i.ValidVesselID,
+			&i.ValidVesselName,
+			&i.ValidVesselPluralName,
+			&i.ValidVesselDescription,
+			&i.ValidVesselIconPath,
+			&i.ValidVesselUsableForStorage,
+			&i.ValidVesselSlug,
+			&i.ValidVesselDisplayInSummaryLists,
+			&i.ValidVesselIncludeInGeneratedInstructions,
+			&i.ValidVesselCapacity,
+			&i.ValidMeasurementUnitID,
+			&i.ValidMeasurementUnitName,
+			&i.ValidMeasurementUnitDescription,
+			&i.ValidMeasurementUnitVolumetric,
+			&i.ValidMeasurementUnitIconPath,
+			&i.ValidMeasurementUnitUniversal,
+			&i.ValidMeasurementUnitMetric,
+			&i.ValidMeasurementUnitImperial,
+			&i.ValidMeasurementUnitSlug,
+			&i.ValidMeasurementUnitPluralName,
+			&i.ValidMeasurementUnitCreatedAt,
+			&i.ValidMeasurementUnitLastUpdatedAt,
+			&i.ValidMeasurementUnitArchivedAt,
+			&i.ValidVesselWidthInMillimeters,
+			&i.ValidVesselLengthInMillimeters,
+			&i.ValidVesselHeightInMillimeters,
+			&i.ValidVesselShape,
+			&i.ValidVesselCreatedAt,
+			&i.ValidVesselLastUpdatedAt,
+			&i.ValidVesselArchivedAt,
 			&i.Name,
-			&i.PluralName,
-			&i.Description,
-			&i.IconPath,
-			&i.UsableForStorage,
-			&i.Slug,
-			&i.DisplayInSummaryLists,
-			&i.IncludeInGeneratedInstructions,
-			&i.Capacity,
-			&i.ID_3,
-			&i.Name_2,
-			&i.Description_2,
-			&i.Volumetric,
-			&i.IconPath_2,
-			&i.Universal,
-			&i.Metric,
-			&i.Imperial,
-			&i.Slug_2,
-			&i.PluralName_2,
-			&i.CreatedAt,
-			&i.LastUpdatedAt,
-			&i.ArchivedAt,
-			&i.WidthInMillimeters,
-			&i.LengthInMillimeters,
-			&i.HeightInMillimeters,
-			&i.Shape,
-			&i.CreatedAt_2,
-			&i.LastUpdatedAt_2,
-			&i.ArchivedAt_2,
-			&i.Name_3,
 			&i.Notes,
 			&i.BelongsToRecipeStep,
 			&i.RecipeStepProductID,
@@ -413,9 +405,9 @@ func (q *Queries) GetRecipeStepVesselsForRecipe(ctx context.Context, db DBTX, be
 			&i.MinimumQuantity,
 			&i.MaximumQuantity,
 			&i.UnavailableAfterStep,
-			&i.CreatedAt_3,
-			&i.LastUpdatedAt_3,
-			&i.ArchivedAt_3,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
 		); err != nil {
 			return nil, err
 		}

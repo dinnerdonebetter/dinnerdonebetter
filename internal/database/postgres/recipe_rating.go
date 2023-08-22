@@ -117,9 +117,6 @@ func (q *Querier) RecipeRatingExists(ctx context.Context, recipeRatingID string)
 	return result, nil
 }
 
-//go:embed queries/recipe_ratings/get_one.sql
-var getRecipeRatingQuery string
-
 // GetRecipeRating fetches a recipe rating from the database.
 func (q *Querier) GetRecipeRating(ctx context.Context, recipeRatingID string) (*types.RecipeRating, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -133,15 +130,24 @@ func (q *Querier) GetRecipeRating(ctx context.Context, recipeRatingID string) (*
 	logger = logger.WithValue(keys.RecipeRatingIDKey, recipeRatingID)
 	tracing.AttachRecipeRatingIDToSpan(span, recipeRatingID)
 
-	args := []any{
-		recipeRatingID,
+	result, err := q.generatedQuerier.GetRecipeRating(ctx, q.db, recipeRatingID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing recipe rating existence check")
 	}
 
-	row := q.getOneRow(ctx, q.db, "recipe rating", getRecipeRatingQuery, args)
-
-	recipeRating, _, _, err := q.scanRecipeRating(ctx, row, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning recipeRating")
+	recipeRating := &types.RecipeRating{
+		CreatedAt:     result.CreatedAt,
+		LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+		Notes:         result.Notes,
+		ID:            result.ID,
+		RecipeID:      result.RecipeID,
+		ByUser:        result.ByUser,
+		Taste:         float32FromNullString(result.Taste),
+		Instructions:  float32FromNullString(result.Instructions),
+		Overall:       float32FromNullString(result.Overall),
+		Cleanup:       float32FromNullString(result.Cleanup),
+		Difficulty:    float32FromNullString(result.Difficulty),
 	}
 
 	return recipeRating, nil

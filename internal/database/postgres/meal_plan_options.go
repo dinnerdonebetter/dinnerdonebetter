@@ -170,9 +170,6 @@ func (q *Querier) MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlan
 	return result, nil
 }
 
-//go:embed queries/meal_plan_options/get_one.sql
-var getMealPlanOptionQuery string
-
 // GetMealPlanOption fetches a meal plan option from the database.
 func (q *Querier) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (*types.MealPlanOption, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -198,24 +195,43 @@ func (q *Querier) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanEve
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
-	args := []any{
-		mealPlanID,
-		mealPlanEventID,
-		mealPlanOptionID,
+	result, err := q.generatedQuerier.GetMealPlanOption(ctx, q.db, &generated.GetMealPlanOptionParams{
+		MealPlanID:       mealPlanID,
+		MealPlanEventID:  nullStringFromString(mealPlanEventID),
+		MealPlanOptionID: mealPlanOptionID,
+	})
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing meal plan option query")
 	}
 
-	row := q.getOneRow(ctx, q.db, "meal plan option", getMealPlanOptionQuery, args)
-
-	mealPlanOption, _, _, err := q.scanMealPlanOption(ctx, row, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal plan option")
+	mealPlanOption := &types.MealPlanOption{
+		CreatedAt:              result.CreatedAt,
+		LastUpdatedAt:          timePointerFromNullTime(result.LastUpdatedAt),
+		AssignedCook:           stringPointerFromNullString(result.AssignedCook),
+		ArchivedAt:             timePointerFromNullTime(result.ArchivedAt),
+		AssignedDishwasher:     stringPointerFromNullString(result.AssignedDishwasher),
+		Notes:                  result.Notes,
+		BelongsToMealPlanEvent: stringFromNullString(result.BelongsToMealPlanEvent),
+		ID:                     result.ID,
+		Meal: types.Meal{
+			CreatedAt:                result.MealCreatedAt,
+			ArchivedAt:               timePointerFromNullTime(result.MealArchivedAt),
+			LastUpdatedAt:            timePointerFromNullTime(result.MealLastUpdatedAt),
+			MaximumEstimatedPortions: float32PointerFromNullString(result.MealMaxEstimatedPortions),
+			ID:                       result.MealID,
+			Description:              result.MealDescription,
+			CreatedByUser:            result.MealCreatedByUser,
+			Name:                     result.MealName,
+			MinimumEstimatedPortions: float32FromString(result.MealMinEstimatedPortions),
+			EligibleForMealPlans:     result.MealEligibleForMealPlans,
+		},
+		MealScale: float32FromString(result.MealScale),
+		Chosen:    result.Chosen,
+		TieBroken: result.Tiebroken,
 	}
 
 	return mealPlanOption, nil
 }
-
-//go:embed queries/meal_plan_options/get_one_by_id.sql
-var getMealPlanOptionByIDQuery string
 
 // getMealPlanOptionByID fetches a meal plan option from the database by its ID.
 func (q *Querier) getMealPlanOptionByID(ctx context.Context, mealPlanOptionID string) (*types.MealPlanOption, error) {
@@ -230,15 +246,37 @@ func (q *Querier) getMealPlanOptionByID(ctx context.Context, mealPlanOptionID st
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
-	args := []any{
-		mealPlanOptionID,
+	result, err := q.generatedQuerier.GetMealPlanOptionByID(ctx, q.db, mealPlanOptionID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing meal plan option query")
 	}
 
-	row := q.getOneRow(ctx, q.db, "meal plan option by ID", getMealPlanOptionByIDQuery, args)
-
-	mealPlanOption, _, _, err := q.scanMealPlanOption(ctx, row, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal plan option")
+	mealPlanOption := &types.MealPlanOption{
+		CreatedAt:              result.CreatedAt,
+		LastUpdatedAt:          timePointerFromNullTime(result.LastUpdatedAt),
+		AssignedCook:           stringPointerFromNullString(result.AssignedCook),
+		ArchivedAt:             timePointerFromNullTime(result.ArchivedAt),
+		AssignedDishwasher:     stringPointerFromNullString(result.AssignedDishwasher),
+		Notes:                  result.Notes,
+		BelongsToMealPlanEvent: stringFromNullString(result.BelongsToMealPlanEvent),
+		ID:                     result.ID,
+		Votes:                  nil,
+		Meal: types.Meal{
+			CreatedAt:                result.MealCreatedAt,
+			ArchivedAt:               timePointerFromNullTime(result.MealArchivedAt),
+			LastUpdatedAt:            timePointerFromNullTime(result.MealLastUpdatedAt),
+			MaximumEstimatedPortions: float32PointerFromNullString(result.MealMaxEstimatedPortions),
+			ID:                       result.MealID,
+			Description:              result.MealDescription,
+			CreatedByUser:            result.MealCreatedByUser,
+			Name:                     result.MealName,
+			Components:               nil,
+			MinimumEstimatedPortions: float32FromString(result.MealMinEstimatedPortions),
+			EligibleForMealPlans:     result.MealEligibleForMealPlans,
+		},
+		MealScale: float32FromString(result.MealScale),
+		Chosen:    result.Chosen,
+		TieBroken: result.Tiebroken,
 	}
 
 	return mealPlanOption, nil
@@ -402,13 +440,13 @@ func (q *Querier) UpdateMealPlanOption(ctx context.Context, updated *types.MealP
 	tracing.AttachMealPlanOptionIDToSpan(span, updated.ID)
 
 	if err := q.generatedQuerier.UpdateMealPlanOption(ctx, q.db, &generated.UpdateMealPlanOptionParams{
-		MealID:                 updated.Meal.ID,
-		Notes:                  updated.Notes,
-		MealScale:              stringFromFloat32(updated.MealScale),
-		ID:                     updated.ID,
-		AssignedCook:           nullStringFromStringPointer(updated.AssignedCook),
-		AssignedDishwasher:     nullStringFromStringPointer(updated.AssignedDishwasher),
-		BelongsToMealPlanEvent: nullStringFromString(updated.BelongsToMealPlanEvent),
+		MealID:             updated.Meal.ID,
+		Notes:              updated.Notes,
+		MealScale:          stringFromFloat32(updated.MealScale),
+		MealPlanOptionID:   updated.ID,
+		AssignedCook:       nullStringFromStringPointer(updated.AssignedCook),
+		AssignedDishwasher: nullStringFromStringPointer(updated.AssignedDishwasher),
+		MealPlanEventID:    nullStringFromString(updated.BelongsToMealPlanEvent),
 	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating meal plan option")
 	}

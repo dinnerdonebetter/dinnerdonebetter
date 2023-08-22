@@ -3,9 +3,7 @@ package postgres
 import (
 	"context"
 	_ "embed"
-	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
@@ -14,68 +12,6 @@ import (
 )
 
 var _ types.OAuth2ClientTokenDataManager = (*Querier)(nil)
-
-// scanOAuth2ClientToken takes a database Scanner (i.e. *sql.Row) and scans the result into an OAuth2 client token struct.
-func (q *Querier) scanOAuth2ClientToken(ctx context.Context, scan database.Scanner) (x *types.OAuth2ClientToken, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	x = &types.OAuth2ClientToken{}
-
-	var (
-		codeExpiresAt, accessExpiresAt, refreshExpiresAt time.Time
-	)
-
-	targetVars := []any{
-		&x.ID,
-		&x.ClientID,
-		&x.BelongsToUser,
-		&x.RedirectURI,
-		&x.Scope,
-		&x.Code,
-		&x.CodeChallenge,
-		&x.CodeChallengeMethod,
-		&x.CodeCreatedAt,
-		&codeExpiresAt,
-		&x.Access,
-		&x.AccessCreatedAt,
-		&accessExpiresAt,
-		&x.Refresh,
-		&x.RefreshCreatedAt,
-		&refreshExpiresAt,
-	}
-
-	if err = scan.Scan(targetVars...); err != nil {
-		return nil, observability.PrepareError(err, span, "")
-	}
-
-	x.CodeExpiresIn = codeExpiresAt.Sub(x.CodeCreatedAt)
-	x.AccessExpiresIn = accessExpiresAt.Sub(x.AccessCreatedAt)
-	x.RefreshExpiresIn = refreshExpiresAt.Sub(x.RefreshCreatedAt)
-
-	decryptedCode, err := q.oauth2ClientTokenEncDec.Decrypt(ctx, x.Code)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "decrypting oauth2 token code")
-	}
-	x.Code = decryptedCode
-
-	decryptedAccess, err := q.oauth2ClientTokenEncDec.Decrypt(ctx, x.Access)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "decrypting oauth2 token access")
-	}
-	x.Access = decryptedAccess
-
-	decryptedRefresh, err := q.oauth2ClientTokenEncDec.Decrypt(ctx, x.Refresh)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "decrypting oauth2 token refresh")
-	}
-	x.Refresh = decryptedRefresh
-
-	return x, nil
-}
-
-//go:embed queries/oauth2_client_tokens/get_one_by_code.sql
-var getOAuth2ClientTokenByCodeQuery string
 
 // GetOAuth2ClientTokenByCode fetches an OAuth2 client token from the database.
 func (q *Querier) GetOAuth2ClientTokenByCode(ctx context.Context, code string) (*types.OAuth2ClientToken, error) {
@@ -95,22 +31,54 @@ func (q *Querier) GetOAuth2ClientTokenByCode(ctx context.Context, code string) (
 		return nil, observability.PrepareError(err, span, "decrypting oauth2 token code")
 	}
 
-	args := []any{
-		encryptedCode,
-	}
-
-	row := q.getOneRow(ctx, q.db, "oauth2 client token by code", getOAuth2ClientTokenByCodeQuery, args)
-
-	oauth2ClientToken, err := q.scanOAuth2ClientToken(ctx, row)
+	result, err := q.generatedQuerier.GetOAuth2ClientTokenByCode(ctx, q.db, encryptedCode)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning oauth2 client token")
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting oauth2 client token by code")
 	}
+
+	oauth2ClientToken := &types.OAuth2ClientToken{
+		RefreshCreatedAt:    result.RefreshCreatedAt,
+		AccessCreatedAt:     result.AccessCreatedAt,
+		CodeCreatedAt:       result.CodeCreatedAt,
+		RedirectURI:         result.RedirectUri,
+		Scope:               string(result.Scope),
+		Code:                result.Code,
+		CodeChallenge:       result.CodeChallenge,
+		CodeChallengeMethod: result.CodeChallengeMethod,
+		BelongsToUser:       result.BelongsToUser,
+		Access:              result.Access,
+		ClientID:            result.ClientID,
+		Refresh:             result.Refresh,
+		ID:                  result.ID,
+		CodeExpiresAt:       0,
+		AccessExpiresAt:     0,
+		RefreshExpiresAt:    0,
+	}
+
+	oauth2ClientToken.CodeExpiresAt = result.CodeExpiresAt.Sub(result.CodeCreatedAt)
+	oauth2ClientToken.AccessExpiresAt = result.AccessExpiresAt.Sub(result.AccessCreatedAt)
+	oauth2ClientToken.RefreshExpiresAt = result.RefreshExpiresAt.Sub(result.RefreshCreatedAt)
+
+	decryptedCode, err := q.oauth2ClientTokenEncDec.Decrypt(ctx, result.Code)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "decrypting oauth2 token code")
+	}
+	oauth2ClientToken.Code = decryptedCode
+
+	decryptedAccess, err := q.oauth2ClientTokenEncDec.Decrypt(ctx, result.Access)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "decrypting oauth2 token access")
+	}
+	oauth2ClientToken.Access = decryptedAccess
+
+	decryptedRefresh, err := q.oauth2ClientTokenEncDec.Decrypt(ctx, result.Refresh)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "decrypting oauth2 token refresh")
+	}
+	oauth2ClientToken.Refresh = decryptedRefresh
 
 	return oauth2ClientToken, nil
 }
-
-//go:embed queries/oauth2_client_tokens/get_one_by_access.sql
-var getOAuth2ClientTokenByAccessQuery string
 
 // GetOAuth2ClientTokenByAccess fetches an OAuth2 client token from the database.
 func (q *Querier) GetOAuth2ClientTokenByAccess(ctx context.Context, access string) (*types.OAuth2ClientToken, error) {
@@ -130,22 +98,54 @@ func (q *Querier) GetOAuth2ClientTokenByAccess(ctx context.Context, access strin
 		return nil, observability.PrepareError(err, span, "decrypting oauth2 token access")
 	}
 
-	args := []any{
-		encryptedAccess,
-	}
-
-	row := q.getOneRow(ctx, q.db, "oauth2 client token by access", getOAuth2ClientTokenByAccessQuery, args)
-
-	oauth2ClientToken, err := q.scanOAuth2ClientToken(ctx, row)
+	result, err := q.generatedQuerier.GetOAuth2ClientTokenByAccess(ctx, q.db, encryptedAccess)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning oauth2 client token")
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting oauth2 client token by access")
 	}
+
+	oauth2ClientToken := &types.OAuth2ClientToken{
+		RefreshCreatedAt:    result.RefreshCreatedAt,
+		AccessCreatedAt:     result.AccessCreatedAt,
+		CodeCreatedAt:       result.CodeCreatedAt,
+		RedirectURI:         result.RedirectUri,
+		Scope:               string(result.Scope),
+		Code:                result.Code,
+		CodeChallenge:       result.CodeChallenge,
+		CodeChallengeMethod: result.CodeChallengeMethod,
+		BelongsToUser:       result.BelongsToUser,
+		Access:              result.Access,
+		ClientID:            result.ClientID,
+		Refresh:             result.Refresh,
+		ID:                  result.ID,
+		CodeExpiresAt:       0,
+		AccessExpiresAt:     0,
+		RefreshExpiresAt:    0,
+	}
+
+	oauth2ClientToken.CodeExpiresAt = result.CodeExpiresAt.Sub(result.CodeCreatedAt)
+	oauth2ClientToken.AccessExpiresAt = result.AccessExpiresAt.Sub(result.AccessCreatedAt)
+	oauth2ClientToken.RefreshExpiresAt = result.RefreshExpiresAt.Sub(result.RefreshCreatedAt)
+
+	decryptedCode, err := q.oauth2ClientTokenEncDec.Decrypt(ctx, result.Code)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "decrypting oauth2 token code")
+	}
+	oauth2ClientToken.Code = decryptedCode
+
+	decryptedAccess, err := q.oauth2ClientTokenEncDec.Decrypt(ctx, result.Access)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "decrypting oauth2 token access")
+	}
+	oauth2ClientToken.Access = decryptedAccess
+
+	decryptedRefresh, err := q.oauth2ClientTokenEncDec.Decrypt(ctx, result.Refresh)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "decrypting oauth2 token refresh")
+	}
+	oauth2ClientToken.Refresh = decryptedRefresh
 
 	return oauth2ClientToken, nil
 }
-
-//go:embed queries/oauth2_client_tokens/get_one_by_refresh.sql
-var getOAuth2ClientTokenByRefreshQuery string
 
 // GetOAuth2ClientTokenByRefresh fetches an OAuth2 client token from the database.
 func (q *Querier) GetOAuth2ClientTokenByRefresh(ctx context.Context, refresh string) (*types.OAuth2ClientToken, error) {
@@ -165,16 +165,51 @@ func (q *Querier) GetOAuth2ClientTokenByRefresh(ctx context.Context, refresh str
 		return nil, observability.PrepareError(err, span, "decrypting oauth2 token access")
 	}
 
-	args := []any{
-		encryptedRefresh,
-	}
-
-	row := q.getOneRow(ctx, q.db, "oauth2 client token by refresh", getOAuth2ClientTokenByRefreshQuery, args)
-
-	oauth2ClientToken, err := q.scanOAuth2ClientToken(ctx, row)
+	result, err := q.generatedQuerier.GetOAuth2ClientTokenByRefresh(ctx, q.db, encryptedRefresh)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning oauth2 client token")
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting oauth2 client token by refresh")
 	}
+
+	oauth2ClientToken := &types.OAuth2ClientToken{
+		RefreshCreatedAt:    result.RefreshCreatedAt,
+		AccessCreatedAt:     result.AccessCreatedAt,
+		CodeCreatedAt:       result.CodeCreatedAt,
+		RedirectURI:         result.RedirectUri,
+		Scope:               string(result.Scope),
+		Code:                result.Code,
+		CodeChallenge:       result.CodeChallenge,
+		CodeChallengeMethod: result.CodeChallengeMethod,
+		BelongsToUser:       result.BelongsToUser,
+		Access:              result.Access,
+		ClientID:            result.ClientID,
+		Refresh:             result.Refresh,
+		ID:                  result.ID,
+		CodeExpiresAt:       0,
+		AccessExpiresAt:     0,
+		RefreshExpiresAt:    0,
+	}
+
+	oauth2ClientToken.CodeExpiresAt = result.CodeExpiresAt.Sub(result.CodeCreatedAt)
+	oauth2ClientToken.AccessExpiresAt = result.AccessExpiresAt.Sub(result.AccessCreatedAt)
+	oauth2ClientToken.RefreshExpiresAt = result.RefreshExpiresAt.Sub(result.RefreshCreatedAt)
+
+	decryptedCode, err := q.oauth2ClientTokenEncDec.Decrypt(ctx, result.Code)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "decrypting oauth2 token code")
+	}
+	oauth2ClientToken.Code = decryptedCode
+
+	decryptedAccess, err := q.oauth2ClientTokenEncDec.Decrypt(ctx, result.Access)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "decrypting oauth2 token access")
+	}
+	oauth2ClientToken.Access = decryptedAccess
+
+	decryptedRefresh, err := q.oauth2ClientTokenEncDec.Decrypt(ctx, result.Refresh)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "decrypting oauth2 token refresh")
+	}
+	oauth2ClientToken.Refresh = decryptedRefresh
 
 	return oauth2ClientToken, nil
 }
@@ -244,9 +279,9 @@ func (q *Querier) CreateOAuth2ClientToken(ctx context.Context, input *types.OAut
 		ClientID:            input.ClientID,
 		Refresh:             input.Refresh,
 		ID:                  input.ID,
-		CodeExpiresIn:       input.CodeExpiresIn,
-		AccessExpiresIn:     input.AccessExpiresIn,
-		RefreshExpiresIn:    input.RefreshExpiresIn,
+		CodeExpiresAt:       input.CodeExpiresIn,
+		AccessExpiresAt:     input.AccessExpiresIn,
+		RefreshExpiresAt:    input.RefreshExpiresIn,
 	}
 
 	return oauth2ClientToken, nil

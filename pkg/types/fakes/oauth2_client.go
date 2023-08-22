@@ -35,9 +35,9 @@ func BuildFakeOAuth2ClientToken() *types.OAuth2ClientToken {
 		ClientID:            BuildFakeID(),
 		Refresh:             buildUniqueString(),
 		ID:                  BuildFakeID(),
-		CodeExpiresIn:       time.Hour,
-		AccessExpiresIn:     time.Hour,
-		RefreshExpiresIn:    time.Hour,
+		CodeExpiresAt:       time.Hour,
+		AccessExpiresAt:     time.Hour,
+		RefreshExpiresAt:    time.Hour,
 	}
 }
 

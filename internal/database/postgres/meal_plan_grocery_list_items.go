@@ -142,9 +142,6 @@ func (q *Querier) fleshOutMealPlanGroceryListItem(ctx context.Context, mealPlanG
 	return mealPlanGroceryListItem, nil
 }
 
-//go:embed queries/meal_plan_grocery_list_items/get_one.sql
-var getMealPlanGroceryListItemQuery string
-
 // GetMealPlanGroceryListItem fetches a meal plan grocery list from the database.
 func (q *Querier) GetMealPlanGroceryListItem(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string) (*types.MealPlanGroceryListItem, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -164,22 +161,97 @@ func (q *Querier) GetMealPlanGroceryListItem(ctx context.Context, mealPlanID, me
 	logger = logger.WithValue(keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 	tracing.AttachMealPlanGroceryListItemIDToSpan(span, mealPlanGroceryListItemID)
 
-	args := []any{
-		mealPlanID,
-		mealPlanGroceryListItemID,
+	result, err := q.generatedQuerier.GetMealPlanGroceryListItem(ctx, q.db, &generated.GetMealPlanGroceryListItemParams{
+		MealPlanID:                mealPlanID,
+		MealPlanGroceryListItemID: mealPlanGroceryListItemID,
+	})
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching meal plan grocery list item")
 	}
 
-	row := q.getOneRow(ctx, q.db, "meal plan grocery list item", getMealPlanGroceryListItemQuery, args)
+	mealPlanGroceryListItem := &types.MealPlanGroceryListItem{
+		CreatedAt:             result.CreatedAt,
+		MaximumQuantityNeeded: float32PointerFromNullString(result.MaximumQuantityNeeded),
+		LastUpdatedAt:         timePointerFromNullTime(result.LastUpdatedAt),
+		PurchasePrice:         float32PointerFromNullString(result.PurchasePrice),
+		PurchasedUPC:          stringPointerFromNullString(result.PurchasedUpc),
+		ArchivedAt:            timePointerFromNullTime(result.ArchivedAt),
+		QuantityPurchased:     float32PointerFromNullString(result.QuantityPurchased),
 
-	mealPlanGroceryListItem, err := q.scanMealPlanGroceryListItem(ctx, row)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal plan grocery list item")
+		BelongsToMealPlan:     result.BelongsToMealPlan,
+		Status:                string(result.Status),
+		StatusExplanation:     result.StatusExplanation,
+		ID:                    result.ID,
+		MinimumQuantityNeeded: float32FromString(result.MinimumQuantityNeeded),
+		MeasurementUnit: types.ValidMeasurementUnit{
+			CreatedAt:     result.ValidMeasurementUnitCreatedAt,
+			LastUpdatedAt: timePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
+			ArchivedAt:    timePointerFromNullTime(result.ValidMeasurementUnitArchivedAt),
+			Name:          result.ValidMeasurementUnitName,
+			IconPath:      result.ValidMeasurementUnitIconPath,
+			ID:            result.ValidMeasurementUnitID,
+			Description:   result.ValidMeasurementUnitDescription,
+			PluralName:    result.ValidMeasurementUnitPluralName,
+			Slug:          result.ValidMeasurementUnitSlug,
+			Volumetric:    boolFromNullBool(result.ValidMeasurementUnitVolumetric),
+			Universal:     result.ValidMeasurementUnitUniversal,
+			Metric:        result.ValidMeasurementUnitMetric,
+			Imperial:      result.ValidMeasurementUnitImperial,
+		},
+		Ingredient: types.ValidIngredient{
+			CreatedAt:                               result.ValidIngredientCreatedAt,
+			LastUpdatedAt:                           timePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
+			ArchivedAt:                              timePointerFromNullTime(result.ValidIngredientArchivedAt),
+			MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
+			MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
+			IconPath:                                result.ValidIngredientIconPath,
+			Warning:                                 result.ValidIngredientWarning,
+			PluralName:                              result.ValidIngredientPluralName,
+			StorageInstructions:                     result.ValidIngredientStorageInstructions,
+			Name:                                    result.ValidIngredientName,
+			ID:                                      result.ValidIngredientID,
+			Description:                             result.ValidIngredientDescription,
+			Slug:                                    result.ValidIngredientSlug,
+			ShoppingSuggestions:                     result.ValidIngredientShoppingSuggestions,
+			ContainsShellfish:                       result.ValidIngredientContainsShellfish,
+			IsMeasuredVolumetrically:                result.ValidIngredientVolumetric,
+			IsLiquid:                                boolFromNullBool(result.ValidIngredientIsLiquid),
+			ContainsPeanut:                          result.ValidIngredientContainsPeanut,
+			ContainsTreeNut:                         result.ValidIngredientContainsTreeNut,
+			ContainsEgg:                             result.ValidIngredientContainsEgg,
+			ContainsWheat:                           result.ValidIngredientContainsWheat,
+			ContainsSoy:                             result.ValidIngredientContainsSoy,
+			AnimalDerived:                           result.ValidIngredientAnimalDerived,
+			RestrictToPreparations:                  result.ValidIngredientRestrictToPreparations,
+			ContainsSesame:                          result.ValidIngredientContainsSesame,
+			ContainsFish:                            result.ValidIngredientContainsFish,
+			ContainsGluten:                          result.ValidIngredientContainsGluten,
+			ContainsDairy:                           result.ValidIngredientContainsDairy,
+			ContainsAlcohol:                         result.ValidIngredientContainsAlcohol,
+			AnimalFlesh:                             result.ValidIngredientAnimalFlesh,
+			IsStarch:                                result.ValidIngredientIsStarch,
+			IsProtein:                               result.ValidIngredientIsProtein,
+			IsGrain:                                 result.ValidIngredientIsGrain,
+			IsFruit:                                 result.ValidIngredientIsFruit,
+			IsSalt:                                  result.ValidIngredientIsSalt,
+			IsFat:                                   result.ValidIngredientIsFat,
+			IsAcid:                                  result.ValidIngredientIsAcid,
+			IsHeat:                                  result.ValidIngredientIsHeat,
+		},
 	}
 
-	// flesh out the data
-	mealPlanGroceryListItem, err = q.fleshOutMealPlanGroceryListItem(ctx, mealPlanGroceryListItem)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "augmenting grocery list item data")
+	if result.PurchasedMeasurementUnit.Valid {
+		mealPlanGroceryListItem.PurchasedMeasurementUnit = &types.ValidMeasurementUnit{
+			ID: result.PurchasedMeasurementUnit.String,
+		}
+	}
+
+	if mealPlanGroceryListItem.PurchasedMeasurementUnit != nil {
+		purchasedMeasurementUnit, getPurchasedMeasurementUnitErr := q.GetValidMeasurementUnit(ctx, mealPlanGroceryListItem.PurchasedMeasurementUnit.ID)
+		if getPurchasedMeasurementUnitErr != nil {
+			return nil, observability.PrepareAndLogError(getPurchasedMeasurementUnitErr, logger, span, "fetching grocery list item purchased measurement unit")
+		}
+		mealPlanGroceryListItem.PurchasedMeasurementUnit = purchasedMeasurementUnit
 	}
 
 	return mealPlanGroceryListItem, nil

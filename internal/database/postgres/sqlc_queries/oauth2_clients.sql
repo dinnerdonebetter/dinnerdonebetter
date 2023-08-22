@@ -13,7 +13,8 @@ INSERT INTO oauth2_clients (id,"name",client_id,client_secret) VALUES ($1,$2,$3,
 
 SELECT
 	oauth2_clients.id,
-	oauth2_clients.name,
+    oauth2_clients.name,
+    oauth2_clients.description,
 	oauth2_clients.client_id,
 	oauth2_clients.client_secret,
 	oauth2_clients.created_at,
@@ -27,6 +28,7 @@ WHERE oauth2_clients.archived_at IS NULL
 SELECT
 	oauth2_clients.id,
 	oauth2_clients.name,
+    oauth2_clients.description,
 	oauth2_clients.client_id,
 	oauth2_clients.client_secret,
 	oauth2_clients.created_at,

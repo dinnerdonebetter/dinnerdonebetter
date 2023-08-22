@@ -983,6 +983,16 @@ type Oauth2ClientTokens struct {
 	BelongsToUser       string
 }
 
+type Oauth2Clients struct {
+	ID           string
+	Name         string
+	Description  string
+	ClientID     string
+	ClientSecret string
+	CreatedAt    time.Time
+	ArchivedAt   sql.NullTime
+}
+
 type PasswordResetTokens struct {
 	ID            string
 	Token         string

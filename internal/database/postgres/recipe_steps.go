@@ -185,9 +185,6 @@ func (q *Querier) RecipeStepExists(ctx context.Context, recipeID, recipeStepID s
 	return result, nil
 }
 
-//go:embed queries/recipe_steps/get_one.sql
-var getRecipeStepQuery string
-
 // GetRecipeStep fetches a recipe step from the database.
 func (q *Querier) GetRecipeStep(ctx context.Context, recipeID, recipeStepID string) (*types.RecipeStep, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -207,23 +204,64 @@ func (q *Querier) GetRecipeStep(ctx context.Context, recipeID, recipeStepID stri
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
-	args := []any{
-		recipeID,
-		recipeStepID,
+	result, err := q.generatedQuerier.GetRecipeStep(ctx, q.db, &generated.GetRecipeStepParams{
+		BelongsToRecipe: recipeID,
+		ID:              recipeStepID,
+	})
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step")
 	}
 
-	row := q.getOneRow(ctx, q.db, "recipe step", getRecipeStepQuery, args)
-
-	recipeStep, _, _, err := q.scanRecipeStep(ctx, row, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning recipeStep")
+	recipeStep := &types.RecipeStep{
+		CreatedAt:                     result.CreatedAt,
+		MinimumEstimatedTimeInSeconds: uint32PointerFromNullInt64(result.MinimumEstimatedTimeInSeconds),
+		ArchivedAt:                    timePointerFromNullTime(result.ArchivedAt),
+		LastUpdatedAt:                 timePointerFromNullTime(result.LastUpdatedAt),
+		MinimumTemperatureInCelsius:   float32PointerFromNullString(result.MinimumTemperatureInCelsius),
+		MaximumTemperatureInCelsius:   float32PointerFromNullString(result.MaximumTemperatureInCelsius),
+		MaximumEstimatedTimeInSeconds: uint32PointerFromNullInt64(result.MaximumEstimatedTimeInSeconds),
+		BelongsToRecipe:               result.BelongsToRecipe,
+		ConditionExpression:           result.ConditionExpression,
+		ID:                            result.ID,
+		Notes:                         result.Notes,
+		ExplicitInstructions:          result.ExplicitInstructions,
+		Media:                         nil,
+		Products:                      nil,
+		Instruments:                   nil,
+		Vessels:                       nil,
+		CompletionConditions:          nil,
+		Ingredients:                   nil,
+		Preparation: types.ValidPreparation{
+			CreatedAt:                   result.ValidPreparationCreatedAt,
+			MaximumInstrumentCount:      int32PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
+			ArchivedAt:                  timePointerFromNullTime(result.ValidPreparationArchivedAt),
+			MaximumIngredientCount:      int32PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
+			LastUpdatedAt:               timePointerFromNullTime(result.ValidPreparationLastUpdatedAt),
+			MaximumVesselCount:          int32PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
+			IconPath:                    result.ValidPreparationIconPath,
+			PastTense:                   result.ValidPreparationPastTense,
+			ID:                          result.ValidPreparationID,
+			Name:                        result.ValidPreparationName,
+			Description:                 result.ValidPreparationDescription,
+			Slug:                        result.ValidPreparationSlug,
+			MinimumIngredientCount:      result.ValidPreparationMinimumIngredientCount,
+			MinimumInstrumentCount:      result.ValidPreparationMinimumInstrumentCount,
+			MinimumVesselCount:          result.ValidPreparationMinimumVesselCount,
+			RestrictToIngredients:       result.ValidPreparationRestrictToIngredients,
+			TemperatureRequired:         result.ValidPreparationTemperatureRequired,
+			TimeEstimateRequired:        result.ValidPreparationTimeEstimateRequired,
+			ConditionExpressionRequired: result.ValidPreparationConditionExpressionRequired,
+			ConsumesVessel:              result.ValidPreparationConsumesVessel,
+			OnlyForVessels:              result.ValidPreparationOnlyForVessels,
+			YieldsNothing:               result.ValidPreparationYieldsNothing,
+		},
+		Index:                   uint32(result.Index),
+		Optional:                result.Optional,
+		StartTimerAutomatically: result.StartTimerAutomatically,
 	}
 
 	return recipeStep, nil
 }
-
-//go:embed queries/recipe_steps/get_one_by_recipe_id.sql
-var getRecipeStepByIDQuery string
 
 // getRecipeStepByID fetches a recipe step from the database.
 func (q *Querier) getRecipeStepByID(ctx context.Context, querier database.SQLQueryExecutor, recipeStepID string) (*types.RecipeStep, error) {
@@ -238,15 +276,57 @@ func (q *Querier) getRecipeStepByID(ctx context.Context, querier database.SQLQue
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
-	args := []any{
-		recipeStepID,
+	result, err := q.generatedQuerier.GetRecipeStepByRecipeID(ctx, querier, recipeStepID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step")
 	}
 
-	row := q.getOneRow(ctx, querier, "recipe step", getRecipeStepByIDQuery, args)
-
-	recipeStep, _, _, err := q.scanRecipeStep(ctx, row, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning recipeStep")
+	recipeStep := &types.RecipeStep{
+		CreatedAt:                     result.CreatedAt,
+		MinimumEstimatedTimeInSeconds: uint32PointerFromNullInt64(result.MinimumEstimatedTimeInSeconds),
+		ArchivedAt:                    timePointerFromNullTime(result.ArchivedAt),
+		LastUpdatedAt:                 timePointerFromNullTime(result.LastUpdatedAt),
+		MinimumTemperatureInCelsius:   float32PointerFromNullString(result.MinimumTemperatureInCelsius),
+		MaximumTemperatureInCelsius:   float32PointerFromNullString(result.MaximumTemperatureInCelsius),
+		MaximumEstimatedTimeInSeconds: uint32PointerFromNullInt64(result.MaximumEstimatedTimeInSeconds),
+		BelongsToRecipe:               result.BelongsToRecipe,
+		ConditionExpression:           result.ConditionExpression,
+		ID:                            result.ID,
+		Notes:                         result.Notes,
+		ExplicitInstructions:          result.ExplicitInstructions,
+		Media:                         nil,
+		Products:                      nil,
+		Instruments:                   nil,
+		Vessels:                       nil,
+		CompletionConditions:          nil,
+		Ingredients:                   nil,
+		Preparation: types.ValidPreparation{
+			CreatedAt:                   result.ValidPreparationCreatedAt,
+			MaximumInstrumentCount:      int32PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
+			ArchivedAt:                  timePointerFromNullTime(result.ValidPreparationArchivedAt),
+			MaximumIngredientCount:      int32PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
+			LastUpdatedAt:               timePointerFromNullTime(result.ValidPreparationLastUpdatedAt),
+			MaximumVesselCount:          int32PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
+			IconPath:                    result.ValidPreparationIconPath,
+			PastTense:                   result.ValidPreparationPastTense,
+			ID:                          result.ValidPreparationID,
+			Name:                        result.ValidPreparationName,
+			Description:                 result.ValidPreparationDescription,
+			Slug:                        result.ValidPreparationSlug,
+			MinimumIngredientCount:      result.ValidPreparationMinimumIngredientCount,
+			MinimumInstrumentCount:      result.ValidPreparationMinimumInstrumentCount,
+			MinimumVesselCount:          result.ValidPreparationMinimumVesselCount,
+			RestrictToIngredients:       result.ValidPreparationRestrictToIngredients,
+			TemperatureRequired:         result.ValidPreparationTemperatureRequired,
+			TimeEstimateRequired:        result.ValidPreparationTimeEstimateRequired,
+			ConditionExpressionRequired: result.ValidPreparationConditionExpressionRequired,
+			ConsumesVessel:              result.ValidPreparationConsumesVessel,
+			OnlyForVessels:              result.ValidPreparationOnlyForVessels,
+			YieldsNothing:               result.ValidPreparationYieldsNothing,
+		},
+		Index:                   uint32(result.Index),
+		Optional:                result.Optional,
+		StartTimerAutomatically: result.StartTimerAutomatically,
 	}
 
 	return recipeStep, nil

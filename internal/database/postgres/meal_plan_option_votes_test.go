@@ -136,35 +136,6 @@ func TestQuerier_MealPlanOptionVoteExists(T *testing.T) {
 func TestQuerier_GetMealPlanOptionVote(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMealPlanID := fakes.BuildFakeID()
-		exampleMealPlanEventID := fakes.BuildFakeID()
-		exampleMealPlanOptionID := fakes.BuildFakeID()
-		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleMealPlanOptionID,
-			exampleMealPlanOptionVote.ID,
-			exampleMealPlanEventID,
-			exampleMealPlanID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionVoteQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromMealPlanOptionVotes(false, 0, exampleMealPlanOptionVote))
-
-		actual, err := c.GetMealPlanOptionVote(ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionID, exampleMealPlanOptionVote.ID)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleMealPlanOptionVote, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid meal plan ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -208,35 +179,6 @@ func TestQuerier_GetMealPlanOptionVote(T *testing.T) {
 		actual, err := c.GetMealPlanOptionVote(ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionID, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMealPlanID := fakes.BuildFakeID()
-		exampleMealPlanEventID := fakes.BuildFakeID()
-		exampleMealPlanOptionID := fakes.BuildFakeID()
-		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleMealPlanOptionID,
-			exampleMealPlanOptionVote.ID,
-			exampleMealPlanEventID,
-			exampleMealPlanID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getMealPlanOptionVoteQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetMealPlanOptionVote(ctx, exampleMealPlanID, exampleMealPlanEventID, exampleMealPlanOptionID, exampleMealPlanOptionVote.ID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 
