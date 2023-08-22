@@ -285,9 +285,6 @@ func (q *Querier) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPl
 	return x, nil
 }
 
-//go:embed queries/meal_plan_option_votes/create.sql
-var mealPlanOptionVoteCreationQuery string
-
 // CreateMealPlanOptionVote creates a meal plan option vote in the database.
 func (q *Querier) CreateMealPlanOptionVote(ctx context.Context, input *types.MealPlanOptionVotesDatabaseCreationInput) ([]*types.MealPlanOptionVote, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -307,7 +304,6 @@ func (q *Querier) CreateMealPlanOptionVote(ctx context.Context, input *types.Mea
 
 	votes := []*types.MealPlanOptionVote{}
 	for _, vote := range input.Votes {
-
 		// create the meal plan option vote.
 		if err = q.generatedQuerier.CreateMealPlanOptionVote(ctx, tx, &generated.CreateMealPlanOptionVoteParams{
 			ID:                      vote.ID,

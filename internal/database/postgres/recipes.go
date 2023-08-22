@@ -489,9 +489,6 @@ func (q *Querier) SearchForRecipes(ctx context.Context, recipeNameQuery string, 
 	return x, nil
 }
 
-//go:embed queries/recipes/create.sql
-var recipeCreationQuery string
-
 // CreateRecipe creates a recipe in the database.
 func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseCreationInput) (*types.Recipe, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -658,9 +655,6 @@ func findCreatedRecipeStepProductsForVessels(recipe *types.RecipeDatabaseCreatio
 	}
 }
 
-//go:embed queries/recipes/update.sql
-var updateRecipeQuery string
-
 // UpdateRecipe updates a particular recipe.
 func (q *Querier) UpdateRecipe(ctx context.Context, updated *types.Recipe) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -674,24 +668,22 @@ func (q *Querier) UpdateRecipe(ctx context.Context, updated *types.Recipe) error
 	tracing.AttachRecipeIDToSpan(span, updated.ID)
 	tracing.AttachUserIDToSpan(span, updated.CreatedByUser)
 
-	args := []any{
-		updated.Name,
-		updated.Slug,
-		updated.Source,
-		updated.Description,
-		updated.InspiredByRecipeID,
-		updated.MinimumEstimatedPortions,
-		updated.MaximumEstimatedPortions,
-		updated.PortionName,
-		updated.PluralPortionName,
-		updated.SealOfApproval,
-		updated.EligibleForMeals,
-		updated.YieldsComponentType,
-		updated.CreatedByUser,
-		updated.ID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "recipe update", updateRecipeQuery, args); err != nil {
+	if err := q.generatedQuerier.UpdateRecipe(ctx, q.db, &generated.UpdateRecipeParams{
+		Name:                 updated.Name,
+		Slug:                 updated.Slug,
+		Source:               updated.Source,
+		Description:          updated.Description,
+		InspiredByRecipeID:   nullStringFromStringPointer(updated.InspiredByRecipeID),
+		MinEstimatedPortions: stringFromFloat32(updated.MinimumEstimatedPortions),
+		MaxEstimatedPortions: nullStringFromFloat32Pointer(updated.MaximumEstimatedPortions),
+		PortionName:          updated.PortionName,
+		PluralPortionName:    updated.PluralPortionName,
+		SealOfApproval:       updated.SealOfApproval,
+		EligibleForMeals:     updated.EligibleForMeals,
+		YieldsComponentType:  generated.ComponentType(updated.YieldsComponentType),
+		CreatedByUser:        updated.CreatedByUser,
+		ID:                   updated.ID,
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe")
 	}
 

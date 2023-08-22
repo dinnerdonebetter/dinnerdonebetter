@@ -406,9 +406,6 @@ func (q *Querier) MarkMealPlanAsHavingTasksCreated(ctx context.Context, mealPlan
 	return nil
 }
 
-//go:embed queries/meal_plans/mark_as_grocery_list_initialized.sql
-var markMealPlanAsHavingGroceryListInitialized string
-
 // MarkMealPlanAsHavingGroceryListInitialized marks a meal plan as having all its tasks created.
 func (q *Querier) MarkMealPlanAsHavingGroceryListInitialized(ctx context.Context, mealPlanID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -431,9 +428,6 @@ func (q *Querier) MarkMealPlanAsHavingGroceryListInitialized(ctx context.Context
 	return nil
 }
 
-//go:embed queries/meal_plan_tasks/change_status.sql
-var changeMealPlanTaskStatusQuery string
-
 // ChangeMealPlanTaskStatus changes a meal plan task's status.
 func (q *Querier) ChangeMealPlanTaskStatus(ctx context.Context, input *types.MealPlanTaskStatusChangeRequestInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -453,14 +447,17 @@ func (q *Querier) ChangeMealPlanTaskStatus(ctx context.Context, input *types.Mea
 		settledAt = &t
 	}
 
-	changeMealPlanTaskStatusArgs := []any{
-		input.ID,
-		input.Status,
-		input.StatusExplanation,
-		settledAt,
+	var newStatus string
+	if input.Status != nil {
+		newStatus = *input.Status
 	}
 
-	if err := q.performWriteQuery(ctx, q.db, "meal plan task status change", changeMealPlanTaskStatusQuery, changeMealPlanTaskStatusArgs); err != nil {
+	if err := q.generatedQuerier.ChangeMealPlanTaskStatus(ctx, q.db, &generated.ChangeMealPlanTaskStatusParams{
+		ID:                input.ID,
+		Status:            generated.PrepStepStatus(newStatus),
+		StatusExplanation: input.StatusExplanation,
+		CompletedAt:       nullTimeFromTimePointer(settledAt),
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "changing meal plan task status")
 	}
 

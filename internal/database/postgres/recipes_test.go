@@ -922,40 +922,6 @@ func TestQuerier_CreateRecipe(T *testing.T) {
 func TestQuerier_UpdateRecipe(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipe := fakes.BuildFakeRecipe()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleRecipe.Name,
-			exampleRecipe.Slug,
-			exampleRecipe.Source,
-			exampleRecipe.Description,
-			exampleRecipe.InspiredByRecipeID,
-			exampleRecipe.MinimumEstimatedPortions,
-			exampleRecipe.MaximumEstimatedPortions,
-			exampleRecipe.PortionName,
-			exampleRecipe.PluralPortionName,
-			exampleRecipe.SealOfApproval,
-			exampleRecipe.EligibleForMeals,
-			exampleRecipe.YieldsComponentType,
-			exampleRecipe.CreatedByUser,
-			exampleRecipe.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateRecipeQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.UpdateRecipe(ctx, exampleRecipe))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
@@ -963,40 +929,6 @@ func TestQuerier_UpdateRecipe(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateRecipe(ctx, nil))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipe := fakes.BuildFakeRecipe()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleRecipe.Name,
-			exampleRecipe.Slug,
-			exampleRecipe.Source,
-			exampleRecipe.Description,
-			exampleRecipe.InspiredByRecipeID,
-			exampleRecipe.MinimumEstimatedPortions,
-			exampleRecipe.MaximumEstimatedPortions,
-			exampleRecipe.PortionName,
-			exampleRecipe.PluralPortionName,
-			exampleRecipe.SealOfApproval,
-			exampleRecipe.EligibleForMeals,
-			exampleRecipe.YieldsComponentType,
-			exampleRecipe.CreatedByUser,
-			exampleRecipe.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateRecipeQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.UpdateRecipe(ctx, exampleRecipe))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

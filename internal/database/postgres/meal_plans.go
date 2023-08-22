@@ -17,6 +17,9 @@ import (
 var (
 	_ types.MealPlanDataManager = (*Querier)(nil)
 
+	// ErrAlreadyFinalized is returned when a meal plan is already finalized.
+	ErrAlreadyFinalized = errors.New("meal plan already finalized")
+
 	// mealPlansTableColumns are the columns for the meal_plans table.
 	mealPlansTableColumns = []string{
 		"meal_plans.id",
@@ -355,12 +358,6 @@ func (q *Querier) ArchiveMealPlan(ctx context.Context, mealPlanID, householdID s
 	return nil
 }
 
-//go:embed queries/meal_plans/finalize.sql
-var finalizeMealPlanQuery string
-
-// ErrAlreadyFinalized is returned when a meal plan is already finalized.
-var ErrAlreadyFinalized = errors.New("meal plan already finalized")
-
 // AttemptToFinalizeMealPlan finalizes a meal plan if all of its options have a selection.
 func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, householdID string) (finalized bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -449,16 +446,13 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, hou
 		// the ballot is ready to be tallied for this event
 		winner, tiebroken, chosen := q.decideOptionWinner(ctx, event.Options)
 		if chosen {
-			args := []any{
-				event.ID,
-				winner,
-				tiebroken,
-			}
-
 			logger = logger.WithValue("winner", winner).WithValue("tiebroken", tiebroken)
 
-			if err = q.performWriteQuery(ctx, tx, "meal plan option finalization", finalizeMealPlanOptionQuery, args); err != nil {
-				q.rollbackTransaction(ctx, tx)
+			if err = q.generatedQuerier.FinalizeMealPlanOption(ctx, q.db, &generated.FinalizeMealPlanOptionParams{
+				BelongsToMealPlanEvent: nullStringFromString(event.ID),
+				ID:                     winner,
+				Tiebroken:              tiebroken,
+			}); err != nil {
 				return false, observability.PrepareAndLogError(err, logger, span, "finalizing meal plan option")
 			}
 
@@ -467,14 +461,11 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, hou
 	}
 
 	if allVotesAreSubmitted {
-		args := []any{
-			types.MealPlanStatusFinalized,
-			mealPlanID,
-		}
-
-		if err = q.performWriteQuery(ctx, tx, "meal plan finalization", finalizeMealPlanQuery, args); err != nil {
-			q.rollbackTransaction(ctx, tx)
-			return false, observability.PrepareAndLogError(err, logger, span, "finalizing meal plan")
+		if err = q.generatedQuerier.FinalizeMealPlan(ctx, q.db, &generated.FinalizeMealPlanParams{
+			Status: generated.MealPlanStatus(types.MealPlanStatusFinalized),
+			ID:     mealPlanID,
+		}); err != nil {
+			return false, observability.PrepareAndLogError(err, logger, span, "finalizing meal plan option")
 		}
 
 		finalized = true

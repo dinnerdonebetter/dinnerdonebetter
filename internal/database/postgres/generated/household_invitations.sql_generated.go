@@ -14,19 +14,19 @@ import (
 const attachHouseholdInvitationsToUserID = `-- name: AttachHouseholdInvitationsToUserID :exec
 
 UPDATE household_invitations SET
-	to_user = $1,
-	last_updated_at = NOW()
+    to_user = $1,
+    last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND to_email = LOWER($2)
+  AND to_email = LOWER($2)
 `
 
 type AttachHouseholdInvitationsToUserIDParams struct {
-	Lower  string
-	ToUser sql.NullString
+	EmailAddress string
+	UserID       sql.NullString
 }
 
 func (q *Queries) AttachHouseholdInvitationsToUserID(ctx context.Context, db DBTX, arg *AttachHouseholdInvitationsToUserIDParams) error {
-	_, err := db.ExecContext(ctx, attachHouseholdInvitationsToUserID, arg.ToUser, arg.Lower)
+	_, err := db.ExecContext(ctx, attachHouseholdInvitationsToUserID, arg.UserID, arg.EmailAddress)
 	return err
 }
 

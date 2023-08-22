@@ -140,17 +140,16 @@ const markHouseholdUserMembershipAsUserDefault = `-- name: MarkHouseholdUserMemb
 UPDATE household_user_memberships
 SET default_household = (belongs_to_user = $1 AND belongs_to_household = $2)
 WHERE archived_at IS NULL
-	AND belongs_to_user = $3
+	AND belongs_to_user = $1
 `
 
 type MarkHouseholdUserMembershipAsUserDefaultParams struct {
-	BelongsToUser      string
-	BelongsToHousehold string
-	BelongsToUser_2    string
+	UserID      string
+	HouseholdID string
 }
 
 func (q *Queries) MarkHouseholdUserMembershipAsUserDefault(ctx context.Context, db DBTX, arg *MarkHouseholdUserMembershipAsUserDefaultParams) error {
-	_, err := db.ExecContext(ctx, markHouseholdUserMembershipAsUserDefault, arg.BelongsToUser, arg.BelongsToHousehold, arg.BelongsToUser_2)
+	_, err := db.ExecContext(ctx, markHouseholdUserMembershipAsUserDefault, arg.UserID, arg.HouseholdID)
 	return err
 }
 
@@ -212,13 +211,13 @@ UPDATE households SET belongs_to_user = $1 WHERE archived_at IS NULL AND belongs
 `
 
 type TransferHouseholdOwnershipParams struct {
-	BelongsToUser   string
-	BelongsToUser_2 string
-	ID              string
+	NewOwner    string
+	OldOwner    string
+	HouseholdID string
 }
 
 func (q *Queries) TransferHouseholdOwnership(ctx context.Context, db DBTX, arg *TransferHouseholdOwnershipParams) error {
-	_, err := db.ExecContext(ctx, transferHouseholdOwnership, arg.BelongsToUser, arg.BelongsToUser_2, arg.ID)
+	_, err := db.ExecContext(ctx, transferHouseholdOwnership, arg.NewOwner, arg.OldOwner, arg.HouseholdID)
 	return err
 }
 

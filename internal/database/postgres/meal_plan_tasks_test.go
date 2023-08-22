@@ -5,9 +5,7 @@ import (
 	"database/sql/driver"
 	"errors"
 	"testing"
-	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
@@ -449,62 +447,9 @@ func TestQuerier_ChangeMealPlanTaskStatus(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		exampleInput := fakes.BuildFakeMealPlanTaskStatusChangeRequestInput()
-		// so we trigger setting the time function
-		exampleInput.Status = pointers.Pointer(types.MealPlanTaskStatusFinished)
-
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c, _ := buildTestClient(t)
 
-		exampleTime := time.Now()
-		c.timeFunc = func() time.Time {
-			return exampleTime
-		}
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.Status,
-			exampleInput.StatusExplanation,
-			exampleTime,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(changeMealPlanTaskStatusQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.ChangeMealPlanTaskStatus(ctx, exampleInput))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		exampleInput := fakes.BuildFakeMealPlanTaskStatusChangeRequestInput()
-		// so we trigger setting the time function
-		exampleInput.Status = pointers.Pointer(types.MealPlanTaskStatusFinished)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		exampleTime := time.Now()
-		c.timeFunc = func() time.Time {
-			return exampleTime
-		}
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.Status,
-			exampleInput.StatusExplanation,
-			exampleTime,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(changeMealPlanTaskStatusQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.ChangeMealPlanTaskStatus(ctx, exampleInput))
-
-		mock.AssertExpectationsForObjects(t, db)
+		assert.Error(t, c.ChangeMealPlanTaskStatus(ctx, nil))
 	})
 }

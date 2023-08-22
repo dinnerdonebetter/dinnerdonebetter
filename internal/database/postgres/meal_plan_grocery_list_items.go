@@ -223,9 +223,6 @@ func (q *Querier) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, me
 	return x, nil
 }
 
-//go:embed queries/meal_plan_grocery_list_items/create.sql
-var mealPlanGroceryListItemCreationQuery string
-
 // createMealPlanGroceryListItem creates a meal plan grocery list in the database.
 func (q *Querier) createMealPlanGroceryListItem(ctx context.Context, querier database.SQLQueryExecutor, input *types.MealPlanGroceryListItemDatabaseCreationInput) (*types.MealPlanGroceryListItem, error) {
 	ctx, span := q.tracer.StartSpan(ctx)

@@ -39,9 +39,9 @@ WHERE household_user_memberships.archived_at IS NULL
 -- name: MarkHouseholdUserMembershipAsUserDefault :exec
 
 UPDATE household_user_memberships
-SET default_household = (belongs_to_user = $1 AND belongs_to_household = $2)
+SET default_household = (belongs_to_user = sqlc.arg(user_id) AND belongs_to_household = sqlc.arg(household_id))
 WHERE archived_at IS NULL
-	AND belongs_to_user = $3;
+	AND belongs_to_user = sqlc.arg(user_id);
 
 
 -- name: ModifyHouseholdUserPermissions :exec
@@ -65,7 +65,7 @@ UPDATE household_user_memberships SET belongs_to_user = $1 WHERE archived_at IS 
 
 -- name: TransferHouseholdOwnership :exec
 
-UPDATE households SET belongs_to_user = $1 WHERE archived_at IS NULL AND belongs_to_user = $2 AND id = $3;
+UPDATE households SET belongs_to_user = sqlc.arg(new_owner) WHERE archived_at IS NULL AND belongs_to_user = sqlc.arg(old_owner) AND id = sqlc.arg(household_id);
 
 
 -- name: UserIsHouseholdMember :one

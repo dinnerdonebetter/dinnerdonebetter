@@ -522,9 +522,6 @@ func (q *Querier) decideOptionWinner(ctx context.Context, options []*types.MealP
 	return "", false, false
 }
 
-//go:embed queries/meal_plan_options/finalize.sql
-var finalizeMealPlanOptionQuery string
-
 // FinalizeMealPlanOption archives a meal plan option vote from the database by its ID.
 func (q *Querier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, householdID string) (changed bool, err error) {
 	_, span := q.tracer.StartSpan(ctx)
@@ -600,13 +597,11 @@ func (q *Querier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPl
 
 	winner, tiebroken, chosen := q.decideOptionWinner(ctx, mealPlanEvent.Options)
 	if chosen {
-		args := []any{
-			mealPlanEventID,
-			winner,
-			tiebroken,
-		}
-
-		if err = q.performWriteQuery(ctx, q.db, "meal plan option finalization", finalizeMealPlanOptionQuery, args); err != nil {
+		if err = q.generatedQuerier.FinalizeMealPlanOption(ctx, q.db, &generated.FinalizeMealPlanOptionParams{
+			BelongsToMealPlanEvent: nullStringFromString(mealPlanEventID),
+			ID:                     winner,
+			Tiebroken:              tiebroken,
+		}); err != nil {
 			return false, observability.PrepareAndLogError(err, logger, span, "finalizing meal plan option")
 		}
 

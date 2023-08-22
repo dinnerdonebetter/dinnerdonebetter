@@ -307,9 +307,6 @@ func (q *Querier) SearchForMeals(ctx context.Context, mealNameQuery string, filt
 	return x, nil
 }
 
-//go:embed queries/meals/create.sql
-var mealCreationQuery string
-
 // CreateMeal creates a meal in the database.
 func (q *Querier) createMeal(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *types.MealDatabaseCreationInput) (*types.Meal, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -415,9 +412,6 @@ func (q *Querier) CreateMealComponent(ctx context.Context, querier database.SQLQ
 	return nil
 }
 
-//go:embed queries/meals/update_last_indexed_at.sql
-var updateMealLastIndexedAtQuery string
-
 // MarkMealAsIndexed updates a particular meal's last_indexed_at value.
 func (q *Querier) MarkMealAsIndexed(ctx context.Context, mealID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -431,11 +425,7 @@ func (q *Querier) MarkMealAsIndexed(ctx context.Context, mealID string) error {
 	logger = logger.WithValue(keys.MealIDKey, mealID)
 	tracing.AttachMealIDToSpan(span, mealID)
 
-	args := []any{
-		mealID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "meal last_indexed_at", updateMealLastIndexedAtQuery, args); err != nil {
+	if err := q.generatedQuerier.UpdateMealLastIndexedAt(ctx, q.db, mealID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking meal as indexed")
 	}
 

@@ -384,12 +384,6 @@ func (q *Querier) MarkUserAsIndexed(ctx context.Context, userID string) error {
 	return nil
 }
 
-//go:embed queries/users/create.sql
-var userCreationQuery string
-
-//go:embed queries/household_user_memberships/create_for_new_user.sql
-var createHouseholdMembershipForNewUserQuery string
-
 // CreateUser creates a user. TODO: this should return a household as well.
 func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreationInput) (*types.User, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -418,22 +412,20 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 		return nil, observability.PrepareError(err, span, "generating email verification token")
 	}
 
-	userCreationArgs := []any{
-		input.ID,
-		input.FirstName,
-		input.LastName,
-		input.Username,
-		input.EmailAddress,
-		input.HashedPassword,
-		input.TwoFactorSecret,
-		input.AvatarSrc,
-		string(types.UnverifiedHouseholdStatus),
-		input.Birthday,
-		authorization.ServiceUserRole.String(),
-		token,
-	}
-
-	if writeErr := q.performWriteQuery(ctx, tx, "user creation", userCreationQuery, userCreationArgs); writeErr != nil {
+	if writeErr := q.generatedQuerier.CreateUser(ctx, tx, &generated.CreateUserParams{
+		ID:                            input.ID,
+		FirstName:                     input.FirstName,
+		LastName:                      input.LastName,
+		Username:                      input.Username,
+		EmailAddress:                  input.EmailAddress,
+		HashedPassword:                input.HashedPassword,
+		TwoFactorSecret:               input.TwoFactorSecret,
+		AvatarSrc:                     nullStringFromStringPointer(input.AvatarSrc),
+		UserAccountStatus:             string(types.UnverifiedHouseholdStatus),
+		Birthday:                      nullTimeFromTimePointer(input.Birthday),
+		ServiceRole:                   authorization.ServiceUserRole.String(),
+		EmailAddressVerificationToken: nullStringFromString(token),
+	}); writeErr != nil {
 		q.rollbackTransaction(ctx, tx)
 
 		var pgErr *pgconn.PgError

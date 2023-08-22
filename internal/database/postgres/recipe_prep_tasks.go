@@ -187,9 +187,6 @@ func (q *Querier) GetRecipePrepTask(ctx context.Context, recipeID, recipePrepTas
 	return x, nil
 }
 
-//go:embed queries/recipe_prep_tasks/create.sql
-var createRecipePrepTaskQuery string
-
 // createRecipePrepTask creates a recipe prep task.
 func (q *Querier) createRecipePrepTask(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *types.RecipePrepTaskDatabaseCreationInput) (*types.RecipePrepTask, error) {
 	ctx, span := q.tracer.StartSpan(ctx)

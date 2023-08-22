@@ -415,9 +415,6 @@ func (q *Querier) GetPendingHouseholdInvitationsForUser(ctx context.Context, use
 	return returnList, nil
 }
 
-//go:embed queries/household_invitations/set_status.sql
-var setInvitationStatusQuery string
-
 func (q *Querier) setInvitationStatus(ctx context.Context, querier database.SQLQueryExecutor, householdInvitationID, note, status string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -430,13 +427,11 @@ func (q *Querier) setInvitationStatus(ctx context.Context, querier database.SQLQ
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
 	tracing.AttachHouseholdInvitationIDToSpan(span, householdInvitationID)
 
-	args := []any{
-		status,
-		note,
-		householdInvitationID,
-	}
-
-	if err := q.performWriteQuery(ctx, querier, "household invitation status change", setInvitationStatusQuery, args); err != nil {
+	if err := q.generatedQuerier.SetHouseholdInvitationStatus(ctx, querier, &generated.SetHouseholdInvitationStatusParams{
+		Status:     generated.InvitationState(status),
+		StatusNote: note,
+		ID:         householdInvitationID,
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "changing household invitation status")
 	}
 
@@ -506,9 +501,6 @@ func (q *Querier) RejectHouseholdInvitation(ctx context.Context, householdInvita
 	return q.setInvitationStatus(ctx, q.db, householdInvitationID, note, string(types.RejectedHouseholdInvitationStatus))
 }
 
-//go:embed queries/household_invitations/attach_invitations_to_user_id.sql
-var attachInvitationsToUserIDQuery string
-
 func (q *Querier) attachInvitationsToUser(ctx context.Context, querier database.SQLQueryExecutor, userEmail, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -527,9 +519,10 @@ func (q *Querier) attachInvitationsToUser(ctx context.Context, querier database.
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachHouseholdInvitationIDToSpan(span, userID)
 
-	args := []any{userID, userEmail}
-
-	if err := q.performWriteQuery(ctx, querier, "invitation attachment", attachInvitationsToUserIDQuery, args); err != nil && !errors.Is(err, sql.ErrNoRows) {
+	if err := q.generatedQuerier.AttachHouseholdInvitationsToUserID(ctx, querier, &generated.AttachHouseholdInvitationsToUserIDParams{
+		EmailAddress: userEmail,
+		UserID:       nullStringFromString(userID),
+	}); err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return observability.PrepareAndLogError(err, logger, span, "attaching invitations to user")
 	}
 
@@ -552,15 +545,13 @@ func (q *Querier) acceptInvitationForUser(ctx context.Context, querier database.
 
 	logger.Debug("fetched invitation to accept for user")
 
-	createHouseholdMembershipForNewUserArgs := []any{
-		identifiers.New(),
-		input.ID,
-		input.DestinationHouseholdID,
-		true,
-		authorization.HouseholdMemberRole.String(),
-	}
-
-	if err := q.performWriteQuery(ctx, querier, "household user membership creation", createHouseholdMembershipForNewUserQuery, createHouseholdMembershipForNewUserArgs); err != nil {
+	if err := q.generatedQuerier.CreateHouseholdUserMembershipForNewUser(ctx, querier, &generated.CreateHouseholdUserMembershipForNewUserParams{
+		ID:                 identifiers.New(),
+		BelongsToUser:      input.ID,
+		BelongsToHousehold: input.DestinationHouseholdID,
+		HouseholdRole:      authorization.HouseholdMemberRole.String(),
+		DefaultHousehold:   true,
+	}); err != nil {
 		q.rollbackTransaction(ctx, querier)
 		return observability.PrepareAndLogError(err, logger, span, "writing destination household membership")
 	}

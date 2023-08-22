@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	_ "embed"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
@@ -40,57 +39,6 @@ var (
 		"recipe_step_completion_conditions.archived_at",
 	}
 )
-
-// scanRecipeStepCompletionConditionWithIngredients takes a database Scanner (i.e. *sql.Row) and scans the result into a recipe step completion condition struct.
-func (q *Querier) scanRecipeStepCompletionConditionWithIngredients(ctx context.Context, rows database.ResultIterator, includeCounts bool) (x *types.RecipeStepCompletionCondition, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	x = &types.RecipeStepCompletionCondition{}
-
-	for rows.Next() {
-		y := &types.RecipeStepCompletionConditionIngredient{}
-
-		targetVars := []any{
-			&y.ID,
-			&y.BelongsToRecipeStepCompletionCondition,
-			&y.RecipeStepIngredient,
-			&x.ID,
-			&x.BelongsToRecipeStep,
-			&x.IngredientState.ID,
-			&x.IngredientState.Name,
-			&x.IngredientState.Description,
-			&x.IngredientState.IconPath,
-			&x.IngredientState.Slug,
-			&x.IngredientState.PastTense,
-			&x.IngredientState.AttributeType,
-			&x.IngredientState.CreatedAt,
-			&x.IngredientState.LastUpdatedAt,
-			&x.IngredientState.ArchivedAt,
-			&x.Optional,
-			&x.Notes,
-			&x.CreatedAt,
-			&x.LastUpdatedAt,
-			&x.ArchivedAt,
-		}
-
-		if includeCounts {
-			targetVars = append(targetVars, &filteredCount, &totalCount)
-		}
-
-		if err = rows.Scan(targetVars...); err != nil {
-			return nil, filteredCount, totalCount, observability.PrepareError(err, span, "")
-		}
-
-		x.Ingredients = append(x.Ingredients, y)
-	}
-
-	if x.ID == "" {
-		return nil, 0, 0, sql.ErrNoRows
-	}
-
-	return x, filteredCount, totalCount, nil
-}
 
 // scanRecipeStepCompletionConditionsWithIngredients takes a database Scanner (i.e. *sql.Row) and scans the result into a recipe step completion condition struct.
 func (q *Querier) scanRecipeStepCompletionConditionsWithIngredients(ctx context.Context, rows database.ResultIterator, includeCounts bool) (recipeStepConditions []*types.RecipeStepCompletionCondition, filteredCount, totalCount uint64, err error) {
@@ -187,9 +135,6 @@ func (q *Querier) RecipeStepCompletionConditionExists(ctx context.Context, recip
 
 	return result, nil
 }
-
-//go:embed queries/recipe_step_completion_conditions/get_one.sql
-var getRecipeStepCompletionConditionQuery string
 
 // GetRecipeStepCompletionCondition fetches a recipe step completion condition from the database.
 func (q *Querier) GetRecipeStepCompletionCondition(ctx context.Context, recipeID, recipeStepID, recipeStepCompletionConditionID string) (*types.RecipeStepCompletionCondition, error) {
