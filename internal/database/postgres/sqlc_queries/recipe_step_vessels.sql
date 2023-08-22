@@ -148,16 +148,16 @@ WHERE recipe_step_vessels.archived_at IS NULL
 -- name: UpdateRecipeStepVessel :exec
 
 UPDATE recipe_step_vessels SET
-	name = $1,
-	notes = $2,
-	belongs_to_recipe_step = $3,
-	recipe_step_product_id = $4,
-	valid_vessel_id = $5,
-	vessel_predicate = $6,
-	minimum_quantity = $7,
-    maximum_quantity = $8,
-    unavailable_after_step = $9,
+	name = sqlc.arg(name),
+	notes = sqlc.arg(notes),
+	belongs_to_recipe_step = sqlc.arg(recipe_step_id),
+	recipe_step_product_id = sqlc.arg(recipe_step_product_id),
+	valid_vessel_id = sqlc.arg(valid_vessel_id),
+	vessel_predicate = sqlc.arg(vessel_predicate),
+	minimum_quantity = sqlc.arg(minimum_quantity),
+    maximum_quantity = sqlc.arg(maximum_quantity),
+    unavailable_after_step = sqlc.arg(unavailable_after_step),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND belongs_to_recipe_step = $10
-	AND id = $11;
+	AND belongs_to_recipe_step = sqlc.arg(recipe_step_id)
+	AND id = sqlc.arg(id);

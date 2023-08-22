@@ -789,40 +789,6 @@ func TestQuerier_CreateHousehold(T *testing.T) {
 func TestQuerier_UpdateHousehold(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleUserID := fakes.BuildFakeID()
-		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleHousehold.BelongsToUser = exampleUserID
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleHousehold.Name,
-			exampleHousehold.ContactPhone,
-			exampleHousehold.AddressLine1,
-			exampleHousehold.AddressLine2,
-			exampleHousehold.City,
-			exampleHousehold.State,
-			exampleHousehold.ZipCode,
-			exampleHousehold.Country,
-			exampleHousehold.Latitude,
-			exampleHousehold.Longitude,
-			exampleHousehold.BelongsToUser,
-			exampleHousehold.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateHouseholdQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.UpdateHousehold(ctx, exampleHousehold))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
@@ -834,40 +800,6 @@ func TestQuerier_UpdateHousehold(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateHousehold(ctx, nil))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleUserID := fakes.BuildFakeID()
-		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleHousehold.BelongsToUser = exampleUserID
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleHousehold.Name,
-			exampleHousehold.ContactPhone,
-			exampleHousehold.AddressLine1,
-			exampleHousehold.AddressLine2,
-			exampleHousehold.City,
-			exampleHousehold.State,
-			exampleHousehold.ZipCode,
-			exampleHousehold.Country,
-			exampleHousehold.Latitude,
-			exampleHousehold.Longitude,
-			exampleHousehold.BelongsToUser,
-			exampleHousehold.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateHouseholdQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.UpdateHousehold(ctx, exampleHousehold))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

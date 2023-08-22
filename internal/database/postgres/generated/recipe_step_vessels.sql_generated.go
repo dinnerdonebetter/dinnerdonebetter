@@ -444,36 +444,34 @@ UPDATE recipe_step_vessels SET
     unavailable_after_step = $9,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND belongs_to_recipe_step = $10
-	AND id = $11
+	AND belongs_to_recipe_step = $3
+	AND id = $10
 `
 
 type UpdateRecipeStepVesselParams struct {
-	Name                  string
-	Notes                 string
-	BelongsToRecipeStep   string
-	VesselPredicate       string
-	BelongsToRecipeStep_2 string
-	ID                    string
-	RecipeStepProductID   sql.NullString
-	ValidVesselID         sql.NullString
-	MaximumQuantity       sql.NullInt32
-	MinimumQuantity       int32
-	UnavailableAfterStep  bool
+	Name                 string
+	Notes                string
+	RecipeStepID         string
+	VesselPredicate      string
+	ID                   string
+	RecipeStepProductID  sql.NullString
+	ValidVesselID        sql.NullString
+	MaximumQuantity      sql.NullInt32
+	MinimumQuantity      int32
+	UnavailableAfterStep bool
 }
 
 func (q *Queries) UpdateRecipeStepVessel(ctx context.Context, db DBTX, arg *UpdateRecipeStepVesselParams) error {
 	_, err := db.ExecContext(ctx, updateRecipeStepVessel,
 		arg.Name,
 		arg.Notes,
-		arg.BelongsToRecipeStep,
+		arg.RecipeStepID,
 		arg.RecipeStepProductID,
 		arg.ValidVesselID,
 		arg.VesselPredicate,
 		arg.MinimumQuantity,
 		arg.MaximumQuantity,
 		arg.UnavailableAfterStep,
-		arg.BelongsToRecipeStep_2,
 		arg.ID,
 	)
 	return err

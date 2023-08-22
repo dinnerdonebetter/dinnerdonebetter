@@ -395,9 +395,6 @@ func (q *Querier) CreateRecipeStepVessel(ctx context.Context, input *types.Recip
 	return q.createRecipeStepVessel(ctx, q.db, input)
 }
 
-//go:embed queries/recipe_step_vessels/update.sql
-var updateRecipeStepVesselQuery string
-
 // UpdateRecipeStepVessel updates a particular recipe step vessel.
 func (q *Querier) UpdateRecipeStepVessel(ctx context.Context, updated *types.RecipeStepVessel) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -406,30 +403,26 @@ func (q *Querier) UpdateRecipeStepVessel(ctx context.Context, updated *types.Rec
 	if updated == nil {
 		return ErrNilInputProvided
 	}
-
 	logger := q.logger.WithValue(keys.RecipeStepVesselIDKey, updated.ID)
 	tracing.AttachRecipeStepVesselIDToSpan(span, updated.ID)
 
-	var instrumentID *string
+	var vesselID *string
 	if updated.Vessel != nil {
-		instrumentID = &updated.Vessel.ID
+		vesselID = &updated.Vessel.ID
 	}
 
-	args := []any{
-		updated.Name,
-		updated.Notes,
-		updated.BelongsToRecipeStep,
-		updated.RecipeStepProductID,
-		instrumentID,
-		updated.VesselPreposition,
-		updated.MinimumQuantity,
-		updated.MaximumQuantity,
-		updated.UnavailableAfterStep,
-		updated.BelongsToRecipeStep,
-		updated.ID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "recipe step vessel update", updateRecipeStepVesselQuery, args); err != nil {
+	if err := q.generatedQuerier.UpdateRecipeStepVessel(ctx, q.db, &generated.UpdateRecipeStepVesselParams{
+		Name:                 updated.Name,
+		Notes:                updated.Notes,
+		RecipeStepID:         updated.BelongsToRecipeStep,
+		VesselPredicate:      updated.VesselPreposition,
+		ID:                   updated.ID,
+		RecipeStepProductID:  nullStringFromStringPointer(updated.RecipeStepProductID),
+		ValidVesselID:        nullStringFromStringPointer(vesselID),
+		MaximumQuantity:      nullInt32FromUint32Pointer(updated.MaximumQuantity),
+		MinimumQuantity:      int32(updated.MinimumQuantity),
+		UnavailableAfterStep: updated.UnavailableAfterStep,
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step vessel")
 	}
 

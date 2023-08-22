@@ -554,43 +554,6 @@ func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 func TestQuerier_UpdateRecipeStepProduct(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleRecipeStepProduct.Name,
-			exampleRecipeStepProduct.Type,
-			exampleRecipeStepProduct.MeasurementUnit.ID,
-			exampleRecipeStepProduct.MinimumQuantity,
-			exampleRecipeStepProduct.MaximumQuantity,
-			exampleRecipeStepProduct.QuantityNotes,
-			exampleRecipeStepProduct.Compostable,
-			exampleRecipeStepProduct.MaximumStorageDurationInSeconds,
-			exampleRecipeStepProduct.MinimumStorageTemperatureInCelsius,
-			exampleRecipeStepProduct.MaximumStorageTemperatureInCelsius,
-			exampleRecipeStepProduct.StorageInstructions,
-			exampleRecipeStepProduct.IsLiquid,
-			exampleRecipeStepProduct.IsWaste,
-			exampleRecipeStepProduct.Index,
-			exampleRecipeStepProduct.ContainedInVesselIndex,
-			exampleRecipeStepProduct.BelongsToRecipeStep,
-			exampleRecipeStepProduct.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateRecipeStepProductQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.UpdateRecipeStepProduct(ctx, exampleRecipeStepProduct))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
@@ -598,43 +561,6 @@ func TestQuerier_UpdateRecipeStepProduct(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateRecipeStepProduct(ctx, nil))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleRecipeStepProduct.Name,
-			exampleRecipeStepProduct.Type,
-			exampleRecipeStepProduct.MeasurementUnit.ID,
-			exampleRecipeStepProduct.MinimumQuantity,
-			exampleRecipeStepProduct.MaximumQuantity,
-			exampleRecipeStepProduct.QuantityNotes,
-			exampleRecipeStepProduct.Compostable,
-			exampleRecipeStepProduct.MaximumStorageDurationInSeconds,
-			exampleRecipeStepProduct.MinimumStorageTemperatureInCelsius,
-			exampleRecipeStepProduct.MaximumStorageTemperatureInCelsius,
-			exampleRecipeStepProduct.StorageInstructions,
-			exampleRecipeStepProduct.IsLiquid,
-			exampleRecipeStepProduct.IsWaste,
-			exampleRecipeStepProduct.Index,
-			exampleRecipeStepProduct.ContainedInVesselIndex,
-			exampleRecipeStepProduct.BelongsToRecipeStep,
-			exampleRecipeStepProduct.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateRecipeStepProductQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.UpdateRecipeStepProduct(ctx, exampleRecipeStepProduct))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

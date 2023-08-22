@@ -328,9 +328,6 @@ func (q *Querier) CreateMealPlanGroceryListItemsForMealPlan(ctx context.Context,
 	return nil
 }
 
-//go:embed queries/meal_plan_grocery_list_items/update.sql
-var updateMealPlanGroceryListItemQuery string
-
 // UpdateMealPlanGroceryListItem updates a particular meal plan grocery list.
 func (q *Querier) UpdateMealPlanGroceryListItem(ctx context.Context, updated *types.MealPlanGroceryListItem) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -339,7 +336,6 @@ func (q *Querier) UpdateMealPlanGroceryListItem(ctx context.Context, updated *ty
 	if updated == nil {
 		return ErrNilInputProvided
 	}
-
 	logger := q.logger.WithValue(keys.MealPlanGroceryListItemIDKey, updated.ID)
 	tracing.AttachMealPlanGroceryListItemIDToSpan(span, updated.ID)
 
@@ -348,22 +344,20 @@ func (q *Querier) UpdateMealPlanGroceryListItem(ctx context.Context, updated *ty
 		purchasedMeasurementUnitID = &updated.PurchasedMeasurementUnit.ID
 	}
 
-	args := []any{
-		updated.BelongsToMealPlan,
-		updated.Ingredient.ID,
-		updated.MeasurementUnit.ID,
-		updated.MinimumQuantityNeeded,
-		updated.MaximumQuantityNeeded,
-		updated.QuantityPurchased,
-		purchasedMeasurementUnitID,
-		updated.PurchasedUPC,
-		updated.PurchasePrice,
-		updated.StatusExplanation,
-		updated.Status,
-		updated.ID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "meal plan grocery list update", updateMealPlanGroceryListItemQuery, args); err != nil {
+	if err := q.generatedQuerier.UpdateMealPlanGroceryListItem(ctx, q.db, &generated.UpdateMealPlanGroceryListItemParams{
+		BelongsToMealPlan:        updated.BelongsToMealPlan,
+		ValidIngredient:          updated.Ingredient.ID,
+		ValidMeasurementUnit:     updated.MeasurementUnit.ID,
+		MinimumQuantityNeeded:    stringFromFloat32(updated.MinimumQuantityNeeded),
+		StatusExplanation:        updated.StatusExplanation,
+		Status:                   generated.GroceryListItemStatus(updated.Status),
+		ID:                       updated.ID,
+		MaximumQuantityNeeded:    nullStringFromFloat32Pointer(updated.MaximumQuantityNeeded),
+		QuantityPurchased:        nullStringFromFloat32Pointer(updated.QuantityPurchased),
+		PurchasedMeasurementUnit: nullStringFromStringPointer(purchasedMeasurementUnitID),
+		PurchasedUpc:             nullStringFromStringPointer(updated.PurchasedUPC),
+		PurchasePrice:            nullStringFromFloat32Pointer(updated.PurchasePrice),
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating meal plan grocery list")
 	}
 

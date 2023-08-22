@@ -315,6 +315,7 @@ func TestServiceSettingConfigurationsService_ForUserHandler(T *testing.T) {
 			"GetServiceSettingConfigurationsForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
+			testutils.QueryFilterMatcher,
 		).Return(helper.exampleServiceSettingConfigurationList, nil)
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
@@ -368,6 +369,7 @@ func TestServiceSettingConfigurationsService_ForUserHandler(T *testing.T) {
 			"GetServiceSettingConfigurationsForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
+			testutils.QueryFilterMatcher,
 		).Return((*types.QueryFilteredResult[types.ServiceSettingConfiguration])(nil), sql.ErrNoRows)
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
@@ -396,6 +398,7 @@ func TestServiceSettingConfigurationsService_ForUserHandler(T *testing.T) {
 			"GetServiceSettingConfigurationsForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
+			testutils.QueryFilterMatcher,
 		).Return((*types.QueryFilteredResult[types.ServiceSettingConfiguration])(nil), errors.New("blah"))
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
@@ -428,6 +431,7 @@ func TestServiceSettingConfigurationsService_ForHouseholdHandler(T *testing.T) {
 			"GetServiceSettingConfigurationsForHousehold",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
+			testutils.QueryFilterMatcher,
 		).Return(helper.exampleServiceSettingConfigurationList, nil)
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
@@ -481,6 +485,7 @@ func TestServiceSettingConfigurationsService_ForHouseholdHandler(T *testing.T) {
 			"GetServiceSettingConfigurationsForHousehold",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
+			testutils.QueryFilterMatcher,
 		).Return((*types.QueryFilteredResult[types.ServiceSettingConfiguration])(nil), sql.ErrNoRows)
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
@@ -509,6 +514,7 @@ func TestServiceSettingConfigurationsService_ForHouseholdHandler(T *testing.T) {
 			"GetServiceSettingConfigurationsForHousehold",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
+			testutils.QueryFilterMatcher,
 		).Return((*types.QueryFilteredResult[types.ServiceSettingConfiguration])(nil), errors.New("blah"))
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 

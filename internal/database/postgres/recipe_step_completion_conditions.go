@@ -411,9 +411,6 @@ func (q *Querier) CreateRecipeStepCompletionCondition(ctx context.Context, input
 	return q.createRecipeStepCompletionCondition(ctx, q.db, input)
 }
 
-//go:embed queries/recipe_step_completion_conditions/update.sql
-var updateRecipeStepCompletionConditionQuery string
-
 // UpdateRecipeStepCompletionCondition updates a particular recipe step completion condition.
 func (q *Querier) UpdateRecipeStepCompletionCondition(ctx context.Context, updated *types.RecipeStepCompletionCondition) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -422,19 +419,16 @@ func (q *Querier) UpdateRecipeStepCompletionCondition(ctx context.Context, updat
 	if updated == nil {
 		return ErrNilInputProvided
 	}
-
 	logger := q.logger.WithValue(keys.RecipeStepCompletionConditionIDKey, updated.ID)
 	tracing.AttachRecipeStepCompletionConditionIDToSpan(span, updated.ID)
 
-	args := []any{
-		updated.Optional,
-		updated.Notes,
-		updated.BelongsToRecipeStep,
-		updated.IngredientState.ID,
-		updated.ID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "recipe step completion condition update", updateRecipeStepCompletionConditionQuery, args); err != nil {
+	if err := q.generatedQuerier.UpdateRecipeStepCompletionCondition(ctx, q.db, &generated.UpdateRecipeStepCompletionConditionParams{
+		Optional:            updated.Optional,
+		Notes:               updated.Notes,
+		BelongsToRecipeStep: updated.BelongsToRecipeStep,
+		IngredientState:     updated.IngredientState.ID,
+		ID:                  updated.ID,
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step completion condition")
 	}
 

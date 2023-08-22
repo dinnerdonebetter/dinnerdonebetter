@@ -256,9 +256,6 @@ func (q *Querier) CreateHouseholdInstrumentOwnership(ctx context.Context, input 
 	return x, nil
 }
 
-//go:embed queries/household_instrument_ownerships/update.sql
-var updateHouseholdInstrumentOwnershipQuery string
-
 // UpdateHouseholdInstrumentOwnership updates a particular household instrument ownership.
 func (q *Querier) UpdateHouseholdInstrumentOwnership(ctx context.Context, updated *types.HouseholdInstrumentOwnership) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -267,19 +264,16 @@ func (q *Querier) UpdateHouseholdInstrumentOwnership(ctx context.Context, update
 	if updated == nil {
 		return ErrNilInputProvided
 	}
-
 	logger := q.logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, updated.ID)
 	tracing.AttachHouseholdInstrumentOwnershipIDToSpan(span, updated.ID)
 
-	args := []any{
-		updated.Notes,
-		updated.Quantity,
-		updated.Instrument.ID,
-		updated.ID,
-		updated.BelongsToHousehold,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "household instrument ownership update", updateHouseholdInstrumentOwnershipQuery, args); err != nil {
+	if err := q.generatedQuerier.UpdateHouseholdInstrumentOwnership(ctx, q.db, &generated.UpdateHouseholdInstrumentOwnershipParams{
+		Notes:              updated.Notes,
+		ValidInstrumentID:  updated.Instrument.ID,
+		ID:                 updated.ID,
+		BelongsToHousehold: updated.BelongsToHousehold,
+		Quantity:           int32(updated.Quantity),
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating household instrument ownership")
 	}
 

@@ -384,9 +384,6 @@ func (q *Querier) CreateRecipeStepProduct(ctx context.Context, input *types.Reci
 	return q.createRecipeStepProduct(ctx, q.db, input)
 }
 
-//go:embed queries/recipe_step_products/update.sql
-var updateRecipeStepProductQuery string
-
 // UpdateRecipeStepProduct updates a particular recipe step product.
 func (q *Querier) UpdateRecipeStepProduct(ctx context.Context, updated *types.RecipeStepProduct) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -395,31 +392,33 @@ func (q *Querier) UpdateRecipeStepProduct(ctx context.Context, updated *types.Re
 	if updated == nil {
 		return ErrNilInputProvided
 	}
-
 	logger := q.logger.WithValue(keys.RecipeStepProductIDKey, updated.ID)
 	tracing.AttachRecipeStepProductIDToSpan(span, updated.ID)
 
-	args := []any{
-		updated.Name,
-		updated.Type,
-		updated.MeasurementUnit.ID,
-		updated.MinimumQuantity,
-		updated.MaximumQuantity,
-		updated.QuantityNotes,
-		updated.Compostable,
-		updated.MaximumStorageDurationInSeconds,
-		updated.MinimumStorageTemperatureInCelsius,
-		updated.MaximumStorageTemperatureInCelsius,
-		updated.StorageInstructions,
-		updated.IsLiquid,
-		updated.IsWaste,
-		updated.Index,
-		updated.ContainedInVesselIndex,
-		updated.BelongsToRecipeStep,
-		updated.ID,
+	var measurementUnitID *string
+	if updated.MeasurementUnit != nil {
+		measurementUnitID = &updated.MeasurementUnit.ID
 	}
 
-	if err := q.performWriteQuery(ctx, q.db, "recipe step product update", updateRecipeStepProductQuery, args); err != nil {
+	if err := q.generatedQuerier.UpdateRecipeStepProduct(ctx, q.db, &generated.UpdateRecipeStepProductParams{
+		Name:                               updated.Name,
+		Type:                               generated.RecipeStepProductType(updated.Type),
+		MeasurementUnit:                    nullStringFromStringPointer(measurementUnitID),
+		MinimumQuantityValue:               nullStringFromFloat32Pointer(updated.MinimumQuantity),
+		MaximumQuantityValue:               nullStringFromFloat32Pointer(updated.MaximumQuantity),
+		QuantityNotes:                      updated.QuantityNotes,
+		Compostable:                        updated.Compostable,
+		MaximumStorageDurationInSeconds:    nullInt32FromUint32Pointer(updated.MaximumStorageDurationInSeconds),
+		MinimumStorageTemperatureInCelsius: nullStringFromFloat32Pointer(updated.MinimumStorageTemperatureInCelsius),
+		MaximumStorageTemperatureInCelsius: nullStringFromFloat32Pointer(updated.MaximumStorageTemperatureInCelsius),
+		StorageInstructions:                updated.StorageInstructions,
+		IsLiquid:                           updated.IsLiquid,
+		IsWaste:                            updated.IsWaste,
+		Index:                              int32(updated.Index),
+		ContainedInVesselIndex:             nullInt32FromUint16Pointer(updated.ContainedInVesselIndex),
+		BelongsToRecipeStep:                updated.BelongsToRecipeStep,
+		ID:                                 updated.ID,
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step product")
 	}
 

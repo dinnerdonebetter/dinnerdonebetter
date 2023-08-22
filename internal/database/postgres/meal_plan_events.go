@@ -354,9 +354,6 @@ func (q *Querier) CreateMealPlanEvent(ctx context.Context, input *types.MealPlan
 	return x, nil
 }
 
-//go:embed queries/meal_plan_events/update.sql
-var updateMealPlanEventQuery string
-
 // UpdateMealPlanEvent updates a particular meal plan event.
 func (q *Querier) UpdateMealPlanEvent(ctx context.Context, updated *types.MealPlanEvent) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -365,20 +362,17 @@ func (q *Querier) UpdateMealPlanEvent(ctx context.Context, updated *types.MealPl
 	if updated == nil {
 		return ErrNilInputProvided
 	}
-
 	logger := q.logger.WithValue(keys.MealPlanEventIDKey, updated.ID)
 	tracing.AttachMealPlanEventIDToSpan(span, updated.ID)
 
-	updateMealPlanEventArgs := []any{
-		updated.Notes,
-		updated.StartsAt,
-		updated.EndsAt,
-		updated.MealName,
-		updated.BelongsToMealPlan,
-		updated.ID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "meal plan event update", updateMealPlanEventQuery, updateMealPlanEventArgs); err != nil {
+	if err := q.generatedQuerier.UpdateMealPlanEvent(ctx, q.db, &generated.UpdateMealPlanEventParams{
+		Notes:             updated.Notes,
+		StartsAt:          updated.StartsAt,
+		EndsAt:            updated.EndsAt,
+		MealName:          generated.MealName(updated.MealName),
+		BelongsToMealPlan: updated.BelongsToMealPlan,
+		ID:                updated.ID,
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating meal plan event")
 	}
 

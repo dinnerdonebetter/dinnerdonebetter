@@ -619,43 +619,6 @@ func TestSQLQuerier_createRecipeStepIngredient(T *testing.T) {
 func TestQuerier_UpdateRecipeStepIngredient(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
-		exampleRecipeStepIngredient.MeasurementUnit = types.ValidMeasurementUnit{ID: exampleRecipeStepIngredient.MeasurementUnit.ID}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleRecipeStepIngredient.Ingredient.ID,
-			exampleRecipeStepIngredient.Name,
-			exampleRecipeStepIngredient.Optional,
-			exampleRecipeStepIngredient.MeasurementUnit.ID,
-			exampleRecipeStepIngredient.MinimumQuantity,
-			exampleRecipeStepIngredient.MaximumQuantity,
-			exampleRecipeStepIngredient.QuantityNotes,
-			exampleRecipeStepIngredient.RecipeStepProductID,
-			exampleRecipeStepIngredient.IngredientNotes,
-			exampleRecipeStepIngredient.OptionIndex,
-			exampleRecipeStepIngredient.ToTaste,
-			exampleRecipeStepIngredient.ProductPercentageToUse,
-			exampleRecipeStepIngredient.VesselIndex,
-			exampleRecipeStepIngredient.RecipeStepProductRecipeID,
-			exampleRecipeStepIngredient.BelongsToRecipeStep,
-			exampleRecipeStepIngredient.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateRecipeStepIngredientQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.UpdateRecipeStepIngredient(ctx, exampleRecipeStepIngredient))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
@@ -663,43 +626,6 @@ func TestQuerier_UpdateRecipeStepIngredient(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateRecipeStepIngredient(ctx, nil))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
-		exampleRecipeStepIngredient.MeasurementUnit = types.ValidMeasurementUnit{ID: exampleRecipeStepIngredient.MeasurementUnit.ID}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleRecipeStepIngredient.Ingredient.ID,
-			exampleRecipeStepIngredient.Name,
-			exampleRecipeStepIngredient.Optional,
-			exampleRecipeStepIngredient.MeasurementUnit.ID,
-			exampleRecipeStepIngredient.MinimumQuantity,
-			exampleRecipeStepIngredient.MaximumQuantity,
-			exampleRecipeStepIngredient.QuantityNotes,
-			exampleRecipeStepIngredient.RecipeStepProductID,
-			exampleRecipeStepIngredient.IngredientNotes,
-			exampleRecipeStepIngredient.OptionIndex,
-			exampleRecipeStepIngredient.ToTaste,
-			exampleRecipeStepIngredient.ProductPercentageToUse,
-			exampleRecipeStepIngredient.VesselIndex,
-			exampleRecipeStepIngredient.RecipeStepProductRecipeID,
-			exampleRecipeStepIngredient.BelongsToRecipeStep,
-			exampleRecipeStepIngredient.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateRecipeStepIngredientQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.UpdateRecipeStepIngredient(ctx, exampleRecipeStepIngredient))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

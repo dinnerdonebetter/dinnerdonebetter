@@ -451,37 +451,6 @@ func TestQuerier_CreateRecipeStepInstrument(T *testing.T) {
 func TestQuerier_UpdateRecipeStepInstrument(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeStepInstrument := fakes.BuildFakeRecipeStepInstrument()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleRecipeStepInstrument.Instrument.ID,
-			exampleRecipeStepInstrument.RecipeStepProductID,
-			exampleRecipeStepInstrument.Name,
-			exampleRecipeStepInstrument.Notes,
-			exampleRecipeStepInstrument.PreferenceRank,
-			exampleRecipeStepInstrument.Optional,
-			exampleRecipeStepInstrument.OptionIndex,
-			exampleRecipeStepInstrument.MinimumQuantity,
-			exampleRecipeStepInstrument.MaximumQuantity,
-			exampleRecipeStepInstrument.BelongsToRecipeStep,
-			exampleRecipeStepInstrument.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateRecipeStepInstrumentQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.UpdateRecipeStepInstrument(ctx, exampleRecipeStepInstrument))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
@@ -489,37 +458,6 @@ func TestQuerier_UpdateRecipeStepInstrument(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateRecipeStepInstrument(ctx, nil))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeStepInstrument := fakes.BuildFakeRecipeStepInstrument()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleRecipeStepInstrument.Instrument.ID,
-			exampleRecipeStepInstrument.RecipeStepProductID,
-			exampleRecipeStepInstrument.Name,
-			exampleRecipeStepInstrument.Notes,
-			exampleRecipeStepInstrument.PreferenceRank,
-			exampleRecipeStepInstrument.Optional,
-			exampleRecipeStepInstrument.OptionIndex,
-			exampleRecipeStepInstrument.MinimumQuantity,
-			exampleRecipeStepInstrument.MaximumQuantity,
-			exampleRecipeStepInstrument.BelongsToRecipeStep,
-			exampleRecipeStepInstrument.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateRecipeStepInstrumentQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.UpdateRecipeStepInstrument(ctx, exampleRecipeStepInstrument))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

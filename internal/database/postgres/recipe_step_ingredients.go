@@ -496,9 +496,6 @@ func (q *Querier) CreateRecipeStepIngredient(ctx context.Context, input *types.R
 	return q.createRecipeStepIngredient(ctx, q.db, input)
 }
 
-//go:embed queries/recipe_step_ingredients/update.sql
-var updateRecipeStepIngredientQuery string
-
 // UpdateRecipeStepIngredient updates a particular recipe step ingredient.
 func (q *Querier) UpdateRecipeStepIngredient(ctx context.Context, updated *types.RecipeStepIngredient) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -507,30 +504,32 @@ func (q *Querier) UpdateRecipeStepIngredient(ctx context.Context, updated *types
 	if updated == nil {
 		return ErrNilInputProvided
 	}
-
 	logger := q.logger.WithValue(keys.RecipeStepIngredientIDKey, updated.ID)
 	tracing.AttachRecipeStepIngredientIDToSpan(span, updated.ID)
 
-	args := []any{
-		updated.Ingredient.ID,
-		updated.Name,
-		updated.Optional,
-		updated.MeasurementUnit.ID,
-		updated.MinimumQuantity,
-		updated.MaximumQuantity,
-		updated.QuantityNotes,
-		updated.RecipeStepProductID,
-		updated.IngredientNotes,
-		updated.OptionIndex,
-		updated.ToTaste,
-		updated.ProductPercentageToUse,
-		updated.VesselIndex,
-		updated.RecipeStepProductRecipeID,
-		updated.BelongsToRecipeStep,
-		updated.ID,
+	var ingredientID *string
+	if updated.Ingredient != nil {
+		ingredientID = &updated.MeasurementUnit.ID
 	}
 
-	if err := q.performWriteQuery(ctx, q.db, "recipe step ingredient update", updateRecipeStepIngredientQuery, args); err != nil {
+	if err := q.generatedQuerier.UpdateRecipeStepIngredient(ctx, q.db, &generated.UpdateRecipeStepIngredientParams{
+		IngredientID:              nullStringFromStringPointer(ingredientID),
+		Name:                      updated.Name,
+		Optional:                  updated.Optional,
+		MeasurementUnit:           nullStringFromString(updated.MeasurementUnit.ID),
+		MinimumQuantityValue:      stringFromFloat32(updated.MinimumQuantity),
+		MaximumQuantityValue:      nullStringFromFloat32Pointer(updated.MaximumQuantity),
+		QuantityNotes:             updated.QuantityNotes,
+		RecipeStepProductID:       nullStringFromStringPointer(updated.RecipeStepProductID),
+		IngredientNotes:           updated.IngredientNotes,
+		OptionIndex:               int32(updated.OptionIndex),
+		ToTaste:                   updated.ToTaste,
+		ProductPercentageToUse:    nullStringFromFloat32Pointer(updated.ProductPercentageToUse),
+		VesselIndex:               nullInt32FromUint16Pointer(updated.VesselIndex),
+		RecipeStepProductRecipeID: nullStringFromStringPointer(updated.RecipeStepProductRecipeID),
+		BelongsToRecipeStep:       updated.BelongsToRecipeStep,
+		ID:                        updated.ID,
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step ingredient")
 	}
 

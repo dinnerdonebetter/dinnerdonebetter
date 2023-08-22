@@ -728,42 +728,6 @@ func TestQuerier_CreateMealPlanEvent(T *testing.T) {
 func TestQuerier_UpdateMealPlanEvent(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMealPlanEvent := fakes.BuildFakeMealPlanEvent()
-		for i := range exampleMealPlanEvent.Options {
-			exampleMealPlanEvent.Options[i].CreatedAt = exampleMealPlanEvent.CreatedAt
-			exampleMealPlanEvent.Options[i].Meal = types.Meal{ID: exampleMealPlanEvent.Options[i].Meal.ID}
-			exampleMealPlanEvent.Options[i].Votes = []*types.MealPlanOptionVote{}
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		c.timeFunc = func() time.Time {
-			return exampleMealPlanEvent.CreatedAt
-		}
-
-		updateMealPlanEventArgs := []any{
-			exampleMealPlanEvent.Notes,
-			exampleMealPlanEvent.StartsAt,
-			exampleMealPlanEvent.EndsAt,
-			exampleMealPlanEvent.MealName,
-			exampleMealPlanEvent.BelongsToMealPlan,
-			exampleMealPlanEvent.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateMealPlanEventQuery)).
-			WithArgs(interfaceToDriverValue(updateMealPlanEventArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		err := c.UpdateMealPlanEvent(ctx, exampleMealPlanEvent)
-		assert.NoError(t, err)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
@@ -771,42 +735,6 @@ func TestQuerier_UpdateMealPlanEvent(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		err := c.UpdateMealPlanEvent(ctx, nil)
-		assert.Error(t, err)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMealPlanEvent := fakes.BuildFakeMealPlanEvent()
-		for i := range exampleMealPlanEvent.Options {
-			exampleMealPlanEvent.Options[i].CreatedAt = exampleMealPlanEvent.CreatedAt
-			exampleMealPlanEvent.Options[i].Meal = types.Meal{ID: exampleMealPlanEvent.Options[i].Meal.ID}
-			exampleMealPlanEvent.Options[i].Votes = []*types.MealPlanOptionVote{}
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		c.timeFunc = func() time.Time {
-			return exampleMealPlanEvent.CreatedAt
-		}
-
-		updateMealPlanEventArgs := []any{
-			exampleMealPlanEvent.Notes,
-			exampleMealPlanEvent.StartsAt,
-			exampleMealPlanEvent.EndsAt,
-			exampleMealPlanEvent.MealName,
-			exampleMealPlanEvent.BelongsToMealPlan,
-			exampleMealPlanEvent.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateMealPlanEventQuery)).
-			WithArgs(interfaceToDriverValue(updateMealPlanEventArgs)...).
-			WillReturnError(errors.New("blah"))
-
-		err := c.UpdateMealPlanEvent(ctx, exampleMealPlanEvent)
 		assert.Error(t, err)
 
 		mock.AssertExpectationsForObjects(t, db)

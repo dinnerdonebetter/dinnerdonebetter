@@ -446,9 +446,6 @@ func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDat
 	return household, nil
 }
 
-//go:embed queries/households/update.sql
-var updateHouseholdQuery string
-
 // UpdateHousehold updates a particular household. Note that UpdateHousehold expects the provided input to have a valid ID.
 func (q *Querier) UpdateHousehold(ctx context.Context, updated *types.Household) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -457,28 +454,23 @@ func (q *Querier) UpdateHousehold(ctx context.Context, updated *types.Household)
 	if updated == nil {
 		return ErrNilInputProvided
 	}
-
 	logger := q.logger.WithValue(keys.HouseholdIDKey, updated.ID)
 	tracing.AttachHouseholdIDToSpan(span, updated.ID)
 
-	args := []any{
-		updated.Name,
-		updated.ContactPhone,
-		updated.AddressLine1,
-		updated.AddressLine2,
-		updated.City,
-		updated.State,
-		updated.ZipCode,
-		updated.Country,
-		updated.Latitude,
-		updated.Longitude,
-		updated.BelongsToUser,
-		updated.ID,
-	}
-
-	logger.WithValue("query", updateHouseholdQuery).WithValue("args", args).Info("making query for households")
-
-	if err := q.performWriteQuery(ctx, q.db, "household update", updateHouseholdQuery, args); err != nil {
+	if err := q.generatedQuerier.UpdateHousehold(ctx, q.db, &generated.UpdateHouseholdParams{
+		Name:          updated.Name,
+		ContactPhone:  updated.ContactPhone,
+		AddressLine1:  updated.AddressLine1,
+		AddressLine2:  updated.AddressLine2,
+		City:          updated.City,
+		State:         updated.State,
+		ZipCode:       updated.ZipCode,
+		Country:       updated.Country,
+		BelongsToUser: updated.BelongsToUser,
+		ID:            updated.ID,
+		Latitude:      nullStringFromFloat64Pointer(updated.Latitude),
+		Longitude:     nullStringFromFloat64Pointer(updated.Longitude),
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating household")
 	}
 

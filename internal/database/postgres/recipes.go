@@ -702,9 +702,6 @@ func (q *Querier) UpdateRecipe(ctx context.Context, updated *types.Recipe) error
 	return nil
 }
 
-//go:embed queries/recipes/update_last_indexed_at.sql
-var updateRecipeLastIndexedAtQuery string
-
 // MarkRecipeAsIndexed updates a particular recipe's last_indexed_at value.
 func (q *Querier) MarkRecipeAsIndexed(ctx context.Context, recipeID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -718,11 +715,7 @@ func (q *Querier) MarkRecipeAsIndexed(ctx context.Context, recipeID string) erro
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	args := []any{
-		recipeID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "recipe last_indexed_at", updateRecipeLastIndexedAtQuery, args); err != nil {
+	if err := q.generatedQuerier.UpdateRecipeLastIndexedAt(ctx, q.db, recipeID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking recipe as indexed")
 	}
 

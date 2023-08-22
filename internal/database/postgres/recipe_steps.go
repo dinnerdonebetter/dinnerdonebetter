@@ -399,9 +399,6 @@ func (q *Querier) CreateRecipeStep(ctx context.Context, input *types.RecipeStepD
 	return q.createRecipeStep(ctx, q.db, input)
 }
 
-//go:embed queries/recipe_steps/update.sql
-var updateRecipeStepQuery string
-
 // UpdateRecipeStep updates a particular recipe step.
 func (q *Querier) UpdateRecipeStep(ctx context.Context, updated *types.RecipeStep) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -410,27 +407,24 @@ func (q *Querier) UpdateRecipeStep(ctx context.Context, updated *types.RecipeSte
 	if updated == nil {
 		return ErrNilInputProvided
 	}
-
 	logger := q.logger.WithValue(keys.RecipeStepIDKey, updated.ID)
 	tracing.AttachRecipeStepIDToSpan(span, updated.ID)
 
-	args := []any{
-		updated.Index,
-		updated.Preparation.ID,
-		updated.MinimumEstimatedTimeInSeconds,
-		updated.MaximumEstimatedTimeInSeconds,
-		updated.MinimumTemperatureInCelsius,
-		updated.MaximumTemperatureInCelsius,
-		updated.Notes,
-		updated.ExplicitInstructions,
-		updated.ConditionExpression,
-		updated.Optional,
-		updated.StartTimerAutomatically,
-		updated.BelongsToRecipe,
-		updated.ID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "recipe step update", updateRecipeStepQuery, args); err != nil {
+	if err := q.generatedQuerier.UpdateRecipeStep(ctx, q.db, &generated.UpdateRecipeStepParams{
+		ConditionExpression:           updated.ConditionExpression,
+		PreparationID:                 updated.Preparation.ID,
+		ID:                            updated.ID,
+		BelongsToRecipe:               updated.BelongsToRecipe,
+		Notes:                         updated.Notes,
+		ExplicitInstructions:          updated.ExplicitInstructions,
+		MinimumTemperatureInCelsius:   nullStringFromFloat32Pointer(updated.MinimumTemperatureInCelsius),
+		MaximumTemperatureInCelsius:   nullStringFromFloat32Pointer(updated.MaximumTemperatureInCelsius),
+		MaximumEstimatedTimeInSeconds: nullInt64FromUint32Pointer(updated.MaximumEstimatedTimeInSeconds),
+		MinimumEstimatedTimeInSeconds: nullInt64FromUint32Pointer(updated.MinimumEstimatedTimeInSeconds),
+		Index:                         int32(updated.Index),
+		Optional:                      updated.Optional,
+		StartTimerAutomatically:       updated.StartTimerAutomatically,
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step")
 	}
 

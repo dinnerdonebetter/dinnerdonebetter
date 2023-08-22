@@ -361,9 +361,6 @@ func (q *Querier) CreateRecipeStepInstrument(ctx context.Context, input *types.R
 	return q.createRecipeStepInstrument(ctx, q.db, input)
 }
 
-//go:embed queries/recipe_step_instruments/update.sql
-var updateRecipeStepInstrumentQuery string
-
 // UpdateRecipeStepInstrument updates a particular recipe step instrument.
 func (q *Querier) UpdateRecipeStepInstrument(ctx context.Context, updated *types.RecipeStepInstrument) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -372,7 +369,6 @@ func (q *Querier) UpdateRecipeStepInstrument(ctx context.Context, updated *types
 	if updated == nil {
 		return ErrNilInputProvided
 	}
-
 	logger := q.logger.WithValue(keys.RecipeStepInstrumentIDKey, updated.ID)
 	tracing.AttachRecipeStepInstrumentIDToSpan(span, updated.ID)
 
@@ -381,21 +377,19 @@ func (q *Querier) UpdateRecipeStepInstrument(ctx context.Context, updated *types
 		instrumentID = &updated.Instrument.ID
 	}
 
-	args := []any{
-		instrumentID,
-		updated.RecipeStepProductID,
-		updated.Name,
-		updated.Notes,
-		updated.PreferenceRank,
-		updated.Optional,
-		updated.OptionIndex,
-		updated.MinimumQuantity,
-		updated.MaximumQuantity,
-		updated.BelongsToRecipeStep,
-		updated.ID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "recipe step instrument update", updateRecipeStepInstrumentQuery, args); err != nil {
+	if err := q.generatedQuerier.UpdateRecipeStepInstrument(ctx, q.db, &generated.UpdateRecipeStepInstrumentParams{
+		InstrumentID:        nullStringFromStringPointer(instrumentID),
+		RecipeStepProductID: nullStringFromStringPointer(updated.RecipeStepProductID),
+		Name:                updated.Name,
+		Notes:               updated.Notes,
+		PreferenceRank:      int32(updated.PreferenceRank),
+		Optional:            updated.Optional,
+		OptionIndex:         int32(updated.OptionIndex),
+		MinimumQuantity:     int32(updated.MinimumQuantity),
+		MaximumQuantity:     nullInt32FromUint32Pointer(updated.MaximumQuantity),
+		BelongsToRecipeStep: updated.BelongsToRecipeStep,
+		ID:                  updated.ID,
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step instrument")
 	}
 

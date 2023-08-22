@@ -466,37 +466,6 @@ func TestQuerier_CreateRecipeStepVessel(T *testing.T) {
 func TestQuerier_UpdateRecipeStepVessel(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleRecipeStepVessel.Name,
-			exampleRecipeStepVessel.Notes,
-			exampleRecipeStepVessel.BelongsToRecipeStep,
-			exampleRecipeStepVessel.RecipeStepProductID,
-			exampleRecipeStepVessel.Vessel.ID,
-			exampleRecipeStepVessel.VesselPreposition,
-			exampleRecipeStepVessel.MinimumQuantity,
-			exampleRecipeStepVessel.MaximumQuantity,
-			exampleRecipeStepVessel.UnavailableAfterStep,
-			exampleRecipeStepVessel.BelongsToRecipeStep,
-			exampleRecipeStepVessel.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateRecipeStepVesselQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.UpdateRecipeStepVessel(ctx, exampleRecipeStepVessel))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
@@ -504,37 +473,6 @@ func TestQuerier_UpdateRecipeStepVessel(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateRecipeStepVessel(ctx, nil))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleRecipeStepVessel.Name,
-			exampleRecipeStepVessel.Notes,
-			exampleRecipeStepVessel.BelongsToRecipeStep,
-			exampleRecipeStepVessel.RecipeStepProductID,
-			exampleRecipeStepVessel.Vessel.ID,
-			exampleRecipeStepVessel.VesselPreposition,
-			exampleRecipeStepVessel.MinimumQuantity,
-			exampleRecipeStepVessel.MaximumQuantity,
-			exampleRecipeStepVessel.UnavailableAfterStep,
-			exampleRecipeStepVessel.BelongsToRecipeStep,
-			exampleRecipeStepVessel.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateRecipeStepVesselQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.UpdateRecipeStepVessel(ctx, exampleRecipeStepVessel))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

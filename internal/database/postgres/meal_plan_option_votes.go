@@ -345,9 +345,6 @@ func (q *Querier) CreateMealPlanOptionVote(ctx context.Context, input *types.Mea
 	return votes, nil
 }
 
-//go:embed queries/meal_plan_option_votes/update.sql
-var updateMealPlanOptionVoteQuery string
-
 // UpdateMealPlanOptionVote updates a particular meal plan option vote.
 func (q *Querier) UpdateMealPlanOptionVote(ctx context.Context, updated *types.MealPlanOptionVote) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -356,20 +353,17 @@ func (q *Querier) UpdateMealPlanOptionVote(ctx context.Context, updated *types.M
 	if updated == nil {
 		return ErrNilInputProvided
 	}
-
 	logger := q.logger.WithValue(keys.MealPlanOptionVoteIDKey, updated.ID)
 	tracing.AttachMealPlanOptionVoteIDToSpan(span, updated.ID)
 
-	args := []any{
-		updated.Rank,
-		updated.Abstain,
-		updated.Notes,
-		updated.ByUser,
-		updated.BelongsToMealPlanOption,
-		updated.ID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "meal plan option vote update", updateMealPlanOptionVoteQuery, args); err != nil {
+	if err := q.generatedQuerier.UpdateMealPlanOptionVote(ctx, q.db, &generated.UpdateMealPlanOptionVoteParams{
+		Notes:                   updated.Notes,
+		ByUser:                  updated.ByUser,
+		BelongsToMealPlanOption: updated.BelongsToMealPlanOption,
+		ID:                      updated.ID,
+		Rank:                    int32(updated.Rank),
+		Abstain:                 updated.Abstain,
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating meal plan option vote")
 	}
 

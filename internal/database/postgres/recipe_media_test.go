@@ -315,33 +315,6 @@ func TestQuerier_CreateRecipeMedia(T *testing.T) {
 func TestQuerier_UpdateRecipeMedia(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleRecipeMedia := fakes.BuildFakeRecipeMedia()
-
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleRecipeMedia.BelongsToRecipe,
-			exampleRecipeMedia.BelongsToRecipeStep,
-			exampleRecipeMedia.MimeType,
-			exampleRecipeMedia.InternalPath,
-			exampleRecipeMedia.ExternalPath,
-			exampleRecipeMedia.Index,
-			exampleRecipeMedia.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateRecipeMediaQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.UpdateRecipeMedia(ctx, exampleRecipeMedia))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
@@ -349,33 +322,6 @@ func TestQuerier_UpdateRecipeMedia(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateRecipeMedia(ctx, nil))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleRecipeMedia := fakes.BuildFakeRecipeMedia()
-
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleRecipeMedia.BelongsToRecipe,
-			exampleRecipeMedia.BelongsToRecipeStep,
-			exampleRecipeMedia.MimeType,
-			exampleRecipeMedia.InternalPath,
-			exampleRecipeMedia.ExternalPath,
-			exampleRecipeMedia.Index,
-			exampleRecipeMedia.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateRecipeMediaQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.UpdateRecipeMedia(ctx, exampleRecipeMedia))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

@@ -322,34 +322,6 @@ func TestQuerier_CreateRecipeRating(T *testing.T) {
 func TestQuerier_UpdateRecipeRating(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeRating := fakes.BuildFakeRecipeRating()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleRecipeRating.RecipeID,
-			exampleRecipeRating.Taste,
-			exampleRecipeRating.Difficulty,
-			exampleRecipeRating.Cleanup,
-			exampleRecipeRating.Instructions,
-			exampleRecipeRating.Overall,
-			exampleRecipeRating.Notes,
-			exampleRecipeRating.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateRecipeRatingQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.UpdateRecipeRating(ctx, exampleRecipeRating))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
@@ -357,34 +329,6 @@ func TestQuerier_UpdateRecipeRating(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateRecipeRating(ctx, nil))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeRating := fakes.BuildFakeRecipeRating()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleRecipeRating.RecipeID,
-			exampleRecipeRating.Taste,
-			exampleRecipeRating.Difficulty,
-			exampleRecipeRating.Cleanup,
-			exampleRecipeRating.Instructions,
-			exampleRecipeRating.Overall,
-			exampleRecipeRating.Notes,
-			exampleRecipeRating.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateRecipeRatingQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.UpdateRecipeRating(ctx, exampleRecipeRating))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

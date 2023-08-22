@@ -71,6 +71,17 @@ func nullInt32FromUint8Pointer(i *uint8) sql.NullInt32 {
 	}
 }
 
+func nullInt32FromUint16Pointer(i *uint16) sql.NullInt32 {
+	if i == nil {
+		return sql.NullInt32{}
+	}
+
+	return sql.NullInt32{
+		Int32: int32(*i),
+		Valid: true,
+	}
+}
+
 func nullInt32FromUint16(i uint16) sql.NullInt32 {
 	return sql.NullInt32{
 		Int32: int32(i),
@@ -93,6 +104,17 @@ func nullInt32FromInt32Pointer(i *int32) sql.NullInt32 {
 
 	return sql.NullInt32{
 		Int32: *i,
+		Valid: true,
+	}
+}
+
+func nullInt32FromUint32Pointer(i *uint32) sql.NullInt32 {
+	if i == nil {
+		return sql.NullInt32{}
+	}
+
+	return sql.NullInt32{
+		Int32: int32(*i),
 		Valid: true,
 	}
 }
@@ -153,5 +175,38 @@ func nullStringFromFloat32Pointer(f *float32) sql.NullString {
 	return sql.NullString{
 		String: stringFromFloat32(*f),
 		Valid:  true,
+	}
+}
+
+func nullStringFromFloat32(f float32) sql.NullString {
+	return sql.NullString{
+		String: stringFromFloat32(f),
+		Valid:  true,
+	}
+}
+
+func stringFromFloat64(f float64) string {
+	return strconv.FormatFloat(f, 'f', -1, 64)
+}
+
+func nullStringFromFloat64Pointer(f *float64) sql.NullString {
+	if f == nil {
+		return sql.NullString{}
+	}
+
+	return sql.NullString{
+		String: stringFromFloat64(*f),
+		Valid:  true,
+	}
+}
+
+func nullInt64FromUint32Pointer(f *uint32) sql.NullInt64 {
+	if f == nil {
+		return sql.NullInt64{}
+	}
+
+	return sql.NullInt64{
+		Int64: int64(*f),
+		Valid: true,
 	}
 }

@@ -367,37 +367,31 @@ func (q *Querier) GetRecipePrepTasksForRecipe(ctx context.Context, recipeID stri
 	return q.getRecipePrepTasksForRecipe(ctx, recipeID)
 }
 
-//go:embed queries/recipe_prep_tasks/update.sql
-var updateRecipePrepStepTaskQuery string
-
 // UpdateRecipePrepTask updates a recipe prep task.
 func (q *Querier) UpdateRecipePrepTask(ctx context.Context, updated *types.RecipePrepTask) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
-
 	if updated == nil {
 		return ErrNilInputProvided
 	}
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, updated.ID)
 
-	updateRecipePrepStepTaskArgs := []any{
-		updated.Name,
-		updated.Description,
-		updated.Notes,
-		updated.Optional,
-		updated.ExplicitStorageInstructions,
-		updated.MinimumTimeBufferBeforeRecipeInSeconds,
-		updated.MaximumTimeBufferBeforeRecipeInSeconds,
-		updated.StorageType,
-		updated.MinimumStorageTemperatureInCelsius,
-		updated.MaximumStorageTemperatureInCelsius,
-		updated.BelongsToRecipe,
-		updated.ID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "recipe prep task update", updateRecipePrepStepTaskQuery, updateRecipePrepStepTaskArgs); err != nil {
+	if err := q.generatedQuerier.UpdateRecipePrepTask(ctx, q.db, &generated.UpdateRecipePrepTaskParams{
+		Name:                                   updated.Name,
+		Description:                            updated.Description,
+		Notes:                                  updated.Notes,
+		Optional:                               updated.Optional,
+		ExplicitStorageInstructions:            updated.ExplicitStorageInstructions,
+		MinimumTimeBufferBeforeRecipeInSeconds: int32(updated.MinimumTimeBufferBeforeRecipeInSeconds),
+		MaximumTimeBufferBeforeRecipeInSeconds: nullInt32FromUint32Pointer(updated.MaximumTimeBufferBeforeRecipeInSeconds),
+		StorageType:                            generated.NullStorageContainerType{StorageContainerType: generated.StorageContainerType(updated.StorageType)},
+		MinimumStorageTemperatureInCelsius:     nullStringFromFloat32Pointer(updated.MinimumStorageTemperatureInCelsius),
+		MaximumStorageTemperatureInCelsius:     nullStringFromFloat32Pointer(updated.MaximumStorageTemperatureInCelsius),
+		BelongsToRecipe:                        updated.BelongsToRecipe,
+		ID:                                     updated.ID,
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe prep task")
 	}
 

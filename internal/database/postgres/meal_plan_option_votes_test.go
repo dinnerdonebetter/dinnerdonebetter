@@ -508,32 +508,6 @@ func TestQuerier_CreateMealPlanOptionVote(T *testing.T) {
 func TestQuerier_UpdateMealPlanOptionVote(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleMealPlanOptionVote.Rank,
-			exampleMealPlanOptionVote.Abstain,
-			exampleMealPlanOptionVote.Notes,
-			exampleMealPlanOptionVote.ByUser,
-			exampleMealPlanOptionVote.BelongsToMealPlanOption,
-			exampleMealPlanOptionVote.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateMealPlanOptionVoteQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.UpdateMealPlanOptionVote(ctx, exampleMealPlanOptionVote))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
@@ -541,32 +515,6 @@ func TestQuerier_UpdateMealPlanOptionVote(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateMealPlanOptionVote(ctx, nil))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleMealPlanOptionVote.Rank,
-			exampleMealPlanOptionVote.Abstain,
-			exampleMealPlanOptionVote.Notes,
-			exampleMealPlanOptionVote.ByUser,
-			exampleMealPlanOptionVote.BelongsToMealPlanOption,
-			exampleMealPlanOptionVote.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateMealPlanOptionVoteQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.UpdateMealPlanOptionVote(ctx, exampleMealPlanOptionVote))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

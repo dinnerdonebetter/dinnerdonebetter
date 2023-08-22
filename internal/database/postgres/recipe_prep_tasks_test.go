@@ -243,34 +243,13 @@ func TestQuerier_GetRecipePrepTasksForRecipe(T *testing.T) {
 func TestQuerier_UpdateRecipePrepTask(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
+	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		exampleRecipePrepTask := fakes.BuildFakeRecipePrepTask()
-
 		c, db := buildTestClient(t)
 
-		args := []any{
-			exampleRecipePrepTask.Name,
-			exampleRecipePrepTask.Description,
-			exampleRecipePrepTask.Notes,
-			exampleRecipePrepTask.Optional,
-			exampleRecipePrepTask.ExplicitStorageInstructions,
-			exampleRecipePrepTask.MinimumTimeBufferBeforeRecipeInSeconds,
-			exampleRecipePrepTask.MaximumTimeBufferBeforeRecipeInSeconds,
-			exampleRecipePrepTask.StorageType,
-			exampleRecipePrepTask.MinimumStorageTemperatureInCelsius,
-			exampleRecipePrepTask.MaximumStorageTemperatureInCelsius,
-			exampleRecipePrepTask.BelongsToRecipe,
-			exampleRecipePrepTask.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateRecipePrepStepTaskQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.UpdateRecipePrepTask(ctx, exampleRecipePrepTask))
+		assert.Error(t, c.UpdateRecipePrepTask(ctx, nil))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})

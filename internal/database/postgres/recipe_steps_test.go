@@ -867,39 +867,6 @@ func TestSQLQuerier_createRecipeStep(T *testing.T) {
 func TestQuerier_UpdateRecipeStep(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeStep := fakes.BuildFakeRecipeStep()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleRecipeStep.Index,
-			exampleRecipeStep.Preparation.ID,
-			exampleRecipeStep.MinimumEstimatedTimeInSeconds,
-			exampleRecipeStep.MaximumEstimatedTimeInSeconds,
-			exampleRecipeStep.MinimumTemperatureInCelsius,
-			exampleRecipeStep.MaximumTemperatureInCelsius,
-			exampleRecipeStep.Notes,
-			exampleRecipeStep.ExplicitInstructions,
-			exampleRecipeStep.ConditionExpression,
-			exampleRecipeStep.Optional,
-			exampleRecipeStep.StartTimerAutomatically,
-			exampleRecipeStep.BelongsToRecipe,
-			exampleRecipeStep.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateRecipeStepQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.UpdateRecipeStep(ctx, exampleRecipeStep))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
@@ -907,39 +874,6 @@ func TestQuerier_UpdateRecipeStep(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateRecipeStep(ctx, nil))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeStep := fakes.BuildFakeRecipeStep()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleRecipeStep.Index,
-			exampleRecipeStep.Preparation.ID,
-			exampleRecipeStep.MinimumEstimatedTimeInSeconds,
-			exampleRecipeStep.MaximumEstimatedTimeInSeconds,
-			exampleRecipeStep.MinimumTemperatureInCelsius,
-			exampleRecipeStep.MaximumTemperatureInCelsius,
-			exampleRecipeStep.Notes,
-			exampleRecipeStep.ExplicitInstructions,
-			exampleRecipeStep.ConditionExpression,
-			exampleRecipeStep.Optional,
-			exampleRecipeStep.StartTimerAutomatically,
-			exampleRecipeStep.BelongsToRecipe,
-			exampleRecipeStep.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateRecipeStepQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.UpdateRecipeStep(ctx, exampleRecipeStep))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

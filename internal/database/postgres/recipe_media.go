@@ -5,6 +5,7 @@ import (
 	_ "embed"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -245,9 +246,6 @@ func (q *Querier) CreateRecipeMedia(ctx context.Context, input *types.RecipeMedi
 	return x, nil
 }
 
-//go:embed queries/recipe_media/update.sql
-var updateRecipeMediaQuery string
-
 // UpdateRecipeMedia updates a particular recipe media.
 func (q *Querier) UpdateRecipeMedia(ctx context.Context, updated *types.RecipeMedia) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -256,21 +254,17 @@ func (q *Querier) UpdateRecipeMedia(ctx context.Context, updated *types.RecipeMe
 	if updated == nil {
 		return ErrNilInputProvided
 	}
-
 	logger := q.logger.WithValue(keys.RecipeMediaIDKey, updated.ID)
 	tracing.AttachRecipeMediaIDToSpan(span, updated.ID)
 
-	args := []any{
-		updated.BelongsToRecipe,
-		updated.BelongsToRecipeStep,
-		updated.MimeType,
-		updated.InternalPath,
-		updated.ExternalPath,
-		updated.Index,
-		updated.ID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "recipe media update", updateRecipeMediaQuery, args); err != nil {
+	if err := q.generatedQuerier.UpdateRecipeMedia(ctx, q.db, &generated.UpdateRecipeMediaParams{
+		BelongsToRecipe:     nullStringFromStringPointer(updated.BelongsToRecipe),
+		BelongsToRecipeStep: nullStringFromStringPointer(updated.BelongsToRecipeStep),
+		MimeType:            updated.MimeType,
+		InternalPath:        updated.InternalPath,
+		ExternalPath:        updated.ExternalPath,
+		Index:               int32(updated.Index),
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe media")
 	}
 

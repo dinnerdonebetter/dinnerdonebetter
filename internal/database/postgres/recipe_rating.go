@@ -5,6 +5,7 @@ import (
 	_ "embed"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -227,9 +228,6 @@ func (q *Querier) CreateRecipeRating(ctx context.Context, input *types.RecipeRat
 	return x, nil
 }
 
-//go:embed queries/recipe_ratings/update.sql
-var updateRecipeRatingQuery string
-
 // UpdateRecipeRating updates a particular recipe rating.
 func (q *Querier) UpdateRecipeRating(ctx context.Context, updated *types.RecipeRating) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -238,22 +236,19 @@ func (q *Querier) UpdateRecipeRating(ctx context.Context, updated *types.RecipeR
 	if updated == nil {
 		return ErrNilInputProvided
 	}
-
 	logger := q.logger.WithValue(keys.RecipeRatingIDKey, updated.ID)
 	tracing.AttachRecipeRatingIDToSpan(span, updated.ID)
 
-	args := []any{
-		updated.RecipeID,
-		updated.Taste,
-		updated.Difficulty,
-		updated.Cleanup,
-		updated.Instructions,
-		updated.Overall,
-		updated.Notes,
-		updated.ID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "recipe rating update", updateRecipeRatingQuery, args); err != nil {
+	if err := q.generatedQuerier.UpdateRecipeRating(ctx, q.db, &generated.UpdateRecipeRatingParams{
+		RecipeID:     updated.RecipeID,
+		Taste:        nullStringFromFloat32(updated.Taste),
+		Difficulty:   nullStringFromFloat32(updated.Difficulty),
+		Cleanup:      nullStringFromFloat32(updated.Cleanup),
+		Instructions: nullStringFromFloat32(updated.Instructions),
+		Overall:      nullStringFromFloat32(updated.Overall),
+		Notes:        updated.Notes,
+		ID:           updated.ID,
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe rating")
 	}
 

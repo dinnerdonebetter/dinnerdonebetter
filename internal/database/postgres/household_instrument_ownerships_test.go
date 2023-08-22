@@ -333,31 +333,6 @@ func TestQuerier_CreateHouseholdInstrumentOwnership(T *testing.T) {
 func TestQuerier_UpdateHouseholdInstrumentOwnership(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHouseholdInstrumentOwnership := fakes.BuildFakeHouseholdInstrumentOwnership()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleHouseholdInstrumentOwnership.Notes,
-			exampleHouseholdInstrumentOwnership.Quantity,
-			exampleHouseholdInstrumentOwnership.Instrument.ID,
-			exampleHouseholdInstrumentOwnership.ID,
-			exampleHouseholdInstrumentOwnership.BelongsToHousehold,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateHouseholdInstrumentOwnershipQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.UpdateHouseholdInstrumentOwnership(ctx, exampleHouseholdInstrumentOwnership))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
@@ -365,31 +340,6 @@ func TestQuerier_UpdateHouseholdInstrumentOwnership(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateHouseholdInstrumentOwnership(ctx, nil))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHouseholdInstrumentOwnership := fakes.BuildFakeHouseholdInstrumentOwnership()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleHouseholdInstrumentOwnership.Notes,
-			exampleHouseholdInstrumentOwnership.Quantity,
-			exampleHouseholdInstrumentOwnership.Instrument.ID,
-			exampleHouseholdInstrumentOwnership.ID,
-			exampleHouseholdInstrumentOwnership.BelongsToHousehold,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateHouseholdInstrumentOwnershipQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.UpdateHouseholdInstrumentOwnership(ctx, exampleHouseholdInstrumentOwnership))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

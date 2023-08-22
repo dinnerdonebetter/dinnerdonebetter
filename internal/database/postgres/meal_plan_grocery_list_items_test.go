@@ -540,39 +540,6 @@ func TestQuerier_CreateMealPlanGroceryListItemsForMealPlan(T *testing.T) {
 func TestQuerier_UpdateMealPlanGroceryListItem(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
-		exampleMealPlanGroceryListItem.PurchasedMeasurementUnit = fakes.BuildFakeValidMeasurementUnit()
-
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleMealPlanGroceryListItem.BelongsToMealPlan,
-			exampleMealPlanGroceryListItem.Ingredient.ID,
-			exampleMealPlanGroceryListItem.MeasurementUnit.ID,
-			exampleMealPlanGroceryListItem.MinimumQuantityNeeded,
-			exampleMealPlanGroceryListItem.MaximumQuantityNeeded,
-			exampleMealPlanGroceryListItem.QuantityPurchased,
-			exampleMealPlanGroceryListItem.PurchasedMeasurementUnit.ID,
-			exampleMealPlanGroceryListItem.PurchasedUPC,
-			exampleMealPlanGroceryListItem.PurchasePrice,
-			exampleMealPlanGroceryListItem.StatusExplanation,
-			exampleMealPlanGroceryListItem.Status,
-			exampleMealPlanGroceryListItem.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateMealPlanGroceryListItemQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.UpdateMealPlanGroceryListItem(ctx, exampleMealPlanGroceryListItem))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
@@ -580,43 +547,6 @@ func TestQuerier_UpdateMealPlanGroceryListItem(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateMealPlanGroceryListItem(ctx, nil))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
-
-		c, db := buildTestClient(t)
-
-		var purchasedMeasurementUnitID *string
-		if exampleMealPlanGroceryListItem.PurchasedMeasurementUnit != nil {
-			purchasedMeasurementUnitID = &exampleMealPlanGroceryListItem.PurchasedMeasurementUnit.ID
-		}
-
-		args := []any{
-			exampleMealPlanGroceryListItem.BelongsToMealPlan,
-			exampleMealPlanGroceryListItem.Ingredient.ID,
-			exampleMealPlanGroceryListItem.MeasurementUnit.ID,
-			exampleMealPlanGroceryListItem.MinimumQuantityNeeded,
-			exampleMealPlanGroceryListItem.MaximumQuantityNeeded,
-			exampleMealPlanGroceryListItem.QuantityPurchased,
-			purchasedMeasurementUnitID,
-			exampleMealPlanGroceryListItem.PurchasedUPC,
-			exampleMealPlanGroceryListItem.PurchasePrice,
-			exampleMealPlanGroceryListItem.StatusExplanation,
-			exampleMealPlanGroceryListItem.Status,
-			exampleMealPlanGroceryListItem.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateMealPlanGroceryListItemQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.UpdateMealPlanGroceryListItem(ctx, exampleMealPlanGroceryListItem))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

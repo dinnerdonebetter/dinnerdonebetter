@@ -397,9 +397,6 @@ func (q *Querier) CreateMealPlanOption(ctx context.Context, input *types.MealPla
 	return q.createMealPlanOption(ctx, q.db, input, false)
 }
 
-//go:embed queries/meal_plan_options/update.sql
-var updateMealPlanOptionQuery string
-
 // UpdateMealPlanOption updates a particular meal plan option.
 func (q *Querier) UpdateMealPlanOption(ctx context.Context, updated *types.MealPlanOption) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -408,21 +405,18 @@ func (q *Querier) UpdateMealPlanOption(ctx context.Context, updated *types.MealP
 	if updated == nil {
 		return ErrNilInputProvided
 	}
-
 	logger := q.logger.WithValue(keys.MealPlanOptionIDKey, updated.ID)
 	tracing.AttachMealPlanOptionIDToSpan(span, updated.ID)
 
-	args := []any{
-		updated.AssignedCook,
-		updated.AssignedDishwasher,
-		updated.Meal.ID,
-		updated.Notes,
-		updated.MealScale,
-		updated.BelongsToMealPlanEvent,
-		updated.ID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "meal plan option update", updateMealPlanOptionQuery, args); err != nil {
+	if err := q.generatedQuerier.UpdateMealPlanOption(ctx, q.db, &generated.UpdateMealPlanOptionParams{
+		MealID:                 updated.Meal.ID,
+		Notes:                  updated.Notes,
+		MealScale:              stringFromFloat32(updated.MealScale),
+		ID:                     updated.ID,
+		AssignedCook:           nullStringFromStringPointer(updated.AssignedCook),
+		AssignedDishwasher:     nullStringFromStringPointer(updated.AssignedDishwasher),
+		BelongsToMealPlanEvent: nullStringFromString(updated.BelongsToMealPlanEvent),
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating meal plan option")
 	}
 

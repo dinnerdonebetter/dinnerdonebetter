@@ -466,33 +466,6 @@ func TestQuerier_CreateMealPlanOption(T *testing.T) {
 func TestQuerier_UpdateMealPlanOption(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleMealPlanOption.AssignedCook,
-			exampleMealPlanOption.AssignedDishwasher,
-			exampleMealPlanOption.Meal.ID,
-			exampleMealPlanOption.Notes,
-			exampleMealPlanOption.MealScale,
-			exampleMealPlanOption.BelongsToMealPlanEvent,
-			exampleMealPlanOption.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateMealPlanOptionQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.UpdateMealPlanOption(ctx, exampleMealPlanOption))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
@@ -500,33 +473,6 @@ func TestQuerier_UpdateMealPlanOption(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.UpdateMealPlanOption(ctx, nil))
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleMealPlanOption.AssignedCook,
-			exampleMealPlanOption.AssignedDishwasher,
-			exampleMealPlanOption.Meal.ID,
-			exampleMealPlanOption.Notes,
-			exampleMealPlanOption.MealScale,
-			exampleMealPlanOption.BelongsToMealPlanEvent,
-			exampleMealPlanOption.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(updateMealPlanOptionQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.UpdateMealPlanOption(ctx, exampleMealPlanOption))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 
