@@ -2,18 +2,15 @@
 
 UPDATE recipe_step_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2;
 
-
 -- name: CreateRecipeStepInstrument :exec
 
 INSERT INTO recipe_step_instruments
 (id,instrument_id,recipe_step_product_id,"name",notes,preference_rank,optional,option_index,minimum_quantity,maximum_quantity,belongs_to_recipe_step)
 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11);
 
-
 -- name: CheckRecipeStepInstrumentExistence :one
 
 SELECT EXISTS ( SELECT recipe_step_instruments.id FROM recipe_step_instruments JOIN recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_instruments.archived_at IS NULL AND recipe_step_instruments.belongs_to_recipe_step = sqlc.arg(recipe_step_id) AND recipe_step_instruments.id = sqlc.arg(recipe_step_instrument_id) AND recipe_steps.archived_at IS NULL AND recipe_steps.belongs_to_recipe = sqlc.arg(recipe_id) AND recipe_steps.id = sqlc.arg(recipe_step_id) AND recipes.archived_at IS NULL AND recipes.id = sqlc.arg(recipe_id) );
-
 
 -- name: GetRecipeStepInstrumentsForRecipe :many
 
@@ -52,7 +49,6 @@ WHERE recipe_step_instruments.archived_at IS NULL
 	AND recipe_steps.belongs_to_recipe = $1
 	AND recipes.archived_at IS NULL
 	AND recipes.id = $1;
-
 
 -- name: GetRecipeStepInstrument :one
 
@@ -94,7 +90,6 @@ WHERE recipe_step_instruments.archived_at IS NULL
 	AND recipe_steps.id = $4
 	AND recipes.archived_at IS NULL
 	AND recipes.id = $5;
-
 
 -- name: UpdateRecipeStepInstrument :exec
 

@@ -2,7 +2,6 @@
 
 UPDATE meals SET archived_at = NOW() WHERE archived_at IS NULL AND created_by_user = $1 AND id = $2;
 
-
 -- name: CreateMeal :exec
 
 INSERT INTO meals (id,"name",description,min_estimated_portions,max_estimated_portions,eligible_for_meal_plans,created_by_user) VALUES ($1,$2,$3,$4,$5,$6,$7);
@@ -10,7 +9,6 @@ INSERT INTO meals (id,"name",description,min_estimated_portions,max_estimated_po
 -- name: CheckMealExistence :one
 
 SELECT EXISTS ( SELECT meals.id FROM meals WHERE meals.archived_at IS NULL AND meals.id = $1 );
-
 
 -- name: GetMealsNeedingIndexing :many
 
@@ -44,7 +42,6 @@ FROM meals
 WHERE meals.archived_at IS NULL
 	AND meal_components.archived_at IS NULL
 	AND meals.id = $1;
-
 
 -- name: UpdateMealLastIndexedAt :exec
 

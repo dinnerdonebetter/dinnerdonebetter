@@ -2,13 +2,11 @@
 
 UPDATE recipe_step_vessels SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2;
 
-
 -- name: CreateRecipeStepVessel :exec
 
 INSERT INTO recipe_step_vessels
 (id,"name",notes,belongs_to_recipe_step,recipe_step_product_id,valid_vessel_id,vessel_predicate,minimum_quantity,maximum_quantity,unavailable_after_step)
 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10);
-
 
 -- name: CheckRecipeStepVesselExistence :one
 
@@ -26,7 +24,6 @@ SELECT EXISTS (
         AND recipes.archived_at IS NULL
         AND recipes.id = sqlc.arg(recipe_id)
 );
-
 
 -- name: GetRecipeStepVesselsForRecipe :many
 
@@ -83,7 +80,6 @@ WHERE recipe_step_vessels.archived_at IS NULL
 	AND recipe_steps.belongs_to_recipe = $1
 	AND recipes.archived_at IS NULL
 	AND recipes.id = $1;
-
 
 -- name: GetRecipeStepVessel :one
 
@@ -143,7 +139,6 @@ WHERE recipe_step_vessels.archived_at IS NULL
 	AND recipe_steps.id = $4
 	AND recipes.archived_at IS NULL
 	AND recipes.id = $5;
-
 
 -- name: UpdateRecipeStepVessel :exec
 

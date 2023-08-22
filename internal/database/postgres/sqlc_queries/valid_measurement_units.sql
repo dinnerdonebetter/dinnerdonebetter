@@ -2,18 +2,15 @@
 
 UPDATE valid_measurement_units SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
 
-
 -- name: CreateValidMeasurementUnit :exec
 
 INSERT INTO valid_measurement_units
 (id,"name",description,volumetric,icon_path,universal,metric,imperial,plural_name,slug)
 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10);
 
-
 -- name: CheckValidMeasurementUnitExistence :one
 
 SELECT EXISTS ( SELECT valid_measurement_units.id FROM valid_measurement_units WHERE valid_measurement_units.archived_at IS NULL AND valid_measurement_units.id = $1 );
-
 
 -- name: GetValidMeasurementUnitByID :one
 
@@ -32,7 +29,6 @@ SELECT valid_measurement_units.id,
        valid_measurement_units.archived_at
   FROM valid_measurement_units
  WHERE valid_measurement_units.archived_at IS NULL;
-
 
 -- name: GetValidMeasurementUnits :many
 
@@ -130,7 +126,6 @@ FROM valid_measurement_units
 WHERE valid_measurement_units.archived_at IS NULL
 	AND valid_measurement_units.id = $1;
 
-
 -- name: GetRandomValidMeasurementUnit :one
 
 SELECT
@@ -150,7 +145,6 @@ SELECT
 FROM valid_measurement_units
 WHERE valid_measurement_units.archived_at IS NULL
 	ORDER BY random() LIMIT 1;
-
 
 -- name: GetValidMeasurementUnitsWithIDs :many
 
@@ -172,7 +166,6 @@ FROM valid_measurement_units
 WHERE valid_measurement_units.archived_at IS NULL
 	AND valid_measurement_units.id = ANY(sqlc.arg(ids)::text[]);
 
-
 -- name: SearchForValidMeasurementUnits :many
 
 SELECT
@@ -193,7 +186,6 @@ FROM valid_measurement_units
 WHERE (valid_measurement_units.name ILIKE '%' || sqlc.arg(query)::text || '%' OR valid_measurement_units.universal is TRUE)
 AND valid_measurement_units.archived_at IS NULL
 LIMIT 50;
-
 
 -- name: SearchValidMeasurementUnitsByIngredientID :many
 
@@ -265,7 +257,6 @@ WHERE
 	LIMIT sqlc.narg(query_limit)
 	OFFSET sqlc.narg(query_offset);
 
-
 -- name: UpdateValidMeasurementUnit :exec
 
 UPDATE valid_measurement_units SET
@@ -280,7 +271,6 @@ UPDATE valid_measurement_units SET
 	plural_name = $9,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL AND id = $10;
-
 
 -- name: UpdateValidMeasurementUnitLastIndexedAt :exec
 

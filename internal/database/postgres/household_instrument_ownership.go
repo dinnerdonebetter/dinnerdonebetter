@@ -140,9 +140,6 @@ func (q *Querier) HouseholdInstrumentOwnershipExists(ctx context.Context, househ
 	return result, nil
 }
 
-//go:embed queries/household_instrument_ownerships/get_one.sql
-var getHouseholdInstrumentOwnershipQuery string
-
 // GetHouseholdInstrumentOwnership fetches a household instrument ownership from the database.
 func (q *Querier) GetHouseholdInstrumentOwnership(ctx context.Context, householdInstrumentOwnershipID, householdID string) (*types.HouseholdInstrumentOwnership, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -162,16 +159,36 @@ func (q *Querier) GetHouseholdInstrumentOwnership(ctx context.Context, household
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	args := []any{
-		householdInstrumentOwnershipID,
-		householdID,
+	result, err := q.generatedQuerier.GetHouseholdInstrumentOwnership(ctx, q.db, &generated.GetHouseholdInstrumentOwnershipParams{
+		ID:                 householdInstrumentOwnershipID,
+		BelongsToHousehold: householdID,
+	})
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching household instrument ownership")
 	}
 
-	row := q.getOneRow(ctx, q.db, "householdInstrumentOwnership", getHouseholdInstrumentOwnershipQuery, args)
-
-	householdInstrumentOwnership, _, _, err := q.scanHouseholdInstrumentOwnership(ctx, row, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning householdInstrumentOwnership")
+	householdInstrumentOwnership := &types.HouseholdInstrumentOwnership{
+		CreatedAt:          result.CreatedAt,
+		ArchivedAt:         timePointerFromNullTime(result.ArchivedAt),
+		LastUpdatedAt:      timePointerFromNullTime(result.LastUpdatedAt),
+		ID:                 result.ID,
+		Notes:              result.Notes,
+		BelongsToHousehold: result.BelongsToHousehold,
+		Quantity:           uint16(result.Quantity),
+		Instrument: types.ValidInstrument{
+			CreatedAt:                      result.ValidInstrumentCreatedAt,
+			LastUpdatedAt:                  timePointerFromNullTime(result.ValidInstrumentLastUpdatedAt),
+			ArchivedAt:                     timePointerFromNullTime(result.ValidInstrumentArchivedAt),
+			IconPath:                       result.ValidInstrumentIconPath,
+			ID:                             result.ValidInstrumentID,
+			Name:                           result.ValidInstrumentName,
+			PluralName:                     result.ValidInstrumentPluralName,
+			Description:                    result.ValidInstrumentDescription,
+			Slug:                           result.ValidInstrumentSlug,
+			DisplayInSummaryLists:          result.ValidInstrumentDisplayInSummaryLists,
+			IncludeInGeneratedInstructions: result.ValidInstrumentIncludeInGeneratedInstructions,
+			UsableForStorage:               result.ValidInstrumentUsableForStorage,
+		},
 	}
 
 	return householdInstrumentOwnership, nil

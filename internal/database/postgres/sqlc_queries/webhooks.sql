@@ -8,7 +8,6 @@ WHERE archived_at IS NULL
 	AND belongs_to_household = $1
 	AND id = $2;
 
-
 -- name: CreateWebhook :exec
 
 INSERT INTO webhooks (
@@ -56,7 +55,6 @@ SELECT webhooks.id,
        AND webhooks.archived_at IS NULL
        AND webhooks.belongs_to_household = $1
        AND webhooks.id = $2;
-
 
 -- name: GetWebhooks :many
 
@@ -115,7 +113,6 @@ WHERE
 	AND webhooks.belongs_to_household = sqlc.arg(household_id)
 	OFFSET sqlc.narg(query_offset)
     LIMIT sqlc.narg(query_limit);
-
 
 -- name: GetWebhook :many
 

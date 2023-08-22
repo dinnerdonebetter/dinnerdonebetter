@@ -2,11 +2,9 @@
 
 UPDATE valid_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
 
-
 -- name: CreateValidInstrument :exec
 
 INSERT INTO valid_instruments (id,"name",plural_name,description,icon_path,usable_for_storage,display_in_summary_lists,include_in_generated_instructions,slug) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9);
-
 
 -- name: CheckValidInstrumentExistence :one
 
@@ -62,7 +60,6 @@ ORDER BY
     OFFSET sqlc.narg(query_offset)
 	LIMIT sqlc.narg(query_limit);
 
-
 -- name: GetValidInstrumentsNeedingIndexing :many
 
 SELECT valid_instruments.id
@@ -92,7 +89,6 @@ SELECT
 FROM valid_instruments
 WHERE valid_instruments.archived_at IS NULL
 	AND valid_instruments.id = $1;
-
 
 -- name: GetRandomValidInstrument :one
 
@@ -132,7 +128,6 @@ FROM valid_instruments
 WHERE valid_instruments.archived_at IS NULL
     AND valid_instruments.id = ANY(sqlc.arg(ids)::text[]);
 
-
 -- name: SearchForValidInstruments :many
 
 SELECT
@@ -153,7 +148,6 @@ WHERE valid_instruments.archived_at IS NULL
 	AND valid_instruments.name ILIKE '%' || sqlc.arg(query)::text || '%'
     LIMIT 50;
 
-
 -- name: UpdateValidInstrument :exec
 
 UPDATE valid_instruments
@@ -169,7 +163,6 @@ SET
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = $9;
-
 
 -- name: UpdateValidInstrumentLastIndexedAt :exec
 

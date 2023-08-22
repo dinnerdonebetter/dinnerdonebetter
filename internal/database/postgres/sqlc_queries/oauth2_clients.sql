@@ -9,7 +9,6 @@ WHERE archived_at IS NULL
 
 INSERT INTO oauth2_clients (id,"name",client_id,client_secret) VALUES ($1,$2,$3,$4);
 
-
 -- name: GetOAuth2ClientByClientID :one
 
 SELECT
@@ -22,7 +21,6 @@ SELECT
 FROM oauth2_clients
 WHERE oauth2_clients.archived_at IS NULL
 	AND oauth2_clients.client_id = $1;
-
 
 -- name: GetOAuth2ClientByDatabaseID :one
 

@@ -2,7 +2,6 @@
 
 UPDATE valid_ingredients SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
 
-
 -- name: CreateValidIngredient :exec
 
 INSERT INTO valid_ingredients
@@ -80,11 +79,9 @@ INSERT INTO valid_ingredients
     sqlc.arg(is_heat)
 );
 
-
 -- name: CheckValidIngredientExistence :one
 
 SELECT EXISTS ( SELECT valid_ingredients.id FROM valid_ingredients WHERE valid_ingredients.archived_at IS NULL AND valid_ingredients.id = $1 );
-
 
 -- name: GetValidIngredientByID :one
 
@@ -129,7 +126,6 @@ SELECT
     valid_ingredients.archived_at
     FROM valid_ingredients
     WHERE valid_ingredients.archived_at IS NULL;
-
 
 -- name: GetValidIngredients :many
 
@@ -207,7 +203,6 @@ ORDER BY
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
 
-
 -- name: GetValidIngredientsNeedingIndexing :many
 
 SELECT valid_ingredients.id
@@ -218,7 +213,6 @@ SELECT valid_ingredients.id
 			OR valid_ingredients.last_indexed_at
 				< now() - '24 hours'::INTERVAL
 		);
-
 
 -- name: GetValidIngredient :one
 
@@ -265,7 +259,6 @@ FROM valid_ingredients
 WHERE valid_ingredients.archived_at IS NULL
 AND valid_ingredients.id = $1;
 
-
 -- name: GetRandomValidIngredient :one
 
 SELECT
@@ -310,7 +303,6 @@ SELECT
 FROM valid_ingredients
 WHERE valid_ingredients.archived_at IS NULL
 ORDER BY random() LIMIT 1;
-
 
 -- name: GetValidIngredientsWithIDs :many
 
@@ -359,7 +351,6 @@ WHERE
   valid_ingredients.archived_at IS NULL
     AND valid_ingredients.id = ANY(sqlc.arg(ids)::text[]);
 
-
 -- name: SearchForValidIngredients :many
 
 SELECT
@@ -405,7 +396,6 @@ FROM valid_ingredients
 WHERE valid_ingredients.name ILIKE '%' || $1::text || '%'
 	AND valid_ingredients.archived_at IS NULL
 LIMIT 50;
-
 
 -- name: SearchValidIngredientsByPreparationAndIngredientName :many
 
@@ -457,7 +447,6 @@ WHERE valid_ingredient_preparations.archived_at IS NULL
 	AND (valid_ingredient_preparations.valid_preparation_id = $1 OR valid_preparations.restrict_to_ingredients IS FALSE)
 	AND valid_ingredients.name ILIKE '%' || $2::text || '%';
 
-
 -- name: UpdateValidIngredient :exec
 
 UPDATE valid_ingredients SET
@@ -497,7 +486,6 @@ UPDATE valid_ingredients SET
     is_heat = sqlc.arg(is_heat),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL AND id = sqlc.arg(id);
-
 
 -- name: UpdateValidIngredientLastIndexedAt :exec
 

@@ -35,8 +35,6 @@ WHERE meal_plans.archived_at IS NULL
 	AND voting_deadline < now()
 GROUP BY meal_plans.id
 ORDER BY meal_plans.id;
-
-
 -- name: GetFinalizedMealPlansForPlanning :many
 
 SELECT
@@ -65,7 +63,6 @@ GROUP BY
 ORDER BY
   meal_plans.id;
 
-
 -- name: GetFinalizedMealPlansWithoutGroceryListInit :many
 
 SELECT
@@ -75,7 +72,6 @@ FROM meal_plans
 WHERE meal_plans.archived_at IS NULL
 	AND meal_plans.status = 'finalized'
 	AND meal_plans.grocery_list_initialized IS FALSE;
-
 
 -- name: GetMealPlan :one
 
@@ -128,7 +124,6 @@ SET
 WHERE archived_at IS NULL
 	AND id = $1;
 
-
 -- name: MarkMealPlanAsPrepTasksCreated :exec
 
 UPDATE meal_plans
@@ -137,7 +132,6 @@ SET
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = $1;
-
 
 -- name: UpdateMealPlan :exec
 

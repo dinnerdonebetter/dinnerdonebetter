@@ -2,16 +2,13 @@
 
 UPDATE recipes SET archived_at = NOW() WHERE archived_at IS NULL AND created_by_user = $1 AND id = $2;
 
-
 -- name: CreateRecipe :exec
 
 INSERT INTO recipes (id,"name",slug,"source",description,inspired_by_recipe_id,min_estimated_portions,max_estimated_portions,portion_name,plural_portion_name,seal_of_approval,eligible_for_meals,yields_component_type,created_by_user) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14);
 
-
 -- name: CheckRecipeExistence :one
 
 SELECT EXISTS ( SELECT recipes.id FROM recipes WHERE recipes.archived_at IS NULL AND recipes.id = $1 );
-
 
 -- name: GetRecipeByID :one
 
@@ -76,7 +73,6 @@ FROM recipes
 WHERE recipes.archived_at IS NULL
 	AND recipes.id = $1
 ORDER BY recipe_steps.index;
-
 
 -- name: GetRecipeByIDAndAuthorID :many
 
@@ -143,7 +139,6 @@ WHERE recipes.archived_at IS NULL
 	AND recipes.created_by_user = $2
 ORDER BY recipe_steps.index;
 
-
 -- name: GetRecipesNeedingIndexing :many
 
 SELECT recipes.id
@@ -154,7 +149,6 @@ SELECT recipes.id
 			OR recipes.last_indexed_at
 				< now() - '24 hours'::INTERVAL
 		);
-
 
 -- name: GetRecipeIDsForMeal :many
 
@@ -171,7 +165,6 @@ GROUP BY
 	recipes.id
 ORDER BY
 	recipes.id;
-
 
 -- name: UpdateRecipe :exec
 
@@ -192,7 +185,6 @@ UPDATE recipes SET
 WHERE archived_at IS NULL
   AND created_by_user = $13
   AND id = $14;
-
 
 -- name: UpdateRecipeLastIndexedAt :exec
 

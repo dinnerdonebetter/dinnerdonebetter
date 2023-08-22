@@ -2,7 +2,6 @@
 
 UPDATE valid_ingredient_groups SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
 
-
 -- name: ArchiveValidIngredientGroupMember :exec
 
 UPDATE valid_ingredient_group_members SET archived_at = NOW() WHERE id = $1 AND belongs_to_group = $2;
@@ -17,7 +16,6 @@ INSERT INTO valid_ingredient_groups
 	slug
 ) VALUES ($1,$2,$3,$4);
 
-
 -- name: CreateValidIngredientGroupMember :exec
 
 INSERT INTO valid_ingredient_group_members
@@ -27,11 +25,9 @@ INSERT INTO valid_ingredient_group_members
 	valid_ingredient
 ) VALUES ($1,$2,$3);
 
-
 -- name: CheckValidIngredientGroupExistence :one
 
 SELECT EXISTS ( SELECT valid_ingredient_groups.id FROM valid_ingredient_groups WHERE valid_ingredient_groups.archived_at IS NULL AND valid_ingredient_groups.id = $1 );
-
 
 -- name: GetValidIngredientGroups :many
 
@@ -86,7 +82,6 @@ WHERE
 	OFFSET sqlc.narg(query_offset)
     LIMIT sqlc.narg(query_limit);
 
-
 -- name: GetValidIngredientGroupMembers :many
 
 SELECT
@@ -137,7 +132,6 @@ FROM valid_ingredient_group_members
 WHERE valid_ingredient_group_members.archived_at IS NULL
 AND valid_ingredient_group_members.belongs_to_group = $1;
 
-
 -- name: GetValidIngredientGroup :one
 
 SELECT
@@ -151,7 +145,6 @@ SELECT
 FROM valid_ingredient_groups
 WHERE valid_ingredient_groups.archived_at IS NULL
 AND valid_ingredient_groups.id = $1;
-
 
 -- name: SearchForValidIngredientGroups :many
 
@@ -206,7 +199,6 @@ WHERE
     )
 OFFSET sqlc.narg(query_offset)
     LIMIT sqlc.narg(query_limit);
-
 
 -- name: UpdateValidIngredientGroup :exec
 

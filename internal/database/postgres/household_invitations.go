@@ -169,16 +169,71 @@ func (q *Querier) GetHouseholdInvitationByHouseholdAndID(ctx context.Context, ho
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
 	tracing.AttachHouseholdInvitationIDToSpan(span, householdInvitationID)
 
-	args := []any{
-		householdID,
-		householdInvitationID,
+	result, err := q.generatedQuerier.GetHouseholdInvitationByHouseholdAndID(ctx, q.db, &generated.GetHouseholdInvitationByHouseholdAndIDParams{
+		DestinationHousehold: householdID,
+		ID:                   householdInvitationID,
+	})
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching household invitation")
 	}
 
-	row := q.getOneRow(ctx, q.db, "household invitation", getHouseholdInvitationByHouseholdAndIDQuery, args)
-
-	householdInvitation, _, _, err := q.scanHouseholdInvitation(ctx, row, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "reading household invitation")
+	householdInvitation := &types.HouseholdInvitation{
+		CreatedAt:     result.CreatedAt,
+		LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+		ToUser:        stringPointerFromNullString(result.ToUser),
+		Status:        string(result.Status),
+		ToEmail:       result.ToEmail,
+		StatusNote:    result.StatusNote,
+		Token:         result.Token,
+		ID:            result.ID,
+		Note:          result.Note,
+		ToName:        result.ToName,
+		ExpiresAt:     result.ExpiresAt,
+		DestinationHousehold: types.Household{
+			CreatedAt:                  result.HouseholdCreatedAt,
+			SubscriptionPlanID:         stringPointerFromNullString(result.HouseholdSubscriptionPlanID),
+			LastUpdatedAt:              timePointerFromNullTime(result.HouseholdLastUpdatedAt),
+			ArchivedAt:                 timePointerFromNullTime(result.HouseholdArchivedAt),
+			ContactPhone:               result.HouseholdContactPhone,
+			BillingStatus:              result.HouseholdBillingStatus,
+			AddressLine1:               result.HouseholdAddressLine1,
+			AddressLine2:               result.HouseholdAddressLine2,
+			City:                       result.HouseholdCity,
+			State:                      result.HouseholdState,
+			ZipCode:                    result.HouseholdZipCode,
+			Country:                    result.HouseholdCountry,
+			Latitude:                   float64PointerFromNullString(result.HouseholdLatitude),
+			Longitude:                  float64PointerFromNullString(result.HouseholdLongitude),
+			PaymentProcessorCustomerID: result.HouseholdPaymentProcessorCustomerID,
+			BelongsToUser:              result.HouseholdBelongsToUser,
+			ID:                         result.HouseholdID,
+			Name:                       result.HouseholdName,
+			Members:                    nil,
+		},
+		FromUser: types.User{
+			CreatedAt:                  result.UserCreatedAt,
+			PasswordLastChangedAt:      timePointerFromNullTime(result.UserPasswordLastChangedAt),
+			LastUpdatedAt:              timePointerFromNullTime(result.UserLastUpdatedAt),
+			LastAcceptedTermsOfService: timePointerFromNullTime(result.UserLastAcceptedTermsOfService),
+			LastAcceptedPrivacyPolicy:  timePointerFromNullTime(result.UserLastAcceptedPrivacyPolicy),
+			TwoFactorSecretVerifiedAt:  timePointerFromNullTime(result.UserTwoFactorSecretVerifiedAt),
+			AvatarSrc:                  stringPointerFromNullString(result.UserAvatarSrc),
+			Birthday:                   timePointerFromNullTime(result.UserBirthday),
+			ArchivedAt:                 timePointerFromNullTime(result.UserArchivedAt),
+			AccountStatusExplanation:   result.UserUserAccountStatusExplanation,
+			TwoFactorSecret:            result.UserTwoFactorSecret,
+			HashedPassword:             result.UserHashedPassword,
+			ID:                         result.UserID,
+			AccountStatus:              result.UserUserAccountStatus,
+			Username:                   result.UserUsername,
+			FirstName:                  result.UserFirstName,
+			LastName:                   result.UserLastName,
+			EmailAddress:               result.UserEmailAddress,
+			EmailAddressVerifiedAt:     timePointerFromNullTime(result.UserEmailAddressVerifiedAt),
+			ServiceRole:                result.UserServiceRole,
+			RequiresPasswordChange:     result.UserRequiresPasswordChange,
+		},
 	}
 
 	return householdInvitation, nil
@@ -207,16 +262,71 @@ func (q *Querier) GetHouseholdInvitationByTokenAndID(ctx context.Context, token,
 
 	logger.Debug("fetching household invitation")
 
-	args := []any{
-		token,
-		invitationID,
+	result, err := q.generatedQuerier.GetHouseholdInvitationByTokenAndID(ctx, q.db, &generated.GetHouseholdInvitationByTokenAndIDParams{
+		Token: token,
+		ID:    invitationID,
+	})
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching household invitation")
 	}
 
-	row := q.getOneRow(ctx, q.db, "household invitation", getHouseholdInvitationByTokenAndIDQuery, args)
-
-	householdInvitation, _, _, err := q.scanHouseholdInvitation(ctx, row, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "reading household invitation")
+	householdInvitation := &types.HouseholdInvitation{
+		CreatedAt:     result.CreatedAt,
+		LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+		ToUser:        stringPointerFromNullString(result.ToUser),
+		Status:        string(result.Status),
+		ToEmail:       result.ToEmail,
+		StatusNote:    result.StatusNote,
+		Token:         result.Token,
+		ID:            result.ID,
+		Note:          result.Note,
+		ToName:        result.ToName,
+		ExpiresAt:     result.ExpiresAt,
+		DestinationHousehold: types.Household{
+			CreatedAt:                  result.HouseholdCreatedAt,
+			SubscriptionPlanID:         stringPointerFromNullString(result.HouseholdSubscriptionPlanID),
+			LastUpdatedAt:              timePointerFromNullTime(result.HouseholdLastUpdatedAt),
+			ArchivedAt:                 timePointerFromNullTime(result.HouseholdArchivedAt),
+			ContactPhone:               result.HouseholdContactPhone,
+			BillingStatus:              result.HouseholdBillingStatus,
+			AddressLine1:               result.HouseholdAddressLine1,
+			AddressLine2:               result.HouseholdAddressLine2,
+			City:                       result.HouseholdCity,
+			State:                      result.HouseholdState,
+			ZipCode:                    result.HouseholdZipCode,
+			Country:                    result.HouseholdCountry,
+			Latitude:                   float64PointerFromNullString(result.HouseholdLatitude),
+			Longitude:                  float64PointerFromNullString(result.HouseholdLongitude),
+			PaymentProcessorCustomerID: result.HouseholdPaymentProcessorCustomerID,
+			BelongsToUser:              result.HouseholdBelongsToUser,
+			ID:                         result.HouseholdID,
+			Name:                       result.HouseholdName,
+			Members:                    nil,
+		},
+		FromUser: types.User{
+			CreatedAt:                  result.UserCreatedAt,
+			PasswordLastChangedAt:      timePointerFromNullTime(result.UserPasswordLastChangedAt),
+			LastUpdatedAt:              timePointerFromNullTime(result.UserLastUpdatedAt),
+			LastAcceptedTermsOfService: timePointerFromNullTime(result.UserLastAcceptedTermsOfService),
+			LastAcceptedPrivacyPolicy:  timePointerFromNullTime(result.UserLastAcceptedPrivacyPolicy),
+			TwoFactorSecretVerifiedAt:  timePointerFromNullTime(result.UserTwoFactorSecretVerifiedAt),
+			AvatarSrc:                  stringPointerFromNullString(result.UserAvatarSrc),
+			Birthday:                   timePointerFromNullTime(result.UserBirthday),
+			ArchivedAt:                 timePointerFromNullTime(result.UserArchivedAt),
+			AccountStatusExplanation:   result.UserUserAccountStatusExplanation,
+			TwoFactorSecret:            result.UserTwoFactorSecret,
+			HashedPassword:             result.UserHashedPassword,
+			ID:                         result.UserID,
+			AccountStatus:              result.UserUserAccountStatus,
+			Username:                   result.UserUsername,
+			FirstName:                  result.UserFirstName,
+			LastName:                   result.UserLastName,
+			EmailAddress:               result.UserEmailAddress,
+			EmailAddressVerifiedAt:     timePointerFromNullTime(result.UserEmailAddressVerifiedAt),
+			ServiceRole:                result.UserServiceRole,
+			RequiresPasswordChange:     result.UserRequiresPasswordChange,
+		},
 	}
 
 	return householdInvitation, nil
@@ -245,16 +355,71 @@ func (q *Querier) GetHouseholdInvitationByEmailAndToken(ctx context.Context, ema
 	logger = logger.WithValue(keys.HouseholdInvitationTokenKey, token)
 	tracing.AttachHouseholdInvitationTokenToSpan(span, token)
 
-	args := []any{
-		emailAddress,
-		token,
+	result, err := q.generatedQuerier.GetHouseholdInvitationByEmailAndToken(ctx, q.db, &generated.GetHouseholdInvitationByEmailAndTokenParams{
+		EmailAddress: emailAddress,
+		Token:        token,
+	})
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching household invitation")
 	}
 
-	row := q.getOneRow(ctx, q.db, "household invitation", getHouseholdInvitationByEmailAndTokenQuery, args)
-
-	invitation, _, _, err := q.scanHouseholdInvitation(ctx, row, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning invitation")
+	invitation := &types.HouseholdInvitation{
+		CreatedAt:     result.CreatedAt,
+		LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+		ToUser:        stringPointerFromNullString(result.ToUser),
+		Status:        string(result.Status),
+		ToEmail:       result.ToEmail,
+		StatusNote:    result.StatusNote,
+		Token:         result.Token,
+		ID:            result.ID,
+		Note:          result.Note,
+		ToName:        result.ToName,
+		ExpiresAt:     result.ExpiresAt,
+		DestinationHousehold: types.Household{
+			CreatedAt:                  result.HouseholdCreatedAt,
+			SubscriptionPlanID:         stringPointerFromNullString(result.HouseholdSubscriptionPlanID),
+			LastUpdatedAt:              timePointerFromNullTime(result.HouseholdLastUpdatedAt),
+			ArchivedAt:                 timePointerFromNullTime(result.HouseholdArchivedAt),
+			ContactPhone:               result.HouseholdContactPhone,
+			BillingStatus:              result.HouseholdBillingStatus,
+			AddressLine1:               result.HouseholdAddressLine1,
+			AddressLine2:               result.HouseholdAddressLine2,
+			City:                       result.HouseholdCity,
+			State:                      result.HouseholdState,
+			ZipCode:                    result.HouseholdZipCode,
+			Country:                    result.HouseholdCountry,
+			Latitude:                   float64PointerFromNullString(result.HouseholdLatitude),
+			Longitude:                  float64PointerFromNullString(result.HouseholdLongitude),
+			PaymentProcessorCustomerID: result.HouseholdPaymentProcessorCustomerID,
+			BelongsToUser:              result.HouseholdBelongsToUser,
+			ID:                         result.HouseholdID,
+			Name:                       result.HouseholdName,
+			Members:                    nil,
+		},
+		FromUser: types.User{
+			CreatedAt:                  result.UserCreatedAt,
+			PasswordLastChangedAt:      timePointerFromNullTime(result.UserPasswordLastChangedAt),
+			LastUpdatedAt:              timePointerFromNullTime(result.UserLastUpdatedAt),
+			LastAcceptedTermsOfService: timePointerFromNullTime(result.UserLastAcceptedTermsOfService),
+			LastAcceptedPrivacyPolicy:  timePointerFromNullTime(result.UserLastAcceptedPrivacyPolicy),
+			TwoFactorSecretVerifiedAt:  timePointerFromNullTime(result.UserTwoFactorSecretVerifiedAt),
+			AvatarSrc:                  stringPointerFromNullString(result.UserAvatarSrc),
+			Birthday:                   timePointerFromNullTime(result.UserBirthday),
+			ArchivedAt:                 timePointerFromNullTime(result.UserArchivedAt),
+			AccountStatusExplanation:   result.UserUserAccountStatusExplanation,
+			TwoFactorSecret:            result.UserTwoFactorSecret,
+			HashedPassword:             result.UserHashedPassword,
+			ID:                         result.UserID,
+			AccountStatus:              result.UserUserAccountStatus,
+			Username:                   result.UserUsername,
+			FirstName:                  result.UserFirstName,
+			LastName:                   result.UserLastName,
+			EmailAddress:               result.UserEmailAddress,
+			EmailAddressVerifiedAt:     timePointerFromNullTime(result.UserEmailAddressVerifiedAt),
+			ServiceRole:                result.UserServiceRole,
+			RequiresPasswordChange:     result.UserRequiresPasswordChange,
+		},
 	}
 
 	return invitation, nil

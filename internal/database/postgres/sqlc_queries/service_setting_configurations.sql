@@ -2,16 +2,13 @@
 
 UPDATE service_setting_configurations SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
 
-
 -- name: CreateServiceSettingConfiguration :exec
 
 INSERT INTO service_setting_configurations (id,value,notes,service_setting_id,belongs_to_user,belongs_to_household) VALUES ($1,$2,$3,$4,$5,$6);
 
-
 -- name: CheckServiceSettingConfigurationExistence :one
 
 SELECT EXISTS ( SELECT service_setting_configurations.id FROM service_setting_configurations WHERE service_setting_configurations.archived_at IS NULL AND service_setting_configurations.id = $1 );
-
 
 -- name: GetServiceSettingConfigurationByID :one
 

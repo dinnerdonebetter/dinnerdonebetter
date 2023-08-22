@@ -2,11 +2,9 @@
 
 UPDATE meal_plan_option_votes SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_meal_plan_option = $1 AND id = $2;
 
-
 -- name: CreateMealPlanOptionVote :exec
 
 INSERT INTO meal_plan_option_votes (id,rank,abstain,notes,by_user,belongs_to_meal_plan_option) VALUES ($1,$2,$3,$4,$5,$6);
-
 
 -- name: CheckMealPlanOptionVoteExistence :one
 
@@ -57,7 +55,6 @@ WHERE meal_plan_option_votes.archived_at IS NULL
 	AND meal_plans.archived_at IS NULL
 	AND meal_plans.id = $1;
 
-
 -- name: GetMealPlanOptionVote :one
 
 
@@ -85,7 +82,6 @@ WHERE meal_plan_option_votes.archived_at IS NULL
 	AND meal_plan_options.id = $1
 	AND meal_plans.archived_at IS NULL
 	AND meal_plans.id = $4;
-
 
 -- name: UpdateMealPlanOptionVote :exec
 

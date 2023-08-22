@@ -2,14 +2,12 @@
 
 UPDATE meal_plan_events SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1 AND belongs_to_meal_plan = $2;
 
-
 -- name: CreateMealPlanEvent :exec
 
 INSERT INTO
 	meal_plan_events (id, notes, starts_at, ends_at, meal_name, belongs_to_meal_plan)
 VALUES
 	($1, $2, $3, $4, $5, $6);
-
 
 -- name: MealPlanEventIsEligibleForVoting :one
 
@@ -33,7 +31,6 @@ SELECT
 
 SELECT EXISTS ( SELECT meal_plan_events.id FROM meal_plan_events WHERE meal_plan_events.archived_at IS NULL AND meal_plan_events.id = sqlc.arg(meal_plan_event_id) AND meal_plan_events.belongs_to_meal_plan = sqlc.arg(meal_plan_id));
 
-
 -- name: GetMealPlanEventsForMealPlan :many
 
 SELECT
@@ -49,7 +46,6 @@ SELECT
 FROM meal_plan_events
 WHERE meal_plan_events.archived_at IS NULL
 	AND meal_plan_events.belongs_to_meal_plan = $1;
-
 
 -- name: GetMealPlanEvent :one
 
@@ -67,7 +63,6 @@ FROM meal_plan_events
 WHERE meal_plan_events.archived_at IS NULL
 	AND meal_plan_events.id = $1
 	AND meal_plan_events.belongs_to_meal_plan = $2;
-
 
 -- name: UpdateMealPlanEvent :exec
 

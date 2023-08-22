@@ -2,16 +2,13 @@
 
 UPDATE valid_preparation_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
 
-
 -- name: CreateValidPreparationInstrument :exec
 
 INSERT INTO valid_preparation_instruments (id,notes,valid_preparation_id,valid_instrument_id) VALUES ($1,$2,$3,$4);
 
-
 -- name: CheckValidPreparationInstrumentExistence :one
 
 SELECT EXISTS ( SELECT valid_preparation_instruments.id FROM valid_preparation_instruments WHERE valid_preparation_instruments.archived_at IS NULL AND valid_preparation_instruments.id = $1 );
-
 
 -- name: GetValidPreparationInstrumentsForInstrument :many
 
@@ -376,7 +373,6 @@ WHERE
     AND valid_preparations.archived_at IS NULL
 	AND valid_preparation_instruments.id = $1;
 
-
 -- name: ValidPreparationInstrumentPairIsValid :one
 
 SELECT EXISTS(
@@ -386,7 +382,6 @@ SELECT EXISTS(
 	AND valid_preparation_id = $2
 	AND archived_at IS NULL
 );
-
 
 -- name: UpdateValidPreparationInstrument :exec
 

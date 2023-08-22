@@ -2,18 +2,15 @@
 
 UPDATE recipe_step_products SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2;
 
-
 -- name: CreateRecipeStepProduct :exec
 
 INSERT INTO recipe_step_products
 (id,"name","type",measurement_unit,minimum_quantity_value,maximum_quantity_value,quantity_notes,compostable,maximum_storage_duration_in_seconds,minimum_storage_temperature_in_celsius,maximum_storage_temperature_in_celsius,storage_instructions,belongs_to_recipe_step,is_liquid,is_waste,"index",contained_in_vessel_index)
 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17);
 
-
 -- name: CheckRecipeStepProductExistence :one
 
 SELECT EXISTS ( SELECT recipe_step_products.id FROM recipe_step_products JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_products.archived_at IS NULL AND recipe_step_products.belongs_to_recipe_step = sqlc.arg(recipe_step_id) AND recipe_step_products.id = sqlc.arg(recipe_step_product_id) AND recipe_steps.archived_at IS NULL AND recipe_steps.belongs_to_recipe = sqlc.arg(recipe_id) AND recipe_steps.id = sqlc.arg(recipe_step_id) AND recipes.archived_at IS NULL AND recipes.id = sqlc.arg(recipe_id) );
-
 
 -- name: GetRecipeStepProductsForRecipe :many
 
@@ -59,7 +56,6 @@ WHERE recipe_step_products.archived_at IS NULL
 	AND recipe_steps.belongs_to_recipe = $1
 	AND recipes.archived_at IS NULL
 	AND recipes.id = $1;
-
 
 -- name: GetRecipeStepProduct :one
 
@@ -108,7 +104,6 @@ WHERE recipe_step_products.archived_at IS NULL
 	AND recipe_steps.id = $4
 	AND recipes.archived_at IS NULL
 	AND recipes.id = $5;
-
 
 -- name: UpdateRecipeStepProduct :exec
 

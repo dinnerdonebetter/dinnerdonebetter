@@ -2,16 +2,13 @@
 
 UPDATE valid_ingredient_states SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
 
-
 -- name: CreateValidIngredientState :exec
 
 INSERT INTO valid_ingredient_states (id,"name",description,icon_path,past_tense,slug,attribute_type) VALUES ($1,$2,$3,$4,$5,$6,$7);
 
-
 -- name: CheckValidIngredientStateExistence :one
 
 SELECT EXISTS ( SELECT valid_ingredient_states.id FROM valid_ingredient_states WHERE valid_ingredient_states.archived_at IS NULL AND valid_ingredient_states.id = $1 );
-
 
 -- name: GetValidIngredientStates :many
 
@@ -52,7 +49,6 @@ WHERE valid_ingredient_states.archived_at IS NULL
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
 
-
 -- name: GetValidIngredientStatesNeedingIndexing :many
 
 SELECT valid_ingredient_states.id
@@ -83,7 +79,6 @@ FROM valid_ingredient_states
 WHERE valid_ingredient_states.archived_at IS NULL
 	AND valid_ingredient_states.id = $1;
 
-
 -- name: GetValidIngredientStatesWithIDs :many
 
 SELECT
@@ -100,7 +95,6 @@ SELECT
 FROM valid_ingredient_states
 WHERE valid_ingredient_states.archived_at IS NULL
 	AND valid_ingredient_states.id = ANY($1::text[]);
-
 
 -- name: SearchForValidIngredientStates :many
 
@@ -120,7 +114,6 @@ WHERE valid_ingredient_states.archived_at IS NULL
 	AND valid_ingredient_states.name ILIKE '%' || sqlc.arg(query)::text || '%'
 LIMIT 50;
 
-
 -- name: UpdateValidIngredientState :exec
 
 UPDATE valid_ingredient_states
@@ -134,7 +127,6 @@ SET
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = $7;
-
 
 -- name: UpdateValidIngredientStateLastIndexedAt :exec
 

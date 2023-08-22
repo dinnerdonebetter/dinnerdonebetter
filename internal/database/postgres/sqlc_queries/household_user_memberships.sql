@@ -3,12 +3,10 @@
 INSERT INTO household_user_memberships (id,belongs_to_user,belongs_to_household,household_role)
 VALUES ($1,$2,$3,$4);
 
-
 -- name: CreateHouseholdUserMembershipForNewUser :exec
 
 INSERT INTO household_user_memberships (id,belongs_to_user,belongs_to_household,default_household,household_role)
 VALUES ($1,$2,$3,$4,$5);
-
 
 -- name: GetDefaultHouseholdIDForUser :one
 
@@ -17,7 +15,6 @@ FROM households
  JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
 WHERE household_user_memberships.belongs_to_user = $1
 	AND household_user_memberships.default_household = TRUE;
-
 
 -- name: GetHouseholdUserMembershipsForUser :many
 
@@ -35,14 +32,12 @@ FROM household_user_memberships
 WHERE household_user_memberships.archived_at IS NULL
 	AND household_user_memberships.belongs_to_user = $1;
 
-
 -- name: MarkHouseholdUserMembershipAsUserDefault :exec
 
 UPDATE household_user_memberships
 SET default_household = (belongs_to_user = sqlc.arg(user_id) AND belongs_to_household = sqlc.arg(household_id))
 WHERE archived_at IS NULL
 	AND belongs_to_user = sqlc.arg(user_id);
-
 
 -- name: ModifyHouseholdUserPermissions :exec
 
@@ -57,16 +52,13 @@ WHERE household_user_memberships.archived_at IS NULL
 	AND household_user_memberships.belongs_to_household = $1
 	AND household_user_memberships.belongs_to_user = $2;
 
-
 -- name: TransferHouseholdMembership :exec
 
 UPDATE household_user_memberships SET belongs_to_user = $1 WHERE archived_at IS NULL AND belongs_to_household = $2 AND belongs_to_user = $3;
 
-
 -- name: TransferHouseholdOwnership :exec
 
 UPDATE households SET belongs_to_user = sqlc.arg(new_owner) WHERE archived_at IS NULL AND belongs_to_user = sqlc.arg(old_owner) AND id = sqlc.arg(household_id);
-
 
 -- name: UserIsHouseholdMember :one
 

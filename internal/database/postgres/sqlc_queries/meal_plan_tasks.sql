@@ -2,12 +2,10 @@
 
 UPDATE meal_plan_tasks SET completed_at = $4, status_explanation = $3, status = $2 WHERE id = $1;
 
-
 -- name: CreateMealPlanTask :exec
 
 INSERT INTO meal_plan_tasks (id,status,status_explanation,creation_explanation,belongs_to_meal_plan_option,belongs_to_recipe_prep_task,assigned_to_user)
 VALUES ($1,$2,$3,$4,$5,$6,$7);
-
 
 -- name: CheckMealPlanTaskExistence :one
 
@@ -22,7 +20,6 @@ SELECT EXISTS (
 		AND meal_plans.archived_at IS NULL
 		AND meal_plan_tasks.id = sqlc.arg(meal_plan_task_id)
 );
-
 
 -- name: GetMealPlanTask :one
 
@@ -80,7 +77,6 @@ WHERE meal_plan_options.archived_at IS NULL
 	AND meals.archived_at IS NULL
 	AND recipe_steps.archived_at IS NULL
 	AND meal_plan_tasks.id = $1;
-
 
 -- name: ListAllMealPlanTasksByMealPlan :many
 

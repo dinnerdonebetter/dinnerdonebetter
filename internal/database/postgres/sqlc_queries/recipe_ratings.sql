@@ -2,11 +2,9 @@
 
 UPDATE recipe_ratings SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
 
-
 -- name: CreateRecipeRating :exec
 
 INSERT INTO recipe_ratings (id,recipe_id,taste,difficulty,cleanup,instructions,overall,notes,by_user) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9);
-
 
 -- name: CheckRecipeRatingExistence :one
 
@@ -61,7 +59,6 @@ ORDER BY
 	recipe_ratings.id
 	LIMIT $5;
 
-
 -- name: GetRecipeRating :one
 
 SELECT
@@ -80,7 +77,6 @@ SELECT
 FROM recipe_ratings
 WHERE recipe_ratings.archived_at IS NULL
 	AND recipe_ratings.id = $1;
-
 
 -- name: UpdateRecipeRating :exec
 

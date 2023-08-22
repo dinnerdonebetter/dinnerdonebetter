@@ -181,6 +181,8 @@ type Querier interface {
 	GetOAuth2ClientTokenByRefresh(ctx context.Context, db DBTX, refresh string) (*Oauth2ClientTokens, error)
 	GetOnePastVotingDeadline(ctx context.Context, db DBTX, arg *GetOnePastVotingDeadlineParams) (*GetOnePastVotingDeadlineRow, error)
 	GetPasswordResetToken(ctx context.Context, db DBTX, token string) (*PasswordResetTokens, error)
+	GetPendingInvitesForUser(ctx context.Context, db DBTX, arg *GetPendingInvitesForUserParams) ([]*GetPendingInvitesForUserRow, error)
+	GetPendingInvitesFromUser(ctx context.Context, db DBTX, arg *GetPendingInvitesFromUserParams) ([]*GetPendingInvitesFromUserRow, error)
 	GetRandomValidIngredient(ctx context.Context, db DBTX) (*GetRandomValidIngredientRow, error)
 	GetRandomValidInstrument(ctx context.Context, db DBTX) (*GetRandomValidInstrumentRow, error)
 	GetRandomValidMeasurementUnit(ctx context.Context, db DBTX) (*GetRandomValidMeasurementUnitRow, error)

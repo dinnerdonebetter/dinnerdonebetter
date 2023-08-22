@@ -155,6 +155,16 @@ func float32PointerFromNullString(f sql.NullString) *float32 {
 	return nil
 }
 
+func float64PointerFromNullString(f sql.NullString) *float64 {
+	if f.Valid {
+		if parsedFloat, err := strconv.ParseFloat(f.String, 64); err == nil {
+			return pointers.Pointer(float64(parsedFloat))
+		}
+	}
+
+	return nil
+}
+
 func stringFromFloat32(f float32) string {
 	return strconv.FormatFloat(float64(f), 'f', -1, 32)
 }

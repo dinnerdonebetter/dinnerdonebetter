@@ -2,7 +2,6 @@
 
 UPDATE recipe_step_completion_conditions SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2;
 
-
 -- name: CreateRecipeStepCompletionCondition :exec
 
 INSERT INTO recipe_step_completion_conditions (
@@ -13,11 +12,9 @@ INSERT INTO recipe_step_completion_conditions (
 	notes
 ) VALUES ($1,$2,$3,$4,$5);
 
-
 -- name: CheckRecipeStepCompletionConditionExistence :one
 
 SELECT EXISTS ( SELECT recipe_step_completion_conditions.id FROM recipe_step_completion_conditions JOIN recipe_steps ON recipe_step_completion_conditions.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_completion_conditions.archived_at IS NULL AND recipe_step_completion_conditions.belongs_to_recipe_step = sqlc.arg(recipe_step_id) AND recipe_step_completion_conditions.id = sqlc.arg(recipe_step_completion_condition_id) AND recipe_steps.archived_at IS NULL AND recipe_steps.belongs_to_recipe = sqlc.arg(recipe_id) AND recipe_steps.id = sqlc.arg(recipe_step_id) AND recipes.archived_at IS NULL AND recipes.id = sqlc.arg(recipe_id) );
-
 
 -- name: GetAllRecipeStepCompletionConditionsForRecipe :many
 

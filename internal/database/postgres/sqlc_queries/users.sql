@@ -5,14 +5,12 @@ UPDATE users SET
 WHERE archived_at IS NULL
 	AND id = $1;
 
-
 -- name: AcceptTermsOfServiceForUser :exec
 
 UPDATE users SET
 	last_accepted_terms_of_service = NOW()
 WHERE archived_at IS NULL
 	AND id = $1;
-
 
 -- name: ArchiveUser :exec
 
@@ -21,7 +19,6 @@ UPDATE users SET
 WHERE archived_at IS NULL
 	AND id = $1;
 
-
 -- name: ArchiveUserMemberships :exec
 
 UPDATE household_user_memberships SET
@@ -29,11 +26,9 @@ UPDATE household_user_memberships SET
 WHERE archived_at IS NULL
 	AND belongs_to_user = $1;
 
-
 -- name: CreateUser :exec
 
 INSERT INTO users (id,first_name,last_name,username,email_address,hashed_password,two_factor_secret,avatar_src,user_account_status,birthday,service_role,email_address_verification_token) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);
-
 
 -- name: GetAdminUserByUsername :one
 
@@ -65,7 +60,6 @@ WHERE users.archived_at IS NULL
 	AND users.username = $1
 	AND users.two_factor_secret_verified_at IS NOT NULL;
 
-
 -- name: GetUserByEmail :one
 
 SELECT
@@ -93,7 +87,6 @@ SELECT
 FROM users
 WHERE users.archived_at IS NULL
 	AND users.email_address = $1;
-
 
 -- name: GetUserByEmailAddressVerificationToken :one
 
@@ -123,7 +116,6 @@ FROM users
 WHERE users.archived_at IS NULL
 	AND users.email_address_verification_token = $1;
 
-
 -- name: GetUserByID :one
 
 SELECT
@@ -151,7 +143,6 @@ SELECT
 FROM users
 WHERE users.archived_at IS NULL
 	AND users.id = $1;
-
 
 -- name: GetUserByUsername :one
 
@@ -181,7 +172,6 @@ FROM users
 WHERE users.archived_at IS NULL
 	AND users.username = $1;
 
-
 -- name: GetEmailVerificationTokenByUserID :one
 
 SELECT
@@ -190,7 +180,6 @@ FROM users
 WHERE users.archived_at IS NULL
     AND users.email_address_verified_at IS NULL
 	AND users.id = $1;
-
 
 -- name: GetUsers :many
 
@@ -258,7 +247,6 @@ WHERE
     )
 OFFSET sqlc.narg(query_offset)
 LIMIT sqlc.narg(query_limit);
-
 
 -- name: GetUserIDsNeedingIndexing :many
 
@@ -340,7 +328,6 @@ WHERE email_address_verified_at IS NULL
 	AND id = $1
 	AND email_address_verification_token = $2;
 
-
 -- name: MarkTwoFactorSecretAsUnverified :exec
 
 UPDATE users SET
@@ -350,7 +337,6 @@ UPDATE users SET
 WHERE archived_at IS NULL
 	AND id = $2;
 
-
 -- name: MarkTwoFactorSecretAsVerified :exec
 
 UPDATE users SET
@@ -358,7 +344,6 @@ UPDATE users SET
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = $1;
-
 
 -- name: SearchUsersByUsername :many
 
@@ -388,7 +373,6 @@ FROM users
 WHERE users.username ILIKE '%' || sqlc.arg(username)::text || '%'
 AND users.archived_at IS NULL;
 
-
 -- name: UpdateUser :exec
 
 UPDATE users SET
@@ -402,7 +386,6 @@ UPDATE users SET
 WHERE archived_at IS NULL
 	AND id = $7;
 
-
 -- name: UpdateUserAvatarSrc :exec
 
 UPDATE users SET
@@ -410,7 +393,6 @@ UPDATE users SET
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = $2;
-
 
 -- name: UpdateUserDetails :exec
 
@@ -422,7 +404,6 @@ UPDATE users SET
 WHERE archived_at IS NULL
 	AND id = $4;
 
-
 -- name: UpdateUserEmailAddress :exec
 
 UPDATE users SET
@@ -432,11 +413,9 @@ UPDATE users SET
 WHERE archived_at IS NULL
 	AND id = $2;
 
-
 -- name: UpdateUserLastIndexedAt :exec
 
 UPDATE users SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL;
-
 
 -- name: UpdateUserPassword :exec
 
@@ -447,7 +426,6 @@ UPDATE users SET
 WHERE archived_at IS NULL
 	AND id = $2;
 
-
 -- name: UpdateUserTwoFactorSecret :exec
 
 UPDATE users SET
@@ -456,7 +434,6 @@ UPDATE users SET
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = $2;
-
 
 -- name: UpdateUserUsername :exec
 

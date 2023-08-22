@@ -3,16 +3,13 @@
 INSERT INTO household_user_memberships (id,belongs_to_user,belongs_to_household,household_role)
 VALUES ($1,$2,$3,$4);
 
-
 -- name: ArchiveHousehold :exec
 
 UPDATE households SET last_updated_at = NOW(), archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_user = $1 AND id = $2;
 
-
 -- name: CreateHousehold :exec
 
 INSERT INTO households (id,"name",billing_status,contact_phone,address_line_1,address_line_2,city,state,zip_code,country,latitude,longitude,belongs_to_user) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13);
-
 
 -- name: GetHouseholdByIDWithMemberships :many
 
@@ -66,7 +63,6 @@ FROM households
 WHERE households.archived_at IS NULL
 	AND household_user_memberships.archived_at IS NULL
 	AND households.id = $1;
-
 
 -- name: UpdateHousehold :exec
 

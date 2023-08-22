@@ -2,7 +2,6 @@
 
 INSERT INTO password_reset_tokens (id,token,expires_at,belongs_to_user) VALUES ($1,$2,NOW() + (30 * interval '1 minutes'),$3);
 
-
 -- name: GetPasswordResetToken :one
 
 SELECT
@@ -17,7 +16,6 @@ FROM password_reset_tokens
 WHERE password_reset_tokens.redeemed_at IS NULL
 	AND NOW() < password_reset_tokens.expires_at
 	AND password_reset_tokens.token = $1;
-
 
 -- name: RedeemPasswordResetToken :exec
 

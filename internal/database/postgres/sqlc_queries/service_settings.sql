@@ -4,17 +4,14 @@ UPDATE service_settings
 SET archived_at = NOW()
     WHERE id = $1;
 
-
 -- name: CreateServiceSetting :exec
 
 INSERT INTO service_settings (id,name,type,description,default_value,admins_only,enumeration) VALUES
 ($1,$2,$3,$4,$5,$6,$7);
 
-
 -- name: CheckServiceSettingExistence :one
 
 SELECT EXISTS ( SELECT service_settings.id FROM service_settings WHERE service_settings.archived_at IS NULL AND service_settings.id = $1 );
-
 
 -- name: GetServiceSettings :many
 
@@ -71,7 +68,6 @@ WHERE service_settings.archived_at IS NULL
 OFFSET sqlc.narg(query_offset)
 LIMIT sqlc.narg(query_limit);
 
-
 -- name: GetServiceSetting :one
 
 SELECT
@@ -88,7 +84,6 @@ SELECT
 FROM service_settings
 WHERE service_settings.archived_at IS NULL
 	AND service_settings.id = $1;
-
 
 -- name: SearchForServiceSettings :many
 

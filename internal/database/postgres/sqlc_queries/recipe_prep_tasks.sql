@@ -2,12 +2,10 @@
 
 UPDATE recipe_prep_tasks SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
 
-
 -- name: CreateRecipePrepTask :exec
 
 INSERT INTO recipe_prep_tasks (id,name,description,notes,optional,explicit_storage_instructions,minimum_time_buffer_before_recipe_in_seconds,maximum_time_buffer_before_recipe_in_seconds,storage_type,minimum_storage_temperature_in_celsius,maximum_storage_temperature_in_celsius,belongs_to_recipe)
 VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);
-
 
 -- name: CheckRecipePrepTaskExistence :one
 
@@ -21,7 +19,6 @@ SELECT EXISTS (
 	  AND recipes.archived_at IS NULL
 	  AND recipes.id = $1
 );
-
 
 -- name: GetRecipePrepTask :one
 
@@ -50,7 +47,6 @@ FROM recipe_prep_tasks
 WHERE recipe_prep_tasks.archived_at IS NULL
 	AND recipe_prep_tasks.id = $1
 	AND recipe_prep_tasks.archived_at IS NULL;
-
 
 -- name: ListAllRecipePrepTasksByRecipe :many
 
@@ -83,7 +79,6 @@ WHERE recipe_prep_tasks.archived_at IS NULL
   AND recipes.archived_at IS NULL
   AND recipes.id = $1
   AND recipe_steps.belongs_to_recipe = $1;
-
 
 -- name: UpdateRecipePrepTask :exec
 

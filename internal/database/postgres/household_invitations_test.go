@@ -190,29 +190,6 @@ func TestQuerier_HouseholdInvitationExists(T *testing.T) {
 func TestQuerier_GetHouseholdInvitationByTokenAndID(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHouseholdID := fakes.BuildFakeID()
-		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
-		exampleHouseholdInvitation.DestinationHousehold.Members = nil
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{exampleHouseholdID, exampleHouseholdInvitation.ID}
-
-		db.ExpectQuery(formatQueryForSQLMock(getHouseholdInvitationByTokenAndIDQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromHouseholdInvitations(false, 0, exampleHouseholdInvitation))
-
-		actual, err := c.GetHouseholdInvitationByTokenAndID(ctx, exampleHouseholdID, exampleHouseholdInvitation.ID)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleHouseholdInvitation, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid household ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -243,29 +220,6 @@ func TestQuerier_GetHouseholdInvitationByTokenAndID(T *testing.T) {
 func TestQuerier_GetHouseholdInvitationByHouseholdAndID(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHouseholdID := fakes.BuildFakeID()
-		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
-		exampleHouseholdInvitation.DestinationHousehold.Members = nil
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{exampleHouseholdID, exampleHouseholdInvitation.ID}
-
-		db.ExpectQuery(formatQueryForSQLMock(getHouseholdInvitationByHouseholdAndIDQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromHouseholdInvitations(false, 0, exampleHouseholdInvitation))
-
-		actual, err := c.GetHouseholdInvitationByHouseholdAndID(ctx, exampleHouseholdID, exampleHouseholdInvitation.ID)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleHouseholdInvitation, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid household ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -292,54 +246,10 @@ func TestQuerier_GetHouseholdInvitationByHouseholdAndID(T *testing.T) {
 		assert.Nil(t, actual)
 	})
 
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHouseholdID := fakes.BuildFakeID()
-		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
-		exampleHouseholdInvitation.DestinationHousehold.Members = nil
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{exampleHouseholdID, exampleHouseholdInvitation.ID}
-
-		db.ExpectQuery(formatQueryForSQLMock(getHouseholdInvitationByHouseholdAndIDQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetHouseholdInvitationByHouseholdAndID(ctx, exampleHouseholdID, exampleHouseholdInvitation.ID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
 }
 
 func TestQuerier_GetHouseholdInvitationByEmailAndToken(T *testing.T) {
 	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
-		exampleHouseholdInvitation.DestinationHousehold.Members = nil
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{exampleHouseholdInvitation.ToEmail, exampleHouseholdInvitation.Token}
-
-		db.ExpectQuery(formatQueryForSQLMock(getHouseholdInvitationByEmailAndTokenQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromHouseholdInvitations(false, 0, exampleHouseholdInvitation))
-
-		actual, err := c.GetHouseholdInvitationByEmailAndToken(ctx, exampleHouseholdInvitation.ToEmail, exampleHouseholdInvitation.Token)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleHouseholdInvitation, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
 
 	T.Run("with invalid household ID", func(t *testing.T) {
 		t.Parallel()

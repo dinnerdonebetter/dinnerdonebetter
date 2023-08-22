@@ -2,17 +2,14 @@
 
 UPDATE recipe_media SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
 
-
 -- name: CreateRecipeMedia :exec
 
 INSERT INTO recipe_media (id,belongs_to_recipe,belongs_to_recipe_step,mime_type,internal_path,external_path,"index")
 	VALUES ($1,$2,$3,$4,$5,$6,$7);
 
-
 -- name: CheckRecipeMediaExistence :one
 
 SELECT EXISTS ( SELECT recipe_media.id FROM recipe_media WHERE recipe_media.archived_at IS NULL AND recipe_media.id = $1 );
-
 
 -- name: GetRecipeMediaForRecipe :many
 
@@ -34,7 +31,6 @@ WHERE recipe_media.belongs_to_recipe = $1
 GROUP BY recipe_media.id
 ORDER BY recipe_media.id;
 
-
 -- name: GetRecipeMediaForRecipeStep :many
 
 SELECT
@@ -55,7 +51,6 @@ WHERE recipe_media.belongs_to_recipe = $1
 GROUP BY recipe_media.id
 ORDER BY recipe_media.id;
 
-
 -- name: GetRecipeMedia :one
 
 SELECT
@@ -72,7 +67,6 @@ SELECT
 FROM recipe_media
 WHERE recipe_media.archived_at IS NULL
 	AND recipe_media.id = $1;
-
 
 -- name: UpdateRecipeMedia :exec
 

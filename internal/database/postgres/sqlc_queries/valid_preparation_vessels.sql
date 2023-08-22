@@ -2,16 +2,13 @@
 
 UPDATE valid_preparation_vessels SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
 
-
 -- name: CreateValidPreparationVessel :exec
 
 INSERT INTO valid_preparation_vessels (id,notes,valid_preparation_id,valid_vessel_id) VALUES ($1,$2,$3,$4);
 
-
 -- name: CheckValidPreparationVesselExistence :one
 
 SELECT EXISTS ( SELECT valid_preparation_vessels.id FROM valid_preparation_vessels WHERE valid_preparation_vessels.archived_at IS NULL AND valid_preparation_vessels.id = $1 );
-
 
 -- name: GetValidPreparationVesselsForPreparation :many
 SELECT
@@ -419,7 +416,6 @@ WHERE
 	AND valid_preparations.archived_at IS NULL
 	AND valid_preparation_vessels.id = $1;
 
-
 -- name: ValidPreparationVesselPairIsValid :one
 
 SELECT EXISTS(
@@ -429,7 +425,6 @@ SELECT EXISTS(
 	AND valid_preparation_id = $2
 	AND archived_at IS NULL
 );
-
 
 -- name: UpdateValidPreparationVessel :exec
 

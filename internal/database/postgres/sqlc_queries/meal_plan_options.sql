@@ -9,7 +9,6 @@ WHERE
 	AND belongs_to_meal_plan_event = $1
 	AND id = $2;
 
-
 -- name: CreateMealPlanOption :exec
 
 INSERT INTO meal_plan_options (id,assigned_cook,assigned_dishwasher,meal_id,notes,meal_scale,belongs_to_meal_plan_event,chosen)
@@ -23,7 +22,6 @@ VALUES (
     $7, -- sqlc.arg(belongs_to_meal_plan_event),
     $8  -- sqlc.arg(chosen)::bool
 );
-
 
 -- name: CheckMealPlanOptionExistence :one
 
@@ -45,11 +43,9 @@ SELECT EXISTS (
 	AND meal_plans.id = sqlc.arg(meal_plan_id)
 );
 
-
 -- name: FinalizeMealPlanOption :exec
 
 UPDATE meal_plan_options SET chosen = (belongs_to_meal_plan_event = $1 AND id = $2), tiebroken = $3 WHERE archived_at IS NULL AND belongs_to_meal_plan_event = $1 AND id = $2;
-
 
 -- name: GetMealPlanOptionsForMealPlanEvent :many
 
@@ -88,7 +84,6 @@ WHERE
 	AND meal_plans.archived_at IS NULL
 	AND meal_plans.id = $2;
 
-
 -- name: GetMealPlanOption :one
 
 SELECT
@@ -125,7 +120,6 @@ WHERE meal_plan_options.archived_at IS NULL
 	AND meal_plan_events.belongs_to_meal_plan = $1
 	AND meal_plans.archived_at IS NULL
 	AND meal_plans.id = $1;
-
 
 -- name: GetMealPlanOptionByID :one
 
