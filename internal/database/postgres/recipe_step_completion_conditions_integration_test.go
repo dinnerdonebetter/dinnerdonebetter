@@ -58,9 +58,9 @@ func createRecipeStepCompletionConditionForTest(t *testing.T, ctx context.Contex
 }
 
 func TestQuerier_Integration_RecipeStepCompletionConditions(t *testing.T) {
-	// if !runningContainerTests {
+	//if !runningContainerTests {
 	t.SkipNow()
-	// }
+	//}
 
 	ctx := context.Background()
 	dbc, container := buildDatabaseClientForTest(t, ctx)

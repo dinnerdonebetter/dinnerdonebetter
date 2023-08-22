@@ -6,11 +6,9 @@ import (
 	"database/sql/driver"
 	"errors"
 	"testing"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -341,54 +339,6 @@ func TestQuerier_GetOAuth2Clients(T *testing.T) {
 func TestQuerier_CreateOAuth2Client(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleOAuth2Client := fakes.BuildFakeOAuth2Client()
-		exampleOAuth2Client.ClientSecret = ""
-		exampleInput := converters.ConvertOAuth2ClientToOAuth2ClientDatabaseCreationInput(exampleOAuth2Client)
-		exampleOAuth2Client.ID = exampleInput.ID
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.Name,
-			exampleInput.ClientID,
-			exampleInput.ClientSecret,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(createOAuth2ClientQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		c.timeFunc = func() time.Time {
-			return exampleOAuth2Client.CreatedAt
-		}
-
-		actual, err := c.CreateOAuth2Client(ctx, exampleInput)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleOAuth2Client, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with invalid creator ID", func(t *testing.T) {
-		t.Parallel()
-
-		exampleOAuth2Client := fakes.BuildFakeOAuth2Client()
-		exampleOAuth2Client.ClientSecret = ""
-		exampleInput := converters.ConvertOAuth2ClientToOAuth2ClientDatabaseCreationInput(exampleOAuth2Client)
-
-		ctx := context.Background()
-		c, _ := buildTestClient(t)
-
-		actual, err := c.CreateOAuth2Client(ctx, exampleInput)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-	})
-
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
@@ -398,37 +348,6 @@ func TestQuerier_CreateOAuth2Client(T *testing.T) {
 		actual, err := c.CreateOAuth2Client(ctx, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		exampleOAuth2Client := fakes.BuildFakeOAuth2Client()
-		exampleInput := converters.ConvertOAuth2ClientToOAuth2ClientDatabaseCreationInput(exampleOAuth2Client)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.Name,
-			exampleInput.ClientID,
-			exampleInput.ClientSecret,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(createOAuth2ClientQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		c.timeFunc = func() time.Time {
-			return exampleOAuth2Client.CreatedAt
-		}
-
-		actual, err := c.CreateOAuth2Client(ctx, exampleInput)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

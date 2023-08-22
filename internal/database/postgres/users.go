@@ -515,36 +515,33 @@ func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.S
 		BelongsToUser: userID,
 	}
 
-	householdCreationArgs := []any{
-		householdCreationInput.ID,
-		householdCreationInput.Name,
-		types.UnpaidHouseholdBillingStatus,
-		householdCreationInput.ContactPhone,
-		householdCreationInput.AddressLine1,
-		householdCreationInput.AddressLine2,
-		householdCreationInput.City,
-		householdCreationInput.State,
-		householdCreationInput.ZipCode,
-		householdCreationInput.Country,
-		householdCreationInput.Latitude,
-		householdCreationInput.Longitude,
-		householdCreationInput.BelongsToUser,
-	}
-
-	if writeErr := q.performWriteQuery(ctx, querier, "household creation", householdCreationQuery, householdCreationArgs); writeErr != nil {
+	// create the household.
+	if err := q.generatedQuerier.CreateHousehold(ctx, querier, &generated.CreateHouseholdParams{
+		City:          householdCreationInput.City,
+		Name:          householdCreationInput.Name,
+		BillingStatus: string(types.UnpaidHouseholdBillingStatus),
+		ContactPhone:  householdCreationInput.ContactPhone,
+		AddressLine1:  householdCreationInput.AddressLine1,
+		AddressLine2:  householdCreationInput.AddressLine2,
+		ID:            householdCreationInput.ID,
+		State:         householdCreationInput.State,
+		ZipCode:       householdCreationInput.ZipCode,
+		Country:       householdCreationInput.Country,
+		BelongsToUser: householdCreationInput.BelongsToUser,
+		Latitude:      nullStringFromFloat64Pointer(householdCreationInput.Latitude),
+		Longitude:     nullStringFromFloat64Pointer(householdCreationInput.Longitude),
+	}); err != nil {
 		q.rollbackTransaction(ctx, querier)
-		return observability.PrepareError(writeErr, span, "create household")
+		return observability.PrepareError(err, span, "creating household")
 	}
 
-	createHouseholdMembershipForNewUserArgs := []any{
-		identifiers.New(),
-		userID,
-		householdID,
-		!hasValidInvite,
-		authorization.HouseholdAdminRole.String(),
-	}
-
-	if err := q.performWriteQuery(ctx, querier, "household user membership creation", createHouseholdMembershipForNewUserQuery, createHouseholdMembershipForNewUserArgs); err != nil {
+	if err := q.generatedQuerier.CreateHouseholdUserMembershipForNewUser(ctx, querier, &generated.CreateHouseholdUserMembershipForNewUserParams{
+		ID:                 identifiers.New(),
+		BelongsToUser:      userID,
+		BelongsToHousehold: householdID,
+		HouseholdRole:      authorization.HouseholdAdminRole.String(),
+		DefaultHousehold:   !hasValidInvite,
+	}); err != nil {
 		q.rollbackTransaction(ctx, querier)
 		return observability.PrepareError(err, span, "writing household user membership")
 	}

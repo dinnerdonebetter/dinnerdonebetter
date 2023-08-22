@@ -7,6 +7,7 @@ import (
 	"errors"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -179,9 +180,6 @@ func (q *Querier) GetOAuth2Clients(ctx context.Context, filter *types.QueryFilte
 	return x, nil
 }
 
-//go:embed queries/oauth2_clients/create.sql
-var createOAuth2ClientQuery string
-
 // CreateOAuth2Client creates an OAuth2 client.
 func (q *Querier) CreateOAuth2Client(ctx context.Context, input *types.OAuth2ClientDatabaseCreationInput) (*types.OAuth2Client, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -195,14 +193,12 @@ func (q *Querier) CreateOAuth2Client(ctx context.Context, input *types.OAuth2Cli
 		keys.OAuth2ClientClientIDKey: input.ClientID,
 	})
 
-	args := []any{
-		input.ID,
-		input.Name,
-		input.ClientID,
-		input.ClientSecret,
-	}
-
-	if writeErr := q.performWriteQuery(ctx, q.db, "OAuth2 client creation", createOAuth2ClientQuery, args); writeErr != nil {
+	if writeErr := q.generatedQuerier.CreateOAuth2Client(ctx, q.db, &generated.CreateOAuth2ClientParams{
+		ID:           input.ID,
+		Name:         input.Name,
+		ClientID:     input.ClientID,
+		ClientSecret: input.ClientSecret,
+	}); writeErr != nil {
 		return nil, observability.PrepareError(writeErr, span, "creating OAuth2 client")
 	}
 

@@ -197,7 +197,7 @@ type Querier interface {
 	GetRecipeRatings(ctx context.Context, db DBTX, arg *GetRecipeRatingsParams) ([]*GetRecipeRatingsRow, error)
 	GetRecipeStep(ctx context.Context, db DBTX, arg *GetRecipeStepParams) (*GetRecipeStepRow, error)
 	GetRecipeStepByRecipeID(ctx context.Context, db DBTX, id string) (*GetRecipeStepByRecipeIDRow, error)
-	GetRecipeStepCompletionCondition(ctx context.Context, db DBTX, arg *GetRecipeStepCompletionConditionParams) (*GetRecipeStepCompletionConditionRow, error)
+	GetRecipeStepCompletionConditionWithIngredients(ctx context.Context, db DBTX, arg *GetRecipeStepCompletionConditionWithIngredientsParams) ([]*GetRecipeStepCompletionConditionWithIngredientsRow, error)
 	GetRecipeStepCompletionConditions(ctx context.Context, db DBTX, arg *GetRecipeStepCompletionConditionsParams) ([]*GetRecipeStepCompletionConditionsRow, error)
 	GetRecipeStepIngredient(ctx context.Context, db DBTX, arg *GetRecipeStepIngredientParams) (*GetRecipeStepIngredientRow, error)
 	GetRecipeStepIngredientsForRecipe(ctx context.Context, db DBTX, id string) ([]*GetRecipeStepIngredientsForRecipeRow, error)

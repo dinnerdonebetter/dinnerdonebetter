@@ -508,25 +508,23 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	args := []any{
-		input.ID,
-		input.Name,
-		input.Slug,
-		input.Source,
-		input.Description,
-		input.InspiredByRecipeID,
-		input.MinimumEstimatedPortions,
-		input.MaximumEstimatedPortions,
-		input.PortionName,
-		input.PluralPortionName,
-		input.SealOfApproval,
-		input.EligibleForMeals,
-		input.YieldsComponentType,
-		input.CreatedByUser,
-	}
-
 	// create the recipe.
-	if err = q.performWriteQuery(ctx, q.db, "recipe creation", recipeCreationQuery, args); err != nil {
+	if err = q.generatedQuerier.CreateRecipe(ctx, tx, &generated.CreateRecipeParams{
+		MinEstimatedPortions: stringFromFloat32(input.MinimumEstimatedPortions),
+		ID:                   input.ID,
+		Slug:                 input.Slug,
+		Source:               input.Source,
+		Description:          input.Description,
+		CreatedByUser:        input.CreatedByUser,
+		Name:                 input.Name,
+		YieldsComponentType:  generated.ComponentType(input.YieldsComponentType),
+		PortionName:          input.PortionName,
+		PluralPortionName:    input.PluralPortionName,
+		MaxEstimatedPortions: nullStringFromFloat32Pointer(input.MaximumEstimatedPortions),
+		InspiredByRecipeID:   nullStringFromStringPointer(input.InspiredByRecipeID),
+		SealOfApproval:       input.SealOfApproval,
+		EligibleForMeals:     input.EligibleForMeals,
+	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing recipe creation query")
 	}

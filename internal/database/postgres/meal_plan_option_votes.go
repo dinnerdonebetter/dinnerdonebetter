@@ -307,17 +307,16 @@ func (q *Querier) CreateMealPlanOptionVote(ctx context.Context, input *types.Mea
 
 	votes := []*types.MealPlanOptionVote{}
 	for _, vote := range input.Votes {
-		args := []any{
-			vote.ID,
-			vote.Rank,
-			vote.Abstain,
-			vote.Notes,
-			vote.ByUser,
-			vote.BelongsToMealPlanOption,
-		}
 
 		// create the meal plan option vote.
-		if err = q.performWriteQuery(ctx, tx, "meal plan option vote creation", mealPlanOptionVoteCreationQuery, args); err != nil {
+		if err = q.generatedQuerier.CreateMealPlanOptionVote(ctx, tx, &generated.CreateMealPlanOptionVoteParams{
+			ID:                      vote.ID,
+			Notes:                   vote.Notes,
+			ByUser:                  vote.ByUser,
+			BelongsToMealPlanOption: vote.BelongsToMealPlanOption,
+			Rank:                    int32(vote.Rank),
+			Abstain:                 vote.Abstain,
+		}); err != nil {
 			q.rollbackTransaction(ctx, tx)
 			return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan option vote")
 		}

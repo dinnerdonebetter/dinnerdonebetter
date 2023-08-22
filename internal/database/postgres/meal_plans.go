@@ -229,9 +229,6 @@ func (q *Querier) GetMealPlans(ctx context.Context, householdID string, filter *
 	return x, nil
 }
 
-//go:embed queries/meal_plans/create.sql
-var mealPlanCreationQuery string
-
 // CreateMealPlan creates a meal plan in the database.
 func (q *Querier) CreateMealPlan(ctx context.Context, input *types.MealPlanDatabaseCreationInput) (*types.MealPlan, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -250,22 +247,20 @@ func (q *Querier) CreateMealPlan(ctx context.Context, input *types.MealPlanDatab
 		}
 	}
 
-	args := []any{
-		input.ID,
-		input.Notes,
-		status,
-		input.VotingDeadline,
-		input.BelongsToHousehold,
-		input.CreatedByUser,
-	}
-
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
 	// create the meal plan.
-	if err = q.performWriteQuery(ctx, tx, "meal plan creation", mealPlanCreationQuery, args); err != nil {
+	if err = q.generatedQuerier.CreateMealPlan(ctx, q.db, &generated.CreateMealPlanParams{
+		ID:                 input.ID,
+		Notes:              input.Notes,
+		Status:             generated.MealPlanStatus(status),
+		VotingDeadline:     input.VotingDeadline,
+		BelongsToHousehold: input.BelongsToHousehold,
+		CreatedByUser:      input.CreatedByUser,
+	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan")
 	}

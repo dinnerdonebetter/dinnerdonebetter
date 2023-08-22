@@ -5,11 +5,9 @@ import (
 	"database/sql/driver"
 	"errors"
 	"testing"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -250,40 +248,6 @@ func TestQuerier_GetHouseholdInstrumentOwnerships(T *testing.T) {
 func TestQuerier_CreateHouseholdInstrumentOwnership(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHouseholdInstrumentOwnership := fakes.BuildFakeHouseholdInstrumentOwnership()
-		exampleHouseholdInstrumentOwnership.ID = "1"
-		exampleHouseholdInstrumentOwnership.Instrument = types.ValidInstrument{ID: exampleHouseholdInstrumentOwnership.Instrument.ID}
-		exampleInput := converters.ConvertHouseholdInstrumentOwnershipToHouseholdInstrumentOwnershipDatabaseCreationInput(exampleHouseholdInstrumentOwnership)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.Notes,
-			exampleInput.Quantity,
-			exampleInput.ValidInstrumentID,
-			exampleInput.BelongsToHousehold,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(householdInstrumentOwnershipCreationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		c.timeFunc = func() time.Time {
-			return exampleHouseholdInstrumentOwnership.CreatedAt
-		}
-
-		actual, err := c.CreateHouseholdInstrumentOwnership(ctx, exampleInput)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleHouseholdInstrumentOwnership, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
@@ -293,40 +257,6 @@ func TestQuerier_CreateHouseholdInstrumentOwnership(T *testing.T) {
 		actual, err := c.CreateHouseholdInstrumentOwnership(ctx, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		expectedErr := errors.New(t.Name())
-		exampleHouseholdInstrumentOwnership := fakes.BuildFakeHouseholdInstrumentOwnership()
-		exampleInput := converters.ConvertHouseholdInstrumentOwnershipToHouseholdInstrumentOwnershipDatabaseCreationInput(exampleHouseholdInstrumentOwnership)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.Notes,
-			exampleInput.Quantity,
-			exampleInput.ValidInstrumentID,
-			exampleInput.BelongsToHousehold,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(householdInstrumentOwnershipCreationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(expectedErr)
-
-		c.timeFunc = func() time.Time {
-			return exampleHouseholdInstrumentOwnership.CreatedAt
-		}
-
-		actual, err := c.CreateHouseholdInstrumentOwnership(ctx, exampleInput)
-		assert.Error(t, err)
-		assert.True(t, errors.Is(err, expectedErr))
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

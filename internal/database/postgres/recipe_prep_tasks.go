@@ -200,25 +200,24 @@ func (q *Querier) createRecipePrepTask(ctx context.Context, querier database.SQL
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
+	tracing.AttachMealPlanIDToSpan(span, input.ID)
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, input.ID)
 
-	args := []any{
-		input.ID,
-		input.Name,
-		input.Description,
-		input.Notes,
-		input.Optional,
-		input.ExplicitStorageInstructions,
-		input.MinimumTimeBufferBeforeRecipeInSeconds,
-		input.MaximumTimeBufferBeforeRecipeInSeconds,
-		input.StorageType,
-		input.MinimumStorageTemperatureInCelsius,
-		input.MaximumStorageTemperatureInCelsius,
-		input.BelongsToRecipe,
-	}
-
 	// create the recipe prep task.
-	if err := q.performWriteQuery(ctx, querier, "recipe prep task creation", createRecipePrepTaskQuery, args); err != nil {
+	if err := q.generatedQuerier.CreateRecipePrepTask(ctx, querier, &generated.CreateRecipePrepTaskParams{
+		ID:                                     input.ID,
+		Name:                                   input.Name,
+		Description:                            input.Description,
+		Notes:                                  input.Notes,
+		ExplicitStorageInstructions:            input.ExplicitStorageInstructions,
+		BelongsToRecipe:                        input.BelongsToRecipe,
+		StorageType:                            generated.NullStorageContainerType{StorageContainerType: generated.StorageContainerType(input.StorageType), Valid: true},
+		MinimumStorageTemperatureInCelsius:     nullStringFromFloat32Pointer(input.MinimumStorageTemperatureInCelsius),
+		MaximumStorageTemperatureInCelsius:     nullStringFromFloat32Pointer(input.MaximumStorageTemperatureInCelsius),
+		MaximumTimeBufferBeforeRecipeInSeconds: nullInt32FromUint32Pointer(input.MaximumTimeBufferBeforeRecipeInSeconds),
+		MinimumTimeBufferBeforeRecipeInSeconds: int32(input.MinimumTimeBufferBeforeRecipeInSeconds),
+		Optional:                               input.Optional,
+	}); err != nil {
 		q.rollbackTransaction(ctx, querier)
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe prep task")
 	}
@@ -249,7 +248,6 @@ func (q *Querier) createRecipePrepTask(ctx context.Context, querier database.SQL
 		x.TaskSteps = append(x.TaskSteps, s)
 	}
 
-	tracing.AttachMealPlanIDToSpan(span, x.ID)
 	logger.Info("recipe prep task created")
 
 	return x, nil
@@ -286,9 +284,6 @@ func (q *Querier) CreateRecipePrepTask(ctx context.Context, input *types.RecipeP
 	return x, nil
 }
 
-//go:embed queries/recipe_prep_task_steps/create.sql
-var createRecipePrepTaskStepQuery string
-
 // createRecipePrepTaskStep creates a recipe prep task step.
 func (q *Querier) createRecipePrepTaskStep(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *types.RecipePrepTaskStepDatabaseCreationInput) (*types.RecipePrepTaskStep, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -300,17 +295,15 @@ func (q *Querier) createRecipePrepTaskStep(ctx context.Context, querier database
 		return nil, ErrNilInputProvided
 	}
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, input.ID)
-
-	args := []any{
-		input.ID,
-		input.BelongsToRecipePrepTask,
-		input.BelongsToRecipeStep,
-		input.SatisfiesRecipeStep,
-	}
 	tracing.AttachRecipePrepTaskIDToSpan(span, input.BelongsToRecipePrepTask)
 
 	// create the meal plan.
-	if err := q.performWriteQuery(ctx, querier, "recipe prep task step creation", createRecipePrepTaskStepQuery, args); err != nil {
+	if err := q.generatedQuerier.CreateRecipePrepTaskStep(ctx, querier, &generated.CreateRecipePrepTaskStepParams{
+		ID:                      input.ID,
+		BelongsToRecipePrepTask: input.BelongsToRecipePrepTask,
+		BelongsToRecipeStep:     input.BelongsToRecipeStep,
+		SatisfiesRecipeStep:     input.SatisfiesRecipeStep,
+	}); err != nil {
 		q.rollbackTransaction(ctx, querier)
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe prep task step")
 	}

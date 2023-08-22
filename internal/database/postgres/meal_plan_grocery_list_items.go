@@ -237,23 +237,21 @@ func (q *Querier) createMealPlanGroceryListItem(ctx context.Context, querier dat
 
 	logger := q.logger.WithValue(keys.MealPlanGroceryListItemIDKey, input.ID)
 
-	args := []any{
-		input.ID,
-		input.BelongsToMealPlan,
-		input.ValidIngredientID,
-		input.ValidMeasurementUnitID,
-		input.MinimumQuantityNeeded,
-		input.MaximumQuantityNeeded,
-		input.QuantityPurchased,
-		input.PurchasedMeasurementUnitID,
-		input.PurchasedUPC,
-		input.PurchasePrice,
-		input.StatusExplanation,
-		input.Status,
-	}
-
 	// create the meal plan grocery list.
-	if err := q.performWriteQuery(ctx, querier, "meal plan grocery list creation", mealPlanGroceryListItemCreationQuery, args); err != nil {
+	if err := q.generatedQuerier.CreateMealPlanGroceryListItem(ctx, querier, &generated.CreateMealPlanGroceryListItemParams{
+		ID:                       input.ID,
+		BelongsToMealPlan:        input.BelongsToMealPlan,
+		ValidIngredient:          input.ValidIngredientID,
+		ValidMeasurementUnit:     input.ValidMeasurementUnitID,
+		MinimumQuantityNeeded:    stringFromFloat32(input.MinimumQuantityNeeded),
+		StatusExplanation:        input.StatusExplanation,
+		Status:                   generated.GroceryListItemStatus(input.Status),
+		MaximumQuantityNeeded:    nullStringFromFloat32Pointer(input.MaximumQuantityNeeded),
+		QuantityPurchased:        nullStringFromFloat32Pointer(input.QuantityPurchased),
+		PurchasedMeasurementUnit: nullStringFromStringPointer(input.PurchasedMeasurementUnitID),
+		PurchasedUpc:             nullStringFromStringPointer(input.PurchasedUPC),
+		PurchasePrice:            nullStringFromFloat32Pointer(input.PurchasePrice),
+	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing meal plan grocery list creation query")
 	}
 

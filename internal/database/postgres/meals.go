@@ -318,21 +318,18 @@ func (q *Querier) createMeal(ctx context.Context, querier database.SQLQueryExecu
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-
 	logger := q.logger.WithValue(keys.MealIDKey, input.ID).WithValue("meal.name", input.Name)
 
-	args := []any{
-		input.ID,
-		input.Name,
-		input.Description,
-		input.MinimumEstimatedPortions,
-		input.MaximumEstimatedPortions,
-		input.EligibleForMealPlans,
-		input.CreatedByUser,
-	}
-
 	// create the meal.
-	if err := q.performWriteQuery(ctx, querier, "meal creation", mealCreationQuery, args); err != nil {
+	if err := q.generatedQuerier.CreateMeal(ctx, querier, &generated.CreateMealParams{
+		ID:                   input.ID,
+		Name:                 input.Name,
+		Description:          input.Description,
+		MinEstimatedPortions: stringFromFloat32(input.MinimumEstimatedPortions),
+		CreatedByUser:        input.CreatedByUser,
+		MaxEstimatedPortions: nullStringFromFloat32Pointer(input.MaximumEstimatedPortions),
+		EligibleForMealPlans: input.EligibleForMealPlans,
+	}); err != nil {
 		q.rollbackTransaction(ctx, querier)
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing meal creation query")
 	}
@@ -387,9 +384,6 @@ func (q *Querier) CreateMeal(ctx context.Context, input *types.MealDatabaseCreat
 	return x, nil
 }
 
-//go:embed queries/meal_components/create.sql
-var mealRecipeCreationQuery string
-
 // CreateMealComponent creates a meal component in the database.
 func (q *Querier) CreateMealComponent(ctx context.Context, querier database.SQLQueryExecutor, mealID string, input *types.MealComponentDatabaseCreationInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -397,26 +391,24 @@ func (q *Querier) CreateMealComponent(ctx context.Context, querier database.SQLQ
 
 	logger := q.logger.Clone()
 
+	if input == nil {
+		return ErrNilInputProvided
+	}
+
 	if mealID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealIDKey, mealID)
 	tracing.AttachMealIDToSpan(span, mealID)
 
-	if input == nil {
-		return ErrNilInputProvided
-	}
-
-	args := []any{
-		identifiers.New(),
-		mealID,
-		input.RecipeID,
-		input.ComponentType,
-		input.RecipeScale,
-	}
-
 	// create the meal.
-	if err := q.performWriteQuery(ctx, querier, "meal recipe creation", mealRecipeCreationQuery, args); err != nil {
+	if err := q.generatedQuerier.CreateMealComponent(ctx, querier, &generated.CreateMealComponentParams{
+		ID:                identifiers.New(),
+		MealID:            mealID,
+		RecipeID:          input.RecipeID,
+		MealComponentType: generated.ComponentType(input.ComponentType),
+		RecipeScale:       stringFromFloat32(input.RecipeScale),
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "performing meal creation query")
 	}
 

@@ -5,11 +5,9 @@ import (
 	"database/sql/driver"
 	"errors"
 	"testing"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -373,45 +371,6 @@ func TestQuerier_GetRecipeStepVessels(T *testing.T) {
 func TestQuerier_CreateRecipeStepVessel(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
-		exampleRecipeStepVessel.ID = "1"
-		exampleRecipeStepVessel.Vessel = &types.ValidVessel{ID: exampleRecipeStepVessel.ID}
-		exampleInput := converters.ConvertRecipeStepVesselToRecipeStepVesselDatabaseCreationInput(exampleRecipeStepVessel)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.Name,
-			exampleInput.Notes,
-			exampleInput.BelongsToRecipeStep,
-			exampleInput.RecipeStepProductID,
-			exampleInput.VesselID,
-			exampleInput.VesselPreposition,
-			exampleInput.MinimumQuantity,
-			exampleInput.MaximumQuantity,
-			exampleInput.UnavailableAfterStep,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(recipeStepVesselCreationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		c.timeFunc = func() time.Time {
-			return exampleRecipeStepVessel.CreatedAt
-		}
-
-		actual, err := c.CreateRecipeStepVessel(ctx, exampleInput)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleRecipeStepVessel, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
@@ -421,45 +380,6 @@ func TestQuerier_CreateRecipeStepVessel(T *testing.T) {
 		actual, err := c.CreateRecipeStepVessel(ctx, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		expectedErr := errors.New(t.Name())
-		exampleRecipeStepVessel := fakes.BuildFakeRecipeStepVessel()
-		exampleInput := converters.ConvertRecipeStepVesselToRecipeStepVesselDatabaseCreationInput(exampleRecipeStepVessel)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.Name,
-			exampleInput.Notes,
-			exampleInput.BelongsToRecipeStep,
-			exampleInput.RecipeStepProductID,
-			exampleInput.VesselID,
-			exampleInput.VesselPreposition,
-			exampleInput.MinimumQuantity,
-			exampleInput.MaximumQuantity,
-			exampleInput.UnavailableAfterStep,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(recipeStepVesselCreationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(expectedErr)
-
-		c.timeFunc = func() time.Time {
-			return exampleRecipeStepVessel.CreatedAt
-		}
-
-		actual, err := c.CreateRecipeStepVessel(ctx, exampleInput)
-		assert.Error(t, err)
-		assert.True(t, errors.Is(err, expectedErr))
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

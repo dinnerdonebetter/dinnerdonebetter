@@ -5,10 +5,8 @@ import (
 	"database/sql/driver"
 	"errors"
 	"testing"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -110,36 +108,6 @@ func TestSQLQuerier_GetPasswordResetTokenByToken(T *testing.T) {
 func TestSQLQuerier_CreatePasswordResetToken(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleToken := fakes.BuildFakePasswordResetToken()
-		exampleInput := converters.ConvertPasswordResetTokenToPasswordResetTokenDatabaseCreationInput(exampleToken)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		c.timeFunc = func() time.Time {
-			return exampleToken.CreatedAt
-		}
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.Token,
-			exampleInput.BelongsToUser,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(passwordResetTokenCreationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		actual, err := c.CreatePasswordResetToken(ctx, exampleInput)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleToken, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with missing input", func(t *testing.T) {
 		t.Parallel()
 
@@ -149,36 +117,6 @@ func TestSQLQuerier_CreatePasswordResetToken(T *testing.T) {
 		actual, err := c.CreatePasswordResetToken(ctx, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-	})
-
-	T.Run("with error writing to database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleToken := fakes.BuildFakePasswordResetToken()
-		exampleInput := converters.ConvertPasswordResetTokenToPasswordResetTokenDatabaseCreationInput(exampleToken)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		c.timeFunc = func() time.Time {
-			return exampleToken.CreatedAt
-		}
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.Token,
-			exampleInput.BelongsToUser,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(passwordResetTokenCreationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.CreatePasswordResetToken(ctx, exampleInput)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

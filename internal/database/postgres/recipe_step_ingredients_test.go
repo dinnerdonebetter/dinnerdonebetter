@@ -5,7 +5,6 @@ import (
 	"database/sql/driver"
 	"errors"
 	"testing"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -463,52 +462,6 @@ func TestQuerier_GetRecipeStepIngredients(T *testing.T) {
 func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
-		exampleRecipeStepIngredient.ID = "1"
-		exampleRecipeStepIngredient.MeasurementUnit = types.ValidMeasurementUnit{ID: exampleRecipeStepIngredient.MeasurementUnit.ID}
-		exampleRecipeStepIngredient.Ingredient = &types.ValidIngredient{ID: exampleRecipeStepIngredient.Ingredient.ID}
-		exampleInput := converters.ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput(exampleRecipeStepIngredient)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.Name,
-			exampleInput.Optional,
-			exampleInput.IngredientID,
-			exampleInput.MeasurementUnitID,
-			exampleInput.MinimumQuantity,
-			exampleInput.MaximumQuantity,
-			exampleInput.QuantityNotes,
-			exampleInput.RecipeStepProductID,
-			exampleInput.IngredientNotes,
-			exampleInput.OptionIndex,
-			exampleInput.ToTaste,
-			exampleInput.ProductPercentageToUse,
-			exampleInput.VesselIndex,
-			exampleInput.RecipeStepProductRecipeID,
-			exampleInput.BelongsToRecipeStep,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(recipeStepIngredientCreationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		c.timeFunc = func() time.Time {
-			return exampleRecipeStepIngredient.CreatedAt
-		}
-
-		actual, err := c.CreateRecipeStepIngredient(ctx, exampleInput)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleRecipeStepIngredient, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
@@ -519,100 +472,20 @@ func TestQuerier_CreateRecipeStepIngredient(T *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		expectedErr := errors.New(t.Name())
-		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
-		exampleInput := converters.ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput(exampleRecipeStepIngredient)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.Name,
-			exampleInput.Optional,
-			exampleInput.IngredientID,
-			exampleInput.MeasurementUnitID,
-			exampleInput.MinimumQuantity,
-			exampleInput.MaximumQuantity,
-			exampleInput.QuantityNotes,
-			exampleInput.RecipeStepProductID,
-			exampleInput.IngredientNotes,
-			exampleInput.OptionIndex,
-			exampleInput.ToTaste,
-			exampleInput.ProductPercentageToUse,
-			exampleInput.VesselIndex,
-			exampleInput.RecipeStepProductRecipeID,
-			exampleInput.BelongsToRecipeStep,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(recipeStepIngredientCreationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(expectedErr)
-
-		c.timeFunc = func() time.Time {
-			return exampleRecipeStepIngredient.CreatedAt
-		}
-
-		actual, err := c.CreateRecipeStepIngredient(ctx, exampleInput)
-		assert.Error(t, err)
-		assert.True(t, errors.Is(err, expectedErr))
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
 }
 
 func TestSQLQuerier_createRecipeStepIngredient(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
+	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		exampleRecipeStepIngredient := fakes.BuildFakeRecipeStepIngredient()
-		exampleRecipeStepIngredient.ID = "3"
-		exampleRecipeStepIngredient.BelongsToRecipeStep = "2"
-
-		exampleInput := converters.ConvertRecipeStepIngredientToRecipeStepIngredientDatabaseCreationInput(exampleRecipeStepIngredient)
-
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c, _ := buildTestClient(t)
 
-		recipeStepIngredientCreationArgs := []any{
-			exampleInput.ID,
-			exampleInput.Name,
-			exampleInput.Optional,
-			exampleInput.IngredientID,
-			exampleInput.MeasurementUnitID,
-			exampleInput.MinimumQuantity,
-			exampleInput.MaximumQuantity,
-			exampleInput.QuantityNotes,
-			exampleInput.RecipeStepProductID,
-			exampleInput.IngredientNotes,
-			exampleInput.OptionIndex,
-			exampleInput.ToTaste,
-			exampleInput.ProductPercentageToUse,
-			exampleInput.VesselIndex,
-			exampleInput.RecipeStepProductRecipeID,
-			exampleInput.BelongsToRecipeStep,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(recipeStepIngredientCreationQuery)).
-			WithArgs(interfaceToDriverValue(recipeStepIngredientCreationArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		c.timeFunc = func() time.Time {
-			return exampleRecipeStepIngredient.CreatedAt
-		}
-
-		actual, err := c.createRecipeStepIngredient(ctx, c.db, exampleInput)
-		assert.NoError(t, err)
-		assert.NotNil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
+		actual, err := c.createRecipeStepIngredient(ctx, c.db, nil)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
 	})
 }
 

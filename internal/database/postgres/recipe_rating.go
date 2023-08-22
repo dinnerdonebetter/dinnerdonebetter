@@ -178,9 +178,6 @@ func (q *Querier) GetRecipeRatings(ctx context.Context, filter *types.QueryFilte
 	return x, nil
 }
 
-//go:embed queries/recipe_ratings/create.sql
-var recipeRatingCreationQuery string
-
 // CreateRecipeRating creates a recipe rating in the database.
 func (q *Querier) CreateRecipeRating(ctx context.Context, input *types.RecipeRatingDatabaseCreationInput) (*types.RecipeRating, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -192,26 +189,24 @@ func (q *Querier) CreateRecipeRating(ctx context.Context, input *types.RecipeRat
 
 	logger := q.logger.WithValue(keys.RecipeRatingIDKey, input.ID)
 
-	args := []any{
-		input.ID,
-		input.MealID,
-		input.Taste,
-		input.Difficulty,
-		input.Cleanup,
-		input.Instructions,
-		input.Overall,
-		input.Notes,
-		input.ByUser,
-	}
-
 	// create the recipe rating.
-	if err := q.performWriteQuery(ctx, q.db, "recipe rating creation", recipeRatingCreationQuery, args); err != nil {
+	if err := q.generatedQuerier.CreateRecipeRating(ctx, q.db, &generated.CreateRecipeRatingParams{
+		ID:           input.ID,
+		RecipeID:     input.RecipeID,
+		Notes:        input.Notes,
+		ByUser:       input.ByUser,
+		Taste:        nullStringFromFloat32(input.Taste),
+		Difficulty:   nullStringFromFloat32(input.Difficulty),
+		Cleanup:      nullStringFromFloat32(input.Cleanup),
+		Instructions: nullStringFromFloat32(input.Instructions),
+		Overall:      nullStringFromFloat32(input.Overall),
+	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing recipe rating creation query")
 	}
 
 	x := &types.RecipeRating{
 		ID:           input.ID,
-		RecipeID:     input.MealID,
+		RecipeID:     input.RecipeID,
 		Taste:        input.Taste,
 		Difficulty:   input.Difficulty,
 		Cleanup:      input.Cleanup,

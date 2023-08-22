@@ -358,9 +358,6 @@ func (q *Querier) GetHouseholdsForAdmin(ctx context.Context, userID string, filt
 	return q.getHouseholdsForUser(ctx, q.db, userID, true, filter)
 }
 
-//go:embed queries/households/create.sql
-var householdCreationQuery string
-
 // CreateHousehold creates a household in the database.
 func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDatabaseCreationInput) (*types.Household, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -378,24 +375,22 @@ func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDat
 		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	householdCreationArgs := []any{
-		input.ID,
-		input.Name,
-		types.UnpaidHouseholdBillingStatus,
-		input.ContactPhone,
-		input.AddressLine1,
-		input.AddressLine2,
-		input.City,
-		input.State,
-		input.ZipCode,
-		input.Country,
-		input.Latitude,
-		input.Longitude,
-		input.BelongsToUser,
-	}
-
 	// create the household.
-	if writeErr := q.performWriteQuery(ctx, tx, "household creation", householdCreationQuery, householdCreationArgs); writeErr != nil {
+	if writeErr := q.generatedQuerier.CreateHousehold(ctx, tx, &generated.CreateHouseholdParams{
+		City:          input.City,
+		Name:          input.Name,
+		BillingStatus: string(types.UnpaidHouseholdBillingStatus),
+		ContactPhone:  input.ContactPhone,
+		AddressLine1:  input.AddressLine1,
+		AddressLine2:  input.AddressLine2,
+		ID:            input.ID,
+		State:         input.State,
+		ZipCode:       input.ZipCode,
+		Country:       input.Country,
+		BelongsToUser: input.BelongsToUser,
+		Latitude:      nullStringFromFloat64Pointer(input.Latitude),
+		Longitude:     nullStringFromFloat64Pointer(input.Longitude),
+	}); writeErr != nil {
 		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareError(writeErr, span, "creating household")
 	}
@@ -417,21 +412,12 @@ func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDat
 		CreatedAt:     q.currentTime(),
 	}
 
-	addInput := &types.HouseholdUserMembershipDatabaseCreationInput{
-		ID:            identifiers.New(),
-		UserID:        input.BelongsToUser,
-		HouseholdID:   household.ID,
-		HouseholdRole: authorization.HouseholdAdminRole.String(),
-	}
-
-	addUserToHouseholdArgs := []any{
-		addInput.ID,
-		addInput.UserID,
-		addInput.HouseholdID,
-		addInput.HouseholdRole,
-	}
-
-	if err = q.performWriteQuery(ctx, tx, "household user membership creation", addUserToHouseholdQuery, addUserToHouseholdArgs); err != nil {
+	if err = q.generatedQuerier.AddUserToHousehold(ctx, tx, &generated.AddUserToHouseholdParams{
+		ID:                 identifiers.New(),
+		BelongsToUser:      input.BelongsToUser,
+		BelongsToHousehold: household.ID,
+		HouseholdRole:      authorization.HouseholdAdminRole.String(),
+	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing household membership creation query")
 	}

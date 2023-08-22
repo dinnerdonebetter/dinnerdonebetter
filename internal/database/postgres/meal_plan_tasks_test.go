@@ -9,7 +9,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -239,51 +238,6 @@ func TestQuerier_GetMealPlanTask(T *testing.T) {
 func TestQuerier_createMealPlanTask(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMealPlanTask := fakes.BuildFakeMealPlanTask()
-		exampleMealPlanTask.MealPlanOption = types.MealPlanOption{
-			ID: exampleMealPlanTask.MealPlanOption.ID,
-		}
-		exampleMealPlanTask.RecipePrepTask = types.RecipePrepTask{
-			ID: exampleMealPlanTask.RecipePrepTask.ID,
-		}
-		exampleInput := converters.ConvertMealPlanTaskToMealPlanTaskDatabaseCreationInput(exampleMealPlanTask)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-		tx, err := c.db.BeginTx(ctx, nil)
-		require.NoError(t, err)
-		require.NotNil(t, tx)
-
-		createMealPlanTaskArgs := []any{
-			exampleInput.ID,
-			types.MealPlanTaskStatusUnfinished,
-			exampleInput.StatusExplanation,
-			exampleInput.CreationExplanation,
-			exampleInput.MealPlanOptionID,
-			exampleInput.RecipePrepTaskID,
-			exampleInput.AssignedToUser,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(createMealPlanTaskQuery)).
-			WithArgs(interfaceToDriverValue(createMealPlanTaskArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		c.timeFunc = func() time.Time {
-			return exampleMealPlanTask.CreatedAt
-		}
-
-		actual, err := c.createMealPlanTask(ctx, tx, exampleInput)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleMealPlanTask, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
@@ -301,99 +255,10 @@ func TestQuerier_createMealPlanTask(T *testing.T) {
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMealPlanTask := fakes.BuildFakeMealPlanTask()
-		exampleMealPlanTask.MealPlanOption = types.MealPlanOption{
-			ID: exampleMealPlanTask.MealPlanOption.ID,
-		}
-		exampleMealPlanTask.RecipePrepTask = types.RecipePrepTask{
-			ID: exampleMealPlanTask.RecipePrepTask.ID,
-		}
-		exampleInput := converters.ConvertMealPlanTaskToMealPlanTaskDatabaseCreationInput(exampleMealPlanTask)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-		tx, err := c.db.BeginTx(ctx, nil)
-		require.NoError(t, err)
-		require.NotNil(t, tx)
-
-		createMealPlanTaskArgs := []any{
-			exampleInput.ID,
-			types.MealPlanTaskStatusUnfinished,
-			exampleInput.StatusExplanation,
-			exampleInput.CreationExplanation,
-			exampleInput.MealPlanOptionID,
-			exampleInput.RecipePrepTaskID,
-			exampleInput.AssignedToUser,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(createMealPlanTaskQuery)).
-			WithArgs(interfaceToDriverValue(createMealPlanTaskArgs)...).
-			WillReturnError(errors.New("blah"))
-
-		c.timeFunc = func() time.Time {
-			return exampleMealPlanTask.CreatedAt
-		}
-
-		actual, err := c.createMealPlanTask(ctx, tx, exampleInput)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
 }
 
 func TestQuerier_CreateMealPlanTask(T *testing.T) {
 	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMealPlanTask := fakes.BuildFakeMealPlanTask()
-		exampleMealPlanTask.MealPlanOption = types.MealPlanOption{
-			ID: exampleMealPlanTask.MealPlanOption.ID,
-		}
-		exampleMealPlanTask.RecipePrepTask = types.RecipePrepTask{
-			ID: exampleMealPlanTask.RecipePrepTask.ID,
-		}
-		exampleInput := converters.ConvertMealPlanTaskToMealPlanTaskDatabaseCreationInput(exampleMealPlanTask)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-
-		createMealPlanTaskArgs := []any{
-			exampleInput.ID,
-			types.MealPlanTaskStatusUnfinished,
-			exampleInput.StatusExplanation,
-			exampleInput.CreationExplanation,
-			exampleInput.MealPlanOptionID,
-			exampleInput.RecipePrepTaskID,
-			exampleInput.AssignedToUser,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(createMealPlanTaskQuery)).
-			WithArgs(interfaceToDriverValue(createMealPlanTaskArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		c.timeFunc = func() time.Time {
-			return exampleMealPlanTask.CreatedAt
-		}
-
-		db.ExpectCommit()
-
-		actual, err := c.CreateMealPlanTask(ctx, exampleInput)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleMealPlanTask, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
 
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
@@ -402,118 +267,6 @@ func TestQuerier_CreateMealPlanTask(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		actual, err := c.CreateMealPlanTask(ctx, nil)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error beginning transaction", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMealPlanTask := fakes.BuildFakeMealPlanTask()
-		exampleMealPlanTask.MealPlanOption = types.MealPlanOption{
-			ID: exampleMealPlanTask.MealPlanOption.ID,
-		}
-		exampleMealPlanTask.RecipePrepTask = types.RecipePrepTask{
-			ID: exampleMealPlanTask.RecipePrepTask.ID,
-		}
-		exampleInput := converters.ConvertMealPlanTaskToMealPlanTaskDatabaseCreationInput(exampleMealPlanTask)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin().WillReturnError(errors.New("blah"))
-
-		actual, err := c.CreateMealPlanTask(ctx, exampleInput)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMealPlanTask := fakes.BuildFakeMealPlanTask()
-		exampleMealPlanTask.MealPlanOption = types.MealPlanOption{
-			ID: exampleMealPlanTask.MealPlanOption.ID,
-		}
-		exampleMealPlanTask.RecipePrepTask = types.RecipePrepTask{
-			ID: exampleMealPlanTask.RecipePrepTask.ID,
-		}
-		exampleInput := converters.ConvertMealPlanTaskToMealPlanTaskDatabaseCreationInput(exampleMealPlanTask)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-
-		createMealPlanTaskArgs := []any{
-			exampleInput.ID,
-			types.MealPlanTaskStatusUnfinished,
-			exampleInput.StatusExplanation,
-			exampleInput.CreationExplanation,
-			exampleInput.MealPlanOptionID,
-			exampleInput.RecipePrepTaskID,
-			exampleInput.AssignedToUser,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(createMealPlanTaskQuery)).
-			WithArgs(interfaceToDriverValue(createMealPlanTaskArgs)...).
-			WillReturnError(errors.New("blah"))
-
-		db.ExpectRollback()
-
-		c.timeFunc = func() time.Time {
-			return exampleMealPlanTask.CreatedAt
-		}
-
-		actual, err := c.CreateMealPlanTask(ctx, exampleInput)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error committing transaction", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMealPlanTask := fakes.BuildFakeMealPlanTask()
-		exampleMealPlanTask.MealPlanOption = types.MealPlanOption{
-			ID: exampleMealPlanTask.MealPlanOption.ID,
-		}
-		exampleMealPlanTask.RecipePrepTask = types.RecipePrepTask{
-			ID: exampleMealPlanTask.RecipePrepTask.ID,
-		}
-		exampleInput := converters.ConvertMealPlanTaskToMealPlanTaskDatabaseCreationInput(exampleMealPlanTask)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-
-		createMealPlanTaskArgs := []any{
-			exampleInput.ID,
-			types.MealPlanTaskStatusUnfinished,
-			exampleInput.StatusExplanation,
-			exampleInput.CreationExplanation,
-			exampleInput.MealPlanOptionID,
-			exampleInput.RecipePrepTaskID,
-			exampleInput.AssignedToUser,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(createMealPlanTaskQuery)).
-			WithArgs(interfaceToDriverValue(createMealPlanTaskArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		c.timeFunc = func() time.Time {
-			return exampleMealPlanTask.CreatedAt
-		}
-
-		db.ExpectCommit().WillReturnError(errors.New("blah"))
-
-		actual, err := c.CreateMealPlanTask(ctx, exampleInput)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 
@@ -618,174 +371,6 @@ func TestQuerier_GetMealPlanTasksForMealPlan(T *testing.T) {
 	})
 }
 
-func TestQuerier_CreateMealPlanTasksForMealPlanOption(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMealPlanTasks := fakes.BuildFakeMealPlanTaskList()
-		exampleTime := fakes.BuildFakeTime()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-
-		inputs := []*types.MealPlanTaskDatabaseCreationInput{}
-		for _, x := range exampleMealPlanTasks.Data {
-			x.RecipePrepTask = types.RecipePrepTask{}
-			x.MealPlanOption = types.MealPlanOption{}
-			x.CreatedAt = exampleTime
-			exampleInput := converters.ConvertMealPlanTaskToMealPlanTaskDatabaseCreationInput(x)
-			inputs = append(inputs, exampleInput)
-
-			createMealPlanTaskArgs := []any{
-				exampleInput.ID,
-				types.MealPlanTaskStatusUnfinished,
-				exampleInput.StatusExplanation,
-				exampleInput.CreationExplanation,
-				exampleInput.MealPlanOptionID,
-				exampleInput.RecipePrepTaskID,
-				exampleInput.AssignedToUser,
-			}
-
-			db.ExpectExec(formatQueryForSQLMock(createMealPlanTaskQuery)).
-				WithArgs(interfaceToDriverValue(createMealPlanTaskArgs)...).
-				WillReturnResult(newArbitraryDatabaseResult())
-		}
-
-		c.timeFunc = func() time.Time {
-			return exampleTime
-		}
-
-		db.ExpectCommit()
-
-		actual, err := c.CreateMealPlanTasksForMealPlanOption(ctx, inputs)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleMealPlanTasks.Data, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error beginning transaction", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMealPlanTasks := fakes.BuildFakeMealPlanTaskList()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin().WillReturnError(errors.New("blah"))
-
-		inputs := []*types.MealPlanTaskDatabaseCreationInput{}
-		for _, x := range exampleMealPlanTasks.Data {
-			exampleInput := converters.ConvertMealPlanTaskToMealPlanTaskDatabaseCreationInput(x)
-			inputs = append(inputs, exampleInput)
-		}
-
-		actual, err := c.CreateMealPlanTasksForMealPlanOption(ctx, inputs)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMealPlanTasks := fakes.BuildFakeMealPlanTaskList()
-		exampleTime := fakes.BuildFakeTime()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-
-		inputs := []*types.MealPlanTaskDatabaseCreationInput{}
-		for _, x := range exampleMealPlanTasks.Data {
-			x.RecipePrepTask = types.RecipePrepTask{}
-			x.MealPlanOption = types.MealPlanOption{}
-			x.CreatedAt = exampleTime
-			exampleInput := converters.ConvertMealPlanTaskToMealPlanTaskDatabaseCreationInput(x)
-			inputs = append(inputs, exampleInput)
-		}
-
-		createMealPlanTaskArgs := []any{
-			inputs[0].ID,
-			types.MealPlanTaskStatusUnfinished,
-			inputs[0].StatusExplanation,
-			inputs[0].CreationExplanation,
-			inputs[0].MealPlanOptionID,
-			inputs[0].RecipePrepTaskID,
-			inputs[0].AssignedToUser,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(createMealPlanTaskQuery)).
-			WithArgs(interfaceToDriverValue(createMealPlanTaskArgs)...).
-			WillReturnError(errors.New("blah"))
-
-		db.ExpectRollback()
-
-		c.timeFunc = func() time.Time {
-			return exampleTime
-		}
-
-		actual, err := c.CreateMealPlanTasksForMealPlanOption(ctx, inputs)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error committing transaction", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMealPlanTasks := fakes.BuildFakeMealPlanTaskList()
-		exampleTime := fakes.BuildFakeTime()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-
-		inputs := []*types.MealPlanTaskDatabaseCreationInput{}
-		for _, x := range exampleMealPlanTasks.Data {
-			x.RecipePrepTask = types.RecipePrepTask{}
-			x.MealPlanOption = types.MealPlanOption{}
-			x.CreatedAt = exampleTime
-			exampleInput := converters.ConvertMealPlanTaskToMealPlanTaskDatabaseCreationInput(x)
-			inputs = append(inputs, exampleInput)
-
-			createMealPlanTaskArgs := []any{
-				exampleInput.ID,
-				types.MealPlanTaskStatusUnfinished,
-				exampleInput.StatusExplanation,
-				exampleInput.CreationExplanation,
-				exampleInput.MealPlanOptionID,
-				exampleInput.RecipePrepTaskID,
-				exampleInput.AssignedToUser,
-			}
-
-			db.ExpectExec(formatQueryForSQLMock(createMealPlanTaskQuery)).
-				WithArgs(interfaceToDriverValue(createMealPlanTaskArgs)...).
-				WillReturnResult(newArbitraryDatabaseResult())
-		}
-
-		c.timeFunc = func() time.Time {
-			return exampleTime
-		}
-
-		db.ExpectCommit().WillReturnError(errors.New("blah"))
-
-		actual, err := c.CreateMealPlanTasksForMealPlanOption(ctx, inputs)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
 func TestQuerier_MarkMealPlanAsHavingTasksCreated(T *testing.T) {
 	T.Parallel()
 
@@ -846,27 +431,6 @@ func TestQuerier_MarkMealPlanAsHavingTasksCreated(T *testing.T) {
 func TestQuerier_MarkMealPlanAsHavingGroceryListInitialized(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		exampleMealPlan := fakes.BuildFakeMealPlan()
-
-		markMealPlanOptionAsHavingStepsCreatedArgs := []any{
-			exampleMealPlan.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(markMealPlanAsHavingGroceryListInitialized)).
-			WithArgs(interfaceToDriverValue(markMealPlanOptionAsHavingStepsCreatedArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		assert.NoError(t, c.MarkMealPlanAsHavingGroceryListInitialized(ctx, exampleMealPlan.ID))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with empty meal plan ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -874,27 +438,6 @@ func TestQuerier_MarkMealPlanAsHavingGroceryListInitialized(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		assert.Error(t, c.MarkMealPlanAsHavingGroceryListInitialized(ctx, ""))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		exampleMealPlan := fakes.BuildFakeMealPlan()
-
-		markMealPlanOptionAsHavingStepsCreatedArgs := []any{
-			exampleMealPlan.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(markMealPlanAsHavingGroceryListInitialized)).
-			WithArgs(interfaceToDriverValue(markMealPlanOptionAsHavingStepsCreatedArgs)...).
-			WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.MarkMealPlanAsHavingGroceryListInitialized(ctx, exampleMealPlan.ID))
 
 		mock.AssertExpectationsForObjects(t, db)
 	})

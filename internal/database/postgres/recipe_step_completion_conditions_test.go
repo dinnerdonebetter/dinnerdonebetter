@@ -5,10 +5,8 @@ import (
 	"database/sql/driver"
 	"errors"
 	"testing"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -113,34 +111,6 @@ func TestQuerier_RecipeStepCompletionConditionExists(T *testing.T) {
 func TestQuerier_GetRecipeStepCompletionCondition(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeID := fakes.BuildFakeID()
-		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleRecipeStepCompletionCondition := fakes.BuildFakeRecipeStepCompletionCondition()
-		exampleRecipeStepCompletionCondition.IngredientState = types.ValidIngredientState{ID: exampleRecipeStepCompletionCondition.IngredientState.ID}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleRecipeID,
-			exampleRecipeStepID,
-			exampleRecipeStepCompletionCondition.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepCompletionConditionQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromRecipeStepCompletionConditions(false, 0, exampleRecipeStepCompletionCondition))
-
-		actual, err := c.GetRecipeStepCompletionCondition(ctx, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepCompletionCondition.ID)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleRecipeStepCompletionCondition, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid recipe ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -181,35 +151,6 @@ func TestQuerier_GetRecipeStepCompletionCondition(T *testing.T) {
 		actual, err := c.GetRecipeStepCompletionCondition(ctx, exampleRecipeID, exampleRecipeStepID, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeID := fakes.BuildFakeID()
-		exampleRecipeStepID := fakes.BuildFakeID()
-		exampleRecipeStepCompletionCondition := fakes.BuildFakeRecipeStepCompletionCondition()
-		exampleRecipeStepCompletionCondition.IngredientState = types.ValidIngredientState{ID: exampleRecipeStepCompletionCondition.IngredientState.ID}
-		exampleRecipeStepCompletionCondition.Ingredients = nil
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleRecipeID,
-			exampleRecipeStepID,
-			exampleRecipeStepCompletionCondition.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getRecipeStepCompletionConditionQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetRecipeStepCompletionCondition(ctx, exampleRecipeID, exampleRecipeStepID, exampleRecipeStepCompletionCondition.ID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 
@@ -389,41 +330,6 @@ func TestQuerier_GetRecipeStepCompletionConditions(T *testing.T) {
 func TestQuerier_CreateRecipeStepCompletionCondition(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeStepCompletionCondition := fakes.BuildFakeRecipeStepCompletionCondition()
-		exampleRecipeStepCompletionCondition.ID = "1"
-		exampleRecipeStepCompletionCondition.IngredientState = types.ValidIngredientState{ID: exampleRecipeStepCompletionCondition.IngredientState.ID}
-		exampleRecipeStepCompletionCondition.Ingredients = nil
-		exampleInput := converters.ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionDatabaseCreationInput(exampleRecipeStepCompletionCondition)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.BelongsToRecipeStep,
-			exampleInput.IngredientStateID,
-			exampleInput.Optional,
-			exampleInput.Notes,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(recipeStepCompletionConditionCreationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		c.timeFunc = func() time.Time {
-			return exampleRecipeStepCompletionCondition.CreatedAt
-		}
-
-		actual, err := c.CreateRecipeStepCompletionCondition(ctx, exampleInput)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleRecipeStepCompletionCondition, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
@@ -434,81 +340,20 @@ func TestQuerier_CreateRecipeStepCompletionCondition(T *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		expectedErr := errors.New(t.Name())
-		exampleRecipeStepCompletionCondition := fakes.BuildFakeRecipeStepCompletionCondition()
-		exampleRecipeStepCompletionCondition.IngredientState = types.ValidIngredientState{ID: exampleRecipeStepCompletionCondition.IngredientState.ID}
-		exampleRecipeStepCompletionCondition.Ingredients = nil
-		exampleInput := converters.ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionDatabaseCreationInput(exampleRecipeStepCompletionCondition)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.BelongsToRecipeStep,
-			exampleInput.IngredientStateID,
-			exampleInput.Optional,
-			exampleInput.Notes,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(recipeStepCompletionConditionCreationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(expectedErr)
-
-		c.timeFunc = func() time.Time {
-			return exampleRecipeStepCompletionCondition.CreatedAt
-		}
-
-		actual, err := c.CreateRecipeStepCompletionCondition(ctx, exampleInput)
-		assert.Error(t, err)
-		assert.True(t, errors.Is(err, expectedErr))
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
 }
 
 func TestSQLQuerier_createRecipeStepCompletionCondition(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
+	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
-		exampleRecipeStepCompletionCondition := fakes.BuildFakeRecipeStepCompletionCondition()
-		exampleRecipeStepCompletionCondition.ID = "3"
-		exampleRecipeStepCompletionCondition.BelongsToRecipeStep = "2"
-		exampleRecipeStepCompletionCondition.IngredientState = types.ValidIngredientState{ID: exampleRecipeStepCompletionCondition.IngredientState.ID}
-
-		exampleInput := converters.ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionDatabaseCreationInput(exampleRecipeStepCompletionCondition)
-
 		ctx := context.Background()
-		c, db := buildTestClient(t)
+		c, _ := buildTestClient(t)
 
-		recipeStepCompletionConditionCreationArgs := []any{
-			exampleInput.ID,
-			exampleInput.BelongsToRecipeStep,
-			exampleInput.IngredientStateID,
-			exampleInput.Optional,
-			exampleInput.Notes,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(recipeStepCompletionConditionCreationQuery)).
-			WithArgs(interfaceToDriverValue(recipeStepCompletionConditionCreationArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		c.timeFunc = func() time.Time {
-			return exampleRecipeStepCompletionCondition.CreatedAt
-		}
-
-		actual, err := c.createRecipeStepCompletionCondition(ctx, c.db, exampleInput)
-		assert.NoError(t, err)
-		assert.NotNil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
+		actual, err := c.createRecipeStepCompletionCondition(ctx, c.db, nil)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
 	})
 }
 

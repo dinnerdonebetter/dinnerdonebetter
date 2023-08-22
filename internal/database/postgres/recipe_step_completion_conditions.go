@@ -216,20 +216,50 @@ func (q *Querier) GetRecipeStepCompletionCondition(ctx context.Context, recipeID
 	logger = logger.WithValue(keys.RecipeStepCompletionConditionIDKey, recipeStepCompletionConditionID)
 	tracing.AttachRecipeStepCompletionConditionIDToSpan(span, recipeStepCompletionConditionID)
 
-	args := []any{
-		recipeID,
-		recipeStepID,
-		recipeStepCompletionConditionID,
-	}
-
-	rows, err := q.getRows(ctx, q.db, "get recipe step completion condition", getRecipeStepCompletionConditionQuery, args)
+	results, err := q.generatedQuerier.GetRecipeStepCompletionConditionWithIngredients(ctx, q.db, &generated.GetRecipeStepCompletionConditionWithIngredientsParams{
+		RecipeID:                        recipeID,
+		RecipeStepID:                    recipeStepID,
+		RecipeStepCompletionConditionID: recipeStepCompletionConditionID,
+	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "querying for recipe step completion condition")
 	}
 
-	recipeStepCompletionCondition, _, _, err := q.scanRecipeStepCompletionConditionWithIngredients(ctx, rows, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning recipe step completion condition")
+	recipeStepCompletionCondition := &types.RecipeStepCompletionCondition{}
+	for _, result := range results {
+		if recipeStepCompletionCondition.ID == "" {
+			recipeStepCompletionCondition = &types.RecipeStepCompletionCondition{
+				CreatedAt:     result.CreatedAt,
+				ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+				LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
+				IngredientState: types.ValidIngredientState{
+					CreatedAt:     result.ValidIngredientStateCreatedAt,
+					ArchivedAt:    timePointerFromNullTime(result.ValidIngredientStateArchivedAt),
+					LastUpdatedAt: timePointerFromNullTime(result.ValidIngredientStateLastUpdatedAt),
+					PastTense:     result.ValidIngredientStatePastTense,
+					Description:   result.ValidIngredientStateDescription,
+					IconPath:      result.ValidIngredientStateIconPath,
+					ID:            result.ValidIngredientStateID,
+					Name:          result.ValidIngredientStateName,
+					AttributeType: string(result.ValidIngredientStateAttributeType),
+					Slug:          result.ValidIngredientStateSlug,
+				},
+				ID:                  result.ID,
+				BelongsToRecipeStep: result.BelongsToRecipeStep,
+				Notes:               result.Notes,
+				Ingredients:         []*types.RecipeStepCompletionConditionIngredient{},
+				Optional:            result.Optional,
+			}
+		}
+
+		recipeStepCompletionCondition.Ingredients = append(recipeStepCompletionCondition.Ingredients, &types.RecipeStepCompletionConditionIngredient{
+			CreatedAt:                              result.RecipeStepCompletionConditionIngredientCreatedAt,
+			ArchivedAt:                             timePointerFromNullTime(result.RecipeStepCompletionConditionIngredientArchivedAt),
+			LastUpdatedAt:                          timePointerFromNullTime(result.RecipeStepCompletionConditionIngredientLastUpdatedAt),
+			ID:                                     result.RecipeStepCompletionConditionIngredientID,
+			BelongsToRecipeStepCompletionCondition: result.RecipeStepCompletionConditionIngredientBelongsToRecipeS,
+			RecipeStepIngredient:                   result.RecipeStepCompletionConditionIngredientRecipeStepIngredi,
+		})
 	}
 
 	return recipeStepCompletionCondition, nil
@@ -322,9 +352,6 @@ func (q *Querier) GetRecipeStepCompletionConditions(ctx context.Context, recipeI
 	return x, nil
 }
 
-//go:embed queries/recipe_step_completion_conditions/create.sql
-var recipeStepCompletionConditionCreationQuery string
-
 // createRecipeStepCompletionCondition creates a recipe step completion condition in the database.
 func (q *Querier) createRecipeStepCompletionCondition(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepCompletionConditionDatabaseCreationInput) (*types.RecipeStepCompletionCondition, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -334,16 +361,14 @@ func (q *Querier) createRecipeStepCompletionCondition(ctx context.Context, db da
 		return nil, ErrNilInputProvided
 	}
 
-	args := []any{
-		input.ID,
-		input.BelongsToRecipeStep,
-		input.IngredientStateID,
-		input.Optional,
-		input.Notes,
-	}
-
 	// create the recipe step completion condition.
-	if err := q.performWriteQuery(ctx, db, "recipe step completion condition creation", recipeStepCompletionConditionCreationQuery, args); err != nil {
+	if err := q.generatedQuerier.CreateRecipeStepCompletionCondition(ctx, db, &generated.CreateRecipeStepCompletionConditionParams{
+		ID:                  input.ID,
+		BelongsToRecipeStep: input.BelongsToRecipeStep,
+		IngredientState:     input.IngredientStateID,
+		Notes:               input.Notes,
+		Optional:            input.Optional,
+	}); err != nil {
 		return nil, observability.PrepareError(err, span, "performing recipe step completion condition creation query")
 	}
 

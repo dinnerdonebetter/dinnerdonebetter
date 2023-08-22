@@ -289,9 +289,6 @@ func (q *Querier) GetRecipeSteps(ctx context.Context, recipeID string, filter *t
 	return x, nil
 }
 
-//go:embed queries/recipe_steps/create.sql
-var recipeStepCreationQuery string
-
 // CreateRecipeStep creates a recipe step in the database.
 func (q *Querier) createRecipeStep(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepDatabaseCreationInput) (*types.RecipeStep, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -301,24 +298,22 @@ func (q *Querier) createRecipeStep(ctx context.Context, db database.SQLQueryExec
 		return nil, ErrNilInputProvided
 	}
 
-	args := []any{
-		input.ID,
-		input.Index,
-		input.PreparationID,
-		input.MinimumEstimatedTimeInSeconds,
-		input.MaximumEstimatedTimeInSeconds,
-		input.MinimumTemperatureInCelsius,
-		input.MaximumTemperatureInCelsius,
-		input.Notes,
-		input.ExplicitInstructions,
-		input.ConditionExpression,
-		input.Optional,
-		input.StartTimerAutomatically,
-		input.BelongsToRecipe,
-	}
-
 	// create the recipe step.
-	if err := q.performWriteQuery(ctx, db, "recipe step creation", recipeStepCreationQuery, args); err != nil {
+	if err := q.generatedQuerier.CreateRecipeStep(ctx, db, &generated.CreateRecipeStepParams{
+		ID:                            input.ID,
+		BelongsToRecipe:               input.BelongsToRecipe,
+		PreparationID:                 input.PreparationID,
+		ConditionExpression:           input.ConditionExpression,
+		ExplicitInstructions:          input.ExplicitInstructions,
+		Notes:                         input.Notes,
+		MaximumTemperatureInCelsius:   nullStringFromFloat32Pointer(input.MaximumTemperatureInCelsius),
+		MinimumTemperatureInCelsius:   nullStringFromFloat32Pointer(input.MinimumTemperatureInCelsius),
+		MaximumEstimatedTimeInSeconds: nullInt64FromUint32Pointer(input.MaximumEstimatedTimeInSeconds),
+		MinimumEstimatedTimeInSeconds: nullInt64FromUint32Pointer(input.MinimumEstimatedTimeInSeconds),
+		Index:                         int32(input.Index),
+		Optional:                      input.Optional,
+		StartTimerAutomatically:       input.StartTimerAutomatically,
+	}); err != nil {
 		return nil, observability.PrepareError(err, span, "performing recipe step creation")
 	}
 

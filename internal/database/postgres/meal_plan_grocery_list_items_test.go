@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"testing"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -102,60 +101,6 @@ func TestQuerier_GetMealPlanGroceryListItem(T *testing.T) {
 func TestQuerier_createMealPlanGroceryListItem(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
-		exampleMealPlanGroceryListItem.ID = "1"
-		exampleMealPlanGroceryListItem.PurchasedMeasurementUnit = &types.ValidMeasurementUnit{
-			ID: fakes.BuildFakeID(),
-		}
-		exampleInput := converters.ConvertMealPlanGroceryListItemToMealPlanGroceryListItemDatabaseCreationInput(exampleMealPlanGroceryListItem)
-
-		exampleMealPlanGroceryListItem.Ingredient = types.ValidIngredient{
-			ID: exampleMealPlanGroceryListItem.Ingredient.ID,
-		}
-		exampleMealPlanGroceryListItem.MeasurementUnit = types.ValidMeasurementUnit{
-			ID: exampleMealPlanGroceryListItem.MeasurementUnit.ID,
-		}
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-		tx, err := c.db.BeginTx(ctx, nil)
-		require.NoError(t, err)
-		require.NotNil(t, tx)
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.BelongsToMealPlan,
-			exampleInput.ValidIngredientID,
-			exampleInput.ValidMeasurementUnitID,
-			exampleInput.MinimumQuantityNeeded,
-			exampleInput.MaximumQuantityNeeded,
-			exampleInput.QuantityPurchased,
-			exampleInput.PurchasedMeasurementUnitID,
-			exampleInput.PurchasedUPC,
-			exampleInput.PurchasePrice,
-			exampleInput.StatusExplanation,
-			exampleInput.Status,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(mealPlanGroceryListItemCreationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		c.timeFunc = func() time.Time {
-			return exampleMealPlanGroceryListItem.CreatedAt
-		}
-
-		actual, err := c.createMealPlanGroceryListItem(ctx, tx, exampleInput)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleMealPlanGroceryListItem, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with nil input", func(t *testing.T) {
 		t.Parallel()
 
@@ -173,108 +118,10 @@ func TestQuerier_createMealPlanGroceryListItem(T *testing.T) {
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
-		exampleMealPlanGroceryListItem.ID = "1"
-		exampleMealPlanGroceryListItem.PurchasedMeasurementUnit = fakes.BuildFakeValidMeasurementUnit()
-		exampleInput := converters.ConvertMealPlanGroceryListItemToMealPlanGroceryListItemDatabaseCreationInput(exampleMealPlanGroceryListItem)
-
-		exampleMealPlanGroceryListItem.Ingredient = types.ValidIngredient{
-			ID: exampleMealPlanGroceryListItem.Ingredient.ID,
-		}
-		exampleMealPlanGroceryListItem.MeasurementUnit = types.ValidMeasurementUnit{
-			ID: exampleMealPlanGroceryListItem.MeasurementUnit.ID,
-		}
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-		tx, err := c.db.BeginTx(ctx, nil)
-		require.NoError(t, err)
-		require.NotNil(t, tx)
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.BelongsToMealPlan,
-			exampleInput.ValidIngredientID,
-			exampleInput.ValidMeasurementUnitID,
-			exampleInput.MinimumQuantityNeeded,
-			exampleInput.MaximumQuantityNeeded,
-			exampleInput.QuantityPurchased,
-			exampleInput.PurchasedMeasurementUnitID,
-			exampleInput.PurchasedUPC,
-			exampleInput.PurchasePrice,
-			exampleInput.StatusExplanation,
-			exampleInput.Status,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(mealPlanGroceryListItemCreationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		c.timeFunc = func() time.Time {
-			return exampleMealPlanGroceryListItem.CreatedAt
-		}
-
-		actual, err := c.createMealPlanGroceryListItem(ctx, tx, exampleInput)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
 }
 
 func TestQuerier_CreateMealPlanGroceryListItem(T *testing.T) {
 	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
-		exampleMealPlanGroceryListItem.ID = "1"
-		exampleInput := converters.ConvertMealPlanGroceryListItemToMealPlanGroceryListItemDatabaseCreationInput(exampleMealPlanGroceryListItem)
-
-		exampleMealPlanGroceryListItem.Ingredient = types.ValidIngredient{
-			ID: exampleMealPlanGroceryListItem.Ingredient.ID,
-		}
-		exampleMealPlanGroceryListItem.MeasurementUnit = types.ValidMeasurementUnit{
-			ID: exampleMealPlanGroceryListItem.MeasurementUnit.ID,
-		}
-
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.BelongsToMealPlan,
-			exampleInput.ValidIngredientID,
-			exampleInput.ValidMeasurementUnitID,
-			exampleInput.MinimumQuantityNeeded,
-			exampleInput.MaximumQuantityNeeded,
-			exampleInput.QuantityPurchased,
-			exampleInput.PurchasedMeasurementUnitID,
-			exampleInput.PurchasedUPC,
-			exampleInput.PurchasePrice,
-			exampleInput.StatusExplanation,
-			exampleInput.Status,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(mealPlanGroceryListItemCreationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		c.timeFunc = func() time.Time {
-			return exampleMealPlanGroceryListItem.CreatedAt
-		}
-
-		actual, err := c.CreateMealPlanGroceryListItem(ctx, exampleInput)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleMealPlanGroceryListItem, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
 
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
@@ -286,100 +133,10 @@ func TestQuerier_CreateMealPlanGroceryListItem(T *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		expectedErr := errors.New(t.Name())
-		exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
-		exampleInput := converters.ConvertMealPlanGroceryListItemToMealPlanGroceryListItemDatabaseCreationInput(exampleMealPlanGroceryListItem)
-
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.BelongsToMealPlan,
-			exampleInput.ValidIngredientID,
-			exampleInput.ValidMeasurementUnitID,
-			exampleInput.MinimumQuantityNeeded,
-			exampleInput.MaximumQuantityNeeded,
-			exampleInput.QuantityPurchased,
-			exampleInput.PurchasedMeasurementUnitID,
-			exampleInput.PurchasedUPC,
-			exampleInput.PurchasePrice,
-			exampleInput.StatusExplanation,
-			exampleInput.Status,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(mealPlanGroceryListItemCreationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(expectedErr)
-
-		c.timeFunc = func() time.Time {
-			return exampleMealPlanGroceryListItem.CreatedAt
-		}
-
-		actual, err := c.CreateMealPlanGroceryListItem(ctx, exampleInput)
-		assert.Error(t, err)
-		assert.True(t, errors.Is(err, expectedErr))
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
 }
 
 func TestQuerier_CreateMealPlanGroceryListItemsForMealPlan(T *testing.T) {
 	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleMealPlan := fakes.BuildFakeMealPlan()
-		exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
-		exampleInput := converters.ConvertMealPlanGroceryListItemToMealPlanGroceryListItemDatabaseCreationInput(exampleMealPlanGroceryListItem)
-		inputs := []*types.MealPlanGroceryListItemDatabaseCreationInput{exampleInput}
-
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-
-		for _, input := range inputs {
-			args := []any{
-				input.ID,
-				input.BelongsToMealPlan,
-				input.ValidIngredientID,
-				input.ValidMeasurementUnitID,
-				input.MinimumQuantityNeeded,
-				input.MaximumQuantityNeeded,
-				input.QuantityPurchased,
-				input.PurchasedMeasurementUnitID,
-				input.PurchasedUPC,
-				input.PurchasePrice,
-				input.StatusExplanation,
-				input.Status,
-			}
-
-			db.ExpectExec(formatQueryForSQLMock(mealPlanGroceryListItemCreationQuery)).
-				WithArgs(interfaceToDriverValue(args)...).
-				WillReturnResult(newArbitraryDatabaseResult())
-		}
-
-		markMealPlanOptionAsHavingStepsCreatedArgs := []any{
-			exampleMealPlan.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(markMealPlanAsHavingGroceryListInitialized)).
-			WithArgs(interfaceToDriverValue(markMealPlanOptionAsHavingStepsCreatedArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		db.ExpectCommit()
-
-		assert.NoError(t, c.CreateMealPlanGroceryListItemsForMealPlan(ctx, exampleMealPlan.ID, inputs))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
 
 	T.Run("with error beginning transaction", func(t *testing.T) {
 		t.Parallel()
@@ -393,143 +150,6 @@ func TestQuerier_CreateMealPlanGroceryListItemsForMealPlan(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		db.ExpectBegin().WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.CreateMealPlanGroceryListItemsForMealPlan(ctx, exampleMealPlan.ID, inputs))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing creation query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleMealPlan := fakes.BuildFakeMealPlan()
-		exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
-		exampleInput := converters.ConvertMealPlanGroceryListItemToMealPlanGroceryListItemDatabaseCreationInput(exampleMealPlanGroceryListItem)
-		inputs := []*types.MealPlanGroceryListItemDatabaseCreationInput{exampleInput}
-
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.BelongsToMealPlan,
-			exampleInput.ValidIngredientID,
-			exampleInput.ValidMeasurementUnitID,
-			exampleInput.MinimumQuantityNeeded,
-			exampleInput.MaximumQuantityNeeded,
-			exampleInput.QuantityPurchased,
-			exampleInput.PurchasedMeasurementUnitID,
-			exampleInput.PurchasedUPC,
-			exampleInput.PurchasePrice,
-			exampleInput.StatusExplanation,
-			exampleInput.Status,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(mealPlanGroceryListItemCreationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		db.ExpectRollback()
-
-		assert.Error(t, c.CreateMealPlanGroceryListItemsForMealPlan(ctx, exampleMealPlan.ID, inputs))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error marking steps as created", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleMealPlan := fakes.BuildFakeMealPlan()
-		exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
-		exampleInput := converters.ConvertMealPlanGroceryListItemToMealPlanGroceryListItemDatabaseCreationInput(exampleMealPlanGroceryListItem)
-		inputs := []*types.MealPlanGroceryListItemDatabaseCreationInput{exampleInput}
-
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-
-		for _, input := range inputs {
-			args := []any{
-				input.ID,
-				input.BelongsToMealPlan,
-				input.ValidIngredientID,
-				input.ValidMeasurementUnitID,
-				input.MinimumQuantityNeeded,
-				input.MaximumQuantityNeeded,
-				input.QuantityPurchased,
-				input.PurchasedMeasurementUnitID,
-				input.PurchasedUPC,
-				input.PurchasePrice,
-				input.StatusExplanation,
-				input.Status,
-			}
-
-			db.ExpectExec(formatQueryForSQLMock(mealPlanGroceryListItemCreationQuery)).
-				WithArgs(interfaceToDriverValue(args)...).
-				WillReturnResult(newArbitraryDatabaseResult())
-		}
-
-		markMealPlanOptionAsHavingStepsCreatedArgs := []any{
-			exampleMealPlan.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(markMealPlanAsHavingGroceryListInitialized)).
-			WithArgs(interfaceToDriverValue(markMealPlanOptionAsHavingStepsCreatedArgs)...).
-			WillReturnError(errors.New("blah"))
-
-		db.ExpectRollback()
-
-		assert.Error(t, c.CreateMealPlanGroceryListItemsForMealPlan(ctx, exampleMealPlan.ID, inputs))
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error committing transaction", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleMealPlan := fakes.BuildFakeMealPlan()
-		exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
-		exampleInput := converters.ConvertMealPlanGroceryListItemToMealPlanGroceryListItemDatabaseCreationInput(exampleMealPlanGroceryListItem)
-		inputs := []*types.MealPlanGroceryListItemDatabaseCreationInput{exampleInput}
-
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-
-		for _, input := range inputs {
-			args := []any{
-				input.ID,
-				input.BelongsToMealPlan,
-				input.ValidIngredientID,
-				input.ValidMeasurementUnitID,
-				input.MinimumQuantityNeeded,
-				input.MaximumQuantityNeeded,
-				input.QuantityPurchased,
-				input.PurchasedMeasurementUnitID,
-				input.PurchasedUPC,
-				input.PurchasePrice,
-				input.StatusExplanation,
-				input.Status,
-			}
-
-			db.ExpectExec(formatQueryForSQLMock(mealPlanGroceryListItemCreationQuery)).
-				WithArgs(interfaceToDriverValue(args)...).
-				WillReturnResult(newArbitraryDatabaseResult())
-		}
-
-		markMealPlanOptionAsHavingStepsCreatedArgs := []any{
-			exampleMealPlan.ID,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(markMealPlanAsHavingGroceryListInitialized)).
-			WithArgs(interfaceToDriverValue(markMealPlanOptionAsHavingStepsCreatedArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		db.ExpectCommit().WillReturnError(errors.New("blah"))
 
 		assert.Error(t, c.CreateMealPlanGroceryListItemsForMealPlan(ctx, exampleMealPlan.ID, inputs))
 

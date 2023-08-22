@@ -272,9 +272,6 @@ func (q *Querier) MealPlanEventIsEligibleForVoting(ctx context.Context, mealPlan
 	return result, nil
 }
 
-//go:embed queries/meal_plan_events/create.sql
-var mealPlanEventCreationQuery string
-
 // createMealPlanEvent creates a meal plan event in the database.
 func (q *Querier) createMealPlanEvent(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *types.MealPlanEventDatabaseCreationInput) (*types.MealPlanEvent, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -283,20 +280,17 @@ func (q *Querier) createMealPlanEvent(ctx context.Context, querier database.SQLQ
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-
 	logger := q.logger.WithValue(keys.MealPlanEventIDKey, input.ID)
 
-	mealPlanEventCreationArgs := []any{
-		input.ID,
-		input.Notes,
-		input.StartsAt,
-		input.EndsAt,
-		input.MealName,
-		input.BelongsToMealPlan,
-	}
-
 	// create the meal plan event.
-	if err := q.performWriteQuery(ctx, querier, "meal plan event creation", mealPlanEventCreationQuery, mealPlanEventCreationArgs); err != nil {
+	if err := q.generatedQuerier.CreateMealPlanEvent(ctx, querier, &generated.CreateMealPlanEventParams{
+		ID:                input.ID,
+		Notes:             input.Notes,
+		StartsAt:          input.StartsAt,
+		EndsAt:            input.EndsAt,
+		MealName:          generated.MealName(input.MealName),
+		BelongsToMealPlan: input.BelongsToMealPlan,
+	}); err != nil {
 		q.rollbackTransaction(ctx, querier)
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing meal plan event creation query")
 	}

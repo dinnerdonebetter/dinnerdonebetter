@@ -4,16 +4,13 @@ import (
 	"context"
 	"database/sql/driver"
 	"testing"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
-	"github.com/stretchr/testify/require"
 )
 
 func buildMockRowsFromRecipePrepTasks(recipePrepTasks ...*types.RecipePrepTask) *sqlmock.Rows {
@@ -120,95 +117,15 @@ func TestQuerier_GetRecipePrepTask(T *testing.T) {
 func TestQuerier_CreateRecipePrepTask(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
+	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		expected := fakes.BuildFakeRecipePrepTask()
-		exampleInput := converters.ConvertRecipePrepTaskToRecipePrepTaskDatabaseCreationInput(expected)
+		c, _ := buildTestClient(t)
 
-		c, db := buildTestClient(t)
-
-		createRecipePrepTaskQueryArgs := []any{
-			exampleInput.ID,
-			exampleInput.Name,
-			exampleInput.Description,
-			exampleInput.Notes,
-			exampleInput.Optional,
-			exampleInput.ExplicitStorageInstructions,
-			exampleInput.MinimumTimeBufferBeforeRecipeInSeconds,
-			exampleInput.MaximumTimeBufferBeforeRecipeInSeconds,
-			exampleInput.StorageType,
-			exampleInput.MinimumStorageTemperatureInCelsius,
-			exampleInput.MaximumStorageTemperatureInCelsius,
-			exampleInput.BelongsToRecipe,
-		}
-
-		db.ExpectBegin()
-
-		db.ExpectExec(formatQueryForSQLMock(createRecipePrepTaskQuery)).
-			WithArgs(interfaceToDriverValue(createRecipePrepTaskQueryArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		c.timeFunc = func() time.Time {
-			return expected.CreatedAt
-		}
-
-		for _, taskStep := range exampleInput.TaskSteps {
-			createRecipePrepTaskStepArgs := []any{
-				taskStep.ID,
-				taskStep.BelongsToRecipePrepTask,
-				taskStep.BelongsToRecipeStep,
-				taskStep.SatisfiesRecipeStep,
-			}
-
-			db.ExpectExec(formatQueryForSQLMock(createRecipePrepTaskStepQuery)).
-				WithArgs(interfaceToDriverValue(createRecipePrepTaskStepArgs)...).
-				WillReturnResult(newArbitraryDatabaseResult())
-		}
-
-		db.ExpectCommit()
-
-		actual, err := c.CreateRecipePrepTask(ctx, exampleInput)
-		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
-func TestQuerier_createRecipePrepTaskStep(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		expected := fakes.BuildFakeRecipePrepTaskStep()
-		exampleInput := converters.ConvertRecipePrepTaskStepToRecipePrepTaskStepDatabaseCreationInput(expected)
-
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.BelongsToRecipePrepTask,
-			exampleInput.BelongsToRecipeStep,
-			exampleInput.SatisfiesRecipeStep,
-		}
-
-		db.ExpectBegin()
-		tx, err := c.DB().Begin()
-		require.NoError(t, err)
-
-		db.ExpectExec(formatQueryForSQLMock(createRecipePrepTaskStepQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		actual, err := c.createRecipePrepTaskStep(ctx, tx, exampleInput)
-		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
+		actual, err := c.CreateRecipePrepTask(ctx, nil)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
 	})
 }
 

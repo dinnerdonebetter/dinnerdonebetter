@@ -200,9 +200,6 @@ func (q *Querier) getRecipeMediaForRecipeStep(ctx context.Context, recipeID, rec
 	return x, nil
 }
 
-//go:embed queries/recipe_media/create.sql
-var recipeMediaCreationQuery string
-
 // CreateRecipeMedia creates a recipe media in the database.
 func (q *Querier) CreateRecipeMedia(ctx context.Context, input *types.RecipeMediaDatabaseCreationInput) (*types.RecipeMedia, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -214,18 +211,16 @@ func (q *Querier) CreateRecipeMedia(ctx context.Context, input *types.RecipeMedi
 
 	logger := q.logger.WithValue(keys.RecipeMediaIDKey, input.ID)
 
-	args := []any{
-		input.ID,
-		input.BelongsToRecipe,
-		input.BelongsToRecipeStep,
-		input.MimeType,
-		input.InternalPath,
-		input.ExternalPath,
-		input.Index,
-	}
-
 	// create the recipe media.
-	if err := q.performWriteQuery(ctx, q.db, "recipe media creation", recipeMediaCreationQuery, args); err != nil {
+	if err := q.generatedQuerier.CreateRecipeMedia(ctx, q.db, &generated.CreateRecipeMediaParams{
+		ID:                  input.ID,
+		MimeType:            input.MimeType,
+		InternalPath:        input.InternalPath,
+		ExternalPath:        input.ExternalPath,
+		BelongsToRecipe:     nullStringFromStringPointer(input.BelongsToRecipe),
+		BelongsToRecipeStep: nullStringFromStringPointer(input.BelongsToRecipeStep),
+		Index:               int32(input.Index),
+	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing recipe media creation query")
 	}
 

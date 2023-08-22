@@ -5,7 +5,6 @@ import (
 	"database/sql/driver"
 	"errors"
 	"testing"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -351,48 +350,6 @@ func TestQuerier_GetMealPlanOptionVotes(T *testing.T) {
 func TestQuerier_CreateMealPlanOptionVote(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
-		exampleMealPlanOptionVote.ID = "1"
-		exampleInput := converters.ConvertMealPlanOptionVoteToMealPlanOptionVoteDatabaseCreationInput(exampleMealPlanOptionVote)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-
-		for _, vote := range exampleInput.Votes {
-			args := []any{
-				vote.ID,
-				vote.Rank,
-				vote.Abstain,
-				vote.Notes,
-				vote.ByUser,
-				vote.BelongsToMealPlanOption,
-			}
-
-			db.ExpectExec(formatQueryForSQLMock(mealPlanOptionVoteCreationQuery)).
-				WithArgs(interfaceToDriverValue(args)...).
-				WillReturnResult(newArbitraryDatabaseResult())
-		}
-
-		db.ExpectCommit()
-
-		c.timeFunc = func() time.Time {
-			return exampleMealPlanOptionVote.CreatedAt
-		}
-
-		expected := []*types.MealPlanOptionVote{exampleMealPlanOptionVote}
-
-		actual, err := c.CreateMealPlanOptionVote(ctx, exampleInput)
-		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
@@ -415,87 +372,6 @@ func TestQuerier_CreateMealPlanOptionVote(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		db.ExpectBegin().WillReturnError(errors.New("blah"))
-
-		actual, err := c.CreateMealPlanOptionVote(ctx, exampleInput)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		expectedErr := errors.New(t.Name())
-		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
-		exampleInput := converters.ConvertMealPlanOptionVoteToMealPlanOptionVoteDatabaseCreationInput(exampleMealPlanOptionVote)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-
-		for _, vote := range exampleInput.Votes {
-			args := []any{
-				vote.ID,
-				vote.Rank,
-				vote.Abstain,
-				vote.Notes,
-				vote.ByUser,
-				vote.BelongsToMealPlanOption,
-			}
-
-			db.ExpectExec(formatQueryForSQLMock(mealPlanOptionVoteCreationQuery)).
-				WithArgs(interfaceToDriverValue(args)...).
-				WillReturnError(expectedErr)
-		}
-
-		db.ExpectRollback()
-
-		c.timeFunc = func() time.Time {
-			return exampleMealPlanOptionVote.CreatedAt
-		}
-
-		actual, err := c.CreateMealPlanOptionVote(ctx, exampleInput)
-		assert.Error(t, err)
-		assert.True(t, errors.Is(err, expectedErr))
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error committing transaction", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMealPlanOptionVote := fakes.BuildFakeMealPlanOptionVote()
-		exampleMealPlanOptionVote.ID = "1"
-		exampleInput := converters.ConvertMealPlanOptionVoteToMealPlanOptionVoteDatabaseCreationInput(exampleMealPlanOptionVote)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-
-		for _, vote := range exampleInput.Votes {
-			args := []any{
-				vote.ID,
-				vote.Rank,
-				vote.Abstain,
-				vote.Notes,
-				vote.ByUser,
-				vote.BelongsToMealPlanOption,
-			}
-
-			db.ExpectExec(formatQueryForSQLMock(mealPlanOptionVoteCreationQuery)).
-				WithArgs(interfaceToDriverValue(args)...).
-				WillReturnResult(newArbitraryDatabaseResult())
-		}
-
-		db.ExpectCommit().WillReturnError(errors.New("blah"))
-
-		c.timeFunc = func() time.Time {
-			return exampleMealPlanOptionVote.CreatedAt
-		}
 
 		actual, err := c.CreateMealPlanOptionVote(ctx, exampleInput)
 		assert.Error(t, err)

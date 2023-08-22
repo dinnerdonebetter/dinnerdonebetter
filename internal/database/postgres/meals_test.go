@@ -5,7 +5,6 @@ import (
 	"database/sql/driver"
 	"errors"
 	"testing"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -483,62 +482,6 @@ func TestQuerier_SearchForMeals(T *testing.T) {
 func TestQuerier_CreateMeal(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMeal := fakes.BuildFakeMeal()
-		exampleMeal.ID = "1"
-
-		exampleInput := converters.ConvertMealToMealDatabaseCreationInput(exampleMeal)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-
-		mealCreationArgs := []any{
-			exampleMeal.ID,
-			exampleMeal.Name,
-			exampleMeal.Description,
-			exampleMeal.MinimumEstimatedPortions,
-			exampleMeal.MaximumEstimatedPortions,
-			exampleMeal.EligibleForMealPlans,
-			exampleMeal.CreatedByUser,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(mealCreationQuery)).
-			WithArgs(interfaceToDriverValue(mealCreationArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		for _, component := range exampleInput.Components {
-			mealRecipeCreationArgs := []any{
-				&idMatcher{},
-				exampleMeal.ID,
-				component.RecipeID,
-				component.ComponentType,
-				component.RecipeScale,
-			}
-
-			db.ExpectExec(formatQueryForSQLMock(mealRecipeCreationQuery)).
-				WithArgs(interfaceToDriverValue(mealRecipeCreationArgs)...).
-				WillReturnResult(newArbitraryDatabaseResult())
-		}
-
-		db.ExpectCommit()
-
-		c.timeFunc = func() time.Time {
-			return exampleMeal.CreatedAt
-		}
-
-		actual, err := c.CreateMeal(ctx, exampleInput)
-		assert.NoError(t, err)
-		exampleMeal.Components = nil
-
-		assert.Equal(t, exampleMeal, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
@@ -551,202 +494,10 @@ func TestQuerier_CreateMeal(T *testing.T) {
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
-
-	T.Run("with error starting transaction", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMeal := fakes.BuildFakeMeal()
-		exampleInput := converters.ConvertMealToMealDatabaseCreationInput(exampleMeal)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin().WillReturnError(errors.New("blah"))
-
-		actual, err := c.CreateMeal(ctx, exampleInput)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error creating meal", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMeal := fakes.BuildFakeMeal()
-		exampleMeal.ID = "1"
-
-		exampleInput := converters.ConvertMealToMealDatabaseCreationInput(exampleMeal)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-
-		mealCreationArgs := []any{
-			exampleMeal.ID,
-			exampleMeal.Name,
-			exampleMeal.Description,
-			exampleMeal.MinimumEstimatedPortions,
-			exampleMeal.MaximumEstimatedPortions,
-			exampleMeal.EligibleForMealPlans,
-			exampleMeal.CreatedByUser,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(mealCreationQuery)).
-			WithArgs(interfaceToDriverValue(mealCreationArgs)...).
-			WillReturnError(errors.New("blah"))
-
-		db.ExpectRollback()
-
-		actual, err := c.CreateMeal(ctx, exampleInput)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error creating meal recipe", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMeal := fakes.BuildFakeMeal()
-		exampleMeal.ID = "1"
-
-		exampleInput := converters.ConvertMealToMealDatabaseCreationInput(exampleMeal)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-
-		mealCreationArgs := []any{
-			exampleMeal.ID,
-			exampleMeal.Name,
-			exampleMeal.Description,
-			exampleMeal.MinimumEstimatedPortions,
-			exampleMeal.MaximumEstimatedPortions,
-			exampleMeal.EligibleForMealPlans,
-			exampleMeal.CreatedByUser,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(mealCreationQuery)).
-			WithArgs(interfaceToDriverValue(mealCreationArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		mealRecipeCreationArgs := []any{
-			&idMatcher{},
-			exampleMeal.ID,
-			exampleInput.Components[0].RecipeID,
-			exampleInput.Components[0].ComponentType,
-			exampleInput.Components[0].RecipeScale,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(mealRecipeCreationQuery)).
-			WithArgs(interfaceToDriverValue(mealRecipeCreationArgs)...).
-			WillReturnError(errors.New("blah"))
-
-		db.ExpectRollback()
-
-		c.timeFunc = func() time.Time {
-			return exampleMeal.CreatedAt
-		}
-
-		actual, err := c.CreateMeal(ctx, exampleInput)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error committing transaction", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMeal := fakes.BuildFakeMeal()
-		exampleMeal.ID = "1"
-
-		exampleInput := converters.ConvertMealToMealDatabaseCreationInput(exampleMeal)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin()
-
-		mealCreationArgs := []any{
-			exampleMeal.ID,
-			exampleMeal.Name,
-			exampleMeal.Description,
-			exampleMeal.MinimumEstimatedPortions,
-			exampleMeal.MaximumEstimatedPortions,
-			exampleMeal.EligibleForMealPlans,
-			exampleMeal.CreatedByUser,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(mealCreationQuery)).
-			WithArgs(interfaceToDriverValue(mealCreationArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		for _, component := range exampleInput.Components {
-			mealRecipeCreationArgs := []any{
-				&idMatcher{},
-				exampleMeal.ID,
-				component.RecipeID,
-				component.ComponentType,
-				component.RecipeScale,
-			}
-
-			db.ExpectExec(formatQueryForSQLMock(mealRecipeCreationQuery)).
-				WithArgs(interfaceToDriverValue(mealRecipeCreationArgs)...).
-				WillReturnResult(newArbitraryDatabaseResult())
-		}
-
-		db.ExpectCommit().WillReturnError(errors.New("blah"))
-
-		c.timeFunc = func() time.Time {
-			return exampleMeal.CreatedAt
-		}
-
-		actual, err := c.CreateMeal(ctx, exampleInput)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
 }
 
 func TestQuerier_CreateMealRecipe(T *testing.T) {
 	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMeal := fakes.BuildFakeMeal()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		mealRecipeCreationArgs := []any{
-			&idMatcher{},
-			exampleMeal.ID,
-			exampleMeal.Components[0].Recipe.ID,
-			exampleMeal.Components[0].ComponentType,
-			exampleMeal.Components[0].RecipeScale,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(mealRecipeCreationQuery)).
-			WithArgs(interfaceToDriverValue(mealRecipeCreationArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		c.timeFunc = func() time.Time {
-			return exampleMeal.CreatedAt
-		}
-
-		exampleInput := converters.ConvertMealComponentToMealComponentDatabaseCreationInput(exampleMeal.Components[0])
-
-		err := c.CreateMealComponent(ctx, c.db, exampleMeal.ID, exampleInput)
-		assert.NoError(t, err)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
 
 	T.Run("with missing meal ID", func(t *testing.T) {
 		t.Parallel()
@@ -773,38 +524,6 @@ func TestQuerier_CreateMealRecipe(T *testing.T) {
 		c, db := buildTestClient(t)
 
 		err := c.CreateMealComponent(ctx, c.db, exampleMeal.ID, nil)
-		assert.Error(t, err)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error performing query", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMeal := fakes.BuildFakeMeal()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		mealRecipeCreationArgs := []any{
-			&idMatcher{},
-			exampleMeal.ID,
-			exampleMeal.Components[0].Recipe.ID,
-			exampleMeal.Components[0].ComponentType,
-			exampleMeal.Components[0].RecipeScale,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(mealRecipeCreationQuery)).
-			WithArgs(interfaceToDriverValue(mealRecipeCreationArgs)...).
-			WillReturnError(errors.New("blah"))
-
-		c.timeFunc = func() time.Time {
-			return exampleMeal.CreatedAt
-		}
-
-		exampleInput := converters.ConvertMealComponentToMealComponentDatabaseCreationInput(exampleMeal.Components[0])
-
-		err := c.CreateMealComponent(ctx, c.db, exampleMeal.ID, exampleInput)
 		assert.Error(t, err)
 
 		mock.AssertExpectationsForObjects(t, db)

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -178,9 +179,6 @@ func (q *Querier) GetOAuth2ClientTokenByRefresh(ctx context.Context, refresh str
 	return oauth2ClientToken, nil
 }
 
-//go:embed queries/oauth2_client_tokens/create.sql
-var oauth2ClientTokenCreationQuery string
-
 // CreateOAuth2ClientToken creates an OAuth2 client token in the database.
 func (q *Querier) CreateOAuth2ClientToken(ctx context.Context, input *types.OAuth2ClientTokenDatabaseCreationInput) (*types.OAuth2ClientToken, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -208,27 +206,25 @@ func (q *Querier) CreateOAuth2ClientToken(ctx context.Context, input *types.OAut
 		return nil, observability.PrepareError(err, span, "encrypting oauth2 token refresh")
 	}
 
-	args := []any{
-		input.ID,
-		input.ClientID,
-		input.BelongsToUser,
-		input.RedirectURI,
-		input.Scope,
-		encryptedCode,
-		input.CodeChallenge,
-		input.CodeChallengeMethod,
-		now,
-		now.Add(input.CodeExpiresIn),
-		encryptedAccess,
-		now,
-		now.Add(input.AccessExpiresIn),
-		encryptedRefresh,
-		now,
-		now.Add(input.RefreshExpiresIn),
-	}
-
 	// create the oauth2 client token.
-	if err = q.performWriteQuery(ctx, q.db, "oauth2 client token creation", oauth2ClientTokenCreationQuery, args); err != nil {
+	if err = q.generatedQuerier.CreateOAuth2ClientToken(ctx, q.db, &generated.CreateOAuth2ClientTokenParams{
+		AccessExpiresAt:     now.Add(input.AccessExpiresIn),
+		CodeExpiresAt:       now.Add(input.CodeExpiresIn),
+		RefreshExpiresAt:    now.Add(input.RefreshExpiresIn),
+		RefreshCreatedAt:    now,
+		CodeCreatedAt:       now,
+		AccessCreatedAt:     now,
+		CodeChallenge:       input.CodeChallenge,
+		CodeChallengeMethod: input.CodeChallengeMethod,
+		Scope:               generated.Oauth2ClientTokenScopes(input.Scope),
+		ClientID:            input.ClientID,
+		Access:              encryptedAccess,
+		Code:                encryptedCode,
+		ID:                  input.ID,
+		Refresh:             encryptedRefresh,
+		RedirectUri:         input.RedirectURI,
+		BelongsToUser:       input.BelongsToUser,
+	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing oauth2 client token creation query")
 	}
 

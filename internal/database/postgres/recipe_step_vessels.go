@@ -335,9 +335,6 @@ func (q *Querier) getRecipeStepVesselsForRecipe(ctx context.Context, recipeID st
 	return recipeStepVessels, nil
 }
 
-//go:embed queries/recipe_step_vessels/create.sql
-var recipeStepVesselCreationQuery string
-
 // CreateRecipeStepVessel creates a recipe step vessel in the database.
 func (q *Querier) createRecipeStepVessel(ctx context.Context, querier database.SQLQueryExecutor, input *types.RecipeStepVesselDatabaseCreationInput) (*types.RecipeStepVessel, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -349,21 +346,19 @@ func (q *Querier) createRecipeStepVessel(ctx context.Context, querier database.S
 
 	logger := q.logger.WithValue(keys.RecipeStepVesselIDKey, input.ID)
 
-	args := []any{
-		input.ID,
-		input.Name,
-		input.Notes,
-		input.BelongsToRecipeStep,
-		input.RecipeStepProductID,
-		input.VesselID,
-		input.VesselPreposition,
-		input.MinimumQuantity,
-		input.MaximumQuantity,
-		input.UnavailableAfterStep,
-	}
-
 	// create the recipe step vessel.
-	if err := q.performWriteQuery(ctx, querier, "recipe step vessel creation", recipeStepVesselCreationQuery, args); err != nil {
+	if err := q.generatedQuerier.CreateRecipeStepVessel(ctx, querier, &generated.CreateRecipeStepVesselParams{
+		ID:                   input.ID,
+		Name:                 input.Name,
+		Notes:                input.Notes,
+		BelongsToRecipeStep:  input.BelongsToRecipeStep,
+		VesselPredicate:      input.VesselPreposition,
+		RecipeStepProductID:  nullStringFromStringPointer(input.RecipeStepProductID),
+		ValidVesselID:        nullStringFromStringPointer(input.VesselID),
+		MaximumQuantity:      nullInt32FromUint32Pointer(input.MaximumQuantity),
+		MinimumQuantity:      int32(input.MinimumQuantity),
+		UnavailableAfterStep: input.UnavailableAfterStep,
+	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing recipe step vessel creation query")
 	}
 

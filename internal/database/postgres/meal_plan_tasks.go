@@ -230,9 +230,6 @@ func (q *Querier) GetMealPlanTask(ctx context.Context, mealPlanTaskID string) (x
 	return x, nil
 }
 
-//go:embed queries/meal_plan_tasks/create.sql
-var createMealPlanTaskQuery string
-
 // createMealPlanTask creates a meal plan task.
 func (q *Querier) createMealPlanTask(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *types.MealPlanTaskDatabaseCreationInput) (*types.MealPlanTask, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -245,18 +242,16 @@ func (q *Querier) createMealPlanTask(ctx context.Context, querier database.SQLQu
 	}
 	logger = logger.WithValue(keys.MealPlanTaskIDKey, input.ID)
 
-	createMealPlanTaskArgs := []any{
-		input.ID,
-		types.MealPlanTaskStatusUnfinished,
-		input.StatusExplanation,
-		input.CreationExplanation,
-		input.MealPlanOptionID,
-		input.RecipePrepTaskID,
-		input.AssignedToUser,
-	}
-
 	// create the meal plan task.
-	if err := q.performWriteQuery(ctx, querier, "meal plan task creation", createMealPlanTaskQuery, createMealPlanTaskArgs); err != nil {
+	if err := q.generatedQuerier.CreateMealPlanTask(ctx, querier, &generated.CreateMealPlanTaskParams{
+		ID:                      input.ID,
+		Status:                  types.MealPlanTaskStatusUnfinished,
+		StatusExplanation:       input.StatusExplanation,
+		CreationExplanation:     input.CreationExplanation,
+		BelongsToMealPlanOption: input.MealPlanOptionID,
+		BelongsToRecipePrepTask: input.RecipePrepTaskID,
+		AssignedToUser:          nullStringFromStringPointer(input.AssignedToUser),
+	}); err != nil {
 		q.rollbackTransaction(ctx, querier)
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan task")
 	}
@@ -427,12 +422,7 @@ func (q *Querier) MarkMealPlanAsHavingGroceryListInitialized(ctx context.Context
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
-	// mark prep steps as created for step
-	markMealPlanOptionAsHavingStepsCreatedArgs := []any{
-		mealPlanID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "mark meal plan task", markMealPlanAsHavingGroceryListInitialized, markMealPlanOptionAsHavingStepsCreatedArgs); err != nil {
+	if err := q.generatedQuerier.MarkMealPlanAsGroceryListInitialized(ctx, q.db, mealPlanID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking meal plan as having tasks created")
 	}
 

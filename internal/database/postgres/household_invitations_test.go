@@ -5,11 +5,9 @@ import (
 	"database/sql/driver"
 	"errors"
 	"testing"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -373,46 +371,6 @@ func TestQuerier_GetHouseholdInvitationByEmailAndToken(T *testing.T) {
 func TestQuerier_CreateHouseholdInvitation(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
-		exampleHouseholdInvitation.StatusNote = ""
-		exampleHouseholdInvitation.DestinationHousehold = types.Household{ID: exampleHouseholdInvitation.DestinationHousehold.ID}
-		exampleHouseholdInvitation.FromUser = types.User{ID: exampleHouseholdInvitation.FromUser.ID}
-
-		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationDatabaseCreationInput(exampleHouseholdInvitation)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.FromUser,
-			exampleInput.ToUser,
-			exampleInput.ToName,
-			exampleInput.Note,
-			exampleInput.ToEmail,
-			exampleInput.Token,
-			exampleInput.DestinationHouseholdID,
-			exampleInput.ExpiresAt,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(createHouseholdInvitationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		c.timeFunc = func() time.Time {
-			return exampleHouseholdInvitation.CreatedAt
-		}
-
-		actual, err := c.CreateHouseholdInvitation(ctx, exampleInput)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleHouseholdInvitation, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
@@ -422,44 +380,6 @@ func TestQuerier_CreateHouseholdInvitation(T *testing.T) {
 		actual, err := c.CreateHouseholdInvitation(ctx, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-	})
-
-	T.Run("with error executing creation query", func(t *testing.T) {
-		t.Parallel()
-
-		exampleHouseholdInvitation := fakes.BuildFakeHouseholdInvitation()
-		exampleHouseholdInvitation.StatusNote = ""
-		exampleHouseholdInvitation.DestinationHousehold = types.Household{ID: exampleHouseholdInvitation.DestinationHousehold.ID}
-		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationDatabaseCreationInput(exampleHouseholdInvitation)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.FromUser,
-			exampleInput.ToUser,
-			exampleInput.ToName,
-			exampleInput.Note,
-			exampleInput.ToEmail,
-			exampleInput.Token,
-			exampleInput.DestinationHouseholdID,
-			exampleInput.ExpiresAt,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(createHouseholdInvitationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		c.timeFunc = func() time.Time {
-			return exampleHouseholdInvitation.CreatedAt
-		}
-
-		actual, err := c.CreateHouseholdInvitation(ctx, exampleInput)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

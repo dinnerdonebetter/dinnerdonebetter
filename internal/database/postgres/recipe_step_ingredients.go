@@ -427,9 +427,6 @@ func (q *Querier) GetRecipeStepIngredients(ctx context.Context, recipeID, recipe
 	return x, nil
 }
 
-//go:embed queries/recipe_step_ingredients/create.sql
-var recipeStepIngredientCreationQuery string
-
 // createRecipeStepIngredient creates a recipe step ingredient in the database.
 func (q *Querier) createRecipeStepIngredient(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepIngredientDatabaseCreationInput) (*types.RecipeStepIngredient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -439,27 +436,25 @@ func (q *Querier) createRecipeStepIngredient(ctx context.Context, db database.SQ
 		return nil, ErrNilInputProvided
 	}
 
-	args := []any{
-		input.ID,
-		input.Name,
-		input.Optional,
-		input.IngredientID,
-		input.MeasurementUnitID,
-		input.MinimumQuantity,
-		input.MaximumQuantity,
-		input.QuantityNotes,
-		input.RecipeStepProductID,
-		input.IngredientNotes,
-		input.OptionIndex,
-		input.ToTaste,
-		input.ProductPercentageToUse,
-		input.VesselIndex,
-		input.RecipeStepProductRecipeID,
-		input.BelongsToRecipeStep,
-	}
-
 	// create the recipe step ingredient.
-	if err := q.performWriteQuery(ctx, db, "recipe step ingredient creation", recipeStepIngredientCreationQuery, args); err != nil {
+	if err := q.generatedQuerier.CreateRecipeStepIngredient(ctx, db, &generated.CreateRecipeStepIngredientParams{
+		QuantityNotes:             input.QuantityNotes,
+		Name:                      input.Name,
+		BelongsToRecipeStep:       input.BelongsToRecipeStep,
+		IngredientNotes:           input.IngredientNotes,
+		ID:                        input.ID,
+		MinimumQuantityValue:      stringFromFloat32(input.MinimumQuantity),
+		RecipeStepProductID:       nullStringFromStringPointer(input.RecipeStepProductID),
+		MaximumQuantityValue:      nullStringFromFloat32Pointer(input.MaximumQuantity),
+		MeasurementUnit:           nullStringFromString(input.MeasurementUnitID),
+		IngredientID:              nullStringFromStringPointer(input.IngredientID),
+		ProductPercentageToUse:    nullStringFromFloat32Pointer(input.ProductPercentageToUse),
+		RecipeStepProductRecipeID: nullStringFromStringPointer(input.RecipeStepProductRecipeID),
+		VesselIndex:               nullInt32FromUint16Pointer(input.VesselIndex),
+		OptionIndex:               int32(input.OptionIndex),
+		ToTaste:                   input.ToTaste,
+		Optional:                  input.Optional,
+	}); err != nil {
 		return nil, observability.PrepareError(err, span, "performing recipe step ingredient creation query")
 	}
 

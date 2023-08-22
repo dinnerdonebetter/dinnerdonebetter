@@ -298,9 +298,6 @@ func (q *Querier) getRecipeStepInstrumentsForRecipe(ctx context.Context, recipeI
 	return recipeStepInstruments, nil
 }
 
-//go:embed queries/recipe_step_instruments/create.sql
-var recipeStepInstrumentCreationQuery string
-
 // CreateRecipeStepInstrument creates a recipe step instrument in the database.
 func (q *Querier) createRecipeStepInstrument(ctx context.Context, querier database.SQLQueryExecutor, input *types.RecipeStepInstrumentDatabaseCreationInput) (*types.RecipeStepInstrument, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -309,25 +306,23 @@ func (q *Querier) createRecipeStepInstrument(ctx context.Context, querier databa
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-
+	tracing.AttachRecipeStepInstrumentIDToSpan(span, input.ID)
 	logger := q.logger.WithValue(keys.RecipeStepInstrumentIDKey, input.ID)
 
-	args := []any{
-		input.ID,
-		input.InstrumentID,
-		input.RecipeStepProductID,
-		input.Name,
-		input.Notes,
-		input.PreferenceRank,
-		input.Optional,
-		input.OptionIndex,
-		input.MinimumQuantity,
-		input.MaximumQuantity,
-		input.BelongsToRecipeStep,
-	}
-
 	// create the recipe step instrument.
-	if err := q.performWriteQuery(ctx, querier, "recipe step instrument creation", recipeStepInstrumentCreationQuery, args); err != nil {
+	if err := q.generatedQuerier.CreateRecipeStepInstrument(ctx, querier, &generated.CreateRecipeStepInstrumentParams{
+		ID:                  input.ID,
+		Name:                input.Name,
+		Notes:               input.Notes,
+		BelongsToRecipeStep: input.BelongsToRecipeStep,
+		InstrumentID:        nullStringFromStringPointer(input.InstrumentID),
+		RecipeStepProductID: nullStringFromStringPointer(input.RecipeStepProductID),
+		MaximumQuantity:     nullInt32FromUint32Pointer(input.MaximumQuantity),
+		PreferenceRank:      int32(input.PreferenceRank),
+		OptionIndex:         int32(input.OptionIndex),
+		MinimumQuantity:     int32(input.MinimumQuantity),
+		Optional:            input.Optional,
+	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing recipe step instrument creation query")
 	}
 
@@ -350,7 +345,6 @@ func (q *Querier) createRecipeStepInstrument(ctx context.Context, querier databa
 		x.Instrument = &types.ValidInstrument{ID: *input.InstrumentID}
 	}
 
-	tracing.AttachRecipeStepInstrumentIDToSpan(span, x.ID)
 	logger.Info("recipe step instrument created")
 
 	return x, nil

@@ -214,9 +214,6 @@ func (q *Querier) GetHouseholdInstrumentOwnerships(ctx context.Context, househol
 	return x, nil
 }
 
-//go:embed queries/household_instrument_ownerships/create.sql
-var householdInstrumentOwnershipCreationQuery string
-
 // CreateHouseholdInstrumentOwnership creates a household instrument ownership in the database.
 func (q *Querier) CreateHouseholdInstrumentOwnership(ctx context.Context, input *types.HouseholdInstrumentOwnershipDatabaseCreationInput) (*types.HouseholdInstrumentOwnership, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -225,19 +222,17 @@ func (q *Querier) CreateHouseholdInstrumentOwnership(ctx context.Context, input 
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-
+	tracing.AttachHouseholdInstrumentOwnershipIDToSpan(span, input.ID)
 	logger := q.logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, input.ID)
 
-	args := []any{
-		input.ID,
-		input.Notes,
-		input.Quantity,
-		input.ValidInstrumentID,
-		input.BelongsToHousehold,
-	}
-
 	// create the household instrument ownership.
-	if err := q.performWriteQuery(ctx, q.db, "household instrument ownership creation", householdInstrumentOwnershipCreationQuery, args); err != nil {
+	if err := q.generatedQuerier.CreateHouseholdInstrumentOwnership(ctx, q.db, &generated.CreateHouseholdInstrumentOwnershipParams{
+		ID:                 input.ID,
+		Notes:              input.Notes,
+		ValidInstrumentID:  input.ValidInstrumentID,
+		BelongsToHousehold: input.BelongsToHousehold,
+		Quantity:           int32(input.Quantity),
+	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing household instrument ownership creation query")
 	}
 
@@ -250,7 +245,6 @@ func (q *Querier) CreateHouseholdInstrumentOwnership(ctx context.Context, input 
 		CreatedAt:          q.currentTime(),
 	}
 
-	tracing.AttachHouseholdInstrumentOwnershipIDToSpan(span, x.ID)
 	logger.Info("household instrument ownership created")
 
 	return x, nil

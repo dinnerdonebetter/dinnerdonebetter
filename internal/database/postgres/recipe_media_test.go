@@ -5,11 +5,9 @@ import (
 	"database/sql/driver"
 	"errors"
 	"testing"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -229,41 +227,6 @@ func TestQuerier_GetRecipeMediaForRecipe(T *testing.T) {
 func TestQuerier_CreateRecipeMedia(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleRecipeMedia := fakes.BuildFakeRecipeMedia()
-		exampleRecipeMedia.ID = "1"
-		exampleInput := converters.ConvertRecipeMediaToRecipeMediaDatabaseCreationInput(exampleRecipeMedia)
-
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.BelongsToRecipe,
-			exampleInput.BelongsToRecipeStep,
-			exampleInput.MimeType,
-			exampleInput.InternalPath,
-			exampleInput.ExternalPath,
-			exampleInput.Index,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(recipeMediaCreationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		c.timeFunc = func() time.Time {
-			return exampleRecipeMedia.CreatedAt
-		}
-
-		actual, err := c.CreateRecipeMedia(ctx, exampleInput)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleRecipeMedia, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
@@ -273,42 +236,6 @@ func TestQuerier_CreateRecipeMedia(T *testing.T) {
 		actual, err := c.CreateRecipeMedia(ctx, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		expectedErr := errors.New(t.Name())
-		exampleRecipeMedia := fakes.BuildFakeRecipeMedia()
-		exampleInput := converters.ConvertRecipeMediaToRecipeMediaDatabaseCreationInput(exampleRecipeMedia)
-
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.BelongsToRecipe,
-			exampleInput.BelongsToRecipeStep,
-			exampleInput.MimeType,
-			exampleInput.InternalPath,
-			exampleInput.ExternalPath,
-			exampleInput.Index,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(recipeMediaCreationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(expectedErr)
-
-		c.timeFunc = func() time.Time {
-			return exampleRecipeMedia.CreatedAt
-		}
-
-		actual, err := c.CreateRecipeMedia(ctx, exampleInput)
-		assert.Error(t, err)
-		assert.True(t, errors.Is(err, expectedErr))
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

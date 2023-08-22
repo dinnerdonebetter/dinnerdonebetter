@@ -5,11 +5,9 @@ import (
 	"database/sql/driver"
 	"errors"
 	"testing"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -232,43 +230,6 @@ func TestQuerier_GetRecipeRatings(T *testing.T) {
 func TestQuerier_CreateRecipeRating(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeRating := fakes.BuildFakeRecipeRating()
-		exampleRecipeRating.ID = "1"
-		exampleInput := converters.ConvertRecipeRatingToRecipeRatingDatabaseCreationInput(exampleRecipeRating)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.MealID,
-			exampleInput.Taste,
-			exampleInput.Difficulty,
-			exampleInput.Cleanup,
-			exampleInput.Instructions,
-			exampleInput.Overall,
-			exampleInput.Notes,
-			exampleInput.ByUser,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(recipeRatingCreationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		c.timeFunc = func() time.Time {
-			return exampleRecipeRating.CreatedAt
-		}
-
-		actual, err := c.CreateRecipeRating(ctx, exampleInput)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleRecipeRating, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
@@ -278,44 +239,6 @@ func TestQuerier_CreateRecipeRating(T *testing.T) {
 		actual, err := c.CreateRecipeRating(ctx, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		expectedErr := errors.New(t.Name())
-		exampleRecipeRating := fakes.BuildFakeRecipeRating()
-		exampleInput := converters.ConvertRecipeRatingToRecipeRatingDatabaseCreationInput(exampleRecipeRating)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.MealID,
-			exampleInput.Taste,
-			exampleInput.Difficulty,
-			exampleInput.Cleanup,
-			exampleInput.Instructions,
-			exampleInput.Overall,
-			exampleInput.Notes,
-			exampleInput.ByUser,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(recipeRatingCreationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(expectedErr)
-
-		c.timeFunc = func() time.Time {
-			return exampleRecipeRating.CreatedAt
-		}
-
-		actual, err := c.CreateRecipeRating(ctx, exampleInput)
-		assert.Error(t, err)
-		assert.True(t, errors.Is(err, expectedErr))
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

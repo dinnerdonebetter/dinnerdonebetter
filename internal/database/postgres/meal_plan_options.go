@@ -344,9 +344,6 @@ func (q *Querier) GetMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEv
 	return x, nil
 }
 
-//go:embed queries/meal_plan_options/create.sql
-var mealPlanOptionCreationQuery string
-
 // createMealPlanOption creates a meal plan option in the database.
 func (q *Querier) createMealPlanOption(ctx context.Context, db database.SQLQueryExecutor, input *types.MealPlanOptionDatabaseCreationInput, markAsChosen bool) (*types.MealPlanOption, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -355,23 +352,20 @@ func (q *Querier) createMealPlanOption(ctx context.Context, db database.SQLQuery
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-
+	tracing.AttachMealPlanOptionIDToSpan(span, input.ID)
 	logger := q.logger.WithValue(keys.MealPlanOptionIDKey, input.ID)
 
-	// we're leaving PrepStepsCreated out on purpose since it would be false by default.
-	mealPlanOptionCreationArgs := []any{
-		input.ID,
-		input.AssignedCook,
-		input.AssignedDishwasher,
-		input.MealID,
-		input.Notes,
-		input.MealScale,
-		input.BelongsToMealPlanEvent,
-		markAsChosen,
-	}
-
 	// create the meal plan option.
-	if err := q.performWriteQuery(ctx, db, "meal plan option creation", mealPlanOptionCreationQuery, mealPlanOptionCreationArgs); err != nil {
+	if err := q.generatedQuerier.CreateMealPlanOption(ctx, db, &generated.CreateMealPlanOptionParams{
+		ID:                     input.ID,
+		AssignedCook:           nullStringFromStringPointer(input.AssignedCook),
+		AssignedDishwasher:     nullStringFromStringPointer(input.AssignedDishwasher),
+		MealID:                 input.MealID,
+		Notes:                  input.Notes,
+		MealScale:              stringFromFloat32(input.MealScale),
+		BelongsToMealPlanEvent: nullStringFromString(input.BelongsToMealPlanEvent),
+		Chosen:                 markAsChosen,
+	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan option")
 	}
 
@@ -386,7 +380,6 @@ func (q *Querier) createMealPlanOption(ctx context.Context, db database.SQLQuery
 		Votes:                  []*types.MealPlanOptionVote{},
 	}
 
-	tracing.AttachMealPlanOptionIDToSpan(span, x.ID)
 	logger.Info("meal plan option created")
 
 	return x, nil

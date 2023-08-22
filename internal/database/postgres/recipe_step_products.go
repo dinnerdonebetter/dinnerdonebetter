@@ -313,9 +313,6 @@ func (q *Querier) GetRecipeStepProducts(ctx context.Context, recipeID, recipeSte
 	return x, nil
 }
 
-//go:embed queries/recipe_step_products/create.sql
-var recipeStepProductCreationQuery string
-
 // CreateRecipeStepProduct creates a recipe step product in the database.
 func (q *Querier) createRecipeStepProduct(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepProductDatabaseCreationInput) (*types.RecipeStepProduct, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -325,28 +322,26 @@ func (q *Querier) createRecipeStepProduct(ctx context.Context, db database.SQLQu
 		return nil, ErrNilInputProvided
 	}
 
-	args := []any{
-		input.ID,
-		input.Name,
-		input.Type,
-		input.MeasurementUnitID,
-		input.MinimumQuantity,
-		input.MaximumQuantity,
-		input.QuantityNotes,
-		input.Compostable,
-		input.MaximumStorageDurationInSeconds,
-		input.MinimumStorageTemperatureInCelsius,
-		input.MaximumStorageTemperatureInCelsius,
-		input.StorageInstructions,
-		input.BelongsToRecipeStep,
-		input.IsLiquid,
-		input.IsWaste,
-		input.Index,
-		input.ContainedInVesselIndex,
-	}
-
 	// create the recipe step product.
-	if err := q.performWriteQuery(ctx, db, "recipe step product creation", recipeStepProductCreationQuery, args); err != nil {
+	if err := q.generatedQuerier.CreateRecipeStepProduct(ctx, db, &generated.CreateRecipeStepProductParams{
+		QuantityNotes:                      input.QuantityNotes,
+		Name:                               input.Name,
+		Type:                               generated.RecipeStepProductType(input.Type),
+		BelongsToRecipeStep:                input.BelongsToRecipeStep,
+		ID:                                 input.ID,
+		StorageInstructions:                input.StorageInstructions,
+		MinimumQuantityValue:               nullStringFromFloat32Pointer(input.MinimumQuantity),
+		MinimumStorageTemperatureInCelsius: nullStringFromFloat32Pointer(input.MinimumStorageTemperatureInCelsius),
+		MaximumStorageTemperatureInCelsius: nullStringFromFloat32Pointer(input.MaximumStorageTemperatureInCelsius),
+		MaximumQuantityValue:               nullStringFromFloat32Pointer(input.MaximumQuantity),
+		MeasurementUnit:                    nullStringFromStringPointer(input.MeasurementUnitID),
+		MaximumStorageDurationInSeconds:    nullInt32FromUint32Pointer(input.MaximumStorageDurationInSeconds),
+		ContainedInVesselIndex:             nullInt32FromUint16Pointer(input.ContainedInVesselIndex),
+		Index:                              int32(input.Index),
+		Compostable:                        input.Compostable,
+		IsLiquid:                           input.IsLiquid,
+		IsWaste:                            input.IsWaste,
+	}); err != nil {
 		return nil, observability.PrepareError(err, span, "performing recipe step product creation query")
 	}
 

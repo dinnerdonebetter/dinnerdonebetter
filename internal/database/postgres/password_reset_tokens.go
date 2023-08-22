@@ -5,6 +5,7 @@ import (
 	_ "embed"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -77,9 +78,6 @@ func (q *Querier) GetPasswordResetTokenByToken(ctx context.Context, token string
 	return passwordResetToken, nil
 }
 
-//go:embed queries/password_reset_tokens/create.sql
-var passwordResetTokenCreationQuery string
-
 // CreatePasswordResetToken creates a password reset token in the database.
 func (q *Querier) CreatePasswordResetToken(ctx context.Context, input *types.PasswordResetTokenDatabaseCreationInput) (*types.PasswordResetToken, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -88,17 +86,15 @@ func (q *Querier) CreatePasswordResetToken(ctx context.Context, input *types.Pas
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-
+	tracing.AttachPasswordResetTokenIDToSpan(span, input.ID)
 	logger := q.logger.WithValue(keys.PasswordResetTokenIDKey, input.ID)
 
-	args := []any{
-		input.ID,
-		input.Token,
-		input.BelongsToUser,
-	}
-
 	// create the password reset token.
-	if err := q.performWriteQuery(ctx, q.db, "password reset token creation", passwordResetTokenCreationQuery, args); err != nil {
+	if err := q.generatedQuerier.CreatePasswordResetToken(ctx, q.db, &generated.CreatePasswordResetTokenParams{
+		ID:            input.ID,
+		Token:         input.Token,
+		BelongsToUser: input.BelongsToUser,
+	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing password reset token creation query")
 	}
 
@@ -110,7 +106,6 @@ func (q *Querier) CreatePasswordResetToken(ctx context.Context, input *types.Pas
 		BelongsToUser: input.BelongsToUser,
 	}
 
-	tracing.AttachPasswordResetTokenIDToSpan(span, x.ID)
 	logger.Info("password reset token created")
 
 	return x, nil

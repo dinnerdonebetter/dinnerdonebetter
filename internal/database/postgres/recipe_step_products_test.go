@@ -5,11 +5,9 @@ import (
 	"database/sql/driver"
 	"errors"
 	"testing"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -447,52 +445,6 @@ func TestQuerier_GetRecipeStepProducts(T *testing.T) {
 func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
-		exampleRecipeStepProduct.ID = "1"
-		exampleInput := converters.ConvertRecipeStepProductToRecipeStepProductDatabaseCreationInput(exampleRecipeStepProduct)
-		exampleRecipeStepProduct.MeasurementUnit = &types.ValidMeasurementUnit{ID: exampleRecipeStepProduct.MeasurementUnit.ID}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.Name,
-			exampleInput.Type,
-			exampleInput.MeasurementUnitID,
-			exampleInput.MinimumQuantity,
-			exampleInput.MaximumQuantity,
-			exampleInput.QuantityNotes,
-			exampleInput.Compostable,
-			exampleInput.MaximumStorageDurationInSeconds,
-			exampleInput.MinimumStorageTemperatureInCelsius,
-			exampleInput.MaximumStorageTemperatureInCelsius,
-			exampleInput.StorageInstructions,
-			exampleInput.BelongsToRecipeStep,
-			exampleInput.IsLiquid,
-			exampleInput.IsWaste,
-			exampleRecipeStepProduct.Index,
-			exampleRecipeStepProduct.ContainedInVesselIndex,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(recipeStepProductCreationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		c.timeFunc = func() time.Time {
-			return exampleRecipeStepProduct.CreatedAt
-		}
-
-		actual, err := c.CreateRecipeStepProduct(ctx, exampleInput)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleRecipeStepProduct, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
@@ -502,52 +454,6 @@ func TestQuerier_CreateRecipeStepProduct(T *testing.T) {
 		actual, err := c.CreateRecipeStepProduct(ctx, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		expectedErr := errors.New(t.Name())
-		exampleRecipeStepProduct := fakes.BuildFakeRecipeStepProduct()
-		exampleInput := converters.ConvertRecipeStepProductToRecipeStepProductDatabaseCreationInput(exampleRecipeStepProduct)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.Name,
-			exampleInput.Type,
-			exampleInput.MeasurementUnitID,
-			exampleInput.MinimumQuantity,
-			exampleInput.MaximumQuantity,
-			exampleInput.QuantityNotes,
-			exampleInput.Compostable,
-			exampleInput.MaximumStorageDurationInSeconds,
-			exampleInput.MinimumStorageTemperatureInCelsius,
-			exampleInput.MaximumStorageTemperatureInCelsius,
-			exampleInput.StorageInstructions,
-			exampleInput.BelongsToRecipeStep,
-			exampleInput.IsLiquid,
-			exampleInput.IsWaste,
-			exampleRecipeStepProduct.Index,
-			exampleRecipeStepProduct.ContainedInVesselIndex,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(recipeStepProductCreationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(expectedErr)
-
-		c.timeFunc = func() time.Time {
-			return exampleRecipeStepProduct.CreatedAt
-		}
-
-		actual, err := c.CreateRecipeStepProduct(ctx, exampleInput)
-		assert.Error(t, err)
-		assert.True(t, errors.Is(err, expectedErr))
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

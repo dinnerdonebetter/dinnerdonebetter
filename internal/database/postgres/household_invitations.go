@@ -9,6 +9,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
@@ -259,9 +260,6 @@ func (q *Querier) GetHouseholdInvitationByEmailAndToken(ctx context.Context, ema
 	return invitation, nil
 }
 
-//go:embed queries/household_invitations/create.sql
-var createHouseholdInvitationQuery string
-
 // CreateHouseholdInvitation creates an invitation in a database.
 func (q *Querier) CreateHouseholdInvitation(ctx context.Context, input *types.HouseholdInvitationDatabaseCreationInput) (*types.HouseholdInvitation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -272,20 +270,19 @@ func (q *Querier) CreateHouseholdInvitation(ctx context.Context, input *types.Ho
 	}
 
 	logger := q.logger.WithValue(keys.HouseholdInvitationIDKey, input.ID)
+	tracing.AttachHouseholdIDToSpan(span, input.DestinationHouseholdID)
 
-	args := []any{
-		input.ID,
-		input.FromUser,
-		input.ToUser,
-		input.ToName,
-		input.Note,
-		input.ToEmail,
-		input.Token,
-		input.DestinationHouseholdID,
-		input.ExpiresAt,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "household invitation creation", createHouseholdInvitationQuery, args); err != nil {
+	if err := q.generatedQuerier.CreateHouseholdInvitation(ctx, q.db, &generated.CreateHouseholdInvitationParams{
+		ExpiresAt:            input.ExpiresAt,
+		ID:                   input.ID,
+		FromUser:             input.FromUser,
+		ToName:               input.ToName,
+		Note:                 input.Note,
+		ToEmail:              input.ToEmail,
+		Token:                input.Token,
+		DestinationHousehold: input.DestinationHouseholdID,
+		ToUser:               nullStringFromStringPointer(input.ToUser),
+	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing household invitation creation query")
 	}
 

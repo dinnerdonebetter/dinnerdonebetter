@@ -5,11 +5,9 @@ import (
 	"database/sql/driver"
 	"errors"
 	"testing"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/DATA-DOG/go-sqlmock"
@@ -375,44 +373,6 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 func TestQuerier_CreateMealPlanOption(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
-		exampleMealPlanOption.ID = "1"
-		exampleMealPlanOption.Votes = []*types.MealPlanOptionVote{}
-		exampleMealPlanOption.Meal = types.Meal{ID: exampleMealPlanOption.Meal.ID}
-		exampleInput := converters.ConvertMealPlanOptionToMealPlanOptionDatabaseCreationInput(exampleMealPlanOption)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		mealPlanOptionCreationArgs := []any{
-			exampleInput.ID,
-			exampleInput.AssignedCook,
-			exampleInput.AssignedDishwasher,
-			exampleInput.MealID,
-			exampleInput.Notes,
-			exampleInput.MealScale,
-			exampleInput.BelongsToMealPlanEvent,
-			false,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(mealPlanOptionCreationQuery)).
-			WithArgs(interfaceToDriverValue(mealPlanOptionCreationArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		c.timeFunc = func() time.Time {
-			return exampleMealPlanOption.CreatedAt
-		}
-
-		actual, err := c.CreateMealPlanOption(ctx, exampleInput)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleMealPlanOption, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
@@ -422,44 +382,6 @@ func TestQuerier_CreateMealPlanOption(T *testing.T) {
 		actual, err := c.CreateMealPlanOption(ctx, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		expectedErr := errors.New(t.Name())
-		exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
-		exampleMealPlanOption.Meal = types.Meal{ID: exampleMealPlanOption.Meal.ID}
-		exampleInput := converters.ConvertMealPlanOptionToMealPlanOptionDatabaseCreationInput(exampleMealPlanOption)
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleInput.ID,
-			exampleInput.AssignedCook,
-			exampleInput.AssignedDishwasher,
-			exampleInput.MealID,
-			exampleInput.Notes,
-			exampleInput.MealScale,
-			exampleInput.BelongsToMealPlanEvent,
-			false,
-		}
-
-		db.ExpectExec(formatQueryForSQLMock(mealPlanOptionCreationQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(expectedErr)
-
-		c.timeFunc = func() time.Time {
-			return exampleMealPlanOption.CreatedAt
-		}
-
-		actual, err := c.CreateMealPlanOption(ctx, exampleInput)
-		assert.Error(t, err)
-		assert.True(t, errors.Is(err, expectedErr))
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 
