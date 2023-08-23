@@ -142,6 +142,10 @@ func TestQuerier_Integration_MealPlans(t *testing.T) {
 	ctx := context.Background()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
 	defer func(t *testing.T) {
 		t.Helper()
 		assert.NoError(t, container.Terminate(ctx))

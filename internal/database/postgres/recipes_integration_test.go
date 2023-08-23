@@ -136,12 +136,12 @@ func createRecipeForTest(t *testing.T, ctx context.Context, exampleRecipe *types
 			exampleRecipe.Steps[i].Media[j] = recipe.Steps[i].Media[j]
 		}
 
-		require.Equal(t, exampleRecipe.Steps[i].Products, recipe.Steps[i].Products)
-		require.Equal(t, exampleRecipe.Steps[i].Instruments, recipe.Steps[i].Instruments)
-		require.Equal(t, exampleRecipe.Steps[i].Vessels, recipe.Steps[i].Vessels)
-		require.Equal(t, exampleRecipe.Steps[i].Ingredients, recipe.Steps[i].Ingredients)
-		require.Equal(t, exampleRecipe.Steps[i].Media, recipe.Steps[i].Media)
-		require.Equal(t, exampleRecipe.Steps[i].CompletionConditions, recipe.Steps[i].CompletionConditions)
+		require.Equal(t, len(exampleRecipe.Steps[i].Products), len(recipe.Steps[i].Products))
+		require.Equal(t, len(exampleRecipe.Steps[i].Instruments), len(recipe.Steps[i].Instruments))
+		require.Equal(t, len(exampleRecipe.Steps[i].Vessels), len(recipe.Steps[i].Vessels))
+		require.Equal(t, len(exampleRecipe.Steps[i].Ingredients), len(recipe.Steps[i].Ingredients))
+		require.Equal(t, len(exampleRecipe.Steps[i].Media), len(recipe.Steps[i].Media))
+		require.Equal(t, len(exampleRecipe.Steps[i].CompletionConditions), len(recipe.Steps[i].CompletionConditions))
 
 		require.Equal(t, exampleRecipe.Steps[i], recipe.Steps[i])
 	}
@@ -158,6 +158,10 @@ func TestQuerier_Integration_Recipes(t *testing.T) {
 
 	ctx := context.Background()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
 
 	defer func(t *testing.T) {
 		t.Helper()

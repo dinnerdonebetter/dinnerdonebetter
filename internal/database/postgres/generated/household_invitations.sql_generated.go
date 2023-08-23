@@ -676,7 +676,7 @@ SELECT
         SELECT COUNT(household_invitations.id)
         FROM household_invitations
         WHERE household_invitations.archived_at IS NULL
-          AND household_invitations.from_user = $1
+          AND household_invitations.to_user = $1
           AND household_invitations.status = $2
           AND household_invitations.created_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
           AND household_invitations.created_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
@@ -687,28 +687,32 @@ SELECT
         SELECT COUNT(household_invitations.id)
         FROM household_invitations
         WHERE household_invitations.archived_at IS NULL
-          AND household_invitations.from_user = $1
+          AND household_invitations.to_user = $1
           AND household_invitations.status = $2
     ) as total_count
 FROM household_invitations
     JOIN households ON household_invitations.destination_household = households.id
     JOIN users ON household_invitations.from_user = users.id
 WHERE household_invitations.archived_at IS NULL
-  AND household_invitations.from_user = $1
-  AND household_invitations.status = $2
-  AND household_invitations.created_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-  AND household_invitations.created_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-  AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at > COALESCE($5, (SELECT NOW() - interval '999 years')))
-  AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at < COALESCE($6, (SELECT NOW() + interval '999 years')))
+    AND household_invitations.to_user = $1
+    AND household_invitations.status = $2
+    AND household_invitations.created_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+    AND household_invitations.created_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+    AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at > COALESCE($5, (SELECT NOW() - interval '999 years')))
+    AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at < COALESCE($6, (SELECT NOW() + interval '999 years')))
+    OFFSET $7
+    LIMIT $8
 `
 
 type GetPendingInvitesForUserParams struct {
-	UserID        string
-	Status        InvitationState
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
 	UpdatedAfter  sql.NullTime
 	UpdatedBefore sql.NullTime
+	Status        InvitationState
+	UserID        sql.NullString
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
 }
 
 type GetPendingInvitesForUserRow struct {
@@ -775,6 +779,8 @@ func (q *Queries) GetPendingInvitesForUser(ctx context.Context, db DBTX, arg *Ge
 		arg.CreatedBefore,
 		arg.UpdatedAfter,
 		arg.UpdatedBefore,
+		arg.QueryOffset,
+		arg.QueryLimit,
 	)
 	if err != nil {
 		return nil, err
@@ -909,7 +915,7 @@ SELECT
         SELECT COUNT(household_invitations.id)
         FROM household_invitations
         WHERE household_invitations.archived_at IS NULL
-          AND household_invitations.to_user = $1
+          AND household_invitations.from_user = $1
           AND household_invitations.status = $2
           AND household_invitations.created_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
           AND household_invitations.created_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
@@ -920,14 +926,14 @@ SELECT
         SELECT COUNT(household_invitations.id)
         FROM household_invitations
         WHERE household_invitations.archived_at IS NULL
-          AND household_invitations.to_user = $1
+          AND household_invitations.from_user = $1
           AND household_invitations.status = $2
     ) as total_count
 FROM household_invitations
     JOIN households ON household_invitations.destination_household = households.id
     JOIN users ON household_invitations.from_user = users.id
 WHERE household_invitations.archived_at IS NULL
-    AND household_invitations.to_user = $1
+    AND household_invitations.from_user = $1
     AND household_invitations.status = $2
     AND household_invitations.created_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
     AND household_invitations.created_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
@@ -938,12 +944,12 @@ WHERE household_invitations.archived_at IS NULL
 `
 
 type GetPendingInvitesFromUserParams struct {
+	UserID        string
+	Status        InvitationState
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
 	UpdatedAfter  sql.NullTime
 	UpdatedBefore sql.NullTime
-	Status        InvitationState
-	UserID        sql.NullString
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }

@@ -212,6 +212,7 @@ type Querier interface {
 	GetRecipeStepVessel(ctx context.Context, db DBTX, arg *GetRecipeStepVesselParams) (*GetRecipeStepVesselRow, error)
 	GetRecipeStepVesselsForRecipe(ctx context.Context, db DBTX, belongsToRecipe string) ([]*GetRecipeStepVesselsForRecipeRow, error)
 	GetRecipeSteps(ctx context.Context, db DBTX, arg *GetRecipeStepsParams) ([]*GetRecipeStepsRow, error)
+	GetRecipes(ctx context.Context, db DBTX, arg *GetRecipesParams) ([]*GetRecipesRow, error)
 	GetRecipesNeedingIndexing(ctx context.Context, db DBTX) ([]string, error)
 	GetServiceSetting(ctx context.Context, db DBTX, id string) (*GetServiceSettingRow, error)
 	GetServiceSettingConfigurationByID(ctx context.Context, db DBTX, id string) (*GetServiceSettingConfigurationByIDRow, error)

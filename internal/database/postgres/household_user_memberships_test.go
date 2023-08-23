@@ -2,59 +2,14 @@ package postgres
 
 import (
 	"context"
-	"database/sql/driver"
 	"errors"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
-	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
-
-func buildMockRowsFromHouseholdUserMembershipsWithUsers(memberships ...*types.HouseholdUserMembershipWithUser) *sqlmock.Rows {
-	exampleRows := sqlmock.NewRows(householdsUserMembershipTableColumns)
-
-	for _, x := range memberships {
-		rowValues := []driver.Value{
-			&x.ID,
-			&x.BelongsToUser.ID,
-			&x.BelongsToHousehold,
-			x.HouseholdRole,
-			&x.DefaultHousehold,
-			&x.CreatedAt,
-			&x.LastUpdatedAt,
-			&x.ArchivedAt,
-		}
-
-		exampleRows.AddRow(rowValues...)
-	}
-
-	return exampleRows
-}
-
-func buildInvalidRowsFromHouseholdUserMembershipsWithUsers(memberships ...*types.HouseholdUserMembershipWithUser) *sqlmock.Rows {
-	exampleRows := sqlmock.NewRows(householdsUserMembershipTableColumns)
-
-	for _, x := range memberships {
-		rowValues := []driver.Value{
-			&x.ArchivedAt,
-			&x.ID,
-			&x.BelongsToUser.ID,
-			&x.BelongsToHousehold,
-			x.HouseholdRole,
-			&x.DefaultHousehold,
-			&x.CreatedAt,
-			&x.LastUpdatedAt,
-		}
-
-		exampleRows.AddRow(rowValues...)
-	}
-
-	return exampleRows
-}
 
 func TestQuerier_BuildSessionContextDataForUser(T *testing.T) {
 	T.Parallel()

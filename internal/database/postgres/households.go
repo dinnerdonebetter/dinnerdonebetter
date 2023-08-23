@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 	_ "embed"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
@@ -16,48 +17,7 @@ import (
 
 var (
 	_ types.HouseholdDataManager = (*Querier)(nil)
-
-	householdsTableColumns = []string{
-		"households.id",
-		"households.name",
-		"households.billing_status",
-		"households.contact_phone",
-		"households.address_line_1",
-		"households.address_line_2",
-		"households.city",
-		"households.state",
-		"households.zip_code",
-		"households.country",
-		"households.latitude",
-		"households.longitude",
-		"households.payment_processor_customer_id",
-		"households.subscription_plan_id",
-		"households.created_at",
-		"households.last_updated_at",
-		"households.archived_at",
-		"households.belongs_to_user",
-		"users.id",
-		"users.first_name",
-		"users.last_name",
-		"users.username",
-		"users.email_address",
-		"users.email_address_verified_at",
-		"users.avatar_src",
-		"users.requires_password_change",
-		"users.password_last_changed_at",
-		"users.two_factor_secret_verified_at",
-		"users.service_role",
-		"users.user_account_status",
-		"users.user_account_status_explanation",
-		"users.birthday",
-		"users.created_at",
-		"users.last_updated_at",
-		"users.archived_at",
-	}
 )
-
-//go:embed queries/households/get_by_id_with_memberships.sql
-var getHouseholdAndMembershipsByIDQuery string
 
 // GetHousehold fetches a household from the database.
 func (q *Querier) GetHousehold(ctx context.Context, householdID string) (*types.Household, error) {
@@ -130,6 +90,10 @@ func (q *Querier) GetHousehold(ctx context.Context, householdID string) (*types.
 			HouseholdRole:      result.MembershipHouseholdRole,
 			DefaultHousehold:   result.MembershipDefaultHousehold,
 		})
+	}
+
+	if household == nil {
+		return nil, sql.ErrNoRows
 	}
 
 	return household, nil

@@ -2,83 +2,13 @@ package postgres
 
 import (
 	"context"
-	"database/sql/driver"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
-	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 )
-
-func buildMockRowsFromHouseholds(includeCounts bool, filteredCount uint64, households ...*types.Household) *sqlmock.Rows {
-	columns := append(householdsTableColumns, householdsUserMembershipTableColumns...)
-
-	if includeCounts {
-		columns = append(columns, "filtered_count", "total_count")
-	}
-
-	exampleRows := sqlmock.NewRows(columns)
-
-	for _, x := range households {
-		for _, y := range x.Members {
-			rowValues := []driver.Value{
-				&x.ID,
-				&x.Name,
-				&x.BillingStatus,
-				&x.ContactPhone,
-				&x.AddressLine1,
-				&x.AddressLine2,
-				&x.City,
-				&x.State,
-				&x.ZipCode,
-				&x.Country,
-				&x.Latitude,
-				&x.Longitude,
-				&x.PaymentProcessorCustomerID,
-				&x.SubscriptionPlanID,
-				&x.CreatedAt,
-				&x.LastUpdatedAt,
-				&x.ArchivedAt,
-				&x.BelongsToUser,
-				&y.BelongsToUser.ID,
-				&y.BelongsToUser.FirstName,
-				&y.BelongsToUser.LastName,
-				&y.BelongsToUser.Username,
-				&y.BelongsToUser.EmailAddress,
-				&y.BelongsToUser.EmailAddressVerifiedAt,
-				&y.BelongsToUser.AvatarSrc,
-				&y.BelongsToUser.RequiresPasswordChange,
-				&y.BelongsToUser.PasswordLastChangedAt,
-				&y.BelongsToUser.TwoFactorSecretVerifiedAt,
-				&y.BelongsToUser.ServiceRole,
-				&y.BelongsToUser.AccountStatus,
-				&y.BelongsToUser.AccountStatusExplanation,
-				&y.BelongsToUser.Birthday,
-				&y.BelongsToUser.CreatedAt,
-				&y.BelongsToUser.LastUpdatedAt,
-				&y.BelongsToUser.ArchivedAt,
-				&y.ID,
-				&y.BelongsToUser.ID,
-				&y.BelongsToHousehold,
-				&y.HouseholdRole,
-				&y.DefaultHousehold,
-				&y.CreatedAt,
-				&x.LastUpdatedAt,
-				&y.ArchivedAt,
-			}
-
-			if includeCounts {
-				rowValues = append(rowValues, filteredCount, len(households))
-			}
-
-			exampleRows.AddRow(rowValues...)
-		}
-	}
-
-	return exampleRows
-}
 
 func TestQuerier_GetHousehold(T *testing.T) {
 	T.Parallel()

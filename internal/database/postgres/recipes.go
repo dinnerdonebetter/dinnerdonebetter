@@ -378,15 +378,40 @@ func (q *Querier) GetRecipes(ctx context.Context, filter *types.QueryFilter) (x 
 		Pagination: filter.ToPagination(),
 	}
 
-	query, args := q.buildListQuery(ctx, "recipes", nil, nil, nil, "", recipesTableColumns, "", false, filter)
-
-	rows, err := q.getRows(ctx, q.db, "recipes", query, args)
+	results, err := q.generatedQuerier.GetRecipes(ctx, q.db, &generated.GetRecipesParams{
+		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipes list retrieval query")
 	}
 
-	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanRecipes(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning recipes")
+	for _, result := range results {
+		x.Data = append(x.Data, &types.Recipe{
+			CreatedAt:                result.CreatedAt,
+			InspiredByRecipeID:       stringPointerFromNullString(result.InspiredByRecipeID),
+			LastUpdatedAt:            timePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:               timePointerFromNullTime(result.ArchivedAt),
+			MaximumEstimatedPortions: float32PointerFromNullString(result.MaxEstimatedPortions),
+			PluralPortionName:        result.PluralPortionName,
+			Description:              result.Description,
+			Name:                     result.Name,
+			PortionName:              result.PortionName,
+			ID:                       result.ID,
+			CreatedByUser:            result.CreatedByUser,
+			Source:                   result.Source,
+			Slug:                     result.Slug,
+			YieldsComponentType:      string(result.YieldsComponentType),
+			MinimumEstimatedPortions: float32FromString(result.MinEstimatedPortions),
+			SealOfApproval:           result.SealOfApproval,
+			EligibleForMeals:         result.EligibleForMeals,
+		})
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
 	}
 
 	return x, nil

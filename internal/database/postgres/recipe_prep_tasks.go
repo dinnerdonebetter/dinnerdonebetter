@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 	_ "embed"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
@@ -180,6 +181,10 @@ func (q *Querier) GetRecipePrepTask(ctx context.Context, recipeID, recipePrepTas
 	x, err = q.scanRecipePrepTaskWithSteps(ctx, rows)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning recipe prep task")
+	}
+
+	if x.ID == "" {
+		return nil, sql.ErrNoRows
 	}
 
 	logger.Info("recipe prep tasks retrieved")

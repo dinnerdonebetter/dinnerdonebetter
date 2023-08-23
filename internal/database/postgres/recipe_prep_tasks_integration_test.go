@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/identifiers"
@@ -33,7 +34,7 @@ func createRecipePrepTaskForTest(t *testing.T, ctx context.Context, exampleRecip
 	exampleRecipePrepTask.CreatedAt = recipePrepTask.CreatedAt
 
 	assert.NoError(t, err)
-	assert.Equal(t, recipePrepTask, exampleRecipePrepTask)
+	assert.Equal(t, exampleRecipePrepTask, recipePrepTask)
 
 	return created
 }
@@ -45,6 +46,10 @@ func TestQuerier_Integration_RecipePrepTasks(t *testing.T) {
 
 	ctx := context.Background()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
 
 	defer func(t *testing.T) {
 		t.Helper()
@@ -93,7 +98,8 @@ func TestQuerier_Integration_RecipePrepTasks(t *testing.T) {
 
 		var y *types.RecipePrepTask
 		y, err = dbc.GetRecipePrepTask(ctx, createdRecipe.ID, recipePrepTask.ID)
-		assert.NotNil(t, y)
-		assert.NoError(t, err)
+		assert.Nil(t, y)
+		assert.Error(t, err)
+		assert.ErrorIs(t, err, sql.ErrNoRows)
 	}
 }

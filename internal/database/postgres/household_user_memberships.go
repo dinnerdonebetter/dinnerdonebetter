@@ -18,18 +18,6 @@ import (
 
 var (
 	_ types.HouseholdUserMembershipDataManager = (*Querier)(nil)
-
-	// householdsUserMembershipTableColumns are the columns for the household user memberships table.
-	householdsUserMembershipTableColumns = []string{
-		"household_user_memberships.id",
-		"household_user_memberships.belongs_to_user",
-		"household_user_memberships.belongs_to_household",
-		"household_user_memberships.household_role",
-		"household_user_memberships.default_household",
-		"household_user_memberships.created_at",
-		"household_user_memberships.last_updated_at",
-		"household_user_memberships.archived_at",
-	}
 )
 
 // BuildSessionContextDataForUser queries the database for the memberships of a user and constructs a SessionContextData struct from the results.
