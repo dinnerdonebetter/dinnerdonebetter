@@ -156,18 +156,18 @@ SELECT
   household_instrument_ownerships.id,
   household_instrument_ownerships.notes,
   household_instrument_ownerships.quantity,
-  valid_instruments.id,
-  valid_instruments.name,
-  valid_instruments.plural_name,
-  valid_instruments.description,
-  valid_instruments.icon_path,
-  valid_instruments.usable_for_storage,
-  valid_instruments.display_in_summary_lists,
-  valid_instruments.include_in_generated_instructions,
-  valid_instruments.slug,
-  valid_instruments.created_at,
-  valid_instruments.last_updated_at,
-  valid_instruments.archived_at,
+  valid_instruments.id as valid_instrument_id,
+  valid_instruments.name as valid_instrument_name,
+  valid_instruments.plural_name as valid_instrument_plural_name,
+  valid_instruments.description as valid_instrument_description,
+  valid_instruments.icon_path as valid_instrument_icon_path,
+  valid_instruments.usable_for_storage as valid_instrument_usable_for_storage,
+  valid_instruments.display_in_summary_lists as valid_instrument_display_in_summary_lists,
+  valid_instruments.include_in_generated_instructions as valid_instrument_include_in_generated_instructions,
+  valid_instruments.slug as valid_instrument_slug,
+  valid_instruments.created_at as valid_instrument_created_at,
+  valid_instruments.last_updated_at as valid_instrument_last_updated_at,
+  valid_instruments.archived_at as valid_instrument_archived_at,
   household_instrument_ownerships.belongs_to_household,
   household_instrument_ownerships.created_at,
   household_instrument_ownerships.last_updated_at,
@@ -225,48 +225,48 @@ LIMIT $7
 `
 
 type GetHouseholdInstrumentOwnershipsParams struct {
-	BelongsToHousehold string
-	CreatedAt          time.Time
-	CreatedAt_2        time.Time
-	LastUpdatedAt      sql.NullTime
-	LastUpdatedAt_2    sql.NullTime
-	Offset             int32
-	Limit              int32
+	HouseholdID   string
+	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	UpdatedBefore sql.NullTime
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
 }
 
 type GetHouseholdInstrumentOwnershipsRow struct {
-	CreatedAt                      time.Time
-	CreatedAt_2                    time.Time
-	ArchivedAt_2                   sql.NullTime
-	LastUpdatedAt_2                sql.NullTime
-	ArchivedAt                     sql.NullTime
-	LastUpdatedAt                  sql.NullTime
-	BelongsToHousehold             string
-	ID_2                           string
-	Notes                          string
-	IconPath                       string
-	ID                             string
-	Slug                           string
-	Description                    string
-	PluralName                     string
-	Name                           string
-	FilteredCount                  int64
-	TotalCount                     int64
-	Quantity                       int32
-	IncludeInGeneratedInstructions bool
-	DisplayInSummaryLists          bool
-	UsableForStorage               bool
+	ValidInstrumentCreatedAt                      time.Time
+	CreatedAt                                     time.Time
+	ArchivedAt                                    sql.NullTime
+	LastUpdatedAt                                 sql.NullTime
+	ValidInstrumentArchivedAt                     sql.NullTime
+	ValidInstrumentLastUpdatedAt                  sql.NullTime
+	BelongsToHousehold                            string
+	ValidInstrumentID                             string
+	Notes                                         string
+	ValidInstrumentIconPath                       string
+	ID                                            string
+	ValidInstrumentSlug                           string
+	ValidInstrumentDescription                    string
+	ValidInstrumentPluralName                     string
+	ValidInstrumentName                           string
+	FilteredCount                                 int64
+	TotalCount                                    int64
+	Quantity                                      int32
+	ValidInstrumentIncludeInGeneratedInstructions bool
+	ValidInstrumentDisplayInSummaryLists          bool
+	ValidInstrumentUsableForStorage               bool
 }
 
 func (q *Queries) GetHouseholdInstrumentOwnerships(ctx context.Context, db DBTX, arg *GetHouseholdInstrumentOwnershipsParams) ([]*GetHouseholdInstrumentOwnershipsRow, error) {
 	rows, err := db.QueryContext(ctx, getHouseholdInstrumentOwnerships,
-		arg.BelongsToHousehold,
-		arg.CreatedAt,
-		arg.CreatedAt_2,
-		arg.LastUpdatedAt,
-		arg.LastUpdatedAt_2,
-		arg.Offset,
-		arg.Limit,
+		arg.HouseholdID,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedAfter,
+		arg.UpdatedBefore,
+		arg.QueryOffset,
+		arg.QueryLimit,
 	)
 	if err != nil {
 		return nil, err
@@ -279,22 +279,22 @@ func (q *Queries) GetHouseholdInstrumentOwnerships(ctx context.Context, db DBTX,
 			&i.ID,
 			&i.Notes,
 			&i.Quantity,
-			&i.ID_2,
-			&i.Name,
-			&i.PluralName,
-			&i.Description,
-			&i.IconPath,
-			&i.UsableForStorage,
-			&i.DisplayInSummaryLists,
-			&i.IncludeInGeneratedInstructions,
-			&i.Slug,
+			&i.ValidInstrumentID,
+			&i.ValidInstrumentName,
+			&i.ValidInstrumentPluralName,
+			&i.ValidInstrumentDescription,
+			&i.ValidInstrumentIconPath,
+			&i.ValidInstrumentUsableForStorage,
+			&i.ValidInstrumentDisplayInSummaryLists,
+			&i.ValidInstrumentIncludeInGeneratedInstructions,
+			&i.ValidInstrumentSlug,
+			&i.ValidInstrumentCreatedAt,
+			&i.ValidInstrumentLastUpdatedAt,
+			&i.ValidInstrumentArchivedAt,
+			&i.BelongsToHousehold,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
-			&i.BelongsToHousehold,
-			&i.CreatedAt_2,
-			&i.LastUpdatedAt_2,
-			&i.ArchivedAt_2,
 			&i.FilteredCount,
 			&i.TotalCount,
 		); err != nil {

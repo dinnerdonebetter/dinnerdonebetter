@@ -6,7 +6,6 @@ import (
 	_ "embed"
 	"errors"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
@@ -16,74 +15,7 @@ import (
 
 var (
 	_ types.OAuth2ClientDataManager = (*Querier)(nil)
-
-	oauth2ClientsTableColumns = []string{
-		"oauth2_clients.id",
-		"oauth2_clients.name",
-		"oauth2_clients.client_id",
-		"oauth2_clients.client_secret",
-		"oauth2_clients.created_at",
-		"oauth2_clients.archived_at",
-	}
 )
-
-// scanOAuth2Client takes a Scanner (i.e. *sql.Row) and scans its results into an OAuth2Client struct.
-func (q *Querier) scanOAuth2Client(ctx context.Context, scan database.Scanner, includeCounts bool) (client *types.OAuth2Client, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	client = &types.OAuth2Client{}
-
-	targetVars := []any{
-		&client.ID,
-		&client.Name,
-		&client.ClientID,
-		&client.ClientSecret,
-		&client.CreatedAt,
-		&client.ArchivedAt,
-	}
-
-	if includeCounts {
-		targetVars = append(targetVars, &filteredCount, &totalCount)
-	}
-
-	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "scanning OAuth2 client database result")
-	}
-
-	return client, filteredCount, totalCount, nil
-}
-
-// scanOAuth2Clients takes sql rows and turns them into a slice of OAuth2 Clients.
-func (q *Querier) scanOAuth2Clients(ctx context.Context, rows database.ResultIterator, includeCounts bool) (clients []*types.OAuth2Client, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	for rows.Next() {
-		client, fc, tc, scanErr := q.scanOAuth2Client(ctx, rows, includeCounts)
-		if scanErr != nil {
-			return nil, 0, 0, observability.PrepareError(scanErr, span, "scanning OAuth2 client")
-		}
-
-		if includeCounts {
-			if filteredCount == 0 {
-				filteredCount = fc
-			}
-
-			if totalCount == 0 {
-				totalCount = tc
-			}
-		}
-
-		clients = append(clients, client)
-	}
-
-	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
-	}
-
-	return clients, filteredCount, totalCount, nil
-}
 
 // GetOAuth2ClientByClientID gets an OAuth2 client from the database.
 func (q *Querier) GetOAuth2ClientByClientID(ctx context.Context, clientID string) (*types.OAuth2Client, error) {
@@ -164,19 +96,28 @@ func (q *Querier) GetOAuth2Clients(ctx context.Context, filter *types.QueryFilte
 		Pagination: filter.ToPagination(),
 	}
 
-	query, args := q.buildListQuery(ctx, "oauth2_clients", nil, nil, nil, userOwnershipColumn, oauth2ClientsTableColumns, "", false, filter)
-
-	rows, err := q.getRows(ctx, q.db, "OAuth2 clients", query, args)
+	results, err := q.generatedQuerier.GetOAuth2Clients(ctx, q.db, &generated.GetOAuth2ClientsParams{
+		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
+		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+	})
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, err
-		}
-
-		return nil, observability.PrepareAndLogError(err, logger, span, "querying for OAuth2 clients")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching oauth2 clients")
 	}
 
-	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanOAuth2Clients(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning response from database")
+	for _, result := range results {
+		x.Data = append(x.Data, &types.OAuth2Client{
+			CreatedAt:    result.CreatedAt,
+			ArchivedAt:   timePointerFromNullTime(result.ArchivedAt),
+			Name:         result.Name,
+			Description:  result.Description,
+			ClientID:     result.ClientID,
+			ID:           result.ID,
+			ClientSecret: result.ClientSecret,
+		})
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
 	}
 
 	return x, nil

@@ -5,7 +5,6 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -14,39 +13,6 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
-
-func TestQuerier_ScanMealPlanGroceryListItems(T *testing.T) {
-	T.Parallel()
-
-	T.Run("surfaces row errs", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		q, _ := buildTestClient(t)
-
-		mockRows := &database.MockResultIterator{}
-		mockRows.On("Next").Return(false)
-		mockRows.On("Err").Return(errors.New("blah"))
-
-		_, err := q.scanMealPlanGroceryListItems(ctx, mockRows)
-		assert.Error(t, err)
-	})
-
-	T.Run("logs row closing errs", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		q, _ := buildTestClient(t)
-
-		mockRows := &database.MockResultIterator{}
-		mockRows.On("Next").Return(false)
-		mockRows.On("Err").Return(nil)
-		mockRows.On("Close").Return(errors.New("blah"))
-
-		_, err := q.scanMealPlanGroceryListItems(ctx, mockRows)
-		assert.Error(t, err)
-	})
-}
 
 func TestQuerier_MealPlanGroceryListItemExists(T *testing.T) {
 	T.Parallel()

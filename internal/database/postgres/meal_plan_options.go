@@ -613,7 +613,7 @@ func (q *Querier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPl
 	}
 
 	// fetch household data
-	household, err := q.GetHouseholdByID(ctx, mealPlan.BelongsToHousehold)
+	household, err := q.GetHousehold(ctx, mealPlan.BelongsToHousehold)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "fetching household")
 	}

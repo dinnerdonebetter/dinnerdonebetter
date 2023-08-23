@@ -25,7 +25,7 @@ func TestQuerier_Integration_HouseholdUserMemberships(t *testing.T) {
 	}(t)
 
 	exampleUser := createUserForTest(t, ctx, nil, dbc)
-	households, err := dbc.getHouseholdsForUser(ctx, dbc.db, exampleUser.ID, false, nil)
+	households, err := dbc.GetHouseholds(ctx, exampleUser.ID, nil)
 	assert.NoError(t, err)
 	assert.Len(t, households.Data, 1)
 

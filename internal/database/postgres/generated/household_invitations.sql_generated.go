@@ -703,12 +703,12 @@ WHERE household_invitations.archived_at IS NULL
 `
 
 type GetPendingInvitesForUserParams struct {
-	FromUser        string
-	Status          InvitationState
-	CreatedAt       time.Time
-	CreatedAt_2     time.Time
-	LastUpdatedAt   sql.NullTime
-	LastUpdatedAt_2 sql.NullTime
+	UserID        string
+	Status        InvitationState
+	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	UpdatedBefore sql.NullTime
 }
 
 type GetPendingInvitesForUserRow struct {
@@ -769,12 +769,12 @@ type GetPendingInvitesForUserRow struct {
 
 func (q *Queries) GetPendingInvitesForUser(ctx context.Context, db DBTX, arg *GetPendingInvitesForUserParams) ([]*GetPendingInvitesForUserRow, error) {
 	rows, err := db.QueryContext(ctx, getPendingInvitesForUser,
-		arg.FromUser,
+		arg.UserID,
 		arg.Status,
-		arg.CreatedAt,
-		arg.CreatedAt_2,
-		arg.LastUpdatedAt,
-		arg.LastUpdatedAt_2,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedAfter,
+		arg.UpdatedBefore,
 	)
 	if err != nil {
 		return nil, err
@@ -927,21 +927,25 @@ FROM household_invitations
     JOIN households ON household_invitations.destination_household = households.id
     JOIN users ON household_invitations.from_user = users.id
 WHERE household_invitations.archived_at IS NULL
-  AND household_invitations.to_user = $1
-  AND household_invitations.status = $2
-  AND household_invitations.created_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-  AND household_invitations.created_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-  AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at > COALESCE($5, (SELECT NOW() - interval '999 years')))
-  AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at < COALESCE($6, (SELECT NOW() + interval '999 years')))
+    AND household_invitations.to_user = $1
+    AND household_invitations.status = $2
+    AND household_invitations.created_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+    AND household_invitations.created_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+    AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at > COALESCE($5, (SELECT NOW() - interval '999 years')))
+    AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at < COALESCE($6, (SELECT NOW() + interval '999 years')))
+    OFFSET $7
+    LIMIT $8
 `
 
 type GetPendingInvitesFromUserParams struct {
-	CreatedAt       time.Time
-	CreatedAt_2     time.Time
-	LastUpdatedAt   sql.NullTime
-	LastUpdatedAt_2 sql.NullTime
-	Status          InvitationState
-	ToUser          sql.NullString
+	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	UpdatedBefore sql.NullTime
+	Status        InvitationState
+	UserID        sql.NullString
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
 }
 
 type GetPendingInvitesFromUserRow struct {
@@ -1002,12 +1006,14 @@ type GetPendingInvitesFromUserRow struct {
 
 func (q *Queries) GetPendingInvitesFromUser(ctx context.Context, db DBTX, arg *GetPendingInvitesFromUserParams) ([]*GetPendingInvitesFromUserRow, error) {
 	rows, err := db.QueryContext(ctx, getPendingInvitesFromUser,
-		arg.ToUser,
+		arg.UserID,
 		arg.Status,
-		arg.CreatedAt,
-		arg.CreatedAt_2,
-		arg.LastUpdatedAt,
-		arg.LastUpdatedAt_2,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedAfter,
+		arg.UpdatedBefore,
+		arg.QueryOffset,
+		arg.QueryLimit,
 	)
 	if err != nil {
 		return nil, err

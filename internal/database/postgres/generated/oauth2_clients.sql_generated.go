@@ -7,6 +7,8 @@ package generated
 
 import (
 	"context"
+	"database/sql"
+	"time"
 )
 
 const archiveOAuth2Client = `-- name: ArchiveOAuth2Client :exec
@@ -77,16 +79,16 @@ func (q *Queries) GetOAuth2ClientByClientID(ctx context.Context, db DBTX, client
 const getOAuth2ClientByDatabaseID = `-- name: GetOAuth2ClientByDatabaseID :one
 
 SELECT
-	oauth2_clients.id,
-	oauth2_clients.name,
+    oauth2_clients.id,
+    oauth2_clients.name,
     oauth2_clients.description,
-	oauth2_clients.client_id,
-	oauth2_clients.client_secret,
-	oauth2_clients.created_at,
-	oauth2_clients.archived_at
+    oauth2_clients.client_id,
+    oauth2_clients.client_secret,
+    oauth2_clients.created_at,
+    oauth2_clients.archived_at
 FROM oauth2_clients
 WHERE oauth2_clients.archived_at IS NULL
-	AND oauth2_clients.id = $1
+  AND oauth2_clients.id = $1
 `
 
 func (q *Queries) GetOAuth2ClientByDatabaseID(ctx context.Context, db DBTX, id string) (*Oauth2Clients, error) {
@@ -102,4 +104,97 @@ func (q *Queries) GetOAuth2ClientByDatabaseID(ctx context.Context, db DBTX, id s
 		&i.ArchivedAt,
 	)
 	return &i, err
+}
+
+const getOAuth2Clients = `-- name: GetOAuth2Clients :many
+
+SELECT
+    oauth2_clients.id,
+    oauth2_clients.name,
+    oauth2_clients.description,
+    oauth2_clients.client_id,
+    oauth2_clients.client_secret,
+    oauth2_clients.created_at,
+    oauth2_clients.archived_at,
+    (
+        SELECT
+            COUNT(oauth2_clients.id)
+        FROM
+            oauth2_clients
+        WHERE
+            oauth2_clients.archived_at IS NULL
+          AND oauth2_clients.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+          AND oauth2_clients.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+    ) as filtered_count,
+    (
+        SELECT
+            COUNT(oauth2_clients.id)
+        FROM
+            oauth2_clients
+        WHERE
+            oauth2_clients.archived_at IS NULL
+    ) as total_count
+FROM oauth2_clients
+WHERE oauth2_clients.archived_at IS NULL
+    AND oauth2_clients.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+    AND oauth2_clients.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+    OFFSET $3
+    LIMIT $4
+`
+
+type GetOAuth2ClientsParams struct {
+	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
+}
+
+type GetOAuth2ClientsRow struct {
+	ID            string
+	Name          string
+	Description   string
+	ClientID      string
+	ClientSecret  string
+	CreatedAt     time.Time
+	ArchivedAt    sql.NullTime
+	FilteredCount int64
+	TotalCount    int64
+}
+
+func (q *Queries) GetOAuth2Clients(ctx context.Context, db DBTX, arg *GetOAuth2ClientsParams) ([]*GetOAuth2ClientsRow, error) {
+	rows, err := db.QueryContext(ctx, getOAuth2Clients,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.QueryOffset,
+		arg.QueryLimit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetOAuth2ClientsRow{}
+	for rows.Next() {
+		var i GetOAuth2ClientsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.ClientID,
+			&i.ClientSecret,
+			&i.CreatedAt,
+			&i.ArchivedAt,
+			&i.FilteredCount,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

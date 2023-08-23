@@ -32,10 +32,10 @@ SELECT
 		recipe_ratings
 	 WHERE
 		recipe_ratings.archived_at IS NULL
-	 AND recipe_ratings.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-	 AND recipe_ratings.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-	 AND (recipe_ratings.last_updated_at IS NULL OR recipe_ratings.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-	 AND (recipe_ratings.last_updated_at IS NULL OR recipe_ratings.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+	 AND recipe_ratings.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
+	 AND recipe_ratings.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+	 AND (recipe_ratings.last_updated_at IS NULL OR recipe_ratings.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years')))
+	 AND (recipe_ratings.last_updated_at IS NULL OR recipe_ratings.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
 	) as filtered_count,
 	(
 	 SELECT
@@ -49,15 +49,16 @@ FROM
 	recipe_ratings
 WHERE
 	recipe_ratings.archived_at IS NULL
-	AND recipe_ratings.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-	AND recipe_ratings.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-	AND (recipe_ratings.last_updated_at IS NULL OR recipe_ratings.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-	AND (recipe_ratings.last_updated_at IS NULL OR recipe_ratings.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+	AND recipe_ratings.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
+	AND recipe_ratings.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+	AND (recipe_ratings.last_updated_at IS NULL OR recipe_ratings.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years')))
+	AND (recipe_ratings.last_updated_at IS NULL OR recipe_ratings.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
 GROUP BY
 	recipe_ratings.id
 ORDER BY
 	recipe_ratings.id
-	LIMIT $5;
+    OFFSET sqlc.narg(query_offset)
+	LIMIT sqlc.narg(query_limit);
 
 -- name: GetRecipeRating :one
 

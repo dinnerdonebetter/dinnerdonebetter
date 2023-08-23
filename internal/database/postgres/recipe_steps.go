@@ -18,142 +18,7 @@ const (
 
 var (
 	_ types.RecipeStepDataManager = (*Querier)(nil)
-
-	// recipeStepsTableColumns are the columns for the recipe_steps table.
-	recipeStepsTableColumns = []string{
-		"recipe_steps.id",
-		"recipe_steps.index",
-		"valid_preparations.id",
-		"valid_preparations.name",
-		"valid_preparations.description",
-		"valid_preparations.icon_path",
-		"valid_preparations.yields_nothing",
-		"valid_preparations.restrict_to_ingredients",
-		"valid_preparations.minimum_ingredient_count",
-		"valid_preparations.maximum_ingredient_count",
-		"valid_preparations.minimum_instrument_count",
-		"valid_preparations.maximum_instrument_count",
-		"valid_preparations.temperature_required",
-		"valid_preparations.time_estimate_required",
-		"valid_preparations.condition_expression_required",
-		"valid_preparations.consumes_vessel",
-		"valid_preparations.only_for_vessels",
-		"valid_preparations.minimum_vessel_count",
-		"valid_preparations.maximum_vessel_count",
-		"valid_preparations.slug",
-		"valid_preparations.past_tense",
-		"valid_preparations.created_at",
-		"valid_preparations.last_updated_at",
-		"valid_preparations.archived_at",
-		"recipe_steps.minimum_estimated_time_in_seconds",
-		"recipe_steps.maximum_estimated_time_in_seconds",
-		"recipe_steps.minimum_temperature_in_celsius",
-		"recipe_steps.maximum_temperature_in_celsius",
-		"recipe_steps.notes",
-		"recipe_steps.explicit_instructions",
-		"recipe_steps.condition_expression",
-		"recipe_steps.optional",
-		"recipe_steps.start_timer_automatically",
-		"recipe_steps.created_at",
-		"recipe_steps.last_updated_at",
-		"recipe_steps.archived_at",
-		"recipe_steps.belongs_to_recipe",
-	}
-
-	getRecipeStepsJoins = []string{
-		recipesOnRecipeStepsJoinClause,
-		validPreparationsOnRecipeStepsJoinClause,
-	}
 )
-
-// scanRecipeStep takes a database Scanner (i.e. *sql.Row) and scans the result into a recipe step struct.
-func (q *Querier) scanRecipeStep(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.RecipeStep, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	x = &types.RecipeStep{}
-
-	targetVars := []any{
-		&x.ID,
-		&x.Index,
-		&x.Preparation.ID,
-		&x.Preparation.Name,
-		&x.Preparation.Description,
-		&x.Preparation.IconPath,
-		&x.Preparation.YieldsNothing,
-		&x.Preparation.RestrictToIngredients,
-		&x.Preparation.MinimumIngredientCount,
-		&x.Preparation.MaximumIngredientCount,
-		&x.Preparation.MinimumInstrumentCount,
-		&x.Preparation.MaximumInstrumentCount,
-		&x.Preparation.TemperatureRequired,
-		&x.Preparation.TimeEstimateRequired,
-		&x.Preparation.ConditionExpressionRequired,
-		&x.Preparation.ConsumesVessel,
-		&x.Preparation.OnlyForVessels,
-		&x.Preparation.MinimumVesselCount,
-		&x.Preparation.MaximumVesselCount,
-		&x.Preparation.Slug,
-		&x.Preparation.PastTense,
-		&x.Preparation.CreatedAt,
-		&x.Preparation.LastUpdatedAt,
-		&x.Preparation.ArchivedAt,
-		&x.MinimumEstimatedTimeInSeconds,
-		&x.MaximumEstimatedTimeInSeconds,
-		&x.MinimumTemperatureInCelsius,
-		&x.MaximumTemperatureInCelsius,
-		&x.Notes,
-		&x.ExplicitInstructions,
-		&x.ConditionExpression,
-		&x.Optional,
-		&x.StartTimerAutomatically,
-		&x.CreatedAt,
-		&x.LastUpdatedAt,
-		&x.ArchivedAt,
-		&x.BelongsToRecipe,
-	}
-
-	if includeCounts {
-		targetVars = append(targetVars, &filteredCount, &totalCount)
-	}
-
-	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "")
-	}
-
-	return x, filteredCount, totalCount, nil
-}
-
-// scanRecipeSteps takes some database rows and turns them into a slice of recipe steps.
-func (q *Querier) scanRecipeSteps(ctx context.Context, rows database.ResultIterator, includeCounts bool) (recipeSteps []*types.RecipeStep, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	for rows.Next() {
-		x, fc, tc, scanErr := q.scanRecipeStep(ctx, rows, includeCounts)
-		if scanErr != nil {
-			return nil, 0, 0, scanErr
-		}
-
-		if includeCounts {
-			if filteredCount == 0 {
-				filteredCount = fc
-			}
-
-			if totalCount == 0 {
-				totalCount = tc
-			}
-		}
-
-		recipeSteps = append(recipeSteps, x)
-	}
-
-	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
-	}
-
-	return recipeSteps, filteredCount, totalCount, nil
-}
 
 // RecipeStepExists fetches whether a recipe step exists from the database.
 func (q *Querier) RecipeStepExists(ctx context.Context, recipeID, recipeStepID string) (exists bool, err error) {
@@ -355,15 +220,71 @@ func (q *Querier) GetRecipeSteps(ctx context.Context, recipeID string, filter *t
 		Pagination: filter.ToPagination(),
 	}
 
-	query, args := q.buildListQuery(ctx, "recipe_steps", getRecipeStepsJoins, []string{"valid_preparations.id"}, nil, householdOwnershipColumn, recipeStepsTableColumns, "", false, filter)
-
-	rows, err := q.getRows(ctx, q.db, "recipe steps", query, args)
+	results, err := q.generatedQuerier.GetRecipeSteps(ctx, q.db, &generated.GetRecipeStepsParams{
+		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		RecipeID:      recipeID,
+	})
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe steps list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe steps")
 	}
 
-	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanRecipeSteps(ctx, rows, true); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning recipe steps")
+	for _, result := range results {
+		recipeStep := &types.RecipeStep{
+			CreatedAt:                     result.CreatedAt,
+			MinimumEstimatedTimeInSeconds: uint32PointerFromNullInt64(result.MinimumEstimatedTimeInSeconds),
+			ArchivedAt:                    timePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt:                 timePointerFromNullTime(result.LastUpdatedAt),
+			MinimumTemperatureInCelsius:   float32PointerFromNullString(result.MinimumTemperatureInCelsius),
+			MaximumTemperatureInCelsius:   float32PointerFromNullString(result.MaximumTemperatureInCelsius),
+			MaximumEstimatedTimeInSeconds: uint32PointerFromNullInt64(result.MaximumEstimatedTimeInSeconds),
+			BelongsToRecipe:               result.BelongsToRecipe,
+			ConditionExpression:           result.ConditionExpression,
+			ID:                            result.ID,
+			Notes:                         result.Notes,
+			ExplicitInstructions:          result.ExplicitInstructions,
+			Media:                         nil,
+			Products:                      nil,
+			Instruments:                   nil,
+			Vessels:                       nil,
+			CompletionConditions:          nil,
+			Ingredients:                   nil,
+			Preparation: types.ValidPreparation{
+				CreatedAt:                   result.ValidPreparationCreatedAt,
+				MaximumInstrumentCount:      int32PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
+				ArchivedAt:                  timePointerFromNullTime(result.ValidPreparationArchivedAt),
+				MaximumIngredientCount:      int32PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
+				LastUpdatedAt:               timePointerFromNullTime(result.ValidPreparationLastUpdatedAt),
+				MaximumVesselCount:          int32PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
+				IconPath:                    result.ValidPreparationIconPath,
+				PastTense:                   result.ValidPreparationPastTense,
+				ID:                          result.ValidPreparationID,
+				Name:                        result.ValidPreparationName,
+				Description:                 result.ValidPreparationDescription,
+				Slug:                        result.ValidPreparationSlug,
+				MinimumIngredientCount:      result.ValidPreparationMinimumIngredientCount,
+				MinimumInstrumentCount:      result.ValidPreparationMinimumInstrumentCount,
+				MinimumVesselCount:          result.ValidPreparationMinimumVesselCount,
+				RestrictToIngredients:       result.ValidPreparationRestrictToIngredients,
+				TemperatureRequired:         result.ValidPreparationTemperatureRequired,
+				TimeEstimateRequired:        result.ValidPreparationTimeEstimateRequired,
+				ConditionExpressionRequired: result.ValidPreparationConditionExpressionRequired,
+				ConsumesVessel:              result.ValidPreparationConsumesVessel,
+				OnlyForVessels:              result.ValidPreparationOnlyForVessels,
+				YieldsNothing:               result.ValidPreparationYieldsNothing,
+			},
+			Index:                   uint32(result.Index),
+			Optional:                result.Optional,
+			StartTimerAutomatically: result.StartTimerAutomatically,
+		}
+
+		x.Data = append(x.Data, recipeStep)
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
 	}
 
 	return x, nil

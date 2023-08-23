@@ -4,7 +4,6 @@ import (
 	"context"
 	_ "embed"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
@@ -14,87 +13,7 @@ import (
 
 var (
 	_ types.RecipeRatingDataManager = (*Querier)(nil)
-
-	// recipeRatingsTableColumns are the columns for the recipe_ratings table.
-	recipeRatingsTableColumns = []string{
-		"recipe_ratings.id",
-		"recipe_ratings.recipe_id",
-		"recipe_ratings.taste",
-		"recipe_ratings.difficulty",
-		"recipe_ratings.cleanup",
-		"recipe_ratings.instructions",
-		"recipe_ratings.overall",
-		"recipe_ratings.notes",
-		"recipe_ratings.by_user",
-		"recipe_ratings.created_at",
-		"recipe_ratings.last_updated_at",
-		"recipe_ratings.archived_at",
-	}
 )
-
-// scanRecipeRating takes a database Scanner (i.e. *sql.Row) and scans the result into a recipe rating struct.
-func (q *Querier) scanRecipeRating(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.RecipeRating, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	x = &types.RecipeRating{}
-
-	targetVars := []any{
-		&x.ID,
-		&x.RecipeID,
-		&x.Taste,
-		&x.Difficulty,
-		&x.Cleanup,
-		&x.Instructions,
-		&x.Overall,
-		&x.Notes,
-		&x.ByUser,
-		&x.CreatedAt,
-		&x.LastUpdatedAt,
-		&x.ArchivedAt,
-	}
-
-	if includeCounts {
-		targetVars = append(targetVars, &filteredCount, &totalCount)
-	}
-
-	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "")
-	}
-
-	return x, filteredCount, totalCount, nil
-}
-
-// scanRecipeRatings takes some database rows and turns them into a slice of recipe ratings.
-func (q *Querier) scanRecipeRatings(ctx context.Context, rows database.ResultIterator, includeCounts bool) (recipeRatings []*types.RecipeRating, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	for rows.Next() {
-		x, fc, tc, scanErr := q.scanRecipeRating(ctx, rows, includeCounts)
-		if scanErr != nil {
-			return nil, 0, 0, scanErr
-		}
-
-		if includeCounts {
-			if filteredCount == 0 {
-				filteredCount = fc
-			}
-
-			if totalCount == 0 {
-				totalCount = tc
-			}
-		}
-
-		recipeRatings = append(recipeRatings, x)
-	}
-
-	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
-	}
-
-	return recipeRatings, filteredCount, totalCount, nil
-}
 
 // RecipeRatingExists fetches whether a recipe rating exists from the database.
 func (q *Querier) RecipeRatingExists(ctx context.Context, recipeRatingID string) (exists bool, err error) {
@@ -170,15 +89,35 @@ func (q *Querier) GetRecipeRatings(ctx context.Context, filter *types.QueryFilte
 		Pagination: filter.ToPagination(),
 	}
 
-	query, args := q.buildListQuery(ctx, "recipe_ratings", nil, nil, nil, "", recipeRatingsTableColumns, "", false, filter)
-
-	rows, err := q.getRows(ctx, q.db, "recipe ratings", query, args)
+	results, err := q.generatedQuerier.GetRecipeRatings(ctx, q.db, &generated.GetRecipeRatingsParams{
+		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe ratings list retrieval query")
 	}
 
-	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanRecipeRatings(ctx, rows, true); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning recipe ratings")
+	for _, result := range results {
+		x.Data = append(x.Data, &types.RecipeRating{
+			CreatedAt:     result.CreatedAt,
+			LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+			Notes:         result.Notes,
+			ID:            result.ID,
+			RecipeID:      result.RecipeID,
+			ByUser:        result.ByUser,
+			Taste:         float32FromNullString(result.Taste),
+			Instructions:  float32FromNullString(result.Instructions),
+			Overall:       float32FromNullString(result.Overall),
+			Cleanup:       float32FromNullString(result.Cleanup),
+			Difficulty:    float32FromNullString(result.Difficulty),
+		})
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
 	}
 
 	return x, nil

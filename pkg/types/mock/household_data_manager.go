@@ -27,12 +27,6 @@ func (m *HouseholdDataManagerMock) GetHousehold(ctx context.Context, householdID
 	return args.Get(0).(*types.Household), args.Error(1)
 }
 
-// GetHouseholdByID is a mock function.
-func (m *HouseholdDataManagerMock) GetHouseholdByID(ctx context.Context, householdID string) (*types.Household, error) {
-	args := m.Called(ctx, householdID)
-	return args.Get(0).(*types.Household), args.Error(1)
-}
-
 // GetAllHouseholds is a mock function.
 func (m *HouseholdDataManagerMock) GetAllHouseholds(ctx context.Context, results chan []*types.Household, bucketSize uint16) error {
 	return m.Called(ctx, results, bucketSize).Error(0)
@@ -40,12 +34,6 @@ func (m *HouseholdDataManagerMock) GetAllHouseholds(ctx context.Context, results
 
 // GetHouseholds is a mock function.
 func (m *HouseholdDataManagerMock) GetHouseholds(ctx context.Context, userID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.Household], error) {
-	args := m.Called(ctx, userID, filter)
-	return args.Get(0).(*types.QueryFilteredResult[types.Household]), args.Error(1)
-}
-
-// GetHouseholdsForAdmin is a mock function.
-func (m *HouseholdDataManagerMock) GetHouseholdsForAdmin(ctx context.Context, userID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.Household], error) {
 	args := m.Called(ctx, userID, filter)
 	return args.Get(0).(*types.QueryFilteredResult[types.Household]), args.Error(1)
 }

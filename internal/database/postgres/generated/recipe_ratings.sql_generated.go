@@ -152,15 +152,17 @@ GROUP BY
 	recipe_ratings.id
 ORDER BY
 	recipe_ratings.id
-	LIMIT $5
+    OFFSET $5
+	LIMIT $6
 `
 
 type GetRecipeRatingsParams struct {
-	CreatedAt       time.Time
-	CreatedAt_2     time.Time
-	LastUpdatedAt   sql.NullTime
-	LastUpdatedAt_2 sql.NullTime
-	Limit           int32
+	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	UpdatedBefore sql.NullTime
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
 }
 
 type GetRecipeRatingsRow struct {
@@ -182,11 +184,12 @@ type GetRecipeRatingsRow struct {
 
 func (q *Queries) GetRecipeRatings(ctx context.Context, db DBTX, arg *GetRecipeRatingsParams) ([]*GetRecipeRatingsRow, error) {
 	rows, err := db.QueryContext(ctx, getRecipeRatings,
-		arg.CreatedAt,
-		arg.CreatedAt_2,
-		arg.LastUpdatedAt,
-		arg.LastUpdatedAt_2,
-		arg.Limit,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedAfter,
+		arg.UpdatedBefore,
+		arg.QueryOffset,
+		arg.QueryLimit,
 	)
 	if err != nil {
 		return nil, err

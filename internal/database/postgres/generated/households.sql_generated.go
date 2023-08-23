@@ -110,31 +110,33 @@ SELECT
 	households.last_updated_at,
 	households.archived_at,
 	households.belongs_to_user,
-	users.id,
-	users.first_name,
-	users.last_name,
-	users.username,
-	users.email_address,
-	users.email_address_verified_at,
-	users.avatar_src,
-	users.requires_password_change,
-	users.password_last_changed_at,
-	users.two_factor_secret_verified_at,
-	users.service_role,
-	users.user_account_status,
-	users.user_account_status_explanation,
-	users.birthday,
-	users.created_at,
-	users.last_updated_at,
-	users.archived_at,
-	household_user_memberships.id,
-	household_user_memberships.belongs_to_user,
-	household_user_memberships.belongs_to_household,
-	household_user_memberships.household_role,
-	household_user_memberships.default_household,
-	household_user_memberships.created_at,
-	household_user_memberships.last_updated_at,
-	household_user_memberships.archived_at
+	users.id as user_id,
+	users.first_name as user_first_name,
+	users.last_name as user_last_name,
+	users.username as user_username,
+	users.email_address as user_email_address,
+	users.email_address_verified_at as user_email_address_verified_at,
+	users.avatar_src as user_avatar_src,
+	users.requires_password_change as user_requires_password_change,
+	users.password_last_changed_at as user_password_last_changed_at,
+	users.two_factor_secret_verified_at as user_two_factor_secret_verified_at,
+	users.service_role as user_service_role,
+	users.user_account_status as user_user_account_status,
+	users.user_account_status_explanation as user_user_account_status_explanation,
+	users.birthday as user_birthday,
+    users.last_accepted_terms_of_service as user_last_accepted_terms_of_service,
+    users.last_accepted_privacy_policy as user_last_accepted_privacy_policy,
+	users.created_at as user_created_at,
+	users.last_updated_at as user_last_updated_at,
+	users.archived_at as user_archived_at,
+	household_user_memberships.id as membership_id,
+	household_user_memberships.belongs_to_user as membership_belongs_to_user,
+	household_user_memberships.belongs_to_household as membership_belongs_to_household,
+	household_user_memberships.household_role as membership_household_role,
+	household_user_memberships.default_household as membership_default_household,
+	household_user_memberships.created_at as membership_created_at,
+	household_user_memberships.last_updated_at as membership_last_updated_at,
+	household_user_memberships.archived_at as membership_archived_at
 FROM households
 	JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
 	JOIN users ON household_user_memberships.belongs_to_user = users.id
@@ -144,49 +146,51 @@ WHERE households.archived_at IS NULL
 `
 
 type GetHouseholdByIDWithMembershipsRow struct {
-	CreatedAt_2                  time.Time
-	CreatedAt_3                  time.Time
-	CreatedAt                    time.Time
-	ArchivedAt_3                 sql.NullTime
-	LastUpdatedAt_3              sql.NullTime
-	ArchivedAt_2                 sql.NullTime
-	LastUpdatedAt_2              sql.NullTime
-	Birthday                     sql.NullTime
-	TwoFactorSecretVerifiedAt    sql.NullTime
-	PasswordLastChangedAt        sql.NullTime
-	EmailAddressVerifiedAt       sql.NullTime
-	ArchivedAt                   sql.NullTime
-	LastUpdatedAt                sql.NullTime
-	UserAccountStatusExplanation string
-	ServiceRole                  string
-	PaymentProcessorCustomerID   string
-	Name                         string
-	BelongsToUser                string
-	ID_2                         string
-	FirstName                    string
-	LastName                     string
-	Username                     string
-	EmailAddress                 string
-	BillingStatus                string
-	ContactPhone                 string
-	HouseholdRole                string
-	Country                      string
-	ZipCode                      string
-	BelongsToHousehold           string
-	UserAccountStatus            string
-	ID                           string
-	State                        string
-	City                         string
-	AddressLine2                 string
-	AddressLine1                 string
-	ID_3                         string
-	BelongsToUser_2              string
-	SubscriptionPlanID           sql.NullString
-	AvatarSrc                    sql.NullString
-	Latitude                     sql.NullString
-	Longitude                    sql.NullString
-	RequiresPasswordChange       bool
-	DefaultHousehold             bool
+	UserCreatedAt                    time.Time
+	MembershipCreatedAt              time.Time
+	CreatedAt                        time.Time
+	UserLastAcceptedTermsOfService   sql.NullTime
+	UserArchivedAt                   sql.NullTime
+	UserLastUpdatedAt                sql.NullTime
+	MembershipArchivedAt             sql.NullTime
+	UserLastAcceptedPrivacyPolicy    sql.NullTime
+	LastUpdatedAt                    sql.NullTime
+	UserBirthday                     sql.NullTime
+	UserTwoFactorSecretVerifiedAt    sql.NullTime
+	UserPasswordLastChangedAt        sql.NullTime
+	UserEmailAddressVerifiedAt       sql.NullTime
+	ArchivedAt                       sql.NullTime
+	MembershipLastUpdatedAt          sql.NullTime
+	UserEmailAddress                 string
+	UserUserAccountStatusExplanation string
+	BelongsToUser                    string
+	UserID                           string
+	UserFirstName                    string
+	UserLastName                     string
+	UserUsername                     string
+	ID                               string
+	PaymentProcessorCustomerID       string
+	Name                             string
+	BillingStatus                    string
+	ContactPhone                     string
+	MembershipHouseholdRole          string
+	UserServiceRole                  string
+	UserUserAccountStatus            string
+	MembershipBelongsToHousehold     string
+	Country                          string
+	ZipCode                          string
+	State                            string
+	City                             string
+	AddressLine2                     string
+	AddressLine1                     string
+	MembershipID                     string
+	MembershipBelongsToUser          string
+	SubscriptionPlanID               sql.NullString
+	Latitude                         sql.NullString
+	Longitude                        sql.NullString
+	UserAvatarSrc                    sql.NullString
+	MembershipDefaultHousehold       bool
+	UserRequiresPasswordChange       bool
 }
 
 func (q *Queries) GetHouseholdByIDWithMemberships(ctx context.Context, db DBTX, id string) ([]*GetHouseholdByIDWithMembershipsRow, error) {
@@ -217,31 +221,172 @@ func (q *Queries) GetHouseholdByIDWithMemberships(ctx context.Context, db DBTX, 
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
 			&i.BelongsToUser,
-			&i.ID_2,
-			&i.FirstName,
-			&i.LastName,
-			&i.Username,
-			&i.EmailAddress,
-			&i.EmailAddressVerifiedAt,
-			&i.AvatarSrc,
-			&i.RequiresPasswordChange,
-			&i.PasswordLastChangedAt,
-			&i.TwoFactorSecretVerifiedAt,
-			&i.ServiceRole,
-			&i.UserAccountStatus,
-			&i.UserAccountStatusExplanation,
-			&i.Birthday,
-			&i.CreatedAt_2,
-			&i.LastUpdatedAt_2,
-			&i.ArchivedAt_2,
-			&i.ID_3,
-			&i.BelongsToUser_2,
-			&i.BelongsToHousehold,
-			&i.HouseholdRole,
-			&i.DefaultHousehold,
-			&i.CreatedAt_3,
-			&i.LastUpdatedAt_3,
-			&i.ArchivedAt_3,
+			&i.UserID,
+			&i.UserFirstName,
+			&i.UserLastName,
+			&i.UserUsername,
+			&i.UserEmailAddress,
+			&i.UserEmailAddressVerifiedAt,
+			&i.UserAvatarSrc,
+			&i.UserRequiresPasswordChange,
+			&i.UserPasswordLastChangedAt,
+			&i.UserTwoFactorSecretVerifiedAt,
+			&i.UserServiceRole,
+			&i.UserUserAccountStatus,
+			&i.UserUserAccountStatusExplanation,
+			&i.UserBirthday,
+			&i.UserLastAcceptedTermsOfService,
+			&i.UserLastAcceptedPrivacyPolicy,
+			&i.UserCreatedAt,
+			&i.UserLastUpdatedAt,
+			&i.UserArchivedAt,
+			&i.MembershipID,
+			&i.MembershipBelongsToUser,
+			&i.MembershipBelongsToHousehold,
+			&i.MembershipHouseholdRole,
+			&i.MembershipDefaultHousehold,
+			&i.MembershipCreatedAt,
+			&i.MembershipLastUpdatedAt,
+			&i.MembershipArchivedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getHouseholdsForUser = `-- name: GetHouseholdsForUser :many
+
+SELECT
+    households.id,
+    households.name,
+    households.billing_status,
+    households.contact_phone,
+    households.address_line_1,
+    households.address_line_2,
+    households.city,
+    households.state,
+    households.zip_code,
+    households.country,
+    households.latitude,
+    households.longitude,
+    households.payment_processor_customer_id,
+    households.subscription_plan_id,
+    households.created_at,
+    households.last_updated_at,
+    households.archived_at,
+    households.belongs_to_user,
+    (
+        SELECT
+            COUNT(households.id)
+        FROM
+            households
+        WHERE households.archived_at IS NULL
+            AND household_user_memberships.belongs_to_user = $1
+            AND households.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
+            AND households.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
+            AND (households.last_updated_at IS NULL OR households.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years')))
+            AND (households.last_updated_at IS NULL OR households.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years')))
+    ) as filtered_count,
+    (
+        SELECT
+            COUNT(households.id)
+        FROM
+            households
+        WHERE
+            households.archived_at IS NULL
+    ) as total_count
+FROM households
+	JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
+    JOIN users ON household_user_memberships.belongs_to_user = users.id
+WHERE households.archived_at IS NULL
+    AND household_user_memberships.belongs_to_user = $1
+    AND households.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
+    AND households.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
+    AND (households.last_updated_at IS NULL OR households.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years')))
+    AND (households.last_updated_at IS NULL OR households.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years')))
+    OFFSET $6
+    LIMIT $7
+`
+
+type GetHouseholdsForUserParams struct {
+	UserID        string
+	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	UpdatedBefore sql.NullTime
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
+}
+
+type GetHouseholdsForUserRow struct {
+	CreatedAt                  time.Time
+	ArchivedAt                 sql.NullTime
+	LastUpdatedAt              sql.NullTime
+	AddressLine2               string
+	PaymentProcessorCustomerID string
+	ID                         string
+	City                       string
+	State                      string
+	ZipCode                    string
+	Country                    string
+	BelongsToUser              string
+	Name                       string
+	AddressLine1               string
+	BillingStatus              string
+	ContactPhone               string
+	SubscriptionPlanID         sql.NullString
+	Longitude                  sql.NullString
+	Latitude                   sql.NullString
+	FilteredCount              int64
+	TotalCount                 int64
+}
+
+func (q *Queries) GetHouseholdsForUser(ctx context.Context, db DBTX, arg *GetHouseholdsForUserParams) ([]*GetHouseholdsForUserRow, error) {
+	rows, err := db.QueryContext(ctx, getHouseholdsForUser,
+		arg.UserID,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedAfter,
+		arg.UpdatedBefore,
+		arg.QueryOffset,
+		arg.QueryLimit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetHouseholdsForUserRow{}
+	for rows.Next() {
+		var i GetHouseholdsForUserRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.BillingStatus,
+			&i.ContactPhone,
+			&i.AddressLine1,
+			&i.AddressLine2,
+			&i.City,
+			&i.State,
+			&i.ZipCode,
+			&i.Country,
+			&i.Latitude,
+			&i.Longitude,
+			&i.PaymentProcessorCustomerID,
+			&i.SubscriptionPlanID,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+			&i.BelongsToUser,
+			&i.FilteredCount,
+			&i.TotalCount,
 		); err != nil {
 			return nil, err
 		}

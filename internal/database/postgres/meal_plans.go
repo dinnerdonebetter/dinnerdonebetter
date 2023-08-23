@@ -402,7 +402,7 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, hou
 
 	logger.Info("attempting to finalize meal plan")
 
-	household, err := q.GetHouseholdByID(ctx, householdID)
+	household, err := q.GetHousehold(ctx, householdID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "fetching household")
 	}

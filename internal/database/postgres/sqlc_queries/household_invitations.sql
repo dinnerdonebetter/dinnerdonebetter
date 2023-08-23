@@ -259,30 +259,32 @@ SELECT
         SELECT COUNT(household_invitations.id)
         FROM household_invitations
         WHERE household_invitations.archived_at IS NULL
-          AND household_invitations.to_user = $1
-          AND household_invitations.status = $2
-          AND household_invitations.created_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-          AND household_invitations.created_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-          AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at > COALESCE($5, (SELECT NOW() - interval '999 years')))
-          AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at < COALESCE($6, (SELECT NOW() + interval '999 years')))
+          AND household_invitations.to_user = sqlc.arg(user_id)
+          AND household_invitations.status = sqlc.arg(status)
+          AND household_invitations.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
+          AND household_invitations.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+          AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years')))
+          AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
     ) as filtered_count,
     (
         SELECT COUNT(household_invitations.id)
         FROM household_invitations
         WHERE household_invitations.archived_at IS NULL
-          AND household_invitations.to_user = $1
-          AND household_invitations.status = $2
+          AND household_invitations.to_user = sqlc.arg(user_id)
+          AND household_invitations.status = sqlc.arg(status)
     ) as total_count
 FROM household_invitations
     JOIN households ON household_invitations.destination_household = households.id
     JOIN users ON household_invitations.from_user = users.id
 WHERE household_invitations.archived_at IS NULL
-  AND household_invitations.to_user = $1
-  AND household_invitations.status = $2
-  AND household_invitations.created_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-  AND household_invitations.created_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-  AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at > COALESCE($5, (SELECT NOW() - interval '999 years')))
-  AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at < COALESCE($6, (SELECT NOW() + interval '999 years')));
+    AND household_invitations.to_user = sqlc.arg(user_id)
+    AND household_invitations.status = sqlc.arg(status)
+    AND household_invitations.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
+    AND household_invitations.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+    AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years')))
+    AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
+    OFFSET sqlc.narg(query_offset)
+    LIMIT sqlc.narg(query_limit);
 
 -- name: GetPendingInvitesForUser :many
 
@@ -342,30 +344,30 @@ SELECT
         SELECT COUNT(household_invitations.id)
         FROM household_invitations
         WHERE household_invitations.archived_at IS NULL
-          AND household_invitations.from_user = $1
-          AND household_invitations.status = $2
-          AND household_invitations.created_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-          AND household_invitations.created_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-          AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at > COALESCE($5, (SELECT NOW() - interval '999 years')))
-          AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at < COALESCE($6, (SELECT NOW() + interval '999 years')))
+          AND household_invitations.from_user = sqlc.arg(user_id)
+          AND household_invitations.status = sqlc.arg(status)
+          AND household_invitations.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
+          AND household_invitations.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+          AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years')))
+          AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
     ) as filtered_count,
     (
         SELECT COUNT(household_invitations.id)
         FROM household_invitations
         WHERE household_invitations.archived_at IS NULL
-          AND household_invitations.from_user = $1
-          AND household_invitations.status = $2
+          AND household_invitations.from_user = sqlc.arg(user_id)
+          AND household_invitations.status = sqlc.arg(status)
     ) as total_count
 FROM household_invitations
     JOIN households ON household_invitations.destination_household = households.id
     JOIN users ON household_invitations.from_user = users.id
 WHERE household_invitations.archived_at IS NULL
-  AND household_invitations.from_user = $1
-  AND household_invitations.status = $2
-  AND household_invitations.created_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-  AND household_invitations.created_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-  AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at > COALESCE($5, (SELECT NOW() - interval '999 years')))
-  AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at < COALESCE($6, (SELECT NOW() + interval '999 years')));
+  AND household_invitations.from_user = sqlc.arg(user_id)
+  AND household_invitations.status = sqlc.arg(status)
+  AND household_invitations.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
+  AND household_invitations.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+  AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years')))
+  AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')));
 
 -- name: SetHouseholdInvitationStatus :exec
 

@@ -376,15 +376,10 @@ WHERE meal_plan_grocery_list_items.archived_at IS NULL
     AND valid_ingredients.archived_at IS NULL
     AND meal_plan_grocery_list_items.belongs_to_meal_plan = $1
     AND meal_plans.archived_at IS NULL
-    AND meal_plans.id = $2
+    AND meal_plans.id = $1
 GROUP BY meal_plan_grocery_list_items.id
 ORDER BY meal_plan_grocery_list_items.id
 `
-
-type GetMealPlanGroceryListItemsForMealPlanParams struct {
-	MealPlanID                string
-	MealPlanGroceryListItemID string
-}
 
 type GetMealPlanGroceryListItemsForMealPlanRow struct {
 	ValidIngredientCreatedAt                               time.Time
@@ -453,8 +448,8 @@ type GetMealPlanGroceryListItemsForMealPlanRow struct {
 	ValidIngredientContainsEgg                             bool
 }
 
-func (q *Queries) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, db DBTX, arg *GetMealPlanGroceryListItemsForMealPlanParams) ([]*GetMealPlanGroceryListItemsForMealPlanRow, error) {
-	rows, err := db.QueryContext(ctx, getMealPlanGroceryListItemsForMealPlan, arg.MealPlanID, arg.MealPlanGroceryListItemID)
+func (q *Queries) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, db DBTX, mealPlanID string) ([]*GetMealPlanGroceryListItemsForMealPlanRow, error) {
+	rows, err := db.QueryContext(ctx, getMealPlanGroceryListItemsForMealPlan, mealPlanID)
 	if err != nil {
 		return nil, err
 	}

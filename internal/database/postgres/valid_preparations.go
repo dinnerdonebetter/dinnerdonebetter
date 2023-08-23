@@ -11,16 +11,12 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-const (
-	validPreparationsOnRecipeStepsJoinClause = "valid_preparations ON recipe_steps.preparation_id=valid_preparations.id"
-)
-
 var (
 	_ types.ValidPreparationDataManager = (*Querier)(nil)
 )
 
 // ValidPreparationExists fetches whether a valid preparation exists from the database.
-func (q *Querier) ValidPreparationExists(ctx context.Context, validPreparationID string) (exists bool, err error) {
+func (q *Querier) ValidPreparationExists(ctx context.Context, validPreparationID string) (bool, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -32,7 +28,7 @@ func (q *Querier) ValidPreparationExists(ctx context.Context, validPreparationID
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
 	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
 
-	exists, err = q.generatedQuerier.CheckValidPreparationExistence(ctx, q.db, validPreparationID)
+	exists, err := q.generatedQuerier.CheckValidPreparationExistence(ctx, q.db, validPreparationID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "checking valid preparation existence")
 	}

@@ -16,11 +16,6 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-const (
-	// householdsUserMembershipTableName is what the households membership table calls itself.
-	householdsUserMembershipTableName = "household_user_memberships"
-)
-
 var (
 	_ types.HouseholdUserMembershipDataManager = (*Querier)(nil)
 
@@ -306,14 +301,10 @@ func (q *Querier) removeUserFromHousehold(ctx context.Context, querier database.
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if userID == "" {
+	if userID == "" || householdID == "" {
 		return ErrInvalidIDProvided
 	}
 	tracing.AttachUserIDToSpan(span, userID)
-
-	if householdID == "" {
-		return ErrInvalidIDProvided
-	}
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	logger := q.logger.WithValues(map[string]any{
@@ -330,7 +321,7 @@ func (q *Querier) removeUserFromHousehold(ctx context.Context, querier database.
 		return observability.PrepareAndLogError(err, logger, span, "removing user from household")
 	}
 
-	remainingHouseholds, fetchRemainingHouseholdsErr := q.getHouseholdsForUser(ctx, querier, userID, false, nil)
+	remainingHouseholds, fetchRemainingHouseholdsErr := q.getHouseholdsForUser(ctx, querier, userID, nil)
 	if fetchRemainingHouseholdsErr != nil {
 		q.rollbackTransaction(ctx, querier)
 		return observability.PrepareError(fetchRemainingHouseholdsErr, span, "fetching remaining households")

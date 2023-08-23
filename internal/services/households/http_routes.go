@@ -50,12 +50,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 
 	filter.AttachToLogger(logger)
 
-	fetchFunc := s.householdDataManager.GetHouseholds
-	if sessionCtxData.ServiceRolePermissionChecker().IsServiceAdmin() {
-		fetchFunc = s.householdDataManager.GetHouseholdsForAdmin
-	}
-
-	households, err := fetchFunc(ctx, requester, filter)
+	households, err := s.householdDataManager.GetHouseholds(ctx, requester, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
 		households = &types.QueryFilteredResult[types.Household]{Data: []*types.Household{}}
@@ -210,13 +205,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	// fetch household from database.
-	var household *types.Household
-	if sessionCtxData.ServiceRolePermissionChecker().IsServiceAdmin() {
-		household, err = s.householdDataManager.GetHouseholdByID(ctx, householdID)
-	} else {
-		household, err = s.householdDataManager.GetHousehold(ctx, householdID)
-	}
-
+	household, err := s.householdDataManager.GetHousehold(ctx, householdID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
@@ -285,13 +274,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	// fetch household from database.
-	var household *types.Household
-	if sessionCtxData.ServiceRolePermissionChecker().IsServiceAdmin() {
-		household, err = s.householdDataManager.GetHouseholdByID(ctx, householdID)
-	} else {
-		household, err = s.householdDataManager.GetHousehold(ctx, householdID)
-	}
-
+	household, err := s.householdDataManager.GetHousehold(ctx, householdID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
