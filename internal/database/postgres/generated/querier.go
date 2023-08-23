@@ -297,6 +297,7 @@ type Querier interface {
 	MarkTwoFactorSecretAsVerified(ctx context.Context, db DBTX, id string) error
 	MealPlanEventIsEligibleForVoting(ctx context.Context, db DBTX, arg *MealPlanEventIsEligibleForVotingParams) (bool, error)
 	ModifyHouseholdUserPermissions(ctx context.Context, db DBTX, arg *ModifyHouseholdUserPermissionsParams) error
+	RecipeSearch(ctx context.Context, db DBTX, arg *RecipeSearchParams) ([]*RecipeSearchRow, error)
 	RedeemPasswordResetToken(ctx context.Context, db DBTX, id string) error
 	RemoveUserFromHousehold(ctx context.Context, db DBTX, arg *RemoveUserFromHouseholdParams) error
 	SearchForServiceSettings(ctx context.Context, db DBTX, nameQuery string) ([]*SearchForServiceSettingsRow, error)

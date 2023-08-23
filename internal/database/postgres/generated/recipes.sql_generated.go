@@ -689,6 +689,153 @@ func (q *Queries) GetRecipesNeedingIndexing(ctx context.Context, db DBTX) ([]str
 	return items, nil
 }
 
+const recipeSearch = `-- name: RecipeSearch :many
+
+SELECT
+    recipes.id,
+    recipes.name,
+    recipes.slug,
+    recipes.source,
+    recipes.description,
+    recipes.inspired_by_recipe_id,
+    recipes.min_estimated_portions,
+    recipes.max_estimated_portions,
+    recipes.portion_name,
+    recipes.plural_portion_name,
+    recipes.seal_of_approval,
+    recipes.eligible_for_meals,
+    recipes.yields_component_type,
+    recipes.created_at,
+    recipes.last_updated_at,
+    recipes.archived_at,
+    recipes.created_by_user,
+    (
+        SELECT
+            COUNT(recipes.id)
+        FROM
+            recipes
+        WHERE
+            recipes.archived_at IS NULL
+          AND recipes.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+          AND recipes.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+          AND (
+                recipes.last_updated_at IS NULL
+                OR recipes.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+            )
+          AND (
+                recipes.last_updated_at IS NULL
+                OR recipes.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+            )
+        OFFSET $5
+    ) AS filtered_count,
+    (
+        SELECT
+            COUNT(recipes.id)
+        FROM
+            recipes
+        WHERE
+            recipes.archived_at IS NULL
+    ) AS total_count
+FROM recipes
+WHERE recipes.archived_at IS NULL
+    AND recipes.name ILIKE '%' || $6::text || '%'
+    AND recipes.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+    AND recipes.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+    AND (
+        recipes.last_updated_at IS NULL
+        OR recipes.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+    )
+    AND (
+        recipes.last_updated_at IS NULL
+        OR recipes.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+    )
+OFFSET $5
+LIMIT $7
+`
+
+type RecipeSearchParams struct {
+	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	UpdatedBefore sql.NullTime
+	Query         string
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
+}
+
+type RecipeSearchRow struct {
+	CreatedAt            time.Time
+	ArchivedAt           sql.NullTime
+	LastUpdatedAt        sql.NullTime
+	PortionName          string
+	Source               string
+	CreatedByUser        string
+	MinEstimatedPortions string
+	Description          string
+	ID                   string
+	PluralPortionName    string
+	Name                 string
+	Slug                 string
+	YieldsComponentType  ComponentType
+	MaxEstimatedPortions sql.NullString
+	InspiredByRecipeID   sql.NullString
+	FilteredCount        int64
+	TotalCount           int64
+	EligibleForMeals     bool
+	SealOfApproval       bool
+}
+
+func (q *Queries) RecipeSearch(ctx context.Context, db DBTX, arg *RecipeSearchParams) ([]*RecipeSearchRow, error) {
+	rows, err := db.QueryContext(ctx, recipeSearch,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedAfter,
+		arg.UpdatedBefore,
+		arg.QueryOffset,
+		arg.Query,
+		arg.QueryLimit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*RecipeSearchRow{}
+	for rows.Next() {
+		var i RecipeSearchRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Slug,
+			&i.Source,
+			&i.Description,
+			&i.InspiredByRecipeID,
+			&i.MinEstimatedPortions,
+			&i.MaxEstimatedPortions,
+			&i.PortionName,
+			&i.PluralPortionName,
+			&i.SealOfApproval,
+			&i.EligibleForMeals,
+			&i.YieldsComponentType,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+			&i.CreatedByUser,
+			&i.FilteredCount,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateRecipe = `-- name: UpdateRecipe :exec
 
 UPDATE recipes SET

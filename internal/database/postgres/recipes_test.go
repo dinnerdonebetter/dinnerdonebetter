@@ -3,61 +3,18 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	"database/sql/driver"
 	"errors"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/Masterminds/squirrel"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
-
-func buildMockRowsFromRecipes(includeCounts bool, filteredCount uint64, recipes ...*types.Recipe) *sqlmock.Rows {
-	columns := recipesTableColumns
-
-	if includeCounts {
-		columns = append(columns, "filtered_count", "total_count")
-	}
-
-	exampleRows := sqlmock.NewRows(columns)
-
-	for _, x := range recipes {
-		rowValues := []driver.Value{
-			x.ID,
-			x.Name,
-			x.Slug,
-			x.Source,
-			x.Description,
-			x.InspiredByRecipeID,
-			x.MinimumEstimatedPortions,
-			x.MaximumEstimatedPortions,
-			x.PortionName,
-			x.PluralPortionName,
-			x.SealOfApproval,
-			x.EligibleForMeals,
-			x.YieldsComponentType,
-			x.CreatedAt,
-			x.LastUpdatedAt,
-			x.ArchivedAt,
-			x.CreatedByUser,
-		}
-
-		if includeCounts {
-			rowValues = append(rowValues, filteredCount, len(recipes))
-		}
-
-		exampleRows.AddRow(rowValues...)
-	}
-
-	return exampleRows
-}
 
 // fullRecipesColumns are the columns for the recipes table.
 var fullRecipesColumns = []string{
@@ -180,39 +137,6 @@ func buildMockFullRowsFromRecipe(recipe *types.Recipe) *sqlmock.Rows {
 	}
 
 	return exampleRows
-}
-
-func TestQuerier_ScanRecipes(T *testing.T) {
-	T.Parallel()
-
-	T.Run("surfaces row errs", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		q, _ := buildTestClient(t)
-
-		mockRows := &database.MockResultIterator{}
-		mockRows.On("Next").Return(false)
-		mockRows.On("Err").Return(errors.New("blah"))
-
-		_, _, _, err := q.scanRecipes(ctx, mockRows, false)
-		assert.Error(t, err)
-	})
-
-	T.Run("logs row closing errs", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		q, _ := buildTestClient(t)
-
-		mockRows := &database.MockResultIterator{}
-		mockRows.On("Next").Return(false)
-		mockRows.On("Err").Return(nil)
-		mockRows.On("Close").Return(errors.New("blah"))
-
-		_, _, _, err := q.scanRecipes(ctx, mockRows, false)
-		assert.Error(t, err)
-	})
 }
 
 func TestQuerier_RecipeExists(T *testing.T) {
@@ -673,158 +597,6 @@ func TestQuerier_GetRecipesWithIDs(T *testing.T) {
 		actual, err := c.GetRecipesWithIDs(ctx, exampleIDs)
 		assert.NoError(t, err)
 		assert.Equal(t, exampleRecipeList.Data, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
-func TestQuerier_GetRecipeThatNeedSearchIndexing(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleRecipeList := fakes.BuildFakeRecipeList()
-
-		c, db := buildTestClient(t)
-
-		exampleIDs := []string{}
-		for _, exampleRecipe := range exampleRecipeList.Data {
-			exampleIDs = append(exampleIDs, exampleRecipe.ID)
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(recipesNeedingIndexingQuery)).
-			WithArgs(interfaceToDriverValue(nil)...).
-			WillReturnRows(buildMockRowsFromIDs(exampleIDs...))
-
-		actual, err := c.GetRecipeIDsThatNeedSearchIndexing(ctx)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleIDs, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
-func TestQuerier_getRecipeIDsForMeal(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMeal := fakes.BuildFakeMeal()
-		exampleRecipeList := fakes.BuildFakeRecipeList()
-		exampleRecipeIDs := []string{}
-		for i := range exampleRecipeList.Data {
-			exampleRecipeList.Data[i].Steps = nil
-			exampleRecipeList.Data[i].PrepTasks = nil
-			exampleRecipeIDs = append(exampleRecipeIDs, exampleRecipeList.Data[i].ID)
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		args := []any{
-			exampleMeal.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getRecipesForMealQuery)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromIDs(exampleRecipeIDs...))
-
-		actual, err := c.getRecipeIDsForMeal(ctx, exampleMeal.ID)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleRecipeIDs, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
-func TestQuerier_SearchForRecipes(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		filter := types.DefaultQueryFilter()
-		exampleRecipeList := fakes.BuildFakeRecipeList()
-		for i := range exampleRecipeList.Data {
-			exampleRecipeList.Data[i].Steps = nil
-			exampleRecipeList.Data[i].PrepTasks = nil
-			exampleRecipeList.Data[i].Media = nil
-			exampleRecipeList.Data[i].SupportingRecipes = nil
-		}
-
-		ctx := context.Background()
-		recipeNameQuery := "example"
-		c, db := buildTestClient(t)
-
-		where := squirrel.ILike{"name": wrapQueryForILIKE(recipeNameQuery)}
-		query, args := c.buildListQueryWithILike(ctx, "recipes", nil, nil, where, "", recipesTableColumns, "", false, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromRecipes(true, exampleRecipeList.FilteredCount, exampleRecipeList.Data...))
-
-		actual, err := c.SearchForRecipes(ctx, recipeNameQuery, filter)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleRecipeList, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		filter := types.DefaultQueryFilter()
-		exampleRecipeList := fakes.BuildFakeRecipeList()
-		for i := range exampleRecipeList.Data {
-			exampleRecipeList.Data[i].Steps = nil
-			exampleRecipeList.Data[i].PrepTasks = nil
-		}
-
-		ctx := context.Background()
-		recipeNameQuery := "example"
-		c, db := buildTestClient(t)
-
-		where := squirrel.ILike{"name": wrapQueryForILIKE(recipeNameQuery)}
-		query, args := c.buildListQueryWithILike(ctx, "recipes", nil, nil, where, "", recipesTableColumns, "", false, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.SearchForRecipes(ctx, recipeNameQuery, filter)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error scanning response from database", func(t *testing.T) {
-		t.Parallel()
-
-		filter := types.DefaultQueryFilter()
-		exampleRecipeList := fakes.BuildFakeRecipeList()
-		for i := range exampleRecipeList.Data {
-			exampleRecipeList.Data[i].Steps = nil
-			exampleRecipeList.Data[i].PrepTasks = nil
-		}
-
-		ctx := context.Background()
-		recipeNameQuery := "example"
-		c, db := buildTestClient(t)
-
-		where := squirrel.ILike{"name": wrapQueryForILIKE(recipeNameQuery)}
-		query, args := c.buildListQueryWithILike(ctx, "recipes", nil, nil, where, "", recipesTableColumns, "", false, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildErroneousMockRow())
-
-		actual, err := c.SearchForRecipes(ctx, recipeNameQuery, filter)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})

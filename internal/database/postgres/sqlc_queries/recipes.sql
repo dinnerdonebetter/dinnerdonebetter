@@ -201,6 +201,69 @@ FROM recipes
 OFFSET sqlc.narg(query_offset)
 LIMIT sqlc.narg(query_limit);
 
+-- name: RecipeSearch :many
+
+SELECT
+    recipes.id,
+    recipes.name,
+    recipes.slug,
+    recipes.source,
+    recipes.description,
+    recipes.inspired_by_recipe_id,
+    recipes.min_estimated_portions,
+    recipes.max_estimated_portions,
+    recipes.portion_name,
+    recipes.plural_portion_name,
+    recipes.seal_of_approval,
+    recipes.eligible_for_meals,
+    recipes.yields_component_type,
+    recipes.created_at,
+    recipes.last_updated_at,
+    recipes.archived_at,
+    recipes.created_by_user,
+    (
+        SELECT
+            COUNT(recipes.id)
+        FROM
+            recipes
+        WHERE
+            recipes.archived_at IS NULL
+          AND recipes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
+          AND recipes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+          AND (
+                recipes.last_updated_at IS NULL
+                OR recipes.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years'))
+            )
+          AND (
+                recipes.last_updated_at IS NULL
+                OR recipes.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
+            )
+        OFFSET sqlc.narg(query_offset)
+    ) AS filtered_count,
+    (
+        SELECT
+            COUNT(recipes.id)
+        FROM
+            recipes
+        WHERE
+            recipes.archived_at IS NULL
+    ) AS total_count
+FROM recipes
+WHERE recipes.archived_at IS NULL
+    AND recipes.name ILIKE '%' || sqlc.arg(query)::text || '%'
+    AND recipes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
+    AND recipes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+    AND (
+        recipes.last_updated_at IS NULL
+        OR recipes.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years'))
+    )
+    AND (
+        recipes.last_updated_at IS NULL
+        OR recipes.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
+    )
+OFFSET sqlc.narg(query_offset)
+LIMIT sqlc.narg(query_limit);;
+
 -- name: GetRecipesNeedingIndexing :many
 
 SELECT recipes.id

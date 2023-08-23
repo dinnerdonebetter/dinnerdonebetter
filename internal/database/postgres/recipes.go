@@ -13,103 +13,11 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-
-	"github.com/Masterminds/squirrel"
 )
 
 var (
 	_ types.RecipeDataManager = (*Querier)(nil)
-
-	// recipesTableColumns are the columns for the recipes table.
-	recipesTableColumns = []string{
-		"recipes.id",
-		"recipes.name",
-		"recipes.slug",
-		"recipes.source",
-		"recipes.description",
-		"recipes.inspired_by_recipe_id",
-		"recipes.min_estimated_portions",
-		"recipes.max_estimated_portions",
-		"recipes.portion_name",
-		"recipes.plural_portion_name",
-		"recipes.seal_of_approval",
-		"recipes.eligible_for_meals",
-		"recipes.yields_component_type",
-		"recipes.created_at",
-		"recipes.last_updated_at",
-		"recipes.archived_at",
-		"recipes.created_by_user",
-	}
 )
-
-// scanRecipe takes a database Scanner (i.e. *sql.Row) and scans the result into a recipe struct.
-func (q *Querier) scanRecipe(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.Recipe, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	x = &types.Recipe{}
-
-	targetVars := []any{
-		&x.ID,
-		&x.Name,
-		&x.Slug,
-		&x.Source,
-		&x.Description,
-		&x.InspiredByRecipeID,
-		&x.MinimumEstimatedPortions,
-		&x.MaximumEstimatedPortions,
-		&x.PortionName,
-		&x.PluralPortionName,
-		&x.SealOfApproval,
-		&x.EligibleForMeals,
-		&x.YieldsComponentType,
-		&x.CreatedAt,
-		&x.LastUpdatedAt,
-		&x.ArchivedAt,
-		&x.CreatedByUser,
-	}
-
-	if includeCounts {
-		targetVars = append(targetVars, &filteredCount, &totalCount)
-	}
-
-	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "")
-	}
-
-	return x, filteredCount, totalCount, nil
-}
-
-// scanRecipes takes some database rows and turns them into a slice of recipes.
-func (q *Querier) scanRecipes(ctx context.Context, rows database.ResultIterator, includeCounts bool) (recipes []*types.Recipe, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	for rows.Next() {
-		x, fc, tc, scanErr := q.scanRecipe(ctx, rows, includeCounts)
-		if scanErr != nil {
-			return nil, 0, 0, scanErr
-		}
-
-		if includeCounts {
-			if filteredCount == 0 {
-				filteredCount = fc
-			}
-
-			if totalCount == 0 {
-				totalCount = tc
-			}
-		}
-
-		recipes = append(recipes, x)
-	}
-
-	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
-	}
-
-	return recipes, filteredCount, totalCount, nil
-}
 
 // RecipeExists fetches whether a recipe exists from the database.
 func (q *Querier) RecipeExists(ctx context.Context, recipeID string) (exists bool, err error) {
@@ -128,12 +36,6 @@ func (q *Querier) RecipeExists(ctx context.Context, recipeID string) (exists boo
 
 	return result, nil
 }
-
-//go:embed queries/recipes/get_by_id.sql
-var getRecipeByIDQuery string
-
-//go:embed queries/recipes/get_by_id_and_author_id.sql
-var getRecipeByIDAndAuthorIDQuery string
 
 // scanRecipeAndStep takes a database Scanner (i.e. *sql.Row) and scans the result into a recipe struct.
 func (q *Querier) scanRecipeAndStep(ctx context.Context, scan database.Scanner) (x *types.Recipe, y *types.RecipeStep, filteredCount, totalCount uint64, err error) {
@@ -206,6 +108,12 @@ func (q *Querier) scanRecipeAndStep(ctx context.Context, scan database.Scanner) 
 
 	return x, y, filteredCount, totalCount, nil
 }
+
+//go:embed queries/recipes/get_by_id.sql
+var getRecipeByIDQuery string
+
+//go:embed queries/recipes/get_by_id_and_author_id.sql
+var getRecipeByIDAndAuthorIDQuery string
 
 // getRecipe fetches a recipe from the database.
 func (q *Querier) getRecipe(ctx context.Context, recipeID, userID string) (*types.Recipe, error) {
@@ -437,49 +345,17 @@ func (q *Querier) GetRecipesWithIDs(ctx context.Context, ids []string) ([]*types
 	return recipes, nil
 }
 
-//go:embed queries/recipes/get_needing_indexing.sql
-var recipesNeedingIndexingQuery string
-
 // GetRecipeIDsThatNeedSearchIndexing fetches a list of recipe IDs from the database that meet a particular filter.
 func (q *Querier) GetRecipeIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	rows, err := q.getRows(ctx, q.db, "recipes needing indexing", recipesNeedingIndexingQuery, nil)
+	results, err := q.generatedQuerier.GetRecipesNeedingIndexing(ctx, q.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing recipes list retrieval query")
 	}
 
-	return q.scanIDs(ctx, rows)
-}
-
-//go:embed queries/recipes/ids_for_meal.sql
-var getRecipesForMealQuery string
-
-// getRecipeIDsForMeal fetches a list of recipe IDs from the database that are associated with a given meal.
-func (q *Querier) getRecipeIDsForMeal(ctx context.Context, mealID string) (x []string, err error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	if mealID == "" {
-		return nil, ErrInvalidIDProvided
-	}
-	tracing.AttachMealIDToSpan(span, mealID)
-
-	args := []any{
-		mealID,
-	}
-
-	rows, err := q.getRows(ctx, q.db, "recipes for meal", getRecipesForMealQuery, args)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing recipes list retrieval query")
-	}
-
-	if x, err = q.scanIDs(ctx, rows); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning recipes")
-	}
-
-	return x, nil
+	return results, nil
 }
 
 // SearchForRecipes fetches a list of recipes from the database that match a query.
@@ -499,16 +375,41 @@ func (q *Querier) SearchForRecipes(ctx context.Context, recipeNameQuery string, 
 		Pagination: filter.ToPagination(),
 	}
 
-	where := squirrel.ILike{"name": wrapQueryForILIKE(recipeNameQuery)}
-	query, args := q.buildListQueryWithILike(ctx, "recipes", nil, nil, where, "", recipesTableColumns, "", false, filter)
-
-	rows, err := q.getRows(ctx, q.db, "recipes search", query, args)
+	results, err := q.generatedQuerier.RecipeSearch(ctx, q.db, &generated.RecipeSearchParams{
+		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		Query:         recipeNameQuery,
+	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipes search query")
 	}
 
-	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanRecipes(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning recipes")
+	for _, result := range results {
+		x.Data = append(x.Data, &types.Recipe{
+			CreatedAt:                result.CreatedAt,
+			InspiredByRecipeID:       stringPointerFromNullString(result.InspiredByRecipeID),
+			LastUpdatedAt:            timePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:               timePointerFromNullTime(result.ArchivedAt),
+			MaximumEstimatedPortions: float32PointerFromNullString(result.MaxEstimatedPortions),
+			PluralPortionName:        result.PluralPortionName,
+			Description:              result.Description,
+			Name:                     result.Name,
+			PortionName:              result.PortionName,
+			ID:                       result.ID,
+			CreatedByUser:            result.CreatedByUser,
+			Source:                   result.Source,
+			Slug:                     result.Slug,
+			YieldsComponentType:      string(result.YieldsComponentType),
+			MinimumEstimatedPortions: float32FromString(result.MinEstimatedPortions),
+			SealOfApproval:           result.SealOfApproval,
+			EligibleForMeals:         result.EligibleForMeals,
+		})
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
 	}
 
 	return x, nil
