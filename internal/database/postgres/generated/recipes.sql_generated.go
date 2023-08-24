@@ -80,7 +80,7 @@ func (q *Queries) CreateRecipe(ctx context.Context, db DBTX, arg *CreateRecipePa
 	return err
 }
 
-const getRecipeByID = `-- name: GetRecipeByID :one
+const getRecipeByID = `-- name: GetRecipeByID :many
 
 SELECT
 	recipes.id,
@@ -100,168 +100,184 @@ SELECT
 	recipes.last_updated_at,
 	recipes.archived_at,
 	recipes.created_by_user,
-	recipe_steps.id,
-	recipe_steps.index,
-	valid_preparations.id,
-	valid_preparations.name,
-	valid_preparations.description,
-	valid_preparations.icon_path,
-	valid_preparations.yields_nothing,
-	valid_preparations.restrict_to_ingredients,
-	valid_preparations.minimum_ingredient_count,
-	valid_preparations.maximum_ingredient_count,
-	valid_preparations.minimum_instrument_count,
-	valid_preparations.maximum_instrument_count,
-	valid_preparations.temperature_required,
-	valid_preparations.time_estimate_required,
-	valid_preparations.condition_expression_required,
-    valid_preparations.consumes_vessel,
-    valid_preparations.only_for_vessels,
-    valid_preparations.minimum_vessel_count,
-    valid_preparations.maximum_vessel_count,
-	valid_preparations.slug,
-	valid_preparations.past_tense,
-	valid_preparations.created_at,
-	valid_preparations.last_updated_at,
-	valid_preparations.archived_at,
-	recipe_steps.minimum_estimated_time_in_seconds,
-	recipe_steps.maximum_estimated_time_in_seconds,
-	recipe_steps.minimum_temperature_in_celsius,
-	recipe_steps.maximum_temperature_in_celsius,
-	recipe_steps.notes,
-	recipe_steps.explicit_instructions,
-	recipe_steps.condition_expression,
-	recipe_steps.optional,
-	recipe_steps.start_timer_automatically,
-	recipe_steps.created_at,
-	recipe_steps.last_updated_at,
-	recipe_steps.archived_at,
-	recipe_steps.belongs_to_recipe
+	recipe_steps.id as recipe_step_id,
+	recipe_steps.index as recipe_step_index,
+	valid_preparations.id as recipe_step_preparation_id,
+	valid_preparations.name as recipe_step_preparation_name,
+	valid_preparations.description as recipe_step_preparation_description,
+	valid_preparations.icon_path as recipe_step_preparation_icon_path,
+	valid_preparations.yields_nothing as recipe_step_preparation_yields_nothing,
+	valid_preparations.restrict_to_ingredients as recipe_step_preparation_restrict_to_ingredients,
+	valid_preparations.minimum_ingredient_count as recipe_step_preparation_minimum_ingredient_count,
+	valid_preparations.maximum_ingredient_count as recipe_step_preparation_maximum_ingredient_count,
+	valid_preparations.minimum_instrument_count as recipe_step_preparation_minimum_instrument_count,
+	valid_preparations.maximum_instrument_count as recipe_step_preparation_maximum_instrument_count,
+	valid_preparations.temperature_required as recipe_step_preparation_temperature_required,
+	valid_preparations.time_estimate_required as recipe_step_preparation_time_estimate_required,
+	valid_preparations.condition_expression_required as recipe_step_preparation_condition_expression_required,
+    valid_preparations.consumes_vessel as recipe_step_preparation_consumes_vessel,
+    valid_preparations.only_for_vessels as recipe_step_preparation_only_for_vessels,
+    valid_preparations.minimum_vessel_count as recipe_step_preparation_minimum_vessel_count,
+    valid_preparations.maximum_vessel_count as recipe_step_preparation_maximum_vessel_count,
+	valid_preparations.slug as recipe_step_preparation_slug,
+	valid_preparations.past_tense as recipe_step_preparation_past_tense,
+	valid_preparations.created_at as recipe_step_preparation_created_at,
+	valid_preparations.last_updated_at as recipe_step_preparation_last_updated_at,
+	valid_preparations.archived_at as recipe_step_preparation_archived_at,
+	recipe_steps.minimum_estimated_time_in_seconds as recipe_step_minimum_estimated_time_in_seconds,
+	recipe_steps.maximum_estimated_time_in_seconds as recipe_step_maximum_estimated_time_in_seconds,
+	recipe_steps.minimum_temperature_in_celsius as recipe_step_minimum_temperature_in_celsius,
+	recipe_steps.maximum_temperature_in_celsius as recipe_step_maximum_temperature_in_celsius,
+	recipe_steps.notes as recipe_step_notes,
+	recipe_steps.explicit_instructions as recipe_step_explicit_instructions,
+	recipe_steps.condition_expression as recipe_step_condition_expression,
+	recipe_steps.optional as recipe_step_optional,
+	recipe_steps.start_timer_automatically as recipe_step_start_timer_automatically,
+	recipe_steps.created_at as recipe_step_created_at,
+	recipe_steps.last_updated_at as recipe_step_last_updated_at,
+	recipe_steps.archived_at as recipe_step_archived_at,
+	recipe_steps.belongs_to_recipe as recipe_step_belongs_to_recipe
 FROM recipes
-	FULL OUTER JOIN recipe_steps ON recipes.id=recipe_steps.belongs_to_recipe
-	FULL OUTER JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
+    JOIN recipe_steps ON recipes.id=recipe_steps.belongs_to_recipe
+	JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
 WHERE recipes.archived_at IS NULL
 	AND recipes.id = $1
 ORDER BY recipe_steps.index
 `
 
 type GetRecipeByIDRow struct {
-	LastUpdatedAt_2               sql.NullTime
-	CreatedAt                     sql.NullTime
-	ArchivedAt_3                  sql.NullTime
-	LastUpdatedAt_3               sql.NullTime
-	CreatedAt_3                   sql.NullTime
-	ArchivedAt_2                  sql.NullTime
-	CreatedAt_2                   sql.NullTime
-	ArchivedAt                    sql.NullTime
-	LastUpdatedAt                 sql.NullTime
-	MaximumTemperatureInCelsius   sql.NullString
-	MinimumTemperatureInCelsius   sql.NullString
-	BelongsToRecipe               sql.NullString
-	YieldsComponentType           NullComponentType
-	PluralPortionName             sql.NullString
-	PortionName                   sql.NullString
-	MaxEstimatedPortions          sql.NullString
-	CreatedByUser                 sql.NullString
-	ID_2                          sql.NullString
-	Source                        sql.NullString
-	ID_3                          sql.NullString
-	Name_2                        sql.NullString
-	Description_2                 sql.NullString
-	IconPath                      sql.NullString
-	Description                   sql.NullString
-	ConditionExpression           sql.NullString
-	ExplicitInstructions          sql.NullString
-	Slug                          sql.NullString
-	Notes                         sql.NullString
-	Name                          sql.NullString
-	InspiredByRecipeID            sql.NullString
-	ID                            sql.NullString
-	MinEstimatedPortions          sql.NullString
-	PastTense                     sql.NullString
-	Slug_2                        sql.NullString
-	MinimumEstimatedTimeInSeconds sql.NullInt64
-	MaximumEstimatedTimeInSeconds sql.NullInt64
-	MinimumInstrumentCount        sql.NullInt32
-	MaximumInstrumentCount        sql.NullInt32
-	MaximumIngredientCount        sql.NullInt32
-	Index                         sql.NullInt32
-	MinimumVesselCount            sql.NullInt32
-	MinimumIngredientCount        sql.NullInt32
-	MaximumVesselCount            sql.NullInt32
-	OnlyForVessels                sql.NullBool
-	SealOfApproval                sql.NullBool
-	StartTimerAutomatically       sql.NullBool
-	ConsumesVessel                sql.NullBool
-	RestrictToIngredients         sql.NullBool
-	Optional                      sql.NullBool
-	TemperatureRequired           sql.NullBool
-	YieldsNothing                 sql.NullBool
-	TimeEstimateRequired          sql.NullBool
-	ConditionExpressionRequired   sql.NullBool
-	EligibleForMeals              sql.NullBool
+	CreatedAt                                        time.Time
+	RecipeStepCreatedAt                              time.Time
+	RecipeStepPreparationCreatedAt                   time.Time
+	RecipeStepPreparationLastUpdatedAt               sql.NullTime
+	LastUpdatedAt                                    sql.NullTime
+	RecipeStepLastUpdatedAt                          sql.NullTime
+	RecipeStepPreparationArchivedAt                  sql.NullTime
+	RecipeStepArchivedAt                             sql.NullTime
+	ArchivedAt                                       sql.NullTime
+	RecipeStepPreparationDescription                 string
+	RecipeStepNotes                                  string
+	RecipeStepBelongsToRecipe                        string
+	Slug                                             string
+	Source                                           string
+	RecipeStepPreparationPastTense                   string
+	PortionName                                      string
+	CreatedByUser                                    string
+	RecipeStepID                                     string
+	Name                                             string
+	RecipeStepPreparationID                          string
+	RecipeStepPreparationName                        string
+	RecipeStepConditionExpression                    string
+	RecipeStepPreparationIconPath                    string
+	RecipeStepExplicitInstructions                   string
+	ID                                               string
+	RecipeStepPreparationSlug                        string
+	MinEstimatedPortions                             string
+	Description                                      string
+	PluralPortionName                                string
+	YieldsComponentType                              ComponentType
+	MaxEstimatedPortions                             sql.NullString
+	RecipeStepMinimumTemperatureInCelsius            sql.NullString
+	RecipeStepMaximumTemperatureInCelsius            sql.NullString
+	InspiredByRecipeID                               sql.NullString
+	RecipeStepMaximumEstimatedTimeInSeconds          sql.NullInt64
+	RecipeStepMinimumEstimatedTimeInSeconds          sql.NullInt64
+	RecipeStepPreparationMaximumIngredientCount      sql.NullInt32
+	RecipeStepPreparationMaximumVesselCount          sql.NullInt32
+	RecipeStepPreparationMaximumInstrumentCount      sql.NullInt32
+	RecipeStepPreparationMinimumInstrumentCount      int32
+	RecipeStepPreparationMinimumIngredientCount      int32
+	RecipeStepIndex                                  int32
+	RecipeStepPreparationMinimumVesselCount          int32
+	RecipeStepPreparationYieldsNothing               bool
+	RecipeStepPreparationOnlyForVessels              bool
+	RecipeStepPreparationRestrictToIngredients       bool
+	RecipeStepPreparationTimeEstimateRequired        bool
+	SealOfApproval                                   bool
+	RecipeStepOptional                               bool
+	RecipeStepStartTimerAutomatically                bool
+	RecipeStepPreparationTemperatureRequired         bool
+	RecipeStepPreparationConditionExpressionRequired bool
+	RecipeStepPreparationConsumesVessel              bool
+	EligibleForMeals                                 bool
 }
 
-func (q *Queries) GetRecipeByID(ctx context.Context, db DBTX, id string) (*GetRecipeByIDRow, error) {
-	row := db.QueryRowContext(ctx, getRecipeByID, id)
-	var i GetRecipeByIDRow
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.Slug,
-		&i.Source,
-		&i.Description,
-		&i.InspiredByRecipeID,
-		&i.MinEstimatedPortions,
-		&i.MaxEstimatedPortions,
-		&i.PortionName,
-		&i.PluralPortionName,
-		&i.SealOfApproval,
-		&i.EligibleForMeals,
-		&i.YieldsComponentType,
-		&i.CreatedAt,
-		&i.LastUpdatedAt,
-		&i.ArchivedAt,
-		&i.CreatedByUser,
-		&i.ID_2,
-		&i.Index,
-		&i.ID_3,
-		&i.Name_2,
-		&i.Description_2,
-		&i.IconPath,
-		&i.YieldsNothing,
-		&i.RestrictToIngredients,
-		&i.MinimumIngredientCount,
-		&i.MaximumIngredientCount,
-		&i.MinimumInstrumentCount,
-		&i.MaximumInstrumentCount,
-		&i.TemperatureRequired,
-		&i.TimeEstimateRequired,
-		&i.ConditionExpressionRequired,
-		&i.ConsumesVessel,
-		&i.OnlyForVessels,
-		&i.MinimumVesselCount,
-		&i.MaximumVesselCount,
-		&i.Slug_2,
-		&i.PastTense,
-		&i.CreatedAt_2,
-		&i.LastUpdatedAt_2,
-		&i.ArchivedAt_2,
-		&i.MinimumEstimatedTimeInSeconds,
-		&i.MaximumEstimatedTimeInSeconds,
-		&i.MinimumTemperatureInCelsius,
-		&i.MaximumTemperatureInCelsius,
-		&i.Notes,
-		&i.ExplicitInstructions,
-		&i.ConditionExpression,
-		&i.Optional,
-		&i.StartTimerAutomatically,
-		&i.CreatedAt_3,
-		&i.LastUpdatedAt_3,
-		&i.ArchivedAt_3,
-		&i.BelongsToRecipe,
-	)
-	return &i, err
+func (q *Queries) GetRecipeByID(ctx context.Context, db DBTX, recipeID string) ([]*GetRecipeByIDRow, error) {
+	rows, err := db.QueryContext(ctx, getRecipeByID, recipeID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetRecipeByIDRow{}
+	for rows.Next() {
+		var i GetRecipeByIDRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Slug,
+			&i.Source,
+			&i.Description,
+			&i.InspiredByRecipeID,
+			&i.MinEstimatedPortions,
+			&i.MaxEstimatedPortions,
+			&i.PortionName,
+			&i.PluralPortionName,
+			&i.SealOfApproval,
+			&i.EligibleForMeals,
+			&i.YieldsComponentType,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+			&i.CreatedByUser,
+			&i.RecipeStepID,
+			&i.RecipeStepIndex,
+			&i.RecipeStepPreparationID,
+			&i.RecipeStepPreparationName,
+			&i.RecipeStepPreparationDescription,
+			&i.RecipeStepPreparationIconPath,
+			&i.RecipeStepPreparationYieldsNothing,
+			&i.RecipeStepPreparationRestrictToIngredients,
+			&i.RecipeStepPreparationMinimumIngredientCount,
+			&i.RecipeStepPreparationMaximumIngredientCount,
+			&i.RecipeStepPreparationMinimumInstrumentCount,
+			&i.RecipeStepPreparationMaximumInstrumentCount,
+			&i.RecipeStepPreparationTemperatureRequired,
+			&i.RecipeStepPreparationTimeEstimateRequired,
+			&i.RecipeStepPreparationConditionExpressionRequired,
+			&i.RecipeStepPreparationConsumesVessel,
+			&i.RecipeStepPreparationOnlyForVessels,
+			&i.RecipeStepPreparationMinimumVesselCount,
+			&i.RecipeStepPreparationMaximumVesselCount,
+			&i.RecipeStepPreparationSlug,
+			&i.RecipeStepPreparationPastTense,
+			&i.RecipeStepPreparationCreatedAt,
+			&i.RecipeStepPreparationLastUpdatedAt,
+			&i.RecipeStepPreparationArchivedAt,
+			&i.RecipeStepMinimumEstimatedTimeInSeconds,
+			&i.RecipeStepMaximumEstimatedTimeInSeconds,
+			&i.RecipeStepMinimumTemperatureInCelsius,
+			&i.RecipeStepMaximumTemperatureInCelsius,
+			&i.RecipeStepNotes,
+			&i.RecipeStepExplicitInstructions,
+			&i.RecipeStepConditionExpression,
+			&i.RecipeStepOptional,
+			&i.RecipeStepStartTimerAutomatically,
+			&i.RecipeStepCreatedAt,
+			&i.RecipeStepLastUpdatedAt,
+			&i.RecipeStepArchivedAt,
+			&i.RecipeStepBelongsToRecipe,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getRecipeByIDAndAuthorID = `-- name: GetRecipeByIDAndAuthorID :many

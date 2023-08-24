@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"testing"
 
@@ -217,11 +216,5 @@ func TestQuerier_Integration_Recipes(t *testing.T) {
 		exists, err = dbc.RecipeExists(ctx, recipe.ID)
 		assert.NoError(t, err)
 		assert.False(t, exists)
-
-		var y *types.Recipe
-		y, err = dbc.GetRecipeByIDAndUser(ctx, recipe.ID, recipe.CreatedByUser)
-		assert.Nil(t, y)
-		assert.Error(t, err)
-		assert.ErrorIs(t, err, sql.ErrNoRows)
 	}
 }

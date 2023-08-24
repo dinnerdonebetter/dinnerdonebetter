@@ -257,6 +257,7 @@ linters:
     # Things that are disabled which should probably be enabled one day, when the refactor cost is tolerable.
     # - containedctx                                      # detects struct contained context.Context field
     # - ireturn                                           # Accept Interfaces, Return Concrete Types
+    # - exhaustivestruct # Checks if all struct fields are initialized
 
   disable:
     - cyclop           # checks function and package cyclomatic complexity

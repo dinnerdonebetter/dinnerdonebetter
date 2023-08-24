@@ -192,7 +192,7 @@ type Querier interface {
 	GetRandomValidMeasurementUnit(ctx context.Context, db DBTX) (*GetRandomValidMeasurementUnitRow, error)
 	GetRandomValidPreparation(ctx context.Context, db DBTX) (*GetRandomValidPreparationRow, error)
 	GetRandomValidVessel(ctx context.Context, db DBTX) (*GetRandomValidVesselRow, error)
-	GetRecipeByID(ctx context.Context, db DBTX, id string) (*GetRecipeByIDRow, error)
+	GetRecipeByID(ctx context.Context, db DBTX, recipeID string) ([]*GetRecipeByIDRow, error)
 	GetRecipeByIDAndAuthorID(ctx context.Context, db DBTX, arg *GetRecipeByIDAndAuthorIDParams) ([]*GetRecipeByIDAndAuthorIDRow, error)
 	GetRecipeIDsForMeal(ctx context.Context, db DBTX, id string) ([]string, error)
 	GetRecipeMedia(ctx context.Context, db DBTX, id string) (*GetRecipeMediaRow, error)

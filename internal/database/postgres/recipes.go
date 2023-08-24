@@ -6,7 +6,6 @@ import (
 	_ "embed"
 	"log"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -37,86 +36,8 @@ func (q *Querier) RecipeExists(ctx context.Context, recipeID string) (exists boo
 	return result, nil
 }
 
-// scanRecipeAndStep takes a database Scanner (i.e. *sql.Row) and scans the result into a recipe struct.
-func (q *Querier) scanRecipeAndStep(ctx context.Context, scan database.Scanner) (x *types.Recipe, y *types.RecipeStep, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	x = &types.Recipe{}
-	y = &types.RecipeStep{}
-
-	targetVars := []any{
-		&x.ID,
-		&x.Name,
-		&x.Slug,
-		&x.Source,
-		&x.Description,
-		&x.InspiredByRecipeID,
-		&x.MinimumEstimatedPortions,
-		&x.MaximumEstimatedPortions,
-		&x.PortionName,
-		&x.PluralPortionName,
-		&x.SealOfApproval,
-		&x.EligibleForMeals,
-		&x.YieldsComponentType,
-		&x.CreatedAt,
-		&x.LastUpdatedAt,
-		&x.ArchivedAt,
-		&x.CreatedByUser,
-		&y.ID,
-		&y.Index,
-		&y.Preparation.ID,
-		&y.Preparation.Name,
-		&y.Preparation.Description,
-		&y.Preparation.IconPath,
-		&y.Preparation.YieldsNothing,
-		&y.Preparation.RestrictToIngredients,
-		&y.Preparation.MinimumIngredientCount,
-		&y.Preparation.MaximumIngredientCount,
-		&y.Preparation.MinimumInstrumentCount,
-		&y.Preparation.MaximumInstrumentCount,
-		&y.Preparation.TemperatureRequired,
-		&y.Preparation.TimeEstimateRequired,
-		&y.Preparation.ConditionExpressionRequired,
-		&y.Preparation.ConsumesVessel,
-		&y.Preparation.OnlyForVessels,
-		&y.Preparation.MinimumVesselCount,
-		&y.Preparation.MaximumVesselCount,
-		&y.Preparation.Slug,
-		&y.Preparation.PastTense,
-		&y.Preparation.CreatedAt,
-		&y.Preparation.LastUpdatedAt,
-		&y.Preparation.ArchivedAt,
-		&y.MinimumEstimatedTimeInSeconds,
-		&y.MaximumEstimatedTimeInSeconds,
-		&y.MinimumTemperatureInCelsius,
-		&y.MaximumTemperatureInCelsius,
-		&y.Notes,
-		&y.ExplicitInstructions,
-		&y.ConditionExpression,
-		&y.Optional,
-		&y.StartTimerAutomatically,
-		&y.CreatedAt,
-		&y.LastUpdatedAt,
-		&y.ArchivedAt,
-		&y.BelongsToRecipe,
-	}
-
-	if err = scan.Scan(targetVars...); err != nil {
-		return nil, nil, 0, 0, observability.PrepareError(err, span, "")
-	}
-
-	return x, y, filteredCount, totalCount, nil
-}
-
-//go:embed queries/recipes/get_by_id.sql
-var getRecipeByIDQuery string
-
-//go:embed queries/recipes/get_by_id_and_author_id.sql
-var getRecipeByIDAndAuthorIDQuery string
-
 // getRecipe fetches a recipe from the database.
-func (q *Querier) getRecipe(ctx context.Context, recipeID, userID string) (*types.Recipe, error) {
+func (q *Querier) getRecipe(ctx context.Context, recipeID string) (*types.Recipe, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -125,42 +46,84 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID, userID string) (*type
 	}
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	args := []any{
-		recipeID,
-	}
-
-	query := getRecipeByIDQuery
-	if userID != "" {
-		query = getRecipeByIDAndAuthorIDQuery
-		args = append(args, userID)
-	}
-
-	rows, err := q.getRows(ctx, q.db, "get recipe", query, args)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "fetching recipe data")
-	}
-
 	var x *types.Recipe
-	for rows.Next() {
-		recipe, recipeStep, _, _, recipeScanErr := q.scanRecipeAndStep(ctx, rows)
-		if recipeScanErr != nil {
-			return nil, observability.PrepareError(recipeScanErr, span, "scanning recipe")
-		}
+	results, err := q.generatedQuerier.GetRecipeByID(ctx, q.db, recipeID)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "fetching recipe")
+	}
 
+	for _, result := range results {
 		if x == nil {
-			x = recipe
+			x = &types.Recipe{
+				CreatedAt:                result.CreatedAt,
+				InspiredByRecipeID:       stringPointerFromNullString(result.InspiredByRecipeID),
+				LastUpdatedAt:            timePointerFromNullTime(result.LastUpdatedAt),
+				ArchivedAt:               timePointerFromNullTime(result.ArchivedAt),
+				MaximumEstimatedPortions: float32PointerFromNullString(result.MaxEstimatedPortions),
+				PluralPortionName:        result.PluralPortionName,
+				Description:              result.Description,
+				Name:                     result.Name,
+				PortionName:              result.PortionName,
+				ID:                       result.ID,
+				CreatedByUser:            result.CreatedByUser,
+				Source:                   result.Source,
+				Slug:                     result.Slug,
+				YieldsComponentType:      string(result.YieldsComponentType),
+				MinimumEstimatedPortions: float32FromString(result.MinEstimatedPortions),
+				SealOfApproval:           result.SealOfApproval,
+				EligibleForMeals:         result.EligibleForMeals,
+				PrepTasks:                []*types.RecipePrepTask{},
+				SupportingRecipes:        []*types.Recipe{},
+				Media:                    []*types.RecipeMedia{},
+			}
 		}
 
-		x.Steps = append(x.Steps, recipeStep)
+		x.Steps = append(x.Steps, &types.RecipeStep{
+			CreatedAt:                     result.RecipeStepCreatedAt,
+			MinimumEstimatedTimeInSeconds: uint32PointerFromNullInt64(result.RecipeStepMinimumEstimatedTimeInSeconds),
+			ArchivedAt:                    timePointerFromNullTime(result.RecipeStepArchivedAt),
+			LastUpdatedAt:                 timePointerFromNullTime(result.RecipeStepLastUpdatedAt),
+			MinimumTemperatureInCelsius:   float32PointerFromNullString(result.RecipeStepMinimumTemperatureInCelsius),
+			MaximumTemperatureInCelsius:   float32PointerFromNullString(result.RecipeStepMaximumTemperatureInCelsius),
+			MaximumEstimatedTimeInSeconds: uint32PointerFromNullInt64(result.RecipeStepMaximumEstimatedTimeInSeconds),
+			BelongsToRecipe:               result.RecipeStepBelongsToRecipe,
+			ConditionExpression:           result.RecipeStepConditionExpression,
+			ID:                            result.RecipeStepID,
+			Notes:                         result.RecipeStepNotes,
+			ExplicitInstructions:          result.RecipeStepExplicitInstructions,
+			Preparation: types.ValidPreparation{
+				CreatedAt:                   result.RecipeStepPreparationCreatedAt,
+				MaximumInstrumentCount:      int32PointerFromNullInt32(result.RecipeStepPreparationMaximumInstrumentCount),
+				ArchivedAt:                  timePointerFromNullTime(result.RecipeStepPreparationArchivedAt),
+				MaximumIngredientCount:      int32PointerFromNullInt32(result.RecipeStepPreparationMaximumIngredientCount),
+				LastUpdatedAt:               timePointerFromNullTime(result.RecipeStepPreparationLastUpdatedAt),
+				MaximumVesselCount:          int32PointerFromNullInt32(result.RecipeStepPreparationMaximumVesselCount),
+				IconPath:                    result.RecipeStepPreparationIconPath,
+				PastTense:                   result.RecipeStepPreparationPastTense,
+				ID:                          result.RecipeStepPreparationID,
+				Name:                        result.RecipeStepPreparationName,
+				Description:                 result.RecipeStepPreparationDescription,
+				Slug:                        result.RecipeStepPreparationSlug,
+				MinimumIngredientCount:      result.RecipeStepPreparationMinimumIngredientCount,
+				MinimumInstrumentCount:      result.RecipeStepPreparationMinimumInstrumentCount,
+				MinimumVesselCount:          result.RecipeStepPreparationMinimumVesselCount,
+				RestrictToIngredients:       result.RecipeStepPreparationRestrictToIngredients,
+				TemperatureRequired:         result.RecipeStepPreparationTemperatureRequired,
+				TimeEstimateRequired:        result.RecipeStepPreparationTimeEstimateRequired,
+				ConditionExpressionRequired: result.RecipeStepPreparationConditionExpressionRequired,
+				ConsumesVessel:              result.RecipeStepPreparationConsumesVessel,
+				OnlyForVessels:              result.RecipeStepPreparationOnlyForVessels,
+				YieldsNothing:               result.RecipeStepPreparationYieldsNothing,
+			},
+			Index:                   uint32(result.RecipeStepIndex),
+			Optional:                result.RecipeStepOptional,
+			StartTimerAutomatically: result.RecipeStepStartTimerAutomatically,
+		})
 	}
 
 	if x == nil {
 		return nil, sql.ErrNoRows
 	}
-
-	x.PrepTasks = []*types.RecipePrepTask{}
-	x.SupportingRecipes = []*types.Recipe{}
-	x.Media = []*types.RecipeMedia{}
 
 	prepTasks, err := q.getRecipePrepTasksForRecipe(ctx, recipeID)
 	if err != nil {
@@ -261,12 +224,7 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID, userID string) (*type
 
 // GetRecipe fetches a recipe from the database.
 func (q *Querier) GetRecipe(ctx context.Context, recipeID string) (*types.Recipe, error) {
-	return q.getRecipe(ctx, recipeID, "")
-}
-
-// GetRecipeByIDAndUser fetches a recipe from the database.
-func (q *Querier) GetRecipeByIDAndUser(ctx context.Context, recipeID, userID string) (*types.Recipe, error) {
-	return q.getRecipe(ctx, recipeID, userID)
+	return q.getRecipe(ctx, recipeID)
 }
 
 // GetRecipes fetches a list of recipes from the database that meet a particular filter.
@@ -334,7 +292,7 @@ func (q *Querier) GetRecipesWithIDs(ctx context.Context, ids []string) ([]*types
 
 	recipes := []*types.Recipe{}
 	for _, id := range ids {
-		r, err := q.getRecipe(ctx, id, "")
+		r, err := q.getRecipe(ctx, id)
 		if err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "getting recipe")
 		}

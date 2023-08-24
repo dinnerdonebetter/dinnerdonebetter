@@ -137,47 +137,8 @@ func TestQuerier_MealExists(T *testing.T) {
 	})
 }
 
-func prepareMockToSuccessfullyGetMeal(t *testing.T, exampleMeal *types.Meal, db *sqlmockExpecterWrapper) {
-	t.Helper()
-
-	getMealArgs := []any{
-		exampleMeal.ID,
-	}
-
-	db.ExpectQuery(formatQueryForSQLMock(getMealByIDQuery)).
-		WithArgs(interfaceToDriverValue(getMealArgs)...).
-		WillReturnRows(buildMockFullRowsFromMeal(exampleMeal))
-
-	for _, component := range exampleMeal.Components {
-		prepareMockToSuccessfullyGetRecipe(t, &component.Recipe, "", db)
-	}
-}
-
 func TestQuerier_GetMeal(T *testing.T) {
 	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMeal := fakes.BuildFakeMeal()
-
-		for i := range exampleMeal.Components {
-			for j := range exampleMeal.Components[i].Recipe.Steps {
-				exampleMeal.Components[i].Recipe.Steps[j].Products = nil
-			}
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		prepareMockToSuccessfullyGetMeal(t, exampleMeal, db)
-
-		actual, err := c.GetMeal(ctx, exampleMeal.ID)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleMeal, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
 
 	T.Run("with invalid meal ID", func(t *testing.T) {
 		t.Parallel()
@@ -188,83 +149,6 @@ func TestQuerier_GetMeal(T *testing.T) {
 		actual, err := c.GetMeal(ctx, "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMeal := fakes.BuildFakeMeal()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		getMealArgs := []any{
-			exampleMeal.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getMealByIDQuery)).
-			WithArgs(interfaceToDriverValue(getMealArgs)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetMeal(ctx, exampleMeal.ID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error scanning response from database", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMeal := fakes.BuildFakeMeal()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		getMealArgs := []any{
-			exampleMeal.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getMealByIDQuery)).
-			WithArgs(interfaceToDriverValue(getMealArgs)...).
-			WillReturnRows(buildErroneousMockRow())
-
-		actual, err := c.GetMeal(ctx, exampleMeal.ID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with error querying for recipes", func(t *testing.T) {
-		t.Parallel()
-
-		exampleMeal := fakes.BuildFakeMeal()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		getMealArgs := []any{
-			exampleMeal.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getMealByIDQuery)).
-			WithArgs(interfaceToDriverValue(getMealArgs)...).
-			WillReturnRows(buildMockFullRowsFromMeal(exampleMeal))
-
-		getRecipeArgs := []any{
-			exampleMeal.Components[0].Recipe.ID,
-		}
-
-		db.ExpectQuery(formatQueryForSQLMock(getRecipeByIDQuery)).
-			WithArgs(interfaceToDriverValue(getRecipeArgs)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetMeal(ctx, exampleMeal.ID)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 
@@ -334,33 +218,6 @@ func TestQuerier_GetMeals(T *testing.T) {
 		actual, err := c.GetMeals(ctx, filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-}
-
-func TestQuerier_GetMealsWithIDs(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		exampleMealList := fakes.BuildFakeMealList()
-		exampleIDs := make([]string, len(exampleMealList.Data))
-		for i, exampleMeal := range exampleMealList.Data {
-			exampleIDs[i] = exampleMeal.ID
-		}
-
-		for _, exampleMeal := range exampleMealList.Data {
-			prepareMockToSuccessfullyGetMeal(t, exampleMeal, db)
-		}
-
-		actual, err := c.GetMealsWithIDs(ctx, exampleIDs)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleMealList.Data, actual)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})

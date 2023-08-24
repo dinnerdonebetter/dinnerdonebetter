@@ -273,13 +273,18 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
 	// fetch recipe from database.
-	recipe, err := s.recipeDataManager.GetRecipeByIDAndUser(ctx, recipeID, sessionCtxData.Requester.UserID)
+	recipe, err := s.recipeDataManager.GetRecipe(ctx, recipeID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving recipe for update")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	if recipe.CreatedByUser != sessionCtxData.Requester.UserID {
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthorized", http.StatusUnauthorized)
 		return
 	}
 
