@@ -28,7 +28,7 @@ func BuildFakeServiceSettingConfigurationList() *types.QueryFilteredResult[types
 	return &types.QueryFilteredResult[types.ServiceSettingConfiguration]{
 		Pagination: types.Pagination{
 			Page:          1,
-			Limit:         20,
+			Limit:         50,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,
 		},

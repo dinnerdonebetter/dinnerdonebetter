@@ -125,7 +125,7 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_GetMealPlanOptionVotes() {
 
 		exampleMealPlanOptionVoteList := fakes.BuildFakeMealPlanOptionVoteList()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, s.exampleMealPlanID, s.exampleMealPlanEventID, s.exampleMealPlanOptionID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, s.exampleMealPlanID, s.exampleMealPlanEventID, s.exampleMealPlanOptionID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleMealPlanOptionVoteList)
 		actual, err := c.GetMealPlanOptionVotes(s.ctx, s.exampleMealPlanID, s.exampleMealPlanEventID, s.exampleMealPlanOptionID, filter)
 
@@ -175,7 +175,7 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_GetMealPlanOptionVotes() {
 
 		filter := (*types.QueryFilter)(nil)
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, s.exampleMealPlanID, s.exampleMealPlanEventID, s.exampleMealPlanOptionID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, s.exampleMealPlanID, s.exampleMealPlanEventID, s.exampleMealPlanOptionID)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.GetMealPlanOptionVotes(s.ctx, s.exampleMealPlanID, s.exampleMealPlanEventID, s.exampleMealPlanOptionID, filter)
 

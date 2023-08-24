@@ -134,7 +134,7 @@ func (s *validIngredientsTestSuite) TestClient_GetValidIngredients() {
 
 		exampleValidIngredientList := fakes.BuildFakeValidIngredientList()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientList)
 		actual, err := c.GetValidIngredients(s.ctx, filter)
 
@@ -160,7 +160,7 @@ func (s *validIngredientsTestSuite) TestClient_GetValidIngredients() {
 
 		filter := (*types.QueryFilter)(nil)
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.GetValidIngredients(s.ctx, filter)
 
@@ -179,7 +179,7 @@ func (s *validIngredientsTestSuite) TestClient_SearchValidIngredients() {
 
 		exampleValidIngredientList := fakes.BuildFakeValidIngredientList()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&q=whatever", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&q=whatever", expectedPath)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientList.Data)
 		actual, err := c.SearchValidIngredients(s.ctx, exampleQuery, 0)
 
@@ -212,7 +212,7 @@ func (s *validIngredientsTestSuite) TestClient_SearchValidIngredients() {
 	s.Run("with bad response from server", func() {
 		t := s.T()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&q=whatever", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&q=whatever", expectedPath)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.SearchValidIngredients(s.ctx, exampleQuery, 0)
 

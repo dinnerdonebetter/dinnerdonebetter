@@ -97,7 +97,7 @@ func (s *householdInstrumentOwnershipsTestSuite) TestClient_GetHouseholdInstrume
 
 		exampleHouseholdInstrumentOwnershipList := fakes.BuildFakeHouseholdInstrumentOwnershipList()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleHouseholdInstrumentOwnershipList)
 		actual, err := c.GetHouseholdInstrumentOwnerships(s.ctx, filter)
 
@@ -123,7 +123,7 @@ func (s *householdInstrumentOwnershipsTestSuite) TestClient_GetHouseholdInstrume
 
 		filter := (*types.QueryFilter)(nil)
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.GetHouseholdInstrumentOwnerships(s.ctx, filter)
 

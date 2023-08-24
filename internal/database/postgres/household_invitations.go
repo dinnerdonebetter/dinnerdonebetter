@@ -472,10 +472,10 @@ func (q *Querier) GetPendingHouseholdInvitationsForUser(ctx context.Context, use
 		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
-		//QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		//QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
-		Status: generated.InvitationState(types.PendingHouseholdInvitationStatus),
-		UserID: nullStringFromString(userID),
+		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		Status:        generated.InvitationState(types.PendingHouseholdInvitationStatus),
+		UserID:        nullStringFromString(userID),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing household invitation query")

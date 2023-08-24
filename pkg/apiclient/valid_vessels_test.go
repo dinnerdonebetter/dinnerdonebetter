@@ -134,7 +134,7 @@ func (s *validVesselsTestSuite) TestClient_GetValidVessels() {
 
 		exampleValidVesselList := fakes.BuildFakeValidVesselList()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidVesselList)
 		actual, err := c.GetValidVessels(s.ctx, filter)
 
@@ -160,7 +160,7 @@ func (s *validVesselsTestSuite) TestClient_GetValidVessels() {
 
 		filter := (*types.QueryFilter)(nil)
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.GetValidVessels(s.ctx, filter)
 
@@ -179,7 +179,7 @@ func (s *validVesselsTestSuite) TestClient_SearchValidVessels() {
 
 		exampleValidVesselList := fakes.BuildFakeValidVesselList()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&q=whatever", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&q=whatever", expectedPath)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidVesselList.Data)
 		actual, err := c.SearchValidVessels(s.ctx, exampleQuery, 0)
 
@@ -212,7 +212,7 @@ func (s *validVesselsTestSuite) TestClient_SearchValidVessels() {
 	s.Run("with bad response from server", func() {
 		t := s.T()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&q=whatever", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&q=whatever", expectedPath)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.SearchValidVessels(s.ctx, exampleQuery, 0)
 

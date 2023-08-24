@@ -146,6 +146,7 @@ type Querier interface {
 	FinalizeMealPlan(ctx context.Context, db DBTX, arg *FinalizeMealPlanParams) error
 	FinalizeMealPlanOption(ctx context.Context, db DBTX, arg *FinalizeMealPlanOptionParams) error
 	GetAdminUserByUsername(ctx context.Context, db DBTX, username string) (*GetAdminUserByUsernameRow, error)
+	GetAllMealPlanEventsForMealPlan(ctx context.Context, db DBTX, mealPlanID string) ([]*MealPlanEvents, error)
 	GetAllRecipeStepCompletionConditionsForRecipe(ctx context.Context, db DBTX, id string) ([]*GetAllRecipeStepCompletionConditionsForRecipeRow, error)
 	GetAllValidMeasurementUnitConversionsFromMeasurementUnit(ctx context.Context, db DBTX, fromUnit string) ([]*GetAllValidMeasurementUnitConversionsFromMeasurementUnitRow, error)
 	GetAllValidMeasurementUnitConversionsToMeasurementUnit(ctx context.Context, db DBTX, id string) ([]*GetAllValidMeasurementUnitConversionsToMeasurementUnitRow, error)
@@ -165,12 +166,13 @@ type Querier interface {
 	GetMeal(ctx context.Context, db DBTX, id string) (*GetMealRow, error)
 	GetMealPlan(ctx context.Context, db DBTX, arg *GetMealPlanParams) (*GetMealPlanRow, error)
 	GetMealPlanEvent(ctx context.Context, db DBTX, arg *GetMealPlanEventParams) (*MealPlanEvents, error)
-	GetMealPlanEventsForMealPlan(ctx context.Context, db DBTX, belongsToMealPlan string) ([]*MealPlanEvents, error)
+	GetMealPlanEvents(ctx context.Context, db DBTX, arg *GetMealPlanEventsParams) ([]*GetMealPlanEventsRow, error)
 	GetMealPlanGroceryListItem(ctx context.Context, db DBTX, arg *GetMealPlanGroceryListItemParams) (*GetMealPlanGroceryListItemRow, error)
 	GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, db DBTX, mealPlanID string) ([]*GetMealPlanGroceryListItemsForMealPlanRow, error)
 	GetMealPlanOption(ctx context.Context, db DBTX, arg *GetMealPlanOptionParams) (*GetMealPlanOptionRow, error)
 	GetMealPlanOptionByID(ctx context.Context, db DBTX, mealPlanOptionID string) (*GetMealPlanOptionByIDRow, error)
 	GetMealPlanOptionVote(ctx context.Context, db DBTX, arg *GetMealPlanOptionVoteParams) (*MealPlanOptionVotes, error)
+	GetMealPlanOptionVotes(ctx context.Context, db DBTX, arg *GetMealPlanOptionVotesParams) ([]*GetMealPlanOptionVotesRow, error)
 	GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, db DBTX, arg *GetMealPlanOptionVotesForMealPlanOptionParams) ([]*MealPlanOptionVotes, error)
 	GetMealPlanOptionsForMealPlanEvent(ctx context.Context, db DBTX, arg *GetMealPlanOptionsForMealPlanEventParams) ([]*GetMealPlanOptionsForMealPlanEventRow, error)
 	GetMealPlanPastVotingDeadline(ctx context.Context, db DBTX, arg *GetMealPlanPastVotingDeadlineParams) (*GetMealPlanPastVotingDeadlineRow, error)

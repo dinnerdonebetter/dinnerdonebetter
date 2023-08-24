@@ -101,7 +101,7 @@ func TestBuilder_BuildGetRecipeStepVesselsRequest(T *testing.T) {
 		exampleRecipeStepID := fakes.BuildFakeID()
 
 		filter := (*types.QueryFilter)(nil)
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat, exampleRecipeID, exampleRecipeStepID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat, exampleRecipeID, exampleRecipeStepID)
 
 		actual, err := helper.builder.BuildGetRecipeStepVesselsRequest(helper.ctx, exampleRecipeID, exampleRecipeStepID, filter)
 		assert.NoError(t, err)

@@ -203,7 +203,10 @@ func (q *Querier) getMealPlan(ctx context.Context, mealPlanID, householdID strin
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "populating meal plan events")
 	}
-	mealPlan.Events = events
+
+	if events != nil {
+		mealPlan.Events = events
+	}
 
 	return mealPlan, nil
 }

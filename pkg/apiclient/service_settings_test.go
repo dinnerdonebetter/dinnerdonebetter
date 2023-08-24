@@ -96,7 +96,7 @@ func (s *serviceSettingsTestSuite) TestClient_GetServiceSettings() {
 
 		exampleServiceSettingList := fakes.BuildFakeServiceSettingList()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleServiceSettingList)
 		actual, err := c.GetServiceSettings(s.ctx, filter)
 
@@ -122,7 +122,7 @@ func (s *serviceSettingsTestSuite) TestClient_GetServiceSettings() {
 
 		filter := (*types.QueryFilter)(nil)
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.GetServiceSettings(s.ctx, filter)
 
@@ -141,7 +141,7 @@ func (s *serviceSettingsTestSuite) TestClient_SearchServiceSettings() {
 
 		exampleServiceSettingList := fakes.BuildFakeServiceSettingList()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&q=whatever", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&q=whatever", expectedPath)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleServiceSettingList.Data)
 		actual, err := c.SearchServiceSettings(s.ctx, exampleQuery, 0)
 
@@ -174,7 +174,7 @@ func (s *serviceSettingsTestSuite) TestClient_SearchServiceSettings() {
 	s.Run("with bad response from server", func() {
 		t := s.T()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&q=whatever", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&q=whatever", expectedPath)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.SearchServiceSettings(s.ctx, exampleQuery, 0)
 

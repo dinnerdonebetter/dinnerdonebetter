@@ -95,7 +95,7 @@ func TestBuilder_BuildGetValidIngredientsRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		filter := (*types.QueryFilter)(nil)
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat)
 
 		actual, err := helper.builder.BuildGetValidIngredientsRequest(helper.ctx, filter)
 		assert.NoError(t, err)
@@ -129,7 +129,7 @@ func TestBuilder_BuildSearchValidIngredientsRequest(T *testing.T) {
 
 		limit := types.DefaultQueryFilter().Limit
 		exampleQuery := "whatever"
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&q=whatever", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&q=whatever", expectedPath)
 
 		actual, err := helper.builder.BuildSearchValidIngredientsRequest(helper.ctx, exampleQuery, *limit)
 		assert.NoError(t, err)

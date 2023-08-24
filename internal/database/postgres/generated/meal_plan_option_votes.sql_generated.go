@@ -8,6 +8,7 @@ package generated
 import (
 	"context"
 	"database/sql"
+	"time"
 )
 
 const archiveMealPlanOptionVote = `-- name: ArchiveMealPlanOptionVote :exec
@@ -95,7 +96,6 @@ func (q *Queries) CreateMealPlanOptionVote(ctx context.Context, db DBTX, arg *Cr
 
 const getMealPlanOptionVote = `-- name: GetMealPlanOptionVote :one
 
-
 SELECT
 	meal_plan_option_votes.id,
 	meal_plan_option_votes.rank,
@@ -151,42 +151,180 @@ func (q *Queries) GetMealPlanOptionVote(ctx context.Context, db DBTX, arg *GetMe
 	return &i, err
 }
 
+const getMealPlanOptionVotes = `-- name: GetMealPlanOptionVotes :many
+
+SELECT
+    meal_plan_option_votes.id,
+    meal_plan_option_votes.rank,
+    meal_plan_option_votes.abstain,
+    meal_plan_option_votes.notes,
+    meal_plan_option_votes.by_user,
+    meal_plan_option_votes.created_at,
+    meal_plan_option_votes.last_updated_at,
+    meal_plan_option_votes.archived_at,
+    meal_plan_option_votes.belongs_to_meal_plan_option,
+    (
+        SELECT
+            COUNT(meal_plan_events.id)
+        FROM
+            meal_plan_option_votes
+        WHERE
+            meal_plan_option_votes.archived_at IS NULL
+            AND meal_plan_option_votes.belongs_to_meal_plan_option = $1
+            AND meal_plan_option_votes.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
+            AND meal_plan_option_votes.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
+            AND (
+                meal_plan_option_votes.last_updated_at IS NULL
+                OR meal_plan_option_votes.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years'))
+            )
+            AND (
+                meal_plan_option_votes.last_updated_at IS NULL
+                OR meal_plan_option_votes.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
+            )
+    ) AS filtered_count,
+    (
+        SELECT
+            COUNT(meal_plan_option_votes.id)
+        FROM
+            meal_plan_option_votes
+        WHERE
+            meal_plan_option_votes.archived_at IS NULL
+    ) AS total_count
+FROM meal_plan_option_votes
+    JOIN meal_plan_options ON meal_plan_option_votes.belongs_to_meal_plan_option=meal_plan_options.id
+    JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event=meal_plan_events.id
+    JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan=meal_plans.id
+WHERE meal_plan_option_votes.archived_at IS NULL
+    AND meal_plan_option_votes.belongs_to_meal_plan_option = $1
+    AND meal_plan_options.archived_at IS NULL
+    AND meal_plan_options.belongs_to_meal_plan_event = $6
+    AND meal_plan_options.id = $1
+    AND meal_plan_events.archived_at IS NULL
+    AND meal_plan_events.belongs_to_meal_plan = $7
+    AND meal_plan_events.id = $6
+    AND meal_plans.archived_at IS NULL
+    AND meal_plans.id = $7
+    AND meal_plan_option_votes.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
+    AND meal_plan_option_votes.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
+    AND (
+        meal_plan_option_votes.last_updated_at IS NULL
+        OR meal_plan_option_votes.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years'))
+    )
+    AND (
+        meal_plan_option_votes.last_updated_at IS NULL
+        OR meal_plan_option_votes.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
+    )
+OFFSET $8
+LIMIT $9
+`
+
+type GetMealPlanOptionVotesParams struct {
+	CreatedAfter     sql.NullTime
+	CreatedBefore    sql.NullTime
+	UpdatedAfter     sql.NullTime
+	UpdatedBefore    sql.NullTime
+	MealPlanOptionID string
+	MealPlanID       string
+	MealPlanEventID  sql.NullString
+	QueryOffset      sql.NullInt32
+	QueryLimit       sql.NullInt32
+}
+
+type GetMealPlanOptionVotesRow struct {
+	CreatedAt               time.Time
+	LastUpdatedAt           sql.NullTime
+	ArchivedAt              sql.NullTime
+	ID                      string
+	Notes                   string
+	ByUser                  string
+	BelongsToMealPlanOption string
+	FilteredCount           int64
+	TotalCount              int64
+	Rank                    int32
+	Abstain                 bool
+}
+
+func (q *Queries) GetMealPlanOptionVotes(ctx context.Context, db DBTX, arg *GetMealPlanOptionVotesParams) ([]*GetMealPlanOptionVotesRow, error) {
+	rows, err := db.QueryContext(ctx, getMealPlanOptionVotes,
+		arg.MealPlanOptionID,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedAfter,
+		arg.UpdatedBefore,
+		arg.MealPlanEventID,
+		arg.MealPlanID,
+		arg.QueryOffset,
+		arg.QueryLimit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetMealPlanOptionVotesRow{}
+	for rows.Next() {
+		var i GetMealPlanOptionVotesRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Rank,
+			&i.Abstain,
+			&i.Notes,
+			&i.ByUser,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+			&i.BelongsToMealPlanOption,
+			&i.FilteredCount,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getMealPlanOptionVotesForMealPlanOption = `-- name: GetMealPlanOptionVotesForMealPlanOption :many
 
 SELECT
-	meal_plan_option_votes.id,
-	meal_plan_option_votes.rank,
-	meal_plan_option_votes.abstain,
-	meal_plan_option_votes.notes,
-	meal_plan_option_votes.by_user,
-	meal_plan_option_votes.created_at,
-	meal_plan_option_votes.last_updated_at,
-	meal_plan_option_votes.archived_at,
-	meal_plan_option_votes.belongs_to_meal_plan_option
+    meal_plan_option_votes.id,
+    meal_plan_option_votes.rank,
+    meal_plan_option_votes.abstain,
+    meal_plan_option_votes.notes,
+    meal_plan_option_votes.by_user,
+    meal_plan_option_votes.created_at,
+    meal_plan_option_votes.last_updated_at,
+    meal_plan_option_votes.archived_at,
+    meal_plan_option_votes.belongs_to_meal_plan_option
 FROM meal_plan_option_votes
-	JOIN meal_plan_options ON meal_plan_option_votes.belongs_to_meal_plan_option=meal_plan_options.id
-	JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event=meal_plan_events.id
-	JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan=meal_plans.id
+         JOIN meal_plan_options ON meal_plan_option_votes.belongs_to_meal_plan_option=meal_plan_options.id
+         JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event=meal_plan_events.id
+         JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan=meal_plans.id
 WHERE meal_plan_option_votes.archived_at IS NULL
-	AND meal_plan_option_votes.belongs_to_meal_plan_option = $3
-	AND meal_plan_options.archived_at IS NULL
-	AND meal_plan_options.belongs_to_meal_plan_event = $2
-	AND meal_plan_options.id = $3
-	AND meal_plan_events.archived_at IS NULL
-	AND meal_plan_events.belongs_to_meal_plan = $1
-	AND meal_plan_events.id = $2
-	AND meal_plans.archived_at IS NULL
-	AND meal_plans.id = $1
+  AND meal_plan_option_votes.belongs_to_meal_plan_option = $1
+  AND meal_plan_options.archived_at IS NULL
+  AND meal_plan_options.belongs_to_meal_plan_event = $2
+  AND meal_plan_options.id = $1
+  AND meal_plan_events.archived_at IS NULL
+  AND meal_plan_events.belongs_to_meal_plan = $3
+  AND meal_plan_events.id = $2
+  AND meal_plans.archived_at IS NULL
+  AND meal_plans.id = $3
 `
 
 type GetMealPlanOptionVotesForMealPlanOptionParams struct {
-	BelongsToMealPlan       string
-	BelongsToMealPlanOption string
-	BelongsToMealPlanEvent  sql.NullString
+	MealPlanOptionID string
+	MealPlanID       string
+	MealPlanEventID  sql.NullString
 }
 
 func (q *Queries) GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, db DBTX, arg *GetMealPlanOptionVotesForMealPlanOptionParams) ([]*MealPlanOptionVotes, error) {
-	rows, err := db.QueryContext(ctx, getMealPlanOptionVotesForMealPlanOption, arg.BelongsToMealPlan, arg.BelongsToMealPlanEvent, arg.BelongsToMealPlanOption)
+	rows, err := db.QueryContext(ctx, getMealPlanOptionVotesForMealPlanOption, arg.MealPlanOptionID, arg.MealPlanEventID, arg.MealPlanID)
 	if err != nil {
 		return nil, err
 	}

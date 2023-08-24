@@ -117,7 +117,7 @@ func (s *householdInvitationsTestSuite) TestClient_GetPendingHouseholdInvitation
 		filter := types.DefaultQueryFilter()
 		s.exampleHousehold.BelongsToUser = ""
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdInvitation)
 
 		actual, err := c.GetPendingHouseholdInvitationsForUser(s.ctx, filter)
@@ -159,7 +159,7 @@ func (s *householdInvitationsTestSuite) TestClient_GetPendingHouseholdInvitation
 		filter := types.DefaultQueryFilter()
 		s.exampleHousehold.BelongsToUser = ""
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdInvitation)
 
 		actual, err := c.GetPendingHouseholdInvitationsFromUser(s.ctx, filter)

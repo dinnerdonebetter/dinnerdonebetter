@@ -116,7 +116,7 @@ func TestBuilder_BuildGetMealPlanTasksRequest(T *testing.T) {
 
 		filter := (*types.QueryFilter)(nil)
 		exampleMealPlanID := fakes.BuildFakeID()
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat, exampleMealPlanID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat, exampleMealPlanID)
 
 		actual, err := helper.builder.BuildGetMealPlanTasksRequest(helper.ctx, exampleMealPlanID, filter)
 		assert.NoError(t, err)

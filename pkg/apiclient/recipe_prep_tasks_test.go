@@ -109,7 +109,7 @@ func (s *recipePrepTasksTestSuite) TestClient_GetRecipePrepTasks() {
 
 		exampleRecipePrepTaskList := fakes.BuildFakeRecipePrepTaskList().Data
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, s.exampleRecipeID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, s.exampleRecipeID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleRecipePrepTaskList)
 		actual, err := c.GetRecipePrepTasks(s.ctx, s.exampleRecipeID, filter)
 
@@ -147,7 +147,7 @@ func (s *recipePrepTasksTestSuite) TestClient_GetRecipePrepTasks() {
 
 		filter := (*types.QueryFilter)(nil)
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, s.exampleRecipeID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, s.exampleRecipeID)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.GetRecipePrepTasks(s.ctx, s.exampleRecipeID, filter)
 

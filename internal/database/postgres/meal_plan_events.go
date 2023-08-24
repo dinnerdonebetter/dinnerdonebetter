@@ -19,81 +19,7 @@ const (
 
 var (
 	_ types.MealPlanEventDataManager = (*Querier)(nil)
-
-	// mealPlanEventsTableColumns are the columns for the mealPlanEvents table.
-	mealPlanEventsTableColumns = []string{
-		"meal_plan_events.id",
-		"meal_plan_events.notes",
-		"meal_plan_events.starts_at",
-		"meal_plan_events.ends_at",
-		"meal_plan_events.meal_name",
-		"meal_plan_events.belongs_to_meal_plan",
-		"meal_plan_events.created_at",
-		"meal_plan_events.last_updated_at",
-		"meal_plan_events.archived_at",
-	}
 )
-
-// scanMealPlanEvent takes a database Scanner (i.e. *sql.Row) and scans the result into a meal plan event struct.
-func (q *Querier) scanMealPlanEvent(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.MealPlanEvent, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	x = &types.MealPlanEvent{}
-
-	targetVars := []any{
-		&x.ID,
-		&x.Notes,
-		&x.StartsAt,
-		&x.EndsAt,
-		&x.MealName,
-		&x.BelongsToMealPlan,
-		&x.CreatedAt,
-		&x.LastUpdatedAt,
-		&x.ArchivedAt,
-	}
-
-	if includeCounts {
-		targetVars = append(targetVars, &filteredCount, &totalCount)
-	}
-
-	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "")
-	}
-
-	return x, filteredCount, totalCount, nil
-}
-
-// scanMealPlanEvents takes some database rows and turns them into a slice of meal_plan_events.
-func (q *Querier) scanMealPlanEvents(ctx context.Context, rows database.ResultIterator, includeCounts bool) (mealPlanEvents []*types.MealPlanEvent, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	for rows.Next() {
-		x, fc, tc, scanErr := q.scanMealPlanEvent(ctx, rows, includeCounts)
-		if scanErr != nil {
-			return nil, 0, 0, scanErr
-		}
-
-		if includeCounts {
-			if filteredCount == 0 {
-				filteredCount = fc
-			}
-
-			if totalCount == 0 {
-				totalCount = tc
-			}
-		}
-
-		mealPlanEvents = append(mealPlanEvents, x)
-	}
-
-	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
-	}
-
-	return mealPlanEvents, filteredCount, totalCount, nil
-}
 
 // MealPlanEventExists fetches whether a meal plan event exists from the database.
 func (q *Querier) MealPlanEventExists(ctx context.Context, mealPlanID, mealPlanEventID string) (exists bool, err error) {
@@ -173,9 +99,6 @@ func (q *Querier) GetMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEven
 	return mealPlanEvent, nil
 }
 
-//go:embed queries/meal_plan_events/get_for_meal_plan.sql
-var getMealPlanEventsForMealPlanQuery string
-
 // getMealPlanEventsForMealPlan fetches a list of mealPlanEvents from the database that meet a particular filter.
 func (q *Querier) getMealPlanEventsForMealPlan(ctx context.Context, mealPlanID string) (x []*types.MealPlanEvent, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -189,27 +112,34 @@ func (q *Querier) getMealPlanEventsForMealPlan(ctx context.Context, mealPlanID s
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
-	getMealPlanEventsForMealPlanArgs := []any{
-		mealPlanID,
-	}
+	x = []*types.MealPlanEvent{}
 
-	rows, err := q.getRows(ctx, q.db, "meal plan events", getMealPlanEventsForMealPlanQuery, getMealPlanEventsForMealPlanArgs)
+	results, err := q.generatedQuerier.GetAllMealPlanEventsForMealPlan(ctx, q.db, mealPlanID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan events list retrieval query")
 	}
 
-	x, _, _, err = q.scanMealPlanEvents(ctx, rows, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal plan events")
-	}
+	for _, result := range results {
+		event := &types.MealPlanEvent{
+			CreatedAt:         result.CreatedAt,
+			StartsAt:          result.StartsAt,
+			EndsAt:            result.EndsAt,
+			ArchivedAt:        timePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt:     timePointerFromNullTime(result.LastUpdatedAt),
+			MealName:          string(result.MealName),
+			Notes:             result.Notes,
+			BelongsToMealPlan: result.BelongsToMealPlan,
+			ID:                result.ID,
+		}
 
-	for _, event := range x {
 		mealPlanOptions, mealPlanOptionsErr := q.getMealPlanOptionsForMealPlanEvent(ctx, mealPlanID, event.ID)
 		if mealPlanOptionsErr != nil {
 			return nil, observability.PrepareAndLogError(mealPlanOptionsErr, logger, span, "fetching options for meal plan events")
 		}
 
 		event.Options = mealPlanOptions
+
+		x = append(x, event)
 	}
 
 	return x, nil
@@ -222,6 +152,12 @@ func (q *Querier) GetMealPlanEvents(ctx context.Context, mealPlanID string, filt
 
 	logger := q.logger.Clone()
 
+	if mealPlanID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
+	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+
 	if filter == nil {
 		filter = types.DefaultQueryFilter()
 	}
@@ -232,24 +168,34 @@ func (q *Querier) GetMealPlanEvents(ctx context.Context, mealPlanID string, filt
 		Pagination: filter.ToPagination(),
 	}
 
-	if mealPlanID == "" {
-		return nil, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
-
-	query, args := q.buildListQuery(ctx, "meal_plan_events", nil, nil, nil, "", mealPlanEventsTableColumns, "", false, filter)
-
-	rows, err := q.getRows(ctx, q.db, "meal plan events", query, args)
+	results, err := q.generatedQuerier.GetMealPlanEvents(ctx, q.db, &generated.GetMealPlanEventsParams{
+		MealPlanID:    mealPlanID,
+		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan events list retrieval query")
 	}
 
-	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanMealPlanEvents(ctx, rows, true); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal plan events")
+	for _, result := range results {
+		x.Data = append(x.Data, &types.MealPlanEvent{
+			CreatedAt:         result.CreatedAt,
+			StartsAt:          result.StartsAt,
+			EndsAt:            result.EndsAt,
+			ArchivedAt:        timePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt:     timePointerFromNullTime(result.LastUpdatedAt),
+			MealName:          string(result.MealName),
+			Notes:             result.Notes,
+			BelongsToMealPlan: result.BelongsToMealPlan,
+			ID:                result.ID,
+		})
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
 	}
-
-	logger.WithValue("quantity", len(x.Data)).Info("fetched meal plan events")
 
 	return x, nil
 }

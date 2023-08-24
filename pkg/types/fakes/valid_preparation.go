@@ -48,7 +48,7 @@ func BuildFakeValidPreparationList() *types.QueryFilteredResult[types.ValidPrepa
 	return &types.QueryFilteredResult[types.ValidPreparation]{
 		Pagination: types.Pagination{
 			Page:          1,
-			Limit:         20,
+			Limit:         50,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,
 		},

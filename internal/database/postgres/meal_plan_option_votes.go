@@ -4,7 +4,6 @@ import (
 	"context"
 	_ "embed"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
@@ -12,93 +11,9 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-const (
-	mealPlanOptionsOnMealPlanOptionVotesJoinClause = "meal_plan_options ON meal_plan_option_votes.belongs_to_meal_plan_option=meal_plan_options.id"
-)
-
 var (
 	_ types.MealPlanOptionVoteDataManager = (*Querier)(nil)
-
-	// mealPlanOptionVotesTableColumns are the columns for the meal_plan_option_votes table.
-	mealPlanOptionVotesTableColumns = []string{
-		"meal_plan_option_votes.id",
-		"meal_plan_option_votes.rank",
-		"meal_plan_option_votes.abstain",
-		"meal_plan_option_votes.notes",
-		"meal_plan_option_votes.by_user",
-		"meal_plan_option_votes.created_at",
-		"meal_plan_option_votes.last_updated_at",
-		"meal_plan_option_votes.archived_at",
-		"meal_plan_option_votes.belongs_to_meal_plan_option",
-	}
-
-	getMealPlanOptionVotesJoins = []string{
-		mealPlanOptionsOnMealPlanOptionVotesJoinClause,
-		mealPlanEventsOnMealPlanOptionsJoinClause,
-		mealPlansOnMealPlanEventsJoinClause,
-	}
 )
-
-// scanMealPlanOptionVote takes a database Scanner (i.e. *sql.Row) and scans the result into a meal plan option vote struct.
-func (q *Querier) scanMealPlanOptionVote(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.MealPlanOptionVote, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	x = &types.MealPlanOptionVote{}
-
-	targetVars := []any{
-		&x.ID,
-		&x.Rank,
-		&x.Abstain,
-		&x.Notes,
-		&x.ByUser,
-		&x.CreatedAt,
-		&x.LastUpdatedAt,
-		&x.ArchivedAt,
-		&x.BelongsToMealPlanOption,
-	}
-
-	if includeCounts {
-		targetVars = append(targetVars, &filteredCount, &totalCount)
-	}
-
-	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "")
-	}
-
-	return x, filteredCount, totalCount, nil
-}
-
-// scanMealPlanOptionVotes takes some database rows and turns them into a slice of meal plan option votes.
-func (q *Querier) scanMealPlanOptionVotes(ctx context.Context, rows database.ResultIterator, includeCounts bool) (mealPlanOptionVotes []*types.MealPlanOptionVote, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	for rows.Next() {
-		x, fc, tc, scanErr := q.scanMealPlanOptionVote(ctx, rows, includeCounts)
-		if scanErr != nil {
-			return nil, 0, 0, scanErr
-		}
-
-		if includeCounts {
-			if filteredCount == 0 {
-				filteredCount = fc
-			}
-
-			if totalCount == 0 {
-				totalCount = tc
-			}
-		}
-
-		mealPlanOptionVotes = append(mealPlanOptionVotes, x)
-	}
-
-	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
-	}
-
-	return mealPlanOptionVotes, filteredCount, totalCount, nil
-}
 
 // MealPlanOptionVoteExists fetches whether a meal plan option vote exists from the database.
 func (q *Querier) MealPlanOptionVoteExists(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) (exists bool, err error) {
@@ -194,9 +109,6 @@ func (q *Querier) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPla
 	return mealPlanOptionVote, nil
 }
 
-//go:embed queries/meal_plan_option_votes/get_for_meal_plan_option.sql
-var getMealPlanOptionVotesForMealPlanOptionQuery string
-
 // GetMealPlanOptionVotesForMealPlanOption fetches a list of meal plan option votes from the database that meet a particular filter.
 func (q *Querier) GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (x []*types.MealPlanOptionVote, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -222,20 +134,28 @@ func (q *Querier) GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, m
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
-	args := []any{
-		mealPlanID,
-		mealPlanEventID,
-		mealPlanOptionID,
+	results, err := q.generatedQuerier.GetMealPlanOptionVotesForMealPlanOption(ctx, q.db, &generated.GetMealPlanOptionVotesForMealPlanOptionParams{
+		MealPlanID:       mealPlanID,
+		MealPlanOptionID: mealPlanOptionID,
+		MealPlanEventID:  nullStringFromString(mealPlanEventID),
+	})
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting meal plan option votes for meal plan option")
 	}
 
-	rows, err := q.getRows(ctx, q.db, "meal plan option votes for meal plan option", getMealPlanOptionVotesForMealPlanOptionQuery, args)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "fetching meal plan option votes for meal plan option")
-	}
-
-	x, _, _, err = q.scanMealPlanOptionVotes(ctx, rows, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal plan option votes")
+	x = make([]*types.MealPlanOptionVote, len(results))
+	for i, result := range results {
+		x[i] = &types.MealPlanOptionVote{
+			CreatedAt:               result.CreatedAt,
+			ArchivedAt:              timePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt:           timePointerFromNullTime(result.LastUpdatedAt),
+			ID:                      result.ID,
+			Notes:                   result.Notes,
+			BelongsToMealPlanOption: result.BelongsToMealPlanOption,
+			ByUser:                  result.ByUser,
+			Rank:                    uint8(result.Rank),
+			Abstain:                 result.Abstain,
+		}
 	}
 
 	return x, nil
@@ -276,15 +196,33 @@ func (q *Querier) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPl
 		Pagination: filter.ToPagination(),
 	}
 
-	query, args := q.buildListQuery(ctx, "meal_plan_option_votes", getMealPlanOptionVotesJoins, nil, nil, householdOwnershipColumn, mealPlanOptionVotesTableColumns, "", false, filter)
-
-	rows, err := q.getRows(ctx, q.db, "meal plan option votes", query, args)
+	results, err := q.generatedQuerier.GetMealPlanOptionVotes(ctx, q.db, &generated.GetMealPlanOptionVotesParams{
+		MealPlanOptionID: mealPlanOptionID,
+		MealPlanEventID:  nullStringFromString(mealPlanEventID),
+		MealPlanID:       mealPlanID,
+		CreatedBefore:    nullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:     nullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:    nullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:     nullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:      nullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:       nullInt32FromUint8Pointer(filter.Limit),
+	})
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan option votes list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting meal plan option votes")
 	}
 
-	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanMealPlanOptionVotes(ctx, rows, true); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal plan option votes")
+	for _, result := range results {
+		x.Data = append(x.Data, &types.MealPlanOptionVote{
+			CreatedAt:               result.CreatedAt,
+			ArchivedAt:              timePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt:           timePointerFromNullTime(result.LastUpdatedAt),
+			ID:                      result.ID,
+			Notes:                   result.Notes,
+			BelongsToMealPlanOption: result.BelongsToMealPlanOption,
+			ByUser:                  result.ByUser,
+			Rank:                    uint8(result.Rank),
+			Abstain:                 result.Abstain,
+		})
 	}
 
 	return x, nil

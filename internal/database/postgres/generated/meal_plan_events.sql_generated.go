@@ -7,6 +7,7 @@ package generated
 
 import (
 	"context"
+	"database/sql"
 	"time"
 )
 
@@ -71,6 +72,57 @@ func (q *Queries) CreateMealPlanEvent(ctx context.Context, db DBTX, arg *CreateM
 	return err
 }
 
+const getAllMealPlanEventsForMealPlan = `-- name: GetAllMealPlanEventsForMealPlan :many
+
+SELECT
+    meal_plan_events.id,
+    meal_plan_events.notes,
+    meal_plan_events.starts_at,
+    meal_plan_events.ends_at,
+    meal_plan_events.meal_name,
+    meal_plan_events.belongs_to_meal_plan,
+    meal_plan_events.created_at,
+    meal_plan_events.last_updated_at,
+    meal_plan_events.archived_at
+FROM meal_plan_events
+WHERE
+    meal_plan_events.archived_at IS NULL
+  AND meal_plan_events.belongs_to_meal_plan = $1
+`
+
+func (q *Queries) GetAllMealPlanEventsForMealPlan(ctx context.Context, db DBTX, mealPlanID string) ([]*MealPlanEvents, error) {
+	rows, err := db.QueryContext(ctx, getAllMealPlanEventsForMealPlan, mealPlanID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*MealPlanEvents{}
+	for rows.Next() {
+		var i MealPlanEvents
+		if err := rows.Scan(
+			&i.ID,
+			&i.Notes,
+			&i.StartsAt,
+			&i.EndsAt,
+			&i.MealName,
+			&i.BelongsToMealPlan,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getMealPlanEvent = `-- name: GetMealPlanEvent :one
 
 SELECT
@@ -111,32 +163,104 @@ func (q *Queries) GetMealPlanEvent(ctx context.Context, db DBTX, arg *GetMealPla
 	return &i, err
 }
 
-const getMealPlanEventsForMealPlan = `-- name: GetMealPlanEventsForMealPlan :many
+const getMealPlanEvents = `-- name: GetMealPlanEvents :many
 
 SELECT
-	meal_plan_events.id,
-	meal_plan_events.notes,
-	meal_plan_events.starts_at,
-	meal_plan_events.ends_at,
-	meal_plan_events.meal_name,
-	meal_plan_events.belongs_to_meal_plan,
-	meal_plan_events.created_at,
-	meal_plan_events.last_updated_at,
-	meal_plan_events.archived_at
+    meal_plan_events.id,
+    meal_plan_events.notes,
+    meal_plan_events.starts_at,
+    meal_plan_events.ends_at,
+    meal_plan_events.meal_name,
+    meal_plan_events.belongs_to_meal_plan,
+    meal_plan_events.created_at,
+    meal_plan_events.last_updated_at,
+    meal_plan_events.archived_at,
+    (
+        SELECT
+            COUNT(meal_plan_events.id)
+        FROM
+            meal_plan_events
+        WHERE
+            meal_plan_events.archived_at IS NULL
+          AND meal_plan_events.belongs_to_meal_plan = $1
+          AND meal_plan_events.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
+          AND meal_plan_events.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
+          AND (
+                meal_plan_events.last_updated_at IS NULL
+                OR meal_plan_events.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years'))
+            )
+          AND (
+                meal_plan_events.last_updated_at IS NULL
+                OR meal_plan_events.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
+            )
+    ) AS filtered_count,
+    (
+        SELECT
+            COUNT(meal_plan_events.id)
+        FROM
+            meal_plan_events
+        WHERE
+            meal_plan_events.archived_at IS NULL
+    ) AS total_count
 FROM meal_plan_events
-WHERE meal_plan_events.archived_at IS NULL
-	AND meal_plan_events.belongs_to_meal_plan = $1
+WHERE
+    meal_plan_events.archived_at IS NULL
+  AND meal_plan_events.belongs_to_meal_plan = $1
+  AND meal_plan_events.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
+  AND meal_plan_events.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
+  AND (
+        meal_plan_events.last_updated_at IS NULL
+        OR meal_plan_events.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years'))
+    )
+  AND (
+        meal_plan_events.last_updated_at IS NULL
+        OR meal_plan_events.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
+    )
+OFFSET $6
+    LIMIT $7
 `
 
-func (q *Queries) GetMealPlanEventsForMealPlan(ctx context.Context, db DBTX, belongsToMealPlan string) ([]*MealPlanEvents, error) {
-	rows, err := db.QueryContext(ctx, getMealPlanEventsForMealPlan, belongsToMealPlan)
+type GetMealPlanEventsParams struct {
+	MealPlanID    string
+	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	UpdatedBefore sql.NullTime
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
+}
+
+type GetMealPlanEventsRow struct {
+	ID                string
+	Notes             string
+	StartsAt          time.Time
+	EndsAt            time.Time
+	MealName          MealName
+	BelongsToMealPlan string
+	CreatedAt         time.Time
+	LastUpdatedAt     sql.NullTime
+	ArchivedAt        sql.NullTime
+	FilteredCount     int64
+	TotalCount        int64
+}
+
+func (q *Queries) GetMealPlanEvents(ctx context.Context, db DBTX, arg *GetMealPlanEventsParams) ([]*GetMealPlanEventsRow, error) {
+	rows, err := db.QueryContext(ctx, getMealPlanEvents,
+		arg.MealPlanID,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedAfter,
+		arg.UpdatedBefore,
+		arg.QueryOffset,
+		arg.QueryLimit,
+	)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []*MealPlanEvents{}
+	items := []*GetMealPlanEventsRow{}
 	for rows.Next() {
-		var i MealPlanEvents
+		var i GetMealPlanEventsRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Notes,
@@ -147,6 +271,8 @@ func (q *Queries) GetMealPlanEventsForMealPlan(ctx context.Context, db DBTX, bel
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
+			&i.FilteredCount,
+			&i.TotalCount,
 		); err != nil {
 			return nil, err
 		}

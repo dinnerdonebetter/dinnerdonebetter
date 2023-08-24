@@ -183,7 +183,7 @@ func (s *householdsTestSuite) TestClient_GetHousehold() {
 func (s *householdsTestSuite) TestClient_GetHouseholds() {
 	const expectedPath = "/api/v1/households"
 
-	spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
+	spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
 	filter := (*types.QueryFilter)(nil)
 
 	s.Run("standard", func() {

@@ -65,7 +65,7 @@ func TestBuilder_BuildGetValidPreparationInstrumentsRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		filter := (*types.QueryFilter)(nil)
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat)
 
 		actual, err := helper.builder.BuildGetValidPreparationInstrumentsRequest(helper.ctx, filter)
 		assert.NoError(t, err)
@@ -100,7 +100,7 @@ func TestBuilder_BuildGetValidPreparationInstrumentsForPreparationRequest(T *tes
 		helper := buildTestHelper()
 
 		filter := (*types.QueryFilter)(nil)
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat, examplePreparation.ID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat, examplePreparation.ID)
 
 		actual, err := helper.builder.BuildGetValidPreparationInstrumentsForPreparationRequest(helper.ctx, examplePreparation.ID, filter)
 		assert.NoError(t, err)
@@ -146,7 +146,7 @@ func TestBuilder_BuildGetValidPreparationInstrumentsForInstrumentRequest(T *test
 		helper := buildTestHelper()
 
 		filter := (*types.QueryFilter)(nil)
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat, examplePreparation.ID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat, examplePreparation.ID)
 
 		actual, err := helper.builder.BuildGetValidPreparationInstrumentsForInstrumentRequest(helper.ctx, examplePreparation.ID, filter)
 		assert.NoError(t, err)

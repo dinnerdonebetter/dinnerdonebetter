@@ -51,7 +51,7 @@ func (s *serviceSettingConfigurationsTestSuite) TestClient_GetServiceSettingConf
 
 		exampleServiceSettingConfiguration := fakes.BuildFakeServiceSettingConfiguration()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, settingName)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, settingName)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleServiceSettingConfiguration)
 		actual, err := c.GetServiceSettingConfigurationForUserByName(s.ctx, settingName, filter)
 
@@ -79,7 +79,7 @@ func (s *serviceSettingConfigurationsTestSuite) TestClient_GetServiceSettingConf
 		filter := (*types.QueryFilter)(nil)
 		settingName := fakes.BuildFakeServiceSetting().Name
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, settingName)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, settingName)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.GetServiceSettingConfigurationForUserByName(s.ctx, settingName, filter)
 
@@ -98,7 +98,7 @@ func (s *serviceSettingConfigurationsTestSuite) TestClient_GetServiceSettingConf
 
 		exampleServiceSettingConfigurationList := fakes.BuildFakeServiceSettingConfigurationList()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleServiceSettingConfigurationList)
 		actual, err := c.GetServiceSettingConfigurationsForUser(s.ctx, filter)
 
@@ -124,7 +124,7 @@ func (s *serviceSettingConfigurationsTestSuite) TestClient_GetServiceSettingConf
 
 		filter := (*types.QueryFilter)(nil)
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.GetServiceSettingConfigurationsForUser(s.ctx, filter)
 
@@ -143,7 +143,7 @@ func (s *serviceSettingConfigurationsTestSuite) TestClient_GetServiceSettingConf
 
 		exampleServiceSettingConfigurationList := fakes.BuildFakeServiceSettingConfigurationList()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleServiceSettingConfigurationList)
 		actual, err := c.GetServiceSettingConfigurationsForHousehold(s.ctx, filter)
 
@@ -169,7 +169,7 @@ func (s *serviceSettingConfigurationsTestSuite) TestClient_GetServiceSettingConf
 
 		filter := (*types.QueryFilter)(nil)
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.GetServiceSettingConfigurationsForHousehold(s.ctx, filter)
 

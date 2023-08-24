@@ -121,7 +121,7 @@ func (s *recipeStepCompletionConditionsTestSuite) TestClient_GetRecipeStepComple
 
 		exampleRecipeStepCompletionConditionList := fakes.BuildFakeRecipeStepCompletionConditionList()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, s.exampleRecipeID, s.exampleRecipeStepID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, s.exampleRecipeID, s.exampleRecipeStepID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleRecipeStepCompletionConditionList)
 		actual, err := c.GetRecipeStepCompletionConditions(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, filter)
 
@@ -171,7 +171,7 @@ func (s *recipeStepCompletionConditionsTestSuite) TestClient_GetRecipeStepComple
 
 		filter := (*types.QueryFilter)(nil)
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, s.exampleRecipeID, s.exampleRecipeStepID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, s.exampleRecipeID, s.exampleRecipeStepID)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.GetRecipeStepCompletionConditions(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, filter)
 

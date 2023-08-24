@@ -29,7 +29,7 @@ func BuildFakeValidIngredientStateList() *types.QueryFilteredResult[types.ValidI
 	return &types.QueryFilteredResult[types.ValidIngredientState]{
 		Pagination: types.Pagination{
 			Page:          1,
-			Limit:         20,
+			Limit:         50,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,
 		},

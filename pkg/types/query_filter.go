@@ -17,7 +17,7 @@ const (
 	// MaxLimit is the maximum value for list queries.
 	MaxLimit = 250
 	// DefaultLimit represents how many results we return in a response by default.
-	DefaultLimit = 20
+	DefaultLimit = 50
 
 	// SearchQueryKey is the query param key to find search queries in requests.
 	SearchQueryKey = "q"
