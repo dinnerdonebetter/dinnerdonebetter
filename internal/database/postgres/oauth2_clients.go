@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	_ "embed"
 	"errors"
 
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"

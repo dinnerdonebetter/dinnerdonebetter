@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	_ "embed"
 	"math/rand"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
@@ -16,121 +15,9 @@ import (
 	"resenje.org/schulze"
 )
 
-const (
-	mealsOnMealPlanOptionsJoinClause = "meals ON meal_plan_options.meal_id=meals.id"
-)
-
 var (
 	_ types.MealPlanOptionDataManager = (*Querier)(nil)
-
-	// mealPlanOptionsTableColumns are the columns for the meal_plan_options table.
-	mealPlanOptionsTableColumns = []string{
-		"meal_plan_options.id",
-		"meal_plan_options.assigned_cook",
-		"meal_plan_options.assigned_dishwasher",
-		"meal_plan_options.chosen",
-		"meal_plan_options.tiebroken",
-		"meal_plan_options.meal_scale",
-		"meal_plan_options.meal_id",
-		"meal_plan_options.notes",
-		"meal_plan_options.created_at",
-		"meal_plan_options.last_updated_at",
-		"meal_plan_options.archived_at",
-		"meal_plan_options.belongs_to_meal_plan_event",
-		"meals.id",
-		"meals.name",
-		"meals.description",
-		"meals.min_estimated_portions",
-		"meals.max_estimated_portions",
-		"meals.eligible_for_meal_plans",
-		"meals.created_at",
-		"meals.last_updated_at",
-		"meals.archived_at",
-		"meals.created_by_user",
-	}
-
-	getMealPlanOptionsJoins = []string{
-		mealPlanEventsOnMealPlanOptionsJoinClause,
-		mealsOnMealPlanOptionsJoinClause,
-		mealPlansOnMealPlanEventsJoinClause,
-	}
 )
-
-// scanMealPlanOption takes a database Scanner (i.e. *sql.Row) and scans the result into a meal plan option struct.
-func (q *Querier) scanMealPlanOption(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.MealPlanOption, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	x = &types.MealPlanOption{
-		Votes: []*types.MealPlanOptionVote{},
-	}
-
-	targetVars := []any{
-		&x.ID,
-		&x.AssignedCook,
-		&x.AssignedDishwasher,
-		&x.Chosen,
-		&x.TieBroken,
-		&x.MealScale,
-		&x.Meal.ID,
-		&x.Notes,
-		&x.CreatedAt,
-		&x.LastUpdatedAt,
-		&x.ArchivedAt,
-		&x.BelongsToMealPlanEvent,
-		&x.Meal.ID,
-		&x.Meal.Name,
-		&x.Meal.Description,
-		&x.Meal.MinimumEstimatedPortions,
-		&x.Meal.MaximumEstimatedPortions,
-		&x.Meal.EligibleForMealPlans,
-		&x.Meal.CreatedAt,
-		&x.Meal.LastUpdatedAt,
-		&x.Meal.ArchivedAt,
-		&x.Meal.CreatedByUser,
-	}
-
-	if includeCounts {
-		targetVars = append(targetVars, &filteredCount, &totalCount)
-	}
-
-	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "")
-	}
-
-	return x, filteredCount, totalCount, nil
-}
-
-// scanMealPlanOptions takes some database rows and turns them into a slice of meal plan options.
-func (q *Querier) scanMealPlanOptions(ctx context.Context, rows database.ResultIterator, includeCounts bool) (mealPlanOptions []*types.MealPlanOption, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	for rows.Next() {
-		x, fc, tc, scanErr := q.scanMealPlanOption(ctx, rows, includeCounts)
-		if scanErr != nil {
-			return nil, 0, 0, scanErr
-		}
-
-		if includeCounts {
-			if filteredCount == 0 {
-				filteredCount = fc
-			}
-
-			if totalCount == 0 {
-				totalCount = tc
-			}
-		}
-
-		mealPlanOptions = append(mealPlanOptions, x)
-	}
-
-	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
-	}
-
-	return mealPlanOptions, filteredCount, totalCount, nil
-}
 
 // MealPlanOptionExists fetches whether a meal plan option exists from the database.
 func (q *Querier) MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (exists bool, err error) {
@@ -282,11 +169,8 @@ func (q *Querier) getMealPlanOptionByID(ctx context.Context, mealPlanOptionID st
 	return mealPlanOption, nil
 }
 
-//go:embed queries/meal_plan_options/get_for_meal_plan_event.sql
-var getMealPlanOptionsForMealPlanEventQuery string
-
 // getMealPlanOptionsForMealPlanEvent fetches a list of meal plan options from the database that meet a particular filter.
-func (q *Querier) getMealPlanOptionsForMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) (x []*types.MealPlanOption, err error) {
+func (q *Querier) getMealPlanOptionsForMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEventID string) ([]*types.MealPlanOption, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -304,19 +188,33 @@ func (q *Querier) getMealPlanOptionsForMealPlanEvent(ctx context.Context, mealPl
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanEventID)
 
-	args := []any{
-		mealPlanEventID,
-		mealPlanID,
+	results, err := q.generatedQuerier.GetAllMealPlanOptionsForMealPlanEvent(ctx, q.db, &generated.GetAllMealPlanOptionsForMealPlanEventParams{
+		BelongsToMealPlan:      mealPlanID,
+		BelongsToMealPlanEvent: nullStringFromString(mealPlanEventID),
+	})
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing meal plan option query")
 	}
 
-	rows, err := q.getRows(ctx, q.db, "meal plan options for meal plan event", getMealPlanOptionsForMealPlanEventQuery, args)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan options for meal plan event list retrieval query")
-	}
-
-	x, _, _, err = q.scanMealPlanOptions(ctx, rows, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal plan options for meal plan event")
+	x := []*types.MealPlanOption{}
+	for _, result := range results {
+		x = append(x, &types.MealPlanOption{
+			CreatedAt:              result.CreatedAt,
+			LastUpdatedAt:          timePointerFromNullTime(result.LastUpdatedAt),
+			AssignedCook:           stringPointerFromNullString(result.AssignedCook),
+			ArchivedAt:             timePointerFromNullTime(result.ArchivedAt),
+			AssignedDishwasher:     stringPointerFromNullString(result.AssignedDishwasher),
+			Notes:                  result.Notes,
+			BelongsToMealPlanEvent: stringFromNullString(result.BelongsToMealPlanEvent),
+			ID:                     result.ID,
+			Votes:                  nil,
+			Meal: types.Meal{
+				ID: result.MealID,
+			},
+			MealScale: float32FromString(result.MealScale),
+			Chosen:    result.Chosen,
+			TieBroken: result.Tiebroken,
+		})
 	}
 
 	for i, opt := range x {
@@ -367,16 +265,41 @@ func (q *Querier) GetMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEv
 		Pagination: filter.ToPagination(),
 	}
 
-	groupBys := []string{"meal_plan_options.id", "meals.id"}
-	query, args := q.buildListQuery(ctx, "meal_plan_options", getMealPlanOptionsJoins, groupBys, nil, householdOwnershipColumn, mealPlanOptionsTableColumns, "", false, filter)
-
-	rows, err := q.getRows(ctx, q.db, "meal plan options", query, args)
+	results, err := q.generatedQuerier.GetMealPlanOptions(ctx, q.db, &generated.GetMealPlanOptionsParams{
+		MealPlanEventID: nullStringFromString(mealPlanEventID),
+		MealPlanID:      mealPlanID,
+		CreatedBefore:   nullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    nullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   nullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    nullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:     nullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:      nullInt32FromUint8Pointer(filter.Limit),
+	})
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan options list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing meal plan option query")
 	}
 
-	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanMealPlanOptions(ctx, rows, true); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal plan options")
+	for _, result := range results {
+		mealPlanOption := &types.MealPlanOption{
+			CreatedAt:              result.CreatedAt,
+			LastUpdatedAt:          timePointerFromNullTime(result.LastUpdatedAt),
+			AssignedCook:           stringPointerFromNullString(result.AssignedCook),
+			ArchivedAt:             timePointerFromNullTime(result.ArchivedAt),
+			AssignedDishwasher:     stringPointerFromNullString(result.AssignedDishwasher),
+			Notes:                  result.Notes,
+			BelongsToMealPlanEvent: stringFromNullString(result.BelongsToMealPlanEvent),
+			ID:                     result.ID,
+			Votes:                  nil,
+			Meal: types.Meal{
+				ID: result.MealID,
+			},
+			MealScale: float32FromString(result.MealScale),
+			Chosen:    result.Chosen,
+			TieBroken: result.Tiebroken,
+		}
+		x.Data = append(x.Data, mealPlanOption)
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
 	}
 
 	return x, nil

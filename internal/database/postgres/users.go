@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	_ "embed"
 	"errors"
 	"fmt"
 	"strings"

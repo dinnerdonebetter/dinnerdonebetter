@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	_ "embed"
 	"log"
 
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
@@ -118,6 +117,7 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID string) (*types.Recipe
 			Index:                   uint32(result.RecipeStepIndex),
 			Optional:                result.RecipeStepOptional,
 			StartTimerAutomatically: result.RecipeStepStartTimerAutomatically,
+			Media:                   []*types.RecipeMedia{},
 		})
 	}
 

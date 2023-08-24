@@ -142,10 +142,6 @@ func buildTestClient(t *testing.T) (*Querier, *sqlmockExpecterWrapper) {
 	return c, &sqlmockExpecterWrapper{Sqlmock: sqlMock}
 }
 
-const (
-	defaultImage = "postgres:15"
-)
-
 func hashStringToNumber(s string) uint64 {
 	// Create a new FNV-1a 64-bit hash object
 	h := fnv.New64a()
@@ -185,27 +181,24 @@ func splitReverseConcat(input string) string {
 	return reversedSecondHalf + reversedFirstHalf
 }
 
+const (
+	defaultImage = "postgres:15"
+)
+
 func buildDatabaseClientForTest(t *testing.T, ctx context.Context) (*Querier, *postgres.PostgresContainer) {
 	t.Helper()
 
 	dbUsername := fmt.Sprintf("%d", hashStringToNumber(t.Name()))
-	dbName := splitReverseConcat(dbUsername)
-	dbPassword := reverseString(dbUsername)
-
 	assert.NoError(t, os.Setenv("TESTCONTAINERS_RYUK_DISABLED", "true"))
 	testcontainers.Logger = log.New(io.Discard, "", log.LstdFlags)
 
 	container, err := postgres.RunContainer(
 		ctx,
 		testcontainers.WithImage(defaultImage),
-		postgres.WithDatabase(dbName),
+		postgres.WithDatabase(splitReverseConcat(dbUsername)),
 		postgres.WithUsername(dbUsername),
-		postgres.WithPassword(dbPassword),
-		testcontainers.WithWaitStrategyAndDeadline(
-			time.Minute,
-			wait.ForLog("database system is ready to accept connections").
-				WithOccurrence(2),
-		),
+		postgres.WithPassword(reverseString(dbUsername)),
+		testcontainers.WithWaitStrategyAndDeadline(time.Minute, wait.ForLog("database system is ready to accept connections").WithOccurrence(2)),
 	)
 
 	require.NoError(t, err)

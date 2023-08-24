@@ -40,7 +40,6 @@ type (
 	Upload struct {
 		Filename    string
 		ContentType string
-		Extension   string
 		Data        []byte
 		Size        int
 	}
@@ -160,7 +159,6 @@ func (p *uploadProcessor) processFile(ctx context.Context, file multipart.File, 
 
 	i := &Upload{
 		Filename:    info.Filename,
-		Extension:   filepath.Ext(filename),
 		ContentType: contentTypeFromFilename(filename),
 		Data:        bs,
 		Size:        len(bs),

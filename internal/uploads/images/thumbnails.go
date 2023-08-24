@@ -71,10 +71,10 @@ func (t *jpegThumbnailer) Thumbnail(img *Upload, width, height uint, filename st
 	return i, nil
 }
 
-type pngThumbnailer struct{}
+type gifThumbnailer struct{}
 
-// Thumbnail creates a PNG thumbnail.
-func (t *pngThumbnailer) Thumbnail(img *Upload, width, height uint, filename string) (*Upload, error) {
+// Thumbnail creates a GIF thumbnail.
+func (t *gifThumbnailer) Thumbnail(img *Upload, width, height uint, filename string) (*Upload, error) {
 	thumbnail, err := preprocess(img, width, height)
 	if err != nil {
 		return nil, err
@@ -97,10 +97,10 @@ func (t *pngThumbnailer) Thumbnail(img *Upload, width, height uint, filename str
 	return i, nil
 }
 
-type gifThumbnailer struct{}
+type pngThumbnailer struct{}
 
-// Thumbnail creates a GIF thumbnail.
-func (t *gifThumbnailer) Thumbnail(img *Upload, width, height uint, filename string) (*Upload, error) {
+// Thumbnail creates a PNG thumbnail.
+func (t *pngThumbnailer) Thumbnail(img *Upload, width, height uint, filename string) (*Upload, error) {
 	thumbnail, err := preprocess(img, width, height)
 	if err != nil {
 		return nil, err

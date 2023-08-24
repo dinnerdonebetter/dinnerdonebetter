@@ -18,6 +18,8 @@ CLOUD_JOBS                    := meal_plan_finalizer meal_plan_grocery_list_init
 CLOUD_FUNCTIONS               := data_changes outbound_emailer search_indexer
 WIRE_TARGETS                  := server/http/build
 
+# TODO: upgrade golangci-lint to 1.54.2
+
 ## non-PHONY folders/files
 
 clean:

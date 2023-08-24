@@ -53,7 +53,7 @@ func buildRecipeForTestCreation(t *testing.T, ctx context.Context, userID string
 
 	exampleRecipe.Media = []*types.RecipeMedia{}
 	for i := range exampleRecipe.Steps {
-		exampleRecipe.Steps[i].Media = nil                // []*types.RecipeMedia{}
+		exampleRecipe.Steps[i].Media = []*types.RecipeMedia{}
 		exampleRecipe.Steps[i].CompletionConditions = nil // []*types.RecipeStepCompletionCondition{}
 	}
 
@@ -142,7 +142,9 @@ func createRecipeForTest(t *testing.T, ctx context.Context, exampleRecipe *types
 		require.Equal(t, len(exampleRecipe.Steps[i].Media), len(recipe.Steps[i].Media))
 		require.Equal(t, len(exampleRecipe.Steps[i].CompletionConditions), len(recipe.Steps[i].CompletionConditions))
 
-		require.Equal(t, exampleRecipe.Steps[i], recipe.Steps[i])
+		expectedStep := exampleRecipe.Steps[i]
+		actualStep := recipe.Steps[i]
+		require.Equal(t, expectedStep, actualStep)
 	}
 
 	require.Equal(t, exampleRecipe, recipe)

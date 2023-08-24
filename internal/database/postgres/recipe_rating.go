@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	_ "embed"
 
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"

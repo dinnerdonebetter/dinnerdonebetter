@@ -8,6 +8,7 @@ package generated
 import (
 	"context"
 	"database/sql"
+	"time"
 )
 
 const archiveMeal = `-- name: ArchiveMeal :exec
@@ -68,40 +69,40 @@ func (q *Queries) CreateMeal(ctx context.Context, db DBTX, arg *CreateMealParams
 const getMeal = `-- name: GetMeal :one
 
 SELECT
-	meals.id,
-	meals.name,
-	meals.description,
-	meals.min_estimated_portions,
+    meals.id,
+    meals.name,
+    meals.description,
+    meals.min_estimated_portions,
     meals.max_estimated_portions,
     meals.eligible_for_meal_plans,
-	meals.created_at,
-	meals.last_updated_at,
-	meals.archived_at,
-	meals.created_by_user,
-	meal_components.recipe_id,
-	meal_components.recipe_scale,
-	meal_components.meal_component_type
+    meals.created_at,
+    meals.last_updated_at,
+    meals.archived_at,
+    meals.created_by_user,
+    meal_components.recipe_id as component_recipe_id,
+    meal_components.recipe_scale as component_recipe_scale,
+    meal_components.meal_component_type as component_meal_component_type
 FROM meals
-	FULL OUTER JOIN meal_components ON meal_components.meal_id=meals.id
+    JOIN meal_components ON meal_components.meal_id=meals.id
 WHERE meals.archived_at IS NULL
-	AND meal_components.archived_at IS NULL
-	AND meals.id = $1
+  AND meal_components.archived_at IS NULL
+  AND meals.id = $1
 `
 
 type GetMealRow struct {
-	CreatedAt            sql.NullTime
-	ArchivedAt           sql.NullTime
-	LastUpdatedAt        sql.NullTime
-	MinEstimatedPortions sql.NullString
-	MaxEstimatedPortions sql.NullString
-	ID                   sql.NullString
-	Description          sql.NullString
-	Name                 sql.NullString
-	CreatedByUser        sql.NullString
-	RecipeID             sql.NullString
-	RecipeScale          sql.NullString
-	MealComponentType    NullComponentType
-	EligibleForMealPlans sql.NullBool
+	CreatedAt                  time.Time
+	ArchivedAt                 sql.NullTime
+	LastUpdatedAt              sql.NullTime
+	MinEstimatedPortions       string
+	ID                         string
+	Description                string
+	Name                       string
+	CreatedByUser              string
+	ComponentRecipeID          string
+	ComponentRecipeScale       string
+	ComponentMealComponentType ComponentType
+	MaxEstimatedPortions       sql.NullString
+	EligibleForMealPlans       bool
 }
 
 func (q *Queries) GetMeal(ctx context.Context, db DBTX, id string) (*GetMealRow, error) {
@@ -118,23 +119,141 @@ func (q *Queries) GetMeal(ctx context.Context, db DBTX, id string) (*GetMealRow,
 		&i.LastUpdatedAt,
 		&i.ArchivedAt,
 		&i.CreatedByUser,
-		&i.RecipeID,
-		&i.RecipeScale,
-		&i.MealComponentType,
+		&i.ComponentRecipeID,
+		&i.ComponentRecipeScale,
+		&i.ComponentMealComponentType,
 	)
 	return &i, err
+}
+
+const getMeals = `-- name: GetMeals :many
+SELECT
+    meals.id,
+    meals.name,
+    meals.description,
+    meals.min_estimated_portions,
+    meals.max_estimated_portions,
+    meals.eligible_for_meal_plans,
+    meals.created_at,
+    meals.last_updated_at,
+    meals.archived_at,
+    meals.created_by_user,
+    meal_components.recipe_id as component_recipe_id,
+    meal_components.recipe_scale as component_recipe_scale,
+    meal_components.meal_component_type as component_meal_component_type,
+    (
+        SELECT
+            COUNT(meals.id)
+        FROM
+            meals
+        WHERE
+            meals.archived_at IS NULL
+            AND meals.id = $1
+            AND meals.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
+            AND meals.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
+            AND (meals.last_updated_at IS NULL OR meals.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years')))
+            AND (meals.last_updated_at IS NULL OR meals.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years')))
+    ) as filtered_count,
+    (
+        SELECT
+            COUNT(meals.id)
+        FROM
+            meals
+        WHERE
+            meals.archived_at IS NULL
+    ) as total_count
+FROM meals
+    JOIN meal_components ON meal_components.meal_id=meals.id
+WHERE meals.archived_at IS NULL
+    AND meals.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
+    AND meals.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
+    AND (meals.last_updated_at IS NULL OR meals.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years')))
+    AND (meals.last_updated_at IS NULL OR meals.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years')))
+    AND meal_components.archived_at IS NULL
+    AND meals.id = $1
+`
+
+type GetMealsParams struct {
+	MealID        string
+	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	UpdatedBefore sql.NullTime
+}
+
+type GetMealsRow struct {
+	CreatedAt                  time.Time
+	ArchivedAt                 sql.NullTime
+	LastUpdatedAt              sql.NullTime
+	MinEstimatedPortions       string
+	ID                         string
+	Description                string
+	Name                       string
+	CreatedByUser              string
+	ComponentRecipeID          string
+	ComponentRecipeScale       string
+	ComponentMealComponentType ComponentType
+	MaxEstimatedPortions       sql.NullString
+	FilteredCount              int64
+	TotalCount                 int64
+	EligibleForMealPlans       bool
+}
+
+func (q *Queries) GetMeals(ctx context.Context, db DBTX, arg *GetMealsParams) ([]*GetMealsRow, error) {
+	rows, err := db.QueryContext(ctx, getMeals,
+		arg.MealID,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedAfter,
+		arg.UpdatedBefore,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetMealsRow{}
+	for rows.Next() {
+		var i GetMealsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.MinEstimatedPortions,
+			&i.MaxEstimatedPortions,
+			&i.EligibleForMealPlans,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+			&i.CreatedByUser,
+			&i.ComponentRecipeID,
+			&i.ComponentRecipeScale,
+			&i.ComponentMealComponentType,
+			&i.FilteredCount,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getMealsNeedingIndexing = `-- name: GetMealsNeedingIndexing :many
 
 SELECT meals.id
-  FROM meals
- WHERE (meals.archived_at IS NULL)
-       AND (
-			(meals.last_indexed_at IS NULL)
-			OR meals.last_indexed_at
-				< now() - '24 hours'::INTERVAL
-		)
+    FROM meals
+    WHERE (meals.archived_at IS NULL)
+    AND (
+        (meals.last_indexed_at IS NULL)
+        OR meals.last_indexed_at
+            < now() - '24 hours'::INTERVAL
+    )
 `
 
 func (q *Queries) GetMealsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error) {

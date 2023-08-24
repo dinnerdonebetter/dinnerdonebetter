@@ -38,7 +38,7 @@ func createRecipeMediaForTest(t *testing.T, ctx context.Context, exampleRecipeMe
 	return created
 }
 
-func TestQuerier_Integration_RecipeMedias(t *testing.T) {
+func TestQuerier_Integration_RecipeMedia(t *testing.T) {
 	if !runningContainerTests {
 		t.SkipNow()
 	}

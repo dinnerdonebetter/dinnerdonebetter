@@ -2,97 +2,14 @@ package postgres
 
 import (
 	"context"
-	"database/sql/driver"
-	"errors"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
-	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"resenje.org/schulze"
 )
-
-func buildMockRowsFromMealPlanOptions(includeCounts bool, filteredCount uint64, mealPlanOptions ...*types.MealPlanOption) *sqlmock.Rows {
-	columns := mealPlanOptionsTableColumns
-
-	if includeCounts {
-		columns = append(columns, "filtered_count", "total_count")
-	}
-
-	exampleRows := sqlmock.NewRows(columns)
-
-	for _, x := range mealPlanOptions {
-		rowValues := []driver.Value{
-			x.ID,
-			x.AssignedCook,
-			x.AssignedDishwasher,
-			x.Chosen,
-			x.TieBroken,
-			x.MealScale,
-			x.Meal.ID,
-			x.Notes,
-			x.CreatedAt,
-			x.LastUpdatedAt,
-			x.ArchivedAt,
-			x.BelongsToMealPlanEvent,
-			x.Meal.ID,
-			x.Meal.Name,
-			x.Meal.Description,
-			x.Meal.MinimumEstimatedPortions,
-			x.Meal.MaximumEstimatedPortions,
-			x.Meal.EligibleForMealPlans,
-			x.Meal.CreatedAt,
-			x.Meal.LastUpdatedAt,
-			x.Meal.ArchivedAt,
-			x.Meal.CreatedByUser,
-		}
-
-		if includeCounts {
-			rowValues = append(rowValues, filteredCount, len(mealPlanOptions))
-		}
-
-		exampleRows.AddRow(rowValues...)
-	}
-
-	return exampleRows
-}
-
-func TestQuerier_ScanMealPlanOptions(T *testing.T) {
-	T.Parallel()
-
-	T.Run("surfaces row errs", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		q, _ := buildTestClient(t)
-
-		mockRows := &database.MockResultIterator{}
-		mockRows.On("Next").Return(false)
-		mockRows.On("Err").Return(errors.New("blah"))
-
-		_, _, _, err := q.scanMealPlanOptions(ctx, mockRows, false)
-		assert.Error(t, err)
-	})
-
-	T.Run("logs row closing errs", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		q, _ := buildTestClient(t)
-
-		mockRows := &database.MockResultIterator{}
-		mockRows.On("Next").Return(false)
-		mockRows.On("Err").Return(nil)
-		mockRows.On("Close").Return(errors.New("blah"))
-
-		_, _, _, err := q.scanMealPlanOptions(ctx, mockRows, false)
-		assert.Error(t, err)
-	})
-}
 
 func TestQuerier_MealPlanOptionExists(T *testing.T) {
 	T.Parallel()
@@ -176,36 +93,6 @@ func TestQuerier_getMealPlanOptionByID(T *testing.T) {
 func TestQuerier_GetMealPlanOptions(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		filter := types.DefaultQueryFilter()
-		exampleMealPlanID := fakes.BuildFakeID()
-		exampleMealPlanEventID := fakes.BuildFakeID()
-		exampleMealPlanOptionList := fakes.BuildFakeMealPlanOptionList()
-
-		for i := range exampleMealPlanOptionList.Data {
-			exampleMealPlanOptionList.Data[i].Votes = []*types.MealPlanOptionVote{}
-			exampleMealPlanOptionList.Data[i].Meal = types.Meal{ID: exampleMealPlanOptionList.Data[i].Meal.ID}
-		}
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		groupBys := []string{"meal_plan_options.id", "meals.id"}
-		query, args := c.buildListQuery(ctx, "meal_plan_options", getMealPlanOptionsJoins, groupBys, nil, householdOwnershipColumn, mealPlanOptionsTableColumns, "", false, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildMockRowsFromMealPlanOptions(true, exampleMealPlanOptionList.FilteredCount, exampleMealPlanOptionList.Data...))
-
-		actual, err := c.GetMealPlanOptions(ctx, exampleMealPlanID, exampleMealPlanEventID, filter)
-		assert.NoError(t, err)
-		assert.Equal(t, exampleMealPlanOptionList, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
 	T.Run("with invalid meal plan ID", func(t *testing.T) {
 		t.Parallel()
 
@@ -217,54 +104,6 @@ func TestQuerier_GetMealPlanOptions(T *testing.T) {
 		actual, err := c.GetMealPlanOptions(ctx, "", "", filter)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		filter := types.DefaultQueryFilter()
-		exampleMealPlanID := fakes.BuildFakeID()
-		exampleMealPlanEventID := fakes.BuildFakeID()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		groupBys := []string{"meal_plan_options.id", "meals.id"}
-		query, args := c.buildListQuery(ctx, "meal_plan_options", getMealPlanOptionsJoins, groupBys, nil, householdOwnershipColumn, mealPlanOptionsTableColumns, "", false, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnError(errors.New("blah"))
-
-		actual, err := c.GetMealPlanOptions(ctx, exampleMealPlanID, exampleMealPlanEventID, filter)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
-	})
-
-	T.Run("with erroneous response from database", func(t *testing.T) {
-		t.Parallel()
-
-		filter := types.DefaultQueryFilter()
-		exampleMealPlanID := fakes.BuildFakeID()
-		exampleMealPlanEventID := fakes.BuildFakeID()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		groupBys := []string{"meal_plan_options.id", "meals.id"}
-		query, args := c.buildListQuery(ctx, "meal_plan_options", getMealPlanOptionsJoins, groupBys, nil, householdOwnershipColumn, mealPlanOptionsTableColumns, "", false, filter)
-
-		db.ExpectQuery(formatQueryForSQLMock(query)).
-			WithArgs(interfaceToDriverValue(args)...).
-			WillReturnRows(buildErroneousMockRow())
-
-		actual, err := c.GetMealPlanOptions(ctx, exampleMealPlanID, exampleMealPlanEventID, filter)
-		assert.Error(t, err)
-		assert.Nil(t, actual)
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 
