@@ -14,48 +14,48 @@ type Querier interface {
 	AcceptTermsOfServiceForUser(ctx context.Context, db DBTX, id string) error
 	AddToHouseholdDuringCreation(ctx context.Context, db DBTX, arg *AddToHouseholdDuringCreationParams) error
 	AddUserToHousehold(ctx context.Context, db DBTX, arg *AddUserToHouseholdParams) error
-	ArchiveHousehold(ctx context.Context, db DBTX, arg *ArchiveHouseholdParams) error
-	ArchiveHouseholdInstrumentOwnership(ctx context.Context, db DBTX, arg *ArchiveHouseholdInstrumentOwnershipParams) error
-	ArchiveMeal(ctx context.Context, db DBTX, arg *ArchiveMealParams) error
-	ArchiveMealPlan(ctx context.Context, db DBTX, arg *ArchiveMealPlanParams) error
-	ArchiveMealPlanEvent(ctx context.Context, db DBTX, arg *ArchiveMealPlanEventParams) error
-	ArchiveMealPlanGroceryListItem(ctx context.Context, db DBTX, id string) error
-	ArchiveMealPlanOption(ctx context.Context, db DBTX, arg *ArchiveMealPlanOptionParams) error
-	ArchiveMealPlanOptionVote(ctx context.Context, db DBTX, arg *ArchiveMealPlanOptionVoteParams) error
-	ArchiveOAuth2Client(ctx context.Context, db DBTX, id string) error
-	ArchiveOAuth2ClientTokenByAccess(ctx context.Context, db DBTX, access string) error
-	ArchiveOAuth2ClientTokenByCode(ctx context.Context, db DBTX, code string) error
-	ArchiveOAuth2ClientTokenByRefresh(ctx context.Context, db DBTX, refresh string) error
-	ArchiveRecipe(ctx context.Context, db DBTX, arg *ArchiveRecipeParams) error
-	ArchiveRecipeMedia(ctx context.Context, db DBTX, id string) error
-	ArchiveRecipePrepTask(ctx context.Context, db DBTX, id string) error
-	ArchiveRecipeRating(ctx context.Context, db DBTX, id string) error
-	ArchiveRecipeStep(ctx context.Context, db DBTX, arg *ArchiveRecipeStepParams) error
-	ArchiveRecipeStepCompletionCondition(ctx context.Context, db DBTX, arg *ArchiveRecipeStepCompletionConditionParams) error
-	ArchiveRecipeStepIngredient(ctx context.Context, db DBTX, arg *ArchiveRecipeStepIngredientParams) error
-	ArchiveRecipeStepInstrument(ctx context.Context, db DBTX, arg *ArchiveRecipeStepInstrumentParams) error
-	ArchiveRecipeStepProduct(ctx context.Context, db DBTX, arg *ArchiveRecipeStepProductParams) error
-	ArchiveRecipeStepVessel(ctx context.Context, db DBTX, arg *ArchiveRecipeStepVesselParams) error
-	ArchiveServiceSetting(ctx context.Context, db DBTX, id string) error
-	ArchiveServiceSettingConfiguration(ctx context.Context, db DBTX, id string) error
-	ArchiveUser(ctx context.Context, db DBTX, id string) error
-	ArchiveUserIngredientPreference(ctx context.Context, db DBTX, arg *ArchiveUserIngredientPreferenceParams) error
-	ArchiveUserMemberships(ctx context.Context, db DBTX, belongsToUser string) error
-	ArchiveValidIngredient(ctx context.Context, db DBTX, id string) error
-	ArchiveValidIngredientGroup(ctx context.Context, db DBTX, id string) error
-	ArchiveValidIngredientGroupMember(ctx context.Context, db DBTX, arg *ArchiveValidIngredientGroupMemberParams) error
-	ArchiveValidIngredientMeasurementUnit(ctx context.Context, db DBTX, id string) error
-	ArchiveValidIngredientPreparation(ctx context.Context, db DBTX, id string) error
-	ArchiveValidIngredientState(ctx context.Context, db DBTX, id string) error
-	ArchiveValidIngredientStateIngredient(ctx context.Context, db DBTX, id string) error
-	ArchiveValidInstrument(ctx context.Context, db DBTX, id string) error
-	ArchiveValidMeasurementUnit(ctx context.Context, db DBTX, id string) error
-	ArchiveValidMeasurementUnitConversion(ctx context.Context, db DBTX, id string) error
-	ArchiveValidPreparation(ctx context.Context, db DBTX, id string) error
-	ArchiveValidPreparationInstrument(ctx context.Context, db DBTX, id string) error
-	ArchiveValidPreparationVessel(ctx context.Context, db DBTX, id string) error
-	ArchiveValidVessel(ctx context.Context, db DBTX, id string) error
-	ArchiveWebhook(ctx context.Context, db DBTX, arg *ArchiveWebhookParams) error
+	ArchiveHousehold(ctx context.Context, db DBTX, arg *ArchiveHouseholdParams) (int64, error)
+	ArchiveHouseholdInstrumentOwnership(ctx context.Context, db DBTX, arg *ArchiveHouseholdInstrumentOwnershipParams) (int64, error)
+	ArchiveMeal(ctx context.Context, db DBTX, arg *ArchiveMealParams) (int64, error)
+	ArchiveMealPlan(ctx context.Context, db DBTX, arg *ArchiveMealPlanParams) (int64, error)
+	ArchiveMealPlanEvent(ctx context.Context, db DBTX, arg *ArchiveMealPlanEventParams) (int64, error)
+	ArchiveMealPlanGroceryListItem(ctx context.Context, db DBTX, id string) (int64, error)
+	ArchiveMealPlanOption(ctx context.Context, db DBTX, arg *ArchiveMealPlanOptionParams) (int64, error)
+	ArchiveMealPlanOptionVote(ctx context.Context, db DBTX, arg *ArchiveMealPlanOptionVoteParams) (int64, error)
+	ArchiveOAuth2Client(ctx context.Context, db DBTX, id string) (int64, error)
+	ArchiveOAuth2ClientTokenByAccess(ctx context.Context, db DBTX, access string) (int64, error)
+	ArchiveOAuth2ClientTokenByCode(ctx context.Context, db DBTX, code string) (int64, error)
+	ArchiveOAuth2ClientTokenByRefresh(ctx context.Context, db DBTX, refresh string) (int64, error)
+	ArchiveRecipe(ctx context.Context, db DBTX, arg *ArchiveRecipeParams) (int64, error)
+	ArchiveRecipeMedia(ctx context.Context, db DBTX, id string) (int64, error)
+	ArchiveRecipePrepTask(ctx context.Context, db DBTX, id string) (int64, error)
+	ArchiveRecipeRating(ctx context.Context, db DBTX, id string) (int64, error)
+	ArchiveRecipeStep(ctx context.Context, db DBTX, arg *ArchiveRecipeStepParams) (int64, error)
+	ArchiveRecipeStepCompletionCondition(ctx context.Context, db DBTX, arg *ArchiveRecipeStepCompletionConditionParams) (int64, error)
+	ArchiveRecipeStepIngredient(ctx context.Context, db DBTX, arg *ArchiveRecipeStepIngredientParams) (int64, error)
+	ArchiveRecipeStepInstrument(ctx context.Context, db DBTX, arg *ArchiveRecipeStepInstrumentParams) (int64, error)
+	ArchiveRecipeStepProduct(ctx context.Context, db DBTX, arg *ArchiveRecipeStepProductParams) (int64, error)
+	ArchiveRecipeStepVessel(ctx context.Context, db DBTX, arg *ArchiveRecipeStepVesselParams) (int64, error)
+	ArchiveServiceSetting(ctx context.Context, db DBTX, id string) (int64, error)
+	ArchiveServiceSettingConfiguration(ctx context.Context, db DBTX, id string) (int64, error)
+	ArchiveUser(ctx context.Context, db DBTX, id string) (int64, error)
+	ArchiveUserIngredientPreference(ctx context.Context, db DBTX, arg *ArchiveUserIngredientPreferenceParams) (int64, error)
+	ArchiveUserMemberships(ctx context.Context, db DBTX, belongsToUser string) (int64, error)
+	ArchiveValidIngredient(ctx context.Context, db DBTX, id string) (int64, error)
+	ArchiveValidIngredientGroup(ctx context.Context, db DBTX, id string) (int64, error)
+	ArchiveValidIngredientGroupMember(ctx context.Context, db DBTX, arg *ArchiveValidIngredientGroupMemberParams) (int64, error)
+	ArchiveValidIngredientMeasurementUnit(ctx context.Context, db DBTX, id string) (int64, error)
+	ArchiveValidIngredientPreparation(ctx context.Context, db DBTX, id string) (int64, error)
+	ArchiveValidIngredientState(ctx context.Context, db DBTX, id string) (int64, error)
+	ArchiveValidIngredientStateIngredient(ctx context.Context, db DBTX, id string) (int64, error)
+	ArchiveValidInstrument(ctx context.Context, db DBTX, id string) (int64, error)
+	ArchiveValidMeasurementUnit(ctx context.Context, db DBTX, id string) (int64, error)
+	ArchiveValidMeasurementUnitConversion(ctx context.Context, db DBTX, id string) (int64, error)
+	ArchiveValidPreparation(ctx context.Context, db DBTX, id string) (int64, error)
+	ArchiveValidPreparationInstrument(ctx context.Context, db DBTX, id string) (int64, error)
+	ArchiveValidPreparationVessel(ctx context.Context, db DBTX, id string) (int64, error)
+	ArchiveValidVessel(ctx context.Context, db DBTX, id string) (int64, error)
+	ArchiveWebhook(ctx context.Context, db DBTX, arg *ArchiveWebhookParams) (int64, error)
 	AttachHouseholdInvitationsToUserID(ctx context.Context, db DBTX, arg *AttachHouseholdInvitationsToUserIDParams) error
 	ChangeMealPlanTaskStatus(ctx context.Context, db DBTX, arg *ChangeMealPlanTaskStatusParams) error
 	CheckHouseholdInstrumentOwnershipExistence(ctx context.Context, db DBTX, arg *CheckHouseholdInstrumentOwnershipExistenceParams) (bool, error)
@@ -148,7 +148,9 @@ type Querier interface {
 	GetAdminUserByUsername(ctx context.Context, db DBTX, username string) (*GetAdminUserByUsernameRow, error)
 	GetAllMealPlanEventsForMealPlan(ctx context.Context, db DBTX, mealPlanID string) ([]*MealPlanEvents, error)
 	GetAllMealPlanOptionsForMealPlanEvent(ctx context.Context, db DBTX, arg *GetAllMealPlanOptionsForMealPlanEventParams) ([]*GetAllMealPlanOptionsForMealPlanEventRow, error)
+	GetAllRecipeStepCompletionConditionIngredientsForRecipeCompletionIDs(ctx context.Context, db DBTX, recipeStepCompletionConditionID []string) ([]*GetAllRecipeStepCompletionConditionIngredientsForRecipeCompletionIDsRow, error)
 	GetAllRecipeStepCompletionConditionsForRecipe(ctx context.Context, db DBTX, id string) ([]*GetAllRecipeStepCompletionConditionsForRecipeRow, error)
+	GetAllRecipeStepIngredientsForRecipe(ctx context.Context, db DBTX, recipeID string) ([]*GetAllRecipeStepIngredientsForRecipeRow, error)
 	GetAllValidMeasurementUnitConversionsFromMeasurementUnit(ctx context.Context, db DBTX, fromUnit string) ([]*GetAllValidMeasurementUnitConversionsFromMeasurementUnitRow, error)
 	GetAllValidMeasurementUnitConversionsToMeasurementUnit(ctx context.Context, db DBTX, id string) ([]*GetAllValidMeasurementUnitConversionsToMeasurementUnitRow, error)
 	GetDefaultHouseholdIDForUser(ctx context.Context, db DBTX, belongsToUser string) (string, error)
@@ -164,7 +166,7 @@ type Querier interface {
 	GetHouseholdInvitationByTokenAndID(ctx context.Context, db DBTX, arg *GetHouseholdInvitationByTokenAndIDParams) (*GetHouseholdInvitationByTokenAndIDRow, error)
 	GetHouseholdUserMembershipsForUser(ctx context.Context, db DBTX, belongsToUser string) ([]*GetHouseholdUserMembershipsForUserRow, error)
 	GetHouseholdsForUser(ctx context.Context, db DBTX, arg *GetHouseholdsForUserParams) ([]*GetHouseholdsForUserRow, error)
-	GetMeal(ctx context.Context, db DBTX, id string) (*GetMealRow, error)
+	GetMeal(ctx context.Context, db DBTX, id string) ([]*GetMealRow, error)
 	GetMealPlan(ctx context.Context, db DBTX, arg *GetMealPlanParams) (*GetMealPlanRow, error)
 	GetMealPlanEvent(ctx context.Context, db DBTX, arg *GetMealPlanEventParams) (*MealPlanEvents, error)
 	GetMealPlanEvents(ctx context.Context, db DBTX, arg *GetMealPlanEventsParams) ([]*GetMealPlanEventsRow, error)
@@ -209,7 +211,7 @@ type Querier interface {
 	GetRecipeStepCompletionConditionWithIngredients(ctx context.Context, db DBTX, arg *GetRecipeStepCompletionConditionWithIngredientsParams) ([]*GetRecipeStepCompletionConditionWithIngredientsRow, error)
 	GetRecipeStepCompletionConditions(ctx context.Context, db DBTX, arg *GetRecipeStepCompletionConditionsParams) ([]*GetRecipeStepCompletionConditionsRow, error)
 	GetRecipeStepIngredient(ctx context.Context, db DBTX, arg *GetRecipeStepIngredientParams) (*GetRecipeStepIngredientRow, error)
-	GetRecipeStepIngredientsForRecipe(ctx context.Context, db DBTX, recipeID string) ([]*GetRecipeStepIngredientsForRecipeRow, error)
+	GetRecipeStepIngredients(ctx context.Context, db DBTX, arg *GetRecipeStepIngredientsParams) ([]*GetRecipeStepIngredientsRow, error)
 	GetRecipeStepInstrument(ctx context.Context, db DBTX, arg *GetRecipeStepInstrumentParams) (*GetRecipeStepInstrumentRow, error)
 	GetRecipeStepInstruments(ctx context.Context, db DBTX, arg *GetRecipeStepInstrumentsParams) ([]*GetRecipeStepInstrumentsRow, error)
 	GetRecipeStepInstrumentsForRecipe(ctx context.Context, db DBTX, belongsToRecipe string) ([]*GetRecipeStepInstrumentsForRecipeRow, error)
@@ -325,54 +327,54 @@ type Querier interface {
 	SetUserAccountStatus(ctx context.Context, db DBTX, arg *SetUserAccountStatusParams) (sql.Result, error)
 	TransferHouseholdMembership(ctx context.Context, db DBTX, arg *TransferHouseholdMembershipParams) error
 	TransferHouseholdOwnership(ctx context.Context, db DBTX, arg *TransferHouseholdOwnershipParams) error
-	UpdateHousehold(ctx context.Context, db DBTX, arg *UpdateHouseholdParams) error
-	UpdateHouseholdInstrumentOwnership(ctx context.Context, db DBTX, arg *UpdateHouseholdInstrumentOwnershipParams) error
-	UpdateMealLastIndexedAt(ctx context.Context, db DBTX, id string) error
-	UpdateMealPlan(ctx context.Context, db DBTX, arg *UpdateMealPlanParams) error
-	UpdateMealPlanEvent(ctx context.Context, db DBTX, arg *UpdateMealPlanEventParams) error
-	UpdateMealPlanGroceryListItem(ctx context.Context, db DBTX, arg *UpdateMealPlanGroceryListItemParams) error
-	UpdateMealPlanOption(ctx context.Context, db DBTX, arg *UpdateMealPlanOptionParams) error
-	UpdateMealPlanOptionVote(ctx context.Context, db DBTX, arg *UpdateMealPlanOptionVoteParams) error
-	UpdateRecipe(ctx context.Context, db DBTX, arg *UpdateRecipeParams) error
-	UpdateRecipeLastIndexedAt(ctx context.Context, db DBTX, id string) error
-	UpdateRecipeMedia(ctx context.Context, db DBTX, arg *UpdateRecipeMediaParams) error
-	UpdateRecipePrepTask(ctx context.Context, db DBTX, arg *UpdateRecipePrepTaskParams) error
-	UpdateRecipeRating(ctx context.Context, db DBTX, arg *UpdateRecipeRatingParams) error
-	UpdateRecipeStep(ctx context.Context, db DBTX, arg *UpdateRecipeStepParams) error
-	UpdateRecipeStepCompletionCondition(ctx context.Context, db DBTX, arg *UpdateRecipeStepCompletionConditionParams) error
-	UpdateRecipeStepIngredient(ctx context.Context, db DBTX, arg *UpdateRecipeStepIngredientParams) error
-	UpdateRecipeStepInstrument(ctx context.Context, db DBTX, arg *UpdateRecipeStepInstrumentParams) error
-	UpdateRecipeStepProduct(ctx context.Context, db DBTX, arg *UpdateRecipeStepProductParams) error
-	UpdateRecipeStepVessel(ctx context.Context, db DBTX, arg *UpdateRecipeStepVesselParams) error
-	UpdateServiceSettingConfiguration(ctx context.Context, db DBTX, arg *UpdateServiceSettingConfigurationParams) error
-	UpdateUser(ctx context.Context, db DBTX, arg *UpdateUserParams) error
-	UpdateUserAvatarSrc(ctx context.Context, db DBTX, arg *UpdateUserAvatarSrcParams) error
-	UpdateUserDetails(ctx context.Context, db DBTX, arg *UpdateUserDetailsParams) error
-	UpdateUserEmailAddress(ctx context.Context, db DBTX, arg *UpdateUserEmailAddressParams) error
-	UpdateUserIngredientPreference(ctx context.Context, db DBTX, arg *UpdateUserIngredientPreferenceParams) error
-	UpdateUserLastIndexedAt(ctx context.Context, db DBTX, id string) error
-	UpdateUserPassword(ctx context.Context, db DBTX, arg *UpdateUserPasswordParams) error
-	UpdateUserTwoFactorSecret(ctx context.Context, db DBTX, arg *UpdateUserTwoFactorSecretParams) error
-	UpdateUserUsername(ctx context.Context, db DBTX, arg *UpdateUserUsernameParams) error
-	UpdateValidIngredient(ctx context.Context, db DBTX, arg *UpdateValidIngredientParams) error
-	UpdateValidIngredientGroup(ctx context.Context, db DBTX, arg *UpdateValidIngredientGroupParams) error
-	UpdateValidIngredientLastIndexedAt(ctx context.Context, db DBTX, id string) error
-	UpdateValidIngredientMeasurementUnit(ctx context.Context, db DBTX, arg *UpdateValidIngredientMeasurementUnitParams) error
-	UpdateValidIngredientPreparation(ctx context.Context, db DBTX, arg *UpdateValidIngredientPreparationParams) error
-	UpdateValidIngredientState(ctx context.Context, db DBTX, arg *UpdateValidIngredientStateParams) error
-	UpdateValidIngredientStateIngredient(ctx context.Context, db DBTX, arg *UpdateValidIngredientStateIngredientParams) error
-	UpdateValidIngredientStateLastIndexedAt(ctx context.Context, db DBTX, id string) error
-	UpdateValidInstrument(ctx context.Context, db DBTX, arg *UpdateValidInstrumentParams) error
-	UpdateValidInstrumentLastIndexedAt(ctx context.Context, db DBTX, id string) error
-	UpdateValidMeasurementUnit(ctx context.Context, db DBTX, arg *UpdateValidMeasurementUnitParams) error
-	UpdateValidMeasurementUnitConversion(ctx context.Context, db DBTX, arg *UpdateValidMeasurementUnitConversionParams) error
-	UpdateValidMeasurementUnitLastIndexedAt(ctx context.Context, db DBTX, id string) error
-	UpdateValidPreparation(ctx context.Context, db DBTX, arg *UpdateValidPreparationParams) error
-	UpdateValidPreparationInstrument(ctx context.Context, db DBTX, arg *UpdateValidPreparationInstrumentParams) error
-	UpdateValidPreparationLastIndexedAt(ctx context.Context, db DBTX, id string) error
-	UpdateValidPreparationVessel(ctx context.Context, db DBTX, arg *UpdateValidPreparationVesselParams) error
-	UpdateValidVessel(ctx context.Context, db DBTX, arg *UpdateValidVesselParams) error
-	UpdateValidVesselLastIndexedAt(ctx context.Context, db DBTX, id string) error
+	UpdateHousehold(ctx context.Context, db DBTX, arg *UpdateHouseholdParams) (int64, error)
+	UpdateHouseholdInstrumentOwnership(ctx context.Context, db DBTX, arg *UpdateHouseholdInstrumentOwnershipParams) (int64, error)
+	UpdateMealLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error)
+	UpdateMealPlan(ctx context.Context, db DBTX, arg *UpdateMealPlanParams) (int64, error)
+	UpdateMealPlanEvent(ctx context.Context, db DBTX, arg *UpdateMealPlanEventParams) (int64, error)
+	UpdateMealPlanGroceryListItem(ctx context.Context, db DBTX, arg *UpdateMealPlanGroceryListItemParams) (int64, error)
+	UpdateMealPlanOption(ctx context.Context, db DBTX, arg *UpdateMealPlanOptionParams) (int64, error)
+	UpdateMealPlanOptionVote(ctx context.Context, db DBTX, arg *UpdateMealPlanOptionVoteParams) (int64, error)
+	UpdateRecipe(ctx context.Context, db DBTX, arg *UpdateRecipeParams) (int64, error)
+	UpdateRecipeLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error)
+	UpdateRecipeMedia(ctx context.Context, db DBTX, arg *UpdateRecipeMediaParams) (int64, error)
+	UpdateRecipePrepTask(ctx context.Context, db DBTX, arg *UpdateRecipePrepTaskParams) (int64, error)
+	UpdateRecipeRating(ctx context.Context, db DBTX, arg *UpdateRecipeRatingParams) (int64, error)
+	UpdateRecipeStep(ctx context.Context, db DBTX, arg *UpdateRecipeStepParams) (int64, error)
+	UpdateRecipeStepCompletionCondition(ctx context.Context, db DBTX, arg *UpdateRecipeStepCompletionConditionParams) (int64, error)
+	UpdateRecipeStepIngredient(ctx context.Context, db DBTX, arg *UpdateRecipeStepIngredientParams) (int64, error)
+	UpdateRecipeStepInstrument(ctx context.Context, db DBTX, arg *UpdateRecipeStepInstrumentParams) (int64, error)
+	UpdateRecipeStepProduct(ctx context.Context, db DBTX, arg *UpdateRecipeStepProductParams) (int64, error)
+	UpdateRecipeStepVessel(ctx context.Context, db DBTX, arg *UpdateRecipeStepVesselParams) (int64, error)
+	UpdateServiceSettingConfiguration(ctx context.Context, db DBTX, arg *UpdateServiceSettingConfigurationParams) (int64, error)
+	UpdateUser(ctx context.Context, db DBTX, arg *UpdateUserParams) (int64, error)
+	UpdateUserAvatarSrc(ctx context.Context, db DBTX, arg *UpdateUserAvatarSrcParams) (int64, error)
+	UpdateUserDetails(ctx context.Context, db DBTX, arg *UpdateUserDetailsParams) (int64, error)
+	UpdateUserEmailAddress(ctx context.Context, db DBTX, arg *UpdateUserEmailAddressParams) (int64, error)
+	UpdateUserIngredientPreference(ctx context.Context, db DBTX, arg *UpdateUserIngredientPreferenceParams) (int64, error)
+	UpdateUserLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error)
+	UpdateUserPassword(ctx context.Context, db DBTX, arg *UpdateUserPasswordParams) (int64, error)
+	UpdateUserTwoFactorSecret(ctx context.Context, db DBTX, arg *UpdateUserTwoFactorSecretParams) (int64, error)
+	UpdateUserUsername(ctx context.Context, db DBTX, arg *UpdateUserUsernameParams) (int64, error)
+	UpdateValidIngredient(ctx context.Context, db DBTX, arg *UpdateValidIngredientParams) (int64, error)
+	UpdateValidIngredientGroup(ctx context.Context, db DBTX, arg *UpdateValidIngredientGroupParams) (int64, error)
+	UpdateValidIngredientLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error)
+	UpdateValidIngredientMeasurementUnit(ctx context.Context, db DBTX, arg *UpdateValidIngredientMeasurementUnitParams) (int64, error)
+	UpdateValidIngredientPreparation(ctx context.Context, db DBTX, arg *UpdateValidIngredientPreparationParams) (int64, error)
+	UpdateValidIngredientState(ctx context.Context, db DBTX, arg *UpdateValidIngredientStateParams) (int64, error)
+	UpdateValidIngredientStateIngredient(ctx context.Context, db DBTX, arg *UpdateValidIngredientStateIngredientParams) (int64, error)
+	UpdateValidIngredientStateLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error)
+	UpdateValidInstrument(ctx context.Context, db DBTX, arg *UpdateValidInstrumentParams) (int64, error)
+	UpdateValidInstrumentLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error)
+	UpdateValidMeasurementUnit(ctx context.Context, db DBTX, arg *UpdateValidMeasurementUnitParams) (int64, error)
+	UpdateValidMeasurementUnitConversion(ctx context.Context, db DBTX, arg *UpdateValidMeasurementUnitConversionParams) (int64, error)
+	UpdateValidMeasurementUnitLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error)
+	UpdateValidPreparation(ctx context.Context, db DBTX, arg *UpdateValidPreparationParams) (int64, error)
+	UpdateValidPreparationInstrument(ctx context.Context, db DBTX, arg *UpdateValidPreparationInstrumentParams) (int64, error)
+	UpdateValidPreparationLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error)
+	UpdateValidPreparationVessel(ctx context.Context, db DBTX, arg *UpdateValidPreparationVesselParams) (int64, error)
+	UpdateValidVessel(ctx context.Context, db DBTX, arg *UpdateValidVesselParams) (int64, error)
+	UpdateValidVesselLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error)
 	UserIsHouseholdMember(ctx context.Context, db DBTX, arg *UserIsHouseholdMemberParams) (bool, error)
 	ValidIngredientMeasurementUnitPairIsValid(ctx context.Context, db DBTX, arg *ValidIngredientMeasurementUnitPairIsValidParams) (bool, error)
 	ValidIngredientPreparationPairIsValid(ctx context.Context, db DBTX, arg *ValidIngredientPreparationPairIsValidParams) (bool, error)

@@ -1,4 +1,4 @@
--- name: ArchiveMealPlanOption :exec
+-- name: ArchiveMealPlanOption :execrows
 
 UPDATE
 	meal_plan_options
@@ -213,7 +213,7 @@ FROM meal_plan_options
 WHERE meal_plan_options.archived_at IS NULL
 	AND meal_plan_options.id = sqlc.arg(meal_plan_option_id);
 
--- name: UpdateMealPlanOption :exec
+-- name: UpdateMealPlanOption :execrows
 
 UPDATE meal_plan_options
 SET

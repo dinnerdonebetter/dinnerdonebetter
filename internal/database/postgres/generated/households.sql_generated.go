@@ -34,7 +34,7 @@ func (q *Queries) AddToHouseholdDuringCreation(ctx context.Context, db DBTX, arg
 	return err
 }
 
-const archiveHousehold = `-- name: ArchiveHousehold :exec
+const archiveHousehold = `-- name: ArchiveHousehold :execrows
 
 UPDATE households SET last_updated_at = NOW(), archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_user = $1 AND id = $2
 `
@@ -44,9 +44,12 @@ type ArchiveHouseholdParams struct {
 	ID            string
 }
 
-func (q *Queries) ArchiveHousehold(ctx context.Context, db DBTX, arg *ArchiveHouseholdParams) error {
-	_, err := db.ExecContext(ctx, archiveHousehold, arg.BelongsToUser, arg.ID)
-	return err
+func (q *Queries) ArchiveHousehold(ctx context.Context, db DBTX, arg *ArchiveHouseholdParams) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveHousehold, arg.BelongsToUser, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const createHousehold = `-- name: CreateHousehold :exec
@@ -401,7 +404,7 @@ func (q *Queries) GetHouseholdsForUser(ctx context.Context, db DBTX, arg *GetHou
 	return items, nil
 }
 
-const updateHousehold = `-- name: UpdateHousehold :exec
+const updateHousehold = `-- name: UpdateHousehold :execrows
 
 UPDATE households
 SET
@@ -436,8 +439,8 @@ type UpdateHouseholdParams struct {
 	Longitude     sql.NullString
 }
 
-func (q *Queries) UpdateHousehold(ctx context.Context, db DBTX, arg *UpdateHouseholdParams) error {
-	_, err := db.ExecContext(ctx, updateHousehold,
+func (q *Queries) UpdateHousehold(ctx context.Context, db DBTX, arg *UpdateHouseholdParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateHousehold,
 		arg.Name,
 		arg.ContactPhone,
 		arg.AddressLine1,
@@ -451,5 +454,8 @@ func (q *Queries) UpdateHousehold(ctx context.Context, db DBTX, arg *UpdateHouse
 		arg.BelongsToUser,
 		arg.ID,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

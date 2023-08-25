@@ -11,17 +11,20 @@ import (
 	"time"
 )
 
-const archiveValidIngredientGroup = `-- name: ArchiveValidIngredientGroup :exec
+const archiveValidIngredientGroup = `-- name: ArchiveValidIngredientGroup :execrows
 
 UPDATE valid_ingredient_groups SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
-func (q *Queries) ArchiveValidIngredientGroup(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, archiveValidIngredientGroup, id)
-	return err
+func (q *Queries) ArchiveValidIngredientGroup(ctx context.Context, db DBTX, id string) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveValidIngredientGroup, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
-const archiveValidIngredientGroupMember = `-- name: ArchiveValidIngredientGroupMember :exec
+const archiveValidIngredientGroupMember = `-- name: ArchiveValidIngredientGroupMember :execrows
 
 UPDATE valid_ingredient_group_members SET archived_at = NOW() WHERE id = $1 AND belongs_to_group = $2
 `
@@ -31,9 +34,12 @@ type ArchiveValidIngredientGroupMemberParams struct {
 	BelongsToGroup string
 }
 
-func (q *Queries) ArchiveValidIngredientGroupMember(ctx context.Context, db DBTX, arg *ArchiveValidIngredientGroupMemberParams) error {
-	_, err := db.ExecContext(ctx, archiveValidIngredientGroupMember, arg.ID, arg.BelongsToGroup)
-	return err
+func (q *Queries) ArchiveValidIngredientGroupMember(ctx context.Context, db DBTX, arg *ArchiveValidIngredientGroupMemberParams) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveValidIngredientGroupMember, arg.ID, arg.BelongsToGroup)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkValidIngredientGroupExistence = `-- name: CheckValidIngredientGroupExistence :one
@@ -532,7 +538,7 @@ func (q *Queries) SearchForValidIngredientGroups(ctx context.Context, db DBTX, a
 	return items, nil
 }
 
-const updateValidIngredientGroup = `-- name: UpdateValidIngredientGroup :exec
+const updateValidIngredientGroup = `-- name: UpdateValidIngredientGroup :execrows
 
 UPDATE valid_ingredient_groups SET
 	name = $1,
@@ -549,12 +555,15 @@ type UpdateValidIngredientGroupParams struct {
 	ID          string
 }
 
-func (q *Queries) UpdateValidIngredientGroup(ctx context.Context, db DBTX, arg *UpdateValidIngredientGroupParams) error {
-	_, err := db.ExecContext(ctx, updateValidIngredientGroup,
+func (q *Queries) UpdateValidIngredientGroup(ctx context.Context, db DBTX, arg *UpdateValidIngredientGroupParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateValidIngredientGroup,
 		arg.Name,
 		arg.Description,
 		arg.Slug,
 		arg.ID,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

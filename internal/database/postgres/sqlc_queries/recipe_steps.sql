@@ -1,4 +1,4 @@
--- name: ArchiveRecipeStep :exec
+-- name: ArchiveRecipeStep :execrows
 
 UPDATE recipe_steps SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe = $1 AND id = $2;
 
@@ -190,7 +190,7 @@ FROM recipe_steps
 WHERE recipe_steps.archived_at IS NULL
 	AND recipe_steps.id = $1;
 
--- name: UpdateRecipeStep :exec
+-- name: UpdateRecipeStep :execrows
 
 UPDATE recipe_steps SET
 	index = $1,

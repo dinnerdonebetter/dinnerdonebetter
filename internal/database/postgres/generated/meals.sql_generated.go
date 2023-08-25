@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const archiveMeal = `-- name: ArchiveMeal :exec
+const archiveMeal = `-- name: ArchiveMeal :execrows
 
 UPDATE meals SET archived_at = NOW() WHERE archived_at IS NULL AND created_by_user = $1 AND id = $2
 `
@@ -21,9 +21,12 @@ type ArchiveMealParams struct {
 	ID            string
 }
 
-func (q *Queries) ArchiveMeal(ctx context.Context, db DBTX, arg *ArchiveMealParams) error {
-	_, err := db.ExecContext(ctx, archiveMeal, arg.CreatedByUser, arg.ID)
-	return err
+func (q *Queries) ArchiveMeal(ctx context.Context, db DBTX, arg *ArchiveMealParams) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveMeal, arg.CreatedByUser, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkMealExistence = `-- name: CheckMealExistence :one
@@ -66,7 +69,7 @@ func (q *Queries) CreateMeal(ctx context.Context, db DBTX, arg *CreateMealParams
 	return err
 }
 
-const getMeal = `-- name: GetMeal :one
+const getMeal = `-- name: GetMeal :many
 
 SELECT
     meals.id,
@@ -105,25 +108,41 @@ type GetMealRow struct {
 	EligibleForMealPlans       bool
 }
 
-func (q *Queries) GetMeal(ctx context.Context, db DBTX, id string) (*GetMealRow, error) {
-	row := db.QueryRowContext(ctx, getMeal, id)
-	var i GetMealRow
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.Description,
-		&i.MinEstimatedPortions,
-		&i.MaxEstimatedPortions,
-		&i.EligibleForMealPlans,
-		&i.CreatedAt,
-		&i.LastUpdatedAt,
-		&i.ArchivedAt,
-		&i.CreatedByUser,
-		&i.ComponentRecipeID,
-		&i.ComponentRecipeScale,
-		&i.ComponentMealComponentType,
-	)
-	return &i, err
+func (q *Queries) GetMeal(ctx context.Context, db DBTX, id string) ([]*GetMealRow, error) {
+	rows, err := db.QueryContext(ctx, getMeal, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetMealRow{}
+	for rows.Next() {
+		var i GetMealRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.MinEstimatedPortions,
+			&i.MaxEstimatedPortions,
+			&i.EligibleForMealPlans,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+			&i.CreatedByUser,
+			&i.ComponentRecipeID,
+			&i.ComponentRecipeScale,
+			&i.ComponentMealComponentType,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getMeals = `-- name: GetMeals :many
@@ -395,12 +414,15 @@ func (q *Queries) SearchForMeals(ctx context.Context, db DBTX, arg *SearchForMea
 	return items, nil
 }
 
-const updateMealLastIndexedAt = `-- name: UpdateMealLastIndexedAt :exec
+const updateMealLastIndexedAt = `-- name: UpdateMealLastIndexedAt :execrows
 
 UPDATE meals SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 
-func (q *Queries) UpdateMealLastIndexedAt(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, updateMealLastIndexedAt, id)
-	return err
+func (q *Queries) UpdateMealLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error) {
+	result, err := db.ExecContext(ctx, updateMealLastIndexedAt, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

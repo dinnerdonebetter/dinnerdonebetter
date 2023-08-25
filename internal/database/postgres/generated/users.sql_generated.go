@@ -37,7 +37,7 @@ func (q *Queries) AcceptTermsOfServiceForUser(ctx context.Context, db DBTX, id s
 	return err
 }
 
-const archiveUser = `-- name: ArchiveUser :exec
+const archiveUser = `-- name: ArchiveUser :execrows
 
 UPDATE users SET
 	archived_at = NOW()
@@ -45,12 +45,15 @@ WHERE archived_at IS NULL
 	AND id = $1
 `
 
-func (q *Queries) ArchiveUser(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, archiveUser, id)
-	return err
+func (q *Queries) ArchiveUser(ctx context.Context, db DBTX, id string) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveUser, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
-const archiveUserMemberships = `-- name: ArchiveUserMemberships :exec
+const archiveUserMemberships = `-- name: ArchiveUserMemberships :execrows
 
 UPDATE household_user_memberships SET
 	archived_at = NOW()
@@ -58,9 +61,12 @@ WHERE archived_at IS NULL
 	AND belongs_to_user = $1
 `
 
-func (q *Queries) ArchiveUserMemberships(ctx context.Context, db DBTX, belongsToUser string) error {
-	_, err := db.ExecContext(ctx, archiveUserMemberships, belongsToUser)
-	return err
+func (q *Queries) ArchiveUserMemberships(ctx context.Context, db DBTX, belongsToUser string) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveUserMemberships, belongsToUser)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const createUser = `-- name: CreateUser :exec
@@ -1042,7 +1048,7 @@ func (q *Queries) SearchUsersByUsername(ctx context.Context, db DBTX, username s
 	return items, nil
 }
 
-const updateUser = `-- name: UpdateUser :exec
+const updateUser = `-- name: UpdateUser :execrows
 
 UPDATE users SET
 	username = $1,
@@ -1066,8 +1072,8 @@ type UpdateUserParams struct {
 	AvatarSrc      sql.NullString
 }
 
-func (q *Queries) UpdateUser(ctx context.Context, db DBTX, arg *UpdateUserParams) error {
-	_, err := db.ExecContext(ctx, updateUser,
+func (q *Queries) UpdateUser(ctx context.Context, db DBTX, arg *UpdateUserParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateUser,
 		arg.Username,
 		arg.FirstName,
 		arg.LastName,
@@ -1076,10 +1082,13 @@ func (q *Queries) UpdateUser(ctx context.Context, db DBTX, arg *UpdateUserParams
 		arg.Birthday,
 		arg.ID,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
-const updateUserAvatarSrc = `-- name: UpdateUserAvatarSrc :exec
+const updateUserAvatarSrc = `-- name: UpdateUserAvatarSrc :execrows
 
 UPDATE users SET
 	avatar_src = $1,
@@ -1093,12 +1102,15 @@ type UpdateUserAvatarSrcParams struct {
 	AvatarSrc sql.NullString
 }
 
-func (q *Queries) UpdateUserAvatarSrc(ctx context.Context, db DBTX, arg *UpdateUserAvatarSrcParams) error {
-	_, err := db.ExecContext(ctx, updateUserAvatarSrc, arg.AvatarSrc, arg.ID)
-	return err
+func (q *Queries) UpdateUserAvatarSrc(ctx context.Context, db DBTX, arg *UpdateUserAvatarSrcParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateUserAvatarSrc, arg.AvatarSrc, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
-const updateUserDetails = `-- name: UpdateUserDetails :exec
+const updateUserDetails = `-- name: UpdateUserDetails :execrows
 
 UPDATE users SET
 	first_name = $1,
@@ -1116,17 +1128,20 @@ type UpdateUserDetailsParams struct {
 	ID        string
 }
 
-func (q *Queries) UpdateUserDetails(ctx context.Context, db DBTX, arg *UpdateUserDetailsParams) error {
-	_, err := db.ExecContext(ctx, updateUserDetails,
+func (q *Queries) UpdateUserDetails(ctx context.Context, db DBTX, arg *UpdateUserDetailsParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateUserDetails,
 		arg.FirstName,
 		arg.LastName,
 		arg.Birthday,
 		arg.ID,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
-const updateUserEmailAddress = `-- name: UpdateUserEmailAddress :exec
+const updateUserEmailAddress = `-- name: UpdateUserEmailAddress :execrows
 
 UPDATE users SET
 	email_address = $1,
@@ -1141,22 +1156,28 @@ type UpdateUserEmailAddressParams struct {
 	ID           string
 }
 
-func (q *Queries) UpdateUserEmailAddress(ctx context.Context, db DBTX, arg *UpdateUserEmailAddressParams) error {
-	_, err := db.ExecContext(ctx, updateUserEmailAddress, arg.EmailAddress, arg.ID)
-	return err
+func (q *Queries) UpdateUserEmailAddress(ctx context.Context, db DBTX, arg *UpdateUserEmailAddressParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateUserEmailAddress, arg.EmailAddress, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
-const updateUserLastIndexedAt = `-- name: UpdateUserLastIndexedAt :exec
+const updateUserLastIndexedAt = `-- name: UpdateUserLastIndexedAt :execrows
 
 UPDATE users SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 
-func (q *Queries) UpdateUserLastIndexedAt(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, updateUserLastIndexedAt, id)
-	return err
+func (q *Queries) UpdateUserLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error) {
+	result, err := db.ExecContext(ctx, updateUserLastIndexedAt, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
-const updateUserPassword = `-- name: UpdateUserPassword :exec
+const updateUserPassword = `-- name: UpdateUserPassword :execrows
 
 UPDATE users SET
 	hashed_password = $1,
@@ -1171,12 +1192,15 @@ type UpdateUserPasswordParams struct {
 	ID             string
 }
 
-func (q *Queries) UpdateUserPassword(ctx context.Context, db DBTX, arg *UpdateUserPasswordParams) error {
-	_, err := db.ExecContext(ctx, updateUserPassword, arg.HashedPassword, arg.ID)
-	return err
+func (q *Queries) UpdateUserPassword(ctx context.Context, db DBTX, arg *UpdateUserPasswordParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateUserPassword, arg.HashedPassword, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
-const updateUserTwoFactorSecret = `-- name: UpdateUserTwoFactorSecret :exec
+const updateUserTwoFactorSecret = `-- name: UpdateUserTwoFactorSecret :execrows
 
 UPDATE users SET
 	two_factor_secret_verified_at = NULL,
@@ -1191,12 +1215,15 @@ type UpdateUserTwoFactorSecretParams struct {
 	ID              string
 }
 
-func (q *Queries) UpdateUserTwoFactorSecret(ctx context.Context, db DBTX, arg *UpdateUserTwoFactorSecretParams) error {
-	_, err := db.ExecContext(ctx, updateUserTwoFactorSecret, arg.TwoFactorSecret, arg.ID)
-	return err
+func (q *Queries) UpdateUserTwoFactorSecret(ctx context.Context, db DBTX, arg *UpdateUserTwoFactorSecretParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateUserTwoFactorSecret, arg.TwoFactorSecret, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
-const updateUserUsername = `-- name: UpdateUserUsername :exec
+const updateUserUsername = `-- name: UpdateUserUsername :execrows
 
 UPDATE users SET
 	username = $1,
@@ -1210,7 +1237,10 @@ type UpdateUserUsernameParams struct {
 	ID       string
 }
 
-func (q *Queries) UpdateUserUsername(ctx context.Context, db DBTX, arg *UpdateUserUsernameParams) error {
-	_, err := db.ExecContext(ctx, updateUserUsername, arg.Username, arg.ID)
-	return err
+func (q *Queries) UpdateUserUsername(ctx context.Context, db DBTX, arg *UpdateUserUsernameParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateUserUsername, arg.Username, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

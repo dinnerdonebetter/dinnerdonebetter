@@ -1,4 +1,4 @@
--- name: ArchiveRecipeRating :exec
+-- name: ArchiveRecipeRating :execrows
 
 UPDATE recipe_ratings SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
 
@@ -79,7 +79,7 @@ FROM recipe_ratings
 WHERE recipe_ratings.archived_at IS NULL
 	AND recipe_ratings.id = $1;
 
--- name: UpdateRecipeRating :exec
+-- name: UpdateRecipeRating :execrows
 
 UPDATE recipe_ratings
 SET

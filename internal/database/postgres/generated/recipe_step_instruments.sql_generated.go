@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const archiveRecipeStepInstrument = `-- name: ArchiveRecipeStepInstrument :exec
+const archiveRecipeStepInstrument = `-- name: ArchiveRecipeStepInstrument :execrows
 
 UPDATE recipe_step_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2
 `
@@ -21,9 +21,12 @@ type ArchiveRecipeStepInstrumentParams struct {
 	ID                  string
 }
 
-func (q *Queries) ArchiveRecipeStepInstrument(ctx context.Context, db DBTX, arg *ArchiveRecipeStepInstrumentParams) error {
-	_, err := db.ExecContext(ctx, archiveRecipeStepInstrument, arg.BelongsToRecipeStep, arg.ID)
-	return err
+func (q *Queries) ArchiveRecipeStepInstrument(ctx context.Context, db DBTX, arg *ArchiveRecipeStepInstrumentParams) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveRecipeStepInstrument, arg.BelongsToRecipeStep, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkRecipeStepInstrumentExistence = `-- name: CheckRecipeStepInstrumentExistence :one
@@ -267,8 +270,8 @@ type GetRecipeStepInstrumentsParams struct {
 	UpdatedAfter  sql.NullTime
 	UpdatedBefore sql.NullTime
 	RecipeID      string
-	QueryOffset   int32
-	QueryLimit    int32
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
 }
 
 type GetRecipeStepInstrumentsRow struct {
@@ -364,31 +367,31 @@ func (q *Queries) GetRecipeStepInstruments(ctx context.Context, db DBTX, arg *Ge
 const getRecipeStepInstrumentsForRecipe = `-- name: GetRecipeStepInstrumentsForRecipe :many
 
 SELECT
-	recipe_step_instruments.id,
-	valid_instruments.id,
-	valid_instruments.name,
-	valid_instruments.plural_name,
-	valid_instruments.description,
-	valid_instruments.icon_path,
-	valid_instruments.usable_for_storage,
-	valid_instruments.display_in_summary_lists,
-	valid_instruments.include_in_generated_instructions,
-	valid_instruments.slug,
-	valid_instruments.created_at,
-	valid_instruments.last_updated_at,
-	valid_instruments.archived_at,
-	recipe_step_instruments.recipe_step_product_id,
-	recipe_step_instruments.name,
-	recipe_step_instruments.notes,
-	recipe_step_instruments.preference_rank,
-	recipe_step_instruments.optional,
-	recipe_step_instruments.minimum_quantity,
-	recipe_step_instruments.maximum_quantity,
-	recipe_step_instruments.option_index,
-	recipe_step_instruments.created_at,
-	recipe_step_instruments.last_updated_at,
-	recipe_step_instruments.archived_at,
-	recipe_step_instruments.belongs_to_recipe_step
+    recipe_step_instruments.id,
+    valid_instruments.id as valid_instrument_id,
+    valid_instruments.name as valid_instrument_name,
+    valid_instruments.plural_name as valid_instrument_plural_name,
+    valid_instruments.description as valid_instrument_description,
+    valid_instruments.icon_path as valid_instrument_icon_path,
+    valid_instruments.usable_for_storage as valid_instrument_usable_for_storage,
+    valid_instruments.display_in_summary_lists as valid_instrument_display_in_summary_lists,
+    valid_instruments.include_in_generated_instructions as valid_instrument_include_in_generated_instructions,
+    valid_instruments.slug as valid_instrument_slug,
+    valid_instruments.created_at as valid_instrument_created_at,
+    valid_instruments.last_updated_at as valid_instrument_last_updated_at,
+    valid_instruments.archived_at as valid_instrument_archived_at,
+    recipe_step_instruments.recipe_step_product_id,
+    recipe_step_instruments.name,
+    recipe_step_instruments.notes,
+    recipe_step_instruments.preference_rank,
+    recipe_step_instruments.optional,
+    recipe_step_instruments.minimum_quantity,
+    recipe_step_instruments.maximum_quantity,
+    recipe_step_instruments.option_index,
+    recipe_step_instruments.created_at,
+    recipe_step_instruments.last_updated_at,
+    recipe_step_instruments.archived_at,
+    recipe_step_instruments.belongs_to_recipe_step
 FROM recipe_step_instruments
 	LEFT JOIN valid_instruments ON recipe_step_instruments.instrument_id=valid_instruments.id
 	JOIN recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id
@@ -401,31 +404,31 @@ WHERE recipe_step_instruments.archived_at IS NULL
 `
 
 type GetRecipeStepInstrumentsForRecipeRow struct {
-	CreatedAt_2                    time.Time
-	ArchivedAt                     sql.NullTime
-	ArchivedAt_2                   sql.NullTime
-	LastUpdatedAt_2                sql.NullTime
-	LastUpdatedAt                  sql.NullTime
-	CreatedAt                      sql.NullTime
-	Name_2                         string
-	BelongsToRecipeStep            string
-	ID                             string
-	Notes                          string
-	Description                    sql.NullString
-	PluralName                     sql.NullString
-	IconPath                       sql.NullString
-	Slug                           sql.NullString
-	RecipeStepProductID            sql.NullString
-	Name                           sql.NullString
-	ID_2                           sql.NullString
-	MaximumQuantity                sql.NullInt32
-	MinimumQuantity                int32
-	OptionIndex                    int32
-	PreferenceRank                 int32
-	IncludeInGeneratedInstructions sql.NullBool
-	DisplayInSummaryLists          sql.NullBool
-	UsableForStorage               sql.NullBool
-	Optional                       bool
+	CreatedAt                                     time.Time
+	ValidInstrumentArchivedAt                     sql.NullTime
+	ArchivedAt                                    sql.NullTime
+	LastUpdatedAt                                 sql.NullTime
+	ValidInstrumentLastUpdatedAt                  sql.NullTime
+	ValidInstrumentCreatedAt                      sql.NullTime
+	Name                                          string
+	BelongsToRecipeStep                           string
+	ID                                            string
+	Notes                                         string
+	ValidInstrumentDescription                    sql.NullString
+	ValidInstrumentPluralName                     sql.NullString
+	ValidInstrumentIconPath                       sql.NullString
+	ValidInstrumentSlug                           sql.NullString
+	RecipeStepProductID                           sql.NullString
+	ValidInstrumentName                           sql.NullString
+	ValidInstrumentID                             sql.NullString
+	MaximumQuantity                               sql.NullInt32
+	MinimumQuantity                               int32
+	OptionIndex                                   int32
+	PreferenceRank                                int32
+	ValidInstrumentIncludeInGeneratedInstructions sql.NullBool
+	ValidInstrumentDisplayInSummaryLists          sql.NullBool
+	ValidInstrumentUsableForStorage               sql.NullBool
+	Optional                                      bool
 }
 
 func (q *Queries) GetRecipeStepInstrumentsForRecipe(ctx context.Context, db DBTX, belongsToRecipe string) ([]*GetRecipeStepInstrumentsForRecipeRow, error) {
@@ -439,29 +442,29 @@ func (q *Queries) GetRecipeStepInstrumentsForRecipe(ctx context.Context, db DBTX
 		var i GetRecipeStepInstrumentsForRecipeRow
 		if err := rows.Scan(
 			&i.ID,
-			&i.ID_2,
-			&i.Name,
-			&i.PluralName,
-			&i.Description,
-			&i.IconPath,
-			&i.UsableForStorage,
-			&i.DisplayInSummaryLists,
-			&i.IncludeInGeneratedInstructions,
-			&i.Slug,
-			&i.CreatedAt,
-			&i.LastUpdatedAt,
-			&i.ArchivedAt,
+			&i.ValidInstrumentID,
+			&i.ValidInstrumentName,
+			&i.ValidInstrumentPluralName,
+			&i.ValidInstrumentDescription,
+			&i.ValidInstrumentIconPath,
+			&i.ValidInstrumentUsableForStorage,
+			&i.ValidInstrumentDisplayInSummaryLists,
+			&i.ValidInstrumentIncludeInGeneratedInstructions,
+			&i.ValidInstrumentSlug,
+			&i.ValidInstrumentCreatedAt,
+			&i.ValidInstrumentLastUpdatedAt,
+			&i.ValidInstrumentArchivedAt,
 			&i.RecipeStepProductID,
-			&i.Name_2,
+			&i.Name,
 			&i.Notes,
 			&i.PreferenceRank,
 			&i.Optional,
 			&i.MinimumQuantity,
 			&i.MaximumQuantity,
 			&i.OptionIndex,
-			&i.CreatedAt_2,
-			&i.LastUpdatedAt_2,
-			&i.ArchivedAt_2,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
 			&i.BelongsToRecipeStep,
 		); err != nil {
 			return nil, err
@@ -477,7 +480,7 @@ func (q *Queries) GetRecipeStepInstrumentsForRecipe(ctx context.Context, db DBTX
 	return items, nil
 }
 
-const updateRecipeStepInstrument = `-- name: UpdateRecipeStepInstrument :exec
+const updateRecipeStepInstrument = `-- name: UpdateRecipeStepInstrument :execrows
 
 UPDATE recipe_step_instruments SET
 	instrument_id = $1,
@@ -509,8 +512,8 @@ type UpdateRecipeStepInstrumentParams struct {
 	Optional            bool
 }
 
-func (q *Queries) UpdateRecipeStepInstrument(ctx context.Context, db DBTX, arg *UpdateRecipeStepInstrumentParams) error {
-	_, err := db.ExecContext(ctx, updateRecipeStepInstrument,
+func (q *Queries) UpdateRecipeStepInstrument(ctx context.Context, db DBTX, arg *UpdateRecipeStepInstrumentParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateRecipeStepInstrument,
 		arg.InstrumentID,
 		arg.RecipeStepProductID,
 		arg.Name,
@@ -523,5 +526,8 @@ func (q *Queries) UpdateRecipeStepInstrument(ctx context.Context, db DBTX, arg *
 		arg.BelongsToRecipeStep,
 		arg.ID,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

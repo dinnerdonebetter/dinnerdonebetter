@@ -1,8 +1,8 @@
--- name: ArchiveValidIngredientGroup :exec
+-- name: ArchiveValidIngredientGroup :execrows
 
 UPDATE valid_ingredient_groups SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
 
--- name: ArchiveValidIngredientGroupMember :exec
+-- name: ArchiveValidIngredientGroupMember :execrows
 
 UPDATE valid_ingredient_group_members SET archived_at = NOW() WHERE id = $1 AND belongs_to_group = $2;
 
@@ -200,7 +200,7 @@ WHERE
 OFFSET sqlc.narg(query_offset)
     LIMIT sqlc.narg(query_limit);
 
--- name: UpdateValidIngredientGroup :exec
+-- name: UpdateValidIngredientGroup :execrows
 
 UPDATE valid_ingredient_groups SET
 	name = $1,

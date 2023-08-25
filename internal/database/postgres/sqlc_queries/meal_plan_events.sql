@@ -1,4 +1,4 @@
--- name: ArchiveMealPlanEvent :exec
+-- name: ArchiveMealPlanEvent :execrows
 
 UPDATE meal_plan_events SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1 AND belongs_to_meal_plan = $2;
 
@@ -122,7 +122,7 @@ WHERE meal_plan_events.archived_at IS NULL
 	AND meal_plan_events.id = $1
 	AND meal_plan_events.belongs_to_meal_plan = $2;
 
--- name: UpdateMealPlanEvent :exec
+-- name: UpdateMealPlanEvent :execrows
 
 UPDATE meal_plan_events
 SET notes = $1,

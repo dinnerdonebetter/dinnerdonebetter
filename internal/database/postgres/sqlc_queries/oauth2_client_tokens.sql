@@ -1,12 +1,12 @@
--- name: ArchiveOAuth2ClientTokenByAccess :exec
+-- name: ArchiveOAuth2ClientTokenByAccess :execrows
 
 DELETE FROM oauth2_client_tokens WHERE access = $1;
 
--- name: ArchiveOAuth2ClientTokenByCode :exec
+-- name: ArchiveOAuth2ClientTokenByCode :execrows
 
 DELETE FROM oauth2_client_tokens WHERE code = $1;
 
--- name: ArchiveOAuth2ClientTokenByRefresh :exec
+-- name: ArchiveOAuth2ClientTokenByRefresh :execrows
 
 DELETE FROM oauth2_client_tokens WHERE refresh = $1;
 

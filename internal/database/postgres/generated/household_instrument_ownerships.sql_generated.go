@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const archiveHouseholdInstrumentOwnership = `-- name: ArchiveHouseholdInstrumentOwnership :exec
+const archiveHouseholdInstrumentOwnership = `-- name: ArchiveHouseholdInstrumentOwnership :execrows
 
 UPDATE household_instrument_ownerships SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1 AND belongs_to_household = $2
 `
@@ -21,9 +21,12 @@ type ArchiveHouseholdInstrumentOwnershipParams struct {
 	BelongsToHousehold string
 }
 
-func (q *Queries) ArchiveHouseholdInstrumentOwnership(ctx context.Context, db DBTX, arg *ArchiveHouseholdInstrumentOwnershipParams) error {
-	_, err := db.ExecContext(ctx, archiveHouseholdInstrumentOwnership, arg.ID, arg.BelongsToHousehold)
-	return err
+func (q *Queries) ArchiveHouseholdInstrumentOwnership(ctx context.Context, db DBTX, arg *ArchiveHouseholdInstrumentOwnershipParams) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveHouseholdInstrumentOwnership, arg.ID, arg.BelongsToHousehold)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkHouseholdInstrumentOwnershipExistence = `-- name: CheckHouseholdInstrumentOwnershipExistence :one
@@ -311,7 +314,7 @@ func (q *Queries) GetHouseholdInstrumentOwnerships(ctx context.Context, db DBTX,
 	return items, nil
 }
 
-const updateHouseholdInstrumentOwnership = `-- name: UpdateHouseholdInstrumentOwnership :exec
+const updateHouseholdInstrumentOwnership = `-- name: UpdateHouseholdInstrumentOwnership :execrows
 
 UPDATE household_instrument_ownerships
 SET
@@ -332,13 +335,16 @@ type UpdateHouseholdInstrumentOwnershipParams struct {
 	Quantity           int32
 }
 
-func (q *Queries) UpdateHouseholdInstrumentOwnership(ctx context.Context, db DBTX, arg *UpdateHouseholdInstrumentOwnershipParams) error {
-	_, err := db.ExecContext(ctx, updateHouseholdInstrumentOwnership,
+func (q *Queries) UpdateHouseholdInstrumentOwnership(ctx context.Context, db DBTX, arg *UpdateHouseholdInstrumentOwnershipParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateHouseholdInstrumentOwnership,
 		arg.Notes,
 		arg.Quantity,
 		arg.ValidInstrumentID,
 		arg.ID,
 		arg.BelongsToHousehold,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

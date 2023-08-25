@@ -1,4 +1,4 @@
--- name: ArchiveValidMeasurementUnit :exec
+-- name: ArchiveValidMeasurementUnit :execrows
 
 UPDATE valid_measurement_units SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
 
@@ -257,7 +257,7 @@ WHERE
 	LIMIT sqlc.narg(query_limit)
 	OFFSET sqlc.narg(query_offset);
 
--- name: UpdateValidMeasurementUnit :exec
+-- name: UpdateValidMeasurementUnit :execrows
 
 UPDATE valid_measurement_units SET
 	name = $1,
@@ -272,6 +272,6 @@ UPDATE valid_measurement_units SET
 	last_updated_at = NOW()
 WHERE archived_at IS NULL AND id = $10;
 
--- name: UpdateValidMeasurementUnitLastIndexedAt :exec
+-- name: UpdateValidMeasurementUnitLastIndexedAt :execrows
 
 UPDATE valid_measurement_units SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL;

@@ -252,7 +252,7 @@ func (q *Querier) UpdateHousehold(ctx context.Context, updated *types.Household)
 	logger := q.logger.WithValue(keys.HouseholdIDKey, updated.ID)
 	tracing.AttachHouseholdIDToSpan(span, updated.ID)
 
-	if err := q.generatedQuerier.UpdateHousehold(ctx, q.db, &generated.UpdateHouseholdParams{
+	if _, err := q.generatedQuerier.UpdateHousehold(ctx, q.db, &generated.UpdateHouseholdParams{
 		Name:          updated.Name,
 		ContactPhone:  updated.ContactPhone,
 		AddressLine1:  updated.AddressLine1,
@@ -290,7 +290,7 @@ func (q *Querier) ArchiveHousehold(ctx context.Context, householdID, userID stri
 		keys.UserIDKey:      userID,
 	})
 
-	if err := q.generatedQuerier.ArchiveHousehold(ctx, q.db, &generated.ArchiveHouseholdParams{
+	if _, err := q.generatedQuerier.ArchiveHousehold(ctx, q.db, &generated.ArchiveHouseholdParams{
 		BelongsToUser: userID,
 		ID:            householdID,
 	}); err != nil {

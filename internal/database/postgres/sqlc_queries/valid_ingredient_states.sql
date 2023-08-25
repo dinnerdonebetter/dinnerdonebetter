@@ -1,4 +1,4 @@
--- name: ArchiveValidIngredientState :exec
+-- name: ArchiveValidIngredientState :execrows
 
 UPDATE valid_ingredient_states SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
 
@@ -114,7 +114,7 @@ WHERE valid_ingredient_states.archived_at IS NULL
 	AND valid_ingredient_states.name ILIKE '%' || sqlc.arg(query)::text || '%'
 LIMIT 50;
 
--- name: UpdateValidIngredientState :exec
+-- name: UpdateValidIngredientState :execrows
 
 UPDATE valid_ingredient_states
 SET
@@ -128,6 +128,6 @@ SET
 WHERE archived_at IS NULL
 	AND id = $7;
 
--- name: UpdateValidIngredientStateLastIndexedAt :exec
+-- name: UpdateValidIngredientStateLastIndexedAt :execrows
 
 UPDATE valid_ingredient_states SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL;

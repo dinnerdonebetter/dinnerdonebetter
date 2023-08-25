@@ -1,4 +1,4 @@
--- name: ArchiveRecipePrepTask :exec
+-- name: ArchiveRecipePrepTask :execrows
 
 UPDATE recipe_prep_tasks SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
 
@@ -80,7 +80,7 @@ WHERE recipe_prep_tasks.archived_at IS NULL
     AND recipes.id = sqlc.arg(recipe_id)
     AND recipe_steps.belongs_to_recipe = sqlc.arg(recipe_id);
 
--- name: UpdateRecipePrepTask :exec
+-- name: UpdateRecipePrepTask :execrows
 
 UPDATE recipe_prep_tasks SET
 	 name = $1,

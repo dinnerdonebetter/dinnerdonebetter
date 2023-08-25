@@ -12,14 +12,14 @@ UPDATE users SET
 WHERE archived_at IS NULL
 	AND id = $1;
 
--- name: ArchiveUser :exec
+-- name: ArchiveUser :execrows
 
 UPDATE users SET
 	archived_at = NOW()
 WHERE archived_at IS NULL
 	AND id = $1;
 
--- name: ArchiveUserMemberships :exec
+-- name: ArchiveUserMemberships :execrows
 
 UPDATE household_user_memberships SET
 	archived_at = NOW()
@@ -373,7 +373,7 @@ FROM users
 WHERE users.username ILIKE '%' || sqlc.arg(username)::text || '%'
 AND users.archived_at IS NULL;
 
--- name: UpdateUser :exec
+-- name: UpdateUser :execrows
 
 UPDATE users SET
 	username = $1,
@@ -386,7 +386,7 @@ UPDATE users SET
 WHERE archived_at IS NULL
 	AND id = $7;
 
--- name: UpdateUserAvatarSrc :exec
+-- name: UpdateUserAvatarSrc :execrows
 
 UPDATE users SET
 	avatar_src = $1,
@@ -394,7 +394,7 @@ UPDATE users SET
 WHERE archived_at IS NULL
 	AND id = $2;
 
--- name: UpdateUserDetails :exec
+-- name: UpdateUserDetails :execrows
 
 UPDATE users SET
 	first_name = $1,
@@ -404,7 +404,7 @@ UPDATE users SET
 WHERE archived_at IS NULL
 	AND id = $4;
 
--- name: UpdateUserEmailAddress :exec
+-- name: UpdateUserEmailAddress :execrows
 
 UPDATE users SET
 	email_address = $1,
@@ -413,11 +413,11 @@ UPDATE users SET
 WHERE archived_at IS NULL
 	AND id = $2;
 
--- name: UpdateUserLastIndexedAt :exec
+-- name: UpdateUserLastIndexedAt :execrows
 
 UPDATE users SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL;
 
--- name: UpdateUserPassword :exec
+-- name: UpdateUserPassword :execrows
 
 UPDATE users SET
 	hashed_password = $1,
@@ -426,7 +426,7 @@ UPDATE users SET
 WHERE archived_at IS NULL
 	AND id = $2;
 
--- name: UpdateUserTwoFactorSecret :exec
+-- name: UpdateUserTwoFactorSecret :execrows
 
 UPDATE users SET
 	two_factor_secret_verified_at = NULL,
@@ -435,7 +435,7 @@ UPDATE users SET
 WHERE archived_at IS NULL
 	AND id = $2;
 
--- name: UpdateUserUsername :exec
+-- name: UpdateUserUsername :execrows
 
 UPDATE users SET
 	username = $1,

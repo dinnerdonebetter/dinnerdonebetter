@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const archiveMealPlan = `-- name: ArchiveMealPlan :exec
+const archiveMealPlan = `-- name: ArchiveMealPlan :execrows
 
 UPDATE meal_plans SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_household = $1 AND id = $2
 `
@@ -21,9 +21,12 @@ type ArchiveMealPlanParams struct {
 	ID                 string
 }
 
-func (q *Queries) ArchiveMealPlan(ctx context.Context, db DBTX, arg *ArchiveMealPlanParams) error {
-	_, err := db.ExecContext(ctx, archiveMealPlan, arg.BelongsToHousehold, arg.ID)
-	return err
+func (q *Queries) ArchiveMealPlan(ctx context.Context, db DBTX, arg *ArchiveMealPlanParams) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveMealPlan, arg.BelongsToHousehold, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkMealPlanExistence = `-- name: CheckMealPlanExistence :one
@@ -552,7 +555,7 @@ func (q *Queries) MarkMealPlanAsPrepTasksCreated(ctx context.Context, db DBTX, i
 	return err
 }
 
-const updateMealPlan = `-- name: UpdateMealPlan :exec
+const updateMealPlan = `-- name: UpdateMealPlan :execrows
 
 UPDATE meal_plans SET notes = $1, status = $2, voting_deadline = $3, last_updated_at = NOW() WHERE archived_at IS NULL AND belongs_to_household = $4 AND id = $5
 `
@@ -565,13 +568,16 @@ type UpdateMealPlanParams struct {
 	ID                 string
 }
 
-func (q *Queries) UpdateMealPlan(ctx context.Context, db DBTX, arg *UpdateMealPlanParams) error {
-	_, err := db.ExecContext(ctx, updateMealPlan,
+func (q *Queries) UpdateMealPlan(ctx context.Context, db DBTX, arg *UpdateMealPlanParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateMealPlan,
 		arg.Notes,
 		arg.Status,
 		arg.VotingDeadline,
 		arg.BelongsToHousehold,
 		arg.ID,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

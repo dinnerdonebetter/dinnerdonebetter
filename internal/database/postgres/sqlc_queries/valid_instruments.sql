@@ -1,4 +1,4 @@
--- name: ArchiveValidInstrument :exec
+-- name: ArchiveValidInstrument :execrows
 
 UPDATE valid_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
 
@@ -148,7 +148,7 @@ WHERE valid_instruments.archived_at IS NULL
 	AND valid_instruments.name ILIKE '%' || sqlc.arg(query)::text || '%'
     LIMIT 50;
 
--- name: UpdateValidInstrument :exec
+-- name: UpdateValidInstrument :execrows
 
 UPDATE valid_instruments
 SET
@@ -164,6 +164,6 @@ SET
 WHERE archived_at IS NULL
 	AND id = $9;
 
--- name: UpdateValidInstrumentLastIndexedAt :exec
+-- name: UpdateValidInstrumentLastIndexedAt :execrows
 
 UPDATE valid_instruments SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL;

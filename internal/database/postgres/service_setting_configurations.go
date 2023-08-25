@@ -388,7 +388,7 @@ func (q *Querier) UpdateServiceSettingConfiguration(ctx context.Context, updated
 	logger := q.logger.WithValue(keys.ServiceSettingConfigurationIDKey, updated.ID)
 	tracing.AttachServiceSettingConfigurationIDToSpan(span, updated.ID)
 
-	if err := q.generatedQuerier.UpdateServiceSettingConfiguration(ctx, q.db, &generated.UpdateServiceSettingConfigurationParams{
+	if _, err := q.generatedQuerier.UpdateServiceSettingConfiguration(ctx, q.db, &generated.UpdateServiceSettingConfigurationParams{
 		Value:              updated.Value,
 		Notes:              updated.Notes,
 		ServiceSettingID:   updated.ServiceSetting.ID,
@@ -417,7 +417,7 @@ func (q *Querier) ArchiveServiceSettingConfiguration(ctx context.Context, servic
 	logger = logger.WithValue(keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
 	tracing.AttachServiceSettingConfigurationIDToSpan(span, serviceSettingConfigurationID)
 
-	if err := q.generatedQuerier.ArchiveServiceSettingConfiguration(ctx, q.db, serviceSettingConfigurationID); err != nil {
+	if _, err := q.generatedQuerier.ArchiveServiceSettingConfiguration(ctx, q.db, serviceSettingConfigurationID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving service setting configuration")
 	}
 

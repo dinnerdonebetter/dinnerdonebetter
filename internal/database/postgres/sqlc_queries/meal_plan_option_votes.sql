@@ -1,4 +1,4 @@
--- name: ArchiveMealPlanOptionVote :exec
+-- name: ArchiveMealPlanOptionVote :execrows
 
 UPDATE meal_plan_option_votes SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_meal_plan_option = $1 AND id = $2;
 
@@ -148,6 +148,6 @@ WHERE meal_plan_option_votes.archived_at IS NULL
 	AND meal_plans.archived_at IS NULL
 	AND meal_plans.id = $4;
 
--- name: UpdateMealPlanOptionVote :exec
+-- name: UpdateMealPlanOptionVote :execrows
 
 UPDATE meal_plan_option_votes SET rank = $1, abstain = $2, notes = $3, by_user = $4, last_updated_at = NOW() WHERE archived_at IS NULL AND belongs_to_meal_plan_option = $5 AND id = $6;

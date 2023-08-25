@@ -1,4 +1,4 @@
--- name: ArchiveValidPreparation :exec
+-- name: ArchiveValidPreparation :execrows
 
 UPDATE valid_preparations SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
 
@@ -238,7 +238,7 @@ WHERE valid_preparations.archived_at IS NULL
 	AND valid_preparations.name ILIKE '%' || sqlc.arg(query)::text || '%'
 LIMIT 50;
 
--- name: UpdateValidPreparation :exec
+-- name: UpdateValidPreparation :execrows
 
 UPDATE valid_preparations
 SET
@@ -264,6 +264,6 @@ SET
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
 
--- name: UpdateValidPreparationLastIndexedAt :exec
+-- name: UpdateValidPreparationLastIndexedAt :execrows
 
 UPDATE valid_preparations SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL;

@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const archiveMealPlanOptionVote = `-- name: ArchiveMealPlanOptionVote :exec
+const archiveMealPlanOptionVote = `-- name: ArchiveMealPlanOptionVote :execrows
 
 UPDATE meal_plan_option_votes SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_meal_plan_option = $1 AND id = $2
 `
@@ -21,9 +21,12 @@ type ArchiveMealPlanOptionVoteParams struct {
 	ID                      string
 }
 
-func (q *Queries) ArchiveMealPlanOptionVote(ctx context.Context, db DBTX, arg *ArchiveMealPlanOptionVoteParams) error {
-	_, err := db.ExecContext(ctx, archiveMealPlanOptionVote, arg.BelongsToMealPlanOption, arg.ID)
-	return err
+func (q *Queries) ArchiveMealPlanOptionVote(ctx context.Context, db DBTX, arg *ArchiveMealPlanOptionVoteParams) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveMealPlanOptionVote, arg.BelongsToMealPlanOption, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkMealPlanOptionVoteExistence = `-- name: CheckMealPlanOptionVoteExistence :one
@@ -356,7 +359,7 @@ func (q *Queries) GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, d
 	return items, nil
 }
 
-const updateMealPlanOptionVote = `-- name: UpdateMealPlanOptionVote :exec
+const updateMealPlanOptionVote = `-- name: UpdateMealPlanOptionVote :execrows
 
 UPDATE meal_plan_option_votes SET rank = $1, abstain = $2, notes = $3, by_user = $4, last_updated_at = NOW() WHERE archived_at IS NULL AND belongs_to_meal_plan_option = $5 AND id = $6
 `
@@ -370,8 +373,8 @@ type UpdateMealPlanOptionVoteParams struct {
 	Abstain                 bool
 }
 
-func (q *Queries) UpdateMealPlanOptionVote(ctx context.Context, db DBTX, arg *UpdateMealPlanOptionVoteParams) error {
-	_, err := db.ExecContext(ctx, updateMealPlanOptionVote,
+func (q *Queries) UpdateMealPlanOptionVote(ctx context.Context, db DBTX, arg *UpdateMealPlanOptionVoteParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateMealPlanOptionVote,
 		arg.Rank,
 		arg.Abstain,
 		arg.Notes,
@@ -379,5 +382,8 @@ func (q *Queries) UpdateMealPlanOptionVote(ctx context.Context, db DBTX, arg *Up
 		arg.BelongsToMealPlanOption,
 		arg.ID,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

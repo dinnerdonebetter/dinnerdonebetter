@@ -407,7 +407,7 @@ func (q *Querier) UpdateValidVessel(ctx context.Context, updated *types.ValidVes
 		return fmt.Errorf("capacity unit: %w", ErrNilInputProvided)
 	}
 
-	if err := q.generatedQuerier.UpdateValidVessel(ctx, q.db, &generated.UpdateValidVesselParams{
+	if _, err := q.generatedQuerier.UpdateValidVessel(ctx, q.db, &generated.UpdateValidVesselParams{
 		Name:                           updated.Name,
 		PluralName:                     updated.PluralName,
 		Description:                    updated.Description,
@@ -445,7 +445,7 @@ func (q *Querier) MarkValidVesselAsIndexed(ctx context.Context, validVesselID st
 	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
 	tracing.AttachValidVesselIDToSpan(span, validVesselID)
 
-	if err := q.generatedQuerier.UpdateValidVesselLastIndexedAt(ctx, q.db, validVesselID); err != nil {
+	if _, err := q.generatedQuerier.UpdateValidVesselLastIndexedAt(ctx, q.db, validVesselID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking valid vessel as indexed")
 	}
 
@@ -467,7 +467,7 @@ func (q *Querier) ArchiveValidVessel(ctx context.Context, validVesselID string) 
 	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
 	tracing.AttachValidVesselIDToSpan(span, validVesselID)
 
-	if err := q.generatedQuerier.ArchiveValidVessel(ctx, q.db, validVesselID); err != nil {
+	if _, err := q.generatedQuerier.ArchiveValidVessel(ctx, q.db, validVesselID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid vessel")
 	}
 

@@ -11,14 +11,17 @@ import (
 	"time"
 )
 
-const archiveRecipeMedia = `-- name: ArchiveRecipeMedia :exec
+const archiveRecipeMedia = `-- name: ArchiveRecipeMedia :execrows
 
 UPDATE recipe_media SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
-func (q *Queries) ArchiveRecipeMedia(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, archiveRecipeMedia, id)
-	return err
+func (q *Queries) ArchiveRecipeMedia(ctx context.Context, db DBTX, id string) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveRecipeMedia, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkRecipeMediaExistence = `-- name: CheckRecipeMediaExistence :one
@@ -252,7 +255,7 @@ func (q *Queries) GetRecipeMediaForRecipeStep(ctx context.Context, db DBTX, arg 
 	return items, nil
 }
 
-const updateRecipeMedia = `-- name: UpdateRecipeMedia :exec
+const updateRecipeMedia = `-- name: UpdateRecipeMedia :execrows
 
 UPDATE recipe_media
 SET
@@ -276,8 +279,8 @@ type UpdateRecipeMediaParams struct {
 	Index               int32
 }
 
-func (q *Queries) UpdateRecipeMedia(ctx context.Context, db DBTX, arg *UpdateRecipeMediaParams) error {
-	_, err := db.ExecContext(ctx, updateRecipeMedia,
+func (q *Queries) UpdateRecipeMedia(ctx context.Context, db DBTX, arg *UpdateRecipeMediaParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateRecipeMedia,
 		arg.BelongsToRecipe,
 		arg.BelongsToRecipeStep,
 		arg.MimeType,
@@ -285,5 +288,8 @@ func (q *Queries) UpdateRecipeMedia(ctx context.Context, db DBTX, arg *UpdateRec
 		arg.ExternalPath,
 		arg.Index,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

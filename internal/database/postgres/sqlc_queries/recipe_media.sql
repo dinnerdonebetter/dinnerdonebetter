@@ -1,4 +1,4 @@
--- name: ArchiveRecipeMedia :exec
+-- name: ArchiveRecipeMedia :execrows
 
 UPDATE recipe_media SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
 
@@ -68,7 +68,7 @@ FROM recipe_media
 WHERE recipe_media.archived_at IS NULL
 	AND recipe_media.id = $1;
 
--- name: UpdateRecipeMedia :exec
+-- name: UpdateRecipeMedia :execrows
 
 UPDATE recipe_media
 SET

@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const archiveRecipe = `-- name: ArchiveRecipe :exec
+const archiveRecipe = `-- name: ArchiveRecipe :execrows
 
 UPDATE recipes SET archived_at = NOW() WHERE archived_at IS NULL AND created_by_user = $1 AND id = $2
 `
@@ -21,9 +21,12 @@ type ArchiveRecipeParams struct {
 	ID            string
 }
 
-func (q *Queries) ArchiveRecipe(ctx context.Context, db DBTX, arg *ArchiveRecipeParams) error {
-	_, err := db.ExecContext(ctx, archiveRecipe, arg.CreatedByUser, arg.ID)
-	return err
+func (q *Queries) ArchiveRecipe(ctx context.Context, db DBTX, arg *ArchiveRecipeParams) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveRecipe, arg.CreatedByUser, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkRecipeExistence = `-- name: CheckRecipeExistence :one
@@ -852,7 +855,7 @@ func (q *Queries) RecipeSearch(ctx context.Context, db DBTX, arg *RecipeSearchPa
 	return items, nil
 }
 
-const updateRecipe = `-- name: UpdateRecipe :exec
+const updateRecipe = `-- name: UpdateRecipe :execrows
 
 UPDATE recipes SET
     name = $1,
@@ -890,8 +893,8 @@ type UpdateRecipeParams struct {
 	SealOfApproval       bool
 }
 
-func (q *Queries) UpdateRecipe(ctx context.Context, db DBTX, arg *UpdateRecipeParams) error {
-	_, err := db.ExecContext(ctx, updateRecipe,
+func (q *Queries) UpdateRecipe(ctx context.Context, db DBTX, arg *UpdateRecipeParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateRecipe,
 		arg.Name,
 		arg.Slug,
 		arg.Source,
@@ -907,15 +910,21 @@ func (q *Queries) UpdateRecipe(ctx context.Context, db DBTX, arg *UpdateRecipePa
 		arg.CreatedByUser,
 		arg.ID,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
-const updateRecipeLastIndexedAt = `-- name: UpdateRecipeLastIndexedAt :exec
+const updateRecipeLastIndexedAt = `-- name: UpdateRecipeLastIndexedAt :execrows
 
 UPDATE recipes SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 
-func (q *Queries) UpdateRecipeLastIndexedAt(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, updateRecipeLastIndexedAt, id)
-	return err
+func (q *Queries) UpdateRecipeLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error) {
+	result, err := db.ExecContext(ctx, updateRecipeLastIndexedAt, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

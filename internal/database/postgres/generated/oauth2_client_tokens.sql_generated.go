@@ -10,34 +10,43 @@ import (
 	"time"
 )
 
-const archiveOAuth2ClientTokenByAccess = `-- name: ArchiveOAuth2ClientTokenByAccess :exec
+const archiveOAuth2ClientTokenByAccess = `-- name: ArchiveOAuth2ClientTokenByAccess :execrows
 
 DELETE FROM oauth2_client_tokens WHERE access = $1
 `
 
-func (q *Queries) ArchiveOAuth2ClientTokenByAccess(ctx context.Context, db DBTX, access string) error {
-	_, err := db.ExecContext(ctx, archiveOAuth2ClientTokenByAccess, access)
-	return err
+func (q *Queries) ArchiveOAuth2ClientTokenByAccess(ctx context.Context, db DBTX, access string) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveOAuth2ClientTokenByAccess, access)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
-const archiveOAuth2ClientTokenByCode = `-- name: ArchiveOAuth2ClientTokenByCode :exec
+const archiveOAuth2ClientTokenByCode = `-- name: ArchiveOAuth2ClientTokenByCode :execrows
 
 DELETE FROM oauth2_client_tokens WHERE code = $1
 `
 
-func (q *Queries) ArchiveOAuth2ClientTokenByCode(ctx context.Context, db DBTX, code string) error {
-	_, err := db.ExecContext(ctx, archiveOAuth2ClientTokenByCode, code)
-	return err
+func (q *Queries) ArchiveOAuth2ClientTokenByCode(ctx context.Context, db DBTX, code string) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveOAuth2ClientTokenByCode, code)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
-const archiveOAuth2ClientTokenByRefresh = `-- name: ArchiveOAuth2ClientTokenByRefresh :exec
+const archiveOAuth2ClientTokenByRefresh = `-- name: ArchiveOAuth2ClientTokenByRefresh :execrows
 
 DELETE FROM oauth2_client_tokens WHERE refresh = $1
 `
 
-func (q *Queries) ArchiveOAuth2ClientTokenByRefresh(ctx context.Context, db DBTX, refresh string) error {
-	_, err := db.ExecContext(ctx, archiveOAuth2ClientTokenByRefresh, refresh)
-	return err
+func (q *Queries) ArchiveOAuth2ClientTokenByRefresh(ctx context.Context, db DBTX, refresh string) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveOAuth2ClientTokenByRefresh, refresh)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkOAuth2ClientTokenExistence = `-- name: CheckOAuth2ClientTokenExistence :one

@@ -310,7 +310,7 @@ func (q *Querier) UpdateUserIngredientPreference(ctx context.Context, updated *t
 	logger := q.logger.WithValue(keys.UserIngredientPreferenceIDKey, updated.ID)
 	tracing.AttachUserIngredientPreferenceIDToSpan(span, updated.ID)
 
-	if err := q.generatedQuerier.UpdateUserIngredientPreference(ctx, q.db, &generated.UpdateUserIngredientPreferenceParams{
+	if _, err := q.generatedQuerier.UpdateUserIngredientPreference(ctx, q.db, &generated.UpdateUserIngredientPreferenceParams{
 		Ingredient:    updated.Ingredient.ID,
 		Notes:         updated.Notes,
 		ID:            updated.ID,
@@ -345,7 +345,7 @@ func (q *Querier) ArchiveUserIngredientPreference(ctx context.Context, userIngre
 	logger = logger.WithValue(keys.UserIngredientPreferenceIDKey, userIngredientPreferenceID)
 	tracing.AttachUserIngredientPreferenceIDToSpan(span, userIngredientPreferenceID)
 
-	if err := q.generatedQuerier.ArchiveUserIngredientPreference(ctx, q.db, &generated.ArchiveUserIngredientPreferenceParams{
+	if _, err := q.generatedQuerier.ArchiveUserIngredientPreference(ctx, q.db, &generated.ArchiveUserIngredientPreferenceParams{
 		ID:            userIngredientPreferenceID,
 		BelongsToUser: userID,
 	}); err != nil {

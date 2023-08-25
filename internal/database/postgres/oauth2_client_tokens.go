@@ -304,7 +304,7 @@ func (q *Querier) ArchiveOAuth2ClientTokenByAccess(ctx context.Context, access s
 		return observability.PrepareError(err, span, "decrypting oauth2 token access")
 	}
 
-	if err = q.generatedQuerier.ArchiveOAuth2ClientTokenByAccess(ctx, q.db, encryptedAccess); err != nil {
+	if _, err = q.generatedQuerier.ArchiveOAuth2ClientTokenByAccess(ctx, q.db, encryptedAccess); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving oauth2 client token by refresh")
 	}
 
@@ -331,7 +331,7 @@ func (q *Querier) ArchiveOAuth2ClientTokenByCode(ctx context.Context, code strin
 		return observability.PrepareError(err, span, "decrypting oauth2 token access")
 	}
 
-	if err = q.generatedQuerier.ArchiveOAuth2ClientTokenByCode(ctx, q.db, encryptedCode); err != nil {
+	if _, err = q.generatedQuerier.ArchiveOAuth2ClientTokenByCode(ctx, q.db, encryptedCode); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving oauth2 client token by refresh")
 	}
 
@@ -358,7 +358,7 @@ func (q *Querier) ArchiveOAuth2ClientTokenByRefresh(ctx context.Context, refresh
 		return observability.PrepareError(err, span, "decrypting oauth2 token access")
 	}
 
-	if err = q.generatedQuerier.ArchiveOAuth2ClientTokenByRefresh(ctx, q.db, encryptedRefresh); err != nil {
+	if _, err = q.generatedQuerier.ArchiveOAuth2ClientTokenByRefresh(ctx, q.db, encryptedRefresh); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving oauth2 client token by refresh")
 	}
 

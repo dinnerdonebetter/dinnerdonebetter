@@ -1,4 +1,4 @@
--- name: ArchiveRecipeStepProduct :exec
+-- name: ArchiveRecipeStepProduct :execrows
 
 UPDATE recipe_step_products SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2;
 
@@ -182,7 +182,7 @@ WHERE recipe_step_products.archived_at IS NULL
 	AND recipes.archived_at IS NULL
 	AND recipes.id = sqlc.arg(recipe_id);
 
--- name: UpdateRecipeStepProduct :exec
+-- name: UpdateRecipeStepProduct :execrows
 
 UPDATE recipe_step_products
 SET

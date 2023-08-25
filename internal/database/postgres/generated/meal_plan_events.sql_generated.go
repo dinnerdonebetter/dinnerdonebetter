@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const archiveMealPlanEvent = `-- name: ArchiveMealPlanEvent :exec
+const archiveMealPlanEvent = `-- name: ArchiveMealPlanEvent :execrows
 
 UPDATE meal_plan_events SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1 AND belongs_to_meal_plan = $2
 `
@@ -21,9 +21,12 @@ type ArchiveMealPlanEventParams struct {
 	BelongsToMealPlan string
 }
 
-func (q *Queries) ArchiveMealPlanEvent(ctx context.Context, db DBTX, arg *ArchiveMealPlanEventParams) error {
-	_, err := db.ExecContext(ctx, archiveMealPlanEvent, arg.ID, arg.BelongsToMealPlan)
-	return err
+func (q *Queries) ArchiveMealPlanEvent(ctx context.Context, db DBTX, arg *ArchiveMealPlanEventParams) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveMealPlanEvent, arg.ID, arg.BelongsToMealPlan)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkMealPlanEventExistence = `-- name: CheckMealPlanEventExistence :one
@@ -318,7 +321,7 @@ func (q *Queries) MealPlanEventIsEligibleForVoting(ctx context.Context, db DBTX,
 	return exists, err
 }
 
-const updateMealPlanEvent = `-- name: UpdateMealPlanEvent :exec
+const updateMealPlanEvent = `-- name: UpdateMealPlanEvent :execrows
 
 UPDATE meal_plan_events
 SET notes = $1,
@@ -340,8 +343,8 @@ type UpdateMealPlanEventParams struct {
 	ID                string
 }
 
-func (q *Queries) UpdateMealPlanEvent(ctx context.Context, db DBTX, arg *UpdateMealPlanEventParams) error {
-	_, err := db.ExecContext(ctx, updateMealPlanEvent,
+func (q *Queries) UpdateMealPlanEvent(ctx context.Context, db DBTX, arg *UpdateMealPlanEventParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateMealPlanEvent,
 		arg.Notes,
 		arg.StartsAt,
 		arg.EndsAt,
@@ -349,5 +352,8 @@ func (q *Queries) UpdateMealPlanEvent(ctx context.Context, db DBTX, arg *UpdateM
 		arg.BelongsToMealPlan,
 		arg.ID,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

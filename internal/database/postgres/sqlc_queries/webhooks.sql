@@ -1,4 +1,4 @@
--- name: ArchiveWebhook :exec
+-- name: ArchiveWebhook :execrows
 
 UPDATE webhooks
 SET

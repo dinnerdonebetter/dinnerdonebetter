@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const archiveOAuth2Client = `-- name: ArchiveOAuth2Client :exec
+const archiveOAuth2Client = `-- name: ArchiveOAuth2Client :execrows
 
 UPDATE oauth2_clients SET
 	archived_at = NOW()
@@ -19,9 +19,12 @@ WHERE archived_at IS NULL
 	AND id = $1
 `
 
-func (q *Queries) ArchiveOAuth2Client(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, archiveOAuth2Client, id)
-	return err
+func (q *Queries) ArchiveOAuth2Client(ctx context.Context, db DBTX, id string) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveOAuth2Client, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const createOAuth2Client = `-- name: CreateOAuth2Client :exec

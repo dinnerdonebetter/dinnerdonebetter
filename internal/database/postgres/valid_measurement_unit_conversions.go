@@ -58,7 +58,43 @@ func (q *Querier) GetValidMeasurementUnitConversion(ctx context.Context, validMe
 		CreatedAt:     result.CreatedAt,
 		LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
 		ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
-		OnlyForIngredient: &types.ValidIngredient{
+		Notes:         result.Notes,
+		ID:            result.ID,
+		From: types.ValidMeasurementUnit{
+			CreatedAt:     result.FromUnitCreatedAt,
+			LastUpdatedAt: timePointerFromNullTime(result.FromUnitLastUpdatedAt),
+			ArchivedAt:    timePointerFromNullTime(result.FromUnitArchivedAt),
+			Name:          result.FromUnitName,
+			IconPath:      result.FromUnitIconPath,
+			ID:            result.FromUnitID,
+			Description:   result.FromUnitDescription,
+			PluralName:    result.FromUnitPluralName,
+			Slug:          result.FromUnitSlug,
+			Volumetric:    boolFromNullBool(result.FromUnitVolumetric),
+			Universal:     result.FromUnitUniversal,
+			Metric:        result.FromUnitMetric,
+			Imperial:      result.FromUnitImperial,
+		},
+		To: types.ValidMeasurementUnit{
+			CreatedAt:     result.ToUnitCreatedAt,
+			LastUpdatedAt: timePointerFromNullTime(result.ToUnitLastUpdatedAt),
+			ArchivedAt:    timePointerFromNullTime(result.ToUnitArchivedAt),
+			Name:          result.ToUnitName,
+			IconPath:      result.ToUnitIconPath,
+			ID:            result.ToUnitID,
+			Description:   result.ToUnitDescription,
+			PluralName:    result.ToUnitPluralName,
+			Slug:          result.ToUnitSlug,
+			Volumetric:    boolFromNullBool(result.ToUnitVolumetric),
+			Universal:     result.ToUnitUniversal,
+			Metric:        result.ToUnitMetric,
+			Imperial:      result.ToUnitImperial,
+		},
+		Modifier: float32(result.ValidMeasurementConversionsModifier),
+	}
+
+	if result.ValidIngredientID.Valid && result.ValidIngredientID.String != "" {
+		validMeasurementUnitConversion.OnlyForIngredient = &types.ValidIngredient{
 			CreatedAt:                               result.ValidIngredientCreatedAt.Time,
 			LastUpdatedAt:                           &result.ValidIngredientLastUpdatedAt.Time,
 			ArchivedAt:                              &result.ValidIngredientArchivedAt.Time,
@@ -97,40 +133,7 @@ func (q *Querier) GetValidMeasurementUnitConversion(ctx context.Context, validMe
 			IsFat:                                   result.ValidIngredientIsFat.Bool,
 			IsAcid:                                  result.ValidIngredientIsAcid.Bool,
 			IsHeat:                                  result.ValidIngredientIsHeat.Bool,
-		},
-		Notes: result.Notes,
-		ID:    result.ID,
-		From: types.ValidMeasurementUnit{
-			CreatedAt:     result.FromUnitCreatedAt,
-			LastUpdatedAt: timePointerFromNullTime(result.FromUnitLastUpdatedAt),
-			ArchivedAt:    timePointerFromNullTime(result.FromUnitArchivedAt),
-			Name:          result.FromUnitName,
-			IconPath:      result.FromUnitIconPath,
-			ID:            result.FromUnitID,
-			Description:   result.FromUnitDescription,
-			PluralName:    result.FromUnitPluralName,
-			Slug:          result.FromUnitSlug,
-			Volumetric:    boolFromNullBool(result.FromUnitVolumetric),
-			Universal:     result.FromUnitUniversal,
-			Metric:        result.FromUnitMetric,
-			Imperial:      result.FromUnitImperial,
-		},
-		To: types.ValidMeasurementUnit{
-			CreatedAt:     result.ToUnitCreatedAt,
-			LastUpdatedAt: timePointerFromNullTime(result.ToUnitLastUpdatedAt),
-			ArchivedAt:    timePointerFromNullTime(result.ToUnitArchivedAt),
-			Name:          result.ToUnitName,
-			IconPath:      result.ToUnitIconPath,
-			ID:            result.ToUnitID,
-			Description:   result.ToUnitDescription,
-			PluralName:    result.ToUnitPluralName,
-			Slug:          result.ToUnitSlug,
-			Volumetric:    boolFromNullBool(result.ToUnitVolumetric),
-			Universal:     result.ToUnitUniversal,
-			Metric:        result.ToUnitMetric,
-			Imperial:      result.ToUnitImperial,
-		},
-		Modifier: float32(result.ValidMeasurementConversionsModifier),
+		}
 	}
 
 	return validMeasurementUnitConversion, nil
@@ -401,7 +404,7 @@ func (q *Querier) UpdateValidMeasurementUnitConversion(ctx context.Context, upda
 		ingredientID = &updated.OnlyForIngredient.ID
 	}
 
-	if err := q.generatedQuerier.UpdateValidMeasurementUnitConversion(ctx, q.db, &generated.UpdateValidMeasurementUnitConversionParams{
+	if _, err := q.generatedQuerier.UpdateValidMeasurementUnitConversion(ctx, q.db, &generated.UpdateValidMeasurementUnitConversionParams{
 		FromUnit:          updated.From.ID,
 		ToUnit:            updated.To.ID,
 		OnlyForIngredient: nullStringFromStringPointer(ingredientID),
@@ -430,7 +433,7 @@ func (q *Querier) ArchiveValidMeasurementUnitConversion(ctx context.Context, val
 	logger = logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 	tracing.AttachValidMeasurementUnitConversionIDToSpan(span, validMeasurementUnitConversionID)
 
-	if err := q.generatedQuerier.ArchiveValidMeasurementUnitConversion(ctx, q.db, validMeasurementUnitConversionID); err != nil {
+	if _, err := q.generatedQuerier.ArchiveValidMeasurementUnitConversion(ctx, q.db, validMeasurementUnitConversionID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid measurement conversion")
 	}
 

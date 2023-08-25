@@ -1,4 +1,4 @@
--- name: ArchiveMeal :exec
+-- name: ArchiveMeal :execrows
 
 UPDATE meals SET archived_at = NOW() WHERE archived_at IS NULL AND created_by_user = $1 AND id = $2;
 
@@ -21,7 +21,7 @@ SELECT meals.id
             < now() - '24 hours'::INTERVAL
     );
 
--- name: GetMeal :one
+-- name: GetMeal :many
 
 SELECT
     meals.id,
@@ -133,6 +133,6 @@ WHERE meals.archived_at IS NULL
     OFFSET sqlc.narg(query_offset)
     LIMIT sqlc.narg(query_limit);
 
--- name: UpdateMealLastIndexedAt :exec
+-- name: UpdateMealLastIndexedAt :execrows
 
 UPDATE meals SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL;

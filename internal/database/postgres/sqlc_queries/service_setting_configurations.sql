@@ -1,4 +1,4 @@
--- name: ArchiveServiceSettingConfiguration :exec
+-- name: ArchiveServiceSettingConfiguration :execrows
 
 UPDATE service_setting_configurations SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
 
@@ -147,7 +147,7 @@ WHERE service_settings.archived_at IS NULL
   AND service_setting_configurations.archived_at IS NULL
   AND service_setting_configurations.belongs_to_user = $1;
 
--- name: UpdateServiceSettingConfiguration :exec
+-- name: UpdateServiceSettingConfiguration :execrows
 
 UPDATE service_setting_configurations
 SET

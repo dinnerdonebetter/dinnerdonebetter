@@ -13,14 +13,17 @@ import (
 	"github.com/lib/pq"
 )
 
-const archiveValidVessel = `-- name: ArchiveValidVessel :exec
+const archiveValidVessel = `-- name: ArchiveValidVessel :execrows
 
 UPDATE valid_vessels SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
-func (q *Queries) ArchiveValidVessel(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, archiveValidVessel, id)
-	return err
+func (q *Queries) ArchiveValidVessel(ctx context.Context, db DBTX, id string) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveValidVessel, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkValidVesselExistence = `-- name: CheckValidVesselExistence :one
@@ -710,7 +713,7 @@ func (q *Queries) SearchForValidVessels(ctx context.Context, db DBTX, query stri
 	return items, nil
 }
 
-const updateValidVessel = `-- name: UpdateValidVessel :exec
+const updateValidVessel = `-- name: UpdateValidVessel :execrows
 
 UPDATE valid_vessels
 SET
@@ -751,8 +754,8 @@ type UpdateValidVesselParams struct {
 	UsableForStorage               bool
 }
 
-func (q *Queries) UpdateValidVessel(ctx context.Context, db DBTX, arg *UpdateValidVesselParams) error {
-	_, err := db.ExecContext(ctx, updateValidVessel,
+func (q *Queries) UpdateValidVessel(ctx context.Context, db DBTX, arg *UpdateValidVesselParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateValidVessel,
 		arg.Name,
 		arg.PluralName,
 		arg.Description,
@@ -769,15 +772,21 @@ func (q *Queries) UpdateValidVessel(ctx context.Context, db DBTX, arg *UpdateVal
 		arg.Shape,
 		arg.ID,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
-const updateValidVesselLastIndexedAt = `-- name: UpdateValidVesselLastIndexedAt :exec
+const updateValidVesselLastIndexedAt = `-- name: UpdateValidVesselLastIndexedAt :execrows
 
 UPDATE valid_vessels SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 
-func (q *Queries) UpdateValidVesselLastIndexedAt(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, updateValidVesselLastIndexedAt, id)
-	return err
+func (q *Queries) UpdateValidVesselLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error) {
+	result, err := db.ExecContext(ctx, updateValidVesselLastIndexedAt, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

@@ -251,7 +251,7 @@ func (q *Querier) UpdateValidIngredientState(ctx context.Context, updated *types
 	logger := q.logger.WithValue(keys.ValidIngredientStateIDKey, updated.ID)
 	tracing.AttachValidIngredientStateIDToSpan(span, updated.ID)
 
-	if err := q.generatedQuerier.UpdateValidIngredientState(ctx, q.db, &generated.UpdateValidIngredientStateParams{
+	if _, err := q.generatedQuerier.UpdateValidIngredientState(ctx, q.db, &generated.UpdateValidIngredientStateParams{
 		Name:          updated.Name,
 		Description:   updated.Description,
 		IconPath:      updated.IconPath,
@@ -281,7 +281,7 @@ func (q *Querier) MarkValidIngredientStateAsIndexed(ctx context.Context, validIn
 	logger = logger.WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
 	tracing.AttachValidIngredientStateIDToSpan(span, validIngredientStateID)
 
-	if err := q.generatedQuerier.UpdateValidIngredientStateLastIndexedAt(ctx, q.db, validIngredientStateID); err != nil {
+	if _, err := q.generatedQuerier.UpdateValidIngredientStateLastIndexedAt(ctx, q.db, validIngredientStateID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking valid ingredient state as indexed")
 	}
 
@@ -303,7 +303,7 @@ func (q *Querier) ArchiveValidIngredientState(ctx context.Context, validIngredie
 	logger = logger.WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
 	tracing.AttachValidIngredientStateIDToSpan(span, validIngredientStateID)
 
-	if err := q.generatedQuerier.ArchiveValidIngredientState(ctx, q.db, validIngredientStateID); err != nil {
+	if _, err := q.generatedQuerier.ArchiveValidIngredientState(ctx, q.db, validIngredientStateID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient state")
 	}
 

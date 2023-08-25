@@ -1,4 +1,4 @@
--- name: ArchiveRecipe :exec
+-- name: ArchiveRecipe :execrows
 
 UPDATE recipes SET archived_at = NOW() WHERE archived_at IS NULL AND created_by_user = $1 AND id = $2;
 
@@ -291,7 +291,7 @@ GROUP BY
 ORDER BY
 	recipes.id;
 
--- name: UpdateRecipe :exec
+-- name: UpdateRecipe :execrows
 
 UPDATE recipes SET
     name = $1,
@@ -311,6 +311,6 @@ WHERE archived_at IS NULL
   AND created_by_user = $13
   AND id = $14;
 
--- name: UpdateRecipeLastIndexedAt :exec
+-- name: UpdateRecipeLastIndexedAt :execrows
 
 UPDATE recipes SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL;

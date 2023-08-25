@@ -11,10 +11,6 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-const (
-	recipesOnRecipeStepsJoinClause = "recipes ON recipe_steps.belongs_to_recipe=recipes.id"
-)
-
 var (
 	_ types.RecipeStepDataManager = (*Querier)(nil)
 )
@@ -405,7 +401,7 @@ func (q *Querier) UpdateRecipeStep(ctx context.Context, updated *types.RecipeSte
 	logger := q.logger.WithValue(keys.RecipeStepIDKey, updated.ID)
 	tracing.AttachRecipeStepIDToSpan(span, updated.ID)
 
-	if err := q.generatedQuerier.UpdateRecipeStep(ctx, q.db, &generated.UpdateRecipeStepParams{
+	if _, err := q.generatedQuerier.UpdateRecipeStep(ctx, q.db, &generated.UpdateRecipeStepParams{
 		ConditionExpression:           updated.ConditionExpression,
 		PreparationID:                 updated.Preparation.ID,
 		ID:                            updated.ID,
@@ -447,7 +443,7 @@ func (q *Querier) ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID 
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
-	if err := q.generatedQuerier.ArchiveRecipeStep(ctx, q.db, &generated.ArchiveRecipeStepParams{
+	if _, err := q.generatedQuerier.ArchiveRecipeStep(ctx, q.db, &generated.ArchiveRecipeStepParams{
 		BelongsToRecipe: recipeID,
 		ID:              recipeStepID,
 	}); err != nil {

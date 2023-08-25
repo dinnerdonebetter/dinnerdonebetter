@@ -434,7 +434,7 @@ func (q *Querier) UpdateValidIngredientGroup(ctx context.Context, updated *types
 	logger := q.logger.WithValue(keys.ValidIngredientGroupIDKey, updated.ID)
 	tracing.AttachValidIngredientGroupIDToSpan(span, updated.ID)
 
-	if err := q.generatedQuerier.UpdateValidIngredientGroup(ctx, q.db, &generated.UpdateValidIngredientGroupParams{
+	if _, err := q.generatedQuerier.UpdateValidIngredientGroup(ctx, q.db, &generated.UpdateValidIngredientGroupParams{
 		Name:        updated.Name,
 		Description: updated.Description,
 		Slug:        updated.Slug,
@@ -461,7 +461,7 @@ func (q *Querier) ArchiveValidIngredientGroup(ctx context.Context, validIngredie
 	logger = logger.WithValue(keys.ValidIngredientGroupIDKey, validIngredientGroupID)
 	tracing.AttachValidIngredientGroupIDToSpan(span, validIngredientGroupID)
 
-	if err := q.generatedQuerier.ArchiveValidIngredientGroup(ctx, q.db, validIngredientGroupID); err != nil {
+	if _, err := q.generatedQuerier.ArchiveValidIngredientGroup(ctx, q.db, validIngredientGroupID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient group")
 	}
 

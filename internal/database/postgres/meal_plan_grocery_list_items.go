@@ -429,7 +429,7 @@ func (q *Querier) UpdateMealPlanGroceryListItem(ctx context.Context, updated *ty
 		purchasedMeasurementUnitID = &updated.PurchasedMeasurementUnit.ID
 	}
 
-	if err := q.generatedQuerier.UpdateMealPlanGroceryListItem(ctx, q.db, &generated.UpdateMealPlanGroceryListItemParams{
+	if _, err := q.generatedQuerier.UpdateMealPlanGroceryListItem(ctx, q.db, &generated.UpdateMealPlanGroceryListItemParams{
 		BelongsToMealPlan:        updated.BelongsToMealPlan,
 		ValidIngredient:          updated.Ingredient.ID,
 		ValidMeasurementUnit:     updated.MeasurementUnit.ID,
@@ -464,7 +464,7 @@ func (q *Querier) ArchiveMealPlanGroceryListItem(ctx context.Context, mealPlanGr
 	logger = logger.WithValue(keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 	tracing.AttachMealPlanGroceryListItemIDToSpan(span, mealPlanGroceryListItemID)
 
-	if err := q.generatedQuerier.ArchiveMealPlanGroceryListItem(ctx, q.db, mealPlanGroceryListItemID); err != nil {
+	if _, err := q.generatedQuerier.ArchiveMealPlanGroceryListItem(ctx, q.db, mealPlanGroceryListItemID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan grocery list")
 	}
 

@@ -374,7 +374,7 @@ func (q *Querier) MarkUserAsIndexed(ctx context.Context, userID string) error {
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachUserIDToSpan(span, userID)
 
-	if err := q.generatedQuerier.UpdateUserLastIndexedAt(ctx, q.db, userID); err != nil {
+	if _, err := q.generatedQuerier.UpdateUserLastIndexedAt(ctx, q.db, userID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking user as indexed")
 	}
 
@@ -559,7 +559,7 @@ func (q *Querier) UpdateUserUsername(ctx context.Context, userID, newUsername st
 	logger = logger.WithValue(keys.UsernameKey, newUsername)
 	tracing.AttachUsernameToSpan(span, newUsername)
 
-	if err := q.generatedQuerier.UpdateUserUsername(ctx, q.db, &generated.UpdateUserUsernameParams{
+	if _, err := q.generatedQuerier.UpdateUserUsername(ctx, q.db, &generated.UpdateUserUsernameParams{
 		Username: newUsername,
 		ID:       userID,
 	}); err != nil {
@@ -587,7 +587,7 @@ func (q *Querier) UpdateUserEmailAddress(ctx context.Context, userID, newEmailAd
 	}
 	tracing.AttachEmailAddressToSpan(span, newEmailAddress)
 
-	if err := q.generatedQuerier.UpdateUserEmailAddress(ctx, q.db, &generated.UpdateUserEmailAddressParams{
+	if _, err := q.generatedQuerier.UpdateUserEmailAddress(ctx, q.db, &generated.UpdateUserEmailAddressParams{
 		EmailAddress: newEmailAddress,
 		ID:           userID,
 	}); err != nil {
@@ -614,7 +614,7 @@ func (q *Querier) UpdateUserDetails(ctx context.Context, userID string, input *t
 	tracing.AttachUserIDToSpan(span, userID)
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 
-	if err := q.generatedQuerier.UpdateUserDetails(ctx, q.db, &generated.UpdateUserDetailsParams{
+	if _, err := q.generatedQuerier.UpdateUserDetails(ctx, q.db, &generated.UpdateUserDetailsParams{
 		FirstName: input.FirstName,
 		LastName:  input.LastName,
 		Birthday:  nullTimeFromTime(input.Birthday),
@@ -643,7 +643,7 @@ func (q *Querier) UpdateUserAvatar(ctx context.Context, userID, newAvatarSrc str
 	tracing.AttachUserIDToSpan(span, userID)
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 
-	if err := q.generatedQuerier.UpdateUserAvatarSrc(ctx, q.db, &generated.UpdateUserAvatarSrcParams{
+	if _, err := q.generatedQuerier.UpdateUserAvatarSrc(ctx, q.db, &generated.UpdateUserAvatarSrcParams{
 		AvatarSrc: nullStringFromString(newAvatarSrc),
 		ID:        userID,
 	}); err != nil {
@@ -670,7 +670,7 @@ func (q *Querier) UpdateUserPassword(ctx context.Context, userID, newHash string
 	tracing.AttachUserIDToSpan(span, userID)
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 
-	if err := q.generatedQuerier.UpdateUserPassword(ctx, q.db, &generated.UpdateUserPasswordParams{
+	if _, err := q.generatedQuerier.UpdateUserPassword(ctx, q.db, &generated.UpdateUserPasswordParams{
 		HashedPassword: newHash,
 		ID:             userID,
 	}); err != nil {
@@ -697,7 +697,7 @@ func (q *Querier) UpdateUserTwoFactorSecret(ctx context.Context, userID, newSecr
 	tracing.AttachUserIDToSpan(span, userID)
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 
-	if err := q.generatedQuerier.UpdateUserTwoFactorSecret(ctx, q.db, &generated.UpdateUserTwoFactorSecretParams{
+	if _, err := q.generatedQuerier.UpdateUserTwoFactorSecret(ctx, q.db, &generated.UpdateUserTwoFactorSecretParams{
 		TwoFactorSecret: newSecret,
 		ID:              userID,
 	}); err != nil {
@@ -763,7 +763,6 @@ func (q *Querier) ArchiveUser(ctx context.Context, userID string) error {
 	if userID == "" {
 		return ErrInvalidIDProvided
 	}
-
 	tracing.AttachUserIDToSpan(span, userID)
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 
@@ -773,12 +772,12 @@ func (q *Querier) ArchiveUser(ctx context.Context, userID string) error {
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	if err = q.generatedQuerier.ArchiveUser(ctx, tx, userID); err != nil {
+	if _, err = q.generatedQuerier.ArchiveUser(ctx, tx, userID); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "archiving user")
 	}
 
-	if err = q.generatedQuerier.ArchiveUserMemberships(ctx, tx, userID); err != nil {
+	if _, err = q.generatedQuerier.ArchiveUserMemberships(ctx, tx, userID); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "archiving user household memberships")
 	}

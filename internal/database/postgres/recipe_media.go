@@ -204,7 +204,7 @@ func (q *Querier) UpdateRecipeMedia(ctx context.Context, updated *types.RecipeMe
 	logger := q.logger.WithValue(keys.RecipeMediaIDKey, updated.ID)
 	tracing.AttachRecipeMediaIDToSpan(span, updated.ID)
 
-	if err := q.generatedQuerier.UpdateRecipeMedia(ctx, q.db, &generated.UpdateRecipeMediaParams{
+	if _, err := q.generatedQuerier.UpdateRecipeMedia(ctx, q.db, &generated.UpdateRecipeMediaParams{
 		BelongsToRecipe:     nullStringFromStringPointer(updated.BelongsToRecipe),
 		BelongsToRecipeStep: nullStringFromStringPointer(updated.BelongsToRecipeStep),
 		MimeType:            updated.MimeType,
@@ -233,7 +233,7 @@ func (q *Querier) ArchiveRecipeMedia(ctx context.Context, recipeMediaID string) 
 	logger = logger.WithValue(keys.RecipeMediaIDKey, recipeMediaID)
 	tracing.AttachRecipeMediaIDToSpan(span, recipeMediaID)
 
-	if err := q.generatedQuerier.ArchiveRecipeMedia(ctx, q.db, recipeMediaID); err != nil {
+	if _, err := q.generatedQuerier.ArchiveRecipeMedia(ctx, q.db, recipeMediaID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe media")
 	}
 

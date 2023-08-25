@@ -17,10 +17,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/pkg/cryptography/salsa20"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 
-	"github.com/Masterminds/squirrel"
 	"github.com/alexedwards/scs/postgresstore"
 	"github.com/alexedwards/scs/v2"
-	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
@@ -37,17 +35,13 @@ var _ database.DataManager = (*Querier)(nil)
 type Querier struct {
 	tracer                  tracing.Tracer
 	logger                  logging.Logger
-	sqlBuilder              squirrel.StatementBuilderType
 	secretGenerator         random.Generator
 	oauth2ClientTokenEncDec cryptography.EncryptorDecryptor
 	generatedQuerier        generated.Querier
 	timeFunc                func() time.Time
 	config                  *dbconfig.Config
 	db                      *sql.DB
-	pgxDB                   *pgxpool.Pool
-	connectionURL           string
 	migrateOnce             sync.Once
-	logQueries              bool
 }
 
 // ProvideDatabaseClient provides a new DataManager client.
@@ -76,23 +70,14 @@ func ProvideDatabaseClient(
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating encryptor/decryptor with secret length %d", len(cfg.OAuth2TokenEncryptionKey))
 	}
 
-	pgxDB, err := pgxpool.New(ctx, cfg.ConnectionDetails)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "initializing PGX pool")
-	}
-
 	c := &Querier{
 		db:                      db,
-		pgxDB:                   pgxDB,
 		config:                  cfg,
 		tracer:                  tracer,
-		logQueries:              cfg.LogQueries,
 		timeFunc:                defaultTimeFunc,
 		generatedQuerier:        generated.New(),
 		secretGenerator:         random.NewGenerator(logger, tracerProvider),
-		connectionURL:           cfg.ConnectionDetails,
 		logger:                  logging.EnsureLogger(logger).WithName("querier"),
-		sqlBuilder:              squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
 		oauth2ClientTokenEncDec: encDec,
 	}
 
@@ -134,7 +119,7 @@ func (q *Querier) IsReady(ctx context.Context, waitPeriod time.Duration, maxAtte
 
 	attemptCount := 0
 
-	logger := q.logger.WithValue("connection_url", q.connectionURL)
+	logger := q.logger.WithValue("connection_url", q.config.ConnectionDetails)
 
 	for !ready {
 		err := q.db.PingContext(ctx)
@@ -195,31 +180,4 @@ func (q *Querier) rollbackTransaction(ctx context.Context, tx database.SQLQueryE
 	}
 
 	q.logger.Debug("transaction rolled back")
-}
-
-func (q *Querier) getRows(ctx context.Context, querier database.SQLQueryExecutor, queryDescription, query string, args []any) (*sql.Rows, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.WithValue("query_desc", queryDescription)
-	if q.logQueries {
-		logger = logger.WithValue("args", args)
-	}
-
-	tracing.AttachDatabaseQueryToSpan(span, fmt.Sprintf("%s fetch query", queryDescription), query, args)
-
-	rows, err := querier.QueryContext(ctx, query, args...)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "performing read query")
-	}
-
-	if err = rows.Err(); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning results")
-	}
-
-	if q.logQueries {
-		logger.Debug("read query performed")
-	}
-
-	return rows, nil
 }

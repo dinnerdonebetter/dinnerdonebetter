@@ -362,7 +362,7 @@ func (q *Querier) UpdateMealPlanOption(ctx context.Context, updated *types.MealP
 	logger := q.logger.WithValue(keys.MealPlanOptionIDKey, updated.ID)
 	tracing.AttachMealPlanOptionIDToSpan(span, updated.ID)
 
-	if err := q.generatedQuerier.UpdateMealPlanOption(ctx, q.db, &generated.UpdateMealPlanOptionParams{
+	if _, err := q.generatedQuerier.UpdateMealPlanOption(ctx, q.db, &generated.UpdateMealPlanOptionParams{
 		MealID:             updated.Meal.ID,
 		Notes:              updated.Notes,
 		MealScale:          stringFromFloat32(updated.MealScale),
@@ -404,7 +404,7 @@ func (q *Querier) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPla
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
 
-	if err := q.generatedQuerier.ArchiveMealPlanOption(ctx, q.db, &generated.ArchiveMealPlanOptionParams{
+	if _, err := q.generatedQuerier.ArchiveMealPlanOption(ctx, q.db, &generated.ArchiveMealPlanOptionParams{
 		ID:                     mealPlanOptionID,
 		BelongsToMealPlanEvent: sql.NullString{String: mealPlanEventID, Valid: true},
 	}); err != nil {

@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	_ "embed"
 	"errors"
 	"strings"
 
@@ -277,7 +276,7 @@ func (q *Querier) UpdateMealPlan(ctx context.Context, updated *types.MealPlan) e
 	tracing.AttachMealPlanIDToSpan(span, updated.ID)
 	tracing.AttachHouseholdIDToSpan(span, updated.BelongsToHousehold)
 
-	if err := q.generatedQuerier.UpdateMealPlan(ctx, q.db, &generated.UpdateMealPlanParams{
+	if _, err := q.generatedQuerier.UpdateMealPlan(ctx, q.db, &generated.UpdateMealPlanParams{
 		Notes:              updated.Notes,
 		Status:             generated.MealPlanStatus(updated.Status),
 		VotingDeadline:     updated.VotingDeadline,
@@ -311,7 +310,7 @@ func (q *Querier) ArchiveMealPlan(ctx context.Context, mealPlanID, householdID s
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	if err := q.generatedQuerier.ArchiveMealPlan(ctx, q.db, &generated.ArchiveMealPlanParams{
+	if _, err := q.generatedQuerier.ArchiveMealPlan(ctx, q.db, &generated.ArchiveMealPlanParams{
 		BelongsToHousehold: householdID,
 		ID:                 mealPlanID,
 	}); err != nil {
@@ -475,54 +474,47 @@ func (q *Querier) GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context.Co
 	return mealPlans, nil
 }
 
-//go:embed queries/meal_plans/get_finalized_for_planning.sql
-var getFinalizedMealPlansQuery string
-
 // GetFinalizedMealPlanIDsForTheNextWeek gets finalized meal plans for a given duration.
 func (q *Querier) GetFinalizedMealPlanIDsForTheNextWeek(ctx context.Context) ([]*types.FinalizedMealPlanDatabaseResult, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	rows, err := q.getRows(ctx, q.db, "finalized meal plans", getFinalizedMealPlansQuery, nil)
+	results, err := q.generatedQuerier.GetFinalizedMealPlansForPlanning(ctx, q.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing finalized meal plan IDs for the week retrieval query")
 	}
 
-	results := []*types.FinalizedMealPlanDatabaseResult{}
-
-	var result *types.FinalizedMealPlanDatabaseResult
-	for rows.Next() {
-		r := &types.FinalizedMealPlanDatabaseResult{}
-		var recipeID string
-		scanErr := rows.Scan(&r.MealPlanID, &r.MealPlanOptionID, &r.MealID, &r.MealPlanEventID, &recipeID)
-		if scanErr != nil {
-			return nil, observability.PrepareError(scanErr, span, "scanning finalized meal plan IDs for the week")
+	output := []*types.FinalizedMealPlanDatabaseResult{}
+	var databaseResult *types.FinalizedMealPlanDatabaseResult
+	for _, result := range results {
+		r := &types.FinalizedMealPlanDatabaseResult{
+			MealPlanID:       result.MealPlanID,
+			MealPlanEventID:  result.MealPlanEventID,
+			MealPlanOptionID: result.MealPlanOptionID,
+			MealID:           result.MealID,
+			RecipeIDs:        nil,
 		}
 
-		if result == nil {
-			result = r
+		if databaseResult == nil {
+			databaseResult = r
 		}
 
-		if r.MealID != result.MealID &&
-			r.MealPlanOptionID != result.MealPlanOptionID &&
-			r.MealPlanEventID != result.MealPlanEventID &&
-			r.MealPlanID != result.MealPlanID {
-			results = append(results, result)
-			result = r
+		if r.MealID != databaseResult.MealID &&
+			r.MealPlanOptionID != databaseResult.MealPlanOptionID &&
+			r.MealPlanEventID != databaseResult.MealPlanEventID &&
+			r.MealPlanID != databaseResult.MealPlanID {
+			output = append(output, databaseResult)
+			databaseResult = r
 		}
 
-		result.RecipeIDs = append(result.RecipeIDs, recipeID)
+		databaseResult.RecipeIDs = append(databaseResult.RecipeIDs, result.RecipeID)
 	}
 
-	if result != nil {
-		results = append(results, result)
+	if databaseResult != nil {
+		output = append(output, databaseResult)
 	}
 
-	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, observability.PrepareError(err, span, "closing rows")
-	}
-
-	return results, nil
+	return output, nil
 }
 
 func (q *Querier) GetFinalizedMealPlansWithUninitializedGroceryLists(ctx context.Context) ([]*types.MealPlan, error) {

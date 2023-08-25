@@ -11,16 +11,19 @@ import (
 	"time"
 )
 
-const archiveServiceSetting = `-- name: ArchiveServiceSetting :exec
+const archiveServiceSetting = `-- name: ArchiveServiceSetting :execrows
 
 UPDATE service_settings
 SET archived_at = NOW()
     WHERE id = $1
 `
 
-func (q *Queries) ArchiveServiceSetting(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, archiveServiceSetting, id)
-	return err
+func (q *Queries) ArchiveServiceSetting(ctx context.Context, db DBTX, id string) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveServiceSetting, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkServiceSettingExistence = `-- name: CheckServiceSettingExistence :one

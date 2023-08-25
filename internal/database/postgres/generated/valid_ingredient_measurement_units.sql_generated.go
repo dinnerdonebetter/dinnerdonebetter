@@ -11,14 +11,17 @@ import (
 	"time"
 )
 
-const archiveValidIngredientMeasurementUnit = `-- name: ArchiveValidIngredientMeasurementUnit :exec
+const archiveValidIngredientMeasurementUnit = `-- name: ArchiveValidIngredientMeasurementUnit :execrows
 
 UPDATE valid_ingredient_measurement_units SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
-func (q *Queries) ArchiveValidIngredientMeasurementUnit(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, archiveValidIngredientMeasurementUnit, id)
-	return err
+func (q *Queries) ArchiveValidIngredientMeasurementUnit(ctx context.Context, db DBTX, id string) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveValidIngredientMeasurementUnit, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkValidIngredientMeasurementUnitExistence = `-- name: CheckValidIngredientMeasurementUnitExistence :one
@@ -1036,7 +1039,7 @@ func (q *Queries) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx conte
 	return items, nil
 }
 
-const updateValidIngredientMeasurementUnit = `-- name: UpdateValidIngredientMeasurementUnit :exec
+const updateValidIngredientMeasurementUnit = `-- name: UpdateValidIngredientMeasurementUnit :execrows
 
 UPDATE valid_ingredient_measurement_units
 SET
@@ -1059,8 +1062,8 @@ type UpdateValidIngredientMeasurementUnitParams struct {
 	MaximumAllowableQuantity sql.NullString
 }
 
-func (q *Queries) UpdateValidIngredientMeasurementUnit(ctx context.Context, db DBTX, arg *UpdateValidIngredientMeasurementUnitParams) error {
-	_, err := db.ExecContext(ctx, updateValidIngredientMeasurementUnit,
+func (q *Queries) UpdateValidIngredientMeasurementUnit(ctx context.Context, db DBTX, arg *UpdateValidIngredientMeasurementUnitParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateValidIngredientMeasurementUnit,
 		arg.Notes,
 		arg.ValidMeasurementUnitID,
 		arg.ValidIngredientID,
@@ -1068,7 +1071,10 @@ func (q *Queries) UpdateValidIngredientMeasurementUnit(ctx context.Context, db D
 		arg.MaximumAllowableQuantity,
 		arg.ID,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const validIngredientMeasurementUnitPairIsValid = `-- name: ValidIngredientMeasurementUnitPairIsValid :one

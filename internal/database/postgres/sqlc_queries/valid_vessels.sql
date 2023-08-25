@@ -1,4 +1,4 @@
--- name: ArchiveValidVessel :exec
+-- name: ArchiveValidVessel :execrows
 
 UPDATE valid_vessels SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
 
@@ -237,7 +237,7 @@ WHERE valid_vessels.archived_at IS NULL
     AND valid_vessels.name ILIKE '%' || sqlc.arg(query)::text || '%'
 	LIMIT 50;
 
--- name: UpdateValidVessel :exec
+-- name: UpdateValidVessel :execrows
 
 UPDATE valid_vessels
 SET
@@ -259,6 +259,6 @@ SET
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
 
--- name: UpdateValidVesselLastIndexedAt :exec
+-- name: UpdateValidVesselLastIndexedAt :execrows
 
 UPDATE valid_vessels SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL;

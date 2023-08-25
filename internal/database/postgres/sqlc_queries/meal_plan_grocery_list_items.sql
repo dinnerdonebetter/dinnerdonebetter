@@ -1,4 +1,4 @@
--- name: ArchiveMealPlanGroceryListItem :exec
+-- name: ArchiveMealPlanGroceryListItem :execrows
 
 UPDATE meal_plan_grocery_list_items SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
 
@@ -169,7 +169,7 @@ WHERE meal_plan_grocery_list_items.archived_at IS NULL
     AND meal_plan_grocery_list_items.id = sqlc.arg(meal_plan_grocery_list_item_id)
     AND meal_plan_grocery_list_items.belongs_to_meal_plan = sqlc.arg(meal_plan_id);
 
--- name: UpdateMealPlanGroceryListItem :exec
+-- name: UpdateMealPlanGroceryListItem :execrows
 
 UPDATE meal_plan_grocery_list_items
 SET

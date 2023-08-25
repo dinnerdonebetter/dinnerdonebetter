@@ -512,7 +512,7 @@ func (q *Querier) UpdateValidPreparationVessel(ctx context.Context, updated *typ
 	logger := q.logger.WithValue(keys.ValidPreparationVesselIDKey, updated.ID)
 	tracing.AttachValidPreparationVesselIDToSpan(span, updated.ID)
 
-	if err := q.generatedQuerier.UpdateValidPreparationVessel(ctx, q.db, &generated.UpdateValidPreparationVesselParams{
+	if _, err := q.generatedQuerier.UpdateValidPreparationVessel(ctx, q.db, &generated.UpdateValidPreparationVesselParams{
 		Notes:              updated.Notes,
 		ValidPreparationID: updated.Preparation.ID,
 		ValidVesselID:      updated.Vessel.ID,
@@ -537,7 +537,7 @@ func (q *Querier) ArchiveValidPreparationVessel(ctx context.Context, validPrepar
 	logger := q.logger.WithValue(keys.ValidPreparationVesselIDKey, validPreparationVesselID)
 	tracing.AttachValidPreparationVesselIDToSpan(span, validPreparationVesselID)
 
-	if err := q.generatedQuerier.ArchiveValidPreparationVessel(ctx, q.db, validPreparationVesselID); err != nil {
+	if _, err := q.generatedQuerier.ArchiveValidPreparationVessel(ctx, q.db, validPreparationVesselID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation vessel")
 	}
 

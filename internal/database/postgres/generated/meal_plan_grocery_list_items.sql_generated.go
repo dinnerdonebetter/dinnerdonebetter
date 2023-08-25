@@ -11,14 +11,17 @@ import (
 	"time"
 )
 
-const archiveMealPlanGroceryListItem = `-- name: ArchiveMealPlanGroceryListItem :exec
+const archiveMealPlanGroceryListItem = `-- name: ArchiveMealPlanGroceryListItem :execrows
 
 UPDATE meal_plan_grocery_list_items SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
-func (q *Queries) ArchiveMealPlanGroceryListItem(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, archiveMealPlanGroceryListItem, id)
-	return err
+func (q *Queries) ArchiveMealPlanGroceryListItem(ctx context.Context, db DBTX, id string) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveMealPlanGroceryListItem, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkMealPlanGroceryListItemExistence = `-- name: CheckMealPlanGroceryListItemExistence :one
@@ -536,7 +539,7 @@ func (q *Queries) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, db
 	return items, nil
 }
 
-const updateMealPlanGroceryListItem = `-- name: UpdateMealPlanGroceryListItem :exec
+const updateMealPlanGroceryListItem = `-- name: UpdateMealPlanGroceryListItem :execrows
 
 UPDATE meal_plan_grocery_list_items
 SET
@@ -571,8 +574,8 @@ type UpdateMealPlanGroceryListItemParams struct {
 	PurchasePrice            sql.NullString
 }
 
-func (q *Queries) UpdateMealPlanGroceryListItem(ctx context.Context, db DBTX, arg *UpdateMealPlanGroceryListItemParams) error {
-	_, err := db.ExecContext(ctx, updateMealPlanGroceryListItem,
+func (q *Queries) UpdateMealPlanGroceryListItem(ctx context.Context, db DBTX, arg *UpdateMealPlanGroceryListItemParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateMealPlanGroceryListItem,
 		arg.BelongsToMealPlan,
 		arg.ValidIngredient,
 		arg.ValidMeasurementUnit,
@@ -586,5 +589,8 @@ func (q *Queries) UpdateMealPlanGroceryListItem(ctx context.Context, db DBTX, ar
 		arg.Status,
 		arg.ID,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

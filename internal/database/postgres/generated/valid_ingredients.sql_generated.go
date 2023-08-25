@@ -13,14 +13,17 @@ import (
 	"github.com/lib/pq"
 )
 
-const archiveValidIngredient = `-- name: ArchiveValidIngredient :exec
+const archiveValidIngredient = `-- name: ArchiveValidIngredient :execrows
 
 UPDATE valid_ingredients SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
-func (q *Queries) ArchiveValidIngredient(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, archiveValidIngredient, id)
-	return err
+func (q *Queries) ArchiveValidIngredient(ctx context.Context, db DBTX, id string) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveValidIngredient, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkValidIngredientExistence = `-- name: CheckValidIngredientExistence :one
@@ -1285,7 +1288,7 @@ func (q *Queries) SearchValidIngredientsByPreparationAndIngredientName(ctx conte
 	return items, nil
 }
 
-const updateValidIngredient = `-- name: UpdateValidIngredient :exec
+const updateValidIngredient = `-- name: UpdateValidIngredient :execrows
 
 UPDATE valid_ingredients SET
 	name = $1,
@@ -1364,8 +1367,8 @@ type UpdateValidIngredientParams struct {
 	ContainsEgg                             bool
 }
 
-func (q *Queries) UpdateValidIngredient(ctx context.Context, db DBTX, arg *UpdateValidIngredientParams) error {
-	_, err := db.ExecContext(ctx, updateValidIngredient,
+func (q *Queries) UpdateValidIngredient(ctx context.Context, db DBTX, arg *UpdateValidIngredientParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateValidIngredient,
 		arg.Name,
 		arg.Description,
 		arg.Warning,
@@ -1402,15 +1405,21 @@ func (q *Queries) UpdateValidIngredient(ctx context.Context, db DBTX, arg *Updat
 		arg.IsHeat,
 		arg.ID,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
-const updateValidIngredientLastIndexedAt = `-- name: UpdateValidIngredientLastIndexedAt :exec
+const updateValidIngredientLastIndexedAt = `-- name: UpdateValidIngredientLastIndexedAt :execrows
 
 UPDATE valid_ingredients SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 
-func (q *Queries) UpdateValidIngredientLastIndexedAt(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, updateValidIngredientLastIndexedAt, id)
-	return err
+func (q *Queries) UpdateValidIngredientLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error) {
+	result, err := db.ExecContext(ctx, updateValidIngredientLastIndexedAt, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

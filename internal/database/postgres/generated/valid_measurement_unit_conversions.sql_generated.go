@@ -11,14 +11,17 @@ import (
 	"time"
 )
 
-const archiveValidMeasurementUnitConversion = `-- name: ArchiveValidMeasurementUnitConversion :exec
+const archiveValidMeasurementUnitConversion = `-- name: ArchiveValidMeasurementUnitConversion :execrows
 
 UPDATE valid_measurement_conversions SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
-func (q *Queries) ArchiveValidMeasurementUnitConversion(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, archiveValidMeasurementUnitConversion, id)
-	return err
+func (q *Queries) ArchiveValidMeasurementUnitConversion(ctx context.Context, db DBTX, id string) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveValidMeasurementUnitConversion, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkValidMeasurementUnitConversionExistence = `-- name: CheckValidMeasurementUnitConversionExistence :one
@@ -794,7 +797,7 @@ func (q *Queries) GetValidMeasurementUnitConversion(ctx context.Context, db DBTX
 	return &i, err
 }
 
-const updateValidMeasurementUnitConversion = `-- name: UpdateValidMeasurementUnitConversion :exec
+const updateValidMeasurementUnitConversion = `-- name: UpdateValidMeasurementUnitConversion :execrows
 
 UPDATE valid_measurement_conversions
 SET
@@ -817,8 +820,8 @@ type UpdateValidMeasurementUnitConversionParams struct {
 	Modifier          float64
 }
 
-func (q *Queries) UpdateValidMeasurementUnitConversion(ctx context.Context, db DBTX, arg *UpdateValidMeasurementUnitConversionParams) error {
-	_, err := db.ExecContext(ctx, updateValidMeasurementUnitConversion,
+func (q *Queries) UpdateValidMeasurementUnitConversion(ctx context.Context, db DBTX, arg *UpdateValidMeasurementUnitConversionParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateValidMeasurementUnitConversion,
 		arg.FromUnit,
 		arg.ToUnit,
 		arg.OnlyForIngredient,
@@ -826,5 +829,8 @@ func (q *Queries) UpdateValidMeasurementUnitConversion(ctx context.Context, db D
 		arg.Notes,
 		arg.ID,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

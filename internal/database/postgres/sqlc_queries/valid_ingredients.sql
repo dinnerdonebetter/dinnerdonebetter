@@ -1,4 +1,4 @@
--- name: ArchiveValidIngredient :exec
+-- name: ArchiveValidIngredient :execrows
 
 UPDATE valid_ingredients SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
 
@@ -447,7 +447,7 @@ WHERE valid_ingredient_preparations.archived_at IS NULL
 	AND (valid_ingredient_preparations.valid_preparation_id = $1 OR valid_preparations.restrict_to_ingredients IS FALSE)
 	AND valid_ingredients.name ILIKE '%' || $2::text || '%';
 
--- name: UpdateValidIngredient :exec
+-- name: UpdateValidIngredient :execrows
 
 UPDATE valid_ingredients SET
 	name = sqlc.arg(name),
@@ -487,6 +487,6 @@ UPDATE valid_ingredients SET
 	last_updated_at = NOW()
 WHERE archived_at IS NULL AND id = sqlc.arg(id);
 
--- name: UpdateValidIngredientLastIndexedAt :exec
+-- name: UpdateValidIngredientLastIndexedAt :execrows
 
 UPDATE valid_ingredients SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL;

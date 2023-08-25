@@ -1,7 +1,6 @@
 package email
 
 import (
-	_ "embed"
 	"errors"
 	"fmt"
 

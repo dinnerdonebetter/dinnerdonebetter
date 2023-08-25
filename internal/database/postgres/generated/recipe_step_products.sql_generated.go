@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const archiveRecipeStepProduct = `-- name: ArchiveRecipeStepProduct :exec
+const archiveRecipeStepProduct = `-- name: ArchiveRecipeStepProduct :execrows
 
 UPDATE recipe_step_products SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2
 `
@@ -21,9 +21,12 @@ type ArchiveRecipeStepProductParams struct {
 	ID                  string
 }
 
-func (q *Queries) ArchiveRecipeStepProduct(ctx context.Context, db DBTX, arg *ArchiveRecipeStepProductParams) error {
-	_, err := db.ExecContext(ctx, archiveRecipeStepProduct, arg.BelongsToRecipeStep, arg.ID)
-	return err
+func (q *Queries) ArchiveRecipeStepProduct(ctx context.Context, db DBTX, arg *ArchiveRecipeStepProductParams) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveRecipeStepProduct, arg.BelongsToRecipeStep, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkRecipeStepProductExistence = `-- name: CheckRecipeStepProductExistence :one
@@ -554,7 +557,7 @@ func (q *Queries) GetRecipeStepProductsForRecipe(ctx context.Context, db DBTX, b
 	return items, nil
 }
 
-const updateRecipeStepProduct = `-- name: UpdateRecipeStepProduct :exec
+const updateRecipeStepProduct = `-- name: UpdateRecipeStepProduct :execrows
 
 UPDATE recipe_step_products
 SET
@@ -599,8 +602,8 @@ type UpdateRecipeStepProductParams struct {
 	IsWaste                            bool
 }
 
-func (q *Queries) UpdateRecipeStepProduct(ctx context.Context, db DBTX, arg *UpdateRecipeStepProductParams) error {
-	_, err := db.ExecContext(ctx, updateRecipeStepProduct,
+func (q *Queries) UpdateRecipeStepProduct(ctx context.Context, db DBTX, arg *UpdateRecipeStepProductParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateRecipeStepProduct,
 		arg.Name,
 		arg.Type,
 		arg.MeasurementUnit,
@@ -619,5 +622,8 @@ func (q *Queries) UpdateRecipeStepProduct(ctx context.Context, db DBTX, arg *Upd
 		arg.BelongsToRecipeStep,
 		arg.ID,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

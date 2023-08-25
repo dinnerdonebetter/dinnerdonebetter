@@ -13,14 +13,17 @@ import (
 	"github.com/lib/pq"
 )
 
-const archiveValidPreparation = `-- name: ArchiveValidPreparation :exec
+const archiveValidPreparation = `-- name: ArchiveValidPreparation :execrows
 
 UPDATE valid_preparations SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
-func (q *Queries) ArchiveValidPreparation(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, archiveValidPreparation, id)
-	return err
+func (q *Queries) ArchiveValidPreparation(ctx context.Context, db DBTX, id string) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveValidPreparation, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkValidPreparationExistence = `-- name: CheckValidPreparationExistence :one
@@ -743,7 +746,7 @@ func (q *Queries) SearchForValidPreparations(ctx context.Context, db DBTX, query
 	return items, nil
 }
 
-const updateValidPreparation = `-- name: UpdateValidPreparation :exec
+const updateValidPreparation = `-- name: UpdateValidPreparation :execrows
 
 UPDATE valid_preparations
 SET
@@ -792,8 +795,8 @@ type UpdateValidPreparationParams struct {
 	YieldsNothing               bool
 }
 
-func (q *Queries) UpdateValidPreparation(ctx context.Context, db DBTX, arg *UpdateValidPreparationParams) error {
-	_, err := db.ExecContext(ctx, updateValidPreparation,
+func (q *Queries) UpdateValidPreparation(ctx context.Context, db DBTX, arg *UpdateValidPreparationParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateValidPreparation,
 		arg.Name,
 		arg.Description,
 		arg.IconPath,
@@ -814,15 +817,21 @@ func (q *Queries) UpdateValidPreparation(ctx context.Context, db DBTX, arg *Upda
 		arg.PastTense,
 		arg.ID,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
-const updateValidPreparationLastIndexedAt = `-- name: UpdateValidPreparationLastIndexedAt :exec
+const updateValidPreparationLastIndexedAt = `-- name: UpdateValidPreparationLastIndexedAt :execrows
 
 UPDATE valid_preparations SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 
-func (q *Queries) UpdateValidPreparationLastIndexedAt(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, updateValidPreparationLastIndexedAt, id)
-	return err
+func (q *Queries) UpdateValidPreparationLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error) {
+	result, err := db.ExecContext(ctx, updateValidPreparationLastIndexedAt, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

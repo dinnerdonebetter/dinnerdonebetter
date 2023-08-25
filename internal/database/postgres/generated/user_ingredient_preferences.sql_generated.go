@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const archiveUserIngredientPreference = `-- name: ArchiveUserIngredientPreference :exec
+const archiveUserIngredientPreference = `-- name: ArchiveUserIngredientPreference :execrows
 
 UPDATE user_ingredient_preferences SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1 AND belongs_to_user = $2
 `
@@ -21,9 +21,12 @@ type ArchiveUserIngredientPreferenceParams struct {
 	BelongsToUser string
 }
 
-func (q *Queries) ArchiveUserIngredientPreference(ctx context.Context, db DBTX, arg *ArchiveUserIngredientPreferenceParams) error {
-	_, err := db.ExecContext(ctx, archiveUserIngredientPreference, arg.ID, arg.BelongsToUser)
-	return err
+func (q *Queries) ArchiveUserIngredientPreference(ctx context.Context, db DBTX, arg *ArchiveUserIngredientPreferenceParams) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveUserIngredientPreference, arg.ID, arg.BelongsToUser)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkUserIngredientPreferenceExistence = `-- name: CheckUserIngredientPreferenceExistence :one
@@ -470,7 +473,7 @@ func (q *Queries) GetUserIngredientPreferencesForUser(ctx context.Context, db DB
 	return items, nil
 }
 
-const updateUserIngredientPreference = `-- name: UpdateUserIngredientPreference :exec
+const updateUserIngredientPreference = `-- name: UpdateUserIngredientPreference :execrows
 
 UPDATE user_ingredient_preferences
 SET
@@ -493,8 +496,8 @@ type UpdateUserIngredientPreferenceParams struct {
 	Allergy       bool
 }
 
-func (q *Queries) UpdateUserIngredientPreference(ctx context.Context, db DBTX, arg *UpdateUserIngredientPreferenceParams) error {
-	_, err := db.ExecContext(ctx, updateUserIngredientPreference,
+func (q *Queries) UpdateUserIngredientPreference(ctx context.Context, db DBTX, arg *UpdateUserIngredientPreferenceParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateUserIngredientPreference,
 		arg.Ingredient,
 		arg.Rating,
 		arg.Notes,
@@ -502,5 +505,8 @@ func (q *Queries) UpdateUserIngredientPreference(ctx context.Context, db DBTX, a
 		arg.ID,
 		arg.BelongsToUser,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

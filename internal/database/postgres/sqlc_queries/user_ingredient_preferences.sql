@@ -1,4 +1,4 @@
--- name: ArchiveUserIngredientPreference :exec
+-- name: ArchiveUserIngredientPreference :execrows
 
 UPDATE user_ingredient_preferences SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1 AND belongs_to_user = $2;
 
@@ -160,7 +160,7 @@ WHERE user_ingredient_preferences.archived_at IS NULL
 	AND user_ingredient_preferences.id = sqlc.arg(user_ingredient_preference_id)
 	AND user_ingredient_preferences.belongs_to_user = sqlc.arg(user_id);
 
--- name: UpdateUserIngredientPreference :exec
+-- name: UpdateUserIngredientPreference :execrows
 
 UPDATE user_ingredient_preferences
 SET

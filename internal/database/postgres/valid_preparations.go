@@ -365,7 +365,7 @@ func (q *Querier) UpdateValidPreparation(ctx context.Context, updated *types.Val
 	logger := q.logger.WithValue(keys.ValidPreparationIDKey, updated.ID)
 	tracing.AttachValidPreparationIDToSpan(span, updated.ID)
 
-	if err := q.generatedQuerier.UpdateValidPreparation(ctx, q.db, &generated.UpdateValidPreparationParams{
+	if _, err := q.generatedQuerier.UpdateValidPreparation(ctx, q.db, &generated.UpdateValidPreparationParams{
 		Description:                 updated.Description,
 		IconPath:                    updated.IconPath,
 		ID:                          updated.ID,
@@ -407,7 +407,7 @@ func (q *Querier) MarkValidPreparationAsIndexed(ctx context.Context, validPrepar
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
 	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
 
-	if err := q.generatedQuerier.UpdateValidPreparationLastIndexedAt(ctx, q.db, validPreparationID); err != nil {
+	if _, err := q.generatedQuerier.UpdateValidPreparationLastIndexedAt(ctx, q.db, validPreparationID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking valid preparation as indexed")
 	}
 
@@ -429,7 +429,7 @@ func (q *Querier) ArchiveValidPreparation(ctx context.Context, validPreparationI
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
 	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
 
-	if err := q.generatedQuerier.ArchiveValidPreparation(ctx, q.db, validPreparationID); err != nil {
+	if _, err := q.generatedQuerier.ArchiveValidPreparation(ctx, q.db, validPreparationID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation")
 	}
 

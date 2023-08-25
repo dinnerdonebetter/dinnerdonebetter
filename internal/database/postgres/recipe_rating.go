@@ -178,7 +178,7 @@ func (q *Querier) UpdateRecipeRating(ctx context.Context, updated *types.RecipeR
 	logger := q.logger.WithValue(keys.RecipeRatingIDKey, updated.ID)
 	tracing.AttachRecipeRatingIDToSpan(span, updated.ID)
 
-	if err := q.generatedQuerier.UpdateRecipeRating(ctx, q.db, &generated.UpdateRecipeRatingParams{
+	if _, err := q.generatedQuerier.UpdateRecipeRating(ctx, q.db, &generated.UpdateRecipeRatingParams{
 		RecipeID:     updated.RecipeID,
 		Taste:        nullStringFromFloat32(updated.Taste),
 		Difficulty:   nullStringFromFloat32(updated.Difficulty),
@@ -209,7 +209,7 @@ func (q *Querier) ArchiveRecipeRating(ctx context.Context, recipeRatingID string
 	logger = logger.WithValue(keys.RecipeRatingIDKey, recipeRatingID)
 	tracing.AttachRecipeRatingIDToSpan(span, recipeRatingID)
 
-	if err := q.generatedQuerier.ArchiveRecipeRating(ctx, q.db, recipeRatingID); err != nil {
+	if _, err := q.generatedQuerier.ArchiveRecipeRating(ctx, q.db, recipeRatingID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe rating")
 	}
 

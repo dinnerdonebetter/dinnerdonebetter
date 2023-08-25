@@ -293,7 +293,7 @@ func (q *Querier) UpdateMealPlanOptionVote(ctx context.Context, updated *types.M
 	logger := q.logger.WithValue(keys.MealPlanOptionVoteIDKey, updated.ID)
 	tracing.AttachMealPlanOptionVoteIDToSpan(span, updated.ID)
 
-	if err := q.generatedQuerier.UpdateMealPlanOptionVote(ctx, q.db, &generated.UpdateMealPlanOptionVoteParams{
+	if _, err := q.generatedQuerier.UpdateMealPlanOptionVote(ctx, q.db, &generated.UpdateMealPlanOptionVoteParams{
 		Notes:                   updated.Notes,
 		ByUser:                  updated.ByUser,
 		BelongsToMealPlanOption: updated.BelongsToMealPlanOption,
@@ -340,7 +340,7 @@ func (q *Querier) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanID, mea
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVoteID)
 
-	if err := q.generatedQuerier.ArchiveMealPlanOptionVote(ctx, q.db, &generated.ArchiveMealPlanOptionVoteParams{
+	if _, err := q.generatedQuerier.ArchiveMealPlanOptionVote(ctx, q.db, &generated.ArchiveMealPlanOptionVoteParams{
 		BelongsToMealPlanOption: mealPlanOptionID,
 		ID:                      mealPlanOptionVoteID,
 	}); err != nil {

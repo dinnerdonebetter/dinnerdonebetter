@@ -372,7 +372,7 @@ func (q *Querier) UpdateRecipeStepProduct(ctx context.Context, updated *types.Re
 		measurementUnitID = &updated.MeasurementUnit.ID
 	}
 
-	if err := q.generatedQuerier.UpdateRecipeStepProduct(ctx, q.db, &generated.UpdateRecipeStepProductParams{
+	if _, err := q.generatedQuerier.UpdateRecipeStepProduct(ctx, q.db, &generated.UpdateRecipeStepProductParams{
 		Name:                               updated.Name,
 		Type:                               generated.RecipeStepProductType(updated.Type),
 		MeasurementUnit:                    nullStringFromStringPointer(measurementUnitID),
@@ -418,7 +418,7 @@ func (q *Querier) ArchiveRecipeStepProduct(ctx context.Context, recipeStepID, re
 	logger = logger.WithValue(keys.RecipeStepProductIDKey, recipeStepProductID)
 	tracing.AttachRecipeStepProductIDToSpan(span, recipeStepProductID)
 
-	if err := q.generatedQuerier.ArchiveRecipeStepProduct(ctx, q.db, &generated.ArchiveRecipeStepProductParams{
+	if _, err := q.generatedQuerier.ArchiveRecipeStepProduct(ctx, q.db, &generated.ArchiveRecipeStepProductParams{
 		BelongsToRecipeStep: recipeStepID,
 		ID:                  recipeStepProductID,
 	}); err != nil {

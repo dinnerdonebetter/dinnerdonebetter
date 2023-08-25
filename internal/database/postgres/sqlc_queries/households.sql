@@ -3,7 +3,7 @@
 INSERT INTO household_user_memberships (id,belongs_to_user,belongs_to_household,household_role)
 VALUES ($1,$2,$3,$4);
 
--- name: ArchiveHousehold :exec
+-- name: ArchiveHousehold :execrows
 
 UPDATE households SET last_updated_at = NOW(), archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_user = $1 AND id = $2;
 
@@ -120,7 +120,7 @@ WHERE households.archived_at IS NULL
     LIMIT sqlc.narg(query_limit);
 
 
--- name: UpdateHousehold :exec
+-- name: UpdateHousehold :execrows
 
 UPDATE households
 SET

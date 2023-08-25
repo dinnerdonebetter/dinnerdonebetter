@@ -11,14 +11,17 @@ import (
 	"time"
 )
 
-const archiveServiceSettingConfiguration = `-- name: ArchiveServiceSettingConfiguration :exec
+const archiveServiceSettingConfiguration = `-- name: ArchiveServiceSettingConfiguration :execrows
 
 UPDATE service_setting_configurations SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
-func (q *Queries) ArchiveServiceSettingConfiguration(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, archiveServiceSettingConfiguration, id)
-	return err
+func (q *Queries) ArchiveServiceSettingConfiguration(ctx context.Context, db DBTX, id string) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveServiceSettingConfiguration, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkServiceSettingConfigurationExistence = `-- name: CheckServiceSettingConfigurationExistence :one
@@ -478,7 +481,7 @@ func (q *Queries) GetServiceSettingConfigurationsForUser(ctx context.Context, db
 	return items, nil
 }
 
-const updateServiceSettingConfiguration = `-- name: UpdateServiceSettingConfiguration :exec
+const updateServiceSettingConfiguration = `-- name: UpdateServiceSettingConfiguration :execrows
 
 UPDATE service_setting_configurations
 SET
@@ -501,8 +504,8 @@ type UpdateServiceSettingConfigurationParams struct {
 	ID                 string
 }
 
-func (q *Queries) UpdateServiceSettingConfiguration(ctx context.Context, db DBTX, arg *UpdateServiceSettingConfigurationParams) error {
-	_, err := db.ExecContext(ctx, updateServiceSettingConfiguration,
+func (q *Queries) UpdateServiceSettingConfiguration(ctx context.Context, db DBTX, arg *UpdateServiceSettingConfigurationParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateServiceSettingConfiguration,
 		arg.Value,
 		arg.Notes,
 		arg.ServiceSettingID,
@@ -510,5 +513,8 @@ func (q *Queries) UpdateServiceSettingConfiguration(ctx context.Context, db DBTX
 		arg.BelongsToHousehold,
 		arg.ID,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

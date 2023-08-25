@@ -311,7 +311,7 @@ func (q *Querier) UpdateMealPlanEvent(ctx context.Context, updated *types.MealPl
 	logger := q.logger.WithValue(keys.MealPlanEventIDKey, updated.ID)
 	tracing.AttachMealPlanEventIDToSpan(span, updated.ID)
 
-	if err := q.generatedQuerier.UpdateMealPlanEvent(ctx, q.db, &generated.UpdateMealPlanEventParams{
+	if _, err := q.generatedQuerier.UpdateMealPlanEvent(ctx, q.db, &generated.UpdateMealPlanEventParams{
 		Notes:             updated.Notes,
 		StartsAt:          updated.StartsAt,
 		EndsAt:            updated.EndsAt,
@@ -346,7 +346,7 @@ func (q *Querier) ArchiveMealPlanEvent(ctx context.Context, mealPlanID, mealPlan
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
-	if err := q.generatedQuerier.ArchiveMealPlanEvent(ctx, q.db, &generated.ArchiveMealPlanEventParams{
+	if _, err := q.generatedQuerier.ArchiveMealPlanEvent(ctx, q.db, &generated.ArchiveMealPlanEventParams{
 		ID:                mealPlanEventID,
 		BelongsToMealPlan: mealPlanID,
 	}); err != nil {

@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const archiveRecipeStepVessel = `-- name: ArchiveRecipeStepVessel :exec
+const archiveRecipeStepVessel = `-- name: ArchiveRecipeStepVessel :execrows
 
 UPDATE recipe_step_vessels SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2
 `
@@ -21,9 +21,12 @@ type ArchiveRecipeStepVesselParams struct {
 	ID                  string
 }
 
-func (q *Queries) ArchiveRecipeStepVessel(ctx context.Context, db DBTX, arg *ArchiveRecipeStepVesselParams) error {
-	_, err := db.ExecContext(ctx, archiveRecipeStepVessel, arg.BelongsToRecipeStep, arg.ID)
-	return err
+func (q *Queries) ArchiveRecipeStepVessel(ctx context.Context, db DBTX, arg *ArchiveRecipeStepVesselParams) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveRecipeStepVessel, arg.BelongsToRecipeStep, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkRecipeStepVesselExistence = `-- name: CheckRecipeStepVesselExistence :one
@@ -642,7 +645,7 @@ func (q *Queries) GetRecipeStepVesselsForRecipe(ctx context.Context, db DBTX, be
 	return items, nil
 }
 
-const updateRecipeStepVessel = `-- name: UpdateRecipeStepVessel :exec
+const updateRecipeStepVessel = `-- name: UpdateRecipeStepVessel :execrows
 
 UPDATE recipe_step_vessels SET
 	name = $1,
@@ -673,8 +676,8 @@ type UpdateRecipeStepVesselParams struct {
 	UnavailableAfterStep bool
 }
 
-func (q *Queries) UpdateRecipeStepVessel(ctx context.Context, db DBTX, arg *UpdateRecipeStepVesselParams) error {
-	_, err := db.ExecContext(ctx, updateRecipeStepVessel,
+func (q *Queries) UpdateRecipeStepVessel(ctx context.Context, db DBTX, arg *UpdateRecipeStepVesselParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateRecipeStepVessel,
 		arg.Name,
 		arg.Notes,
 		arg.RecipeStepID,
@@ -686,5 +689,8 @@ func (q *Queries) UpdateRecipeStepVessel(ctx context.Context, db DBTX, arg *Upda
 		arg.UnavailableAfterStep,
 		arg.ID,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

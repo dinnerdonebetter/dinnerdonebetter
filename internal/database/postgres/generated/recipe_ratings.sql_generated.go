@@ -11,14 +11,17 @@ import (
 	"time"
 )
 
-const archiveRecipeRating = `-- name: ArchiveRecipeRating :exec
+const archiveRecipeRating = `-- name: ArchiveRecipeRating :execrows
 
 UPDATE recipe_ratings SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
-func (q *Queries) ArchiveRecipeRating(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, archiveRecipeRating, id)
-	return err
+func (q *Queries) ArchiveRecipeRating(ctx context.Context, db DBTX, id string) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveRecipeRating, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkRecipeRatingExistence = `-- name: CheckRecipeRatingExistence :one
@@ -227,7 +230,7 @@ func (q *Queries) GetRecipeRatings(ctx context.Context, db DBTX, arg *GetRecipeR
 	return items, nil
 }
 
-const updateRecipeRating = `-- name: UpdateRecipeRating :exec
+const updateRecipeRating = `-- name: UpdateRecipeRating :execrows
 
 UPDATE recipe_ratings
 SET
@@ -254,8 +257,8 @@ type UpdateRecipeRatingParams struct {
 	Overall      sql.NullString
 }
 
-func (q *Queries) UpdateRecipeRating(ctx context.Context, db DBTX, arg *UpdateRecipeRatingParams) error {
-	_, err := db.ExecContext(ctx, updateRecipeRating,
+func (q *Queries) UpdateRecipeRating(ctx context.Context, db DBTX, arg *UpdateRecipeRatingParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateRecipeRating,
 		arg.RecipeID,
 		arg.Taste,
 		arg.Difficulty,
@@ -265,5 +268,8 @@ func (q *Queries) UpdateRecipeRating(ctx context.Context, db DBTX, arg *UpdateRe
 		arg.Notes,
 		arg.ID,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

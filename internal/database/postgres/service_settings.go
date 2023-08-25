@@ -238,7 +238,7 @@ func (q *Querier) ArchiveServiceSetting(ctx context.Context, serviceSettingID st
 	logger = logger.WithValue(keys.ServiceSettingIDKey, serviceSettingID)
 	tracing.AttachServiceSettingIDToSpan(span, serviceSettingID)
 
-	if err := q.generatedQuerier.ArchiveServiceSetting(ctx, q.db, serviceSettingID); err != nil {
+	if _, err := q.generatedQuerier.ArchiveServiceSetting(ctx, q.db, serviceSettingID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating service setting")
 	}
 

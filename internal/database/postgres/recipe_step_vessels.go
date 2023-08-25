@@ -409,7 +409,7 @@ func (q *Querier) UpdateRecipeStepVessel(ctx context.Context, updated *types.Rec
 		vesselID = &updated.Vessel.ID
 	}
 
-	if err := q.generatedQuerier.UpdateRecipeStepVessel(ctx, q.db, &generated.UpdateRecipeStepVesselParams{
+	if _, err := q.generatedQuerier.UpdateRecipeStepVessel(ctx, q.db, &generated.UpdateRecipeStepVesselParams{
 		Name:                 updated.Name,
 		Notes:                updated.Notes,
 		RecipeStepID:         updated.BelongsToRecipeStep,
@@ -448,7 +448,7 @@ func (q *Querier) ArchiveRecipeStepVessel(ctx context.Context, recipeStepID, rec
 	logger = logger.WithValue(keys.RecipeStepVesselIDKey, recipeStepVesselID)
 	tracing.AttachRecipeStepVesselIDToSpan(span, recipeStepVesselID)
 
-	if err := q.generatedQuerier.ArchiveRecipeStepVessel(ctx, q.db, &generated.ArchiveRecipeStepVesselParams{
+	if _, err := q.generatedQuerier.ArchiveRecipeStepVessel(ctx, q.db, &generated.ArchiveRecipeStepVesselParams{
 		BelongsToRecipeStep: recipeStepID,
 		ID:                  recipeStepVesselID,
 	}); err != nil {

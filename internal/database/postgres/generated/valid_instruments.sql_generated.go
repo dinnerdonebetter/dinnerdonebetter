@@ -13,14 +13,17 @@ import (
 	"github.com/lib/pq"
 )
 
-const archiveValidInstrument = `-- name: ArchiveValidInstrument :exec
+const archiveValidInstrument = `-- name: ArchiveValidInstrument :execrows
 
 UPDATE valid_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
-func (q *Queries) ArchiveValidInstrument(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, archiveValidInstrument, id)
-	return err
+func (q *Queries) ArchiveValidInstrument(ctx context.Context, db DBTX, id string) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveValidInstrument, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkValidInstrumentExistence = `-- name: CheckValidInstrumentExistence :one
@@ -477,7 +480,7 @@ func (q *Queries) SearchForValidInstruments(ctx context.Context, db DBTX, query 
 	return items, nil
 }
 
-const updateValidInstrument = `-- name: UpdateValidInstrument :exec
+const updateValidInstrument = `-- name: UpdateValidInstrument :execrows
 
 UPDATE valid_instruments
 SET
@@ -506,8 +509,8 @@ type UpdateValidInstrumentParams struct {
 	IncludeInGeneratedInstructions bool
 }
 
-func (q *Queries) UpdateValidInstrument(ctx context.Context, db DBTX, arg *UpdateValidInstrumentParams) error {
-	_, err := db.ExecContext(ctx, updateValidInstrument,
+func (q *Queries) UpdateValidInstrument(ctx context.Context, db DBTX, arg *UpdateValidInstrumentParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateValidInstrument,
 		arg.Name,
 		arg.PluralName,
 		arg.Description,
@@ -518,15 +521,21 @@ func (q *Queries) UpdateValidInstrument(ctx context.Context, db DBTX, arg *Updat
 		arg.Slug,
 		arg.ID,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
-const updateValidInstrumentLastIndexedAt = `-- name: UpdateValidInstrumentLastIndexedAt :exec
+const updateValidInstrumentLastIndexedAt = `-- name: UpdateValidInstrumentLastIndexedAt :execrows
 
 UPDATE valid_instruments SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 
-func (q *Queries) UpdateValidInstrumentLastIndexedAt(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, updateValidInstrumentLastIndexedAt, id)
-	return err
+func (q *Queries) UpdateValidInstrumentLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error) {
+	result, err := db.ExecContext(ctx, updateValidInstrumentLastIndexedAt, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

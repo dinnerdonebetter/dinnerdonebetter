@@ -407,7 +407,7 @@ func (q *Querier) UpdateValidPreparationInstrument(ctx context.Context, updated 
 	logger := q.logger.WithValue(keys.ValidPreparationInstrumentIDKey, updated.ID)
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, updated.ID)
 
-	if err := q.generatedQuerier.UpdateValidPreparationInstrument(ctx, q.db, &generated.UpdateValidPreparationInstrumentParams{
+	if _, err := q.generatedQuerier.UpdateValidPreparationInstrument(ctx, q.db, &generated.UpdateValidPreparationInstrumentParams{
 		Notes:              updated.Notes,
 		ValidPreparationID: updated.Preparation.ID,
 		ValidInstrumentID:  updated.Instrument.ID,
@@ -432,7 +432,7 @@ func (q *Querier) ArchiveValidPreparationInstrument(ctx context.Context, validPr
 	logger := q.logger.WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 	tracing.AttachValidPreparationInstrumentIDToSpan(span, validPreparationInstrumentID)
 
-	if err := q.generatedQuerier.ArchiveValidPreparationInstrument(ctx, q.db, validPreparationInstrumentID); err != nil {
+	if _, err := q.generatedQuerier.ArchiveValidPreparationInstrument(ctx, q.db, validPreparationInstrumentID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation instrument")
 	}
 

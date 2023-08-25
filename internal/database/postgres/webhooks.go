@@ -271,7 +271,7 @@ func (q *Querier) ArchiveWebhook(ctx context.Context, webhookID, householdID str
 		keys.HouseholdIDKey: householdID,
 	})
 
-	if err := q.generatedQuerier.ArchiveWebhook(ctx, q.db, &generated.ArchiveWebhookParams{
+	if _, err := q.generatedQuerier.ArchiveWebhook(ctx, q.db, &generated.ArchiveWebhookParams{
 		BelongsToHousehold: householdID,
 		ID:                 webhookID,
 	}); err != nil {

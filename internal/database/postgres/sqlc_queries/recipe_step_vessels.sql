@@ -1,4 +1,4 @@
--- name: ArchiveRecipeStepVessel :exec
+-- name: ArchiveRecipeStepVessel :execrows
 
 UPDATE recipe_step_vessels SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2;
 
@@ -224,7 +224,7 @@ WHERE recipe_step_vessels.archived_at IS NULL
     OFFSET sqlc.narg(query_offset)
     LIMIT sqlc.narg(query_limit);
 
--- name: UpdateRecipeStepVessel :exec
+-- name: UpdateRecipeStepVessel :execrows
 
 UPDATE recipe_step_vessels SET
 	name = sqlc.arg(name),

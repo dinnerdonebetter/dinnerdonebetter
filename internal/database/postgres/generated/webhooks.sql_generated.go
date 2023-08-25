@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const archiveWebhook = `-- name: ArchiveWebhook :exec
+const archiveWebhook = `-- name: ArchiveWebhook :execrows
 
 UPDATE webhooks
 SET
@@ -27,9 +27,12 @@ type ArchiveWebhookParams struct {
 	ID                 string
 }
 
-func (q *Queries) ArchiveWebhook(ctx context.Context, db DBTX, arg *ArchiveWebhookParams) error {
-	_, err := db.ExecContext(ctx, archiveWebhook, arg.BelongsToHousehold, arg.ID)
-	return err
+func (q *Queries) ArchiveWebhook(ctx context.Context, db DBTX, arg *ArchiveWebhookParams) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveWebhook, arg.BelongsToHousehold, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkWebhookExistence = `-- name: CheckWebhookExistence :one

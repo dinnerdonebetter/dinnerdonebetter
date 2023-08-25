@@ -552,7 +552,7 @@ func (q *Querier) UpdateRecipe(ctx context.Context, updated *types.Recipe) error
 	tracing.AttachRecipeIDToSpan(span, updated.ID)
 	tracing.AttachUserIDToSpan(span, updated.CreatedByUser)
 
-	if err := q.generatedQuerier.UpdateRecipe(ctx, q.db, &generated.UpdateRecipeParams{
+	if _, err := q.generatedQuerier.UpdateRecipe(ctx, q.db, &generated.UpdateRecipeParams{
 		Name:                 updated.Name,
 		Slug:                 updated.Slug,
 		Source:               updated.Source,
@@ -589,7 +589,7 @@ func (q *Querier) MarkRecipeAsIndexed(ctx context.Context, recipeID string) erro
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	if err := q.generatedQuerier.UpdateRecipeLastIndexedAt(ctx, q.db, recipeID); err != nil {
+	if _, err := q.generatedQuerier.UpdateRecipeLastIndexedAt(ctx, q.db, recipeID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking recipe as indexed")
 	}
 
@@ -615,7 +615,7 @@ func (q *Querier) ArchiveRecipe(ctx context.Context, recipeID, userID string) er
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachUserIDToSpan(span, userID)
 
-	if err := q.generatedQuerier.ArchiveRecipe(ctx, q.db, &generated.ArchiveRecipeParams{
+	if _, err := q.generatedQuerier.ArchiveRecipe(ctx, q.db, &generated.ArchiveRecipeParams{
 		CreatedByUser: userID,
 		ID:            recipeID,
 	}); err != nil {

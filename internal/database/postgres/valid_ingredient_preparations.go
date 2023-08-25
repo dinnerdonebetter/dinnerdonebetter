@@ -511,7 +511,7 @@ func (q *Querier) UpdateValidIngredientPreparation(ctx context.Context, updated 
 	logger := q.logger.WithValue(keys.ValidIngredientPreparationIDKey, updated.ID)
 	tracing.AttachValidIngredientPreparationIDToSpan(span, updated.ID)
 
-	if err := q.generatedQuerier.UpdateValidIngredientPreparation(ctx, q.db, &generated.UpdateValidIngredientPreparationParams{
+	if _, err := q.generatedQuerier.UpdateValidIngredientPreparation(ctx, q.db, &generated.UpdateValidIngredientPreparationParams{
 		Notes:              updated.Notes,
 		ValidPreparationID: updated.Preparation.ID,
 		ValidIngredientID:  updated.Ingredient.ID,
@@ -538,7 +538,7 @@ func (q *Querier) ArchiveValidIngredientPreparation(ctx context.Context, validIn
 	logger = logger.WithValue(keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 	tracing.AttachValidIngredientPreparationIDToSpan(span, validIngredientPreparationID)
 
-	if err := q.generatedQuerier.ArchiveValidIngredientPreparation(ctx, q.db, validIngredientPreparationID); err != nil {
+	if _, err := q.generatedQuerier.ArchiveValidIngredientPreparation(ctx, q.db, validIngredientPreparationID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient preparation")
 	}
 

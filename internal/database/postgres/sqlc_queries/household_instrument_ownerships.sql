@@ -1,4 +1,4 @@
--- name: ArchiveHouseholdInstrumentOwnership :exec
+-- name: ArchiveHouseholdInstrumentOwnership :execrows
 
 UPDATE household_instrument_ownerships SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1 AND belongs_to_household = $2;
 
@@ -111,7 +111,7 @@ WHERE household_instrument_ownerships.archived_at IS NULL
 	AND household_instrument_ownerships.id = $1
 	AND household_instrument_ownerships.belongs_to_household = $2;
 
--- name: UpdateHouseholdInstrumentOwnership :exec
+-- name: UpdateHouseholdInstrumentOwnership :execrows
 
 UPDATE household_instrument_ownerships
 SET

@@ -1,4 +1,4 @@
--- name: ArchiveServiceSetting :exec
+-- name: ArchiveServiceSetting :execrows
 
 UPDATE service_settings
 SET archived_at = NOW()

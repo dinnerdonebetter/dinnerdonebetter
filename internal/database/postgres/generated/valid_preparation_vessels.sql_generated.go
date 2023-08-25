@@ -13,14 +13,17 @@ import (
 	"github.com/lib/pq"
 )
 
-const archiveValidPreparationVessel = `-- name: ArchiveValidPreparationVessel :exec
+const archiveValidPreparationVessel = `-- name: ArchiveValidPreparationVessel :execrows
 
 UPDATE valid_preparation_vessels SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
-func (q *Queries) ArchiveValidPreparationVessel(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, archiveValidPreparationVessel, id)
-	return err
+func (q *Queries) ArchiveValidPreparationVessel(ctx context.Context, db DBTX, id string) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveValidPreparationVessel, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkValidPreparationVesselExistence = `-- name: CheckValidPreparationVesselExistence :one
@@ -1079,7 +1082,7 @@ func (q *Queries) GetValidPreparationVesselsForVessel(ctx context.Context, db DB
 	return items, nil
 }
 
-const updateValidPreparationVessel = `-- name: UpdateValidPreparationVessel :exec
+const updateValidPreparationVessel = `-- name: UpdateValidPreparationVessel :execrows
 
 UPDATE valid_preparation_vessels SET notes = $1, valid_preparation_id = $2, valid_vessel_id = $3, last_updated_at = NOW() WHERE archived_at IS NULL AND id = $4
 `
@@ -1091,14 +1094,17 @@ type UpdateValidPreparationVesselParams struct {
 	ID                 string
 }
 
-func (q *Queries) UpdateValidPreparationVessel(ctx context.Context, db DBTX, arg *UpdateValidPreparationVesselParams) error {
-	_, err := db.ExecContext(ctx, updateValidPreparationVessel,
+func (q *Queries) UpdateValidPreparationVessel(ctx context.Context, db DBTX, arg *UpdateValidPreparationVesselParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateValidPreparationVessel,
 		arg.Notes,
 		arg.ValidPreparationID,
 		arg.ValidVesselID,
 		arg.ID,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const validPreparationVesselPairIsValid = `-- name: ValidPreparationVesselPairIsValid :one

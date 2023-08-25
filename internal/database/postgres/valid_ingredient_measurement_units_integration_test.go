@@ -36,6 +36,8 @@ func createValidIngredientMeasurementUnitForTest(t *testing.T, ctx context.Conte
 	assert.Equal(t, exampleValidIngredientMeasurementUnit, created)
 
 	validIngredientMeasurementUnit, err := dbc.GetValidIngredientMeasurementUnit(ctx, created.ID)
+	require.NoError(t, err)
+	require.NotNil(t, validIngredientMeasurementUnit)
 	exampleValidIngredientMeasurementUnit.CreatedAt = validIngredientMeasurementUnit.CreatedAt
 	exampleValidIngredientMeasurementUnit.MeasurementUnit = validIngredientMeasurementUnit.MeasurementUnit
 	exampleValidIngredientMeasurementUnit.Ingredient = validIngredientMeasurementUnit.Ingredient

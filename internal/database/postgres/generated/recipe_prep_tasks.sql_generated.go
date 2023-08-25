@@ -11,14 +11,17 @@ import (
 	"time"
 )
 
-const archiveRecipePrepTask = `-- name: ArchiveRecipePrepTask :exec
+const archiveRecipePrepTask = `-- name: ArchiveRecipePrepTask :execrows
 
 UPDATE recipe_prep_tasks SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
-func (q *Queries) ArchiveRecipePrepTask(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, archiveRecipePrepTask, id)
-	return err
+func (q *Queries) ArchiveRecipePrepTask(ctx context.Context, db DBTX, id string) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveRecipePrepTask, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkRecipePrepTaskExistence = `-- name: CheckRecipePrepTaskExistence :one
@@ -278,7 +281,7 @@ func (q *Queries) ListAllRecipePrepTasksByRecipe(ctx context.Context, db DBTX, r
 	return items, nil
 }
 
-const updateRecipePrepTask = `-- name: UpdateRecipePrepTask :exec
+const updateRecipePrepTask = `-- name: UpdateRecipePrepTask :execrows
 
 UPDATE recipe_prep_tasks SET
 	 name = $1,
@@ -311,8 +314,8 @@ type UpdateRecipePrepTaskParams struct {
 	Optional                               bool
 }
 
-func (q *Queries) UpdateRecipePrepTask(ctx context.Context, db DBTX, arg *UpdateRecipePrepTaskParams) error {
-	_, err := db.ExecContext(ctx, updateRecipePrepTask,
+func (q *Queries) UpdateRecipePrepTask(ctx context.Context, db DBTX, arg *UpdateRecipePrepTaskParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateRecipePrepTask,
 		arg.Name,
 		arg.Description,
 		arg.Notes,
@@ -326,5 +329,8 @@ func (q *Queries) UpdateRecipePrepTask(ctx context.Context, db DBTX, arg *Update
 		arg.BelongsToRecipe,
 		arg.ID,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

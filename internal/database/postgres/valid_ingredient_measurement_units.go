@@ -142,6 +142,7 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Co
 
 	x = &types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]{
 		Pagination: filter.ToPagination(),
+		Data:       []*types.ValidIngredientMeasurementUnit{},
 	}
 
 	results, err := q.generatedQuerier.GetValidIngredientMeasurementUnitsForIngredient(ctx, q.db, &generated.GetValidIngredientMeasurementUnitsForIngredientParams{
@@ -251,6 +252,7 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx conte
 
 	x = &types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]{
 		Pagination: filter.ToPagination(),
+		Data:       []*types.ValidIngredientMeasurementUnit{},
 	}
 
 	results, err := q.generatedQuerier.GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx, q.db, &generated.GetValidIngredientMeasurementUnitsForMeasurementUnitParams{
@@ -354,6 +356,7 @@ func (q *Querier) GetValidIngredientMeasurementUnits(ctx context.Context, filter
 
 	x := &types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]{
 		Pagination: filter.ToPagination(),
+		Data:       []*types.ValidIngredientMeasurementUnit{},
 	}
 
 	results, err := q.generatedQuerier.GetValidIngredientMeasurementUnits(ctx, q.db, &generated.GetValidIngredientMeasurementUnitsParams{
@@ -490,7 +493,7 @@ func (q *Querier) UpdateValidIngredientMeasurementUnit(ctx context.Context, upda
 	logger := q.logger.WithValue(keys.ValidIngredientMeasurementUnitIDKey, updated.ID)
 	tracing.AttachValidIngredientMeasurementUnitIDToSpan(span, updated.ID)
 
-	if err := q.generatedQuerier.UpdateValidIngredientMeasurementUnit(ctx, q.db, &generated.UpdateValidIngredientMeasurementUnitParams{
+	if _, err := q.generatedQuerier.UpdateValidIngredientMeasurementUnit(ctx, q.db, &generated.UpdateValidIngredientMeasurementUnitParams{
 		Notes:                    updated.Notes,
 		ValidMeasurementUnitID:   updated.MeasurementUnit.ID,
 		ValidIngredientID:        updated.Ingredient.ID,
@@ -519,7 +522,7 @@ func (q *Querier) ArchiveValidIngredientMeasurementUnit(ctx context.Context, val
 	logger = logger.WithValue(keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
 	tracing.AttachValidIngredientMeasurementUnitIDToSpan(span, validIngredientMeasurementUnitID)
 
-	if err := q.generatedQuerier.ArchiveValidIngredientMeasurementUnit(ctx, q.db, validIngredientMeasurementUnitID); err != nil {
+	if _, err := q.generatedQuerier.ArchiveValidIngredientMeasurementUnit(ctx, q.db, validIngredientMeasurementUnitID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient measurement unit")
 	}
 

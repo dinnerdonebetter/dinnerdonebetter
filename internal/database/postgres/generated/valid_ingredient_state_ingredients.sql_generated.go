@@ -13,14 +13,17 @@ import (
 	"github.com/lib/pq"
 )
 
-const archiveValidIngredientStateIngredient = `-- name: ArchiveValidIngredientStateIngredient :exec
+const archiveValidIngredientStateIngredient = `-- name: ArchiveValidIngredientStateIngredient :execrows
 
 UPDATE valid_ingredient_state_ingredients SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
-func (q *Queries) ArchiveValidIngredientStateIngredient(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, archiveValidIngredientStateIngredient, id)
-	return err
+func (q *Queries) ArchiveValidIngredientStateIngredient(ctx context.Context, db DBTX, id string) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveValidIngredientStateIngredient, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkValidIngredientStateIngredientExistence = `-- name: CheckValidIngredientStateIngredientExistence :one
@@ -1185,7 +1188,7 @@ func (q *Queries) GetValidIngredientStateIngredientsWithIDs(ctx context.Context,
 	return items, nil
 }
 
-const updateValidIngredientStateIngredient = `-- name: UpdateValidIngredientStateIngredient :exec
+const updateValidIngredientStateIngredient = `-- name: UpdateValidIngredientStateIngredient :execrows
 
 UPDATE valid_ingredient_state_ingredients SET notes = $1, valid_ingredient_state = $2, valid_ingredient = $3, last_updated_at = NOW() WHERE archived_at IS NULL AND id = $4
 `
@@ -1197,12 +1200,15 @@ type UpdateValidIngredientStateIngredientParams struct {
 	ID                   string
 }
 
-func (q *Queries) UpdateValidIngredientStateIngredient(ctx context.Context, db DBTX, arg *UpdateValidIngredientStateIngredientParams) error {
-	_, err := db.ExecContext(ctx, updateValidIngredientStateIngredient,
+func (q *Queries) UpdateValidIngredientStateIngredient(ctx context.Context, db DBTX, arg *UpdateValidIngredientStateIngredientParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateValidIngredientStateIngredient,
 		arg.Notes,
 		arg.ValidIngredientState,
 		arg.ValidIngredient,
 		arg.ID,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

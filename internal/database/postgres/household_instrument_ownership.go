@@ -214,7 +214,7 @@ func (q *Querier) UpdateHouseholdInstrumentOwnership(ctx context.Context, update
 	logger := q.logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, updated.ID)
 	tracing.AttachHouseholdInstrumentOwnershipIDToSpan(span, updated.ID)
 
-	if err := q.generatedQuerier.UpdateHouseholdInstrumentOwnership(ctx, q.db, &generated.UpdateHouseholdInstrumentOwnershipParams{
+	if _, err := q.generatedQuerier.UpdateHouseholdInstrumentOwnership(ctx, q.db, &generated.UpdateHouseholdInstrumentOwnershipParams{
 		Notes:              updated.Notes,
 		ValidInstrumentID:  updated.Instrument.ID,
 		ID:                 updated.ID,
@@ -248,7 +248,7 @@ func (q *Querier) ArchiveHouseholdInstrumentOwnership(ctx context.Context, house
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
-	if err := q.generatedQuerier.ArchiveHouseholdInstrumentOwnership(ctx, q.db, &generated.ArchiveHouseholdInstrumentOwnershipParams{
+	if _, err := q.generatedQuerier.ArchiveHouseholdInstrumentOwnership(ctx, q.db, &generated.ArchiveHouseholdInstrumentOwnershipParams{
 		ID:                 householdInstrumentOwnershipID,
 		BelongsToHousehold: householdID,
 	}); err != nil {

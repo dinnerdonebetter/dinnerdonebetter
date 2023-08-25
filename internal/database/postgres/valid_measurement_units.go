@@ -10,11 +10,6 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-const (
-	validMeasurementUnitsOnRecipeStepIngredientsJoinClause = `valid_measurement_units ON recipe_step_ingredients.measurement_unit=valid_measurement_units.id`
-	validMeasurementUnitsOnRecipeStepProductsJoinClause    = `valid_measurement_units ON recipe_step_products.measurement_unit=valid_measurement_units.id`
-)
-
 var (
 	_ types.ValidMeasurementUnitDataManager = (*Querier)(nil)
 )
@@ -365,7 +360,7 @@ func (q *Querier) UpdateValidMeasurementUnit(ctx context.Context, updated *types
 	logger := q.logger.WithValue(keys.ValidMeasurementUnitIDKey, updated.ID)
 	tracing.AttachValidMeasurementUnitIDToSpan(span, updated.ID)
 
-	if err := q.generatedQuerier.UpdateValidMeasurementUnit(ctx, q.db, &generated.UpdateValidMeasurementUnitParams{
+	if _, err := q.generatedQuerier.UpdateValidMeasurementUnit(ctx, q.db, &generated.UpdateValidMeasurementUnitParams{
 		Name:        updated.Name,
 		Description: updated.Description,
 		IconPath:    updated.IconPath,
@@ -398,7 +393,7 @@ func (q *Querier) MarkValidMeasurementUnitAsIndexed(ctx context.Context, validMe
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
 
-	if err := q.generatedQuerier.UpdateValidMeasurementUnitLastIndexedAt(ctx, q.db, validMeasurementUnitID); err != nil {
+	if _, err := q.generatedQuerier.UpdateValidMeasurementUnitLastIndexedAt(ctx, q.db, validMeasurementUnitID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking valid measurement unit as indexed")
 	}
 
@@ -420,7 +415,7 @@ func (q *Querier) ArchiveValidMeasurementUnit(ctx context.Context, validMeasurem
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
 
-	if err := q.generatedQuerier.ArchiveValidMeasurementUnit(ctx, q.db, validMeasurementUnitID); err != nil {
+	if _, err := q.generatedQuerier.ArchiveValidMeasurementUnit(ctx, q.db, validMeasurementUnitID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid measurement unit")
 	}
 

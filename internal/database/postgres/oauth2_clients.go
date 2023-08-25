@@ -170,7 +170,7 @@ func (q *Querier) ArchiveOAuth2Client(ctx context.Context, clientID string) erro
 	tracing.AttachOAuth2ClientIDToSpan(span, clientID)
 	logger := q.logger.WithValue(keys.OAuth2ClientIDKey, clientID)
 
-	if err := q.generatedQuerier.ArchiveOAuth2Client(ctx, q.db, clientID); err != nil {
+	if _, err := q.generatedQuerier.ArchiveOAuth2Client(ctx, q.db, clientID); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return err
 		}

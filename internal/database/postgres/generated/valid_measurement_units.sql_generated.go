@@ -13,14 +13,17 @@ import (
 	"github.com/lib/pq"
 )
 
-const archiveValidMeasurementUnit = `-- name: ArchiveValidMeasurementUnit :exec
+const archiveValidMeasurementUnit = `-- name: ArchiveValidMeasurementUnit :execrows
 
 UPDATE valid_measurement_units SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
-func (q *Queries) ArchiveValidMeasurementUnit(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, archiveValidMeasurementUnit, id)
-	return err
+func (q *Queries) ArchiveValidMeasurementUnit(ctx context.Context, db DBTX, id string) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveValidMeasurementUnit, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkValidMeasurementUnitExistence = `-- name: CheckValidMeasurementUnitExistence :one
@@ -712,7 +715,7 @@ func (q *Queries) SearchValidMeasurementUnitsByIngredientID(ctx context.Context,
 	return items, nil
 }
 
-const updateValidMeasurementUnit = `-- name: UpdateValidMeasurementUnit :exec
+const updateValidMeasurementUnit = `-- name: UpdateValidMeasurementUnit :execrows
 
 UPDATE valid_measurement_units SET
 	name = $1,
@@ -741,8 +744,8 @@ type UpdateValidMeasurementUnitParams struct {
 	Imperial    bool
 }
 
-func (q *Queries) UpdateValidMeasurementUnit(ctx context.Context, db DBTX, arg *UpdateValidMeasurementUnitParams) error {
-	_, err := db.ExecContext(ctx, updateValidMeasurementUnit,
+func (q *Queries) UpdateValidMeasurementUnit(ctx context.Context, db DBTX, arg *UpdateValidMeasurementUnitParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateValidMeasurementUnit,
 		arg.Name,
 		arg.Description,
 		arg.Volumetric,
@@ -754,15 +757,21 @@ func (q *Queries) UpdateValidMeasurementUnit(ctx context.Context, db DBTX, arg *
 		arg.PluralName,
 		arg.ID,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
-const updateValidMeasurementUnitLastIndexedAt = `-- name: UpdateValidMeasurementUnitLastIndexedAt :exec
+const updateValidMeasurementUnitLastIndexedAt = `-- name: UpdateValidMeasurementUnitLastIndexedAt :execrows
 
 UPDATE valid_measurement_units SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL
 `
 
-func (q *Queries) UpdateValidMeasurementUnitLastIndexedAt(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, updateValidMeasurementUnitLastIndexedAt, id)
-	return err
+func (q *Queries) UpdateValidMeasurementUnitLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error) {
+	result, err := db.ExecContext(ctx, updateValidMeasurementUnitLastIndexedAt, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

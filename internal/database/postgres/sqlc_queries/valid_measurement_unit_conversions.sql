@@ -1,4 +1,4 @@
--- name: ArchiveValidMeasurementUnitConversion :exec
+-- name: ArchiveValidMeasurementUnitConversion :execrows
 
 UPDATE valid_measurement_conversions SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
 
@@ -258,7 +258,7 @@ WHERE valid_measurement_conversions.id = sqlc.arg(id)
     AND valid_measurement_units_from.archived_at IS NULL
     AND valid_measurement_units_to.archived_at IS NULL;
 
--- name: UpdateValidMeasurementUnitConversion :exec
+-- name: UpdateValidMeasurementUnitConversion :execrows
 
 UPDATE valid_measurement_conversions
 SET

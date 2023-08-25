@@ -1,4 +1,4 @@
--- name: ArchiveOAuth2Client :exec
+-- name: ArchiveOAuth2Client :execrows
 
 UPDATE oauth2_clients SET
 	archived_at = NOW()

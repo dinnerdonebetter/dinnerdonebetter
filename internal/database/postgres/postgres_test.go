@@ -24,7 +24,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/pkg/cryptography/aes"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/Masterminds/squirrel"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -129,13 +128,15 @@ func buildTestClient(t *testing.T) (*Querier, *sqlmockExpecterWrapper) {
 	require.NoError(t, err)
 
 	c := &Querier{
-		db:                      fakeDB,
-		logQueries:              false,
+		db: fakeDB,
+		config: &config.Config{
+			ConnectionDetails: t.Name(),
+			LogQueries:        false,
+		},
 		logger:                  logging.NewNoopLogger(),
 		generatedQuerier:        generated.New(),
 		timeFunc:                defaultTimeFunc,
 		tracer:                  tracing.NewTracerForTest("test"),
-		sqlBuilder:              squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
 		oauth2ClientTokenEncDec: encDec,
 	}
 

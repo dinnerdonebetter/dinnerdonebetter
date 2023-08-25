@@ -13,14 +13,17 @@ import (
 	"github.com/lib/pq"
 )
 
-const archiveValidIngredientPreparation = `-- name: ArchiveValidIngredientPreparation :exec
+const archiveValidIngredientPreparation = `-- name: ArchiveValidIngredientPreparation :execrows
 
 UPDATE valid_ingredient_preparations SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
-func (q *Queries) ArchiveValidIngredientPreparation(ctx context.Context, db DBTX, id string) error {
-	_, err := db.ExecContext(ctx, archiveValidIngredientPreparation, id)
-	return err
+func (q *Queries) ArchiveValidIngredientPreparation(ctx context.Context, db DBTX, id string) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveValidIngredientPreparation, id)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkValidIngredientPreparationExistence = `-- name: CheckValidIngredientPreparationExistence :one
@@ -1358,7 +1361,7 @@ func (q *Queries) SearchValidIngredientPreparationsByPreparationAndIngredientNam
 	return items, nil
 }
 
-const updateValidIngredientPreparation = `-- name: UpdateValidIngredientPreparation :exec
+const updateValidIngredientPreparation = `-- name: UpdateValidIngredientPreparation :execrows
 
 UPDATE valid_ingredient_preparations SET notes = $1, valid_preparation_id = $2, valid_ingredient_id = $3, last_updated_at = NOW() WHERE archived_at IS NULL AND id = $4
 `
@@ -1370,14 +1373,17 @@ type UpdateValidIngredientPreparationParams struct {
 	ID                 string
 }
 
-func (q *Queries) UpdateValidIngredientPreparation(ctx context.Context, db DBTX, arg *UpdateValidIngredientPreparationParams) error {
-	_, err := db.ExecContext(ctx, updateValidIngredientPreparation,
+func (q *Queries) UpdateValidIngredientPreparation(ctx context.Context, db DBTX, arg *UpdateValidIngredientPreparationParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateValidIngredientPreparation,
 		arg.Notes,
 		arg.ValidPreparationID,
 		arg.ValidIngredientID,
 		arg.ID,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const validIngredientPreparationPairIsValid = `-- name: ValidIngredientPreparationPairIsValid :one

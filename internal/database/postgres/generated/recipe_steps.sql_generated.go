@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const archiveRecipeStep = `-- name: ArchiveRecipeStep :exec
+const archiveRecipeStep = `-- name: ArchiveRecipeStep :execrows
 
 UPDATE recipe_steps SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe = $1 AND id = $2
 `
@@ -21,9 +21,12 @@ type ArchiveRecipeStepParams struct {
 	ID              string
 }
 
-func (q *Queries) ArchiveRecipeStep(ctx context.Context, db DBTX, arg *ArchiveRecipeStepParams) error {
-	_, err := db.ExecContext(ctx, archiveRecipeStep, arg.BelongsToRecipe, arg.ID)
-	return err
+func (q *Queries) ArchiveRecipeStep(ctx context.Context, db DBTX, arg *ArchiveRecipeStepParams) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveRecipeStep, arg.BelongsToRecipe, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const checkRecipeStepExistence = `-- name: CheckRecipeStepExistence :one
@@ -563,7 +566,7 @@ func (q *Queries) GetRecipeSteps(ctx context.Context, db DBTX, arg *GetRecipeSte
 	return items, nil
 }
 
-const updateRecipeStep = `-- name: UpdateRecipeStep :exec
+const updateRecipeStep = `-- name: UpdateRecipeStep :execrows
 
 UPDATE recipe_steps SET
 	index = $1,
@@ -599,8 +602,8 @@ type UpdateRecipeStepParams struct {
 	StartTimerAutomatically       bool
 }
 
-func (q *Queries) UpdateRecipeStep(ctx context.Context, db DBTX, arg *UpdateRecipeStepParams) error {
-	_, err := db.ExecContext(ctx, updateRecipeStep,
+func (q *Queries) UpdateRecipeStep(ctx context.Context, db DBTX, arg *UpdateRecipeStepParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateRecipeStep,
 		arg.Index,
 		arg.PreparationID,
 		arg.MinimumEstimatedTimeInSeconds,
@@ -615,5 +618,8 @@ func (q *Queries) UpdateRecipeStep(ctx context.Context, db DBTX, arg *UpdateReci
 		arg.BelongsToRecipe,
 		arg.ID,
 	)
-	return err
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }

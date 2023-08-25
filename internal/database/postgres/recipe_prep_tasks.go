@@ -323,7 +323,7 @@ func (q *Querier) UpdateRecipePrepTask(ctx context.Context, updated *types.Recip
 	}
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, updated.ID)
 
-	if err := q.generatedQuerier.UpdateRecipePrepTask(ctx, q.db, &generated.UpdateRecipePrepTaskParams{
+	if _, err := q.generatedQuerier.UpdateRecipePrepTask(ctx, q.db, &generated.UpdateRecipePrepTaskParams{
 		Name:                                   updated.Name,
 		Description:                            updated.Description,
 		Notes:                                  updated.Notes,
@@ -364,7 +364,7 @@ func (q *Querier) ArchiveRecipePrepTask(ctx context.Context, recipeID, recipePre
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
 	tracing.AttachRecipePrepTaskIDToSpan(span, recipePrepTaskID)
 
-	if err := q.generatedQuerier.ArchiveRecipePrepTask(ctx, q.db, recipePrepTaskID); err != nil {
+	if _, err := q.generatedQuerier.ArchiveRecipePrepTask(ctx, q.db, recipePrepTaskID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe prep task")
 	}
 

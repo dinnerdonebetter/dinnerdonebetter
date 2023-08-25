@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	_ "embed"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
@@ -17,47 +16,6 @@ import (
 var (
 	_ types.MealDataManager = (*Querier)(nil)
 )
-
-// scanMealWithRecipes takes a database Scanner (i.e. *sql.Row) and scans the result into a meal struct.
-func (q *Querier) scanMealWithRecipes(ctx context.Context, rows database.ResultIterator) (x *types.Meal, mealComponents []*types.MealComponentDatabaseCreationInput, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	x = &types.Meal{}
-
-	for rows.Next() {
-		var (
-			recipeID, componentType string
-			recipeScale             float32
-		)
-		targetVars := []any{
-			&x.ID,
-			&x.Name,
-			&x.Description,
-			&x.MinimumEstimatedPortions,
-			&x.MaximumEstimatedPortions,
-			&x.EligibleForMealPlans,
-			&x.CreatedAt,
-			&x.LastUpdatedAt,
-			&x.ArchivedAt,
-			&x.CreatedByUser,
-			&recipeID,
-			&recipeScale,
-			&componentType,
-		}
-
-		if err = rows.Scan(targetVars...); err != nil {
-			return nil, nil, observability.PrepareError(err, span, "scanning complete meal")
-		}
-		mealComponents = append(mealComponents, &types.MealComponentDatabaseCreationInput{ComponentType: componentType, RecipeScale: recipeScale, RecipeID: recipeID})
-	}
-
-	if err = rows.Err(); err != nil {
-		return nil, nil, observability.PrepareError(err, span, "querying for complete meal")
-	}
-
-	return x, mealComponents, nil
-}
 
 // MealExists fetches whether a meal exists from the database.
 func (q *Querier) MealExists(ctx context.Context, mealID string) (exists bool, err error) {
@@ -80,9 +38,6 @@ func (q *Querier) MealExists(ctx context.Context, mealID string) (exists bool, e
 	return result, nil
 }
 
-//go:embed queries/meals/get_one.sql
-var getMealByIDQuery string
-
 // GetMeal fetches a meal from the database.
 func (q *Querier) GetMeal(ctx context.Context, mealID string) (*types.Meal, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -96,38 +51,53 @@ func (q *Querier) GetMeal(ctx context.Context, mealID string) (*types.Meal, erro
 	logger = logger.WithValue(keys.MealIDKey, mealID)
 	tracing.AttachMealIDToSpan(span, mealID)
 
-	getMealByIDArgs := []any{
-		mealID,
-	}
-
-	rows, err := q.getRows(ctx, q.db, "meal", getMealByIDQuery, getMealByIDArgs)
+	results, err := q.generatedQuerier.GetMeal(ctx, q.db, mealID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal retrieval query")
 	}
 
-	m, mealComponents, err := q.scanMealWithRecipes(ctx, rows)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal retrieval query")
-	}
-
-	if m == nil || m.ID == "" || len(mealComponents) == 0 {
-		return nil, sql.ErrNoRows
-	}
-
-	for _, mealComponent := range mealComponents {
-		r, getRecipeErr := q.getRecipe(ctx, mealComponent.RecipeID)
-		if getRecipeErr != nil {
-			return nil, observability.PrepareError(getRecipeErr, span, "fetching recipe for meal")
+	var meal *types.Meal
+	for _, result := range results {
+		if meal == nil {
+			meal = &types.Meal{
+				CreatedAt:                result.CreatedAt,
+				ArchivedAt:               timePointerFromNullTime(result.ArchivedAt),
+				LastUpdatedAt:            timePointerFromNullTime(result.LastUpdatedAt),
+				MaximumEstimatedPortions: float32PointerFromNullString(result.MaxEstimatedPortions),
+				ID:                       result.ID,
+				Description:              result.Description,
+				CreatedByUser:            result.CreatedByUser,
+				Name:                     result.Name,
+				Components:               nil,
+				MinimumEstimatedPortions: float32FromString(result.MinEstimatedPortions),
+				EligibleForMealPlans:     result.EligibleForMealPlans,
+			}
 		}
 
-		m.Components = append(m.Components, &types.MealComponent{
-			ComponentType: mealComponent.ComponentType,
-			RecipeScale:   mealComponent.RecipeScale,
-			Recipe:        *r,
+		meal.Components = append(meal.Components, &types.MealComponent{
+			ComponentType: string(result.ComponentMealComponentType),
+			Recipe: types.Recipe{
+				ID: result.ComponentRecipeID,
+			},
+			RecipeScale: float32FromString(result.ComponentRecipeScale),
 		})
 	}
 
-	return m, nil
+	if meal == nil || meal.ID == "" || len(meal.Components) == 0 {
+		return nil, sql.ErrNoRows
+	}
+
+	for i, mealComponent := range meal.Components {
+		var r *types.Recipe
+		r, err = q.getRecipe(ctx, mealComponent.Recipe.ID)
+		if err != nil {
+			return nil, observability.PrepareError(err, span, "fetching recipe for meal")
+		}
+
+		meal.Components[i].Recipe = *r
+	}
+
+	return meal, nil
 }
 
 // GetMeals fetches a list of meals from the database that meet a particular filter.
@@ -400,7 +370,7 @@ func (q *Querier) MarkMealAsIndexed(ctx context.Context, mealID string) error {
 	logger = logger.WithValue(keys.MealIDKey, mealID)
 	tracing.AttachMealIDToSpan(span, mealID)
 
-	if err := q.generatedQuerier.UpdateMealLastIndexedAt(ctx, q.db, mealID); err != nil {
+	if _, err := q.generatedQuerier.UpdateMealLastIndexedAt(ctx, q.db, mealID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking meal as indexed")
 	}
 
@@ -428,7 +398,7 @@ func (q *Querier) ArchiveMeal(ctx context.Context, mealID, userID string) error 
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachUserIDToSpan(span, userID)
 
-	if err := q.generatedQuerier.ArchiveMeal(ctx, q.db, &generated.ArchiveMealParams{
+	if _, err := q.generatedQuerier.ArchiveMeal(ctx, q.db, &generated.ArchiveMealParams{
 		CreatedByUser: userID,
 		ID:            mealID,
 	}); err != nil {
