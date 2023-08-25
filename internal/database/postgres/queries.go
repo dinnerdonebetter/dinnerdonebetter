@@ -108,7 +108,7 @@ func (q *Querier) buildFilteredCountQuery(ctx context.Context, tableName string,
 
 // BuildListQuery builds a SQL query selecting rows that adhere to a given QueryFilter and belong to a given household,
 // and returns both the query and the relevant args to pass to the query executor. TODO: Deprecate this.
-func (q *Querier) buildListQuery(ctx context.Context, tableName string, joins, groupBys []string, ownershipColumn string, columns []string, ownerID string, filter *types.QueryFilter) (query string, args []any) {
+func (q *Querier) buildListQuery(ctx context.Context, tableName string, joins, groupBys, columns []string, filter *types.QueryFilter) (query string, args []any) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -123,8 +123,8 @@ func (q *Querier) buildListQuery(ctx context.Context, tableName string, joins, g
 		}
 	}
 
-	filteredCountQuery, filteredCountQueryArgs := q.buildFilteredCountQuery(ctx, tableName, joins, ownershipColumn, ownerID, includeArchived, filter)
-	totalCountQuery, totalCountQueryArgs := q.buildTotalCountQuery(ctx, tableName, joins, ownershipColumn, ownerID, includeArchived)
+	filteredCountQuery, filteredCountQueryArgs := q.buildFilteredCountQuery(ctx, tableName, joins, householdOwnershipColumn, "", includeArchived, filter)
+	totalCountQuery, totalCountQueryArgs := q.buildTotalCountQuery(ctx, tableName, joins, householdOwnershipColumn, "", includeArchived)
 
 	columns = append(
 		columns,
@@ -139,10 +139,6 @@ func (q *Querier) buildListQuery(ctx context.Context, tableName string, joins, g
 
 	where := squirrel.Eq{}
 	where[fmt.Sprintf("%s.archived_at", tableName)] = nil
-
-	if ownershipColumn != "" && ownerID != "" {
-		where[fmt.Sprintf("%s.%s", tableName, ownershipColumn)] = ownerID
-	}
 
 	builder = builder.Where(where)
 

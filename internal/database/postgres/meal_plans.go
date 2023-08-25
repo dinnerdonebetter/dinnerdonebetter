@@ -6,7 +6,6 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
@@ -19,87 +18,7 @@ var (
 
 	// ErrAlreadyFinalized is returned when a meal plan is already finalized.
 	ErrAlreadyFinalized = errors.New("meal plan already finalized")
-
-	// mealPlansTableColumns are the columns for the meal_plans table.
-	mealPlansTableColumns = []string{
-		"meal_plans.id",
-		"meal_plans.notes",
-		"meal_plans.status",
-		"meal_plans.voting_deadline",
-		"meal_plans.grocery_list_initialized",
-		"meal_plans.tasks_created",
-		"meal_plans.election_method",
-		"meal_plans.created_at",
-		"meal_plans.last_updated_at",
-		"meal_plans.archived_at",
-		"meal_plans.belongs_to_household",
-		"meal_plans.created_by_user",
-	}
 )
-
-// scanMealPlan takes a database Scanner (i.e. *sql.Row) and scans the result into a meal plan struct.
-func (q *Querier) scanMealPlan(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.MealPlan, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	x = &types.MealPlan{}
-
-	targetVars := []any{
-		&x.ID,
-		&x.Notes,
-		&x.Status,
-		&x.VotingDeadline,
-		&x.GroceryListInitialized,
-		&x.TasksCreated,
-		&x.ElectionMethod,
-		&x.CreatedAt,
-		&x.LastUpdatedAt,
-		&x.ArchivedAt,
-		&x.BelongsToHousehold,
-		&x.CreatedByUser,
-	}
-
-	if includeCounts {
-		targetVars = append(targetVars, &filteredCount, &totalCount)
-	}
-
-	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "scanning meal plan")
-	}
-
-	return x, filteredCount, totalCount, nil
-}
-
-// scanMealPlans takes some database rows and turns them into a slice of meal plans.
-func (q *Querier) scanMealPlans(ctx context.Context, rows database.ResultIterator, includeCounts bool) (mealPlans []*types.MealPlan, filteredCount, totalCount uint64, err error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	for rows.Next() {
-		x, fc, tc, scanErr := q.scanMealPlan(ctx, rows, includeCounts)
-		if scanErr != nil {
-			return nil, 0, 0, scanErr
-		}
-
-		if includeCounts {
-			if filteredCount == 0 {
-				filteredCount = fc
-			}
-
-			if totalCount == 0 {
-				totalCount = tc
-			}
-		}
-
-		mealPlans = append(mealPlans, x)
-	}
-
-	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
-	}
-
-	return mealPlans, filteredCount, totalCount, nil
-}
 
 // MealPlanExists fetches whether a meal plan exists from the database.
 func (q *Querier) MealPlanExists(ctx context.Context, mealPlanID, householdID string) (exists bool, err error) {

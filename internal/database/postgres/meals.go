@@ -16,83 +16,7 @@ import (
 
 var (
 	_ types.MealDataManager = (*Querier)(nil)
-
-	// mealsTableColumns are the columns for the meals table.
-	mealsTableColumns = []string{
-		"meals.id",
-		"meals.name",
-		"meals.description",
-		"meals.min_estimated_portions",
-		"meals.max_estimated_portions",
-		"meals.eligible_for_meal_plans",
-		"meals.created_at",
-		"meals.last_updated_at",
-		"meals.archived_at",
-		"meals.created_by_user",
-	}
 )
-
-// scanMeal takes a database Scanner (i.e. *sql.Row) and scans the result into a meal struct.
-func (q *Querier) scanMeal(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.Meal, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	x = &types.Meal{}
-
-	targetVars := []any{
-		&x.ID,
-		&x.Name,
-		&x.Description,
-		&x.MinimumEstimatedPortions,
-		&x.MaximumEstimatedPortions,
-		&x.EligibleForMealPlans,
-		&x.CreatedAt,
-		&x.LastUpdatedAt,
-		&x.ArchivedAt,
-		&x.CreatedByUser,
-	}
-
-	if includeCounts {
-		targetVars = append(targetVars, &filteredCount, &totalCount)
-	}
-
-	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "")
-	}
-
-	return x, filteredCount, totalCount, nil
-}
-
-// scanMeals takes some database rows and turns them into a slice of meals.
-func (q *Querier) scanMeals(ctx context.Context, rows database.ResultIterator, includeCounts bool) (meals []*types.Meal, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	for rows.Next() {
-		x, fc, tc, scanErr := q.scanMeal(ctx, rows, includeCounts)
-		if scanErr != nil {
-			return nil, 0, 0, scanErr
-		}
-
-		if includeCounts {
-			if filteredCount == 0 {
-				filteredCount = fc
-			}
-
-			if totalCount == 0 {
-				totalCount = tc
-			}
-		}
-
-		meals = append(meals, x)
-	}
-
-	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
-	}
-
-	return meals, filteredCount, totalCount, nil
-}
 
 // scanMealWithRecipes takes a database Scanner (i.e. *sql.Row) and scans the result into a meal struct.
 func (q *Querier) scanMealWithRecipes(ctx context.Context, rows database.ResultIterator) (x *types.Meal, mealComponents []*types.MealComponentDatabaseCreationInput, err error) {
@@ -223,7 +147,7 @@ func (q *Querier) GetMeals(ctx context.Context, filter *types.QueryFilter) (x *t
 		Pagination: filter.ToPagination(),
 	}
 
-	q.generatedQuerier.GetMeals(ctx, q.db, &generated.GetMealsParams{
+	results, err := q.generatedQuerier.GetMeals(ctx, q.db, &generated.GetMealsParams{
 		CreatedAfter:  sql.NullTime{},
 		CreatedBefore: sql.NullTime{},
 		UpdatedAfter:  sql.NullTime{},
@@ -231,16 +155,27 @@ func (q *Querier) GetMeals(ctx context.Context, filter *types.QueryFilter) (x *t
 		QueryOffset:   sql.NullInt32{},
 		QueryLimit:    sql.NullInt32{},
 	})
-
-	query, args := q.buildListQuery(ctx, "meals", nil, nil, "", mealsTableColumns, "", filter)
-
-	rows, err := q.getRows(ctx, q.db, "meals", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meals list retrieval query")
 	}
 
-	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanMeals(ctx, rows, true); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meals")
+	for _, result := range results {
+		x.Data = append(x.Data, &types.Meal{
+			CreatedAt:                result.CreatedAt,
+			ArchivedAt:               timePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt:            timePointerFromNullTime(result.LastUpdatedAt),
+			MaximumEstimatedPortions: float32PointerFromNullString(result.MaxEstimatedPortions),
+			ID:                       result.ID,
+			Description:              result.Description,
+			CreatedByUser:            result.CreatedByUser,
+			Name:                     result.Name,
+			Components:               nil,
+			MinimumEstimatedPortions: float32FromString(result.MinEstimatedPortions),
+			EligibleForMealPlans:     result.EligibleForMealPlans,
+		})
+
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
 	}
 
 	return x, nil

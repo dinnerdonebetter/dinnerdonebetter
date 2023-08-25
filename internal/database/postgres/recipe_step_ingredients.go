@@ -483,7 +483,7 @@ func (q *Querier) GetRecipeStepIngredients(ctx context.Context, recipeID, recipe
 		filter = types.DefaultQueryFilter()
 	}
 
-	query, args := q.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"valid_measurement_units.id", "valid_ingredients.id"}, householdOwnershipColumn, recipeStepIngredientsTableColumns, "", filter)
+	query, args := q.buildListQuery(ctx, "recipe_step_ingredients", getRecipeStepIngredientsJoins, []string{"valid_measurement_units.id", "valid_ingredients.id"}, recipeStepIngredientsTableColumns, filter)
 	rows, err := q.getRows(ctx, q.db, "recipe step ingredients", query, args)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe step ingredients list retrieval query")
