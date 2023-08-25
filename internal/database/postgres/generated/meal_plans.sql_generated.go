@@ -87,18 +87,18 @@ func (q *Queries) FinalizeMealPlan(ctx context.Context, db DBTX, arg *FinalizeMe
 const getExpiredAndUnresolvedMealPlans = `-- name: GetExpiredAndUnresolvedMealPlans :many
 
 SELECT
-	meal_plans.id,
-	meal_plans.notes,
-	meal_plans.status,
-	meal_plans.voting_deadline,
-	meal_plans.grocery_list_initialized,
-	meal_plans.tasks_created,
-	meal_plans.election_method,
-	meal_plans.created_at,
-	meal_plans.last_updated_at,
-	meal_plans.archived_at,
-	meal_plans.belongs_to_household,
-	meal_plans.created_by_user
+    meal_plans.id,
+    meal_plans.notes,
+    meal_plans.status,
+    meal_plans.voting_deadline,
+    meal_plans.grocery_list_initialized,
+    meal_plans.tasks_created,
+    meal_plans.election_method,
+    meal_plans.created_at,
+    meal_plans.last_updated_at,
+    meal_plans.archived_at,
+    meal_plans.belongs_to_household,
+    meal_plans.created_by_user
 FROM meal_plans
 WHERE meal_plans.archived_at IS NULL
 	AND meal_plans.status = 'awaiting_votes'
@@ -161,38 +161,38 @@ func (q *Queries) GetExpiredAndUnresolvedMealPlans(ctx context.Context, db DBTX)
 const getFinalizedMealPlansForPlanning = `-- name: GetFinalizedMealPlansForPlanning :many
 
 SELECT
-  meal_plans.id as meal_plan_id,
-  meal_plan_options.id as meal_plan_option_id,
-  meals.id as meal_id,
-  meal_plan_events.id as meal_plan_event_id,
-  meal_components.recipe_id as recipe_id
+    meal_plans.id as meal_plan_id,
+    meal_plan_options.id as meal_plan_option_id,
+    meals.id as meal_id,
+    meal_plan_events.id as meal_plan_event_id,
+    meal_components.recipe_id as recipe_id
 FROM
-  meal_plan_options
-  FULL OUTER JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event = meal_plan_events.id
-  FULL OUTER JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan = meal_plans.id
-  FULL OUTER JOIN meal_components ON meal_plan_options.meal_id = meal_components.meal_id
-  FULL OUTER JOIN meals ON meal_plan_options.meal_id = meals.id
+    meal_plan_options
+    JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event = meal_plan_events.id
+    JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan = meal_plans.id
+    JOIN meal_components ON meal_plan_options.meal_id = meal_components.meal_id
+    JOIN meals ON meal_plan_options.meal_id = meals.id
 WHERE
-  meal_plans.archived_at IS NULL
-  AND meal_plans.status = 'finalized'
-  AND meal_plan_options.chosen IS TRUE
-  AND meal_plans.tasks_created IS FALSE
+    meal_plans.archived_at IS NULL
+    AND meal_plans.status = 'finalized'
+    AND meal_plan_options.chosen IS TRUE
+    AND meal_plans.tasks_created IS FALSE
 GROUP BY
-  meal_plans.id,
-  meal_plan_options.id,
-  meals.id,
-  meal_plan_events.id,
-  meal_components.recipe_id
+    meal_plans.id,
+    meal_plan_options.id,
+    meals.id,
+    meal_plan_events.id,
+    meal_components.recipe_id
 ORDER BY
-  meal_plans.id
+    meal_plans.id
 `
 
 type GetFinalizedMealPlansForPlanningRow struct {
-	MealPlanID       sql.NullString
-	MealPlanOptionID sql.NullString
-	MealID           sql.NullString
-	MealPlanEventID  sql.NullString
-	RecipeID         sql.NullString
+	MealPlanID       string
+	MealPlanOptionID string
+	MealID           string
+	MealPlanEventID  string
+	RecipeID         string
 }
 
 func (q *Queries) GetFinalizedMealPlansForPlanning(ctx context.Context, db DBTX) ([]*GetFinalizedMealPlansForPlanningRow, error) {
@@ -266,22 +266,22 @@ func (q *Queries) GetFinalizedMealPlansWithoutGroceryListInit(ctx context.Contex
 const getMealPlan = `-- name: GetMealPlan :one
 
 SELECT
-	meal_plans.id,
-	meal_plans.notes,
-	meal_plans.status,
-	meal_plans.voting_deadline,
-	meal_plans.grocery_list_initialized,
-	meal_plans.tasks_created,
-	meal_plans.election_method,
-	meal_plans.created_at,
-	meal_plans.last_updated_at,
-	meal_plans.archived_at,
-	meal_plans.belongs_to_household,
-	meal_plans.created_by_user
+    meal_plans.id,
+    meal_plans.notes,
+    meal_plans.status,
+    meal_plans.voting_deadline,
+    meal_plans.grocery_list_initialized,
+    meal_plans.tasks_created,
+    meal_plans.election_method,
+    meal_plans.created_at,
+    meal_plans.last_updated_at,
+    meal_plans.archived_at,
+    meal_plans.belongs_to_household,
+    meal_plans.created_by_user
 FROM meal_plans
 WHERE meal_plans.archived_at IS NULL
-	AND meal_plans.id = $1
-	AND meal_plans.belongs_to_household = $2
+  AND meal_plans.id = $1
+  AND meal_plans.belongs_to_household = $2
 `
 
 type GetMealPlanParams struct {
@@ -385,6 +385,123 @@ func (q *Queries) GetMealPlanPastVotingDeadline(ctx context.Context, db DBTX, ar
 		&i.CreatedByUser,
 	)
 	return &i, err
+}
+
+const getMealPlans = `-- name: GetMealPlans :many
+
+SELECT
+    meal_plans.id,
+    meal_plans.notes,
+    meal_plans.status,
+    meal_plans.voting_deadline,
+    meal_plans.grocery_list_initialized,
+    meal_plans.tasks_created,
+    meal_plans.election_method,
+    meal_plans.created_at,
+    meal_plans.last_updated_at,
+    meal_plans.archived_at,
+    meal_plans.belongs_to_household,
+    meal_plans.created_by_user,
+    (
+        SELECT
+            COUNT(meal_plans.id)
+        FROM
+            meal_plans
+        WHERE
+            meal_plans.archived_at IS NULL
+            AND meal_plans.belongs_to_household = $1
+            AND meal_plans.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
+            AND meal_plans.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
+            AND (
+                meal_plans.last_updated_at IS NULL
+                OR meal_plans.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years'))
+            )
+            AND (
+                meal_plans.last_updated_at IS NULL
+                OR meal_plans.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
+            )
+    ) as filtered_count,
+    (
+        SELECT
+            COUNT(meal_plans.id)
+        FROM
+            meal_plans
+        WHERE
+            meal_plans.archived_at IS NULL
+            AND meal_plans.belongs_to_household = $1
+    ) as total_count
+FROM meal_plans
+WHERE meal_plans.archived_at IS NULL
+  AND meal_plans.belongs_to_household = $1
+`
+
+type GetMealPlansParams struct {
+	HouseholdID   string
+	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	UpdatedBefore sql.NullTime
+}
+
+type GetMealPlansRow struct {
+	VotingDeadline         time.Time
+	CreatedAt              time.Time
+	ArchivedAt             sql.NullTime
+	LastUpdatedAt          sql.NullTime
+	Status                 MealPlanStatus
+	ElectionMethod         ValidElectionMethod
+	Notes                  string
+	ID                     string
+	BelongsToHousehold     string
+	CreatedByUser          string
+	FilteredCount          int64
+	TotalCount             int64
+	GroceryListInitialized bool
+	TasksCreated           bool
+}
+
+func (q *Queries) GetMealPlans(ctx context.Context, db DBTX, arg *GetMealPlansParams) ([]*GetMealPlansRow, error) {
+	rows, err := db.QueryContext(ctx, getMealPlans,
+		arg.HouseholdID,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedAfter,
+		arg.UpdatedBefore,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetMealPlansRow{}
+	for rows.Next() {
+		var i GetMealPlansRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Notes,
+			&i.Status,
+			&i.VotingDeadline,
+			&i.GroceryListInitialized,
+			&i.TasksCreated,
+			&i.ElectionMethod,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+			&i.BelongsToHousehold,
+			&i.CreatedByUser,
+			&i.FilteredCount,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const markMealPlanAsGroceryListInitialized = `-- name: MarkMealPlanAsGroceryListInitialized :exec

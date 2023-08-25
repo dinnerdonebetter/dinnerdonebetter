@@ -191,6 +191,176 @@ func (q *Queries) GetRecipeStepInstrument(ctx context.Context, db DBTX, arg *Get
 	return &i, err
 }
 
+const getRecipeStepInstruments = `-- name: GetRecipeStepInstruments :many
+
+SELECT
+    recipe_step_instruments.id,
+    valid_instruments.id as valid_instrument_id,
+    valid_instruments.name as valid_instrument_name,
+    valid_instruments.plural_name as valid_instrument_plural_name,
+    valid_instruments.description as valid_instrument_description,
+    valid_instruments.icon_path as valid_instrument_icon_path,
+    valid_instruments.usable_for_storage as valid_instrument_usable_for_storage,
+    valid_instruments.display_in_summary_lists as valid_instrument_display_in_summary_lists,
+    valid_instruments.include_in_generated_instructions as valid_instrument_include_in_generated_instructions,
+    valid_instruments.slug as valid_instrument_slug,
+    valid_instruments.created_at as valid_instrument_created_at,
+    valid_instruments.last_updated_at as valid_instrument_last_updated_at,
+    valid_instruments.archived_at as valid_instrument_archived_at,
+    recipe_step_instruments.recipe_step_product_id,
+    recipe_step_instruments.name,
+    recipe_step_instruments.notes,
+    recipe_step_instruments.preference_rank,
+    recipe_step_instruments.optional,
+    recipe_step_instruments.minimum_quantity,
+    recipe_step_instruments.maximum_quantity,
+    recipe_step_instruments.option_index,
+    recipe_step_instruments.created_at,
+    recipe_step_instruments.last_updated_at,
+    recipe_step_instruments.archived_at,
+    recipe_step_instruments.belongs_to_recipe_step,
+    (
+        SELECT
+            COUNT(recipe_step_instruments.id)
+        FROM
+            recipe_step_instruments
+        WHERE
+            recipe_step_instruments.archived_at IS NULL
+            AND recipe_step_instruments.belongs_to_recipe_step = $1
+            AND recipe_step_instruments.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
+            AND recipe_step_instruments.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
+            AND (recipe_step_instruments.last_updated_at IS NULL OR recipe_step_instruments.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years')))
+            AND (recipe_step_instruments.last_updated_at IS NULL OR recipe_step_instruments.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years')))
+    ) as filtered_count,
+    (
+        SELECT
+            COUNT(recipe_step_instruments.id)
+        FROM
+            recipe_step_instruments
+        WHERE
+            recipe_step_instruments.archived_at IS NULL
+    ) as total_count
+FROM recipe_step_instruments
+    LEFT JOIN valid_instruments ON recipe_step_instruments.instrument_id=valid_instruments.id
+    JOIN recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id
+    JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
+WHERE
+    recipe_step_instruments.archived_at IS NULL
+    AND recipe_step_instruments.belongs_to_recipe_step = $1
+    AND recipe_step_instruments.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
+    AND recipe_step_instruments.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
+    AND (recipe_step_instruments.last_updated_at IS NULL OR recipe_step_instruments.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years')))
+    AND (recipe_step_instruments.last_updated_at IS NULL OR recipe_step_instruments.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years')))
+    AND recipe_steps.archived_at IS NULL
+    AND recipe_steps.belongs_to_recipe = $6
+    AND recipe_steps.id = $1
+    AND recipes.archived_at IS NULL
+    AND recipes.id = $6
+    OFFSET $7
+    LIMIT $8
+`
+
+type GetRecipeStepInstrumentsParams struct {
+	RecipeStepID  string
+	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	UpdatedBefore sql.NullTime
+	RecipeID      string
+	QueryOffset   int32
+	QueryLimit    int32
+}
+
+type GetRecipeStepInstrumentsRow struct {
+	CreatedAt                                     time.Time
+	ValidInstrumentCreatedAt                      sql.NullTime
+	LastUpdatedAt                                 sql.NullTime
+	ArchivedAt                                    sql.NullTime
+	ValidInstrumentArchivedAt                     sql.NullTime
+	ValidInstrumentLastUpdatedAt                  sql.NullTime
+	Notes                                         string
+	Name                                          string
+	BelongsToRecipeStep                           string
+	ID                                            string
+	ValidInstrumentName                           sql.NullString
+	ValidInstrumentIconPath                       sql.NullString
+	ValidInstrumentDescription                    sql.NullString
+	RecipeStepProductID                           sql.NullString
+	ValidInstrumentPluralName                     sql.NullString
+	ValidInstrumentID                             sql.NullString
+	ValidInstrumentSlug                           sql.NullString
+	TotalCount                                    int64
+	FilteredCount                                 int64
+	MaximumQuantity                               sql.NullInt32
+	MinimumQuantity                               int32
+	OptionIndex                                   int32
+	PreferenceRank                                int32
+	ValidInstrumentIncludeInGeneratedInstructions sql.NullBool
+	ValidInstrumentDisplayInSummaryLists          sql.NullBool
+	ValidInstrumentUsableForStorage               sql.NullBool
+	Optional                                      bool
+}
+
+func (q *Queries) GetRecipeStepInstruments(ctx context.Context, db DBTX, arg *GetRecipeStepInstrumentsParams) ([]*GetRecipeStepInstrumentsRow, error) {
+	rows, err := db.QueryContext(ctx, getRecipeStepInstruments,
+		arg.RecipeStepID,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedAfter,
+		arg.UpdatedBefore,
+		arg.RecipeID,
+		arg.QueryOffset,
+		arg.QueryLimit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetRecipeStepInstrumentsRow{}
+	for rows.Next() {
+		var i GetRecipeStepInstrumentsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.ValidInstrumentID,
+			&i.ValidInstrumentName,
+			&i.ValidInstrumentPluralName,
+			&i.ValidInstrumentDescription,
+			&i.ValidInstrumentIconPath,
+			&i.ValidInstrumentUsableForStorage,
+			&i.ValidInstrumentDisplayInSummaryLists,
+			&i.ValidInstrumentIncludeInGeneratedInstructions,
+			&i.ValidInstrumentSlug,
+			&i.ValidInstrumentCreatedAt,
+			&i.ValidInstrumentLastUpdatedAt,
+			&i.ValidInstrumentArchivedAt,
+			&i.RecipeStepProductID,
+			&i.Name,
+			&i.Notes,
+			&i.PreferenceRank,
+			&i.Optional,
+			&i.MinimumQuantity,
+			&i.MaximumQuantity,
+			&i.OptionIndex,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+			&i.BelongsToRecipeStep,
+			&i.FilteredCount,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getRecipeStepInstrumentsForRecipe = `-- name: GetRecipeStepInstrumentsForRecipe :many
 
 SELECT

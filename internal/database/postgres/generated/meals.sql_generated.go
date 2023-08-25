@@ -127,6 +127,7 @@ func (q *Queries) GetMeal(ctx context.Context, db DBTX, id string) (*GetMealRow,
 }
 
 const getMeals = `-- name: GetMeals :many
+
 SELECT
     meals.id,
     meals.name,
@@ -138,9 +139,6 @@ SELECT
     meals.last_updated_at,
     meals.archived_at,
     meals.created_by_user,
-    meal_components.recipe_id as component_recipe_id,
-    meal_components.recipe_scale as component_recipe_scale,
-    meal_components.meal_component_type as component_meal_component_type,
     (
         SELECT
             COUNT(meals.id)
@@ -148,11 +146,10 @@ SELECT
             meals
         WHERE
             meals.archived_at IS NULL
-            AND meals.id = $1
-            AND meals.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
-            AND meals.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
-            AND (meals.last_updated_at IS NULL OR meals.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years')))
-            AND (meals.last_updated_at IS NULL OR meals.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years')))
+            AND meals.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+            AND meals.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+            AND (meals.last_updated_at IS NULL OR meals.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+            AND (meals.last_updated_at IS NULL OR meals.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
     ) as filtered_count,
     (
         SELECT
@@ -163,49 +160,47 @@ SELECT
             meals.archived_at IS NULL
     ) as total_count
 FROM meals
-    JOIN meal_components ON meal_components.meal_id=meals.id
 WHERE meals.archived_at IS NULL
-    AND meals.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
-    AND meals.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
-    AND (meals.last_updated_at IS NULL OR meals.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years')))
-    AND (meals.last_updated_at IS NULL OR meals.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years')))
-    AND meal_components.archived_at IS NULL
-    AND meals.id = $1
+    AND meals.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+    AND meals.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+    AND (meals.last_updated_at IS NULL OR meals.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+    AND (meals.last_updated_at IS NULL OR meals.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+    OFFSET $5
+    LIMIT $6
 `
 
 type GetMealsParams struct {
-	MealID        string
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
 	UpdatedAfter  sql.NullTime
 	UpdatedBefore sql.NullTime
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
 }
 
 type GetMealsRow struct {
-	CreatedAt                  time.Time
-	ArchivedAt                 sql.NullTime
-	LastUpdatedAt              sql.NullTime
-	MinEstimatedPortions       string
-	ID                         string
-	Description                string
-	Name                       string
-	CreatedByUser              string
-	ComponentRecipeID          string
-	ComponentRecipeScale       string
-	ComponentMealComponentType ComponentType
-	MaxEstimatedPortions       sql.NullString
-	FilteredCount              int64
-	TotalCount                 int64
-	EligibleForMealPlans       bool
+	CreatedAt            time.Time
+	LastUpdatedAt        sql.NullTime
+	ArchivedAt           sql.NullTime
+	ID                   string
+	Name                 string
+	Description          string
+	MinEstimatedPortions string
+	CreatedByUser        string
+	MaxEstimatedPortions sql.NullString
+	FilteredCount        int64
+	TotalCount           int64
+	EligibleForMealPlans bool
 }
 
 func (q *Queries) GetMeals(ctx context.Context, db DBTX, arg *GetMealsParams) ([]*GetMealsRow, error) {
 	rows, err := db.QueryContext(ctx, getMeals,
-		arg.MealID,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
 		arg.UpdatedAfter,
 		arg.UpdatedBefore,
+		arg.QueryOffset,
+		arg.QueryLimit,
 	)
 	if err != nil {
 		return nil, err
@@ -225,9 +220,6 @@ func (q *Queries) GetMeals(ctx context.Context, db DBTX, arg *GetMealsParams) ([
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
 			&i.CreatedByUser,
-			&i.ComponentRecipeID,
-			&i.ComponentRecipeScale,
-			&i.ComponentMealComponentType,
 			&i.FilteredCount,
 			&i.TotalCount,
 		); err != nil {
@@ -269,6 +261,130 @@ func (q *Queries) GetMealsNeedingIndexing(ctx context.Context, db DBTX) ([]strin
 			return nil, err
 		}
 		items = append(items, id)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const searchForMeals = `-- name: SearchForMeals :many
+
+SELECT
+    meals.id,
+    meals.name,
+    meals.description,
+    meals.min_estimated_portions,
+    meals.max_estimated_portions,
+    meals.eligible_for_meal_plans,
+    meals.created_at,
+    meals.last_updated_at,
+    meals.archived_at,
+    meals.created_by_user,
+    meal_components.recipe_id as component_recipe_id,
+    meal_components.recipe_scale as component_recipe_scale,
+    meal_components.meal_component_type as component_meal_component_type,
+    (
+        SELECT
+            COUNT(meals.id)
+        FROM
+            meals
+        WHERE
+            meals.archived_at IS NULL
+            AND meals.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+            AND meals.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+            AND (meals.last_updated_at IS NULL OR meals.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+            AND (meals.last_updated_at IS NULL OR meals.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+    ) as filtered_count,
+    (
+        SELECT
+            COUNT(meals.id)
+        FROM
+            meals
+        WHERE
+            meals.archived_at IS NULL
+    ) as total_count
+FROM meals
+    JOIN meal_components ON meal_components.meal_id=meals.id
+WHERE meals.archived_at IS NULL
+    AND meals.name ILIKE '%' || $5 || '%'
+    AND meals.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+    AND meals.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+    AND (meals.last_updated_at IS NULL OR meals.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+    AND (meals.last_updated_at IS NULL OR meals.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+    AND meal_components.archived_at IS NULL
+    OFFSET $6
+    LIMIT $7
+`
+
+type SearchForMealsParams struct {
+	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	UpdatedBefore sql.NullTime
+	Query         sql.NullString
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
+}
+
+type SearchForMealsRow struct {
+	CreatedAt                  time.Time
+	ArchivedAt                 sql.NullTime
+	LastUpdatedAt              sql.NullTime
+	MinEstimatedPortions       string
+	ID                         string
+	Description                string
+	Name                       string
+	CreatedByUser              string
+	ComponentRecipeID          string
+	ComponentRecipeScale       string
+	ComponentMealComponentType ComponentType
+	MaxEstimatedPortions       sql.NullString
+	FilteredCount              int64
+	TotalCount                 int64
+	EligibleForMealPlans       bool
+}
+
+func (q *Queries) SearchForMeals(ctx context.Context, db DBTX, arg *SearchForMealsParams) ([]*SearchForMealsRow, error) {
+	rows, err := db.QueryContext(ctx, searchForMeals,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedAfter,
+		arg.UpdatedBefore,
+		arg.Query,
+		arg.QueryOffset,
+		arg.QueryLimit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*SearchForMealsRow{}
+	for rows.Next() {
+		var i SearchForMealsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.MinEstimatedPortions,
+			&i.MaxEstimatedPortions,
+			&i.EligibleForMealPlans,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+			&i.CreatedByUser,
+			&i.ComponentRecipeID,
+			&i.ComponentRecipeScale,
+			&i.ComponentMealComponentType,
+			&i.FilteredCount,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
 	}
 	if err := rows.Close(); err != nil {
 		return nil, err

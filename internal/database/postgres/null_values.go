@@ -33,10 +33,7 @@ func stringFromNullString(nt sql.NullString) string {
 }
 
 func nullStringFromString(s string) sql.NullString {
-	return sql.NullString{
-		String: s,
-		Valid:  true,
-	}
+	return sql.NullString{String: s, Valid: true}
 }
 
 func nullStringFromStringPointer(s *string) sql.NullString {
@@ -44,17 +41,11 @@ func nullStringFromStringPointer(s *string) sql.NullString {
 		return sql.NullString{}
 	}
 
-	return sql.NullString{
-		String: *s,
-		Valid:  true,
-	}
+	return sql.NullString{String: *s, Valid: true}
 }
 
 func nullTimeFromTime(t time.Time) sql.NullTime {
-	return sql.NullTime{
-		Time:  t,
-		Valid: true,
-	}
+	return sql.NullTime{Time: t, Valid: true}
 }
 
 func nullTimeFromTimePointer(t *time.Time) sql.NullTime {
@@ -62,10 +53,7 @@ func nullTimeFromTimePointer(t *time.Time) sql.NullTime {
 		return sql.NullTime{}
 	}
 
-	return sql.NullTime{
-		Time:  *t,
-		Valid: true,
-	}
+	return sql.NullTime{Time: *t, Valid: true}
 }
 
 func nullInt32FromUint8Pointer(i *uint8) sql.NullInt32 {
@@ -73,10 +61,7 @@ func nullInt32FromUint8Pointer(i *uint8) sql.NullInt32 {
 		return sql.NullInt32{}
 	}
 
-	return sql.NullInt32{
-		Int32: int32(*i),
-		Valid: true,
-	}
+	return sql.NullInt32{Int32: int32(*i), Valid: true}
 }
 
 func nullInt32FromUint16Pointer(i *uint16) sql.NullInt32 {
@@ -84,17 +69,11 @@ func nullInt32FromUint16Pointer(i *uint16) sql.NullInt32 {
 		return sql.NullInt32{}
 	}
 
-	return sql.NullInt32{
-		Int32: int32(*i),
-		Valid: true,
-	}
+	return sql.NullInt32{Int32: int32(*i), Valid: true}
 }
 
 func nullInt32FromUint16(i uint16) sql.NullInt32 {
-	return sql.NullInt32{
-		Int32: int32(i),
-		Valid: true,
-	}
+	return sql.NullInt32{Int32: int32(i), Valid: true}
 }
 
 func boolFromNullBool(b sql.NullBool) bool {
@@ -110,10 +89,7 @@ func nullInt32FromInt32Pointer(i *int32) sql.NullInt32 {
 		return sql.NullInt32{}
 	}
 
-	return sql.NullInt32{
-		Int32: *i,
-		Valid: true,
-	}
+	return sql.NullInt32{Int32: *i, Valid: true}
 }
 
 func nullInt32FromUint32Pointer(i *uint32) sql.NullInt32 {
@@ -121,10 +97,7 @@ func nullInt32FromUint32Pointer(i *uint32) sql.NullInt32 {
 		return sql.NullInt32{}
 	}
 
-	return sql.NullInt32{
-		Int32: int32(*i),
-		Valid: true,
-	}
+	return sql.NullInt32{Int32: int32(*i), Valid: true}
 }
 
 func int32PointerFromNullInt32(i sql.NullInt32) *int32 {
@@ -136,10 +109,7 @@ func int32PointerFromNullInt32(i sql.NullInt32) *int32 {
 }
 
 func nullBoolFromBool(b bool) sql.NullBool {
-	return sql.NullBool{
-		Bool:  b,
-		Valid: true,
-	}
+	return sql.NullBool{Bool: b, Valid: true}
 }
 
 func nullFloat64FromFloat32Pointer(f *float32) sql.NullFloat64 {
@@ -147,10 +117,7 @@ func nullFloat64FromFloat32Pointer(f *float32) sql.NullFloat64 {
 		return sql.NullFloat64{}
 	}
 
-	return sql.NullFloat64{
-		Float64: float64(*f),
-		Valid:   true,
-	}
+	return sql.NullFloat64{Float64: float64(*f), Valid: true}
 }
 
 func float32PointerFromNullString(f sql.NullString) *float32 {
@@ -198,17 +165,11 @@ func nullStringFromFloat32Pointer(f *float32) sql.NullString {
 		return sql.NullString{}
 	}
 
-	return sql.NullString{
-		String: stringFromFloat32(*f),
-		Valid:  true,
-	}
+	return sql.NullString{String: stringFromFloat32(*f), Valid: true}
 }
 
 func nullStringFromFloat32(f float32) sql.NullString {
-	return sql.NullString{
-		String: stringFromFloat32(f),
-		Valid:  true,
-	}
+	return sql.NullString{String: stringFromFloat32(f), Valid: true}
 }
 
 func stringFromFloat64(f float64) string {
@@ -220,10 +181,7 @@ func nullStringFromFloat64Pointer(f *float64) sql.NullString {
 		return sql.NullString{}
 	}
 
-	return sql.NullString{
-		String: stringFromFloat64(*f),
-		Valid:  true,
-	}
+	return sql.NullString{String: stringFromFloat64(*f), Valid: true}
 }
 
 func nullInt64FromUint32Pointer(f *uint32) sql.NullInt64 {
@@ -231,10 +189,7 @@ func nullInt64FromUint32Pointer(f *uint32) sql.NullInt64 {
 		return sql.NullInt64{}
 	}
 
-	return sql.NullInt64{
-		Int64: int64(*f),
-		Valid: true,
-	}
+	return sql.NullInt64{Int64: int64(*f), Valid: true}
 }
 
 func uint16PointerFromNullInt32(f sql.NullInt32) *uint16 {

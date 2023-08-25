@@ -12,8 +12,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-
-	"github.com/Masterminds/squirrel"
 )
 
 var (
@@ -225,7 +223,16 @@ func (q *Querier) GetMeals(ctx context.Context, filter *types.QueryFilter) (x *t
 		Pagination: filter.ToPagination(),
 	}
 
-	query, args := q.buildListQuery(ctx, "meals", nil, nil, nil, "", mealsTableColumns, "", false, filter)
+	q.generatedQuerier.GetMeals(ctx, q.db, &generated.GetMealsParams{
+		CreatedAfter:  sql.NullTime{},
+		CreatedBefore: sql.NullTime{},
+		UpdatedAfter:  sql.NullTime{},
+		UpdatedBefore: sql.NullTime{},
+		QueryOffset:   sql.NullInt32{},
+		QueryLimit:    sql.NullInt32{},
+	})
+
+	query, args := q.buildListQuery(ctx, "meals", nil, nil, "", mealsTableColumns, "", filter)
 
 	rows, err := q.getRows(ctx, q.db, "meals", query, args)
 	if err != nil {
@@ -259,20 +266,17 @@ func (q *Querier) GetMealsWithIDs(ctx context.Context, ids []string) ([]*types.M
 	return meals, nil
 }
 
-//go:embed queries/meals/get_needing_indexing.sql
-var mealsNeedingIndexingQuery string
-
 // GetMealIDsThatNeedSearchIndexing fetches a list of meal IDs from the database that meet a particular filter.
 func (q *Querier) GetMealIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	rows, err := q.getRows(ctx, q.db, "meals needing indexing", mealsNeedingIndexingQuery, nil)
+	results, err := q.generatedQuerier.GetMealsNeedingIndexing(ctx, q.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing meals list retrieval query")
 	}
 
-	return q.scanIDs(ctx, rows)
+	return results, nil
 }
 
 // SearchForMeals fetches a list of recipes from the database that match a query.
@@ -292,16 +296,52 @@ func (q *Querier) SearchForMeals(ctx context.Context, mealNameQuery string, filt
 		Pagination: filter.ToPagination(),
 	}
 
-	where := squirrel.ILike{"name": wrapQueryForILIKE(mealNameQuery)}
-	query, args := q.buildListQueryWithILike(ctx, "meals", nil, nil, where, "", mealsTableColumns, "", false, filter)
-
-	rows, err := q.getRows(ctx, q.db, "meals search", query, args)
+	results, err := q.generatedQuerier.SearchForMeals(ctx, q.db, &generated.SearchForMealsParams{
+		Query:         nullStringFromString(mealNameQuery),
+		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing meals search query")
 	}
 
-	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanMeals(ctx, rows, true); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meals")
+	var meal *types.Meal
+	for _, result := range results {
+		if meal != nil && meal.ID != result.ID {
+			x.Data = append(x.Data, meal)
+			meal = nil
+		}
+
+		if meal == nil {
+			meal = &types.Meal{
+				CreatedAt:                result.CreatedAt,
+				ArchivedAt:               timePointerFromNullTime(result.ArchivedAt),
+				LastUpdatedAt:            timePointerFromNullTime(result.LastUpdatedAt),
+				MaximumEstimatedPortions: float32PointerFromNullString(result.MaxEstimatedPortions),
+				ID:                       result.ID,
+				Description:              result.Description,
+				CreatedByUser:            result.CreatedByUser,
+				Name:                     result.Name,
+				Components:               []*types.MealComponent{},
+				MinimumEstimatedPortions: float32FromString(result.MinEstimatedPortions),
+				EligibleForMealPlans:     result.EligibleForMealPlans,
+			}
+		}
+
+		meal.Components = append(meal.Components, &types.MealComponent{
+			ComponentType: string(result.ComponentMealComponentType),
+			Recipe: types.Recipe{
+				ID: result.ComponentRecipeID,
+			},
+			RecipeScale: float32FromString(result.ComponentRecipeScale),
+		})
+
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
 	}
 
 	return x, nil

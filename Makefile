@@ -66,6 +66,12 @@ ifeq (, $(shell which scc))
 	$(shell go install github.com/boyter/scc@latest)
 endif
 
+.PHONY: ensure_exhaustruct_installed
+ensure_exhaustruct_installed:
+ifeq (, $(shell which exhaustruct))
+	$(shell go install github.com/GaijinEntertainment/go-exhaustruct/v3/cmd/exhaustruct@latest)
+endif
+
 .PHONY: clean_vendor
 clean_vendor:
 	rm -rf vendor go.sum

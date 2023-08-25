@@ -178,6 +178,7 @@ type Querier interface {
 	GetMealPlanOptions(ctx context.Context, db DBTX, arg *GetMealPlanOptionsParams) ([]*GetMealPlanOptionsRow, error)
 	GetMealPlanPastVotingDeadline(ctx context.Context, db DBTX, arg *GetMealPlanPastVotingDeadlineParams) (*GetMealPlanPastVotingDeadlineRow, error)
 	GetMealPlanTask(ctx context.Context, db DBTX, mealPlanTaskID string) (*GetMealPlanTaskRow, error)
+	GetMealPlans(ctx context.Context, db DBTX, arg *GetMealPlansParams) ([]*GetMealPlansRow, error)
 	GetMeals(ctx context.Context, db DBTX, arg *GetMealsParams) ([]*GetMealsRow, error)
 	GetMealsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error)
 	GetOAuth2ClientByClientID(ctx context.Context, db DBTX, clientID string) (*Oauth2Clients, error)
@@ -210,6 +211,7 @@ type Querier interface {
 	GetRecipeStepIngredient(ctx context.Context, db DBTX, arg *GetRecipeStepIngredientParams) (*GetRecipeStepIngredientRow, error)
 	GetRecipeStepIngredientsForRecipe(ctx context.Context, db DBTX, recipeID string) ([]*GetRecipeStepIngredientsForRecipeRow, error)
 	GetRecipeStepInstrument(ctx context.Context, db DBTX, arg *GetRecipeStepInstrumentParams) (*GetRecipeStepInstrumentRow, error)
+	GetRecipeStepInstruments(ctx context.Context, db DBTX, arg *GetRecipeStepInstrumentsParams) ([]*GetRecipeStepInstrumentsRow, error)
 	GetRecipeStepInstrumentsForRecipe(ctx context.Context, db DBTX, belongsToRecipe string) ([]*GetRecipeStepInstrumentsForRecipeRow, error)
 	GetRecipeStepProduct(ctx context.Context, db DBTX, arg *GetRecipeStepProductParams) (*GetRecipeStepProductRow, error)
 	GetRecipeStepProducts(ctx context.Context, db DBTX, arg *GetRecipeStepProductsParams) ([]*GetRecipeStepProductsRow, error)
@@ -306,6 +308,7 @@ type Querier interface {
 	RecipeSearch(ctx context.Context, db DBTX, arg *RecipeSearchParams) ([]*RecipeSearchRow, error)
 	RedeemPasswordResetToken(ctx context.Context, db DBTX, id string) error
 	RemoveUserFromHousehold(ctx context.Context, db DBTX, arg *RemoveUserFromHouseholdParams) error
+	SearchForMeals(ctx context.Context, db DBTX, arg *SearchForMealsParams) ([]*SearchForMealsRow, error)
 	SearchForServiceSettings(ctx context.Context, db DBTX, nameQuery string) ([]*SearchForServiceSettingsRow, error)
 	SearchForValidIngredientGroups(ctx context.Context, db DBTX, arg *SearchForValidIngredientGroupsParams) ([]*SearchForValidIngredientGroupsRow, error)
 	SearchForValidIngredientStates(ctx context.Context, db DBTX, query string) ([]*SearchForValidIngredientStatesRow, error)

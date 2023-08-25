@@ -233,7 +233,7 @@ func (q *Querier) GetMealPlans(ctx context.Context, householdID string, filter *
 		Pagination: filter.ToPagination(),
 	}
 
-	query, args := q.buildListQuery(ctx, "meal_plans", nil, nil, nil, householdOwnershipColumn, mealPlansTableColumns, householdID, false, filter)
+	query, args := q.buildListQuery(ctx, "meal_plans", nil, nil, householdOwnershipColumn, mealPlansTableColumns, householdID, filter)
 
 	rows, err := q.getRows(ctx, q.db, "meal plans", query, args)
 	if err != nil {

@@ -276,7 +276,7 @@ func (q *Querier) GetRecipeStepInstruments(ctx context.Context, recipeID, recipe
 		Pagination: filter.ToPagination(),
 	}
 
-	query, args := q.buildListQuery(ctx, "recipe_step_instruments", getRecipeStepInstrumentsJoins, []string{"valid_instruments.id", "recipe_step_instruments.id"}, nil, householdOwnershipColumn, recipeStepInstrumentsTableColumns, "", false, filter)
+	query, args := q.buildListQuery(ctx, "recipe_step_instruments", getRecipeStepInstrumentsJoins, []string{"valid_instruments.id", "recipe_step_instruments.id"}, householdOwnershipColumn, recipeStepInstrumentsTableColumns, "", filter)
 
 	rows, err := q.getRows(ctx, q.db, "recipe step instruments", query, args)
 	if err != nil {

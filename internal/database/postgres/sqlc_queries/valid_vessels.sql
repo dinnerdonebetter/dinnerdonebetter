@@ -38,40 +38,40 @@ SELECT
     FROM
       valid_vessels
     WHERE
-      valid_vessels.archived_at IS NULL
-      AND valid_vessels.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
-      AND valid_vessels.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
-      AND (
+        valid_vessels.archived_at IS NULL
+        AND valid_vessels.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
+        AND valid_vessels.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+        AND (
+            valid_vessels.last_updated_at IS NULL
+            OR valid_vessels.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years'))
+        )
+        AND (
+            valid_vessels.last_updated_at IS NULL
+            OR valid_vessels.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
+        )
+  ) as filtered_count,
+    (
+        SELECT
+            COUNT(valid_vessels.id)
+        FROM
+            valid_vessels
+        WHERE
+            valid_vessels.archived_at IS NULL
+    ) as total_count
+FROM
+    valid_vessels
+WHERE
+    valid_vessels.archived_at IS NULL
+    AND valid_vessels.created_at > (COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years')))
+    AND valid_vessels.created_at < (COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years')))
+    AND (
         valid_vessels.last_updated_at IS NULL
         OR valid_vessels.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years'))
-      )
-      AND (
+    )
+    AND (
         valid_vessels.last_updated_at IS NULL
         OR valid_vessels.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
-      )
-  ) as filtered_count,
-  (
-    SELECT
-      COUNT(valid_vessels.id)
-    FROM
-      valid_vessels
-    WHERE
-      valid_vessels.archived_at IS NULL
-  ) as total_count
-FROM
-  valid_vessels
-WHERE
-  valid_vessels.archived_at IS NULL
-  AND valid_vessels.created_at > (COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years')))
-  AND valid_vessels.created_at < (COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years')))
-  AND (
-    valid_vessels.last_updated_at IS NULL
-    OR valid_vessels.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years'))
-  )
-  AND (
-    valid_vessels.last_updated_at IS NULL
-    OR valid_vessels.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
-  )
+    )
 GROUP BY
   valid_vessels.id
 ORDER BY

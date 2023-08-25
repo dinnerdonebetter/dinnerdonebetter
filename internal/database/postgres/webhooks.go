@@ -245,6 +245,7 @@ func (q *Querier) createWebhookTriggerEvent(ctx context.Context, querier databas
 		TriggerEvent:     input.TriggerEvent,
 		BelongsToWebhook: input.BelongsToWebhook,
 		CreatedAt:        q.currentTime(),
+		ArchivedAt:       nil,
 	}
 
 	return x, nil
