@@ -233,15 +233,35 @@ func (q *Querier) GetMealPlans(ctx context.Context, householdID string, filter *
 		Pagination: filter.ToPagination(),
 	}
 
-	query, args := q.buildListQuery(ctx, "meal_plans", nil, nil, householdOwnershipColumn, mealPlansTableColumns, householdID, filter)
-
-	rows, err := q.getRows(ctx, q.db, "meal plans", query, args)
+	results, err := q.generatedQuerier.GetMealPlans(ctx, q.db, &generated.GetMealPlansParams{
+		HouseholdID:   householdID,
+		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+	})
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing meal plans list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing meal plans retrieval")
 	}
 
-	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanMealPlans(ctx, rows, true); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning meal plans")
+	for _, result := range results {
+		x.Data = append(x.Data, &types.MealPlan{
+			CreatedAt:              result.CreatedAt,
+			VotingDeadline:         result.VotingDeadline,
+			ArchivedAt:             timePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt:          timePointerFromNullTime(result.LastUpdatedAt),
+			ID:                     result.ID,
+			Status:                 string(result.Status),
+			Notes:                  result.Notes,
+			ElectionMethod:         string(result.ElectionMethod),
+			BelongsToHousehold:     result.BelongsToHousehold,
+			CreatedByUser:          result.CreatedByUser,
+			Events:                 nil,
+			GroceryListInitialized: result.GroceryListInitialized,
+			TasksCreated:           result.TasksCreated,
+		})
 	}
 
 	fullMealPlans := []*types.MealPlan{}
@@ -504,30 +524,33 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, hou
 	return finalized, nil
 }
 
-//go:embed queries/meal_plans/get_expired_and_unresolved.sql
-var getExpiredAndUnresolvedMealPlansQuery string
-
 // GetUnfinalizedMealPlansWithExpiredVotingPeriods gets unfinalized meal plans with expired voting deadlines.
 func (q *Querier) GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context.Context) ([]*types.MealPlan, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	rows, err := q.getRows(ctx, q.db, "expired and unresolved meal plan", getExpiredAndUnresolvedMealPlansQuery, nil)
+	results, err := q.generatedQuerier.GetExpiredAndUnresolvedMealPlans(ctx, q.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing unfinalized meal plans with expired voting periods retrieval query")
 	}
 
 	mealPlans := []*types.MealPlan{}
-	for rows.Next() {
-		mp, _, _, scanErr := q.scanMealPlan(ctx, rows, false)
-		if scanErr != nil {
-			return nil, observability.PrepareError(scanErr, span, "scanning meal plan response")
-		}
-		mealPlans = append(mealPlans, mp)
-	}
-
-	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, observability.PrepareError(err, span, "closing rows")
+	for _, result := range results {
+		mealPlans = append(mealPlans, &types.MealPlan{
+			CreatedAt:              result.CreatedAt,
+			VotingDeadline:         result.VotingDeadline,
+			ArchivedAt:             timePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt:          timePointerFromNullTime(result.LastUpdatedAt),
+			ID:                     result.ID,
+			Status:                 string(result.Status),
+			Notes:                  result.Notes,
+			ElectionMethod:         string(result.ElectionMethod),
+			BelongsToHousehold:     result.BelongsToHousehold,
+			CreatedByUser:          result.CreatedByUser,
+			Events:                 nil,
+			GroceryListInitialized: result.GroceryListInitialized,
+			TasksCreated:           result.TasksCreated,
+		})
 	}
 
 	return mealPlans, nil
@@ -583,36 +606,18 @@ func (q *Querier) GetFinalizedMealPlanIDsForTheNextWeek(ctx context.Context) ([]
 	return results, nil
 }
 
-//go:embed queries/meal_plans/get_finalized_without_grocery_list_init.sql
-var getFinalizedMealPlansWithoutGroceryListInitializationQuery string
-
 func (q *Querier) GetFinalizedMealPlansWithUninitializedGroceryLists(ctx context.Context) ([]*types.MealPlan, error) {
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	rows, err := q.getRows(ctx, q.db, "expired and unresolved meal plan", getFinalizedMealPlansWithoutGroceryListInitializationQuery, nil)
+	results, err := q.generatedQuerier.GetFinalizedMealPlansWithoutGroceryListInit(ctx, q.db)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing unfinalized meal plans with uninitialized grocery lists query")
+		return nil, observability.PrepareError(err, span, "executing finalized meal plans without grocery list initialization query")
 	}
 
 	mealPlanDetails := map[string]string{}
-	for rows.Next() {
-		var mealPlanID, householdID string
-
-		targetVars := []any{
-			&mealPlanID,
-			&householdID,
-		}
-
-		if err = rows.Scan(targetVars...); err != nil {
-			return nil, observability.PrepareError(err, span, "scanning meal plan ID")
-		}
-
-		mealPlanDetails[mealPlanID] = householdID
-	}
-
-	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, observability.PrepareError(err, span, "closing rows")
+	for _, result := range results {
+		mealPlanDetails[result.ID] = result.BelongsToHousehold
 	}
 
 	mealPlans := []*types.MealPlan{}

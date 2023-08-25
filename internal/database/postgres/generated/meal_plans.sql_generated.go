@@ -410,6 +410,7 @@ SELECT
         WHERE
             meal_plans.archived_at IS NULL
             AND meal_plans.belongs_to_household = $1
+            AND meal_plans.belongs_to_household = $1
             AND meal_plans.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
             AND meal_plans.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
             AND (
@@ -432,7 +433,20 @@ SELECT
     ) as total_count
 FROM meal_plans
 WHERE meal_plans.archived_at IS NULL
-  AND meal_plans.belongs_to_household = $1
+    AND meal_plans.belongs_to_household = $1
+    AND meal_plans.belongs_to_household = $1
+    AND meal_plans.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
+    AND meal_plans.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
+    AND (
+        meal_plans.last_updated_at IS NULL
+        OR meal_plans.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years'))
+    )
+    AND (
+        meal_plans.last_updated_at IS NULL
+        OR meal_plans.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
+    )
+    OFFSET $6
+    LIMIT $7
 `
 
 type GetMealPlansParams struct {
@@ -441,6 +455,8 @@ type GetMealPlansParams struct {
 	CreatedBefore sql.NullTime
 	UpdatedAfter  sql.NullTime
 	UpdatedBefore sql.NullTime
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
 }
 
 type GetMealPlansRow struct {
@@ -467,6 +483,8 @@ func (q *Queries) GetMealPlans(ctx context.Context, db DBTX, arg *GetMealPlansPa
 		arg.CreatedBefore,
 		arg.UpdatedAfter,
 		arg.UpdatedBefore,
+		arg.QueryOffset,
+		arg.QueryLimit,
 	)
 	if err != nil {
 		return nil, err

@@ -117,6 +117,7 @@ SELECT
         WHERE
             meal_plans.archived_at IS NULL
             AND meal_plans.belongs_to_household = sqlc.arg(household_id)
+            AND meal_plans.belongs_to_household = sqlc.arg(household_id)
             AND meal_plans.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
             AND meal_plans.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
             AND (
@@ -139,7 +140,20 @@ SELECT
     ) as total_count
 FROM meal_plans
 WHERE meal_plans.archived_at IS NULL
-  AND meal_plans.belongs_to_household = sqlc.arg(household_id);
+    AND meal_plans.belongs_to_household = sqlc.arg(household_id)
+    AND meal_plans.belongs_to_household = sqlc.arg(household_id)
+    AND meal_plans.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
+    AND meal_plans.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+    AND (
+        meal_plans.last_updated_at IS NULL
+        OR meal_plans.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years'))
+    )
+    AND (
+        meal_plans.last_updated_at IS NULL
+        OR meal_plans.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
+    )
+    OFFSET sqlc.narg(query_offset)
+    LIMIT sqlc.narg(query_limit);
 
 -- name: GetMealPlanPastVotingDeadline :one
 
