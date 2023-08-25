@@ -166,13 +166,13 @@ SELECT
             recipes
         WHERE
             recipes.archived_at IS NULL
-          AND recipes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
-          AND recipes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
-          AND (
+            AND recipes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
+            AND recipes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+            AND (
                 recipes.last_updated_at IS NULL
                 OR recipes.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years'))
             )
-          AND (
+            AND (
                 recipes.last_updated_at IS NULL
                 OR recipes.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
             )

@@ -224,85 +224,278 @@ func (q *Queries) GetRecipeStepProduct(ctx context.Context, db DBTX, arg *GetRec
 	return &i, err
 }
 
-const getRecipeStepProductsForRecipe = `-- name: GetRecipeStepProductsForRecipe :many
+const getRecipeStepProducts = `-- name: GetRecipeStepProducts :many
 
 SELECT
-	recipe_step_products.id,
-	recipe_step_products.name,
-	recipe_step_products.type,
-	valid_measurement_units.id,
-	valid_measurement_units.name,
-	valid_measurement_units.description,
-	valid_measurement_units.volumetric,
-	valid_measurement_units.icon_path,
-	valid_measurement_units.universal,
-	valid_measurement_units.metric,
-	valid_measurement_units.imperial,
-	valid_measurement_units.slug,
-	valid_measurement_units.plural_name,
-	valid_measurement_units.created_at,
-	valid_measurement_units.last_updated_at,
-	valid_measurement_units.archived_at,
-	recipe_step_products.minimum_quantity_value,
-	recipe_step_products.maximum_quantity_value,
-	recipe_step_products.quantity_notes,
-	recipe_step_products.compostable,
-	recipe_step_products.maximum_storage_duration_in_seconds,
-	recipe_step_products.minimum_storage_temperature_in_celsius,
-	recipe_step_products.maximum_storage_temperature_in_celsius,
-	recipe_step_products.storage_instructions,
-	recipe_step_products.is_liquid,
-	recipe_step_products.is_waste,
+    recipe_step_products.id,
+    recipe_step_products.name,
+    recipe_step_products.type,
+    valid_measurement_units.id as valid_measurement_unit_id,
+    valid_measurement_units.name as valid_measurement_unit_name,
+    valid_measurement_units.description as valid_measurement_unit_description,
+    valid_measurement_units.volumetric as valid_measurement_unit_volumetric,
+    valid_measurement_units.icon_path as valid_measurement_unit_icon_path,
+    valid_measurement_units.universal as valid_measurement_unit_universal,
+    valid_measurement_units.metric as valid_measurement_unit_metric,
+    valid_measurement_units.imperial as valid_measurement_unit_imperial,
+    valid_measurement_units.slug as valid_measurement_unit_slug,
+    valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+    valid_measurement_units.created_at as valid_measurement_unit_created_at,
+    valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
+    valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
+    recipe_step_products.minimum_quantity_value,
+    recipe_step_products.maximum_quantity_value,
+    recipe_step_products.quantity_notes,
+    recipe_step_products.compostable,
+    recipe_step_products.maximum_storage_duration_in_seconds,
+    recipe_step_products.minimum_storage_temperature_in_celsius,
+    recipe_step_products.maximum_storage_temperature_in_celsius,
+    recipe_step_products.storage_instructions,
+    recipe_step_products.is_liquid,
+    recipe_step_products.is_waste,
     recipe_step_products.index,
     recipe_step_products.contained_in_vessel_index,
-	recipe_step_products.created_at,
-	recipe_step_products.last_updated_at,
-	recipe_step_products.archived_at,
-	recipe_step_products.belongs_to_recipe_step
+    recipe_step_products.created_at,
+    recipe_step_products.last_updated_at,
+    recipe_step_products.archived_at,
+    recipe_step_products.belongs_to_recipe_step,
+    (
+        SELECT
+            COUNT(recipe_step_products.id)
+        FROM
+            recipe_step_products
+        WHERE
+            recipe_step_products.archived_at IS NULL
+            AND recipe_step_products.belongs_to_recipe_step = $1
+            AND recipe_step_products.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
+            AND recipe_step_products.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
+            AND (
+                recipe_step_products.last_updated_at IS NULL
+                OR recipe_step_products.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years'))
+            )
+            AND (
+                recipe_step_products.last_updated_at IS NULL
+                OR recipe_step_products.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
+            )
+    ) AS filtered_count,
+    (
+        SELECT
+            COUNT(recipe_step_products.id)
+        FROM
+            recipe_step_products
+        WHERE
+            recipe_step_products.archived_at IS NULL
+            AND recipe_step_products.belongs_to_recipe_step = $1
+    ) AS total_count
 FROM recipe_step_products
-	JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id
-	JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
-	LEFT OUTER JOIN valid_measurement_units ON recipe_step_products.measurement_unit=valid_measurement_units.id
+    JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id
+    JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
+    JOIN valid_measurement_units ON recipe_step_products.measurement_unit=valid_measurement_units.id
 WHERE recipe_step_products.archived_at IS NULL
-	AND recipe_steps.archived_at IS NULL
-	AND recipe_steps.belongs_to_recipe = $1
-	AND recipes.archived_at IS NULL
-	AND recipes.id = $1
+    AND recipe_step_products.belongs_to_recipe_step = $1
+    AND recipe_steps.archived_at IS NULL
+    AND recipe_steps.id = $1
+    AND recipe_steps.belongs_to_recipe = $6
+    AND recipes.archived_at IS NULL
+    AND recipes.id = $6
+    OFFSET $7
+    LIMIT $8
 `
 
-type GetRecipeStepProductsForRecipeRow struct {
-	CreatedAt_2                        time.Time
-	ArchivedAt_2                       sql.NullTime
-	ArchivedAt                         sql.NullTime
+type GetRecipeStepProductsParams struct {
+	RecipeStepID  string
+	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	UpdatedBefore sql.NullTime
+	RecipeID      string
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
+}
+
+type GetRecipeStepProductsRow struct {
+	CreatedAt                          time.Time
+	ValidMeasurementUnitCreatedAt      time.Time
 	LastUpdatedAt                      sql.NullTime
-	CreatedAt                          sql.NullTime
-	LastUpdatedAt_2                    sql.NullTime
+	ArchivedAt                         sql.NullTime
+	ValidMeasurementUnitArchivedAt     sql.NullTime
+	ValidMeasurementUnitLastUpdatedAt  sql.NullTime
+	ValidMeasurementUnitIconPath       string
 	QuantityNotes                      string
-	Name                               string
 	ID                                 string
-	BelongsToRecipeStep                string
-	StorageInstructions                string
+	Name                               string
 	Type                               RecipeStepProductType
-	MinimumStorageTemperatureInCelsius sql.NullString
-	Name_2                             sql.NullString
-	ID_2                               sql.NullString
-	Slug                               sql.NullString
-	MinimumQuantityValue               sql.NullString
+	ValidMeasurementUnitSlug           string
+	ValidMeasurementUnitPluralName     string
+	ValidMeasurementUnitDescription    string
+	ValidMeasurementUnitName           string
+	ValidMeasurementUnitID             string
+	StorageInstructions                string
+	BelongsToRecipeStep                string
 	MaximumQuantityValue               sql.NullString
-	IconPath                           sql.NullString
-	PluralName                         sql.NullString
+	MinimumStorageTemperatureInCelsius sql.NullString
 	MaximumStorageTemperatureInCelsius sql.NullString
-	Description                        sql.NullString
+	MinimumQuantityValue               sql.NullString
+	FilteredCount                      int64
+	TotalCount                         int64
 	MaximumStorageDurationInSeconds    sql.NullInt32
 	ContainedInVesselIndex             sql.NullInt32
 	Index                              int32
-	Universal                          sql.NullBool
-	Imperial                           sql.NullBool
-	Metric                             sql.NullBool
-	Volumetric                         sql.NullBool
+	ValidMeasurementUnitVolumetric     sql.NullBool
+	ValidMeasurementUnitUniversal      bool
 	IsWaste                            bool
 	IsLiquid                           bool
 	Compostable                        bool
+	ValidMeasurementUnitImperial       bool
+	ValidMeasurementUnitMetric         bool
+}
+
+func (q *Queries) GetRecipeStepProducts(ctx context.Context, db DBTX, arg *GetRecipeStepProductsParams) ([]*GetRecipeStepProductsRow, error) {
+	rows, err := db.QueryContext(ctx, getRecipeStepProducts,
+		arg.RecipeStepID,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedAfter,
+		arg.UpdatedBefore,
+		arg.RecipeID,
+		arg.QueryOffset,
+		arg.QueryLimit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetRecipeStepProductsRow{}
+	for rows.Next() {
+		var i GetRecipeStepProductsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Type,
+			&i.ValidMeasurementUnitID,
+			&i.ValidMeasurementUnitName,
+			&i.ValidMeasurementUnitDescription,
+			&i.ValidMeasurementUnitVolumetric,
+			&i.ValidMeasurementUnitIconPath,
+			&i.ValidMeasurementUnitUniversal,
+			&i.ValidMeasurementUnitMetric,
+			&i.ValidMeasurementUnitImperial,
+			&i.ValidMeasurementUnitSlug,
+			&i.ValidMeasurementUnitPluralName,
+			&i.ValidMeasurementUnitCreatedAt,
+			&i.ValidMeasurementUnitLastUpdatedAt,
+			&i.ValidMeasurementUnitArchivedAt,
+			&i.MinimumQuantityValue,
+			&i.MaximumQuantityValue,
+			&i.QuantityNotes,
+			&i.Compostable,
+			&i.MaximumStorageDurationInSeconds,
+			&i.MinimumStorageTemperatureInCelsius,
+			&i.MaximumStorageTemperatureInCelsius,
+			&i.StorageInstructions,
+			&i.IsLiquid,
+			&i.IsWaste,
+			&i.Index,
+			&i.ContainedInVesselIndex,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+			&i.BelongsToRecipeStep,
+			&i.FilteredCount,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getRecipeStepProductsForRecipe = `-- name: GetRecipeStepProductsForRecipe :many
+
+SELECT
+    recipe_step_products.id,
+    recipe_step_products.name,
+    recipe_step_products.type,
+    valid_measurement_units.id as valid_measurement_unit_id,
+    valid_measurement_units.name as valid_measurement_unit_name,
+    valid_measurement_units.description as valid_measurement_unit_description,
+    valid_measurement_units.volumetric as valid_measurement_unit_volumetric,
+    valid_measurement_units.icon_path as valid_measurement_unit_icon_path,
+    valid_measurement_units.universal as valid_measurement_unit_universal,
+    valid_measurement_units.metric as valid_measurement_unit_metric,
+    valid_measurement_units.imperial as valid_measurement_unit_imperial,
+    valid_measurement_units.slug as valid_measurement_unit_slug,
+    valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+    valid_measurement_units.created_at as valid_measurement_unit_created_at,
+    valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
+    valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
+    recipe_step_products.minimum_quantity_value,
+    recipe_step_products.maximum_quantity_value,
+    recipe_step_products.quantity_notes,
+    recipe_step_products.compostable,
+    recipe_step_products.maximum_storage_duration_in_seconds,
+    recipe_step_products.minimum_storage_temperature_in_celsius,
+    recipe_step_products.maximum_storage_temperature_in_celsius,
+    recipe_step_products.storage_instructions,
+    recipe_step_products.is_liquid,
+    recipe_step_products.is_waste,
+    recipe_step_products.index,
+    recipe_step_products.contained_in_vessel_index,
+    recipe_step_products.created_at,
+    recipe_step_products.last_updated_at,
+    recipe_step_products.archived_at,
+    recipe_step_products.belongs_to_recipe_step
+FROM recipe_step_products
+    JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id
+    JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
+    JOIN valid_measurement_units ON recipe_step_products.measurement_unit=valid_measurement_units.id
+WHERE recipe_step_products.archived_at IS NULL
+    AND recipe_steps.archived_at IS NULL
+    AND recipe_steps.belongs_to_recipe = $1
+    AND recipes.archived_at IS NULL
+    AND recipes.id = $1
+`
+
+type GetRecipeStepProductsForRecipeRow struct {
+	CreatedAt                          time.Time
+	ValidMeasurementUnitCreatedAt      time.Time
+	ArchivedAt                         sql.NullTime
+	LastUpdatedAt                      sql.NullTime
+	ValidMeasurementUnitArchivedAt     sql.NullTime
+	ValidMeasurementUnitLastUpdatedAt  sql.NullTime
+	QuantityNotes                      string
+	ValidMeasurementUnitID             string
+	ID                                 string
+	BelongsToRecipeStep                string
+	Name                               string
+	ValidMeasurementUnitSlug           string
+	ValidMeasurementUnitPluralName     string
+	ValidMeasurementUnitDescription    string
+	ValidMeasurementUnitName           string
+	ValidMeasurementUnitIconPath       string
+	StorageInstructions                string
+	Type                               RecipeStepProductType
+	MaximumQuantityValue               sql.NullString
+	MinimumStorageTemperatureInCelsius sql.NullString
+	MaximumStorageTemperatureInCelsius sql.NullString
+	MinimumQuantityValue               sql.NullString
+	MaximumStorageDurationInSeconds    sql.NullInt32
+	ContainedInVesselIndex             sql.NullInt32
+	Index                              int32
+	ValidMeasurementUnitVolumetric     sql.NullBool
+	ValidMeasurementUnitUniversal      bool
+	IsWaste                            bool
+	IsLiquid                           bool
+	Compostable                        bool
+	ValidMeasurementUnitImperial       bool
+	ValidMeasurementUnitMetric         bool
 }
 
 func (q *Queries) GetRecipeStepProductsForRecipe(ctx context.Context, db DBTX, belongsToRecipe string) ([]*GetRecipeStepProductsForRecipeRow, error) {
@@ -318,19 +511,19 @@ func (q *Queries) GetRecipeStepProductsForRecipe(ctx context.Context, db DBTX, b
 			&i.ID,
 			&i.Name,
 			&i.Type,
-			&i.ID_2,
-			&i.Name_2,
-			&i.Description,
-			&i.Volumetric,
-			&i.IconPath,
-			&i.Universal,
-			&i.Metric,
-			&i.Imperial,
-			&i.Slug,
-			&i.PluralName,
-			&i.CreatedAt,
-			&i.LastUpdatedAt,
-			&i.ArchivedAt,
+			&i.ValidMeasurementUnitID,
+			&i.ValidMeasurementUnitName,
+			&i.ValidMeasurementUnitDescription,
+			&i.ValidMeasurementUnitVolumetric,
+			&i.ValidMeasurementUnitIconPath,
+			&i.ValidMeasurementUnitUniversal,
+			&i.ValidMeasurementUnitMetric,
+			&i.ValidMeasurementUnitImperial,
+			&i.ValidMeasurementUnitSlug,
+			&i.ValidMeasurementUnitPluralName,
+			&i.ValidMeasurementUnitCreatedAt,
+			&i.ValidMeasurementUnitLastUpdatedAt,
+			&i.ValidMeasurementUnitArchivedAt,
 			&i.MinimumQuantityValue,
 			&i.MaximumQuantityValue,
 			&i.QuantityNotes,
@@ -343,9 +536,9 @@ func (q *Queries) GetRecipeStepProductsForRecipe(ctx context.Context, db DBTX, b
 			&i.IsWaste,
 			&i.Index,
 			&i.ContainedInVesselIndex,
-			&i.CreatedAt_2,
-			&i.LastUpdatedAt_2,
-			&i.ArchivedAt_2,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
 			&i.BelongsToRecipeStep,
 		); err != nil {
 			return nil, err

@@ -212,6 +212,7 @@ type Querier interface {
 	GetRecipeStepInstrument(ctx context.Context, db DBTX, arg *GetRecipeStepInstrumentParams) (*GetRecipeStepInstrumentRow, error)
 	GetRecipeStepInstrumentsForRecipe(ctx context.Context, db DBTX, belongsToRecipe string) ([]*GetRecipeStepInstrumentsForRecipeRow, error)
 	GetRecipeStepProduct(ctx context.Context, db DBTX, arg *GetRecipeStepProductParams) (*GetRecipeStepProductRow, error)
+	GetRecipeStepProducts(ctx context.Context, db DBTX, arg *GetRecipeStepProductsParams) ([]*GetRecipeStepProductsRow, error)
 	GetRecipeStepProductsForRecipe(ctx context.Context, db DBTX, belongsToRecipe string) ([]*GetRecipeStepProductsForRecipeRow, error)
 	GetRecipeStepVessel(ctx context.Context, db DBTX, arg *GetRecipeStepVesselParams) (*GetRecipeStepVesselRow, error)
 	GetRecipeStepVessels(ctx context.Context, db DBTX, arg *GetRecipeStepVesselsParams) ([]*GetRecipeStepVesselsRow, error)

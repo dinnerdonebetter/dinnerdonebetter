@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	_ "embed"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
@@ -10,149 +9,11 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
-)
-
-const (
-	recipeStepsOnRecipeStepProductsJoinClause = "recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id"
 )
 
 var (
 	_ types.RecipeStepProductDataManager = (*Querier)(nil)
-
-	// recipeStepProductsTableColumns are the columns for the recipe_step_products table.
-	recipeStepProductsTableColumns = []string{
-		"recipe_step_products.id",
-		"recipe_step_products.name",
-		"recipe_step_products.type",
-		"valid_measurement_units.id",
-		"valid_measurement_units.name",
-		"valid_measurement_units.description",
-		"valid_measurement_units.volumetric",
-		"valid_measurement_units.icon_path",
-		"valid_measurement_units.universal",
-		"valid_measurement_units.metric",
-		"valid_measurement_units.imperial",
-		"valid_measurement_units.slug",
-		"valid_measurement_units.plural_name",
-		"valid_measurement_units.created_at",
-		"valid_measurement_units.last_updated_at",
-		"valid_measurement_units.archived_at",
-		"recipe_step_products.minimum_quantity_value",
-		"recipe_step_products.maximum_quantity_value",
-		"recipe_step_products.quantity_notes",
-		"recipe_step_products.compostable",
-		"recipe_step_products.maximum_storage_duration_in_seconds",
-		"recipe_step_products.minimum_storage_temperature_in_celsius",
-		"recipe_step_products.maximum_storage_temperature_in_celsius",
-		"recipe_step_products.storage_instructions",
-		"recipe_step_products.is_liquid",
-		"recipe_step_products.is_waste",
-		"recipe_step_products.index",
-		"recipe_step_products.contained_in_vessel_index",
-		"recipe_step_products.created_at",
-		"recipe_step_products.last_updated_at",
-		"recipe_step_products.archived_at",
-		"recipe_step_products.belongs_to_recipe_step",
-	}
-
-	getRecipeStepProductsJoins = []string{
-		recipeStepsOnRecipeStepProductsJoinClause,
-		recipesOnRecipeStepsJoinClause,
-		validMeasurementUnitsOnRecipeStepProductsJoinClause,
-	}
 )
-
-// scanRecipeStepProduct takes a database Scanner (i.e. *sql.Row) and scans the result into a recipe step product struct.
-func (q *Querier) scanRecipeStepProduct(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.RecipeStepProduct, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	x = &types.RecipeStepProduct{
-		MeasurementUnit: &types.ValidMeasurementUnit{},
-	}
-	nmu := &types.NullableValidMeasurementUnit{}
-
-	targetVars := []any{
-		&x.ID,
-		&x.Name,
-		&x.Type,
-		&nmu.ID,
-		&nmu.Name,
-		&nmu.Description,
-		&nmu.Volumetric,
-		&nmu.IconPath,
-		&nmu.Universal,
-		&nmu.Metric,
-		&nmu.Imperial,
-		&nmu.Slug,
-		&nmu.PluralName,
-		&nmu.CreatedAt,
-		&nmu.LastUpdatedAt,
-		&nmu.ArchivedAt,
-		&x.MinimumQuantity,
-		&x.MaximumQuantity,
-		&x.QuantityNotes,
-		&x.Compostable,
-		&x.MaximumStorageDurationInSeconds,
-		&x.MinimumStorageTemperatureInCelsius,
-		&x.MaximumStorageTemperatureInCelsius,
-		&x.StorageInstructions,
-		&x.IsLiquid,
-		&x.IsWaste,
-		&x.Index,
-		&x.ContainedInVesselIndex,
-		&x.CreatedAt,
-		&x.LastUpdatedAt,
-		&x.ArchivedAt,
-		&x.BelongsToRecipeStep,
-	}
-
-	if includeCounts {
-		targetVars = append(targetVars, &filteredCount, &totalCount)
-	}
-
-	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "")
-	}
-
-	if nmu.ID != nil {
-		x.MeasurementUnit = converters.ConvertNullableValidMeasurementUnitToValidMeasurementUnit(nmu)
-	}
-
-	return x, filteredCount, totalCount, nil
-}
-
-// scanRecipeStepProducts takes some database rows and turns them into a slice of recipe step products.
-func (q *Querier) scanRecipeStepProducts(ctx context.Context, rows database.ResultIterator, includeCounts bool) (recipeStepProducts []*types.RecipeStepProduct, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	for rows.Next() {
-		x, fc, tc, scanErr := q.scanRecipeStepProduct(ctx, rows, includeCounts)
-		if scanErr != nil {
-			return nil, 0, 0, scanErr
-		}
-
-		if includeCounts {
-			if filteredCount == 0 {
-				filteredCount = fc
-			}
-
-			if totalCount == 0 {
-				totalCount = tc
-			}
-		}
-
-		recipeStepProducts = append(recipeStepProducts, x)
-	}
-
-	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
-	}
-
-	return recipeStepProducts, filteredCount, totalCount, nil
-}
 
 // RecipeStepProductExists fetches whether a recipe step product exists from the database.
 func (q *Querier) RecipeStepProductExists(ctx context.Context, recipeID, recipeStepID, recipeStepProductID string) (exists bool, err error) {
@@ -269,9 +130,6 @@ func (q *Querier) GetRecipeStepProduct(ctx context.Context, recipeID, recipeStep
 	return recipeStepProduct, nil
 }
 
-//go:embed queries/recipe_step_products/get_for_recipe.sql
-var getRecipeStepProductsForRecipeQuery string
-
 // getRecipeStepProductsForRecipe fetches a list of recipe step products from the database that meet a particular filter.
 func (q *Querier) getRecipeStepProductsForRecipe(ctx context.Context, recipeID string) ([]*types.RecipeStepProduct, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -285,18 +143,55 @@ func (q *Querier) getRecipeStepProductsForRecipe(ctx context.Context, recipeID s
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	args := []any{
-		recipeID,
+	results, err := q.generatedQuerier.GetRecipeStepProductsForRecipe(ctx, q.db, recipeID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting recipe step products for recipe")
 	}
 
-	rows, err := q.getRows(ctx, q.db, "recipe step products", getRecipeStepProductsForRecipeQuery, args)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe step products list retrieval query")
-	}
+	recipeStepProducts := []*types.RecipeStepProduct{}
+	for _, result := range results {
+		recipeStepProduct := &types.RecipeStepProduct{
+			CreatedAt:                          result.CreatedAt,
+			MaximumStorageTemperatureInCelsius: float32PointerFromNullString(result.MaximumStorageTemperatureInCelsius),
+			MaximumStorageDurationInSeconds:    uint32PointerFromNullInt32(result.MaximumStorageDurationInSeconds),
+			MinimumStorageTemperatureInCelsius: float32PointerFromNullString(result.MinimumStorageTemperatureInCelsius),
+			ArchivedAt:                         timePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt:                      timePointerFromNullTime(result.LastUpdatedAt),
+			MinimumQuantity:                    float32PointerFromNullString(result.MinimumQuantityValue),
+			MeasurementUnit:                    nil,
+			MaximumQuantity:                    float32PointerFromNullString(result.MaximumQuantityValue),
+			ContainedInVesselIndex:             uint16PointerFromNullInt32(result.ContainedInVesselIndex),
+			Name:                               result.Name,
+			BelongsToRecipeStep:                result.BelongsToRecipeStep,
+			Type:                               string(result.Type),
+			ID:                                 result.ID,
+			StorageInstructions:                result.StorageInstructions,
+			QuantityNotes:                      result.QuantityNotes,
+			Index:                              uint16(result.Index),
+			IsWaste:                            result.IsWaste,
+			IsLiquid:                           result.IsLiquid,
+			Compostable:                        result.Compostable,
+		}
 
-	recipeStepProducts, _, _, err := q.scanRecipeStepProducts(ctx, rows, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning recipe step products")
+		if result.ValidMeasurementUnitID != "" {
+			recipeStepProduct.MeasurementUnit = &types.ValidMeasurementUnit{
+				CreatedAt:     result.ValidMeasurementUnitCreatedAt,
+				LastUpdatedAt: timePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
+				ArchivedAt:    timePointerFromNullTime(result.ValidMeasurementUnitArchivedAt),
+				Name:          result.ValidMeasurementUnitName,
+				IconPath:      result.ValidMeasurementUnitIconPath,
+				ID:            result.ValidMeasurementUnitID,
+				Description:   result.ValidMeasurementUnitDescription,
+				PluralName:    result.ValidMeasurementUnitPluralName,
+				Slug:          result.ValidMeasurementUnitSlug,
+				Volumetric:    boolFromNullBool(result.ValidMeasurementUnitVolumetric),
+				Universal:     result.ValidMeasurementUnitUniversal,
+				Metric:        result.ValidMeasurementUnitMetric,
+				Imperial:      result.ValidMeasurementUnitImperial,
+			}
+		}
+
+		recipeStepProducts = append(recipeStepProducts, recipeStepProduct)
 	}
 
 	return recipeStepProducts, nil
@@ -331,15 +226,65 @@ func (q *Querier) GetRecipeStepProducts(ctx context.Context, recipeID, recipeSte
 		Pagination: filter.ToPagination(),
 	}
 
-	query, args := q.buildListQuery(ctx, "recipe_step_products", getRecipeStepProductsJoins, []string{"valid_measurement_units.id"}, nil, householdOwnershipColumn, recipeStepProductsTableColumns, "", false, filter)
-
-	rows, err := q.getRows(ctx, q.db, "recipe step products", query, args)
+	results, err := q.generatedQuerier.GetRecipeStepProducts(ctx, q.db, &generated.GetRecipeStepProductsParams{
+		RecipeStepID:  recipeStepID,
+		RecipeID:      recipeID,
+		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+	})
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe step products list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting recipe step products")
 	}
 
-	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanRecipeStepProducts(ctx, rows, true); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning recipe step products")
+	for _, result := range results {
+		recipeStepProduct := &types.RecipeStepProduct{
+			CreatedAt:                          result.CreatedAt,
+			MaximumStorageTemperatureInCelsius: float32PointerFromNullString(result.MaximumStorageTemperatureInCelsius),
+			MaximumStorageDurationInSeconds:    uint32PointerFromNullInt32(result.MaximumStorageDurationInSeconds),
+			MinimumStorageTemperatureInCelsius: float32PointerFromNullString(result.MinimumStorageTemperatureInCelsius),
+			ArchivedAt:                         timePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt:                      timePointerFromNullTime(result.LastUpdatedAt),
+			MinimumQuantity:                    float32PointerFromNullString(result.MinimumQuantityValue),
+			MeasurementUnit:                    nil,
+			MaximumQuantity:                    float32PointerFromNullString(result.MaximumQuantityValue),
+			ContainedInVesselIndex:             uint16PointerFromNullInt32(result.ContainedInVesselIndex),
+			Name:                               result.Name,
+			BelongsToRecipeStep:                result.BelongsToRecipeStep,
+			Type:                               string(result.Type),
+			ID:                                 result.ID,
+			StorageInstructions:                result.StorageInstructions,
+			QuantityNotes:                      result.QuantityNotes,
+			Index:                              uint16(result.Index),
+			IsWaste:                            result.IsWaste,
+			IsLiquid:                           result.IsLiquid,
+			Compostable:                        result.Compostable,
+		}
+
+		if result.ValidMeasurementUnitID != "" {
+			recipeStepProduct.MeasurementUnit = &types.ValidMeasurementUnit{
+				CreatedAt:     result.ValidMeasurementUnitCreatedAt,
+				LastUpdatedAt: timePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
+				ArchivedAt:    timePointerFromNullTime(result.ValidMeasurementUnitArchivedAt),
+				Name:          result.ValidMeasurementUnitName,
+				IconPath:      result.ValidMeasurementUnitIconPath,
+				ID:            result.ValidMeasurementUnitID,
+				Description:   result.ValidMeasurementUnitDescription,
+				PluralName:    result.ValidMeasurementUnitPluralName,
+				Slug:          result.ValidMeasurementUnitSlug,
+				Volumetric:    boolFromNullBool(result.ValidMeasurementUnitVolumetric),
+				Universal:     result.ValidMeasurementUnitUniversal,
+				Metric:        result.ValidMeasurementUnitMetric,
+				Imperial:      result.ValidMeasurementUnitImperial,
+			}
+		}
+
+		x.Data = append(x.Data, recipeStepProduct)
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
 	}
 
 	return x, nil

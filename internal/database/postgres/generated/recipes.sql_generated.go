@@ -553,13 +553,13 @@ SELECT
             recipes
         WHERE
             recipes.archived_at IS NULL
-          AND recipes.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-          AND recipes.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-          AND (
+            AND recipes.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+            AND recipes.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+            AND (
                 recipes.last_updated_at IS NULL
                 OR recipes.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
             )
-          AND (
+            AND (
                 recipes.last_updated_at IS NULL
                 OR recipes.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
             )
