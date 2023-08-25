@@ -93,37 +93,37 @@ const getMealPlanTask = `-- name: GetMealPlanTask :one
 
 SELECT
 	meal_plan_tasks.id,
-	meal_plan_options.id,
-	meal_plan_options.assigned_cook,
-	meal_plan_options.assigned_dishwasher,
-	meal_plan_options.chosen,
-	meal_plan_options.tiebroken,
-    meal_plan_options.meal_scale,
-	meal_plan_options.meal_id,
-	meal_plan_options.notes,
-	meal_plan_options.created_at,
-	meal_plan_options.last_updated_at,
-	meal_plan_options.archived_at,
-	meal_plan_options.belongs_to_meal_plan_event,
-	recipe_prep_tasks.id,
-	recipe_prep_tasks.name,
-	recipe_prep_tasks.description,
-	recipe_prep_tasks.notes,
-	recipe_prep_tasks.optional,
-	recipe_prep_tasks.explicit_storage_instructions,
-	recipe_prep_tasks.minimum_time_buffer_before_recipe_in_seconds,
-	recipe_prep_tasks.maximum_time_buffer_before_recipe_in_seconds,
-	recipe_prep_tasks.storage_type,
-	recipe_prep_tasks.minimum_storage_temperature_in_celsius,
-	recipe_prep_tasks.maximum_storage_temperature_in_celsius,
-	recipe_prep_tasks.belongs_to_recipe,
-	recipe_prep_tasks.created_at,
-	recipe_prep_tasks.last_updated_at,
-	recipe_prep_tasks.archived_at,
-	recipe_prep_task_steps.id,
-	recipe_prep_task_steps.belongs_to_recipe_step,
-	recipe_prep_task_steps.belongs_to_recipe_prep_task,
-	recipe_prep_task_steps.satisfies_recipe_step,
+	meal_plan_options.id as meal_plan_option_id,
+	meal_plan_options.assigned_cook as meal_plan_option_assigned_cook,
+	meal_plan_options.assigned_dishwasher as meal_plan_option_assigned_dishwasher,
+	meal_plan_options.chosen as meal_plan_option_chosen,
+	meal_plan_options.tiebroken as meal_plan_option_tiebroken,
+    meal_plan_options.meal_scale as meal_plan_option_meal_scale,
+	meal_plan_options.meal_id as meal_plan_option_meal_id,
+	meal_plan_options.notes as meal_plan_option_notes,
+	meal_plan_options.created_at as meal_plan_option_created_at,
+	meal_plan_options.last_updated_at as meal_plan_option_last_updated_at,
+	meal_plan_options.archived_at as meal_plan_option_archived_at,
+	meal_plan_options.belongs_to_meal_plan_event as meal_plan_option_belongs_to_meal_plan_event,
+	recipe_prep_tasks.id as prep_task_id,
+	recipe_prep_tasks.name as prep_task_name,
+	recipe_prep_tasks.description as prep_task_description,
+	recipe_prep_tasks.notes as prep_task_notes,
+	recipe_prep_tasks.optional as prep_task_optional,
+	recipe_prep_tasks.explicit_storage_instructions as prep_task_explicit_storage_instructions,
+	recipe_prep_tasks.minimum_time_buffer_before_recipe_in_seconds as prep_task_minimum_time_buffer_before_recipe_in_seconds,
+	recipe_prep_tasks.maximum_time_buffer_before_recipe_in_seconds as prep_task_maximum_time_buffer_before_recipe_in_seconds,
+	recipe_prep_tasks.storage_type as prep_task_storage_type,
+	recipe_prep_tasks.minimum_storage_temperature_in_celsius as prep_task_minimum_storage_temperature_in_celsius,
+	recipe_prep_tasks.maximum_storage_temperature_in_celsius as prep_task_maximum_storage_temperature_in_celsius,
+	recipe_prep_tasks.belongs_to_recipe as prep_task_belongs_to_recipe,
+	recipe_prep_tasks.created_at as prep_task_created_at,
+	recipe_prep_tasks.last_updated_at as prep_task_last_updated_at,
+	recipe_prep_tasks.archived_at as prep_task_archived_at,
+	recipe_prep_task_steps.id as prep_task_step_id,
+	recipe_prep_task_steps.belongs_to_recipe_step as prep_task_step_belongs_to_recipe_step,
+	recipe_prep_task_steps.belongs_to_recipe_prep_task as prep_task_step_belongs_to_recipe_prep_task,
+	recipe_prep_task_steps.satisfies_recipe_step as prep_task_step_satisfies_recipe_step,
 	meal_plan_tasks.created_at,
 	meal_plan_tasks.last_updated_at,
 	meal_plan_tasks.completed_at,
@@ -132,10 +132,10 @@ SELECT
 	meal_plan_tasks.status_explanation,
 	meal_plan_tasks.assigned_to_user
 FROM meal_plan_tasks
-	FULL OUTER JOIN meal_plan_options ON meal_plan_tasks.belongs_to_meal_plan_option=meal_plan_options.id
-	FULL OUTER JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event=meal_plan_events.id
-	FULL OUTER JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan=meal_plans.id
-	FULL OUTER JOIN meals ON meal_plan_options.meal_id=meals.id
+	JOIN meal_plan_options ON meal_plan_tasks.belongs_to_meal_plan_option=meal_plan_options.id
+	JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event=meal_plan_events.id
+	JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan=meal_plans.id
+	JOIN meals ON meal_plan_options.meal_id=meals.id
 	JOIN recipe_prep_tasks ON meal_plan_tasks.belongs_to_recipe_prep_task=recipe_prep_tasks.id
 	JOIN recipe_prep_task_steps ON recipe_prep_task_steps.belongs_to_recipe_prep_task=recipe_prep_tasks.id
 	JOIN recipe_steps ON recipe_prep_task_steps.belongs_to_recipe_step=recipe_steps.id
@@ -148,85 +148,85 @@ WHERE meal_plan_options.archived_at IS NULL
 `
 
 type GetMealPlanTaskRow struct {
-	CreatedAt_2                            time.Time
-	ArchivedAt_2                           sql.NullTime
-	LastUpdatedAt                          sql.NullTime
-	CompletedAt                            sql.NullTime
-	LastUpdatedAt_3                        sql.NullTime
-	CreatedAt_3                            sql.NullTime
-	LastUpdatedAt_2                        sql.NullTime
-	CreatedAt                              sql.NullTime
-	ArchivedAt                             sql.NullTime
-	BelongsToRecipeStep                    string
-	ID_4                                   string
-	BelongsToRecipePrepTask                string
-	BelongsToRecipe                        string
-	ID_3                                   string
-	Name                                   string
-	Description                            string
-	Notes_2                                string
-	ExplicitStorageInstructions            string
-	MinimumStorageTemperatureInCelsius     sql.NullString
-	ID_2                                   sql.NullString
-	BelongsToMealPlanEvent                 sql.NullString
-	CreationExplanation                    sql.NullString
-	AssignedDishwasher                     sql.NullString
-	ID                                     sql.NullString
-	MaximumStorageTemperatureInCelsius     sql.NullString
-	MealScale                              sql.NullString
-	StatusExplanation                      sql.NullString
-	MealID                                 sql.NullString
-	AssignedCook                           sql.NullString
-	Status                                 NullPrepStepStatus
-	Notes                                  sql.NullString
-	AssignedToUser                         sql.NullString
-	StorageType                            NullStorageContainerType
-	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
-	MinimumTimeBufferBeforeRecipeInSeconds int32
-	Chosen                                 sql.NullBool
-	Tiebroken                              sql.NullBool
-	Optional                               bool
-	SatisfiesRecipeStep                    bool
+	MealPlanOptionCreatedAt                        time.Time
+	CreatedAt                                      time.Time
+	PrepTaskCreatedAt                              time.Time
+	PrepTaskArchivedAt                             sql.NullTime
+	MealPlanOptionLastUpdatedAt                    sql.NullTime
+	CompletedAt                                    sql.NullTime
+	LastUpdatedAt                                  sql.NullTime
+	PrepTaskLastUpdatedAt                          sql.NullTime
+	MealPlanOptionArchivedAt                       sql.NullTime
+	PrepTaskStepID                                 string
+	PrepTaskExplicitStorageInstructions            string
+	MealPlanOptionNotes                            string
+	MealPlanOptionID                               string
+	PrepTaskID                                     string
+	PrepTaskName                                   string
+	PrepTaskDescription                            string
+	PrepTaskNotes                                  string
+	CreationExplanation                            string
+	MealPlanOptionMealID                           string
+	PrepTaskStepBelongsToRecipePrepTask            string
+	MealPlanOptionMealScale                        string
+	StatusExplanation                              string
+	Status                                         PrepStepStatus
+	PrepTaskStepBelongsToRecipeStep                string
+	PrepTaskBelongsToRecipe                        string
+	ID                                             string
+	PrepTaskMinimumStorageTemperatureInCelsius     sql.NullString
+	MealPlanOptionAssignedCook                     sql.NullString
+	PrepTaskStorageType                            NullStorageContainerType
+	PrepTaskMaximumStorageTemperatureInCelsius     sql.NullString
+	AssignedToUser                                 sql.NullString
+	MealPlanOptionAssignedDishwasher               sql.NullString
+	MealPlanOptionBelongsToMealPlanEvent           sql.NullString
+	PrepTaskMaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
+	PrepTaskMinimumTimeBufferBeforeRecipeInSeconds int32
+	PrepTaskOptional                               bool
+	PrepTaskStepSatisfiesRecipeStep                bool
+	MealPlanOptionChosen                           bool
+	MealPlanOptionTiebroken                        bool
 }
 
-func (q *Queries) GetMealPlanTask(ctx context.Context, db DBTX, id string) (*GetMealPlanTaskRow, error) {
-	row := db.QueryRowContext(ctx, getMealPlanTask, id)
+func (q *Queries) GetMealPlanTask(ctx context.Context, db DBTX, mealPlanTaskID string) (*GetMealPlanTaskRow, error) {
+	row := db.QueryRowContext(ctx, getMealPlanTask, mealPlanTaskID)
 	var i GetMealPlanTaskRow
 	err := row.Scan(
 		&i.ID,
-		&i.ID_2,
-		&i.AssignedCook,
-		&i.AssignedDishwasher,
-		&i.Chosen,
-		&i.Tiebroken,
-		&i.MealScale,
-		&i.MealID,
-		&i.Notes,
+		&i.MealPlanOptionID,
+		&i.MealPlanOptionAssignedCook,
+		&i.MealPlanOptionAssignedDishwasher,
+		&i.MealPlanOptionChosen,
+		&i.MealPlanOptionTiebroken,
+		&i.MealPlanOptionMealScale,
+		&i.MealPlanOptionMealID,
+		&i.MealPlanOptionNotes,
+		&i.MealPlanOptionCreatedAt,
+		&i.MealPlanOptionLastUpdatedAt,
+		&i.MealPlanOptionArchivedAt,
+		&i.MealPlanOptionBelongsToMealPlanEvent,
+		&i.PrepTaskID,
+		&i.PrepTaskName,
+		&i.PrepTaskDescription,
+		&i.PrepTaskNotes,
+		&i.PrepTaskOptional,
+		&i.PrepTaskExplicitStorageInstructions,
+		&i.PrepTaskMinimumTimeBufferBeforeRecipeInSeconds,
+		&i.PrepTaskMaximumTimeBufferBeforeRecipeInSeconds,
+		&i.PrepTaskStorageType,
+		&i.PrepTaskMinimumStorageTemperatureInCelsius,
+		&i.PrepTaskMaximumStorageTemperatureInCelsius,
+		&i.PrepTaskBelongsToRecipe,
+		&i.PrepTaskCreatedAt,
+		&i.PrepTaskLastUpdatedAt,
+		&i.PrepTaskArchivedAt,
+		&i.PrepTaskStepID,
+		&i.PrepTaskStepBelongsToRecipeStep,
+		&i.PrepTaskStepBelongsToRecipePrepTask,
+		&i.PrepTaskStepSatisfiesRecipeStep,
 		&i.CreatedAt,
 		&i.LastUpdatedAt,
-		&i.ArchivedAt,
-		&i.BelongsToMealPlanEvent,
-		&i.ID_3,
-		&i.Name,
-		&i.Description,
-		&i.Notes_2,
-		&i.Optional,
-		&i.ExplicitStorageInstructions,
-		&i.MinimumTimeBufferBeforeRecipeInSeconds,
-		&i.MaximumTimeBufferBeforeRecipeInSeconds,
-		&i.StorageType,
-		&i.MinimumStorageTemperatureInCelsius,
-		&i.MaximumStorageTemperatureInCelsius,
-		&i.BelongsToRecipe,
-		&i.CreatedAt_2,
-		&i.LastUpdatedAt_2,
-		&i.ArchivedAt_2,
-		&i.ID_4,
-		&i.BelongsToRecipeStep,
-		&i.BelongsToRecipePrepTask,
-		&i.SatisfiesRecipeStep,
-		&i.CreatedAt_3,
-		&i.LastUpdatedAt_3,
 		&i.CompletedAt,
 		&i.Status,
 		&i.CreationExplanation,
@@ -239,50 +239,50 @@ func (q *Queries) GetMealPlanTask(ctx context.Context, db DBTX, id string) (*Get
 const listAllMealPlanTasksByMealPlan = `-- name: ListAllMealPlanTasksByMealPlan :many
 
 SELECT
-	meal_plan_tasks.id,
-	meal_plan_options.id,
-	meal_plan_options.assigned_cook,
-	meal_plan_options.assigned_dishwasher,
-	meal_plan_options.chosen,
-	meal_plan_options.tiebroken,
-    meal_plan_options.meal_scale,
-	meal_plan_options.meal_id,
-	meal_plan_options.notes,
-	meal_plan_options.created_at,
-	meal_plan_options.last_updated_at,
-	meal_plan_options.archived_at,
-	meal_plan_options.belongs_to_meal_plan_event,
-	recipe_prep_tasks.id,
-	recipe_prep_tasks.name,
-	recipe_prep_tasks.description,
-	recipe_prep_tasks.notes,
-	recipe_prep_tasks.optional,
-	recipe_prep_tasks.explicit_storage_instructions,
-	recipe_prep_tasks.minimum_time_buffer_before_recipe_in_seconds,
-	recipe_prep_tasks.maximum_time_buffer_before_recipe_in_seconds,
-	recipe_prep_tasks.storage_type,
-	recipe_prep_tasks.minimum_storage_temperature_in_celsius,
-	recipe_prep_tasks.maximum_storage_temperature_in_celsius,
-	recipe_prep_tasks.belongs_to_recipe,
-	recipe_prep_tasks.created_at,
-	recipe_prep_tasks.last_updated_at,
-	recipe_prep_tasks.archived_at,
-	recipe_prep_task_steps.id,
-	recipe_prep_task_steps.belongs_to_recipe_step,
-	recipe_prep_task_steps.belongs_to_recipe_prep_task,
-	recipe_prep_task_steps.satisfies_recipe_step,
-	meal_plan_tasks.created_at,
-	meal_plan_tasks.last_updated_at,
-	meal_plan_tasks.completed_at,
-	meal_plan_tasks.status,
-	meal_plan_tasks.creation_explanation,
-	meal_plan_tasks.status_explanation,
-	meal_plan_tasks.assigned_to_user
+    meal_plan_tasks.id,
+    meal_plan_options.id as meal_plan_option_id,
+    meal_plan_options.assigned_cook as meal_plan_option_assigned_cook,
+    meal_plan_options.assigned_dishwasher as meal_plan_option_assigned_dishwasher,
+    meal_plan_options.chosen as meal_plan_option_chosen,
+    meal_plan_options.tiebroken as meal_plan_option_tiebroken,
+    meal_plan_options.meal_scale as meal_plan_option_meal_scale,
+    meal_plan_options.meal_id as meal_plan_option_meal_id,
+    meal_plan_options.notes as meal_plan_option_notes,
+    meal_plan_options.created_at as meal_plan_option_created_at,
+    meal_plan_options.last_updated_at as meal_plan_option_last_updated_at,
+    meal_plan_options.archived_at as meal_plan_option_archived_at,
+    meal_plan_options.belongs_to_meal_plan_event as meal_plan_option_belongs_to_meal_plan_event,
+    recipe_prep_tasks.id as prep_task_id,
+    recipe_prep_tasks.name as prep_task_name,
+    recipe_prep_tasks.description as prep_task_description,
+    recipe_prep_tasks.notes as prep_task_notes,
+    recipe_prep_tasks.optional as prep_task_optional,
+    recipe_prep_tasks.explicit_storage_instructions as prep_task_explicit_storage_instructions,
+    recipe_prep_tasks.minimum_time_buffer_before_recipe_in_seconds as prep_task_minimum_time_buffer_before_recipe_in_seconds,
+    recipe_prep_tasks.maximum_time_buffer_before_recipe_in_seconds as prep_task_maximum_time_buffer_before_recipe_in_seconds,
+    recipe_prep_tasks.storage_type as prep_task_storage_type,
+    recipe_prep_tasks.minimum_storage_temperature_in_celsius as prep_task_minimum_storage_temperature_in_celsius,
+    recipe_prep_tasks.maximum_storage_temperature_in_celsius as prep_task_maximum_storage_temperature_in_celsius,
+    recipe_prep_tasks.belongs_to_recipe as prep_task_belongs_to_recipe,
+    recipe_prep_tasks.created_at as prep_task_created_at,
+    recipe_prep_tasks.last_updated_at as prep_task_last_updated_at,
+    recipe_prep_tasks.archived_at as prep_task_archived_at,
+    recipe_prep_task_steps.id as prep_task_step_id,
+    recipe_prep_task_steps.belongs_to_recipe_step as prep_task_step_belongs_to_recipe_step,
+    recipe_prep_task_steps.belongs_to_recipe_prep_task as prep_task_step_belongs_to_recipe_prep_task,
+    recipe_prep_task_steps.satisfies_recipe_step as prep_task_step_satisfies_recipe_step,
+    meal_plan_tasks.created_at,
+    meal_plan_tasks.last_updated_at,
+    meal_plan_tasks.completed_at,
+    meal_plan_tasks.status,
+    meal_plan_tasks.creation_explanation,
+    meal_plan_tasks.status_explanation,
+    meal_plan_tasks.assigned_to_user
 FROM meal_plan_tasks
-	FULL OUTER JOIN meal_plan_options ON meal_plan_tasks.belongs_to_meal_plan_option=meal_plan_options.id
-	FULL OUTER JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event=meal_plan_events.id
-	FULL OUTER JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan=meal_plans.id
-	FULL OUTER JOIN meals ON meal_plan_options.meal_id=meals.id
+	JOIN meal_plan_options ON meal_plan_tasks.belongs_to_meal_plan_option=meal_plan_options.id
+	JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event=meal_plan_events.id
+	JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan=meal_plans.id
+	JOIN meals ON meal_plan_options.meal_id=meals.id
 	JOIN recipe_prep_tasks ON meal_plan_tasks.belongs_to_recipe_prep_task=recipe_prep_tasks.id
 	JOIN recipe_prep_task_steps ON recipe_prep_task_steps.belongs_to_recipe_prep_task=recipe_prep_tasks.id
 	JOIN recipe_steps ON recipe_prep_task_steps.belongs_to_recipe_step=recipe_steps.id
@@ -295,49 +295,49 @@ WHERE meal_plan_options.archived_at IS NULL
 `
 
 type ListAllMealPlanTasksByMealPlanRow struct {
-	CreatedAt_2                            time.Time
-	ArchivedAt_2                           sql.NullTime
-	LastUpdatedAt                          sql.NullTime
-	CompletedAt                            sql.NullTime
-	LastUpdatedAt_3                        sql.NullTime
-	CreatedAt_3                            sql.NullTime
-	LastUpdatedAt_2                        sql.NullTime
-	CreatedAt                              sql.NullTime
-	ArchivedAt                             sql.NullTime
-	BelongsToRecipeStep                    string
-	ID_4                                   string
-	BelongsToRecipePrepTask                string
-	BelongsToRecipe                        string
-	ID_3                                   string
-	Name                                   string
-	Description                            string
-	Notes_2                                string
-	ExplicitStorageInstructions            string
-	MinimumStorageTemperatureInCelsius     sql.NullString
-	ID_2                                   sql.NullString
-	BelongsToMealPlanEvent                 sql.NullString
-	CreationExplanation                    sql.NullString
-	AssignedDishwasher                     sql.NullString
-	ID                                     sql.NullString
-	MaximumStorageTemperatureInCelsius     sql.NullString
-	MealScale                              sql.NullString
-	StatusExplanation                      sql.NullString
-	MealID                                 sql.NullString
-	AssignedCook                           sql.NullString
-	Status                                 NullPrepStepStatus
-	Notes                                  sql.NullString
-	AssignedToUser                         sql.NullString
-	StorageType                            NullStorageContainerType
-	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
-	MinimumTimeBufferBeforeRecipeInSeconds int32
-	Chosen                                 sql.NullBool
-	Tiebroken                              sql.NullBool
-	Optional                               bool
-	SatisfiesRecipeStep                    bool
+	MealPlanOptionCreatedAt                        time.Time
+	CreatedAt                                      time.Time
+	PrepTaskCreatedAt                              time.Time
+	PrepTaskArchivedAt                             sql.NullTime
+	MealPlanOptionLastUpdatedAt                    sql.NullTime
+	CompletedAt                                    sql.NullTime
+	LastUpdatedAt                                  sql.NullTime
+	PrepTaskLastUpdatedAt                          sql.NullTime
+	MealPlanOptionArchivedAt                       sql.NullTime
+	PrepTaskStepID                                 string
+	PrepTaskExplicitStorageInstructions            string
+	MealPlanOptionNotes                            string
+	MealPlanOptionID                               string
+	PrepTaskID                                     string
+	PrepTaskName                                   string
+	PrepTaskDescription                            string
+	PrepTaskNotes                                  string
+	CreationExplanation                            string
+	MealPlanOptionMealID                           string
+	PrepTaskStepBelongsToRecipePrepTask            string
+	MealPlanOptionMealScale                        string
+	StatusExplanation                              string
+	Status                                         PrepStepStatus
+	PrepTaskStepBelongsToRecipeStep                string
+	PrepTaskBelongsToRecipe                        string
+	ID                                             string
+	PrepTaskMinimumStorageTemperatureInCelsius     sql.NullString
+	MealPlanOptionAssignedCook                     sql.NullString
+	PrepTaskStorageType                            NullStorageContainerType
+	PrepTaskMaximumStorageTemperatureInCelsius     sql.NullString
+	AssignedToUser                                 sql.NullString
+	MealPlanOptionAssignedDishwasher               sql.NullString
+	MealPlanOptionBelongsToMealPlanEvent           sql.NullString
+	PrepTaskMaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
+	PrepTaskMinimumTimeBufferBeforeRecipeInSeconds int32
+	PrepTaskOptional                               bool
+	PrepTaskStepSatisfiesRecipeStep                bool
+	MealPlanOptionChosen                           bool
+	MealPlanOptionTiebroken                        bool
 }
 
-func (q *Queries) ListAllMealPlanTasksByMealPlan(ctx context.Context, db DBTX, id string) ([]*ListAllMealPlanTasksByMealPlanRow, error) {
-	rows, err := db.QueryContext(ctx, listAllMealPlanTasksByMealPlan, id)
+func (q *Queries) ListAllMealPlanTasksByMealPlan(ctx context.Context, db DBTX, mealPlanID string) ([]*ListAllMealPlanTasksByMealPlanRow, error) {
+	rows, err := db.QueryContext(ctx, listAllMealPlanTasksByMealPlan, mealPlanID)
 	if err != nil {
 		return nil, err
 	}
@@ -347,39 +347,39 @@ func (q *Queries) ListAllMealPlanTasksByMealPlan(ctx context.Context, db DBTX, i
 		var i ListAllMealPlanTasksByMealPlanRow
 		if err := rows.Scan(
 			&i.ID,
-			&i.ID_2,
-			&i.AssignedCook,
-			&i.AssignedDishwasher,
-			&i.Chosen,
-			&i.Tiebroken,
-			&i.MealScale,
-			&i.MealID,
-			&i.Notes,
+			&i.MealPlanOptionID,
+			&i.MealPlanOptionAssignedCook,
+			&i.MealPlanOptionAssignedDishwasher,
+			&i.MealPlanOptionChosen,
+			&i.MealPlanOptionTiebroken,
+			&i.MealPlanOptionMealScale,
+			&i.MealPlanOptionMealID,
+			&i.MealPlanOptionNotes,
+			&i.MealPlanOptionCreatedAt,
+			&i.MealPlanOptionLastUpdatedAt,
+			&i.MealPlanOptionArchivedAt,
+			&i.MealPlanOptionBelongsToMealPlanEvent,
+			&i.PrepTaskID,
+			&i.PrepTaskName,
+			&i.PrepTaskDescription,
+			&i.PrepTaskNotes,
+			&i.PrepTaskOptional,
+			&i.PrepTaskExplicitStorageInstructions,
+			&i.PrepTaskMinimumTimeBufferBeforeRecipeInSeconds,
+			&i.PrepTaskMaximumTimeBufferBeforeRecipeInSeconds,
+			&i.PrepTaskStorageType,
+			&i.PrepTaskMinimumStorageTemperatureInCelsius,
+			&i.PrepTaskMaximumStorageTemperatureInCelsius,
+			&i.PrepTaskBelongsToRecipe,
+			&i.PrepTaskCreatedAt,
+			&i.PrepTaskLastUpdatedAt,
+			&i.PrepTaskArchivedAt,
+			&i.PrepTaskStepID,
+			&i.PrepTaskStepBelongsToRecipeStep,
+			&i.PrepTaskStepBelongsToRecipePrepTask,
+			&i.PrepTaskStepSatisfiesRecipeStep,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
-			&i.ArchivedAt,
-			&i.BelongsToMealPlanEvent,
-			&i.ID_3,
-			&i.Name,
-			&i.Description,
-			&i.Notes_2,
-			&i.Optional,
-			&i.ExplicitStorageInstructions,
-			&i.MinimumTimeBufferBeforeRecipeInSeconds,
-			&i.MaximumTimeBufferBeforeRecipeInSeconds,
-			&i.StorageType,
-			&i.MinimumStorageTemperatureInCelsius,
-			&i.MaximumStorageTemperatureInCelsius,
-			&i.BelongsToRecipe,
-			&i.CreatedAt_2,
-			&i.LastUpdatedAt_2,
-			&i.ArchivedAt_2,
-			&i.ID_4,
-			&i.BelongsToRecipeStep,
-			&i.BelongsToRecipePrepTask,
-			&i.SatisfiesRecipeStep,
-			&i.CreatedAt_3,
-			&i.LastUpdatedAt_3,
 			&i.CompletedAt,
 			&i.Status,
 			&i.CreationExplanation,

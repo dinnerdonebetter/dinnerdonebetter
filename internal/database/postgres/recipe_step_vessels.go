@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	_ "embed"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
@@ -10,171 +9,11 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
-)
-
-const (
-	recipeStepsOnRecipeStepVesselsJoinClause      = "recipe_steps ON recipe_step_vessels.belongs_to_recipe_step=recipe_steps.id"
-	recipeStepVesselsOnValidInstrumentsJoinClause = "valid_vessels ON recipe_step_vessels.valid_vessel_id=valid_vessels.id"
 )
 
 var (
 	_ types.RecipeStepVesselDataManager = (*Querier)(nil)
-
-	// recipeStepVesselsTableColumns are the columns for the recipe_step_vessels table.
-	recipeStepVesselsTableColumns = []string{
-		"recipe_step_vessels.id",
-		"valid_vessels.id",
-		"valid_vessels.name",
-		"valid_vessels.plural_name",
-		"valid_vessels.description",
-		"valid_vessels.icon_path",
-		"valid_vessels.usable_for_storage",
-		"valid_vessels.slug",
-		"valid_vessels.display_in_summary_lists",
-		"valid_vessels.include_in_generated_instructions",
-		"valid_vessels.capacity",
-		"valid_measurement_units.id",
-		"valid_measurement_units.name",
-		"valid_measurement_units.description",
-		"valid_measurement_units.volumetric",
-		"valid_measurement_units.icon_path",
-		"valid_measurement_units.universal",
-		"valid_measurement_units.metric",
-		"valid_measurement_units.imperial",
-		"valid_measurement_units.slug",
-		"valid_measurement_units.plural_name",
-		"valid_measurement_units.created_at",
-		"valid_measurement_units.last_updated_at",
-		"valid_measurement_units.archived_at",
-		"valid_vessels.width_in_millimeters",
-		"valid_vessels.length_in_millimeters",
-		"valid_vessels.height_in_millimeters",
-		"valid_vessels.shape",
-		"valid_vessels.created_at",
-		"valid_vessels.last_updated_at",
-		"valid_vessels.archived_at",
-		"recipe_step_vessels.name",
-		"recipe_step_vessels.notes",
-		"recipe_step_vessels.belongs_to_recipe_step",
-		"recipe_step_vessels.recipe_step_product_id",
-		"recipe_step_vessels.vessel_predicate",
-		"recipe_step_vessels.minimum_quantity",
-		"recipe_step_vessels.maximum_quantity",
-		"recipe_step_vessels.unavailable_after_step",
-		"recipe_step_vessels.created_at",
-		"recipe_step_vessels.last_updated_at",
-		"recipe_step_vessels.archived_at",
-	}
-
-	getRecipeStepVesselsJoins = []string{
-		recipeStepsOnRecipeStepVesselsJoinClause,
-		recipeStepVesselsOnValidInstrumentsJoinClause,
-		recipesOnRecipeStepsJoinClause,
-		"valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id",
-	}
 )
-
-// scanRecipeStepVessel takes a database Scanner (i.e. *sql.Row) and scans the result into a recipe step vessel struct.
-func (q *Querier) scanRecipeStepVessel(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.RecipeStepVessel, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	x = &types.RecipeStepVessel{}
-	vessel := &types.NullableValidVessel{
-		CapacityUnit: &types.NullableValidMeasurementUnit{},
-	}
-
-	targetVars := []any{
-		&x.ID,
-		&vessel.ID,
-		&vessel.Name,
-		&vessel.PluralName,
-		&vessel.Description,
-		&vessel.IconPath,
-		&vessel.UsableForStorage,
-		&vessel.Slug,
-		&vessel.DisplayInSummaryLists,
-		&vessel.IncludeInGeneratedInstructions,
-		&vessel.Capacity,
-		&vessel.CapacityUnit.ID,
-		&vessel.CapacityUnit.Name,
-		&vessel.CapacityUnit.Description,
-		&vessel.CapacityUnit.Volumetric,
-		&vessel.CapacityUnit.IconPath,
-		&vessel.CapacityUnit.Universal,
-		&vessel.CapacityUnit.Metric,
-		&vessel.CapacityUnit.Imperial,
-		&vessel.CapacityUnit.Slug,
-		&vessel.CapacityUnit.PluralName,
-		&vessel.CapacityUnit.CreatedAt,
-		&vessel.CapacityUnit.LastUpdatedAt,
-		&vessel.CapacityUnit.ArchivedAt,
-		&vessel.WidthInMillimeters,
-		&vessel.LengthInMillimeters,
-		&vessel.HeightInMillimeters,
-		&vessel.Shape,
-		&vessel.CreatedAt,
-		&vessel.LastUpdatedAt,
-		&vessel.ArchivedAt,
-		&x.Name,
-		&x.Notes,
-		&x.BelongsToRecipeStep,
-		&x.RecipeStepProductID,
-		&x.VesselPreposition,
-		&x.MinimumQuantity,
-		&x.MaximumQuantity,
-		&x.UnavailableAfterStep,
-		&x.CreatedAt,
-		&x.LastUpdatedAt,
-		&x.ArchivedAt,
-	}
-
-	if includeCounts {
-		targetVars = append(targetVars, &filteredCount, &totalCount)
-	}
-
-	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "")
-	}
-
-	if vessel.ID != nil {
-		x.Vessel = converters.ConvertNullableValidVesselToValidVessel(vessel)
-	}
-
-	return x, filteredCount, totalCount, nil
-}
-
-// scanRecipeStepVessels takes some database rows and turns them into a slice of recipe step vessels.
-func (q *Querier) scanRecipeStepVessels(ctx context.Context, rows database.ResultIterator, includeCounts bool) (recipeStepVessels []*types.RecipeStepVessel, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	for rows.Next() {
-		x, fc, tc, scanErr := q.scanRecipeStepVessel(ctx, rows, includeCounts)
-		if scanErr != nil {
-			return nil, 0, 0, scanErr
-		}
-
-		if includeCounts {
-			if filteredCount == 0 {
-				filteredCount = fc
-			}
-
-			if totalCount == 0 {
-				totalCount = tc
-			}
-		}
-
-		recipeStepVessels = append(recipeStepVessels, x)
-	}
-
-	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
-	}
-
-	return recipeStepVessels, filteredCount, totalCount, nil
-}
 
 // RecipeStepVesselExists fetches whether a recipe step vessel exists from the database.
 func (q *Querier) RecipeStepVesselExists(ctx context.Context, recipeID, recipeStepID, recipeStepVesselID string) (exists bool, err error) {
@@ -336,22 +175,85 @@ func (q *Querier) GetRecipeStepVessels(ctx context.Context, recipeID, recipeStep
 		Pagination: filter.ToPagination(),
 	}
 
-	query, args := q.buildListQuery(ctx, "recipe_step_vessels", getRecipeStepVesselsJoins, []string{"valid_vessels.id", "valid_measurement_units.id"}, nil, householdOwnershipColumn, recipeStepVesselsTableColumns, "", false, filter)
-
-	rows, err := q.getRows(ctx, q.db, "recipe step vessels", query, args)
+	results, err := q.generatedQuerier.GetRecipeStepVessels(ctx, q.db, &generated.GetRecipeStepVesselsParams{
+		RecipeID:      recipeID,
+		RecipeStepID:  recipeStepID,
+		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe step vessels list retrieval query")
 	}
 
-	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanRecipeStepVessels(ctx, rows, true); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning recipe step vessels")
+	for _, result := range results {
+		recipeStepVessel := &types.RecipeStepVessel{
+			CreatedAt:            result.CreatedAt,
+			MaximumQuantity:      uint32PointerFromNullInt32(result.MaximumQuantity),
+			LastUpdatedAt:        timePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:           timePointerFromNullTime(result.ArchivedAt),
+			RecipeStepProductID:  stringPointerFromNullString(result.RecipeStepProductID),
+			Vessel:               nil,
+			ID:                   result.ID,
+			Notes:                result.Notes,
+			BelongsToRecipeStep:  result.BelongsToRecipeStep,
+			VesselPreposition:    result.VesselPredicate,
+			Name:                 result.Name,
+			MinimumQuantity:      uint32(result.MinimumQuantity),
+			UnavailableAfterStep: result.UnavailableAfterStep,
+		}
+
+		if result.ValidVesselID.Valid {
+			recipeStepVessel.Vessel = &types.ValidVessel{
+				CreatedAt:                      result.ValidVesselCreatedAt.Time,
+				ArchivedAt:                     timePointerFromNullTime(result.ValidVesselArchivedAt),
+				LastUpdatedAt:                  timePointerFromNullTime(result.ValidVesselLastUpdatedAt),
+				CapacityUnit:                   nil,
+				IconPath:                       result.ValidVesselIconPath.String,
+				PluralName:                     result.ValidVesselPluralName.String,
+				Description:                    result.ValidVesselDescription.String,
+				Name:                           result.ValidVesselName.String,
+				Slug:                           result.ValidVesselSlug.String,
+				Shape:                          string(result.ValidVesselShape.VesselShape),
+				ID:                             result.ValidVesselID.String,
+				WidthInMillimeters:             float32FromNullString(result.ValidVesselWidthInMillimeters),
+				LengthInMillimeters:            float32FromNullString(result.ValidVesselLengthInMillimeters),
+				HeightInMillimeters:            float32FromNullString(result.ValidVesselHeightInMillimeters),
+				Capacity:                       float32FromNullString(result.ValidVesselCapacity),
+				IncludeInGeneratedInstructions: result.ValidVesselIncludeInGeneratedInstructions.Bool,
+				DisplayInSummaryLists:          result.ValidVesselDisplayInSummaryLists.Bool,
+				UsableForStorage:               result.ValidVesselUsableForStorage.Bool,
+			}
+
+			if result.ValidMeasurementUnitID.Valid {
+				recipeStepVessel.Vessel.CapacityUnit = &types.ValidMeasurementUnit{
+					CreatedAt:     result.ValidMeasurementUnitCreatedAt.Time,
+					LastUpdatedAt: timePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
+					ArchivedAt:    timePointerFromNullTime(result.ValidMeasurementUnitArchivedAt),
+					Name:          result.ValidMeasurementUnitName.String,
+					IconPath:      result.ValidMeasurementUnitIconPath.String,
+					ID:            result.ValidMeasurementUnitID.String,
+					Description:   result.ValidMeasurementUnitDescription.String,
+					PluralName:    result.ValidMeasurementUnitPluralName.String,
+					Slug:          result.ValidMeasurementUnitSlug.String,
+					Volumetric:    result.ValidMeasurementUnitVolumetric.Bool,
+					Universal:     result.ValidMeasurementUnitUniversal.Bool,
+					Metric:        result.ValidMeasurementUnitMetric.Bool,
+					Imperial:      result.ValidMeasurementUnitImperial.Bool,
+				}
+			}
+		}
+
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
+		x.Data = append(x.Data, recipeStepVessel)
 	}
 
 	return x, nil
 }
-
-//go:embed queries/recipe_step_vessels/get_for_recipe.sql
-var getRecipeStepVesselsForRecipeQuery string
 
 // getRecipeStepVesselsForRecipe fetches a list of recipe step vessels from the database that meet a particular filter.
 func (q *Querier) getRecipeStepVesselsForRecipe(ctx context.Context, recipeID string) ([]*types.RecipeStepVessel, error) {
@@ -366,18 +268,71 @@ func (q *Querier) getRecipeStepVesselsForRecipe(ctx context.Context, recipeID st
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	args := []any{
-		recipeID,
-	}
-
-	rows, err := q.getRows(ctx, q.db, "recipe step vessels for recipe", getRecipeStepVesselsForRecipeQuery, args)
+	results, err := q.generatedQuerier.GetRecipeStepVesselsForRecipe(ctx, q.db, recipeID)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe step vessels list retrieval query")
 	}
 
-	recipeStepVessels, _, _, err := q.scanRecipeStepVessels(ctx, rows, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning recipe step vessels")
+	recipeStepVessels := []*types.RecipeStepVessel{}
+	for _, result := range results {
+		recipeStepVessel := &types.RecipeStepVessel{
+			CreatedAt:            result.CreatedAt,
+			MaximumQuantity:      uint32PointerFromNullInt32(result.MaximumQuantity),
+			LastUpdatedAt:        timePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:           timePointerFromNullTime(result.ArchivedAt),
+			RecipeStepProductID:  stringPointerFromNullString(result.RecipeStepProductID),
+			Vessel:               nil,
+			ID:                   result.ID,
+			Notes:                result.Notes,
+			BelongsToRecipeStep:  result.BelongsToRecipeStep,
+			VesselPreposition:    result.VesselPredicate,
+			Name:                 result.Name,
+			MinimumQuantity:      uint32(result.MinimumQuantity),
+			UnavailableAfterStep: result.UnavailableAfterStep,
+		}
+
+		if result.ValidVesselID.Valid {
+			recipeStepVessel.Vessel = &types.ValidVessel{
+				CreatedAt:                      result.ValidVesselCreatedAt.Time,
+				ArchivedAt:                     timePointerFromNullTime(result.ValidVesselArchivedAt),
+				LastUpdatedAt:                  timePointerFromNullTime(result.ValidVesselLastUpdatedAt),
+				CapacityUnit:                   nil,
+				IconPath:                       result.ValidVesselIconPath.String,
+				PluralName:                     result.ValidVesselPluralName.String,
+				Description:                    result.ValidVesselDescription.String,
+				Name:                           result.ValidVesselName.String,
+				Slug:                           result.ValidVesselSlug.String,
+				Shape:                          string(result.ValidVesselShape.VesselShape),
+				ID:                             result.ValidVesselID.String,
+				WidthInMillimeters:             float32FromNullString(result.ValidVesselWidthInMillimeters),
+				LengthInMillimeters:            float32FromNullString(result.ValidVesselLengthInMillimeters),
+				HeightInMillimeters:            float32FromNullString(result.ValidVesselHeightInMillimeters),
+				Capacity:                       float32FromNullString(result.ValidVesselCapacity),
+				IncludeInGeneratedInstructions: result.ValidVesselIncludeInGeneratedInstructions.Bool,
+				DisplayInSummaryLists:          result.ValidVesselDisplayInSummaryLists.Bool,
+				UsableForStorage:               result.ValidVesselUsableForStorage.Bool,
+			}
+
+			if result.ValidMeasurementUnitID.Valid {
+				recipeStepVessel.Vessel.CapacityUnit = &types.ValidMeasurementUnit{
+					CreatedAt:     result.ValidMeasurementUnitCreatedAt.Time,
+					LastUpdatedAt: timePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
+					ArchivedAt:    timePointerFromNullTime(result.ValidMeasurementUnitArchivedAt),
+					Name:          result.ValidMeasurementUnitName.String,
+					IconPath:      result.ValidMeasurementUnitIconPath.String,
+					ID:            result.ValidMeasurementUnitID.String,
+					Description:   result.ValidMeasurementUnitDescription.String,
+					PluralName:    result.ValidMeasurementUnitPluralName.String,
+					Slug:          result.ValidMeasurementUnitSlug.String,
+					Volumetric:    result.ValidMeasurementUnitVolumetric.Bool,
+					Universal:     result.ValidMeasurementUnitUniversal.Bool,
+					Metric:        result.ValidMeasurementUnitMetric.Bool,
+					Imperial:      result.ValidMeasurementUnitImperial.Bool,
+				}
+			}
+		}
+
+		recipeStepVessels = append(recipeStepVessels, recipeStepVessel)
 	}
 
 	return recipeStepVessels, nil

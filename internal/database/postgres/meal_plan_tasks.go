@@ -2,8 +2,6 @@ package postgres
 
 import (
 	"context"
-	_ "embed"
-	"sort"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
@@ -17,153 +15,6 @@ import (
 var (
 	_ types.MealPlanTaskDataManager = (*Querier)(nil)
 )
-
-// scanMealPlanTaskWithRecipePrepTaskSteps takes a database Scanner (i.e. *sql.Row) and scans the result into a meal struct.
-func (q *Querier) scanMealPlanTaskWithRecipePrepTaskSteps(ctx context.Context, rows database.ResultIterator) (x *types.MealPlanTask, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	x = &types.MealPlanTask{}
-
-	for rows.Next() {
-		recipePrepTaskStep := &types.RecipePrepTaskStep{}
-
-		targetVars := []any{
-			&x.ID,
-			&x.MealPlanOption.ID,
-			&x.MealPlanOption.AssignedCook,
-			&x.MealPlanOption.AssignedDishwasher,
-			&x.MealPlanOption.Chosen,
-			&x.MealPlanOption.TieBroken,
-			&x.MealPlanOption.MealScale,
-			&x.MealPlanOption.Meal.ID,
-			&x.MealPlanOption.Notes,
-			&x.MealPlanOption.CreatedAt,
-			&x.MealPlanOption.LastUpdatedAt,
-			&x.MealPlanOption.ArchivedAt,
-			&x.MealPlanOption.BelongsToMealPlanEvent,
-			&x.RecipePrepTask.ID,
-			&x.RecipePrepTask.Name,
-			&x.RecipePrepTask.Description,
-			&x.RecipePrepTask.Notes,
-			&x.RecipePrepTask.Optional,
-			&x.RecipePrepTask.ExplicitStorageInstructions,
-			&x.RecipePrepTask.MinimumTimeBufferBeforeRecipeInSeconds,
-			&x.RecipePrepTask.MaximumTimeBufferBeforeRecipeInSeconds,
-			&x.RecipePrepTask.StorageType,
-			&x.RecipePrepTask.MinimumStorageTemperatureInCelsius,
-			&x.RecipePrepTask.MaximumStorageTemperatureInCelsius,
-			&x.RecipePrepTask.BelongsToRecipe,
-			&x.RecipePrepTask.CreatedAt,
-			&x.RecipePrepTask.LastUpdatedAt,
-			&x.RecipePrepTask.ArchivedAt,
-			&recipePrepTaskStep.ID,
-			&recipePrepTaskStep.BelongsToRecipeStep,
-			&recipePrepTaskStep.BelongsToRecipePrepTask,
-			&recipePrepTaskStep.SatisfiesRecipeStep,
-			&x.CreatedAt,
-			&x.LastUpdatedAt,
-			&x.CompletedAt,
-			&x.Status,
-			&x.CreationExplanation,
-			&x.StatusExplanation,
-			&x.AssignedToUser,
-		}
-
-		if err = rows.Scan(targetVars...); err != nil {
-			return nil, observability.PrepareError(err, span, "scanning complete recipe prep task step")
-		}
-
-		x.RecipePrepTask.TaskSteps = append(x.RecipePrepTask.TaskSteps, recipePrepTaskStep)
-	}
-
-	return x, nil
-}
-
-// scanMealPlanTasksForMealPlan takes a database Scanner (i.e. *sql.Row) and scans the result into a meal plan task struct.
-func (q *Querier) scanMealPlanTasksForMealPlan(ctx context.Context, rows database.ResultIterator) ([]*types.MealPlanTask, error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	mealPlanTaskResults := []*types.MealPlanTask{}
-
-	for rows.Next() {
-		x := &types.MealPlanTask{}
-		y := &types.RecipePrepTaskStep{}
-
-		targetVars := []any{
-			&x.ID,
-			&x.MealPlanOption.ID,
-			&x.MealPlanOption.AssignedCook,
-			&x.MealPlanOption.AssignedDishwasher,
-			&x.MealPlanOption.Chosen,
-			&x.MealPlanOption.TieBroken,
-			&x.MealPlanOption.MealScale,
-			&x.MealPlanOption.Meal.ID,
-			&x.MealPlanOption.Notes,
-			&x.MealPlanOption.CreatedAt,
-			&x.MealPlanOption.LastUpdatedAt,
-			&x.MealPlanOption.ArchivedAt,
-			&x.MealPlanOption.BelongsToMealPlanEvent,
-			&x.RecipePrepTask.ID,
-			&x.RecipePrepTask.Name,
-			&x.RecipePrepTask.Description,
-			&x.RecipePrepTask.Notes,
-			&x.RecipePrepTask.Optional,
-			&x.RecipePrepTask.ExplicitStorageInstructions,
-			&x.RecipePrepTask.MinimumTimeBufferBeforeRecipeInSeconds,
-			&x.RecipePrepTask.MaximumTimeBufferBeforeRecipeInSeconds,
-			&x.RecipePrepTask.StorageType,
-			&x.RecipePrepTask.MinimumStorageTemperatureInCelsius,
-			&x.RecipePrepTask.MaximumStorageTemperatureInCelsius,
-			&x.RecipePrepTask.BelongsToRecipe,
-			&x.RecipePrepTask.CreatedAt,
-			&x.RecipePrepTask.LastUpdatedAt,
-			&x.RecipePrepTask.ArchivedAt,
-			&y.ID,
-			&y.BelongsToRecipeStep,
-			&y.BelongsToRecipePrepTask,
-			&y.SatisfiesRecipeStep,
-			&x.CreatedAt,
-			&x.LastUpdatedAt,
-			&x.CompletedAt,
-			&x.Status,
-			&x.CreationExplanation,
-			&x.StatusExplanation,
-			&x.AssignedToUser,
-		}
-
-		if err := rows.Scan(targetVars...); err != nil {
-			return nil, observability.PrepareError(err, span, "scanning meal plan task")
-		}
-
-		x.RecipePrepTask.TaskSteps = append(x.RecipePrepTask.TaskSteps, y)
-
-		mealPlanTaskResults = append(mealPlanTaskResults, x)
-	}
-
-	// the TL;DR of this is that we get a list of every meal plan task step in a given meal plan,
-	// for some unknown number of meal plan tasks. So we sort them by ID, congeal all the task
-	// steps together and then return the results sorted by ID. There's probably a better and prettier
-	// way to do this, but this is how we're doing it in this particular instance. At least I wrote this.
-	mealPlanTaskMap := map[string]*types.MealPlanTask{}
-	for _, mealPlanTask := range mealPlanTaskResults {
-		if _, ok := mealPlanTaskMap[mealPlanTask.ID]; !ok {
-			mealPlanTaskMap[mealPlanTask.ID] = mealPlanTask
-		} else {
-			mealPlanTaskMap[mealPlanTask.ID].RecipePrepTask.TaskSteps = append(mealPlanTaskMap[mealPlanTask.ID].RecipePrepTask.TaskSteps, mealPlanTask.RecipePrepTask.TaskSteps...)
-		}
-	}
-
-	mealPlanTasks := types.MealPlanTaskList{}
-	for _, mealPlanTask := range mealPlanTaskMap {
-		mealPlanTasks = append(mealPlanTasks, mealPlanTask)
-	}
-
-	sort.Sort(mealPlanTasks)
-
-	return mealPlanTasks, nil
-}
 
 // MealPlanTaskExists checks if a meal plan task exists.
 func (q *Querier) MealPlanTaskExists(ctx context.Context, mealPlanID, mealPlanTaskID string) (bool, error) {
@@ -197,11 +48,8 @@ func (q *Querier) MealPlanTaskExists(ctx context.Context, mealPlanID, mealPlanTa
 	return result, nil
 }
 
-//go:embed queries/meal_plan_tasks/get_one.sql
-var getMealPlanTasksQuery string
-
 // GetMealPlanTask fetches a meal plan task.
-func (q *Querier) GetMealPlanTask(ctx context.Context, mealPlanTaskID string) (x *types.MealPlanTask, err error) {
+func (q *Querier) GetMealPlanTask(ctx context.Context, mealPlanTaskID string) (*types.MealPlanTask, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -213,21 +61,41 @@ func (q *Querier) GetMealPlanTask(ctx context.Context, mealPlanTaskID string) (x
 	logger = logger.WithValue(keys.MealPlanTaskIDKey, mealPlanTaskID)
 	tracing.AttachMealPlanTaskIDToSpan(span, mealPlanTaskID)
 
-	args := []any{
-		mealPlanTaskID,
-	}
-
-	rows, err := q.getRows(ctx, q.db, "meal plan task", getMealPlanTasksQuery, args)
+	result, err := q.generatedQuerier.GetMealPlanTask(ctx, q.db, mealPlanTaskID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "fetching meal plan task rows")
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing meal plan task existence check")
 	}
 
-	x, err = q.scanMealPlanTaskWithRecipePrepTaskSteps(ctx, rows)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "fetching meal plan task")
+	mealPlanTask := &types.MealPlanTask{
+		RecipePrepTask:      types.RecipePrepTask{},
+		CreatedAt:           result.CreatedAt,
+		LastUpdatedAt:       timePointerFromNullTime(result.LastUpdatedAt),
+		CompletedAt:         timePointerFromNullTime(result.CompletedAt),
+		AssignedToUser:      stringPointerFromNullString(result.AssignedToUser),
+		ID:                  result.ID,
+		Status:              string(result.Status),
+		CreationExplanation: result.CreationExplanation,
+		StatusExplanation:   result.StatusExplanation,
+		MealPlanOption: types.MealPlanOption{
+			CreatedAt:              result.MealPlanOptionCreatedAt,
+			LastUpdatedAt:          timePointerFromNullTime(result.MealPlanOptionLastUpdatedAt),
+			AssignedCook:           stringPointerFromNullString(result.MealPlanOptionAssignedCook),
+			ArchivedAt:             timePointerFromNullTime(result.MealPlanOptionArchivedAt),
+			AssignedDishwasher:     stringPointerFromNullString(result.MealPlanOptionAssignedDishwasher),
+			Notes:                  result.MealPlanOptionNotes,
+			BelongsToMealPlanEvent: stringFromNullString(result.MealPlanOptionBelongsToMealPlanEvent),
+			ID:                     result.MealPlanOptionID,
+			Votes:                  nil,
+			Meal: types.Meal{
+				ID: result.MealPlanOptionMealID,
+			},
+			MealScale: float32FromString(result.MealPlanOptionMealScale),
+			Chosen:    result.MealPlanOptionChosen,
+			TieBroken: result.MealPlanOptionTiebroken,
+		},
 	}
 
-	return x, nil
+	return mealPlanTask, nil
 }
 
 // createMealPlanTask creates a meal plan task.
@@ -309,9 +177,6 @@ func (q *Querier) CreateMealPlanTask(ctx context.Context, input *types.MealPlanT
 	return x, nil
 }
 
-//go:embed queries/meal_plan_tasks/list_all_by_meal_plan.sql
-var listMealPlanTasksForMealPlanQuery string
-
 // GetMealPlanTasksForMealPlan fetches a list of meal plan tasks.
 func (q *Querier) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID string) (x []*types.MealPlanTask, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -325,18 +190,43 @@ func (q *Querier) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID st
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
 
-	args := []any{
-		mealPlanID,
+	results, err := q.generatedQuerier.ListAllMealPlanTasksByMealPlan(ctx, q.db, mealPlanID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing meal plan tasks list retrieval query")
 	}
 
-	rows, getRowsErr := q.getRows(ctx, q.db, "meal plan tasks list", listMealPlanTasksForMealPlanQuery, args)
-	if getRowsErr != nil {
-		return nil, observability.PrepareAndLogError(getRowsErr, logger, span, "executing meal plan tasks list retrieval query")
-	}
+	x = []*types.MealPlanTask{}
+	for _, result := range results {
+		mealPlanTask := &types.MealPlanTask{
+			RecipePrepTask:      types.RecipePrepTask{},
+			CreatedAt:           result.CreatedAt,
+			LastUpdatedAt:       timePointerFromNullTime(result.LastUpdatedAt),
+			CompletedAt:         timePointerFromNullTime(result.CompletedAt),
+			AssignedToUser:      stringPointerFromNullString(result.AssignedToUser),
+			ID:                  result.ID,
+			Status:              string(result.Status),
+			CreationExplanation: result.CreationExplanation,
+			StatusExplanation:   result.StatusExplanation,
+			MealPlanOption: types.MealPlanOption{
+				CreatedAt:              result.MealPlanOptionCreatedAt,
+				LastUpdatedAt:          timePointerFromNullTime(result.MealPlanOptionLastUpdatedAt),
+				AssignedCook:           stringPointerFromNullString(result.MealPlanOptionAssignedCook),
+				ArchivedAt:             timePointerFromNullTime(result.MealPlanOptionArchivedAt),
+				AssignedDishwasher:     stringPointerFromNullString(result.MealPlanOptionAssignedDishwasher),
+				Notes:                  result.MealPlanOptionNotes,
+				BelongsToMealPlanEvent: stringFromNullString(result.MealPlanOptionBelongsToMealPlanEvent),
+				ID:                     result.MealPlanOptionID,
+				Votes:                  nil,
+				Meal: types.Meal{
+					ID: result.MealPlanOptionMealID,
+				},
+				MealScale: float32FromString(result.MealPlanOptionMealScale),
+				Chosen:    result.MealPlanOptionChosen,
+				TieBroken: result.MealPlanOptionTiebroken,
+			},
+		}
 
-	x, scanErr := q.scanMealPlanTasksForMealPlan(ctx, rows)
-	if scanErr != nil {
-		return nil, observability.PrepareAndLogError(scanErr, logger, span, "scanning meal plan tasks")
+		x = append(x, mealPlanTask)
 	}
 
 	logger.Info("meal plan tasks retrieved")
