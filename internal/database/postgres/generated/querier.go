@@ -200,7 +200,7 @@ type Querier interface {
 	GetRecipeMedia(ctx context.Context, db DBTX, id string) (*GetRecipeMediaRow, error)
 	GetRecipeMediaForRecipe(ctx context.Context, db DBTX, belongsToRecipe sql.NullString) ([]*GetRecipeMediaForRecipeRow, error)
 	GetRecipeMediaForRecipeStep(ctx context.Context, db DBTX, arg *GetRecipeMediaForRecipeStepParams) ([]*GetRecipeMediaForRecipeStepRow, error)
-	GetRecipePrepTask(ctx context.Context, db DBTX, id string) (*GetRecipePrepTaskRow, error)
+	GetRecipePrepTask(ctx context.Context, db DBTX, recipePrepTaskID string) ([]*GetRecipePrepTaskRow, error)
 	GetRecipeRating(ctx context.Context, db DBTX, id string) (*RecipeRatings, error)
 	GetRecipeRatings(ctx context.Context, db DBTX, arg *GetRecipeRatingsParams) ([]*GetRecipeRatingsRow, error)
 	GetRecipeStep(ctx context.Context, db DBTX, arg *GetRecipeStepParams) (*GetRecipeStepRow, error)
@@ -293,7 +293,7 @@ type Querier interface {
 	GetWebhooks(ctx context.Context, db DBTX, arg *GetWebhooksParams) ([]*GetWebhooksRow, error)
 	GetWebhooksForUser(ctx context.Context, db DBTX, arg *GetWebhooksForUserParams) ([]*GetWebhooksForUserRow, error)
 	ListAllMealPlanTasksByMealPlan(ctx context.Context, db DBTX, mealPlanID string) ([]*ListAllMealPlanTasksByMealPlanRow, error)
-	ListAllRecipePrepTasksByRecipe(ctx context.Context, db DBTX, id string) ([]*ListAllRecipePrepTasksByRecipeRow, error)
+	ListAllRecipePrepTasksByRecipe(ctx context.Context, db DBTX, recipeID string) ([]*ListAllRecipePrepTasksByRecipeRow, error)
 	ListIncompleteMealPlanTasksByMealPlanOption(ctx context.Context, db DBTX, belongsToMealPlanOption string) ([]*ListIncompleteMealPlanTasksByMealPlanOptionRow, error)
 	MarkEmailAddressAsVerified(ctx context.Context, db DBTX, arg *MarkEmailAddressAsVerifiedParams) error
 	MarkHouseholdUserMembershipAsUserDefault(ctx context.Context, db DBTX, arg *MarkHouseholdUserMembershipAsUserDefaultParams) error

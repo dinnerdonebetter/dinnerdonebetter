@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	_ "embed"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
@@ -16,104 +15,6 @@ import (
 var (
 	_ types.RecipePrepTaskDataManager = (*Querier)(nil)
 )
-
-// scanRecipePrepTaskWithSteps takes a database Scanner (i.e. *sql.Row) and scans the result into a meal struct.
-func (q *Querier) scanRecipePrepTaskWithSteps(ctx context.Context, rows database.ResultIterator) (x *types.RecipePrepTask, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	x = &types.RecipePrepTask{}
-
-	for rows.Next() {
-		recipePrepTaskRecipeStep := &types.RecipePrepTaskStep{}
-
-		targetVars := []any{
-			&x.ID,
-			&x.Name,
-			&x.Description,
-			&x.Notes,
-			&x.Optional,
-			&x.ExplicitStorageInstructions,
-			&x.MinimumTimeBufferBeforeRecipeInSeconds,
-			&x.MaximumTimeBufferBeforeRecipeInSeconds,
-			&x.StorageType,
-			&x.MinimumStorageTemperatureInCelsius,
-			&x.MaximumStorageTemperatureInCelsius,
-			&x.BelongsToRecipe,
-			&x.CreatedAt,
-			&x.LastUpdatedAt,
-			&x.ArchivedAt,
-			&recipePrepTaskRecipeStep.ID,
-			&recipePrepTaskRecipeStep.BelongsToRecipeStep,
-			&recipePrepTaskRecipeStep.BelongsToRecipePrepTask,
-			&recipePrepTaskRecipeStep.SatisfiesRecipeStep,
-		}
-
-		if err = rows.Scan(targetVars...); err != nil {
-			return nil, observability.PrepareError(err, span, "scanning recipe prep task with step")
-		}
-
-		x.TaskSteps = append(x.TaskSteps, recipePrepTaskRecipeStep)
-	}
-
-	return x, nil
-}
-
-// scanRecipePrepTasksWithSteps takes a database Scanner (i.e. *sql.Row) and scans the result into a meal struct.
-func (q *Querier) scanRecipePrepTasksWithSteps(ctx context.Context, rows database.ResultIterator) (recipePrepTasks []*types.RecipePrepTask, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	x := &types.RecipePrepTask{}
-
-	for rows.Next() {
-		recipePrepTask := &types.RecipePrepTask{}
-		recipePrepTaskRecipeStep := &types.RecipePrepTaskStep{}
-
-		targetVars := []any{
-			&recipePrepTask.ID,
-			&recipePrepTask.Name,
-			&recipePrepTask.Description,
-			&recipePrepTask.Notes,
-			&recipePrepTask.Optional,
-			&recipePrepTask.ExplicitStorageInstructions,
-			&recipePrepTask.MinimumTimeBufferBeforeRecipeInSeconds,
-			&recipePrepTask.MaximumTimeBufferBeforeRecipeInSeconds,
-			&recipePrepTask.StorageType,
-			&recipePrepTask.MinimumStorageTemperatureInCelsius,
-			&recipePrepTask.MaximumStorageTemperatureInCelsius,
-			&recipePrepTask.BelongsToRecipe,
-			&recipePrepTask.CreatedAt,
-			&recipePrepTask.LastUpdatedAt,
-			&recipePrepTask.ArchivedAt,
-			&recipePrepTaskRecipeStep.ID,
-			&recipePrepTaskRecipeStep.BelongsToRecipeStep,
-			&recipePrepTaskRecipeStep.BelongsToRecipePrepTask,
-			&recipePrepTaskRecipeStep.SatisfiesRecipeStep,
-		}
-
-		if err = rows.Scan(targetVars...); err != nil {
-			return nil, observability.PrepareError(err, span, "scanning complete recipe prep task")
-		}
-
-		if recipePrepTask.ID != x.ID {
-			if x.ID == "" {
-				x = recipePrepTask
-			} else {
-				recipePrepTasks = append(recipePrepTasks, x)
-				x = recipePrepTask
-			}
-		}
-
-		x.TaskSteps = append(x.TaskSteps, recipePrepTaskRecipeStep)
-	}
-
-	if x.ID != "" {
-		recipePrepTasks = append(recipePrepTasks, x)
-	}
-
-	return recipePrepTasks, nil
-}
 
 // RecipePrepTaskExists checks if a recipe prep task exists.
 func (q *Querier) RecipePrepTaskExists(ctx context.Context, recipeID, recipePrepTaskID string) (bool, error) {
@@ -147,9 +48,6 @@ func (q *Querier) RecipePrepTaskExists(ctx context.Context, recipeID, recipePrep
 	return result, nil
 }
 
-//go:embed queries/recipe_prep_tasks/get_one.sql
-var getRecipePrepTasksQuery string
-
 // GetRecipePrepTask fetches a recipe prep task.
 func (q *Querier) GetRecipePrepTask(ctx context.Context, recipeID, recipePrepTaskID string) (x *types.RecipePrepTask, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -169,21 +67,42 @@ func (q *Querier) GetRecipePrepTask(ctx context.Context, recipeID, recipePrepTas
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
 	tracing.AttachRecipePrepTaskIDToSpan(span, recipePrepTaskID)
 
-	args := []any{
-		recipePrepTaskID,
-	}
-
-	rows, err := q.getRows(ctx, q.db, "recipe prep task", getRecipePrepTasksQuery, args)
+	results, err := q.generatedQuerier.GetRecipePrepTask(ctx, q.db, recipePrepTaskID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe prep task rows")
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting recipe prep task")
 	}
 
-	x, err = q.scanRecipePrepTaskWithSteps(ctx, rows)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning recipe prep task")
+	for _, result := range results {
+		if x == nil {
+			x = &types.RecipePrepTask{
+				CreatedAt:                              result.CreatedAt,
+				MaximumStorageTemperatureInCelsius:     float32PointerFromNullString(result.MaximumStorageTemperatureInCelsius),
+				ArchivedAt:                             timePointerFromNullTime(result.ArchivedAt),
+				LastUpdatedAt:                          timePointerFromNullTime(result.LastUpdatedAt),
+				MinimumStorageTemperatureInCelsius:     float32PointerFromNullString(result.MinimumStorageTemperatureInCelsius),
+				MaximumTimeBufferBeforeRecipeInSeconds: uint32PointerFromNullInt32(result.MaximumTimeBufferBeforeRecipeInSeconds),
+				ID:                                     result.ID,
+				StorageType:                            string(result.StorageType.StorageContainerType),
+				BelongsToRecipe:                        result.BelongsToRecipe,
+				ExplicitStorageInstructions:            result.ExplicitStorageInstructions,
+				Notes:                                  result.Notes,
+				Name:                                   result.Name,
+				Description:                            result.Description,
+				TaskSteps:                              []*types.RecipePrepTaskStep{},
+				MinimumTimeBufferBeforeRecipeInSeconds: uint32(result.MinimumTimeBufferBeforeRecipeInSeconds),
+				Optional:                               result.Optional,
+			}
+		}
+
+		x.TaskSteps = append(x.TaskSteps, &types.RecipePrepTaskStep{
+			ID:                      result.TaskStepID,
+			BelongsToRecipeStep:     result.TaskStepBelongsToRecipeStep,
+			BelongsToRecipePrepTask: result.TaskStepBelongsToRecipePrepTask,
+			SatisfiesRecipeStep:     result.TaskStepSatisfiesRecipeStep,
+		})
 	}
 
-	if x.ID == "" {
+	if x == nil || x.ID == "" {
 		return nil, sql.ErrNoRows
 	}
 
@@ -322,11 +241,8 @@ func (q *Querier) createRecipePrepTaskStep(ctx context.Context, querier database
 	return x, nil
 }
 
-//go:embed queries/recipe_prep_tasks/list_all_by_recipe.sql
-var listRecipePrepTasksForRecipeQuery string
-
 // getRecipePrepTasksForRecipe gets a recipe prep task.
-func (q *Querier) getRecipePrepTasksForRecipe(ctx context.Context, recipeID string) (x []*types.RecipePrepTask, err error) {
+func (q *Querier) getRecipePrepTasksForRecipe(ctx context.Context, recipeID string) ([]*types.RecipePrepTask, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -338,18 +254,52 @@ func (q *Querier) getRecipePrepTasksForRecipe(ctx context.Context, recipeID stri
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	args := []any{
-		recipeID,
+	results, err := q.generatedQuerier.ListAllRecipePrepTasksByRecipe(ctx, q.db, recipeID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe prep tasks list retrieval query")
 	}
 
-	rows, getRowsErr := q.getRows(ctx, q.db, "recipe prep tasks list", listRecipePrepTasksForRecipeQuery, args)
-	if getRowsErr != nil {
-		return nil, observability.PrepareAndLogError(getRowsErr, logger, span, "executing recipe prep tasks list retrieval query")
+	x := []*types.RecipePrepTask{}
+
+	var currentRecipePrepTask *types.RecipePrepTask
+	for _, result := range results {
+		prepTaskStep := &types.RecipePrepTaskStep{
+			ID:                      result.TaskStepID,
+			BelongsToRecipeStep:     result.TaskStepBelongsToRecipeStep,
+			BelongsToRecipePrepTask: result.TaskStepBelongsToRecipePrepTask,
+			SatisfiesRecipeStep:     result.TaskStepSatisfiesRecipeStep,
+		}
+
+		if currentRecipePrepTask != nil && currentRecipePrepTask.ID != result.ID {
+			x = append(x, currentRecipePrepTask)
+			currentRecipePrepTask = nil
+		}
+
+		if currentRecipePrepTask == nil {
+			currentRecipePrepTask = &types.RecipePrepTask{
+				CreatedAt:                              result.CreatedAt,
+				MaximumStorageTemperatureInCelsius:     float32PointerFromNullString(result.MaximumStorageTemperatureInCelsius),
+				ArchivedAt:                             timePointerFromNullTime(result.ArchivedAt),
+				LastUpdatedAt:                          timePointerFromNullTime(result.LastUpdatedAt),
+				MinimumStorageTemperatureInCelsius:     float32PointerFromNullString(result.MinimumStorageTemperatureInCelsius),
+				MaximumTimeBufferBeforeRecipeInSeconds: uint32PointerFromNullInt32(result.MaximumTimeBufferBeforeRecipeInSeconds),
+				ID:                                     result.ID,
+				StorageType:                            string(result.StorageType.StorageContainerType),
+				BelongsToRecipe:                        result.BelongsToRecipe,
+				ExplicitStorageInstructions:            result.ExplicitStorageInstructions,
+				Notes:                                  result.Notes,
+				Name:                                   result.Name,
+				Description:                            result.Description,
+				TaskSteps:                              []*types.RecipePrepTaskStep{},
+				MinimumTimeBufferBeforeRecipeInSeconds: uint32(result.MinimumTimeBufferBeforeRecipeInSeconds),
+				Optional:                               result.Optional,
+			}
+		}
+		currentRecipePrepTask.TaskSteps = append(currentRecipePrepTask.TaskSteps, prepTaskStep)
 	}
 
-	x, scanErr := q.scanRecipePrepTasksWithSteps(ctx, rows)
-	if scanErr != nil {
-		return nil, observability.PrepareAndLogError(scanErr, logger, span, "scanning recipe prep tasks")
+	if currentRecipePrepTask != nil && currentRecipePrepTask.ID != "" {
+		x = append(x, currentRecipePrepTask)
 	}
 
 	logger.Info("recipe prep tasks retrieved")

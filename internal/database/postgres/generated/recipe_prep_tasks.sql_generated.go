@@ -8,6 +8,7 @@ package generated
 import (
 	"context"
 	"database/sql"
+	"time"
 )
 
 const archiveRecipePrepTask = `-- name: ArchiveRecipePrepTask :exec
@@ -85,7 +86,7 @@ func (q *Queries) CreateRecipePrepTask(ctx context.Context, db DBTX, arg *Create
 	return err
 }
 
-const getRecipePrepTask = `-- name: GetRecipePrepTask :one
+const getRecipePrepTask = `-- name: GetRecipePrepTask :many
 
 SELECT
 	recipe_prep_tasks.id,
@@ -103,64 +104,80 @@ SELECT
 	recipe_prep_tasks.created_at,
 	recipe_prep_tasks.last_updated_at,
 	recipe_prep_tasks.archived_at,
-	recipe_prep_task_steps.id,
-	recipe_prep_task_steps.belongs_to_recipe_step,
-	recipe_prep_task_steps.belongs_to_recipe_prep_task,
-	recipe_prep_task_steps.satisfies_recipe_step
+	recipe_prep_task_steps.id as task_step_id,
+	recipe_prep_task_steps.belongs_to_recipe_step as task_step_belongs_to_recipe_step,
+	recipe_prep_task_steps.belongs_to_recipe_prep_task as task_step_belongs_to_recipe_prep_task,
+	recipe_prep_task_steps.satisfies_recipe_step as task_step_satisfies_recipe_step
 FROM recipe_prep_tasks
-	 FULL OUTER JOIN recipe_prep_task_steps ON recipe_prep_tasks.id=recipe_prep_task_steps.belongs_to_recipe_prep_task
+    JOIN recipe_prep_task_steps ON recipe_prep_tasks.id=recipe_prep_task_steps.belongs_to_recipe_prep_task
 WHERE recipe_prep_tasks.archived_at IS NULL
-	AND recipe_prep_tasks.id = $1
-	AND recipe_prep_tasks.archived_at IS NULL
+    AND recipe_prep_tasks.id = $1
+    AND recipe_prep_tasks.archived_at IS NULL
 `
 
 type GetRecipePrepTaskRow struct {
-	CreatedAt                              sql.NullTime
+	CreatedAt                              time.Time
 	ArchivedAt                             sql.NullTime
 	LastUpdatedAt                          sql.NullTime
+	Name                                   string
+	Description                            string
+	Notes                                  string
+	TaskStepBelongsToRecipePrepTask        string
+	ExplicitStorageInstructions            string
+	TaskStepBelongsToRecipeStep            string
+	TaskStepID                             string
+	ID                                     string
+	BelongsToRecipe                        string
 	StorageType                            NullStorageContainerType
-	Description                            sql.NullString
-	ExplicitStorageInstructions            sql.NullString
-	BelongsToRecipePrepTask                sql.NullString
-	BelongsToRecipeStep                    sql.NullString
-	ID                                     sql.NullString
-	MinimumStorageTemperatureInCelsius     sql.NullString
 	MaximumStorageTemperatureInCelsius     sql.NullString
-	BelongsToRecipe                        sql.NullString
-	Notes                                  sql.NullString
-	ID_2                                   sql.NullString
-	Name                                   sql.NullString
+	MinimumStorageTemperatureInCelsius     sql.NullString
 	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
-	MinimumTimeBufferBeforeRecipeInSeconds sql.NullInt32
-	Optional                               sql.NullBool
-	SatisfiesRecipeStep                    sql.NullBool
+	MinimumTimeBufferBeforeRecipeInSeconds int32
+	Optional                               bool
+	TaskStepSatisfiesRecipeStep            bool
 }
 
-func (q *Queries) GetRecipePrepTask(ctx context.Context, db DBTX, id string) (*GetRecipePrepTaskRow, error) {
-	row := db.QueryRowContext(ctx, getRecipePrepTask, id)
-	var i GetRecipePrepTaskRow
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.Description,
-		&i.Notes,
-		&i.Optional,
-		&i.ExplicitStorageInstructions,
-		&i.MinimumTimeBufferBeforeRecipeInSeconds,
-		&i.MaximumTimeBufferBeforeRecipeInSeconds,
-		&i.StorageType,
-		&i.MinimumStorageTemperatureInCelsius,
-		&i.MaximumStorageTemperatureInCelsius,
-		&i.BelongsToRecipe,
-		&i.CreatedAt,
-		&i.LastUpdatedAt,
-		&i.ArchivedAt,
-		&i.ID_2,
-		&i.BelongsToRecipeStep,
-		&i.BelongsToRecipePrepTask,
-		&i.SatisfiesRecipeStep,
-	)
-	return &i, err
+func (q *Queries) GetRecipePrepTask(ctx context.Context, db DBTX, recipePrepTaskID string) ([]*GetRecipePrepTaskRow, error) {
+	rows, err := db.QueryContext(ctx, getRecipePrepTask, recipePrepTaskID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetRecipePrepTaskRow{}
+	for rows.Next() {
+		var i GetRecipePrepTaskRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Description,
+			&i.Notes,
+			&i.Optional,
+			&i.ExplicitStorageInstructions,
+			&i.MinimumTimeBufferBeforeRecipeInSeconds,
+			&i.MaximumTimeBufferBeforeRecipeInSeconds,
+			&i.StorageType,
+			&i.MinimumStorageTemperatureInCelsius,
+			&i.MaximumStorageTemperatureInCelsius,
+			&i.BelongsToRecipe,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
+			&i.TaskStepID,
+			&i.TaskStepBelongsToRecipeStep,
+			&i.TaskStepBelongsToRecipePrepTask,
+			&i.TaskStepSatisfiesRecipeStep,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const listAllRecipePrepTasksByRecipe = `-- name: ListAllRecipePrepTasksByRecipe :many
@@ -181,45 +198,45 @@ SELECT
 	recipe_prep_tasks.created_at,
 	recipe_prep_tasks.last_updated_at,
 	recipe_prep_tasks.archived_at,
-	recipe_prep_task_steps.id,
-	recipe_prep_task_steps.belongs_to_recipe_step,
-	recipe_prep_task_steps.belongs_to_recipe_prep_task,
-	recipe_prep_task_steps.satisfies_recipe_step
+	recipe_prep_task_steps.id as task_step_id,
+	recipe_prep_task_steps.belongs_to_recipe_step as task_step_belongs_to_recipe_step,
+	recipe_prep_task_steps.belongs_to_recipe_prep_task as task_step_belongs_to_recipe_prep_task,
+	recipe_prep_task_steps.satisfies_recipe_step as task_step_satisfies_recipe_step
 FROM recipe_prep_tasks
-	 FULL OUTER JOIN recipe_prep_task_steps ON recipe_prep_task_steps.belongs_to_recipe_prep_task=recipe_prep_tasks.id
-	 FULL OUTER JOIN recipe_steps ON recipe_prep_task_steps.belongs_to_recipe_step=recipe_steps.id
-	 FULL OUTER JOIN recipes ON recipe_prep_tasks.belongs_to_recipe=recipes.id
+    JOIN recipe_prep_task_steps ON recipe_prep_task_steps.belongs_to_recipe_prep_task=recipe_prep_tasks.id
+    JOIN recipe_steps ON recipe_prep_task_steps.belongs_to_recipe_step=recipe_steps.id
+    JOIN recipes ON recipe_prep_tasks.belongs_to_recipe=recipes.id
 WHERE recipe_prep_tasks.archived_at IS NULL
-  AND recipe_steps.archived_at IS NULL
-  AND recipes.archived_at IS NULL
-  AND recipes.id = $1
-  AND recipe_steps.belongs_to_recipe = $1
+    AND recipe_steps.archived_at IS NULL
+    AND recipes.archived_at IS NULL
+    AND recipes.id = $1
+    AND recipe_steps.belongs_to_recipe = $1
 `
 
 type ListAllRecipePrepTasksByRecipeRow struct {
-	CreatedAt                              sql.NullTime
+	CreatedAt                              time.Time
 	ArchivedAt                             sql.NullTime
 	LastUpdatedAt                          sql.NullTime
+	Name                                   string
+	Description                            string
+	Notes                                  string
+	TaskStepBelongsToRecipePrepTask        string
+	ExplicitStorageInstructions            string
+	TaskStepBelongsToRecipeStep            string
+	TaskStepID                             string
+	ID                                     string
+	BelongsToRecipe                        string
 	StorageType                            NullStorageContainerType
-	Description                            sql.NullString
-	ExplicitStorageInstructions            sql.NullString
-	BelongsToRecipePrepTask                sql.NullString
-	BelongsToRecipeStep                    sql.NullString
-	ID                                     sql.NullString
-	MinimumStorageTemperatureInCelsius     sql.NullString
 	MaximumStorageTemperatureInCelsius     sql.NullString
-	BelongsToRecipe                        sql.NullString
-	Notes                                  sql.NullString
-	ID_2                                   sql.NullString
-	Name                                   sql.NullString
+	MinimumStorageTemperatureInCelsius     sql.NullString
 	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
-	MinimumTimeBufferBeforeRecipeInSeconds sql.NullInt32
-	Optional                               sql.NullBool
-	SatisfiesRecipeStep                    sql.NullBool
+	MinimumTimeBufferBeforeRecipeInSeconds int32
+	Optional                               bool
+	TaskStepSatisfiesRecipeStep            bool
 }
 
-func (q *Queries) ListAllRecipePrepTasksByRecipe(ctx context.Context, db DBTX, id string) ([]*ListAllRecipePrepTasksByRecipeRow, error) {
-	rows, err := db.QueryContext(ctx, listAllRecipePrepTasksByRecipe, id)
+func (q *Queries) ListAllRecipePrepTasksByRecipe(ctx context.Context, db DBTX, recipeID string) ([]*ListAllRecipePrepTasksByRecipeRow, error) {
+	rows, err := db.QueryContext(ctx, listAllRecipePrepTasksByRecipe, recipeID)
 	if err != nil {
 		return nil, err
 	}
@@ -243,10 +260,10 @@ func (q *Queries) ListAllRecipePrepTasksByRecipe(ctx context.Context, db DBTX, i
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
-			&i.ID_2,
-			&i.BelongsToRecipeStep,
-			&i.BelongsToRecipePrepTask,
-			&i.SatisfiesRecipeStep,
+			&i.TaskStepID,
+			&i.TaskStepBelongsToRecipeStep,
+			&i.TaskStepBelongsToRecipePrepTask,
+			&i.TaskStepSatisfiesRecipeStep,
 		); err != nil {
 			return nil, err
 		}
