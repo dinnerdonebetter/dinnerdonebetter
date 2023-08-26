@@ -17,20 +17,8 @@ func buildMealPlanForIntegrationTest(userID string, meal *types.Meal) *types.Mea
 	exampleMealPlan := fakes.BuildFakeMealPlan()
 	exampleMealPlan.CreatedByUser = userID
 
-	exampleMealPlanEvent := fakes.BuildFakeMealPlanEvent()
-
-	exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
-	exampleMealPlanOption.Meal = *meal
-	exampleMealPlanOption.MealScale = 1
-	exampleMealPlanOption.AssignedCook = nil
-	exampleMealPlanOption.AssignedDishwasher = nil
-	exampleMealPlanOption.BelongsToMealPlanEvent = exampleMealPlanEvent.ID
-	exampleMealPlanEvent.Options = []*types.MealPlanOption{
-		exampleMealPlanOption,
-	}
-
 	exampleMealPlan.Events = []*types.MealPlanEvent{
-		exampleMealPlanEvent,
+		buildMealPlanEventForIntegrationTest(meal),
 	}
 
 	// only one event means it's immediately finalized
