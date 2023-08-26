@@ -15,12 +15,7 @@ import (
 func buildMealPlanEventForIntegrationTest(meal *types.Meal) *types.MealPlanEvent {
 	exampleMealPlanEvent := fakes.BuildFakeMealPlanEvent()
 
-	exampleMealPlanOption := fakes.BuildFakeMealPlanOption()
-	exampleMealPlanOption.Meal = *meal
-	exampleMealPlanOption.MealScale = 1
-	exampleMealPlanOption.AssignedCook = nil
-	exampleMealPlanOption.AssignedDishwasher = nil
-	exampleMealPlanOption.Votes = []*types.MealPlanOptionVote{}
+	exampleMealPlanOption := buildMealPlanOptionForIntegrationTest(meal)
 	exampleMealPlanOption.BelongsToMealPlanEvent = exampleMealPlanEvent.ID
 	exampleMealPlanEvent.Options = []*types.MealPlanOption{
 		exampleMealPlanOption,

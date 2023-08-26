@@ -157,7 +157,7 @@ func (q *Querier) getMealPlanOptionByID(ctx context.Context, mealPlanOptionID st
 			Description:              result.MealDescription,
 			CreatedByUser:            result.MealCreatedByUser,
 			Name:                     result.MealName,
-			Components:               nil,
+			Components:               []*types.MealComponent{},
 			MinimumEstimatedPortions: float32FromString(result.MealMinEstimatedPortions),
 			EligibleForMealPlans:     result.MealEligibleForMealPlans,
 		},
