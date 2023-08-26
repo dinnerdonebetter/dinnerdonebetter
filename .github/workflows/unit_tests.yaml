@@ -3,6 +3,8 @@ on: # [gollum]
     paths:
       - pkg/**
       - internal/**
+      - go.mod
+      - go.sum
 name: unit tests
 jobs:
  run:
