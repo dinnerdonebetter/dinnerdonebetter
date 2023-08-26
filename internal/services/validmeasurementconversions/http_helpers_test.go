@@ -16,23 +16,23 @@ import (
 	testutils "github.com/dinnerdonebetter/backend/tests/utils"
 )
 
-type validMeasurementConversionsServiceHTTPRoutesTestHelper struct {
-	ctx                               context.Context
-	req                               *http.Request
-	res                               *httptest.ResponseRecorder
-	service                           *service
-	exampleUser                       *types.User
-	exampleHousehold                  *types.Household
-	exampleValidMeasurementUnit       *types.ValidMeasurementUnit
-	exampleValidMeasurementConversion *types.ValidMeasurementUnitConversion
-	exampleCreationInput              *types.ValidMeasurementUnitConversionCreationRequestInput
-	exampleUpdateInput                *types.ValidMeasurementUnitConversionUpdateRequestInput
+type validMeasurementUnitConversionsServiceHTTPRoutesTestHelper struct {
+	ctx                                   context.Context
+	req                                   *http.Request
+	res                                   *httptest.ResponseRecorder
+	service                               *service
+	exampleUser                           *types.User
+	exampleHousehold                      *types.Household
+	exampleValidMeasurementUnit           *types.ValidMeasurementUnit
+	exampleValidMeasurementUnitConversion *types.ValidMeasurementUnitConversion
+	exampleCreationInput                  *types.ValidMeasurementUnitConversionCreationRequestInput
+	exampleUpdateInput                    *types.ValidMeasurementUnitConversionUpdateRequestInput
 }
 
-func buildTestHelper(t *testing.T) *validMeasurementConversionsServiceHTTPRoutesTestHelper {
+func buildTestHelper(t *testing.T) *validMeasurementUnitConversionsServiceHTTPRoutesTestHelper {
 	t.Helper()
 
-	helper := &validMeasurementConversionsServiceHTTPRoutesTestHelper{}
+	helper := &validMeasurementUnitConversionsServiceHTTPRoutesTestHelper{}
 
 	helper.ctx = context.Background()
 	helper.service = buildTestService()
@@ -40,12 +40,12 @@ func buildTestHelper(t *testing.T) *validMeasurementConversionsServiceHTTPRoutes
 	helper.exampleHousehold = fakes.BuildFakeHousehold()
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
 	helper.exampleValidMeasurementUnit = fakes.BuildFakeValidMeasurementUnit()
-	helper.exampleValidMeasurementConversion = fakes.BuildFakeValidMeasurementConversion()
-	helper.exampleCreationInput = converters.ConvertValidMeasurementConversionToValidMeasurementConversionCreationRequestInput(helper.exampleValidMeasurementConversion)
-	helper.exampleUpdateInput = converters.ConvertValidMeasurementConversionToValidMeasurementConversionUpdateRequestInput(helper.exampleValidMeasurementConversion)
+	helper.exampleValidMeasurementUnitConversion = fakes.BuildFakeValidMeasurementUnitConversion()
+	helper.exampleCreationInput = converters.ConvertValidMeasurementUnitConversionToValidMeasurementUnitConversionCreationRequestInput(helper.exampleValidMeasurementUnitConversion)
+	helper.exampleUpdateInput = converters.ConvertValidMeasurementUnitConversionToValidMeasurementUnitConversionUpdateRequestInput(helper.exampleValidMeasurementUnitConversion)
 
-	helper.service.validMeasurementConversionIDFetcher = func(*http.Request) string {
-		return helper.exampleValidMeasurementConversion.ID
+	helper.service.validMeasurementUnitConversionIDFetcher = func(*http.Request) string {
+		return helper.exampleValidMeasurementUnitConversion.ID
 	}
 
 	helper.service.validMeasurementUnitIDFetcher = func(*http.Request) string {

@@ -61,7 +61,7 @@ func TestBuilder_BuildGetOAuth2ClientsRequest(T *testing.T) {
 
 		helper := buildTestHelper()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
 
 		actual, err := helper.builder.BuildGetOAuth2ClientsRequest(helper.ctx, nil)
 		assert.NoError(t, err)

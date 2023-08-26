@@ -23,9 +23,9 @@ type (
 		ClientID            string        `json:"clientID"`
 		Refresh             string        `json:"refresh"`
 		ID                  string        `json:"id"`
-		CodeExpiresIn       time.Duration `json:"codeExpiresIn"`
-		AccessExpiresIn     time.Duration `json:"accessExpiresIn"`
-		RefreshExpiresIn    time.Duration `json:"refreshExpiresIn"`
+		CodeExpiresAt       time.Duration `json:"codeExpiresIn"`
+		AccessExpiresAt     time.Duration `json:"accessExpiresIn"`
+		RefreshExpiresAt    time.Duration `json:"refreshExpiresIn"`
 	}
 
 	// OAuth2ClientTokenDatabaseCreationInput represents a user-authorized OAuth2 client's token's database creation input.

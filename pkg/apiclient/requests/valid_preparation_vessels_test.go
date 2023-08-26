@@ -65,7 +65,7 @@ func TestBuilder_BuildGetValidPreparationVesselsRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		filter := (*types.QueryFilter)(nil)
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat)
 
 		actual, err := helper.builder.BuildGetValidPreparationVesselsRequest(helper.ctx, filter)
 		assert.NoError(t, err)
@@ -100,7 +100,7 @@ func TestBuilder_BuildGetValidPreparationVesselsForPreparationRequest(T *testing
 		helper := buildTestHelper()
 
 		filter := (*types.QueryFilter)(nil)
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat, examplePreparation.ID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat, examplePreparation.ID)
 
 		actual, err := helper.builder.BuildGetValidPreparationVesselsForPreparationRequest(helper.ctx, examplePreparation.ID, filter)
 		assert.NoError(t, err)
@@ -146,7 +146,7 @@ func TestBuilder_BuildGetValidPreparationVesselsForVesselRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		filter := (*types.QueryFilter)(nil)
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat, examplePreparation.ID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat, examplePreparation.ID)
 
 		actual, err := helper.builder.BuildGetValidPreparationVesselsForVesselRequest(helper.ctx, examplePreparation.ID, filter)
 		assert.NoError(t, err)

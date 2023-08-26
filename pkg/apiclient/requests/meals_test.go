@@ -65,7 +65,7 @@ func TestBuilder_BuildGetMealsRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		filter := (*types.QueryFilter)(nil)
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat)
 
 		actual, err := helper.builder.BuildGetMealsRequest(helper.ctx, filter)
 		assert.NoError(t, err)
@@ -98,7 +98,7 @@ func TestBuilder_BuildSearchForMealsRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		filter := (*types.QueryFilter)(nil)
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&q=example&sortBy=asc", expectedPathFormat)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&q=example&sortBy=asc", expectedPathFormat)
 
 		actual, err := helper.builder.BuildSearchForMealsRequest(helper.ctx, "example", filter)
 		assert.NoError(t, err)

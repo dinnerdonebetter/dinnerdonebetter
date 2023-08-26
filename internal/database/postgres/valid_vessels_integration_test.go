@@ -51,6 +51,10 @@ func TestQuerier_Integration_ValidVessels(t *testing.T) {
 	ctx := context.Background()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
 	defer func(t *testing.T) {
 		t.Helper()
 		assert.NoError(t, container.Terminate(ctx))
@@ -93,16 +97,46 @@ func TestQuerier_Integration_ValidVessels(t *testing.T) {
 
 	byIDs, err := dbc.GetValidVesselsWithIDs(ctx, validVesselIDs)
 	assert.NoError(t, err)
+
+	for i, v := range byIDs {
+		validVessels.Data[i].CreatedAt = v.CreatedAt
+		validVessels.Data[i].LastUpdatedAt = v.LastUpdatedAt
+		validVessels.Data[i].CapacityUnit.CreatedAt = v.CapacityUnit.CreatedAt
+		validVessels.Data[i].CapacityUnit.LastUpdatedAt = v.CapacityUnit.LastUpdatedAt
+	}
+
 	assert.Equal(t, validVessels.Data, byIDs)
 
 	// fetch via name search
 	byName, err := dbc.SearchForValidVessels(ctx, updatedValidVessel.Name)
+
+	for i, v := range byName {
+		validVessels.Data[i].CreatedAt = v.CreatedAt
+		validVessels.Data[i].LastUpdatedAt = v.LastUpdatedAt
+		validVessels.Data[i].CapacityUnit.CreatedAt = v.CapacityUnit.CreatedAt
+		validVessels.Data[i].CapacityUnit.LastUpdatedAt = v.CapacityUnit.LastUpdatedAt
+	}
+
 	assert.NoError(t, err)
 	assert.Equal(t, validVessels.Data, byName)
 
+	random, err := dbc.GetRandomValidVessel(ctx)
+	assert.NoError(t, err)
+	assert.NotNil(t, random)
+
+	results, err := dbc.GetValidVesselIDsThatNeedSearchIndexing(ctx)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, results)
+
 	// delete
 	for _, validVessel := range createdValidVessels {
+		assert.NoError(t, dbc.MarkValidVesselAsIndexed(ctx, validVessel.ID))
 		assert.NoError(t, dbc.ArchiveValidVessel(ctx, validVessel.ID))
+
+		var exists bool
+		exists, err = dbc.ValidVesselExists(ctx, validVessel.ID)
+		assert.NoError(t, err)
+		assert.False(t, exists)
 
 		var y *types.ValidVessel
 		y, err = dbc.GetValidVessel(ctx, validVessel.ID)

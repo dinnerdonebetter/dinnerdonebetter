@@ -47,7 +47,7 @@ func (c *Client) SearchServiceSettings(ctx context.Context, query string, limit 
 	}
 
 	if limit == 0 {
-		limit = 20
+		limit = types.DefaultLimit
 	}
 
 	logger = logger.WithValue(keys.SearchQueryKey, query).WithValue(keys.FilterLimitKey, limit)

@@ -1,4 +1,6 @@
 PWD                           := $(shell pwd)
+ME                            := $(shell id -u)
+MY_GROUP					  := $(shell id -g)
 GOPATH                        := $(GOPATH)
 ARTIFACTS_DIR                 := artifacts
 COVERAGE_OUT                  := $(ARTIFACTS_DIR)/coverage.out
@@ -15,6 +17,8 @@ CONTAINER_LINTER_IMAGE        := openpolicyagent/conftest:v0.44.1
 CLOUD_JOBS                    := meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator search_data_index_scheduler
 CLOUD_FUNCTIONS               := data_changes outbound_emailer search_indexer
 WIRE_TARGETS                  := server/http/build
+
+# TODO: upgrade golangci-lint to 1.54.2
 
 ## non-PHONY folders/files
 
@@ -136,7 +140,7 @@ pre_lint:
 .PHONY: lint_docker
 lint_docker:
 	@docker pull --quiet $(CONTAINER_LINTER_IMAGE)
-	docker run --rm --volume $(PWD):$(PWD) --workdir=$(PWD) $(CONTAINER_LINTER_IMAGE) test --policy docker_security.rego `find . -type f -name "*.Dockerfile"`
+	docker run --rm --volume $(PWD):$(PWD) --workdir=$(PWD) --user $(ME):$(MY_GROUP) $(CONTAINER_LINTER_IMAGE) test --policy docker_security.rego `find . -type f -name "*.Dockerfile"`
 
 .PHONY: queries_lint
 queries_lint:
@@ -144,19 +148,22 @@ queries_lint:
 	docker run --rm \
 		--volume $(PWD):/src \
 		--workdir /src \
+		--user $(ME):$(MY_GROUP) \
 		$(SQL_GENERATOR_IMAGE) compile --no-database --no-remote
 	docker run --rm \
 		--volume $(PWD):/src \
 		--workdir /src \
+		--user $(ME):$(MY_GROUP) \
 		$(SQL_GENERATOR_IMAGE) vet --no-database --no-remote
 
 .PHONY: querier
 querier: queries_lint
+	rm -rf internal/database/postgres/generated/*.go
 	docker run --rm \
 		--volume $(PWD):/src \
 		--workdir /src \
+		--user $(ME):$(MY_GROUP) \
 	$(SQL_GENERATOR_IMAGE) generate
-	$(MAKE) format
 
 .PHONY: golang_lint
 golang_lint:
@@ -253,4 +260,4 @@ line_count: ensure_scc_installed
 # https://cloud.google.com/sql/docs/postgres/connect-admin-proxy#connect-tcp
 .PHONY: proxy_dev_db
 proxy_dev_db:
-	cloud_sql_proxy -dir=/cloudsql -instances='dinner-done-better-dev:us-central1:dev=tcp:5434'
+	cloud_sql_proxy dinner-done-better-dev:us-central1:dev --port 5434

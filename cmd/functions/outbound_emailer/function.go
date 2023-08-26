@@ -75,7 +75,7 @@ func SendEmail(ctx context.Context, e event.Event) error {
 
 	analyticsEventReporter, err := analyticsconfig.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "error setting up customer data collector")
+		return observability.PrepareAndLogError(err, logger, span, "setting up customer data collector")
 	}
 
 	defer analyticsEventReporter.Close()

@@ -93,6 +93,7 @@ func (c *Client) unmarshalBody(ctx context.Context, res *http.Response, dest any
 	}
 
 	if err = c.encoder.Unmarshal(ctx, bodyBytes, &dest); err != nil {
+		logger = logger.WithValue("raw_body", string(bodyBytes))
 		return observability.PrepareAndLogError(err, logger, span, "unmarshalling response body")
 	}
 

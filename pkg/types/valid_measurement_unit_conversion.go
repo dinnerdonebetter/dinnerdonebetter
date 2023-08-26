@@ -51,8 +51,8 @@ type (
 		Modifier          float32 `json:"modifier"`
 	}
 
-	// ValidMeasurementConversionDatabaseCreationInput represents what a user could set as input for creating valid measurement conversions.
-	ValidMeasurementConversionDatabaseCreationInput struct {
+	// ValidMeasurementUnitConversionDatabaseCreationInput represents what a user could set as input for creating valid measurement conversions.
+	ValidMeasurementUnitConversionDatabaseCreationInput struct {
 		_ struct{}
 
 		OnlyForIngredient *string
@@ -74,19 +74,19 @@ type (
 		Notes             *string  `json:"notes,omitempty"`
 	}
 
-	// ValidMeasurementConversionDataManager describes a structure capable of storing valid measurement conversions permanently.
-	ValidMeasurementConversionDataManager interface {
-		ValidMeasurementConversionExists(ctx context.Context, validMeasurementConversionID string) (bool, error)
-		GetValidMeasurementUnitConversion(ctx context.Context, validMeasurementConversionID string) (*ValidMeasurementUnitConversion, error)
-		CreateValidMeasurementConversion(ctx context.Context, input *ValidMeasurementConversionDatabaseCreationInput) (*ValidMeasurementUnitConversion, error)
-		UpdateValidMeasurementConversion(ctx context.Context, updated *ValidMeasurementUnitConversion) error
-		ArchiveValidMeasurementConversion(ctx context.Context, validMeasurementConversionID string) error
+	// ValidMeasurementUnitConversionDataManager describes a structure capable of storing valid measurement conversions permanently.
+	ValidMeasurementUnitConversionDataManager interface {
+		ValidMeasurementUnitConversionExists(ctx context.Context, validMeasurementUnitConversionID string) (bool, error)
+		GetValidMeasurementUnitConversion(ctx context.Context, validMeasurementUnitConversionID string) (*ValidMeasurementUnitConversion, error)
+		CreateValidMeasurementUnitConversion(ctx context.Context, input *ValidMeasurementUnitConversionDatabaseCreationInput) (*ValidMeasurementUnitConversion, error)
+		UpdateValidMeasurementUnitConversion(ctx context.Context, updated *ValidMeasurementUnitConversion) error
+		ArchiveValidMeasurementUnitConversion(ctx context.Context, validMeasurementUnitConversionID string) error
 		GetValidMeasurementUnitConversionsFromUnit(ctx context.Context, validMeasurementUnitID string) ([]*ValidMeasurementUnitConversion, error)
 		GetValidMeasurementUnitConversionsToUnit(ctx context.Context, validMeasurementUnitID string) ([]*ValidMeasurementUnitConversion, error)
 	}
 
-	// ValidMeasurementConversionDataService describes a structure capable of serving traffic related to valid measurement conversions.
-	ValidMeasurementConversionDataService interface {
+	// ValidMeasurementUnitConversionDataService describes a structure capable of serving traffic related to valid measurement conversions.
+	ValidMeasurementUnitConversionDataService interface {
 		FromMeasurementUnitHandler(http.ResponseWriter, *http.Request)
 		ToMeasurementUnitHandler(http.ResponseWriter, *http.Request)
 		CreateHandler(http.ResponseWriter, *http.Request)
@@ -132,10 +132,10 @@ func (x *ValidMeasurementUnitConversionCreationRequestInput) ValidateWithContext
 	)
 }
 
-var _ validation.ValidatableWithContext = (*ValidMeasurementConversionDatabaseCreationInput)(nil)
+var _ validation.ValidatableWithContext = (*ValidMeasurementUnitConversionDatabaseCreationInput)(nil)
 
-// ValidateWithContext validates a ValidMeasurementConversionDatabaseCreationInput.
-func (x *ValidMeasurementConversionDatabaseCreationInput) ValidateWithContext(ctx context.Context) error {
+// ValidateWithContext validates a ValidMeasurementUnitConversionDatabaseCreationInput.
+func (x *ValidMeasurementUnitConversionDatabaseCreationInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,

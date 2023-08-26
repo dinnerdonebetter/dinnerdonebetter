@@ -15,11 +15,6 @@ type ValidIngredientDataManagerMock struct {
 	mock.Mock
 }
 
-func (m *ValidIngredientDataManagerMock) SearchForValidIngredientsForIngredientState(ctx context.Context, ingredientStateID, query string, filter *types.QueryFilter) ([]*types.ValidIngredient, error) {
-	args := m.Called(ctx, ingredientStateID, query, filter)
-	return args.Get(0).([]*types.ValidIngredient), args.Error(1)
-}
-
 // ValidIngredientExists is a mock function.
 func (m *ValidIngredientDataManagerMock) ValidIngredientExists(ctx context.Context, validIngredientID string) (bool, error) {
 	args := m.Called(ctx, validIngredientID)
@@ -39,9 +34,9 @@ func (m *ValidIngredientDataManagerMock) GetRandomValidIngredient(ctx context.Co
 }
 
 // SearchForValidIngredients is a mock function.
-func (m *ValidIngredientDataManagerMock) SearchForValidIngredients(ctx context.Context, query string, filter *types.QueryFilter) ([]*types.ValidIngredient, error) {
+func (m *ValidIngredientDataManagerMock) SearchForValidIngredients(ctx context.Context, query string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredient], error) {
 	args := m.Called(ctx, query, filter)
-	return args.Get(0).([]*types.ValidIngredient), args.Error(1)
+	return args.Get(0).(*types.QueryFilteredResult[types.ValidIngredient]), args.Error(1)
 }
 
 // SearchForValidIngredientsForPreparation is a mock function.

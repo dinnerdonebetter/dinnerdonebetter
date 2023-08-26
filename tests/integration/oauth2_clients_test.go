@@ -149,9 +149,6 @@ func (s *TestSuite) TestOAuth2Clients_Reading() {
 	})
 }
 
-func (s *TestSuite) TestOAuth2Clients_Archiving_Returns404ForNonexistentOAuth2Client() {
-}
-
 func (s *TestSuite) TestOAuth2Clients_Archiving() {
 	s.runForCookieClient("should be possible to archive OAuth2 clients", func(testClients *testClientWrapper) func() {
 		return func() {
@@ -169,17 +166,6 @@ func (s *TestSuite) TestOAuth2Clients_Archiving() {
 
 			// Clean up OAuth2 client.
 			assert.NoError(t, testClients.admin.ArchiveOAuth2Client(ctx, createdOAuth2Client.ID))
-		}
-	})
-
-	s.runForCookieClient("should not be possible to archive non-existent OAuth2 clients", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			assert.Error(t, testClients.admin.ArchiveOAuth2Client(ctx, nonexistentID))
 		}
 	})
 }

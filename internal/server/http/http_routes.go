@@ -494,33 +494,33 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 			})
 		})
 
-		// ValidMeasurementConversions
-		validMeasurementConversionPath := "valid_measurement_conversions"
-		validMeasurementConversionsRouteWithPrefix := fmt.Sprintf("/%s", validMeasurementConversionPath)
-		validMeasurementConversionUnitIDRouteParam := buildURLVarChunk(validmeasurementconversionsservice.ValidMeasurementUnitIDURIParamKey, "")
-		validMeasurementConversionIDRouteParam := buildURLVarChunk(validmeasurementconversionsservice.ValidMeasurementConversionIDURIParamKey, "")
-		v1Router.Route(validMeasurementConversionsRouteWithPrefix, func(validMeasurementConversionsRouter routing.Router) {
-			validMeasurementConversionsRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateValidMeasurementConversionsPermission)).
-				Post(root, s.validMeasurementConversionsService.CreateHandler)
+		// ValidMeasurementUnitConversions
+		validMeasurementUnitConversionPath := "valid_measurement_conversions"
+		validMeasurementUnitConversionsRouteWithPrefix := fmt.Sprintf("/%s", validMeasurementUnitConversionPath)
+		validMeasurementUnitConversionUnitIDRouteParam := buildURLVarChunk(validmeasurementconversionsservice.ValidMeasurementUnitIDURIParamKey, "")
+		validMeasurementUnitConversionIDRouteParam := buildURLVarChunk(validmeasurementconversionsservice.ValidMeasurementUnitConversionIDURIParamKey, "")
+		v1Router.Route(validMeasurementUnitConversionsRouteWithPrefix, func(validMeasurementUnitConversionsRouter routing.Router) {
+			validMeasurementUnitConversionsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateValidMeasurementUnitConversionsPermission)).
+				Post(root, s.validMeasurementUnitConversionsService.CreateHandler)
 
-			validMeasurementConversionsRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidMeasurementConversionsPermission)).
-				Get(path.Join("/from_unit", validMeasurementConversionUnitIDRouteParam), s.validMeasurementConversionsService.FromMeasurementUnitHandler)
-			validMeasurementConversionsRouter.
-				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidMeasurementConversionsPermission)).
-				Get(path.Join("/to_unit", validMeasurementConversionUnitIDRouteParam), s.validMeasurementConversionsService.ToMeasurementUnitHandler)
+			validMeasurementUnitConversionsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidMeasurementUnitConversionsPermission)).
+				Get(path.Join("/from_unit", validMeasurementUnitConversionUnitIDRouteParam), s.validMeasurementUnitConversionsService.FromMeasurementUnitHandler)
+			validMeasurementUnitConversionsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidMeasurementUnitConversionsPermission)).
+				Get(path.Join("/to_unit", validMeasurementUnitConversionUnitIDRouteParam), s.validMeasurementUnitConversionsService.ToMeasurementUnitHandler)
 
-			validMeasurementConversionsRouter.Route(validMeasurementConversionIDRouteParam, func(singleValidMeasurementConversionRouter routing.Router) {
-				singleValidMeasurementConversionRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidMeasurementConversionsPermission)).
-					Get(root, s.validMeasurementConversionsService.ReadHandler)
-				singleValidMeasurementConversionRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidMeasurementConversionsPermission)).
-					Put(root, s.validMeasurementConversionsService.UpdateHandler)
-				singleValidMeasurementConversionRouter.
-					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidMeasurementConversionsPermission)).
-					Delete(root, s.validMeasurementConversionsService.ArchiveHandler)
+			validMeasurementUnitConversionsRouter.Route(validMeasurementUnitConversionIDRouteParam, func(singleValidMeasurementUnitConversionRouter routing.Router) {
+				singleValidMeasurementUnitConversionRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadValidMeasurementUnitConversionsPermission)).
+					Get(root, s.validMeasurementUnitConversionsService.ReadHandler)
+				singleValidMeasurementUnitConversionRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateValidMeasurementUnitConversionsPermission)).
+					Put(root, s.validMeasurementUnitConversionsService.UpdateHandler)
+				singleValidMeasurementUnitConversionRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveValidMeasurementUnitConversionsPermission)).
+					Delete(root, s.validMeasurementUnitConversionsService.ArchiveHandler)
 			})
 		})
 

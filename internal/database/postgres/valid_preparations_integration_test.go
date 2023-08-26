@@ -11,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func createValidPreparationForTest(t *testing.T, ctx context.Context, exampleValidPreparation *types.ValidPreparation, dbc *Querier) *types.ValidPreparation {
@@ -43,6 +44,10 @@ func TestQuerier_Integration_ValidPreparations(t *testing.T) {
 
 	ctx := context.Background()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
 
 	defer func(t *testing.T) {
 		t.Helper()
@@ -88,9 +93,24 @@ func TestQuerier_Integration_ValidPreparations(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, validPreparations.Data, byName)
 
+	whatever, err := dbc.GetValidPreparationIDsThatNeedSearchIndexing(ctx)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, whatever)
+
+	assert.NoError(t, dbc.MarkValidPreparationAsIndexed(ctx, updatedValidPreparation.ID))
+
+	randomPreparation, err := dbc.GetRandomValidPreparation(ctx)
+	assert.NoError(t, err)
+	assert.NotNil(t, randomPreparation)
+
 	// delete
 	for _, validPreparation := range createdValidPreparations {
 		assert.NoError(t, dbc.ArchiveValidPreparation(ctx, validPreparation.ID))
+
+		var exists bool
+		exists, err = dbc.ValidPreparationExists(ctx, validPreparation.ID)
+		assert.NoError(t, err)
+		assert.False(t, exists)
 
 		var y *types.ValidPreparation
 		y, err = dbc.GetValidPreparation(ctx, validPreparation.ID)

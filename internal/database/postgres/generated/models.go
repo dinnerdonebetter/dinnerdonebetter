@@ -76,6 +76,20 @@ func (e ComponentType) Valid() bool {
 	return false
 }
 
+func AllComponentTypeValues() []ComponentType {
+	return []ComponentType{
+		ComponentTypeUnspecified,
+		ComponentTypeAmuseBouche,
+		ComponentTypeAppetizer,
+		ComponentTypeSoup,
+		ComponentTypeMain,
+		ComponentTypeSalad,
+		ComponentTypeBeverage,
+		ComponentTypeSide,
+		ComponentTypeDessert,
+	}
+}
+
 type GroceryListItemStatus string
 
 const (
@@ -131,6 +145,16 @@ func (e GroceryListItemStatus) Valid() bool {
 		return true
 	}
 	return false
+}
+
+func AllGroceryListItemStatusValues() []GroceryListItemStatus {
+	return []GroceryListItemStatus{
+		GroceryListItemStatusUnknown,
+		GroceryListItemStatusAlreadyowned,
+		GroceryListItemStatusNeeds,
+		GroceryListItemStatusUnavailable,
+		GroceryListItemStatusAcquired,
+	}
 }
 
 type IngredientAttributeType string
@@ -198,6 +222,20 @@ func (e IngredientAttributeType) Valid() bool {
 	return false
 }
 
+func AllIngredientAttributeTypeValues() []IngredientAttributeType {
+	return []IngredientAttributeType{
+		IngredientAttributeTypeTexture,
+		IngredientAttributeTypeConsistency,
+		IngredientAttributeTypeColor,
+		IngredientAttributeTypeAppearance,
+		IngredientAttributeTypeOdor,
+		IngredientAttributeTypeTaste,
+		IngredientAttributeTypeSound,
+		IngredientAttributeTypeTemperature,
+		IngredientAttributeTypeOther,
+	}
+}
+
 type InvitationState string
 
 const (
@@ -251,6 +289,15 @@ func (e InvitationState) Valid() bool {
 		return true
 	}
 	return false
+}
+
+func AllInvitationStateValues() []InvitationState {
+	return []InvitationState{
+		InvitationStatePending,
+		InvitationStateCancelled,
+		InvitationStateAccepted,
+		InvitationStateRejected,
+	}
 }
 
 type MealName string
@@ -312,6 +359,17 @@ func (e MealName) Valid() bool {
 	return false
 }
 
+func AllMealNameValues() []MealName {
+	return []MealName{
+		MealNameBreakfast,
+		MealNameSecondBreakfast,
+		MealNameBrunch,
+		MealNameLunch,
+		MealNameSupper,
+		MealNameDinner,
+	}
+}
+
 type MealPlanStatus string
 
 const (
@@ -361,6 +419,13 @@ func (e MealPlanStatus) Valid() bool {
 		return true
 	}
 	return false
+}
+
+func AllMealPlanStatusValues() []MealPlanStatus {
+	return []MealPlanStatus{
+		MealPlanStatusAwaitingVotes,
+		MealPlanStatusFinalized,
+	}
 }
 
 type Oauth2ClientTokenScopes string
@@ -416,6 +481,15 @@ func (e Oauth2ClientTokenScopes) Valid() bool {
 		return true
 	}
 	return false
+}
+
+func AllOauth2ClientTokenScopesValues() []Oauth2ClientTokenScopes {
+	return []Oauth2ClientTokenScopes{
+		Oauth2ClientTokenScopesUnknown,
+		Oauth2ClientTokenScopesHouseholdMember,
+		Oauth2ClientTokenScopesHouseholdAdmin,
+		Oauth2ClientTokenScopesServiceAdmin,
+	}
 }
 
 type PrepStepStatus string
@@ -475,6 +549,16 @@ func (e PrepStepStatus) Valid() bool {
 	return false
 }
 
+func AllPrepStepStatusValues() []PrepStepStatus {
+	return []PrepStepStatus{
+		PrepStepStatusUnfinished,
+		PrepStepStatusPostponed,
+		PrepStepStatusIgnored,
+		PrepStepStatusCanceled,
+		PrepStepStatusFinished,
+	}
+}
+
 type RecipeStepProductType string
 
 const (
@@ -528,6 +612,14 @@ func (e RecipeStepProductType) Valid() bool {
 	return false
 }
 
+func AllRecipeStepProductTypeValues() []RecipeStepProductType {
+	return []RecipeStepProductType{
+		RecipeStepProductTypeIngredient,
+		RecipeStepProductTypeInstrument,
+		RecipeStepProductTypeVessel,
+	}
+}
+
 type SettingType string
 
 const (
@@ -579,6 +671,14 @@ func (e SettingType) Valid() bool {
 		return true
 	}
 	return false
+}
+
+func AllSettingTypeValues() []SettingType {
+	return []SettingType{
+		SettingTypeUser,
+		SettingTypeHousehold,
+		SettingTypeMembership,
+	}
 }
 
 type StorageContainerType string
@@ -636,6 +736,15 @@ func (e StorageContainerType) Valid() bool {
 	return false
 }
 
+func AllStorageContainerTypeValues() []StorageContainerType {
+	return []StorageContainerType{
+		StorageContainerTypeUncovered,
+		StorageContainerTypeCovered,
+		StorageContainerTypeOnawirerack,
+		StorageContainerTypeInanairtightcontainer,
+	}
+}
+
 type ValidElectionMethod string
 
 const (
@@ -685,6 +794,13 @@ func (e ValidElectionMethod) Valid() bool {
 		return true
 	}
 	return false
+}
+
+func AllValidElectionMethodValues() []ValidElectionMethod {
+	return []ValidElectionMethod{
+		ValidElectionMethodSchulze,
+		ValidElectionMethodInstantRunoff,
+	}
 }
 
 type VesselShape string
@@ -750,6 +866,19 @@ func (e VesselShape) Valid() bool {
 	return false
 }
 
+func AllVesselShapeValues() []VesselShape {
+	return []VesselShape{
+		VesselShapeHemisphere,
+		VesselShapeRectangle,
+		VesselShapeCone,
+		VesselShapePyramid,
+		VesselShapeCylinder,
+		VesselShapeSphere,
+		VesselShapeCube,
+		VesselShapeOther,
+	}
+}
+
 type WebhookEvent string
 
 const (
@@ -803,70 +932,88 @@ func (e WebhookEvent) Valid() bool {
 	return false
 }
 
+func AllWebhookEventValues() []WebhookEvent {
+	return []WebhookEvent{
+		WebhookEventWebhookCreated,
+		WebhookEventWebhookUpdated,
+		WebhookEventWebhookArchived,
+	}
+}
+
 type MealPlanEvents struct {
-	ID                string       `db:"id"`
-	Notes             string       `db:"notes"`
-	StartsAt          time.Time    `db:"starts_at"`
-	EndsAt            time.Time    `db:"ends_at"`
-	MealName          MealName     `db:"meal_name"`
-	BelongsToMealPlan string       `db:"belongs_to_meal_plan"`
-	CreatedAt         time.Time    `db:"created_at"`
-	LastUpdatedAt     sql.NullTime `db:"last_updated_at"`
-	ArchivedAt        sql.NullTime `db:"archived_at"`
+	ID                string
+	Notes             string
+	StartsAt          time.Time
+	EndsAt            time.Time
+	MealName          MealName
+	BelongsToMealPlan string
+	CreatedAt         time.Time
+	LastUpdatedAt     sql.NullTime
+	ArchivedAt        sql.NullTime
 }
 
 type MealPlanOptionVotes struct {
-	CreatedAt               time.Time    `db:"created_at"`
-	LastUpdatedAt           sql.NullTime `db:"last_updated_at"`
-	ArchivedAt              sql.NullTime `db:"archived_at"`
-	ID                      string       `db:"id"`
-	Notes                   string       `db:"notes"`
-	ByUser                  string       `db:"by_user"`
-	BelongsToMealPlanOption string       `db:"belongs_to_meal_plan_option"`
-	Rank                    int32        `db:"rank"`
-	Abstain                 bool         `db:"abstain"`
+	CreatedAt               time.Time
+	LastUpdatedAt           sql.NullTime
+	ArchivedAt              sql.NullTime
+	ID                      string
+	Notes                   string
+	ByUser                  string
+	BelongsToMealPlanOption string
+	Rank                    int32
+	Abstain                 bool
 }
 
 type Oauth2ClientTokens struct {
-	AccessExpiresAt     time.Time               `db:"access_expires_at"`
-	CodeExpiresAt       time.Time               `db:"code_expires_at"`
-	RefreshExpiresAt    time.Time               `db:"refresh_expires_at"`
-	RefreshCreatedAt    time.Time               `db:"refresh_created_at"`
-	CodeCreatedAt       time.Time               `db:"code_created_at"`
-	AccessCreatedAt     time.Time               `db:"access_created_at"`
-	CodeChallenge       string                  `db:"code_challenge"`
-	CodeChallengeMethod string                  `db:"code_challenge_method"`
-	Scope               Oauth2ClientTokenScopes `db:"scope"`
-	ClientID            string                  `db:"client_id"`
-	Access              string                  `db:"access"`
-	Code                string                  `db:"code"`
-	ID                  string                  `db:"id"`
-	Refresh             string                  `db:"refresh"`
-	RedirectUri         string                  `db:"redirect_uri"`
-	BelongsToUser       string                  `db:"belongs_to_user"`
+	AccessExpiresAt     time.Time
+	CodeExpiresAt       time.Time
+	RefreshExpiresAt    time.Time
+	RefreshCreatedAt    time.Time
+	CodeCreatedAt       time.Time
+	AccessCreatedAt     time.Time
+	CodeChallenge       string
+	CodeChallengeMethod string
+	Scope               Oauth2ClientTokenScopes
+	ClientID            string
+	Access              string
+	Code                string
+	ID                  string
+	Refresh             string
+	RedirectUri         string
+	BelongsToUser       string
+}
+
+type Oauth2Clients struct {
+	ID           string
+	Name         string
+	Description  string
+	ClientID     string
+	ClientSecret string
+	CreatedAt    time.Time
+	ArchivedAt   sql.NullTime
 }
 
 type PasswordResetTokens struct {
-	ID            string       `db:"id"`
-	Token         string       `db:"token"`
-	ExpiresAt     time.Time    `db:"expires_at"`
-	CreatedAt     time.Time    `db:"created_at"`
-	LastUpdatedAt sql.NullTime `db:"last_updated_at"`
-	RedeemedAt    sql.NullTime `db:"redeemed_at"`
-	BelongsToUser string       `db:"belongs_to_user"`
+	ID            string
+	Token         string
+	ExpiresAt     time.Time
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	RedeemedAt    sql.NullTime
+	BelongsToUser string
 }
 
 type RecipeRatings struct {
-	CreatedAt     time.Time      `db:"created_at"`
-	LastUpdatedAt sql.NullTime   `db:"last_updated_at"`
-	ArchivedAt    sql.NullTime   `db:"archived_at"`
-	ID            string         `db:"id"`
-	RecipeID      string         `db:"recipe_id"`
-	Notes         string         `db:"notes"`
-	ByUser        string         `db:"by_user"`
-	Taste         sql.NullString `db:"taste"`
-	Difficulty    sql.NullString `db:"difficulty"`
-	Cleanup       sql.NullString `db:"cleanup"`
-	Instructions  sql.NullString `db:"instructions"`
-	Overall       sql.NullString `db:"overall"`
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
+	ID            string
+	RecipeID      string
+	Notes         string
+	ByUser        string
+	Taste         sql.NullString
+	Difficulty    sql.NullString
+	Cleanup       sql.NullString
+	Instructions  sql.NullString
+	Overall       sql.NullString
 }

@@ -99,7 +99,7 @@ func (s *recipeRatingsTestSuite) TestClient_GetRecipeRatings() {
 
 		exampleRecipeRatingList := fakes.BuildFakeRecipeRatingList()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, s.exampleMeal.ID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, s.exampleMeal.ID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleRecipeRatingList)
 		actual, err := c.GetRecipeRatings(s.ctx, s.exampleMeal.ID, filter)
 
@@ -125,7 +125,7 @@ func (s *recipeRatingsTestSuite) TestClient_GetRecipeRatings() {
 
 		filter := (*types.QueryFilter)(nil)
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, s.exampleMeal.ID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, s.exampleMeal.ID)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.GetRecipeRatings(s.ctx, s.exampleMeal.ID, filter)
 

@@ -399,9 +399,9 @@ func AttachMealPlanGroceryListItemIDToSpan(span trace.Span, id string) {
 	AttachStringToSpan(span, keys.MealPlanGroceryListItemIDKey, id)
 }
 
-// AttachValidMeasurementConversionIDToSpan attaches a valid measurement conversion ID to a given span.
-func AttachValidMeasurementConversionIDToSpan(span trace.Span, id string) {
-	AttachStringToSpan(span, keys.ValidMeasurementConversionIDKey, id)
+// AttachValidMeasurementUnitConversionIDToSpan attaches a valid measurement conversion ID to a given span.
+func AttachValidMeasurementUnitConversionIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.ValidMeasurementUnitConversionIDKey, id)
 }
 
 // AttachRecipeMediaIDToSpan attaches a recipe media ID to a given span.
@@ -442,6 +442,11 @@ func AttachRecipeRatingIDToSpan(span trace.Span, id string) {
 // AttachOAuth2ClientIDToSpan attaches an oauth2 client's ID to a given span.
 func AttachOAuth2ClientIDToSpan(span trace.Span, id string) {
 	AttachStringToSpan(span, keys.OAuth2ClientIDKey, id)
+}
+
+// AttachOAuth2ClientClientIDToSpan attaches an oauth2 client's client ID to a given span.
+func AttachOAuth2ClientClientIDToSpan(span trace.Span, id string) {
+	AttachStringToSpan(span, keys.OAuth2ClientClientIDKey, id)
 }
 
 // AttachValidPreparationVesselIDToSpan attaches a valid preparation vessel ID to a given span.

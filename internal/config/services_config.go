@@ -58,7 +58,7 @@ type (
 		RecipeStepCompletionConditions  recipestepcompletionconditionsservice.Config  `json:"recipeStepCompletionConditions"  toml:"recipe_step_completion_conditions,omitempty"`
 		RecipeRatings                   reciperatingsservice.Config                   `json:"recipeRatings"                   toml:"recipe_ratings,omitempty"`
 		ValidPreparationInstruments     validpreparationinstrumentsservice.Config     `json:"validPreparationInstruments"     toml:"valid_preparation_instruments,omitempty"`
-		ValidMeasurementConversions     validmeasurementconversions.Config            `json:"validMeasurementConversions"     toml:"valid_measurement_conversions,omitempty"`
+		ValidMeasurementUnitConversions validmeasurementconversions.Config            `json:"validMeasurementUnitConversions" toml:"valid_measurement_conversions,omitempty"`
 		ValidIngredientGroups           validingredientgroupsservice.Config           `json:"validIngredientGroups"           toml:"valid_ingredient_groups,omitempty"`
 		MealPlanGroceryListItems        mealplangrocerylistitems.Config               `json:"mealPlanGroceryListItems"        toml:"meal_plan_grocery_list_items,omitempty"`
 		ValidInstrumentMeasurementUnits validingredientmeasurementunitsservice.Config `json:"validInstrumentMeasurementUnits" toml:"valid_ingredient_measurement_units,omitempty"`
@@ -126,7 +126,7 @@ func (cfg *ServicesConfig) ValidateWithContext(ctx context.Context) error {
 		"MealPlanOptionVotes":             cfg.MealPlanOptionVotes.ValidateWithContext,
 		"RecipePrepTasks":                 cfg.RecipePrepTasks.ValidateWithContext,
 		"MealPlanGroceryListItems":        cfg.MealPlanGroceryListItems.ValidateWithContext,
-		"ValidMeasurementConversions":     cfg.ValidMeasurementConversions.ValidateWithContext,
+		"ValidMeasurementUnitConversions": cfg.ValidMeasurementUnitConversions.ValidateWithContext,
 		"ValidIngredientStates":           cfg.ValidIngredientStates.ValidateWithContext,
 		"VendorProxy":                     cfg.VendorProxy.ValidateWithContext,
 		"ServiceSettings":                 cfg.ServiceSettings.ValidateWithContext,

@@ -35,9 +35,9 @@ func BuildFakeOAuth2ClientToken() *types.OAuth2ClientToken {
 		ClientID:            BuildFakeID(),
 		Refresh:             buildUniqueString(),
 		ID:                  BuildFakeID(),
-		CodeExpiresIn:       time.Hour,
-		AccessExpiresIn:     time.Hour,
-		RefreshExpiresIn:    time.Hour,
+		CodeExpiresAt:       time.Hour,
+		AccessExpiresAt:     time.Hour,
+		RefreshExpiresAt:    time.Hour,
 	}
 }
 
@@ -60,7 +60,7 @@ func BuildFakeOAuth2ClientList() *types.QueryFilteredResult[types.OAuth2Client] 
 	return &types.QueryFilteredResult[types.OAuth2Client]{
 		Pagination: types.Pagination{
 			Page:          1,
-			Limit:         20,
+			Limit:         50,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,
 		},

@@ -3,115 +3,19 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	_ "embed"
 	"log"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
-
-	"github.com/Masterminds/squirrel"
 )
 
 var (
 	_ types.RecipeDataManager = (*Querier)(nil)
-
-	// recipesTableColumns are the columns for the recipes table.
-	recipesTableColumns = []string{
-		"recipes.id",
-		"recipes.name",
-		"recipes.slug",
-		"recipes.source",
-		"recipes.description",
-		"recipes.inspired_by_recipe_id",
-		"recipes.min_estimated_portions",
-		"recipes.max_estimated_portions",
-		"recipes.portion_name",
-		"recipes.plural_portion_name",
-		"recipes.seal_of_approval",
-		"recipes.eligible_for_meals",
-		"recipes.yields_component_type",
-		"recipes.created_at",
-		"recipes.last_updated_at",
-		"recipes.archived_at",
-		"recipes.created_by_user",
-	}
 )
-
-// scanRecipe takes a database Scanner (i.e. *sql.Row) and scans the result into a recipe struct.
-func (q *Querier) scanRecipe(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.Recipe, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	x = &types.Recipe{}
-
-	targetVars := []any{
-		&x.ID,
-		&x.Name,
-		&x.Slug,
-		&x.Source,
-		&x.Description,
-		&x.InspiredByRecipeID,
-		&x.MinimumEstimatedPortions,
-		&x.MaximumEstimatedPortions,
-		&x.PortionName,
-		&x.PluralPortionName,
-		&x.SealOfApproval,
-		&x.EligibleForMeals,
-		&x.YieldsComponentType,
-		&x.CreatedAt,
-		&x.LastUpdatedAt,
-		&x.ArchivedAt,
-		&x.CreatedByUser,
-	}
-
-	if includeCounts {
-		targetVars = append(targetVars, &filteredCount, &totalCount)
-	}
-
-	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "")
-	}
-
-	return x, filteredCount, totalCount, nil
-}
-
-// scanRecipes takes some database rows and turns them into a slice of recipes.
-func (q *Querier) scanRecipes(ctx context.Context, rows database.ResultIterator, includeCounts bool) (recipes []*types.Recipe, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	for rows.Next() {
-		x, fc, tc, scanErr := q.scanRecipe(ctx, rows, includeCounts)
-		if scanErr != nil {
-			return nil, 0, 0, scanErr
-		}
-
-		if includeCounts {
-			if filteredCount == 0 {
-				filteredCount = fc
-			}
-
-			if totalCount == 0 {
-				totalCount = tc
-			}
-		}
-
-		recipes = append(recipes, x)
-	}
-
-	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
-	}
-
-	return recipes, filteredCount, totalCount, nil
-}
-
-//go:embed queries/recipes/exists.sql
-var recipeExistenceQuery string
 
 // RecipeExists fetches whether a recipe exists from the database.
 func (q *Querier) RecipeExists(ctx context.Context, recipeID string) (exists bool, err error) {
@@ -123,11 +27,7 @@ func (q *Querier) RecipeExists(ctx context.Context, recipeID string) (exists boo
 	}
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	args := []any{
-		recipeID,
-	}
-
-	result, err := q.performBooleanQuery(ctx, q.db, recipeExistenceQuery, args)
+	result, err := q.generatedQuerier.CheckRecipeExistence(ctx, q.db, recipeID)
 	if err != nil {
 		return false, observability.PrepareError(err, span, "performing recipe existence check")
 	}
@@ -135,86 +35,8 @@ func (q *Querier) RecipeExists(ctx context.Context, recipeID string) (exists boo
 	return result, nil
 }
 
-//go:embed queries/recipes/get_by_id.sql
-var getRecipeByIDQuery string
-
-//go:embed queries/recipes/get_by_id_and_author_id.sql
-var getRecipeByIDAndAuthorIDQuery string
-
-// scanRecipeAndStep takes a database Scanner (i.e. *sql.Row) and scans the result into a recipe struct.
-func (q *Querier) scanRecipeAndStep(ctx context.Context, scan database.Scanner) (x *types.Recipe, y *types.RecipeStep, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	x = &types.Recipe{}
-	y = &types.RecipeStep{}
-
-	targetVars := []any{
-		&x.ID,
-		&x.Name,
-		&x.Slug,
-		&x.Source,
-		&x.Description,
-		&x.InspiredByRecipeID,
-		&x.MinimumEstimatedPortions,
-		&x.MaximumEstimatedPortions,
-		&x.PortionName,
-		&x.PluralPortionName,
-		&x.SealOfApproval,
-		&x.EligibleForMeals,
-		&x.YieldsComponentType,
-		&x.CreatedAt,
-		&x.LastUpdatedAt,
-		&x.ArchivedAt,
-		&x.CreatedByUser,
-		&y.ID,
-		&y.Index,
-		&y.Preparation.ID,
-		&y.Preparation.Name,
-		&y.Preparation.Description,
-		&y.Preparation.IconPath,
-		&y.Preparation.YieldsNothing,
-		&y.Preparation.RestrictToIngredients,
-		&y.Preparation.MinimumIngredientCount,
-		&y.Preparation.MaximumIngredientCount,
-		&y.Preparation.MinimumInstrumentCount,
-		&y.Preparation.MaximumInstrumentCount,
-		&y.Preparation.TemperatureRequired,
-		&y.Preparation.TimeEstimateRequired,
-		&y.Preparation.ConditionExpressionRequired,
-		&y.Preparation.ConsumesVessel,
-		&y.Preparation.OnlyForVessels,
-		&y.Preparation.MinimumVesselCount,
-		&y.Preparation.MaximumVesselCount,
-		&y.Preparation.Slug,
-		&y.Preparation.PastTense,
-		&y.Preparation.CreatedAt,
-		&y.Preparation.LastUpdatedAt,
-		&y.Preparation.ArchivedAt,
-		&y.MinimumEstimatedTimeInSeconds,
-		&y.MaximumEstimatedTimeInSeconds,
-		&y.MinimumTemperatureInCelsius,
-		&y.MaximumTemperatureInCelsius,
-		&y.Notes,
-		&y.ExplicitInstructions,
-		&y.ConditionExpression,
-		&y.Optional,
-		&y.StartTimerAutomatically,
-		&y.CreatedAt,
-		&y.LastUpdatedAt,
-		&y.ArchivedAt,
-		&y.BelongsToRecipe,
-	}
-
-	if err = scan.Scan(targetVars...); err != nil {
-		return nil, nil, 0, 0, observability.PrepareError(err, span, "")
-	}
-
-	return x, y, filteredCount, totalCount, nil
-}
-
 // getRecipe fetches a recipe from the database.
-func (q *Querier) getRecipe(ctx context.Context, recipeID, userID string) (*types.Recipe, error) {
+func (q *Querier) getRecipe(ctx context.Context, recipeID string) (*types.Recipe, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -223,33 +45,80 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID, userID string) (*type
 	}
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	args := []any{
-		recipeID,
-	}
-
-	query := getRecipeByIDQuery
-	if userID != "" {
-		query = getRecipeByIDAndAuthorIDQuery
-		args = append(args, userID)
-	}
-
-	rows, err := q.getRows(ctx, q.db, "get recipe", query, args)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "fetching recipe data")
-	}
-
 	var x *types.Recipe
-	for rows.Next() {
-		recipe, recipeStep, _, _, recipeScanErr := q.scanRecipeAndStep(ctx, rows)
-		if recipeScanErr != nil {
-			return nil, observability.PrepareError(recipeScanErr, span, "scanning recipe")
-		}
+	results, err := q.generatedQuerier.GetRecipeByID(ctx, q.db, recipeID)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "fetching recipe")
+	}
 
+	for _, result := range results {
 		if x == nil {
-			x = recipe
+			x = &types.Recipe{
+				CreatedAt:                result.CreatedAt,
+				InspiredByRecipeID:       stringPointerFromNullString(result.InspiredByRecipeID),
+				LastUpdatedAt:            timePointerFromNullTime(result.LastUpdatedAt),
+				ArchivedAt:               timePointerFromNullTime(result.ArchivedAt),
+				MaximumEstimatedPortions: float32PointerFromNullString(result.MaxEstimatedPortions),
+				PluralPortionName:        result.PluralPortionName,
+				Description:              result.Description,
+				Name:                     result.Name,
+				PortionName:              result.PortionName,
+				ID:                       result.ID,
+				CreatedByUser:            result.CreatedByUser,
+				Source:                   result.Source,
+				Slug:                     result.Slug,
+				YieldsComponentType:      string(result.YieldsComponentType),
+				MinimumEstimatedPortions: float32FromString(result.MinEstimatedPortions),
+				SealOfApproval:           result.SealOfApproval,
+				EligibleForMeals:         result.EligibleForMeals,
+				PrepTasks:                []*types.RecipePrepTask{},
+				SupportingRecipes:        []*types.Recipe{},
+				Media:                    []*types.RecipeMedia{},
+			}
 		}
 
-		x.Steps = append(x.Steps, recipeStep)
+		x.Steps = append(x.Steps, &types.RecipeStep{
+			CreatedAt:                     result.RecipeStepCreatedAt,
+			MinimumEstimatedTimeInSeconds: uint32PointerFromNullInt64(result.RecipeStepMinimumEstimatedTimeInSeconds),
+			ArchivedAt:                    timePointerFromNullTime(result.RecipeStepArchivedAt),
+			LastUpdatedAt:                 timePointerFromNullTime(result.RecipeStepLastUpdatedAt),
+			MinimumTemperatureInCelsius:   float32PointerFromNullString(result.RecipeStepMinimumTemperatureInCelsius),
+			MaximumTemperatureInCelsius:   float32PointerFromNullString(result.RecipeStepMaximumTemperatureInCelsius),
+			MaximumEstimatedTimeInSeconds: uint32PointerFromNullInt64(result.RecipeStepMaximumEstimatedTimeInSeconds),
+			BelongsToRecipe:               result.RecipeStepBelongsToRecipe,
+			ConditionExpression:           result.RecipeStepConditionExpression,
+			ID:                            result.RecipeStepID,
+			Notes:                         result.RecipeStepNotes,
+			ExplicitInstructions:          result.RecipeStepExplicitInstructions,
+			Preparation: types.ValidPreparation{
+				CreatedAt:                   result.RecipeStepPreparationCreatedAt,
+				MaximumInstrumentCount:      int32PointerFromNullInt32(result.RecipeStepPreparationMaximumInstrumentCount),
+				ArchivedAt:                  timePointerFromNullTime(result.RecipeStepPreparationArchivedAt),
+				MaximumIngredientCount:      int32PointerFromNullInt32(result.RecipeStepPreparationMaximumIngredientCount),
+				LastUpdatedAt:               timePointerFromNullTime(result.RecipeStepPreparationLastUpdatedAt),
+				MaximumVesselCount:          int32PointerFromNullInt32(result.RecipeStepPreparationMaximumVesselCount),
+				IconPath:                    result.RecipeStepPreparationIconPath,
+				PastTense:                   result.RecipeStepPreparationPastTense,
+				ID:                          result.RecipeStepPreparationID,
+				Name:                        result.RecipeStepPreparationName,
+				Description:                 result.RecipeStepPreparationDescription,
+				Slug:                        result.RecipeStepPreparationSlug,
+				MinimumIngredientCount:      result.RecipeStepPreparationMinimumIngredientCount,
+				MinimumInstrumentCount:      result.RecipeStepPreparationMinimumInstrumentCount,
+				MinimumVesselCount:          result.RecipeStepPreparationMinimumVesselCount,
+				RestrictToIngredients:       result.RecipeStepPreparationRestrictToIngredients,
+				TemperatureRequired:         result.RecipeStepPreparationTemperatureRequired,
+				TimeEstimateRequired:        result.RecipeStepPreparationTimeEstimateRequired,
+				ConditionExpressionRequired: result.RecipeStepPreparationConditionExpressionRequired,
+				ConsumesVessel:              result.RecipeStepPreparationConsumesVessel,
+				OnlyForVessels:              result.RecipeStepPreparationOnlyForVessels,
+				YieldsNothing:               result.RecipeStepPreparationYieldsNothing,
+			},
+			Index:                   uint32(result.RecipeStepIndex),
+			Optional:                result.RecipeStepOptional,
+			StartTimerAutomatically: result.RecipeStepStartTimerAutomatically,
+			Media:                   []*types.RecipeMedia{},
+		})
 	}
 
 	if x == nil {
@@ -260,13 +129,17 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID, userID string) (*type
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "fetching recipe step prep tasks for recipe")
 	}
-	x.PrepTasks = prepTasks
+	if prepTasks != nil {
+		x.PrepTasks = prepTasks
+	}
 
 	recipeMedia, err := q.getRecipeMediaForRecipe(ctx, recipeID)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "fetching recipe step ingredients for recipe")
 	}
-	x.Media = recipeMedia
+	if recipeMedia != nil {
+		x.Media = recipeMedia
+	}
 
 	ingredients, err := q.getRecipeStepIngredientsForRecipe(ctx, recipeID)
 	if err != nil {
@@ -351,12 +224,7 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID, userID string) (*type
 
 // GetRecipe fetches a recipe from the database.
 func (q *Querier) GetRecipe(ctx context.Context, recipeID string) (*types.Recipe, error) {
-	return q.getRecipe(ctx, recipeID, "")
-}
-
-// GetRecipeByIDAndUser fetches a recipe from the database.
-func (q *Querier) GetRecipeByIDAndUser(ctx context.Context, recipeID, userID string) (*types.Recipe, error) {
-	return q.getRecipe(ctx, recipeID, userID)
+	return q.getRecipe(ctx, recipeID)
 }
 
 // GetRecipes fetches a list of recipes from the database that meet a particular filter.
@@ -364,28 +232,52 @@ func (q *Querier) GetRecipes(ctx context.Context, filter *types.QueryFilter) (x 
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	x = &types.QueryFilteredResult[types.Recipe]{}
+	logger := q.logger.Clone()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
-
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
+	x = &types.QueryFilteredResult[types.Recipe]{
+		Pagination: filter.ToPagination(),
 	}
 
-	query, args := q.buildListQuery(ctx, "recipes", nil, nil, nil, "", recipesTableColumns, "", false, filter)
-
-	rows, err := q.getRows(ctx, q.db, "recipes", query, args)
+	results, err := q.generatedQuerier.GetRecipes(ctx, q.db, &generated.GetRecipesParams{
+		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+	})
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing recipes list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipes list retrieval query")
 	}
 
-	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanRecipes(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning recipes")
+	for _, result := range results {
+		x.Data = append(x.Data, &types.Recipe{
+			CreatedAt:                result.CreatedAt,
+			InspiredByRecipeID:       stringPointerFromNullString(result.InspiredByRecipeID),
+			LastUpdatedAt:            timePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:               timePointerFromNullTime(result.ArchivedAt),
+			MaximumEstimatedPortions: float32PointerFromNullString(result.MaxEstimatedPortions),
+			PluralPortionName:        result.PluralPortionName,
+			Description:              result.Description,
+			Name:                     result.Name,
+			PortionName:              result.PortionName,
+			ID:                       result.ID,
+			CreatedByUser:            result.CreatedByUser,
+			Source:                   result.Source,
+			Slug:                     result.Slug,
+			YieldsComponentType:      string(result.YieldsComponentType),
+			MinimumEstimatedPortions: float32FromString(result.MinEstimatedPortions),
+			SealOfApproval:           result.SealOfApproval,
+			EligibleForMeals:         result.EligibleForMeals,
+		})
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
 	}
 
 	return x, nil
@@ -400,7 +292,7 @@ func (q *Querier) GetRecipesWithIDs(ctx context.Context, ids []string) ([]*types
 
 	recipes := []*types.Recipe{}
 	for _, id := range ids {
-		r, err := q.getRecipe(ctx, id, "")
+		r, err := q.getRecipe(ctx, id)
 		if err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "getting recipe")
 		}
@@ -411,49 +303,17 @@ func (q *Querier) GetRecipesWithIDs(ctx context.Context, ids []string) ([]*types
 	return recipes, nil
 }
 
-//go:embed queries/recipes/get_needing_indexing.sql
-var recipesNeedingIndexingQuery string
-
 // GetRecipeIDsThatNeedSearchIndexing fetches a list of recipe IDs from the database that meet a particular filter.
 func (q *Querier) GetRecipeIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	rows, err := q.getRows(ctx, q.db, "recipes needing indexing", recipesNeedingIndexingQuery, nil)
+	results, err := q.generatedQuerier.GetRecipesNeedingIndexing(ctx, q.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing recipes list retrieval query")
 	}
 
-	return q.scanIDs(ctx, rows)
-}
-
-//go:embed queries/recipes/ids_for_meal.sql
-var getRecipesForMealQuery string
-
-// getRecipeIDsForMeal fetches a list of recipe IDs from the database that are associated with a given meal.
-func (q *Querier) getRecipeIDsForMeal(ctx context.Context, mealID string) (x []string, err error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	if mealID == "" {
-		return nil, ErrInvalidIDProvided
-	}
-	tracing.AttachMealIDToSpan(span, mealID)
-
-	args := []any{
-		mealID,
-	}
-
-	rows, err := q.getRows(ctx, q.db, "recipes for meal", getRecipesForMealQuery, args)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing recipes list retrieval query")
-	}
-
-	if x, err = q.scanIDs(ctx, rows); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning recipes")
-	}
-
-	return x, nil
+	return results, nil
 }
 
 // SearchForRecipes fetches a list of recipes from the database that match a query.
@@ -461,36 +321,57 @@ func (q *Querier) SearchForRecipes(ctx context.Context, recipeNameQuery string, 
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	x = &types.QueryFilteredResult[types.Recipe]{}
+	logger := q.logger.Clone()
+
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
+	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
-
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
+	x = &types.QueryFilteredResult[types.Recipe]{
+		Pagination: filter.ToPagination(),
 	}
 
-	where := squirrel.ILike{"name": wrapQueryForILIKE(recipeNameQuery)}
-	query, args := q.buildListQueryWithILike(ctx, "recipes", nil, nil, where, "", recipesTableColumns, "", false, filter)
-
-	rows, err := q.getRows(ctx, q.db, "recipes search", query, args)
+	results, err := q.generatedQuerier.RecipeSearch(ctx, q.db, &generated.RecipeSearchParams{
+		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		Query:         recipeNameQuery,
+	})
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "executing recipes search query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipes search query")
 	}
 
-	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanRecipes(ctx, rows, true); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning recipes")
+	for _, result := range results {
+		x.Data = append(x.Data, &types.Recipe{
+			CreatedAt:                result.CreatedAt,
+			InspiredByRecipeID:       stringPointerFromNullString(result.InspiredByRecipeID),
+			LastUpdatedAt:            timePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:               timePointerFromNullTime(result.ArchivedAt),
+			MaximumEstimatedPortions: float32PointerFromNullString(result.MaxEstimatedPortions),
+			PluralPortionName:        result.PluralPortionName,
+			Description:              result.Description,
+			Name:                     result.Name,
+			PortionName:              result.PortionName,
+			ID:                       result.ID,
+			CreatedByUser:            result.CreatedByUser,
+			Source:                   result.Source,
+			Slug:                     result.Slug,
+			YieldsComponentType:      string(result.YieldsComponentType),
+			MinimumEstimatedPortions: float32FromString(result.MinEstimatedPortions),
+			SealOfApproval:           result.SealOfApproval,
+			EligibleForMeals:         result.EligibleForMeals,
+		})
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
 	}
 
 	return x, nil
 }
-
-//go:embed queries/recipes/create.sql
-var recipeCreationQuery string
 
 // CreateRecipe creates a recipe in the database.
 func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseCreationInput) (*types.Recipe, error) {
@@ -500,33 +381,31 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-
 	logger := q.logger.WithValue(keys.RecipeIDKey, input.ID)
+	tracing.AttachRecipeIDToSpan(span, input.ID)
 
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	args := []any{
-		input.ID,
-		input.Name,
-		input.Slug,
-		input.Source,
-		input.Description,
-		input.InspiredByRecipeID,
-		input.MinimumEstimatedPortions,
-		input.MaximumEstimatedPortions,
-		input.PortionName,
-		input.PluralPortionName,
-		input.SealOfApproval,
-		input.EligibleForMeals,
-		input.YieldsComponentType,
-		input.CreatedByUser,
-	}
-
 	// create the recipe.
-	if err = q.performWriteQuery(ctx, q.db, "recipe creation", recipeCreationQuery, args); err != nil {
+	if err = q.generatedQuerier.CreateRecipe(ctx, tx, &generated.CreateRecipeParams{
+		MinEstimatedPortions: stringFromFloat32(input.MinimumEstimatedPortions),
+		ID:                   input.ID,
+		Slug:                 input.Slug,
+		Source:               input.Source,
+		Description:          input.Description,
+		CreatedByUser:        input.CreatedByUser,
+		Name:                 input.Name,
+		YieldsComponentType:  generated.ComponentType(input.YieldsComponentType),
+		PortionName:          input.PortionName,
+		PluralPortionName:    input.PluralPortionName,
+		MaxEstimatedPortions: nullStringFromFloat32Pointer(input.MaximumEstimatedPortions),
+		InspiredByRecipeID:   nullStringFromStringPointer(input.InspiredByRecipeID),
+		SealOfApproval:       input.SealOfApproval,
+		EligibleForMeals:     input.EligibleForMeals,
+	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing recipe creation query")
 	}
@@ -547,6 +426,10 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 		PluralPortionName:        input.PluralPortionName,
 		YieldsComponentType:      input.YieldsComponentType,
 		CreatedAt:                q.currentTime(),
+		PrepTasks:                []*types.RecipePrepTask{},
+		Steps:                    []*types.RecipeStep{},
+		Media:                    []*types.RecipeMedia{},
+		SupportingRecipes:        []*types.Recipe{},
 	}
 
 	findCreatedRecipeStepProductsForIngredients(input)
@@ -557,27 +440,29 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 		stepInput.Index = uint32(i)
 		stepInput.BelongsToRecipe = x.ID
 
-		s, createErr := q.createRecipeStep(ctx, tx, stepInput)
-		if createErr != nil {
+		var s *types.RecipeStep
+		s, err = q.createRecipeStep(ctx, tx, stepInput)
+		if err != nil {
 			q.rollbackTransaction(ctx, tx)
-			return nil, observability.PrepareError(createErr, span, "creating recipe step #%d", i+1)
+			return nil, observability.PrepareError(err, span, "creating recipe step #%d", i+1)
 		}
 
 		x.Steps = append(x.Steps, s)
 	}
 
 	for i, prepTaskInput := range input.PrepTasks {
-		pt, createPrepTaskErr := q.createRecipePrepTask(ctx, tx, prepTaskInput)
-		if createPrepTaskErr != nil {
+		var pt *types.RecipePrepTask
+		pt, err = q.createRecipePrepTask(ctx, tx, prepTaskInput)
+		if err != nil {
 			q.rollbackTransaction(ctx, tx)
-			return nil, observability.PrepareError(createPrepTaskErr, span, "creating recipe prep task #%d", i+1)
+			return nil, observability.PrepareError(err, span, "creating recipe prep task #%d", i+1)
 		}
 
 		x.PrepTasks = append(x.PrepTasks, pt)
 	}
 
 	if input.AlsoCreateMeal {
-		_, mealCreateErr := q.createMeal(ctx, tx, &types.MealDatabaseCreationInput{
+		if _, err = q.createMeal(ctx, tx, &types.MealDatabaseCreationInput{
 			ID:                       identifiers.New(),
 			Name:                     x.Name,
 			Description:              x.Description,
@@ -592,11 +477,9 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 					ComponentType: types.MealComponentTypesMain,
 				},
 			},
-		})
-
-		if mealCreateErr != nil {
+		}); err != nil {
 			q.rollbackTransaction(ctx, tx)
-			return nil, observability.PrepareError(mealCreateErr, span, "creating meal from recipe")
+			return nil, observability.PrepareError(err, span, "creating meal from recipe")
 		}
 	}
 
@@ -604,7 +487,6 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 		return nil, observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
-	tracing.AttachRecipeIDToSpan(span, x.ID)
 	logger.Info("recipe created")
 
 	return x, nil
@@ -657,9 +539,6 @@ func findCreatedRecipeStepProductsForVessels(recipe *types.RecipeDatabaseCreatio
 	}
 }
 
-//go:embed queries/recipes/update.sql
-var updateRecipeQuery string
-
 // UpdateRecipe updates a particular recipe.
 func (q *Querier) UpdateRecipe(ctx context.Context, updated *types.Recipe) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -673,24 +552,22 @@ func (q *Querier) UpdateRecipe(ctx context.Context, updated *types.Recipe) error
 	tracing.AttachRecipeIDToSpan(span, updated.ID)
 	tracing.AttachUserIDToSpan(span, updated.CreatedByUser)
 
-	args := []any{
-		updated.Name,
-		updated.Slug,
-		updated.Source,
-		updated.Description,
-		updated.InspiredByRecipeID,
-		updated.MinimumEstimatedPortions,
-		updated.MaximumEstimatedPortions,
-		updated.PortionName,
-		updated.PluralPortionName,
-		updated.SealOfApproval,
-		updated.EligibleForMeals,
-		updated.YieldsComponentType,
-		updated.CreatedByUser,
-		updated.ID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "recipe update", updateRecipeQuery, args); err != nil {
+	if _, err := q.generatedQuerier.UpdateRecipe(ctx, q.db, &generated.UpdateRecipeParams{
+		Name:                 updated.Name,
+		Slug:                 updated.Slug,
+		Source:               updated.Source,
+		Description:          updated.Description,
+		InspiredByRecipeID:   nullStringFromStringPointer(updated.InspiredByRecipeID),
+		MinEstimatedPortions: stringFromFloat32(updated.MinimumEstimatedPortions),
+		MaxEstimatedPortions: nullStringFromFloat32Pointer(updated.MaximumEstimatedPortions),
+		PortionName:          updated.PortionName,
+		PluralPortionName:    updated.PluralPortionName,
+		SealOfApproval:       updated.SealOfApproval,
+		EligibleForMeals:     updated.EligibleForMeals,
+		YieldsComponentType:  generated.ComponentType(updated.YieldsComponentType),
+		CreatedByUser:        updated.CreatedByUser,
+		ID:                   updated.ID,
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe")
 	}
 
@@ -698,9 +575,6 @@ func (q *Querier) UpdateRecipe(ctx context.Context, updated *types.Recipe) error
 
 	return nil
 }
-
-//go:embed queries/recipes/update_last_indexed_at.sql
-var updateRecipeLastIndexedAtQuery string
 
 // MarkRecipeAsIndexed updates a particular recipe's last_indexed_at value.
 func (q *Querier) MarkRecipeAsIndexed(ctx context.Context, recipeID string) error {
@@ -715,11 +589,7 @@ func (q *Querier) MarkRecipeAsIndexed(ctx context.Context, recipeID string) erro
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachRecipeIDToSpan(span, recipeID)
 
-	args := []any{
-		recipeID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "recipe last_indexed_at", updateRecipeLastIndexedAtQuery, args); err != nil {
+	if _, err := q.generatedQuerier.UpdateRecipeLastIndexedAt(ctx, q.db, recipeID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking recipe as indexed")
 	}
 
@@ -727,9 +597,6 @@ func (q *Querier) MarkRecipeAsIndexed(ctx context.Context, recipeID string) erro
 
 	return nil
 }
-
-//go:embed queries/recipes/archive.sql
-var archiveRecipeQuery string
 
 // ArchiveRecipe archives a recipe from the database by its ID.
 func (q *Querier) ArchiveRecipe(ctx context.Context, recipeID, userID string) error {
@@ -748,12 +615,10 @@ func (q *Querier) ArchiveRecipe(ctx context.Context, recipeID, userID string) er
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachUserIDToSpan(span, userID)
 
-	args := []any{
-		userID,
-		recipeID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "recipe archive", archiveRecipeQuery, args); err != nil {
+	if _, err := q.generatedQuerier.ArchiveRecipe(ctx, q.db, &generated.ArchiveRecipeParams{
+		CreatedByUser: userID,
+		ID:            recipeID,
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe")
 	}
 

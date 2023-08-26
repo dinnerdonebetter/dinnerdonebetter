@@ -3,12 +3,12 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	_ "embed"
 	"errors"
 	"fmt"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
@@ -17,116 +17,6 @@ import (
 )
 
 var _ types.HouseholdInvitationDataManager = (*Querier)(nil)
-
-// scanHouseholdInvitation is a consistent way to turn a *sql.Row into an invitation struct.
-func (q *Querier) scanHouseholdInvitation(ctx context.Context, scan database.Scanner, includeCounts bool) (householdInvitation *types.HouseholdInvitation, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	householdInvitation = &types.HouseholdInvitation{
-		DestinationHousehold: types.Household{},
-	}
-
-	targetVars := []any{
-		&householdInvitation.ID,
-		&householdInvitation.DestinationHousehold.ID,
-		&householdInvitation.DestinationHousehold.Name,
-		&householdInvitation.DestinationHousehold.BillingStatus,
-		&householdInvitation.DestinationHousehold.ContactPhone,
-		&householdInvitation.DestinationHousehold.AddressLine1,
-		&householdInvitation.DestinationHousehold.AddressLine2,
-		&householdInvitation.DestinationHousehold.City,
-		&householdInvitation.DestinationHousehold.State,
-		&householdInvitation.DestinationHousehold.ZipCode,
-		&householdInvitation.DestinationHousehold.Country,
-		&householdInvitation.DestinationHousehold.Latitude,
-		&householdInvitation.DestinationHousehold.Longitude,
-		&householdInvitation.DestinationHousehold.PaymentProcessorCustomerID,
-		&householdInvitation.DestinationHousehold.SubscriptionPlanID,
-		&householdInvitation.DestinationHousehold.CreatedAt,
-		&householdInvitation.DestinationHousehold.LastUpdatedAt,
-		&householdInvitation.DestinationHousehold.ArchivedAt,
-		&householdInvitation.DestinationHousehold.BelongsToUser,
-		&householdInvitation.ToEmail,
-		&householdInvitation.ToUser,
-		&householdInvitation.FromUser.ID,
-		&householdInvitation.FromUser.FirstName,
-		&householdInvitation.FromUser.LastName,
-		&householdInvitation.FromUser.Username,
-		&householdInvitation.FromUser.EmailAddress,
-		&householdInvitation.FromUser.EmailAddressVerifiedAt,
-		&householdInvitation.FromUser.AvatarSrc,
-		&householdInvitation.FromUser.HashedPassword,
-		&householdInvitation.FromUser.RequiresPasswordChange,
-		&householdInvitation.FromUser.PasswordLastChangedAt,
-		&householdInvitation.FromUser.TwoFactorSecret,
-		&householdInvitation.FromUser.TwoFactorSecretVerifiedAt,
-		&householdInvitation.FromUser.ServiceRole,
-		&householdInvitation.FromUser.AccountStatus,
-		&householdInvitation.FromUser.AccountStatusExplanation,
-		&householdInvitation.FromUser.Birthday,
-		&householdInvitation.FromUser.CreatedAt,
-		&householdInvitation.FromUser.LastUpdatedAt,
-		&householdInvitation.FromUser.ArchivedAt,
-		&householdInvitation.ToName,
-		&householdInvitation.Status,
-		&householdInvitation.Note,
-		&householdInvitation.StatusNote,
-		&householdInvitation.Token,
-		&householdInvitation.ExpiresAt,
-		&householdInvitation.CreatedAt,
-		&householdInvitation.LastUpdatedAt,
-		&householdInvitation.ArchivedAt,
-	}
-
-	if includeCounts {
-		targetVars = append(targetVars, &filteredCount, &totalCount)
-	}
-
-	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "scanning household invitation")
-	}
-
-	return householdInvitation, filteredCount, totalCount, nil
-}
-
-// scanHouseholdInvitations provides a consistent way to turn sql rows into a slice of household_invitations.
-func (q *Querier) scanHouseholdInvitations(ctx context.Context, rows database.ResultIterator, includeCounts bool) (householdInvitations []*types.HouseholdInvitation, filteredCount, totalCount uint64, err error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	for rows.Next() {
-		householdInvitation, fc, tc, scanErr := q.scanHouseholdInvitation(ctx, rows, includeCounts)
-		if scanErr != nil {
-			return nil, 0, 0, scanErr
-		}
-
-		if includeCounts {
-			if filteredCount == 0 {
-				filteredCount = fc
-			}
-
-			if totalCount == 0 {
-				totalCount = tc
-			}
-		}
-
-		householdInvitations = append(householdInvitations, householdInvitation)
-	}
-
-	if err = rows.Err(); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "fetching household invitation from database")
-	}
-
-	if err = rows.Close(); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "fetching household invitation from database")
-	}
-
-	return householdInvitations, filteredCount, totalCount, nil
-}
-
-//go:embed queries/household_invitations/exists.sql
-var householdInvitationExistenceQuery string
 
 // HouseholdInvitationExists fetches whether a household invitation exists from the database.
 func (q *Querier) HouseholdInvitationExists(ctx context.Context, householdInvitationID string) (bool, error) {
@@ -141,20 +31,13 @@ func (q *Querier) HouseholdInvitationExists(ctx context.Context, householdInvita
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
 	tracing.AttachHouseholdInvitationIDToSpan(span, householdInvitationID)
 
-	args := []any{
-		householdInvitationID,
-	}
-
-	result, err := q.performBooleanQuery(ctx, q.db, householdInvitationExistenceQuery, args)
+	result, err := q.generatedQuerier.CheckHouseholdInvitationExistence(ctx, q.db, householdInvitationID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing household invitation existence check")
 	}
 
 	return result, nil
 }
-
-//go:embed queries/household_invitations/get_by_household_and_id.sql
-var getHouseholdInvitationByHouseholdAndIDQuery string
 
 // GetHouseholdInvitationByHouseholdAndID fetches an invitation from the database.
 func (q *Querier) GetHouseholdInvitationByHouseholdAndID(ctx context.Context, householdID, householdInvitationID string) (*types.HouseholdInvitation, error) {
@@ -175,24 +58,75 @@ func (q *Querier) GetHouseholdInvitationByHouseholdAndID(ctx context.Context, ho
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
 	tracing.AttachHouseholdInvitationIDToSpan(span, householdInvitationID)
 
-	args := []any{
-		householdID,
-		householdInvitationID,
+	result, err := q.generatedQuerier.GetHouseholdInvitationByHouseholdAndID(ctx, q.db, &generated.GetHouseholdInvitationByHouseholdAndIDParams{
+		DestinationHousehold: householdID,
+		ID:                   householdInvitationID,
+	})
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching household invitation")
 	}
 
-	row := q.getOneRow(ctx, q.db, "household invitation", getHouseholdInvitationByHouseholdAndIDQuery, args)
-
-	householdInvitation, _, _, err := q.scanHouseholdInvitation(ctx, row, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "reading household invitation")
+	householdInvitation := &types.HouseholdInvitation{
+		CreatedAt:     result.CreatedAt,
+		LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+		ToUser:        stringPointerFromNullString(result.ToUser),
+		Status:        string(result.Status),
+		ToEmail:       result.ToEmail,
+		StatusNote:    result.StatusNote,
+		Token:         result.Token,
+		ID:            result.ID,
+		Note:          result.Note,
+		ToName:        result.ToName,
+		ExpiresAt:     result.ExpiresAt,
+		DestinationHousehold: types.Household{
+			CreatedAt:                  result.HouseholdCreatedAt,
+			SubscriptionPlanID:         stringPointerFromNullString(result.HouseholdSubscriptionPlanID),
+			LastUpdatedAt:              timePointerFromNullTime(result.HouseholdLastUpdatedAt),
+			ArchivedAt:                 timePointerFromNullTime(result.HouseholdArchivedAt),
+			ContactPhone:               result.HouseholdContactPhone,
+			BillingStatus:              result.HouseholdBillingStatus,
+			AddressLine1:               result.HouseholdAddressLine1,
+			AddressLine2:               result.HouseholdAddressLine2,
+			City:                       result.HouseholdCity,
+			State:                      result.HouseholdState,
+			ZipCode:                    result.HouseholdZipCode,
+			Country:                    result.HouseholdCountry,
+			Latitude:                   float64PointerFromNullString(result.HouseholdLatitude),
+			Longitude:                  float64PointerFromNullString(result.HouseholdLongitude),
+			PaymentProcessorCustomerID: result.HouseholdPaymentProcessorCustomerID,
+			BelongsToUser:              result.HouseholdBelongsToUser,
+			ID:                         result.HouseholdID,
+			Name:                       result.HouseholdName,
+			Members:                    nil,
+		},
+		FromUser: types.User{
+			CreatedAt:                  result.UserCreatedAt,
+			PasswordLastChangedAt:      timePointerFromNullTime(result.UserPasswordLastChangedAt),
+			LastUpdatedAt:              timePointerFromNullTime(result.UserLastUpdatedAt),
+			LastAcceptedTermsOfService: timePointerFromNullTime(result.UserLastAcceptedTermsOfService),
+			LastAcceptedPrivacyPolicy:  timePointerFromNullTime(result.UserLastAcceptedPrivacyPolicy),
+			TwoFactorSecretVerifiedAt:  timePointerFromNullTime(result.UserTwoFactorSecretVerifiedAt),
+			AvatarSrc:                  stringPointerFromNullString(result.UserAvatarSrc),
+			Birthday:                   timePointerFromNullTime(result.UserBirthday),
+			ArchivedAt:                 timePointerFromNullTime(result.UserArchivedAt),
+			AccountStatusExplanation:   result.UserUserAccountStatusExplanation,
+			TwoFactorSecret:            result.UserTwoFactorSecret,
+			HashedPassword:             result.UserHashedPassword,
+			ID:                         result.UserID,
+			AccountStatus:              result.UserUserAccountStatus,
+			Username:                   result.UserUsername,
+			FirstName:                  result.UserFirstName,
+			LastName:                   result.UserLastName,
+			EmailAddress:               result.UserEmailAddress,
+			EmailAddressVerifiedAt:     timePointerFromNullTime(result.UserEmailAddressVerifiedAt),
+			ServiceRole:                result.UserServiceRole,
+			RequiresPasswordChange:     result.UserRequiresPasswordChange,
+		},
 	}
 
 	return householdInvitation, nil
 }
-
-/* #nosec G101 */
-//go:embed queries/household_invitations/get_by_token_and_id.sql
-var getHouseholdInvitationByTokenAndIDQuery string
 
 // GetHouseholdInvitationByTokenAndID fetches an invitation from the database.
 func (q *Querier) GetHouseholdInvitationByTokenAndID(ctx context.Context, token, invitationID string) (*types.HouseholdInvitation, error) {
@@ -213,24 +147,75 @@ func (q *Querier) GetHouseholdInvitationByTokenAndID(ctx context.Context, token,
 
 	logger.Debug("fetching household invitation")
 
-	args := []any{
-		token,
-		invitationID,
+	result, err := q.generatedQuerier.GetHouseholdInvitationByTokenAndID(ctx, q.db, &generated.GetHouseholdInvitationByTokenAndIDParams{
+		Token: token,
+		ID:    invitationID,
+	})
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching household invitation")
 	}
 
-	row := q.getOneRow(ctx, q.db, "household invitation", getHouseholdInvitationByTokenAndIDQuery, args)
-
-	householdInvitation, _, _, err := q.scanHouseholdInvitation(ctx, row, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "reading household invitation")
+	householdInvitation := &types.HouseholdInvitation{
+		CreatedAt:     result.CreatedAt,
+		LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+		ToUser:        stringPointerFromNullString(result.ToUser),
+		Status:        string(result.Status),
+		ToEmail:       result.ToEmail,
+		StatusNote:    result.StatusNote,
+		Token:         result.Token,
+		ID:            result.ID,
+		Note:          result.Note,
+		ToName:        result.ToName,
+		ExpiresAt:     result.ExpiresAt,
+		DestinationHousehold: types.Household{
+			CreatedAt:                  result.HouseholdCreatedAt,
+			SubscriptionPlanID:         stringPointerFromNullString(result.HouseholdSubscriptionPlanID),
+			LastUpdatedAt:              timePointerFromNullTime(result.HouseholdLastUpdatedAt),
+			ArchivedAt:                 timePointerFromNullTime(result.HouseholdArchivedAt),
+			ContactPhone:               result.HouseholdContactPhone,
+			BillingStatus:              result.HouseholdBillingStatus,
+			AddressLine1:               result.HouseholdAddressLine1,
+			AddressLine2:               result.HouseholdAddressLine2,
+			City:                       result.HouseholdCity,
+			State:                      result.HouseholdState,
+			ZipCode:                    result.HouseholdZipCode,
+			Country:                    result.HouseholdCountry,
+			Latitude:                   float64PointerFromNullString(result.HouseholdLatitude),
+			Longitude:                  float64PointerFromNullString(result.HouseholdLongitude),
+			PaymentProcessorCustomerID: result.HouseholdPaymentProcessorCustomerID,
+			BelongsToUser:              result.HouseholdBelongsToUser,
+			ID:                         result.HouseholdID,
+			Name:                       result.HouseholdName,
+			Members:                    nil,
+		},
+		FromUser: types.User{
+			CreatedAt:                  result.UserCreatedAt,
+			PasswordLastChangedAt:      timePointerFromNullTime(result.UserPasswordLastChangedAt),
+			LastUpdatedAt:              timePointerFromNullTime(result.UserLastUpdatedAt),
+			LastAcceptedTermsOfService: timePointerFromNullTime(result.UserLastAcceptedTermsOfService),
+			LastAcceptedPrivacyPolicy:  timePointerFromNullTime(result.UserLastAcceptedPrivacyPolicy),
+			TwoFactorSecretVerifiedAt:  timePointerFromNullTime(result.UserTwoFactorSecretVerifiedAt),
+			AvatarSrc:                  stringPointerFromNullString(result.UserAvatarSrc),
+			Birthday:                   timePointerFromNullTime(result.UserBirthday),
+			ArchivedAt:                 timePointerFromNullTime(result.UserArchivedAt),
+			AccountStatusExplanation:   result.UserUserAccountStatusExplanation,
+			TwoFactorSecret:            result.UserTwoFactorSecret,
+			HashedPassword:             result.UserHashedPassword,
+			ID:                         result.UserID,
+			AccountStatus:              result.UserUserAccountStatus,
+			Username:                   result.UserUsername,
+			FirstName:                  result.UserFirstName,
+			LastName:                   result.UserLastName,
+			EmailAddress:               result.UserEmailAddress,
+			EmailAddressVerifiedAt:     timePointerFromNullTime(result.UserEmailAddressVerifiedAt),
+			ServiceRole:                result.UserServiceRole,
+			RequiresPasswordChange:     result.UserRequiresPasswordChange,
+		},
 	}
 
 	return householdInvitation, nil
 }
-
-/* #nosec G101 */
-//go:embed queries/household_invitations/get_by_email_and_token.sql
-var getHouseholdInvitationByEmailAndTokenQuery string
 
 // GetHouseholdInvitationByEmailAndToken fetches an invitation from the database.
 func (q *Querier) GetHouseholdInvitationByEmailAndToken(ctx context.Context, emailAddress, token string) (*types.HouseholdInvitation, error) {
@@ -251,23 +236,75 @@ func (q *Querier) GetHouseholdInvitationByEmailAndToken(ctx context.Context, ema
 	logger = logger.WithValue(keys.HouseholdInvitationTokenKey, token)
 	tracing.AttachHouseholdInvitationTokenToSpan(span, token)
 
-	args := []any{
-		emailAddress,
-		token,
+	result, err := q.generatedQuerier.GetHouseholdInvitationByEmailAndToken(ctx, q.db, &generated.GetHouseholdInvitationByEmailAndTokenParams{
+		EmailAddress: emailAddress,
+		Token:        token,
+	})
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching household invitation")
 	}
 
-	row := q.getOneRow(ctx, q.db, "household invitation", getHouseholdInvitationByEmailAndTokenQuery, args)
-
-	invitation, _, _, err := q.scanHouseholdInvitation(ctx, row, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning invitation")
+	invitation := &types.HouseholdInvitation{
+		CreatedAt:     result.CreatedAt,
+		LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+		ToUser:        stringPointerFromNullString(result.ToUser),
+		Status:        string(result.Status),
+		ToEmail:       result.ToEmail,
+		StatusNote:    result.StatusNote,
+		Token:         result.Token,
+		ID:            result.ID,
+		Note:          result.Note,
+		ToName:        result.ToName,
+		ExpiresAt:     result.ExpiresAt,
+		DestinationHousehold: types.Household{
+			CreatedAt:                  result.HouseholdCreatedAt,
+			SubscriptionPlanID:         stringPointerFromNullString(result.HouseholdSubscriptionPlanID),
+			LastUpdatedAt:              timePointerFromNullTime(result.HouseholdLastUpdatedAt),
+			ArchivedAt:                 timePointerFromNullTime(result.HouseholdArchivedAt),
+			ContactPhone:               result.HouseholdContactPhone,
+			BillingStatus:              result.HouseholdBillingStatus,
+			AddressLine1:               result.HouseholdAddressLine1,
+			AddressLine2:               result.HouseholdAddressLine2,
+			City:                       result.HouseholdCity,
+			State:                      result.HouseholdState,
+			ZipCode:                    result.HouseholdZipCode,
+			Country:                    result.HouseholdCountry,
+			Latitude:                   float64PointerFromNullString(result.HouseholdLatitude),
+			Longitude:                  float64PointerFromNullString(result.HouseholdLongitude),
+			PaymentProcessorCustomerID: result.HouseholdPaymentProcessorCustomerID,
+			BelongsToUser:              result.HouseholdBelongsToUser,
+			ID:                         result.HouseholdID,
+			Name:                       result.HouseholdName,
+			Members:                    nil,
+		},
+		FromUser: types.User{
+			CreatedAt:                  result.UserCreatedAt,
+			PasswordLastChangedAt:      timePointerFromNullTime(result.UserPasswordLastChangedAt),
+			LastUpdatedAt:              timePointerFromNullTime(result.UserLastUpdatedAt),
+			LastAcceptedTermsOfService: timePointerFromNullTime(result.UserLastAcceptedTermsOfService),
+			LastAcceptedPrivacyPolicy:  timePointerFromNullTime(result.UserLastAcceptedPrivacyPolicy),
+			TwoFactorSecretVerifiedAt:  timePointerFromNullTime(result.UserTwoFactorSecretVerifiedAt),
+			AvatarSrc:                  stringPointerFromNullString(result.UserAvatarSrc),
+			Birthday:                   timePointerFromNullTime(result.UserBirthday),
+			ArchivedAt:                 timePointerFromNullTime(result.UserArchivedAt),
+			AccountStatusExplanation:   result.UserUserAccountStatusExplanation,
+			TwoFactorSecret:            result.UserTwoFactorSecret,
+			HashedPassword:             result.UserHashedPassword,
+			ID:                         result.UserID,
+			AccountStatus:              result.UserUserAccountStatus,
+			Username:                   result.UserUsername,
+			FirstName:                  result.UserFirstName,
+			LastName:                   result.UserLastName,
+			EmailAddress:               result.UserEmailAddress,
+			EmailAddressVerifiedAt:     timePointerFromNullTime(result.UserEmailAddressVerifiedAt),
+			ServiceRole:                result.UserServiceRole,
+			RequiresPasswordChange:     result.UserRequiresPasswordChange,
+		},
 	}
 
 	return invitation, nil
 }
-
-//go:embed queries/household_invitations/create.sql
-var createHouseholdInvitationQuery string
 
 // CreateHouseholdInvitation creates an invitation in a database.
 func (q *Querier) CreateHouseholdInvitation(ctx context.Context, input *types.HouseholdInvitationDatabaseCreationInput) (*types.HouseholdInvitation, error) {
@@ -279,20 +316,19 @@ func (q *Querier) CreateHouseholdInvitation(ctx context.Context, input *types.Ho
 	}
 
 	logger := q.logger.WithValue(keys.HouseholdInvitationIDKey, input.ID)
+	tracing.AttachHouseholdIDToSpan(span, input.DestinationHouseholdID)
 
-	args := []any{
-		input.ID,
-		input.FromUser,
-		input.ToUser,
-		input.ToName,
-		input.Note,
-		input.ToEmail,
-		input.Token,
-		input.DestinationHouseholdID,
-		input.ExpiresAt,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "household invitation creation", createHouseholdInvitationQuery, args); err != nil {
+	if err := q.generatedQuerier.CreateHouseholdInvitation(ctx, q.db, &generated.CreateHouseholdInvitationParams{
+		ExpiresAt:            input.ExpiresAt,
+		ID:                   input.ID,
+		FromUser:             input.FromUser,
+		ToName:               input.ToName,
+		Note:                 input.Note,
+		ToEmail:              input.ToEmail,
+		Token:                input.Token,
+		DestinationHousehold: input.DestinationHouseholdID,
+		ToUser:               nullStringFromStringPointer(input.ToUser),
+	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing household invitation creation query")
 	}
 
@@ -319,9 +355,6 @@ func (q *Querier) CreateHouseholdInvitation(ctx context.Context, input *types.Ho
 	return x, nil
 }
 
-//go:embed queries/household_invitations/get_pending_invites_from_user.sql
-var getPendingInvitesFromUserQuery string
-
 // GetPendingHouseholdInvitationsFromUser fetches pending household invitations sent from a given user.
 func (q *Querier) GetPendingHouseholdInvitationsFromUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.HouseholdInvitation], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -330,50 +363,93 @@ func (q *Querier) GetPendingHouseholdInvitationsFromUser(ctx context.Context, us
 	if filter == nil {
 		filter = types.DefaultQueryFilter()
 	}
-
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 	filter.AttachToLogger(logger)
 
-	getPendingInvitesFromUserArgs := []any{
-		userID,
-		types.PendingHouseholdInvitationStatus,
-		filter.CreatedAfter,
-		filter.CreatedBefore,
-		filter.UpdatedAfter,
-		filter.UpdatedBefore,
+	x := &types.QueryFilteredResult[types.HouseholdInvitation]{
+		Pagination: filter.ToPagination(),
 	}
 
-	rows, err := q.getRows(ctx, q.db, "household invitations from user", getPendingInvitesFromUserQuery, getPendingInvitesFromUserArgs)
+	results, err := q.generatedQuerier.GetPendingInvitesFromUser(ctx, q.db, &generated.GetPendingInvitesFromUserParams{
+		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		Status:        generated.InvitationState(types.PendingHouseholdInvitationStatus),
+		UserID:        userID,
+	})
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "reading household invitations from user")
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing household invitation query")
 	}
 
-	householdInvitations, fc, tc, err := q.scanHouseholdInvitations(ctx, rows, true)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "reading household invitations from user")
+	for _, result := range results {
+		x.Data = append(x.Data, &types.HouseholdInvitation{
+			CreatedAt:     result.CreatedAt,
+			LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+			ToUser:        stringPointerFromNullString(result.ToUser),
+			Status:        string(result.Status),
+			ToEmail:       result.ToEmail,
+			StatusNote:    result.StatusNote,
+			Token:         result.Token,
+			ID:            result.ID,
+			Note:          result.Note,
+			ToName:        result.ToName,
+			ExpiresAt:     result.ExpiresAt,
+			DestinationHousehold: types.Household{
+				CreatedAt:                  result.HouseholdCreatedAt,
+				SubscriptionPlanID:         stringPointerFromNullString(result.HouseholdSubscriptionPlanID),
+				LastUpdatedAt:              timePointerFromNullTime(result.HouseholdLastUpdatedAt),
+				ArchivedAt:                 timePointerFromNullTime(result.HouseholdArchivedAt),
+				ContactPhone:               result.HouseholdContactPhone,
+				BillingStatus:              result.HouseholdBillingStatus,
+				AddressLine1:               result.HouseholdAddressLine1,
+				AddressLine2:               result.HouseholdAddressLine2,
+				City:                       result.HouseholdCity,
+				State:                      result.HouseholdState,
+				ZipCode:                    result.HouseholdZipCode,
+				Country:                    result.HouseholdCountry,
+				Latitude:                   float64PointerFromNullString(result.HouseholdLatitude),
+				Longitude:                  float64PointerFromNullString(result.HouseholdLongitude),
+				PaymentProcessorCustomerID: result.HouseholdPaymentProcessorCustomerID,
+				BelongsToUser:              result.HouseholdBelongsToUser,
+				ID:                         result.HouseholdID,
+				Name:                       result.HouseholdName,
+				Members:                    nil,
+			},
+			FromUser: types.User{
+				CreatedAt:                  result.UserCreatedAt,
+				PasswordLastChangedAt:      timePointerFromNullTime(result.UserPasswordLastChangedAt),
+				LastUpdatedAt:              timePointerFromNullTime(result.UserLastUpdatedAt),
+				LastAcceptedTermsOfService: timePointerFromNullTime(result.UserLastAcceptedTermsOfService),
+				LastAcceptedPrivacyPolicy:  timePointerFromNullTime(result.UserLastAcceptedPrivacyPolicy),
+				TwoFactorSecretVerifiedAt:  timePointerFromNullTime(result.UserTwoFactorSecretVerifiedAt),
+				AvatarSrc:                  stringPointerFromNullString(result.UserAvatarSrc),
+				Birthday:                   timePointerFromNullTime(result.UserBirthday),
+				ArchivedAt:                 timePointerFromNullTime(result.UserArchivedAt),
+				AccountStatusExplanation:   result.UserUserAccountStatusExplanation,
+				TwoFactorSecret:            result.UserTwoFactorSecret,
+				HashedPassword:             result.UserHashedPassword,
+				ID:                         result.UserID,
+				AccountStatus:              result.UserUserAccountStatus,
+				Username:                   result.UserUsername,
+				FirstName:                  result.UserFirstName,
+				LastName:                   result.UserLastName,
+				EmailAddress:               result.UserEmailAddress,
+				EmailAddressVerifiedAt:     timePointerFromNullTime(result.UserEmailAddressVerifiedAt),
+				ServiceRole:                result.UserServiceRole,
+				RequiresPasswordChange:     result.UserRequiresPasswordChange,
+			},
+		})
+
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
 	}
 
-	returnList := &types.QueryFilteredResult[types.HouseholdInvitation]{
-		Pagination: types.Pagination{
-			FilteredCount: fc,
-			TotalCount:    tc,
-		},
-		Data: householdInvitations,
-	}
-
-	if filter.Page != nil {
-		returnList.Page = *filter.Page
-	}
-
-	if filter.Limit != nil {
-		returnList.Limit = *filter.Limit
-	}
-
-	return returnList, nil
+	return x, nil
 }
-
-//go:embed queries/household_invitations/get_pending_invites_for_user.sql
-var getPendingInvitesForUserQuery string
 
 // GetPendingHouseholdInvitationsForUser fetches pending household invitations sent to a given user.
 func (q *Querier) GetPendingHouseholdInvitationsForUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.HouseholdInvitation], error) {
@@ -383,50 +459,93 @@ func (q *Querier) GetPendingHouseholdInvitationsForUser(ctx context.Context, use
 	if filter == nil {
 		filter = types.DefaultQueryFilter()
 	}
-
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 	filter.AttachToLogger(logger)
 
-	getPendingInvitesForUserArgs := []any{
-		userID,
-		types.PendingHouseholdInvitationStatus,
-		filter.CreatedAfter,
-		filter.CreatedBefore,
-		filter.UpdatedAfter,
-		filter.UpdatedBefore,
+	x := &types.QueryFilteredResult[types.HouseholdInvitation]{
+		Pagination: filter.ToPagination(),
 	}
 
-	rows, err := q.getRows(ctx, q.db, "household invitations for user", getPendingInvitesForUserQuery, getPendingInvitesForUserArgs)
+	results, err := q.generatedQuerier.GetPendingInvitesForUser(ctx, q.db, &generated.GetPendingInvitesForUserParams{
+		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		Status:        generated.InvitationState(types.PendingHouseholdInvitationStatus),
+		UserID:        nullStringFromString(userID),
+	})
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "reading household invitations from user")
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing household invitation query")
 	}
 
-	householdInvitations, fc, tc, err := q.scanHouseholdInvitations(ctx, rows, true)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "reading household invitations from user")
+	for _, result := range results {
+		x.Data = append(x.Data, &types.HouseholdInvitation{
+			CreatedAt:     result.CreatedAt,
+			LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+			ToUser:        stringPointerFromNullString(result.ToUser),
+			Status:        string(result.Status),
+			ToEmail:       result.ToEmail,
+			StatusNote:    result.StatusNote,
+			Token:         result.Token,
+			ID:            result.ID,
+			Note:          result.Note,
+			ToName:        result.ToName,
+			ExpiresAt:     result.ExpiresAt,
+			DestinationHousehold: types.Household{
+				CreatedAt:                  result.HouseholdCreatedAt,
+				SubscriptionPlanID:         stringPointerFromNullString(result.HouseholdSubscriptionPlanID),
+				LastUpdatedAt:              timePointerFromNullTime(result.HouseholdLastUpdatedAt),
+				ArchivedAt:                 timePointerFromNullTime(result.HouseholdArchivedAt),
+				ContactPhone:               result.HouseholdContactPhone,
+				BillingStatus:              result.HouseholdBillingStatus,
+				AddressLine1:               result.HouseholdAddressLine1,
+				AddressLine2:               result.HouseholdAddressLine2,
+				City:                       result.HouseholdCity,
+				State:                      result.HouseholdState,
+				ZipCode:                    result.HouseholdZipCode,
+				Country:                    result.HouseholdCountry,
+				Latitude:                   float64PointerFromNullString(result.HouseholdLatitude),
+				Longitude:                  float64PointerFromNullString(result.HouseholdLongitude),
+				PaymentProcessorCustomerID: result.HouseholdPaymentProcessorCustomerID,
+				BelongsToUser:              result.HouseholdBelongsToUser,
+				ID:                         result.HouseholdID,
+				Name:                       result.HouseholdName,
+				Members:                    nil,
+			},
+			FromUser: types.User{
+				CreatedAt:                  result.UserCreatedAt,
+				PasswordLastChangedAt:      timePointerFromNullTime(result.UserPasswordLastChangedAt),
+				LastUpdatedAt:              timePointerFromNullTime(result.UserLastUpdatedAt),
+				LastAcceptedTermsOfService: timePointerFromNullTime(result.UserLastAcceptedTermsOfService),
+				LastAcceptedPrivacyPolicy:  timePointerFromNullTime(result.UserLastAcceptedPrivacyPolicy),
+				TwoFactorSecretVerifiedAt:  timePointerFromNullTime(result.UserTwoFactorSecretVerifiedAt),
+				AvatarSrc:                  stringPointerFromNullString(result.UserAvatarSrc),
+				Birthday:                   timePointerFromNullTime(result.UserBirthday),
+				ArchivedAt:                 timePointerFromNullTime(result.UserArchivedAt),
+				AccountStatusExplanation:   result.UserUserAccountStatusExplanation,
+				TwoFactorSecret:            result.UserTwoFactorSecret,
+				HashedPassword:             result.UserHashedPassword,
+				ID:                         result.UserID,
+				AccountStatus:              result.UserUserAccountStatus,
+				Username:                   result.UserUsername,
+				FirstName:                  result.UserFirstName,
+				LastName:                   result.UserLastName,
+				EmailAddress:               result.UserEmailAddress,
+				EmailAddressVerifiedAt:     timePointerFromNullTime(result.UserEmailAddressVerifiedAt),
+				ServiceRole:                result.UserServiceRole,
+				RequiresPasswordChange:     result.UserRequiresPasswordChange,
+			},
+		})
+
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
 	}
 
-	returnList := &types.QueryFilteredResult[types.HouseholdInvitation]{
-		Pagination: types.Pagination{
-			FilteredCount: fc,
-			TotalCount:    tc,
-		},
-		Data: householdInvitations,
-	}
-
-	if filter.Page != nil {
-		returnList.Page = *filter.Page
-	}
-
-	if filter.Limit != nil {
-		returnList.Limit = *filter.Limit
-	}
-
-	return returnList, nil
+	return x, nil
 }
-
-//go:embed queries/household_invitations/set_status.sql
-var setInvitationStatusQuery string
 
 func (q *Querier) setInvitationStatus(ctx context.Context, querier database.SQLQueryExecutor, householdInvitationID, note, status string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
@@ -440,13 +559,11 @@ func (q *Querier) setInvitationStatus(ctx context.Context, querier database.SQLQ
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
 	tracing.AttachHouseholdInvitationIDToSpan(span, householdInvitationID)
 
-	args := []any{
-		status,
-		note,
-		householdInvitationID,
-	}
-
-	if err := q.performWriteQuery(ctx, querier, "household invitation status change", setInvitationStatusQuery, args); err != nil {
+	if err := q.generatedQuerier.SetHouseholdInvitationStatus(ctx, querier, &generated.SetHouseholdInvitationStatusParams{
+		Status:     generated.InvitationState(status),
+		StatusNote: note,
+		ID:         householdInvitationID,
+	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "changing household invitation status")
 	}
 
@@ -516,9 +633,6 @@ func (q *Querier) RejectHouseholdInvitation(ctx context.Context, householdInvita
 	return q.setInvitationStatus(ctx, q.db, householdInvitationID, note, string(types.RejectedHouseholdInvitationStatus))
 }
 
-//go:embed queries/household_invitations/attach_invitations_to_user_id.sql
-var attachInvitationsToUserIDQuery string
-
 func (q *Querier) attachInvitationsToUser(ctx context.Context, querier database.SQLQueryExecutor, userEmail, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
@@ -537,9 +651,10 @@ func (q *Querier) attachInvitationsToUser(ctx context.Context, querier database.
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachHouseholdInvitationIDToSpan(span, userID)
 
-	args := []any{userID, userEmail}
-
-	if err := q.performWriteQuery(ctx, querier, "invitation attachment", attachInvitationsToUserIDQuery, args); err != nil && !errors.Is(err, sql.ErrNoRows) {
+	if err := q.generatedQuerier.AttachHouseholdInvitationsToUserID(ctx, querier, &generated.AttachHouseholdInvitationsToUserIDParams{
+		EmailAddress: userEmail,
+		UserID:       nullStringFromString(userID),
+	}); err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return observability.PrepareAndLogError(err, logger, span, "attaching invitations to user")
 	}
 
@@ -562,15 +677,13 @@ func (q *Querier) acceptInvitationForUser(ctx context.Context, querier database.
 
 	logger.Debug("fetched invitation to accept for user")
 
-	createHouseholdMembershipForNewUserArgs := []any{
-		identifiers.New(),
-		input.ID,
-		input.DestinationHouseholdID,
-		true,
-		authorization.HouseholdMemberRole.String(),
-	}
-
-	if err := q.performWriteQuery(ctx, querier, "household user membership creation", createHouseholdMembershipForNewUserQuery, createHouseholdMembershipForNewUserArgs); err != nil {
+	if err := q.generatedQuerier.CreateHouseholdUserMembershipForNewUser(ctx, querier, &generated.CreateHouseholdUserMembershipForNewUserParams{
+		ID:                 identifiers.New(),
+		BelongsToUser:      input.ID,
+		BelongsToHousehold: input.DestinationHouseholdID,
+		HouseholdRole:      authorization.HouseholdMemberRole.String(),
+		DefaultHousehold:   true,
+	}); err != nil {
 		q.rollbackTransaction(ctx, querier)
 		return observability.PrepareAndLogError(err, logger, span, "writing destination household membership")
 	}

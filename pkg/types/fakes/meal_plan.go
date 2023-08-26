@@ -46,7 +46,7 @@ func BuildFakeMealPlanList() *types.QueryFilteredResult[types.MealPlan] {
 	return &types.QueryFilteredResult[types.MealPlan]{
 		Pagination: types.Pagination{
 			Page:          1,
-			Limit:         20,
+			Limit:         50,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,
 		},

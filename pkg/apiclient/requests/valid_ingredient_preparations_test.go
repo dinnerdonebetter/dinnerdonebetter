@@ -66,7 +66,7 @@ func TestBuilder_BuildGetValidIngredientPreparationsRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		filter := (*types.QueryFilter)(nil)
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat)
 
 		actual, err := helper.builder.BuildGetValidIngredientPreparationsRequest(helper.ctx, filter)
 		assert.NoError(t, err)
@@ -101,7 +101,7 @@ func TestBuilder_BuildGetValidIngredientPreparationsForIngredientRequest(T *test
 		helper := buildTestHelper()
 
 		filter := (*types.QueryFilter)(nil)
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat, exampleIngredient.ID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat, exampleIngredient.ID)
 
 		actual, err := helper.builder.BuildGetValidIngredientPreparationsForIngredientRequest(helper.ctx, exampleIngredient.ID, filter)
 		assert.NoError(t, err)
@@ -147,7 +147,7 @@ func TestBuilder_BuildGetValidIngredientPreparationsForPreparationRequest(T *tes
 		helper := buildTestHelper()
 
 		filter := (*types.QueryFilter)(nil)
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat, examplePreparation.ID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat, examplePreparation.ID)
 
 		actual, err := helper.builder.BuildGetValidIngredientPreparationsForPreparationRequest(helper.ctx, examplePreparation.ID, filter)
 		assert.NoError(t, err)
@@ -194,7 +194,7 @@ func TestBuilder_BuildGetValidIngredientPreparationsForPreparationAndIngredientN
 		helper := buildTestHelper()
 
 		filter := (*types.QueryFilter)(nil)
-		spec := newRequestSpec(true, http.MethodGet, fmt.Sprintf("limit=20&page=1&q=%s&sortBy=asc", exampleQuery), expectedPathFormat, examplePreparation.ID)
+		spec := newRequestSpec(true, http.MethodGet, fmt.Sprintf("limit=50&page=1&q=%s&sortBy=asc", exampleQuery), expectedPathFormat, examplePreparation.ID)
 
 		actual, err := helper.builder.BuildGetValidIngredientPreparationsForPreparationAndIngredientNameRequest(helper.ctx, examplePreparation.ID, exampleQuery, filter)
 		assert.NoError(t, err)

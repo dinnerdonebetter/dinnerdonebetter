@@ -86,7 +86,7 @@ func (s *webhooksTestSuite) TestClient_GetWebhooks() {
 	s.Run("standard", func() {
 		t := s.T()
 
-		spec := newRequestSpec(false, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(false, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleWebhookList)
 
 		actual, err := c.GetWebhooks(s.ctx, nil)

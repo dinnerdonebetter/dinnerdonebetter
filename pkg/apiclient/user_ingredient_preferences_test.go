@@ -50,7 +50,7 @@ func (s *userIngredientPreferencesTestSuite) TestClient_GetUserIngredientPrefere
 
 		exampleUserIngredientPreferenceList := fakes.BuildFakeUserIngredientPreferenceList()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleUserIngredientPreferenceList)
 		actual, err := c.GetUserIngredientPreferences(s.ctx, filter)
 
@@ -76,7 +76,7 @@ func (s *userIngredientPreferencesTestSuite) TestClient_GetUserIngredientPrefere
 
 		filter := (*types.QueryFilter)(nil)
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.GetUserIngredientPreferences(s.ctx, filter)
 

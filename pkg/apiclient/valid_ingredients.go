@@ -56,7 +56,7 @@ func (c *Client) GetRandomValidIngredient(ctx context.Context) (*types.ValidIngr
 }
 
 // SearchValidIngredients searches through a list of valid ingredients.
-func (c *Client) SearchValidIngredients(ctx context.Context, query string, limit uint8) ([]*types.ValidIngredient, error) {
+func (c *Client) SearchValidIngredients(ctx context.Context, query string, limit uint8) (*types.QueryFilteredResult[types.ValidIngredient], error) {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -67,7 +67,7 @@ func (c *Client) SearchValidIngredients(ctx context.Context, query string, limit
 	}
 
 	if limit == 0 {
-		limit = 20
+		limit = types.DefaultLimit
 	}
 
 	logger = logger.WithValue(keys.SearchQueryKey, query).WithValue(keys.FilterLimitKey, limit)
@@ -77,7 +77,7 @@ func (c *Client) SearchValidIngredients(ctx context.Context, query string, limit
 		return nil, observability.PrepareAndLogError(err, logger, span, "building search for valid ingredients request")
 	}
 
-	var validIngredients []*types.ValidIngredient
+	var validIngredients *types.QueryFilteredResult[types.ValidIngredient]
 	if err = c.fetchAndUnmarshal(ctx, req, &validIngredients); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredients")
 	}

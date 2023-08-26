@@ -29,7 +29,8 @@ func init() {
 type (
 	// MealPlanOption represents a meal plan option.
 	MealPlanOption struct {
-		_                      struct{}
+		_ struct{}
+
 		CreatedAt              time.Time             `json:"createdAt"`
 		LastUpdatedAt          *time.Time            `json:"lastUpdatedAt"`
 		AssignedCook           *string               `json:"assignedCook"`

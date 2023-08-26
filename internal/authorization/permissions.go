@@ -117,14 +117,14 @@ const (
 	// ArchiveValidIngredientStatesPermission is a household user permission.
 	ArchiveValidIngredientStatesPermission Permission = "archive.valid_ingredient_states"
 
-	// CreateValidMeasurementConversionsPermission is a household user permission.
-	CreateValidMeasurementConversionsPermission Permission = "create.measurement_conversions"
-	// ReadValidMeasurementConversionsPermission is a household user permission.
-	ReadValidMeasurementConversionsPermission Permission = "read.measurement_conversions"
-	// UpdateValidMeasurementConversionsPermission is a household user permission.
-	UpdateValidMeasurementConversionsPermission Permission = "update.measurement_conversions"
-	// ArchiveValidMeasurementConversionsPermission is a household user permission.
-	ArchiveValidMeasurementConversionsPermission Permission = "archive.measurement_conversions"
+	// CreateValidMeasurementUnitConversionsPermission is a household user permission.
+	CreateValidMeasurementUnitConversionsPermission Permission = "create.measurement_conversions"
+	// ReadValidMeasurementUnitConversionsPermission is a household user permission.
+	ReadValidMeasurementUnitConversionsPermission Permission = "read.measurement_conversions"
+	// UpdateValidMeasurementUnitConversionsPermission is a household user permission.
+	UpdateValidMeasurementUnitConversionsPermission Permission = "update.measurement_conversions"
+	// ArchiveValidMeasurementUnitConversionsPermission is a household user permission.
+	ArchiveValidMeasurementUnitConversionsPermission Permission = "archive.measurement_conversions"
 
 	// CreateValidIngredientPreparationsPermission is a household user permission.
 	CreateValidIngredientPreparationsPermission Permission = "create.valid_ingredient_preparations"
@@ -426,9 +426,9 @@ var (
 		CreateValidMeasurementUnitsPermission,
 		UpdateValidMeasurementUnitsPermission,
 		ArchiveValidMeasurementUnitsPermission,
-		CreateValidMeasurementConversionsPermission,
-		UpdateValidMeasurementConversionsPermission,
-		ArchiveValidMeasurementConversionsPermission,
+		CreateValidMeasurementUnitConversionsPermission,
+		UpdateValidMeasurementUnitConversionsPermission,
+		ArchiveValidMeasurementUnitConversionsPermission,
 		CreateValidIngredientPreparationsPermission,
 		UpdateValidIngredientPreparationsPermission,
 		ArchiveValidIngredientPreparationsPermission,
@@ -538,7 +538,7 @@ var (
 		SearchValidPreparationsPermission,
 		ReadValidMeasurementUnitsPermission,
 		SearchValidMeasurementUnitsPermission,
-		ReadValidMeasurementConversionsPermission,
+		ReadValidMeasurementUnitConversionsPermission,
 		ReadValidIngredientPreparationsPermission,
 		SearchValidIngredientPreparationsPermission,
 		ReadValidIngredientStateIngredientsPermission,

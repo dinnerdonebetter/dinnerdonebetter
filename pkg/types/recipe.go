@@ -29,7 +29,8 @@ func init() {
 type (
 	// Recipe represents a recipe.
 	Recipe struct {
-		_                        struct{}
+		_ struct{}
+
 		CreatedAt                time.Time         `json:"createdAt"`
 		InspiredByRecipeID       *string           `json:"inspiredByRecipeID"`
 		LastUpdatedAt            *time.Time        `json:"lastUpdatedAt"`
@@ -129,7 +130,6 @@ type (
 	RecipeDataManager interface {
 		RecipeExists(ctx context.Context, recipeID string) (bool, error)
 		GetRecipe(ctx context.Context, recipeID string) (*Recipe, error)
-		GetRecipeByIDAndUser(ctx context.Context, recipeID, userID string) (*Recipe, error)
 		GetRecipes(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[Recipe], error)
 		SearchForRecipes(ctx context.Context, query string, filter *QueryFilter) (*QueryFilteredResult[Recipe], error)
 		CreateRecipe(ctx context.Context, input *RecipeDatabaseCreationInput) (*Recipe, error)

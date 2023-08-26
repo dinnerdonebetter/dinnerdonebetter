@@ -53,9 +53,6 @@ type (
 		SQLTransactionManager
 	}
 
-	// MetricsCollectionInterval defines the interval at which we collect database metrics.
-	MetricsCollectionInterval time.Duration
-
 	// DataManager describes anything that stores data for our services.
 	DataManager interface {
 		DB() *sql.DB
@@ -91,7 +88,7 @@ type (
 		types.ValidIngredientMeasurementUnitDataManager
 		types.RecipePrepTaskDataManager
 		types.MealPlanGroceryListItemDataManager
-		types.ValidMeasurementConversionDataManager
+		types.ValidMeasurementUnitConversionDataManager
 		types.RecipeMediaDataManager
 		types.ValidIngredientStateDataManager
 		types.RecipeStepCompletionConditionDataManager

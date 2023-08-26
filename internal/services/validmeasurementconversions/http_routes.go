@@ -14,8 +14,8 @@ import (
 )
 
 const (
-	// ValidMeasurementConversionIDURIParamKey is a standard string that we'll use to refer to valid measurement conversion IDs with.
-	ValidMeasurementConversionIDURIParamKey = "validMeasurementConversionID"
+	// ValidMeasurementUnitConversionIDURIParamKey is a standard string that we'll use to refer to valid measurement conversion IDs with.
+	ValidMeasurementUnitConversionIDURIParamKey = "validMeasurementUnitConversionID"
 	// ValidMeasurementUnitIDURIParamKey is a standard string that we'll use to refer to valid measurement unit IDs with.
 	ValidMeasurementUnitIDURIParamKey = "validMeasurementUnitID"
 )
@@ -53,12 +53,12 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	input := converters.ConvertValidMeasurementConversionCreationRequestInputToValidMeasurementConversionDatabaseCreationInput(providedInput)
+	input := converters.ConvertValidMeasurementUnitConversionCreationRequestInputToValidMeasurementUnitConversionDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
 
-	tracing.AttachValidMeasurementConversionIDToSpan(span, input.ID)
+	tracing.AttachValidMeasurementUnitConversionIDToSpan(span, input.ID)
 
-	validMeasurementConversion, err := s.validMeasurementConversionDataManager.CreateValidMeasurementConversion(ctx, input)
+	validMeasurementUnitConversion, err := s.validMeasurementUnitConversionDataManager.CreateValidMeasurementUnitConversion(ctx, input)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating valid measurement conversions")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
@@ -67,7 +67,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	dcm := &types.DataChangeMessage{
 		EventType:                      types.ValidMeasurementUnitConversionCreatedCustomerEventType,
-		ValidMeasurementUnitConversion: validMeasurementConversion,
+		ValidMeasurementUnitConversion: validMeasurementUnitConversion,
 		UserID:                         sessionCtxData.Requester.UserID,
 	}
 
@@ -75,7 +75,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validMeasurementConversion, http.StatusCreated)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validMeasurementUnitConversion, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a valid measurement conversion.
@@ -98,12 +98,12 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// determine valid measurement conversion ID.
-	validMeasurementConversionID := s.validMeasurementConversionIDFetcher(req)
-	tracing.AttachValidMeasurementConversionIDToSpan(span, validMeasurementConversionID)
-	logger = logger.WithValue(keys.ValidMeasurementConversionIDKey, validMeasurementConversionID)
+	validMeasurementUnitConversionID := s.validMeasurementUnitConversionIDFetcher(req)
+	tracing.AttachValidMeasurementUnitConversionIDToSpan(span, validMeasurementUnitConversionID)
+	logger = logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 
 	// fetch valid measurement conversion from database.
-	x, err := s.validMeasurementConversionDataManager.GetValidMeasurementUnitConversion(ctx, validMeasurementConversionID)
+	x, err := s.validMeasurementUnitConversionDataManager.GetValidMeasurementUnitConversion(ctx, validMeasurementUnitConversionID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
@@ -151,12 +151,12 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// determine valid measurement conversion ID.
-	validMeasurementConversionID := s.validMeasurementConversionIDFetcher(req)
-	tracing.AttachValidMeasurementConversionIDToSpan(span, validMeasurementConversionID)
-	logger = logger.WithValue(keys.ValidMeasurementConversionIDKey, validMeasurementConversionID)
+	validMeasurementUnitConversionID := s.validMeasurementUnitConversionIDFetcher(req)
+	tracing.AttachValidMeasurementUnitConversionIDToSpan(span, validMeasurementUnitConversionID)
+	logger = logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 
 	// fetch valid measurement conversion from database.
-	validMeasurementConversion, err := s.validMeasurementConversionDataManager.GetValidMeasurementUnitConversion(ctx, validMeasurementConversionID)
+	validMeasurementUnitConversion, err := s.validMeasurementUnitConversionDataManager.GetValidMeasurementUnitConversion(ctx, validMeasurementUnitConversionID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
@@ -167,9 +167,9 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// update the valid measurement conversion.
-	validMeasurementConversion.Update(input)
+	validMeasurementUnitConversion.Update(input)
 
-	if err = s.validMeasurementConversionDataManager.UpdateValidMeasurementConversion(ctx, validMeasurementConversion); err != nil {
+	if err = s.validMeasurementUnitConversionDataManager.UpdateValidMeasurementUnitConversion(ctx, validMeasurementUnitConversion); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating valid measurement conversions")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
@@ -177,7 +177,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	dcm := &types.DataChangeMessage{
 		EventType:                      types.ValidMeasurementUnitConversionUpdatedCustomerEventType,
-		ValidMeasurementUnitConversion: validMeasurementConversion,
+		ValidMeasurementUnitConversion: validMeasurementUnitConversion,
 		UserID:                         sessionCtxData.Requester.UserID,
 	}
 
@@ -186,7 +186,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, validMeasurementConversion)
+	s.encoderDecoder.RespondWithData(ctx, res, validMeasurementUnitConversion)
 }
 
 // ArchiveHandler returns a handler that archives a valid measurement conversion.
@@ -209,11 +209,11 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// determine valid measurement conversion ID.
-	validMeasurementConversionID := s.validMeasurementConversionIDFetcher(req)
-	tracing.AttachValidMeasurementConversionIDToSpan(span, validMeasurementConversionID)
-	logger = logger.WithValue(keys.ValidMeasurementConversionIDKey, validMeasurementConversionID)
+	validMeasurementUnitConversionID := s.validMeasurementUnitConversionIDFetcher(req)
+	tracing.AttachValidMeasurementUnitConversionIDToSpan(span, validMeasurementUnitConversionID)
+	logger = logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 
-	exists, existenceCheckErr := s.validMeasurementConversionDataManager.ValidMeasurementConversionExists(ctx, validMeasurementConversionID)
+	exists, existenceCheckErr := s.validMeasurementUnitConversionDataManager.ValidMeasurementUnitConversionExists(ctx, validMeasurementUnitConversionID)
 	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
 		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking valid measurement conversion existence")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
@@ -223,7 +223,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	if err = s.validMeasurementConversionDataManager.ArchiveValidMeasurementConversion(ctx, validMeasurementConversionID); err != nil {
+	if err = s.validMeasurementUnitConversionDataManager.ArchiveValidMeasurementUnitConversion(ctx, validMeasurementUnitConversionID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving valid measurement conversions")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
@@ -266,7 +266,7 @@ func (s *service) FromMeasurementUnitHandler(res http.ResponseWriter, req *http.
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	// fetch valid measurement conversion from database.
-	x, err := s.validMeasurementConversionDataManager.GetValidMeasurementUnitConversionsFromUnit(ctx, validMeasurementUnitID)
+	x, err := s.validMeasurementUnitConversionDataManager.GetValidMeasurementUnitConversionsFromUnit(ctx, validMeasurementUnitID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
@@ -304,7 +304,7 @@ func (s *service) ToMeasurementUnitHandler(res http.ResponseWriter, req *http.Re
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	// fetch valid measurement conversion from database.
-	x, err := s.validMeasurementConversionDataManager.GetValidMeasurementUnitConversionsToUnit(ctx, validMeasurementUnitID)
+	x, err := s.validMeasurementUnitConversionDataManager.GetValidMeasurementUnitConversionsToUnit(ctx, validMeasurementUnitID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return

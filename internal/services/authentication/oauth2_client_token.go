@@ -66,11 +66,11 @@ func (t *tokenImpl) SetCodeCreateAt(x time.Time) {
 }
 
 func (t *tokenImpl) GetCodeExpiresIn() time.Duration {
-	return t.CodeExpiresIn
+	return t.CodeExpiresAt
 }
 
 func (t *tokenImpl) SetCodeExpiresIn(duration time.Duration) {
-	t.CodeExpiresIn = duration
+	t.CodeExpiresAt = duration
 }
 
 func (t *tokenImpl) GetCodeChallenge() string {
@@ -106,11 +106,11 @@ func (t *tokenImpl) SetAccessCreateAt(x time.Time) {
 }
 
 func (t *tokenImpl) GetAccessExpiresIn() time.Duration {
-	return t.AccessExpiresIn
+	return t.AccessExpiresAt
 }
 
 func (t *tokenImpl) SetAccessExpiresIn(duration time.Duration) {
-	t.AccessExpiresIn = duration
+	t.AccessExpiresAt = duration
 }
 
 func (t *tokenImpl) GetRefresh() string {
@@ -130,11 +130,11 @@ func (t *tokenImpl) SetRefreshCreateAt(x time.Time) {
 }
 
 func (t *tokenImpl) GetRefreshExpiresIn() time.Duration {
-	return t.RefreshExpiresIn
+	return t.RefreshExpiresAt
 }
 
 func (t *tokenImpl) SetRefreshExpiresIn(duration time.Duration) {
-	t.RefreshExpiresIn = duration
+	t.RefreshExpiresAt = duration
 }
 
 func convertTokenToImpl(t *types.OAuth2ClientToken) oauth2.TokenInfo {

@@ -30,11 +30,11 @@ type (
 		_ struct{}
 
 		CreatedAt                   time.Time  `json:"createdAt"`
-		MaximumInstrumentCount      *int32     `json:"maximumInstrumentCount"`
+		MaximumInstrumentCount      *int32     `json:"maximumInstrumentCount"` // TODO: make these uint16
 		ArchivedAt                  *time.Time `json:"archivedAt"`
-		MaximumIngredientCount      *int32     `json:"maximumIngredientCount"`
+		MaximumIngredientCount      *int32     `json:"maximumIngredientCount"` // TODO: make these uint16
 		LastUpdatedAt               *time.Time `json:"lastUpdatedAt"`
-		MaximumVesselCount          *int32     `json:"maximumVesselCount"`
+		MaximumVesselCount          *int32     `json:"maximumVesselCount"` // TODO: make these uint16
 		IconPath                    string     `json:"iconPath"`
 		PastTense                   string     `json:"pastTense"`
 		ID                          string     `json:"id"`

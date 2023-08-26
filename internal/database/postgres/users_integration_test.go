@@ -12,6 +12,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func createUserForTest(t *testing.T, ctx context.Context, exampleUser *types.User, dbc *Querier) *types.User {
@@ -48,6 +49,10 @@ func TestQuerier_Integration_Users(t *testing.T) {
 	ctx := context.Background()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
 	defer func(t *testing.T) {
 		t.Helper()
 		assert.NoError(t, container.Terminate(ctx))
@@ -64,7 +69,7 @@ func TestQuerier_Integration_Users(t *testing.T) {
 	// create more
 	for i := 0; i < exampleQuantity; i++ {
 		input := fakes.BuildFakeUser()
-		input.Username = fmt.Sprintf("%s %d", exampleUser.Username, i)
+		input.Username = fmt.Sprintf("%s_%d", exampleUser.Username, i)
 		createdUsers = append(createdUsers, createUserForTest(t, ctx, input, dbc))
 	}
 
@@ -84,11 +89,9 @@ func TestQuerier_Integration_Users(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, firstUser, u)
 
-	//// TODO: fix this
-	// foundForUsername, err := dbc.SearchForUsersByUsername(ctx, firstUser.Username)
-	// assert.NoError(t, err)
-	// assert.NotEmpty(t, foundForUsername)
-	// assert.Equal(t, firstUser, foundForUsername[0])
+	foundForUsername, err := dbc.SearchForUsersByUsername(ctx, firstUser.Username)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, foundForUsername)
 
 	// update first user's username
 	firstUser.Username = fmt.Sprintf("%s_new", firstUser.Username)
@@ -150,18 +153,21 @@ func TestQuerier_Integration_Users(t *testing.T) {
 
 	assert.NoError(t, dbc.MarkUserEmailAddressAsVerified(ctx, firstUser.ID, token))
 
-	res, err := dbc.db.Exec("UPDATE users SET service_role = $1 WHERE id = $2", "service_admin", firstUser.ID)
+	res, err := dbc.db.Exec("UPDATE users SET service_role = $1, two_factor_secret_verified_at = NOW() WHERE id = $2", "service_admin", firstUser.ID)
 	assert.NoError(t, err)
 	rowsAffected, err := res.RowsAffected()
 	assert.NoError(t, err)
 	assert.Equal(t, rowsAffected, int64(1))
 
-	// TODO: fix this
-	// u, err = dbc.GetAdminUserByUsername(ctx, firstUser.Username)
-	// assert.NoError(t, err)
-	// firstUser.ServiceRole = u.ServiceRole
-	// firstUser.LastUpdatedAt = u.LastUpdatedAt
-	// assert.Equal(t, firstUser, u)
+	u, err = dbc.GetAdminUserByUsername(ctx, firstUser.Username)
+	assert.NoError(t, err)
+	firstUser.AccountStatus = u.AccountStatus
+	firstUser.AccountStatusExplanation = u.AccountStatusExplanation
+	firstUser.ServiceRole = u.ServiceRole
+	firstUser.EmailAddressVerifiedAt = u.EmailAddressVerifiedAt
+	firstUser.TwoFactorSecretVerifiedAt = u.TwoFactorSecretVerifiedAt
+	firstUser.LastUpdatedAt = u.LastUpdatedAt
+	assert.Equal(t, firstUser, u)
 
 	// delete
 	for _, user := range createdUsers {

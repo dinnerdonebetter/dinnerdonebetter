@@ -17,14 +17,13 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/config"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/cryptography/aes"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/DATA-DOG/go-sqlmock"
-	"github.com/Masterminds/squirrel"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -129,21 +128,20 @@ func buildTestClient(t *testing.T) (*Querier, *sqlmockExpecterWrapper) {
 	require.NoError(t, err)
 
 	c := &Querier{
-		db:                      fakeDB,
-		logQueries:              false,
+		db: fakeDB,
+		config: &config.Config{
+			ConnectionDetails: t.Name(),
+			LogQueries:        false,
+		},
 		logger:                  logging.NewNoopLogger(),
+		generatedQuerier:        generated.New(),
 		timeFunc:                defaultTimeFunc,
 		tracer:                  tracing.NewTracerForTest("test"),
-		sqlBuilder:              squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
 		oauth2ClientTokenEncDec: encDec,
 	}
 
 	return c, &sqlmockExpecterWrapper{Sqlmock: sqlMock}
 }
-
-const (
-	defaultImage = "postgres:15"
-)
 
 func hashStringToNumber(s string) uint64 {
 	// Create a new FNV-1a 64-bit hash object
@@ -184,27 +182,24 @@ func splitReverseConcat(input string) string {
 	return reversedSecondHalf + reversedFirstHalf
 }
 
+const (
+	defaultImage = "postgres:15"
+)
+
 func buildDatabaseClientForTest(t *testing.T, ctx context.Context) (*Querier, *postgres.PostgresContainer) {
 	t.Helper()
 
 	dbUsername := fmt.Sprintf("%d", hashStringToNumber(t.Name()))
-	dbName := splitReverseConcat(dbUsername)
-	dbPassword := reverseString(dbUsername)
-
 	assert.NoError(t, os.Setenv("TESTCONTAINERS_RYUK_DISABLED", "true"))
 	testcontainers.Logger = log.New(io.Discard, "", log.LstdFlags)
 
 	container, err := postgres.RunContainer(
 		ctx,
 		testcontainers.WithImage(defaultImage),
-		postgres.WithDatabase(dbName),
+		postgres.WithDatabase(splitReverseConcat(dbUsername)),
 		postgres.WithUsername(dbUsername),
-		postgres.WithPassword(dbPassword),
-		testcontainers.WithWaitStrategyAndDeadline(
-			time.Minute,
-			wait.ForLog("database system is ready to accept connections").
-				WithOccurrence(2),
-		),
+		postgres.WithPassword(reverseString(dbUsername)),
+		testcontainers.WithWaitStrategyAndDeadline(time.Minute, wait.ForLog("database system is ready to accept connections").WithOccurrence(2)),
 	)
 
 	require.NoError(t, err)
@@ -393,83 +388,6 @@ func TestQuerier_handleRows(T *testing.T) {
 		err := c.checkRowsForErrorAndClose(ctx, mockRows)
 		assert.Error(t, err)
 		assert.True(t, errors.Is(err, expected))
-	})
-}
-
-func TestQuerier_performCreateQueryIgnoringReturn(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-
-		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
-			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		err := c.performWriteQuery(ctx, c.db, "example", fakeQuery, fakeArgs)
-
-		assert.NoError(t, err)
-	})
-}
-
-func TestQuerier_performCreateQuery(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-
-		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
-			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnResult(newArbitraryDatabaseResult())
-
-		err := c.performWriteQuery(ctx, c.db, "example", fakeQuery, fakeArgs)
-
-		assert.NoError(t, err)
-	})
-
-	T.Run("with error executing query", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-
-		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
-			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnError(errors.New("blah"))
-
-		err := c.performWriteQuery(ctx, c.db, "example", fakeQuery, fakeArgs)
-
-		assert.Error(t, err)
-	})
-
-	T.Run("with no rows returned", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		c, db := buildTestClient(t)
-
-		fakeQuery, fakeArgs := fakes.BuildFakeSQLQuery()
-
-		db.ExpectExec(formatQueryForSQLMock(fakeQuery)).
-			WithArgs(interfaceToDriverValue(fakeArgs)...).
-			WillReturnResult(sqlmock.NewResult(int64(1), 0))
-
-		err := c.performWriteQuery(ctx, c.db, "example", fakeQuery, fakeArgs)
-
-		assert.Error(t, err)
-		assert.True(t, errors.Is(err, sql.ErrNoRows))
 	})
 }
 

@@ -39,7 +39,7 @@ func BuildFakeRecipeStepIngredientList() *types.QueryFilteredResult[types.Recipe
 	return &types.QueryFilteredResult[types.RecipeStepIngredient]{
 		Pagination: types.Pagination{
 			Page:          1,
-			Limit:         20,
+			Limit:         50,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,
 		},

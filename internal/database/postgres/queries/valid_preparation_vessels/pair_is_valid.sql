@@ -1,9 +1,0 @@
--- name: ValidPreparationVesselPairIsValid :one
-
-SELECT EXISTS(
-	SELECT id
-	FROM valid_preparation_vessels
-	WHERE valid_vessel_id = $1
-	AND valid_preparation_id = $2
-	AND archived_at IS NULL
-);

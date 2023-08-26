@@ -22,7 +22,7 @@ func TestBuilder_BuildGetServiceSettingConfigurationForUserByNameRequest(T *test
 
 		exampleSettingName := fakes.BuildFakeServiceSetting().Name
 		filter := (*types.QueryFilter)(nil)
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat, exampleSettingName)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat, exampleSettingName)
 
 		actual, err := helper.builder.BuildGetServiceSettingConfigurationForUserByNameRequest(helper.ctx, exampleSettingName, filter)
 		assert.NoError(t, err)
@@ -56,7 +56,7 @@ func TestBuilder_BuildGetServiceSettingConfigurationsForUserRequest(T *testing.T
 		helper := buildTestHelper()
 
 		filter := (*types.QueryFilter)(nil)
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat)
 
 		actual, err := helper.builder.BuildGetServiceSettingConfigurationsForUserRequest(helper.ctx, filter)
 		assert.NoError(t, err)
@@ -89,7 +89,7 @@ func TestBuilder_BuildGetServiceSettingConfigurationsForHouseholdRequest(T *test
 		helper := buildTestHelper()
 
 		filter := (*types.QueryFilter)(nil)
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat)
 
 		actual, err := helper.builder.BuildGetServiceSettingConfigurationsForHouseholdRequest(helper.ctx, filter)
 		assert.NoError(t, err)

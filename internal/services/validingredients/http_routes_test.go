@@ -442,7 +442,7 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			exampleQuery,
 			mock.IsType(&types.QueryFilter{}),
-		).Return(exampleValidIngredientList.Data, nil)
+		).Return(exampleValidIngredientList, nil)
 		helper.service.validIngredientDataManager = validIngredientDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -450,7 +450,7 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType([]*types.ValidIngredient{}),
+			mock.IsType(&types.QueryFilteredResult[types.ValidIngredient]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -541,7 +541,7 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			exampleQuery,
 			mock.IsType(&types.QueryFilter{}),
-		).Return([]*types.ValidIngredient{}, sql.ErrNoRows)
+		).Return(&types.QueryFilteredResult[types.ValidIngredient]{}, sql.ErrNoRows)
 		helper.service.validIngredientDataManager = validIngredientDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -549,7 +549,7 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType([]*types.ValidIngredient{}),
+			mock.IsType(&types.QueryFilteredResult[types.ValidIngredient]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -575,7 +575,7 @@ func TestValidIngredientsService_SearchHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			exampleQuery,
 			mock.IsType(&types.QueryFilter{}),
-		).Return([]*types.ValidIngredient(nil), errors.New("blah"))
+		).Return((*types.QueryFilteredResult[types.ValidIngredient])(nil), errors.New("blah"))
 		helper.service.validIngredientDataManager = validIngredientDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()

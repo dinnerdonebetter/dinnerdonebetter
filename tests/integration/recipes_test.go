@@ -89,6 +89,7 @@ func createRecipeForTest(ctx context.Context, t *testing.T, adminClient, client 
 	}
 
 	exampleRecipeInput := converters.ConvertRecipeToRecipeCreationRequestInput(exampleRecipe)
+	exampleRecipeInput.AlsoCreateMeal = true
 	for i := range exampleRecipeInput.Steps {
 		exampleRecipeInput.Steps[i].PreparationID = createdValidPreparation.ID
 	}

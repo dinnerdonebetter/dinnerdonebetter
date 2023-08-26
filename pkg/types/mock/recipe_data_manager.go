@@ -27,12 +27,6 @@ func (m *RecipeDataManagerMock) GetRecipe(ctx context.Context, recipeID string) 
 	return args.Get(0).(*types.Recipe), args.Error(1)
 }
 
-// GetRecipeByIDAndUser is a mock function.
-func (m *RecipeDataManagerMock) GetRecipeByIDAndUser(ctx context.Context, recipeID, userID string) (*types.Recipe, error) {
-	args := m.Called(ctx, recipeID, userID)
-	return args.Get(0).(*types.Recipe), args.Error(1)
-}
-
 // SearchForRecipes is a mock function.
 func (m *RecipeDataManagerMock) SearchForRecipes(ctx context.Context, query string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.Recipe], error) {
 	args := m.Called(ctx, query, filter)

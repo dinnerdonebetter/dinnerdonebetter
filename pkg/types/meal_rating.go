@@ -36,7 +36,7 @@ type (
 		ArchivedAt    *time.Time `json:"archivedAt"`
 		Notes         string     `json:"notes"`
 		ID            string     `json:"id"`
-		RecipeID      string     `json:"mealID"`
+		RecipeID      string     `json:"recipeID"`
 		ByUser        string     `json:"byUser"`
 		Taste         float32    `json:"taste"`
 		Instructions  float32    `json:"instructions"`
@@ -49,7 +49,7 @@ type (
 	RecipeRatingCreationRequestInput struct {
 		_ struct{}
 
-		MealID       string  `json:"mealID"`
+		RecipeID     string  `json:"recipeID"`
 		Notes        string  `json:"notes"`
 		ByUser       string  `json:"byUser"`
 		Taste        float32 `json:"taste"`
@@ -64,7 +64,7 @@ type (
 		_ struct{}
 
 		ID           string
-		MealID       string
+		RecipeID     string
 		Notes        string
 		ByUser       string
 		Taste        float32
@@ -78,7 +78,7 @@ type (
 	RecipeRatingUpdateRequestInput struct {
 		_ struct{}
 
-		MealID       *string  `json:"mealID"`
+		RecipeID     *string  `json:"recipeID"`
 		Taste        *float32 `json:"taste"`
 		Difficulty   *float32 `json:"difficulty"`
 		Cleanup      *float32 `json:"cleanup"`
@@ -110,8 +110,8 @@ type (
 
 // Update merges an RecipeRatingUpdateRequestInput with a recipe rating.
 func (x *RecipeRating) Update(input *RecipeRatingUpdateRequestInput) {
-	if input.MealID != nil && *input.MealID != x.RecipeID {
-		x.RecipeID = *input.MealID
+	if input.RecipeID != nil && *input.RecipeID != x.RecipeID {
+		x.RecipeID = *input.RecipeID
 	}
 
 	if input.Taste != nil && *input.Taste != x.Taste {
@@ -152,7 +152,7 @@ func (x *RecipeRatingCreationRequestInput) ValidateWithContext(ctx context.Conte
 	if err := validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.MealID, validation.Required),
+		validation.Field(&x.RecipeID, validation.Required),
 	); err != nil {
 		errs = multierror.Append(errs, err)
 	}
@@ -174,7 +174,7 @@ func (x *RecipeRatingDatabaseCreationInput) ValidateWithContext(ctx context.Cont
 		ctx,
 		x,
 		validation.Field(&x.ID, validation.Required),
-		validation.Field(&x.MealID, validation.Required),
+		validation.Field(&x.RecipeID, validation.Required),
 		validation.Field(&x.ByUser, validation.Required),
 	); err != nil {
 		errs = multierror.Append(errs, err)
@@ -191,6 +191,6 @@ func (x *RecipeRatingUpdateRequestInput) ValidateWithContext(ctx context.Context
 		ctx,
 		x,
 		validation.Field(&x.ByUser, validation.Required),
-		validation.Field(&x.MealID, validation.Required),
+		validation.Field(&x.RecipeID, validation.Required),
 	)
 }

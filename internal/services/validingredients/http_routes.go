@@ -190,7 +190,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	var validIngredients []*types.ValidIngredient
+	validIngredients := &types.QueryFilteredResult[types.ValidIngredient]{}
 	if useDB {
 		validIngredients, err = s.validIngredientDataManager.SearchForValidIngredients(ctx, query, filter)
 	} else {
@@ -207,12 +207,12 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 			ids = append(ids, validIngredientSubset.ID)
 		}
 
-		validIngredients, err = s.validIngredientDataManager.GetValidIngredientsWithIDs(ctx, ids)
+		validIngredients.Data, err = s.validIngredientDataManager.GetValidIngredientsWithIDs(ctx, ids)
 	}
 
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		validIngredients = []*types.ValidIngredient{}
+		validIngredients.Data = []*types.ValidIngredient{}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "searching for valid ingredients")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
@@ -256,7 +256,7 @@ func (s *service) SearchByPreparationAndIngredientNameHandler(res http.ResponseW
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	validIngredientPreparations, err := s.validIngredientDataManager.SearchForValidIngredientsForPreparation(ctx, validPreparationID, query, filter)
+	validIngredientPreparations, err := s.validIngredientDataManager.SearchForValidIngredientsForPreparation(ctx, validPreparationID, query, nil)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "searching for valid ingredient preparations")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
@@ -306,7 +306,7 @@ func (s *service) ForValidIngredientStateHandler(res http.ResponseWriter, req *h
 	validIngredients, err := s.validIngredientDataManager.SearchForValidIngredients(ctx, "help me", filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
-		validIngredients = []*types.ValidIngredient{}
+		validIngredients.Data = []*types.ValidIngredient{}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "searching for valid ingredients for valid ingredient state")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)

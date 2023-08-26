@@ -21,7 +21,7 @@ type (
 
 		CreatedAt     time.Time  `json:"createdAt"`
 		ExpiresAt     time.Time  `json:"expiresAt"`
-		RedeemedAt    *uint64    `json:"archivedAt"`
+		RedeemedAt    *time.Time `json:"archivedAt"`
 		LastUpdatedAt *time.Time `json:"lastUpdatedAt"`
 		ID            string     `json:"id"`
 		Token         string     `json:"token"`

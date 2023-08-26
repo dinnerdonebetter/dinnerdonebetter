@@ -2,10 +2,9 @@ package postgres
 
 import (
 	"context"
-	_ "embed"
 	"strings"
 
-	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -18,94 +17,7 @@ const (
 
 var (
 	_ types.ServiceSettingDataManager = (*Querier)(nil)
-
-	// serviceSettingsTableColumns are the columns for the service_settings table.
-	serviceSettingsTableColumns = []string{
-		"service_settings.id",
-		"service_settings.name",
-		"service_settings.type",
-		"service_settings.description",
-		"service_settings.default_value",
-		"service_settings.admins_only",
-		"service_settings.enumeration",
-		"service_settings.created_at",
-		"service_settings.last_updated_at",
-		"service_settings.archived_at",
-	}
 )
-
-// scanServiceSetting takes a database Scanner (i.e. *sql.Row) and scans the result into a service setting struct.
-func (q *Querier) scanServiceSetting(ctx context.Context, scan database.Scanner, includeCounts bool) (x *types.ServiceSetting, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	x = &types.ServiceSetting{}
-
-	var joinedEnum string
-	targetVars := []any{
-		&x.ID,
-		&x.Name,
-		&x.Type,
-		&x.Description,
-		&x.DefaultValue,
-		&x.AdminsOnly,
-		&joinedEnum,
-		&x.CreatedAt,
-		&x.LastUpdatedAt,
-		&x.ArchivedAt,
-	}
-
-	if includeCounts {
-		targetVars = append(targetVars, &filteredCount, &totalCount)
-	}
-
-	if err = scan.Scan(targetVars...); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "")
-	}
-
-	x.Enumeration = []string{}
-	for _, y := range strings.Split(joinedEnum, serviceSettingsEnumDelimiter) {
-		if y != "" {
-			x.Enumeration = append(x.Enumeration, y)
-		}
-	}
-
-	return x, filteredCount, totalCount, nil
-}
-
-// scanServiceSettings takes some database rows and turns them into a slice of service settings.
-func (q *Querier) scanServiceSettings(ctx context.Context, rows database.ResultIterator, includeCounts bool) (serviceSettings []*types.ServiceSetting, filteredCount, totalCount uint64, err error) {
-	_, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	for rows.Next() {
-		x, fc, tc, scanErr := q.scanServiceSetting(ctx, rows, includeCounts)
-		if scanErr != nil {
-			return nil, 0, 0, scanErr
-		}
-
-		if includeCounts {
-			if filteredCount == 0 {
-				filteredCount = fc
-			}
-
-			if totalCount == 0 {
-				totalCount = tc
-			}
-		}
-
-		serviceSettings = append(serviceSettings, x)
-	}
-
-	if err = q.checkRowsForErrorAndClose(ctx, rows); err != nil {
-		return nil, 0, 0, observability.PrepareError(err, span, "handling rows")
-	}
-
-	return serviceSettings, filteredCount, totalCount, nil
-}
-
-//go:embed queries/service_settings/exists.sql
-var serviceSettingExistenceQuery string
 
 // ServiceSettingExists fetches whether a service setting exists from the database.
 func (q *Querier) ServiceSettingExists(ctx context.Context, serviceSettingID string) (exists bool, err error) {
@@ -120,20 +32,13 @@ func (q *Querier) ServiceSettingExists(ctx context.Context, serviceSettingID str
 	logger = logger.WithValue(keys.ServiceSettingIDKey, serviceSettingID)
 	tracing.AttachServiceSettingIDToSpan(span, serviceSettingID)
 
-	args := []any{
-		serviceSettingID,
-	}
-
-	result, err := q.performBooleanQuery(ctx, q.db, serviceSettingExistenceQuery, args)
+	result, err := q.generatedQuerier.CheckServiceSettingExistence(ctx, q.db, serviceSettingID)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing service setting existence check")
 	}
 
 	return result, nil
 }
-
-//go:embed queries/service_settings/get_one.sql
-var getServiceSettingQuery string
 
 // GetServiceSetting fetches a service setting from the database.
 func (q *Querier) GetServiceSetting(ctx context.Context, serviceSettingID string) (*types.ServiceSetting, error) {
@@ -148,22 +53,33 @@ func (q *Querier) GetServiceSetting(ctx context.Context, serviceSettingID string
 	logger = logger.WithValue(keys.ServiceSettingIDKey, serviceSettingID)
 	tracing.AttachServiceSettingIDToSpan(span, serviceSettingID)
 
-	args := []any{
-		serviceSettingID,
+	result, err := q.generatedQuerier.GetServiceSetting(ctx, q.db, serviceSettingID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing service setting fetch")
 	}
 
-	row := q.getOneRow(ctx, q.db, "service setting", getServiceSettingQuery, args)
+	usableEnumeration := []string{}
+	for _, x := range strings.Split(result.Enumeration, serviceSettingsEnumDelimiter) {
+		if strings.TrimSpace(x) != "" {
+			usableEnumeration = append(usableEnumeration, x)
+		}
+	}
 
-	serviceSetting, _, _, err := q.scanServiceSetting(ctx, row, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning service setting")
+	serviceSetting := &types.ServiceSetting{
+		CreatedAt:     result.CreatedAt,
+		DefaultValue:  stringPointerFromNullString(result.DefaultValue),
+		LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+		ID:            result.ID,
+		Name:          result.Name,
+		Type:          string(result.Type),
+		Description:   result.Description,
+		Enumeration:   usableEnumeration,
+		AdminsOnly:    result.AdminsOnly,
 	}
 
 	return serviceSetting, nil
 }
-
-//go:embed queries/service_settings/search.sql
-var serviceSettingSearchQuery string
 
 // SearchForServiceSettings fetches a service setting from the database.
 func (q *Querier) SearchForServiceSettings(ctx context.Context, query string) ([]*types.ServiceSetting, error) {
@@ -178,18 +94,35 @@ func (q *Querier) SearchForServiceSettings(ctx context.Context, query string) ([
 	logger = logger.WithValue(keys.SearchQueryKey, query)
 	tracing.AttachServiceSettingIDToSpan(span, query)
 
-	args := []any{
-		wrapQueryForILIKE(query),
-	}
-
-	rows, err := q.getRows(ctx, q.db, "service settings", serviceSettingSearchQuery, args)
+	results, err := q.generatedQuerier.SearchForServiceSettings(ctx, q.db, query)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing service settings list retrieval query")
 	}
 
-	x, _, _, err := q.scanServiceSettings(ctx, rows, false)
-	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning service settings")
+	x := []*types.ServiceSetting{}
+	for _, result := range results {
+		rawEnumeration := strings.Split(result.Enumeration, serviceSettingsEnumDelimiter)
+		usableEnumeration := []string{}
+		for _, y := range rawEnumeration {
+			if strings.TrimSpace(y) != "" {
+				usableEnumeration = append(usableEnumeration, y)
+			}
+		}
+
+		serviceSetting := &types.ServiceSetting{
+			CreatedAt:     result.CreatedAt,
+			DefaultValue:  stringPointerFromNullString(result.DefaultValue),
+			LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+			ID:            result.ID,
+			Name:          result.Name,
+			Type:          string(result.Type),
+			Description:   result.Description,
+			Enumeration:   usableEnumeration,
+			AdminsOnly:    result.AdminsOnly,
+		}
+
+		x = append(x, serviceSetting)
 	}
 
 	return x, nil
@@ -202,36 +135,55 @@ func (q *Querier) GetServiceSettings(ctx context.Context, filter *types.QueryFil
 
 	logger := q.logger.Clone()
 
-	x = &types.QueryFilteredResult[types.ServiceSetting]{}
+	if filter == nil {
+		filter = types.DefaultQueryFilter()
+	}
 	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
-	if filter != nil {
-		if filter.Page != nil {
-			x.Page = *filter.Page
-		}
-
-		if filter.Limit != nil {
-			x.Limit = *filter.Limit
-		}
+	x = &types.QueryFilteredResult[types.ServiceSetting]{
+		Pagination: filter.ToPagination(),
 	}
 
-	query, args := q.buildListQuery(ctx, "service_settings", nil, nil, nil, householdOwnershipColumn, serviceSettingsTableColumns, "", false, filter)
-
-	rows, err := q.getRows(ctx, q.db, "service settings", query, args)
+	results, err := q.generatedQuerier.GetServiceSettings(ctx, q.db, &generated.GetServiceSettingsParams{
+		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing service settings list retrieval query")
 	}
 
-	if x.Data, x.FilteredCount, x.TotalCount, err = q.scanServiceSettings(ctx, rows, true); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "scanning service settings")
+	for _, result := range results {
+		rawEnumeration := strings.Split(result.Enumeration, serviceSettingsEnumDelimiter)
+		usableEnumeration := []string{}
+		for _, y := range rawEnumeration {
+			if strings.TrimSpace(y) != "" {
+				usableEnumeration = append(usableEnumeration, y)
+			}
+		}
+
+		x.Data = append(x.Data, &types.ServiceSetting{
+			CreatedAt:     result.CreatedAt,
+			DefaultValue:  stringPointerFromNullString(result.DefaultValue),
+			LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+			ID:            result.ID,
+			Name:          result.Name,
+			Type:          string(result.Type),
+			Description:   result.Description,
+			Enumeration:   usableEnumeration,
+			AdminsOnly:    result.AdminsOnly,
+		})
+		x.FilteredCount = uint64(result.FilteredCount)
+		x.TotalCount = uint64(result.TotalCount)
 	}
 
 	return x, nil
 }
-
-//go:embed queries/service_settings/create.sql
-var serviceSettingCreationQuery string
 
 // CreateServiceSetting creates a service setting in the database.
 func (q *Querier) CreateServiceSetting(ctx context.Context, input *types.ServiceSettingDatabaseCreationInput) (*types.ServiceSetting, error) {
@@ -241,21 +193,19 @@ func (q *Querier) CreateServiceSetting(ctx context.Context, input *types.Service
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-
+	tracing.AttachServiceSettingIDToSpan(span, input.ID)
 	logger := q.logger.WithValue(keys.ServiceSettingIDKey, input.ID)
 
-	args := []any{
-		input.ID,
-		input.Name,
-		input.Type,
-		input.Description,
-		input.DefaultValue,
-		input.AdminsOnly,
-		strings.Join(input.Enumeration, serviceSettingsEnumDelimiter),
-	}
-
 	// create the service setting.
-	if err := q.performWriteQuery(ctx, q.db, "service setting creation", serviceSettingCreationQuery, args); err != nil {
+	if err := q.generatedQuerier.CreateServiceSetting(ctx, q.db, &generated.CreateServiceSettingParams{
+		ID:           input.ID,
+		Name:         input.Name,
+		Type:         generated.SettingType(input.Type),
+		Description:  input.Description,
+		Enumeration:  strings.Join(input.Enumeration, serviceSettingsEnumDelimiter),
+		DefaultValue: nullStringFromStringPointer(input.DefaultValue),
+		AdminsOnly:   input.AdminsOnly,
+	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing service setting creation query")
 	}
 
@@ -270,14 +220,10 @@ func (q *Querier) CreateServiceSetting(ctx context.Context, input *types.Service
 		CreatedAt:    q.currentTime(),
 	}
 
-	tracing.AttachServiceSettingIDToSpan(span, x.ID)
 	logger.Info("service setting created")
 
 	return x, nil
 }
-
-//go:embed queries/service_settings/archive.sql
-var archiveServiceSettingQuery string
 
 // ArchiveServiceSetting archives a service setting from the database by its ID.
 func (q *Querier) ArchiveServiceSetting(ctx context.Context, serviceSettingID string) error {
@@ -292,11 +238,7 @@ func (q *Querier) ArchiveServiceSetting(ctx context.Context, serviceSettingID st
 	logger = logger.WithValue(keys.ServiceSettingIDKey, serviceSettingID)
 	tracing.AttachServiceSettingIDToSpan(span, serviceSettingID)
 
-	args := []any{
-		serviceSettingID,
-	}
-
-	if err := q.performWriteQuery(ctx, q.db, "service setting archive", archiveServiceSettingQuery, args); err != nil {
+	if _, err := q.generatedQuerier.ArchiveServiceSetting(ctx, q.db, serviceSettingID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating service setting")
 	}
 

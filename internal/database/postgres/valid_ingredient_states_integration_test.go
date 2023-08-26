@@ -11,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func createValidIngredientStateForTest(t *testing.T, ctx context.Context, exampleValidIngredientState *types.ValidIngredientState, dbc *Querier) *types.ValidIngredientState {
@@ -43,6 +44,10 @@ func TestQuerier_Integration_ValidIngredientStates(t *testing.T) {
 
 	ctx := context.Background()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
 
 	defer func(t *testing.T) {
 		t.Helper()
@@ -88,9 +93,19 @@ func TestQuerier_Integration_ValidIngredientStates(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, validIngredientStates.Data, byName)
 
+	needingIndexing, err := dbc.GetValidIngredientStateIDsThatNeedSearchIndexing(ctx)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, needingIndexing)
+
 	// delete
 	for _, validIngredientState := range createdValidIngredientStates {
+		assert.NoError(t, dbc.MarkValidIngredientStateAsIndexed(ctx, validIngredientState.ID))
 		assert.NoError(t, dbc.ArchiveValidIngredientState(ctx, validIngredientState.ID))
+
+		var exists bool
+		exists, err = dbc.ValidIngredientStateExists(ctx, validIngredientState.ID)
+		assert.NoError(t, err)
+		assert.False(t, exists)
 
 		var y *types.ValidIngredientState
 		y, err = dbc.GetValidIngredientState(ctx, validIngredientState.ID)

@@ -102,7 +102,7 @@
 		"validPreparationInstruments": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"validMeasurementConversions": {
+		"validMeasurementUnitConversions": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"validIngredientGroups": {
@@ -219,9 +219,7 @@
 			"searchFromDatabase": false
 		},
 		"oauth2Clients": {
-			"creationEnabled": false,
-			"minimumUsernameLength": 0,
-			"minimumPasswordLength": 0
+			"creationEnabled": false
 		},
 		"validVessels": {
 			"dataChangesTopicName": "data_changes",

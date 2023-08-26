@@ -28,14 +28,14 @@ func (m *ServiceSettingConfigurationDataManagerMock) GetServiceSettingConfigurat
 }
 
 // GetServiceSettingConfigurationsForUser is a mock function.
-func (m *ServiceSettingConfigurationDataManagerMock) GetServiceSettingConfigurationsForUser(ctx context.Context, userID string) (*types.QueryFilteredResult[types.ServiceSettingConfiguration], error) {
-	returnValues := m.Called(ctx, userID)
+func (m *ServiceSettingConfigurationDataManagerMock) GetServiceSettingConfigurationsForUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ServiceSettingConfiguration], error) {
+	returnValues := m.Called(ctx, userID, filter)
 	return returnValues.Get(0).(*types.QueryFilteredResult[types.ServiceSettingConfiguration]), returnValues.Error(1)
 }
 
 // GetServiceSettingConfigurationsForHousehold is a mock function.
-func (m *ServiceSettingConfigurationDataManagerMock) GetServiceSettingConfigurationsForHousehold(ctx context.Context, householdID string) (*types.QueryFilteredResult[types.ServiceSettingConfiguration], error) {
-	returnValues := m.Called(ctx, householdID)
+func (m *ServiceSettingConfigurationDataManagerMock) GetServiceSettingConfigurationsForHousehold(ctx context.Context, householdID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ServiceSettingConfiguration], error) {
+	returnValues := m.Called(ctx, householdID, filter)
 	return returnValues.Get(0).(*types.QueryFilteredResult[types.ServiceSettingConfiguration]), returnValues.Error(1)
 }
 

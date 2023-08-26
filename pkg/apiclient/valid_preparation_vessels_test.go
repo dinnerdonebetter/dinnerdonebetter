@@ -97,7 +97,7 @@ func (s *validPreparationVesselsTestSuite) TestClient_GetValidPreparationVessels
 
 		exampleValidPreparationVesselList := fakes.BuildFakeValidPreparationVesselList()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidPreparationVesselList)
 		actual, err := c.GetValidPreparationVessels(s.ctx, filter)
 
@@ -123,7 +123,7 @@ func (s *validPreparationVesselsTestSuite) TestClient_GetValidPreparationVessels
 
 		filter := (*types.QueryFilter)(nil)
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.GetValidPreparationVessels(s.ctx, filter)
 
@@ -144,7 +144,7 @@ func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidPreparatio
 
 		exampleValidIngredientMeasurementUnitList := fakes.BuildFakeValidPreparationVesselList()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, exampleValidPreparation.ID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, exampleValidPreparation.ID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientMeasurementUnitList)
 		actual, err := c.GetValidPreparationVesselsForPreparation(s.ctx, exampleValidPreparation.ID, filter)
 
@@ -180,7 +180,7 @@ func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidPreparatio
 
 		filter := (*types.QueryFilter)(nil)
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, exampleValidPreparation.ID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, exampleValidPreparation.ID)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.GetValidPreparationVesselsForPreparation(s.ctx, exampleValidPreparation.ID, filter)
 
@@ -201,7 +201,7 @@ func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidPreparatio
 
 		exampleValidIngredientMeasurementUnitList := fakes.BuildFakeValidPreparationVesselList()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, exampleValidInstrument.ID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, exampleValidInstrument.ID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientMeasurementUnitList)
 		actual, err := c.GetValidPreparationVesselsForVessel(s.ctx, exampleValidInstrument.ID, filter)
 
@@ -237,7 +237,7 @@ func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidPreparatio
 
 		filter := (*types.QueryFilter)(nil)
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, exampleValidInstrument.ID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, exampleValidInstrument.ID)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.GetValidPreparationVesselsForVessel(s.ctx, exampleValidInstrument.ID, filter)
 

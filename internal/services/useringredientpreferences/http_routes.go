@@ -5,7 +5,6 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -52,10 +51,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	input := converters.ConvertUserIngredientPreferenceCreationRequestInputToUserIngredientPreferenceDatabaseCreationInput(providedInput)
-	input.ID = identifiers.New()
 	input.BelongsToUser = sessionCtxData.Requester.UserID
-
-	tracing.AttachUserIngredientPreferenceIDToSpan(span, input.ID)
 
 	userIngredientPreference, err := s.userIngredientPreferenceDataManager.CreateUserIngredientPreference(ctx, input)
 	if err != nil {

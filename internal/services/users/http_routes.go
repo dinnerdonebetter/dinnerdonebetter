@@ -966,6 +966,8 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachUserIDToSpan(span, userID)
 
+	logger.Debug("archiving user")
+
 	// do the deed.
 	err = s.userDataManager.ArchiveUser(ctx, userID)
 	if errors.Is(err, sql.ErrNoRows) {
@@ -976,6 +978,8 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
+
+	logger.Info("user archived")
 
 	dcm := &types.DataChangeMessage{
 		HouseholdID: sessionCtxData.ActiveHouseholdID,

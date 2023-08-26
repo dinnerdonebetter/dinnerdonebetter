@@ -65,7 +65,7 @@ func TestBuilder_BuildGetHouseholdInstrumentOwnershipsRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		filter := (*types.QueryFilter)(nil)
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat)
 
 		actual, err := helper.builder.BuildGetHouseholdInstrumentOwnershipsRequest(helper.ctx, filter)
 		assert.NoError(t, err)

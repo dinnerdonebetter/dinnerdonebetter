@@ -54,6 +54,10 @@ func TestQuerier_Integration_ValidIngredientPreparations(t *testing.T) {
 	ctx := context.Background()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
 	defer func(t *testing.T) {
 		t.Helper()
 		assert.NoError(t, container.Terminate(ctx))
@@ -90,9 +94,22 @@ func TestQuerier_Integration_ValidIngredientPreparations(t *testing.T) {
 	assert.NotEmpty(t, validIngredientPreparations.Data)
 	assert.Equal(t, len(createdValidIngredientPreparations), len(validIngredientPreparations.Data))
 
+	forIngredient, err := dbc.GetValidIngredientPreparationsForIngredient(ctx, createdValidIngredientPreparations[0].Ingredient.ID, nil)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, forIngredient.Data)
+
+	forPreparation, err := dbc.GetValidIngredientPreparationsForPreparation(ctx, createdValidIngredientPreparations[0].Preparation.ID, nil)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, forPreparation.Data)
+
 	// delete
 	for _, validIngredientPreparation := range createdValidIngredientPreparations {
 		assert.NoError(t, dbc.ArchiveValidIngredientPreparation(ctx, validIngredientPreparation.ID))
+
+		var exists bool
+		exists, err = dbc.ValidIngredientPreparationExists(ctx, validIngredientPreparation.ID)
+		assert.NoError(t, err)
+		assert.False(t, exists)
 
 		var y *types.ValidIngredientPreparation
 		y, err = dbc.GetValidIngredientPreparation(ctx, validIngredientPreparation.ID)

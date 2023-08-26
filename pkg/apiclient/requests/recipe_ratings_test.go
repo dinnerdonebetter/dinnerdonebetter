@@ -70,7 +70,7 @@ func TestBuilder_BuildGetRecipeRatingsRequest(T *testing.T) {
 
 		exampleMealID := fakes.BuildFakeID()
 		filter := (*types.QueryFilter)(nil)
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPathFormat, exampleMealID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPathFormat, exampleMealID)
 
 		actual, err := helper.builder.BuildGetRecipeRatingsRequest(helper.ctx, exampleMealID, filter)
 		assert.NoError(t, err)

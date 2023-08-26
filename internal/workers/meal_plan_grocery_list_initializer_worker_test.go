@@ -259,8 +259,10 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 		).Return(firstMealPlanExpectedGroceryListItemInputs, nil)
 		w.groceryListCreator = mglm
 
-		for mealPlanID, inputs := range expectedInputSets {
-			mdm.MealPlanGroceryListItemDataManagerMock.On("CreateMealPlanGroceryListItemsForMealPlan", testutils.ContextMatcher, mealPlanID, inputs).Return(nil)
+		for _, inputs := range expectedInputSets {
+			for _, input := range inputs {
+				mdm.MealPlanGroceryListItemDataManagerMock.On("CreateMealPlanGroceryListItem", testutils.ContextMatcher, input).Return((*types.MealPlanGroceryListItem)(nil), nil)
+			}
 		}
 		w.dataManager = mdm
 

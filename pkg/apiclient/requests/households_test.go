@@ -138,7 +138,7 @@ func TestBuilder_BuildGetHouseholdsRequest(T *testing.T) {
 		helper := buildTestHelper()
 
 		filter := (*types.QueryFilter)(nil)
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
 
 		actual, err := helper.builder.BuildGetHouseholdsRequest(helper.ctx, filter)
 		assert.NoError(t, err)

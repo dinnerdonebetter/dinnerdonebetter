@@ -76,11 +76,11 @@ type (
 
 	// RecipeMediaDataManager describes a structure capable of storing valid preparations permanently.
 	RecipeMediaDataManager interface {
-		RecipeMediaExists(ctx context.Context, validPreparationID string) (bool, error)
-		GetRecipeMedia(ctx context.Context, validPreparationID string) (*RecipeMedia, error)
+		RecipeMediaExists(ctx context.Context, recipeMediaID string) (bool, error)
+		GetRecipeMedia(ctx context.Context, recipeMediaID string) (*RecipeMedia, error)
 		CreateRecipeMedia(ctx context.Context, input *RecipeMediaDatabaseCreationInput) (*RecipeMedia, error)
 		UpdateRecipeMedia(ctx context.Context, updated *RecipeMedia) error
-		ArchiveRecipeMedia(ctx context.Context, validPreparationID string) error
+		ArchiveRecipeMedia(ctx context.Context, recipeMediaID string) error
 	}
 
 	// RecipeMediaDataService describes a structure capable of serving traffic related to valid preparations.

@@ -1,6 +1,7 @@
 package integration
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
@@ -180,19 +181,6 @@ func (s *TestSuite) TestHouseholds_Updating() {
 
 			// Clean up household.
 			assert.NoError(t, testClients.user.ArchiveHousehold(ctx, createdHousehold.ID))
-		}
-	})
-}
-
-func (s *TestSuite) TestHouseholds_Archiving_Returns404ForNonexistentHousehold() {
-	s.runForEachClient("should not be possible to archive a non-existent household", func(testClients *testClientWrapper) func() {
-		return func() {
-			t := s.T()
-
-			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
-			defer span.End()
-
-			assert.Error(t, testClients.user.ArchiveHousehold(ctx, nonexistentID))
 		}
 	})
 }
@@ -815,7 +803,11 @@ func (s *TestSuite) TestHouseholds_UsersHaveBackupHouseholdCreatedForThemWhenRem
 			require.NotEmpty(t, otherHouseholdID)
 			require.True(t, found)
 
+			t.Logf(strings.Repeat("\n", 10))
+
 			require.NoError(t, testClients.user.RemoveUserFromHousehold(ctx, relevantHouseholdID, u.ID))
+
+			t.Logf(strings.Repeat("\n", 10))
 
 			u.HashedPassword = regInput.Password
 

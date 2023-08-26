@@ -5,8 +5,8 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-// ConvertValidMeasurementConversionToValidMeasurementConversionUpdateRequestInput creates a ValidMeasurementUnitConversionUpdateRequestInput from a ValidMeasurementUnitConversion.
-func ConvertValidMeasurementConversionToValidMeasurementConversionUpdateRequestInput(input *types.ValidMeasurementUnitConversion) *types.ValidMeasurementUnitConversionUpdateRequestInput {
+// ConvertValidMeasurementUnitConversionToValidMeasurementUnitConversionUpdateRequestInput creates a ValidMeasurementUnitConversionUpdateRequestInput from a ValidMeasurementUnitConversion.
+func ConvertValidMeasurementUnitConversionToValidMeasurementUnitConversionUpdateRequestInput(input *types.ValidMeasurementUnitConversion) *types.ValidMeasurementUnitConversionUpdateRequestInput {
 	x := &types.ValidMeasurementUnitConversionUpdateRequestInput{
 		From:     &input.From.ID,
 		To:       &input.To.ID,
@@ -21,9 +21,9 @@ func ConvertValidMeasurementConversionToValidMeasurementConversionUpdateRequestI
 	return x
 }
 
-// ConvertValidMeasurementConversionCreationRequestInputToValidMeasurementConversionDatabaseCreationInput creates a ValidMeasurementConversionDatabaseCreationInput from a ValidMeasurementUnitConversionCreationRequestInput.
-func ConvertValidMeasurementConversionCreationRequestInputToValidMeasurementConversionDatabaseCreationInput(input *types.ValidMeasurementUnitConversionCreationRequestInput) *types.ValidMeasurementConversionDatabaseCreationInput {
-	x := &types.ValidMeasurementConversionDatabaseCreationInput{
+// ConvertValidMeasurementUnitConversionCreationRequestInputToValidMeasurementUnitConversionDatabaseCreationInput creates a ValidMeasurementUnitConversionDatabaseCreationInput from a ValidMeasurementUnitConversionCreationRequestInput.
+func ConvertValidMeasurementUnitConversionCreationRequestInputToValidMeasurementUnitConversionDatabaseCreationInput(input *types.ValidMeasurementUnitConversionCreationRequestInput) *types.ValidMeasurementUnitConversionDatabaseCreationInput {
+	x := &types.ValidMeasurementUnitConversionDatabaseCreationInput{
 		ID:                identifiers.New(),
 		From:              input.From,
 		To:                input.To,
@@ -35,34 +35,34 @@ func ConvertValidMeasurementConversionCreationRequestInputToValidMeasurementConv
 	return x
 }
 
-// ConvertValidMeasurementConversionToValidMeasurementConversionCreationRequestInput builds a ValidMeasurementUnitConversionCreationRequestInput from a ValidMeasurementUnitConversion.
-func ConvertValidMeasurementConversionToValidMeasurementConversionCreationRequestInput(validMeasurementConversion *types.ValidMeasurementUnitConversion) *types.ValidMeasurementUnitConversionCreationRequestInput {
+// ConvertValidMeasurementUnitConversionToValidMeasurementUnitConversionCreationRequestInput builds a ValidMeasurementUnitConversionCreationRequestInput from a ValidMeasurementUnitConversion.
+func ConvertValidMeasurementUnitConversionToValidMeasurementUnitConversionCreationRequestInput(validMeasurementUnitConversion *types.ValidMeasurementUnitConversion) *types.ValidMeasurementUnitConversionCreationRequestInput {
 	x := &types.ValidMeasurementUnitConversionCreationRequestInput{
-		From:     validMeasurementConversion.From.ID,
-		To:       validMeasurementConversion.To.ID,
-		Modifier: validMeasurementConversion.Modifier,
-		Notes:    validMeasurementConversion.Notes,
+		From:     validMeasurementUnitConversion.From.ID,
+		To:       validMeasurementUnitConversion.To.ID,
+		Modifier: validMeasurementUnitConversion.Modifier,
+		Notes:    validMeasurementUnitConversion.Notes,
 	}
 
-	if validMeasurementConversion.OnlyForIngredient != nil {
-		x.OnlyForIngredient = &validMeasurementConversion.OnlyForIngredient.ID
+	if validMeasurementUnitConversion.OnlyForIngredient != nil {
+		x.OnlyForIngredient = &validMeasurementUnitConversion.OnlyForIngredient.ID
 	}
 
 	return x
 }
 
-// ConvertValidMeasurementConversionToValidMeasurementConversionDatabaseCreationInput builds a ValidMeasurementConversionDatabaseCreationInput from a ValidMeasurementUnitConversion.
-func ConvertValidMeasurementConversionToValidMeasurementConversionDatabaseCreationInput(validMeasurementConversion *types.ValidMeasurementUnitConversion) *types.ValidMeasurementConversionDatabaseCreationInput {
-	x := &types.ValidMeasurementConversionDatabaseCreationInput{
-		ID:       validMeasurementConversion.ID,
-		From:     validMeasurementConversion.From.ID,
-		To:       validMeasurementConversion.To.ID,
-		Modifier: validMeasurementConversion.Modifier,
-		Notes:    validMeasurementConversion.Notes,
+// ConvertValidMeasurementUnitConversionToValidMeasurementUnitConversionDatabaseCreationInput builds a ValidMeasurementUnitConversionDatabaseCreationInput from a ValidMeasurementUnitConversion.
+func ConvertValidMeasurementUnitConversionToValidMeasurementUnitConversionDatabaseCreationInput(validMeasurementUnitConversion *types.ValidMeasurementUnitConversion) *types.ValidMeasurementUnitConversionDatabaseCreationInput {
+	x := &types.ValidMeasurementUnitConversionDatabaseCreationInput{
+		ID:       validMeasurementUnitConversion.ID,
+		From:     validMeasurementUnitConversion.From.ID,
+		To:       validMeasurementUnitConversion.To.ID,
+		Modifier: validMeasurementUnitConversion.Modifier,
+		Notes:    validMeasurementUnitConversion.Notes,
 	}
 
-	if validMeasurementConversion.OnlyForIngredient != nil {
-		x.OnlyForIngredient = &validMeasurementConversion.OnlyForIngredient.ID
+	if validMeasurementUnitConversion.OnlyForIngredient != nil {
+		x.OnlyForIngredient = &validMeasurementUnitConversion.OnlyForIngredient.ID
 	}
 
 	return x

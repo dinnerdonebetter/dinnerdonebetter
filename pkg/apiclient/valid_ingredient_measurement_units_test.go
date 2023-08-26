@@ -97,7 +97,7 @@ func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidIngredient
 
 		exampleValidIngredientMeasurementUnitList := fakes.BuildFakeValidIngredientMeasurementUnitList()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientMeasurementUnitList)
 		actual, err := c.GetValidIngredientMeasurementUnits(s.ctx, filter)
 
@@ -123,7 +123,7 @@ func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidIngredient
 
 		filter := (*types.QueryFilter)(nil)
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.GetValidIngredientMeasurementUnits(s.ctx, filter)
 
@@ -144,7 +144,7 @@ func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidIngredient
 
 		exampleValidIngredientMeasurementUnitList := fakes.BuildFakeValidIngredientMeasurementUnitList()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, exampleValidIngredient.ID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, exampleValidIngredient.ID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientMeasurementUnitList)
 		actual, err := c.GetValidIngredientMeasurementUnitsForIngredient(s.ctx, exampleValidIngredient.ID, filter)
 
@@ -180,7 +180,7 @@ func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidIngredient
 
 		filter := (*types.QueryFilter)(nil)
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, exampleValidIngredient.ID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, exampleValidIngredient.ID)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.GetValidIngredientMeasurementUnitsForIngredient(s.ctx, exampleValidIngredient.ID, filter)
 
@@ -201,7 +201,7 @@ func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidIngredient
 
 		exampleValidIngredientMeasurementUnitList := fakes.BuildFakeValidIngredientMeasurementUnitList()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, exampleValidMeasurementUnit.ID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, exampleValidMeasurementUnit.ID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientMeasurementUnitList)
 		actual, err := c.GetValidIngredientMeasurementUnitsForMeasurementUnit(s.ctx, exampleValidMeasurementUnit.ID, filter)
 
@@ -237,7 +237,7 @@ func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidIngredient
 
 		filter := (*types.QueryFilter)(nil)
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, exampleValidMeasurementUnit.ID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, exampleValidMeasurementUnit.ID)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.GetValidIngredientMeasurementUnitsForMeasurementUnit(s.ctx, exampleValidMeasurementUnit.ID, filter)
 

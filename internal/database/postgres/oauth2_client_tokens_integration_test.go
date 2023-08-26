@@ -52,6 +52,10 @@ func TestQuerier_Integration_OAuth2ClientTokens(t *testing.T) {
 	ctx := context.Background()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
 
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
+
 	defer func(t *testing.T) {
 		t.Helper()
 		assert.NoError(t, container.Terminate(ctx))
@@ -67,17 +71,32 @@ func TestQuerier_Integration_OAuth2ClientTokens(t *testing.T) {
 	// create
 	createdOAuth2ClientToken := createOAuth2ClientTokenForTest(t, ctx, exampleOAuth2ClientToken, dbc)
 
+	// get
+	byCode, err := dbc.GetOAuth2ClientTokenByCode(ctx, exampleOAuth2ClientToken.Code)
+	assert.NoError(t, err)
+	assert.NotNil(t, byCode)
+
 	// delete
 	assert.NoError(t, dbc.ArchiveOAuth2ClientTokenByCode(ctx, createdOAuth2ClientToken.Code))
 
 	// create
 	createdOAuth2ClientToken = createOAuth2ClientTokenForTest(t, ctx, exampleOAuth2ClientToken, dbc)
 
+	// get
+	byAccess, err := dbc.GetOAuth2ClientTokenByAccess(ctx, exampleOAuth2ClientToken.Access)
+	assert.NoError(t, err)
+	assert.NotNil(t, byAccess)
+
 	// delete
 	assert.NoError(t, dbc.ArchiveOAuth2ClientTokenByAccess(ctx, createdOAuth2ClientToken.Access))
 
 	// create
 	createdOAuth2ClientToken = createOAuth2ClientTokenForTest(t, ctx, exampleOAuth2ClientToken, dbc)
+
+	// get
+	byRefresh, err := dbc.GetOAuth2ClientTokenByRefresh(ctx, exampleOAuth2ClientToken.Refresh)
+	assert.NoError(t, err)
+	assert.NotNil(t, byRefresh)
 
 	// delete
 	assert.NoError(t, dbc.ArchiveOAuth2ClientTokenByRefresh(ctx, createdOAuth2ClientToken.Refresh))

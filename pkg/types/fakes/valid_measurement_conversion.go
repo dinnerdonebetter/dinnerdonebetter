@@ -5,8 +5,8 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 )
 
-// BuildFakeValidMeasurementConversion builds a faked valid preparation.
-func BuildFakeValidMeasurementConversion() *types.ValidMeasurementUnitConversion {
+// BuildFakeValidMeasurementUnitConversion builds a faked valid preparation.
+func BuildFakeValidMeasurementUnitConversion() *types.ValidMeasurementUnitConversion {
 	return &types.ValidMeasurementUnitConversion{
 		ID:                BuildFakeID(),
 		From:              *BuildFakeValidMeasurementUnit(),
@@ -18,17 +18,17 @@ func BuildFakeValidMeasurementConversion() *types.ValidMeasurementUnitConversion
 	}
 }
 
-// BuildFakeValidMeasurementConversionList builds a faked ValidMeasurementConversionList.
-func BuildFakeValidMeasurementConversionList() *types.QueryFilteredResult[types.ValidMeasurementUnitConversion] {
+// BuildFakeValidMeasurementUnitConversionList builds a faked ValidMeasurementUnitConversionList.
+func BuildFakeValidMeasurementUnitConversionList() *types.QueryFilteredResult[types.ValidMeasurementUnitConversion] {
 	var examples []*types.ValidMeasurementUnitConversion
 	for i := 0; i < exampleQuantity; i++ {
-		examples = append(examples, BuildFakeValidMeasurementConversion())
+		examples = append(examples, BuildFakeValidMeasurementUnitConversion())
 	}
 
 	return &types.QueryFilteredResult[types.ValidMeasurementUnitConversion]{
 		Pagination: types.Pagination{
 			Page:          1,
-			Limit:         20,
+			Limit:         50,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,
 		},
@@ -36,26 +36,26 @@ func BuildFakeValidMeasurementConversionList() *types.QueryFilteredResult[types.
 	}
 }
 
-// BuildFakeValidMeasurementConversionUpdateRequestInput builds a faked ValidMeasurementUnitConversionUpdateRequestInput from a valid preparation.
-func BuildFakeValidMeasurementConversionUpdateRequestInput() *types.ValidMeasurementUnitConversionUpdateRequestInput {
-	validMeasurementConversion := BuildFakeValidMeasurementConversion()
+// BuildFakeValidMeasurementUnitConversionUnitUpdateRequestInput builds a faked ValidMeasurementUnitConversionUpdateRequestInput from a valid preparation.
+func BuildFakeValidMeasurementUnitConversionUnitUpdateRequestInput() *types.ValidMeasurementUnitConversionUpdateRequestInput {
+	validMeasurementUnitConversion := BuildFakeValidMeasurementUnitConversion()
 
 	x := &types.ValidMeasurementUnitConversionUpdateRequestInput{
-		From:     &validMeasurementConversion.From.ID,
-		To:       &validMeasurementConversion.To.ID,
-		Modifier: &validMeasurementConversion.Modifier,
-		Notes:    &validMeasurementConversion.Notes,
+		From:     &validMeasurementUnitConversion.From.ID,
+		To:       &validMeasurementUnitConversion.To.ID,
+		Modifier: &validMeasurementUnitConversion.Modifier,
+		Notes:    &validMeasurementUnitConversion.Notes,
 	}
 
-	if validMeasurementConversion.OnlyForIngredient != nil {
-		x.OnlyForIngredient = &validMeasurementConversion.OnlyForIngredient.ID
+	if validMeasurementUnitConversion.OnlyForIngredient != nil {
+		x.OnlyForIngredient = &validMeasurementUnitConversion.OnlyForIngredient.ID
 	}
 
 	return x
 }
 
-// BuildFakeValidMeasurementConversionCreationRequestInput builds a faked ValidMeasurementUnitConversionCreationRequestInput.
-func BuildFakeValidMeasurementConversionCreationRequestInput() *types.ValidMeasurementUnitConversionCreationRequestInput {
-	validMeasurementConversion := BuildFakeValidMeasurementConversion()
-	return converters.ConvertValidMeasurementConversionToValidMeasurementConversionCreationRequestInput(validMeasurementConversion)
+// BuildFakeValidMeasurementUnitConversionCreationRequestInput builds a faked ValidMeasurementUnitConversionCreationRequestInput.
+func BuildFakeValidMeasurementUnitConversionCreationRequestInput() *types.ValidMeasurementUnitConversionCreationRequestInput {
+	validMeasurementUnitConversion := BuildFakeValidMeasurementUnitConversion()
+	return converters.ConvertValidMeasurementUnitConversionToValidMeasurementUnitConversionCreationRequestInput(validMeasurementUnitConversion)
 }

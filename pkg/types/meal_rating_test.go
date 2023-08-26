@@ -17,7 +17,7 @@ func TestRecipeRatingCreationRequestInput_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		x := &RecipeRatingCreationRequestInput{
-			MealID:     t.Name(),
+			RecipeID:   t.Name(),
 			Difficulty: 1.0,
 		}
 
@@ -34,7 +34,7 @@ func TestRecipeRatingDatabaseCreationInput_ValidateWithContext(T *testing.T) {
 		ctx := context.Background()
 		x := &RecipeRatingDatabaseCreationInput{
 			ID:         t.Name(),
-			MealID:     t.Name(),
+			RecipeID:   t.Name(),
 			ByUser:     t.Name(),
 			Difficulty: 1.0,
 		}
@@ -52,7 +52,7 @@ func TestRecipeRatingUpdateRequestInput_ValidateWithContext(T *testing.T) {
 		ctx := context.Background()
 		x := &RecipeRatingUpdateRequestInput{
 			ByUser:     pointers.Pointer(t.Name()),
-			MealID:     pointers.Pointer(t.Name()),
+			RecipeID:   pointers.Pointer(t.Name()),
 			Difficulty: pointers.Pointer[float32](1.0),
 		}
 

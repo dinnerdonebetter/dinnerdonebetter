@@ -97,7 +97,7 @@ func (s *validPreparationInstrumentsTestSuite) TestClient_GetValidPreparationIns
 
 		exampleValidPreparationInstrumentList := fakes.BuildFakeValidPreparationInstrumentList()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidPreparationInstrumentList)
 		actual, err := c.GetValidPreparationInstruments(s.ctx, filter)
 
@@ -123,7 +123,7 @@ func (s *validPreparationInstrumentsTestSuite) TestClient_GetValidPreparationIns
 
 		filter := (*types.QueryFilter)(nil)
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.GetValidPreparationInstruments(s.ctx, filter)
 
@@ -144,7 +144,7 @@ func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidPreparatio
 
 		exampleValidIngredientMeasurementUnitList := fakes.BuildFakeValidPreparationInstrumentList()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, exampleValidPreparation.ID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, exampleValidPreparation.ID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientMeasurementUnitList)
 		actual, err := c.GetValidPreparationInstrumentsForPreparation(s.ctx, exampleValidPreparation.ID, filter)
 
@@ -180,7 +180,7 @@ func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidPreparatio
 
 		filter := (*types.QueryFilter)(nil)
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, exampleValidPreparation.ID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, exampleValidPreparation.ID)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.GetValidPreparationInstrumentsForPreparation(s.ctx, exampleValidPreparation.ID, filter)
 
@@ -201,7 +201,7 @@ func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidPreparatio
 
 		exampleValidIngredientMeasurementUnitList := fakes.BuildFakeValidPreparationInstrumentList()
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, exampleValidInstrument.ID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, exampleValidInstrument.ID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientMeasurementUnitList)
 		actual, err := c.GetValidPreparationInstrumentsForInstrument(s.ctx, exampleValidInstrument.ID, filter)
 
@@ -237,7 +237,7 @@ func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidPreparatio
 
 		filter := (*types.QueryFilter)(nil)
 
-		spec := newRequestSpec(true, http.MethodGet, "limit=20&page=1&sortBy=asc", expectedPath, exampleValidInstrument.ID)
+		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, exampleValidInstrument.ID)
 		c := buildTestClientWithInvalidResponse(t, spec)
 		actual, err := c.GetValidPreparationInstrumentsForInstrument(s.ctx, exampleValidInstrument.ID, filter)
 

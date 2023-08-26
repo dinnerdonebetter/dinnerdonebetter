@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -12,14 +11,12 @@ import (
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/cryptography"
 	"github.com/dinnerdonebetter/backend/internal/pkg/cryptography/salsa20"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 
-	"github.com/Masterminds/squirrel"
 	"github.com/alexedwards/scs/postgresstore"
 	"github.com/alexedwards/scs/v2"
 	_ "github.com/jackc/pgx/v5/stdlib"
@@ -38,16 +35,13 @@ var _ database.DataManager = (*Querier)(nil)
 type Querier struct {
 	tracer                  tracing.Tracer
 	logger                  logging.Logger
-	sqlBuilder              squirrel.StatementBuilderType
 	secretGenerator         random.Generator
 	oauth2ClientTokenEncDec cryptography.EncryptorDecryptor
 	generatedQuerier        generated.Querier
 	timeFunc                func() time.Time
 	config                  *dbconfig.Config
 	db                      *sql.DB
-	connectionURL           string
 	migrateOnce             sync.Once
-	logQueries              bool
 }
 
 // ProvideDatabaseClient provides a new DataManager client.
@@ -80,13 +74,10 @@ func ProvideDatabaseClient(
 		db:                      db,
 		config:                  cfg,
 		tracer:                  tracer,
-		logQueries:              cfg.LogQueries,
 		timeFunc:                defaultTimeFunc,
 		generatedQuerier:        generated.New(),
 		secretGenerator:         random.NewGenerator(logger, tracerProvider),
-		connectionURL:           cfg.ConnectionDetails,
 		logger:                  logging.EnsureLogger(logger).WithName("querier"),
-		sqlBuilder:              squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar),
 		oauth2ClientTokenEncDec: encDec,
 	}
 
@@ -128,7 +119,7 @@ func (q *Querier) IsReady(ctx context.Context, waitPeriod time.Duration, maxAtte
 
 	attemptCount := 0
 
-	logger := q.logger.WithValue("connection_url", q.connectionURL)
+	logger := q.logger.WithValue("connection_url", q.config.ConnectionDetails)
 
 	for !ready {
 		err := q.db.PingContext(ctx)
@@ -147,22 +138,6 @@ func (q *Querier) IsReady(ctx context.Context, waitPeriod time.Duration, maxAtte
 	}
 
 	return false
-}
-
-func timePointerFromNullTime(nt sql.NullTime) *time.Time {
-	if nt.Valid {
-		return &nt.Time
-	}
-
-	return nil
-}
-
-func stringPointerFromNullString(nt sql.NullString) *string {
-	if nt.Valid {
-		return &nt.String
-	}
-
-	return nil
 }
 
 func defaultTimeFunc() time.Time {
@@ -205,108 +180,4 @@ func (q *Querier) rollbackTransaction(ctx context.Context, tx database.SQLQueryE
 	}
 
 	q.logger.Debug("transaction rolled back")
-}
-
-func (q *Querier) getOneRow(ctx context.Context, querier database.SQLQueryExecutor, queryDescription, query string, args []any) *sql.Row {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.WithValue("query_desc", queryDescription)
-	if q.logQueries {
-		logger = logger.WithValue("args", args)
-	}
-
-	tracing.AttachDatabaseQueryToSpan(span, fmt.Sprintf("%s single row fetch query", queryDescription), query, args)
-
-	row := querier.QueryRowContext(ctx, query, args...)
-
-	if q.logQueries {
-		logger.Debug("single row query performed")
-	}
-
-	return row
-}
-
-func (q *Querier) getRows(ctx context.Context, querier database.SQLQueryExecutor, queryDescription, query string, args []any) (*sql.Rows, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.WithValue("query_desc", queryDescription)
-	if q.logQueries {
-		logger = logger.WithValue("args", args)
-	}
-
-	tracing.AttachDatabaseQueryToSpan(span, fmt.Sprintf("%s fetch query", queryDescription), query, args)
-
-	rows, err := querier.QueryContext(ctx, query, args...)
-	if err != nil {
-		return nil, observability.PrepareError(err, span, "performing read query")
-	}
-
-	if err = rows.Err(); err != nil {
-		return nil, observability.PrepareError(err, span, "scanning results")
-	}
-
-	if q.logQueries {
-		logger.Debug("read query performed")
-	}
-
-	return rows, nil
-}
-
-func (q *Querier) performBooleanQuery(ctx context.Context, querier database.SQLQueryExecutor, query string, args []any) (bool, error) {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.WithValue(keys.DatabaseQueryKey, query).WithValue("args", args)
-	tracing.AttachDatabaseQueryToSpan(span, "boolean query", query, args)
-
-	var exists bool
-	err := querier.QueryRowContext(ctx, query, args...).Scan(&exists)
-	if errors.Is(err, sql.ErrNoRows) {
-		return false, nil
-	}
-	if err != nil {
-		return false, observability.PrepareAndLogError(err, logger, span, "executing boolean query")
-	}
-
-	if q.logQueries {
-		logger.Debug("boolean query performed")
-	}
-
-	return exists, nil
-}
-
-func (q *Querier) performWriteQuery(ctx context.Context, querier database.SQLQueryExecutor, queryDescription, query string, args []any) error {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.WithValue("query_desc", queryDescription)
-	if q.logQueries {
-		logger = logger.WithValue("args", args)
-	}
-
-	tracing.AttachDatabaseQueryToSpan(span, queryDescription, query, args)
-
-	res, err := querier.ExecContext(ctx, query, args...)
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "executing %s query", queryDescription)
-	}
-
-	var affectedRowCount int64
-	if affectedRowCount, err = res.RowsAffected(); affectedRowCount == 0 || err != nil {
-		// the only errors returned by the currently supported drivers are either
-		// always nil or simply indicate that no rows were affected by the query.
-
-		logger.Debug("no rows modified by query")
-		span.AddEvent("no_rows_modified")
-
-		return sql.ErrNoRows
-	}
-
-	if q.logQueries {
-		logger.Debug("query executed")
-	}
-
-	return nil
 }

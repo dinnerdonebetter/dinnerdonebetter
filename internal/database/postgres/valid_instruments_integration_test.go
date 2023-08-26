@@ -11,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func createValidInstrumentForTest(t *testing.T, ctx context.Context, exampleValidInstrument *types.ValidInstrument, dbc *Querier) *types.ValidInstrument {
@@ -43,6 +44,10 @@ func TestQuerier_Integration_ValidInstruments(t *testing.T) {
 
 	ctx := context.Background()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
 
 	defer func(t *testing.T) {
 		t.Helper()
@@ -88,9 +93,23 @@ func TestQuerier_Integration_ValidInstruments(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, validInstruments.Data, byName)
 
+	random, err := dbc.GetRandomValidInstrument(ctx)
+	assert.NoError(t, err)
+	assert.NotNil(t, random)
+
+	needingIndexing, err := dbc.GetValidInstrumentIDsThatNeedSearchIndexing(ctx)
+	assert.NoError(t, err)
+	assert.NotNil(t, needingIndexing)
+
 	// delete
 	for _, validInstrument := range createdValidInstruments {
+		assert.NoError(t, dbc.MarkValidInstrumentAsIndexed(ctx, validInstrument.ID))
 		assert.NoError(t, dbc.ArchiveValidInstrument(ctx, validInstrument.ID))
+
+		var exists bool
+		exists, err = dbc.ValidInstrumentExists(ctx, validInstrument.ID)
+		assert.NoError(t, err)
+		assert.False(t, exists)
 
 		var y *types.ValidInstrument
 		y, err = dbc.GetValidInstrument(ctx, validInstrument.ID)

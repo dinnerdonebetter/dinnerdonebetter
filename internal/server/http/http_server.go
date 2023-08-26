@@ -65,7 +65,7 @@ type (
 		mealPlanTasksService                   types.MealPlanTaskDataService
 		recipePrepTasksService                 types.RecipePrepTaskDataService
 		mealPlanGroceryListItemsService        types.MealPlanGroceryListItemDataService
-		validMeasurementConversionsService     types.ValidMeasurementConversionDataService
+		validMeasurementUnitConversionsService types.ValidMeasurementUnitConversionDataService
 		recipeStepCompletionConditionsService  types.RecipeStepCompletionConditionDataService
 		validIngredientStateIngredientsService types.ValidIngredientStateIngredientDataService
 		recipeStepVesselsService               types.RecipeStepVesselDataService
@@ -124,7 +124,7 @@ func ProvideHTTPServer(
 	mealPlanTasksService types.MealPlanTaskDataService,
 	recipePrepTasksService types.RecipePrepTaskDataService,
 	mealPlanGroceryListItemsService types.MealPlanGroceryListItemDataService,
-	validMeasurementConversionsService types.ValidMeasurementConversionDataService,
+	validMeasurementUnitConversionsService types.ValidMeasurementUnitConversionDataService,
 	recipeStepCompletionConditionsService types.RecipeStepCompletionConditionDataService,
 	validIngredientStateIngredientsService types.ValidIngredientStateIngredientDataService,
 	recipeStepVesselsService types.RecipeStepVesselDataService,
@@ -180,7 +180,7 @@ func ProvideHTTPServer(
 		mealPlanTasksService:                   mealPlanTasksService,
 		recipePrepTasksService:                 recipePrepTasksService,
 		mealPlanGroceryListItemsService:        mealPlanGroceryListItemsService,
-		validMeasurementConversionsService:     validMeasurementConversionsService,
+		validMeasurementUnitConversionsService: validMeasurementUnitConversionsService,
 		validIngredientStatesService:           validIngredientStatesService,
 		recipeStepCompletionConditionsService:  recipeStepCompletionConditionsService,
 		validIngredientStateIngredientsService: validIngredientStateIngredientsService,

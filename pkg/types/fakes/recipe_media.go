@@ -32,7 +32,7 @@ func BuildFakeRecipeMediaList() *types.QueryFilteredResult[types.RecipeMedia] {
 	return &types.QueryFilteredResult[types.RecipeMedia]{
 		Pagination: types.Pagination{
 			Page:          1,
-			Limit:         20,
+			Limit:         50,
 			FilteredCount: exampleQuantity / 2,
 			TotalCount:    exampleQuantity,
 		},

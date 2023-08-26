@@ -11,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func createValidMeasurementUnitForTest(t *testing.T, ctx context.Context, exampleValidMeasurementUnit *types.ValidMeasurementUnit, dbc *Querier) *types.ValidMeasurementUnit {
@@ -43,6 +44,10 @@ func TestQuerier_Integration_ValidMeasurementUnits(t *testing.T) {
 
 	ctx := context.Background()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
+
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
 
 	defer func(t *testing.T) {
 		t.Helper()
@@ -88,9 +93,36 @@ func TestQuerier_Integration_ValidMeasurementUnits(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Subset(t, validMeasurementUnits.Data, byName)
 
+	random, err := dbc.GetRandomValidMeasurementUnit(ctx)
+	assert.NoError(t, err)
+	assert.NotNil(t, random)
+
+	needingIndexing, err := dbc.GetValidMeasurementUnitIDsThatNeedSearchIndexing(ctx)
+	assert.NoError(t, err)
+	assert.NotNil(t, needingIndexing)
+
+	ingredient := createValidIngredientForTest(t, ctx, nil, dbc)
+	ingredientMeasurementUnit := fakes.BuildFakeValidIngredientMeasurementUnit()
+	ingredientMeasurementUnit.MeasurementUnit = *createdValidMeasurementUnits[0]
+	ingredientMeasurementUnit.Ingredient = *ingredient
+	dbInput := converters.ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitDatabaseCreationInput(ingredientMeasurementUnit)
+	createdIngredientMeasurementUnit, err := dbc.CreateValidIngredientMeasurementUnit(ctx, dbInput)
+	require.NoError(t, err)
+	require.NotNil(t, createdIngredientMeasurementUnit)
+
+	validIngredientMeasurementUnits, err := dbc.ValidMeasurementUnitsForIngredientID(ctx, ingredient.ID, nil)
+	require.NoError(t, err)
+	require.NotEmpty(t, validIngredientMeasurementUnits)
+
 	// delete
 	for _, validMeasurementUnit := range createdValidMeasurementUnits {
+		assert.NoError(t, dbc.MarkValidMeasurementUnitAsIndexed(ctx, validMeasurementUnit.ID))
 		assert.NoError(t, dbc.ArchiveValidMeasurementUnit(ctx, validMeasurementUnit.ID))
+
+		var exists bool
+		exists, err = dbc.ValidMeasurementUnitExists(ctx, validMeasurementUnit.ID)
+		assert.NoError(t, err)
+		assert.False(t, exists)
 
 		var y *types.ValidMeasurementUnit
 		y, err = dbc.GetValidMeasurementUnit(ctx, validMeasurementUnit.ID)
