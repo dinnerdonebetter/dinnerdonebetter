@@ -25,7 +25,7 @@ func (q *Querier) UpdateUserAccountStatus(ctx context.Context, userID string, in
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachUserIDToSpan(span, userID)
 
-	result, err := q.generatedQuerier.SetUserAccountStatus(ctx, q.db, &generated.SetUserAccountStatusParams{
+	rowsChanged, err := q.generatedQuerier.SetUserAccountStatus(ctx, q.db, &generated.SetUserAccountStatusParams{
 		UserAccountStatus:            input.NewStatus,
 		UserAccountStatusExplanation: input.Reason,
 		ID:                           input.TargetUserID,
@@ -34,10 +34,7 @@ func (q *Querier) UpdateUserAccountStatus(ctx context.Context, userID string, in
 		return observability.PrepareAndLogError(err, logger, span, "user status update")
 	}
 
-	if rowsAffected, rowsAffectedErr := result.RowsAffected(); rowsAffected == 0 {
-		if rowsAffectedErr != nil {
-			logger.Error(rowsAffectedErr, "error checking rows affected")
-		}
+	if rowsChanged == 0 {
 		return sql.ErrNoRows
 	}
 

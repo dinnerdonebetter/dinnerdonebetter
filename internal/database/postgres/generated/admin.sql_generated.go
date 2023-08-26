@@ -7,10 +7,9 @@ package generated
 
 import (
 	"context"
-	"database/sql"
 )
 
-const setUserAccountStatus = `-- name: SetUserAccountStatus :execresult
+const setUserAccountStatus = `-- name: SetUserAccountStatus :execrows
 
 UPDATE users SET user_account_status = $1, user_account_status_explanation = $2 WHERE archived_at IS NULL AND id = $3
 `
@@ -21,6 +20,10 @@ type SetUserAccountStatusParams struct {
 	ID                           string
 }
 
-func (q *Queries) SetUserAccountStatus(ctx context.Context, db DBTX, arg *SetUserAccountStatusParams) (sql.Result, error) {
-	return db.ExecContext(ctx, setUserAccountStatus, arg.UserAccountStatus, arg.UserAccountStatusExplanation, arg.ID)
+func (q *Queries) SetUserAccountStatus(ctx context.Context, db DBTX, arg *SetUserAccountStatusParams) (int64, error) {
+	result, err := db.ExecContext(ctx, setUserAccountStatus, arg.UserAccountStatus, arg.UserAccountStatusExplanation, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
