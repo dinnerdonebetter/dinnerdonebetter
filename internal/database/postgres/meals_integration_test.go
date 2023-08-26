@@ -97,6 +97,14 @@ func TestQuerier_Integration_Meals(t *testing.T) {
 	assert.NotEmpty(t, meals.Data)
 	assert.Equal(t, len(createdMeals), len(meals.Data))
 
+	results, err := dbc.GetMealsWithIDs(ctx, []string{createdMeals[0].ID})
+	assert.NoError(t, err)
+	assert.NotEmpty(t, results)
+
+	ids, err := dbc.GetMealIDsThatNeedSearchIndexing(ctx)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, ids)
+
 	// delete
 	for _, meal := range createdMeals {
 		assert.NoError(t, dbc.ArchiveMeal(ctx, meal.ID, user.ID))

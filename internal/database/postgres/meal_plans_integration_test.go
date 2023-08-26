@@ -167,8 +167,20 @@ func TestQuerier_Integration_MealPlans(t *testing.T) {
 	assert.NotEmpty(t, mealPlans.Data)
 	assert.Equal(t, len(createdMealPlans), len(mealPlans.Data))
 
+	_, err = dbc.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
+	assert.NoError(t, err)
+	_, err = dbc.GetFinalizedMealPlanIDsForTheNextWeek(ctx)
+	assert.NoError(t, err)
+	_, err = dbc.GetFinalizedMealPlansWithUninitializedGroceryLists(ctx)
+	assert.NoError(t, err)
+	_, err = dbc.FetchMissingVotesForMealPlan(ctx, createdMealPlans[0].ID, householdID)
+	assert.NoError(t, err)
+
 	// delete
 	for _, mealPlan := range createdMealPlans {
+		_, err = dbc.AttemptToFinalizeMealPlan(ctx, mealPlan.ID, householdID)
+		assert.Error(t, err)
+		assert.ErrorIs(t, err, ErrAlreadyFinalized)
 		assert.NoError(t, dbc.ArchiveMealPlan(ctx, mealPlan.ID, householdID))
 
 		var exists bool
