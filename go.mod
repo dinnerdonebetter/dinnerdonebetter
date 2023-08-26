@@ -2,8 +2,6 @@ module github.com/dinnerdonebetter/backend
 
 go 1.21
 
-toolchain go1.21.0
-
 require (
 	cloud.google.com/go/pubsub v1.32.0
 	cloud.google.com/go/secretmanager v1.11.1

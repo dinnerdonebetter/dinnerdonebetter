@@ -1,0 +1,39 @@
+concurrency:
+  group: ${{ github.ref }}
+
+on:
+  pull_request:
+    paths:
+      - pkg/**
+      - cmd/**
+      - internal/**
+      - tests/**
+      - go.mod
+      - go.sum
+
+name: deploy
+jobs:
+  infrastructure:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21.x'
+
+      - id: auth
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
+
+      - name: Build data changes cloud function directory
+        run: ./scripts/build_cloud_function.sh data_changes
+
+      - name: Build outbound outbound_emailer cloud function directory
+        run: ./scripts/build_cloud_function.sh outbound_emailer
+
+      - name: Build search indexer cloud function directory
+        run: ./scripts/build_cloud_function.sh search_indexer
