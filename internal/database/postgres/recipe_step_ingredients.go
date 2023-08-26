@@ -478,7 +478,7 @@ func (q *Querier) UpdateRecipeStepIngredient(ctx context.Context, updated *types
 
 	var ingredientID *string
 	if updated.Ingredient != nil {
-		ingredientID = &updated.MeasurementUnit.ID
+		ingredientID = &updated.Ingredient.ID
 	}
 
 	if _, err := q.generatedQuerier.UpdateRecipeStepIngredient(ctx, q.db, &generated.UpdateRecipeStepIngredientParams{

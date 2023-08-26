@@ -82,7 +82,6 @@ func (q *Querier) GetRecipePrepTask(ctx context.Context, recipeID, recipePrepTas
 				MinimumStorageTemperatureInCelsius:     float32PointerFromNullString(result.MinimumStorageTemperatureInCelsius),
 				MaximumTimeBufferBeforeRecipeInSeconds: uint32PointerFromNullInt32(result.MaximumTimeBufferBeforeRecipeInSeconds),
 				ID:                                     result.ID,
-				StorageType:                            string(result.StorageType.StorageContainerType),
 				BelongsToRecipe:                        result.BelongsToRecipe,
 				ExplicitStorageInstructions:            result.ExplicitStorageInstructions,
 				Notes:                                  result.Notes,
@@ -91,6 +90,12 @@ func (q *Querier) GetRecipePrepTask(ctx context.Context, recipeID, recipePrepTas
 				TaskSteps:                              []*types.RecipePrepTaskStep{},
 				MinimumTimeBufferBeforeRecipeInSeconds: uint32(result.MinimumTimeBufferBeforeRecipeInSeconds),
 				Optional:                               result.Optional,
+			}
+
+			logger.WithValue("storage_type", result.StorageType).Info("storage type")
+
+			if result.StorageType.Valid {
+				x.StorageType = string(result.StorageType.StorageContainerType)
 			}
 		}
 
@@ -331,7 +336,7 @@ func (q *Querier) UpdateRecipePrepTask(ctx context.Context, updated *types.Recip
 		ExplicitStorageInstructions:            updated.ExplicitStorageInstructions,
 		MinimumTimeBufferBeforeRecipeInSeconds: int32(updated.MinimumTimeBufferBeforeRecipeInSeconds),
 		MaximumTimeBufferBeforeRecipeInSeconds: nullInt32FromUint32Pointer(updated.MaximumTimeBufferBeforeRecipeInSeconds),
-		StorageType:                            generated.NullStorageContainerType{StorageContainerType: generated.StorageContainerType(updated.StorageType)},
+		StorageType:                            generated.NullStorageContainerType{StorageContainerType: generated.StorageContainerType(updated.StorageType), Valid: true},
 		MinimumStorageTemperatureInCelsius:     nullStringFromFloat32Pointer(updated.MinimumStorageTemperatureInCelsius),
 		MaximumStorageTemperatureInCelsius:     nullStringFromFloat32Pointer(updated.MaximumStorageTemperatureInCelsius),
 		BelongsToRecipe:                        updated.BelongsToRecipe,

@@ -150,8 +150,9 @@ SELECT
 	meal_plan_grocery_list_items.archived_at
 FROM meal_plan_grocery_list_items
 	JOIN meal_plans ON meal_plan_grocery_list_items.belongs_to_meal_plan=meal_plans.id
-    JOIN valid_ingredients ON meal_plan_grcoery_list_items.valid_ingredient=valid_ingredients.id
+    JOIN valid_ingredients ON meal_plan_grocery_list_items.valid_ingredient=valid_ingredients.id
     JOIN valid_measurement_units ON meal_plan_grocery_list_items.valid_measurement_unit=valid_measurement_units.id
+
 WHERE meal_plan_grocery_list_items.archived_at IS NULL
     AND valid_measurement_units.archived_at IS NULL
     AND valid_ingredients.archived_at IS NULL
@@ -372,7 +373,7 @@ SELECT
     meal_plan_grocery_list_items.archived_at
 FROM meal_plan_grocery_list_items
     JOIN meal_plans ON meal_plan_grocery_list_items.belongs_to_meal_plan=meal_plans.id
-    JOIN valid_ingredients ON meal_plan_grcoery_list_items.valid_ingredient=valid_ingredients.id
+    JOIN valid_ingredients ON meal_plan_grocery_list_items.valid_ingredient=valid_ingredients.id
     JOIN valid_measurement_units ON meal_plan_grocery_list_items.valid_measurement_unit=valid_measurement_units.id
 WHERE meal_plan_grocery_list_items.archived_at IS NULL
     AND valid_measurement_units.archived_at IS NULL
@@ -380,7 +381,10 @@ WHERE meal_plan_grocery_list_items.archived_at IS NULL
     AND meal_plan_grocery_list_items.belongs_to_meal_plan = $1
     AND meal_plans.archived_at IS NULL
     AND meal_plans.id = $1
-GROUP BY meal_plan_grocery_list_items.id
+GROUP BY meal_plan_grocery_list_items.id,
+    valid_ingredients.id,
+    valid_measurement_units.id,
+    meal_plans.id
 ORDER BY meal_plan_grocery_list_items.id
 `
 

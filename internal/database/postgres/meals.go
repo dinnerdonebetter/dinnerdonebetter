@@ -249,6 +249,10 @@ func (q *Querier) SearchForMeals(ctx context.Context, mealNameQuery string, filt
 		x.TotalCount = uint64(result.TotalCount)
 	}
 
+	if meal != nil {
+		x.Data = append(x.Data, meal)
+	}
+
 	return x, nil
 }
 

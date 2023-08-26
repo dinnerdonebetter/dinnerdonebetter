@@ -180,12 +180,12 @@ func (s *validIngredientsTestSuite) TestClient_SearchValidIngredients() {
 		exampleValidIngredientList := fakes.BuildFakeValidIngredientList()
 
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&q=whatever", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientList.Data)
+		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientList)
 		actual, err := c.SearchValidIngredients(s.ctx, exampleQuery, 0)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidIngredientList.Data, actual)
+		assert.Equal(t, exampleValidIngredientList, actual)
 	})
 
 	s.Run("with empty query", func() {

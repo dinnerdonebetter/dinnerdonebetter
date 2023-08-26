@@ -31,13 +31,13 @@ func (s *TestSuite) TestRecipeStepCompletionConditions_CompleteLifecycle() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
-			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.user, testClients.user, nil)
+			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
 
 			createdRecipeStep := createdRecipe.Steps[0]
 			require.NotEmpty(t, createdRecipeStep.ID, "created recipe step ID must not be empty")
 
 			// create ingredient state
-			createdValidIngredientState := createValidIngredientStateForTest(t, ctx, testClients.user)
+			createdValidIngredientState := createValidIngredientStateForTest(t, ctx, testClients.admin)
 
 			input := &types.RecipeStepCompletionConditionForExistingRecipeCreationRequestInput{
 				IngredientStateID:   createdValidIngredientState.ID,

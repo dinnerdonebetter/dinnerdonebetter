@@ -308,24 +308,23 @@ func (q *Querier) removeUserFromHousehold(ctx context.Context, querier database.
 		return observability.PrepareAndLogError(err, logger, span, "removing user from household")
 	}
 
-	remainingHouseholds, fetchRemainingHouseholdsErr := q.getHouseholdsForUser(ctx, querier, userID, nil)
-	if fetchRemainingHouseholdsErr != nil {
+	remainingHouseholds, err := q.getHouseholdsForUser(ctx, querier, userID, nil)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		q.rollbackTransaction(ctx, querier)
-		return observability.PrepareError(fetchRemainingHouseholdsErr, span, "fetching remaining households")
+		return observability.PrepareError(err, span, "fetching remaining households")
 	}
 
-	if len(remainingHouseholds.Data) == 0 {
-		if err := q.createHouseholdForUser(ctx, querier, false, "", userID); err != nil {
+	if len(remainingHouseholds.Data) < 1 {
+		logger.Debug("user has no remaining households, creating a new one")
+		if err = q.createHouseholdForUser(ctx, querier, false, "", userID); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "creating household for new user")
 		}
 		return nil
 	}
 
 	household := remainingHouseholds.Data[0]
-
-	logger = logger.WithValue(keys.HouseholdIDKey, household.ID)
-
-	if err := q.markHouseholdAsUserDefault(ctx, querier, userID, household.ID); err != nil {
+	logger.WithValue("new_default_household", household.ID).Info("setting new default household")
+	if err = q.markHouseholdAsUserDefault(ctx, querier, userID, household.ID); err != nil {
 		q.rollbackTransaction(ctx, querier)
 		return observability.PrepareAndLogError(err, logger, span, "marking household as default")
 	}
@@ -354,8 +353,6 @@ func (q *Querier) RemoveUserFromHousehold(ctx context.Context, userID, household
 		keys.UserIDKey:      userID,
 		keys.HouseholdIDKey: householdID,
 	})
-
-	logger.Info("creating")
 
 	tx, createTransactionErr := q.db.BeginTx(ctx, nil)
 	if createTransactionErr != nil {

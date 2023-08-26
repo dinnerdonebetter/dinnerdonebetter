@@ -118,6 +118,11 @@ WHERE meal_plan_option_votes.archived_at IS NULL
         meal_plan_option_votes.last_updated_at IS NULL
         OR meal_plan_option_votes.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
     )
+GROUP BY
+    meal_plan_option_votes.id,
+    meal_plan_options.id,
+    meal_plan_events.id,
+    meal_plans.id
 OFFSET sqlc.narg(query_offset)
 LIMIT sqlc.narg(query_limit);
 

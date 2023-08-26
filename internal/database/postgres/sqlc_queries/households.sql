@@ -92,7 +92,9 @@ SELECT
             COUNT(households.id)
         FROM
             households
+            JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
         WHERE households.archived_at IS NULL
+            AND household_user_memberships.belongs_to_user = sqlc.arg(user_id)
             AND household_user_memberships.belongs_to_user = sqlc.arg(user_id)
             AND households.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
             AND households.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
@@ -111,6 +113,7 @@ FROM households
 	JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
     JOIN users ON household_user_memberships.belongs_to_user = users.id
 WHERE households.archived_at IS NULL
+    AND household_user_memberships.archived_at IS NULL
     AND household_user_memberships.belongs_to_user = sqlc.arg(user_id)
     AND households.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
     AND households.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))

@@ -2,6 +2,7 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
@@ -85,6 +86,10 @@ func (q *Querier) GetRecipeStepCompletionCondition(ctx context.Context, recipeID
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "querying for recipe step completion condition")
+	}
+
+	if len(results) == 0 {
+		return nil, sql.ErrNoRows
 	}
 
 	recipeStepCompletionCondition := &types.RecipeStepCompletionCondition{}
@@ -221,6 +226,7 @@ func (q *Querier) GetRecipeStepCompletionConditions(ctx context.Context, recipeI
 	}
 
 	results, err := q.generatedQuerier.GetRecipeStepCompletionConditions(ctx, q.db, &generated.GetRecipeStepCompletionConditionsParams{
+		RecipeStepID:  recipeStepID,
 		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
@@ -240,16 +246,16 @@ func (q *Querier) GetRecipeStepCompletionConditions(ctx context.Context, recipeI
 			ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
 			LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
 			IngredientState: types.ValidIngredientState{
-				CreatedAt:     time.Time{},
-				ArchivedAt:    nil,
-				LastUpdatedAt: nil,
-				PastTense:     "",
-				Description:   "",
-				IconPath:      "",
-				ID:            "",
-				Name:          "",
-				AttributeType: "",
-				Slug:          "",
+				CreatedAt:     result.ValidIngredientStateCreatedAt,
+				ArchivedAt:    timePointerFromNullTime(result.ValidIngredientStateArchivedAt),
+				LastUpdatedAt: timePointerFromNullTime(result.ValidIngredientStateLastUpdatedAt),
+				PastTense:     result.ValidIngredientStatePastTense,
+				Description:   result.ValidIngredientStateDescription,
+				IconPath:      result.ValidIngredientStateIconPath,
+				ID:            result.ValidIngredientStateID,
+				Name:          result.ValidIngredientStateName,
+				AttributeType: string(result.ValidIngredientStateAttributeType),
+				Slug:          result.ValidIngredientStateSlug,
 			},
 			ID:                  result.ID,
 			BelongsToRecipeStep: result.BelongsToRecipeStep,
@@ -259,8 +265,8 @@ func (q *Querier) GetRecipeStepCompletionConditions(ctx context.Context, recipeI
 
 		if byID[recipeStepCompletionCondition.ID] == nil {
 			byID[recipeStepCompletionCondition.ID] = recipeStepCompletionCondition
-		} else {
 			idOrder = append(idOrder, recipeStepCompletionCondition.ID)
+		} else {
 			byID[recipeStepCompletionCondition.ID].Ingredients = append(byID[recipeStepCompletionCondition.ID].Ingredients, &types.RecipeStepCompletionConditionIngredient{
 				ID:                                     result.RecipeStepCompletionConditionIngredientID,
 				BelongsToRecipeStepCompletionCondition: result.RecipeStepCompletionConditionIngredientBelongsToRecipeS,

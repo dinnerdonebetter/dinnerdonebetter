@@ -772,9 +772,14 @@ func (q *Querier) ArchiveUser(ctx context.Context, userID string) error {
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
 	}
 
-	if _, err = q.generatedQuerier.ArchiveUser(ctx, tx, userID); err != nil {
+	changed, err := q.generatedQuerier.ArchiveUser(ctx, tx, userID)
+	if err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "archiving user")
+	}
+
+	if changed == 0 {
+		return sql.ErrNoRows
 	}
 
 	if _, err = q.generatedQuerier.ArchiveUserMemberships(ctx, tx, userID); err != nil {

@@ -393,7 +393,7 @@ SELECT
 	valid_ingredients.last_updated_at,
 	valid_ingredients.archived_at
 FROM valid_ingredients
-WHERE valid_ingredients.name ILIKE '%' || $1::text || '%'
+WHERE valid_ingredients.name ILIKE '%' || sqlc.arg(query)::text || '%'
 	AND valid_ingredients.archived_at IS NULL
 LIMIT 50;
 

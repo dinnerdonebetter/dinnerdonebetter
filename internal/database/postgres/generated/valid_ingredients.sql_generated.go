@@ -1067,8 +1067,8 @@ type SearchForValidIngredientsRow struct {
 	ContainsEgg                             bool
 }
 
-func (q *Queries) SearchForValidIngredients(ctx context.Context, db DBTX, dollar_1 string) ([]*SearchForValidIngredientsRow, error) {
-	rows, err := db.QueryContext(ctx, searchForValidIngredients, dollar_1)
+func (q *Queries) SearchForValidIngredients(ctx context.Context, db DBTX, query string) ([]*SearchForValidIngredientsRow, error) {
+	rows, err := db.QueryContext(ctx, searchForValidIngredients, query)
 	if err != nil {
 		return nil, err
 	}

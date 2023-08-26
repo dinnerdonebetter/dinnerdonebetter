@@ -21,7 +21,6 @@ func createRecipeStepCompletionConditionForTest(t *testing.T, ctx context.Contex
 	if exampleRecipeStepCompletionCondition == nil {
 		t.Fatal("exampleRecipeStepCompletionCondition must not be nil")
 	}
-	dbInput := converters.ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionDatabaseCreationInput(exampleRecipeStepCompletionCondition)
 
 	recipe, getRecipeErr := dbc.GetRecipe(ctx, recipeID)
 	require.NoError(t, getRecipeErr)
@@ -31,9 +30,18 @@ func createRecipeStepCompletionConditionForTest(t *testing.T, ctx context.Contex
 	require.NoError(t, getRecipeStepErr)
 	require.NotNil(t, recipeStep)
 
-	ingredientState, getIngredientStateErr := dbc.GetValidIngredientState(ctx, dbInput.IngredientStateID)
+	ingredientState, getIngredientStateErr := dbc.GetValidIngredientState(ctx, exampleRecipeStepCompletionCondition.IngredientState.ID)
 	require.NoError(t, getIngredientStateErr)
 	require.NotNil(t, ingredientState)
+
+	dbInput := converters.ConvertRecipeStepCompletionConditionToRecipeStepCompletionConditionDatabaseCreationInput(exampleRecipeStepCompletionCondition)
+	dbInput.Ingredients = []*types.RecipeStepCompletionConditionIngredientDatabaseCreationInput{
+		{
+			ID:                                     identifiers.New(),
+			BelongsToRecipeStepCompletionCondition: dbInput.ID,
+			RecipeStepIngredient:                   recipe.Steps[0].Ingredients[0].ID,
+		},
+	}
 
 	created, err := dbc.CreateRecipeStepCompletionCondition(ctx, dbInput)
 	assert.NoError(t, err)
@@ -58,9 +66,9 @@ func createRecipeStepCompletionConditionForTest(t *testing.T, ctx context.Contex
 }
 
 func TestQuerier_Integration_RecipeStepCompletionConditions(t *testing.T) {
-	// if !runningContainerTests {
-	t.SkipNow()
-	// }
+	if !runningContainerTests {
+		t.SkipNow()
+	}
 
 	ctx := context.Background()
 	dbc, container := buildDatabaseClientForTest(t, ctx)
