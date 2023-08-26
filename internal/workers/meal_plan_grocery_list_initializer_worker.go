@@ -88,10 +88,12 @@ func (w *MealPlanGroceryListInitializer) InitializeGroceryListsForFinalizedMealP
 		l = l.WithValue("grocery_list_items_to_create", len(dbInputs))
 		l.Info("creating grocery list items for meal plan")
 
-		if err = w.dataManager.CreateMealPlanGroceryListItemsForMealPlan(ctx, mealPlan.ID, dbInputs); err != nil {
-			errorResult = multierror.Append(errorResult, err)
-			l.Error(groceryListCreationErr, "failed to create grocery list for meal plan")
-			continue
+		for _, dbInput := range dbInputs {
+			if _, err = w.dataManager.CreateMealPlanGroceryListItem(ctx, dbInput); err != nil {
+				errorResult = multierror.Append(errorResult, err)
+				l.Error(groceryListCreationErr, "failed to create grocery list for meal plan")
+				continue
+			}
 		}
 	}
 

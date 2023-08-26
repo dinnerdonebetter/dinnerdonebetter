@@ -35,8 +35,8 @@ func (q *Querier) MealPlanGroceryListItemExists(ctx context.Context, mealPlanID,
 	tracing.AttachMealPlanGroceryListItemIDToSpan(span, mealPlanGroceryListItemID)
 
 	result, err := q.generatedQuerier.CheckMealPlanGroceryListItemExistence(ctx, q.db, &generated.CheckMealPlanGroceryListItemExistenceParams{
-		MealPlanGroceryListItemID: mealPlanGroceryListItemID,
 		MealPlanID:                mealPlanID,
+		MealPlanGroceryListItemID: mealPlanGroceryListItemID,
 	})
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing meal plan grocery list existence check")
@@ -370,47 +370,6 @@ func (q *Querier) createMealPlanGroceryListItem(ctx context.Context, querier dat
 // CreateMealPlanGroceryListItem creates a meal plan grocery list in the database.
 func (q *Querier) CreateMealPlanGroceryListItem(ctx context.Context, input *types.MealPlanGroceryListItemDatabaseCreationInput) (*types.MealPlanGroceryListItem, error) {
 	return q.createMealPlanGroceryListItem(ctx, q.db, input)
-}
-
-// CreateMealPlanGroceryListItemsForMealPlan creates a meal plan grocery list in the database.
-func (q *Querier) CreateMealPlanGroceryListItemsForMealPlan(ctx context.Context, mealPlanID string, inputs []*types.MealPlanGroceryListItemDatabaseCreationInput) error {
-	ctx, span := q.tracer.StartSpan(ctx)
-	defer span.End()
-
-	logger := q.logger.Clone()
-
-	if mealPlanID == "" {
-		return ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
-
-	if inputs == nil {
-		return ErrNilInputProvided
-	}
-
-	tx, err := q.db.BeginTx(ctx, nil)
-	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
-	}
-
-	for _, input := range inputs {
-		if _, err = q.createMealPlanGroceryListItem(ctx, tx, input); err != nil {
-			q.rollbackTransaction(ctx, tx)
-			return observability.PrepareAndLogError(err, logger, span, "updating meal plan grocery list")
-		}
-	}
-
-	if err = q.MarkMealPlanAsHavingGroceryListInitialized(ctx, mealPlanID); err != nil {
-		q.rollbackTransaction(ctx, tx)
-		return observability.PrepareAndLogError(err, logger, span, "marking meal plan grocery list as initialized")
-	}
-
-	if err = tx.Commit(); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
-	}
-
-	return nil
 }
 
 // UpdateMealPlanGroceryListItem updates a particular meal plan grocery list.

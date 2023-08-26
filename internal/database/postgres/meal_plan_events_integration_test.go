@@ -121,6 +121,11 @@ func TestQuerier_Integration_MealPlanEvents(t *testing.T) {
 	assert.NotEmpty(t, mealPlanEvents)
 	assert.Equal(t, len(createdMealPlanEvents), len(mealPlanEvents.Data))
 
+	assert.NoError(t, dbc.UpdateMealPlanEvent(ctx, createdMealPlanEvents[0]))
+
+	_, err = dbc.MealPlanEventIsEligibleForVoting(ctx, mealPlan.ID, createdMealPlanEvents[0].ID)
+	assert.NoError(t, err)
+
 	// delete
 	for _, mealPlanEvent := range createdMealPlanEvents {
 		assert.NoError(t, dbc.ArchiveMealPlanEvent(ctx, mealPlan.ID, mealPlanEvent.ID))

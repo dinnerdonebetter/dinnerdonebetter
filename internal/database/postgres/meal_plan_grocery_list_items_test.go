@@ -2,11 +2,8 @@ package postgres
 
 import (
 	"context"
-	"errors"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
@@ -98,28 +95,6 @@ func TestQuerier_CreateMealPlanGroceryListItem(T *testing.T) {
 		actual, err := c.CreateMealPlanGroceryListItem(ctx, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
-	})
-}
-
-func TestQuerier_CreateMealPlanGroceryListItemsForMealPlan(T *testing.T) {
-	T.Parallel()
-
-	T.Run("with error beginning transaction", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleMealPlan := fakes.BuildFakeMealPlan()
-		exampleMealPlanGroceryListItem := fakes.BuildFakeMealPlanGroceryListItem()
-		exampleInput := converters.ConvertMealPlanGroceryListItemToMealPlanGroceryListItemDatabaseCreationInput(exampleMealPlanGroceryListItem)
-		inputs := []*types.MealPlanGroceryListItemDatabaseCreationInput{exampleInput}
-
-		c, db := buildTestClient(t)
-
-		db.ExpectBegin().WillReturnError(errors.New("blah"))
-
-		assert.Error(t, c.CreateMealPlanGroceryListItemsForMealPlan(ctx, exampleMealPlan.ID, inputs))
-
-		mock.AssertExpectationsForObjects(t, db)
 	})
 }
 

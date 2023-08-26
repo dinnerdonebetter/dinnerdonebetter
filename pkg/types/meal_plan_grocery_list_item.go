@@ -115,7 +115,6 @@ type (
 		CreateMealPlanGroceryListItem(ctx context.Context, input *MealPlanGroceryListItemDatabaseCreationInput) (*MealPlanGroceryListItem, error)
 		UpdateMealPlanGroceryListItem(ctx context.Context, updated *MealPlanGroceryListItem) error
 		ArchiveMealPlanGroceryListItem(ctx context.Context, mealPlanGroceryListItemID string) error
-		CreateMealPlanGroceryListItemsForMealPlan(ctx context.Context, mealPlanID string, inputs []*MealPlanGroceryListItemDatabaseCreationInput) error
 	}
 
 	// MealPlanGroceryListItemDataService describes a structure capable of serving traffic related to meal plan grocery list items.
