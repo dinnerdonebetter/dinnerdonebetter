@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM golang:1.20-buster
+FROM golang:1.21-buster
 
 WORKDIR /go/src/github.com/dinnerdonebetter/backend
 ENV SKIP_PASETO_TESTS=TRUE

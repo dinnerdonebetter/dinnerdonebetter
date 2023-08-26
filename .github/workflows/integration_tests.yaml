@@ -3,6 +3,7 @@ on: [gollum]
 #    paths:
 #      - pkg/**
 #      - internal/**
+
 name: integration tests
 jobs:
  run:

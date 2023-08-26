@@ -5,6 +5,7 @@ on: # [gollum]
       - cmd/**
       - internal/**
       - tests/**
+
 name: lint
 jobs:
   golang:
