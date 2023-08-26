@@ -5,6 +5,7 @@ on: # [gollum]
       - cmd/**
       - internal/**
       - tests/**
+
 name: check
 jobs:
   golang_formatting:

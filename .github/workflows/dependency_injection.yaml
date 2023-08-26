@@ -4,6 +4,7 @@ on: # [gollum]
       - pkg/**
       - cmd/**
       - internal/**
+
 name: check
 jobs:
  dependency_injection:

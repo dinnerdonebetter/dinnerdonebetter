@@ -5,6 +5,7 @@ on: # [gollum]
       - internal/**
       - go.mod
       - go.sum
+
 name: unit tests
 jobs:
  run:
