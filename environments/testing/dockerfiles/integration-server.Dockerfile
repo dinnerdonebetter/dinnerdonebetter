@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM golang:1.20-buster AS build-stage
+FROM golang:1.21-buster AS build-stage
 
 WORKDIR /go/src/github.com/dinnerdonebetter/backend
 

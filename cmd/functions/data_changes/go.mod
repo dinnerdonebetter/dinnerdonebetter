@@ -1,6 +1,8 @@
 module github.com/dinnerdonebetter/backend/cmd/functions/data_changes
 
-go 1.20
+go 1.21
+
+toolchain go1.21.0
 
 replace github.com/dinnerdonebetter/backend => ../../../
 
