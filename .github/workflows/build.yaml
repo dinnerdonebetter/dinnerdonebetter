@@ -11,8 +11,9 @@ on:
       - go.mod
       - go.sum
 
+name: build
 jobs:
-  build:
+  run:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
