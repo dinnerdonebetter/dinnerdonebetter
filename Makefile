@@ -192,7 +192,7 @@ build:
 
 .PHONY: quicktest
 quicktest: $(ARTIFACTS_DIR) vendor build
-	$(GO) test -cover -shuffle=on -race -failfast $(TESTABLE_PACKAGE_LIST)
+	go test -cover -shuffle=on -race -failfast $(TESTABLE_PACKAGE_LIST)
 
 ## Generated files
 
