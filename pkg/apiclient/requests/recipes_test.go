@@ -349,3 +349,47 @@ func TestBuilder_BuildGetRecipeMealPlanTasksRequest(T *testing.T) {
 		assert.Error(t, err)
 	})
 }
+
+func TestBuilder_BuildCloneRecipeRequest(T *testing.T) {
+	T.Parallel()
+
+	const expectedPathFormat = "/api/v1/recipes/%s/clone"
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+
+		exampleRecipe := fakes.BuildFakeRecipe()
+
+		spec := newRequestSpec(true, http.MethodPost, "", expectedPathFormat, exampleRecipe.ID)
+
+		actual, err := helper.builder.BuildCloneRecipeRequest(helper.ctx, exampleRecipe.ID)
+		assert.NoError(t, err)
+
+		assertRequestQuality(t, actual, spec)
+	})
+
+	T.Run("with invalid recipe ID", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+
+		actual, err := helper.builder.BuildCloneRecipeRequest(helper.ctx, "")
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	T.Run("with invalid request builder", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		helper.builder = buildTestRequestBuilderWithInvalidURL()
+
+		exampleRecipe := fakes.BuildFakeRecipe()
+
+		actual, err := helper.builder.BuildCloneRecipeRequest(helper.ctx, exampleRecipe.ID)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}

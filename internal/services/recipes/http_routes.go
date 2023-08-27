@@ -542,3 +542,92 @@ func (s *service) MermaidHandler(res http.ResponseWriter, req *http.Request) {
 	// encode our response and peace.
 	s.encoderDecoder.RespondWithData(ctx, res, graphDefinition)
 }
+
+// CloneHandler returns a POST handler that returns a cloned recipe.
+func (s *service) CloneHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	// determine user ID.
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		return
+	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	// determine recipe ID.
+	recipeID := s.recipeIDFetcher(req)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+
+	// fetch recipe from database.
+	x, err := s.recipeDataManager.GetRecipe(ctx, recipeID)
+	if errors.Is(err, sql.ErrNoRows) {
+		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		return
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving recipe")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	clonedInput := converters.ConvertRecipeToRecipeDatabaseCreationInput(x)
+	clonedInput.CreatedByUser = sessionCtxData.Requester.UserID
+	clonedInput.InspiredByRecipeID = &x.ID
+	clonedInput.ID = identifiers.New()
+	for i := range clonedInput.Steps {
+		newRecipeStepID := identifiers.New()
+		clonedInput.Steps[i].ID = newRecipeStepID
+		for j := range clonedInput.Steps[i].Ingredients {
+			clonedInput.Steps[i].Ingredients[j].ID = identifiers.New()
+			clonedInput.Steps[i].Ingredients[j].BelongsToRecipeStep = newRecipeStepID
+		}
+		for j := range clonedInput.Steps[i].Instruments {
+			clonedInput.Steps[i].Instruments[j].ID = identifiers.New()
+			clonedInput.Steps[i].Instruments[j].BelongsToRecipeStep = newRecipeStepID
+		}
+		for j := range clonedInput.Steps[i].Vessels {
+			clonedInput.Steps[i].Vessels[j].ID = identifiers.New()
+			clonedInput.Steps[i].Vessels[j].BelongsToRecipeStep = newRecipeStepID
+		}
+		for j := range clonedInput.Steps[i].Products {
+			clonedInput.Steps[i].Products[j].ID = identifiers.New()
+			clonedInput.Steps[i].Products[j].BelongsToRecipeStep = newRecipeStepID
+		}
+		for j := range clonedInput.Steps[i].CompletionConditions {
+			newCompletionConditionID := identifiers.New()
+			clonedInput.Steps[i].CompletionConditions[j].ID = newCompletionConditionID
+			clonedInput.Steps[i].CompletionConditions[j].BelongsToRecipeStep = newRecipeStepID
+			for k := range clonedInput.Steps[i].CompletionConditions[j].Ingredients {
+				clonedInput.Steps[i].CompletionConditions[j].Ingredients[k].ID = identifiers.New()
+				clonedInput.Steps[i].CompletionConditions[j].Ingredients[k].BelongsToRecipeStepCompletionCondition = newCompletionConditionID
+			}
+		}
+	}
+
+	// TODO: handle media here eventually
+
+	for i := range clonedInput.PrepTasks {
+		clonedInput.PrepTasks[i].ID = identifiers.New()
+		for j := range clonedInput.PrepTasks[i].TaskSteps {
+			clonedInput.PrepTasks[i].TaskSteps[j].ID = identifiers.New()
+		}
+	}
+
+	created, err := s.recipeDataManager.CreateRecipe(ctx, clonedInput)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "cloning recipe")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
+	// encode our response and peace.
+	s.encoderDecoder.RespondWithData(ctx, res, created)
+}

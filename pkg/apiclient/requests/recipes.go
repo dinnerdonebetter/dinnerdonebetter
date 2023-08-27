@@ -230,6 +230,33 @@ func (b *Builder) BuildGetRecipeMealPlanTasksRequest(ctx context.Context, recipe
 	return req, nil
 }
 
+// BuildCloneRecipeRequest builds an HTTP request for fetching a recipe.
+func (b *Builder) BuildCloneRecipeRequest(ctx context.Context, recipeID string) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if recipeID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+
+	uri := b.BuildURL(
+		ctx,
+		nil,
+		recipesBasePath,
+		recipeID,
+		"clone",
+	)
+	tracing.AttachRequestURIToSpan(span, uri)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, http.NoBody)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "building request")
+	}
+
+	return req, nil
+}
+
 const (
 	imagePNG  = "image/png"
 	imageJPEG = "image/jpeg"
