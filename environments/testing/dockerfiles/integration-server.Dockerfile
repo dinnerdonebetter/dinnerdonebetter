@@ -12,6 +12,8 @@ COPY vendor vendor
 COPY go.mod go.mod
 COPY go.sum go.sum
 
+ENV CGO_ENABLED=0
+
 RUN --mount=type=cache,target=/root/.cache/go-build go build -trimpath -o /dinnerdonebetter github.com/dinnerdonebetter/backend/cmd/services/api/http
 
 # final stage

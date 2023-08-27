@@ -148,7 +148,6 @@ type (
 		SearchHandler(http.ResponseWriter, *http.Request)
 		UpdateHandler(http.ResponseWriter, *http.Request)
 		ArchiveHandler(http.ResponseWriter, *http.Request)
-		DAGHandler(http.ResponseWriter, *http.Request)
 		EstimatedPrepStepsHandler(http.ResponseWriter, *http.Request)
 		ImageUploadHandler(http.ResponseWriter, *http.Request)
 		MermaidHandler(http.ResponseWriter, *http.Request)
