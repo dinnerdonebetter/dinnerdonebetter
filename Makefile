@@ -5,6 +5,7 @@ GOPATH                        := $(GOPATH)
 ARTIFACTS_DIR                 := artifacts
 COVERAGE_OUT                  := $(ARTIFACTS_DIR)/coverage.out
 GO_FORMAT                     := gofmt -s -w
+GO                            := CGO_ENABLED=0 go
 THIS                          := github.com/dinnerdonebetter/backend
 TOTAL_PACKAGE_LIST            := `go list $(THIS)/...`
 TESTABLE_PACKAGE_LIST         := `go list $(THIS)/... | grep -Ev '(integration)'`
@@ -182,29 +183,29 @@ clean_coverage:
 
 .PHONY: coverage
 coverage: clean_coverage $(ARTIFACTS_DIR)
-	@go test -coverprofile=$(COVERAGE_OUT) -shuffle=on -covermode=atomic -race $(TESTABLE_PACKAGE_LIST) > /dev/null
-	@go tool cover -func=$(ARTIFACTS_DIR)/coverage.out | grep 'total:' | xargs | awk '{ print "COVERAGE: " $$3 }'
+	@$(GO) test -coverprofile=$(COVERAGE_OUT) -shuffle=on -covermode=atomic -race $(TESTABLE_PACKAGE_LIST) > /dev/null
+	@$(GO) tool cover -func=$(ARTIFACTS_DIR)/coverage.out | grep 'total:' | xargs | awk '{ print "COVERAGE: " $$3 }'
 
 .PHONY: build
 build:
-	go build $(TOTAL_PACKAGE_LIST)
+	$(GO) build $(TOTAL_PACKAGE_LIST)
 
 .PHONY: quicktest
 quicktest: $(ARTIFACTS_DIR) vendor build
-	go test -cover -shuffle=on -race -failfast $(TESTABLE_PACKAGE_LIST)
+	$(GO) test -cover -shuffle=on -race -failfast $(TESTABLE_PACKAGE_LIST)
 
 ## Generated files
 
 .PHONY: configs
 configs:
-	go run github.com/dinnerdonebetter/backend/cmd/tools/gen_configs
+	$(GO) run github.com/dinnerdonebetter/backend/cmd/tools/gen_configs
 
 clean_ts:
 	rm -rf $(ARTIFACTS_DIR)/typescript
 
 typescript: clean_ts
 	mkdir -p $(ARTIFACTS_DIR)/typescript
-	go run github.com/dinnerdonebetter/backend/cmd/tools/codegen/gen_typescript
+	$(GO) run github.com/dinnerdonebetter/backend/cmd/tools/codegen/gen_typescript
 	(cd ../frontend && make format)
 
 ## Integration tests
