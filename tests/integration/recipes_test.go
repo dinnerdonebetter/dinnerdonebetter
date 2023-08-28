@@ -757,6 +757,9 @@ func (s *TestSuite) TestRecipes_Cloning() {
 			actual, err := testClients.user.CloneRecipe(ctx, createdRecipe.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
+			require.Equal(t, createdRecipe.Name, actual.Name)
+			require.Equal(t, len(createdRecipe.Steps), len(actual.Steps))
+
 			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
 		}
 	})
