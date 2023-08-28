@@ -743,3 +743,24 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 		}
 	})
 }
+
+func (s *TestSuite) TestRecipes_Cloning() {
+	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+		return func() {
+			t := s.T()
+
+			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
+			defer span.End()
+
+			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
+
+			actual, err := testClients.user.CloneRecipe(ctx, createdRecipe.ID)
+			requireNotNilAndNoProblems(t, actual, err)
+
+			require.Equal(t, createdRecipe.Name, actual.Name)
+			require.Equal(t, len(createdRecipe.Steps), len(actual.Steps))
+
+			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
+		}
+	})
+}

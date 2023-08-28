@@ -209,3 +209,29 @@ func (c *Client) UploadRecipeMedia(ctx context.Context, files map[string][]byte,
 
 	return nil
 }
+
+// CloneRecipe gets a recipe.
+func (c *Client) CloneRecipe(ctx context.Context, recipeID string) (*types.Recipe, error) {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := c.logger.Clone()
+
+	if recipeID == "" {
+		return nil, buildInvalidIDError("recipe")
+	}
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+	tracing.AttachRecipeIDToSpan(span, recipeID)
+
+	req, err := c.requestBuilder.BuildCloneRecipeRequest(ctx, recipeID)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "building get recipe request")
+	}
+
+	var recipe *types.Recipe
+	if err = c.fetchAndUnmarshal(ctx, req, &recipe); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe")
+	}
+
+	return recipe, nil
+}

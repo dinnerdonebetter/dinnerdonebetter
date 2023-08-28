@@ -1106,3 +1106,92 @@ func TestRecipesService_MermaidHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, recipeDataManager, encoderDecoder)
 	})
 }
+
+func TestRecipesService_CloneHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.recipeIDFetcher = func(_ *http.Request) string {
+			return helper.exampleRecipe.ID
+		}
+
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
+		recipeDataManager.On(
+			"GetRecipe",
+			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
+		).Return(helper.exampleRecipe, nil)
+
+		recipeDataManager.On(
+			"CreateRecipe",
+			testutils.ContextMatcher,
+			mock.MatchedBy(func(recipe *types.RecipeDatabaseCreationInput) bool {
+				return assert.NotEqual(t, helper.exampleRecipe.ID, recipe.ID)
+			}),
+		).Return(helper.exampleRecipe, nil)
+		helper.service.recipeDataManager = recipeDataManager
+
+		helper.service.CloneHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager)
+	})
+
+	T.Run("with error getting recipe", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.recipeIDFetcher = func(_ *http.Request) string {
+			return helper.exampleRecipe.ID
+		}
+
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
+		recipeDataManager.On(
+			"GetRecipe",
+			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
+		).Return((*types.Recipe)(nil), errors.New("blah"))
+		helper.service.recipeDataManager = recipeDataManager
+
+		helper.service.CloneHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager)
+	})
+
+	T.Run("with error creating cloned recipe", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.recipeIDFetcher = func(_ *http.Request) string {
+			return helper.exampleRecipe.ID
+		}
+
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
+		recipeDataManager.On(
+			"GetRecipe",
+			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
+		).Return(helper.exampleRecipe, nil)
+
+		recipeDataManager.On(
+			"CreateRecipe",
+			testutils.ContextMatcher,
+			mock.MatchedBy(func(recipe *types.RecipeDatabaseCreationInput) bool {
+				return assert.NotEqual(t, helper.exampleRecipe.ID, recipe.ID)
+			}),
+		).Return((*types.Recipe)(nil), errors.New("blah"))
+		helper.service.recipeDataManager = recipeDataManager
+
+		helper.service.CloneHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager)
+	})
+}

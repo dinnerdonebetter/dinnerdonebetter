@@ -772,6 +772,9 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 				singleRecipeRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipesPermission)).
 					Put(root, s.recipesService.UpdateHandler)
+				singleRecipeRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadRecipesPermission)).
+					Post("/clone", s.recipesService.CloneHandler)
 
 				singleRecipeRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateRecipesPermission)).

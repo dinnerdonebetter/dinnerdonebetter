@@ -337,6 +337,53 @@ func (s *recipesTestSuite) TestClient_ArchiveRecipe() {
 	})
 }
 
+func (s *recipesTestSuite) TestClient_CloneRecipe() {
+	const expectedPathFormat = "/api/v1/recipes/%s/clone"
+
+	s.Run("standard", func() {
+		t := s.T()
+
+		spec := newRequestSpec(true, http.MethodPost, "", expectedPathFormat, s.exampleRecipe.ID)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipe)
+		actual, err := c.CloneRecipe(s.ctx, s.exampleRecipe.ID)
+
+		require.NotNil(t, actual)
+		assert.NoError(t, err)
+		assert.Equal(t, s.exampleRecipe, actual)
+	})
+
+	s.Run("with invalid recipe ID", func() {
+		t := s.T()
+
+		c, _ := buildSimpleTestClient(t)
+		actual, err := c.CloneRecipe(s.ctx, "")
+
+		require.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error building request", func() {
+		t := s.T()
+
+		c := buildTestClientWithInvalidURL(t)
+		actual, err := c.CloneRecipe(s.ctx, s.exampleRecipe.ID)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error executing request", func() {
+		t := s.T()
+
+		spec := newRequestSpec(true, http.MethodPost, "", expectedPathFormat, s.exampleRecipe.ID)
+		c := buildTestClientWithInvalidResponse(t, spec)
+		actual, err := c.CloneRecipe(s.ctx, s.exampleRecipe.ID)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
 // buildArbitraryImage builds an image with a bunch of colors in it.
 func buildArbitraryImage(widthAndHeight int) image.Image {
 	img := image.NewRGBA(image.Rectangle{Min: image.Point{}, Max: image.Point{X: widthAndHeight, Y: widthAndHeight}})
