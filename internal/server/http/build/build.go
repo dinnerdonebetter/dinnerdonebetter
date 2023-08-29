@@ -7,7 +7,7 @@ import (
 	"context"
 
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
-	"github.com/dinnerdonebetter/backend/internal/authentication"
+	authcfg "github.com/dinnerdonebetter/backend/internal/authentication/config"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
@@ -85,7 +85,6 @@ func Build(
 		images.Providers,
 		chi.Providers,
 		random.Providers,
-		authentication.Providers,
 		authservice.Providers,
 		usersservice.Providers,
 		householdsservice.Providers,
@@ -136,6 +135,7 @@ func Build(
 		oauth2clientsservice.Providers,
 		validvesselsservice.Providers,
 		validpreparationvesselsservice.Providers,
+		authcfg.Providers,
 	)
 
 	return nil, nil

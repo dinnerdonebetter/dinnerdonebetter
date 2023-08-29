@@ -10,6 +10,7 @@ import (
 
 	analyticsconfig "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/analytics/segment"
+	authcfg "github.com/dinnerdonebetter/backend/internal/authentication/config"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
 	emailconfig "github.com/dinnerdonebetter/backend/internal/email/config"
@@ -209,6 +210,9 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 	}
 
 	cfg := &config.InstanceConfig{
+		Authentication: authcfg.Config{
+			Provider: authcfg.ProviderArgon2,
+		},
 		Routing: devRoutingConfig,
 		Meta: config.MetaSettings{
 			Debug:   true,
@@ -352,6 +356,9 @@ func devEnvironmentServerConfig(ctx context.Context, filePath string) error {
 
 func buildDevConfig() *config.InstanceConfig {
 	return &config.InstanceConfig{
+		Authentication: authcfg.Config{
+			Provider: authcfg.ProviderArgon2,
+		},
 		Routing: localRoutingConfig,
 		Meta: config.MetaSettings{
 			Debug:   true,
@@ -596,6 +603,9 @@ func localDevelopmentWorkerConfig(ctx context.Context, filePath string) error {
 
 func buildIntegrationTestsConfig() *config.InstanceConfig {
 	return &config.InstanceConfig{
+		Authentication: authcfg.Config{
+			Provider: authcfg.ProviderArgon2,
+		},
 		Routing: localRoutingConfig,
 		Meta: config.MetaSettings{
 			Debug:   false,
