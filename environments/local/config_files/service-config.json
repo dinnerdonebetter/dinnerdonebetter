@@ -1,4 +1,8 @@
 {
+	"authentication": {
+		"argon2": {},
+		"provider": "argon2"
+	},
 	"observability": {
 		"logging": {
 			"level": 0,

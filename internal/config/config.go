@@ -8,6 +8,7 @@ import (
 	"runtime/debug"
 
 	analyticsconfig "github.com/dinnerdonebetter/backend/internal/analytics/config"
+	authcfg "github.com/dinnerdonebetter/backend/internal/authentication/config"
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
 	emailconfig "github.com/dinnerdonebetter/backend/internal/email/config"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
@@ -41,18 +42,19 @@ type (
 	InstanceConfig struct {
 		_ struct{}
 
-		Observability observability.Config      `json:"observability" toml:"observability,omitempty"`
-		Email         emailconfig.Config        `json:"email"         toml:"email,omitempty"`
-		Analytics     analyticsconfig.Config    `json:"analytics"     toml:"analytics,omitempty"`
-		Search        searchcfg.Config          `json:"search"        toml:"search,omitempty"`
-		FeatureFlags  featureflagsconfig.Config `json:"featureFlags"  toml:"events,omitempty"`
-		Encoding      encoding.Config           `json:"encoding"      toml:"encoding,omitempty"`
-		Meta          MetaSettings              `json:"meta"          toml:"meta,omitempty"`
-		Routing       routing.Config            `json:"routing"       toml:"routing,omitempty"`
-		Events        msgconfig.Config          `json:"events"        toml:"events,omitempty"`
-		Server        http.Config               `json:"server"        toml:"server,omitempty"`
-		Database      dbconfig.Config           `json:"database"      toml:"database,omitempty"`
-		Services      ServicesConfig            `json:"services"      toml:"services,omitempty"`
+		Authentication authcfg.Config            `json:"authentication" toml:"authentication,omitempty"`
+		Observability  observability.Config      `json:"observability"  toml:"observability,omitempty"`
+		Email          emailconfig.Config        `json:"email"          toml:"email,omitempty"`
+		Analytics      analyticsconfig.Config    `json:"analytics"      toml:"analytics,omitempty"`
+		Search         searchcfg.Config          `json:"search"         toml:"search,omitempty"`
+		FeatureFlags   featureflagsconfig.Config `json:"featureFlags"   toml:"events,omitempty"`
+		Encoding       encoding.Config           `json:"encoding"       toml:"encoding,omitempty"`
+		Meta           MetaSettings              `json:"meta"           toml:"meta,omitempty"`
+		Routing        routing.Config            `json:"routing"        toml:"routing,omitempty"`
+		Events         msgconfig.Config          `json:"events"         toml:"events,omitempty"`
+		Server         http.Config               `json:"server"         toml:"server,omitempty"`
+		Database       dbconfig.Config           `json:"database"       toml:"database,omitempty"`
+		Services       ServicesConfig            `json:"services"       toml:"services,omitempty"`
 	}
 )
 
@@ -75,16 +77,17 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 	var result *multierror.Error
 
 	validators := map[string]func(context.Context) error{
-		"Routing":       cfg.Routing.ValidateWithContext,
-		"Meta":          cfg.Meta.ValidateWithContext,
-		"Encoding":      cfg.Encoding.ValidateWithContext,
-		"Analytics":     cfg.Analytics.ValidateWithContext,
-		"Observability": cfg.Observability.ValidateWithContext,
-		"Database":      cfg.Database.ValidateWithContext,
-		"server":        cfg.Server.ValidateWithContext,
-		"Email":         cfg.Email.ValidateWithContext,
-		"FeatureFlags":  cfg.FeatureFlags.ValidateWithContext,
-		"Search":        cfg.Search.ValidateWithContext,
+		"Authentication": cfg.Authentication.ValidateWithContext,
+		"Routing":        cfg.Routing.ValidateWithContext,
+		"Meta":           cfg.Meta.ValidateWithContext,
+		"Encoding":       cfg.Encoding.ValidateWithContext,
+		"Analytics":      cfg.Analytics.ValidateWithContext,
+		"Observability":  cfg.Observability.ValidateWithContext,
+		"Database":       cfg.Database.ValidateWithContext,
+		"server":         cfg.Server.ValidateWithContext,
+		"Email":          cfg.Email.ValidateWithContext,
+		"FeatureFlags":   cfg.FeatureFlags.ValidateWithContext,
+		"Search":         cfg.Search.ValidateWithContext,
 	}
 
 	for name, validator := range validators {
