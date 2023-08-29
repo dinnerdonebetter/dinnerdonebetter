@@ -36,7 +36,6 @@ func createValidPreparationVesselForTest(t *testing.T, ctx context.Context, admi
 	exampleValidPreparationVesselInput := converters.ConvertValidPreparationVesselToValidPreparationVesselCreationRequestInput(exampleValidPreparationVessel)
 	createdValidPreparationVessel, err := adminClient.CreateValidPreparationVessel(ctx, exampleValidPreparationVesselInput)
 	require.NoError(t, err)
-	t.Logf("created valid preparation vessel pre-fetch %q", createdValidPreparationVessel.ID)
 
 	checkValidPreparationVesselEquality(t, exampleValidPreparationVessel, createdValidPreparationVessel)
 

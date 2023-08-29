@@ -21,6 +21,7 @@
 	},
 	"analytics": {
 		"segment": null,
+		"posthog": null,
 		"rudderstack": null,
 		"provider": ""
 	},
@@ -266,11 +267,6 @@
 				"hashKey": "HEREISA32CHARSECRETWHICHISMADEUP",
 				"blockKey": "DIFFERENT32CHARSECRETTHATIMADEUP",
 				"lifetime": 86400000000000
-			},
-			"paseto": {
-				"issuer": "dinner_done_better_service",
-				"localModeKey": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
-				"lifetime": 60000000000
 			},
 			"oauth2": {
 				"domain": "http://localhost:9000",

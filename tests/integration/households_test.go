@@ -1,7 +1,6 @@
 package integration
 
 import (
-	"strings"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
@@ -803,11 +802,7 @@ func (s *TestSuite) TestHouseholds_UsersHaveBackupHouseholdCreatedForThemWhenRem
 			require.NotEmpty(t, otherHouseholdID)
 			require.True(t, found)
 
-			t.Logf(strings.Repeat("\n", 10))
-
 			require.NoError(t, testClients.user.RemoveUserFromHousehold(ctx, relevantHouseholdID, u.ID))
-
-			t.Logf(strings.Repeat("\n", 10))
 
 			u.HashedPassword = regInput.Password
 

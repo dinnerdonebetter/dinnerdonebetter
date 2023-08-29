@@ -2,7 +2,6 @@
 FROM golang:1.21-bookworm
 
 WORKDIR /go/src/github.com/dinnerdonebetter/backend
-ENV SKIP_PASETO_TESTS=TRUE
 COPY . .
 
 # to debug a specific test:

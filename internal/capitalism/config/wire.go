@@ -1,4 +1,4 @@
-package capitalism
+package config
 
 import (
 	"github.com/google/wire"
@@ -7,8 +7,6 @@ import (
 var (
 	// Providers are what we provide to dependency injection.
 	Providers = wire.NewSet(
-		wire.FieldsOf(new(*Config),
-			"Stripe",
-		),
+		ProvideCapitalismImplementation,
 	)
 )

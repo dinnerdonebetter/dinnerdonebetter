@@ -5,10 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/random"
-
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 func TestConfig_Validate(T *testing.T) {
@@ -19,14 +16,7 @@ func TestConfig_Validate(T *testing.T) {
 
 		ctx := context.Background()
 
-		localKey, err := random.GenerateRawBytes(ctx, pasetoKeyRequiredLength)
-		require.NoError(t, err)
-
 		cfg := &Config{
-			PASETO: PASETOConfig{
-				Issuer:       "issuer",
-				LocalModeKey: localKey,
-			},
 			Cookies: CookieConfig{
 				Name:     "name",
 				Domain:   "domain",
@@ -54,26 +44,6 @@ func TestCookieConfig_Validate(T *testing.T) {
 			Lifetime: time.Second,
 		}
 		ctx := context.Background()
-
-		assert.NoError(t, cfg.ValidateWithContext(ctx))
-	})
-}
-
-func TestPASETOConfig_Validate(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-
-		localKey, err := random.GenerateRawBytes(ctx, pasetoKeyRequiredLength)
-		require.NoError(t, err)
-
-		cfg := &PASETOConfig{
-			Issuer:       "issuer",
-			LocalModeKey: localKey,
-		}
 
 		assert.NoError(t, cfg.ValidateWithContext(ctx))
 	})

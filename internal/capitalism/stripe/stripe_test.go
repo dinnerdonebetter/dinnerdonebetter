@@ -14,7 +14,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/capitalism"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -37,7 +36,7 @@ func buildTestPaymentManager(t *testing.T) *stripePaymentManager {
 
 	logger := logging.NewNoopLogger()
 
-	pm := ProvideStripePaymentManager(logger, tracing.NewNoopTracerProvider(), &capitalism.StripeConfig{})
+	pm := ProvideStripePaymentManager(logger, tracing.NewNoopTracerProvider(), &Config{})
 
 	return pm.(*stripePaymentManager)
 }
@@ -49,7 +48,7 @@ func TestNewStripePaymentManager(T *testing.T) {
 		t.Parallel()
 
 		logger := logging.NewNoopLogger()
-		pm := ProvideStripePaymentManager(logger, tracing.NewNoopTracerProvider(), &capitalism.StripeConfig{})
+		pm := ProvideStripePaymentManager(logger, tracing.NewNoopTracerProvider(), &Config{})
 
 		assert.NotNil(t, pm)
 	})
