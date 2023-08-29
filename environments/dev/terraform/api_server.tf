@@ -115,7 +115,6 @@ resource "google_cloud_run_v2_service" "api_server" {
     google_secret_manager_secret.api_user_database_password,
     google_secret_manager_secret.cookie_hash_key,
     google_secret_manager_secret.cookie_block_key,
-    google_secret_manager_secret.paseto_local_key,
     google_secret_manager_secret.data_changes_topic_name,
     google_secret_manager_secret.sendgrid_api_token,
     google_secret_manager_secret.segment_api_token,
@@ -232,16 +231,6 @@ resource "google_cloud_run_v2_service" "api_server" {
         value_source {
           secret_key_ref {
             secret  = google_secret_manager_secret.cookie_block_key.secret_id
-            version = "latest"
-          }
-        }
-      }
-
-      env {
-        name = "DINNER_DONE_BETTER_PASETO_LOCAL_KEY"
-        value_source {
-          secret_key_ref {
-            secret  = google_secret_manager_secret.paseto_local_key.secret_id
             version = "latest"
           }
         }

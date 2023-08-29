@@ -9,6 +9,5 @@ var Providers = wire.NewSet(
 	ProvideService,
 	wire.FieldsOf(new(*Config),
 		"Cookies",
-		"PASETO",
 	),
 )

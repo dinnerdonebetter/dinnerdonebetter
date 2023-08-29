@@ -45,6 +45,7 @@ require (
 	github.com/moul/http2curl v1.0.0
 	github.com/mssola/useragent v1.0.0
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
+	github.com/posthog/posthog-go v0.0.0-20230801140217-d607812dee69
 	github.com/pquerna/otp v1.4.0
 	github.com/rs/xid v1.5.0
 	github.com/rs/zerolog v1.30.0

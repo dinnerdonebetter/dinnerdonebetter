@@ -3,7 +3,6 @@ package authentication
 import (
 	"context"
 	"testing"
-	"time"
 
 	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
 	"github.com/dinnerdonebetter/backend/internal/database"
@@ -32,11 +31,6 @@ func buildTestService(t *testing.T) *service {
 			Name:     DefaultCookieName,
 			BlockKey: "BLAHBLAHBLAHPRETENDTHISISSECRET!",
 			Domain:   ".whocares.gov",
-		},
-		PASETO: PASETOConfig{
-			Issuer:       "test",
-			LocalModeKey: []byte("BLAHBLAHBLAHPRETENDTHISISSECRET!"),
-			Lifetime:     time.Hour,
 		},
 	}
 

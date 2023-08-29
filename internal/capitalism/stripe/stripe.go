@@ -45,7 +45,7 @@ type (
 )
 
 // ProvideStripePaymentManager builds a Stripe-backed stripePaymentManager.
-func ProvideStripePaymentManager(logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *capitalism.StripeConfig) capitalism.PaymentManager {
+func ProvideStripePaymentManager(logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *Config) capitalism.PaymentManager {
 	if cfg == nil {
 		return &capitalism.NoopPaymentManager{}
 	}

@@ -89,20 +89,14 @@ const (
 	// message provider topics.
 	dataChangesTopicName = "data_changes"
 
-	pasetoSecretSize      = 32
-	maxAttempts           = 50
-	defaultPASETOLifetime = 1 * time.Minute
+	maxAttempts = 50
 
 	contentTypeJSON               = "application/json"
 	workerQueueAddress            = "worker_queue:6379"
 	localOAuth2TokenEncryptionKey = debugCookieSecret
-
-	pasteoIssuer = "dinner_done_better_service"
 )
 
 var (
-	examplePASETOKey = generatePASETOKey()
-
 	localRoutingConfig = routing.Config{
 		Provider:               routing.ChiProvider,
 		EnableCORSForLocalhost: true,
@@ -196,12 +190,6 @@ var files = map[string]configFunc{
 	"environments/dev/config_files/service-config.json":                              devEnvironmentServerConfig,
 }
 
-func generatePASETOKey() []byte {
-	b := make([]byte, pasetoSecretSize)
-
-	return b
-}
-
 func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 	cookieConfig := authservice.CookieConfig{
 		Name:       defaultCookieName,
@@ -268,10 +256,6 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 		},
 		Services: config.ServicesConfig{
 			Auth: authservice.Config{
-				PASETO: authservice.PASETOConfig{
-					Issuer:   pasteoIssuer,
-					Lifetime: defaultPASETOLifetime,
-				},
 				OAuth2: authservice.OAuth2Config{
 					Domain:               "https://dinnerdonebetter.dev",
 					AccessTokenLifespan:  time.Hour,
@@ -410,11 +394,6 @@ func buildDevConfig() *config.InstanceConfig {
 		},
 		Services: config.ServicesConfig{
 			Auth: authservice.Config{
-				PASETO: authservice.PASETOConfig{
-					Issuer:       pasteoIssuer,
-					Lifetime:     defaultPASETOLifetime,
-					LocalModeKey: examplePASETOKey,
-				},
 				OAuth2: authservice.OAuth2Config{
 					Domain:               "http://localhost:9000",
 					AccessTokenLifespan:  time.Hour,
@@ -662,11 +641,6 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 		},
 		Services: config.ServicesConfig{
 			Auth: authservice.Config{
-				PASETO: authservice.PASETOConfig{
-					Issuer:       pasteoIssuer,
-					Lifetime:     defaultPASETOLifetime,
-					LocalModeKey: examplePASETOKey,
-				},
 				OAuth2: authservice.OAuth2Config{
 					Domain:               "http://localhost:9000",
 					AccessTokenLifespan:  time.Hour,

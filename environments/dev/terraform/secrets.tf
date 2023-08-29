@@ -107,27 +107,6 @@ resource "google_secret_manager_secret_version" "cookie_block_key" {
   secret_data = random_string.cookie_block_key.result
 }
 
-# API server PASETO local mode key
-
-resource "random_string" "paseto_local_key" {
-  length  = 32
-  special = false
-}
-
-resource "google_secret_manager_secret" "paseto_local_key" {
-  secret_id = "paseto_local_key"
-
-  replication {
-    automatic = true
-  }
-}
-
-resource "google_secret_manager_secret_version" "paseto_local_key" {
-  secret = google_secret_manager_secret.paseto_local_key.id
-
-  secret_data = random_string.paseto_local_key.result
-}
-
 # External API services
 
 variable "SEGMENT_API_TOKEN" {}
