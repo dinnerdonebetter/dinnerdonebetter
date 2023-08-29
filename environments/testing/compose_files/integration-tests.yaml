@@ -28,7 +28,6 @@ services:
         environment:
             TARGET_ADDRESS: 'http://api_server:8000'
             CONFIGURATION_FILEPATH: '/etc/config'
-            JAEGER_DISABLED: 'false'
         volumes:
             - source: '../../../'
               target: '/go/src/github.com/dinnerdonebetter/backend'
@@ -46,7 +45,6 @@ services:
         environment:
             TARGET_ADDRESS: 'http://api_server:8000'
             CONFIGURATION_FILEPATH: '/etc/config'
-            JAEGER_DISABLED: 'false'
         volumes:
             - source: '../../../'
               target: '/go/src/github.com/dinnerdonebetter/backend'
@@ -64,7 +62,6 @@ services:
         environment:
             TARGET_ADDRESS: 'http://api_server:8000'
             CONFIGURATION_FILEPATH: '/etc/config'
-            JAEGER_DISABLED: 'false'
         volumes:
             - source: '../../../'
               target: '/go/src/github.com/dinnerdonebetter/backend'
@@ -82,7 +79,6 @@ services:
         environment:
             TARGET_ADDRESS: 'http://api_server:8000'
             CONFIGURATION_FILEPATH: '/etc/config'
-            JAEGER_DISABLED: 'false'
         volumes:
             - source: '../../../'
               target: '/go/src/github.com/dinnerdonebetter/backend'

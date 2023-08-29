@@ -50,7 +50,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	cfg.Observability.Tracing.Jaeger.ServiceName = "queue_loader"
+	cfg.Observability.Tracing.Otel.ServiceName = "queue_loader"
 
 	tracerProvider, initializeTracerErr := cfg.Observability.Tracing.ProvideTracerProvider(ctx, logger)
 	if initializeTracerErr != nil {

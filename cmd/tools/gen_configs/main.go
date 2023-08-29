@@ -23,7 +23,7 @@ import (
 	logcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing/cloudtrace"
 	tracingcfg "github.com/dinnerdonebetter/backend/internal/observability/tracing/config"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing/jaeger"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing/oteltracehttp"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/internal/search/algolia"
 	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
@@ -141,8 +141,8 @@ var (
 	}
 
 	localTracingConfig = tracingcfg.Config{
-		Provider: "jaeger",
-		Jaeger: &jaeger.Config{
+		Provider: tracingcfg.ProviderOtel,
+		Otel: &oteltracehttp.Config{
 			SpanCollectionProbability: 1,
 			CollectorEndpoint:         "http://tracing-server:14268/api/traces",
 			ServiceName:               "dinner_done_better_service",

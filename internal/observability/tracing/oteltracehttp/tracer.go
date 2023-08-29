@@ -1,16 +1,15 @@
-package jaeger
+package oteltracehttp
 
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/exporters/jaeger"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.7.0"
@@ -28,17 +27,15 @@ func init() {
 	otel.SetErrorHandler(errorHandler{logger: logging.NewNoopLogger().WithName("otel_errors")})
 }
 
-// SetupJaeger creates a new trace provider instance and registers it as global trace provider.
-func SetupJaeger(ctx context.Context, c *Config) (tracing.TracerProvider, error) {
-	// Create and install Jaeger export pipeline.
-	exporter, err := jaeger.New(
-		jaeger.WithCollectorEndpoint(
-			jaeger.WithEndpoint(c.CollectorEndpoint),
-			jaeger.WithHTTPClient(&http.Client{Timeout: 10 * time.Second}),
-		),
+// SetupOtelHTTP creates a new trace provider instance and registers it as global trace provider.
+func SetupOtelHTTP(ctx context.Context, c *Config) (tracing.TracerProvider, error) {
+	exporter, err := otlptracehttp.New(
+		ctx,
+		otlptracehttp.WithEndpoint(c.CollectorEndpoint),
+		otlptracehttp.WithTimeout(10*time.Second),
 	)
 	if err != nil {
-		return nil, fmt.Errorf("initializing Jaeger: %w", err)
+		return nil, fmt.Errorf("initializing Otel HTTP: %w", err)
 	}
 
 	res, err := resource.New(

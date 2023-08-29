@@ -1,4 +1,4 @@
-package jaeger
+package oteltracehttp
 
 import (
 	"context"
@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestJaegerConfig_ValidateWithContext(T *testing.T) {
+func TestConfig_ValidateWithContext(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
