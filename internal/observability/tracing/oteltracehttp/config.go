@@ -1,14 +1,9 @@
-package jaeger
+package oteltracehttp
 
 import (
 	"context"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-)
-
-const (
-	// Jaeger represents the open source tracing server.
-	Jaeger = "jaeger"
 )
 
 type (

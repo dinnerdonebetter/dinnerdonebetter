@@ -1,4 +1,4 @@
-package jaeger
+package oteltracehttp
 
 import (
 	"context"
@@ -20,7 +20,7 @@ func Test_tracingErrorHandler_Handle(T *testing.T) {
 	})
 }
 
-func TestConfig_SetupJaeger(T *testing.T) {
+func TestConfig_SetupOtelHTTP(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -33,7 +33,7 @@ func TestConfig_SetupJaeger(T *testing.T) {
 			SpanCollectionProbability: 0,
 		}
 
-		actual, err := SetupJaeger(ctx, cfg)
+		actual, err := SetupOtelHTTP(ctx, cfg)
 		assert.NoError(t, err)
 		assert.NotNil(t, actual)
 	})

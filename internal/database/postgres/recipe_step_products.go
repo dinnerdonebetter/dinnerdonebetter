@@ -109,21 +109,21 @@ func (q *Querier) GetRecipeStepProduct(ctx context.Context, recipeID, recipeStep
 		Compostable:                        result.Compostable,
 	}
 
-	if result.ValidMeasurementUnitID != "" {
+	if result.ValidMeasurementUnitID.Valid && result.ValidMeasurementUnitID.String != "" {
 		recipeStepProduct.MeasurementUnit = &types.ValidMeasurementUnit{
-			CreatedAt:     result.ValidMeasurementUnitCreatedAt,
+			CreatedAt:     result.ValidMeasurementUnitCreatedAt.Time,
 			LastUpdatedAt: timePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
 			ArchivedAt:    timePointerFromNullTime(result.ValidMeasurementUnitArchivedAt),
-			Name:          result.ValidMeasurementUnitName,
-			IconPath:      result.ValidMeasurementUnitIconPath,
-			ID:            result.ValidMeasurementUnitID,
-			Description:   result.ValidMeasurementUnitDescription,
-			PluralName:    result.ValidMeasurementUnitPluralName,
-			Slug:          result.ValidMeasurementUnitSlug,
+			Name:          result.ValidMeasurementUnitName.String,
+			IconPath:      result.ValidMeasurementUnitIconPath.String,
+			ID:            result.ValidMeasurementUnitID.String,
+			Description:   result.ValidMeasurementUnitDescription.String,
+			PluralName:    result.ValidMeasurementUnitPluralName.String,
+			Slug:          result.ValidMeasurementUnitSlug.String,
 			Volumetric:    boolFromNullBool(result.ValidMeasurementUnitVolumetric),
-			Universal:     result.ValidMeasurementUnitUniversal,
-			Metric:        result.ValidMeasurementUnitMetric,
-			Imperial:      result.ValidMeasurementUnitImperial,
+			Universal:     result.ValidMeasurementUnitUniversal.Bool,
+			Metric:        result.ValidMeasurementUnitMetric.Bool,
+			Imperial:      result.ValidMeasurementUnitImperial.Bool,
 		}
 	}
 
@@ -173,21 +173,21 @@ func (q *Querier) getRecipeStepProductsForRecipe(ctx context.Context, recipeID s
 			Compostable:                        result.Compostable,
 		}
 
-		if result.ValidMeasurementUnitID != "" {
+		if result.ValidMeasurementUnitID.Valid && result.ValidMeasurementUnitID.String != "" {
 			recipeStepProduct.MeasurementUnit = &types.ValidMeasurementUnit{
-				CreatedAt:     result.ValidMeasurementUnitCreatedAt,
+				CreatedAt:     result.ValidMeasurementUnitCreatedAt.Time,
 				LastUpdatedAt: timePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
 				ArchivedAt:    timePointerFromNullTime(result.ValidMeasurementUnitArchivedAt),
-				Name:          result.ValidMeasurementUnitName,
-				IconPath:      result.ValidMeasurementUnitIconPath,
-				ID:            result.ValidMeasurementUnitID,
-				Description:   result.ValidMeasurementUnitDescription,
-				PluralName:    result.ValidMeasurementUnitPluralName,
-				Slug:          result.ValidMeasurementUnitSlug,
+				Name:          result.ValidMeasurementUnitName.String,
+				IconPath:      result.ValidMeasurementUnitIconPath.String,
+				ID:            result.ValidMeasurementUnitID.String,
+				Description:   result.ValidMeasurementUnitDescription.String,
+				PluralName:    result.ValidMeasurementUnitPluralName.String,
+				Slug:          result.ValidMeasurementUnitSlug.String,
 				Volumetric:    boolFromNullBool(result.ValidMeasurementUnitVolumetric),
-				Universal:     result.ValidMeasurementUnitUniversal,
-				Metric:        result.ValidMeasurementUnitMetric,
-				Imperial:      result.ValidMeasurementUnitImperial,
+				Universal:     result.ValidMeasurementUnitUniversal.Bool,
+				Metric:        result.ValidMeasurementUnitMetric.Bool,
+				Imperial:      result.ValidMeasurementUnitImperial.Bool,
 			}
 		}
 
@@ -264,21 +264,21 @@ func (q *Querier) GetRecipeStepProducts(ctx context.Context, recipeID, recipeSte
 			Compostable:                        result.Compostable,
 		}
 
-		if result.ValidMeasurementUnitID != "" {
+		if result.ValidMeasurementUnitID.Valid && result.ValidMeasurementUnitID.String != "" {
 			recipeStepProduct.MeasurementUnit = &types.ValidMeasurementUnit{
-				CreatedAt:     result.ValidMeasurementUnitCreatedAt,
+				CreatedAt:     result.ValidMeasurementUnitCreatedAt.Time,
 				LastUpdatedAt: timePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
 				ArchivedAt:    timePointerFromNullTime(result.ValidMeasurementUnitArchivedAt),
-				Name:          result.ValidMeasurementUnitName,
-				IconPath:      result.ValidMeasurementUnitIconPath,
-				ID:            result.ValidMeasurementUnitID,
-				Description:   result.ValidMeasurementUnitDescription,
-				PluralName:    result.ValidMeasurementUnitPluralName,
-				Slug:          result.ValidMeasurementUnitSlug,
+				Name:          result.ValidMeasurementUnitName.String,
+				IconPath:      result.ValidMeasurementUnitIconPath.String,
+				ID:            result.ValidMeasurementUnitID.String,
+				Description:   result.ValidMeasurementUnitDescription.String,
+				PluralName:    result.ValidMeasurementUnitPluralName.String,
+				Slug:          result.ValidMeasurementUnitSlug.String,
 				Volumetric:    boolFromNullBool(result.ValidMeasurementUnitVolumetric),
-				Universal:     result.ValidMeasurementUnitUniversal,
-				Metric:        result.ValidMeasurementUnitMetric,
-				Imperial:      result.ValidMeasurementUnitImperial,
+				Universal:     result.ValidMeasurementUnitUniversal.Bool,
+				Metric:        result.ValidMeasurementUnitMetric.Bool,
+				Imperial:      result.ValidMeasurementUnitImperial.Bool,
 			}
 		}
 

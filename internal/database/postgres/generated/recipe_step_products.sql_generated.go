@@ -135,7 +135,7 @@ SELECT
 FROM recipe_step_products
 	JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id
 	JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
-	JOIN valid_measurement_units ON recipe_step_products.measurement_unit=valid_measurement_units.id
+    LEFT JOIN valid_measurement_units ON recipe_step_products.measurement_unit=valid_measurement_units.id
 WHERE recipe_step_products.archived_at IS NULL
 	AND recipe_step_products.belongs_to_recipe_step = $1
 	AND recipe_step_products.id = $2
@@ -154,37 +154,37 @@ type GetRecipeStepProductParams struct {
 
 type GetRecipeStepProductRow struct {
 	CreatedAt                          time.Time
-	ValidMeasurementUnitCreatedAt      time.Time
 	ArchivedAt                         sql.NullTime
-	LastUpdatedAt                      sql.NullTime
 	ValidMeasurementUnitArchivedAt     sql.NullTime
 	ValidMeasurementUnitLastUpdatedAt  sql.NullTime
+	ValidMeasurementUnitCreatedAt      sql.NullTime
+	LastUpdatedAt                      sql.NullTime
 	QuantityNotes                      string
-	ValidMeasurementUnitID             string
+	Name                               string
 	ID                                 string
 	BelongsToRecipeStep                string
-	Name                               string
-	ValidMeasurementUnitSlug           string
-	ValidMeasurementUnitPluralName     string
-	ValidMeasurementUnitDescription    string
-	ValidMeasurementUnitName           string
-	ValidMeasurementUnitIconPath       string
 	StorageInstructions                string
 	Type                               RecipeStepProductType
-	MaximumQuantityValue               sql.NullString
 	MinimumStorageTemperatureInCelsius sql.NullString
-	MaximumStorageTemperatureInCelsius sql.NullString
+	ValidMeasurementUnitName           sql.NullString
+	ValidMeasurementUnitID             sql.NullString
+	ValidMeasurementUnitSlug           sql.NullString
 	MinimumQuantityValue               sql.NullString
+	MaximumQuantityValue               sql.NullString
+	ValidMeasurementUnitIconPath       sql.NullString
+	ValidMeasurementUnitPluralName     sql.NullString
+	MaximumStorageTemperatureInCelsius sql.NullString
+	ValidMeasurementUnitDescription    sql.NullString
 	MaximumStorageDurationInSeconds    sql.NullInt32
 	ContainedInVesselIndex             sql.NullInt32
 	Index                              int32
+	ValidMeasurementUnitUniversal      sql.NullBool
+	ValidMeasurementUnitImperial       sql.NullBool
+	ValidMeasurementUnitMetric         sql.NullBool
 	ValidMeasurementUnitVolumetric     sql.NullBool
-	ValidMeasurementUnitUniversal      bool
 	IsWaste                            bool
 	IsLiquid                           bool
 	Compostable                        bool
-	ValidMeasurementUnitImperial       bool
-	ValidMeasurementUnitMetric         bool
 }
 
 func (q *Queries) GetRecipeStepProduct(ctx context.Context, db DBTX, arg *GetRecipeStepProductParams) (*GetRecipeStepProductRow, error) {
@@ -293,7 +293,7 @@ SELECT
 FROM recipe_step_products
     JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id
     JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
-    JOIN valid_measurement_units ON recipe_step_products.measurement_unit=valid_measurement_units.id
+    LEFT JOIN valid_measurement_units ON recipe_step_products.measurement_unit=valid_measurement_units.id
 WHERE recipe_step_products.archived_at IS NULL
     AND recipe_step_products.belongs_to_recipe_step = $1
     AND recipe_steps.archived_at IS NULL
@@ -318,39 +318,39 @@ type GetRecipeStepProductsParams struct {
 
 type GetRecipeStepProductsRow struct {
 	CreatedAt                          time.Time
-	ValidMeasurementUnitCreatedAt      time.Time
+	ValidMeasurementUnitCreatedAt      sql.NullTime
 	LastUpdatedAt                      sql.NullTime
 	ArchivedAt                         sql.NullTime
 	ValidMeasurementUnitArchivedAt     sql.NullTime
 	ValidMeasurementUnitLastUpdatedAt  sql.NullTime
-	ValidMeasurementUnitIconPath       string
-	QuantityNotes                      string
-	ID                                 string
 	Name                               string
 	Type                               RecipeStepProductType
-	ValidMeasurementUnitSlug           string
-	ValidMeasurementUnitPluralName     string
-	ValidMeasurementUnitDescription    string
-	ValidMeasurementUnitName           string
-	ValidMeasurementUnitID             string
 	StorageInstructions                string
+	QuantityNotes                      string
+	ID                                 string
 	BelongsToRecipeStep                string
-	MaximumQuantityValue               sql.NullString
-	MinimumStorageTemperatureInCelsius sql.NullString
+	ValidMeasurementUnitPluralName     sql.NullString
 	MaximumStorageTemperatureInCelsius sql.NullString
+	ValidMeasurementUnitSlug           sql.NullString
+	ValidMeasurementUnitID             sql.NullString
 	MinimumQuantityValue               sql.NullString
-	FilteredCount                      int64
+	MaximumQuantityValue               sql.NullString
+	ValidMeasurementUnitIconPath       sql.NullString
+	ValidMeasurementUnitName           sql.NullString
+	ValidMeasurementUnitDescription    sql.NullString
+	MinimumStorageTemperatureInCelsius sql.NullString
 	TotalCount                         int64
-	MaximumStorageDurationInSeconds    sql.NullInt32
+	FilteredCount                      int64
 	ContainedInVesselIndex             sql.NullInt32
+	MaximumStorageDurationInSeconds    sql.NullInt32
 	Index                              int32
+	ValidMeasurementUnitUniversal      sql.NullBool
+	ValidMeasurementUnitImperial       sql.NullBool
+	ValidMeasurementUnitMetric         sql.NullBool
 	ValidMeasurementUnitVolumetric     sql.NullBool
-	ValidMeasurementUnitUniversal      bool
 	IsWaste                            bool
 	IsLiquid                           bool
 	Compostable                        bool
-	ValidMeasurementUnitImperial       bool
-	ValidMeasurementUnitMetric         bool
 }
 
 func (q *Queries) GetRecipeStepProducts(ctx context.Context, db DBTX, arg *GetRecipeStepProductsParams) ([]*GetRecipeStepProductsRow, error) {
@@ -458,7 +458,7 @@ SELECT
 FROM recipe_step_products
     JOIN recipe_steps ON recipe_step_products.belongs_to_recipe_step=recipe_steps.id
     JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
-    JOIN valid_measurement_units ON recipe_step_products.measurement_unit=valid_measurement_units.id
+    LEFT JOIN valid_measurement_units ON recipe_step_products.measurement_unit=valid_measurement_units.id
 WHERE recipe_step_products.archived_at IS NULL
     AND recipe_steps.archived_at IS NULL
     AND recipe_steps.belongs_to_recipe = $1
@@ -468,37 +468,37 @@ WHERE recipe_step_products.archived_at IS NULL
 
 type GetRecipeStepProductsForRecipeRow struct {
 	CreatedAt                          time.Time
-	ValidMeasurementUnitCreatedAt      time.Time
 	ArchivedAt                         sql.NullTime
-	LastUpdatedAt                      sql.NullTime
 	ValidMeasurementUnitArchivedAt     sql.NullTime
 	ValidMeasurementUnitLastUpdatedAt  sql.NullTime
+	ValidMeasurementUnitCreatedAt      sql.NullTime
+	LastUpdatedAt                      sql.NullTime
 	QuantityNotes                      string
-	ValidMeasurementUnitID             string
+	Name                               string
 	ID                                 string
 	BelongsToRecipeStep                string
-	Name                               string
-	ValidMeasurementUnitSlug           string
-	ValidMeasurementUnitPluralName     string
-	ValidMeasurementUnitDescription    string
-	ValidMeasurementUnitName           string
-	ValidMeasurementUnitIconPath       string
 	StorageInstructions                string
 	Type                               RecipeStepProductType
-	MaximumQuantityValue               sql.NullString
 	MinimumStorageTemperatureInCelsius sql.NullString
-	MaximumStorageTemperatureInCelsius sql.NullString
+	ValidMeasurementUnitName           sql.NullString
+	ValidMeasurementUnitID             sql.NullString
+	ValidMeasurementUnitSlug           sql.NullString
 	MinimumQuantityValue               sql.NullString
+	MaximumQuantityValue               sql.NullString
+	ValidMeasurementUnitIconPath       sql.NullString
+	ValidMeasurementUnitPluralName     sql.NullString
+	MaximumStorageTemperatureInCelsius sql.NullString
+	ValidMeasurementUnitDescription    sql.NullString
 	MaximumStorageDurationInSeconds    sql.NullInt32
 	ContainedInVesselIndex             sql.NullInt32
 	Index                              int32
+	ValidMeasurementUnitUniversal      sql.NullBool
+	ValidMeasurementUnitImperial       sql.NullBool
+	ValidMeasurementUnitMetric         sql.NullBool
 	ValidMeasurementUnitVolumetric     sql.NullBool
-	ValidMeasurementUnitUniversal      bool
 	IsWaste                            bool
 	IsLiquid                           bool
 	Compostable                        bool
-	ValidMeasurementUnitImperial       bool
-	ValidMeasurementUnitMetric         bool
 }
 
 func (q *Queries) GetRecipeStepProductsForRecipe(ctx context.Context, db DBTX, belongsToRecipe string) ([]*GetRecipeStepProductsForRecipeRow, error) {

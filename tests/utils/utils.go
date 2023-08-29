@@ -17,6 +17,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/pquerna/otp/totp"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 )
 
 var (
@@ -104,7 +105,7 @@ func GetLoginCookie(ctx context.Context, serviceURL string, u *types.User) (*htt
 		return nil, fmt.Errorf("building request: %w", err)
 	}
 
-	res, err := http.DefaultClient.Do(req)
+	res, err := otelhttp.DefaultClient.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("executing request: %w", err)
 	}
@@ -113,7 +114,8 @@ func GetLoginCookie(ctx context.Context, serviceURL string, u *types.User) (*htt
 		log.Println("error closing body")
 	}
 
-	if cookies := res.Cookies(); len(cookies) > 0 {
+	cookies := res.Cookies()
+	if len(cookies) > 0 {
 		return cookies[0], nil
 	}
 
