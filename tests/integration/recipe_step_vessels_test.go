@@ -1,7 +1,6 @@
 package integration
 
 import (
-	"encoding/json"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -222,9 +221,6 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 			exampleRecipeInput.Steps[1].Vessels[0].ProductOfRecipeStepIndex = pointers.Pointer(uint64(0))
 			exampleRecipeInput.Steps[1].Vessels[0].ProductOfRecipeStepProductIndex = pointers.Pointer(uint64(0))
 
-			inputJSON, _ := json.Marshal(exampleRecipeInput)
-			t.Log(string(inputJSON))
-
 			created, err := testClients.admin.CreateRecipe(ctx, exampleRecipeInput)
 			require.NoError(t, err)
 			checkRecipeEquality(t, expected, created)
@@ -232,9 +228,6 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 			created, err = testClients.user.GetRecipe(ctx, created.ID)
 			requireNotNilAndNoProblems(t, created, err)
 			checkRecipeEquality(t, expected, created)
-
-			createdJSON, _ := json.Marshal(created)
-			t.Log(string(createdJSON))
 
 			recipeStepProductIndex := -1
 			for i, vessel := range created.Steps[1].Vessels {
