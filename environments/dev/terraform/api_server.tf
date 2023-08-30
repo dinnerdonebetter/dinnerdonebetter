@@ -257,6 +257,16 @@ resource "google_cloud_run_v2_service" "api_server" {
       }
 
       env {
+        name = "DINNER_DONE_BETTER_POSTHOG_API_KEY"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.segment_api_token.secret_id
+            version = "latest"
+          }
+        }
+      }
+
+      env {
         name = "DINNER_DONE_BETTER_ALGOLIA_API_KEY"
         value_source {
           secret_key_ref {

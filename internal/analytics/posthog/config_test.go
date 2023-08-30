@@ -13,7 +13,7 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		cfg := &Config{APIToken: t.Name()}
+		cfg := &Config{APIKey: t.Name()}
 
 		require.NoError(t, cfg.ValidateWithContext(context.Background()))
 	})

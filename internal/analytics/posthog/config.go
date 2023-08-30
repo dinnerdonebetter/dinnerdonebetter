@@ -7,7 +7,7 @@ import (
 )
 
 type Config struct {
-	APIToken string `json:"apiToken" toml:"api_token,omitempty"`
+	APIKey string `json:"apiToken" toml:"api_token,omitempty"`
 }
 
 var _ validation.ValidatableWithContext = (*Config)(nil)
@@ -15,6 +15,6 @@ var _ validation.ValidatableWithContext = (*Config)(nil)
 // ValidateWithContext validates a Config struct.
 func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, cfg,
-		validation.Field(&cfg.APIToken, validation.Required),
+		validation.Field(&cfg.APIKey, validation.Required),
 	)
 }

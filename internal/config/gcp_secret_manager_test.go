@@ -140,6 +140,7 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 		require.NoError(t, os.Setenv(gcpCookieHashKeyEnvVarKey, "fake_cookie_hash_key"))
 		require.NoError(t, os.Setenv(gcpCookieBlockKeyEnvVarKey, "fake_cookie_block_key"))
 		require.NoError(t, os.Setenv(gcpSendgridTokenEnvVarKey, "fake_sendgrid_token"))
+		require.NoError(t, os.Setenv(gcpPostHogKeyEnvVarKey, "fake_posthog_api_key"))
 		require.NoError(t, os.Setenv(gcpSegmentTokenEnvVarKey, "fake_segment_token"))
 		require.NoError(t, os.Setenv(gcpAlgoliaAPIKeyEnvVarKey, "fake_algolia_api_key"))
 		require.NoError(t, os.Setenv(gcpAlgoliaAppIDEnvVarKey, "fake_algolia_app_id"))
