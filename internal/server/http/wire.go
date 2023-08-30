@@ -4,7 +4,7 @@ import (
 	"github.com/google/wire"
 )
 
-// Providers are our wire superset of providers this package offers.
-var Providers = wire.NewSet(
+// ProvidersHTTP are our wire superset of providers this package offers.
+var ProvidersHTTP = wire.NewSet(
 	ProvideHTTPServer,
 )

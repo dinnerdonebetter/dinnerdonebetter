@@ -42,7 +42,6 @@ import (
 	validpreparationsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparations"
 	"github.com/dinnerdonebetter/backend/internal/services/validpreparationvessels"
 	validvesselsservice "github.com/dinnerdonebetter/backend/internal/services/validvessels"
-	vendorproxyservice "github.com/dinnerdonebetter/backend/internal/services/vendorproxy"
 	webhooksservice "github.com/dinnerdonebetter/backend/internal/services/webhooks"
 	websocketsservice "github.com/dinnerdonebetter/backend/internal/services/websockets"
 
@@ -67,7 +66,6 @@ type (
 		HouseholdInstrumentOwnerships   householdinstrumentownershipsservice.Config   `json:"householdInstrumentOwnerships"   toml:"household_instrument_ownerships,omitempty"`
 		RecipePrepTasks                 recipepreptasks.Config                        `json:"recipePrepTasks"                 toml:"recipe_prep_tasks,omitempty"`
 		ServiceSettings                 servicesettingsservice.Config                 `json:"serviceSettings"                 toml:"service_settings,omitempty"`
-		VendorProxy                     vendorproxyservice.Config                     `json:"vendorProxy"                     toml:"vendor_proxy,omitempty"`
 		UserIngredientPreferences       useringredientpreferencesservice.Config       `json:"userIngredientPreferences"       toml:"user_ingredient_preferences,omitempty"`
 		MealPlanEvents                  mealplaneventsservice.Config                  `json:"mealPlanEvents"                  toml:"meal_plan_events,omitempty"`
 		Households                      householdsservice.Config                      `json:"households"                      toml:"households,omitempty"`
@@ -128,7 +126,6 @@ func (cfg *ServicesConfig) ValidateWithContext(ctx context.Context) error {
 		"MealPlanGroceryListItems":        cfg.MealPlanGroceryListItems.ValidateWithContext,
 		"ValidMeasurementUnitConversions": cfg.ValidMeasurementUnitConversions.ValidateWithContext,
 		"ValidIngredientStates":           cfg.ValidIngredientStates.ValidateWithContext,
-		"VendorProxy":                     cfg.VendorProxy.ValidateWithContext,
 		"ServiceSettings":                 cfg.ServiceSettings.ValidateWithContext,
 		"ServiceSettingConfigurations":    cfg.ServiceSettingConfigurations.ValidateWithContext,
 		"UserIngredientPreferences":       cfg.UserIngredientPreferences.ValidateWithContext,

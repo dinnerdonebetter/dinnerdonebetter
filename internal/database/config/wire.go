@@ -5,8 +5,8 @@ import (
 )
 
 var (
-	// Providers represents this package's offering to the dependency manager.
-	Providers = wire.NewSet(
+	// DatabaseConfigProviders represents this package's offering to the dependency manager.
+	DatabaseConfigProviders = wire.NewSet(
 		ProvideSessionManager,
 	)
 )

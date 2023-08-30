@@ -15,7 +15,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/panicking"
 	"github.com/dinnerdonebetter/backend/internal/routing"
-	"github.com/dinnerdonebetter/backend/internal/services/vendorproxy"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
@@ -76,7 +75,6 @@ type (
 		householdInstrumentOwnershipService    types.HouseholdInstrumentOwnershipDataService
 		oauth2ClientsService                   types.OAuth2ClientDataService
 		validPreparationVesselsService         types.ValidPreparationVesselDataService
-		vendorProxyService                     vendorproxy.Service
 		encoder                                encoding.ServerEncoderDecoder
 		logger                                 logging.Logger
 		router                                 routing.Router
@@ -130,7 +128,6 @@ func ProvideHTTPServer(
 	recipeStepVesselsService types.RecipeStepVesselDataService,
 	webhooksService types.WebhookDataService,
 	adminService types.AdminService,
-	vendorProxyService vendorproxy.Service,
 	serviceSettingDataService types.ServiceSettingDataService,
 	serviceSettingConfigurationsService types.ServiceSettingConfigurationDataService,
 	userIngredientPreferencesService types.UserIngredientPreferenceDataService,
@@ -185,7 +182,6 @@ func ProvideHTTPServer(
 		recipeStepCompletionConditionsService:  recipeStepCompletionConditionsService,
 		validIngredientStateIngredientsService: validIngredientStateIngredientsService,
 		recipeStepVesselsService:               recipeStepVesselsService,
-		vendorProxyService:                     vendorProxyService,
 		serviceSettingsService:                 serviceSettingDataService,
 		serviceSettingConfigurationsService:    serviceSettingConfigurationsService,
 		userIngredientPreferencesService:       userIngredientPreferencesService,

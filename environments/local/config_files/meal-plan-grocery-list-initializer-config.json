@@ -134,9 +134,6 @@
 		"serviceSettings": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"vendorProxy": {
-			"dataChangesTopicName": "data_changes"
-		},
 		"userIngredientPreferences": {
 			"dataChangesTopicName": "data_changes"
 		},

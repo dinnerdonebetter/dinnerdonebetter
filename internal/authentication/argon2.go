@@ -53,7 +53,7 @@ func (a *Argon2Authenticator) HashPassword(ctx context.Context, password string)
 	return argon2id.CreateHash(password, argonParams)
 }
 
-// ValidateLogin validates a login attempt by:
+// CredentialsAreValid validates a login attempt by:
 //   - checking that the provided authentication matches the provided hashed passwords.
 //   - checking that the temporary one-time authentication provided jives with the provided two factor secret.
 func (a *Argon2Authenticator) CredentialsAreValid(ctx context.Context, hash, password, totpSecret, totpCode string) (bool, error) {
