@@ -6,7 +6,6 @@ package build
 import (
 	"context"
 
-	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database"
@@ -63,7 +62,6 @@ import (
 	validpreparationsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparations"
 	validpreparationvesselsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparationvessels"
 	validvesselsservice "github.com/dinnerdonebetter/backend/internal/services/validvessels"
-	vendorproxyservice "github.com/dinnerdonebetter/backend/internal/services/vendorproxy"
 	webhooksservice "github.com/dinnerdonebetter/backend/internal/services/webhooks"
 	"github.com/dinnerdonebetter/backend/internal/uploads/images"
 
@@ -76,16 +74,24 @@ func Build(
 	cfg *config.InstanceConfig,
 ) (http.Server, error) {
 	wire.Build(
-		authentication.Providers,
+		authentication.AuthProviders,
 		config.ServiceConfigProviders,
 		database.DBProviders,
-		dbconfig.Providers,
+		dbconfig.DatabaseConfigProviders,
 		encoding.EncDecProviders,
 		msgconfig.MessageQueueProviders,
-		http.Providers,
-		images.Providers,
-		chi.Providers,
-		random.Providers,
+		http.ProvidersHTTP,
+		images.ProvidersImages,
+		chi.ProvidersChi,
+		random.ProvidersRandom,
+		featureflagscfg.ProvidersFeatureFlags,
+		tracing.ProvidersTracing,
+		emailcfg.ProvidersEmail,
+		tracingcfg.ProvidersTracing,
+		observability.ProvidersObservability,
+		postgres.ProvidersPostgres,
+		logcfg.ProvidersLogConfig,
+		graphing.Providers,
 		authservice.Providers,
 		usersservice.Providers,
 		householdsservice.Providers,
@@ -113,21 +119,11 @@ func Build(
 		validingredientstateingredientsservice.Providers,
 		validingredientmeasurementunitsservice.Providers,
 		mealplantasksservice.Providers,
-		graphing.Providers,
 		recipepreptasksservice.Providers,
 		mealplangrocerylistitemsservice.Providers,
 		validmeasurementconversionsservice.Providers,
 		validingredientstatesservice.Providers,
 		recipestepcompletionconditionsservice.Providers,
-		featureflagscfg.Providers,
-		vendorproxyservice.Providers,
-		tracing.Providers,
-		emailcfg.Providers,
-		tracingcfg.Providers,
-		observability.Providers,
-		postgres.Providers,
-		analyticscfg.Providers,
-		logcfg.Providers,
 		servicesettingsservice.Providers,
 		servicesettingconfigurationsservice.Providers,
 		useringredientpreferencesservice.Providers,

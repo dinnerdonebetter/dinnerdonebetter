@@ -3,7 +3,7 @@ package tracing
 import "github.com/google/wire"
 
 var (
-	Providers = wire.NewSet(
+	ProvidersTracing = wire.NewSet(
 		BuildTracedHTTPClient,
 	)
 )

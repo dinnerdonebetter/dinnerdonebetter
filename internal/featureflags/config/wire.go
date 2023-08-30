@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	Providers = wire.NewSet(
+	ProvidersFeatureFlags = wire.NewSet(
 		ProvideFeatureFlagManager,
 	)
 )

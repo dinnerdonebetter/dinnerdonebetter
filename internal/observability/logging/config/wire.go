@@ -7,7 +7,7 @@ import (
 )
 
 var (
-	Providers = wire.NewSet(
+	ProvidersLogConfig = wire.NewSet(
 		ProvideLogger,
 	)
 )

@@ -9,8 +9,8 @@ import (
 )
 
 var (
-	// Providers are what we provide to dependency injection.
-	Providers = wire.NewSet(
+	// ProvidersAnalytics are what we provide to dependency injection.
+	ProvidersAnalytics = wire.NewSet(
 		ProvideEventReporter,
 	)
 )
