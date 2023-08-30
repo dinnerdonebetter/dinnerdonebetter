@@ -1,10 +1,8 @@
-package argon2
+package authentication
 
 import (
 	"context"
-	"runtime"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -15,6 +13,7 @@ import (
 
 const (
 	argon2IterationCount = 1
+	argon2ThreadCount    = 2
 	argon2SaltLength     = 16
 	argon2KeyLength      = 32
 	sixtyFourMegabytes   = 64 * 1024
@@ -23,22 +22,22 @@ const (
 var argonParams = &argon2id.Params{
 	Memory:      sixtyFourMegabytes,
 	Iterations:  argon2IterationCount,
-	Parallelism: uint8(runtime.GOMAXPROCS(-1)),
+	Parallelism: argon2ThreadCount,
 	SaltLength:  argon2SaltLength,
 	KeyLength:   argon2KeyLength,
 }
 
 type (
-	// Authenticator is our argon2-based authenticator.
-	Authenticator struct {
+	// Argon2Authenticator is our argon2-based authenticator.
+	Argon2Authenticator struct {
 		logger logging.Logger
 		tracer tracing.Tracer
 	}
 )
 
-// ProvideAuthenticator returns an argon2 powered Authenticator.
-func ProvideAuthenticator(logger logging.Logger, tracerProvider tracing.TracerProvider) authentication.Authenticator {
-	ba := &Authenticator{
+// ProvideArgon2Authenticator returns an argon2 powered Argon2Authenticator.
+func ProvideArgon2Authenticator(logger logging.Logger, tracerProvider tracing.TracerProvider) Authenticator {
+	ba := &Argon2Authenticator{
 		logger: logging.EnsureLogger(logger).WithName("argon2"),
 		tracer: tracing.NewTracer(tracerProvider.Tracer("argon2")),
 	}
@@ -47,17 +46,17 @@ func ProvideAuthenticator(logger logging.Logger, tracerProvider tracing.TracerPr
 }
 
 // HashPassword takes a password and hashes it using argon2.
-func (a *Authenticator) HashPassword(ctx context.Context, password string) (string, error) {
+func (a *Argon2Authenticator) HashPassword(ctx context.Context, password string) (string, error) {
 	_, span := a.tracer.StartSpan(ctx)
 	defer span.End()
 
 	return argon2id.CreateHash(password, argonParams)
 }
 
-// CredentialsAreValid validates a login attempt by:
+// ValidateLogin validates a login attempt by:
 //   - checking that the provided authentication matches the provided hashed passwords.
 //   - checking that the temporary one-time authentication provided jives with the provided two factor secret.
-func (a *Authenticator) CredentialsAreValid(ctx context.Context, hash, password, totpSecret, totpCode string) (bool, error) {
+func (a *Argon2Authenticator) CredentialsAreValid(ctx context.Context, hash, password, totpSecret, totpCode string) (bool, error) {
 	_, span := a.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -67,7 +66,7 @@ func (a *Authenticator) CredentialsAreValid(ctx context.Context, hash, password,
 	if err != nil {
 		return false, observability.PrepareError(err, span, "comparing argon2 hashed password")
 	} else if !passwordMatches {
-		return false, authentication.ErrPasswordDoesNotMatch
+		return false, ErrPasswordDoesNotMatch
 	}
 
 	if totpSecret != "" && totpCode != "" {
@@ -77,7 +76,7 @@ func (a *Authenticator) CredentialsAreValid(ctx context.Context, hash, password,
 				"provided_code":    totpCode,
 			}).Debug("invalid code provided")
 
-			return passwordMatches, authentication.ErrInvalidTOTPToken
+			return passwordMatches, ErrInvalidTOTPToken
 		}
 	}
 
