@@ -1,12 +1,10 @@
-package config
+package authentication
 
-import (
-	"github.com/google/wire"
-)
+import "github.com/google/wire"
 
 var (
 	// Providers are what we offer to dependency injection.
 	Providers = wire.NewSet(
-		ProvideAuthenticator,
+		ProvideArgon2Authenticator,
 	)
 )

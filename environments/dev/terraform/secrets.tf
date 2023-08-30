@@ -109,10 +109,10 @@ resource "google_secret_manager_secret_version" "cookie_block_key" {
 
 # External API services
 
-variable "SEGMENT_API_TOKEN" {}
-variable "SENDGRID_API_TOKEN" {}
 
 # Sendgrid token
+
+variable "SENDGRID_API_TOKEN" {}
 
 resource "google_secret_manager_secret" "sendgrid_api_token" {
   secret_id = "sendgrid_api_token"
@@ -130,6 +130,8 @@ resource "google_secret_manager_secret_version" "sendgrid_api_token" {
 
 # Segment API token
 
+variable "SEGMENT_API_TOKEN" {}
+
 resource "google_secret_manager_secret" "segment_api_token" {
   secret_id = "segment_api_token"
 
@@ -144,7 +146,25 @@ resource "google_secret_manager_secret_version" "segment_api_token" {
   secret_data = var.SEGMENT_API_TOKEN
 }
 
-# Segment API token
+# PostHog API token
+
+variable "POSTHOG_API_KEY" {}
+
+resource "google_secret_manager_secret" "posthog_api_key" {
+  secret_id = "posthog_api_key"
+
+  replication {
+    automatic = true
+  }
+}
+
+resource "google_secret_manager_secret_version" "posthog_api_key" {
+  secret = google_secret_manager_secret.posthog_api_key.id
+
+  secret_data = var.POSTHOG_API_KEY
+}
+
+# Algolia app ID
 
 resource "google_secret_manager_secret" "algolia_application_id" {
   secret_id = "algolia_application_id"
@@ -160,7 +180,7 @@ resource "google_secret_manager_secret_version" "algolia_application_id" {
   secret_data = var.ALGOLIA_APPLICATION_ID
 }
 
-# Segment API token
+# Algolia API key
 
 resource "google_secret_manager_secret" "algolia_api_key" {
   secret_id = "algolia_api_key"

@@ -10,6 +10,7 @@ import (
 	"strconv"
 
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
+	"github.com/dinnerdonebetter/backend/internal/analytics/posthog"
 	"github.com/dinnerdonebetter/backend/internal/analytics/segment"
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
 	emailcfg "github.com/dinnerdonebetter/backend/internal/email/config"
@@ -45,6 +46,8 @@ const (
 	gcpSendgridTokenEnvVarKey = "DINNER_DONE_BETTER_SENDGRID_API_TOKEN"
 	/* #nosec G101 */
 	gcpSegmentTokenEnvVarKey = "DINNER_DONE_BETTER_SEGMENT_API_TOKEN"
+	/* #nosec G101 */
+	gcpPostHogKeyEnvVarKey = "DINNER_DONE_BETTER_POSTHOG_API_KEY"
 )
 
 // SecretVersionAccessor is an interface abstraction of the GCP Secret Manager API call we use during config hydration.
@@ -115,6 +118,7 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client
 
 	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)
 	cfg.Analytics.Segment = &segment.Config{APIToken: os.Getenv(gcpSegmentTokenEnvVarKey)}
+	cfg.Analytics.Posthog = &posthog.Config{APIKey: os.Getenv(gcpPostHogKeyEnvVarKey)}
 
 	cfg.Services.ValidMeasurementUnits.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.ValidInstruments.DataChangesTopicName = dataChangesTopicName
@@ -236,6 +240,7 @@ func getWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*Instance
 	cfg.Email.Sendgrid.APIToken = os.Getenv(gcpSendgridTokenEnvVarKey)
 	cfg.Analytics = analyticscfg.Config{
 		Segment:  &segment.Config{APIToken: os.Getenv(gcpSegmentTokenEnvVarKey)},
+		Posthog:  &posthog.Config{APIKey: os.Getenv(gcpPostHogKeyEnvVarKey)},
 		Provider: analyticscfg.ProviderSegment,
 	}
 

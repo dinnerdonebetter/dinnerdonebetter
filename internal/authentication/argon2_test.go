@@ -1,11 +1,11 @@
-package argon2_test
+package authentication_test
 
 import (
 	"context"
 	"testing"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication/argon2"
+	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
@@ -15,14 +15,12 @@ import (
 
 const (
 	argon2HashedExamplePassword = `$argon2id$v=19$m=65536,t=1,p=2$C+YWiNi21e94acF3ip8UGA$Ru6oL96HZSP7cVcfAbRwOuK9+vwBo/BLhCzOrGrMH0M`
-	examplePassword             = "Pa$$w0rdPa$$w0rdPa$$w0rdPa$$w0rd"
-	exampleTwoFactorSecret      = "HEREISASECRETWHICHIVEMADEUPBECAUSEIWANNATESTRELIABLY"
 )
 
 func TestArgon2_HashPassword(T *testing.T) {
 	T.Parallel()
 
-	x := argon2.ProvideAuthenticator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider())
+	x := authentication.ProvideArgon2Authenticator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider())
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -38,7 +36,7 @@ func TestArgon2_HashPassword(T *testing.T) {
 func TestArgon2_ValidateLogin(T *testing.T) {
 	T.Parallel()
 
-	x := argon2.ProvideAuthenticator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider())
+	x := authentication.ProvideArgon2Authenticator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider())
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -132,6 +130,6 @@ func TestProvideArgon2Authenticator(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		argon2.ProvideAuthenticator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider())
+		authentication.ProvideArgon2Authenticator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider())
 	})
 }

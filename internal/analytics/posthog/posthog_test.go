@@ -20,7 +20,7 @@ func TestNewSegmentEventReporter(T *testing.T) {
 
 		logger := logging.NewNoopLogger()
 
-		collector, err := NewSegmentEventReporter(logger, tracing.NewNoopTracerProvider(), t.Name())
+		collector, err := NewPostHogEventReporter(logger, tracing.NewNoopTracerProvider(), t.Name())
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 	})
@@ -30,7 +30,7 @@ func TestNewSegmentEventReporter(T *testing.T) {
 
 		logger := logging.NewNoopLogger()
 
-		collector, err := NewSegmentEventReporter(logger, tracing.NewNoopTracerProvider(), "")
+		collector, err := NewPostHogEventReporter(logger, tracing.NewNoopTracerProvider(), "")
 		require.Error(t, err)
 		require.Nil(t, collector)
 	})
@@ -44,7 +44,7 @@ func TestSegmentEventReporter_Close(T *testing.T) {
 
 		logger := logging.NewNoopLogger()
 
-		collector, err := NewSegmentEventReporter(logger, tracing.NewNoopTracerProvider(), t.Name())
+		collector, err := NewPostHogEventReporter(logger, tracing.NewNoopTracerProvider(), t.Name())
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 
@@ -65,7 +65,7 @@ func TestSegmentEventReporter_AddUser(T *testing.T) {
 			"test.name": t.Name(),
 		}
 
-		collector, err := NewSegmentEventReporter(logger, tracing.NewNoopTracerProvider(), t.Name())
+		collector, err := NewPostHogEventReporter(logger, tracing.NewNoopTracerProvider(), t.Name())
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 
@@ -86,7 +86,7 @@ func TestSegmentEventReporter_EventOccurred(T *testing.T) {
 			"test.name": t.Name(),
 		}
 
-		collector, err := NewSegmentEventReporter(logger, tracing.NewNoopTracerProvider(), t.Name())
+		collector, err := NewPostHogEventReporter(logger, tracing.NewNoopTracerProvider(), t.Name())
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 

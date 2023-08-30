@@ -9,7 +9,6 @@ var (
 	ServiceConfigProviders = wire.NewSet(
 		wire.FieldsOf(
 			new(*InstanceConfig),
-			"Authentication",
 			"Observability",
 			"Email",
 			"Analytics",

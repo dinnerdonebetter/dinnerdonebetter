@@ -13,7 +13,7 @@ require (
 	github.com/alexedwards/scs/postgresstore v0.0.0-20230327161757-10d4299e3b24
 	github.com/alexedwards/scs/v2 v2.5.1
 	github.com/algolia/algoliasearch-client-go/v3 v3.31.0
-	github.com/aws/aws-sdk-go v1.44.333
+	github.com/aws/aws-sdk-go v1.44.334
 	github.com/boombuler/barcode v1.0.1
 	github.com/brianvoe/gofakeit/v5 v5.11.2
 	github.com/dustin/go-humanize v1.0.1
@@ -61,7 +61,7 @@ require (
 	github.com/wagslane/go-password-validator v0.3.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.43.0
 	go.opentelemetry.io/otel v1.17.0
-	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.3.0
+	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.17.0
 	go.opentelemetry.io/otel/sdk v1.17.0
 	go.opentelemetry.io/otel/trace v1.17.0
 	go.uber.org/automaxprocs v1.5.3
@@ -109,7 +109,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.15.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.21.5 // indirect
 	github.com/aws/smithy-go v1.14.2 // indirect
-	github.com/cenkalti/backoff/v4 v4.2.0 // indirect
+	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/containerd/containerd v1.6.19 // indirect
 	github.com/cpuguy83/dockercfg v0.3.1 // indirect
@@ -137,7 +137,7 @@ require (
 	github.com/googleapis/enterprise-certificate-proxy v0.2.5 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79 // indirect
-	github.com/grpc-ecosystem/grpc-gateway v1.16.0 // indirect
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.17.1 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-hclog v1.5.0 // indirect
@@ -183,7 +183,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20200410134404-eec4a21b6bb0 // indirect
 	github.com/rivo/uniseg v0.4.4 // indirect
-	github.com/rogpeppe/go-internal v1.10.0 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/segmentio/backo-go v1.0.1 // indirect
 	github.com/sergi/go-diff v1.2.0 // indirect
@@ -197,10 +196,9 @@ require (
 	github.com/vanng822/go-premailer v1.20.2 // indirect
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	go.opencensus.io v0.24.0 // indirect
-	go.opentelemetry.io/otel/exporters/otlp/internal/retry v1.3.0 // indirect
-	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.3.0 // indirect
+	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.17.0 // indirect
 	go.opentelemetry.io/otel/metric v1.17.0 // indirect
-	go.opentelemetry.io/proto/otlp v0.11.0 // indirect
+	go.opentelemetry.io/proto/otlp v1.0.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/exp v0.0.0-20230817173708-d852ddb80c63 // indirect
 	golang.org/x/sync v0.3.0 // indirect

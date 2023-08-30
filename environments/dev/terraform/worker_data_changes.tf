@@ -117,6 +117,13 @@ resource "google_cloudfunctions2_function" "data_changes" {
       secret     = google_secret_manager_secret.segment_api_token.secret_id
       version    = "latest"
     }
+
+    secret_environment_variables {
+      key        = "DINNER_DONE_BETTER_POSTHOG_API_KEY"
+      project_id = local.project_id
+      secret     = google_secret_manager_secret.posthog_api_key.secret_id
+      version    = "latest"
+    }
   }
 
   event_trigger {

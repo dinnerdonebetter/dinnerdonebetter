@@ -7,7 +7,7 @@ import (
 	"context"
 
 	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
-	authcfg "github.com/dinnerdonebetter/backend/internal/authentication/config"
+	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
@@ -76,6 +76,7 @@ func Build(
 	cfg *config.InstanceConfig,
 ) (http.Server, error) {
 	wire.Build(
+		authentication.Providers,
 		config.ServiceConfigProviders,
 		database.DBProviders,
 		dbconfig.Providers,
@@ -135,7 +136,6 @@ func Build(
 		oauth2clientsservice.Providers,
 		validvesselsservice.Providers,
 		validpreparationvesselsservice.Providers,
-		authcfg.Providers,
 	)
 
 	return nil, nil

@@ -22,7 +22,7 @@ var (
 )
 
 type (
-	// EventReporter is a Segment-backed EventReporter.
+	// EventReporter is a PostHog-backed EventReporter.
 	EventReporter struct {
 		tracer tracing.Tracer
 		logger logging.Logger
@@ -30,16 +30,26 @@ type (
 	}
 )
 
-// NewSegmentEventReporter returns a new Segment-backed EventReporter.
-func NewSegmentEventReporter(logger logging.Logger, tracerProvider tracing.TracerProvider, apiKey string) (analytics.EventReporter, error) {
+// NewPostHogEventReporter returns a new PostHog-backed EventReporter.
+func NewPostHogEventReporter(logger logging.Logger, tracerProvider tracing.TracerProvider, apiKey string, configModifiers ...func(*posthog.Config)) (analytics.EventReporter, error) {
 	if apiKey == "" {
 		return nil, ErrEmptyAPIToken
+	}
+
+	phc := posthog.Config{Endpoint: "https://app.posthog.com"}
+	for _, f := range configModifiers {
+		f(&phc)
+	}
+
+	client, err := posthog.NewWithConfig(apiKey, phc)
+	if err != nil {
+		return nil, err
 	}
 
 	c := &EventReporter{
 		tracer: tracing.NewTracer(tracerProvider.Tracer(name)),
 		logger: logging.EnsureLogger(logger).WithName(name),
-		client: posthog.New(apiKey),
+		client: client,
 	}
 
 	return c, nil

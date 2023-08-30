@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	authcfg "github.com/dinnerdonebetter/backend/internal/authentication/config"
+	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
@@ -81,11 +81,7 @@ func init() {
 
 	dbmanager = dbm
 
-	hasher, err := authcfg.ProvideAuthenticator(&authcfg.Config{Provider: authcfg.ProviderArgon2}, logger, tracing.NewNoopTracerProvider())
-	if err != nil {
-		panic(err)
-	}
-
+	hasher := authentication.ProvideArgon2Authenticator(logger, tracing.NewNoopTracerProvider())
 	actuallyHashedPass, err := hasher.HashPassword(ctx, premadeAdminUser.HashedPassword)
 	if err != nil {
 		panic(err)

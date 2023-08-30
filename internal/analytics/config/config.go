@@ -53,7 +53,7 @@ func (cfg *Config) ProvideCollector(logger logging.Logger, tracerProvider tracin
 	case ProviderRudderstack:
 		return rudderstack.NewRudderstackEventReporter(logger, tracerProvider, cfg.Rudderstack)
 	case ProviderPostHog:
-		return posthog.NewSegmentEventReporter(logger, tracerProvider, cfg.Posthog.APIToken)
+		return posthog.NewPostHogEventReporter(logger, tracerProvider, cfg.Posthog.APIKey)
 	default:
 		return analytics.NewNoopEventReporter(), nil
 	}
