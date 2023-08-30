@@ -2,6 +2,8 @@ package indexing
 
 import (
 	"context"
+	"testing"
+
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -9,14 +11,16 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/search/config"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	testutils "github.com/dinnerdonebetter/backend/tests/utils"
+
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestHandleIndexRequest(T *testing.T) {
 	T.Parallel()
 
 	T.Run("user index type", func(t *testing.T) {
+		t.Parallel()
+
 		exampleUser := fakes.BuildFakeUser()
 
 		ctx := context.Background()
@@ -38,6 +42,8 @@ func TestHandleIndexRequest(T *testing.T) {
 	})
 
 	T.Run("deleting user index type", func(t *testing.T) {
+		t.Parallel()
+
 		exampleUser := fakes.BuildFakeUser()
 
 		ctx := context.Background()
@@ -59,6 +65,8 @@ func TestHandleIndexRequest(T *testing.T) {
 	})
 
 	T.Run("recipe index type", func(t *testing.T) {
+		t.Parallel()
+
 		exampleRecipe := fakes.BuildFakeRecipe()
 
 		ctx := context.Background()
@@ -80,6 +88,8 @@ func TestHandleIndexRequest(T *testing.T) {
 	})
 
 	T.Run("meal index type", func(t *testing.T) {
+		t.Parallel()
+
 		exampleMeal := fakes.BuildFakeMeal()
 
 		ctx := context.Background()
@@ -101,6 +111,8 @@ func TestHandleIndexRequest(T *testing.T) {
 	})
 
 	T.Run("valid vessel index type", func(t *testing.T) {
+		t.Parallel()
+
 		exampleValidVessel := fakes.BuildFakeValidVessel()
 
 		ctx := context.Background()
@@ -122,6 +134,8 @@ func TestHandleIndexRequest(T *testing.T) {
 	})
 
 	T.Run("valid ingredient index type", func(t *testing.T) {
+		t.Parallel()
+
 		exampleValidIngredient := fakes.BuildFakeValidIngredient()
 
 		ctx := context.Background()
@@ -143,6 +157,8 @@ func TestHandleIndexRequest(T *testing.T) {
 	})
 
 	T.Run("valid instrument index type", func(t *testing.T) {
+		t.Parallel()
+
 		exampleValidInstrument := fakes.BuildFakeValidInstrument()
 
 		ctx := context.Background()
@@ -164,6 +180,8 @@ func TestHandleIndexRequest(T *testing.T) {
 	})
 
 	T.Run("valid preparation index type", func(t *testing.T) {
+		t.Parallel()
+
 		exampleValidPreparation := fakes.BuildFakeValidPreparation()
 
 		ctx := context.Background()
@@ -185,6 +203,8 @@ func TestHandleIndexRequest(T *testing.T) {
 	})
 
 	T.Run("valid measurement unit index type", func(t *testing.T) {
+		t.Parallel()
+
 		exampleValidMeasurementUnit := fakes.BuildFakeValidMeasurementUnit()
 
 		ctx := context.Background()
@@ -206,6 +226,8 @@ func TestHandleIndexRequest(T *testing.T) {
 	})
 
 	T.Run("valid ingredient state index type", func(t *testing.T) {
+		t.Parallel()
+
 		exampleValidIngredientState := fakes.BuildFakeValidIngredientState()
 
 		ctx := context.Background()
