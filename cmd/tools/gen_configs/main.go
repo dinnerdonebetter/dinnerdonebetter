@@ -66,7 +66,6 @@ import (
 	validpreparationsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparations"
 	validpreparationvesselsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparationvessels"
 	validvesselsservice "github.com/dinnerdonebetter/backend/internal/services/validvessels"
-	"github.com/dinnerdonebetter/backend/internal/services/vendorproxy"
 	webhooksservice "github.com/dinnerdonebetter/backend/internal/services/webhooks"
 	websocketsservice "github.com/dinnerdonebetter/backend/internal/services/websockets"
 	"github.com/dinnerdonebetter/backend/internal/uploads"
@@ -544,9 +543,6 @@ func buildDevConfig() *config.InstanceConfig {
 			ValidMeasurementUnitConversions: validmeasurementconversionsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
-			VendorProxy: vendorproxy.Config{
-				DataChangesTopicName: dataChangesTopicName,
-			},
 			ServiceSettings: servicesettings.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
@@ -787,9 +783,6 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidMeasurementUnitConversions: validmeasurementconversionsservice.Config{
-				DataChangesTopicName: dataChangesTopicName,
-			},
-			VendorProxy: vendorproxy.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ServiceSettings: servicesettings.Config{

@@ -56,7 +56,6 @@ var (
 			"ValidIngredientStateIngredients",
 			"RecipeStepVessels",
 			"Auth",
-			"VendorProxy",
 			"ServiceSettings",
 			"ServiceSettingConfigurations",
 			"UserIngredientPreferences",
