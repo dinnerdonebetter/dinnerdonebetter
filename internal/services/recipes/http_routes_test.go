@@ -1084,6 +1084,42 @@ func TestRecipesService_DAGHandler(T *testing.T) {
 	})
 }
 
+func TestRecipesService_EstimatedPrepStepsHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.recipeIDFetcher = func(_ *http.Request) string {
+			return helper.exampleRecipe.ID
+		}
+
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
+		recipeDataManager.On(
+			"GetRecipe",
+			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
+		).Return(helper.exampleRecipe, nil)
+		helper.service.recipeDataManager = recipeDataManager
+
+		mockGrapher := &recipeanalysis.MockRecipeAnalyzer{}
+		mockGrapher.On(
+			"GenerateMealPlanTasksForRecipe",
+			testutils.ContextMatcher,
+			"",
+			helper.exampleRecipe,
+		).Return([]*types.MealPlanTaskDatabaseCreationInput{}, nil)
+		helper.service.recipeAnalyzer = mockGrapher
+
+		helper.service.EstimatedPrepStepsHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager, mockGrapher)
+	})
+}
+
 func TestRecipesService_MermaidHandler(T *testing.T) {
 	T.Parallel()
 
