@@ -187,7 +187,7 @@ coverage: clean_coverage $(ARTIFACTS_DIR)
 
 .PHONY: build
 build:
-	CGO_ENABLED=0 go build $(TOTAL_PACKAGE_LIST)
+	go build $(TOTAL_PACKAGE_LIST)
 
 .PHONY: quicktest
 quicktest: $(ARTIFACTS_DIR) vendor build

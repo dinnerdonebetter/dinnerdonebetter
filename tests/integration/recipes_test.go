@@ -764,3 +764,21 @@ func (s *TestSuite) TestRecipes_Cloning() {
 		}
 	})
 }
+
+func (s *TestSuite) TestRecipes_DAGGeneration() {
+	s.runForEachClient("should be creatable and readable and updatable and deletable", func(testClients *testClientWrapper) func() {
+		return func() {
+			t := s.T()
+
+			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
+			defer span.End()
+
+			_, _, createdRecipe := createRecipeForTest(ctx, t, testClients.admin, testClients.user, nil)
+
+			actual, err := testClients.user.GetRecipeDAG(ctx, createdRecipe.ID)
+			requireNotNilAndNoProblems(t, actual, err)
+
+			assert.NoError(t, testClients.admin.ArchiveRecipe(ctx, createdRecipe.ID))
+		}
+	})
+}
