@@ -150,6 +150,7 @@ type (
 		ArchiveHandler(http.ResponseWriter, *http.Request)
 		EstimatedPrepStepsHandler(http.ResponseWriter, *http.Request)
 		ImageUploadHandler(http.ResponseWriter, *http.Request)
+		DAGHandler(http.ResponseWriter, *http.Request)
 		MermaidHandler(http.ResponseWriter, *http.Request)
 		CloneHandler(http.ResponseWriter, *http.Request)
 	}

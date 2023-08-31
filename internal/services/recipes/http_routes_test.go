@@ -976,6 +976,150 @@ func TestRecipesService_ArchiveHandler(T *testing.T) {
 	})
 }
 
+func TestRecipesService_DAGHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.recipeIDFetcher = func(_ *http.Request) string {
+			return helper.exampleRecipe.ID
+		}
+
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
+		recipeDataManager.On(
+			"GetRecipe",
+			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
+		).Return(helper.exampleRecipe, nil)
+		helper.service.recipeDataManager = recipeDataManager
+
+		fakeImage := testutils.BuildArbitraryImage(1)
+		mockGrapher := &recipeanalysis.MockRecipeAnalyzer{}
+		mockGrapher.On(
+			"GenerateDAGDiagramForRecipe",
+			testutils.ContextMatcher,
+			helper.exampleRecipe,
+		).Return(fakeImage, nil)
+		helper.service.recipeAnalyzer = mockGrapher
+
+		helper.service.DAGHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager, mockGrapher)
+	})
+
+	T.Run("with error fetching session context", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.recipeIDFetcher = func(_ *http.Request) string {
+			return helper.exampleRecipe.ID
+		}
+
+		helper.service.sessionContextDataFetcher = func(request *http.Request) (*types.SessionContextData, error) {
+			return nil, errors.New("blah")
+		}
+
+		helper.service.DAGHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+	})
+
+	T.Run("with error fetching recipe", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.recipeIDFetcher = func(_ *http.Request) string {
+			return helper.exampleRecipe.ID
+		}
+
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
+		recipeDataManager.On(
+			"GetRecipe",
+			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
+		).Return((*types.Recipe)(nil), errors.New("blah"))
+		helper.service.recipeDataManager = recipeDataManager
+
+		helper.service.DAGHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager)
+	})
+
+	T.Run("with error generating diagram", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.recipeIDFetcher = func(_ *http.Request) string {
+			return helper.exampleRecipe.ID
+		}
+
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
+		recipeDataManager.On(
+			"GetRecipe",
+			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
+		).Return(helper.exampleRecipe, nil)
+		helper.service.recipeDataManager = recipeDataManager
+
+		fakeImage := testutils.BuildArbitraryImage(1)
+		mockGrapher := &recipeanalysis.MockRecipeAnalyzer{}
+		mockGrapher.On(
+			"GenerateDAGDiagramForRecipe",
+			testutils.ContextMatcher,
+			helper.exampleRecipe,
+		).Return(fakeImage, errors.New("blah"))
+		helper.service.recipeAnalyzer = mockGrapher
+
+		helper.service.DAGHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager, mockGrapher)
+	})
+}
+
+func TestRecipesService_EstimatedPrepStepsHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.recipeIDFetcher = func(_ *http.Request) string {
+			return helper.exampleRecipe.ID
+		}
+
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
+		recipeDataManager.On(
+			"GetRecipe",
+			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
+		).Return(helper.exampleRecipe, nil)
+		helper.service.recipeDataManager = recipeDataManager
+
+		mockGrapher := &recipeanalysis.MockRecipeAnalyzer{}
+		mockGrapher.On(
+			"GenerateMealPlanTasksForRecipe",
+			testutils.ContextMatcher,
+			"",
+			helper.exampleRecipe,
+		).Return([]*types.MealPlanTaskDatabaseCreationInput{}, nil)
+		helper.service.recipeAnalyzer = mockGrapher
+
+		helper.service.EstimatedPrepStepsHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager, mockGrapher)
+	})
+}
+
 func TestRecipesService_MermaidHandler(T *testing.T) {
 	T.Parallel()
 

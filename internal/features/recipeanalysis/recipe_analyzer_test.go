@@ -2,6 +2,8 @@ package recipeanalysis
 
 import (
 	"context"
+	"image/png"
+	"os"
 	"testing"
 	"time"
 
@@ -12,7 +14,21 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
+
+func saveDebugDAGOfRecipe(t *testing.T, g RecipeAnalyzer, recipe *types.Recipe) {
+	t.Helper()
+
+	ctx := context.Background()
+
+	img, err := g.GenerateDAGDiagramForRecipe(ctx, recipe)
+	require.NoError(t, err)
+
+	f, err := os.CreateTemp("", "")
+	require.NoError(t, err)
+	require.NoError(t, png.Encode(f, img))
+}
 
 func newAnalyzerForTest(t *testing.T) *recipeAnalyzer {
 	t.Helper()

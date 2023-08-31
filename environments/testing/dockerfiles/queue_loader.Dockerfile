@@ -10,8 +10,6 @@ COPY vendor vendor
 COPY go.mod go.mod
 COPY go.sum go.sum
 
-ENV CGO_ENABLED=0
-
 RUN --mount=type=cache,target=/root/.cache/go-build go build -trimpath -o /queue_loader github.com/dinnerdonebetter/backend/cmd/localdev/queue_loader
 
 ENTRYPOINT /queue_loader

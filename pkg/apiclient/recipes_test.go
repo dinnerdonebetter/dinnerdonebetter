@@ -337,6 +337,56 @@ func (s *recipesTestSuite) TestClient_ArchiveRecipe() {
 	})
 }
 
+func (s *recipesTestSuite) TestClient_GetRecipeDAG() {
+	const expectedPathFormat = "/api/v1/recipes/%s/dag"
+
+	s.Run("standard", func() {
+		t := s.T()
+
+		exampleImage, imageBytes := buildArbitraryImagePNGBytes(15)
+		require.NotNil(t, exampleImage)
+
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleRecipe.ID)
+		c, _ := buildTestClientWithBytesResponse(t, spec, imageBytes)
+		actual, err := c.GetRecipeDAG(s.ctx, s.exampleRecipe.ID)
+
+		require.NotNil(t, actual)
+		assert.NoError(t, err)
+		assert.Equal(t, exampleImage, actual)
+	})
+
+	s.Run("with invalid recipe ID", func() {
+		t := s.T()
+
+		c, _ := buildSimpleTestClient(t)
+		actual, err := c.GetRecipeDAG(s.ctx, "")
+
+		require.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error building request", func() {
+		t := s.T()
+
+		c := buildTestClientWithInvalidURL(t)
+		actual, err := c.GetRecipeDAG(s.ctx, s.exampleRecipe.ID)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error executing request", func() {
+		t := s.T()
+
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleRecipe.ID)
+		c := buildTestClientWithInvalidResponse(t, spec)
+		actual, err := c.GetRecipeDAG(s.ctx, s.exampleRecipe.ID)
+
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
 func (s *recipesTestSuite) TestClient_CloneRecipe() {
 	const expectedPathFormat = "/api/v1/recipes/%s/clone"
 

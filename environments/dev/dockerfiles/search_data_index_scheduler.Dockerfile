@@ -5,8 +5,6 @@ WORKDIR /go/src/github.com/dinnerdonebetter/backend
 
 COPY . .
 
-ENV CGO_ENABLED=0
-
 RUN go build -trimpath -o /action github.com/dinnerdonebetter/backend/cmd/jobs/search_data_index_scheduler
 
 # final stage
