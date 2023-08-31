@@ -16,6 +16,7 @@ const (
 	// MealPlanEventUpdatedCustomerEventType indicates a meal plan was updated.
 	MealPlanEventUpdatedCustomerEventType CustomerEventType = "meal_plan_event_updated"
 	// MealPlanEventArchivedCustomerEventType indicates a meal plan was archived.
+	/* #nosec G101 */
 	MealPlanEventArchivedCustomerEventType CustomerEventType = "meal_plan_event_archived"
 
 	// BreakfastMealName represents breakfast.

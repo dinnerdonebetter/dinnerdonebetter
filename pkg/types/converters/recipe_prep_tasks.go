@@ -12,10 +12,11 @@ import (
 func ConvertRecipePrepTaskToRecipePrepTaskUpdateRequestInput(input *types.RecipePrepTask) *types.RecipePrepTaskUpdateRequestInput {
 	taskSteps := []*types.RecipePrepTaskStepUpdateRequestInput{}
 	for _, x := range input.TaskSteps {
+		y := x
 		taskSteps = append(taskSteps, &types.RecipePrepTaskStepUpdateRequestInput{
-			BelongsToRecipeStep:     &x.BelongsToRecipeStep,
-			BelongsToRecipePrepTask: &x.BelongsToRecipePrepTask,
-			SatisfiesRecipeStep:     &x.SatisfiesRecipeStep,
+			BelongsToRecipeStep:     &y.BelongsToRecipeStep,
+			BelongsToRecipePrepTask: &y.BelongsToRecipePrepTask,
+			SatisfiesRecipeStep:     &y.SatisfiesRecipeStep,
 		})
 	}
 	x := &types.RecipePrepTaskUpdateRequestInput{
