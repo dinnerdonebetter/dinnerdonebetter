@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM golang:1.21-bookworm
+FROM golang:1.21-bullseye
 
 WORKDIR /go/src/github.com/dinnerdonebetter/backend
 
