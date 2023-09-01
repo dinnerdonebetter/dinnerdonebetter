@@ -54,7 +54,7 @@ func ProvideService(
 		householdInstrumentOwnershipDataManager: householdInstrumentOwnershipDataManager,
 		dataChangesPublisher:                    dataChangesPublisher,
 		encoderDecoder:                          encoder,
-		tracer:                                  tracing.NewTracer(tracerProvider.Tracer(serviceName)),
+		tracer:                                  tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 	}
 
 	return svc, nil

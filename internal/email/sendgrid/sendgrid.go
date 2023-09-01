@@ -64,7 +64,7 @@ func NewSendGridEmailer(cfg *Config, logger logging.Logger, tracerProvider traci
 
 	e := &Emailer{
 		logger: logging.EnsureLogger(logger).WithName(name),
-		tracer: tracing.NewTracer(tracerProvider.Tracer(name)),
+		tracer: tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(name)),
 		client: sendgrid.NewSendClient(cfg.APIToken),
 		config: *cfg,
 	}

@@ -40,7 +40,7 @@ func doTheThing() error {
 	}
 	otel.SetTracerProvider(tracerProvider)
 
-	ctx, span := tracing.NewTracer(tracerProvider.Tracer("email_prober_job")).StartSpan(ctx)
+	ctx, span := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("email_prober_job")).StartSpan(ctx)
 	defer span.End()
 
 	emailer, err := emailconfig.ProvideEmailer(&cfg.Email, logger, tracerProvider, otelhttp.DefaultClient)

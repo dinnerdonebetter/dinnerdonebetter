@@ -51,7 +51,7 @@ func ProvideDatabaseClient(
 	cfg *dbconfig.Config,
 	tracerProvider tracing.TracerProvider,
 ) (database.DataManager, error) {
-	tracer := tracing.NewTracer(tracerProvider.Tracer(tracingName))
+	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(tracingName))
 
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()

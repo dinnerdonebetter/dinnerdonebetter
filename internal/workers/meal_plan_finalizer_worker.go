@@ -33,7 +33,7 @@ func ProvideMealPlanFinalizationWorker(
 
 	return &MealPlanFinalizationWorker{
 		logger:               logging.EnsureLogger(logger).WithName(n),
-		tracer:               tracing.NewTracer(tracerProvider.Tracer(n)),
+		tracer:               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(n)),
 		encoder:              encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
 		dataManager:          dataManager,
 		postUpdatesPublisher: postUpdatesPublisher,

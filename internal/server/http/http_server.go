@@ -141,7 +141,7 @@ func ProvideHTTPServer(
 		config: serverSettings,
 
 		// infra things,
-		tracer:         tracing.NewTracer(tracerProvider.Tracer(loggerName)),
+		tracer:         tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(loggerName)),
 		encoder:        encoder,
 		logger:         logging.EnsureLogger(logger).WithName(loggerName),
 		panicker:       panicking.NewProductionPanicker(),

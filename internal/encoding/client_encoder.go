@@ -141,7 +141,7 @@ func (e *clientEncoder) EncodeReader(ctx context.Context, data any) (io.Reader, 
 func ProvideClientEncoder(logger logging.Logger, tracerProvider tracing.TracerProvider, encoding *contentType) ClientEncoder {
 	return &clientEncoder{
 		logger:      logging.EnsureLogger(logger).WithName("client_encoder"),
-		tracer:      tracing.NewTracer(tracerProvider.Tracer("client_encoder")),
+		tracer:      tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("client_encoder")),
 		contentType: encoding,
 	}
 }

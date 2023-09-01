@@ -43,7 +43,7 @@ func ProvideMealPlanTaskCreationEnsurerWorker(
 ) *MealPlanTaskCreatorWorker {
 	return &MealPlanTaskCreatorWorker{
 		logger:                 logging.EnsureLogger(logger).WithName(mealPlanTaskCreationEnsurerWorkerName),
-		tracer:                 tracing.NewTracer(tracerProvider.Tracer(mealPlanTaskCreationEnsurerWorkerName)),
+		tracer:                 tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(mealPlanTaskCreationEnsurerWorkerName)),
 		encoder:                encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
 		dataManager:            dataManager,
 		analyzer:               grapher,

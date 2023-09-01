@@ -13,6 +13,7 @@ require (
 	github.com/alexedwards/scs/postgresstore v0.0.0-20230327161757-10d4299e3b24
 	github.com/alexedwards/scs/v2 v2.5.1
 	github.com/algolia/algoliasearch-client-go/v3 v3.31.0
+	github.com/awalterschulze/gographviz v2.0.3+incompatible
 	github.com/aws/aws-sdk-go v1.44.334
 	github.com/boombuler/barcode v1.0.1
 	github.com/brianvoe/gofakeit/v5 v5.11.2
@@ -28,6 +29,7 @@ require (
 	github.com/googleapis/gax-go/v2 v2.12.0
 	github.com/gorilla/securecookie v1.1.1
 	github.com/gorilla/websocket v1.5.0
+	github.com/hako/durafmt v0.0.0-20210608085754-5c1018a4e16b
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/hashicorp/go-retryablehttp v0.7.4
 	github.com/heimdalr/dag v1.3.1

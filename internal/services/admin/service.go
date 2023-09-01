@@ -53,7 +53,7 @@ func ProvideService(
 		sessionManager:            sessionManager,
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,
 		userIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(UserIDURIParamKey),
-		tracer:                    tracing.NewTracer(tracerProvider.Tracer(serviceName)),
+		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 	}
 	svc.sessionManager.Lifetime = cfg.Cookies.Lifetime
 

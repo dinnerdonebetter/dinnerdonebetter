@@ -66,7 +66,7 @@ func ProvideService(
 		mealDataManager:           mealDataManager,
 		dataChangesPublisher:      dataChangesPublisher,
 		encoderDecoder:            encoder,
-		tracer:                    tracing.NewTracer(tracerProvider.Tracer(serviceName)),
+		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 		searchIndex:               searchIndex,
 	}
 

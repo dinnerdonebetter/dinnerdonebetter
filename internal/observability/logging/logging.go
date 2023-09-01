@@ -1,7 +1,9 @@
 package logging
 
 import (
+	"log/slog"
 	"net/http"
+	"os"
 
 	"go.opentelemetry.io/otel/trace"
 )
@@ -60,4 +62,8 @@ func EnsureLogger(logger Logger) Logger {
 	}
 
 	return NewNoopLogger()
+}
+
+func init() {
+	slog.SetDefault(slog.New(slog.NewJSONHandler(os.Stdout, nil)))
 }

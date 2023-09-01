@@ -49,3 +49,11 @@ func (n *noopTracerProvider) ForceFlush(_ context.Context) error {
 var NewNoopTracerProvider = func() TracerProvider {
 	return &noopTracerProvider{}
 }
+
+func EnsureTracerProvider(tracerProvider TracerProvider) TracerProvider {
+	if tracerProvider != nil {
+		return tracerProvider
+	}
+
+	return NewNoopTracerProvider()
+}

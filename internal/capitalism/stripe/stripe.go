@@ -56,7 +56,7 @@ func ProvideStripePaymentManager(logger logging.Logger, tracerProvider tracing.T
 		successURL:    cfg.SuccessURL,
 		cancelURL:     cfg.CancelURL,
 		logger:        logging.EnsureLogger(logger),
-		tracer:        tracing.NewTracer(tracerProvider.Tracer(implementationName)),
+		tracer:        tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(implementationName)),
 	}
 
 	return spm

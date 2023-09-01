@@ -45,7 +45,7 @@ func NewBuilder(u *url.URL, logger logging.Logger, tracerProvider tracing.Tracer
 		logger:   l,
 		encoder:  encoder,
 		panicker: panicking.NewProductionPanicker(),
-		tracer:   tracing.NewTracer(tracerProvider.Tracer(clientName)),
+		tracer:   tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(clientName)),
 	}
 
 	return c, nil

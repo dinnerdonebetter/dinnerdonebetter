@@ -76,7 +76,7 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 	}
 	otel.SetTracerProvider(tracerProvider)
 
-	tracer := tracing.NewTracer(tracerProvider.Tracer("data_changes_job"))
+	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("data_changes_job"))
 
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()

@@ -72,7 +72,7 @@ func ProvideService(
 		websocketDeadline:           5 * time.Second,
 		pollDuration:                30 * time.Second,
 		authConfig:                  authCfg,
-		tracer:                      tracing.NewTracer(tracerProvider.Tracer(serviceName)),
+		tracer:                      tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 	}
 
 	svc.logger.WithValue("topic_name", "data_changes").Info("fetching data change thing")

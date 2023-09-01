@@ -20,6 +20,6 @@ func NewEncryptorDecryptor(tracerProvider tracing.TracerProvider, logger logging
 
 	return &aesImpl{
 		logger: logging.EnsureLogger(logger).WithName("encryptor"),
-		tracer: tracing.NewTracer(tracerProvider.Tracer("encryptor")),
+		tracer: tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("encryptor")),
 	}, nil
 }

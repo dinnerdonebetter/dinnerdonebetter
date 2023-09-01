@@ -67,7 +67,7 @@ func ProvideOAuth2ClientsService(
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,
 		secretGenerator:           secretGenerator,
 		dataChangesPublisher:      dataChangesPublisher,
-		tracer:                    tracing.NewTracer(tracerProvider.Tracer(serviceName)),
+		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 	}
 
 	return s, nil

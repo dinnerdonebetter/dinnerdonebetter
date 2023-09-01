@@ -42,7 +42,7 @@ func doTheThing() error {
 	}
 	otel.SetTracerProvider(tracerProvider)
 
-	ctx, span := tracing.NewTracer(tracerProvider.Tracer("meal_plan_task_creator_job")).StartSpan(ctx)
+	ctx, span := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("meal_plan_task_creator_job")).StartSpan(ctx)
 	defer span.End()
 
 	analyticsEventReporter, err := analyticsconfig.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider)

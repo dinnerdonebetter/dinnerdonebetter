@@ -82,7 +82,7 @@ func ProvideService(
 		cfg:                       *cfg,
 		imageUploadProcessor:      imageUploadProcessor,
 		uploadManager:             uploader,
-		tracer:                    tracing.NewTracer(tracerProvider.Tracer(serviceName)),
+		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 	}
 
 	return svc, nil

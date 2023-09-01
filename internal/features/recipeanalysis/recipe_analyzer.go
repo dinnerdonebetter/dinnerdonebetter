@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"image"
 	"strings"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -16,9 +17,9 @@ import (
 
 	"github.com/dustin/go-humanize/english"
 	"github.com/goccy/go-graphviz"
+	"github.com/hako/durafmt"
 	"github.com/heimdalr/dag"
 	"gonum.org/v1/gonum/graph"
-	dotencoding "gonum.org/v1/gonum/graph/encoding/dot"
 	"gonum.org/v1/gonum/graph/simple"
 	"gonum.org/v1/gonum/graph/topo"
 )
@@ -81,6 +82,7 @@ type RecipeAnalyzer interface {
 	GenerateDAGDiagramForRecipe(ctx context.Context, recipe *types.Recipe) (image.Image, error)
 	GenerateMealPlanTasksForRecipe(ctx context.Context, mealPlanOptionID string, recipe *types.Recipe) ([]*types.MealPlanTaskDatabaseCreationInput, error)
 	RenderMermaidDiagramForRecipe(ctx context.Context, recipe *types.Recipe) string
+	RenderGraphvizDiagramForRecipe(ctx context.Context, recipe *types.Recipe) string
 }
 
 var _ RecipeAnalyzer = (*recipeAnalyzer)(nil)
@@ -95,7 +97,7 @@ type recipeAnalyzer struct {
 func NewRecipeAnalyzer(logger logging.Logger, tracerProvider tracing.TracerProvider) RecipeAnalyzer {
 	return &recipeAnalyzer{
 		logger: logging.EnsureLogger(logger).WithName("recipe_analyzer"),
-		tracer: tracing.NewTracer(tracerProvider.Tracer("recipe_grapher")),
+		tracer: tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("recipe_grapher")),
 	}
 }
 
@@ -104,12 +106,7 @@ func (g *recipeAnalyzer) GenerateDAGDiagramForRecipe(ctx context.Context, recipe
 	ctx, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
-	recipeGraph, err := g.MakeGraphForRecipe(ctx, recipe)
-	if err != nil {
-		return nil, err
-	}
-
-	img, err := g.renderGraph(ctx, recipeGraph)
+	img, err := g.renderGraph(ctx, recipe)
 	if err != nil {
 		return nil, err
 	}
@@ -249,17 +246,12 @@ func (g *recipeAnalyzer) makeDAGForRecipe(ctx context.Context, recipe *types.Rec
 	return recipeGraph, nil
 }
 
-func (g *recipeAnalyzer) renderGraph(ctx context.Context, recipeGraph graph.Graph) (image.Image, error) {
+func (g *recipeAnalyzer) renderGraph(ctx context.Context, recipe *types.Recipe) (image.Image, error) {
 	_, span := g.tracer.StartSpan(ctx)
 	defer span.End()
 
-	dotBytes, err := dotencoding.Marshal(recipeGraph, "", "", "")
-	if err != nil {
-		return nil, err
-	}
-
 	gv := graphviz.New()
-	pg, err := graphviz.ParseBytes(dotBytes)
+	pg, err := graphviz.ParseBytes([]byte(g.RenderGraphvizDiagramForRecipe(ctx, recipe)))
 	if err != nil {
 		return nil, err
 	}
@@ -282,9 +274,9 @@ func frozenIngredientDefrostStepsFilter(recipe *types.Recipe) map[string][]int {
 		for i, ingredient := range recipeStep.Ingredients {
 			// if it's a valid ingredient
 			if ingredient.Ingredient != nil &&
-				// if the ingredient has objectstorage temperature set
+				// if the ingredient has storage temperature set
 				ingredient.Ingredient.MinimumIdealStorageTemperatureInCelsius != nil &&
-				// the ingredient's objectstorage temperature is set to something about freezing temperature.
+				// the ingredient's storage temperature is set to something about freezing temperature.
 				*ingredient.Ingredient.MinimumIdealStorageTemperatureInCelsius <= 3 {
 				ingredientIndices = append(ingredientIndices, i)
 			}
@@ -469,4 +461,74 @@ func (g *recipeAnalyzer) RenderMermaidDiagramForRecipe(ctx context.Context, reci
 	}
 
 	return mermaid.String()
+}
+
+var colorNames = []string{
+	"CornflowerBlue",
+	"purple",
+	"Salmon",
+	"PeachPuff",
+	"Tomato",
+	"Orange",
+	"Chocolate",
+	"LemonChiffon",
+}
+
+const graphvizPreamble = `strict digraph {
+	fontname="Outfit,Helvetica,Arial,sans-serif";
+	node [fontname="Helvetica,Arial,sans-serif" shape=egg];
+	edge [fontname="Helvetica,Arial,sans-serif"];
+    concentrate=true;
+    compound=true;
+	rankdir=TB;
+	start=1;
+`
+
+func (g *recipeAnalyzer) RenderGraphvizDiagramForRecipe(ctx context.Context, recipe *types.Recipe) string {
+	_, span := g.tracer.StartSpan(ctx)
+	defer span.End()
+
+	var graphViz strings.Builder
+	graphViz.WriteString(graphvizPreamble + "\n")
+
+	for _, step := range recipe.Steps {
+		graphViz.WriteString(fmt.Sprintf("\tStep%d [label=\"Step #%d (%s)\"];\n", graphIDForStep(step), graphIDForStep(step), step.Preparation.Name))
+	}
+
+	for i := range recipe.Steps {
+		for j := range recipe.Steps {
+			if i == j {
+				continue
+			}
+
+			if provides := stepProvidesWhatToOtherStep(recipe, uint(i), uint(j)); provides != "" {
+				stepLabel := ""
+				if recipe.Steps[i].MinimumEstimatedTimeInSeconds != nil && *recipe.Steps[i].MinimumEstimatedTimeInSeconds > 0 {
+					stepLabel = durafmt.Parse(time.Duration(*recipe.Steps[i].MinimumEstimatedTimeInSeconds) * time.Second).String()
+				}
+
+				graphViz.WriteString(fmt.Sprintf("\tStep%d -> Step%d [color=\"black\" label=%q];\n", graphIDForStep(recipe.Steps[i]), graphIDForStep(recipe.Steps[j]), stepLabel))
+			}
+		}
+	}
+
+	for i := range recipe.PrepTasks {
+		prepTask := recipe.PrepTasks[i]
+
+		graphViz.WriteString(fmt.Sprintf("\n\tsubgraph cluster_%d {\n\t\tnode [style=filled];\n\t\t", i))
+		for j := range prepTask.TaskSteps {
+			var arrow string
+			if j != len(prepTask.TaskSteps)-1 {
+				arrow = " -> "
+			}
+			graphViz.WriteString(fmt.Sprintf("Step%d%s", graphIDForStep(recipe.Steps[recipe.FindStepIndexByID(prepTask.TaskSteps[j].BelongsToRecipeStep)]), arrow))
+		}
+		colorToUse := colorNames[i%len(colorNames)]
+
+		graphViz.WriteString(fmt.Sprintf(";\n\t\tlabel = \"(prep task #%d)\";\n\t\tcolor=%s;\n\t}\n", i+1, colorToUse))
+	}
+
+	graphViz.WriteString("}\n")
+
+	return graphViz.String()
 }
