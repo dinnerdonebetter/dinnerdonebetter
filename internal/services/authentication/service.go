@@ -82,7 +82,7 @@ func ProvideService(
 		return nil, fmt.Errorf("setting up auth service data changes publisher: %w", publisherProviderErr)
 	}
 
-	tracer := tracing.NewTracer(tracerProvider.Tracer(serviceName))
+	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName))
 
 	svc := &service{
 		logger:                     logging.EnsureLogger(logger).WithName(serviceName),

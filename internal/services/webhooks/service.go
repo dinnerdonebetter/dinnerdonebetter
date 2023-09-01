@@ -52,7 +52,7 @@ func ProvideWebhooksService(
 		dataChangesPublisher:      dataChangesPublisher,
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,
 		webhookIDFetcher:          routeParamManager.BuildRouteParamStringIDFetcher(WebhookIDURIParamKey),
-		tracer:                    tracing.NewTracer(tracerProvider.Tracer(serviceName)),
+		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 	}
 
 	return s, nil

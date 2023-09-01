@@ -53,7 +53,7 @@ func UsingURL(u string) func(*Client) error {
 // UsingTracingProvider sets the url on the client.
 func UsingTracingProvider(tracerProvider tracing.TracerProvider) option {
 	return func(c *Client) error {
-		c.tracer = tracing.NewTracer(tracerProvider.Tracer(clientName))
+		c.tracer = tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(clientName))
 
 		return nil
 	}

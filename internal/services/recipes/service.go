@@ -102,7 +102,7 @@ func ProvideService(
 		recipeAnalyzer:            recipeGrapher,
 		uploadManager:             uploader,
 		imageUploadProcessor:      imageUploadProcessor,
-		tracer:                    tracing.NewTracer(tracerProvider.Tracer(serviceName)),
+		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 		searchIndex:               searchIndex,
 	}
 

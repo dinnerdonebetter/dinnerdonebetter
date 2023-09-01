@@ -72,7 +72,7 @@ func NewMailjetEmailer(cfg *Config, logger logging.Logger, tracerProvider tracin
 
 	e := &Emailer{
 		logger: logging.EnsureLogger(logger).WithName(name),
-		tracer: tracing.NewTracer(tracerProvider.Tracer(name)),
+		tracer: tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(name)),
 		client: mj,
 	}
 

@@ -70,7 +70,7 @@ func SendEmail(ctx context.Context, e event.Event) error {
 	}
 	otel.SetTracerProvider(tracerProvider)
 
-	ctx, span := tracing.NewTracer(tracerProvider.Tracer("outbound_emailer_job")).StartSpan(ctx)
+	ctx, span := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("outbound_emailer_job")).StartSpan(ctx)
 	defer span.End()
 
 	analyticsEventReporter, err := analyticsconfig.ProvideEventReporter(&cfg.Analytics, logger, tracerProvider)

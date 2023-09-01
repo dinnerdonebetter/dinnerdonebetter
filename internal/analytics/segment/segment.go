@@ -37,7 +37,7 @@ func NewSegmentEventReporter(logger logging.Logger, tracerProvider tracing.Trace
 	}
 
 	c := &EventReporter{
-		tracer: tracing.NewTracer(tracerProvider.Tracer(name)),
+		tracer: tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(name)),
 		logger: logging.EnsureLogger(logger).WithName(name),
 		client: segment.New(apiKey),
 	}

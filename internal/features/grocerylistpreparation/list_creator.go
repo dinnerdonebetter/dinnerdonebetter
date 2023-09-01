@@ -26,7 +26,7 @@ type groceryListCreator struct {
 func NewGroceryListCreator(logger logging.Logger, tracerProvider tracing.TracerProvider) GroceryListCreator {
 	return &groceryListCreator{
 		logger: logging.EnsureLogger(logger).WithName("grocery_list_creator"),
-		tracer: tracing.NewTracer(tracerProvider.Tracer("grocery_list_creator")),
+		tracer: tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("grocery_list_creator")),
 	}
 }
 

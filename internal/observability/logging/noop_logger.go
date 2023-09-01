@@ -30,7 +30,7 @@ func (l *noopLogger) Fatal(error) {}
 func (l *noopLogger) Printf(string, ...any) {}
 
 // SetLevel satisfies our interface.
-func (l *noopLogger) SetLevel(Level) {}
+func (l *noopLogger) SetLevel(_ Level) {}
 
 // SetRequestIDFunc satisfies our interface.
 func (l *noopLogger) SetRequestIDFunc(RequestIDFunc) {}

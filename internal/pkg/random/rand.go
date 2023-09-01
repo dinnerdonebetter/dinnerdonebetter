@@ -49,7 +49,7 @@ type (
 func NewGenerator(logger logging.Logger, tracerProvider tracing.TracerProvider) Generator {
 	return &standardGenerator{
 		logger:     logging.EnsureLogger(logger).WithName("random_generator"),
-		tracer:     tracing.NewTracer(tracerProvider.Tracer("secret_generator")),
+		tracer:     tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("secret_generator")),
 		randReader: rand.Reader,
 	}
 }

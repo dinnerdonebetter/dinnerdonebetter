@@ -70,7 +70,7 @@ func ProvideHouseholdInvitationsService(
 		sessionContextDataFetcher:      authservice.FetchContextFromRequest,
 		householdIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(householdsservice.HouseholdIDURIParamKey),
 		householdInvitationIDFetcher:   routeParamManager.BuildRouteParamStringIDFetcher(HouseholdInvitationIDURIParamKey),
-		tracer:                         tracing.NewTracer(tracerProvider.Tracer(serviceName)),
+		tracer:                         tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 	}
 
 	return s, nil

@@ -76,7 +76,7 @@ func NewUploadManager(ctx context.Context, logger logging.Logger, tracerProvider
 	serviceName := fmt.Sprintf("%s_uploader", cfg.BucketName)
 	u := &Uploader{
 		logger:          logging.EnsureLogger(logger).WithName(serviceName),
-		tracer:          tracing.NewTracer(tracerProvider.Tracer(serviceName)),
+		tracer:          tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 		filenameFetcher: routeParamManager.BuildRouteParamStringIDFetcher(cfg.UploadFilenameKey),
 	}
 

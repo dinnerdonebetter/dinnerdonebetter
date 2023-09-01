@@ -80,9 +80,9 @@ func NewClient(u *url.URL, tracerProvider tracing.TracerProvider, options ...opt
 
 	c := &Client{
 		url:                   u,
-		logger:                logging.EnsureLogger(l),
+		logger:                logging.EnsureLogger(nil),
 		debug:                 false,
-		tracer:                tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer(clientName)),
+		tracer:                tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(clientName)),
 		panicker:              panicking.NewProductionPanicker(),
 		encoder:               encoding.ProvideClientEncoder(l, tracerProvider, encoding.ContentTypeJSON),
 		authedClient:          tracing.BuildTracedHTTPClient(),

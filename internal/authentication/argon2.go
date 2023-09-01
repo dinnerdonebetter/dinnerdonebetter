@@ -39,7 +39,7 @@ type (
 func ProvideArgon2Authenticator(logger logging.Logger, tracerProvider tracing.TracerProvider) Authenticator {
 	ba := &Argon2Authenticator{
 		logger: logging.EnsureLogger(logger).WithName("argon2"),
-		tracer: tracing.NewTracer(tracerProvider.Tracer("argon2")),
+		tracer: tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("argon2")),
 	}
 
 	return ba

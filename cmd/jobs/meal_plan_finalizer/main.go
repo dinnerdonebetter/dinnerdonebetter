@@ -41,7 +41,7 @@ func doTheThing() error {
 	}
 	otel.SetTracerProvider(tracerProvider)
 
-	ctx, span := tracing.NewTracer(tracerProvider.Tracer("meal_plan_finalizer_job")).StartSpan(ctx)
+	ctx, span := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("meal_plan_finalizer_job")).StartSpan(ctx)
 	defer span.End()
 
 	// manual db timeout until I find out what's wrong

@@ -68,7 +68,7 @@ func IndexDataForSearch(ctx context.Context, e event.Event) error {
 	}
 	otel.SetTracerProvider(tracerProvider)
 
-	tracer := tracing.NewTracer(tracerProvider.Tracer("search_indexer_cloud_function"))
+	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("search_indexer_cloud_function"))
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
 

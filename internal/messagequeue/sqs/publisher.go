@@ -70,7 +70,7 @@ func provideSQSPublisher(logger logging.Logger, sqsClient *sqs.SQS, tracerProvid
 		topic:     topic,
 		encoder:   encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
 		logger:    logging.EnsureLogger(logger),
-		tracer:    tracing.NewTracer(tracerProvider.Tracer(fmt.Sprintf("%s_publisher", topic))),
+		tracer:    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(fmt.Sprintf("%s_publisher", topic))),
 	}
 }
 

@@ -286,7 +286,7 @@ func (e *serverEncoderDecoder) DecodeRequest(ctx context.Context, req *http.Requ
 func ProvideServerEncoderDecoder(logger logging.Logger, tracerProvider tracing.TracerProvider, contentType ContentType) ServerEncoderDecoder {
 	return &serverEncoderDecoder{
 		logger:      logging.EnsureLogger(logger).WithName("server_encoder_decoder"),
-		tracer:      tracing.NewTracer(tracerProvider.Tracer("server_encoder_decoder")),
+		tracer:      tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("server_encoder_decoder")),
 		panicker:    panicking.NewProductionPanicker(),
 		contentType: contentType,
 	}

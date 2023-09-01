@@ -32,7 +32,7 @@ var (
 )
 
 func HandleIndexRequest(ctx context.Context, l logging.Logger, tracerProvider tracing.TracerProvider, searchConfig *config.Config, dataManager database.DataManager, indexReq *IndexRequest) error {
-	tracer := tracing.NewTracer(tracerProvider.Tracer("search-indexer"))
+	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("search-indexer"))
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
 

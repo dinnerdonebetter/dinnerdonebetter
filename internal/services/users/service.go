@@ -106,7 +106,7 @@ func ProvideUsersService(
 		authSettings:                       authSettings,
 		secretGenerator:                    secretGenerator,
 		householdUserMembershipDataManager: householdUserMembershipDataManager,
-		tracer:                             tracing.NewTracer(tracerProvider.Tracer(serviceName)),
+		tracer:                             tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 		imageUploadProcessor:               imageUploadProcessor,
 		uploadManager:                      uploadManager,
 		dataChangesPublisher:               dataChangesPublisher,

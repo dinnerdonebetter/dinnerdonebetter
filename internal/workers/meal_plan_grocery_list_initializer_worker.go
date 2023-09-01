@@ -45,7 +45,7 @@ func ProvideMealPlanGroceryListInitializer(
 ) *MealPlanGroceryListInitializer {
 	return &MealPlanGroceryListInitializer{
 		logger:                 logging.EnsureLogger(logger).WithName(mealPlanGroceryListInitializerName),
-		tracer:                 tracing.NewTracer(tracerProvider.Tracer(mealPlanGroceryListInitializerName)),
+		tracer:                 tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(mealPlanGroceryListInitializerName)),
 		encoder:                encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
 		dataManager:            dataManager,
 		analyzer:               grapher,
