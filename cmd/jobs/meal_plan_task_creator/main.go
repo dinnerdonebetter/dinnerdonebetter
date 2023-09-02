@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"log/slog"
 	"os"
 	"strings"
 
@@ -20,7 +21,6 @@ import (
 
 	"go.opentelemetry.io/otel"
 	_ "go.uber.org/automaxprocs"
-	"log/slog"
 )
 
 func doTheThing() error {

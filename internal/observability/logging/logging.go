@@ -1,11 +1,11 @@
 package logging
 
 import (
+	"log/slog"
 	"net/http"
 	"os"
 
 	"go.opentelemetry.io/otel/trace"
-	"log/slog"
 )
 
 const (

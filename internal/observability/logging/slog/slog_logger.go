@@ -2,6 +2,7 @@ package slog
 
 import (
 	"fmt"
+	"log/slog"
 	"net/http"
 	"os"
 
@@ -9,7 +10,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 
 	"go.opentelemetry.io/otel/trace"
-	"log/slog"
 )
 
 func init() {
