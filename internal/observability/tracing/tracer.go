@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging/zerolog"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging/slog"
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
@@ -20,7 +20,7 @@ func (h errorHandler) Handle(err error) {
 
 func init() {
 	// set this to a noop error handler just so one is set
-	otel.SetErrorHandler(errorHandler{logger: zerolog.NewZerologLogger(logging.ErrorLevel).WithName("otel_errors")})
+	otel.SetErrorHandler(errorHandler{logger: slog.NewSlogLogger(logging.ErrorLevel).WithName("otel_errors")})
 }
 
 // Tracer describes a tracer.

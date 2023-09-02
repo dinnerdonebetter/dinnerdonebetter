@@ -110,12 +110,12 @@ var (
 
 	devEnvLogConfig = logcfg.Config{
 		Level:    logging.DebugLevel,
-		Provider: logcfg.ProviderZerolog,
+		Provider: logcfg.ProviderSlog,
 	}
 
 	localLogConfig = logcfg.Config{
 		Level:    logging.DebugLevel,
-		Provider: logcfg.ProviderZerolog,
+		Provider: logcfg.ProviderSlog,
 	}
 
 	localServer = http.Config{
@@ -631,7 +631,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 		Observability: observability.Config{
 			Logging: logcfg.Config{
 				Level:    logging.InfoLevel,
-				Provider: logcfg.ProviderZerolog,
+				Provider: logcfg.ProviderSlog,
 			},
 			Tracing: localTracingConfig,
 		},

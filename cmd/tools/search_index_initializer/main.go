@@ -13,7 +13,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging/zerolog"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
 	"github.com/dinnerdonebetter/backend/internal/search"
@@ -35,7 +35,17 @@ func main() {
 	}
 
 	ctx := context.Background()
-	logger := zerolog.NewZerologLogger(logging.DebugLevel)
+
+	logCfg := loggingcfg.Config{
+		Level:    logging.DebugLevel,
+		Provider: loggingcfg.ProviderSlog,
+	}
+
+	logger, err := logCfg.ProvideLogger()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	tracerProvider := tracing.NewNoopTracerProvider()
 
 	cfg := &searchcfg.Config{

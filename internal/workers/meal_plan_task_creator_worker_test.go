@@ -10,7 +10,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging/zerolog"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -28,7 +27,7 @@ func TestProvideMealPlanTaskCreationEnsurerWorker(T *testing.T) {
 		t.Parallel()
 
 		actual := ProvideMealPlanTaskCreationEnsurerWorker(
-			zerolog.NewZerologLogger(logging.DebugLevel),
+			logging.NewNoopLogger(),
 			&database.MockDatabase{},
 			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
@@ -46,7 +45,7 @@ func TestMealPlanTaskCreationEnsurerWorker_HandleMessage(T *testing.T) {
 		t.Parallel()
 
 		w := ProvideMealPlanTaskCreationEnsurerWorker(
-			zerolog.NewZerologLogger(logging.DebugLevel),
+			logging.NewNoopLogger(),
 			&database.MockDatabase{},
 			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
@@ -73,7 +72,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 		t.Parallel()
 
 		w := ProvideMealPlanTaskCreationEnsurerWorker(
-			zerolog.NewZerologLogger(logging.DebugLevel),
+			logging.NewNoopLogger(),
 			&database.MockDatabase{},
 			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
@@ -100,7 +99,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 		t.Parallel()
 
 		w := ProvideMealPlanTaskCreationEnsurerWorker(
-			zerolog.NewZerologLogger(logging.DebugLevel),
+			logging.NewNoopLogger(),
 			&database.MockDatabase{},
 			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
@@ -249,7 +248,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 		t.Parallel()
 
 		w := ProvideMealPlanTaskCreationEnsurerWorker(
-			zerolog.NewZerologLogger(logging.DebugLevel),
+			logging.NewNoopLogger(),
 			&database.MockDatabase{},
 			recipeanalysis.NewRecipeAnalyzer(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 			&mockpublishers.Publisher{},

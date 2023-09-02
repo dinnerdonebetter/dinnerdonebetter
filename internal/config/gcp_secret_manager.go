@@ -15,8 +15,6 @@ import (
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
 	emailcfg "github.com/dinnerdonebetter/backend/internal/email/config"
 	"github.com/dinnerdonebetter/backend/internal/email/sendgrid"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging/zerolog"
 	"github.com/dinnerdonebetter/backend/internal/search/algolia"
 	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
 
@@ -59,9 +57,6 @@ type SecretVersionAccessor interface {
 
 // GetAPIServerConfigFromGoogleCloudRunEnvironment fetches an InstanceConfig from GCP Secret Manager.
 func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client SecretVersionAccessor) (*InstanceConfig, error) {
-	logger := zerolog.NewZerologLogger(logging.DebugLevel)
-	logger.Debug("setting up secret manager client")
-
 	var cfg *InstanceConfig
 	configFilepath := os.Getenv(gcpConfigFilePathEnvVarKey)
 

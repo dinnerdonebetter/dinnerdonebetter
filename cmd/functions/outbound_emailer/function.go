@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"os"
 	"strings"
 	"time"
@@ -15,7 +16,7 @@ import (
 	emailconfig "github.com/dinnerdonebetter/backend/internal/email/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging/zerolog"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
@@ -47,11 +48,19 @@ type PubSubMessage struct {
 
 // SendEmail handles sending an email.
 func SendEmail(ctx context.Context, e event.Event) error {
-	logger := zerolog.NewZerologLogger(logging.DebugLevel)
-
 	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
-		logger.Info("CEASE_OPERATION is set to true, exiting")
+		slog.Info("CEASE_OPERATION is set to true, exiting")
 		return nil
+	}
+
+	logCfg := loggingcfg.Config{
+		Level:    logging.DebugLevel,
+		Provider: loggingcfg.ProviderSlog,
+	}
+
+	logger, err := logCfg.ProvideLogger()
+	if err != nil {
+		return fmt.Errorf("trying to create logger: %w", err)
 	}
 
 	envCfg := email.GetConfigForEnvironment(os.Getenv("DINNER_DONE_BETTER_SERVICE_ENVIRONMENT"))

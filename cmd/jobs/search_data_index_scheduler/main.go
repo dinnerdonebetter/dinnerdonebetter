@@ -16,7 +16,7 @@ import (
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging/zerolog"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/search"
 	"github.com/dinnerdonebetter/backend/internal/search/indexing"
@@ -28,7 +28,16 @@ import (
 
 func doTheThing() error {
 	ctx := context.Background()
-	logger := zerolog.NewZerologLogger(logging.DebugLevel)
+
+	logCfg := loggingcfg.Config{
+		Level:    logging.DebugLevel,
+		Provider: loggingcfg.ProviderSlog,
+	}
+
+	logger, err := logCfg.ProvideLogger()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
 		logger.Info("CEASE_OPERATION is set to true, exiting")
