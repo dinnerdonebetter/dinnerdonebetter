@@ -2,7 +2,7 @@
 	"observability": {
 		"logging": {
 			"level": 0,
-			"provider": "zerolog"
+			"provider": "slog"
 		},
 		"tracing": {
 			"otel": {

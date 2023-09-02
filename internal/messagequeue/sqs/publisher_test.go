@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging/zerolog"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	testutils "github.com/dinnerdonebetter/backend/tests/utils"
 
@@ -35,7 +34,7 @@ func Test_sqsPublisher_Publish(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := zerolog.NewZerologLogger(logging.DebugLevel)
+		logger := logging.NewNoopLogger()
 
 		provider := ProvideSQSPublisherProvider(logger, tracing.NewNoopTracerProvider())
 		require.NotNil(t, provider)
@@ -73,7 +72,7 @@ func Test_sqsPublisher_Publish(T *testing.T) {
 	T.Run("with error encoding value", func(t *testing.T) {
 		t.Parallel()
 
-		logger := zerolog.NewZerologLogger(logging.DebugLevel)
+		logger := logging.NewNoopLogger()
 
 		provider := ProvideSQSPublisherProvider(logger, tracing.NewNoopTracerProvider())
 		require.NotNil(t, provider)
@@ -103,7 +102,7 @@ func TestProvideSQSPublisherProvider(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := zerolog.NewZerologLogger(logging.DebugLevel)
+		logger := logging.NewNoopLogger()
 
 		actual := ProvideSQSPublisherProvider(logger, tracing.NewNoopTracerProvider())
 		assert.NotNil(t, actual)
@@ -116,7 +115,7 @@ func Test_publisherProvider_ProvidePublisher(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := zerolog.NewZerologLogger(logging.DebugLevel)
+		logger := logging.NewNoopLogger()
 
 		provider := ProvideSQSPublisherProvider(logger, tracing.NewNoopTracerProvider())
 		require.NotNil(t, provider)
@@ -129,7 +128,7 @@ func Test_publisherProvider_ProvidePublisher(T *testing.T) {
 	T.Run("with cache hit", func(t *testing.T) {
 		t.Parallel()
 
-		logger := zerolog.NewZerologLogger(logging.DebugLevel)
+		logger := logging.NewNoopLogger()
 
 		provider := ProvideSQSPublisherProvider(logger, tracing.NewNoopTracerProvider())
 		require.NotNil(t, provider)

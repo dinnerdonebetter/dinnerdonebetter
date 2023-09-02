@@ -8,7 +8,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/database"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging/zerolog"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -23,7 +22,7 @@ func newTestChoresWorker(t *testing.T) *MealPlanFinalizationWorker {
 	t.Helper()
 
 	worker := ProvideMealPlanFinalizationWorker(
-		zerolog.NewZerologLogger(logging.DebugLevel),
+		logging.NewNoopLogger(),
 		&database.MockDatabase{},
 		&mockpublishers.Publisher{},
 		tracing.NewNoopTracerProvider(),
@@ -40,7 +39,7 @@ func TestProvideChoresWorker(T *testing.T) {
 		t.Parallel()
 
 		actual := ProvideMealPlanFinalizationWorker(
-			zerolog.NewZerologLogger(logging.DebugLevel),
+			logging.NewNoopLogger(),
 			&database.MockDatabase{},
 			&mockpublishers.Publisher{},
 			tracing.NewNoopTracerProvider(),

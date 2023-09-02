@@ -14,21 +14,31 @@ import (
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging/zerolog"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/workers"
 
 	"go.opentelemetry.io/otel"
 	_ "go.uber.org/automaxprocs"
+	"log/slog"
 )
 
 func doTheThing() error {
 	ctx := context.Background()
-	logger := zerolog.NewZerologLogger(logging.DebugLevel)
 
 	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
-		logger.Info("CEASE_OPERATION is set to true, exiting")
+		slog.Info("CEASE_OPERATION is set to true, exiting")
 		return nil
+	}
+
+	logCfg := loggingcfg.Config{
+		Level:    logging.DebugLevel,
+		Provider: loggingcfg.ProviderSlog,
+	}
+
+	logger, err := logCfg.ProvideLogger()
+	if err != nil {
+		return err
 	}
 
 	cfg, err := config.GetMealPlanTaskCreatorWorkerConfigFromGoogleCloudSecretManager(ctx)

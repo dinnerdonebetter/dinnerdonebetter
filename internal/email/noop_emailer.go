@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging/zerolog"
 )
 
 var _ Emailer = (*NoopEmailer)(nil)
@@ -18,9 +17,7 @@ type (
 
 // NewNoopEmailer returns a new no-op NoopEmailer.
 func NewNoopEmailer() (*NoopEmailer, error) {
-	return &NoopEmailer{
-		logger: zerolog.NewZerologLogger(logging.DebugLevel),
-	}, nil
+	return &NoopEmailer{logger: logging.NewNoopLogger()}, nil
 }
 
 // SendEmail sends an email.

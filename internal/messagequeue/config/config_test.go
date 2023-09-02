@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging/zerolog"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	"github.com/stretchr/testify/assert"
@@ -27,7 +26,7 @@ func TestProvideConsumerProvider(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := zerolog.NewZerologLogger(logging.DebugLevel)
+		logger := logging.NewNoopLogger()
 		cfg := &Config{
 			Consumers: MessageQueueConfig{
 				Provider: ProviderRedis,
@@ -42,7 +41,7 @@ func TestProvideConsumerProvider(T *testing.T) {
 	T.Run("with invalid provider", func(t *testing.T) {
 		t.Parallel()
 
-		logger := zerolog.NewZerologLogger(logging.DebugLevel)
+		logger := logging.NewNoopLogger()
 		cfg := &Config{}
 
 		provider, err := ProvideConsumerProvider(logger, tracing.NewNoopTracerProvider(), cfg)
@@ -58,7 +57,7 @@ func TestProvidePublisherProvider(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := zerolog.NewZerologLogger(logging.DebugLevel)
+		logger := logging.NewNoopLogger()
 		cfg := &Config{
 			Publishers: MessageQueueConfig{
 				Provider: ProviderRedis,
@@ -74,7 +73,7 @@ func TestProvidePublisherProvider(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := zerolog.NewZerologLogger(logging.DebugLevel)
+		logger := logging.NewNoopLogger()
 		cfg := &Config{}
 
 		provider, err := ProvidePublisherProvider(ctx, logger, tracing.NewNoopTracerProvider(), cfg)

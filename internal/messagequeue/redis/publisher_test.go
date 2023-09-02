@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging/zerolog"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	testutils "github.com/dinnerdonebetter/backend/tests/utils"
 
@@ -31,7 +30,7 @@ func Test_redisPublisher_Publish(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := zerolog.NewZerologLogger(logging.DebugLevel)
+		logger := logging.NewNoopLogger()
 
 		cfg := Config{
 			QueueAddresses: []string{t.Name()},
@@ -72,7 +71,7 @@ func Test_redisPublisher_Publish(T *testing.T) {
 	T.Run("with error encoding value", func(t *testing.T) {
 		t.Parallel()
 
-		logger := zerolog.NewZerologLogger(logging.DebugLevel)
+		logger := logging.NewNoopLogger()
 
 		cfg := Config{
 			QueueAddresses: []string{t.Name()},
@@ -105,7 +104,7 @@ func TestProvideRedisPublisherProvider(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := zerolog.NewZerologLogger(logging.DebugLevel)
+		logger := logging.NewNoopLogger()
 
 		cfg := Config{
 			QueueAddresses: []string{t.Name()},
@@ -121,7 +120,7 @@ func Test_publisherProvider_ProvidePublisher(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		logger := zerolog.NewZerologLogger(logging.DebugLevel)
+		logger := logging.NewNoopLogger()
 
 		cfg := Config{
 			QueueAddresses: []string{t.Name()},
@@ -137,7 +136,7 @@ func Test_publisherProvider_ProvidePublisher(T *testing.T) {
 	T.Run("with cache hit", func(t *testing.T) {
 		t.Parallel()
 
-		logger := zerolog.NewZerologLogger(logging.DebugLevel)
+		logger := logging.NewNoopLogger()
 
 		cfg := Config{
 			QueueAddresses: []string{t.Name()},
