@@ -27,19 +27,15 @@ type (
 )
 
 // ProvideLogger builds a logger according to the provided config.
-func (cfg *Config) ProvideLogger() (logging.Logger, error) {
-	var l logging.Logger
-
+func (cfg *Config) ProvideLogger() logging.Logger {
 	switch cfg.Provider {
 	case ProviderZerolog:
-		l = zerolog.NewZerologLogger(cfg.Level)
+		return zerolog.NewZerologLogger(cfg.Level)
 	case ProviderZap:
-		l = zap.NewZapLogger(cfg.Level)
+		return zap.NewZapLogger(cfg.Level)
 	case ProviderSlog:
-		l = slog.NewSlogLogger(cfg.Level)
+		return slog.NewSlogLogger(cfg.Level)
 	default:
-		l = logging.NewNoopLogger()
+		return logging.NewNoopLogger()
 	}
-
-	return l, nil
 }

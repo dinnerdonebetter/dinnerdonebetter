@@ -86,20 +86,11 @@ revendor: clean_vendor vendor
 
 ## dependency injection
 
-.PHONY: clean_wire
-clean_wire:
-	for tgt in $(WIRE_TARGETS); do \
-		rm -f $(THIS)/internal/$$tgt/wire_gen.go; \
-	done
-
-.PHONY: wire
-wire: ensure_wire_installed
-	for tgt in $(WIRE_TARGETS); do \
-		wire gen $(THIS)/internal/$$tgt; \
-	done
-
 .PHONY: rewire
-rewire: clean_wire wire
+rewire:
+	for tgt in $(WIRE_TARGETS); do \
+		rm -f $(THIS)/internal/$$tgt/wire_gen.go; && wire gen $(THIS)/internal/$$tgt; \
+	done
 
 ## formatting
 
@@ -115,6 +106,7 @@ format_golang: format_imports ensure_fieldalignment_installed ensure_tagalign_in
 .PHONY: format_imports
 format_imports: ensure_gci_installed
 	@# TODO: find some way to use $THIS here instead of hardcoding the path
+	@echo gci write --skip-generated --section standard --section "prefix($(THIS))" --section "prefix($(dir $(THIS)))" --section default --custom-order `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`
 	gci write --skip-generated --section standard --section "prefix(github.com/dinnerdonebetter/backend)" --section "prefix(github.com/dinnerdonebetter)" --section default --custom-order `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`
 
 .PHONY: terraformat

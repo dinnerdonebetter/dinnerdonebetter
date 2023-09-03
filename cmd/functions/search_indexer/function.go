@@ -51,15 +51,7 @@ func IndexDataForSearch(ctx context.Context, e event.Event) error {
 		return nil
 	}
 
-	logCfg := loggingcfg.Config{
-		Level:    logging.DebugLevel,
-		Provider: loggingcfg.ProviderSlog,
-	}
-
-	logger, err := logCfg.ProvideLogger()
-	if err != nil {
-		return err
-	}
+	logger := (&loggingcfg.Config{Level: logging.DebugLevel, Provider: loggingcfg.ProviderSlog}).ProvideLogger()
 
 	envCfg := email.GetConfigForEnvironment(os.Getenv("DINNER_DONE_BETTER_SERVICE_ENVIRONMENT"))
 	if envCfg == nil {

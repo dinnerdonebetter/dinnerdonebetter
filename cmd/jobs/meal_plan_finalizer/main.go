@@ -30,15 +30,7 @@ func doTheThing() error {
 		return nil
 	}
 
-	logCfg := loggingcfg.Config{
-		Level:    logging.DebugLevel,
-		Provider: loggingcfg.ProviderSlog,
-	}
-
-	logger, err := logCfg.ProvideLogger()
-	if err != nil {
-		return err
-	}
+	logger := (&loggingcfg.Config{Level: logging.DebugLevel, Provider: loggingcfg.ProviderSlog}).ProvideLogger()
 
 	cfg, err := config.GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx)
 	if err != nil {

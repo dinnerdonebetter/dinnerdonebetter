@@ -59,18 +59,10 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 		return nil
 	}
 
-	logCfg := loggingcfg.Config{
-		Level:    logging.DebugLevel,
-		Provider: loggingcfg.ProviderSlog,
-	}
-
-	logger, err := logCfg.ProvideLogger()
-	if err != nil {
-		return fmt.Errorf("trying to create logger: %w", err)
-	}
+	logger := (&loggingcfg.Config{Level: logging.DebugLevel, Provider: loggingcfg.ProviderSlog}).ProvideLogger()
 
 	var msg MessagePublishedData
-	if err = e.DataAs(&msg); err != nil {
+	if err := e.DataAs(&msg); err != nil {
 		return fmt.Errorf("event.DataAs: %w", err)
 	}
 

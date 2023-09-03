@@ -16,7 +16,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue/redis"
-	logcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/workers"
 
 	_ "go.uber.org/automaxprocs"
@@ -31,11 +32,8 @@ const (
 
 func main() {
 	ctx := context.Background()
-	logger, err := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
-	if err != nil {
-		log.Fatal(err)
-	}
 
+	logger := (&loggingcfg.Config{Level: logging.DebugLevel, Provider: loggingcfg.ProviderSlog}).ProvideLogger()
 	logger.Info("starting meal plan grocery list worker...")
 
 	// find and validate our configuration filepath.

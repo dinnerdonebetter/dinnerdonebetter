@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"log"
 	"net/url"
 	"os"
 	"strings"
@@ -50,10 +49,7 @@ func init() {
 	ctx, span := tracing.StartSpan(context.Background())
 	defer span.End()
 
-	logger, err := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
-	if err != nil {
-		log.Fatal(err)
-	}
+	logger := (&logcfg.Config{Provider: logcfg.ProviderSlog}).ProvideLogger()
 
 	parsedURLToUse = serverutils.DetermineServiceURL()
 	urlToUse = parsedURLToUse.String()

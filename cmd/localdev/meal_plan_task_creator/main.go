@@ -15,6 +15,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue/redis"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	logcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/workers"
 
@@ -30,10 +31,8 @@ const (
 
 func main() {
 	ctx := context.Background()
-	logger, err := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
-	if err != nil {
-		log.Fatal(err)
-	}
+
+	logger := (&logcfg.Config{Level: logging.DebugLevel, Provider: logcfg.ProviderSlog}).ProvideLogger()
 
 	logger.Info("starting meal plan task worker...")
 
