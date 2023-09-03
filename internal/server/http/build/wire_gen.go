@@ -74,10 +74,7 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (http.Server, error)
 	httpConfig := cfg.Server
 	observabilityConfig := &cfg.Observability
 	configConfig := &observabilityConfig.Logging
-	logger, err := config2.ProvideLogger(configConfig)
-	if err != nil {
-		return nil, err
-	}
+	logger := config2.ProvideLogger(configConfig)
 	config8 := &cfg.Database
 	config9 := &observabilityConfig.Tracing
 	tracerProvider, err := config3.ProvideTracerProvider(ctx, config9, logger)

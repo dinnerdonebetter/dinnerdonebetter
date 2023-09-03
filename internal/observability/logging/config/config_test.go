@@ -16,19 +16,15 @@ func TestProvideLogger(T *testing.T) {
 			Provider: ProviderZerolog,
 		}
 
-		l, err := cfg.ProvideLogger()
-
+		l := cfg.ProvideLogger()
 		assert.NotNil(t, l)
-		assert.NoError(t, err)
 	})
 
 	T.Run("no provider", func(t *testing.T) {
 		t.Parallel()
 
 		cfg := &Config{}
-		l, err := cfg.ProvideLogger()
-
+		l := cfg.ProvideLogger()
 		assert.NotNil(t, l)
-		assert.NoError(t, err)
 	})
 }

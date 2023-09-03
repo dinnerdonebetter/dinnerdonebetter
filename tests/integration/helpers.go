@@ -78,10 +78,7 @@ func initializeCookiePoweredClient(ctx context.Context, loginInput *types.UserLo
 		panic("url not set!")
 	}
 
-	logger, err := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
-	if err != nil {
-		return nil, err
-	}
+	logger := (&logcfg.Config{Provider: logcfg.ProviderSlog}).ProvideLogger()
 
 	c, err := apiclient.NewClient(
 		parsedURLToUse,
@@ -109,10 +106,7 @@ func initializeOAuth2PoweredClient(ctx context.Context, cookie *http.Cookie) (*a
 		panic("url not set!")
 	}
 
-	logger, err := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
-	if err != nil {
-		return nil, err
-	}
+	logger := (&logcfg.Config{Provider: logcfg.ProviderSlog}).ProvideLogger()
 
 	c, err := apiclient.NewClient(
 		parsedURLToUse,
@@ -168,10 +162,9 @@ func buildAdminCookieAndOAuthedClients(ctx context.Context, t *testing.T) (cooki
 	u := serverutils.DetermineServiceURL()
 	urlToUse = u.String()
 
-	logger, err := (&logcfg.Config{Provider: logcfg.ProviderZerolog}).ProvideLogger()
-	require.NoError(t, err)
-
+	logger := (&logcfg.Config{Provider: logcfg.ProviderSlog}).ProvideLogger()
 	logger.WithValue(keys.URLKey, urlToUse).Info("checking server")
+
 	serverutils.EnsureServerIsUp(ctx, urlToUse)
 
 	adminCode, err := totp.GenerateCode(strings.ToUpper(premadeAdminUser.TwoFactorSecret), time.Now().UTC())

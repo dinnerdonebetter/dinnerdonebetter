@@ -29,15 +29,7 @@ import (
 func doTheThing() error {
 	ctx := context.Background()
 
-	logCfg := loggingcfg.Config{
-		Level:    logging.DebugLevel,
-		Provider: loggingcfg.ProviderSlog,
-	}
-
-	logger, err := logCfg.ProvideLogger()
-	if err != nil {
-		log.Fatal(err)
-	}
+	logger := (&loggingcfg.Config{Level: logging.DebugLevel, Provider: loggingcfg.ProviderSlog}).ProvideLogger()
 
 	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
 		logger.Info("CEASE_OPERATION is set to true, exiting")

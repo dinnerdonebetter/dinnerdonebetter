@@ -36,15 +36,7 @@ func main() {
 
 	ctx := context.Background()
 
-	logCfg := loggingcfg.Config{
-		Level:    logging.DebugLevel,
-		Provider: loggingcfg.ProviderSlog,
-	}
-
-	logger, err := logCfg.ProvideLogger()
-	if err != nil {
-		log.Fatal(err)
-	}
+	logger := (&loggingcfg.Config{Level: logging.DebugLevel, Provider: loggingcfg.ProviderSlog}).ProvideLogger()
 
 	tracerProvider := tracing.NewNoopTracerProvider()
 

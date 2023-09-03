@@ -12,6 +12,6 @@ var (
 	)
 )
 
-func ProvideLogger(cfg *Config) (logging.Logger, error) {
+func ProvideLogger(cfg *Config) logging.Logger {
 	return cfg.ProvideLogger()
 }
