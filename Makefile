@@ -89,7 +89,7 @@ revendor: clean_vendor vendor
 .PHONY: rewire
 rewire:
 	for tgt in $(WIRE_TARGETS); do \
-		rm -f $(THIS)/internal/$$tgt/wire_gen.go; && wire gen $(THIS)/internal/$$tgt; \
+		rm -f $(THIS)/internal/$$tgt/wire_gen.go && wire gen $(THIS)/internal/$$tgt; \
 	done
 
 ## formatting
