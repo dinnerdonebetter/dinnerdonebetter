@@ -105,9 +105,7 @@ format_golang: format_imports ensure_fieldalignment_installed ensure_tagalign_in
 
 .PHONY: format_imports
 format_imports: ensure_gci_installed
-	@# TODO: find some way to use $THIS here instead of hardcoding the path
-	@echo gci write --skip-generated --section standard --section "prefix($(THIS))" --section "prefix($(dir $(THIS)))" --section default --custom-order `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`
-	gci write --skip-generated --section standard --section "prefix(github.com/dinnerdonebetter/backend)" --section "prefix(github.com/dinnerdonebetter)" --section default --custom-order `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`
+	gci write --skip-generated --section standard --section "prefix($(THIS))" --section "prefix($(dir $(THIS)))" --section default --custom-order `find $(PWD) -type f -not -path '*/vendor/*' -name "*.go"`
 
 .PHONY: terraformat
 terraformat:
@@ -189,14 +187,14 @@ quicktest: $(ARTIFACTS_DIR) vendor build
 
 .PHONY: configs
 configs:
-	go run github.com/dinnerdonebetter/backend/cmd/tools/gen_configs
+	go run $(THIS)/cmd/tools/gen_configs
 
 clean_ts:
 	rm -rf $(ARTIFACTS_DIR)/typescript
 
 typescript: clean_ts
 	mkdir -p $(ARTIFACTS_DIR)/typescript
-	go run github.com/dinnerdonebetter/backend/cmd/tools/codegen/gen_typescript
+	go run $(THIS)/cmd/tools/codegen/gen_typescript
 	(cd ../frontend && make format)
 
 ## Integration tests
