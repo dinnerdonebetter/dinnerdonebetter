@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/analytics"
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/featureflags"
@@ -44,6 +45,7 @@ type (
 		logger                             logging.Logger
 		encoderDecoder                     encoding.ServerEncoderDecoder
 		dataChangesPublisher               messagequeue.Publisher
+		analyticsReporter                  analytics.EventReporter
 		userDataManager                    types.UserDataManager
 		secretGenerator                    random.Generator
 		imageUploadProcessor               images.MediaUploadProcessor
@@ -78,6 +80,7 @@ func ProvideUsersService(
 	secretGenerator random.Generator,
 	passwordResetTokenDataManager types.PasswordResetTokenDataManager,
 	featureFlagManager featureflags.FeatureFlagManager,
+	analyticsReporter analytics.EventReporter,
 ) (types.UserDataService, error) {
 	if cfg == nil {
 		return nil, ErrNilConfig
@@ -112,6 +115,7 @@ func ProvideUsersService(
 		dataChangesPublisher:               dataChangesPublisher,
 		passwordResetTokenDataManager:      passwordResetTokenDataManager,
 		featureFlagManager:                 featureFlagManager,
+		analyticsReporter:                  analyticsReporter,
 	}
 
 	return s, nil

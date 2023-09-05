@@ -296,6 +296,26 @@ resource "google_cloud_run_v2_service" "api_server" {
         }
       }
 
+      env {
+        name = "DINNER_DONE_BETTER_GOOGLE_SSO_CLIENT_ID"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.google_sso_client_id.secret_id
+            version = "latest"
+          }
+        }
+      }
+
+      env {
+        name = "DINNER_DONE_BETTER_GOOGLE_SSO_CLIENT_SECRET"
+        value_source {
+          secret_key_ref {
+            secret  = google_secret_manager_secret.google_sso_client_secret.secret_id
+            version = "latest"
+          }
+        }
+      }
+
       volume_mounts {
         name       = "cloudsql"
         mount_path = "/cloudsql"

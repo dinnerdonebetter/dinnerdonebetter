@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/analytics"
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/email"
@@ -41,6 +42,7 @@ type (
 		config                     *Config
 		logger                     logging.Logger
 		authenticator              authentication.Authenticator
+		analyticsReporter          analytics.EventReporter
 		featureFlagManager         featureflags.FeatureFlagManager
 		userDataManager            types.UserDataManager
 		householdMembershipManager types.HouseholdUserMembershipDataManager
@@ -71,6 +73,7 @@ func ProvideService(
 	secretGenerator random.Generator,
 	emailer email.Emailer,
 	featureFlagManager featureflags.FeatureFlagManager,
+	analyticsReporter analytics.EventReporter,
 ) (types.AuthService, error) {
 	hashKey := []byte(cfg.Cookies.HashKey)
 	if len(hashKey) == 0 {
@@ -99,6 +102,7 @@ func ProvideService(
 		tracer:                     tracer,
 		dataChangesPublisher:       dataChangesPublisher,
 		featureFlagManager:         featureFlagManager,
+		analyticsReporter:          analyticsReporter,
 		oauth2Server:               ProvideOAuth2ServerImplementation(ctx, logger, tracer, &cfg.OAuth2, dataManager),
 	}
 

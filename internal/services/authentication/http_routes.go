@@ -167,6 +167,15 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 			observability.AcknowledgeError(err, logger, span, "publishing data change message")
 		}
 
+		if err = s.analyticsReporter.AddUser(ctx, user.ID, map[string]any{
+			"username":          user.Username,
+			"default_household": defaultHouseholdID,
+			"first_name":        user.FirstName,
+			"last_name":         user.LastName,
+		}); err != nil {
+			observability.AcknowledgeError(err, logger, span, "identifying user for analytics")
+		}
+
 		if err = s.featureFlagManager.Identify(ctx, user); err != nil {
 			observability.AcknowledgeError(err, logger, span, "identifying user in feature flag manager")
 		}

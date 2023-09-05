@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/analytics"
 	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/email"
@@ -51,6 +52,7 @@ func buildTestService(t *testing.T) *service {
 		random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 		&email.MockEmailer{},
 		&featureflags.NoopFeatureFlagManager{},
+		analytics.NewNoopEventReporter(),
 	)
 	require.NoError(t, err)
 
@@ -89,6 +91,7 @@ func TestProvideService(T *testing.T) {
 			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 			&email.MockEmailer{},
 			&featureflags.NoopFeatureFlagManager{},
+			analytics.NewNoopEventReporter(),
 		)
 
 		assert.NotNil(t, s)
@@ -129,6 +132,7 @@ func TestProvideService(T *testing.T) {
 			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 			&email.MockEmailer{},
 			&featureflags.NoopFeatureFlagManager{},
+			analytics.NewNoopEventReporter(),
 		)
 
 		assert.Nil(t, s)

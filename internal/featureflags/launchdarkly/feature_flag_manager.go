@@ -30,6 +30,7 @@ type (
 	}
 
 	launchDarklyClient interface {
+		Close() error
 		BoolVariation(key string, context ldcontext.Context, defaultVal bool) (bool, error)
 		Identify(context ldcontext.Context) error
 	}
@@ -107,4 +108,9 @@ func (f *featureFlagManager) Identify(ctx context.Context, user *types.User) err
 			SetString("last_name", user.LastName).
 			Build(),
 	)
+}
+
+// Close closes the LaunchDarkly client.
+func (f *featureFlagManager) Close() error {
+	return f.launchDarklyClient.Close()
 }

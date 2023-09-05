@@ -389,6 +389,10 @@ issues:
       linters:
         - paralleltest
 
+    - path: internal/featureflags/posthog
+      linters:
+        - paralleltest
+
     ## END SPECIAL SNOWFLAKES
 
     # Exclude known linters from partially hard-vendored code, which is impossible to exclude via "nolint" comments.

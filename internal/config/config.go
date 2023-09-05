@@ -39,8 +39,7 @@ type (
 
 	// InstanceConfig configures an instance of the service. It is composed of all the other setting structs.
 	InstanceConfig struct {
-		_ struct{}
-
+		_             struct{}
 		Observability observability.Config      `json:"observability" toml:"observability,omitempty"`
 		Email         emailconfig.Config        `json:"email"         toml:"email,omitempty"`
 		Analytics     analyticsconfig.Config    `json:"analytics"     toml:"analytics,omitempty"`

@@ -29,10 +29,21 @@ type (
 		SecureOnly bool          `json:"secureOnly,omitempty" toml:"secure_only,omitempty"`
 	}
 
-	// Config represents our passwords configuration.
-	Config struct {
+	GoogleSSOConfig struct {
 		_ struct{}
 
+		ClientID     string `json:"clientID,omitempty"     toml:"client_id,omitempty"`
+		ClientSecret string `json:"clientSecret,omitempty" toml:"client_secret,omitempty"`
+	}
+
+	SSOConfigs struct {
+		Google GoogleSSOConfig `json:"google,omitempty" toml:"google,omitempty"`
+	}
+
+	// Config represents our passwords configuration.
+	Config struct {
+		_                     struct{}
+		SSO                   SSOConfigs   `json:"sso,omitempty"                   toml:"sso,omitempty"`
 		DataChangesTopicName  string       `json:"dataChanges,omitempty"           toml:"data_changes,omitempty"`
 		Cookies               CookieConfig `json:"cookies,omitempty"               toml:"cookies,omitempty"`
 		OAuth2                OAuth2Config `json:"oauth2,omitempty"                toml:"oauth2,omitempty"`

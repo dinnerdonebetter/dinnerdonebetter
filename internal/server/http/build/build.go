@@ -6,6 +6,7 @@ package build
 import (
 	"context"
 
+	analyticscfg "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database"
@@ -132,6 +133,7 @@ func Build(
 		oauth2clientsservice.Providers,
 		validvesselsservice.Providers,
 		validpreparationvesselsservice.Providers,
+		analyticscfg.ProvidersAnalytics,
 	)
 
 	return nil, nil
