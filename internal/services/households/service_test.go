@@ -9,6 +9,7 @@ import (
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/routing/mock"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 
@@ -23,6 +24,7 @@ func buildTestService() *service {
 		householdMembershipDataManager: &mocktypes.HouseholdUserMembershipDataManagerMock{},
 		householdIDFetcher:             func(req *http.Request) string { return "" },
 		encoderDecoder:                 mockencoding.NewMockEncoderDecoder(),
+		secretGenerator:                random.NewGenerator(nil, nil),
 		tracer:                         tracing.NewTracerForTest("test"),
 	}
 }
@@ -60,6 +62,7 @@ func TestProvideHouseholdsService(T *testing.T) {
 			rpm,
 			pp,
 			tracing.NewNoopTracerProvider(),
+			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 		)
 
 		assert.NotNil(t, s)
@@ -89,6 +92,7 @@ func TestProvideHouseholdsService(T *testing.T) {
 			rpm,
 			pp,
 			tracing.NewNoopTracerProvider(),
+			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 		)
 
 		assert.Nil(t, s)

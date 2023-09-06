@@ -138,7 +138,7 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (http.Server, error)
 		return nil, err
 	}
 	householdsConfig := servicesConfig.Households
-	householdDataService, err := households.ProvideService(logger, householdsConfig, householdDataManager, householdInvitationDataManager, householdUserMembershipDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	householdDataService, err := households.ProvideService(logger, householdsConfig, householdDataManager, householdInvitationDataManager, householdUserMembershipDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, generator)
 	if err != nil {
 		return nil, err
 	}

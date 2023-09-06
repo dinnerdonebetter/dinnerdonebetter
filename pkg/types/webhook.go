@@ -79,12 +79,11 @@ type (
 
 	// WebhookExecutionRequest represents a webhook listener, an endpoint to send an HTTP request to upon an event.
 	WebhookExecutionRequest struct {
-		_ struct{}
-
+		_            struct{}
+		Payload      any    `json:"payload"`
 		WebhookID    string `json:"webhookID"`
 		HouseholdID  string `json:"householdID"`
 		TriggerEvent string `json:"triggerEvent"`
-		Payload      any    `json:"payload"`
 	}
 
 	// WebhookDataManager describes a structure capable of storing webhooks.

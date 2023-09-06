@@ -62,18 +62,19 @@ func ConvertHouseholdToHouseholdCreationRequestInput(household *types.Household)
 // ConvertHouseholdToHouseholdDatabaseCreationInput builds a faked HouseholdCreationRequestInput.
 func ConvertHouseholdToHouseholdDatabaseCreationInput(household *types.Household) *types.HouseholdDatabaseCreationInput {
 	return &types.HouseholdDatabaseCreationInput{
-		ID:            household.ID,
-		Name:          household.Name,
-		AddressLine1:  household.AddressLine1,
-		AddressLine2:  household.AddressLine2,
-		City:          household.City,
-		State:         household.State,
-		ZipCode:       household.ZipCode,
-		Country:       household.Country,
-		Latitude:      household.Latitude,
-		Longitude:     household.Longitude,
-		ContactPhone:  household.ContactPhone,
-		BelongsToUser: household.BelongsToUser,
+		ID:                   household.ID,
+		Name:                 household.Name,
+		AddressLine1:         household.AddressLine1,
+		AddressLine2:         household.AddressLine2,
+		City:                 household.City,
+		State:                household.State,
+		ZipCode:              household.ZipCode,
+		Country:              household.Country,
+		Latitude:             household.Latitude,
+		Longitude:            household.Longitude,
+		ContactPhone:         household.ContactPhone,
+		BelongsToUser:        household.BelongsToUser,
+		WebhookEncryptionKey: household.WebhookEncryptionKey,
 	}
 }
 

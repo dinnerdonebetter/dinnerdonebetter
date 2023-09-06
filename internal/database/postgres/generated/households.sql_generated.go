@@ -54,23 +54,25 @@ func (q *Queries) ArchiveHousehold(ctx context.Context, db DBTX, arg *ArchiveHou
 
 const createHousehold = `-- name: CreateHousehold :exec
 
-INSERT INTO households (id,"name",billing_status,contact_phone,address_line_1,address_line_2,city,state,zip_code,country,latitude,longitude,belongs_to_user) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+INSERT INTO households (id,name,billing_status,contact_phone,address_line_1,address_line_2,city,state,zip_code,country,latitude,longitude,belongs_to_user,webhook_hmac_secret)
+VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
 `
 
 type CreateHouseholdParams struct {
-	City          string
-	Name          string
-	BillingStatus string
-	ContactPhone  string
-	AddressLine1  string
-	AddressLine2  string
-	ID            string
-	State         string
-	ZipCode       string
-	Country       string
-	BelongsToUser string
-	Latitude      sql.NullString
-	Longitude     sql.NullString
+	City              string
+	ID                string
+	BillingStatus     string
+	ContactPhone      string
+	AddressLine1      string
+	AddressLine2      string
+	Name              string
+	State             string
+	WebhookHmacSecret string
+	Country           string
+	ZipCode           string
+	BelongsToUser     string
+	Longitude         sql.NullString
+	Latitude          sql.NullString
 }
 
 func (q *Queries) CreateHousehold(ctx context.Context, db DBTX, arg *CreateHouseholdParams) error {
@@ -88,6 +90,7 @@ func (q *Queries) CreateHousehold(ctx context.Context, db DBTX, arg *CreateHouse
 		arg.Latitude,
 		arg.Longitude,
 		arg.BelongsToUser,
+		arg.WebhookHmacSecret,
 	)
 	return err
 }
@@ -113,6 +116,7 @@ SELECT
 	households.last_updated_at,
 	households.archived_at,
 	households.belongs_to_user,
+	households.webhook_hmac_secret,
 	users.id as user_id,
 	users.first_name as user_first_name,
 	users.last_name as user_last_name,
@@ -164,22 +168,23 @@ type GetHouseholdByIDWithMembershipsRow struct {
 	UserEmailAddressVerifiedAt       sql.NullTime
 	ArchivedAt                       sql.NullTime
 	MembershipLastUpdatedAt          sql.NullTime
-	UserEmailAddress                 string
-	UserUserAccountStatusExplanation string
+	UserUsername                     string
+	UserUserAccountStatus            string
 	BelongsToUser                    string
+	WebhookHmacSecret                string
 	UserID                           string
 	UserFirstName                    string
 	UserLastName                     string
-	UserUsername                     string
 	ID                               string
+	UserEmailAddress                 string
 	PaymentProcessorCustomerID       string
 	Name                             string
 	BillingStatus                    string
 	ContactPhone                     string
 	MembershipHouseholdRole          string
 	UserServiceRole                  string
-	UserUserAccountStatus            string
 	MembershipBelongsToHousehold     string
+	UserUserAccountStatusExplanation string
 	Country                          string
 	ZipCode                          string
 	State                            string
@@ -224,6 +229,7 @@ func (q *Queries) GetHouseholdByIDWithMemberships(ctx context.Context, db DBTX, 
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
 			&i.BelongsToUser,
+			&i.WebhookHmacSecret,
 			&i.UserID,
 			&i.UserFirstName,
 			&i.UserLastName,
@@ -420,7 +426,7 @@ SET
 	zip_code = $7,
 	country = $8,
 	latitude = $9,
-    longitude = $10,
+    longitude =  $10,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND belongs_to_user = $11

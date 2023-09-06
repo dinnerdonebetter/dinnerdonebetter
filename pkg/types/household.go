@@ -23,45 +23,40 @@ const (
 	// HouseholdOwnershipTransferredCustomerEventType indicates a household was transferred to another owner.
 	HouseholdOwnershipTransferredCustomerEventType CustomerEventType = "household_ownership_transferred"
 
-	// PaidHouseholdBillingStatus indicates a household is fully paid.
-	PaidHouseholdBillingStatus HouseholdBillingStatus = "paid"
 	// UnpaidHouseholdBillingStatus indicates a household is not paid.
-	UnpaidHouseholdBillingStatus HouseholdBillingStatus = "unpaid"
+	UnpaidHouseholdBillingStatus = "unpaid"
 )
 
 type (
-	// HouseholdBillingStatus is the type to use/compare against when checking billing status.
-	HouseholdBillingStatus string
-
 	// Household represents a household.
 	Household struct {
-		_ struct{}
-
+		_                          struct{}
 		CreatedAt                  time.Time                          `json:"createdAt"`
 		SubscriptionPlanID         *string                            `json:"subscriptionPlanID"`
 		LastUpdatedAt              *time.Time                         `json:"lastUpdatedAt"`
 		ArchivedAt                 *time.Time                         `json:"archivedAt"`
-		ContactPhone               string                             `json:"contactPhone"`
-		BillingStatus              string                             `json:"billingStatus"`
-		AddressLine1               string                             `json:"addressLine1"`
-		AddressLine2               string                             `json:"addressLine2"`
-		City                       string                             `json:"city"`
+		Longitude                  *float64                           `json:"longitude"`
+		Latitude                   *float64                           `json:"latitude"`
 		State                      string                             `json:"state"`
+		ContactPhone               string                             `json:"contactPhone"`
+		City                       string                             `json:"city"`
+		AddressLine1               string                             `json:"addressLine1"`
 		ZipCode                    string                             `json:"zipCode"`
 		Country                    string                             `json:"country"`
-		Latitude                   *float64                           `json:"latitude"`
-		Longitude                  *float64                           `json:"longitude"`
+		BillingStatus              string                             `json:"billingStatus"`
+		AddressLine2               string                             `json:"addressLine2"`
 		PaymentProcessorCustomerID string                             `json:"paymentProcessorCustomer"`
 		BelongsToUser              string                             `json:"belongsToUser"`
 		ID                         string                             `json:"id"`
 		Name                       string                             `json:"name"`
+		WebhookEncryptionKey       string                             `json:"-"`
 		Members                    []*HouseholdUserMembershipWithUser `json:"members"`
-		WebhookEncryptionKey       []byte                             `json:"-"`
 	}
 
 	// HouseholdCreationRequestInput represents what a User could set as input for creating households.
 	HouseholdCreationRequestInput struct {
-		_            struct{}
+		_ struct{}
+
 		Latitude     *float64 `json:"latitude"`
 		Longitude    *float64 `json:"longitude"`
 		Name         string   `json:"name"`
@@ -78,18 +73,19 @@ type (
 	HouseholdDatabaseCreationInput struct {
 		_ struct{}
 
-		ID            string
-		Name          string
-		AddressLine1  string
-		AddressLine2  string
-		City          string
-		State         string
-		ZipCode       string
-		Country       string
-		Latitude      *float64
-		Longitude     *float64
-		ContactPhone  string
-		BelongsToUser string
+		ID                   string
+		Name                 string
+		AddressLine1         string
+		AddressLine2         string
+		City                 string
+		State                string
+		ZipCode              string
+		Country              string
+		Latitude             *float64
+		Longitude            *float64
+		ContactPhone         string
+		BelongsToUser        string
+		WebhookEncryptionKey string
 	}
 
 	// HouseholdUpdateRequestInput represents what a User could set as input for updating households.

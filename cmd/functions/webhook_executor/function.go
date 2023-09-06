@@ -9,17 +9,12 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"log/slog"
 	"net/http"
 	"os"
 	"strings"
 	"time"
 
-	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
-	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
-	"github.com/cloudevents/sdk-go/v2/event"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/email"
@@ -27,6 +22,12 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
+
+	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
+	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
+	"github.com/cloudevents/sdk-go/v2/event"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel"
 	_ "go.uber.org/automaxprocs"
 )
@@ -128,7 +129,12 @@ func ExecuteWebhook(ctx context.Context, e event.Event) error {
 
 	req.Header.Set("Content-Type", webhook.ContentType)
 
-	digest := hmac.New(sha256.New, household.WebhookEncryptionKey)
+	decryptedKey, err := hex.DecodeString(household.WebhookEncryptionKey)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "decoding webhook encryption key")
+	}
+
+	digest := hmac.New(sha256.New, decryptedKey)
 	digest.Write(payloadBody)
 	req.Header.Set("X-Dinner-Done-Better-Signature", hex.EncodeToString(digest.Sum(nil)))
 
