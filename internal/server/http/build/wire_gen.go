@@ -122,7 +122,8 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (http.Server, error)
 	if err != nil {
 		return nil, err
 	}
-	authService, err := authentication2.ProvideService(ctx, logger, authenticationConfig, authenticator, dataManager, householdUserMembershipDataManager, sessionManager, serverEncoderDecoder, tracerProvider, publisherProvider, generator, emailer, featureFlagManager, eventReporter)
+	routeParamManager := chi.NewRouteParamManager()
+	authService, err := authentication2.ProvideService(ctx, logger, authenticationConfig, authenticator, dataManager, householdUserMembershipDataManager, sessionManager, serverEncoderDecoder, tracerProvider, publisherProvider, generator, emailer, featureFlagManager, eventReporter, routeParamManager)
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +132,6 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (http.Server, error)
 	householdDataManager := database.ProvideHouseholdDataManager(dataManager)
 	householdInvitationDataManager := database.ProvideHouseholdInvitationDataManager(dataManager)
 	mediaUploadProcessor := images.NewImageUploadProcessor(logger, tracerProvider)
-	routeParamManager := chi.NewRouteParamManager()
 	passwordResetTokenDataManager := database.ProvidePasswordResetTokenDataManager(dataManager)
 	userDataService, err := users.ProvideUsersService(ctx, usersConfig, authenticationConfig, logger, userDataManager, householdDataManager, householdInvitationDataManager, householdUserMembershipDataManager, authenticator, serverEncoderDecoder, mediaUploadProcessor, routeParamManager, tracerProvider, publisherProvider, generator, passwordResetTokenDataManager, featureFlagManager, eventReporter)
 	if err != nil {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"sync"
 
 	"github.com/dinnerdonebetter/backend/internal/analytics"
 	"github.com/dinnerdonebetter/backend/internal/authentication"
@@ -15,11 +16,14 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
+	"github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/alexedwards/scs/v2"
 	"github.com/go-oauth2/oauth2/v4/server"
 	"github.com/gorilla/securecookie"
+	"github.com/markbates/goth"
+	"github.com/markbates/goth/providers/google"
 )
 
 const (
@@ -28,7 +32,11 @@ const (
 	householdIDContextKey = string(types.HouseholdIDContextKey)
 	cookieErrorLogName    = "_COOKIE_CONSTRUCTION_ERROR_"
 	cookieSecretSize      = 64
+	AuthProviderParamKey  = "auth_provider"
 )
+
+// TODO: remove this.
+var useProvidersMutex = sync.Mutex{}
 
 type (
 	// cookieEncoderDecoder is a stand-in interface for gorilla/securecookie.
@@ -52,6 +60,7 @@ type (
 		cookieManager              cookieEncoderDecoder
 		sessionManager             sessionManager
 		sessionContextDataFetcher  func(*http.Request) (*types.SessionContextData, error)
+		authProviderFetcher        func(*http.Request) string
 		tracer                     tracing.Tracer
 		dataChangesPublisher       messagequeue.Publisher
 		oauth2Server               *server.Server
@@ -74,6 +83,7 @@ func ProvideService(
 	emailer email.Emailer,
 	featureFlagManager featureflags.FeatureFlagManager,
 	analyticsReporter analytics.EventReporter,
+	routeParamManager routing.RouteParamManager,
 ) (types.AuthService, error) {
 	hashKey := []byte(cfg.Cookies.HashKey)
 	if len(hashKey) == 0 {
@@ -103,6 +113,7 @@ func ProvideService(
 		dataChangesPublisher:       dataChangesPublisher,
 		featureFlagManager:         featureFlagManager,
 		analyticsReporter:          analyticsReporter,
+		authProviderFetcher:        routeParamManager.BuildRouteParamStringIDFetcher(AuthProviderParamKey),
 		oauth2Server:               ProvideOAuth2ServerImplementation(ctx, logger, tracer, &cfg.OAuth2, dataManager),
 	}
 
@@ -110,6 +121,12 @@ func ProvideService(
 		logger.WithValue("cookie_signing_key_length", len(cfg.Cookies.BlockKey)).Error(err, "building test cookie")
 		return nil, fmt.Errorf("building test cookie: %w", err)
 	}
+
+	useProvidersMutex.Lock()
+	goth.UseProviders(
+		google.New(svc.config.SSO.Google.ClientID, svc.config.SSO.Google.ClientID, svc.config.SSO.Google.CallbackURL),
+	)
+	useProvidersMutex.Unlock()
 
 	return svc, nil
 }

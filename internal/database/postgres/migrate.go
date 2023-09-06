@@ -504,5 +504,10 @@ var (
 			Description: "non-nullable volumetric measurement unit",
 			Script:      fetchMigration("00091_non_nullable_volumetric_measurement_units"),
 		},
+		{
+			Version:     92,
+			Description: "household hmac secret",
+			Script:      fetchMigration("00092_webhook_hmac_secrets"),
+		},
 	}
 )

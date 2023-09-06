@@ -36,6 +36,8 @@ const (
 	gcpCookieBlockKeyEnvVarKey           = "DINNER_DONE_BETTER_COOKIE_BLOCK_KEY"
 	gcpAlgoliaAPIKeyEnvVarKey            = "DINNER_DONE_BETTER_ALGOLIA_API_KEY"
 	gcpAlgoliaAppIDEnvVarKey             = "DINNER_DONE_BETTER_ALGOLIA_APPLICATION_ID"
+	gcpGoogleSSOClientIDEnvVarKey        = "DINNER_DONE_BETTER_GOOGLE_SSO_CLIENT_ID"
+	gcpGoogleSSOClientSecretEnvVarKey    = "DINNER_DONE_BETTER_GOOGLE_SSO_CLIENT_SECRET"
 	/* #nosec G101 */
 	gcpOauth2TokenEncryptionKeyEnvVarKey = "DINNER_DONE_BETTER_OAUTH2_TOKEN_ENCRYPTION_KEY"
 	/* #nosec G101 */
@@ -95,6 +97,8 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client
 	cfg.Database.OAuth2TokenEncryptionKey = os.Getenv(gcpOauth2TokenEncryptionKeyEnvVarKey)
 	cfg.Services.Auth.Cookies.HashKey = os.Getenv(gcpCookieHashKeyEnvVarKey)
 	cfg.Services.Auth.Cookies.BlockKey = os.Getenv(gcpCookieBlockKeyEnvVarKey)
+	cfg.Services.Auth.SSO.Google.ClientID = os.Getenv(gcpGoogleSSOClientIDEnvVarKey)
+	cfg.Services.Auth.SSO.Google.ClientSecret = os.Getenv(gcpGoogleSSOClientSecretEnvVarKey)
 
 	cfg.Search = searchcfg.Config{
 		Provider: searchcfg.AlgoliaProvider,

@@ -34,6 +34,7 @@ type (
 
 		ClientID     string `json:"clientID,omitempty"     toml:"client_id,omitempty"`
 		ClientSecret string `json:"clientSecret,omitempty" toml:"client_secret,omitempty"`
+		CallbackURL  string `json:"callbackURL,omitempty"  toml:"callback_url,omitempty"`
 	}
 
 	SSOConfigs struct {
