@@ -143,3 +143,13 @@ SET
 WHERE archived_at IS NULL
 	AND belongs_to_user = sqlc.arg(belongs_to_user)
 	AND id = sqlc.arg(id);
+
+-- name: UpdateHouseholdWebhookEncryptionKey :execrows
+
+UPDATE households
+SET
+    webhook_hmac_secret = sqlc.arg(webhook_hmac_secret),
+    last_updated_at = NOW()
+WHERE archived_at IS NULL
+    AND belongs_to_user = sqlc.arg(belongs_to_user)
+    AND id = sqlc.arg(id);

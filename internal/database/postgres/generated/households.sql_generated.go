@@ -468,3 +468,28 @@ func (q *Queries) UpdateHousehold(ctx context.Context, db DBTX, arg *UpdateHouse
 	}
 	return result.RowsAffected()
 }
+
+const updateHouseholdWebhookEncryptionKey = `-- name: UpdateHouseholdWebhookEncryptionKey :execrows
+
+UPDATE households
+SET
+    webhook_hmac_secret = $1,
+    last_updated_at = NOW()
+WHERE archived_at IS NULL
+    AND belongs_to_user = $2
+    AND id = $3
+`
+
+type UpdateHouseholdWebhookEncryptionKeyParams struct {
+	WebhookHmacSecret string
+	BelongsToUser     string
+	ID                string
+}
+
+func (q *Queries) UpdateHouseholdWebhookEncryptionKey(ctx context.Context, db DBTX, arg *UpdateHouseholdWebhookEncryptionKeyParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateHouseholdWebhookEncryptionKey, arg.WebhookHmacSecret, arg.BelongsToUser, arg.ID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}

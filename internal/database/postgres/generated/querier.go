@@ -329,6 +329,7 @@ type Querier interface {
 	TransferHouseholdOwnership(ctx context.Context, db DBTX, arg *TransferHouseholdOwnershipParams) error
 	UpdateHousehold(ctx context.Context, db DBTX, arg *UpdateHouseholdParams) (int64, error)
 	UpdateHouseholdInstrumentOwnership(ctx context.Context, db DBTX, arg *UpdateHouseholdInstrumentOwnershipParams) (int64, error)
+	UpdateHouseholdWebhookEncryptionKey(ctx context.Context, db DBTX, arg *UpdateHouseholdWebhookEncryptionKeyParams) (int64, error)
 	UpdateMealLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error)
 	UpdateMealPlan(ctx context.Context, db DBTX, arg *UpdateMealPlanParams) (int64, error)
 	UpdateMealPlanEvent(ctx context.Context, db DBTX, arg *UpdateMealPlanEventParams) (int64, error)
