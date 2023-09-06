@@ -1646,7 +1646,7 @@ func Test_service_SSOProviderHandler(T *testing.T) {
 			return "google"
 		}
 
-		helper.service.SSOProviderHandler(helper.res, helper.req)
+		helper.service.SSOLoginHandler(helper.res, helper.req)
 
 		assert.NotEmpty(t, helper.res.Header().Get("Location"))
 		assert.Equal(t, http.StatusTemporaryRedirect, helper.res.Code)
@@ -1660,7 +1660,7 @@ func Test_service_SSOProviderHandler(T *testing.T) {
 			return "NOT REAL LOL"
 		}
 
-		helper.service.SSOProviderHandler(helper.res, helper.req)
+		helper.service.SSOLoginHandler(helper.res, helper.req)
 
 		assert.Empty(t, helper.res.Header().Get("Location"))
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)

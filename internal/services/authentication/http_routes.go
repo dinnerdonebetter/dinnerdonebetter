@@ -212,7 +212,7 @@ func (s *service) postLogin(ctx context.Context, user *types.User, defaultHouseh
 	return http.StatusAccepted, nil
 }
 
-func (s *service) SSOProviderHandler(res http.ResponseWriter, req *http.Request) {
+func (s *service) SSOLoginHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -259,7 +259,7 @@ func (s *service) SSOProviderHandler(res http.ResponseWriter, req *http.Request)
 	http.Redirect(res, req, u, http.StatusTemporaryRedirect)
 }
 
-func (s *service) SSOCallbackHandler(res http.ResponseWriter, req *http.Request) {
+func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
@@ -356,7 +356,6 @@ func (s *service) SSOCallbackHandler(res http.ResponseWriter, req *http.Request)
 }
 
 // validateState ensures that the state token param from the original
-// AuthURL matches the one included in the current (callback) request.
 func validateState(req *http.Request, sess goth.Session) error {
 	rawAuthURL, err := sess.GetAuthURL()
 	if err != nil {
