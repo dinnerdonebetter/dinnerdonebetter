@@ -35,8 +35,12 @@ func (s *householdsTestSuite) SetupTest() {
 	s.ctx = context.Background()
 	s.exampleUser = fakes.BuildFakeUser()
 	s.exampleHousehold = fakes.BuildFakeHousehold()
+	s.exampleHousehold.WebhookEncryptionKey = ""
 	s.exampleHousehold.BelongsToUser = s.exampleUser.ID
 	s.exampleHouseholdList = fakes.BuildFakeHouseholdList()
+	for i := range s.exampleHouseholdList.Data {
+		s.exampleHouseholdList.Data[i].WebhookEncryptionKey = ""
+	}
 }
 
 func (s *householdsTestSuite) TestClient_SwitchActiveHousehold() {
@@ -376,6 +380,7 @@ func (s *householdsTestSuite) TestClient_InviteUserToHousehold() {
 		invitation := fakes.BuildFakeHouseholdInvitation()
 		exampleHouseholdID := fakes.BuildFakeID()
 		invitation.FromUser.TwoFactorSecret = ""
+		invitation.DestinationHousehold.WebhookEncryptionKey = ""
 
 		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationCreationInput(invitation)
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, exampleHouseholdID)

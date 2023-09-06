@@ -41,7 +41,7 @@ type (
 		ArchivedAt       *time.Time `json:"archivedAt"`
 		ID               string     `json:"id"`
 		BelongsToWebhook string     `json:"belongsToWebhook"`
-		TriggerEvent     string     `json:"event"`
+		TriggerEvent     string     `json:"triggerEvent"`
 	}
 
 	// WebhookCreationRequestInput represents what a User could set as input for creating a webhook.
@@ -75,6 +75,15 @@ type (
 		ID               string
 		BelongsToWebhook string
 		TriggerEvent     string
+	}
+
+	// WebhookExecutionRequest represents a webhook listener, an endpoint to send an HTTP request to upon an event.
+	WebhookExecutionRequest struct {
+		_            struct{}
+		Payload      any    `json:"payload"`
+		WebhookID    string `json:"webhookID"`
+		HouseholdID  string `json:"householdID"`
+		TriggerEvent string `json:"triggerEvent"`
 	}
 
 	// WebhookDataManager describes a structure capable of storing webhooks.

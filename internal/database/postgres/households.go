@@ -55,6 +55,7 @@ func (q *Querier) GetHousehold(ctx context.Context, householdID string) (*types.
 				BelongsToUser:              result.BelongsToUser,
 				ID:                         result.ID,
 				Name:                       result.Name,
+				WebhookEncryptionKey:       result.WebhookHmacSecret,
 				Members:                    nil,
 			}
 		}
@@ -186,19 +187,20 @@ func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDat
 
 	// create the household.
 	if writeErr := q.generatedQuerier.CreateHousehold(ctx, tx, &generated.CreateHouseholdParams{
-		City:          input.City,
-		Name:          input.Name,
-		BillingStatus: string(types.UnpaidHouseholdBillingStatus),
-		ContactPhone:  input.ContactPhone,
-		AddressLine1:  input.AddressLine1,
-		AddressLine2:  input.AddressLine2,
-		ID:            input.ID,
-		State:         input.State,
-		ZipCode:       input.ZipCode,
-		Country:       input.Country,
-		BelongsToUser: input.BelongsToUser,
-		Latitude:      nullStringFromFloat64Pointer(input.Latitude),
-		Longitude:     nullStringFromFloat64Pointer(input.Longitude),
+		City:              input.City,
+		Name:              input.Name,
+		BillingStatus:     types.UnpaidHouseholdBillingStatus,
+		ContactPhone:      input.ContactPhone,
+		AddressLine1:      input.AddressLine1,
+		AddressLine2:      input.AddressLine2,
+		ID:                input.ID,
+		State:             input.State,
+		ZipCode:           input.ZipCode,
+		Country:           input.Country,
+		BelongsToUser:     input.BelongsToUser,
+		WebhookHmacSecret: input.WebhookEncryptionKey,
+		Latitude:          nullStringFromFloat64Pointer(input.Latitude),
+		Longitude:         nullStringFromFloat64Pointer(input.Longitude),
 	}); writeErr != nil {
 		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareError(writeErr, span, "creating household")
@@ -208,7 +210,7 @@ func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDat
 		ID:            input.ID,
 		Name:          input.Name,
 		BelongsToUser: input.BelongsToUser,
-		BillingStatus: string(types.UnpaidHouseholdBillingStatus),
+		BillingStatus: types.UnpaidHouseholdBillingStatus,
 		ContactPhone:  input.ContactPhone,
 		AddressLine1:  input.AddressLine1,
 		AddressLine2:  input.AddressLine2,

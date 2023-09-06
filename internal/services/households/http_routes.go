@@ -105,6 +105,13 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input.ID = identifiers.New()
 	input.BelongsToUser = requester
 
+	input.WebhookEncryptionKey, err = s.secretGenerator.GenerateHexEncodedString(ctx, 128)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "generating webhook encryption key")
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		return
+	}
+
 	logger = logger.WithValue(keys.NameKey, input.Name)
 
 	// create household in database.

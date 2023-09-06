@@ -9,7 +9,8 @@ UPDATE households SET last_updated_at = NOW(), archived_at = NOW() WHERE archive
 
 -- name: CreateHousehold :exec
 
-INSERT INTO households (id,"name",billing_status,contact_phone,address_line_1,address_line_2,city,state,zip_code,country,latitude,longitude,belongs_to_user) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13);
+INSERT INTO households (id,name,billing_status,contact_phone,address_line_1,address_line_2,city,state,zip_code,country,latitude,longitude,belongs_to_user,webhook_hmac_secret)
+VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14);
 
 -- name: GetHouseholdByIDWithMemberships :many
 
@@ -32,6 +33,7 @@ SELECT
 	households.last_updated_at,
 	households.archived_at,
 	households.belongs_to_user,
+	households.webhook_hmac_secret,
 	users.id as user_id,
 	users.first_name as user_first_name,
 	users.last_name as user_last_name,
@@ -127,17 +129,27 @@ WHERE households.archived_at IS NULL
 
 UPDATE households
 SET
-	name = $1,
-	contact_phone = $2,
-	address_line_1 = $3,
-	address_line_2 = $4,
-	city = $5,
-	state = $6,
-	zip_code = $7,
-	country = $8,
-	latitude = $9,
-    longitude = $10,
+	name = sqlc.arg(name),
+	contact_phone = sqlc.arg(contact_phone),
+	address_line_1 = sqlc.arg(address_line_1),
+	address_line_2 = sqlc.arg(address_line_2),
+	city = sqlc.arg(city),
+	state = sqlc.arg(state),
+	zip_code = sqlc.arg(zip_code),
+	country = sqlc.arg(country),
+	latitude = sqlc.arg(latitude),
+    longitude =  sqlc.arg(longitude),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND belongs_to_user = $11
-	AND id = $12;
+	AND belongs_to_user = sqlc.arg(belongs_to_user)
+	AND id = sqlc.arg(id);
+
+-- name: UpdateHouseholdWebhookEncryptionKey :execrows
+
+UPDATE households
+SET
+    webhook_hmac_secret = sqlc.arg(webhook_hmac_secret),
+    last_updated_at = NOW()
+WHERE archived_at IS NULL
+    AND belongs_to_user = sqlc.arg(belongs_to_user)
+    AND id = sqlc.arg(id);

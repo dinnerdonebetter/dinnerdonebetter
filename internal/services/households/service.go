@@ -8,6 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -29,6 +30,7 @@ type (
 		tracer                         tracing.Tracer
 		encoderDecoder                 encoding.ServerEncoderDecoder
 		dataChangesPublisher           messagequeue.Publisher
+		secretGenerator                random.Generator
 		sessionContextDataFetcher      func(*http.Request) (*types.SessionContextData, error)
 		userIDFetcher                  func(*http.Request) string
 		householdIDFetcher             func(*http.Request) string
@@ -46,6 +48,7 @@ func ProvideService(
 	routeParamManager routing.RouteParamManager,
 	publisherProvider messagequeue.PublisherProvider,
 	tracerProvider tracing.TracerProvider,
+	secretGenerator random.Generator,
 ) (types.HouseholdDataService, error) {
 	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
 	if err != nil {
@@ -62,6 +65,7 @@ func ProvideService(
 		householdMembershipDataManager: householdMembershipDataManager,
 		encoderDecoder:                 encoder,
 		dataChangesPublisher:           dataChangesPublisher,
+		secretGenerator:                secretGenerator,
 		tracer:                         tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 	}
 

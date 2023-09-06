@@ -31,14 +31,18 @@ func createHouseholdForTest(t *testing.T, ctx context.Context, exampleHousehold 
 	assert.NoError(t, err)
 	require.NotNil(t, created)
 	exampleHousehold.CreatedAt = created.CreatedAt
+	exampleHousehold.WebhookEncryptionKey = created.WebhookEncryptionKey
 	assert.Equal(t, exampleHousehold, created)
 
 	household, err := dbc.GetHousehold(ctx, created.ID)
+	require.NoError(t, err)
+	require.NotNil(t, household)
+
 	exampleHousehold.CreatedAt = household.CreatedAt
 	exampleHousehold.Members = household.Members
+	exampleHousehold.WebhookEncryptionKey = household.WebhookEncryptionKey
 
-	assert.NoError(t, err)
-	assert.Equal(t, household, exampleHousehold)
+	assert.Equal(t, exampleHousehold, household)
 
 	return created
 }

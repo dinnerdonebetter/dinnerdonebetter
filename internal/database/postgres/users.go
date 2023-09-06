@@ -510,7 +510,7 @@ func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.S
 	if err := q.generatedQuerier.CreateHousehold(ctx, querier, &generated.CreateHouseholdParams{
 		City:          householdCreationInput.City,
 		Name:          householdCreationInput.Name,
-		BillingStatus: string(types.UnpaidHouseholdBillingStatus),
+		BillingStatus: types.UnpaidHouseholdBillingStatus,
 		ContactPhone:  householdCreationInput.ContactPhone,
 		AddressLine1:  householdCreationInput.AddressLine1,
 		AddressLine2:  householdCreationInput.AddressLine2,

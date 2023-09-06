@@ -19,11 +19,12 @@ func BuildFakeHousehold() *types.Household {
 	}
 
 	fakeAddress := fake.Address()
+	key := fake.BitcoinPrivateKey()
 
 	return &types.Household{
 		ID:                         householdID,
 		Name:                       fake.UUID(),
-		BillingStatus:              string(types.UnpaidHouseholdBillingStatus),
+		BillingStatus:              types.UnpaidHouseholdBillingStatus,
 		ContactPhone:               fake.PhoneFormatted(),
 		PaymentProcessorCustomerID: fake.UUID(),
 		CreatedAt:                  BuildFakeTime(),
@@ -37,14 +38,8 @@ func BuildFakeHousehold() *types.Household {
 		Country:                    fakeAddress.Country,
 		Latitude:                   &fakeAddress.Latitude,
 		Longitude:                  &fakeAddress.Longitude,
+		WebhookEncryptionKey:       key,
 	}
-}
-
-// BuildFakeHouseholdForUser builds a faked household.
-func BuildFakeHouseholdForUser(u *types.User) *types.Household {
-	h := BuildFakeHousehold()
-	h.BelongsToUser = u.ID
-	return h
 }
 
 // BuildFakeHouseholdList builds a faked HouseholdList.
