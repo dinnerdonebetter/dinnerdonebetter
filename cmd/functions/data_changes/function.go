@@ -110,6 +110,13 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 
 	defer searchDataIndexPublisher.Stop()
 
+	webhookExecutionRequestPublisher, err := publisherProvider.ProvidePublisher(os.Getenv("WEBHOOK_EXECUTION_REQUESTS_TOPIC_NAME"))
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "configuring search indexing publisher")
+	}
+
+	defer webhookExecutionRequestPublisher.Stop()
+
 	// manual db timeout until I find out what's wrong
 	dbConnectionContext, cancel := context.WithTimeout(ctx, 15*time.Second)
 	dataManager, err := postgres.ProvideDatabaseClient(dbConnectionContext, logger, &cfg.Database, tracerProvider)
@@ -135,7 +142,7 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 		}
 	}
 
-	if err = handleOutboundNotifications(ctx, logger, tracer, dataManager, outboundEmailsPublisher, analyticsEventReporter, &changeMessage); err != nil {
+	if err = handleOutboundNotifications(ctx, logger, tracer, dataManager, outboundEmailsPublisher, webhookExecutionRequestPublisher, analyticsEventReporter, &changeMessage); err != nil {
 		observability.AcknowledgeError(err, logger, span, "notifying customer(s)")
 	}
 
@@ -351,7 +358,8 @@ func handleOutboundNotifications(
 	l logging.Logger,
 	tracer tracing.Tracer,
 	dataManager database.DataManager,
-	outboundEmailsPublisher messagequeue.Publisher,
+	outboundEmailsPublisher,
+	webhookExecutionRequestsPublisher messagequeue.Publisher,
 	analyticsEventReporter analytics.EventReporter,
 	changeMessage *types.DataChangeMessage,
 ) error {

@@ -56,6 +56,7 @@ type (
 		ID                         string                             `json:"id"`
 		Name                       string                             `json:"name"`
 		Members                    []*HouseholdUserMembershipWithUser `json:"members"`
+		WebhookEncryptionKey       []byte                             `json:"-"`
 	}
 
 	// HouseholdCreationRequestInput represents what a User could set as input for creating households.

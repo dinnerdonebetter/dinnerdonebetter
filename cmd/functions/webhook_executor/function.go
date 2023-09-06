@@ -1,14 +1,25 @@
-package searchindexer
+package webhookexecutor
 
 import (
+	"bytes"
 	"context"
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
+	"github.com/dinnerdonebetter/backend/pkg/types"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"log/slog"
+	"net/http"
 	"os"
 	"strings"
 	"time"
 
+	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
+	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
+	"github.com/cloudevents/sdk-go/v2/event"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/email"
@@ -16,18 +27,13 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/search/indexing"
-
-	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
-	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
-	"github.com/cloudevents/sdk-go/v2/event"
 	"go.opentelemetry.io/otel"
 	_ "go.uber.org/automaxprocs"
 )
 
 func init() {
 	// Register a CloudEvent function with the Functions Framework
-	functions.CloudEvent("IndexDataForSearch", IndexDataForSearch)
+	functions.CloudEvent("ExecuteWebhook", ExecuteWebhook)
 }
 
 type MessagePublishedData struct {
@@ -38,8 +44,8 @@ type PubSubMessage struct {
 	Data []byte `json:"data"`
 }
 
-// IndexDataForSearch handles a data change.
-func IndexDataForSearch(ctx context.Context, e event.Event) error {
+// ExecuteWebhook handles a data change.
+func ExecuteWebhook(ctx context.Context, e event.Event) error {
 	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
 		slog.Info("CEASE_OPERATION is set to true, exiting")
 		return nil
@@ -83,15 +89,61 @@ func IndexDataForSearch(ctx context.Context, e event.Event) error {
 		return fmt.Errorf("event.DataAs: %w", err)
 	}
 
-	var searchIndexRequest *indexing.IndexRequest
-	if err = json.Unmarshal(msg.Message.Data, &searchIndexRequest); err != nil {
+	var webhookExecutionRequest *types.WebhookExecutionRequest
+	if err = json.Unmarshal(msg.Message.Data, &webhookExecutionRequest); err != nil {
 		logger = logger.WithValue("raw_data", msg.Message.Data)
 		return observability.PrepareAndLogError(err, logger, span, "unmarshalling data change message")
 	}
 
-	// we don't want to retry indexing perpetually in the event of a fundamental error, so we just log it and move on
-	if err = indexing.HandleIndexRequest(ctx, logger, tracerProvider, &cfg.Search, dataManager, searchIndexRequest); err != nil {
-		observability.AcknowledgeError(err, logger, span, "handling index request")
+	household, err := dataManager.GetHousehold(ctx, webhookExecutionRequest.HouseholdID)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "getting household")
+	}
+	_ = household
+
+	webhook, err := dataManager.GetWebhook(ctx, webhookExecutionRequest.WebhookID, webhookExecutionRequest.HouseholdID)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "getting webhook")
+		return nil
+	}
+
+	var payloadBody []byte
+	switch webhook.ContentType {
+	case "application/json":
+		payloadBody, err = json.Marshal(webhookExecutionRequest.Payload)
+		if err != nil {
+			return observability.PrepareAndLogError(err, logger, span, "marshalling webhook payload")
+		}
+	case "application/xml":
+		payloadBody, err = xml.Marshal(webhookExecutionRequest.Payload)
+		if err != nil {
+			return observability.PrepareAndLogError(err, logger, span, "marshalling webhook payload")
+		}
+	}
+
+	req, err := http.NewRequest(webhook.Method, webhook.URL, bytes.NewReader(payloadBody))
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "creating webhook request")
+	}
+
+	req.Header.Set("Content-Type", webhook.ContentType)
+
+	digest := hmac.New(sha256.New, household.WebhookEncryptionKey)
+	digest.Write(payloadBody)
+	req.Header.Set("X-Dinner-Done-Better-Signature", hex.EncodeToString(digest.Sum(nil)))
+
+	res, err := otelhttp.DefaultClient.Do(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "executing webhook request")
+		return nil
+	}
+
+	logger = logger.WithResponse(res)
+	tracing.AttachResponseToSpan(span, res)
+
+	if res.StatusCode < 200 || res.StatusCode > 299 {
+		observability.AcknowledgeError(err, logger, span, "invalid response type")
+		return nil
 	}
 
 	return nil

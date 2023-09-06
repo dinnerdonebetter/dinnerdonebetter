@@ -55,6 +55,9 @@ jobs:
       - name: Build search indexer cloud function directory
         run: ./scripts/build_cloud_function.sh search_indexer
 
+      - name: Build webhook executor cloud function directory
+        run: ./scripts/build_cloud_function.sh webhook_executor
+
       - name: copy API server config file
         working-directory: environments/dev
         run: |
