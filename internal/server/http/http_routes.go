@@ -8,6 +8,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/routing"
+	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	householdinstrumentownershipsservice "github.com/dinnerdonebetter/backend/internal/services/householdinstrumentownerships"
 	householdinvitationsservice "github.com/dinnerdonebetter/backend/internal/services/householdinvitations"
 	householdsservice "github.com/dinnerdonebetter/backend/internal/services/households"
@@ -93,6 +94,12 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 		userRouter.Post("/password/reset/redeem", s.usersService.PasswordResetTokenRedemptionHandler)
 		userRouter.Post("/email_address/verify", s.usersService.VerifyUserEmailAddressHandler)
 		userRouter.Post("/totp_secret/verify", s.usersService.TOTPSecretVerificationHandler)
+	})
+
+	router.Route("/auth", func(authRouter routing.Router) {
+		providerRouteParam := buildURLVarChunk(authservice.AuthProviderParamKey, "")
+		authRouter.Get(providerRouteParam, s.authService.SSOLoginHandler)
+		authRouter.Get(path.Join(providerRouteParam, "callback"), s.authService.SSOLoginCallbackHandler)
 	})
 
 	authenticatedRouter.WithMiddleware(s.authService.AuthorizationMiddleware).Route("/api/v1", func(v1Router routing.Router) {

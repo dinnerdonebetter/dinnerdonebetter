@@ -11,6 +11,7 @@ type (
 	FeatureFlagManager interface {
 		Identify(ctx context.Context, user *types.User) error
 		CanUseFeature(ctx context.Context, userID, feature string) (bool, error)
+		Close() error
 	}
 )
 
@@ -29,4 +30,9 @@ func (m *NoopFeatureFlagManager) Identify(context.Context, *types.User) error {
 // CanUseFeature implements the FeatureFlagManager interface.
 func (*NoopFeatureFlagManager) CanUseFeature(context.Context, string, string) (bool, error) {
 	return false, nil
+}
+
+// Close implements the FeatureFlagManager interface.
+func (*NoopFeatureFlagManager) Close() error {
+	return nil
 }

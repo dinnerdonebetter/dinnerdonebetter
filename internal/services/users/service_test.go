@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/analytics"
 	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	"github.com/dinnerdonebetter/backend/internal/featureflags"
@@ -59,6 +60,7 @@ func buildTestService(t *testing.T) *service {
 		random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 		&mocktypes.PasswordResetTokenDataManagerMock{},
 		&featureflags.NoopFeatureFlagManager{},
+		analytics.NewNoopEventReporter(),
 	)
 
 	require.NoError(t, err)
@@ -114,6 +116,7 @@ func TestProvideUsersService(T *testing.T) {
 			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 			&mocktypes.PasswordResetTokenDataManagerMock{},
 			&featureflags.NoopFeatureFlagManager{},
+			analytics.NewNoopEventReporter(),
 		)
 
 		assert.NotNil(t, s)

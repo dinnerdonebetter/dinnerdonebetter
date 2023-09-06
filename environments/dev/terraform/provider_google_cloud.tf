@@ -15,3 +15,6 @@ provider "google" {
 
 data "google_project" "project" {
 }
+
+variable "GOOGLE_SSO_OAUTH2_CLIENT_ID" {}
+variable "GOOGLE_SSO_OAUTH2_CLIENT_SECRET" {}

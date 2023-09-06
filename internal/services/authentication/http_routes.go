@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
+	"net/url"
 	"strings"
 	"sync"
 
@@ -15,6 +16,8 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/gorilla/securecookie"
+	"github.com/markbates/goth"
+	"github.com/markbates/goth/gothic"
 )
 
 var (
@@ -150,28 +153,12 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 			return
 		}
 
-		cookie, err := s.issueSessionManagedCookie(ctx, defaultHouseholdID, user.ID, requestedCookieDomain)
+		responseCode, err := s.postLogin(ctx, user, defaultHouseholdID, req, res)
 		if err != nil {
-			observability.AcknowledgeError(err, logger, span, "issuing cookie")
-			s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, http.StatusInternalServerError)
+			observability.AcknowledgeError(err, logger, span, "handling login status")
+			s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, responseCode)
 			return
 		}
-
-		dcm := &types.DataChangeMessage{
-			EventType:   types.UserLoggedInCustomerEventType,
-			HouseholdID: defaultHouseholdID,
-			UserID:      user.ID,
-		}
-
-		if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-			observability.AcknowledgeError(err, logger, span, "publishing data change message")
-		}
-
-		if err = s.featureFlagManager.Identify(ctx, user); err != nil {
-			observability.AcknowledgeError(err, logger, span, "identifying user in feature flag manager")
-		}
-
-		http.SetCookie(res, cookie)
 
 		statusResponse := &types.UserStatusResponse{
 			UserID:                   user.ID,
@@ -181,9 +168,212 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 			AccountStatusExplanation: user.AccountStatusExplanation,
 		}
 
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, statusResponse, http.StatusAccepted)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, statusResponse, responseCode)
 		logger.Debug("user logged in")
 	}
+}
+
+func (s *service) postLogin(ctx context.Context, user *types.User, defaultHouseholdID string, req *http.Request, res http.ResponseWriter) (int, error) {
+	ctx, span := s.tracer.StartSpan(ctx)
+	defer span.End()
+
+	requestedCookieDomain := s.determineCookieDomain(ctx, req)
+
+	cookie, err := s.issueSessionManagedCookie(ctx, defaultHouseholdID, user.ID, requestedCookieDomain)
+	if err != nil {
+		return http.StatusInternalServerError, observability.PrepareError(err, span, "issuing cookie")
+	}
+
+	http.SetCookie(res, cookie)
+
+	dcm := &types.DataChangeMessage{
+		EventType:   types.UserLoggedInCustomerEventType,
+		HouseholdID: defaultHouseholdID,
+		UserID:      user.ID,
+	}
+
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		return http.StatusAccepted, observability.PrepareError(err, span, "publishing data change message")
+	}
+
+	if err = s.analyticsReporter.AddUser(ctx, user.ID, map[string]any{
+		"username":          user.Username,
+		"default_household": defaultHouseholdID,
+		"first_name":        user.FirstName,
+		"last_name":         user.LastName,
+	}); err != nil {
+		return http.StatusAccepted, observability.PrepareError(err, span, "identifying user for analytics")
+	}
+
+	if err = s.featureFlagManager.Identify(ctx, user); err != nil {
+		return http.StatusAccepted, observability.PrepareError(err, span, "identifying user in feature flag manager")
+	}
+
+	return http.StatusAccepted, nil
+}
+
+func (s *service) SSOLoginHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	providerName := s.authProviderFetcher(req)
+	if providerName == "" {
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "provider name is missing", http.StatusBadRequest)
+		return
+	}
+
+	provider, err := goth.GetProvider(providerName)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "getting provider")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "provider is not supported", http.StatusBadRequest)
+		return
+	}
+
+	sess, err := provider.BeginAuth(gothic.SetState(req))
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "beginning auth")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "failed to begin auth", http.StatusInternalServerError)
+		return
+	}
+
+	ctx, err = s.sessionManager.Load(ctx, providerName)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "loading session")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "failed to load session", http.StatusInternalServerError)
+		return
+	}
+
+	s.sessionManager.Put(ctx, providerName, sess.Marshal())
+
+	u, err := sess.GetAuthURL()
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "getting auth url")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "failed to get auth url", http.StatusInternalServerError)
+		return
+	}
+
+	res.Header().Set("Content-type", "application/json")
+	http.Redirect(res, req, u, http.StatusTemporaryRedirect)
+}
+
+func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	logger := s.logger.WithRequest(req)
+	tracing.AttachRequestToSpan(span, req)
+
+	providerName := s.authProviderFetcher(req)
+	if providerName == "" {
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "provider name is missing", http.StatusBadRequest)
+		return
+	}
+
+	provider, err := goth.GetProvider(providerName)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "getting provider")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "provider is not supported", http.StatusBadRequest)
+		return
+	}
+
+	rawValue := s.sessionManager.Get(ctx, providerName)
+	value, ok := rawValue.(string)
+	if !ok {
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "failed to get session", http.StatusInternalServerError)
+		return
+	}
+
+	sess, err := provider.UnmarshalSession(value)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "unmarshalling session")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "failed to unmarshal session", http.StatusInternalServerError)
+		return
+	}
+
+	err = validateState(req, sess)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "validating state")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "failed to validate state", http.StatusInternalServerError)
+		return
+	}
+
+	providedUser, err := provider.FetchUser(sess)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "fetching user")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "failed to fetch user", http.StatusInternalServerError)
+		return
+	}
+
+	params := req.URL.Query()
+	if params.Encode() == "" && req.Method == "POST" {
+		if err = req.ParseForm(); err != nil {
+			observability.AcknowledgeError(err, logger, span, "parsing form")
+		}
+		params = req.Form
+	}
+
+	// get new token and retry fetch
+	if _, err = sess.Authorize(provider, params); err != nil {
+		observability.AcknowledgeError(err, logger, span, "authorizing session")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "failed to authorize session", http.StatusInternalServerError)
+		return
+	}
+
+	user, err := s.userDataManager.GetUserByEmail(ctx, providedUser.Email)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "getting user by email")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "failed to get user by email", http.StatusInternalServerError)
+		return
+	}
+
+	defaultHouseholdID, err := s.householdMembershipManager.GetDefaultHouseholdIDForUser(ctx, user.ID)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "fetching user memberships")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, http.StatusInternalServerError)
+		return
+	}
+
+	responseCode, err := s.postLogin(ctx, user, defaultHouseholdID, req, res)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "handling login status")
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, responseCode)
+		return
+	}
+
+	statusResponse := &types.UserStatusResponse{
+		UserID:                   user.ID,
+		UserIsAuthenticated:      true,
+		AccountStatus:            user.AccountStatus,
+		ActiveHousehold:          defaultHouseholdID,
+		AccountStatusExplanation: user.AccountStatusExplanation,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, statusResponse, responseCode)
+	logger.Debug("user logged in via SSO")
+}
+
+// validateState ensures that the state token param from the original.
+func validateState(req *http.Request, sess goth.Session) error {
+	rawAuthURL, err := sess.GetAuthURL()
+	if err != nil {
+		return err
+	}
+
+	authURL, err := url.Parse(rawAuthURL)
+	if err != nil {
+		return err
+	}
+
+	reqState := gothic.GetState(req)
+
+	originalState := authURL.Query().Get("state")
+	if originalState != "" && (originalState != reqState) {
+		return errors.New("state token mismatch")
+	}
+	return nil
 }
 
 // ChangeActiveHouseholdHandler is our login route.

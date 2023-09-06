@@ -164,6 +164,25 @@ resource "google_secret_manager_secret_version" "posthog_api_key" {
   secret_data = var.POSTHOG_API_KEY
 }
 
+# PostHog personal API key
+
+variable "POSTHOG_PERSONAL_API_KEY" {}
+
+resource "google_secret_manager_secret" "posthog_personal_api_key" {
+  secret_id = "posthog_personal_api_key"
+
+  replication {
+    automatic = true
+  }
+}
+
+resource "google_secret_manager_secret_version" "posthog_personal_api_key" {
+  secret = google_secret_manager_secret.posthog_personal_api_key.id
+
+  secret_data = var.POSTHOG_PERSONAL_API_KEY
+}
+
+
 # Algolia app ID
 
 resource "google_secret_manager_secret" "algolia_application_id" {
@@ -194,4 +213,36 @@ resource "google_secret_manager_secret_version" "algolia_api_key" {
   secret = google_secret_manager_secret.algolia_api_key.id
 
   secret_data = var.ALGOLIA_API_KEY
+}
+
+# Google SSO Client ID
+
+resource "google_secret_manager_secret" "google_sso_client_id" {
+  secret_id = "google_sso_client_id"
+
+  replication {
+    automatic = true
+  }
+}
+
+resource "google_secret_manager_secret_version" "google_sso_client_id" {
+  secret = google_secret_manager_secret.google_sso_client_id.id
+
+  secret_data = var.GOOGLE_SSO_OAUTH2_CLIENT_ID
+}
+
+# Google SSO Client Secret
+
+resource "google_secret_manager_secret" "google_sso_client_secret" {
+  secret_id = "google_sso_client_secret"
+
+  replication {
+    automatic = true
+  }
+}
+
+resource "google_secret_manager_secret_version" "google_sso_client_secret" {
+  secret = google_secret_manager_secret.google_sso_client_secret.id
+
+  secret_data = var.GOOGLE_SSO_OAUTH2_CLIENT_SECRET
 }

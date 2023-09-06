@@ -1633,3 +1633,36 @@ func TestAuthenticationService_CycleSecretHandler(T *testing.T) {
 		assert.NoError(t, helper.service.cookieManager.Decode(helper.service.config.Cookies.Name, c.Value, &token))
 	})
 }
+
+//nolint:paralleltest // pending race condition fix
+func Test_service_SSOProviderHandler(T *testing.T) {
+	// T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		// t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.authProviderFetcher = func(*http.Request) string {
+			return "google"
+		}
+
+		helper.service.SSOLoginHandler(helper.res, helper.req)
+
+		assert.NotEmpty(t, helper.res.Header().Get("Location"))
+		assert.Equal(t, http.StatusTemporaryRedirect, helper.res.Code)
+	})
+
+	T.Run("with invalid provider", func(t *testing.T) {
+		// t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.authProviderFetcher = func(*http.Request) string {
+			return "NOT REAL LOL"
+		}
+
+		helper.service.SSOLoginHandler(helper.res, helper.req)
+
+		assert.Empty(t, helper.res.Header().Get("Location"))
+		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+	})
+}

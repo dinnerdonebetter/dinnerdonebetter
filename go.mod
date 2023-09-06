@@ -42,6 +42,7 @@ require (
 	github.com/luna-duclos/instrumentedsql v1.1.3
 	github.com/mailgun/mailgun-go/v4 v4.11.0
 	github.com/mailjet/mailjet-apiv3-go/v4 v4.0.1
+	github.com/markbates/goth v1.77.0
 	github.com/matcornic/hermes/v2 v2.1.0
 	github.com/mikespook/gorbac/v2 v2.3.3
 	github.com/moul/http2curl v1.0.0
@@ -139,7 +140,10 @@ require (
 	github.com/google/s2a-go v0.1.5 // indirect
 	github.com/google/uuid v1.3.1 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.5 // indirect
+	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
+	github.com/gorilla/mux v1.6.2 // indirect
+	github.com/gorilla/sessions v1.1.1 // indirect
 	github.com/gregjones/httpcache v0.0.0-20190611155906-901d90724c79 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.17.1 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect

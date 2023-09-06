@@ -2,8 +2,10 @@ package authentication
 
 import (
 	"context"
+	"net/http"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/analytics"
 	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/email"
@@ -13,6 +15,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
+	mockrouting "github.com/dinnerdonebetter/backend/internal/routing/mock"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 
 	"github.com/alexedwards/scs/v2"
@@ -37,6 +40,12 @@ func buildTestService(t *testing.T) *service {
 	pp := &mockpublishers.ProducerProvider{}
 	pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
+	rpm := mockrouting.NewRouteParamManager()
+	rpm.On(
+		"BuildRouteParamStringIDFetcher",
+		AuthProviderParamKey,
+	).Return(func(*http.Request) string { return "" })
+
 	s, err := ProvideService(
 		context.Background(),
 		logger,
@@ -51,6 +60,8 @@ func buildTestService(t *testing.T) *service {
 		random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 		&email.MockEmailer{},
 		&featureflags.NoopFeatureFlagManager{},
+		analytics.NewNoopEventReporter(),
+		rpm,
 	)
 	require.NoError(t, err)
 
@@ -75,6 +86,12 @@ func TestProvideService(T *testing.T) {
 		pp := &mockpublishers.ProducerProvider{}
 		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
+		rpm := mockrouting.NewRouteParamManager()
+		rpm.On(
+			"BuildRouteParamStringIDFetcher",
+			AuthProviderParamKey,
+		).Return(func(*http.Request) string { return "" })
+
 		s, err := ProvideService(
 			context.Background(),
 			logger,
@@ -89,6 +106,8 @@ func TestProvideService(T *testing.T) {
 			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 			&email.MockEmailer{},
 			&featureflags.NoopFeatureFlagManager{},
+			analytics.NewNoopEventReporter(),
+			rpm,
 		)
 
 		assert.NotNil(t, s)
@@ -110,6 +129,12 @@ func TestProvideService(T *testing.T) {
 		pp := &mockpublishers.ProducerProvider{}
 		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
+		rpm := mockrouting.NewRouteParamManager()
+		rpm.On(
+			"BuildRouteParamStringIDFetcher",
+			AuthProviderParamKey,
+		).Return(func(*http.Request) string { return "" })
+
 		s, err := ProvideService(
 			context.Background(),
 			logger,
@@ -129,6 +154,8 @@ func TestProvideService(T *testing.T) {
 			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 			&email.MockEmailer{},
 			&featureflags.NoopFeatureFlagManager{},
+			analytics.NewNoopEventReporter(),
+			rpm,
 		)
 
 		assert.Nil(t, s)
