@@ -355,7 +355,7 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 	logger.Debug("user logged in via SSO")
 }
 
-// validateState ensures that the state token param from the original
+// validateState ensures that the state token param from the original.
 func validateState(req *http.Request, sess goth.Session) error {
 	rawAuthURL, err := sess.GetAuthURL()
 	if err != nil {
