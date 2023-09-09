@@ -5,6 +5,10 @@ on: # [gollum]
       - cmd/**
       - internal/**
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 name: check
 jobs:
  dependency_injection:
