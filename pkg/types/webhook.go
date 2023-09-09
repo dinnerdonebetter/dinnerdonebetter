@@ -91,6 +91,7 @@ type (
 		WebhookExists(ctx context.Context, webhookID, householdID string) (bool, error)
 		GetWebhook(ctx context.Context, webhookID, householdID string) (*Webhook, error)
 		GetWebhooks(ctx context.Context, householdID string, filter *QueryFilter) (*QueryFilteredResult[Webhook], error)
+		GetWebhooksForHouseholdAndEvent(ctx context.Context, householdID string, eventType CustomerEventType) ([]*Webhook, error)
 		CreateWebhook(ctx context.Context, input *WebhookDatabaseCreationInput) (*Webhook, error)
 		ArchiveWebhook(ctx context.Context, webhookID, householdID string) error
 	}

@@ -88,6 +88,11 @@ func TestQuerier_Integration_Webhooks(t *testing.T) {
 	assert.NotEmpty(t, webhooks.Data)
 	assert.Equal(t, len(createdWebhooks), len(webhooks.Data))
 
+	// fetch as list
+	webhooksByHouseholdAndEvent, err := dbc.GetWebhooksForHouseholdAndEvent(ctx, householdID, types.CustomerEventType(createdWebhooks[0].Events[0].TriggerEvent))
+	assert.NoError(t, err)
+	assert.NotEmpty(t, webhooksByHouseholdAndEvent)
+
 	// delete
 	for _, webhook := range createdWebhooks {
 		assert.NoError(t, dbc.ArchiveWebhook(ctx, webhook.ID, householdID))

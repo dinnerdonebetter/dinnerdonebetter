@@ -1017,3 +1017,15 @@ type RecipeRatings struct {
 	Instructions  sql.NullString
 	Overall       sql.NullString
 }
+
+type Webhooks struct {
+	ID                 string
+	Name               string
+	ContentType        string
+	URL                string
+	Method             string
+	CreatedAt          time.Time
+	LastUpdatedAt      sql.NullTime
+	ArchivedAt         sql.NullTime
+	BelongsToHousehold string
+}
