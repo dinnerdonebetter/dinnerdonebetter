@@ -6,17 +6,16 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/analytics"
-	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
+	"github.com/dinnerdonebetter/backend/internal/authentication/mock"
 	"github.com/dinnerdonebetter/backend/internal/database"
-	"github.com/dinnerdonebetter/backend/internal/email"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/featureflags"
-	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
+	"github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
-	mockrouting "github.com/dinnerdonebetter/backend/internal/routing/mock"
-	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
+	"github.com/dinnerdonebetter/backend/internal/routing/mock"
+	"github.com/dinnerdonebetter/backend/pkg/types/mock"
 
 	"github.com/alexedwards/scs/v2"
 	"github.com/stretchr/testify/assert"
@@ -58,7 +57,6 @@ func buildTestService(t *testing.T) *service {
 		tracing.NewNoopTracerProvider(),
 		pp,
 		random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
-		&email.MockEmailer{},
 		&featureflags.NoopFeatureFlagManager{},
 		analytics.NewNoopEventReporter(),
 		rpm,
@@ -104,7 +102,6 @@ func TestProvideService(T *testing.T) {
 			tracing.NewNoopTracerProvider(),
 			pp,
 			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
-			&email.MockEmailer{},
 			&featureflags.NoopFeatureFlagManager{},
 			analytics.NewNoopEventReporter(),
 			rpm,
@@ -152,7 +149,6 @@ func TestProvideService(T *testing.T) {
 			tracing.NewNoopTracerProvider(),
 			pp,
 			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
-			&email.MockEmailer{},
 			&featureflags.NoopFeatureFlagManager{},
 			analytics.NewNoopEventReporter(),
 			rpm,
