@@ -2,9 +2,9 @@ package types
 
 const (
 	// FinalizeMealPlansWithExpiredVotingPeriodsChoreType asks the worker to finalize meal plans with expired voting periods.
-	FinalizeMealPlansWithExpiredVotingPeriodsChoreType choreType = "finalize_meal_plans_with_expired_voting_periods"
+	FinalizeMealPlansWithExpiredVotingPeriodsChoreType = "finalize_meal_plans_with_expired_voting_periods"
 	// CreateMealPlanTasksChoreType asks the worker to finalize meal plans with expired voting periods.
-	CreateMealPlanTasksChoreType choreType = "create_meal_plan_tasks"
+	CreateMealPlanTasksChoreType = "create_meal_plan_tasks"
 )
 
 type (
@@ -84,12 +84,10 @@ type (
 		UserIngredientPreferences        []*UserIngredientPreference     `json:"userIngredientPreference,omitempty"`
 	}
 
-	choreType string
-
 	// ChoreMessage represents an event that asks a worker to perform a chore.
 	ChoreMessage struct {
 		_ struct{}
 
-		ChoreType choreType `json:"choreType"`
+		ChoreType string `json:"choreType"`
 	}
 )

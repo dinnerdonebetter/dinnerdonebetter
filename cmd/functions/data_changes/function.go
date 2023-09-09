@@ -7,7 +7,9 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"slices"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/analytics"
@@ -37,6 +39,35 @@ func init() {
 	// Register a CloudEvent function with the Functions Framework
 	functions.CloudEvent("ProcessDataChange", ProcessDataChange)
 }
+
+var (
+	errRequiredDataIsNil = errors.New("required data is nil")
+
+	nonWebhookEventTypes = []types.CustomerEventType{
+		types.UserSignedUpCustomerEventType,
+		types.UserArchivedCustomerEventType,
+		types.TwoFactorSecretVerifiedCustomerEventType,
+		types.TwoFactorDeactivatedCustomerEventType,
+		types.TwoFactorSecretChangedCustomerEventType,
+		types.PasswordResetTokenCreatedEventType,
+		types.PasswordResetTokenRedeemedEventType,
+		types.PasswordChangedEventType,
+		types.EmailAddressChangedEventType,
+		types.UsernameChangedEventType,
+		types.UserDetailsChangedEventType,
+		types.UsernameReminderRequestedEventType,
+		types.UserLoggedInCustomerEventType,
+		types.UserLoggedOutCustomerEventType,
+		types.UserChangedActiveHouseholdCustomerEventType,
+		types.UserEmailAddressVerifiedEventType,
+		types.UserEmailAddressVerificationEmailRequestedEventType,
+		types.HouseholdMemberRemovedCustomerEventType,
+		types.HouseholdMembershipPermissionsUpdatedCustomerEventType,
+		types.HouseholdOwnershipTransferredCustomerEventType,
+		types.OAuth2ClientCreatedCustomerEventType,
+		types.OAuth2ClientArchivedCustomerEventType,
+	}
+)
 
 // MessagePublishedData contains the full Pub/Sub message
 // See the documentation for more details:
@@ -142,18 +173,50 @@ func ProcessDataChange(ctx context.Context, e event.Event) error {
 		}
 	}
 
-	if err = handleOutboundNotifications(ctx, logger, tracer, dataManager, outboundEmailsPublisher, webhookExecutionRequestPublisher, analyticsEventReporter, &changeMessage); err != nil {
-		observability.AcknowledgeError(err, logger, span, "notifying customer(s)")
-	}
+	var wg sync.WaitGroup
 
-	if err = handleSearchIndexUpdates(ctx, logger, tracer, searchDataIndexPublisher, &changeMessage); err != nil {
-		observability.AcknowledgeError(err, logger, span, "updating search index)")
-	}
+	go func() {
+		wg.Add(1)
+		if changeMessage.HouseholdID != "" && !slices.Contains(nonWebhookEventTypes, changeMessage.EventType) {
+			var relevantWebhooks []*types.Webhook
+			relevantWebhooks, err = dataManager.GetWebhooksForHouseholdAndEvent(ctx, changeMessage.HouseholdID, changeMessage.EventType)
+			if err != nil {
+				observability.AcknowledgeError(err, logger, span, "getting webhooks")
+			}
+
+			for _, webhook := range relevantWebhooks {
+				if err = webhookExecutionRequestPublisher.Publish(ctx, &types.WebhookExecutionRequest{
+					WebhookID:   webhook.ID,
+					HouseholdID: changeMessage.HouseholdID,
+					Payload:     changeMessage,
+				}); err != nil {
+					observability.AcknowledgeError(err, logger, span, "publishing webhook execution request")
+				}
+			}
+		}
+		wg.Done()
+	}()
+
+	go func() {
+		wg.Add(1)
+		if err = handleOutboundNotifications(ctx, logger, tracer, dataManager, outboundEmailsPublisher, webhookExecutionRequestPublisher, analyticsEventReporter, &changeMessage); err != nil {
+			observability.AcknowledgeError(err, logger, span, "notifying customer(s)")
+		}
+		wg.Done()
+	}()
+
+	go func() {
+		wg.Add(1)
+		if err = handleSearchIndexUpdates(ctx, logger, tracer, searchDataIndexPublisher, &changeMessage); err != nil {
+			observability.AcknowledgeError(err, logger, span, "updating search index)")
+		}
+		wg.Done()
+	}()
+
+	wg.Wait()
 
 	return nil
 }
-
-var errRequiredDataIsNil = errors.New("required data is nil")
 
 func handleSearchIndexUpdates(
 	ctx context.Context,

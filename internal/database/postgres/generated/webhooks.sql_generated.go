@@ -304,38 +304,81 @@ func (q *Queries) GetWebhooks(ctx context.Context, db DBTX, arg *GetWebhooksPara
 	return items, nil
 }
 
-const getWebhooksForUser = `-- name: GetWebhooksForUser :many
+const getWebhooksForHousehold = `-- name: GetWebhooksForHousehold :many
 
-SELECT webhooks.id,
-       webhooks.name,
-       webhooks.content_type,
-       webhooks.url,
-       webhooks.method,
-       webhook_trigger_events.id,
-       webhook_trigger_events.trigger_event,
-       webhook_trigger_events.belongs_to_webhook,
-       webhook_trigger_events.created_at,
-       webhook_trigger_events.archived_at,
-       webhooks.created_at,
-       webhooks.last_updated_at,
-       webhooks.archived_at,
-       webhooks.belongs_to_household
-  FROM webhooks
-       JOIN webhook_trigger_events ON
-			webhook_trigger_events.belongs_to_webhook
-			= webhooks.id
- WHERE webhook_trigger_events.archived_at IS NULL
-       AND webhooks.archived_at IS NULL
-       AND webhooks.belongs_to_household = $1
-       AND webhooks.id = $2
+SELECT
+    webhooks.id,
+    webhooks.name,
+    webhooks.content_type,
+    webhooks.url,
+    webhooks.method,
+    webhook_trigger_events.id,
+    webhook_trigger_events.trigger_event,
+    webhook_trigger_events.belongs_to_webhook,
+    webhook_trigger_events.created_at,
+    webhook_trigger_events.archived_at,
+    webhooks.created_at,
+    webhooks.last_updated_at,
+    webhooks.archived_at,
+    webhooks.belongs_to_household,
+    (
+        SELECT
+            COUNT(webhooks.id)
+        FROM
+            webhooks
+        WHERE
+            webhooks.archived_at IS NULL
+            AND webhooks.belongs_to_household = $1
+            AND webhooks.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
+            AND webhooks.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
+            AND (
+                webhooks.last_updated_at IS NULL
+                OR webhooks.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years'))
+            )
+            AND (
+                webhooks.last_updated_at IS NULL
+                OR webhooks.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
+            )
+    ) as filtered_count,
+    (
+        SELECT
+            COUNT(webhooks.id)
+        FROM
+            webhooks
+        WHERE
+            webhooks.archived_at IS NULL
+            AND webhooks.belongs_to_household = $1
+    ) as total_count
+FROM webhooks
+    JOIN webhook_trigger_events ON webhook_trigger_events.belongs_to_webhook = webhooks.id
+WHERE webhook_trigger_events.archived_at IS NULL
+    AND webhooks.created_at > (COALESCE($2, (SELECT NOW() - interval '999 years')))
+    AND webhooks.created_at < (COALESCE($3, (SELECT NOW() + interval '999 years')))
+    AND (
+        webhooks.last_updated_at IS NULL
+        OR webhooks.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years'))
+    )
+    AND (
+        webhooks.last_updated_at IS NULL
+        OR webhooks.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
+    )
+    AND webhooks.archived_at IS NULL
+    AND webhooks.belongs_to_household = $1
+    OFFSET $6
+    LIMIT $7
 `
 
-type GetWebhooksForUserParams struct {
-	BelongsToHousehold string
-	ID                 string
+type GetWebhooksForHouseholdParams struct {
+	HouseholdID   string
+	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	UpdatedBefore sql.NullTime
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
 }
 
-type GetWebhooksForUserRow struct {
+type GetWebhooksForHouseholdRow struct {
 	ID                 string
 	Name               string
 	ContentType        string
@@ -350,17 +393,27 @@ type GetWebhooksForUserRow struct {
 	LastUpdatedAt      sql.NullTime
 	ArchivedAt_2       sql.NullTime
 	BelongsToHousehold string
+	FilteredCount      int64
+	TotalCount         int64
 }
 
-func (q *Queries) GetWebhooksForUser(ctx context.Context, db DBTX, arg *GetWebhooksForUserParams) ([]*GetWebhooksForUserRow, error) {
-	rows, err := db.QueryContext(ctx, getWebhooksForUser, arg.BelongsToHousehold, arg.ID)
+func (q *Queries) GetWebhooksForHousehold(ctx context.Context, db DBTX, arg *GetWebhooksForHouseholdParams) ([]*GetWebhooksForHouseholdRow, error) {
+	rows, err := db.QueryContext(ctx, getWebhooksForHousehold,
+		arg.HouseholdID,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.UpdatedAfter,
+		arg.UpdatedBefore,
+		arg.QueryOffset,
+		arg.QueryLimit,
+	)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []*GetWebhooksForUserRow{}
+	items := []*GetWebhooksForHouseholdRow{}
 	for rows.Next() {
-		var i GetWebhooksForUserRow
+		var i GetWebhooksForHouseholdRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
@@ -375,6 +428,66 @@ func (q *Queries) GetWebhooksForUser(ctx context.Context, db DBTX, arg *GetWebho
 			&i.CreatedAt_2,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt_2,
+			&i.BelongsToHousehold,
+			&i.FilteredCount,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getWebhooksForHouseholdAndEvent = `-- name: GetWebhooksForHouseholdAndEvent :many
+
+SELECT
+    webhooks.id,
+    webhooks.name,
+    webhooks.content_type,
+    webhooks.url,
+    webhooks.method,
+    webhooks.created_at,
+    webhooks.last_updated_at,
+    webhooks.archived_at,
+    webhooks.belongs_to_household
+FROM webhooks
+    JOIN webhook_trigger_events ON webhook_trigger_events.belongs_to_webhook = webhooks.id
+WHERE webhooks.archived_at IS NULL
+    AND webhook_trigger_events.archived_at IS NULL
+    AND webhook_trigger_events.trigger_event = $1
+    AND webhooks.belongs_to_household = $2
+`
+
+type GetWebhooksForHouseholdAndEventParams struct {
+	TriggerEvent WebhookEvent
+	HouseholdID  string
+}
+
+func (q *Queries) GetWebhooksForHouseholdAndEvent(ctx context.Context, db DBTX, arg *GetWebhooksForHouseholdAndEventParams) ([]*Webhooks, error) {
+	rows, err := db.QueryContext(ctx, getWebhooksForHouseholdAndEvent, arg.TriggerEvent, arg.HouseholdID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*Webhooks{}
+	for rows.Next() {
+		var i Webhooks
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.ContentType,
+			&i.URL,
+			&i.Method,
+			&i.CreatedAt,
+			&i.LastUpdatedAt,
+			&i.ArchivedAt,
 			&i.BelongsToHousehold,
 		); err != nil {
 			return nil, err

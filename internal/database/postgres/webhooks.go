@@ -125,14 +125,14 @@ func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *t
 		Pagination: filter.ToPagination(),
 	}
 
-	results, err := q.generatedQuerier.GetWebhooks(ctx, q.db, &generated.GetWebhooksParams{
+	results, err := q.generatedQuerier.GetWebhooksForHousehold(ctx, q.db, &generated.GetWebhooksForHouseholdParams{
+		HouseholdID:   householdID,
 		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
 		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
 		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
 		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
-		HouseholdID:   householdID,
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching webhooks from database")
@@ -150,11 +150,51 @@ func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *t
 			BelongsToHousehold: result.BelongsToHousehold,
 			ContentType:        result.ContentType,
 		})
+
 		x.FilteredCount = uint64(result.FilteredCount)
 		x.TotalCount = uint64(result.TotalCount)
 	}
 
 	return x, nil
+}
+
+// GetWebhooksForHouseholdAndEvent fetches a list of webhooks from the database that meet a particular filter.
+func (q *Querier) GetWebhooksForHouseholdAndEvent(ctx context.Context, householdID string, eventType types.CustomerEventType) ([]*types.Webhook, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if householdID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+	tracing.AttachHouseholdIDToSpan(span, householdID)
+
+	databaseResults, err := q.generatedQuerier.GetWebhooksForHouseholdAndEvent(ctx, q.db, &generated.GetWebhooksForHouseholdAndEventParams{
+		HouseholdID:  householdID,
+		TriggerEvent: generated.WebhookEvent(eventType),
+	})
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "fetching webhooks from database")
+	}
+
+	results := []*types.Webhook{}
+	for _, result := range databaseResults {
+		results = append(results, &types.Webhook{
+			CreatedAt:          result.CreatedAt,
+			ArchivedAt:         timePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt:      timePointerFromNullTime(result.LastUpdatedAt),
+			Name:               result.Name,
+			URL:                result.URL,
+			Method:             result.Method,
+			ID:                 result.ID,
+			BelongsToHousehold: result.BelongsToHousehold,
+			ContentType:        result.ContentType,
+		})
+	}
+
+	return results, nil
 }
 
 // CreateWebhook creates a webhook in a database.
