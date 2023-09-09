@@ -1,5 +1,5 @@
 PWD                           := $(shell pwd)
-ME                            := $(shell id -u)
+MYSELF                        := $(shell id -u)
 MY_GROUP					  := $(shell id -g)
 GOPATH                        := $(GOPATH)
 ARTIFACTS_DIR                 := artifacts
@@ -13,12 +13,10 @@ TEST_DOCKER_COMPOSE_FILES_DIR := $(ENVIRONMENTS_DIR)/testing/compose_files
 GENERATED_QUERIES_DIR         := internal/database/postgres/generated
 SQL_GENERATOR_IMAGE           := sqlc/sqlc:1.20.0
 LINTER_IMAGE                  := golangci/golangci-lint:v1.54.2
-CONTAINER_LINTER_IMAGE        := openpolicyagent/conftest:v0.44.1
+CONTAINER_LINTER_IMAGE        := openpolicyagent/conftest:v0.45.0
 CLOUD_JOBS                    := meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator search_data_index_scheduler
-CLOUD_FUNCTIONS               := data_changes outbound_emailer search_indexer
+CLOUD_FUNCTIONS               := data_changes outbound_emailer search_indexer webhook_executor
 WIRE_TARGETS                  := server/http/build
-
-# TODO: upgrade golangci-lint to 1.54.2
 
 ## non-PHONY folders/files
 
@@ -130,7 +128,7 @@ pre_lint:
 .PHONY: lint_docker
 lint_docker:
 	@docker pull --quiet $(CONTAINER_LINTER_IMAGE)
-	docker run --rm --volume $(PWD):$(PWD) --workdir=$(PWD) --user $(ME):$(MY_GROUP) $(CONTAINER_LINTER_IMAGE) test --policy docker_security.rego `find . -type f -name "*.Dockerfile"`
+	docker run --rm --volume $(PWD):$(PWD) --workdir=$(PWD) --user $(MYSELF):$(MY_GROUP) $(CONTAINER_LINTER_IMAGE) test --policy docker_security.rego `find . -type f -name "*.Dockerfile"`
 
 .PHONY: queries_lint
 queries_lint:
@@ -138,12 +136,12 @@ queries_lint:
 	docker run --rm \
 		--volume $(PWD):/src \
 		--workdir /src \
-		--user $(ME):$(MY_GROUP) \
+		--user $(MYSELF):$(MY_GROUP) \
 		$(SQL_GENERATOR_IMAGE) compile --no-database --no-remote
 	docker run --rm \
 		--volume $(PWD):/src \
 		--workdir /src \
-		--user $(ME):$(MY_GROUP) \
+		--user $(MYSELF):$(MY_GROUP) \
 		$(SQL_GENERATOR_IMAGE) vet --no-database --no-remote
 
 .PHONY: querier
@@ -152,7 +150,7 @@ querier: queries_lint
 	docker run --rm \
 		--volume $(PWD):/src \
 		--workdir /src \
-		--user $(ME):$(MY_GROUP) \
+		--user $(MYSELF):$(MY_GROUP) \
 	$(SQL_GENERATOR_IMAGE) generate
 
 .PHONY: golang_lint
