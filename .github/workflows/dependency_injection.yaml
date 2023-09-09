@@ -30,3 +30,6 @@ jobs:
 
      - name: Test dependency injection
        run: make rewire
+
+     - name: Check for changes
+       run: git diff --exit-code

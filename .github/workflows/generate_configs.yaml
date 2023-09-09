@@ -26,3 +26,6 @@ jobs:
 
      - name: Test build
        run: make configs
+
+     - name: Check for changes
+       run: git diff --exit-code
