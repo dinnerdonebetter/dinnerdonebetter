@@ -16,7 +16,7 @@ var (
 	)
 )
 
-// ProvideUploadManager transforms a *objectstorage.Uploader into an UploadManager.
+// ProvideUploadManager transforms an *objectstorage.Uploader into an UploadManager.
 func ProvideUploadManager(u *objectstorage.Uploader) UploadManager {
 	return u
 }

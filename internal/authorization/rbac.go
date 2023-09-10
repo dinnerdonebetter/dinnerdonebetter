@@ -16,6 +16,12 @@ func init() {
 	globalAuthorizer = initializeRBAC()
 }
 
+func must(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
 func initializeRBAC() *gorbac.RBAC {
 	rbac := gorbac.New()
 

@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/analytics"
+	analyticsmock "github.com/dinnerdonebetter/backend/internal/analytics/mock"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/features/grocerylistpreparation"
 	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
@@ -31,7 +31,7 @@ func TestProvideMealPlanGroceryListInitializer(T *testing.T) {
 			&database.MockDatabase{},
 			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
-			&analytics.MockEventReporter{},
+			&analyticsmock.EventReporter{},
 			tracing.NewNoopTracerProvider(),
 			&grocerylistpreparation.MockGroceryListCreator{},
 		)
@@ -50,7 +50,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 			&database.MockDatabase{},
 			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
-			&analytics.MockEventReporter{},
+			&analyticsmock.EventReporter{},
 			tracing.NewNoopTracerProvider(),
 			&grocerylistpreparation.MockGroceryListCreator{},
 		)

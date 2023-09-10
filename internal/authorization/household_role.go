@@ -62,62 +62,16 @@ func (r householdRoleCollection) HasPermission(p Permission) bool {
 	return hasPermission(p, r.Roles...)
 }
 
-// CanUpdateHouseholds returns whether a user can update households or not.
-func (r householdRoleCollection) CanUpdateHouseholds() bool {
-	return hasPermission(UpdateHouseholdPermission, r.Roles...)
-}
-
-// CanDeleteHouseholds returns whether a user can delete households or not.
-func (r householdRoleCollection) CanDeleteHouseholds() bool {
-	return hasPermission(ArchiveHouseholdPermission, r.Roles...)
-}
-
-// CanAddMemberToHouseholds returns whether a user can add members to households or not.
-func (r householdRoleCollection) CanAddMemberToHouseholds() bool {
-	return hasPermission(InviteUserToHouseholdPermission, r.Roles...)
-}
-
-// CanRemoveMemberFromHouseholds returns whether a user can remove members from households or not.
-func (r householdRoleCollection) CanRemoveMemberFromHouseholds() bool {
-	return hasPermission(RemoveMemberHouseholdPermission, r.Roles...)
-}
-
-// CanTransferHouseholdToNewOwner returns whether a user can transfer a household to a new owner or not.
-func (r householdRoleCollection) CanTransferHouseholdToNewOwner() bool {
-	return hasPermission(TransferHouseholdPermission, r.Roles...)
-}
-
-// CanCreateWebhooks returns whether a user can create webhooks or not.
-func (r householdRoleCollection) CanCreateWebhooks() bool {
-	return hasPermission(CreateWebhooksPermission, r.Roles...)
-}
-
-// CanSeeWebhooks returns whether a user can view webhooks or not.
-func (r householdRoleCollection) CanSeeWebhooks() bool {
-	return hasPermission(ReadWebhooksPermission, r.Roles...)
-}
-
-// CanUpdateWebhooks returns whether a user can update webhooks or not.
-func (r householdRoleCollection) CanUpdateWebhooks() bool {
-	return hasPermission(UpdateWebhooksPermission, r.Roles...)
-}
-
-// CanArchiveWebhooks returns whether a user can delete webhooks or not.
-func (r householdRoleCollection) CanArchiveWebhooks() bool {
-	return hasPermission(ArchiveWebhooksPermission, r.Roles...)
-}
-
-// PermissionSummary renders a permission summary.
-func (r householdRoleCollection) PermissionSummary() map[string]bool {
-	return map[string]bool{
-		"CanUpdateHouseholds":            r.CanUpdateHouseholds(),
-		"CanDeleteHouseholds":            r.CanDeleteHouseholds(),
-		"CanAddMemberToHouseholds":       r.CanAddMemberToHouseholds(),
-		"CanRemoveMemberFromHouseholds":  r.CanRemoveMemberFromHouseholds(),
-		"CanTransferHouseholdToNewOwner": r.CanTransferHouseholdToNewOwner(),
-		"CanCreateWebhooks":              r.CanCreateWebhooks(),
-		"CanSeeWebhooks":                 r.CanSeeWebhooks(),
-		"CanUpdateWebhooks":              r.CanUpdateWebhooks(),
-		"CanArchiveWebhooks":             r.CanArchiveWebhooks(),
+func hasPermission(p Permission, roles ...string) bool {
+	if len(roles) == 0 {
+		return false
 	}
+
+	for _, r := range roles {
+		if globalAuthorizer.IsGranted(r, p, nil) {
+			return true
+		}
+	}
+
+	return false
 }

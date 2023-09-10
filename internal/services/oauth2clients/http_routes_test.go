@@ -13,7 +13,7 @@ import (
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/random/mock"
+	randommock "github.com/dinnerdonebetter/backend/internal/pkg/random/mock"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
@@ -166,7 +166,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = mockDB
 
-		sg := &mockrandom.Generator{}
+		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateHexEncodedString",
 			testutils.ContextMatcher,
@@ -264,7 +264,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 
-		sg := &mockrandom.Generator{}
+		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateHexEncodedString",
 			testutils.ContextMatcher,
@@ -308,7 +308,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = mockDB
 
-		sg := &mockrandom.Generator{}
+		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateHexEncodedString",
 			testutils.ContextMatcher,
@@ -349,7 +349,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
 
-		sg := &mockrandom.Generator{}
+		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateHexEncodedString",
 			testutils.ContextMatcher,
@@ -398,7 +398,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = mockDB
 
-		sg := &mockrandom.Generator{}
+		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateHexEncodedString",
 			testutils.ContextMatcher,

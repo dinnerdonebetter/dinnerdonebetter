@@ -11,7 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
-	"github.com/dinnerdonebetter/backend/internal/pkg/random/mock"
+	randommock "github.com/dinnerdonebetter/backend/internal/pkg/random/mock"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/routing/mock"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
@@ -30,7 +30,7 @@ func buildTestService(t *testing.T) *service {
 		authenticator:             &mockauthn.Authenticator{},
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,
 		urlClientIDExtractor:      func(req *http.Request) string { return "" },
-		secretGenerator:           &mockrandom.Generator{},
+		secretGenerator:           &randommock.Generator{},
 		tracer:                    tracing.NewTracerForTest(serviceName),
 		cfg:                       &Config{},
 	}

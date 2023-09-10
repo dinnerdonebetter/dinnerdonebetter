@@ -14,7 +14,7 @@ func BuildFakeValidIngredientState() *types.ValidIngredientState {
 		IconPath:      buildUniqueString(),
 		Slug:          buildUniqueString(),
 		PastTense:     buildUniqueString(),
-		AttributeType: "other",
+		AttributeType: types.ValidIngredientStateAttributeTypeOther,
 		CreatedAt:     BuildFakeTime(),
 	}
 }

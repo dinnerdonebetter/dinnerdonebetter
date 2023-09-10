@@ -37,7 +37,7 @@ func NewSlogLogger(lvl logging.Level) logging.Logger {
 	}
 
 	handlerOptions := &slog.HandlerOptions{
-		AddSource: lvl == logging.DebugLevel,
+		AddSource: false, // lvl == logging.DebugLevel,
 		Level:     level,
 		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {
 			switch a.Key {

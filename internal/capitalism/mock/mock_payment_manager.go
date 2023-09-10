@@ -1,15 +1,16 @@
-package capitalism
+package capitalismmock
 
 import (
 	"context"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/capitalism"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
 )
 
-var _ PaymentManager = (*MockPaymentManager)(nil)
+var _ capitalism.PaymentManager = (*MockPaymentManager)(nil)
 
 // MockPaymentManager is a mockable capitalism.PaymentManager.
 type MockPaymentManager struct {
@@ -34,10 +35,10 @@ func (m *MockPaymentManager) CreateCustomerID(ctx context.Context, household *ty
 }
 
 // ListPlans satisfies our interface contract.
-func (m *MockPaymentManager) ListPlans(ctx context.Context) ([]SubscriptionPlan, error) {
+func (m *MockPaymentManager) ListPlans(ctx context.Context) ([]capitalism.SubscriptionPlan, error) {
 	returnValues := m.Called(ctx)
 
-	return returnValues.Get(0).([]SubscriptionPlan), returnValues.Error(1)
+	return returnValues.Get(0).([]capitalism.SubscriptionPlan), returnValues.Error(1)
 }
 
 // SubscribeToPlan satisfies our interface contract.
