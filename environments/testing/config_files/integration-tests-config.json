@@ -32,6 +32,7 @@
 	},
 	"featureFlags": {
 		"LaunchDarkly": null,
+		"PostHog": null,
 		"Provider": ""
 	},
 	"encoding": {
