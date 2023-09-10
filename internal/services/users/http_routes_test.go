@@ -16,7 +16,7 @@ import (
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/random/mock"
+	randommock "github.com/dinnerdonebetter/backend/internal/pkg/random/mock"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -791,7 +791,7 @@ func TestService_CreateHandler(T *testing.T) {
 		).Return(helper.exampleHousehold.ID, nil)
 		helper.service.householdUserMembershipDataManager = db
 
-		sg := &mockrandom.Generator{}
+		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase32EncodedString",
 			testutils.ContextMatcher,
@@ -1667,7 +1667,7 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 
 		fakeSecret := fakes.BuildFakeID()
-		sg := &mockrandom.Generator{}
+		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase32EncodedString",
 			testutils.ContextMatcher,
@@ -1800,7 +1800,7 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = mockDB
 
-		sg := &mockrandom.Generator{}
+		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase32EncodedString",
 			testutils.ContextMatcher,
@@ -1848,7 +1848,7 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 
 		fakeSecret := fakes.BuildFakeID()
-		sg := &mockrandom.Generator{}
+		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase32EncodedString",
 			testutils.ContextMatcher,
@@ -1904,7 +1904,7 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 
 		fakeSecret := fakes.BuildFakeID()
-		sg := &mockrandom.Generator{}
+		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase32EncodedString",
 			testutils.ContextMatcher,
@@ -2835,7 +2835,7 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		sg := &mockrandom.Generator{}
+		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase32EncodedString",
 			testutils.ContextMatcher,
@@ -2923,7 +2923,7 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		sg := &mockrandom.Generator{}
+		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase32EncodedString",
 			testutils.ContextMatcher,
@@ -2954,7 +2954,7 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		sg := &mockrandom.Generator{}
+		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase32EncodedString",
 			testutils.ContextMatcher,
@@ -2995,7 +2995,7 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		sg := &mockrandom.Generator{}
+		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase32EncodedString",
 			testutils.ContextMatcher,
@@ -3036,7 +3036,7 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		sg := &mockrandom.Generator{}
+		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase32EncodedString",
 			testutils.ContextMatcher,
@@ -3083,7 +3083,7 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		sg := &mockrandom.Generator{}
+		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase32EncodedString",
 			testutils.ContextMatcher,

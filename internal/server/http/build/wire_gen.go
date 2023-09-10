@@ -8,15 +8,15 @@ package build
 
 import (
 	"context"
-	config8 "github.com/dinnerdonebetter/backend/internal/analytics/config"
+	config7 "github.com/dinnerdonebetter/backend/internal/analytics/config"
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	config4 "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
-	config6 "github.com/dinnerdonebetter/backend/internal/email/config"
+	config8 "github.com/dinnerdonebetter/backend/internal/email/config"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	config7 "github.com/dinnerdonebetter/backend/internal/featureflags/config"
+	config6 "github.com/dinnerdonebetter/backend/internal/featureflags/config"
 	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	config5 "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	config2 "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
@@ -106,24 +106,19 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (http.Server, error)
 		return nil, err
 	}
 	generator := random.NewGenerator(logger, tracerProvider)
-	config12 := &cfg.Email
+	config12 := &cfg.FeatureFlags
 	client := tracing.BuildTracedHTTPClient()
-	emailer, err := config6.ProvideEmailer(config12, logger, tracerProvider, client)
+	featureFlagManager, err := config6.ProvideFeatureFlagManager(config12, logger, tracerProvider, client)
 	if err != nil {
 		return nil, err
 	}
-	config13 := &cfg.FeatureFlags
-	featureFlagManager, err := config7.ProvideFeatureFlagManager(config13, logger, tracerProvider, client)
-	if err != nil {
-		return nil, err
-	}
-	config14 := &cfg.Analytics
-	eventReporter, err := config8.ProvideEventReporter(config14, logger, tracerProvider)
+	config13 := &cfg.Analytics
+	eventReporter, err := config7.ProvideEventReporter(config13, logger, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
 	routeParamManager := chi.NewRouteParamManager()
-	authService, err := authentication2.ProvideService(ctx, logger, authenticationConfig, authenticator, dataManager, householdUserMembershipDataManager, sessionManager, serverEncoderDecoder, tracerProvider, publisherProvider, generator, emailer, featureFlagManager, eventReporter, routeParamManager)
+	authService, err := authentication2.ProvideService(ctx, logger, authenticationConfig, authenticator, dataManager, householdUserMembershipDataManager, sessionManager, serverEncoderDecoder, tracerProvider, publisherProvider, generator, featureFlagManager, eventReporter, routeParamManager)
 	if err != nil {
 		return nil, err
 	}
@@ -143,6 +138,11 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (http.Server, error)
 		return nil, err
 	}
 	householdinvitationsConfig := &servicesConfig.HouseholdInvitations
+	config14 := &cfg.Email
+	emailer, err := config8.ProvideEmailer(config14, logger, tracerProvider, client)
+	if err != nil {
+		return nil, err
+	}
 	householdInvitationDataService, err := householdinvitations.ProvideHouseholdInvitationsService(logger, householdinvitationsConfig, userDataManager, householdInvitationDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, emailer, generator)
 	if err != nil {
 		return nil, err

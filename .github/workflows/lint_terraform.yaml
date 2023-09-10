@@ -3,6 +3,10 @@ on: # [gollum]
     paths:
       - environments/dev/terraform/**
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 name: Lint Terraform code
 jobs:
   terraform:
@@ -59,7 +63,7 @@ jobs:
         id: validate
         run: terraform validate -no-color
 
-      - name: Terraform Format
+      - name: Check formatting
         working-directory: environments/dev/terraform
         id: fmt
         run: terraform fmt -check

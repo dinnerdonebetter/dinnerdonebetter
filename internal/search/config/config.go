@@ -2,6 +2,7 @@ package config
 
 import (
 	"context"
+	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -41,7 +42,7 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 
 // ProvideIndex validates a Config struct.
 func ProvideIndex[T search.Searchable](ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *Config, indexName string) (search.Index[T], error) {
-	switch cfg.Provider {
+	switch strings.TrimSpace(strings.ToLower(cfg.Provider)) {
 	case ElasticsearchProvider:
 		return elasticsearch.ProvideIndexManager[T](ctx, logger, tracerProvider, cfg.Elasticsearch, indexName)
 	case AlgoliaProvider:

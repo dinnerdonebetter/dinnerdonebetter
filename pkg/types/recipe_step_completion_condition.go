@@ -16,25 +16,6 @@ const (
 	RecipeStepCompletionConditionUpdatedCustomerEventType CustomerEventType = "recipe_step_completion_condition_updated"
 	// RecipeStepCompletionConditionArchivedCustomerEventType indicates a recipe step completion condition was archived.
 	RecipeStepCompletionConditionArchivedCustomerEventType CustomerEventType = "recipe_step_completion_condition_archived"
-
-	// IngredientStateAttributeTypeTexture represents the ingredient attribute type for texture.
-	IngredientStateAttributeTypeTexture = "texture"
-	// IngredientStateAttributeTypeConsistency represents the ingredient attribute type for consistency.
-	IngredientStateAttributeTypeConsistency = "consistency"
-	// IngredientStateAttributeTypeTemperature represents the ingredient attribute type for temperature.
-	IngredientStateAttributeTypeTemperature = "temperature"
-	// IngredientStateAttributeTypeColor represents the ingredient attribute type for color.
-	IngredientStateAttributeTypeColor = "color"
-	// IngredientStateAttributeTypeAppearance represents the ingredient attribute type for appearance.
-	IngredientStateAttributeTypeAppearance = "appearance"
-	// IngredientStateAttributeTypeOdor represents the ingredient attribute type for odor.
-	IngredientStateAttributeTypeOdor = "odor"
-	// IngredientStateAttributeTypeTaste represents the ingredient attribute type for taste.
-	IngredientStateAttributeTypeTaste = "taste"
-	// IngredientStateAttributeTypeSound represents the ingredient attribute type for sound.
-	IngredientStateAttributeTypeSound = "sound"
-	// IngredientStateAttributeTypeOther represents the ingredient attribute type for other.
-	IngredientStateAttributeTypeOther = "other"
 )
 
 func init() {

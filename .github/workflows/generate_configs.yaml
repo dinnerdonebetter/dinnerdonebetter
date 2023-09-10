@@ -4,6 +4,10 @@ on: # [gollum]
       - pkg/**
       - internal/**
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 name: generate
 jobs:
  configs:
@@ -20,5 +24,8 @@ jobs:
      - name: Checkout code
        uses: actions/checkout@v3
 
-     - name: Test build
+     - name: Ensure configs can be generated
        run: make configs
+
+     - name: Check for changes
+       run: git diff --exit-code

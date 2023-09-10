@@ -1,6 +1,8 @@
 package config
 
 import (
+	"strings"
+
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging/slog"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging/zap"
@@ -28,7 +30,7 @@ type (
 
 // ProvideLogger builds a logger according to the provided config.
 func (cfg *Config) ProvideLogger() logging.Logger {
-	switch cfg.Provider {
+	switch strings.TrimSpace(strings.ToLower(cfg.Provider)) {
 	case ProviderZerolog:
 		return zerolog.NewZerologLogger(cfg.Level)
 	case ProviderZap:

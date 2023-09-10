@@ -1,4 +1,4 @@
-package cryptography
+package encryption
 
 import (
 	"context"

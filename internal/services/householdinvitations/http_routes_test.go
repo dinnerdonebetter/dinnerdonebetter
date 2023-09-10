@@ -14,7 +14,7 @@ import (
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/random/mock"
+	randommock "github.com/dinnerdonebetter/backend/internal/pkg/random/mock"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -51,7 +51,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = udm
 
-		sg := &mockrandom.Generator{}
+		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
@@ -157,7 +157,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		sg := &mockrandom.Generator{}
+		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
@@ -185,7 +185,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
-		sg := &mockrandom.Generator{}
+		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
@@ -229,7 +229,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = udm
 
-		sg := &mockrandom.Generator{}
+		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
@@ -273,7 +273,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = udm
 
-		sg := &mockrandom.Generator{}
+		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
@@ -325,7 +325,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = udm
 
-		sg := &mockrandom.Generator{}
+		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,
@@ -377,7 +377,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = udm
 
-		sg := &mockrandom.Generator{}
+		sg := &randommock.Generator{}
 		sg.On(
 			"GenerateBase64EncodedString",
 			testutils.ContextMatcher,

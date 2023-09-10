@@ -385,7 +385,7 @@ issues:
       linters:
         - gocritic
 
-    - path: internal/database/postgres/.*_integration_test\.go
+    - path: internal/database/postgres
       linters:
         - paralleltest
 

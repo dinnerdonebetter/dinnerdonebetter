@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/capitalism"
 	"github.com/dinnerdonebetter/backend/internal/capitalism/stripe"
@@ -42,7 +43,7 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 
 // ProvideCapitalismImplementation provides a capitalism.PaymentManager implementation based on the config.
 func ProvideCapitalismImplementation(logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *Config) (capitalism.PaymentManager, error) {
-	switch cfg.Provider {
+	switch strings.TrimSpace(strings.ToLower(cfg.Provider)) {
 	case StripeProvider:
 		return stripe.ProvideStripePaymentManager(logger, tracerProvider, cfg.Stripe), nil
 	default:

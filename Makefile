@@ -7,7 +7,7 @@ COVERAGE_OUT                  := $(ARTIFACTS_DIR)/coverage.out
 GO_FORMAT                     := gofmt -s -w
 THIS                          := github.com/dinnerdonebetter/backend
 TOTAL_PACKAGE_LIST            := `go list $(THIS)/...`
-TESTABLE_PACKAGE_LIST         := `go list $(THIS)/... | grep -Ev '(integration)'`
+TESTABLE_PACKAGE_LIST         := `go list $(THIS)/... | grep -Ev '(cmd|integration|mock|fakes|converters|utils)'`
 ENVIRONMENTS_DIR              := environments
 TEST_DOCKER_COMPOSE_FILES_DIR := $(ENVIRONMENTS_DIR)/testing/compose_files
 GENERATED_QUERIES_DIR         := internal/database/postgres/generated
@@ -177,9 +177,9 @@ coverage: clean_coverage $(ARTIFACTS_DIR)
 build:
 	go build $(TOTAL_PACKAGE_LIST)
 
-.PHONY: quicktest
-quicktest: $(ARTIFACTS_DIR) vendor build
-	go test -cover -shuffle=on -race -failfast $(TESTABLE_PACKAGE_LIST)
+.PHONY: test
+test: $(ARTIFACTS_DIR) vendor build
+	go test -cover -shuffle=on -race -vet=all -failfast $(TESTABLE_PACKAGE_LIST)
 
 ## Generated files
 

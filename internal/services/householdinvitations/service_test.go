@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/email"
+	mock2 "github.com/dinnerdonebetter/backend/internal/email/mock"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
@@ -60,7 +60,7 @@ func TestProvideHouseholdInvitationsService(T *testing.T) {
 			rpm,
 			pp,
 			tracing.NewNoopTracerProvider(),
-			&email.MockEmailer{},
+			&mock2.Emailer{},
 			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 		)
 
@@ -89,7 +89,7 @@ func TestProvideHouseholdInvitationsService(T *testing.T) {
 			nil,
 			pp,
 			tracing.NewNoopTracerProvider(),
-			&email.MockEmailer{},
+			&mock2.Emailer{},
 			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 		)
 

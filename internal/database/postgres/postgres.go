@@ -13,8 +13,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/cryptography"
-	"github.com/dinnerdonebetter/backend/internal/pkg/cryptography/salsa20"
+	"github.com/dinnerdonebetter/backend/internal/pkg/cryptography/encryption"
+	"github.com/dinnerdonebetter/backend/internal/pkg/cryptography/encryption/salsa20"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 
 	"github.com/alexedwards/scs/postgresstore"
@@ -36,7 +36,7 @@ type Querier struct {
 	tracer                  tracing.Tracer
 	logger                  logging.Logger
 	secretGenerator         random.Generator
-	oauth2ClientTokenEncDec cryptography.EncryptorDecryptor
+	oauth2ClientTokenEncDec encryption.EncryptorDecryptor
 	generatedQuerier        generated.Querier
 	timeFunc                func() time.Time
 	config                  *dbconfig.Config

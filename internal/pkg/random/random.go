@@ -20,7 +20,7 @@ const (
 var (
 	_ Generator = (*standardGenerator)(nil)
 
-	defaultGenerator = NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider())
+	defaultGenerator = NewGenerator(nil, nil)
 )
 
 func init() {

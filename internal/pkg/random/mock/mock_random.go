@@ -1,4 +1,4 @@
-package mockrandom
+package randommock
 
 import (
 	"context"

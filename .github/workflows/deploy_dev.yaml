@@ -20,7 +20,7 @@ jobs:
         with:
           go-version: '1.21.x'
 
-      - id: auth
+      - id: Authenticate with GCP
         uses: google-github-actions/auth@v1
         with:
           credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
@@ -29,10 +29,7 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
 
-      - name: Authorize Docker push
-        run: gcloud auth configure-docker gcr.io
-
-      - name: Authorize Docker push
+      - name: Authorize Docker push to pkg.dev
         run: gcloud auth configure-docker us-central1-docker.pkg.dev
 
       - name: Setup Terraform
@@ -79,7 +76,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - id: auth
+      - id: Authenticate with GCP
         uses: google-github-actions/auth@v1
         with:
           credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
@@ -87,7 +84,7 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
 
-      - name: Authorize Docker push
+      - name: Authorize Docker push to pkg.dev
         run: gcloud auth configure-docker us-central1-docker.pkg.dev
 
       - name: Build and push API server container
@@ -117,7 +114,7 @@ jobs:
         with:
           go-version: '1.21.x'
 
-      - id: auth
+      - id: Authenticate with GCP
         uses: google-github-actions/auth@v1
         with:
           credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
@@ -125,7 +122,7 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
 
-      - name: Authorize Docker push
+      - name: Authorize Docker push to pkg.dev
         run: gcloud auth configure-docker us-central1-docker.pkg.dev
 
       - name: Build and push search data index scheduler container
@@ -147,7 +144,7 @@ jobs:
         with:
           go-version: '1.21.x'
 
-      - id: auth
+      - id: Authenticate with GCP
         uses: google-github-actions/auth@v1
         with:
           credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
@@ -155,7 +152,7 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
 
-      - name: Authorize Docker push
+      - name: Authorize Docker push to pkg.dev
         run: gcloud auth configure-docker us-central1-docker.pkg.dev
 
       - name: Build and push email prober container
@@ -177,7 +174,7 @@ jobs:
         with:
           go-version: '1.21.x'
 
-      - id: auth
+      - id: Authenticate with GCP
         uses: google-github-actions/auth@v1
         with:
           credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
@@ -185,7 +182,7 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
 
-      - name: Authorize Docker push
+      - name: Authorize Docker push to pkg.dev
         run: gcloud auth configure-docker us-central1-docker.pkg.dev
 
       - name: Build and push meal plan finalizer container
@@ -207,7 +204,7 @@ jobs:
         with:
           go-version: '1.21.x'
 
-      - id: auth
+      - id: Authenticate with GCP
         uses: google-github-actions/auth@v1
         with:
           credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
@@ -215,7 +212,7 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
 
-      - name: Authorize Docker push
+      - name: Authorize Docker push to pkg.dev
         run: gcloud auth configure-docker us-central1-docker.pkg.dev
 
       - name: Build and push meal plan grocery list initializer container
@@ -237,7 +234,7 @@ jobs:
         with:
           go-version: '1.21.x'
 
-      - id: auth
+      - id: Authenticate with GCP
         uses: google-github-actions/auth@v1
         with:
           credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
@@ -245,7 +242,7 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
 
-      - name: Authorize Docker push
+      - name: Authorize Docker push to pkg.dev
         run: gcloud auth configure-docker us-central1-docker.pkg.dev
 
       - name: Build and push meal plan task creator container

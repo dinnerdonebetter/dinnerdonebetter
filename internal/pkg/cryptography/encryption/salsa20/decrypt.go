@@ -21,7 +21,7 @@ func (e *salsa20Impl) Decrypt(ctx context.Context, content string) (string, erro
 	}
 
 	out := make([]byte, len(ciphered))
-	salsa20.XORKeyStream(out, ciphered, nonce[:], &e.key)
+	salsa20.XORKeyStream(out, ciphered, []byte{0, 0, 0, 0, 0, 0, 0, 0}, &e.key)
 
 	return string(out), nil
 }

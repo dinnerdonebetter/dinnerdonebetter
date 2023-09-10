@@ -10,8 +10,6 @@ import (
 	"io"
 	"log"
 	"os"
-	"regexp"
-	"strings"
 	"testing"
 	"time"
 
@@ -21,7 +19,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/cryptography/aes"
+	"github.com/dinnerdonebetter/backend/internal/pkg/cryptography/encryption/aes"
 
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
@@ -55,59 +53,6 @@ func (s *idMatcher) Match(v driver.Value) bool {
 	}
 
 	return true
-}
-
-func assertArgCountMatchesQuery(t *testing.T, query string, args []any) {
-	t.Helper()
-
-	queryArgCount := len(regexp.MustCompile(`\$\d+`).FindAllString(query, -1))
-
-	if len(args) > 0 {
-		assert.Equal(t, queryArgCount, len(args))
-	} else {
-		assert.Zero(t, queryArgCount)
-	}
-}
-
-func newArbitraryDatabaseResult() driver.Result {
-	return sqlmock.NewResult(1, 1)
-}
-
-func formatQueryForSQLMock(query string) string {
-	return strings.NewReplacer(
-		"$", `\$`,
-		"(", `\(`,
-		")", `\)`,
-		"=", `\=`,
-		"*", `\*`,
-		".", `\.`,
-		"+", `\+`,
-		"?", `\?`,
-		",", `\,`,
-		"-", `\-`,
-		"[", `\[`,
-		"]", `\]`,
-	).Replace(query)
-}
-
-func interfaceToDriverValue(in []any) []driver.Value {
-	out := []driver.Value{}
-
-	for _, x := range in {
-		out = append(out, driver.Value(x))
-	}
-
-	return out
-}
-
-func buildInvalidMockRowsFromListOfIDs(ids []string) *sqlmock.Rows {
-	exampleRows := sqlmock.NewRows([]string{"id"})
-
-	for range ids {
-		exampleRows.AddRow(nil)
-	}
-
-	return exampleRows
 }
 
 type sqlmockExpecterWrapper struct {

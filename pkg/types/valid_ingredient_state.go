@@ -16,6 +16,25 @@ const (
 	ValidIngredientStateUpdatedCustomerEventType CustomerEventType = "valid_ingredient_state_updated"
 	// ValidIngredientStateArchivedCustomerEventType indicates a valid ingredient state was archived.
 	ValidIngredientStateArchivedCustomerEventType CustomerEventType = "valid_ingredient_state_archived"
+
+	// ValidIngredientStateAttributeTypeTexture represents the ingredient attribute type for texture.
+	ValidIngredientStateAttributeTypeTexture = "texture"
+	// ValidIngredientStateAttributeTypeConsistency represents the ingredient attribute type for consistency.
+	ValidIngredientStateAttributeTypeConsistency = "consistency"
+	// ValidIngredientStateAttributeTypeTemperature represents the ingredient attribute type for temperature.
+	ValidIngredientStateAttributeTypeTemperature = "temperature"
+	// ValidIngredientStateAttributeTypeColor represents the ingredient attribute type for color.
+	ValidIngredientStateAttributeTypeColor = "color"
+	// ValidIngredientStateAttributeTypeAppearance represents the ingredient attribute type for appearance.
+	ValidIngredientStateAttributeTypeAppearance = "appearance"
+	// ValidIngredientStateAttributeTypeOdor represents the ingredient attribute type for odor.
+	ValidIngredientStateAttributeTypeOdor = "odor"
+	// ValidIngredientStateAttributeTypeTaste represents the ingredient attribute type for taste.
+	ValidIngredientStateAttributeTypeTaste = "taste"
+	// ValidIngredientStateAttributeTypeSound represents the ingredient attribute type for sound.
+	ValidIngredientStateAttributeTypeSound = "sound"
+	// ValidIngredientStateAttributeTypeOther represents the ingredient attribute type for other.
+	ValidIngredientStateAttributeTypeOther = "other"
 )
 
 func init() {
@@ -149,6 +168,17 @@ func (x *ValidIngredientStateCreationRequestInput) ValidateWithContext(ctx conte
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
+		validation.Field(&x.AttributeType, validation.In(
+			ValidIngredientStateAttributeTypeTexture,
+			ValidIngredientStateAttributeTypeConsistency,
+			ValidIngredientStateAttributeTypeTemperature,
+			ValidIngredientStateAttributeTypeColor,
+			ValidIngredientStateAttributeTypeAppearance,
+			ValidIngredientStateAttributeTypeOdor,
+			ValidIngredientStateAttributeTypeTaste,
+			ValidIngredientStateAttributeTypeSound,
+			ValidIngredientStateAttributeTypeOther,
+		)),
 	)
 }
 
@@ -161,6 +191,17 @@ func (x *ValidIngredientStateDatabaseCreationInput) ValidateWithContext(ctx cont
 		x,
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.Name, validation.Required),
+		validation.Field(&x.AttributeType, validation.In(
+			ValidIngredientStateAttributeTypeTexture,
+			ValidIngredientStateAttributeTypeConsistency,
+			ValidIngredientStateAttributeTypeTemperature,
+			ValidIngredientStateAttributeTypeColor,
+			ValidIngredientStateAttributeTypeAppearance,
+			ValidIngredientStateAttributeTypeOdor,
+			ValidIngredientStateAttributeTypeTaste,
+			ValidIngredientStateAttributeTypeSound,
+			ValidIngredientStateAttributeTypeOther,
+		)),
 	)
 }
 
@@ -172,5 +213,16 @@ func (x *ValidIngredientStateUpdateRequestInput) ValidateWithContext(ctx context
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
+		validation.Field(&x.AttributeType, validation.In(
+			ValidIngredientStateAttributeTypeTexture,
+			ValidIngredientStateAttributeTypeConsistency,
+			ValidIngredientStateAttributeTypeTemperature,
+			ValidIngredientStateAttributeTypeColor,
+			ValidIngredientStateAttributeTypeAppearance,
+			ValidIngredientStateAttributeTypeOdor,
+			ValidIngredientStateAttributeTypeTaste,
+			ValidIngredientStateAttributeTypeSound,
+			ValidIngredientStateAttributeTypeOther,
+		)),
 	)
 }

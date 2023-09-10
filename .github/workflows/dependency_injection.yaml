@@ -5,6 +5,10 @@ on: # [gollum]
       - cmd/**
       - internal/**
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 name: check
 jobs:
  dependency_injection:
@@ -24,5 +28,8 @@ jobs:
      - name: Install wire
        run: go install github.com/google/wire/cmd/wire@latest
 
-     - name: Test dependency injection
+     - name: Ensure dependency injection code can be generated
        run: make rewire
+
+     - name: Check for changes
+       run: git diff --exit-code
