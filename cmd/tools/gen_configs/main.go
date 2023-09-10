@@ -86,7 +86,7 @@ const (
 	testingEnv     = "testing"
 
 	// message provider topics.
-	dataChangesTopicName = "data_changes"
+	dataChangesTopicName = "data_changez"
 
 	maxAttempts = 50
 
