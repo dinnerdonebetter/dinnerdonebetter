@@ -92,10 +92,10 @@
 		"pingWaitPeriod": 1000000000
 	},
 	"services": {
-		"websockets": {
+		"mealPlanOptions": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"mealPlanOptions": {
+		"serviceSettings": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"recipeStepCompletionConditions": {
@@ -131,13 +131,13 @@
 		"recipePrepTasks": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"serviceSettings": {
+		"mealPlanEvents": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"userIngredientPreferences": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"mealPlanEvents": {
+		"websockets": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"households": {
@@ -170,21 +170,6 @@
 		"validPreparationVessels": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"users": {
-			"dataChangesTopicName": "data_changes",
-			"publicMediaURLPrefix": "",
-			"uploads": {
-				"storageConfig": {
-					"filesystem": {
-						"rootDirectory": "/uploads"
-					},
-					"bucketName": "avatars",
-					"uploadFilenameKey": "avatar",
-					"provider": "filesystem"
-				},
-				"debug": true
-			}
-		},
 		"recipeSteps": {
 			"mediaUploadPrefix": "https://example.website.lol",
 			"dataChangesTopicName": "data_changes",
@@ -200,11 +185,26 @@
 				"debug": true
 			}
 		},
-		"validPreparations": {
+		"users": {
+			"dataChangesTopicName": "data_changes",
+			"publicMediaURLPrefix": "",
+			"uploads": {
+				"storageConfig": {
+					"filesystem": {
+						"rootDirectory": "/uploads"
+					},
+					"bucketName": "avatars",
+					"uploadFilenameKey": "avatar",
+					"provider": "filesystem"
+				},
+				"debug": true
+			}
+		},
+		"validIngredients": {
 			"dataChangesTopicName": "data_changes",
 			"searchFromDatabase": false
 		},
-		"validIngredientStates": {
+		"validInstruments": {
 			"dataChangesTopicName": "data_changes",
 			"searchFromDatabase": false
 		},
@@ -220,11 +220,7 @@
 			"dataChangesTopicName": "data_changes",
 			"searchFromDatabase": false
 		},
-		"validIngredients": {
-			"dataChangesTopicName": "data_changes",
-			"searchFromDatabase": false
-		},
-		"validInstruments": {
+		"validIngredientStates": {
 			"dataChangesTopicName": "data_changes",
 			"searchFromDatabase": false
 		},
@@ -239,6 +235,10 @@
 		"householdInvitations": {
 			"dataChangesTopicName": "data_changes",
 			"debug": false
+		},
+		"validPreparations": {
+			"dataChangesTopicName": "data_changes",
+			"searchFromDatabase": false
 		},
 		"recipes": {
 			"dataChangesTopicName": "data_changes",
@@ -257,6 +257,11 @@
 			"searchFromDatabase": false
 		},
 		"auth": {
+			"sso": {
+				"google": {
+					"callbackURL": "https://app.dinnerdonebetter.dev/auth/google/callback"
+				}
+			},
 			"dataChanges": "data_changes",
 			"cookies": {
 				"name": "ddb_api_cookie",
