@@ -509,5 +509,10 @@ var (
 			Description: "household hmac secret",
 			Script:      fetchMigration("00092_webhook_hmac_secrets"),
 		},
+		{
+			Version:     93,
+			Description: "rename measurement unit conversions table",
+			Script:      fetchMigration("00093_rename_measurement_unit_conversions_table"),
+		},
 	}
 )

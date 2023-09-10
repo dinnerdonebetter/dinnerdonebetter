@@ -90,7 +90,7 @@ func (q *Querier) GetValidMeasurementUnitConversion(ctx context.Context, validMe
 			Metric:        result.ToUnitMetric,
 			Imperial:      result.ToUnitImperial,
 		},
-		Modifier: float32(result.ValidMeasurementConversionsModifier),
+		Modifier: float32(result.ValidMeasurementUnitConversionsModifier),
 	}
 
 	if result.ValidIngredientID.Valid && result.ValidIngredientID.String != "" {
@@ -236,7 +236,7 @@ func (q *Querier) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context
 				Metric:        r.ToUnitMetric,
 				Imperial:      r.ToUnitImperial,
 			},
-			Modifier: float32(r.ValidMeasurementConversionsModifier),
+			Modifier: float32(r.ValidMeasurementUnitConversionsModifier),
 		}
 	}
 
@@ -340,7 +340,7 @@ func (q *Querier) GetValidMeasurementUnitConversionsToUnit(ctx context.Context, 
 				Metric:        r.ToUnitMetric,
 				Imperial:      r.ToUnitImperial,
 			},
-			Modifier: float32(r.ValidMeasurementConversionsModifier),
+			Modifier: float32(r.ValidMeasurementUnitConversionsModifier),
 		}
 	}
 

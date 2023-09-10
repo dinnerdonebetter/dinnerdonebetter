@@ -1,21 +1,21 @@
 -- name: ArchiveValidMeasurementUnitConversion :execrows
 
-UPDATE valid_measurement_conversions SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
+UPDATE valid_measurement_unit_conversions SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
 
 -- name: CreateValidMeasurementUnitConversion :exec
 
-INSERT INTO valid_measurement_conversions (id,from_unit,to_unit,only_for_ingredient,modifier,notes)
+INSERT INTO valid_measurement_unit_conversions (id,from_unit,to_unit,only_for_ingredient,modifier,notes)
 VALUES (sqlc.arg(id),sqlc.arg(from_unit),sqlc.arg(to_unit),sqlc.arg(only_for_ingredient),sqlc.arg(modifier)::float,sqlc.arg(notes));
 
 
 -- name: CheckValidMeasurementUnitConversionExistence :one
 
-SELECT EXISTS ( SELECT valid_measurement_conversions.id FROM valid_measurement_conversions WHERE valid_measurement_conversions.archived_at IS NULL AND valid_measurement_conversions.id = $1 );
+SELECT EXISTS ( SELECT valid_measurement_unit_conversions.id FROM valid_measurement_unit_conversions WHERE valid_measurement_unit_conversions.archived_at IS NULL AND valid_measurement_unit_conversions.id = $1 );
 
 -- name: GetAllValidMeasurementUnitConversionsFromMeasurementUnit :many
 
 SELECT
-    valid_measurement_conversions.id,
+    valid_measurement_unit_conversions.id,
     valid_measurement_units_from.id as from_unit_id,
     valid_measurement_units_from.name as from_unit_name,
     valid_measurement_units_from.description as from_unit_description,
@@ -80,24 +80,24 @@ SELECT
     valid_ingredients.created_at as valid_ingredient_created_at,
     valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
     valid_ingredients.archived_at as valid_ingredient_archived_at,
-    valid_measurement_conversions.modifier::float,
-    valid_measurement_conversions.notes,
-    valid_measurement_conversions.created_at,
-    valid_measurement_conversions.last_updated_at,
-    valid_measurement_conversions.archived_at
-FROM valid_measurement_conversions
-     JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_conversions.from_unit = valid_measurement_units_from.id
-     JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_conversions.to_unit = valid_measurement_units_to.id
-     LEFT JOIN valid_ingredients ON valid_measurement_conversions.only_for_ingredient = valid_ingredients.id
-WHERE valid_measurement_conversions.archived_at IS NULL
+    valid_measurement_unit_conversions.modifier::float,
+    valid_measurement_unit_conversions.notes,
+    valid_measurement_unit_conversions.created_at,
+    valid_measurement_unit_conversions.last_updated_at,
+    valid_measurement_unit_conversions.archived_at
+FROM valid_measurement_unit_conversions
+     JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_unit_conversions.from_unit = valid_measurement_units_from.id
+     JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_unit_conversions.to_unit = valid_measurement_units_to.id
+     LEFT JOIN valid_ingredients ON valid_measurement_unit_conversions.only_for_ingredient = valid_ingredients.id
+WHERE valid_measurement_unit_conversions.archived_at IS NULL
   AND valid_measurement_units_from.archived_at IS NULL
   AND valid_measurement_units_to.archived_at IS NULL
-  AND valid_measurement_conversions.from_unit = $1;
+  AND valid_measurement_unit_conversions.from_unit = $1;
 
 -- name: GetAllValidMeasurementUnitConversionsToMeasurementUnit :many
 
 SELECT
-	valid_measurement_conversions.id,
+	valid_measurement_unit_conversions.id,
 	valid_measurement_units_from.id as from_unit_id,
 	valid_measurement_units_from.name as from_unit_name,
 	valid_measurement_units_from.description as from_unit_description,
@@ -162,16 +162,16 @@ SELECT
 	valid_ingredients.created_at as valid_ingredient_created_at,
 	valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
 	valid_ingredients.archived_at as valid_ingredient_archived_at,
-	valid_measurement_conversions.modifier::float,
-	valid_measurement_conversions.notes,
-	valid_measurement_conversions.created_at,
-	valid_measurement_conversions.last_updated_at,
-	valid_measurement_conversions.archived_at
-FROM valid_measurement_conversions
-     JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_conversions.from_unit = valid_measurement_units_from.id
-     JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_conversions.to_unit = valid_measurement_units_to.id
-     LEFT JOIN valid_ingredients ON valid_measurement_conversions.only_for_ingredient = valid_ingredients.id
-WHERE valid_measurement_conversions.archived_at IS NULL
+	valid_measurement_unit_conversions.modifier::float,
+	valid_measurement_unit_conversions.notes,
+	valid_measurement_unit_conversions.created_at,
+	valid_measurement_unit_conversions.last_updated_at,
+	valid_measurement_unit_conversions.archived_at
+FROM valid_measurement_unit_conversions
+     JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_unit_conversions.from_unit = valid_measurement_units_from.id
+     JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_unit_conversions.to_unit = valid_measurement_units_to.id
+     LEFT JOIN valid_ingredients ON valid_measurement_unit_conversions.only_for_ingredient = valid_ingredients.id
+WHERE valid_measurement_unit_conversions.archived_at IS NULL
   AND valid_measurement_units_from.archived_at IS NULL
   AND valid_measurement_units_to.archived_at IS NULL
   AND valid_measurement_units_to.id = $1;
@@ -179,7 +179,7 @@ WHERE valid_measurement_conversions.archived_at IS NULL
 -- name: GetValidMeasurementUnitConversion :one
 
 SELECT
-    valid_measurement_conversions.id,
+    valid_measurement_unit_conversions.id,
     valid_measurement_units_from.id as from_unit_id,
     valid_measurement_units_from.name as from_unit_name,
     valid_measurement_units_from.description as from_unit_description,
@@ -244,23 +244,23 @@ SELECT
     valid_ingredients.created_at as valid_ingredient_created_at,
     valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
     valid_ingredients.archived_at as valid_ingredient_archived_at,
-    valid_measurement_conversions.modifier::float,
-    valid_measurement_conversions.notes,
-    valid_measurement_conversions.created_at,
-    valid_measurement_conversions.last_updated_at,
-    valid_measurement_conversions.archived_at
-FROM valid_measurement_conversions
-    JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_conversions.from_unit = valid_measurement_units_from.id
-    JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_conversions.to_unit = valid_measurement_units_to.id
-    LEFT JOIN valid_ingredients ON valid_measurement_conversions.only_for_ingredient = valid_ingredients.id
-WHERE valid_measurement_conversions.id = sqlc.arg(id)
-    AND valid_measurement_conversions.archived_at IS NULL
+    valid_measurement_unit_conversions.modifier::float,
+    valid_measurement_unit_conversions.notes,
+    valid_measurement_unit_conversions.created_at,
+    valid_measurement_unit_conversions.last_updated_at,
+    valid_measurement_unit_conversions.archived_at
+FROM valid_measurement_unit_conversions
+    JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_unit_conversions.from_unit = valid_measurement_units_from.id
+    JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_unit_conversions.to_unit = valid_measurement_units_to.id
+    LEFT JOIN valid_ingredients ON valid_measurement_unit_conversions.only_for_ingredient = valid_ingredients.id
+WHERE valid_measurement_unit_conversions.id = sqlc.arg(id)
+    AND valid_measurement_unit_conversions.archived_at IS NULL
     AND valid_measurement_units_from.archived_at IS NULL
     AND valid_measurement_units_to.archived_at IS NULL;
 
 -- name: UpdateValidMeasurementUnitConversion :execrows
 
-UPDATE valid_measurement_conversions
+UPDATE valid_measurement_unit_conversions
 SET
 	from_unit = sqlc.arg(from_unit),
 	to_unit = sqlc.arg(to_unit),
