@@ -37,6 +37,7 @@ func NewSlogLogger(lvl logging.Level) logging.Logger {
 	}
 
 	handlerOptions := &slog.HandlerOptions{
+		// there's no way to skip frames here, so we'll just disable it for now
 		AddSource: false, // lvl == logging.DebugLevel,
 		Level:     level,
 		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr {

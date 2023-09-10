@@ -20,7 +20,7 @@ jobs:
         with:
           go-version: '1.21.x'
 
-      - id: Authenticate with GCP
+      - name: authenticate with GCP
         uses: google-github-actions/auth@v1
         with:
           credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
@@ -76,7 +76,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - id: Authenticate with GCP
+      - name: authenticate with GCP
         uses: google-github-actions/auth@v1
         with:
           credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
@@ -114,7 +114,7 @@ jobs:
         with:
           go-version: '1.21.x'
 
-      - id: Authenticate with GCP
+      - name: authenticate with GCP
         uses: google-github-actions/auth@v1
         with:
           credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
@@ -144,7 +144,7 @@ jobs:
         with:
           go-version: '1.21.x'
 
-      - id: Authenticate with GCP
+      - name: authenticate with GCP
         uses: google-github-actions/auth@v1
         with:
           credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
@@ -174,7 +174,7 @@ jobs:
         with:
           go-version: '1.21.x'
 
-      - id: Authenticate with GCP
+      - name: authenticate with GCP
         uses: google-github-actions/auth@v1
         with:
           credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
@@ -204,7 +204,7 @@ jobs:
         with:
           go-version: '1.21.x'
 
-      - id: Authenticate with GCP
+      - name: authenticate with GCP
         uses: google-github-actions/auth@v1
         with:
           credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
@@ -234,7 +234,7 @@ jobs:
         with:
           go-version: '1.21.x'
 
-      - id: Authenticate with GCP
+      - name: authenticate with GCP
         uses: google-github-actions/auth@v1
         with:
           credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
