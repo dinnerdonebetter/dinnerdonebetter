@@ -2,137 +2,143 @@ package postgres
 
 import (
 	"context"
-	"database/sql/driver"
 	"testing"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
-	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"github.com/stretchr/testify/require"
 )
 
-func buildMockRowsFromHouseholdInvitations(includeCounts bool, filteredCount uint64, householdInvitations ...*types.HouseholdInvitation) *sqlmock.Rows {
-	columns := []string{
-		"household_invitations.id",
-		"households.id",
-		"households.name",
-		"households.billing_status",
-		"households.contact_phone",
-		"households.address_line_1",
-		"households.address_line_2",
-		"households.city",
-		"households.state",
-		"households.zip_code",
-		"households.country",
-		"households.latitude",
-		"households.longitude",
-		"households.payment_processor_customer_id",
-		"households.subscription_plan_id",
-		"households.created_at",
-		"households.last_updated_at",
-		"households.archived_at",
-		"households.belongs_to_user",
-		"household_invitations.to_email",
-		"household_invitations.to_user",
-		"users.id",
-		"users.first_name",
-		"users.last_name",
-		"users.username",
-		"users.email_address",
-		"users.email_address_verified_at",
-		"users.avatar_src",
-		"users.hashed_password",
-		"users.requires_password_change",
-		"users.password_last_changed_at",
-		"users.two_factor_secret",
-		"users.two_factor_secret_verified_at",
-		"users.service_role",
-		"users.user_account_status",
-		"users.user_account_status_explanation",
-		"users.birthday",
-		"users.created_at",
-		"users.last_updated_at",
-		"users.archived_at",
-		"household_invitations.to_name",
-		"household_invitations.status",
-		"household_invitations.note",
-		"household_invitations.status_note",
-		"household_invitations.token",
-		"household_invitations.expires_at",
-		"household_invitations.created_at",
-		"household_invitations.last_updated_at",
-		"household_invitations.archived_at",
+func createHouseholdInvitationForTest(t *testing.T, ctx context.Context, exampleHouseholdInvitation *types.HouseholdInvitation, dbc *Querier) *types.HouseholdInvitation {
+	t.Helper()
+
+	// create
+	if exampleHouseholdInvitation == nil {
+		fromUser := createUserForTest(t, ctx, nil, dbc)
+		toUser := createUserForTest(t, ctx, nil, dbc)
+		household := createHouseholdForTest(t, ctx, nil, dbc)
+		exampleHouseholdInvitation = fakes.BuildFakeHouseholdInvitation()
+		exampleHouseholdInvitation.ExpiresAt = time.Now().Add(time.Hour * 24 * 7)
+		exampleHouseholdInvitation.DestinationHousehold = *household
+		exampleHouseholdInvitation.FromUser = *fromUser
+		exampleHouseholdInvitation.ToUser = &toUser.ID
+	}
+	dbInput := converters.ConvertHouseholdInvitationToHouseholdInvitationDatabaseCreationInput(exampleHouseholdInvitation)
+
+	created, err := dbc.CreateHouseholdInvitation(ctx, dbInput)
+	assert.NoError(t, err)
+	require.NotNil(t, created)
+	exampleHouseholdInvitation.CreatedAt = created.CreatedAt
+	exampleHouseholdInvitation.StatusNote = created.StatusNote
+	exampleHouseholdInvitation.FromUser = created.FromUser
+	assert.Equal(t, exampleHouseholdInvitation.DestinationHousehold.ID, created.DestinationHousehold.ID)
+	exampleHouseholdInvitation.DestinationHousehold = created.DestinationHousehold
+	assert.Equal(t, exampleHouseholdInvitation, created)
+
+	householdInvitation, err := dbc.GetHouseholdInvitationByHouseholdAndID(ctx, created.DestinationHousehold.ID, created.ID)
+	assert.NoError(t, err)
+	require.NotNil(t, householdInvitation)
+	exampleHouseholdInvitation.CreatedAt = householdInvitation.CreatedAt
+	exampleHouseholdInvitation.ExpiresAt = householdInvitation.ExpiresAt
+	assert.Equal(t, exampleHouseholdInvitation.FromUser.ID, householdInvitation.FromUser.ID)
+	exampleHouseholdInvitation.FromUser = householdInvitation.FromUser
+	assert.Equal(t, exampleHouseholdInvitation.DestinationHousehold.ID, householdInvitation.DestinationHousehold.ID)
+	exampleHouseholdInvitation.DestinationHousehold = householdInvitation.DestinationHousehold
+
+	assert.Equal(t, householdInvitation, exampleHouseholdInvitation)
+
+	return created
+}
+
+func TestQuerier_Integration_HouseholdInvitations(t *testing.T) {
+	if !runningContainerTests {
+		t.SkipNow()
 	}
 
-	if includeCounts {
-		columns = append(columns, "filtered_count", "total_count")
-	}
+	ctx := context.Background()
+	dbc, container := buildDatabaseClientForTest(t, ctx)
 
-	exampleRows := sqlmock.NewRows(columns)
+	databaseURI, err := container.ConnectionString(ctx)
+	require.NoError(t, err)
+	require.NotEmpty(t, databaseURI)
 
-	for _, w := range householdInvitations {
-		rowValues := []driver.Value{
-			w.ID,
-			w.DestinationHousehold.ID,
-			w.DestinationHousehold.Name,
-			w.DestinationHousehold.BillingStatus,
-			w.DestinationHousehold.ContactPhone,
-			w.DestinationHousehold.AddressLine1,
-			w.DestinationHousehold.AddressLine2,
-			w.DestinationHousehold.City,
-			w.DestinationHousehold.State,
-			w.DestinationHousehold.ZipCode,
-			w.DestinationHousehold.Country,
-			w.DestinationHousehold.Latitude,
-			w.DestinationHousehold.Longitude,
-			w.DestinationHousehold.PaymentProcessorCustomerID,
-			w.DestinationHousehold.SubscriptionPlanID,
-			w.DestinationHousehold.CreatedAt,
-			w.DestinationHousehold.LastUpdatedAt,
-			w.DestinationHousehold.ArchivedAt,
-			w.DestinationHousehold.BelongsToUser,
-			w.ToEmail,
-			w.ToUser,
-			w.FromUser.ID,
-			w.FromUser.FirstName,
-			w.FromUser.LastName,
-			w.FromUser.Username,
-			w.FromUser.EmailAddress,
-			w.FromUser.EmailAddressVerifiedAt,
-			w.FromUser.AvatarSrc,
-			w.FromUser.HashedPassword,
-			w.FromUser.RequiresPasswordChange,
-			w.FromUser.PasswordLastChangedAt,
-			w.FromUser.TwoFactorSecret,
-			w.FromUser.TwoFactorSecretVerifiedAt,
-			w.FromUser.ServiceRole,
-			w.FromUser.AccountStatus,
-			w.FromUser.AccountStatusExplanation,
-			w.FromUser.Birthday,
-			w.FromUser.CreatedAt,
-			w.FromUser.LastUpdatedAt,
-			w.FromUser.ArchivedAt,
-			w.ToName,
-			w.Status,
-			w.Note,
-			w.StatusNote,
-			w.Token,
-			w.ExpiresAt,
-			w.CreatedAt,
-			w.LastUpdatedAt,
-			w.ArchivedAt,
-		}
+	defer func(t *testing.T) {
+		t.Helper()
+		assert.NoError(t, container.Terminate(ctx))
+	}(t)
 
-		if includeCounts {
-			rowValues = append(rowValues, filteredCount, len(householdInvitations))
-		}
+	household := createHouseholdForTest(t, ctx, nil, dbc)
 
-		exampleRows.AddRow(rowValues...)
-	}
+	fromUser := createUserForTest(t, ctx, nil, dbc)
+	toUserA := createUserForTest(t, ctx, nil, dbc)
+	toUserB := createUserForTest(t, ctx, nil, dbc)
+	toUserC := createUserForTest(t, ctx, nil, dbc)
 
-	return exampleRows
+	toBeCancelledInput := fakes.BuildFakeHouseholdInvitation()
+	toBeCancelledInput.DestinationHousehold = *household
+	toBeCancelledInput.ExpiresAt = time.Now().Add(time.Hour * 24 * 7)
+	toBeCancelledInput.FromUser = *fromUser
+	toBeCancelledInput.ToUser = &toUserA.ID
+	toBeCancelled := createHouseholdInvitationForTest(t, ctx, toBeCancelledInput, dbc)
+
+	toBeRejectedInput := fakes.BuildFakeHouseholdInvitation()
+	toBeRejectedInput.DestinationHousehold = *household
+	toBeRejectedInput.ExpiresAt = time.Now().Add(time.Hour * 24 * 7)
+	toBeRejectedInput.FromUser = *fromUser
+	toBeRejectedInput.ToUser = &toUserB.ID
+	toBeRejected := createHouseholdInvitationForTest(t, ctx, toBeRejectedInput, dbc)
+
+	toBeAcceptedInput := fakes.BuildFakeHouseholdInvitation()
+	toBeAcceptedInput.DestinationHousehold = *household
+	toBeAcceptedInput.ExpiresAt = time.Now().Add(time.Hour * 24 * 7)
+	toBeAcceptedInput.FromUser = *fromUser
+	toBeAcceptedInput.ToUser = &toUserC.ID
+	toBeAcceptedInput.ToEmail = toUserC.EmailAddress
+	toBeAccepted := createHouseholdInvitationForTest(t, ctx, toBeAcceptedInput, dbc)
+
+	outboundInvites, err := dbc.GetPendingHouseholdInvitationsFromUser(ctx, fromUser.ID, nil)
+	assert.NoError(t, err)
+	assert.Len(t, outboundInvites.Data, 3)
+
+	inboundInvites, err := dbc.GetPendingHouseholdInvitationsForUser(ctx, toUserC.ID, nil)
+	assert.NoError(t, err)
+	assert.Len(t, inboundInvites.Data, 1)
+
+	exists, err := dbc.HouseholdInvitationExists(ctx, toBeCancelled.ID)
+	assert.NoError(t, err)
+	assert.True(t, exists)
+
+	invite, err := dbc.GetHouseholdInvitationByEmailAndToken(ctx, toUserC.EmailAddress, toBeAccepted.Token)
+	assert.NoError(t, err)
+	assert.NotNil(t, invite)
+
+	// create invite for nonexistent user
+	forNewUserInput := fakes.BuildFakeHouseholdInvitation()
+	forNewUserInput.DestinationHousehold = *household
+	forNewUserInput.ExpiresAt = time.Now().Add(time.Hour * 24 * 7)
+	forNewUserInput.FromUser = *fromUser
+	forNewUserInput.ToUser = nil
+	forNewUserInput.ToEmail = fakes.BuildFakeUser().EmailAddress
+	forNewUser := createHouseholdInvitationForTest(t, ctx, forNewUserInput, dbc)
+
+	fakeUser := fakes.BuildFakeUser()
+	fakeUser.EmailAddress = forNewUserInput.ToEmail
+	dbInput := converters.ConvertUserToUserDatabaseCreationInput(fakeUser)
+	dbInput.InvitationToken = forNewUser.Token
+	dbInput.DestinationHouseholdID = household.ID
+
+	createdUser, err := dbc.CreateUser(ctx, dbInput)
+	assert.NoError(t, err)
+	assert.NotNil(t, createdUser)
+
+	assert.NoError(t, dbc.CancelHouseholdInvitation(ctx, toBeCancelled.ID, "testing"))
+	assert.NoError(t, dbc.RejectHouseholdInvitation(ctx, toBeRejected.ID, "testing"))
+	assert.NoError(t, dbc.AcceptHouseholdInvitation(ctx, toBeAccepted.ID, toBeAccepted.Token, "testing"))
 }
 
 func TestQuerier_HouseholdInvitationExists(T *testing.T) {
