@@ -24,7 +24,7 @@ jobs:
      - name: Checkout code
        uses: actions/checkout@v3
 
-     - name: Test build
+     - name: Ensure configs can be generated
        run: make configs
 
      - name: Check for changes

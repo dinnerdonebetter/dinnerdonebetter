@@ -28,7 +28,7 @@ jobs:
      - name: Install wire
        run: go install github.com/google/wire/cmd/wire@latest
 
-     - name: Test dependency injection
+     - name: Ensure dependency injection code can be generated
        run: make rewire
 
      - name: Check for changes

@@ -63,7 +63,7 @@ jobs:
         id: validate
         run: terraform validate -no-color
 
-      - name: Terraform Format
+      - name: Check formatting
         working-directory: environments/dev/terraform
         id: fmt
         run: terraform fmt -check
