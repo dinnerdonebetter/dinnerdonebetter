@@ -166,11 +166,11 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID string) (*types.Recipe
 		return nil, observability.PrepareError(err, span, "fetching recipe step completion conditions for recipe")
 	}
 
-	supportingRecipeInfo := map[string]bool{}
+	supportingRecipeIDs := []string{}
 	for i, step := range x.Steps {
 		for _, ingredient := range ingredients {
 			if ingredient.RecipeStepProductRecipeID != nil {
-				supportingRecipeInfo[*ingredient.RecipeStepProductRecipeID] = true
+				supportingRecipeIDs = append(supportingRecipeIDs, *ingredient.RecipeStepProductRecipeID)
 			}
 
 			if ingredient.BelongsToRecipeStep == step.ID {
@@ -207,11 +207,6 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID string) (*types.Recipe
 			return nil, observability.PrepareError(err, span, "fetching recipe step ingredients for recipe")
 		}
 		x.Steps[i].Media = recipeMedia
-	}
-
-	var supportingRecipeIDs []string
-	for supportingRecipe := range supportingRecipeInfo {
-		supportingRecipeIDs = append(supportingRecipeIDs, supportingRecipe)
 	}
 
 	x.SupportingRecipes, err = q.GetRecipesWithIDs(ctx, supportingRecipeIDs)
