@@ -119,10 +119,10 @@ type (
 // Update merges an RecipeStepInstrumentUpdateRequestInput with a recipe step instrument.
 func (x *RecipeStepInstrument) Update(input *RecipeStepInstrumentUpdateRequestInput) {
 	if input.InstrumentID != nil && (x.Instrument == nil || (*input.InstrumentID != "" && *input.InstrumentID != x.Instrument.ID)) {
-		x.Instrument.ID = *input.InstrumentID
+		x.Instrument = &ValidInstrument{ID: *input.InstrumentID}
 	}
 
-	if input.RecipeStepProductID != nil && *input.RecipeStepProductID != *x.RecipeStepProductID {
+	if input.RecipeStepProductID != nil && x.RecipeStepProductID != nil && *input.RecipeStepProductID != *x.RecipeStepProductID {
 		x.RecipeStepProductID = input.RecipeStepProductID
 	}
 

@@ -2,7 +2,6 @@ package types
 
 import (
 	"fmt"
-	"time"
 )
 
 const (
@@ -42,48 +41,12 @@ type (
 		Pagination
 	}
 
-	Identifiable interface {
-		Identify() string
-	}
-
-	DatabaseRecord struct {
-		_ struct{}
-
-		CreatedAt     time.Time  `json:"createdAt"`
-		ArchivedAt    *time.Time `json:"archivedAt"`
-		LastUpdatedAt *time.Time `json:"lastUpdatedAt"`
-		ID            string     `json:"id"`
-	}
-
-	DatabaseRecords []Identifiable
-
-	APIMeta struct {
-		_ struct{}
-
-		UserID      string `json:"userID"`
-		HouseholdID string `json:"householdID"`
-	}
-
-	APIResponse[T any] struct {
-		_    struct{}
-		Data *T      `json:"data"`
-		Meta APIMeta `json:"meta"`
-	}
-
 	// APIError represents a response we might send to the User in the event of an error.
 	APIError struct {
 		_ struct{}
 
 		Message string `json:"message"`
 		Code    int    `json:"code"`
-	}
-
-	// NumberRange represents a range of numbers.
-	NumberRange struct {
-		_ struct{}
-
-		Max *float32 `json:"max"`
-		Min float32  `json:"min"`
 	}
 
 	NamedID struct {
@@ -94,24 +57,4 @@ type (
 
 func (e *APIError) Error() string {
 	return fmt.Sprintf("%d: %s", e.Code, e.Message)
-}
-
-// Identify returns the ID of the DatabaseRecord.
-func (r DatabaseRecord) Identify() string {
-	return r.ID
-}
-
-// Len implements the sort.Sort interface.
-func (m DatabaseRecords) Len() int {
-	return len(m)
-}
-
-// Less implements the sort.Sort interface.
-func (m DatabaseRecords) Less(i, j int) bool {
-	return m[i].Identify() < m[j].Identify()
-}
-
-// Swap implements the sort.Sort interface.
-func (m DatabaseRecords) Swap(i, j int) {
-	m[i], m[j] = m[j], m[i]
 }

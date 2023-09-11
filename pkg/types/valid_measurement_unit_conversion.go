@@ -106,7 +106,7 @@ func (x *ValidMeasurementUnitConversion) Update(input *ValidMeasurementUnitConve
 		x.To.ID = *input.To
 	}
 
-	if input.OnlyForIngredient != nil && *input.OnlyForIngredient != x.OnlyForIngredient.ID {
+	if input.OnlyForIngredient != nil && x.OnlyForIngredient != nil && *input.OnlyForIngredient != x.OnlyForIngredient.ID {
 		x.OnlyForIngredient.ID = *input.OnlyForIngredient
 	}
 

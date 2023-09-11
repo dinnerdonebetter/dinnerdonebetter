@@ -4,7 +4,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
-	fake "github.com/brianvoe/gofakeit/v5"
+	fake "github.com/brianvoe/gofakeit/v6"
 )
 
 // BuildFakeValidMeasurementUnit builds a faked valid ingredient.
@@ -16,8 +16,8 @@ func BuildFakeValidMeasurementUnit() *types.ValidMeasurementUnit {
 		Volumetric:  fake.Bool(),
 		IconPath:    buildUniqueString(),
 		Universal:   fake.Bool(),
-		Metric:      fake.Bool(),
-		Imperial:    fake.Bool(),
+		Metric:      true,
+		Imperial:    false,
 		PluralName:  buildUniqueString(),
 		Slug:        buildUniqueString(),
 		CreatedAt:   BuildFakeTime(),

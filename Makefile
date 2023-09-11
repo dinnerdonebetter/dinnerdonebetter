@@ -7,7 +7,7 @@ COVERAGE_OUT                  := $(ARTIFACTS_DIR)/coverage.out
 GO_FORMAT                     := gofmt -s -w
 THIS                          := github.com/dinnerdonebetter/backend
 TOTAL_PACKAGE_LIST            := `go list $(THIS)/...`
-TESTABLE_PACKAGE_LIST         := `go list $(THIS)/... | grep -Ev '(cmd|integration|mock|fakes|converters|utils)'`
+TESTABLE_PACKAGE_LIST         := `go list $(THIS)/... | grep -Ev '(cmd|integration|mock|fakes|converters|utils|generated)'`
 ENVIRONMENTS_DIR              := environments
 TEST_DOCKER_COMPOSE_FILES_DIR := $(ENVIRONMENTS_DIR)/testing/compose_files
 GENERATED_QUERIES_DIR         := internal/database/postgres/generated
@@ -21,13 +21,13 @@ WIRE_TARGETS                  := server/http/build
 ## non-PHONY folders/files
 
 clean:
-	rm -rf $(ARTIFACTS_DIR)
+	rm --recursive --force $(ARTIFACTS_DIR)
 
 $(ARTIFACTS_DIR):
 	@mkdir --parents $(ARTIFACTS_DIR)
 
 clean-$(ARTIFACTS_DIR):
-	@rm -rf $(ARTIFACTS_DIR)
+	@rm --recursive --force $(ARTIFACTS_DIR)
 
 .PHONY: setup
 setup: $(ARTIFACTS_DIR) revendor rewire configs
@@ -66,7 +66,7 @@ endif
 
 .PHONY: clean_vendor
 clean_vendor:
-	rm -rf vendor go.sum
+	rm --recursive --force vendor go.sum
 
 vendor:
 	if [ ! -f go.mod ]; then go mod init; fi
@@ -146,7 +146,7 @@ queries_lint:
 
 .PHONY: querier
 querier: queries_lint
-	rm -rf internal/database/postgres/generated/*.go
+	rm --recursive --force internal/database/postgres/generated/*.go
 	docker run --rm \
 		--volume $(PWD):/src \
 		--workdir /src \
@@ -166,7 +166,7 @@ lint: lint_docker queries_lint golang_lint
 
 .PHONY: clean_coverage
 clean_coverage:
-	@rm -f $(COVERAGE_OUT) profile.out;
+	@rm --force $(COVERAGE_OUT) profile.out;
 
 .PHONY: coverage
 coverage: clean_coverage $(ARTIFACTS_DIR)
@@ -188,10 +188,10 @@ configs:
 	go run $(THIS)/cmd/tools/gen_configs
 
 clean_ts:
-	rm -rf $(ARTIFACTS_DIR)/typescript
+	rm --recursive --force $(ARTIFACTS_DIR)/typescript
 
 typescript: clean_ts
-	mkdir -p $(ARTIFACTS_DIR)/typescript
+	mkdir --parents $(ARTIFACTS_DIR)/typescript
 	go run $(THIS)/cmd/tools/codegen/gen_typescript
 	(cd ../frontend && make format)
 
@@ -237,6 +237,7 @@ dev: $(ARTIFACTS_DIR)
 
 .PHONY: tree
 tree:
+	# there are no longargs for tree, but d means "directories only" and I means "ignore pattern"
 	tree -d -I vendor
 
 .PHONY: line_count

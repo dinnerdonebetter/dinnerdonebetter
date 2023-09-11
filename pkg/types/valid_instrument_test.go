@@ -6,9 +6,24 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
 
-	fake "github.com/brianvoe/gofakeit/v5"
+	fake "github.com/brianvoe/gofakeit/v6"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestValidInstrument_Update(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &ValidInstrument{}
+		input := &ValidInstrumentUpdateRequestInput{}
+
+		fake.Struct(&input)
+
+		x.Update(input)
+	})
+}
 
 func TestValidInstrumentCreationRequestInput_Validate(T *testing.T) {
 	T.Parallel()
@@ -17,9 +32,9 @@ func TestValidInstrumentCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidInstrumentCreationRequestInput{
-			Name:        fake.LoremIpsumSentence(exampleQuantity),
-			Description: fake.LoremIpsumSentence(exampleQuantity),
-			IconPath:    fake.LoremIpsumSentence(exampleQuantity),
+			Name:        t.Name(),
+			Description: t.Name(),
+			IconPath:    t.Name(),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -43,9 +58,9 @@ func TestValidInstrumentUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidInstrumentUpdateRequestInput{
-			Name:        pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Description: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			IconPath:    pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Name:        pointers.Pointer(t.Name()),
+			Description: pointers.Pointer(t.Name()),
+			IconPath:    pointers.Pointer(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

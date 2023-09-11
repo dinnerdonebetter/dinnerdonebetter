@@ -6,7 +6,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
-	fake "github.com/brianvoe/gofakeit/v5"
+	fake "github.com/brianvoe/gofakeit/v6"
 )
 
 // BuildFakeMealPlanOptionVote builds a faked meal plan option vote.

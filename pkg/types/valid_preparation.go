@@ -189,7 +189,7 @@ func (x *ValidPreparation) Update(input *ValidPreparationUpdateRequestInput) {
 		x.MinimumIngredientCount = *input.MinimumIngredientCount
 	}
 
-	if input.MaximumIngredientCount != nil && *input.MaximumIngredientCount != *x.MaximumIngredientCount {
+	if input.MaximumIngredientCount != nil && x.MaximumIngredientCount != nil && *input.MaximumIngredientCount != *x.MaximumIngredientCount {
 		x.MaximumIngredientCount = input.MaximumIngredientCount
 	}
 
@@ -197,7 +197,7 @@ func (x *ValidPreparation) Update(input *ValidPreparationUpdateRequestInput) {
 		x.MinimumInstrumentCount = *input.MinimumInstrumentCount
 	}
 
-	if input.MaximumInstrumentCount != nil && *input.MaximumInstrumentCount != *x.MaximumInstrumentCount {
+	if input.MaximumInstrumentCount != nil && x.MaximumInstrumentCount != nil && *input.MaximumInstrumentCount != *x.MaximumInstrumentCount {
 		x.MaximumInstrumentCount = input.MaximumInstrumentCount
 	}
 
@@ -233,7 +233,7 @@ func (x *ValidPreparation) Update(input *ValidPreparationUpdateRequestInput) {
 		x.MinimumVesselCount = *input.MinimumVesselCount
 	}
 
-	if input.MaximumVesselCount != nil && *input.MaximumVesselCount != *x.MaximumVesselCount {
+	if input.MaximumVesselCount != nil && x.MaximumVesselCount != nil && *input.MaximumVesselCount != *x.MaximumVesselCount {
 		x.MaximumVesselCount = input.MaximumVesselCount
 	}
 }

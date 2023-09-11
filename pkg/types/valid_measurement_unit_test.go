@@ -6,9 +6,30 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
 
-	fake "github.com/brianvoe/gofakeit/v5"
+	fake "github.com/brianvoe/gofakeit/v6"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestValidMeasurementUnit_Update(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &ValidMeasurementUnit{
+			Imperial: true,
+		}
+		input := &ValidMeasurementUnitUpdateRequestInput{}
+
+		fake.Struct(&input)
+		input.Volumetric = pointers.Pointer(true)
+		input.Universal = pointers.Pointer(true)
+		input.Imperial = pointers.Pointer(false)
+		input.Metric = pointers.Pointer(true)
+
+		x.Update(input)
+	})
+}
 
 func TestValidMeasurementUnitCreationRequestInput_Validate(T *testing.T) {
 	T.Parallel()
@@ -17,14 +38,14 @@ func TestValidMeasurementUnitCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidMeasurementUnitCreationRequestInput{
-			Name:        fake.LoremIpsumSentence(exampleQuantity),
-			Description: fake.LoremIpsumSentence(exampleQuantity),
+			Name:        t.Name(),
+			Description: t.Name(),
 			Volumetric:  fake.Bool(),
-			IconPath:    fake.LoremIpsumSentence(exampleQuantity),
+			IconPath:    t.Name(),
 			Universal:   fake.Bool(),
-			Metric:      fake.Bool(),
-			Imperial:    fake.Bool(),
-			PluralName:  fake.LoremIpsumSentence(exampleQuantity),
+			Metric:      true,
+			Imperial:    false,
+			PluralName:  t.Name(),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -48,14 +69,14 @@ func TestValidMeasurementUnitUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidMeasurementUnitUpdateRequestInput{
-			Name:        pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Description: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Name:        pointers.Pointer(t.Name()),
+			Description: pointers.Pointer(t.Name()),
 			Volumetric:  pointers.Pointer(fake.Bool()),
-			IconPath:    pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			IconPath:    pointers.Pointer(t.Name()),
 			Universal:   pointers.Pointer(fake.Bool()),
 			Metric:      pointers.Pointer(fake.Bool()),
 			Imperial:    pointers.Pointer(fake.Bool()),
-			PluralName:  pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			PluralName:  pointers.Pointer(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

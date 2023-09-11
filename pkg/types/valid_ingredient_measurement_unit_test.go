@@ -6,9 +6,27 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
 
-	fake "github.com/brianvoe/gofakeit/v5"
+	fake "github.com/brianvoe/gofakeit/v6"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestValidIngredientMeasurementUnit_Update(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &ValidIngredientMeasurementUnit{
+			MaximumAllowableQuantity: pointers.Pointer(float32(3.21)),
+		}
+		input := &ValidIngredientMeasurementUnitUpdateRequestInput{}
+
+		fake.Struct(&input)
+		input.MaximumAllowableQuantity = pointers.Pointer(float32(1.23))
+
+		x.Update(input)
+	})
+}
 
 func TestValidIngredientMeasurementUnitCreationRequestInput_Validate(T *testing.T) {
 	T.Parallel()
@@ -17,9 +35,9 @@ func TestValidIngredientMeasurementUnitCreationRequestInput_Validate(T *testing.
 		t.Parallel()
 
 		x := &ValidIngredientMeasurementUnitCreationRequestInput{
-			Notes:                    fake.LoremIpsumSentence(exampleQuantity),
-			ValidMeasurementUnitID:   fake.LoremIpsumSentence(exampleQuantity),
-			ValidIngredientID:        fake.LoremIpsumSentence(exampleQuantity),
+			Notes:                    t.Name(),
+			ValidMeasurementUnitID:   t.Name(),
+			ValidIngredientID:        t.Name(),
 			MinimumAllowableQuantity: fake.Float32(),
 			MaximumAllowableQuantity: pointers.Pointer(fake.Float32()),
 		}
@@ -45,9 +63,9 @@ func TestValidIngredientMeasurementUnitUpdateRequestInput_Validate(T *testing.T)
 		t.Parallel()
 
 		x := &ValidIngredientMeasurementUnitUpdateRequestInput{
-			Notes:                    pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			ValidMeasurementUnitID:   pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			ValidIngredientID:        pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Notes:                    pointers.Pointer(t.Name()),
+			ValidMeasurementUnitID:   pointers.Pointer(t.Name()),
+			ValidIngredientID:        pointers.Pointer(t.Name()),
 			MinimumAllowableQuantity: pointers.Pointer(fake.Float32()),
 			MaximumAllowableQuantity: pointers.Pointer(fake.Float32()),
 		}

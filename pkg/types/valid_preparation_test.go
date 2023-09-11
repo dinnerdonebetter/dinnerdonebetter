@@ -6,7 +6,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
 
-	fake "github.com/brianvoe/gofakeit/v5"
+	fake "github.com/brianvoe/gofakeit/v6"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,10 +17,10 @@ func TestValidPreparationCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidPreparationCreationRequestInput{
-			Name:                  fake.LoremIpsumSentence(exampleQuantity),
-			Description:           fake.LoremIpsumSentence(exampleQuantity),
-			IconPath:              fake.LoremIpsumSentence(exampleQuantity),
-			PastTense:             fake.LoremIpsumSentence(exampleQuantity),
+			Name:                  t.Name(),
+			Description:           t.Name(),
+			IconPath:              t.Name(),
+			PastTense:             t.Name(),
 			YieldsNothing:         fake.Bool(),
 			RestrictToIngredients: fake.Bool(),
 		}
@@ -46,10 +46,10 @@ func TestValidPreparationUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidPreparationUpdateRequestInput{
-			Name:                  pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Description:           pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			IconPath:              pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			PastTense:             pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Name:                  pointers.Pointer(t.Name()),
+			Description:           pointers.Pointer(t.Name()),
+			IconPath:              pointers.Pointer(t.Name()),
+			PastTense:             pointers.Pointer(t.Name()),
 			YieldsNothing:         pointers.Pointer(fake.Bool()),
 			RestrictToIngredients: pointers.Pointer(fake.Bool()),
 		}
@@ -74,72 +74,26 @@ func TestValidPreparation_Update(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		actual := &ValidPreparation{
-			MaximumInstrumentCount:      pointers.Pointer(fake.Int32()),
-			MaximumIngredientCount:      pointers.Pointer(fake.Int32()),
-			MaximumVesselCount:          pointers.Pointer(fake.Int32()),
-			IconPath:                    fake.LoremIpsumSentence(exampleQuantity),
-			PastTense:                   fake.LoremIpsumSentence(exampleQuantity),
-			Name:                        fake.LoremIpsumSentence(exampleQuantity),
-			Description:                 fake.LoremIpsumSentence(exampleQuantity),
-			Slug:                        fake.LoremIpsumSentence(exampleQuantity),
-			MinimumIngredientCount:      fake.Int32(),
-			MinimumInstrumentCount:      fake.Int32(),
-			MinimumVesselCount:          fake.Int32(),
-			RestrictToIngredients:       fake.Bool(),
-			TemperatureRequired:         fake.Bool(),
-			TimeEstimateRequired:        fake.Bool(),
-			ConditionExpressionRequired: fake.Bool(),
-			ConsumesVessel:              fake.Bool(),
-			OnlyForVessels:              fake.Bool(),
-			YieldsNothing:               fake.Bool(),
+		x := &ValidPreparation{
+			MaximumInstrumentCount: pointers.Pointer(int32(0)),
+			MaximumIngredientCount: pointers.Pointer(int32(0)),
+			MaximumVesselCount:     pointers.Pointer(int32(0)),
 		}
+		input := &ValidPreparationUpdateRequestInput{}
 
-		expected := &ValidPreparation{
-			MaximumInstrumentCount:      pointers.Pointer(fake.Int32()),
-			MaximumIngredientCount:      pointers.Pointer(fake.Int32()),
-			MaximumVesselCount:          pointers.Pointer(fake.Int32()),
-			IconPath:                    fake.LoremIpsumSentence(exampleQuantity),
-			PastTense:                   fake.LoremIpsumSentence(exampleQuantity),
-			Name:                        fake.LoremIpsumSentence(exampleQuantity),
-			Description:                 fake.LoremIpsumSentence(exampleQuantity),
-			Slug:                        fake.LoremIpsumSentence(exampleQuantity),
-			MinimumIngredientCount:      fake.Int32(),
-			MinimumInstrumentCount:      fake.Int32(),
-			MinimumVesselCount:          fake.Int32(),
-			RestrictToIngredients:       !actual.RestrictToIngredients,
-			TemperatureRequired:         !actual.TemperatureRequired,
-			TimeEstimateRequired:        !actual.TimeEstimateRequired,
-			ConditionExpressionRequired: !actual.ConditionExpressionRequired,
-			ConsumesVessel:              !actual.ConsumesVessel,
-			OnlyForVessels:              !actual.OnlyForVessels,
-			YieldsNothing:               !actual.YieldsNothing,
-		}
+		fake.Struct(&input)
+		input.YieldsNothing = pointers.Pointer(true)
+		input.RestrictToIngredients = pointers.Pointer(true)
+		input.MaximumIngredientCount = pointers.Pointer(int32(1))
+		input.MaximumInstrumentCount = pointers.Pointer(int32(1))
+		input.MaximumVesselCount = pointers.Pointer(int32(1))
+		input.TemperatureRequired = pointers.Pointer(true)
+		input.TimeEstimateRequired = pointers.Pointer(true)
+		input.OnlyForVessels = pointers.Pointer(true)
+		input.ConsumesVessel = pointers.Pointer(true)
+		input.ConditionExpressionRequired = pointers.Pointer(true)
 
-		exampleUpdatedValue := &ValidPreparationUpdateRequestInput{
-			MaximumInstrumentCount:      expected.MaximumInstrumentCount,
-			MaximumIngredientCount:      expected.MaximumIngredientCount,
-			MaximumVesselCount:          expected.MaximumVesselCount,
-			IconPath:                    &expected.IconPath,
-			PastTense:                   &expected.PastTense,
-			Name:                        &expected.Name,
-			Description:                 &expected.Description,
-			Slug:                        &expected.Slug,
-			MinimumIngredientCount:      &expected.MinimumIngredientCount,
-			MinimumInstrumentCount:      &expected.MinimumInstrumentCount,
-			MinimumVesselCount:          &expected.MinimumVesselCount,
-			RestrictToIngredients:       &expected.RestrictToIngredients,
-			TemperatureRequired:         &expected.TemperatureRequired,
-			TimeEstimateRequired:        &expected.TimeEstimateRequired,
-			ConditionExpressionRequired: &expected.ConditionExpressionRequired,
-			ConsumesVessel:              &expected.ConsumesVessel,
-			OnlyForVessels:              &expected.OnlyForVessels,
-			YieldsNothing:               &expected.YieldsNothing,
-		}
-
-		actual.Update(exampleUpdatedValue)
-
-		assert.Equal(t, expected, actual)
+		x.Update(input)
 	})
 }
 

@@ -3,7 +3,7 @@ package fakes
 import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
-	fake "github.com/brianvoe/gofakeit/v5"
+	fake "github.com/brianvoe/gofakeit/v6"
 )
 
 // BuildFakeUserAccountStatusUpdateInput builds a faked UserAccountStatusUpdateInput.

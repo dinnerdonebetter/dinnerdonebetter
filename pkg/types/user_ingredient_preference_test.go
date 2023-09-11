@@ -5,8 +5,24 @@ import (
 	"math"
 	"testing"
 
+	fake "github.com/brianvoe/gofakeit/v6"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestUserIngredientPreference_Update(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &UserIngredientPreference{}
+		input := &UserIngredientPreferenceUpdateRequestInput{}
+
+		fake.Struct(&input)
+
+		x.Update(input)
+	})
+}
 
 func TestUserIngredientPreferenceCreationRequestInput_ValidateWithContext(T *testing.T) {
 	T.Parallel()

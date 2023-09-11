@@ -6,9 +6,25 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
 
-	fake "github.com/brianvoe/gofakeit/v5"
+	fake "github.com/brianvoe/gofakeit/v6"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestRecipeStepCompletionCondition_Update(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeStepCompletionCondition{}
+		input := &RecipeStepCompletionConditionUpdateRequestInput{}
+
+		fake.Struct(&input)
+		input.Optional = pointers.Pointer(true)
+
+		x.Update(input)
+	})
+}
 
 func TestRecipeStepCompletionConditionCreationRequestInput_Validate(T *testing.T) {
 	T.Parallel()

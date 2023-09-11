@@ -6,9 +6,31 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
 
-	fake "github.com/brianvoe/gofakeit/v5"
+	fake "github.com/brianvoe/gofakeit/v6"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestRecipeStepProduct_Update(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeStepProduct{
+			MeasurementUnit:        &ValidMeasurementUnit{},
+			ContainedInVesselIndex: pointers.Pointer(uint16(3)),
+		}
+		input := &RecipeStepProductUpdateRequestInput{}
+
+		fake.Struct(&input)
+		input.Compostable = pointers.Pointer(true)
+		input.ContainedInVesselIndex = pointers.Pointer(uint16(1))
+		input.IsLiquid = pointers.Pointer(true)
+		input.IsWaste = pointers.Pointer(true)
+
+		x.Update(input)
+	})
+}
 
 func TestRecipeStepProductCreationRequestInput_Validate(T *testing.T) {
 	T.Parallel()
@@ -17,11 +39,11 @@ func TestRecipeStepProductCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepProductCreationRequestInput{
-			Name:                               fake.LoremIpsumSentence(exampleQuantity),
+			Name:                               t.Name(),
 			Type:                               RecipeStepProductIngredientType,
-			MeasurementUnitID:                  pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			MeasurementUnitID:                  pointers.Pointer(t.Name()),
 			MinimumQuantity:                    pointers.Pointer(fake.Float32()),
-			QuantityNotes:                      fake.LoremIpsumSentence(exampleQuantity),
+			QuantityNotes:                      t.Name(),
 			Compostable:                        fake.Bool(),
 			MaximumStorageDurationInSeconds:    pointers.Pointer(fake.Uint32()),
 			MinimumStorageTemperatureInCelsius: pointers.Pointer(fake.Float32()),
@@ -49,12 +71,12 @@ func TestRecipeStepProductUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepProductUpdateRequestInput{
-			Name:                               pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Name:                               pointers.Pointer(t.Name()),
 			Type:                               pointers.Pointer(RecipeStepProductIngredientType),
-			MeasurementUnitID:                  pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			MeasurementUnitID:                  pointers.Pointer(t.Name()),
 			MinimumQuantity:                    pointers.Pointer(fake.Float32()),
 			MaximumQuantity:                    pointers.Pointer(fake.Float32()),
-			QuantityNotes:                      pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			QuantityNotes:                      pointers.Pointer(t.Name()),
 			Compostable:                        pointers.Pointer(fake.Bool()),
 			MaximumStorageDurationInSeconds:    pointers.Pointer(fake.Uint32()),
 			MinimumStorageTemperatureInCelsius: pointers.Pointer(fake.Float32()),

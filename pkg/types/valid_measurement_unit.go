@@ -3,10 +3,12 @@ package types
 import (
 	"context"
 	"encoding/gob"
+	"errors"
 	"net/http"
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
+	"github.com/hashicorp/go-multierror"
 )
 
 const (
@@ -189,23 +191,43 @@ var _ validation.ValidatableWithContext = (*ValidMeasurementUnitCreationRequestI
 
 // ValidateWithContext validates a ValidMeasurementUnitCreationRequestInput.
 func (x *ValidMeasurementUnitCreationRequestInput) ValidateWithContext(ctx context.Context) error {
-	return validation.ValidateStructWithContext(
+	var result *multierror.Error
+
+	if x.Metric && x.Imperial {
+		result = multierror.Append(result, errors.New("cannot be both metric and imperial"))
+	}
+
+	if err := validation.ValidateStructWithContext(
 		ctx,
 		x,
 		validation.Field(&x.Name, validation.Required),
-	)
+	); err != nil {
+		result = multierror.Append(result, err)
+	}
+
+	return result.ErrorOrNil()
 }
 
 var _ validation.ValidatableWithContext = (*ValidMeasurementUnitDatabaseCreationInput)(nil)
 
 // ValidateWithContext validates a ValidMeasurementUnitDatabaseCreationInput.
 func (x *ValidMeasurementUnitDatabaseCreationInput) ValidateWithContext(ctx context.Context) error {
-	return validation.ValidateStructWithContext(
+	var result *multierror.Error
+
+	if x.Metric && x.Imperial {
+		result = multierror.Append(result, errors.New("cannot be both metric and imperial"))
+	}
+
+	if err := validation.ValidateStructWithContext(
 		ctx,
 		x,
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.Name, validation.Required),
-	)
+	); err != nil {
+		result = multierror.Append(result, err)
+	}
+
+	return result.ErrorOrNil()
 }
 
 var _ validation.ValidatableWithContext = (*ValidMeasurementUnitUpdateRequestInput)(nil)

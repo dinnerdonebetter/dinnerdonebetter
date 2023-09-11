@@ -6,9 +6,24 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
 
-	fake "github.com/brianvoe/gofakeit/v5"
+	fake "github.com/brianvoe/gofakeit/v6"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestValidIngredientPreparation_Update(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &ValidIngredientPreparation{}
+		input := &ValidIngredientPreparationUpdateRequestInput{}
+
+		fake.Struct(&input)
+
+		x.Update(input)
+	})
+}
 
 func TestValidIngredientPreparationCreationRequestInput_Validate(T *testing.T) {
 	T.Parallel()
@@ -17,9 +32,9 @@ func TestValidIngredientPreparationCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidIngredientPreparationCreationRequestInput{
-			Notes:              fake.LoremIpsumSentence(exampleQuantity),
-			ValidPreparationID: fake.LoremIpsumSentence(exampleQuantity),
-			ValidIngredientID:  fake.LoremIpsumSentence(exampleQuantity),
+			Notes:              t.Name(),
+			ValidPreparationID: t.Name(),
+			ValidIngredientID:  t.Name(),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -43,9 +58,9 @@ func TestValidIngredientPreparationUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidIngredientPreparationUpdateRequestInput{
-			Notes:              pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			ValidPreparationID: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			ValidIngredientID:  pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Notes:              pointers.Pointer(t.Name()),
+			ValidPreparationID: pointers.Pointer(t.Name()),
+			ValidIngredientID:  pointers.Pointer(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

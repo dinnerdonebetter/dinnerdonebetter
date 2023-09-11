@@ -6,7 +6,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
 
-	fake "github.com/brianvoe/gofakeit/v5"
+	fake "github.com/brianvoe/gofakeit/v6"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,11 +17,11 @@ func TestMealCreationRequestInput_ValidateWithContext(T *testing.T) {
 		t.Parallel()
 
 		x := &MealCreationRequestInput{
-			Name:        fake.LoremIpsumSentence(exampleQuantity),
-			Description: fake.LoremIpsumSentence(exampleQuantity),
+			Name:        t.Name(),
+			Description: t.Name(),
 			Components: []*MealComponentCreationRequestInput{
 				{
-					RecipeID:      fake.LoremIpsumSentence(exampleQuantity),
+					RecipeID:      t.Name(),
 					ComponentType: MealComponentTypesMain,
 				},
 			},
@@ -42,8 +42,8 @@ func TestMealCreationRequestInput_ValidateWithContext(T *testing.T) {
 		t.Parallel()
 
 		x := &MealCreationRequestInput{
-			Name:        fake.LoremIpsumSentence(exampleQuantity),
-			Description: fake.LoremIpsumSentence(exampleQuantity),
+			Name:        t.Name(),
+			Description: t.Name(),
 			Components: []*MealComponentCreationRequestInput{
 				{},
 			},
@@ -60,12 +60,12 @@ func TestMealUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealUpdateRequestInput{
-			Name:          pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Description:   pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			CreatedByUser: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Name:          pointers.Pointer(t.Name()),
+			Description:   pointers.Pointer(t.Name()),
+			CreatedByUser: pointers.Pointer(t.Name()),
 			Components: []*MealComponentUpdateRequestInput{
 				{
-					RecipeID:      pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+					RecipeID:      pointers.Pointer(t.Name()),
 					RecipeScale:   pointers.Pointer(float32(exampleQuantity)),
 					ComponentType: pointers.Pointer(MealComponentTypesAmuseBouche),
 				},
@@ -93,7 +93,7 @@ func TestMealComponentCreationRequestInput_ValidateWithContext(T *testing.T) {
 		t.Parallel()
 
 		x := &MealComponentCreationRequestInput{
-			RecipeID:      fake.LoremIpsumSentence(exampleQuantity),
+			RecipeID:      t.Name(),
 			RecipeScale:   exampleQuantity,
 			ComponentType: MealComponentTypesAmuseBouche,
 		}
@@ -152,7 +152,12 @@ func TestMealComponent_Update(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: testme
+		x := &MealComponent{}
+		input := &MealComponentUpdateRequestInput{}
+
+		fake.Struct(&input)
+
+		x.Update(input)
 	})
 }
 
@@ -162,6 +167,12 @@ func TestMeal_Update(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO: testme
+		x := &Meal{}
+		input := &MealUpdateRequestInput{}
+
+		fake.Struct(&input)
+		input.EligibleForMealPlans = pointers.Pointer(true)
+
+		x.Update(input)
 	})
 }
