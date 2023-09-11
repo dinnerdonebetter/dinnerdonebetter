@@ -10,6 +10,28 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestRecipeStepProduct_Update(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeStepProduct{
+			MeasurementUnit:        &ValidMeasurementUnit{},
+			ContainedInVesselIndex: pointers.Pointer(uint16(3)),
+		}
+		input := &RecipeStepProductUpdateRequestInput{}
+
+		fake.Struct(&input)
+		input.Compostable = pointers.Pointer(true)
+		input.ContainedInVesselIndex = pointers.Pointer(uint16(1))
+		input.IsLiquid = pointers.Pointer(true)
+		input.IsWaste = pointers.Pointer(true)
+
+		x.Update(input)
+	})
+}
+
 func TestRecipeStepProductCreationRequestInput_Validate(T *testing.T) {
 	T.Parallel()
 

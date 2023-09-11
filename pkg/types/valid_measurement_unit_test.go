@@ -10,6 +10,27 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestValidMeasurementUnit_Update(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &ValidMeasurementUnit{
+			Imperial: true,
+		}
+		input := &ValidMeasurementUnitUpdateRequestInput{}
+
+		fake.Struct(&input)
+		input.Volumetric = pointers.Pointer(true)
+		input.Universal = pointers.Pointer(true)
+		input.Imperial = pointers.Pointer(false)
+		input.Metric = pointers.Pointer(true)
+
+		x.Update(input)
+	})
+}
+
 func TestValidMeasurementUnitCreationRequestInput_Validate(T *testing.T) {
 	T.Parallel()
 
@@ -22,8 +43,8 @@ func TestValidMeasurementUnitCreationRequestInput_Validate(T *testing.T) {
 			Volumetric:  fake.Bool(),
 			IconPath:    t.Name(),
 			Universal:   fake.Bool(),
-			Metric:      fake.Bool(),
-			Imperial:    fake.Bool(),
+			Metric:      true,
+			Imperial:    false,
 			PluralName:  t.Name(),
 		}
 

@@ -6,8 +6,24 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
 
+	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestValidIngredientPreparation_Update(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &ValidIngredientPreparation{}
+		input := &ValidIngredientPreparationUpdateRequestInput{}
+
+		fake.Struct(&input)
+
+		x.Update(input)
+	})
+}
 
 func TestValidIngredientPreparationCreationRequestInput_Validate(T *testing.T) {
 	T.Parallel()

@@ -10,6 +10,24 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestValidIngredientMeasurementUnit_Update(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &ValidIngredientMeasurementUnit{
+			MaximumAllowableQuantity: pointers.Pointer(float32(3.21)),
+		}
+		input := &ValidIngredientMeasurementUnitUpdateRequestInput{}
+
+		fake.Struct(&input)
+		input.MaximumAllowableQuantity = pointers.Pointer(float32(1.23))
+
+		x.Update(input)
+	})
+}
+
 func TestValidIngredientMeasurementUnitCreationRequestInput_Validate(T *testing.T) {
 	T.Parallel()
 

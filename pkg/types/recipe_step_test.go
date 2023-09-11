@@ -46,6 +46,27 @@ func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput 
 	}
 }
 
+func TestRecipeStep_Update(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeStep{
+			MinimumTemperatureInCelsius: pointers.Pointer(float32(123.45)),
+		}
+		input := &RecipeStepUpdateRequestInput{}
+
+		fake.Struct(&input)
+		input.Optional = pointers.Pointer(true)
+		input.StartTimerAutomatically = pointers.Pointer(true)
+		input.MinimumTemperatureInCelsius = pointers.Pointer(float32(543.21))
+		input.MaximumTemperatureInCelsius = pointers.Pointer(float32(123.45))
+
+		x.Update(input)
+	})
+}
+
 func TestRecipeStepCreationRequestInput_Validate(T *testing.T) {
 	T.Parallel()
 

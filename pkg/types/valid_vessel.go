@@ -211,8 +211,8 @@ func (x *ValidVessel) Update(input *ValidVesselUpdateRequestInput) {
 		x.Capacity = *input.Capacity
 	}
 
-	if input.CapacityUnitID != nil && *input.CapacityUnitID != x.CapacityUnit.ID {
-		x.CapacityUnit.ID = *input.CapacityUnitID
+	if input.CapacityUnitID != nil && x.CapacityUnit != nil && *input.CapacityUnitID != x.CapacityUnit.ID {
+		x.CapacityUnit = &ValidMeasurementUnit{ID: *input.CapacityUnitID}
 	}
 
 	if input.WidthInMillimeters != nil && *input.WidthInMillimeters != x.WidthInMillimeters {

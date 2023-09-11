@@ -154,7 +154,7 @@ func (x *RecipeStepProduct) Update(input *RecipeStepProductUpdateRequestInput) {
 		x.Type = *input.Type
 	}
 
-	if input.MeasurementUnitID != nil && *input.MeasurementUnitID != x.MeasurementUnit.ID {
+	if input.MeasurementUnitID != nil && x.MeasurementUnit != nil && *input.MeasurementUnitID != x.MeasurementUnit.ID {
 		x.MeasurementUnit = &ValidMeasurementUnit{ID: *input.MeasurementUnitID}
 	}
 

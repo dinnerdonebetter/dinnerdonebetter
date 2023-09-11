@@ -10,6 +10,21 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestRecipeStepIngredient_Update(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeStepIngredient{}
+		input := &RecipeStepIngredientUpdateRequestInput{}
+
+		fake.Struct(&input)
+
+		x.Update(input)
+	})
+}
+
 func TestRecipeStepIngredientCreationRequestInput_Validate(T *testing.T) {
 	T.Parallel()
 

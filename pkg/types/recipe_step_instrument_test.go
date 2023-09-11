@@ -11,6 +11,27 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestRecipeStepInstrument_Update(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeStepInstrument{
+			RecipeStepProductID: pointers.Pointer(t.Name()),
+			MaximumQuantity:     pointers.Pointer(uint32(321)),
+		}
+		input := &RecipeStepInstrumentUpdateRequestInput{}
+
+		fake.Struct(&input)
+		input.Optional = pointers.Pointer(true)
+		input.RecipeStepProductID = pointers.Pointer("whatever")
+		input.MaximumQuantity = pointers.Pointer(uint32(123))
+
+		x.Update(input)
+	})
+}
+
 func TestRecipeStepInstrumentCreationRequestInput_Validate(T *testing.T) {
 	T.Parallel()
 

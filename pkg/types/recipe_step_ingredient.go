@@ -136,7 +136,7 @@ type (
 // Update merges an RecipeStepIngredientUpdateRequestInput with a recipe step ingredient.
 func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateRequestInput) {
 	if input.IngredientID != nil && (x.Ingredient == nil || (*input.IngredientID != "" && *input.IngredientID != x.Ingredient.ID)) {
-		x.Ingredient.ID = *input.IngredientID
+		x.Ingredient = &ValidIngredient{ID: *input.IngredientID}
 	}
 
 	if input.RecipeStepProductID != nil && (x.RecipeStepProductID == nil || (*input.RecipeStepProductID != "" && *input.RecipeStepProductID != *x.RecipeStepProductID)) {

@@ -143,14 +143,6 @@ func (x *RecipeStepVessel) Update(input *RecipeStepVesselUpdateRequestInput) {
 		x.UnavailableAfterStep = *input.UnavailableAfterStep
 	}
 
-	if input.MinimumQuantity != nil && *input.MinimumQuantity != x.MinimumQuantity {
-		x.MinimumQuantity = *input.MinimumQuantity
-	}
-
-	if input.MaximumQuantity != nil && x.MaximumQuantity != nil && *input.MaximumQuantity != *x.MaximumQuantity {
-		x.MaximumQuantity = input.MaximumQuantity
-	}
-
 	if input.Notes != nil && *input.Notes != x.Notes {
 		x.Notes = *input.Notes
 	}
