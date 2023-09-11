@@ -12,14 +12,13 @@ WHERE archived_at IS NULL
 
 INSERT INTO webhooks (
 	id,
-	"name",
+	name,
 	content_type,
 	url,
-	"method",
+	method,
 	belongs_to_household
 )
-VALUES
-	($1, $2, $3, $4, $5, $6);
+VALUES ($1, $2, $3, $4, $5, $6);
 
 -- name: CheckWebhookExistence :one
 

@@ -187,6 +187,10 @@ test: $(ARTIFACTS_DIR) vendor build
 configs:
 	go run $(THIS)/cmd/tools/gen_configs
 
+.PHONY: queries
+queries:
+	go run $(THIS)/cmd/tools/gen_queries
+
 clean_ts:
 	rm --recursive --force $(ARTIFACTS_DIR)/typescript
 

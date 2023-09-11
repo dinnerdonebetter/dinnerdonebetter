@@ -1,0 +1,31 @@
+on: # [gollum]
+  pull_request:
+    paths:
+      - cmd/tools/gen_queries/**
+      - internal/database/**
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+name: generate
+jobs:
+ configs:
+   strategy:
+     matrix:
+       go-version: [ '1.21.x' ]
+   runs-on: ubuntu-latest
+   steps:
+     - name: Install Go
+       uses: actions/setup-go@v4
+       with:
+         go-version: ${{ matrix.go-version }}
+
+     - name: Checkout code
+       uses: actions/checkout@v3
+
+     - name: Ensure configs can be generated
+       run: make queries
+
+     - name: Check for changes
+       run: git diff --exit-code
