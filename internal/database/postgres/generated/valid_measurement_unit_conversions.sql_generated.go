@@ -13,7 +13,7 @@ import (
 
 const archiveValidMeasurementUnitConversion = `-- name: ArchiveValidMeasurementUnitConversion :execrows
 
-UPDATE valid_measurement_conversions SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
+UPDATE valid_measurement_unit_conversions SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
 func (q *Queries) ArchiveValidMeasurementUnitConversion(ctx context.Context, db DBTX, id string) (int64, error) {
@@ -26,7 +26,7 @@ func (q *Queries) ArchiveValidMeasurementUnitConversion(ctx context.Context, db 
 
 const checkValidMeasurementUnitConversionExistence = `-- name: CheckValidMeasurementUnitConversionExistence :one
 
-SELECT EXISTS ( SELECT valid_measurement_conversions.id FROM valid_measurement_conversions WHERE valid_measurement_conversions.archived_at IS NULL AND valid_measurement_conversions.id = $1 )
+SELECT EXISTS ( SELECT valid_measurement_unit_conversions.id FROM valid_measurement_unit_conversions WHERE valid_measurement_unit_conversions.archived_at IS NULL AND valid_measurement_unit_conversions.id = $1 )
 `
 
 func (q *Queries) CheckValidMeasurementUnitConversionExistence(ctx context.Context, db DBTX, id string) (bool, error) {
@@ -38,7 +38,7 @@ func (q *Queries) CheckValidMeasurementUnitConversionExistence(ctx context.Conte
 
 const createValidMeasurementUnitConversion = `-- name: CreateValidMeasurementUnitConversion :exec
 
-INSERT INTO valid_measurement_conversions (id,from_unit,to_unit,only_for_ingredient,modifier,notes)
+INSERT INTO valid_measurement_unit_conversions (id,from_unit,to_unit,only_for_ingredient,modifier,notes)
 VALUES ($1,$2,$3,$4,$5::float,$6)
 `
 
@@ -66,7 +66,7 @@ func (q *Queries) CreateValidMeasurementUnitConversion(ctx context.Context, db D
 const getAllValidMeasurementUnitConversionsFromMeasurementUnit = `-- name: GetAllValidMeasurementUnitConversionsFromMeasurementUnit :many
 
 SELECT
-    valid_measurement_conversions.id,
+    valid_measurement_unit_conversions.id,
     valid_measurement_units_from.id as from_unit_id,
     valid_measurement_units_from.name as from_unit_name,
     valid_measurement_units_from.description as from_unit_description,
@@ -131,19 +131,19 @@ SELECT
     valid_ingredients.created_at as valid_ingredient_created_at,
     valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
     valid_ingredients.archived_at as valid_ingredient_archived_at,
-    valid_measurement_conversions.modifier::float,
-    valid_measurement_conversions.notes,
-    valid_measurement_conversions.created_at,
-    valid_measurement_conversions.last_updated_at,
-    valid_measurement_conversions.archived_at
-FROM valid_measurement_conversions
-     JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_conversions.from_unit = valid_measurement_units_from.id
-     JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_conversions.to_unit = valid_measurement_units_to.id
-     LEFT JOIN valid_ingredients ON valid_measurement_conversions.only_for_ingredient = valid_ingredients.id
-WHERE valid_measurement_conversions.archived_at IS NULL
+    valid_measurement_unit_conversions.modifier::float,
+    valid_measurement_unit_conversions.notes,
+    valid_measurement_unit_conversions.created_at,
+    valid_measurement_unit_conversions.last_updated_at,
+    valid_measurement_unit_conversions.archived_at
+FROM valid_measurement_unit_conversions
+     JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_unit_conversions.from_unit = valid_measurement_units_from.id
+     JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_unit_conversions.to_unit = valid_measurement_units_to.id
+     LEFT JOIN valid_ingredients ON valid_measurement_unit_conversions.only_for_ingredient = valid_ingredients.id
+WHERE valid_measurement_unit_conversions.archived_at IS NULL
   AND valid_measurement_units_from.archived_at IS NULL
   AND valid_measurement_units_to.archived_at IS NULL
-  AND valid_measurement_conversions.from_unit = $1
+  AND valid_measurement_unit_conversions.from_unit = $1
 `
 
 type GetAllValidMeasurementUnitConversionsFromMeasurementUnitRow struct {
@@ -182,7 +182,7 @@ type GetAllValidMeasurementUnitConversionsFromMeasurementUnitRow struct {
 	ValidIngredientStorageInstructions                     sql.NullString
 	ValidIngredientID                                      sql.NullString
 	ValidIngredientPluralName                              sql.NullString
-	ValidMeasurementConversionsModifier                    float64
+	ValidMeasurementUnitConversionsModifier                float64
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius float64
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius float64
 	ValidIngredientRestrictToPreparations                  sql.NullBool
@@ -294,7 +294,7 @@ func (q *Queries) GetAllValidMeasurementUnitConversionsFromMeasurementUnit(ctx c
 			&i.ValidIngredientCreatedAt,
 			&i.ValidIngredientLastUpdatedAt,
 			&i.ValidIngredientArchivedAt,
-			&i.ValidMeasurementConversionsModifier,
+			&i.ValidMeasurementUnitConversionsModifier,
 			&i.Notes,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
@@ -316,7 +316,7 @@ func (q *Queries) GetAllValidMeasurementUnitConversionsFromMeasurementUnit(ctx c
 const getAllValidMeasurementUnitConversionsToMeasurementUnit = `-- name: GetAllValidMeasurementUnitConversionsToMeasurementUnit :many
 
 SELECT
-	valid_measurement_conversions.id,
+	valid_measurement_unit_conversions.id,
 	valid_measurement_units_from.id as from_unit_id,
 	valid_measurement_units_from.name as from_unit_name,
 	valid_measurement_units_from.description as from_unit_description,
@@ -381,16 +381,16 @@ SELECT
 	valid_ingredients.created_at as valid_ingredient_created_at,
 	valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
 	valid_ingredients.archived_at as valid_ingredient_archived_at,
-	valid_measurement_conversions.modifier::float,
-	valid_measurement_conversions.notes,
-	valid_measurement_conversions.created_at,
-	valid_measurement_conversions.last_updated_at,
-	valid_measurement_conversions.archived_at
-FROM valid_measurement_conversions
-     JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_conversions.from_unit = valid_measurement_units_from.id
-     JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_conversions.to_unit = valid_measurement_units_to.id
-     LEFT JOIN valid_ingredients ON valid_measurement_conversions.only_for_ingredient = valid_ingredients.id
-WHERE valid_measurement_conversions.archived_at IS NULL
+	valid_measurement_unit_conversions.modifier::float,
+	valid_measurement_unit_conversions.notes,
+	valid_measurement_unit_conversions.created_at,
+	valid_measurement_unit_conversions.last_updated_at,
+	valid_measurement_unit_conversions.archived_at
+FROM valid_measurement_unit_conversions
+     JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_unit_conversions.from_unit = valid_measurement_units_from.id
+     JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_unit_conversions.to_unit = valid_measurement_units_to.id
+     LEFT JOIN valid_ingredients ON valid_measurement_unit_conversions.only_for_ingredient = valid_ingredients.id
+WHERE valid_measurement_unit_conversions.archived_at IS NULL
   AND valid_measurement_units_from.archived_at IS NULL
   AND valid_measurement_units_to.archived_at IS NULL
   AND valid_measurement_units_to.id = $1
@@ -432,7 +432,7 @@ type GetAllValidMeasurementUnitConversionsToMeasurementUnitRow struct {
 	ValidIngredientStorageInstructions                     sql.NullString
 	ValidIngredientID                                      sql.NullString
 	ValidIngredientPluralName                              sql.NullString
-	ValidMeasurementConversionsModifier                    float64
+	ValidMeasurementUnitConversionsModifier                float64
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius float64
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius float64
 	ValidIngredientRestrictToPreparations                  sql.NullBool
@@ -544,7 +544,7 @@ func (q *Queries) GetAllValidMeasurementUnitConversionsToMeasurementUnit(ctx con
 			&i.ValidIngredientCreatedAt,
 			&i.ValidIngredientLastUpdatedAt,
 			&i.ValidIngredientArchivedAt,
-			&i.ValidMeasurementConversionsModifier,
+			&i.ValidMeasurementUnitConversionsModifier,
 			&i.Notes,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
@@ -566,7 +566,7 @@ func (q *Queries) GetAllValidMeasurementUnitConversionsToMeasurementUnit(ctx con
 const getValidMeasurementUnitConversion = `-- name: GetValidMeasurementUnitConversion :one
 
 SELECT
-    valid_measurement_conversions.id,
+    valid_measurement_unit_conversions.id,
     valid_measurement_units_from.id as from_unit_id,
     valid_measurement_units_from.name as from_unit_name,
     valid_measurement_units_from.description as from_unit_description,
@@ -631,17 +631,17 @@ SELECT
     valid_ingredients.created_at as valid_ingredient_created_at,
     valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
     valid_ingredients.archived_at as valid_ingredient_archived_at,
-    valid_measurement_conversions.modifier::float,
-    valid_measurement_conversions.notes,
-    valid_measurement_conversions.created_at,
-    valid_measurement_conversions.last_updated_at,
-    valid_measurement_conversions.archived_at
-FROM valid_measurement_conversions
-    JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_conversions.from_unit = valid_measurement_units_from.id
-    JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_conversions.to_unit = valid_measurement_units_to.id
-    LEFT JOIN valid_ingredients ON valid_measurement_conversions.only_for_ingredient = valid_ingredients.id
-WHERE valid_measurement_conversions.id = $1
-    AND valid_measurement_conversions.archived_at IS NULL
+    valid_measurement_unit_conversions.modifier::float,
+    valid_measurement_unit_conversions.notes,
+    valid_measurement_unit_conversions.created_at,
+    valid_measurement_unit_conversions.last_updated_at,
+    valid_measurement_unit_conversions.archived_at
+FROM valid_measurement_unit_conversions
+    JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_unit_conversions.from_unit = valid_measurement_units_from.id
+    JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_unit_conversions.to_unit = valid_measurement_units_to.id
+    LEFT JOIN valid_ingredients ON valid_measurement_unit_conversions.only_for_ingredient = valid_ingredients.id
+WHERE valid_measurement_unit_conversions.id = $1
+    AND valid_measurement_unit_conversions.archived_at IS NULL
     AND valid_measurement_units_from.archived_at IS NULL
     AND valid_measurement_units_to.archived_at IS NULL
 `
@@ -682,7 +682,7 @@ type GetValidMeasurementUnitConversionRow struct {
 	ValidIngredientStorageInstructions                     sql.NullString
 	ValidIngredientID                                      sql.NullString
 	ValidIngredientPluralName                              sql.NullString
-	ValidMeasurementConversionsModifier                    float64
+	ValidMeasurementUnitConversionsModifier                float64
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius float64
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius float64
 	ValidIngredientRestrictToPreparations                  sql.NullBool
@@ -788,7 +788,7 @@ func (q *Queries) GetValidMeasurementUnitConversion(ctx context.Context, db DBTX
 		&i.ValidIngredientCreatedAt,
 		&i.ValidIngredientLastUpdatedAt,
 		&i.ValidIngredientArchivedAt,
-		&i.ValidMeasurementConversionsModifier,
+		&i.ValidMeasurementUnitConversionsModifier,
 		&i.Notes,
 		&i.CreatedAt,
 		&i.LastUpdatedAt,
@@ -799,7 +799,7 @@ func (q *Queries) GetValidMeasurementUnitConversion(ctx context.Context, db DBTX
 
 const updateValidMeasurementUnitConversion = `-- name: UpdateValidMeasurementUnitConversion :execrows
 
-UPDATE valid_measurement_conversions
+UPDATE valid_measurement_unit_conversions
 SET
 	from_unit = $1,
 	to_unit = $2,
