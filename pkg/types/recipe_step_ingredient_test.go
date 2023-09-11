@@ -17,11 +17,11 @@ func TestRecipeStepIngredientCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepIngredientCreationRequestInput{
-			IngredientID:      pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			MeasurementUnitID: fake.LoremIpsumSentence(exampleQuantity),
+			IngredientID:      pointers.Pointer(t.Name()),
+			MeasurementUnitID: t.Name(),
 			MinimumQuantity:   fake.Float32(),
-			QuantityNotes:     fake.LoremIpsumSentence(exampleQuantity),
-			IngredientNotes:   fake.LoremIpsumSentence(exampleQuantity),
+			QuantityNotes:     t.Name(),
+			IngredientNotes:   t.Name(),
 			Optional:          fake.Bool(),
 		}
 
@@ -46,11 +46,11 @@ func TestRecipeStepIngredientUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepIngredientUpdateRequestInput{
-			IngredientID:      pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			MeasurementUnitID: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			IngredientID:      pointers.Pointer(t.Name()),
+			MeasurementUnitID: pointers.Pointer(t.Name()),
 			MinimumQuantity:   pointers.Pointer(fake.Float32()),
-			QuantityNotes:     pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			IngredientNotes:   pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			QuantityNotes:     pointers.Pointer(t.Name()),
+			IngredientNotes:   pointers.Pointer(t.Name()),
 			Optional:          pointers.Pointer(fake.Bool()),
 		}
 

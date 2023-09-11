@@ -17,9 +17,9 @@ func TestValidIngredientCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidIngredientCreationRequestInput{
-			Name:                                    fake.LoremIpsumSentence(exampleQuantity),
-			Description:                             fake.LoremIpsumSentence(exampleQuantity),
-			Warning:                                 fake.LoremIpsumSentence(exampleQuantity),
+			Name:                                    t.Name(),
+			Description:                             t.Name(),
+			Warning:                                 t.Name(),
 			ContainsEgg:                             fake.Bool(),
 			ContainsDairy:                           fake.Bool(),
 			ContainsPeanut:                          fake.Bool(),
@@ -32,8 +32,8 @@ func TestValidIngredientCreationRequestInput_Validate(T *testing.T) {
 			ContainsGluten:                          fake.Bool(),
 			AnimalFlesh:                             fake.Bool(),
 			IsMeasuredVolumetrically:                fake.Bool(),
-			IconPath:                                fake.LoremIpsumSentence(exampleQuantity),
-			PluralName:                              fake.LoremIpsumSentence(exampleQuantity),
+			IconPath:                                t.Name(),
+			PluralName:                              t.Name(),
 			AnimalDerived:                           fake.Bool(),
 			RestrictToPreparations:                  fake.Bool(),
 			MinimumIdealStorageTemperatureInCelsius: pointers.Pointer(fake.Float32()),
@@ -61,9 +61,9 @@ func TestValidIngredientUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidIngredientUpdateRequestInput{
-			Name:                                    pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Description:                             pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Warning:                                 pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Name:                                    pointers.Pointer(t.Name()),
+			Description:                             pointers.Pointer(t.Name()),
+			Warning:                                 pointers.Pointer(t.Name()),
 			ContainsEgg:                             pointers.Pointer(fake.Bool()),
 			ContainsDairy:                           pointers.Pointer(fake.Bool()),
 			ContainsPeanut:                          pointers.Pointer(fake.Bool()),
@@ -76,8 +76,8 @@ func TestValidIngredientUpdateRequestInput_Validate(T *testing.T) {
 			ContainsGluten:                          pointers.Pointer(fake.Bool()),
 			AnimalFlesh:                             pointers.Pointer(fake.Bool()),
 			IsMeasuredVolumetrically:                pointers.Pointer(fake.Bool()),
-			IconPath:                                pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			PluralName:                              pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			IconPath:                                pointers.Pointer(t.Name()),
+			PluralName:                              pointers.Pointer(t.Name()),
 			AnimalDerived:                           pointers.Pointer(fake.Bool()),
 			RestrictToPreparations:                  pointers.Pointer(fake.Bool()),
 			MinimumIdealStorageTemperatureInCelsius: pointers.Pointer(fake.Float32()),

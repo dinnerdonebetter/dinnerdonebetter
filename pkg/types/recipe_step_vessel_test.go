@@ -17,9 +17,9 @@ func TestRecipeStepVesselCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepVesselCreationRequestInput{
-			Name:                fake.LoremIpsumSentence(exampleQuantity),
-			RecipeStepProductID: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Notes:               fake.LoremIpsumSentence(exampleQuantity),
+			Name:                t.Name(),
+			RecipeStepProductID: pointers.Pointer(t.Name()),
+			Notes:               t.Name(),
 			MinimumQuantity:     fake.Uint32(),
 			MaximumQuantity:     pointers.Pointer(fake.Uint32()),
 		}
@@ -45,10 +45,10 @@ func TestRecipeStepVesselUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepVesselUpdateRequestInput{
-			Name:                pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			BelongsToRecipeStep: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			RecipeStepProductID: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Notes:               pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Name:                pointers.Pointer(t.Name()),
+			BelongsToRecipeStep: pointers.Pointer(t.Name()),
+			RecipeStepProductID: pointers.Pointer(t.Name()),
+			Notes:               pointers.Pointer(t.Name()),
 			MinimumQuantity:     pointers.Pointer(fake.Uint32()),
 			MaximumQuantity:     pointers.Pointer(fake.Uint32()),
 		}

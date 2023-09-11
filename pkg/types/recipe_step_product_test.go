@@ -17,11 +17,11 @@ func TestRecipeStepProductCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepProductCreationRequestInput{
-			Name:                               fake.LoremIpsumSentence(exampleQuantity),
+			Name:                               t.Name(),
 			Type:                               RecipeStepProductIngredientType,
-			MeasurementUnitID:                  pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			MeasurementUnitID:                  pointers.Pointer(t.Name()),
 			MinimumQuantity:                    pointers.Pointer(fake.Float32()),
-			QuantityNotes:                      fake.LoremIpsumSentence(exampleQuantity),
+			QuantityNotes:                      t.Name(),
 			Compostable:                        fake.Bool(),
 			MaximumStorageDurationInSeconds:    pointers.Pointer(fake.Uint32()),
 			MinimumStorageTemperatureInCelsius: pointers.Pointer(fake.Float32()),
@@ -49,12 +49,12 @@ func TestRecipeStepProductUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepProductUpdateRequestInput{
-			Name:                               pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Name:                               pointers.Pointer(t.Name()),
 			Type:                               pointers.Pointer(RecipeStepProductIngredientType),
-			MeasurementUnitID:                  pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			MeasurementUnitID:                  pointers.Pointer(t.Name()),
 			MinimumQuantity:                    pointers.Pointer(fake.Float32()),
 			MaximumQuantity:                    pointers.Pointer(fake.Float32()),
-			QuantityNotes:                      pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			QuantityNotes:                      pointers.Pointer(t.Name()),
 			Compostable:                        pointers.Pointer(fake.Bool()),
 			MaximumStorageDurationInSeconds:    pointers.Pointer(fake.Uint32()),
 			MinimumStorageTemperatureInCelsius: pointers.Pointer(fake.Float32()),

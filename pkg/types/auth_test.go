@@ -25,18 +25,6 @@ func TestChangeActiveHouseholdInput_ValidateWithContext(T *testing.T) {
 	})
 }
 
-func TestSessionContextData_ToBytes(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		x := &SessionContextData{}
-
-		assert.NotEmpty(t, x.ToBytes())
-	})
-}
-
 func TestSessionContextData_AttachToLogger(T *testing.T) {
 	T.Parallel()
 

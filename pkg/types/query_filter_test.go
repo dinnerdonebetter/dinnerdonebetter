@@ -117,6 +117,15 @@ func TestQueryFilter_QueryPage(T *testing.T) {
 
 		assert.Equal(t, expected, actual)
 	})
+
+	T.Run("with nil values", func(t *testing.T) {
+		t.Parallel()
+		qf := &QueryFilter{}
+		expected := uint16(0)
+		actual := qf.QueryOffset()
+
+		assert.Equal(t, expected, actual)
+	})
 }
 
 func TestQueryFilter_ToValues(T *testing.T) {
@@ -200,5 +209,58 @@ func TestExtractQueryFilter(T *testing.T) {
 		req.URL.RawQuery = exampleInput.Encode()
 		actual := ExtractQueryFilterFromRequest(req)
 		assert.Equal(t, expected, actual)
+	})
+
+	T.Run("with missing values", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+
+		expected := &QueryFilter{
+			Page:  pointers.Pointer(uint16(1)),
+			Limit: pointers.Pointer(uint8(DefaultLimit)),
+		}
+		exampleInput := url.Values{
+			pageQueryKey:  []string{"0"},
+			LimitQueryKey: []string{"0"},
+		}
+
+		req, err := http.NewRequestWithContext(ctx, http.MethodGet, "https://verygoodsoftwarenotvirus.ru", http.NoBody)
+		assert.NoError(t, err)
+		require.NotNil(t, req)
+
+		req.URL.RawQuery = exampleInput.Encode()
+		actual := ExtractQueryFilterFromRequest(req)
+		assert.Equal(t, expected, actual)
+	})
+}
+
+func TestQueryFilter_ToPagination(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		qf := &QueryFilter{
+			Page:  pointers.Pointer(uint16(100)),
+			Limit: pointers.Pointer(uint8(MaxLimit)),
+		}
+
+		expected := Pagination{
+			Page:  *qf.Page,
+			Limit: *qf.Limit,
+		}
+
+		actual := qf.ToPagination()
+		assert.Equal(t, expected, actual)
+	})
+
+	T.Run("with nil value", func(t *testing.T) {
+		t.Parallel()
+
+		qf := (*QueryFilter)(nil)
+
+		actual := qf.ToPagination()
+		assert.NotNil(t, actual)
 	})
 }

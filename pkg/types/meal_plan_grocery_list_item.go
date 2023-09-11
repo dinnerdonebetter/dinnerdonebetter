@@ -132,18 +132,23 @@ func (x *MealPlanGroceryListItem) Update(input *MealPlanGroceryListItemUpdateReq
 	if input.BelongsToMealPlan != nil && *input.BelongsToMealPlan != x.BelongsToMealPlan {
 		x.BelongsToMealPlan = *input.BelongsToMealPlan
 	}
+
 	if input.ValidIngredientID != nil && *input.ValidIngredientID != x.Ingredient.ID {
 		x.Ingredient = ValidIngredient{ID: *input.ValidIngredientID}
 	}
+
 	if input.ValidMeasurementUnitID != nil && *input.ValidMeasurementUnitID != x.MeasurementUnit.ID {
 		x.MeasurementUnit = ValidMeasurementUnit{ID: *input.ValidMeasurementUnitID}
 	}
+
 	if input.MinimumQuantityNeeded != nil && *input.MinimumQuantityNeeded != x.MinimumQuantityNeeded {
 		x.MinimumQuantityNeeded = *input.MinimumQuantityNeeded
 	}
+
 	if input.MaximumQuantityNeeded != nil && x.MaximumQuantityNeeded != nil && *input.MaximumQuantityNeeded != *x.MaximumQuantityNeeded {
 		x.MaximumQuantityNeeded = input.MaximumQuantityNeeded
 	}
+
 	// was nil and now will not be nil
 	if input.QuantityPurchased != nil && ((x.QuantityPurchased == nil) || (x.QuantityPurchased != nil && (*input.QuantityPurchased != *x.QuantityPurchased))) {
 		x.QuantityPurchased = input.QuantityPurchased
@@ -156,6 +161,7 @@ func (x *MealPlanGroceryListItem) Update(input *MealPlanGroceryListItemUpdateReq
 	if input.PurchasedUPC != nil && ((x.PurchasedUPC == nil) || (x.PurchasedUPC != nil && (*input.PurchasedUPC != *x.PurchasedUPC))) {
 		x.PurchasedUPC = input.PurchasedUPC
 	}
+
 	if input.PurchasePrice != nil && ((x.PurchasePrice == nil) || (x.PurchasePrice != nil && (*input.PurchasePrice != *x.PurchasePrice))) {
 		x.PurchasePrice = input.PurchasePrice
 	}
@@ -179,6 +185,13 @@ func (x *MealPlanGroceryListItemCreationRequestInput) ValidateWithContext(ctx co
 		validation.Field(&x.ValidIngredientID, validation.Required),
 		validation.Field(&x.ValidMeasurementUnitID, validation.Required),
 		validation.Field(&x.MinimumQuantityNeeded, validation.Required),
+		validation.Field(&x.Status, validation.In(
+			MealPlanGroceryListItemStatusUnknown,
+			MealPlanGroceryListItemStatusAlreadyOwned,
+			MealPlanGroceryListItemStatusNeeds,
+			MealPlanGroceryListItemStatusUnavailable,
+			MealPlanGroceryListItemStatusAcquired,
+		)),
 	)
 }
 
@@ -194,6 +207,13 @@ func (x *MealPlanGroceryListItemDatabaseCreationInput) ValidateWithContext(ctx c
 		validation.Field(&x.ValidIngredientID, validation.Required),
 		validation.Field(&x.ValidMeasurementUnitID, validation.Required),
 		validation.Field(&x.MinimumQuantityNeeded, validation.Required),
+		validation.Field(&x.Status, validation.In(
+			MealPlanGroceryListItemStatusUnknown,
+			MealPlanGroceryListItemStatusAlreadyOwned,
+			MealPlanGroceryListItemStatusNeeds,
+			MealPlanGroceryListItemStatusUnavailable,
+			MealPlanGroceryListItemStatusAcquired,
+		)),
 	)
 }
 
@@ -204,5 +224,12 @@ func (x *MealPlanGroceryListItemUpdateRequestInput) ValidateWithContext(ctx cont
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
+		validation.Field(&x.Status, validation.In(
+			MealPlanGroceryListItemStatusUnknown,
+			MealPlanGroceryListItemStatusAlreadyOwned,
+			MealPlanGroceryListItemStatusNeeds,
+			MealPlanGroceryListItemStatusUnavailable,
+			MealPlanGroceryListItemStatusAcquired,
+		)),
 	)
 }

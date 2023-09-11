@@ -6,7 +6,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
 
-	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,9 +16,9 @@ func TestValidIngredientStateIngredientCreationRequestInput_Validate(T *testing.
 		t.Parallel()
 
 		x := &ValidIngredientStateIngredientCreationRequestInput{
-			Notes:                  fake.LoremIpsumSentence(exampleQuantity),
-			ValidIngredientStateID: fake.LoremIpsumSentence(exampleQuantity),
-			ValidIngredientID:      fake.LoremIpsumSentence(exampleQuantity),
+			Notes:                  t.Name(),
+			ValidIngredientStateID: t.Name(),
+			ValidIngredientID:      t.Name(),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -43,9 +42,9 @@ func TestValidIngredientStateIngredientUpdateRequestInput_Validate(T *testing.T)
 		t.Parallel()
 
 		x := &ValidIngredientStateIngredientUpdateRequestInput{
-			Notes:                  pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			ValidIngredientStateID: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			ValidIngredientID:      pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Notes:                  pointers.Pointer(t.Name()),
+			ValidIngredientStateID: pointers.Pointer(t.Name()),
+			ValidIngredientID:      pointers.Pointer(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

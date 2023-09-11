@@ -12,34 +12,34 @@ import (
 
 func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput {
 	return &RecipeStepCreationRequestInput{
-		PreparationID:                 fake.LoremIpsumSentence(exampleQuantity),
+		PreparationID:                 "PreparationID",
 		MinimumEstimatedTimeInSeconds: pointers.Pointer(fake.Uint32()),
 		MaximumEstimatedTimeInSeconds: pointers.Pointer(fake.Uint32()),
 		MinimumTemperatureInCelsius:   pointers.Pointer(float32(123.45)),
-		Notes:                         fake.LoremIpsumSentence(exampleQuantity),
-		ExplicitInstructions:          fake.LoremIpsumSentence(exampleQuantity),
+		Notes:                         "Notes",
+		ExplicitInstructions:          "ExplicitInstructions",
 		Instruments: []*RecipeStepInstrumentCreationRequestInput{
 			{
-				InstrumentID:    pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-				Name:            fake.LoremIpsumSentence(exampleQuantity),
+				InstrumentID:    pointers.Pointer("InstrumentID"),
+				Name:            "Name",
 				MinimumQuantity: fake.Uint32(),
 			},
 		},
 		Products: []*RecipeStepProductCreationRequestInput{
 			{
-				Name:              fake.LoremIpsumSentence(exampleQuantity),
+				Name:              "Name",
 				Type:              RecipeStepProductIngredientType,
-				MeasurementUnitID: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+				MeasurementUnitID: pointers.Pointer("MeasurementUnitID"),
 				MinimumQuantity:   pointers.Pointer(fake.Float32()),
-				QuantityNotes:     fake.LoremIpsumSentence(exampleQuantity),
+				QuantityNotes:     "QuantityNotes",
 			},
 		},
 		Ingredients: []*RecipeStepIngredientCreationRequestInput{
 			{
-				IngredientID:      func(s string) *string { return &s }(fake.LoremIpsumSentence(exampleQuantity)),
-				MeasurementUnitID: fake.LoremIpsumSentence(exampleQuantity),
-				QuantityNotes:     fake.LoremIpsumSentence(exampleQuantity),
-				IngredientNotes:   fake.LoremIpsumSentence(exampleQuantity),
+				IngredientID:      func(s string) *string { return &s }("IngredientID"),
+				MeasurementUnitID: "MeasurementUnitID",
+				QuantityNotes:     "QuantityNotes",
+				IngredientNotes:   "IngredientNotes",
 				MinimumQuantity:   1,
 			},
 		},
@@ -71,15 +71,15 @@ func TestRecipeStepCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepCreationRequestInput{
-			PreparationID:                 fake.LoremIpsumSentence(exampleQuantity),
+			PreparationID:                 t.Name(),
 			MinimumEstimatedTimeInSeconds: pointers.Pointer(fake.Uint32()),
 			MaximumEstimatedTimeInSeconds: pointers.Pointer(fake.Uint32()),
 			MinimumTemperatureInCelsius:   pointers.Pointer(float32(123.45)),
-			Notes:                         fake.LoremIpsumSentence(exampleQuantity),
-			ExplicitInstructions:          fake.LoremIpsumSentence(exampleQuantity),
+			Notes:                         t.Name(),
+			ExplicitInstructions:          t.Name(),
 			Products: []*RecipeStepProductCreationRequestInput{
 				{
-					Name: fake.LoremIpsumSentence(exampleQuantity),
+					Name: t.Name(),
 				},
 			},
 			Ingredients: []*RecipeStepIngredientCreationRequestInput{},
@@ -87,10 +87,10 @@ func TestRecipeStepCreationRequestInput_Validate(T *testing.T) {
 
 		for i := 0; i < maxIngredientsPerStep*2; i++ {
 			x.Ingredients = append(x.Ingredients, &RecipeStepIngredientCreationRequestInput{
-				IngredientID:      func(s string) *string { return &s }(fake.LoremIpsumSentence(exampleQuantity)),
-				MeasurementUnitID: fake.LoremIpsumSentence(exampleQuantity),
-				QuantityNotes:     fake.LoremIpsumSentence(exampleQuantity),
-				IngredientNotes:   fake.LoremIpsumSentence(exampleQuantity),
+				IngredientID:      func(s string) *string { return &s }(t.Name()),
+				MeasurementUnitID: t.Name(),
+				QuantityNotes:     t.Name(),
+				IngredientNotes:   t.Name(),
 				MinimumQuantity:   1,
 			})
 		}
@@ -112,8 +112,8 @@ func TestRecipeStepUpdateRequestInput_Validate(T *testing.T) {
 			MinimumEstimatedTimeInSeconds: pointers.Pointer(fake.Uint32()),
 			MaximumEstimatedTimeInSeconds: pointers.Pointer(fake.Uint32()),
 			MinimumTemperatureInCelsius:   pointers.Pointer(float32(123.45)),
-			Notes:                         pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			ExplicitInstructions:          pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Notes:                         pointers.Pointer(t.Name()),
+			ExplicitInstructions:          pointers.Pointer(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

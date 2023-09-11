@@ -5,8 +5,49 @@ import (
 	"testing"
 	"time"
 
+	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestMealPlan_Update(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &MealPlan{}
+		input := &MealPlanUpdateRequestInput{}
+
+		fake.Struct(&input)
+
+		x.Update(input)
+	})
+}
+
+func TestMealPlanDatabaseCreationInput_Validate(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &MealPlanDatabaseCreationInput{
+			ID:                 t.Name(),
+			VotingDeadline:     time.Now().Add(24 * time.Hour),
+			BelongsToHousehold: t.Name(),
+			CreatedByUser:      t.Name(),
+		}
+
+		assert.NoError(t, x.ValidateWithContext(context.Background()))
+	})
+
+	T.Run("with invalid structure", func(t *testing.T) {
+		t.Parallel()
+
+		x := &MealPlanDatabaseCreationInput{}
+
+		assert.Error(t, x.ValidateWithContext(context.Background()))
+	})
+}
 
 func TestMealPlanCreationRequestInput_Validate(T *testing.T) {
 	T.Parallel()

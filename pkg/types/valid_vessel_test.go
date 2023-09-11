@@ -6,7 +6,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
 
-	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,11 +16,11 @@ func TestValidVesselCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidVesselCreationRequestInput{
-			Name:           fake.LoremIpsumSentence(exampleQuantity),
-			Description:    fake.LoremIpsumSentence(exampleQuantity),
-			IconPath:       fake.LoremIpsumSentence(exampleQuantity),
+			Name:           t.Name(),
+			Description:    t.Name(),
+			IconPath:       t.Name(),
 			Capacity:       exampleQuantity,
-			CapacityUnitID: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			CapacityUnitID: pointers.Pointer(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -45,9 +44,9 @@ func TestValidVesselUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidVesselUpdateRequestInput{
-			Name:        pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Description: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			IconPath:    pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Name:        pointers.Pointer(t.Name()),
+			Description: pointers.Pointer(t.Name()),
+			IconPath:    pointers.Pointer(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

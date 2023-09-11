@@ -4,8 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
-
+	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -16,13 +15,11 @@ func TestHousehold_Update(T *testing.T) {
 		t.Parallel()
 
 		x := &Household{}
-		name := t.Name()
+		input := &HouseholdUpdateRequestInput{}
 
-		x.Update(&HouseholdUpdateRequestInput{
-			Name:          pointers.Pointer(name),
-			ContactPhone:  pointers.Pointer(name),
-			BelongsToUser: name,
-		})
+		fake.Struct(&input)
+
+		x.Update(input)
 	})
 }
 

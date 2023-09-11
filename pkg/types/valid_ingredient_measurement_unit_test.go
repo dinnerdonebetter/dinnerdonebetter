@@ -17,9 +17,9 @@ func TestValidIngredientMeasurementUnitCreationRequestInput_Validate(T *testing.
 		t.Parallel()
 
 		x := &ValidIngredientMeasurementUnitCreationRequestInput{
-			Notes:                    fake.LoremIpsumSentence(exampleQuantity),
-			ValidMeasurementUnitID:   fake.LoremIpsumSentence(exampleQuantity),
-			ValidIngredientID:        fake.LoremIpsumSentence(exampleQuantity),
+			Notes:                    t.Name(),
+			ValidMeasurementUnitID:   t.Name(),
+			ValidIngredientID:        t.Name(),
 			MinimumAllowableQuantity: fake.Float32(),
 			MaximumAllowableQuantity: pointers.Pointer(fake.Float32()),
 		}
@@ -45,9 +45,9 @@ func TestValidIngredientMeasurementUnitUpdateRequestInput_Validate(T *testing.T)
 		t.Parallel()
 
 		x := &ValidIngredientMeasurementUnitUpdateRequestInput{
-			Notes:                    pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			ValidMeasurementUnitID:   pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			ValidIngredientID:        pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Notes:                    pointers.Pointer(t.Name()),
+			ValidMeasurementUnitID:   pointers.Pointer(t.Name()),
+			ValidIngredientID:        pointers.Pointer(t.Name()),
 			MinimumAllowableQuantity: pointers.Pointer(fake.Float32()),
 			MaximumAllowableQuantity: pointers.Pointer(fake.Float32()),
 		}

@@ -18,10 +18,10 @@ func TestRecipeStepInstrumentCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepInstrumentCreationRequestInput{
-			InstrumentID:        pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Name:                fake.LoremIpsumSentence(exampleQuantity),
-			RecipeStepProductID: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Notes:               fake.LoremIpsumSentence(exampleQuantity),
+			InstrumentID:        pointers.Pointer(t.Name()),
+			Name:                t.Name(),
+			RecipeStepProductID: pointers.Pointer(t.Name()),
+			Notes:               t.Name(),
 			PreferenceRank:      uint8(fake.Number(1, math.MaxUint8)),
 			Optional:            fake.Bool(),
 			MinimumQuantity:     fake.Uint32(),
@@ -49,11 +49,11 @@ func TestRecipeStepInstrumentUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepInstrumentUpdateRequestInput{
-			InstrumentID:        pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Name:                pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			BelongsToRecipeStep: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			RecipeStepProductID: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Notes:               pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			InstrumentID:        pointers.Pointer(t.Name()),
+			Name:                pointers.Pointer(t.Name()),
+			BelongsToRecipeStep: pointers.Pointer(t.Name()),
+			RecipeStepProductID: pointers.Pointer(t.Name()),
+			Notes:               pointers.Pointer(t.Name()),
 			PreferenceRank:      pointers.Pointer(uint8(fake.Number(1, math.MaxUint8))),
 			Optional:            pointers.Pointer(fake.Bool()),
 			MinimumQuantity:     pointers.Pointer(fake.Uint32()),

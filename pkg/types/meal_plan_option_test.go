@@ -10,6 +10,21 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestMealPlanOption_Update(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &MealPlanOption{}
+		input := &MealPlanOptionUpdateRequestInput{}
+
+		fake.Struct(&input)
+
+		x.Update(input)
+	})
+}
+
 func TestMealPlanOptionCreationRequestInput_Validate(T *testing.T) {
 	T.Parallel()
 
@@ -17,10 +32,10 @@ func TestMealPlanOptionCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanOptionCreationRequestInput{
-			AssignedCook:       pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			AssignedDishwasher: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			MealID:             fake.LoremIpsumSentence(exampleQuantity),
-			Notes:              fake.LoremIpsumSentence(exampleQuantity),
+			AssignedCook:       pointers.Pointer(t.Name()),
+			AssignedDishwasher: pointers.Pointer(t.Name()),
+			MealID:             t.Name(),
+			Notes:              t.Name(),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -37,6 +52,32 @@ func TestMealPlanOptionCreationRequestInput_Validate(T *testing.T) {
 	})
 }
 
+func TestMealPlanOptionDatabaseCreationInput_Validate(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &MealPlanOptionDatabaseCreationInput{
+			ID:                     t.Name(),
+			BelongsToMealPlanEvent: t.Name(),
+			MealID:                 t.Name(),
+		}
+
+		actual := x.ValidateWithContext(context.Background())
+		assert.Nil(t, actual)
+	})
+
+	T.Run("with invalid structure", func(t *testing.T) {
+		t.Parallel()
+
+		x := &MealPlanOptionDatabaseCreationInput{}
+
+		actual := x.ValidateWithContext(context.Background())
+		assert.Error(t, actual)
+	})
+}
+
 func TestMealPlanOptionUpdateRequestInput_Validate(T *testing.T) {
 	T.Parallel()
 
@@ -44,11 +85,11 @@ func TestMealPlanOptionUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanOptionUpdateRequestInput{
-			AssignedCook:           pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			AssignedDishwasher:     pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			BelongsToMealPlanEvent: pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			MealID:                 pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Notes:                  pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			AssignedCook:           pointers.Pointer(t.Name()),
+			AssignedDishwasher:     pointers.Pointer(t.Name()),
+			BelongsToMealPlanEvent: pointers.Pointer(t.Name()),
+			MealID:                 pointers.Pointer(t.Name()),
+			Notes:                  pointers.Pointer(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

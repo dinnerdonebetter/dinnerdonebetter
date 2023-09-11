@@ -17,10 +17,10 @@ func TestValidPreparationCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidPreparationCreationRequestInput{
-			Name:                  fake.LoremIpsumSentence(exampleQuantity),
-			Description:           fake.LoremIpsumSentence(exampleQuantity),
-			IconPath:              fake.LoremIpsumSentence(exampleQuantity),
-			PastTense:             fake.LoremIpsumSentence(exampleQuantity),
+			Name:                  t.Name(),
+			Description:           t.Name(),
+			IconPath:              t.Name(),
+			PastTense:             t.Name(),
 			YieldsNothing:         fake.Bool(),
 			RestrictToIngredients: fake.Bool(),
 		}
@@ -46,10 +46,10 @@ func TestValidPreparationUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidPreparationUpdateRequestInput{
-			Name:                  pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			Description:           pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			IconPath:              pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
-			PastTense:             pointers.Pointer(fake.LoremIpsumSentence(exampleQuantity)),
+			Name:                  pointers.Pointer(t.Name()),
+			Description:           pointers.Pointer(t.Name()),
+			IconPath:              pointers.Pointer(t.Name()),
+			PastTense:             pointers.Pointer(t.Name()),
 			YieldsNothing:         pointers.Pointer(fake.Bool()),
 			RestrictToIngredients: pointers.Pointer(fake.Bool()),
 		}
@@ -78,11 +78,11 @@ func TestValidPreparation_Update(T *testing.T) {
 			MaximumInstrumentCount:      pointers.Pointer(fake.Int32()),
 			MaximumIngredientCount:      pointers.Pointer(fake.Int32()),
 			MaximumVesselCount:          pointers.Pointer(fake.Int32()),
-			IconPath:                    fake.LoremIpsumSentence(exampleQuantity),
-			PastTense:                   fake.LoremIpsumSentence(exampleQuantity),
-			Name:                        fake.LoremIpsumSentence(exampleQuantity),
-			Description:                 fake.LoremIpsumSentence(exampleQuantity),
-			Slug:                        fake.LoremIpsumSentence(exampleQuantity),
+			IconPath:                    t.Name(),
+			PastTense:                   t.Name(),
+			Name:                        t.Name(),
+			Description:                 t.Name(),
+			Slug:                        t.Name(),
 			MinimumIngredientCount:      fake.Int32(),
 			MinimumInstrumentCount:      fake.Int32(),
 			MinimumVesselCount:          fake.Int32(),
@@ -99,11 +99,11 @@ func TestValidPreparation_Update(T *testing.T) {
 			MaximumInstrumentCount:      pointers.Pointer(fake.Int32()),
 			MaximumIngredientCount:      pointers.Pointer(fake.Int32()),
 			MaximumVesselCount:          pointers.Pointer(fake.Int32()),
-			IconPath:                    fake.LoremIpsumSentence(exampleQuantity),
-			PastTense:                   fake.LoremIpsumSentence(exampleQuantity),
-			Name:                        fake.LoremIpsumSentence(exampleQuantity),
-			Description:                 fake.LoremIpsumSentence(exampleQuantity),
-			Slug:                        fake.LoremIpsumSentence(exampleQuantity),
+			IconPath:                    t.Name(),
+			PastTense:                   t.Name(),
+			Name:                        t.Name(),
+			Description:                 t.Name(),
+			Slug:                        t.Name(),
 			MinimumIngredientCount:      fake.Int32(),
 			MinimumInstrumentCount:      fake.Int32(),
 			MinimumVesselCount:          fake.Int32(),

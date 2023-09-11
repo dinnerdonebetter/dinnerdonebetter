@@ -6,6 +6,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
 
+	fake "github.com/brianvoe/gofakeit/v5"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -20,6 +21,7 @@ func TestMealPlanGroceryListItemCreationRequestInput_ValidateWithContext(T *test
 			BelongsToMealPlan:      t.Name(),
 			ValidIngredientID:      t.Name(),
 			ValidMeasurementUnitID: t.Name(),
+			Status:                 MealPlanGroceryListItemStatusUnknown,
 			MinimumQuantityNeeded:  1.23,
 		}
 
@@ -40,6 +42,7 @@ func TestMealPlanGroceryListItemDatabaseCreationInput_ValidateWithContext(T *tes
 			ValidIngredientID:      t.Name(),
 			ValidMeasurementUnitID: t.Name(),
 			MinimumQuantityNeeded:  1.23,
+			Status:                 MealPlanGroceryListItemStatusUnknown,
 			MaximumQuantityNeeded:  pointers.Pointer(float32(1.23)),
 		}
 
@@ -60,6 +63,7 @@ func TestMealPlanGroceryListItemUpdateRequestInput_ValidateWithContext(T *testin
 			ValidMeasurementUnitID: pointers.Pointer(t.Name()),
 			MinimumQuantityNeeded:  pointers.Pointer(float32(1.23)),
 			MaximumQuantityNeeded:  pointers.Pointer(float32(1.23)),
+			Status:                 pointers.Pointer(MealPlanGroceryListItemStatusUnknown),
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))
@@ -72,12 +76,16 @@ func TestMealPlanGroceryListItem_Update(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		actual := &MealPlanGroceryListItem{}
-		expected := &MealPlanGroceryListItem{}
+		x := &MealPlanGroceryListItem{
+			PurchasedMeasurementUnit: &ValidMeasurementUnit{},
+			MaximumQuantityNeeded:    pointers.Pointer(float32(1.23)),
+		}
 		input := &MealPlanGroceryListItemUpdateRequestInput{}
 
-		actual.Update(input)
+		fake.Struct(&input)
+		input.PurchasedMeasurementUnitID = pointers.Pointer(t.Name())
+		input.MaximumQuantityNeeded = pointers.Pointer(float32(3.21))
 
-		assert.Equal(t, expected, actual)
+		x.Update(input)
 	})
 }

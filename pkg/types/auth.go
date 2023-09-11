@@ -1,7 +1,6 @@
 package types
 
 import (
-	"bytes"
 	"context"
 	"encoding/gob"
 	"net/http"
@@ -163,18 +162,6 @@ func (x *SessionContextData) HouseholdRolePermissionsChecker() authorization.Hou
 // ServiceRolePermissionChecker returns the relevant ServiceRolePermissionChecker.
 func (x *SessionContextData) ServiceRolePermissionChecker() authorization.ServiceRolePermissionChecker {
 	return x.Requester.ServicePermissions
-}
-
-// ToBytes returns the gob encoded session info.
-func (x *SessionContextData) ToBytes() []byte {
-	var b bytes.Buffer
-
-	if err := gob.NewEncoder(&b).Encode(x); err != nil {
-		// this will never happen
-		panic(err)
-	}
-
-	return b.Bytes()
 }
 
 // AttachToLogger provides a consistent way to attach a SessionContextData object to a logger.
