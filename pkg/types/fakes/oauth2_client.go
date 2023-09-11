@@ -5,7 +5,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
-	fake "github.com/brianvoe/gofakeit/v5"
+	fake "github.com/brianvoe/gofakeit/v6"
 )
 
 // BuildFakeOAuth2Client builds a faked OAuth2Client.

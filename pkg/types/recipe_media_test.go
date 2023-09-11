@@ -3,7 +3,7 @@ package types
 import (
 	"testing"
 
-	fake "github.com/brianvoe/gofakeit/v5"
+	fake "github.com/brianvoe/gofakeit/v6"
 )
 
 func TestRecipeMedia_Update(T *testing.T) {
