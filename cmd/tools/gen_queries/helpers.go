@@ -5,24 +5,17 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/Masterminds/squirrel"
 	"github.com/cockroachdb/cockroachdb-parser/pkg/sql/sem/tree"
 	"github.com/cristalhq/builq"
 	"github.com/mjibson/sqlfmt"
 )
 
 const (
-	placeholder              = "placeholder"
 	idColumn                 = "id"
 	createdAtColumn          = "created_at"
 	lastUpdatedAtColumn      = "last_updated_at"
 	archivedAtColumn         = "archived_at"
 	belongsToHouseholdColumn = "belongs_to_household"
-)
-
-var (
-	queryBuilder = squirrel.StatementBuilder.PlaceholderFormat(squirrel.Dollar)
-	now          = squirrel.Expr("NOW()")
 )
 
 func applyToEach(x []string, f func(string) string) []string {
@@ -33,41 +26,6 @@ func applyToEach(x []string, f func(string) string) []string {
 	}
 
 	return output
-}
-
-func buildQuery(builderType any) string {
-	switch v := builderType.(type) {
-	case squirrel.SelectBuilder:
-		query, _, err := v.ToSql()
-		if err != nil {
-			panic(err)
-		}
-
-		return query
-	case squirrel.UpdateBuilder:
-		query, _, err := v.ToSql()
-		if err != nil {
-			panic(err)
-		}
-
-		return query
-	case squirrel.InsertBuilder:
-		query, _, err := v.ToSql()
-		if err != nil {
-			panic(err)
-		}
-
-		return query
-	case squirrel.DeleteBuilder:
-		query, _, err := v.ToSql()
-		if err != nil {
-			panic(err)
-		}
-
-		return query
-	default:
-		panic("invalid type")
-	}
 }
 
 func buildRawQuery(builder *builq.Builder) string {
@@ -92,16 +50,6 @@ func filterForInsert(columns []string, exceptions ...string) []string {
 		}
 
 		output = append(output, column)
-	}
-
-	return output
-}
-
-func argsForList(columns []string) []any {
-	output := []any{}
-
-	for range columns {
-		output = append(output, placeholder)
 	}
 
 	return output
@@ -134,13 +82,12 @@ func mergeColumns(columns1, columns2 []string, indexToInsertSecondSet uint) []st
 	output := []string{}
 
 	for i, col1 := range columns1 {
-		if i == int(indexToInsertSecondSet+1) {
+		if i == int(indexToInsertSecondSet) {
 			for _, col2 := range columns2 {
 				output = append(output, col2)
 			}
-		} else {
-			output = append(output, col1)
 		}
+		output = append(output, col1)
 	}
 
 	return output
@@ -151,7 +98,7 @@ func buildFilteredColumnCountQuery(tableName string, hasUpdateColumn bool, adden
 
 	builder := filteredCountQueryBuilder.Addf(`(
 	    SELECT
-	        COUNT(%s.id)
+	        COUNT(%s.%s)
 	    FROM
 	        %s
 	    WHERE
@@ -160,6 +107,7 @@ func buildFilteredColumnCountQuery(tableName string, hasUpdateColumn bool, adden
             AND %s.created_at < COALESCE(sqlc.narg(created_after), (SELECT NOW() + interval '999 years'))
            `,
 		tableName,
+		idColumn,
 		tableName,
 		tableName,
 		tableName,
@@ -198,13 +146,14 @@ func buildTotalColumnCountQuery(tableName, addendum string) string {
 
 	builder := totalCountQueryBuilder.Addf(`(
 	    SELECT
-	        COUNT(%s.id)
+	        COUNT(%s.%s)
 	    FROM
 	        %s
 	    WHERE
             %s.archived_at IS NULL
            `,
 		tableName,
+		idColumn,
 		tableName,
 		tableName,
 	)
@@ -220,14 +169,118 @@ func buildTotalColumnCountQuery(tableName, addendum string) string {
 	return buildRawQuery(builder)
 }
 
+func buildCreateQuery(tableName string, columns []string) string {
+	var createQueryBuilder builq.Builder
+
+	values := applyToEach(columns, func(s string) string {
+		return fmt.Sprintf("sqlc.arg(%s)", s)
+	})
+
+	builder := createQueryBuilder.Addf(
+		`INSERT INTO %s (%s) VALUES (%s)`,
+		tableName,
+		strings.Join(columns, ",\n\t"),
+		strings.Join(values, ",\n\t"),
+	)
+
+	return buildRawQuery(builder)
+}
+
+func buildArchiveQuery(tableName, ownershipColumn string) string {
+	var archiveQueryBuilder builq.Builder
+
+	addendum := ""
+	if ownershipColumn != "" {
+		parts := strings.Split(ownershipColumn, "_")
+		addendum = fmt.Sprintf(" AND %s.%s = sqlc.arg(%s_id)", tableName, ownershipColumn, parts[len(parts)-1])
+	}
+
+	builder := archiveQueryBuilder.Addf(
+		`UPDATE %s SET %s = NOW() WHERE %s.archived_at IS NULL AND %s.%s = sqlc.arg(%s)%s`,
+		tableName,
+		archivedAtColumn,
+		tableName,
+		tableName,
+		idColumn,
+		idColumn,
+		addendum,
+	)
+
+	return buildRawQuery(builder)
+}
+
+func buildSelectQuery(tableName string, columnNames, joins []string, conditions ...string) string {
+	var selectQueryBuilder builq.Builder
+
+	joinStatements := applyToEach(joins, func(s string) string {
+		return fmt.Sprintf("JOIN %s", s)
+	})
+
+	conditionStatements := applyToEach(conditions, func(s string) string {
+		return fmt.Sprintf("%s", s)
+	})
+
+	and := ""
+	if len(conditionStatements) > 0 {
+		and = " AND "
+	}
+
+	allConditions := strings.Join(conditionStatements, " AND ")
+
+	builder := selectQueryBuilder.Addf(
+		`SELECT %s FROM %s %s WHERE %s %s %s.archived_at IS NULL AND %s.%s = sqlc.arg(%s)`,
+		strings.Join(columnNames, ",\n\t"),
+		tableName,
+		strings.Join(joinStatements, "\n\t"),
+		allConditions,
+		and,
+		tableName,
+		tableName,
+		idColumn,
+		idColumn,
+	)
+
+	return buildRawQuery(builder)
+}
+
 func buildExistenceCheckQuery(tableName, addendum string) string {
 	var existenceCheckQueryBuilder builq.Builder
 
-	builder := existenceCheckQueryBuilder.Addf(`SELECT EXISTS ( SELECT %s.id FROM %s WHERE %s.archived_at IS NULL%s )`,
+	builder := existenceCheckQueryBuilder.Addf(
+		`SELECT EXISTS ( SELECT %s.%s FROM %s WHERE %s.archived_at IS NULL AND %s.%s = sqlc.arg(%s) %s )`,
+		tableName,
+		idColumn,
 		tableName,
 		tableName,
 		tableName,
+		idColumn,
+		idColumn,
 		addendum,
+	)
+
+	return buildRawQuery(builder)
+}
+
+func buildUpdateQuery(tableName string, columns []string, ownershipColumn string) string {
+	var updateQueryBuilder builq.Builder
+
+	columnUpdates := applyToEach(columns, func(s string) string {
+		return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
+	})
+
+	addendum := ""
+	if ownershipColumn != "" {
+		addendum = fmt.Sprintf(" AND %s.%s = sqlc.arg(%s_%s)", tableName, ownershipColumn, ownershipColumn, idColumn)
+	}
+
+	builder := updateQueryBuilder.Addf(
+		`UPDATE %s SET %s = NOW(), %s WHERE archived_at IS NULL %s AND %s = sqlc.arg(%s)`,
+		tableName,
+		lastUpdatedAtColumn,
+		strings.Join(columnUpdates, ",\n\t"),
+		addendum,
+		idColumn,
+		idColumn,
 	)
 
 	return buildRawQuery(builder)

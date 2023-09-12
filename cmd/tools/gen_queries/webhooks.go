@@ -1,9 +1,5 @@
 package main
 
-import (
-	"github.com/Masterminds/squirrel"
-)
-
 const (
 	webhooksTableName             = "webhooks"
 	webhookTriggerEventsTableName = "webhook_trigger_events"
@@ -25,26 +21,36 @@ var (
 		"content_type",
 		"url",
 		"method",
-		belongsToHouseholdColumn,
 		createdAtColumn,
 		lastUpdatedAtColumn,
 		archivedAtColumn,
+		belongsToHouseholdColumn,
 	}
 )
 
 func buildWebhooksQueries() []Query {
 	insertColumns := filterForInsert(webhooksColumns)
-
-	queryFilteredColumns := append(mergeColumns(
+	fullSelectColumns := mergeColumns(
 		applyToEach(webhooksColumns, func(s string) string {
 			return fullColumnName(webhooksTableName, s)
 		}),
 		applyToEach(webhookTriggerEventsColumns, func(s string) string {
 			return fullColumnName(webhookTriggerEventsTableName, s)
-		}), 5),
-		buildFilteredColumnCountQuery(webhooksTableName, true, "webhooks.belongs_to_household = sqlc.arg(household_id)"),
-		buildTotalColumnCountQuery(webhooksTableName, ""),
-	)
+		}), 5)
+
+	//queryFilteredColumns := append(
+	//	mergeColumns(
+	//		applyToEach(webhooksColumns, func(s string) string {
+	//			return fullColumnName(webhooksTableName, s)
+	//		}),
+	//		applyToEach(webhookTriggerEventsColumns, func(s string) string {
+	//			return fullColumnName(webhookTriggerEventsTableName, s)
+	//		}),
+	//		5,
+	//	),
+	//	buildFilteredColumnCountQuery(webhooksTableName, true, "webhooks.belongs_to_household = sqlc.arg(household_id)"),
+	//	buildTotalColumnCountQuery(webhooksTableName, ""),
+	//)
 
 	return []Query{
 		{
@@ -52,15 +58,8 @@ func buildWebhooksQueries() []Query {
 				Name: "ArchiveWebhook",
 				Type: ExecRowsType,
 			},
-			Content: buildQuery(
-				queryBuilder.Update(webhooksTableName).
-					Set(lastUpdatedAtColumn, now).
-					Set(archivedAtColumn, now).
-					Where(squirrel.Eq{
-						archivedAtColumn:         nil,
-						belongsToHouseholdColumn: placeholder,
-						idColumn:                 placeholder,
-					}),
+			Content: formatQuery(
+				buildArchiveQuery(webhooksTableName, belongsToHouseholdColumn),
 			),
 		},
 		{
@@ -68,10 +67,8 @@ func buildWebhooksQueries() []Query {
 				Name: "CreateWebhook",
 				Type: ExecType,
 			},
-			Content: buildQuery(
-				queryBuilder.Insert(webhooksTableName).
-					Columns(insertColumns...).
-					Values(argsForList(insertColumns)...),
+			Content: formatQuery(
+				buildCreateQuery(webhooksTableName, insertColumns),
 			),
 		},
 		{
@@ -79,32 +76,26 @@ func buildWebhooksQueries() []Query {
 				Name: "CheckWebhookExistence",
 				Type: OneType,
 			},
-			Content: buildExistenceCheckQuery(webhooksTableName, " AND webhooks.belongs_to_household = sqlc.arg(household_id) AND webhooks.id = sqlc.arg(webhook_id)"),
-			//Content: buildQuery(
-			//	queryBuilder.Select(fullColumnName(webhooksTableName, idColumn)).
-			//		Prefix("SELECT EXISTS (").
-			//		From(webhooksTableName).
-			//		Where(squirrel.Eq{
-			//			fullColumnName(webhooksTableName, archivedAtColumn):         nil,
-			//			fullColumnName(webhooksTableName, belongsToHouseholdColumn): placeholder,
-			//			fullColumnName(webhooksTableName, idColumn):                 placeholder,
-			//		}).
-			//		Suffix(")"),
-			//),
+			Content: formatQuery(
+				buildExistenceCheckQuery(
+					webhooksTableName,
+					" AND webhooks.belongs_to_household = sqlc.arg(household_id)",
+				),
+			),
 		},
 		{
 			Annotation: QueryAnnotation{
-				Name: "GetWebhooksForHousehold",
+				Name: "GetWebhook",
 				Type: ManyType,
 			},
-			Content: buildQuery(
-				queryBuilder.Select(queryFilteredColumns...).
-					From(webhooksTableName).
-					Join(webhookTriggerEventsJoin).
-					Where(squirrel.Eq{
-						fullColumnName(webhooksTableName, archivedAtColumn):         nil,
-						fullColumnName(webhooksTableName, belongsToHouseholdColumn): placeholder,
-					}),
+			Content: formatQuery(
+				buildSelectQuery(
+					webhooksTableName,
+					fullSelectColumns,
+					[]string{webhookTriggerEventsJoin},
+					"webhook_trigger_events.archived_at IS NULL",
+					"webhooks.belongs_to_household = sqlc.arg(household_id)",
+				),
 			),
 		},
 	}

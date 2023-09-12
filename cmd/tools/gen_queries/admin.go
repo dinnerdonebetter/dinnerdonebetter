@@ -1,9 +1,5 @@
 package main
 
-import (
-	"github.com/Masterminds/squirrel"
-)
-
 func buildAdminQueries() []Query {
 	return []Query{
 		{
@@ -11,14 +7,12 @@ func buildAdminQueries() []Query {
 				Name: "SetUserAccountStatus",
 				Type: ExecRowsType,
 			},
-			Content: buildQuery(
-				queryBuilder.Update(usersTableName).
-					Set("user_account_status", placeholder).
-					Set("user_account_status_explanation", placeholder).
-					Where(squirrel.Eq{
-						archivedAtColumn: nil,
-						idColumn:         placeholder,
-					}),
+			Content: formatQuery(
+				buildUpdateQuery(
+					"users",
+					[]string{"user_account_status", "user_account_status_explanation"},
+					"",
+				),
 			),
 		},
 	}
