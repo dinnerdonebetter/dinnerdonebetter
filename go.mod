@@ -18,6 +18,7 @@ require (
 	github.com/brianvoe/gofakeit/v5 v5.11.2
 	github.com/brianvoe/gofakeit/v6 v6.23.2
 	github.com/cockroachdb/cockroachdb-parser v0.0.0-20230705064001-302c9ad52e1a
+	github.com/cristalhq/builq v0.10.0
 	github.com/dustin/go-humanize v1.0.1
 	github.com/elastic/go-elasticsearch/v8 v8.9.0
 	github.com/go-chi/chi/v5 v5.0.10

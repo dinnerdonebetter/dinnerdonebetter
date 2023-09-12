@@ -1,0 +1,21 @@
+package main
+
+const mealPlanGroceryListItemsTableName = "meal_plan_grocery_list_items"
+
+var mealPlanGroceryListItemsColumns = []string{
+	"id",
+	"valid_ingredient",
+	"valid_measurement_unit",
+	"minimum_quantity_needed",
+	"maximum_quantity_needed",
+	"quantity_purchased",
+	"purchased_measurement_unit",
+	"purchased_upc",
+	"purchase_price",
+	"status_explanation",
+	"status",
+	"belongs_to_meal_plan",
+	createdAtColumn,
+	lastUpdatedAtColumn,
+	archivedAtColumn,
+}

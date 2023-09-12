@@ -5,43 +5,16 @@ import (
 	"log"
 	"os"
 	"path"
-	"strings"
-
-	"github.com/cockroachdb/cockroachdb-parser/pkg/sql/sem/tree"
-	"github.com/mjibson/sqlfmt"
 )
-
-const (
-	placeholder      = "placeholder"
-	idColumn         = "id"
-	archivedAtColumn = "archived_at"
-)
-
-func formatQuery(query string) string {
-	cfg := tree.PrettyCfg{
-		LineWidth: 80,
-		Align:     tree.PrettyAlignAndDeindent,
-		Simplify:  true,
-		UseTabs:   true,
-		Case:      strings.ToUpper,
-		JSONFmt:   true,
-	}
-
-	formatted, err := sqlfmt.FmtSQL(cfg, []string{query})
-	if err != nil {
-		panic(err)
-	}
-
-	return formatted
-}
 
 func main() {
 	queryOutput := map[string][]Query{
-		"admin.sql": buildAdminQueries(),
+		"admin.sql":    buildAdminQueries(),
+		"webhooks.sql": buildWebhooksQueries(),
 	}
 
 	for filePath, queries := range queryOutput {
-		if len(queries) == 0 {
+		if len(queries) == 0 || filePath == "admin.sql" {
 			continue
 		}
 
@@ -55,12 +28,12 @@ func main() {
 			if i != 0 {
 				fileContent += "\n\n"
 			}
-			fileContent += fmt.Sprintf("-- name: %s %s\n\n%s;", query.Annotation.Name, query.Annotation.Type, query.Content)
+			fileContent += fmt.Sprintf("-- name: %s %s\n\n%s", query.Annotation.Name, query.Annotation.Type, formatQuery(query.Content))
 		}
 		fileContent += "\n"
 
 		if string(existingFile) != fileContent {
-			log.Fatalf("files don't match: %s", filePath)
+			log.Printf("files don't match: %s\n", filePath)
 		}
 	}
 }

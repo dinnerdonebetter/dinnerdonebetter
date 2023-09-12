@@ -76,7 +76,7 @@ func ExecuteWebhook(ctx context.Context, e event.Event) error {
 
 	// manual db timeout until I find out what's wrong
 	dbConnectionContext, cancel := context.WithTimeout(ctx, 15*time.Second)
-	dataManager, err := postgres.ProvideDatabaseClient(dbConnectionContext, logger, &cfg.Database, tracerProvider)
+	dataManager, err := postgres.ProvideDatabaseClient(dbConnectionContext, logger, tracerProvider, &cfg.Database)
 	if err != nil {
 		cancel()
 		return observability.PrepareAndLogError(err, logger, span, "establishing database connection")

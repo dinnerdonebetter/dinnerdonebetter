@@ -55,7 +55,7 @@ func doTheThing() error {
 
 	defer analyticsEventReporter.Close()
 
-	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database, tracerProvider)
+	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, &cfg.Database)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "establishing database connection")
 	}

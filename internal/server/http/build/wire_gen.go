@@ -82,7 +82,7 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (http.Server, error)
 	if err != nil {
 		return nil, err
 	}
-	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, config9, tracerProvider)
+	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, config9)
 	if err != nil {
 		return nil, err
 	}

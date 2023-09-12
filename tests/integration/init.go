@@ -70,7 +70,7 @@ func init() {
 		MaxPingAttempts:          500,
 	}
 
-	dbm, err := postgres.ProvideDatabaseClient(ctx, logger, cfg, tracing.NewNoopTracerProvider())
+	dbm, err := postgres.ProvideDatabaseClient(ctx, logger, tracing.NewNoopTracerProvider(), cfg)
 	if err != nil {
 		panic(err)
 	}

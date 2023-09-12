@@ -10,7 +10,7 @@ concurrency:
 
 name: generate
 jobs:
- configs:
+  queries:
    strategy:
      matrix:
        go-version: [ '1.21.x' ]

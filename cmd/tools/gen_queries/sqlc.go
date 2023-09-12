@@ -3,15 +3,15 @@ package main
 type QueryType string
 
 const (
-	Exec       QueryType = ":exec"
-	ExecResult QueryType = ":execresult"
-	ExecRows   QueryType = ":execrows"
-	ExecLastID QueryType = ":execlastid"
-	Many       QueryType = ":many"
-	One        QueryType = ":one"
-	BatchExec  QueryType = ":batchexec"
-	BatchMany  QueryType = ":batchmany"
-	BatchOne   QueryType = ":batchone"
+	ExecType       QueryType = ":exec"
+	ExecResultType QueryType = ":execresult"
+	ExecRowsType   QueryType = ":execrows"
+	ExecLastIDType QueryType = ":execlastid"
+	ManyType       QueryType = ":many"
+	OneType        QueryType = ":one"
+	BatchExecType  QueryType = ":batchexec"
+	BatchManyType  QueryType = ":batchmany"
+	BatchOneType   QueryType = ":batchone"
 )
 
 type QueryAnnotation struct {
