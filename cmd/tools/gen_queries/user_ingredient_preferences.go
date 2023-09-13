@@ -3,7 +3,7 @@ package main
 const userIngredientPreferencesTableName = "user_ingredient_preferences"
 
 var userIngredientPreferencesColumns = []string{
-	"id",
+	idColumn,
 	"ingredient",
 	"rating",
 	"notes",

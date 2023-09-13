@@ -16,6 +16,7 @@ const (
 	createdAtColumn          = "created_at"
 	lastUpdatedAtColumn      = "last_updated_at"
 	archivedAtColumn         = "archived_at"
+	lastIndexedAtColumn      = "last_indexed_at"
 	belongsToHouseholdColumn = "belongs_to_household"
 	belongsToUserColumn      = "belongs_to_user"
 )

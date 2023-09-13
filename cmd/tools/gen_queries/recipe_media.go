@@ -3,7 +3,7 @@ package main
 const recipeMediaTableName = "recipe_media"
 
 var recipeMediaColumns = []string{
-	"id",
+	idColumn,
 	"belongs_to_recipe",
 	"belongs_to_recipe_step",
 	"mime_type",

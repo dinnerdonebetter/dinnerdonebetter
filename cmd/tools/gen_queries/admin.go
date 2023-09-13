@@ -9,7 +9,7 @@ func buildAdminQueries() []*Query {
 			},
 			Content: formatQuery(
 				buildUpdateQuery(
-					"users",
+					usersTableName,
 					[]string{"user_account_status", "user_account_status_explanation"},
 					"",
 				),

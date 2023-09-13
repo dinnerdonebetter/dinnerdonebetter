@@ -3,7 +3,7 @@ package main
 const validInstrumentsTableName = "valid_instruments"
 
 var validInstrumentsColumns = []string{
-	"id",
+	idColumn,
 	"name",
 	"description",
 	"icon_path",
@@ -12,7 +12,7 @@ var validInstrumentsColumns = []string{
 	"slug",
 	"display_in_summary_lists",
 	"include_in_generated_instructions",
-	"last_indexed_at",
+	lastIndexedAtColumn,
 	createdAtColumn,
 	lastUpdatedAtColumn,
 	archivedAtColumn,

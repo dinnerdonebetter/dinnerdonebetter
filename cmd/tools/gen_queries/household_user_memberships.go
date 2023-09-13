@@ -3,7 +3,7 @@ package main
 const householdUserMembershipsTableName = "household_user_memberships"
 
 var householdUserMembershipsColumns = []string{
-	"id",
+	idColumn,
 	belongsToHouseholdColumn,
 	"belongs_to_user",
 	"default_household",

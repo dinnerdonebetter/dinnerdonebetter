@@ -3,7 +3,7 @@ package main
 const validIngredientPreparationsTableName = "valid_ingredient_preparations"
 
 var validIngredientPreparationsColumns = []string{
-	"id",
+	idColumn,
 	"notes",
 	"valid_preparation_id",
 	"valid_ingredient_id",

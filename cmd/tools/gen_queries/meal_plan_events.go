@@ -3,7 +3,7 @@ package main
 const mealPlanEventsTableName = "meal_plan_events"
 
 var mealPlanEventsColumns = []string{
-	"id",
+	idColumn,
 	"notes",
 	"starts_at",
 	"ends_at",

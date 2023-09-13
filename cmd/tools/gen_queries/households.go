@@ -3,7 +3,7 @@ package main
 const householdsTableName = "households"
 
 var householdsColumns = []string{
-	"id",
+	idColumn,
 	"name",
 	"billing_status",
 	"contact_phone",

@@ -3,7 +3,7 @@ package main
 const mealPlanTasksTableName = "meal_plan_tasks"
 
 var mealPlanTasksColumns = []string{
-	"id",
+	idColumn,
 	"belongs_to_meal_plan_option",
 	"belongs_to_recipe_prep_task",
 	"creation_explanation",

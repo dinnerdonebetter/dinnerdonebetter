@@ -3,7 +3,7 @@ package main
 const recipeStepIngredientsTableName = "recipe_step_ingredients"
 
 var recipeStepIngredientsColumns = []string{
-	"id",
+	idColumn,
 	"ingredient_id",
 	"minimum_quantity_value",
 	"quantity_notes",

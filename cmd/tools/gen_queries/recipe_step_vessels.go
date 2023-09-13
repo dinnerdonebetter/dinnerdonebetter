@@ -3,7 +3,7 @@ package main
 const recipeStepVesselsTableName = "recipe_step_vessels"
 
 var recipeStepVesselsColumns = []string{
-	"id",
+	idColumn,
 	"name",
 	"notes",
 	"belongs_to_recipe_step",

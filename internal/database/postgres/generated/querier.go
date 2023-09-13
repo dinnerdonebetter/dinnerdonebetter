@@ -40,7 +40,7 @@ type Querier interface {
 	ArchiveServiceSettingConfiguration(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveUser(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveUserIngredientPreference(ctx context.Context, db DBTX, arg *ArchiveUserIngredientPreferenceParams) (int64, error)
-	ArchiveUserMemberships(ctx context.Context, db DBTX, belongsToUser string) (int64, error)
+	ArchiveUserMemberships(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveValidIngredient(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveValidIngredientGroup(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveValidIngredientGroupMember(ctx context.Context, db DBTX, arg *ArchiveValidIngredientGroupMemberParams) (int64, error)

@@ -3,7 +3,7 @@ package main
 const householdInvitationsTableName = "household_invitations"
 
 var householdInvitationsColumns = []string{
-	"id",
+	idColumn,
 	"destination_household",
 	"to_email",
 	"to_user",

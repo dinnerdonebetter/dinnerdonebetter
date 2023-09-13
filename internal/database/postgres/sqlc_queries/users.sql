@@ -1,30 +1,26 @@
 -- name: AcceptPrivacyPolicyForUser :exec
 
-UPDATE users SET
-	last_accepted_privacy_policy = NOW()
-WHERE archived_at IS NULL
-	AND id = $1;
+UPDATE users
+   SET last_accepted_privacy_policy = NOW()
+ WHERE archived_at IS NULL AND id = sqlc.arg(id);
 
 -- name: AcceptTermsOfServiceForUser :exec
 
-UPDATE users SET
-	last_accepted_terms_of_service = NOW()
-WHERE archived_at IS NULL
-	AND id = $1;
+UPDATE users
+   SET last_accepted_terms_of_service = NOW()
+ WHERE archived_at IS NULL AND id = sqlc.arg(id);
 
 -- name: ArchiveUser :execrows
 
-UPDATE users SET
-	archived_at = NOW()
-WHERE archived_at IS NULL
-	AND id = $1;
+UPDATE users
+   SET archived_at = NOW()
+ WHERE archived_at IS NULL AND id = sqlc.arg(id);
 
 -- name: ArchiveUserMemberships :execrows
 
-UPDATE household_user_memberships SET
-	archived_at = NOW()
-WHERE archived_at IS NULL
-	AND belongs_to_user = $1;
+UPDATE household_user_memberships
+   SET archived_at = NOW()
+ WHERE archived_at IS NULL AND belongs_to_user = sqlc.arg(id);
 
 -- name: CreateUser :exec
 

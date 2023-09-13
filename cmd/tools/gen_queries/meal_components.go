@@ -3,7 +3,7 @@ package main
 const mealComponentsTableName = "meal_components"
 
 var mealComponentsColumns = []string{
-	"id",
+	idColumn,
 	"meal_id",
 	"recipe_id",
 	"meal_component_type",

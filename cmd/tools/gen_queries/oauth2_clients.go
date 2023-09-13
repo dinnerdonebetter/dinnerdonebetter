@@ -3,7 +3,7 @@ package main
 const oauth2ClientsTableName = "oauth2_clients"
 
 var oauth2ClientsColumns = []string{
-	"id",
+	idColumn,
 	"name",
 	"description",
 	"client_id",

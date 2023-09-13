@@ -3,7 +3,7 @@ package main
 const serviceSettingsTableName = "service_settings"
 
 var serviceSettingsColumns = []string{
-	"id",
+	idColumn,
 	"name",
 	"type",
 	"description",

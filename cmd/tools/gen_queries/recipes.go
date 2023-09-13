@@ -3,7 +3,7 @@ package main
 const recipesTableName = "recipes"
 
 var recipesColumns = []string{
-	"id",
+	idColumn,
 	"name",
 	"source",
 	"description",
@@ -19,7 +19,7 @@ var recipesColumns = []string{
 	"plural_portion_name",
 	"max_estimated_portions",
 	"eligible_for_meals",
-	"last_indexed_at",
+	lastIndexedAtColumn,
 	"last_validated_at",
 	"yields_component_type",
 }

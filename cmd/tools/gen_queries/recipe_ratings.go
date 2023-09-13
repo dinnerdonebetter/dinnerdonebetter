@@ -3,7 +3,7 @@ package main
 const recipeRatingsTableName = "recipe_ratings"
 
 var recipeRatingsColumns = []string{
-	"id",
+	idColumn,
 	"recipe_id",
 	"taste",
 	"difficulty",

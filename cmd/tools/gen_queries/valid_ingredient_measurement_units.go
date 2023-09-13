@@ -3,7 +3,7 @@ package main
 const validIngredientMeasurementUnitsTableName = "valid_ingredient_measurement_units"
 
 var validIngredientMeasurementUnitsColumns = []string{
-	"id",
+	idColumn,
 	"notes",
 	"valid_ingredient_id",
 	"valid_measurement_unit_id",

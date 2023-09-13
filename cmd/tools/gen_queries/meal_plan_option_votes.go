@@ -3,7 +3,7 @@ package main
 const mealPlanOptionVotesTableName = "meal_plan_option_votes"
 
 var mealPlanOptionVotesColumns = []string{
-	"id",
+	idColumn,
 	"rank",
 	"abstain",
 	"notes",

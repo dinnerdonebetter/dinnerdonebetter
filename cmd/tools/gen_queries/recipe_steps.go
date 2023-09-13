@@ -3,7 +3,7 @@ package main
 const recipeStepsTableName = "recipe_steps"
 
 var recipeStepsColumns = []string{
-	"id",
+	idColumn,
 	"index",
 	"preparation_id",
 	"minimum_estimated_time_in_seconds",

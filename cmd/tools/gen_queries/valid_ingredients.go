@@ -3,7 +3,7 @@ package main
 const validIngredientsTableName = "valid_ingredients"
 
 var validIngredientsColumns = []string{
-	"id",
+	idColumn,
 	"name",
 	"description",
 	"warning",
@@ -38,7 +38,7 @@ var validIngredientsColumns = []string{
 	"is_fat",
 	"is_acid",
 	"is_heat",
-	"last_indexed_at",
+	lastIndexedAtColumn,
 	createdAtColumn,
 	lastUpdatedAtColumn,
 	archivedAtColumn,

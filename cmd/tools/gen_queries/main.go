@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"path"
 )
@@ -11,6 +10,7 @@ func main() {
 	queryOutput := map[string][]*Query{
 		"admin.sql":    buildAdminQueries(),
 		"webhooks.sql": buildWebhooksQueries(),
+		"users.sql":    buildUsersQueries(),
 	}
 
 	for filePath, queries := range queryOutput {
@@ -29,7 +29,7 @@ func main() {
 		fileContent += "\n"
 
 		if string(existingFile) != fileContent {
-			log.Printf("files don't match: %s\n", filePath)
+			fmt.Printf("files don't match: %s\n", filePath)
 		}
 	}
 

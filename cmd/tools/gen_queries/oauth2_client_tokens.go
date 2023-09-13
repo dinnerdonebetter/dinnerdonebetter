@@ -5,7 +5,7 @@ const oauth2ClientTokensTableName = "oauth2_client_tokens"
 
 /* #nosec G101 */
 var oauth2ClientTokensColumns = []string{
-	"id",
+	idColumn,
 	"client_id",
 	"belongs_to_user",
 	"redirect_uri",

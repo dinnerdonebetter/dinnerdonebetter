@@ -3,7 +3,7 @@ package main
 const validPreparationsTableName = "valid_preparations"
 
 var validPreparationsColumns = []string{
-	"id",
+	idColumn,
 	"name",
 	"description",
 	"icon_path",
@@ -22,7 +22,7 @@ var validPreparationsColumns = []string{
 	"only_for_vessels",
 	"minimum_vessel_count",
 	"maximum_vessel_count",
-	"last_indexed_at",
+	lastIndexedAtColumn,
 	createdAtColumn,
 	lastUpdatedAtColumn,
 	archivedAtColumn,

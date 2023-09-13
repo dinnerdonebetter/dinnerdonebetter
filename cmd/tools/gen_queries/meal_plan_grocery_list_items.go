@@ -3,7 +3,7 @@ package main
 const mealPlanGroceryListItemsTableName = "meal_plan_grocery_list_items"
 
 var mealPlanGroceryListItemsColumns = []string{
-	"id",
+	idColumn,
 	"valid_ingredient",
 	"valid_measurement_unit",
 	"minimum_quantity_needed",

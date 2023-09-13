@@ -3,7 +3,7 @@ package main
 const validVesselsTableName = "valid_vessels"
 
 var validVesselsColumns = []string{
-	"id",
+	idColumn,
 	"name",
 	"plural_name",
 	"description",
@@ -18,7 +18,7 @@ var validVesselsColumns = []string{
 	"length_in_millimeters",
 	"height_in_millimeters",
 	"shape",
-	"last_indexed_at",
+	lastIndexedAtColumn,
 	createdAtColumn,
 	lastUpdatedAtColumn,
 	archivedAtColumn,

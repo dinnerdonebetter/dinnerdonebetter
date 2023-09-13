@@ -3,7 +3,7 @@ package main
 const recipePrepTasksTableName = "recipe_prep_tasks"
 
 var recipePrepTasksColumns = []string{
-	"id",
+	idColumn,
 	"notes",
 	"explicit_storage_instructions",
 	"minimum_time_buffer_before_recipe_in_seconds",

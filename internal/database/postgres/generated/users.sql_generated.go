@@ -13,10 +13,9 @@ import (
 
 const acceptPrivacyPolicyForUser = `-- name: AcceptPrivacyPolicyForUser :exec
 
-UPDATE users SET
-	last_accepted_privacy_policy = NOW()
-WHERE archived_at IS NULL
-	AND id = $1
+UPDATE users
+   SET last_accepted_privacy_policy = NOW()
+ WHERE archived_at IS NULL AND id = $1
 `
 
 func (q *Queries) AcceptPrivacyPolicyForUser(ctx context.Context, db DBTX, id string) error {
@@ -26,10 +25,9 @@ func (q *Queries) AcceptPrivacyPolicyForUser(ctx context.Context, db DBTX, id st
 
 const acceptTermsOfServiceForUser = `-- name: AcceptTermsOfServiceForUser :exec
 
-UPDATE users SET
-	last_accepted_terms_of_service = NOW()
-WHERE archived_at IS NULL
-	AND id = $1
+UPDATE users
+   SET last_accepted_terms_of_service = NOW()
+ WHERE archived_at IS NULL AND id = $1
 `
 
 func (q *Queries) AcceptTermsOfServiceForUser(ctx context.Context, db DBTX, id string) error {
@@ -39,10 +37,9 @@ func (q *Queries) AcceptTermsOfServiceForUser(ctx context.Context, db DBTX, id s
 
 const archiveUser = `-- name: ArchiveUser :execrows
 
-UPDATE users SET
-	archived_at = NOW()
-WHERE archived_at IS NULL
-	AND id = $1
+UPDATE users
+   SET archived_at = NOW()
+ WHERE archived_at IS NULL AND id = $1
 `
 
 func (q *Queries) ArchiveUser(ctx context.Context, db DBTX, id string) (int64, error) {
@@ -55,14 +52,13 @@ func (q *Queries) ArchiveUser(ctx context.Context, db DBTX, id string) (int64, e
 
 const archiveUserMemberships = `-- name: ArchiveUserMemberships :execrows
 
-UPDATE household_user_memberships SET
-	archived_at = NOW()
-WHERE archived_at IS NULL
-	AND belongs_to_user = $1
+UPDATE household_user_memberships
+   SET archived_at = NOW()
+ WHERE archived_at IS NULL AND belongs_to_user = $1
 `
 
-func (q *Queries) ArchiveUserMemberships(ctx context.Context, db DBTX, belongsToUser string) (int64, error) {
-	result, err := db.ExecContext(ctx, archiveUserMemberships, belongsToUser)
+func (q *Queries) ArchiveUserMemberships(ctx context.Context, db DBTX, id string) (int64, error) {
+	result, err := db.ExecContext(ctx, archiveUserMemberships, id)
 	if err != nil {
 		return 0, err
 	}

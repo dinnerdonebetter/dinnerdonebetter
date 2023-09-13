@@ -3,7 +3,7 @@ package main
 const validMeasurementUnitsTableName = "valid_measurement_units"
 
 var validMeasurementUnitsColumns = []string{
-	"id",
+	idColumn,
 	"name",
 	"description",
 	"icon_path",
@@ -13,7 +13,7 @@ var validMeasurementUnitsColumns = []string{
 	"imperial",
 	"plural_name",
 	"slug",
-	"last_indexed_at",
+	lastIndexedAtColumn,
 	createdAtColumn,
 	lastUpdatedAtColumn,
 	archivedAtColumn,
