@@ -72,7 +72,7 @@ func buildWebhooksQueries() []*Query {
 		{
 			Annotation: QueryAnnotation{
 				Name: "GetWebhooksForHousehold",
-				Type: ExecType,
+				Type: ManyType,
 			},
 			Content: formatQuery(
 				buildListQuery(

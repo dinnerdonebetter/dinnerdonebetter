@@ -107,11 +107,9 @@ AND (
                 things.last_updated_at IS NULL
                 OR things.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + interval '999 years'))
             )
+ AND things.belongs_to_user = sqlc.arg(user_id)
 
-            AND addendum
-
-	) as filtered_count
-`
+	) as filtered_count`
 
 		actual := buildFilteredColumnCountQuery("things", true, belongsToUserColumn)
 
@@ -179,8 +177,7 @@ func Test_buildTotalColumnCountQuery(T *testing.T) {
 
             AND whatever
 
-	) as total_count
-`
+	) as total_count`
 		actual := buildTotalColumnCountQuery("things", "whatever")
 
 		assert.Equal(t, expected, actual)

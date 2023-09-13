@@ -168,7 +168,7 @@ func buildFilteredColumnCountQuery(tableName string, hasUpdateColumn bool, owner
 
 	if ownershipColumn != "" {
 		parts := strings.Split(ownershipColumn, "_")
-		builder.Addf(" AND %s = sqlc.arg(%s_id)", ownershipColumn, parts[len(parts)-1])
+		builder.Addf(" AND %s.%s = sqlc.arg(%s_id)", tableName, ownershipColumn, parts[len(parts)-1])
 	}
 
 	builder.Addf(`

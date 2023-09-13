@@ -32,4 +32,6 @@ func main() {
 			log.Printf("files don't match: %s\n", filePath)
 		}
 	}
+
+	fmt.Println("done")
 }
