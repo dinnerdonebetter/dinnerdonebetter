@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"regexp"
 	"slices"
 	"strings"
 
@@ -76,7 +77,13 @@ func formatQuery(query string) string {
 		panic(err)
 	}
 
-	return strings.NewReplacer("now()", "NOW()", "count(", "COUNT(").Replace(formatted)
+	output := strings.NewReplacer("now()", "NOW()", "count(", "COUNT(").Replace(formatted)
+
+	return regexp.MustCompile(`sqlc\.arg\(\s+(\w+)\s+\)`).ReplaceAllStringFunc(output, func(s string) string {
+		replacement := regexp.MustCompile(`\s+`).ReplaceAllString(s, "")
+
+		return replacement
+	})
 }
 
 func mergeColumns(columns1, columns2 []string, indexToInsertSecondSet uint) []string {

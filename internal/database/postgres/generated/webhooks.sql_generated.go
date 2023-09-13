@@ -62,14 +62,13 @@ const createWebhook = `-- name: CreateWebhook :exec
 
 INSERT INTO webhooks (
 	id,
-	"name",
+	name,
 	content_type,
 	url,
-	"method",
+	method,
 	belongs_to_household
 )
-VALUES
-	($1, $2, $3, $4, $5, $6)
+VALUES ($1, $2, $3, $4, $5, $6)
 `
 
 type CreateWebhookParams struct {
@@ -196,18 +195,18 @@ SELECT
 	    FROM
 	        webhooks
 	    WHERE
-	        webhooks.archived_at IS NULL
-	      AND webhooks.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-	      AND webhooks.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-	      AND (
-	            webhooks.last_updated_at IS NULL
-	            OR webhooks.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-	        )
-	      AND (
-	            webhooks.last_updated_at IS NULL
-	            OR webhooks.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-	        )
-          AND webhooks.belongs_to_household = $5
+            webhooks.archived_at IS NULL
+            AND webhooks.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+            AND webhooks.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+            AND (
+                webhooks.last_updated_at IS NULL
+                OR webhooks.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+            )
+            AND (
+                webhooks.last_updated_at IS NULL
+                OR webhooks.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+            )
+            AND webhooks.belongs_to_household = $5
 	) as filtered_count,
 	(
 	    SELECT
@@ -328,17 +327,17 @@ SELECT
             webhooks
         WHERE
             webhooks.archived_at IS NULL
-            AND webhooks.belongs_to_household = $1
-            AND webhooks.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
-            AND webhooks.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
+            AND webhooks.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+            AND webhooks.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
             AND (
                 webhooks.last_updated_at IS NULL
-                OR webhooks.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years'))
+                OR webhooks.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
             )
             AND (
                 webhooks.last_updated_at IS NULL
-                OR webhooks.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
+                OR webhooks.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
             )
+            AND webhooks.belongs_to_household = $5
     ) as filtered_count,
     (
         SELECT
@@ -347,33 +346,33 @@ SELECT
             webhooks
         WHERE
             webhooks.archived_at IS NULL
-            AND webhooks.belongs_to_household = $1
+            AND webhooks.belongs_to_household = $5
     ) as total_count
 FROM webhooks
     JOIN webhook_trigger_events ON webhook_trigger_events.belongs_to_webhook = webhooks.id
 WHERE webhook_trigger_events.archived_at IS NULL
-    AND webhooks.created_at > (COALESCE($2, (SELECT NOW() - interval '999 years')))
-    AND webhooks.created_at < (COALESCE($3, (SELECT NOW() + interval '999 years')))
+    AND webhooks.created_at > (COALESCE($1, (SELECT NOW() - interval '999 years')))
+    AND webhooks.created_at < (COALESCE($2, (SELECT NOW() + interval '999 years')))
     AND (
         webhooks.last_updated_at IS NULL
-        OR webhooks.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years'))
+        OR webhooks.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
     )
     AND (
         webhooks.last_updated_at IS NULL
-        OR webhooks.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
+        OR webhooks.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
     )
     AND webhooks.archived_at IS NULL
-    AND webhooks.belongs_to_household = $1
+    AND webhooks.belongs_to_household = $5
     OFFSET $6
     LIMIT $7
 `
 
 type GetWebhooksForHouseholdParams struct {
-	HouseholdID   string
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
 	UpdatedAfter  sql.NullTime
 	UpdatedBefore sql.NullTime
+	HouseholdID   string
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
@@ -399,11 +398,11 @@ type GetWebhooksForHouseholdRow struct {
 
 func (q *Queries) GetWebhooksForHousehold(ctx context.Context, db DBTX, arg *GetWebhooksForHouseholdParams) ([]*GetWebhooksForHouseholdRow, error) {
 	rows, err := db.QueryContext(ctx, getWebhooksForHousehold,
-		arg.HouseholdID,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
 		arg.UpdatedAfter,
 		arg.UpdatedBefore,
+		arg.HouseholdID,
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)
