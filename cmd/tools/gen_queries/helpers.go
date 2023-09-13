@@ -16,6 +16,7 @@ const (
 	lastUpdatedAtColumn      = "last_updated_at"
 	archivedAtColumn         = "archived_at"
 	belongsToHouseholdColumn = "belongs_to_household"
+	belongsToUserColumn      = "belongs_to_user"
 )
 
 func applyToEach(x []string, f func(string) string) []string {

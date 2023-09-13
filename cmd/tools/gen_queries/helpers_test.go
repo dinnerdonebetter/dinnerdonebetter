@@ -142,7 +142,21 @@ func Test_buildSelectQuery(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		// TODO
+		expected := `SELECT column1 FROM table JOIN another table WHERE addendum condition 1 AND addendum condition 2  AND  table.archived_at IS NULL AND table.id = sqlc.arg(id)` + "\n"
+
+		actual := buildSelectQuery(
+			"table",
+			[]string{
+				"column1",
+			},
+			[]string{
+				"another table",
+			},
+			"addendum condition 1",
+			"addendum condition 2",
+		)
+
+		assert.Equal(t, expected, actual)
 	})
 }
 
@@ -262,6 +276,21 @@ func Test_mergeColumns(T *testing.T) {
 			}),
 			5,
 		)
+
+		assert.Equal(t, expected, actual)
+	})
+}
+
+func Test_buildUpdateQuery(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		expected := `UPDATE things SET last_updated_at = NOW(), column1 = sqlc.arg(column1),
+	column2 = sqlc.arg(column2) WHERE archived_at IS NULL  AND things.belongs_to_user = sqlc.arg(belongs_to_user_id) AND id = sqlc.arg(id)` + "\n"
+
+		actual := buildUpdateQuery("things", []string{"column1", "column2"}, belongsToUserColumn)
 
 		assert.Equal(t, expected, actual)
 	})

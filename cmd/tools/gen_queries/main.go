@@ -14,10 +14,6 @@ func main() {
 	}
 
 	for filePath, queries := range queryOutput {
-		if len(queries) == 0 || filePath == "admin.sql" {
-			continue
-		}
-
 		existingFile, err := os.ReadFile(path.Join("internal", "database", "postgres", "sqlc_queries", filePath))
 		if err != nil {
 			panic(err)
