@@ -1,7 +1,7 @@
 package main
 
-func buildAdminQueries() []Query {
-	return []Query{
+func buildAdminQueries() []*Query {
+	return []*Query{
 		{
 			Annotation: QueryAnnotation{
 				Name: "SetUserAccountStatus",

@@ -1,7 +1,9 @@
 package main
 
+/* #nosec G101 */
 const oauth2ClientTokensTableName = "oauth2_client_tokens"
 
+/* #nosec G101 */
 var oauth2ClientTokensColumns = []string{
 	"id",
 	"client_id",

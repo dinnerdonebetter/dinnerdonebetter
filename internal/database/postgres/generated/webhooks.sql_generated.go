@@ -14,21 +14,19 @@ import (
 const archiveWebhook = `-- name: ArchiveWebhook :execrows
 
 UPDATE webhooks
-SET
-	last_updated_at = NOW(),
-	archived_at = NOW()
-WHERE archived_at IS NULL
-	AND belongs_to_household = $1
-	AND id = $2
+   SET archived_at = NOW()
+ WHERE archived_at IS NULL
+   AND id = $1
+   AND belongs_to_household = $2
 `
 
 type ArchiveWebhookParams struct {
-	BelongsToHousehold string
-	ID                 string
+	ID          string
+	HouseholdID string
 }
 
 func (q *Queries) ArchiveWebhook(ctx context.Context, db DBTX, arg *ArchiveWebhookParams) (int64, error) {
-	result, err := db.ExecContext(ctx, archiveWebhook, arg.BelongsToHousehold, arg.ID)
+	result, err := db.ExecContext(ctx, archiveWebhook, arg.ID, arg.HouseholdID)
 	if err != nil {
 		return 0, err
 	}
@@ -37,22 +35,22 @@ func (q *Queries) ArchiveWebhook(ctx context.Context, db DBTX, arg *ArchiveWebho
 
 const checkWebhookExistence = `-- name: CheckWebhookExistence :one
 
-SELECT EXISTS (
-	SELECT webhooks.id
-	FROM webhooks
-	WHERE webhooks.archived_at IS NULL
-	  AND webhooks.belongs_to_household = $1
-	  AND webhooks.id = $2
-)
+SELECT EXISTS(
+		SELECT webhooks.id
+		  FROM webhooks
+		 WHERE webhooks.archived_at IS NULL
+		   AND webhooks.id = $1
+		   AND webhooks.belongs_to_household = $2
+       )
 `
 
 type CheckWebhookExistenceParams struct {
-	BelongsToHousehold string
-	ID                 string
+	ID          string
+	HouseholdID string
 }
 
 func (q *Queries) CheckWebhookExistence(ctx context.Context, db DBTX, arg *CheckWebhookExistenceParams) (bool, error) {
-	row := db.QueryRowContext(ctx, checkWebhookExistence, arg.BelongsToHousehold, arg.ID)
+	row := db.QueryRowContext(ctx, checkWebhookExistence, arg.ID, arg.HouseholdID)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
@@ -60,15 +58,16 @@ func (q *Queries) CheckWebhookExistence(ctx context.Context, db DBTX, arg *Check
 
 const createWebhook = `-- name: CreateWebhook :exec
 
-INSERT INTO webhooks (
-	id,
-	name,
-	content_type,
-	url,
-	method,
-	belongs_to_household
-)
-VALUES ($1, $2, $3, $4, $5, $6)
+INSERT
+  INTO webhooks (id, name, content_type, url, method, belongs_to_household)
+VALUES (
+		$1,
+		$2,
+		$3,
+		$4,
+		$5,
+		$6
+       )
 `
 
 type CreateWebhookParams struct {
@@ -94,32 +93,34 @@ func (q *Queries) CreateWebhook(ctx context.Context, db DBTX, arg *CreateWebhook
 
 const getWebhook = `-- name: GetWebhook :many
 
-SELECT
-	webhooks.id as webhook_id,
-	webhooks.name as webhook_name,
-	webhooks.content_type as webhook_content_type,
-	webhooks.url as webhook_url,
-	webhooks.method as webhook_method,
-	webhook_trigger_events.id as webhook_trigger_event_id,
-	webhook_trigger_events.trigger_event as webhook_trigger_event_trigger_event,
-	webhook_trigger_events.belongs_to_webhook as webhook_trigger_event_belongs_to_webhook,
-	webhook_trigger_events.created_at as webhook_trigger_event_created_at,
-	webhook_trigger_events.archived_at as webhook_trigger_event_archived_at,
-	webhooks.created_at as webhook_created_at,
-	webhooks.last_updated_at as webhook_last_updated_at,
-	webhooks.archived_at as webhook_archived_at,
-	webhooks.belongs_to_household as webhook_belongs_to_household
-FROM webhook_trigger_events
- JOIN webhooks ON webhook_trigger_events.belongs_to_webhook=webhooks.id
-WHERE webhooks.archived_at IS NULL
-  AND webhook_trigger_events.archived_at IS NULL
-  AND webhooks.belongs_to_household = $1
-  AND webhooks.id = $2
+SELECT webhooks.id AS webhook_id,
+       webhooks.name AS webhook_name,
+       webhooks.content_type AS webhook_content_type,
+       webhooks.url AS webhook_url,
+       webhooks.method AS webhook_method,
+       webhook_trigger_events.id AS webhook_trigger_event_id,
+       webhook_trigger_events.trigger_event
+		AS webhook_trigger_event_trigger_event,
+       webhook_trigger_events.belongs_to_webhook
+		AS webhook_trigger_event_belongs_to_webhook,
+       webhook_trigger_events.created_at AS webhook_trigger_event_created_at,
+       webhook_trigger_events.archived_at AS webhook_trigger_event_archived_at,
+       webhooks.created_at AS webhook_created_at,
+       webhooks.last_updated_at AS webhook_last_updated_at,
+       webhooks.archived_at AS webhook_archived_at,
+       webhooks.belongs_to_household AS webhook_belongs_to_household
+  FROM webhooks
+  JOIN webhook_trigger_events ON webhooks.id
+                                 = webhook_trigger_events.belongs_to_webhook
+ WHERE webhook_trigger_events.archived_at IS NULL
+   AND webhooks.belongs_to_household = $1
+   AND webhooks.archived_at IS NULL
+   AND webhooks.id = $2
 `
 
 type GetWebhookParams struct {
 	HouseholdID string
-	WebhookID   string
+	ID          string
 }
 
 type GetWebhookRow struct {
@@ -140,7 +141,7 @@ type GetWebhookRow struct {
 }
 
 func (q *Queries) GetWebhook(ctx context.Context, db DBTX, arg *GetWebhookParams) ([]*GetWebhookRow, error) {
-	rows, err := db.QueryContext(ctx, getWebhook, arg.HouseholdID, arg.WebhookID)
+	rows, err := db.QueryContext(ctx, getWebhook, arg.HouseholdID, arg.ID)
 	if err != nil {
 		return nil, err
 	}

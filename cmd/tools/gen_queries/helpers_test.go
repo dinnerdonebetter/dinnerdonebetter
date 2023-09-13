@@ -43,7 +43,7 @@ func Test_buildArchiveQuery(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		expected := `UPDATE things SET archived_at = NOW() WHERE things.archived_at IS NULL AND things.id = sqlc.arg(id) AND things.whatever = sqlc.arg(whatever_id)` + "\n"
+		expected := `UPDATE things SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id) AND whatever = sqlc.arg(whatever_id)` + "\n"
 
 		actual := buildArchiveQuery("things", "whatever")
 
@@ -142,7 +142,7 @@ func Test_buildSelectQuery(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		expected := `SELECT column1 FROM table JOIN another table WHERE addendum condition 1 AND addendum condition 2  AND  table.archived_at IS NULL AND table.id = sqlc.arg(id)` + "\n"
+		expected := `SELECT column1 AS column1 FROM table JOIN another table WHERE addendum condition 1 AND addendum condition 2  AND  table.archived_at IS NULL AND table.id = sqlc.arg(id)` + "\n"
 
 		actual := buildSelectQuery(
 			"table",

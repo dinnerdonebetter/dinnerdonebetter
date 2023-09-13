@@ -36,8 +36,8 @@ func (q *Querier) WebhookExists(ctx context.Context, webhookID, householdID stri
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	result, err := q.generatedQuerier.CheckWebhookExistence(ctx, q.db, &generated.CheckWebhookExistenceParams{
-		BelongsToHousehold: householdID,
-		ID:                 webhookID,
+		HouseholdID: householdID,
+		ID:          webhookID,
 	})
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing webhook existence check")
@@ -67,7 +67,7 @@ func (q *Querier) GetWebhook(ctx context.Context, webhookID, householdID string)
 
 	results, err := q.generatedQuerier.GetWebhook(ctx, q.db, &generated.GetWebhookParams{
 		HouseholdID: householdID,
-		WebhookID:   webhookID,
+		ID:          webhookID,
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching webhook")
@@ -312,8 +312,8 @@ func (q *Querier) ArchiveWebhook(ctx context.Context, webhookID, householdID str
 	})
 
 	if _, err := q.generatedQuerier.ArchiveWebhook(ctx, q.db, &generated.ArchiveWebhookParams{
-		BelongsToHousehold: householdID,
-		ID:                 webhookID,
+		HouseholdID: householdID,
+		ID:          webhookID,
 	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving webhook")
 	}

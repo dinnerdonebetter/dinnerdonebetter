@@ -91,9 +91,7 @@ func mergeColumns(columns1, columns2 []string, indexToInsertSecondSet uint) []st
 
 	for i, col1 := range columns1 {
 		if i == int(indexToInsertSecondSet) {
-			for _, col2 := range columns2 {
-				output = append(output, col2)
-			}
+			output = append(output, columns2...)
 		}
 		output = append(output, col1)
 	}
@@ -200,15 +198,14 @@ func buildArchiveQuery(tableName, ownershipColumn string) string {
 	addendum := ""
 	if ownershipColumn != "" {
 		parts := strings.Split(ownershipColumn, "_")
-		addendum = fmt.Sprintf(" AND %s.%s = sqlc.arg(%s_id)", tableName, ownershipColumn, parts[len(parts)-1])
+		addendum = fmt.Sprintf(" AND %s = sqlc.arg(%s_id)", ownershipColumn, parts[len(parts)-1])
 	}
 
 	builder := archiveQueryBuilder.Addf(
-		`UPDATE %s SET %s = NOW() WHERE %s.archived_at IS NULL AND %s.%s = sqlc.arg(%s)%s`,
+		`UPDATE %s SET %s = NOW() WHERE %s IS NULL AND %s = sqlc.arg(%s)%s`,
 		tableName,
 		archivedAtColumn,
-		tableName,
-		tableName,
+		archivedAtColumn,
 		idColumn,
 		idColumn,
 		addendum,
@@ -224,20 +221,26 @@ func buildSelectQuery(tableName string, columnNames, joins []string, conditions 
 		return fmt.Sprintf("JOIN %s", s)
 	})
 
-	conditionStatements := applyToEach(conditions, func(s string) string {
-		return fmt.Sprintf("%s", s)
-	})
-
 	and := ""
-	if len(conditionStatements) > 0 {
+	if len(conditions) > 0 {
 		and = " AND "
 	}
 
-	allConditions := strings.Join(conditionStatements, " AND ")
+	allConditions := strings.Join(conditions, " AND ")
+
+	columns := applyToEach(columnNames, func(s string) string {
+		if len(joinStatements) > 0 {
+			parts := strings.Split(s, ".")
+			parts[0] = strings.TrimSuffix(parts[0], "s")
+
+			return fmt.Sprintf("%s AS %s", s, strings.Join(parts, "_"))
+		}
+		return s
+	})
 
 	builder := selectQueryBuilder.Addf(
 		`SELECT %s FROM %s %s WHERE %s %s %s.archived_at IS NULL AND %s.%s = sqlc.arg(%s)`,
-		strings.Join(columnNames, ",\n\t"),
+		strings.Join(columns, ",\n\t"),
 		tableName,
 		strings.Join(joinStatements, "\n\t"),
 		allConditions,

@@ -28,7 +28,7 @@ var (
 	}
 )
 
-func buildWebhooksQueries() []Query {
+func buildWebhooksQueries() []*Query {
 	insertColumns := filterForInsert(webhooksColumns)
 	fullSelectColumns := mergeColumns(
 		applyToEach(webhooksColumns, func(s string) string {
@@ -38,21 +38,21 @@ func buildWebhooksQueries() []Query {
 			return fullColumnName(webhookTriggerEventsTableName, s)
 		}), 5)
 
-	//queryFilteredColumns := append(
-	//	mergeColumns(
-	//		applyToEach(webhooksColumns, func(s string) string {
-	//			return fullColumnName(webhooksTableName, s)
-	//		}),
-	//		applyToEach(webhookTriggerEventsColumns, func(s string) string {
-	//			return fullColumnName(webhookTriggerEventsTableName, s)
-	//		}),
-	//		5,
-	//	),
-	//	buildFilteredColumnCountQuery(webhooksTableName, true, "webhooks.belongs_to_household = sqlc.arg(household_id)"),
-	//	buildTotalColumnCountQuery(webhooksTableName, ""),
-	//)
+	// queryFilteredColumns := append(
+	// 	mergeColumns(
+	// 		applyToEach(webhooksColumns, func(s string) string {
+	// 			return fullColumnName(webhooksTableName, s)
+	// 		}),
+	// 		applyToEach(webhookTriggerEventsColumns, func(s string) string {
+	// 			return fullColumnName(webhookTriggerEventsTableName, s)
+	// 		}),
+	// 		5,
+	// 	),
+	// 	buildFilteredColumnCountQuery(webhooksTableName, true, "webhooks.belongs_to_household = sqlc.arg(household_id)"),
+	// 	buildTotalColumnCountQuery(webhooksTableName, ""),
+	// )
 
-	return []Query{
+	return []*Query{
 		{
 			Annotation: QueryAnnotation{
 				Name: "ArchiveWebhook",

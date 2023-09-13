@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	queryOutput := map[string][]Query{
+	queryOutput := map[string][]*Query{
 		"admin.sql":    buildAdminQueries(),
 		"webhooks.sql": buildWebhooksQueries(),
 	}
