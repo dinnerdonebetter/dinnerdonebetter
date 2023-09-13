@@ -55,6 +55,8 @@ func createRecipeStepIngredientForTest(t *testing.T, ctx context.Context, recipe
 }
 
 func TestQuerier_Integration_RecipeStepIngredients(t *testing.T) {
+	t.Parallel()
+
 	if !runningContainerTests {
 		t.SkipNow()
 	}

@@ -11,6 +11,8 @@ import (
 )
 
 func TestQuerier_Integration_Admin(t *testing.T) {
+	t.Parallel()
+
 	if !runningContainerTests {
 		t.SkipNow()
 	}

@@ -11,25 +11,26 @@ concurrency:
 
 name: check
 jobs:
- dependency_injection:
-   strategy:
+  dependency_injection:
+    timeout-minutes: 10
+    strategy:
      matrix:
        go-version: [ '1.21.x' ]
-   runs-on: ubuntu-latest
-   steps:
-     - name: Install Go
-       uses: actions/setup-go@v4
-       with:
-         go-version: ${{ matrix.go-version }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go-version }}
 
-     - name: Checkout code
-       uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-     - name: Install wire
-       run: go install github.com/google/wire/cmd/wire@latest
+      - name: Install wire
+        run: go install github.com/google/wire/cmd/wire@latest
 
-     - name: Ensure dependency injection code can be generated
-       run: make rewire
+      - name: Ensure dependency injection code can be generated
+        run: make rewire
 
-     - name: Check for changes
-       run: git diff --exit-code
+      - name: Check for changes
+        run: git diff --exit-code

@@ -56,6 +56,8 @@ func createHouseholdInvitationForTest(t *testing.T, ctx context.Context, example
 }
 
 func TestQuerier_Integration_HouseholdInvitations(t *testing.T) {
+	t.Parallel()
+
 	if !runningContainerTests {
 		t.SkipNow()
 	}

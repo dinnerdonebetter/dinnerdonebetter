@@ -124,6 +124,8 @@ func createMealPlanForTest(t *testing.T, ctx context.Context, exampleMealPlan *t
 }
 
 func TestQuerier_Integration_MealPlans(t *testing.T) {
+	t.Parallel()
+
 	if !runningContainerTests {
 		t.SkipNow()
 	}

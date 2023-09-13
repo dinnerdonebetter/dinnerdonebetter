@@ -389,10 +389,6 @@ issues:
       linters:
         - gocritic
 
-    - path: internal/database/postgres
-      linters:
-        - paralleltest
-
     - path: internal/featureflags/posthog
       linters:
         - paralleltest

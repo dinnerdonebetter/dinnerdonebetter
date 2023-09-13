@@ -66,6 +66,8 @@ func createRecipeStepCompletionConditionForTest(t *testing.T, ctx context.Contex
 }
 
 func TestQuerier_Integration_RecipeStepCompletionConditions(t *testing.T) {
+	t.Parallel()
+
 	if !runningContainerTests {
 		t.SkipNow()
 	}

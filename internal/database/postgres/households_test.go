@@ -48,6 +48,8 @@ func createHouseholdForTest(t *testing.T, ctx context.Context, exampleHousehold 
 }
 
 func TestQuerier_Integration_Households(t *testing.T) {
+	t.Parallel()
+
 	if !runningContainerTests {
 		t.SkipNow()
 	}

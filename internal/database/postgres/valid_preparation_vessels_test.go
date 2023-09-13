@@ -47,6 +47,8 @@ func createValidPreparationVesselForTest(t *testing.T, ctx context.Context, exam
 }
 
 func TestQuerier_Integration_ValidPreparationVessels(t *testing.T) {
+	t.Parallel()
+
 	if !runningContainerTests {
 		t.SkipNow()
 	}

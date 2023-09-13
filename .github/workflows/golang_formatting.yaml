@@ -13,6 +13,7 @@ concurrency:
 name: check
 jobs:
   golang_formatting:
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     strategy:
       matrix:

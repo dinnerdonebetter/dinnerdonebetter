@@ -38,6 +38,8 @@ func createValidMeasurementUnitForTest(t *testing.T, ctx context.Context, exampl
 }
 
 func TestQuerier_Integration_ValidMeasurementUnits(t *testing.T) {
+	t.Parallel()
+
 	if !runningContainerTests {
 		t.SkipNow()
 	}

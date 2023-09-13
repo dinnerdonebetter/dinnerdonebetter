@@ -10,6 +10,7 @@ on:
 name: deploy
 jobs:
   infrastructure:
+    timeout-minutes: 35
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

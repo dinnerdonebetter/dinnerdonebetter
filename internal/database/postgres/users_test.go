@@ -44,6 +44,8 @@ func createUserForTest(t *testing.T, ctx context.Context, exampleUser *types.Use
 }
 
 func TestQuerier_Integration_Users(t *testing.T) {
+	t.Parallel()
+
 	if !runningContainerTests {
 		t.SkipNow()
 	}

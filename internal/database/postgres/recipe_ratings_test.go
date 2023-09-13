@@ -39,6 +39,8 @@ func createRecipeRatingForTest(t *testing.T, ctx context.Context, exampleRecipeR
 }
 
 func TestQuerier_Integration_RecipeRatings(t *testing.T) {
+	t.Parallel()
+
 	if !runningContainerTests {
 		t.SkipNow()
 	}

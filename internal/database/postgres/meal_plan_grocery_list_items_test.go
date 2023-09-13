@@ -52,6 +52,8 @@ func createMealPlanGroceryListItemForTest(t *testing.T, ctx context.Context, exa
 }
 
 func TestQuerier_Integration_MealPlanGroceryListItems(t *testing.T) {
+	t.Parallel()
+
 	if !runningContainerTests {
 		t.SkipNow()
 	}

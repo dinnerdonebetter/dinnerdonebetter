@@ -49,6 +49,8 @@ func createValidIngredientMeasurementUnitForTest(t *testing.T, ctx context.Conte
 }
 
 func TestQuerier_Integration_ValidIngredientMeasurementUnits(t *testing.T) {
+	t.Parallel()
+
 	if !runningContainerTests {
 		t.SkipNow()
 	}

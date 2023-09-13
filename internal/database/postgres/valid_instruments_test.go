@@ -38,6 +38,8 @@ func createValidInstrumentForTest(t *testing.T, ctx context.Context, exampleVali
 }
 
 func TestQuerier_Integration_ValidInstruments(t *testing.T) {
+	t.Parallel()
+
 	if !runningContainerTests {
 		t.SkipNow()
 	}

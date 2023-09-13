@@ -10,11 +10,12 @@ concurrency:
 
 name: integration tests
 jobs:
- run:
-   runs-on: ubuntu-latest
-   steps:
-     - name: Checkout code
-       uses: actions/checkout@v3
+  run:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-     - name: run integration tests
-       run: make integration_tests
+      - name: run integration tests
+        run: make integration_tests
