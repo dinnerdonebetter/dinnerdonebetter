@@ -10,9 +10,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
-name: check
+name: formatting
 jobs:
-  golang_formatting:
+  golang:
     timeout-minutes: 10
     runs-on: ubuntu-latest
     strategy:

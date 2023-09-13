@@ -99,7 +99,37 @@ func mergeColumns(columns1, columns2 []string, indexToInsertSecondSet uint) []st
 	return output
 }
 
-func buildFilteredColumnCountQuery(tableName string, hasUpdateColumn bool, addendum string) string {
+func buildFilteredColumnConditionsForListQuery(tableName string, hasUpdateColumn bool) string {
+	var filteredCountQueryBuilder builq.Builder
+
+	builder := filteredCountQueryBuilder.Addf(`
+            %s.created_at > COALESCE(sqlc.narg(created_before), (SELECT NOW() - interval '999 years'))
+            AND %s.created_at < COALESCE(sqlc.narg(created_after), (SELECT NOW() + interval '999 years'))
+           `,
+		tableName,
+		tableName,
+	)
+
+	if hasUpdateColumn {
+		builder.Addf(`AND (
+                %s.last_updated_at IS NULL
+                OR %s.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - interval '999 years'))
+            )
+            AND (
+                %s.last_updated_at IS NULL
+                OR %s.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + interval '999 years'))
+            )`,
+			tableName,
+			tableName,
+			tableName,
+			tableName,
+		)
+	}
+
+	return strings.TrimSpace(buildRawQuery(builder))
+}
+
+func buildFilteredColumnCountQuery(tableName string, hasUpdateColumn bool, ownershipColumn string) string {
 	var filteredCountQueryBuilder builq.Builder
 
 	builder := filteredCountQueryBuilder.Addf(`(
@@ -136,18 +166,18 @@ func buildFilteredColumnCountQuery(tableName string, hasUpdateColumn bool, adden
 		)
 	}
 
-	if addendum != "" {
-		builder.Addf(`
-            AND %s`, addendum)
+	if ownershipColumn != "" {
+		parts := strings.Split(ownershipColumn, "_")
+		builder.Addf(" AND %s = sqlc.arg(%s_id)", ownershipColumn, parts[len(parts)-1])
 	}
 
 	builder.Addf(`
 	) as filtered_count`)
 
-	return buildRawQuery(builder)
+	return strings.TrimSpace(buildRawQuery(builder))
 }
 
-func buildTotalColumnCountQuery(tableName, addendum string) string {
+func buildTotalColumnCountQuery(tableName string, addendumConditions ...string) string {
 	var totalCountQueryBuilder builq.Builder
 
 	builder := totalCountQueryBuilder.Addf(`(
@@ -164,7 +194,7 @@ func buildTotalColumnCountQuery(tableName, addendum string) string {
 		tableName,
 	)
 
-	if addendum != "" {
+	for _, addendum := range addendumConditions {
 		builder.Addf(`
             AND %s`, addendum)
 	}
@@ -172,7 +202,7 @@ func buildTotalColumnCountQuery(tableName, addendum string) string {
 	builder.Addf(`
 	) as total_count`)
 
-	return buildRawQuery(builder)
+	return strings.TrimSpace(buildRawQuery(builder))
 }
 
 func buildCreateQuery(tableName string, columns []string) string {
@@ -252,6 +282,49 @@ func buildSelectQuery(tableName string, columnNames, joins []string, byID, addAl
 		and,
 		tableName,
 		idAddendum,
+	)
+
+	return buildRawQuery(builder)
+}
+
+func buildListQuery(tableName string, columnNames, joins []string, addAliases bool, ownershipColumn string, conditions ...string) string {
+	var selectQueryBuilder builq.Builder
+
+	joinStatements := applyToEach(joins, func(s string) string {
+		return fmt.Sprintf("JOIN %s", s)
+	})
+
+	and := ""
+	if len(conditions) > 0 {
+		and = " AND "
+	}
+
+	conditionsX := append([]string{buildFilteredColumnConditionsForListQuery(tableName, true)}, conditions...)
+	allConditions := strings.Join(conditionsX, " AND ")
+
+	columns := append(applyToEach(columnNames, func(s string) string {
+		if addAliases {
+			parts := strings.Split(s, ".")
+			parts[0] = strings.TrimSuffix(parts[0], "s")
+
+			return fmt.Sprintf("%s AS %s", s, strings.Join(parts, "_"))
+		}
+		return s
+	}),
+		buildFilteredColumnCountQuery(webhooksTableName, true, ownershipColumn),
+		buildTotalColumnCountQuery(webhooksTableName, conditions...),
+	)
+
+	columnsToUse := strings.Join(columns, ",\n\t")
+
+	builder := selectQueryBuilder.Addf(
+		`SELECT %s FROM %s %s WHERE %s %s %s.archived_at IS NULL OFFSET sqlc.narg(query_offset) LIMIT sqlc.narg(query_limit)`,
+		columnsToUse,
+		tableName,
+		strings.Join(joinStatements, "\n\t"),
+		allConditions,
+		and,
+		tableName,
 	)
 
 	return buildRawQuery(builder)

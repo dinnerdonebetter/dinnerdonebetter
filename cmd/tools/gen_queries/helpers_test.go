@@ -113,7 +113,7 @@ AND (
 	) as filtered_count
 `
 
-		actual := buildFilteredColumnCountQuery("things", true, "addendum")
+		actual := buildFilteredColumnCountQuery("things", true, belongsToUserColumn)
 
 		assert.Equal(t, expected, actual)
 	})

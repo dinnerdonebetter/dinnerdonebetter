@@ -75,18 +75,14 @@ func buildWebhooksQueries() []*Query {
 				Type: ExecType,
 			},
 			Content: formatQuery(
-				buildSelectQuery(
+				buildListQuery(
 					webhooksTableName,
-					append(
-						fullSelectColumns,
-						buildFilteredColumnCountQuery(webhooksTableName, true, "webhooks.belongs_to_household = sqlc.arg(household_id)"),
-						buildTotalColumnCountQuery(webhooksTableName, ""),
-					),
+					fullSelectColumns,
 					[]string{webhookTriggerEventsJoin},
 					false,
-					false,
-					"webhook_trigger_events.archived_at IS NULL",
+					belongsToHouseholdColumn,
 					"webhooks.belongs_to_household = sqlc.arg(household_id)",
+					"webhook_trigger_events.archived_at IS NULL",
 				),
 			),
 		},

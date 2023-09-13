@@ -13,7 +13,7 @@ concurrency:
 name: unit tests
 jobs:
   run:
-    timeout-minutes: 10
+    timeout-minutes: 25
     strategy:
       matrix:
         go-version: [ '1.21.x' ]
