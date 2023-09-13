@@ -294,7 +294,6 @@ type Querier interface {
 	GetValidVessels(ctx context.Context, db DBTX, arg *GetValidVesselsParams) ([]*GetValidVesselsRow, error)
 	GetValidVesselsWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetValidVesselsWithIDsRow, error)
 	GetWebhook(ctx context.Context, db DBTX, arg *GetWebhookParams) ([]*GetWebhookRow, error)
-	GetWebhooks(ctx context.Context, db DBTX, arg *GetWebhooksParams) ([]*GetWebhooksRow, error)
 	GetWebhooksForHousehold(ctx context.Context, db DBTX, arg *GetWebhooksForHouseholdParams) ([]*GetWebhooksForHouseholdRow, error)
 	GetWebhooksForHouseholdAndEvent(ctx context.Context, db DBTX, arg *GetWebhooksForHouseholdAndEventParams) ([]*Webhooks, error)
 	ListAllMealPlanTasksByMealPlan(ctx context.Context, db DBTX, mealPlanID string) ([]*ListAllMealPlanTasksByMealPlanRow, error)

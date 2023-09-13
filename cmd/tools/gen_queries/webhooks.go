@@ -38,20 +38,6 @@ func buildWebhooksQueries() []*Query {
 			return fullColumnName(webhookTriggerEventsTableName, s)
 		}), 5)
 
-	// queryFilteredColumns := append(
-	// 	mergeColumns(
-	// 		applyToEach(webhooksColumns, func(s string) string {
-	// 			return fullColumnName(webhooksTableName, s)
-	// 		}),
-	// 		applyToEach(webhookTriggerEventsColumns, func(s string) string {
-	// 			return fullColumnName(webhookTriggerEventsTableName, s)
-	// 		}),
-	// 		5,
-	// 	),
-	// 	buildFilteredColumnCountQuery(webhooksTableName, true, "webhooks.belongs_to_household = sqlc.arg(household_id)"),
-	// 	buildTotalColumnCountQuery(webhooksTableName, ""),
-	// )
-
 	return []*Query{
 		{
 			Annotation: QueryAnnotation{
@@ -85,6 +71,44 @@ func buildWebhooksQueries() []*Query {
 		},
 		{
 			Annotation: QueryAnnotation{
+				Name: "GetWebhooksForHousehold",
+				Type: ExecType,
+			},
+			Content: formatQuery(
+				buildSelectQuery(
+					webhooksTableName,
+					append(
+						fullSelectColumns,
+						buildFilteredColumnCountQuery(webhooksTableName, true, "webhooks.belongs_to_household = sqlc.arg(household_id)"),
+						buildTotalColumnCountQuery(webhooksTableName, ""),
+					),
+					[]string{webhookTriggerEventsJoin},
+					false,
+					false,
+					"webhook_trigger_events.archived_at IS NULL",
+					"webhooks.belongs_to_household = sqlc.arg(household_id)",
+				),
+			),
+		},
+		{
+			Annotation: QueryAnnotation{
+				Name: "GetWebhooksForHouseholdAndEvent",
+				Type: ManyType,
+			},
+			Content: formatQuery(
+				buildSelectQuery(webhooksTableName, applyToEach(webhooksColumns, func(s string) string {
+					return fullColumnName(webhooksTableName, s)
+				}), []string{webhookTriggerEventsJoin},
+					false,
+					false,
+					"webhook_trigger_events.archived_at IS NULL",
+					"webhook_trigger_events.trigger_event = sqlc.arg(trigger_event)",
+					"webhooks.belongs_to_household = sqlc.arg(household_id)",
+				),
+			),
+		},
+		{
+			Annotation: QueryAnnotation{
 				Name: "GetWebhook",
 				Type: ManyType,
 			},
@@ -93,6 +117,8 @@ func buildWebhooksQueries() []*Query {
 					webhooksTableName,
 					fullSelectColumns,
 					[]string{webhookTriggerEventsJoin},
+					true,
+					true,
 					"webhook_trigger_events.archived_at IS NULL",
 					"webhooks.belongs_to_household = sqlc.arg(household_id)",
 				),

@@ -152,6 +152,8 @@ func Test_buildSelectQuery(T *testing.T) {
 			[]string{
 				"another table",
 			},
+			true,
+			true,
 			"addendum condition 1",
 			"addendum condition 2",
 		)

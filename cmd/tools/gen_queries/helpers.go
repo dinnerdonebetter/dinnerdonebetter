@@ -214,7 +214,7 @@ func buildArchiveQuery(tableName, ownershipColumn string) string {
 	return buildRawQuery(builder)
 }
 
-func buildSelectQuery(tableName string, columnNames, joins []string, conditions ...string) string {
+func buildSelectQuery(tableName string, columnNames, joins []string, byID, addAliases bool, conditions ...string) string {
 	var selectQueryBuilder builq.Builder
 
 	joinStatements := applyToEach(joins, func(s string) string {
@@ -229,7 +229,7 @@ func buildSelectQuery(tableName string, columnNames, joins []string, conditions 
 	allConditions := strings.Join(conditions, " AND ")
 
 	columns := applyToEach(columnNames, func(s string) string {
-		if len(joinStatements) > 0 {
+		if addAliases {
 			parts := strings.Split(s, ".")
 			parts[0] = strings.TrimSuffix(parts[0], "s")
 
@@ -238,17 +238,20 @@ func buildSelectQuery(tableName string, columnNames, joins []string, conditions 
 		return s
 	})
 
+	idAddendum := ""
+	if byID {
+		idAddendum = fmt.Sprintf(" AND %s.%s = sqlc.arg(%s)", tableName, idColumn, idColumn)
+	}
+
 	builder := selectQueryBuilder.Addf(
-		`SELECT %s FROM %s %s WHERE %s %s %s.archived_at IS NULL AND %s.%s = sqlc.arg(%s)`,
+		`SELECT %s FROM %s %s WHERE %s %s %s.archived_at IS NULL%s`,
 		strings.Join(columns, ",\n\t"),
 		tableName,
 		strings.Join(joinStatements, "\n\t"),
 		allConditions,
 		and,
 		tableName,
-		tableName,
-		idColumn,
-		idColumn,
+		idAddendum,
 	)
 
 	return buildRawQuery(builder)
