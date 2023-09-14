@@ -1,59 +1,30 @@
 -- name: AcceptPrivacyPolicyForUser :exec
 
-UPDATE users SET last_accepted_privacy_policy = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
+UPDATE users
+   SET last_accepted_privacy_policy = NOW()
+ WHERE archived_at IS NULL AND id = sqlc.arg(id);
 
 -- name: AcceptTermsOfServiceForUser :exec
 
-UPDATE users SET last_accepted_terms_of_service = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
+UPDATE users
+   SET last_accepted_terms_of_service = NOW()
+ WHERE archived_at IS NULL AND id = sqlc.arg(id);
 
 -- name: ArchiveUser :execrows
 
-UPDATE users SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
+UPDATE users
+   SET archived_at = NOW()
+ WHERE archived_at IS NULL AND id = sqlc.arg(id);
 
 -- name: ArchiveUserMemberships :execrows
 
-UPDATE household_user_memberships SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_user = sqlc.arg(id);
+UPDATE household_user_memberships
+   SET archived_at = NOW()
+ WHERE archived_at IS NULL AND belongs_to_user = sqlc.arg(id);
 
 -- name: CreateUser :exec
 
-INSERT
-INTO
-	users
-		(
-			id,
-			username,
-			avatar_src,
-			email_address,
-			hashed_password,
-			requires_password_change,
-			two_factor_secret,
-			two_factor_secret_verified_at,
-			service_role,
-			user_account_status,
-			user_account_status_explanation,
-			birthday,
-			email_address_verification_token,
-			first_name,
-			last_name
-		)
-VALUES
-	(
-		sqlc.arg(id),
-		sqlc.arg(username),
-		sqlc.arg(avatar_src),
-		sqlc.arg(email_address),
-		sqlc.arg(hashed_password),
-		sqlc.arg(requires_password_change),
-		sqlc.arg(two_factor_secret),
-		sqlc.arg(two_factor_secret_verified_at),
-		sqlc.arg(service_role),
-		sqlc.arg(user_account_status),
-		sqlc.arg(user_account_status_explanation),
-		sqlc.arg(birthday),
-		sqlc.arg(email_address_verification_token),
-		sqlc.arg(first_name),
-		sqlc.arg(last_name)
-	);
+INSERT INTO users (id,first_name,last_name,username,email_address,hashed_password,two_factor_secret,avatar_src,user_account_status,birthday,service_role,email_address_verification_token) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);
 
 -- name: GetAdminUserByUsername :one
 
