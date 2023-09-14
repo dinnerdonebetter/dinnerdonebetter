@@ -100,110 +100,112 @@ func mergeColumns(columns1, columns2 []string, indexToInsertSecondSet uint) []st
 	return output
 }
 
-func buildFilteredColumnConditionsForListQuery(tableName string, hasUpdateColumn bool) string {
-	var filteredCountQueryBuilder builq.Builder
-
-	builder := filteredCountQueryBuilder.Addf(`
-            %s.created_at > COALESCE(sqlc.narg(created_before), (SELECT NOW() - interval '999 years'))
-            AND %s.created_at < COALESCE(sqlc.narg(created_after), (SELECT NOW() + interval '999 years'))
-           `,
-		tableName,
-		tableName,
+func buildFilterConditions(tableName string, withUpdateColumn bool, conditions ...string) string {
+	updateAddendum := ""
+	if withUpdateColumn {
+		updateAddendum = fmt.Sprintf("\n\t%s", strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`
+	AND (
+		%s.%s IS NULL
+		OR %s.%s > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
 	)
-
-	if hasUpdateColumn {
-		builder.Addf(`AND (
-                %s.last_updated_at IS NULL
-                OR %s.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - interval '999 years'))
-            )
-            AND (
-                %s.last_updated_at IS NULL
-                OR %s.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + interval '999 years'))
-            )`,
+	AND (
+		%s.%s IS NULL
+		OR %s.%s < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
+	)
+		`,
 			tableName,
+			lastUpdatedAtColumn,
 			tableName,
+			lastUpdatedAtColumn,
 			tableName,
+			lastUpdatedAtColumn,
 			tableName,
-		)
+			lastUpdatedAtColumn,
+		))))
 	}
 
-	return strings.TrimSpace(buildRawQuery(builder))
+	allConditions := ""
+	for _, condition := range conditions {
+		allConditions += fmt.Sprintf("\n\tAND %s", condition)
+	}
+
+	return strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`AND %s.%s > COALESCE(sqlc.narg(created_before), (SELECT NOW() - '999 years'::INTERVAL))
+    AND %s.%s < COALESCE(sqlc.narg(created_after), (SELECT NOW() + '999 years'::INTERVAL))%s%s`,
+		tableName,
+		createdAtColumn,
+		tableName,
+		createdAtColumn,
+		updateAddendum,
+		allConditions,
+	)))
 }
 
-func buildFilteredColumnCountQuery(tableName string, hasUpdateColumn bool, ownershipColumn string) string {
-	var filteredCountQueryBuilder builq.Builder
-
-	builder := filteredCountQueryBuilder.Addf(`(
-	    SELECT
-	        COUNT(%s.%s)
-	    FROM
-	        %s
-	    WHERE
-            %s.archived_at IS NULL
-            AND %s.created_at > COALESCE(sqlc.narg(created_before), (SELECT NOW() - interval '999 years'))
-            AND %s.created_at < COALESCE(sqlc.narg(created_after), (SELECT NOW() + interval '999 years'))
-           `,
-		tableName,
-		idColumn,
-		tableName,
-		tableName,
-		tableName,
-		tableName,
-	)
-
-	if hasUpdateColumn {
-		builder.Addf(`AND (
-                %s.last_updated_at IS NULL
-                OR %s.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - interval '999 years'))
-            )
-            AND (
-                %s.last_updated_at IS NULL
-                OR %s.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + interval '999 years'))
-            )`,
+func buildFilterCountSelect(tableName string, withUpdateColumn bool, conditions ...string) string {
+	updateAddendum := ""
+	if withUpdateColumn {
+		updateAddendum = fmt.Sprintf("\n\t\t\t%s", strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`
+			AND (
+				%s.%s IS NULL
+				OR %s.%s > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				%s.%s IS NULL
+				OR %s.%s < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
+			)
+		`,
 			tableName,
+			lastUpdatedAtColumn,
 			tableName,
+			lastUpdatedAtColumn,
 			tableName,
+			lastUpdatedAtColumn,
 			tableName,
-		)
+			lastUpdatedAtColumn,
+		))))
 	}
 
-	if ownershipColumn != "" {
-		parts := strings.Split(ownershipColumn, "_")
-		builder.Addf(" AND %s.%s = sqlc.arg(%s_id)", tableName, ownershipColumn, parts[len(parts)-1])
+	allConditions := ""
+	for _, condition := range conditions {
+		allConditions += fmt.Sprintf("\n\t\t\tAND %s", condition)
 	}
 
-	builder.Addf(`
-	) as filtered_count`)
-
-	return strings.TrimSpace(buildRawQuery(builder))
+	return strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`(
+		SELECT COUNT(%s.id)
+		FROM %s
+		WHERE %s.%s IS NULL
+			AND %s.%s > COALESCE(sqlc.narg(created_before), (SELECT NOW() - '999 years'::INTERVAL))
+			AND %s.%s < COALESCE(sqlc.narg(created_after), (SELECT NOW() + '999 years'::INTERVAL))%s%s
+	) AS filtered_count`,
+		tableName,
+		tableName,
+		tableName,
+		archivedAtColumn,
+		tableName,
+		createdAtColumn,
+		tableName,
+		createdAtColumn,
+		updateAddendum,
+		allConditions,
+	)))
 }
 
-func buildTotalColumnCountQuery(tableName string, addendumConditions ...string) string {
-	var totalCountQueryBuilder builq.Builder
-
-	builder := totalCountQueryBuilder.Addf(`(
-	    SELECT
-	        COUNT(%s.%s)
-	    FROM
-	        %s
-	    WHERE
-            %s.archived_at IS NULL
-           `,
-		tableName,
-		idColumn,
-		tableName,
-		tableName,
-	)
-
-	for _, addendum := range addendumConditions {
-		builder.Addf(`
-            AND %s`, addendum)
+func buildTotalCountSelect(tableName string, conditions ...string) string {
+	allConditons := ""
+	for _, condition := range conditions {
+		allConditons += fmt.Sprintf("\n\t\t\tAND %s", condition)
 	}
 
-	builder.Addf(`
-	) as total_count`)
-
-	return strings.TrimSpace(buildRawQuery(builder))
+	return strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`(
+        SELECT COUNT(%s.id)
+        FROM %s
+        WHERE %s.%s IS NULL%s
+    ) AS total_count`,
+		tableName,
+		tableName,
+		tableName,
+		archivedAtColumn,
+		allConditons,
+	)))
 }
 
 func buildCreateQuery(tableName string, columns []string) string {
@@ -244,49 +246,6 @@ func buildArchiveQuery(tableName, ownershipColumn string) string {
 		idColumn,
 		idColumn,
 		addendum,
-	)
-
-	return buildRawQuery(builder)
-}
-
-func buildListQuery(tableName string, columnNames, joins []string, addAliases bool, ownershipColumn string, conditions ...string) string {
-	var selectQueryBuilder builq.Builder
-
-	joinStatements := applyToEach(joins, func(s string) string {
-		return fmt.Sprintf("JOIN %s", s)
-	})
-
-	and := ""
-	if len(conditions) > 0 {
-		and = " AND "
-	}
-
-	conditionsX := append([]string{buildFilteredColumnConditionsForListQuery(tableName, true)}, conditions...)
-	allConditions := strings.Join(conditionsX, " AND ")
-
-	columns := append(applyToEach(columnNames, func(s string) string {
-		if addAliases {
-			parts := strings.Split(s, ".")
-			parts[0] = strings.TrimSuffix(parts[0], "s")
-
-			return fmt.Sprintf("%s AS %s", s, strings.Join(parts, "_"))
-		}
-		return s
-	}),
-		buildFilteredColumnCountQuery(webhooksTableName, true, ownershipColumn),
-		buildTotalColumnCountQuery(webhooksTableName, conditions...),
-	)
-
-	columnsToUse := strings.Join(columns, ",\n\t")
-
-	builder := selectQueryBuilder.Addf(
-		`SELECT %s FROM %s %s WHERE %s %s %s.archived_at IS NULL OFFSET sqlc.narg(query_offset) LIMIT sqlc.narg(query_limit)`,
-		columnsToUse,
-		tableName,
-		strings.Join(joinStatements, "\n\t"),
-		allConditions,
-		and,
-		tableName,
 	)
 
 	return buildRawQuery(builder)

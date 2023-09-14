@@ -37,71 +37,6 @@ func Test_applyToEach(T *testing.T) {
 	})
 }
 
-func Test_buildArchiveQuery(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		expected := `UPDATE things SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id) AND whatever = sqlc.arg(whatever_id)` + "\n"
-
-		actual := buildArchiveQuery("things", "whatever")
-
-		assert.Equal(t, expected, actual)
-	})
-}
-
-func Test_buildCreateQuery(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		expected := `INSERT INTO things (bingo,
-	bongo) VALUES (sqlc.arg(bingo),
-	sqlc.arg(bongo))
-`
-
-		actual := buildCreateQuery("things", []string{"bingo", "bongo"})
-
-		assert.Equal(t, expected, actual)
-	})
-}
-
-func Test_buildFilteredColumnCountQuery(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		expected := `(
-	    SELECT
-	        COUNT(things.id)
-	    FROM
-	        things
-	    WHERE
-            things.archived_at IS NULL
-            AND things.created_at > COALESCE(sqlc.narg(created_before), (SELECT NOW() - interval '999 years'))
-            AND things.created_at < COALESCE(sqlc.narg(created_after), (SELECT NOW() + interval '999 years'))
-           
-AND (
-                things.last_updated_at IS NULL
-                OR things.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - interval '999 years'))
-            )
-            AND (
-                things.last_updated_at IS NULL
-                OR things.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + interval '999 years'))
-            )
- AND things.belongs_to_user = sqlc.arg(user_id)
-
-	) as filtered_count`
-
-		actual := buildFilteredColumnCountQuery("things", true, belongsToUserColumn)
-
-		assert.Equal(t, expected, actual)
-	})
-}
-
 func Test_buildRawQuery(T *testing.T) {
 	T.Parallel()
 
@@ -114,30 +49,6 @@ func Test_buildRawQuery(T *testing.T) {
 
 		expected := "SELECT * FROM things\n"
 		actual := buildRawQuery(builder)
-
-		assert.Equal(t, expected, actual)
-	})
-}
-
-func Test_buildTotalColumnCountQuery(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		expected := `(
-	    SELECT
-	        COUNT(things.id)
-	    FROM
-	        things
-	    WHERE
-            things.archived_at IS NULL
-           
-
-            AND whatever
-
-	) as total_count`
-		actual := buildTotalColumnCountQuery("things", "whatever")
 
 		assert.Equal(t, expected, actual)
 	})
@@ -177,8 +88,8 @@ func Test_formatQuery(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		example := `SELECT stuff 
-FROM things 
+		example := `SELECT stuff
+FROM things
 				WHERE id = 1
 `
 

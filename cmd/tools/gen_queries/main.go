@@ -11,7 +11,7 @@ func main() {
 	queryOutput := map[string][]*Query{
 		"admin.sql":    buildAdminQueries(),
 		"webhooks.sql": buildWebhooksQueries(),
-		"users.sql":    buildUsersQueries(),
+		//"users.sql":    buildUsersQueries(),
 	}
 
 	for filePath, queries := range queryOutput {
@@ -28,9 +28,12 @@ func main() {
 			fileContent += query.Render()
 		}
 
-		fileContent = strings.TrimSpace(fileContent) + "\n"
+		fileOutput := ""
+		for _, line := range strings.Split(strings.TrimSpace(fileContent), "\n") {
+			fileOutput += strings.TrimSuffix(line, " ") + "\n"
+		}
 
-		if string(existingFile) != fileContent {
+		if string(existingFile) != fileOutput {
 			fmt.Printf("files don't match: %s\n", filePath)
 		}
 	}

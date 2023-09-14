@@ -43,7 +43,9 @@ func buildWebhooksQueries() []*Query {
 		}),
 		applyToEach(webhookTriggerEventsColumns, func(s string) string {
 			return fullColumnName(webhookTriggerEventsTableName, s)
-		}), 5)
+		}),
+		5,
+	)
 
 	return []*Query{
 		{
@@ -102,17 +104,34 @@ func buildWebhooksQueries() []*Query {
 				Name: "GetWebhooksForHousehold",
 				Type: ManyType,
 			},
-			Content: formatQuery(
-				buildListQuery(
+			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+    %s,
+    %s,
+    %s
+FROM webhooks
+	JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
+WHERE webhooks.archived_at IS NULL
+	%s
+LIMIT sqlc.narg(query_limit)
+OFFSET sqlc.narg(query_offset);`,
+				strings.Join(fullSelectColumns, ",\n\t"),
+				buildFilterCountSelect(
 					webhooksTableName,
-					fullSelectColumns,
-					[]string{webhookTriggerEventsJoin},
-					false,
-					belongsToHouseholdColumn,
+					true,
+					"webhooks.belongs_to_household = sqlc.arg(household_id)",
+				),
+				buildTotalCountSelect(
+					webhooksTableName,
 					"webhooks.belongs_to_household = sqlc.arg(household_id)",
 					"webhook_trigger_events.archived_at IS NULL",
 				),
-			) + "\n",
+				buildFilterConditions(
+					webhooksTableName,
+					true,
+					"webhooks.belongs_to_household = sqlc.arg(household_id)",
+					"webhook_trigger_events.archived_at IS NULL",
+				),
+			)),
 		},
 		{
 			Annotation: QueryAnnotation{

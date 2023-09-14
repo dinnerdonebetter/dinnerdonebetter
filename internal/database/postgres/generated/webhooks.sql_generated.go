@@ -183,56 +183,57 @@ const getWebhooksForHousehold = `-- name: GetWebhooksForHousehold :many
 
 SELECT
     webhooks.id,
-    webhooks.name,
-    webhooks.content_type,
-    webhooks.url,
-    webhooks.method,
-    webhook_trigger_events.id,
-    webhook_trigger_events.trigger_event,
-    webhook_trigger_events.belongs_to_webhook,
-    webhook_trigger_events.created_at,
-    webhook_trigger_events.archived_at,
-    webhooks.created_at,
-    webhooks.last_updated_at,
-    webhooks.archived_at,
-    webhooks.belongs_to_household,
+	webhooks.name,
+	webhooks.content_type,
+	webhooks.url,
+	webhooks.method,
+	webhook_trigger_events.id,
+	webhook_trigger_events.trigger_event,
+	webhook_trigger_events.belongs_to_webhook,
+	webhook_trigger_events.created_at,
+	webhook_trigger_events.archived_at,
+	webhooks.created_at,
+	webhooks.last_updated_at,
+	webhooks.archived_at,
+	webhooks.belongs_to_household,
+    (
+		SELECT COUNT(webhooks.id)
+		FROM webhooks
+		WHERE webhooks.archived_at IS NULL
+			AND webhooks.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND webhooks.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				webhooks.last_updated_at IS NULL
+				OR webhooks.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				webhooks.last_updated_at IS NULL
+				OR webhooks.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND webhooks.belongs_to_household = $5
+	) AS filtered_count,
     (
         SELECT COUNT(webhooks.id)
         FROM webhooks
         WHERE webhooks.archived_at IS NULL
-            AND webhooks.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-            AND webhooks.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
-            AND (
-                webhooks.last_updated_at IS NULL
-                OR webhooks.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
-               )
-            AND (
-                webhooks.last_updated_at IS NULL
-                OR webhooks.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
-               )
-            AND webhooks.belongs_to_household = $5
-    ) AS filtered_count,
-    (
-        SELECT COUNT(webhooks.id)
-        FROM webhooks
-        WHERE webhooks.archived_at IS NULL
-            AND webhooks.belongs_to_household = $5
-            AND webhook_trigger_events.archived_at IS NULL
+			AND webhooks.belongs_to_household = $5
+			AND webhook_trigger_events.archived_at IS NULL
     ) AS total_count
-FROM webhooks JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
-WHERE webhooks.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+FROM webhooks
+	JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
+WHERE webhooks.archived_at IS NULL
+	AND webhooks.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
     AND webhooks.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
-    AND (
-        webhooks.last_updated_at IS NULL
-        OR webhooks.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
-    )
-    AND (
-        webhooks.last_updated_at IS NULL
-        OR webhooks.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
-    )
-    AND webhooks.belongs_to_household = $5
-    AND webhook_trigger_events.archived_at IS NULL
-    AND webhooks.archived_at IS NULL
+	AND (
+		webhooks.last_updated_at IS NULL
+		OR webhooks.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		webhooks.last_updated_at IS NULL
+		OR webhooks.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+	)
+	AND webhooks.belongs_to_household = $5
+	AND webhook_trigger_events.archived_at IS NULL
 LIMIT $7
 OFFSET $6
 `
