@@ -64,8 +64,8 @@ func fullColumnName(tableName, columnName string) string {
 
 func formatQuery(query string) string {
 	cfg := tree.PrettyCfg{
-		LineWidth: 80,
-		Align:     tree.PrettyAlignAndDeindent,
+		LineWidth: 128,
+		Align:     tree.PrettyNoAlign,
 		Simplify:  true,
 		TabWidth:  4,
 		UseTabs:   true,

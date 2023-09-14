@@ -24,7 +24,7 @@ func main() {
 			if i != 0 {
 				fileContent += "\n\n"
 			}
-			fileContent += fmt.Sprintf("-- name: %s %s\n\n%s", query.Annotation.Name, query.Annotation.Type, formatQuery(query.Content))
+			fileContent += query.Render()
 		}
 		fileContent += "\n"
 

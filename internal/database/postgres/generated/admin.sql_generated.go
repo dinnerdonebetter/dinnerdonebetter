@@ -11,11 +11,14 @@ import (
 
 const setUserAccountStatus = `-- name: SetUserAccountStatus :execrows
 
-UPDATE users
-   SET last_updated_at = NOW(),
-       user_account_status = $1,
-       user_account_status_explanation = $2
- WHERE archived_at IS NULL AND id = $3
+UPDATE
+	users
+SET
+	last_updated_at = NOW(),
+	user_account_status = $1,
+	user_account_status_explanation = $2
+WHERE
+	archived_at IS NULL AND id = $3
 `
 
 type SetUserAccountStatusParams struct {

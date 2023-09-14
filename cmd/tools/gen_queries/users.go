@@ -82,7 +82,13 @@ WHERE archived_at IS NULL
 }
 
 func buildUsersQueries() []*Query {
-	insertColumns := filterForInsert(usersColumns)
+	insertColumns := filterForInsert(usersColumns,
+		"password_last_changed_at",
+		"email_address_verified_at",
+		lastAcceptedTOSColumn,
+		lastAcceptedPrivacyPolicyColumn,
+		lastIndexedAtColumn,
+	)
 
 	return []*Query{
 		{

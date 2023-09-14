@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 type QueryType string
 
 const (
@@ -22,4 +24,8 @@ type QueryAnnotation struct {
 type Query struct {
 	Content    string
 	Annotation QueryAnnotation
+}
+
+func (q *Query) Render() string {
+	return fmt.Sprintf("-- name: %s %s\n\n%s", q.Annotation.Name, q.Annotation.Type, formatQuery(q.Content))
 }
