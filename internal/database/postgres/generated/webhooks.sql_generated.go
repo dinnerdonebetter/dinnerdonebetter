@@ -13,12 +13,9 @@ import (
 
 const archiveWebhook = `-- name: ArchiveWebhook :execrows
 
-UPDATE
-	webhooks
-SET
-	archived_at = NOW()
-WHERE
-	archived_at IS NULL AND id = $1 AND belongs_to_household = $2
+UPDATE webhooks
+   SET archived_at = NOW()
+ WHERE archived_at IS NULL AND id = $1 AND belongs_to_household = $2
 `
 
 type ArchiveWebhookParams struct {
@@ -36,17 +33,13 @@ func (q *Queries) ArchiveWebhook(ctx context.Context, db DBTX, arg *ArchiveWebho
 
 const checkWebhookExistence = `-- name: CheckWebhookExistence :one
 
-SELECT
-	EXISTS(
-		SELECT
-			webhooks.id
-		FROM
-			webhooks
-		WHERE
-			webhooks.archived_at IS NULL
-			AND webhooks.id = $1
-			AND webhooks.belongs_to_household = $2
-	)
+SELECT EXISTS(
+    SELECT webhooks.id
+    FROM webhooks
+    WHERE webhooks.archived_at IS NULL
+    AND webhooks.id = $1
+    AND webhooks.belongs_to_household = $2
+)
 `
 
 type CheckWebhookExistenceParams struct {
@@ -63,11 +56,21 @@ func (q *Queries) CheckWebhookExistence(ctx context.Context, db DBTX, arg *Check
 
 const createWebhook = `-- name: CreateWebhook :exec
 
-INSERT
-INTO
-	webhooks (id, name, content_type, url, method, belongs_to_household)
-VALUES
-	($1, $2, $3, $4, $5, $6)
+INSERT INTO webhooks (
+    id,
+	name,
+	content_type,
+	url,
+	method,
+	belongs_to_household
+) VALUES (
+    $1,
+	$2,
+	$3,
+	$4,
+	$5,
+	$6
+)
 `
 
 type CreateWebhookParams struct {
@@ -94,24 +97,23 @@ func (q *Queries) CreateWebhook(ctx context.Context, db DBTX, arg *CreateWebhook
 const getWebhook = `-- name: GetWebhook :many
 
 SELECT
-	webhooks.id AS webhook_id,
-	webhooks.name AS webhook_name,
-	webhooks.content_type AS webhook_content_type,
-	webhooks.url AS webhook_url,
-	webhooks.method AS webhook_method,
-	webhook_trigger_events.id AS webhook_trigger_event_id,
-	webhook_trigger_events.trigger_event AS webhook_trigger_event_trigger_event,
-	webhook_trigger_events.belongs_to_webhook AS webhook_trigger_event_belongs_to_webhook,
-	webhook_trigger_events.created_at AS webhook_trigger_event_created_at,
-	webhook_trigger_events.archived_at AS webhook_trigger_event_archived_at,
-	webhooks.created_at AS webhook_created_at,
-	webhooks.last_updated_at AS webhook_last_updated_at,
-	webhooks.archived_at AS webhook_archived_at,
-	webhooks.belongs_to_household AS webhook_belongs_to_household
-FROM
-	webhooks JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
-WHERE
-	webhook_trigger_events.archived_at IS NULL
+	webhooks.id as webhook_id,
+	webhooks.name as webhook_name,
+	webhooks.content_type as webhook_content_type,
+	webhooks.url as webhook_url,
+	webhooks.method as webhook_method,
+	webhook_trigger_events.id as webhook_trigger_event_id,
+	webhook_trigger_events.trigger_event as webhook_trigger_event_trigger_event,
+	webhook_trigger_events.belongs_to_webhook as webhook_trigger_event_belongs_to_webhook,
+	webhook_trigger_events.created_at as webhook_trigger_event_created_at,
+	webhook_trigger_events.archived_at as webhook_trigger_event_archived_at,
+	webhooks.created_at as webhook_created_at,
+	webhooks.last_updated_at as webhook_last_updated_at,
+	webhooks.archived_at as webhook_archived_at,
+	webhooks.belongs_to_household as webhook_belongs_to_household
+FROM webhooks
+	JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
+WHERE webhook_trigger_events.archived_at IS NULL
 	AND webhooks.belongs_to_household = $1
 	AND webhooks.archived_at IS NULL
 	AND webhooks.id = $2
@@ -180,71 +182,59 @@ func (q *Queries) GetWebhook(ctx context.Context, db DBTX, arg *GetWebhookParams
 const getWebhooksForHousehold = `-- name: GetWebhooksForHousehold :many
 
 SELECT
-	webhooks.id,
-	webhooks.name,
-	webhooks.content_type,
-	webhooks.url,
-	webhooks.method,
-	webhook_trigger_events.id,
-	webhook_trigger_events.trigger_event,
-	webhook_trigger_events.belongs_to_webhook,
-	webhook_trigger_events.created_at,
-	webhook_trigger_events.archived_at,
-	webhooks.created_at,
-	webhooks.last_updated_at,
-	webhooks.archived_at,
-	webhooks.belongs_to_household,
-	(
-		SELECT
-			COUNT(webhooks.id)
-		FROM
-			webhooks
-		WHERE
-			webhooks.archived_at IS NULL
-			AND webhooks.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-			AND webhooks.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
-			AND (
-					webhooks.last_updated_at IS NULL
-					OR webhooks.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
-				)
-			AND (
-					webhooks.last_updated_at IS NULL
-					OR webhooks.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
-				)
-			AND webhooks.belongs_to_household = $5
-	)
-		AS filtered_count,
-	(
-		SELECT
-			COUNT(webhooks.id)
-		FROM
-			webhooks
-		WHERE
-			webhooks.archived_at IS NULL
-			AND webhooks.belongs_to_household = $5
-			AND webhook_trigger_events.archived_at IS NULL
-	)
-		AS total_count
-FROM
-	webhooks JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
-WHERE
-	webhooks.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-	AND webhooks.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
-	AND (
-			webhooks.last_updated_at IS NULL
-			OR webhooks.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
-		)
-	AND (
-			webhooks.last_updated_at IS NULL
-			OR webhooks.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
-		)
-	AND webhooks.belongs_to_household = $5
-	AND webhook_trigger_events.archived_at IS NULL
-	AND webhooks.archived_at IS NULL
-LIMIT
-	$7
-OFFSET
-	$6
+    webhooks.id,
+    webhooks.name,
+    webhooks.content_type,
+    webhooks.url,
+    webhooks.method,
+    webhook_trigger_events.id,
+    webhook_trigger_events.trigger_event,
+    webhook_trigger_events.belongs_to_webhook,
+    webhook_trigger_events.created_at,
+    webhook_trigger_events.archived_at,
+    webhooks.created_at,
+    webhooks.last_updated_at,
+    webhooks.archived_at,
+    webhooks.belongs_to_household,
+    (
+        SELECT COUNT(webhooks.id)
+        FROM webhooks
+        WHERE webhooks.archived_at IS NULL
+            AND webhooks.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+            AND webhooks.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+            AND (
+                webhooks.last_updated_at IS NULL
+                OR webhooks.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+               )
+            AND (
+                webhooks.last_updated_at IS NULL
+                OR webhooks.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+               )
+            AND webhooks.belongs_to_household = $5
+    ) AS filtered_count,
+    (
+        SELECT COUNT(webhooks.id)
+        FROM webhooks
+        WHERE webhooks.archived_at IS NULL
+            AND webhooks.belongs_to_household = $5
+            AND webhook_trigger_events.archived_at IS NULL
+    ) AS total_count
+FROM webhooks JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
+WHERE webhooks.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+    AND webhooks.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+    AND (
+        webhooks.last_updated_at IS NULL
+        OR webhooks.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+    )
+    AND (
+        webhooks.last_updated_at IS NULL
+        OR webhooks.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+    )
+    AND webhooks.belongs_to_household = $5
+    AND webhook_trigger_events.archived_at IS NULL
+    AND webhooks.archived_at IS NULL
+LIMIT $7
+OFFSET $6
 `
 
 type GetWebhooksForHouseholdParams struct {
@@ -327,7 +317,7 @@ func (q *Queries) GetWebhooksForHousehold(ctx context.Context, db DBTX, arg *Get
 const getWebhooksForHouseholdAndEvent = `-- name: GetWebhooksForHouseholdAndEvent :many
 
 SELECT
-	webhooks.id,
+    webhooks.id,
 	webhooks.name,
 	webhooks.content_type,
 	webhooks.url,
@@ -336,13 +326,12 @@ SELECT
 	webhooks.last_updated_at,
 	webhooks.archived_at,
 	webhooks.belongs_to_household
-FROM
-	webhooks JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
-WHERE
-	webhook_trigger_events.archived_at IS NULL
-	AND webhook_trigger_events.trigger_event = $1
-	AND webhooks.belongs_to_household = $2
-	AND webhooks.archived_at IS NULL
+FROM webhooks
+    JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
+WHERE webhook_trigger_events.archived_at IS NULL
+    AND webhook_trigger_events.trigger_event = $1
+    AND webhooks.belongs_to_household = $2
+    AND webhooks.archived_at IS NULL
 `
 
 type GetWebhooksForHouseholdAndEventParams struct {

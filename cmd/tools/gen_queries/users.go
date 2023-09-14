@@ -128,9 +128,7 @@ func buildUsersQueries() []*Query {
 				Name: "CreateUser",
 				Type: ExecType,
 			},
-			Content: formatQuery(
-				buildCreateQuery(usersTableName, insertColumns),
-			),
+			Content: buildCreateQuery(usersTableName, insertColumns),
 		},
 		{
 			Annotation: QueryAnnotation{

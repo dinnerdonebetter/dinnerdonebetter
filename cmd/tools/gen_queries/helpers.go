@@ -65,7 +65,7 @@ func fullColumnName(tableName, columnName string) string {
 func formatQuery(query string) string {
 	cfg := tree.PrettyCfg{
 		LineWidth: 128,
-		Align:     tree.PrettyNoAlign,
+		Align:     tree.PrettyAlignAndDeindent,
 		Simplify:  true,
 		TabWidth:  4,
 		UseTabs:   true,
@@ -214,7 +214,11 @@ func buildCreateQuery(tableName string, columns []string) string {
 	})
 
 	builder := createQueryBuilder.Addf(
-		`INSERT INTO %s (%s) VALUES (%s)`,
+		`INSERT INTO %s (
+	%s
+) VALUES (
+	%s
+);`,
 		tableName,
 		strings.Join(columns, ",\n\t"),
 		strings.Join(values, ",\n\t"),
@@ -240,49 +244,6 @@ func buildArchiveQuery(tableName, ownershipColumn string) string {
 		idColumn,
 		idColumn,
 		addendum,
-	)
-
-	return buildRawQuery(builder)
-}
-
-func buildSelectQuery(tableName string, columnNames, joins []string, byID, addAliases bool, conditions ...string) string {
-	var selectQueryBuilder builq.Builder
-
-	joinStatements := applyToEach(joins, func(s string) string {
-		return fmt.Sprintf("JOIN %s", s)
-	})
-
-	and := ""
-	if len(conditions) > 0 {
-		and = " AND "
-	}
-
-	allConditions := strings.Join(conditions, " AND ")
-
-	columns := applyToEach(columnNames, func(s string) string {
-		if addAliases {
-			parts := strings.Split(s, ".")
-			parts[0] = strings.TrimSuffix(parts[0], "s")
-
-			return fmt.Sprintf("%s AS %s", s, strings.Join(parts, "_"))
-		}
-		return s
-	})
-
-	idAddendum := ""
-	if byID {
-		idAddendum = fmt.Sprintf(" AND %s.%s = sqlc.arg(%s)", tableName, idColumn, idColumn)
-	}
-
-	builder := selectQueryBuilder.Addf(
-		`SELECT %s FROM %s %s WHERE %s %s %s.archived_at IS NULL%s`,
-		strings.Join(columns, ",\n\t"),
-		tableName,
-		strings.Join(joinStatements, "\n\t"),
-		allConditions,
-		and,
-		tableName,
-		idAddendum,
 	)
 
 	return buildRawQuery(builder)
@@ -326,49 +287,6 @@ func buildListQuery(tableName string, columnNames, joins []string, addAliases bo
 		allConditions,
 		and,
 		tableName,
-	)
-
-	return buildRawQuery(builder)
-}
-
-func buildExistenceCheckQuery(tableName, addendum string) string {
-	var existenceCheckQueryBuilder builq.Builder
-
-	builder := existenceCheckQueryBuilder.Addf(
-		`SELECT EXISTS ( SELECT %s.%s FROM %s WHERE %s.archived_at IS NULL AND %s.%s = sqlc.arg(%s) %s )`,
-		tableName,
-		idColumn,
-		tableName,
-		tableName,
-		tableName,
-		idColumn,
-		idColumn,
-		addendum,
-	)
-
-	return buildRawQuery(builder)
-}
-
-func buildUpdateQuery(tableName string, columns []string, ownershipColumn string) string {
-	var updateQueryBuilder builq.Builder
-
-	columnUpdates := applyToEach(columns, func(s string) string {
-		return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
-	})
-
-	addendum := ""
-	if ownershipColumn != "" {
-		addendum = fmt.Sprintf(" AND %s.%s = sqlc.arg(%s_%s)", tableName, ownershipColumn, ownershipColumn, idColumn)
-	}
-
-	builder := updateQueryBuilder.Addf(
-		`UPDATE %s SET %s = NOW(), %s WHERE archived_at IS NULL %s AND %s = sqlc.arg(%s)`,
-		tableName,
-		lastUpdatedAtColumn,
-		strings.Join(columnUpdates, ",\n\t"),
-		addendum,
-		idColumn,
-		idColumn,
 	)
 
 	return buildRawQuery(builder)

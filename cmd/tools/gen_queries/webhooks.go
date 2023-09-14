@@ -1,5 +1,12 @@
 package main
 
+import (
+	"fmt"
+	"strings"
+
+	"github.com/cristalhq/builq"
+)
+
 const (
 	webhooksTableName             = "webhooks"
 	webhookTriggerEventsTableName = "webhook_trigger_events"
@@ -44,30 +51,51 @@ func buildWebhooksQueries() []*Query {
 				Name: "ArchiveWebhook",
 				Type: ExecRowsType,
 			},
-			Content: formatQuery(
-				buildArchiveQuery(webhooksTableName, belongsToHouseholdColumn),
-			),
+			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s
+   SET %s = NOW()
+ WHERE %s IS NULL AND id = sqlc.arg(id) AND %s = sqlc.arg(household_id);`,
+				webhooksTableName,
+				archivedAtColumn,
+				archivedAtColumn,
+				belongsToHouseholdColumn,
+			)),
 		},
 		{
 			Annotation: QueryAnnotation{
 				Name: "CreateWebhook",
 				Type: ExecType,
 			},
-			Content: formatQuery(
-				buildCreateQuery(webhooksTableName, insertColumns),
-			),
+			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
+    %s
+) VALUES (
+    %s
+);`,
+				webhooksTableName,
+				strings.Join(insertColumns, ",\n\t"),
+				strings.Join(applyToEach(insertColumns, func(s string) string {
+					return fmt.Sprintf("sqlc.arg(%s)", s)
+				}), ",\n\t"),
+			)),
 		},
 		{
 			Annotation: QueryAnnotation{
 				Name: "CheckWebhookExistence",
 				Type: OneType,
 			},
-			Content: formatQuery(
-				buildExistenceCheckQuery(
-					webhooksTableName,
-					" AND webhooks.belongs_to_household = sqlc.arg(household_id)",
-				),
-			),
+			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS(
+    SELECT %s.id
+    FROM %s
+    WHERE %s.%s IS NULL
+    AND %s.id = sqlc.arg(id)
+    AND %s.belongs_to_household = sqlc.arg(household_id)
+);`,
+				webhooksTableName,
+				webhooksTableName,
+				webhooksTableName,
+				archivedAtColumn,
+				webhooksTableName,
+				webhooksTableName,
+			)),
 		},
 		{
 			Annotation: QueryAnnotation{
@@ -84,41 +112,46 @@ func buildWebhooksQueries() []*Query {
 					"webhooks.belongs_to_household = sqlc.arg(household_id)",
 					"webhook_trigger_events.archived_at IS NULL",
 				),
-			),
+			) + "\n",
 		},
 		{
 			Annotation: QueryAnnotation{
 				Name: "GetWebhooksForHouseholdAndEvent",
 				Type: ManyType,
 			},
-			Content: formatQuery(
-				buildSelectQuery(webhooksTableName, applyToEach(webhooksColumns, func(s string) string {
+			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT 
+    %s
+FROM webhooks
+    JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
+WHERE webhook_trigger_events.archived_at IS NULL
+    AND webhook_trigger_events.trigger_event = sqlc.arg(trigger_event)
+    AND webhooks.belongs_to_household = sqlc.arg(household_id)
+    AND webhooks.archived_at IS NULL;`,
+				strings.Join(applyToEach(webhooksColumns, func(s string) string {
 					return fullColumnName(webhooksTableName, s)
-				}), []string{webhookTriggerEventsJoin},
-					false,
-					false,
-					"webhook_trigger_events.archived_at IS NULL",
-					"webhook_trigger_events.trigger_event = sqlc.arg(trigger_event)",
-					"webhooks.belongs_to_household = sqlc.arg(household_id)",
-				),
-			),
+				}), ",\n\t"),
+			)),
 		},
 		{
 			Annotation: QueryAnnotation{
 				Name: "GetWebhook",
 				Type: ManyType,
 			},
-			Content: formatQuery(
-				buildSelectQuery(
-					webhooksTableName,
-					fullSelectColumns,
-					[]string{webhookTriggerEventsJoin},
-					true,
-					true,
-					"webhook_trigger_events.archived_at IS NULL",
-					"webhooks.belongs_to_household = sqlc.arg(household_id)",
-				),
-			),
+			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT 
+	%s
+FROM webhooks
+	JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
+WHERE webhook_trigger_events.archived_at IS NULL
+	AND webhooks.belongs_to_household = sqlc.arg(household_id)
+	AND webhooks.archived_at IS NULL
+	AND webhooks.id = sqlc.arg(id);`,
+				strings.Join(applyToEach(fullSelectColumns, func(s string) string {
+					parts := strings.Split(s, ".")
+					return fmt.Sprintf("%s as %s_%s",
+						s, strings.TrimSuffix(parts[0], "s"), parts[1],
+					)
+				}), ",\n\t"),
+			)),
 		},
 	}
 }

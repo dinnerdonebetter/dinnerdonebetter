@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"strings"
 )
 
 func main() {
@@ -22,11 +23,12 @@ func main() {
 		var fileContent string
 		for i, query := range queries {
 			if i != 0 {
-				fileContent += "\n\n"
+				fileContent += "\n"
 			}
 			fileContent += query.Render()
 		}
-		fileContent += "\n"
+
+		fileContent = strings.TrimSpace(fileContent) + "\n"
 
 		if string(existingFile) != fileContent {
 			fmt.Printf("files don't match: %s\n", filePath)

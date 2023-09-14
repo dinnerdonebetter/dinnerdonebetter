@@ -27,5 +27,5 @@ type Query struct {
 }
 
 func (q *Query) Render() string {
-	return fmt.Sprintf("-- name: %s %s\n\n%s", q.Annotation.Name, q.Annotation.Type, formatQuery(q.Content))
+	return fmt.Sprintf("-- name: %s %s\n\n%s", q.Annotation.Name, q.Annotation.Type, q.Content)
 }

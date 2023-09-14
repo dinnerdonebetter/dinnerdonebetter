@@ -13,9 +13,7 @@ import (
 
 const acceptPrivacyPolicyForUser = `-- name: AcceptPrivacyPolicyForUser :exec
 
-UPDATE users
-   SET last_accepted_privacy_policy = NOW()
- WHERE archived_at IS NULL AND id = $1
+UPDATE users SET last_accepted_privacy_policy = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
 func (q *Queries) AcceptPrivacyPolicyForUser(ctx context.Context, db DBTX, id string) error {
@@ -25,9 +23,7 @@ func (q *Queries) AcceptPrivacyPolicyForUser(ctx context.Context, db DBTX, id st
 
 const acceptTermsOfServiceForUser = `-- name: AcceptTermsOfServiceForUser :exec
 
-UPDATE users
-   SET last_accepted_terms_of_service = NOW()
- WHERE archived_at IS NULL AND id = $1
+UPDATE users SET last_accepted_terms_of_service = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
 func (q *Queries) AcceptTermsOfServiceForUser(ctx context.Context, db DBTX, id string) error {
@@ -37,9 +33,7 @@ func (q *Queries) AcceptTermsOfServiceForUser(ctx context.Context, db DBTX, id s
 
 const archiveUser = `-- name: ArchiveUser :execrows
 
-UPDATE users
-   SET archived_at = NOW()
- WHERE archived_at IS NULL AND id = $1
+UPDATE users SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1
 `
 
 func (q *Queries) ArchiveUser(ctx context.Context, db DBTX, id string) (int64, error) {
@@ -52,9 +46,7 @@ func (q *Queries) ArchiveUser(ctx context.Context, db DBTX, id string) (int64, e
 
 const archiveUserMemberships = `-- name: ArchiveUserMemberships :execrows
 
-UPDATE household_user_memberships
-   SET archived_at = NOW()
- WHERE archived_at IS NULL AND belongs_to_user = $1
+UPDATE household_user_memberships SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_user = $1
 `
 
 func (q *Queries) ArchiveUserMemberships(ctx context.Context, db DBTX, id string) (int64, error) {
@@ -67,38 +59,81 @@ func (q *Queries) ArchiveUserMemberships(ctx context.Context, db DBTX, id string
 
 const createUser = `-- name: CreateUser :exec
 
-INSERT INTO users (id,first_name,last_name,username,email_address,hashed_password,two_factor_secret,avatar_src,user_account_status,birthday,service_role,email_address_verification_token) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+INSERT
+INTO
+	users
+		(
+			id,
+			username,
+			avatar_src,
+			email_address,
+			hashed_password,
+			requires_password_change,
+			two_factor_secret,
+			two_factor_secret_verified_at,
+			service_role,
+			user_account_status,
+			user_account_status_explanation,
+			birthday,
+			email_address_verification_token,
+			first_name,
+			last_name
+		)
+VALUES
+	(
+		$1,
+		$2,
+		$3,
+		$4,
+		$5,
+		$6,
+		$7,
+		$8,
+		$9,
+		$10,
+		$11,
+		$12,
+		$13,
+		$14,
+		$15
+	)
 `
 
 type CreateUserParams struct {
-	ID                            string
-	FirstName                     string
-	LastName                      string
-	Username                      string
+	TwoFactorSecretVerifiedAt     sql.NullTime
+	Birthday                      sql.NullTime
+	TwoFactorSecret               string
 	EmailAddress                  string
 	HashedPassword                string
-	TwoFactorSecret               string
-	AvatarSrc                     sql.NullString
-	UserAccountStatus             string
-	Birthday                      sql.NullTime
+	ID                            string
 	ServiceRole                   string
+	UserAccountStatus             string
+	UserAccountStatusExplanation  string
+	Username                      string
+	FirstName                     string
+	LastName                      string
+	AvatarSrc                     sql.NullString
 	EmailAddressVerificationToken sql.NullString
+	RequiresPasswordChange        bool
 }
 
 func (q *Queries) CreateUser(ctx context.Context, db DBTX, arg *CreateUserParams) error {
 	_, err := db.ExecContext(ctx, createUser,
 		arg.ID,
-		arg.FirstName,
-		arg.LastName,
 		arg.Username,
+		arg.AvatarSrc,
 		arg.EmailAddress,
 		arg.HashedPassword,
+		arg.RequiresPasswordChange,
 		arg.TwoFactorSecret,
-		arg.AvatarSrc,
-		arg.UserAccountStatus,
-		arg.Birthday,
+		arg.TwoFactorSecretVerifiedAt,
 		arg.ServiceRole,
+		arg.UserAccountStatus,
+		arg.UserAccountStatusExplanation,
+		arg.Birthday,
 		arg.EmailAddressVerificationToken,
+		arg.FirstName,
+		arg.LastName,
 	)
 	return err
 }
