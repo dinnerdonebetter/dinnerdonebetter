@@ -2,13 +2,12 @@ package main
 
 import (
 	"fmt"
-	"regexp"
+	"github.com/cristalhq/builq"
 	"slices"
 	"strings"
 
-	"github.com/cockroachdb/cockroachdb-parser/pkg/sql/sem/tree"
-	"github.com/cristalhq/builq"
-	"github.com/mjibson/sqlfmt"
+	"github.com/pieterclaerhout/go-formatter/sqlformatter"
+	//"github.com/mjibson/sqlfmt"
 )
 
 const (
@@ -63,28 +62,31 @@ func fullColumnName(tableName, columnName string) string {
 }
 
 func formatQuery(query string) string {
-	cfg := tree.PrettyCfg{
-		LineWidth: 128,
-		Align:     tree.PrettyNoAlign,
-		Simplify:  true,
-		TabWidth:  4,
-		UseTabs:   true,
-		Case:      strings.ToUpper,
-		JSONFmt:   true,
-	}
+	formatted := sqlformatter.Format(query)
 
-	formatted, err := sqlfmt.FmtSQL(cfg, []string{query})
-	if err != nil {
-		panic(err)
-	}
-
-	output := strings.NewReplacer("now()", "NOW()", "count(", "COUNT(").Replace(formatted)
-
-	return regexp.MustCompile(`sqlc\.arg\(\s+(\w+)\s+\)`).ReplaceAllStringFunc(output, func(s string) string {
-		replacement := regexp.MustCompile(`\s+`).ReplaceAllString(s, "")
-
-		return replacement
-	})
+	return formatted
+	//cfg := tree.PrettyCfg{
+	//	LineWidth: 128,
+	//	Align:     tree.PrettyNoAlign,
+	//	Simplify:  true,
+	//	TabWidth:  4,
+	//	UseTabs:   true,
+	//	Case:      strings.ToUpper,
+	//	JSONFmt:   true,
+	//}
+	//
+	//formatted, err := sqlfmt.FmtSQL(cfg, []string{query})
+	//if err != nil {
+	//	panic(err)
+	//}
+	//
+	//output := strings.NewReplacer("now()", "NOW()", "count(", "COUNT(").Replace(formatted)
+	//
+	//return regexp.MustCompile(`sqlc\.arg\(\s+(\w+)\s+\)`).ReplaceAllStringFunc(output, func(s string) string {
+	//	replacement := regexp.MustCompile(`\s+`).ReplaceAllString(s, "")
+	//
+	//	return replacement
+	//})
 }
 
 func mergeColumns(columns1, columns2 []string, indexToInsertSecondSet uint) []string {
