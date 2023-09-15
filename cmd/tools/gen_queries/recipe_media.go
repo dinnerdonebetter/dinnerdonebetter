@@ -1,5 +1,9 @@
 package main
 
+import (
+	"github.com/cristalhq/builq"
+)
+
 const recipeMediaTableName = "recipe_media"
 
 var recipeMediaColumns = []string{
@@ -17,6 +21,12 @@ var recipeMediaColumns = []string{
 
 func buildRecipeMediaQueries() []*Query {
 	return []*Query{
-		//
+		{
+			Annotation: QueryAnnotation{
+				Name: "",
+				Type: ExecType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
 	}
 }

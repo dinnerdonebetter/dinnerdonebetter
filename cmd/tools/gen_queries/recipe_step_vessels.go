@@ -1,5 +1,9 @@
 package main
 
+import (
+	"github.com/cristalhq/builq"
+)
+
 const recipeStepVesselsTableName = "recipe_step_vessels"
 
 var recipeStepVesselsColumns = []string{
@@ -20,6 +24,12 @@ var recipeStepVesselsColumns = []string{
 
 func buildRecipeStepVesselsQueries() []*Query {
 	return []*Query{
-		//
+		{
+			Annotation: QueryAnnotation{
+				Name: "",
+				Type: ExecType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
 	}
 }

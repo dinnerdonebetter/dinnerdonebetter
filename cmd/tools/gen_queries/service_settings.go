@@ -1,5 +1,9 @@
 package main
 
+import (
+	"github.com/cristalhq/builq"
+)
+
 const serviceSettingsTableName = "service_settings"
 
 var serviceSettingsColumns = []string{
@@ -17,6 +21,12 @@ var serviceSettingsColumns = []string{
 
 func buildServiceSettingQueries() []*Query {
 	return []*Query{
-		//
+		{
+			Annotation: QueryAnnotation{
+				Name: "",
+				Type: ExecType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
 	}
 }

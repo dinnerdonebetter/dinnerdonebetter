@@ -1,5 +1,9 @@
 package main
 
+import (
+	"github.com/cristalhq/builq"
+)
+
 const validVesselsTableName = "valid_vessels"
 
 var validVesselsColumns = []string{
@@ -26,6 +30,12 @@ var validVesselsColumns = []string{
 
 func buildValidVesselsQueries() []*Query {
 	return []*Query{
-		//
+		{
+			Annotation: QueryAnnotation{
+				Name: "",
+				Type: ExecType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
 	}
 }

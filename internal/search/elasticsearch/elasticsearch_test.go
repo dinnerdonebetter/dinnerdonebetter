@@ -1,8 +1,9 @@
 package elasticsearch
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 // TODO: use testcontainers to properly test this: https://golang.testcontainers.org/modules/elasticsearch/

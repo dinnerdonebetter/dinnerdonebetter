@@ -9,10 +9,11 @@ import (
 
 func main() {
 	queryOutput := map[string][]*Query{
-		"admin.sql":      buildAdminQueries(),
-		"webhooks.sql":   buildWebhooksQueries(),
-		"users.sql":      buildUsersQueries(),
-		"households.sql": buildHouseholdsQueries(),
+		"admin.sql":                      buildAdminQueries(),
+		"webhooks.sql":                   buildWebhooksQueries(),
+		"users.sql":                      buildUsersQueries(),
+		"households.sql":                 buildHouseholdsQueries(),
+		"household_user_memberships.sql": buildHouseholdUserMembershipsQueries(),
 	}
 
 	for filePath, queries := range queryOutput {

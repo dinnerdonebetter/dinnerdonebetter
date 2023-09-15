@@ -1,5 +1,9 @@
 package main
 
+import (
+	"github.com/cristalhq/builq"
+)
+
 const userIngredientPreferencesTableName = "user_ingredient_preferences"
 
 var userIngredientPreferencesColumns = []string{
@@ -16,6 +20,12 @@ var userIngredientPreferencesColumns = []string{
 
 func buildUserIngredientPreferencesQueries() []*Query {
 	return []*Query{
-		//
+		{
+			Annotation: QueryAnnotation{
+				Name: "",
+				Type: ExecType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
 	}
 }

@@ -1,5 +1,9 @@
 package main
 
+import (
+	"github.com/cristalhq/builq"
+)
+
 const validPreparationVesselsTableName = "valid_preparation_vessels"
 
 var validPreparationVesselsColumns = []string{
@@ -14,6 +18,12 @@ var validPreparationVesselsColumns = []string{
 
 func buildValidPreparationVesselsQueries() []*Query {
 	return []*Query{
-		//
+		{
+			Annotation: QueryAnnotation{
+				Name: "",
+				Type: ExecType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
 	}
 }

@@ -1,5 +1,9 @@
 package main
 
+import (
+	"github.com/cristalhq/builq"
+)
+
 const householdInvitationsTableName = "household_invitations"
 
 var householdInvitationsColumns = []string{
@@ -21,6 +25,12 @@ var householdInvitationsColumns = []string{
 
 func buildHouseholdInvitationsQueries() []*Query {
 	return []*Query{
-		//
+		{
+			Annotation: QueryAnnotation{
+				Name: "",
+				Type: ExecType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
 	}
 }

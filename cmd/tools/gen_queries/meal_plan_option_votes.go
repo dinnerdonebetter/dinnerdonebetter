@@ -1,5 +1,9 @@
 package main
 
+import (
+	"github.com/cristalhq/builq"
+)
+
 const mealPlanOptionVotesTableName = "meal_plan_option_votes"
 
 var mealPlanOptionVotesColumns = []string{
@@ -16,6 +20,12 @@ var mealPlanOptionVotesColumns = []string{
 
 func buildMealPlanOptionVotesQueries() []*Query {
 	return []*Query{
-		//
+		{
+			Annotation: QueryAnnotation{
+				Name: "",
+				Type: ExecType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
 	}
 }

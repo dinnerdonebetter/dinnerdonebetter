@@ -1,5 +1,9 @@
 package main
 
+import (
+	"github.com/cristalhq/builq"
+)
+
 const validInstrumentsTableName = "valid_instruments"
 
 var validInstrumentsColumns = []string{
@@ -20,6 +24,12 @@ var validInstrumentsColumns = []string{
 
 func buildValidInstrumentsQueries() []*Query {
 	return []*Query{
-		//
+		{
+			Annotation: QueryAnnotation{
+				Name: "",
+				Type: ExecType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
 	}
 }

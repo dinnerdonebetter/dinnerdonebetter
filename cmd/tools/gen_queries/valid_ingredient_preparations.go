@@ -1,5 +1,9 @@
 package main
 
+import (
+	"github.com/cristalhq/builq"
+)
+
 const validIngredientPreparationsTableName = "valid_ingredient_preparations"
 
 var validIngredientPreparationsColumns = []string{
@@ -14,6 +18,12 @@ var validIngredientPreparationsColumns = []string{
 
 func buildValidIngredientPreparationsQueries() []*Query {
 	return []*Query{
-		//
+		{
+			Annotation: QueryAnnotation{
+				Name: "",
+				Type: ExecType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
 	}
 }

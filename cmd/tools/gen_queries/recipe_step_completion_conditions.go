@@ -1,5 +1,9 @@
 package main
 
+import (
+	"github.com/cristalhq/builq"
+)
+
 const recipeStepCompletionConditionsTableName = "recipe_step_completion_conditions"
 
 var recipeStepCompletionConditionsColumns = []string{
@@ -15,6 +19,12 @@ var recipeStepCompletionConditionsColumns = []string{
 
 func buildRecipeStepCompletionConditionQueries() []*Query {
 	return []*Query{
-		//
+		{
+			Annotation: QueryAnnotation{
+				Name: "",
+				Type: ExecType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
 	}
 }

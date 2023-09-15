@@ -1,5 +1,9 @@
 package main
 
+import (
+	"github.com/cristalhq/builq"
+)
+
 /* #nosec G101 */
 const oauth2ClientTokensTableName = "oauth2_client_tokens"
 
@@ -25,6 +29,12 @@ var oauth2ClientTokensColumns = []string{
 
 func buildOAuth2ClientTokensQueries() []*Query {
 	return []*Query{
-		//
+		{
+			Annotation: QueryAnnotation{
+				Name: "",
+				Type: ExecType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
 	}
 }

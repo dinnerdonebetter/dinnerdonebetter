@@ -1,5 +1,9 @@
 package main
 
+import (
+	"github.com/cristalhq/builq"
+)
+
 const passwordResetTokensTableName = "password_reset_tokens"
 
 var passwordResetTokensColumns = []string{
@@ -14,6 +18,12 @@ var passwordResetTokensColumns = []string{
 
 func buildPasswordResetTokensQueries() []*Query {
 	return []*Query{
-		//
+		{
+			Annotation: QueryAnnotation{
+				Name: "",
+				Type: ExecType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
 	}
 }

@@ -1,5 +1,9 @@
 package main
 
+import (
+	"github.com/cristalhq/builq"
+)
+
 const validPreparationsTableName = "valid_preparations"
 
 var validPreparationsColumns = []string{
@@ -30,6 +34,12 @@ var validPreparationsColumns = []string{
 
 func buildValidPreparationsQueries() []*Query {
 	return []*Query{
-		//
+		{
+			Annotation: QueryAnnotation{
+				Name: "",
+				Type: ExecType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
 	}
 }

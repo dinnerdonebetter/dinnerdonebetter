@@ -1,5 +1,9 @@
 package main
 
+import (
+	"github.com/cristalhq/builq"
+)
+
 const validIngredientMeasurementUnitsTableName = "valid_ingredient_measurement_units"
 
 var validIngredientMeasurementUnitsColumns = []string{
@@ -16,6 +20,12 @@ var validIngredientMeasurementUnitsColumns = []string{
 
 func buildValidIngredientMeasurementUnitsQueries() []*Query {
 	return []*Query{
-		//
+		{
+			Annotation: QueryAnnotation{
+				Name: "",
+				Type: ExecType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
 	}
 }

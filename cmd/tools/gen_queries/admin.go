@@ -1,6 +1,8 @@
 package main
 
-import "github.com/cristalhq/builq"
+import (
+	"github.com/cristalhq/builq"
+)
 
 func buildAdminQueries() []*Query {
 	return []*Query{

@@ -1,5 +1,9 @@
 package main
 
+import (
+	"github.com/cristalhq/builq"
+)
+
 const validPreparationInstrumentsTableName = "valid_preparation_instruments"
 
 var validPreparationInstrumentsColumns = []string{
@@ -14,6 +18,12 @@ var validPreparationInstrumentsColumns = []string{
 
 func buildValidPreparationInstrumentsQueries() []*Query {
 	return []*Query{
-		//
+		{
+			Annotation: QueryAnnotation{
+				Name: "",
+				Type: ExecType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
 	}
 }

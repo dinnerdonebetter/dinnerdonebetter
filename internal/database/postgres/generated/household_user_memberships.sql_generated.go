@@ -13,8 +13,17 @@ import (
 
 const addUserToHousehold = `-- name: AddUserToHousehold :exec
 
-INSERT INTO household_user_memberships (id,belongs_to_user,belongs_to_household,household_role)
-VALUES ($1,$2,$3,$4)
+INSERT INTO household_user_memberships (
+    id,
+    belongs_to_user,
+    belongs_to_household,
+    household_role
+) VALUES (
+    $1,
+    $2,
+    $3,
+    $4
+)
 `
 
 type AddUserToHouseholdParams struct {
@@ -36,8 +45,19 @@ func (q *Queries) AddUserToHousehold(ctx context.Context, db DBTX, arg *AddUserT
 
 const createHouseholdUserMembershipForNewUser = `-- name: CreateHouseholdUserMembershipForNewUser :exec
 
-INSERT INTO household_user_memberships (id,belongs_to_user,belongs_to_household,default_household,household_role)
-VALUES ($1,$2,$3,$4,$5)
+INSERT INTO household_user_memberships (
+    id,
+    belongs_to_user,
+    belongs_to_household,
+    default_household,
+    household_role
+) VALUES (
+    $1,
+    $2,
+    $3,
+    $4,
+    $5
+)
 `
 
 type CreateHouseholdUserMembershipForNewUserParams struct {
@@ -155,7 +175,10 @@ func (q *Queries) MarkHouseholdUserMembershipAsUserDefault(ctx context.Context, 
 
 const modifyHouseholdUserPermissions = `-- name: ModifyHouseholdUserPermissions :exec
 
-UPDATE household_user_memberships SET household_role = $1 WHERE belongs_to_household = $2 AND belongs_to_user = $3
+UPDATE household_user_memberships SET
+    household_role = $1
+WHERE belongs_to_household = $2
+    AND belongs_to_user = $3
 `
 
 type ModifyHouseholdUserPermissionsParams struct {
@@ -191,23 +214,30 @@ func (q *Queries) RemoveUserFromHousehold(ctx context.Context, db DBTX, arg *Rem
 
 const transferHouseholdMembership = `-- name: TransferHouseholdMembership :exec
 
-UPDATE household_user_memberships SET belongs_to_user = $1 WHERE archived_at IS NULL AND belongs_to_household = $2 AND belongs_to_user = $3
+UPDATE household_user_memberships SET
+    belongs_to_user = $1
+WHERE archived_at IS NULL
+    AND belongs_to_household = $2
+    AND belongs_to_user = $1
 `
 
 type TransferHouseholdMembershipParams struct {
 	BelongsToUser      string
 	BelongsToHousehold string
-	BelongsToUser_2    string
 }
 
 func (q *Queries) TransferHouseholdMembership(ctx context.Context, db DBTX, arg *TransferHouseholdMembershipParams) error {
-	_, err := db.ExecContext(ctx, transferHouseholdMembership, arg.BelongsToUser, arg.BelongsToHousehold, arg.BelongsToUser_2)
+	_, err := db.ExecContext(ctx, transferHouseholdMembership, arg.BelongsToUser, arg.BelongsToHousehold)
 	return err
 }
 
 const transferHouseholdOwnership = `-- name: TransferHouseholdOwnership :exec
 
-UPDATE households SET belongs_to_user = $1 WHERE archived_at IS NULL AND belongs_to_user = $2 AND id = $3
+UPDATE households SET
+    belongs_to_user = $1
+WHERE archived_at IS NULL
+    AND belongs_to_user = $2
+    AND id = $3
 `
 
 type TransferHouseholdOwnershipParams struct {

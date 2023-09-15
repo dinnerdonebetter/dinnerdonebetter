@@ -1,5 +1,9 @@
 package main
 
+import (
+	"github.com/cristalhq/builq"
+)
+
 const recipeStepIngredientsTableName = "recipe_step_ingredients"
 
 var recipeStepIngredientsColumns = []string{
@@ -26,6 +30,12 @@ var recipeStepIngredientsColumns = []string{
 
 func buildRecipeStepIngredientsQueries() []*Query {
 	return []*Query{
-		//
+		{
+			Annotation: QueryAnnotation{
+				Name: "",
+				Type: ExecType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
 	}
 }

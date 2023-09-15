@@ -1,5 +1,9 @@
 package main
 
+import (
+	"github.com/cristalhq/builq"
+)
+
 const oauth2ClientsTableName = "oauth2_clients"
 
 var oauth2ClientsColumns = []string{
@@ -14,6 +18,12 @@ var oauth2ClientsColumns = []string{
 
 func buildOAuth2ClientsQueries() []*Query {
 	return []*Query{
-		//
+		{
+			Annotation: QueryAnnotation{
+				Name: "",
+				Type: ExecType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
 	}
 }

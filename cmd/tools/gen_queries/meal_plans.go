@@ -1,5 +1,9 @@
 package main
 
+import (
+	"github.com/cristalhq/builq"
+)
+
 const mealPlansTableName = "meal_plans"
 
 var mealPlansColumns = []string{
@@ -19,6 +23,12 @@ var mealPlansColumns = []string{
 
 func buildMealPlansQueries() []*Query {
 	return []*Query{
-		//
+		{
+			Annotation: QueryAnnotation{
+				Name: "",
+				Type: ExecType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
 	}
 }

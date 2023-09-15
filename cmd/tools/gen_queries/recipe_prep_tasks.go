@@ -1,5 +1,9 @@
 package main
 
+import (
+	"github.com/cristalhq/builq"
+)
+
 const recipePrepTasksTableName = "recipe_prep_tasks"
 
 var recipePrepTasksColumns = []string{
@@ -22,6 +26,12 @@ var recipePrepTasksColumns = []string{
 
 func buildRecipePrepTasksQueries() []*Query {
 	return []*Query{
-		//
+		{
+			Annotation: QueryAnnotation{
+				Name: "",
+				Type: ExecType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
 	}
 }

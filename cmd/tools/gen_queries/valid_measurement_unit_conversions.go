@@ -1,5 +1,9 @@
 package main
 
+import (
+	"github.com/cristalhq/builq"
+)
+
 const validMeasurementUnitConversionsTableName = "valid_measurement_unit_conversions"
 
 var validMeasurementUnitConversionsColumns = []string{
@@ -16,6 +20,12 @@ var validMeasurementUnitConversionsColumns = []string{
 
 func buildValidMeasurementUnitConversionsQueries() []*Query {
 	return []*Query{
-		//
+		{
+			Annotation: QueryAnnotation{
+				Name: "",
+				Type: ExecType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
 	}
 }

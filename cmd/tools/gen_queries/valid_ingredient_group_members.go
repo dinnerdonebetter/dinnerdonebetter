@@ -1,5 +1,9 @@
 package main
 
+import (
+	"github.com/cristalhq/builq"
+)
+
 const validIngredientGroupMembersTableName = "valid_ingredient_group_members"
 
 var validIngredientGroupMembersColumns = []string{
@@ -12,6 +16,12 @@ var validIngredientGroupMembersColumns = []string{
 
 func buildValidIngredientGroupMembersQueries() []*Query {
 	return []*Query{
-		//
+		{
+			Annotation: QueryAnnotation{
+				Name: "",
+				Type: ExecType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
 	}
 }
