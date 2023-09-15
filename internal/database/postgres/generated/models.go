@@ -745,6 +745,73 @@ func AllStorageContainerTypeValues() []StorageContainerType {
 	}
 }
 
+type TimeZone string
+
+const (
+	TimeZoneUTC        TimeZone = "UTC"
+	TimeZoneUSPacific  TimeZone = "US/Pacific"
+	TimeZoneUSMountain TimeZone = "US/Mountain"
+	TimeZoneUSCentral  TimeZone = "US/Central"
+	TimeZoneUSEastern  TimeZone = "US/Eastern"
+)
+
+func (e *TimeZone) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = TimeZone(s)
+	case string:
+		*e = TimeZone(s)
+	default:
+		return fmt.Errorf("unsupported scan type for TimeZone: %T", src)
+	}
+	return nil
+}
+
+type NullTimeZone struct {
+	TimeZone TimeZone
+	Valid    bool // Valid is true if TimeZone is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullTimeZone) Scan(value interface{}) error {
+	if value == nil {
+		ns.TimeZone, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.TimeZone.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullTimeZone) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.TimeZone), nil
+}
+
+func (e TimeZone) Valid() bool {
+	switch e {
+	case TimeZoneUTC,
+		TimeZoneUSPacific,
+		TimeZoneUSMountain,
+		TimeZoneUSCentral,
+		TimeZoneUSEastern:
+		return true
+	}
+	return false
+}
+
+func AllTimeZoneValues() []TimeZone {
+	return []TimeZone{
+		TimeZoneUTC,
+		TimeZoneUSPacific,
+		TimeZoneUSMountain,
+		TimeZoneUSCentral,
+		TimeZoneUSEastern,
+	}
+}
+
 type ValidElectionMethod string
 
 const (

@@ -58,6 +58,10 @@ func filterForInsert(columns []string, exceptions ...string) []string {
 	return output
 }
 
+func filterForUpdate(columns []string, exceptions ...string) []string {
+	return filterForInsert(columns, append(exceptions, idColumn)...)
+}
+
 func fullColumnName(tableName, columnName string) string {
 	return fmt.Sprintf("%s.%s", tableName, columnName)
 }

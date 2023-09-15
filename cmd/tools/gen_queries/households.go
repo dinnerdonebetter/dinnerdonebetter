@@ -42,14 +42,33 @@ func buildHouseholdsQueries() []*Query {
 				Name: "AddToHouseholdDuringCreation",
 				Type: ExecType,
 			},
-			Content: "",
+			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO household_user_memberships (
+    %s
+) VALUES (
+    %s
+);`,
+				strings.Join(filterForInsert(householdUserMembershipsColumns, "default_household"), ",\n\t"),
+				strings.Join(applyToEach(filterForInsert(householdUserMembershipsColumns, "default_household"), func(s string) string {
+					return fmt.Sprintf("sqlc.arg(%s)", s)
+				}), ",\n\t"),
+			)),
 		},
 		{
 			Annotation: QueryAnnotation{
 				Name: "ArchiveHousehold",
 				Type: ExecRowsType,
 			},
-			Content: "",
+			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+    %s = NOW(),
+    %s = NOW()
+WHERE %s IS NULL
+    AND belongs_to_user = sqlc.arg(belongs_to_user)
+    AND id = sqlc.arg(id);`,
+				householdsTableName,
+				lastUpdatedAtColumn,
+				archivedAtColumn,
+				archivedAtColumn,
+			)),
 		},
 		{
 			Annotation: QueryAnnotation{
@@ -73,28 +92,108 @@ func buildHouseholdsQueries() []*Query {
 				Name: "GetHouseholdByIDWithMemberships",
 				Type: ManyType,
 			},
-			Content: "",
+			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s
+FROM households
+	JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
+	JOIN users ON household_user_memberships.belongs_to_user = users.id
+WHERE households.archived_at IS NULL
+	AND household_user_memberships.archived_at IS NULL
+	AND households.id = sqlc.arg(id);`,
+				strings.Join(append(
+					append(
+						applyToEach(householdsColumns, func(s string) string {
+							return fmt.Sprintf("%s.%s", householdsTableName, s)
+						}),
+						applyToEach(usersColumns, func(s string) string {
+							return fmt.Sprintf("%s.%s as user_%s", usersTableName, s, s)
+						})...,
+					),
+					applyToEach(householdUserMembershipsColumns, func(s string) string {
+						return fmt.Sprintf("%s.%s as membership_%s", householdUserMembershipsTableName, s, s)
+					})...,
+				), ",\n\t")),
+			),
 		},
 		{
 			Annotation: QueryAnnotation{
 				Name: "GetHouseholdsForUser",
 				Type: ManyType,
 			},
-			Content: "",
+			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+    %s,
+    %s,
+    %s
+FROM households
+	JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
+    JOIN users ON household_user_memberships.belongs_to_user = users.id
+WHERE households.archived_at IS NULL
+    AND household_user_memberships.archived_at IS NULL
+	%s
+LIMIT sqlc.narg(query_limit)
+OFFSET sqlc.narg(query_offset);`,
+				strings.Join(householdsColumns, ",\n\t"),
+				buildFilterCountSelect(
+					householdsTableName,
+					true,
+				),
+				buildTotalCountSelect(
+					householdsTableName,
+				),
+				buildFilterConditions(
+					householdsTableName,
+					true,
+				),
+			)),
 		},
 		{
 			Annotation: QueryAnnotation{
 				Name: "UpdateHousehold",
 				Type: ExecRowsType,
 			},
-			Content: "",
+			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+	%s,
+	last_updated_at = NOW()
+WHERE archived_at IS NULL
+	AND belongs_to_user = sqlc.arg(belongs_to_user)
+	AND id = sqlc.arg(id);`,
+				householdsTableName,
+				strings.Join(
+					applyToEach(
+						filterForUpdate(
+							householdsColumns,
+							"billing_status",
+							"payment_processor_customer_id",
+							"subscription_plan_id",
+							"belongs_to_user",
+							"time_zone",
+							"last_payment_provider_sync_occurred_at",
+							"webhook_hmac_secret",
+						),
+						func(s string) string {
+							return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
+						},
+					),
+					",\n\t",
+				),
+			)),
 		},
 		{
 			Annotation: QueryAnnotation{
 				Name: "UpdateHouseholdWebhookEncryptionKey",
 				Type: ExecRowsType,
 			},
-			Content: "",
+			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s
+SET
+    webhook_hmac_secret = sqlc.arg(webhook_hmac_secret),
+    %s = NOW()
+WHERE %s IS NULL
+    AND belongs_to_user = sqlc.arg(belongs_to_user)
+    AND id = sqlc.arg(id);`,
+				householdsTableName,
+				lastUpdatedAtColumn,
+				archivedAtColumn,
+			)),
 		},
 	}
 }
