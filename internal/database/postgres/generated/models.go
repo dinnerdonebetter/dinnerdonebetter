@@ -1007,6 +1007,17 @@ func AllWebhookEventValues() []WebhookEvent {
 	}
 }
 
+type HouseholdUserMemberships struct {
+	CreatedAt          time.Time
+	LastUpdatedAt      sql.NullTime
+	ArchivedAt         sql.NullTime
+	ID                 string
+	BelongsToHousehold string
+	BelongsToUser      string
+	HouseholdRole      string
+	DefaultHousehold   bool
+}
+
 type MealPlanEvents struct {
 	ID                string
 	Notes             string

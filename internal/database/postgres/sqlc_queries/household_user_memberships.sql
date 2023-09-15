@@ -2,37 +2,37 @@
 
 INSERT INTO household_user_memberships (
     id,
-    belongs_to_user,
-    belongs_to_household,
-    household_role
+	belongs_to_household,
+	belongs_to_user,
+	household_role
 ) VALUES (
     sqlc.arg(id),
-    sqlc.arg(belongs_to_user),
-    sqlc.arg(belongs_to_household),
-    sqlc.arg(household_role)
+	sqlc.arg(belongs_to_household),
+	sqlc.arg(belongs_to_user),
+	sqlc.arg(household_role)
 );
 
 -- name: CreateHouseholdUserMembershipForNewUser :exec
 
 INSERT INTO household_user_memberships (
     id,
-    belongs_to_user,
-    belongs_to_household,
-    default_household,
-    household_role
+	belongs_to_household,
+	belongs_to_user,
+	default_household,
+	household_role
 ) VALUES (
     sqlc.arg(id),
-    sqlc.arg(belongs_to_user),
-    sqlc.arg(belongs_to_household),
-    sqlc.arg(default_household),
-    sqlc.arg(household_role)
+	sqlc.arg(belongs_to_household),
+	sqlc.arg(belongs_to_user),
+	sqlc.arg(default_household),
+	sqlc.arg(household_role)
 );
 
 -- name: GetDefaultHouseholdIDForUser :one
 
 SELECT households.id
 FROM households
- JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
+	JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
 WHERE household_user_memberships.belongs_to_user = sqlc.arg(belongs_to_user)
 	AND household_user_memberships.default_household = TRUE;
 
@@ -40,10 +40,10 @@ WHERE household_user_memberships.belongs_to_user = sqlc.arg(belongs_to_user)
 
 SELECT
 	household_user_memberships.id,
-	household_user_memberships.belongs_to_user,
 	household_user_memberships.belongs_to_household,
-	household_user_memberships.household_role,
+	household_user_memberships.belongs_to_user,
 	household_user_memberships.default_household,
+	household_user_memberships.household_role,
 	household_user_memberships.created_at,
 	household_user_memberships.last_updated_at,
 	household_user_memberships.archived_at
@@ -94,9 +94,9 @@ WHERE archived_at IS NULL
 -- name: UserIsHouseholdMember :one
 
 SELECT EXISTS (
-   SELECT household_user_memberships.id
-	 FROM household_user_memberships
-	WHERE household_user_memberships.archived_at IS NULL
-	 AND household_user_memberships.belongs_to_household = sqlc.arg(belongs_to_household)
-	 AND household_user_memberships.belongs_to_user = sqlc.arg(belongs_to_user)
+    SELECT household_user_memberships.id
+    FROM household_user_memberships
+    WHERE household_user_memberships.archived_at IS NULL
+        AND household_user_memberships.belongs_to_household = sqlc.arg(belongs_to_household)
+        AND household_user_memberships.belongs_to_user = sqlc.arg(belongs_to_user)
 );

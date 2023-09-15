@@ -164,7 +164,7 @@ type Querier interface {
 	GetHouseholdInvitationByEmailAndToken(ctx context.Context, db DBTX, arg *GetHouseholdInvitationByEmailAndTokenParams) (*GetHouseholdInvitationByEmailAndTokenRow, error)
 	GetHouseholdInvitationByHouseholdAndID(ctx context.Context, db DBTX, arg *GetHouseholdInvitationByHouseholdAndIDParams) (*GetHouseholdInvitationByHouseholdAndIDRow, error)
 	GetHouseholdInvitationByTokenAndID(ctx context.Context, db DBTX, arg *GetHouseholdInvitationByTokenAndIDParams) (*GetHouseholdInvitationByTokenAndIDRow, error)
-	GetHouseholdUserMembershipsForUser(ctx context.Context, db DBTX, belongsToUser string) ([]*GetHouseholdUserMembershipsForUserRow, error)
+	GetHouseholdUserMembershipsForUser(ctx context.Context, db DBTX, belongsToUser string) ([]*HouseholdUserMemberships, error)
 	GetHouseholdsForUser(ctx context.Context, db DBTX, arg *GetHouseholdsForUserParams) ([]*GetHouseholdsForUserRow, error)
 	GetMeal(ctx context.Context, db DBTX, id string) ([]*GetMealRow, error)
 	GetMealPlan(ctx context.Context, db DBTX, arg *GetMealPlanParams) (*GetMealPlanRow, error)

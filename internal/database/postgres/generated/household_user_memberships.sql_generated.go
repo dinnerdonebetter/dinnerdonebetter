@@ -7,37 +7,35 @@ package generated
 
 import (
 	"context"
-	"database/sql"
-	"time"
 )
 
 const addUserToHousehold = `-- name: AddUserToHousehold :exec
 
 INSERT INTO household_user_memberships (
     id,
-    belongs_to_user,
-    belongs_to_household,
-    household_role
+	belongs_to_household,
+	belongs_to_user,
+	household_role
 ) VALUES (
     $1,
-    $2,
-    $3,
-    $4
+	$2,
+	$3,
+	$4
 )
 `
 
 type AddUserToHouseholdParams struct {
 	ID                 string
-	BelongsToUser      string
 	BelongsToHousehold string
+	BelongsToUser      string
 	HouseholdRole      string
 }
 
 func (q *Queries) AddUserToHousehold(ctx context.Context, db DBTX, arg *AddUserToHouseholdParams) error {
 	_, err := db.ExecContext(ctx, addUserToHousehold,
 		arg.ID,
-		arg.BelongsToUser,
 		arg.BelongsToHousehold,
+		arg.BelongsToUser,
 		arg.HouseholdRole,
 	)
 	return err
@@ -47,23 +45,23 @@ const createHouseholdUserMembershipForNewUser = `-- name: CreateHouseholdUserMem
 
 INSERT INTO household_user_memberships (
     id,
-    belongs_to_user,
-    belongs_to_household,
-    default_household,
-    household_role
+	belongs_to_household,
+	belongs_to_user,
+	default_household,
+	household_role
 ) VALUES (
     $1,
-    $2,
-    $3,
-    $4,
-    $5
+	$2,
+	$3,
+	$4,
+	$5
 )
 `
 
 type CreateHouseholdUserMembershipForNewUserParams struct {
 	ID                 string
-	BelongsToUser      string
 	BelongsToHousehold string
+	BelongsToUser      string
 	HouseholdRole      string
 	DefaultHousehold   bool
 }
@@ -71,8 +69,8 @@ type CreateHouseholdUserMembershipForNewUserParams struct {
 func (q *Queries) CreateHouseholdUserMembershipForNewUser(ctx context.Context, db DBTX, arg *CreateHouseholdUserMembershipForNewUserParams) error {
 	_, err := db.ExecContext(ctx, createHouseholdUserMembershipForNewUser,
 		arg.ID,
-		arg.BelongsToUser,
 		arg.BelongsToHousehold,
+		arg.BelongsToUser,
 		arg.DefaultHousehold,
 		arg.HouseholdRole,
 	)
@@ -83,7 +81,7 @@ const getDefaultHouseholdIDForUser = `-- name: GetDefaultHouseholdIDForUser :one
 
 SELECT households.id
 FROM households
- JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
+	JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
 WHERE household_user_memberships.belongs_to_user = $1
 	AND household_user_memberships.default_household = TRUE
 `
@@ -99,10 +97,10 @@ const getHouseholdUserMembershipsForUser = `-- name: GetHouseholdUserMemberships
 
 SELECT
 	household_user_memberships.id,
-	household_user_memberships.belongs_to_user,
 	household_user_memberships.belongs_to_household,
-	household_user_memberships.household_role,
+	household_user_memberships.belongs_to_user,
 	household_user_memberships.default_household,
+	household_user_memberships.household_role,
 	household_user_memberships.created_at,
 	household_user_memberships.last_updated_at,
 	household_user_memberships.archived_at
@@ -112,32 +110,21 @@ WHERE household_user_memberships.archived_at IS NULL
 	AND household_user_memberships.belongs_to_user = $1
 `
 
-type GetHouseholdUserMembershipsForUserRow struct {
-	CreatedAt          time.Time
-	LastUpdatedAt      sql.NullTime
-	ArchivedAt         sql.NullTime
-	ID                 string
-	BelongsToUser      string
-	BelongsToHousehold string
-	HouseholdRole      string
-	DefaultHousehold   bool
-}
-
-func (q *Queries) GetHouseholdUserMembershipsForUser(ctx context.Context, db DBTX, belongsToUser string) ([]*GetHouseholdUserMembershipsForUserRow, error) {
+func (q *Queries) GetHouseholdUserMembershipsForUser(ctx context.Context, db DBTX, belongsToUser string) ([]*HouseholdUserMemberships, error) {
 	rows, err := db.QueryContext(ctx, getHouseholdUserMembershipsForUser, belongsToUser)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []*GetHouseholdUserMembershipsForUserRow{}
+	items := []*HouseholdUserMemberships{}
 	for rows.Next() {
-		var i GetHouseholdUserMembershipsForUserRow
+		var i HouseholdUserMemberships
 		if err := rows.Scan(
 			&i.ID,
-			&i.BelongsToUser,
 			&i.BelongsToHousehold,
-			&i.HouseholdRole,
+			&i.BelongsToUser,
 			&i.DefaultHousehold,
+			&i.HouseholdRole,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
@@ -254,11 +241,11 @@ func (q *Queries) TransferHouseholdOwnership(ctx context.Context, db DBTX, arg *
 const userIsHouseholdMember = `-- name: UserIsHouseholdMember :one
 
 SELECT EXISTS (
-   SELECT household_user_memberships.id
-	 FROM household_user_memberships
-	WHERE household_user_memberships.archived_at IS NULL
-	 AND household_user_memberships.belongs_to_household = $1
-	 AND household_user_memberships.belongs_to_user = $2
+    SELECT household_user_memberships.id
+    FROM household_user_memberships
+    WHERE household_user_memberships.archived_at IS NULL
+        AND household_user_memberships.belongs_to_household = $1
+        AND household_user_memberships.belongs_to_user = $2
 )
 `
 
