@@ -43,3 +43,9 @@ var validIngredientsColumns = []string{
 	lastUpdatedAtColumn,
 	archivedAtColumn,
 }
+
+func buildValidIngredientsQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

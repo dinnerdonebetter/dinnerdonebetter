@@ -11,3 +11,9 @@ var validIngredientPreparationsColumns = []string{
 	lastUpdatedAtColumn,
 	archivedAtColumn,
 }
+
+func buildValidIngredientPreparationsQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

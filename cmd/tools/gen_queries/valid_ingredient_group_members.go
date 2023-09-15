@@ -9,3 +9,9 @@ var validIngredientGroupMembersColumns = []string{
 	createdAtColumn,
 	archivedAtColumn,
 }
+
+func buildValidIngredientGroupMembersQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

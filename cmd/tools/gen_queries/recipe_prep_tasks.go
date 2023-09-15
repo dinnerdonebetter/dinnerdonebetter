@@ -19,3 +19,9 @@ var recipePrepTasksColumns = []string{
 	lastUpdatedAtColumn,
 	archivedAtColumn,
 }
+
+func buildRecipePrepTasksQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

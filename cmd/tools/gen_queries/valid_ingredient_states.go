@@ -15,3 +15,9 @@ var validIngredientStatesColumns = []string{
 	lastUpdatedAtColumn,
 	archivedAtColumn,
 }
+
+func buildValidIngredientStatesQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

@@ -16,3 +16,9 @@ var recipeRatingsColumns = []string{
 	lastUpdatedAtColumn,
 	archivedAtColumn,
 }
+
+func buildRecipeRatingsQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

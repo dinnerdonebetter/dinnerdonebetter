@@ -12,3 +12,9 @@ var recipeStepCompletionConditionsColumns = []string{
 	lastUpdatedAtColumn,
 	archivedAtColumn,
 }
+
+func buildRecipeStepCompletionConditionQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

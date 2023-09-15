@@ -22,3 +22,9 @@ var oauth2ClientTokensColumns = []string{
 	"refresh_created_at",
 	"refresh_expires_at",
 }
+
+func buildOAuth2ClientTokensQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

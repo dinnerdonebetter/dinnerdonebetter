@@ -11,3 +11,9 @@ var validPreparationVesselsColumns = []string{
 	lastUpdatedAtColumn,
 	archivedAtColumn,
 }
+
+func buildValidPreparationVesselsQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

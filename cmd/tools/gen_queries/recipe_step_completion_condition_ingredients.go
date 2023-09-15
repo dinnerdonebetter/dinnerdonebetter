@@ -10,3 +10,9 @@ var recipeStepCompletionConditionIngredientsColumns = []string{
 	lastUpdatedAtColumn,
 	archivedAtColumn,
 }
+
+func buildRecipeStepCompletionConditionIngredientsQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

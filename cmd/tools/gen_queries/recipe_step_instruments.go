@@ -18,3 +18,9 @@ var recipeStepInstrumentsColumns = []string{
 	lastUpdatedAtColumn,
 	archivedAtColumn,
 }
+
+func buildRecipeStepInstrumentsQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

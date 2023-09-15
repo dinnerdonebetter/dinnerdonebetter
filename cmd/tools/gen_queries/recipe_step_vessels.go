@@ -17,3 +17,9 @@ var recipeStepVesselsColumns = []string{
 	lastUpdatedAtColumn,
 	archivedAtColumn,
 }
+
+func buildRecipeStepVesselsQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

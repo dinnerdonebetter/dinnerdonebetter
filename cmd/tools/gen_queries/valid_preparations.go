@@ -27,3 +27,9 @@ var validPreparationsColumns = []string{
 	lastUpdatedAtColumn,
 	archivedAtColumn,
 }
+
+func buildValidPreparationsQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

@@ -16,3 +16,9 @@ var mealPlansColumns = []string{
 	lastUpdatedAtColumn,
 	archivedAtColumn,
 }
+
+func buildMealPlansQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

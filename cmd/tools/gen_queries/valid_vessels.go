@@ -23,3 +23,9 @@ var validVesselsColumns = []string{
 	lastUpdatedAtColumn,
 	archivedAtColumn,
 }
+
+func buildValidVesselsQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

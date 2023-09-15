@@ -11,3 +11,9 @@ var validIngredientGroupsColumns = []string{
 	lastUpdatedAtColumn,
 	archivedAtColumn,
 }
+
+func buildValidIngredientGroupQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

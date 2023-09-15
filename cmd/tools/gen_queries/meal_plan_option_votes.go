@@ -13,3 +13,9 @@ var mealPlanOptionVotesColumns = []string{
 	lastUpdatedAtColumn,
 	archivedAtColumn,
 }
+
+func buildMealPlanOptionVotesQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

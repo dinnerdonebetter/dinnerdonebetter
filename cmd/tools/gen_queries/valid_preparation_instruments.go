@@ -11,3 +11,9 @@ var validPreparationInstrumentsColumns = []string{
 	lastUpdatedAtColumn,
 	archivedAtColumn,
 }
+
+func buildValidPreparationInstrumentsQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

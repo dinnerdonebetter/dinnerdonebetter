@@ -11,3 +11,9 @@ var oauth2ClientsColumns = []string{
 	createdAtColumn,
 	archivedAtColumn,
 }
+
+func buildOAuth2ClientsQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

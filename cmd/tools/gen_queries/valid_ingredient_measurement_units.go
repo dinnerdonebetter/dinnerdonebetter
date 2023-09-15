@@ -13,3 +13,9 @@ var validIngredientMeasurementUnitsColumns = []string{
 	lastUpdatedAtColumn,
 	archivedAtColumn,
 }
+
+func buildValidIngredientMeasurementUnitsQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

@@ -19,3 +19,9 @@ var mealPlanGroceryListItemsColumns = []string{
 	lastUpdatedAtColumn,
 	archivedAtColumn,
 }
+
+func buildMealPlanGroceryListItemsQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

@@ -12,3 +12,9 @@ var householdInstrumentOwnershipsColumns = []string{
 	lastUpdatedAtColumn,
 	archivedAtColumn,
 }
+
+func buildHouseholdInstrumentOwnershipQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

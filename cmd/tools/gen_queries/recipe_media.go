@@ -14,3 +14,9 @@ var recipeMediaColumns = []string{
 	lastUpdatedAtColumn,
 	archivedAtColumn,
 }
+
+func buildRecipeMediaQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

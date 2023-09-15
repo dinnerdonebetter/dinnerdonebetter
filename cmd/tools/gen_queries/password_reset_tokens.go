@@ -11,3 +11,9 @@ var passwordResetTokensColumns = []string{
 	createdAtColumn,
 	lastUpdatedAtColumn,
 }
+
+func buildPasswordResetTokensQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

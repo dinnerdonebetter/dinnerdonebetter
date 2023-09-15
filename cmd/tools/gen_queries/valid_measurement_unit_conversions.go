@@ -13,3 +13,9 @@ var validMeasurementUnitConversionsColumns = []string{
 	lastUpdatedAtColumn,
 	archivedAtColumn,
 }
+
+func buildValidMeasurementUnitConversionsQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

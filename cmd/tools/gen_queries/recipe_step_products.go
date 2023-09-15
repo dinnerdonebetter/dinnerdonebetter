@@ -24,3 +24,9 @@ var recipeStepProductsColumns = []string{
 	lastUpdatedAtColumn,
 	archivedAtColumn,
 }
+
+func buildRecipeStepProductsQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

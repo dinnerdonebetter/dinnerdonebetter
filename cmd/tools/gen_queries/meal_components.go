@@ -12,3 +12,9 @@ var mealComponentsColumns = []string{
 	lastUpdatedAtColumn,
 	archivedAtColumn,
 }
+
+func buildMealComponentsQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

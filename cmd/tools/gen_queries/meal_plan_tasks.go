@@ -14,3 +14,9 @@ var mealPlanTasksColumns = []string{
 	createdAtColumn,
 	lastUpdatedAtColumn,
 }
+
+func buildMealPlanTasksQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

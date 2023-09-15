@@ -14,3 +14,9 @@ var serviceSettingsColumns = []string{
 	lastUpdatedAtColumn,
 	archivedAtColumn,
 }
+
+func buildServiceSettingQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

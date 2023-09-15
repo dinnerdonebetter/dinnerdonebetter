@@ -12,3 +12,9 @@ var householdUserMembershipsColumns = []string{
 	lastUpdatedAtColumn,
 	archivedAtColumn,
 }
+
+func buildHouseholdUserMembershipsQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

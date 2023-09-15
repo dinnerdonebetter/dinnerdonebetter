@@ -23,3 +23,9 @@ var recipesColumns = []string{
 	"last_validated_at",
 	"yields_component_type",
 }
+
+func buildRecipesQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

@@ -8,3 +8,9 @@ var recipePrepTaskStepsColumns = []string{
 	"belongs_to_recipe_step",
 	"belongs_to_recipe_prep_task",
 }
+
+func buildRecipePrepTaskStepsQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

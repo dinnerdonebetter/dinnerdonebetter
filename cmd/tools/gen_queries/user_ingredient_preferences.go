@@ -13,3 +13,9 @@ var userIngredientPreferencesColumns = []string{
 	lastUpdatedAtColumn,
 	archivedAtColumn,
 }
+
+func buildUserIngredientPreferencesQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

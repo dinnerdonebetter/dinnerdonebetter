@@ -17,3 +17,9 @@ var validInstrumentsColumns = []string{
 	lastUpdatedAtColumn,
 	archivedAtColumn,
 }
+
+func buildValidInstrumentsQueries() []*Query {
+	return []*Query{
+		//
+	}
+}

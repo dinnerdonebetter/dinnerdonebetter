@@ -18,3 +18,9 @@ var householdInvitationsColumns = []string{
 	lastUpdatedAtColumn,
 	archivedAtColumn,
 }
+
+func buildHouseholdInvitationsQueries() []*Query {
+	return []*Query{
+		//
+	}
+}
