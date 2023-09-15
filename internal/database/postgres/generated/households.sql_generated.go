@@ -70,51 +70,50 @@ const createHousehold = `-- name: CreateHousehold :exec
 
 INSERT INTO households (
     id,
-    name,
-    billing_status,
-    contact_phone,
-    address_line_1,
-    address_line_2,
-    city,
-    state,
-    zip_code,
-    country,
-    latitude,
-    longitude,
-    belongs_to_user,
-    webhook_hmac_secret
-)
-VALUES (
+	name,
+	billing_status,
+	contact_phone,
+	belongs_to_user,
+	address_line_1,
+	address_line_2,
+	city,
+	state,
+	zip_code,
+	country,
+	latitude,
+	longitude,
+	webhook_hmac_secret
+) VALUES (
     $1,
-    $2,
-    $3,
-    $4,
-    $5,
-    $6,
-    $7,
-    $8,
-    $9,
-    $10,
-    $11,
-    $12,
-    $13,
-    $14
+	$2,
+	$3,
+	$4,
+	$5,
+	$6,
+	$7,
+	$8,
+	$9,
+	$10,
+	$11,
+	$12,
+	$13,
+	$14
 )
 `
 
 type CreateHouseholdParams struct {
-	City              string
+	AddressLine2      string
 	ID                string
 	BillingStatus     string
 	ContactPhone      string
+	BelongsToUser     string
 	AddressLine1      string
-	AddressLine2      string
 	Name              string
-	State             string
-	WebhookHmacSecret string
+	City              string
 	Country           string
 	ZipCode           string
-	BelongsToUser     string
+	State             string
+	WebhookHmacSecret string
 	Longitude         sql.NullString
 	Latitude          sql.NullString
 }
@@ -125,6 +124,7 @@ func (q *Queries) CreateHousehold(ctx context.Context, db DBTX, arg *CreateHouse
 		arg.Name,
 		arg.BillingStatus,
 		arg.ContactPhone,
+		arg.BelongsToUser,
 		arg.AddressLine1,
 		arg.AddressLine2,
 		arg.City,
@@ -133,7 +133,6 @@ func (q *Queries) CreateHousehold(ctx context.Context, db DBTX, arg *CreateHouse
 		arg.Country,
 		arg.Latitude,
 		arg.Longitude,
-		arg.BelongsToUser,
 		arg.WebhookHmacSecret,
 	)
 	return err
@@ -337,23 +336,26 @@ const getHouseholdsForUser = `-- name: GetHouseholdsForUser :many
 
 SELECT
     households.id,
-    households.name,
-    households.billing_status,
-    households.contact_phone,
-    households.address_line_1,
-    households.address_line_2,
-    households.city,
-    households.state,
-    households.zip_code,
-    households.country,
-    households.latitude,
-    households.longitude,
-    households.payment_processor_customer_id,
-    households.subscription_plan_id,
-    households.created_at,
-    households.last_updated_at,
-    households.archived_at,
-    households.belongs_to_user,
+	households.name,
+	households.billing_status,
+	households.contact_phone,
+	households.payment_processor_customer_id,
+	households.subscription_plan_id,
+	households.belongs_to_user,
+	households.time_zone,
+	households.address_line_1,
+	households.address_line_2,
+	households.city,
+	households.state,
+	households.zip_code,
+	households.country,
+	households.latitude,
+	households.longitude,
+	households.last_payment_provider_sync_occurred_at,
+	households.webhook_hmac_secret,
+	households.created_at,
+	households.last_updated_at,
+	households.archived_at,
     (
         SELECT
             COUNT(households.id)
@@ -362,85 +364,85 @@ SELECT
             JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
         WHERE households.archived_at IS NULL
             AND household_user_memberships.belongs_to_user = $1
-            AND households.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
-            AND households.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
-            AND (
-                households.last_updated_at IS NULL
-                OR households.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years'))
-            )
-            AND (
-                households.last_updated_at IS NULL
-                OR households.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
-            )
-        ) as filtered_count,
+			AND households.created_at > COALESCE($2, (SELECT NOW() - '999 years'::INTERVAL))
+    AND households.created_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		households.last_updated_at IS NULL
+		OR households.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		households.last_updated_at IS NULL
+		OR households.last_updated_at < COALESCE($5, (SELECT NOW() + '999 years'::INTERVAL))
+	)
+	) as filtered_count,
     (
-        SELECT
-            COUNT(households.id)
-        FROM
-            households
-        WHERE
-            households.archived_at IS NULL
-    ) as total_count
+        SELECT COUNT(households.id)
+        FROM households
+        WHERE households.archived_at IS NULL
+    ) AS total_count
 FROM households
 	JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
     JOIN users ON household_user_memberships.belongs_to_user = users.id
 WHERE households.archived_at IS NULL
     AND household_user_memberships.archived_at IS NULL
     AND household_user_memberships.belongs_to_user = $1
-    AND households.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
-    AND households.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
-    AND (
-        households.last_updated_at IS NULL
-        OR households.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years'))
-    )
-    AND (
-        households.last_updated_at IS NULL
-        OR households.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
-    )
-    OFFSET $6
-    LIMIT $7
+	AND households.created_at > COALESCE($2, (SELECT NOW() - '999 years'::INTERVAL))
+    AND households.created_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		households.last_updated_at IS NULL
+		OR households.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		households.last_updated_at IS NULL
+		OR households.last_updated_at < COALESCE($5, (SELECT NOW() + '999 years'::INTERVAL))
+	)
+	LIMIT $7
+	OFFSET $6
 `
 
 type GetHouseholdsForUserParams struct {
 	UserID        string
-	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
-	UpdatedAfter  sql.NullTime
+	CreatedAfter  sql.NullTime
 	UpdatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
 
 type GetHouseholdsForUserRow struct {
-	CreatedAt                  time.Time
-	ArchivedAt                 sql.NullTime
-	LastUpdatedAt              sql.NullTime
-	AddressLine2               string
-	PaymentProcessorCustomerID string
-	ID                         string
-	City                       string
-	State                      string
-	ZipCode                    string
-	Country                    string
-	BelongsToUser              string
-	Name                       string
-	AddressLine1               string
-	BillingStatus              string
-	ContactPhone               string
-	SubscriptionPlanID         sql.NullString
-	Longitude                  sql.NullString
-	Latitude                   sql.NullString
-	FilteredCount              int64
-	TotalCount                 int64
+	CreatedAt                         time.Time
+	LastPaymentProviderSyncOccurredAt sql.NullTime
+	LastUpdatedAt                     sql.NullTime
+	ArchivedAt                        sql.NullTime
+	AddressLine1                      string
+	State                             string
+	BelongsToUser                     string
+	TimeZone                          TimeZone
+	PaymentProcessorCustomerID        string
+	AddressLine2                      string
+	City                              string
+	ID                                string
+	ZipCode                           string
+	Country                           string
+	ContactPhone                      string
+	BillingStatus                     string
+	Name                              string
+	WebhookHmacSecret                 string
+	SubscriptionPlanID                sql.NullString
+	Longitude                         sql.NullString
+	Latitude                          sql.NullString
+	FilteredCount                     int64
+	TotalCount                        int64
 }
 
 func (q *Queries) GetHouseholdsForUser(ctx context.Context, db DBTX, arg *GetHouseholdsForUserParams) ([]*GetHouseholdsForUserRow, error) {
 	rows, err := db.QueryContext(ctx, getHouseholdsForUser,
 		arg.UserID,
-		arg.CreatedAfter,
 		arg.CreatedBefore,
-		arg.UpdatedAfter,
+		arg.CreatedAfter,
 		arg.UpdatedBefore,
+		arg.UpdatedAfter,
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)
@@ -456,6 +458,10 @@ func (q *Queries) GetHouseholdsForUser(ctx context.Context, db DBTX, arg *GetHou
 			&i.Name,
 			&i.BillingStatus,
 			&i.ContactPhone,
+			&i.PaymentProcessorCustomerID,
+			&i.SubscriptionPlanID,
+			&i.BelongsToUser,
+			&i.TimeZone,
 			&i.AddressLine1,
 			&i.AddressLine2,
 			&i.City,
@@ -464,12 +470,11 @@ func (q *Queries) GetHouseholdsForUser(ctx context.Context, db DBTX, arg *GetHou
 			&i.Country,
 			&i.Latitude,
 			&i.Longitude,
-			&i.PaymentProcessorCustomerID,
-			&i.SubscriptionPlanID,
+			&i.LastPaymentProviderSyncOccurredAt,
+			&i.WebhookHmacSecret,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
-			&i.BelongsToUser,
 			&i.FilteredCount,
 			&i.TotalCount,
 		); err != nil {

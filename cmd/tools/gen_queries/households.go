@@ -81,8 +81,20 @@ WHERE %s IS NULL
     %s
 );`,
 				householdsTableName,
-				strings.Join(insertColumns, ",\n\t"),
-				strings.Join(applyToEach(insertColumns, func(s string) string {
+				strings.Join(filterForInsert(
+					insertColumns,
+					"time_zone",
+					"payment_processor_customer_id",
+					"last_payment_provider_sync_occurred_at",
+					"subscription_plan_id",
+				), ",\n\t"),
+				strings.Join(applyToEach(filterForInsert(
+					insertColumns,
+					"time_zone",
+					"payment_processor_customer_id",
+					"last_payment_provider_sync_occurred_at",
+					"subscription_plan_id",
+				), func(s string) string {
 					return fmt.Sprintf("sqlc.arg(%s)", s)
 				}), ",\n\t"),
 			)),
@@ -122,18 +134,30 @@ WHERE households.archived_at IS NULL
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
     %s,
-    %s,
+    (
+        SELECT
+            COUNT(households.id)
+        FROM
+            households
+            JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
+        WHERE households.archived_at IS NULL
+            AND household_user_memberships.belongs_to_user = sqlc.arg(user_id)
+			%s
+	) as filtered_count,
     %s
 FROM households
 	JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
     JOIN users ON household_user_memberships.belongs_to_user = users.id
 WHERE households.archived_at IS NULL
     AND household_user_memberships.archived_at IS NULL
+    AND household_user_memberships.belongs_to_user = sqlc.arg(user_id)
 	%s
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);`,
-				strings.Join(householdsColumns, ",\n\t"),
-				buildFilterCountSelect(
+	LIMIT sqlc.narg(query_limit)
+	OFFSET sqlc.narg(query_offset);`,
+				strings.Join(applyToEach(householdsColumns, func(s string) string {
+					return fmt.Sprintf("%s.%s", householdsTableName, s)
+				}), ",\n\t"),
+				buildFilterConditions(
 					householdsTableName,
 					true,
 				),
