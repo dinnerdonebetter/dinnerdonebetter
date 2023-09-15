@@ -41,7 +41,10 @@ func filterForInsert(columns []string, exceptions ...string) []string {
 	output := []string{}
 
 	for _, column := range columns {
-		if column == archivedAtColumn || column == createdAtColumn || column == lastUpdatedAtColumn {
+		if column == archivedAtColumn ||
+			column == createdAtColumn ||
+			column == lastUpdatedAtColumn ||
+			column == lastIndexedAtColumn {
 			continue
 		}
 

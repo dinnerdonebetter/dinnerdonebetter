@@ -5,12 +5,47 @@ VALUES ($1,$2,$3,$4);
 
 -- name: ArchiveHousehold :execrows
 
-UPDATE households SET last_updated_at = NOW(), archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_user = $1 AND id = $2;
+UPDATE households SET
+    last_updated_at = NOW(),
+    archived_at = NOW()
+WHERE archived_at IS NULL
+    AND belongs_to_user = sqlc.arg(belongs_to_user)
+    AND id = sqlc.arg(id);
 
 -- name: CreateHousehold :exec
 
-INSERT INTO households (id,name,billing_status,contact_phone,address_line_1,address_line_2,city,state,zip_code,country,latitude,longitude,belongs_to_user,webhook_hmac_secret)
-VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14);
+INSERT INTO households (
+    id,
+    name,
+    billing_status,
+    contact_phone,
+    address_line_1,
+    address_line_2,
+    city,
+    state,
+    zip_code,
+    country,
+    latitude,
+    longitude,
+    belongs_to_user,
+    webhook_hmac_secret
+)
+VALUES (
+    sqlc.arg(id),
+    sqlc.arg(name),
+    sqlc.arg(billing_status),
+    sqlc.arg(contact_phone),
+    sqlc.arg(address_line_1),
+    sqlc.arg(address_line_2),
+    sqlc.arg(city),
+    sqlc.arg(state),
+    sqlc.arg(zip_code),
+    sqlc.arg(country),
+    sqlc.arg(latitude),
+    sqlc.arg(longitude),
+    sqlc.arg(belongs_to_user),
+    sqlc.arg(webhook_hmac_secret)
+);
 
 -- name: GetHouseholdByIDWithMemberships :many
 
@@ -66,7 +101,7 @@ FROM households
 	JOIN users ON household_user_memberships.belongs_to_user = users.id
 WHERE households.archived_at IS NULL
 	AND household_user_memberships.archived_at IS NULL
-	AND households.id = $1;
+	AND households.id = sqlc.arg(id);
 
 -- name: GetHouseholdsForUser :many
 

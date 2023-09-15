@@ -54,8 +54,38 @@ func (q *Queries) ArchiveHousehold(ctx context.Context, db DBTX, arg *ArchiveHou
 
 const createHousehold = `-- name: CreateHousehold :exec
 
-INSERT INTO households (id,name,billing_status,contact_phone,address_line_1,address_line_2,city,state,zip_code,country,latitude,longitude,belongs_to_user,webhook_hmac_secret)
-VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+INSERT INTO households (
+    id,
+    name,
+    billing_status,
+    contact_phone,
+    address_line_1,
+    address_line_2,
+    city,
+    state,
+    zip_code,
+    country,
+    latitude,
+    longitude,
+    belongs_to_user,
+    webhook_hmac_secret
+)
+VALUES (
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $6,
+    $7,
+    $8,
+    $9,
+    $10,
+    $11,
+    $12,
+    $13,
+    $14
+)
 `
 
 type CreateHouseholdParams struct {
