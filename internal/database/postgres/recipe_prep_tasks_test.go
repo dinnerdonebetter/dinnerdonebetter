@@ -41,8 +41,6 @@ func createRecipePrepTaskForTest(t *testing.T, ctx context.Context, exampleRecip
 }
 
 func TestQuerier_Integration_RecipePrepTasks(t *testing.T) {
-	t.Parallel()
-
 	if !runningContainerTests {
 		t.SkipNow()
 	}

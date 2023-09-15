@@ -52,8 +52,6 @@ func createRecipeStepVesselForTest(t *testing.T, ctx context.Context, recipeID s
 }
 
 func TestQuerier_Integration_RecipeStepVessels(t *testing.T) {
-	t.Parallel()
-
 	if !runningContainerTests {
 		t.SkipNow()
 	}

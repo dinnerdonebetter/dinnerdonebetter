@@ -20,7 +20,7 @@ func Test_applyToEach(T *testing.T) {
 		}
 
 		callCount := 0
-		exampleFunc := func(x string) string {
+		exampleFunc := func(_ int, x string) string {
 			callCount += 1
 			return x
 		}
@@ -119,14 +119,28 @@ func Test_mergeColumns(T *testing.T) {
 		}
 
 		actual := mergeColumns(
-			applyToEach(webhooksColumns, func(s string) string {
+			applyToEach(webhooksColumns, func(_ int, s string) string {
 				return fullColumnName(webhooksTableName, s)
 			}),
-			applyToEach(webhookTriggerEventsColumns, func(s string) string {
+			applyToEach(webhookTriggerEventsColumns, func(_ int, s string) string {
 				return fullColumnName(webhookTriggerEventsTableName, s)
 			}),
 			5,
 		)
+
+		assert.Equal(t, expected, actual)
+	})
+}
+
+func Test_buildFilterConditions(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		expected := `AND things.created_at > COALESCE(sqlc.narg(created_before), (SELECT NOW() - '999 years'::INTERVAL))
+    AND things.created_at < COALESCE(sqlc.narg(created_after), (SELECT NOW() + '999 years'::INTERVAL))`
+		actual := buildFilterConditions("things", false)
 
 		assert.Equal(t, expected, actual)
 	})

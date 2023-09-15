@@ -48,6 +48,8 @@ func Test_newRedisCache(T *testing.T) {
 	})
 }
 
+// TODO: use testcontainers to properly test this: https://golang.testcontainers.org/modules/redis/
+
 func Test_redisCacheImpl_Get(T *testing.T) {
 	T.Parallel()
 

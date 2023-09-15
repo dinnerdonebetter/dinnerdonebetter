@@ -38,10 +38,10 @@ var (
 func buildWebhooksQueries() []*Query {
 	insertColumns := filterForInsert(webhooksColumns)
 	fullSelectColumns := mergeColumns(
-		applyToEach(webhooksColumns, func(s string) string {
+		applyToEach(webhooksColumns, func(_ int, s string) string {
 			return fullColumnName(webhooksTableName, s)
 		}),
-		applyToEach(webhookTriggerEventsColumns, func(s string) string {
+		applyToEach(webhookTriggerEventsColumns, func(_ int, s string) string {
 			return fullColumnName(webhookTriggerEventsTableName, s)
 		}),
 		5,
@@ -74,7 +74,7 @@ func buildWebhooksQueries() []*Query {
 );`,
 				webhooksTableName,
 				strings.Join(insertColumns, ",\n\t"),
-				strings.Join(applyToEach(insertColumns, func(s string) string {
+				strings.Join(applyToEach(insertColumns, func(_ int, s string) string {
 					return fmt.Sprintf("sqlc.arg(%s)", s)
 				}), ",\n\t"),
 			)),
@@ -146,7 +146,7 @@ WHERE webhook_trigger_events.archived_at IS NULL
     AND webhook_trigger_events.trigger_event = sqlc.arg(trigger_event)
     AND webhooks.belongs_to_household = sqlc.arg(household_id)
     AND webhooks.archived_at IS NULL;`,
-				strings.Join(applyToEach(webhooksColumns, func(s string) string {
+				strings.Join(applyToEach(webhooksColumns, func(_ int, s string) string {
 					return fullColumnName(webhooksTableName, s)
 				}), ",\n\t"),
 			)),
@@ -164,7 +164,7 @@ WHERE webhook_trigger_events.archived_at IS NULL
 	AND webhooks.belongs_to_household = sqlc.arg(household_id)
 	AND webhooks.archived_at IS NULL
 	AND webhooks.id = sqlc.arg(id);`,
-				strings.Join(applyToEach(fullSelectColumns, func(s string) string {
+				strings.Join(applyToEach(fullSelectColumns, func(_ int, s string) string {
 					parts := strings.Split(s, ".")
 					return fmt.Sprintf("%s as %s_%s",
 						s, strings.TrimSuffix(parts[0], "s"), parts[1],

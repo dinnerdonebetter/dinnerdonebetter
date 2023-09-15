@@ -365,15 +365,15 @@ SELECT
         WHERE households.archived_at IS NULL
             AND household_user_memberships.belongs_to_user = $1
 			AND households.created_at > COALESCE($2, (SELECT NOW() - '999 years'::INTERVAL))
-    AND households.created_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
-	AND (
-		households.last_updated_at IS NULL
-		OR households.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
-	)
-	AND (
-		households.last_updated_at IS NULL
-		OR households.last_updated_at < COALESCE($5, (SELECT NOW() + '999 years'::INTERVAL))
-	)
+		    AND households.created_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				households.last_updated_at IS NULL
+				OR households.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				households.last_updated_at IS NULL
+				OR households.last_updated_at < COALESCE($5, (SELECT NOW() + '999 years'::INTERVAL))
+			)
 	) as filtered_count,
     (
         SELECT COUNT(households.id)

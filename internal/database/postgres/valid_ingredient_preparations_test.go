@@ -47,8 +47,6 @@ func createValidIngredientPreparationForTest(t *testing.T, ctx context.Context, 
 }
 
 func TestQuerier_Integration_ValidIngredientPreparations(t *testing.T) {
-	t.Parallel()
-
 	if !runningContainerTests {
 		t.SkipNow()
 	}

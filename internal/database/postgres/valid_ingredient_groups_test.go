@@ -47,8 +47,6 @@ func createValidIngredientGroupForTest(t *testing.T, ctx context.Context, exampl
 }
 
 func TestQuerier_Integration_ValidIngredientGroups(t *testing.T) {
-	t.Parallel()
-
 	if !runningContainerTests {
 		t.SkipNow()
 	}

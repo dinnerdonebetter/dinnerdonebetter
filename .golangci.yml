@@ -375,6 +375,10 @@ issues:
       linters:
         - forcetypeassert
 
+    - path: internal/database/postgres
+      linters:
+        - paralleltest
+
     ## BEGIN SPECIAL SNOWFLAKES
 
     - path: cmd/gen_configs/main.go

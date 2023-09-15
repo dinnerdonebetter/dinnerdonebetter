@@ -47,8 +47,6 @@ func createValidPreparationInstrumentForTest(t *testing.T, ctx context.Context, 
 }
 
 func TestQuerier_Integration_ValidPreparationInstruments(t *testing.T) {
-	t.Parallel()
-
 	if !runningContainerTests {
 		t.SkipNow()
 	}

@@ -46,8 +46,6 @@ func createOAuth2ClientTokenForTest(t *testing.T, ctx context.Context, exampleOA
 }
 
 func TestQuerier_Integration_OAuth2ClientTokens(t *testing.T) {
-	t.Parallel()
-
 	if !runningContainerTests {
 		t.SkipNow()
 	}

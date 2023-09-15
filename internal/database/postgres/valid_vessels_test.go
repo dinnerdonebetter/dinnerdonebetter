@@ -45,8 +45,6 @@ func createValidVesselForTest(t *testing.T, ctx context.Context, exampleValidVes
 }
 
 func TestQuerier_Integration_ValidVessels(t *testing.T) {
-	t.Parallel()
-
 	if !runningContainerTests {
 		t.SkipNow()
 	}

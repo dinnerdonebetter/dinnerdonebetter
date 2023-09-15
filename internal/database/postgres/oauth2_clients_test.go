@@ -38,8 +38,6 @@ func createOAuth2ClientForTest(t *testing.T, ctx context.Context, exampleOAuth2C
 }
 
 func TestQuerier_Integration_OAuth2Clients(t *testing.T) {
-	t.Parallel()
-
 	if !runningContainerTests {
 		t.SkipNow()
 	}

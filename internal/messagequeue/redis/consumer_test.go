@@ -41,6 +41,8 @@ func convertChan(c chan *redis.Message) <-chan *redis.Message {
 	return c
 }
 
+// TODO: use testcontainers to properly test this: https://golang.testcontainers.org/modules/redis/
+
 func Test_redisConsumer_Consume(T *testing.T) {
 	T.Parallel()
 

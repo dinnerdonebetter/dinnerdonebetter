@@ -15,8 +15,6 @@ import (
 )
 
 func TestQuerier_Integration_HouseholdUserMemberships(t *testing.T) {
-	t.Parallel()
-
 	if !runningContainerTests {
 		t.SkipNow()
 	}

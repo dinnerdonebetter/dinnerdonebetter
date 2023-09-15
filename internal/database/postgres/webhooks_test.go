@@ -47,8 +47,6 @@ func createWebhookForTest(t *testing.T, ctx context.Context, exampleWebhook *typ
 }
 
 func TestQuerier_Integration_Webhooks(t *testing.T) {
-	t.Parallel()
-
 	if !runningContainerTests {
 		t.SkipNow()
 	}

@@ -24,6 +24,8 @@ func (m *mockMessagePublisher) Publish(ctx context.Context, channel string, mess
 	return m.Called(ctx, channel, message).Get(0).(*redis.IntCmd)
 }
 
+// TODO: use testcontainers to properly test this: https://golang.testcontainers.org/modules/redis/
+
 func Test_redisPublisher_Publish(T *testing.T) {
 	T.Parallel()
 

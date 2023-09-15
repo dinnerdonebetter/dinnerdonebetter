@@ -48,7 +48,7 @@ func buildHouseholdsQueries() []*Query {
     %s
 );`,
 				strings.Join(filterForInsert(householdUserMembershipsColumns, "default_household"), ",\n\t"),
-				strings.Join(applyToEach(filterForInsert(householdUserMembershipsColumns, "default_household"), func(s string) string {
+				strings.Join(applyToEach(filterForInsert(householdUserMembershipsColumns, "default_household"), func(_ int, s string) string {
 					return fmt.Sprintf("sqlc.arg(%s)", s)
 				}), ",\n\t"),
 			)),
@@ -94,7 +94,7 @@ WHERE %s IS NULL
 					"payment_processor_customer_id",
 					"last_payment_provider_sync_occurred_at",
 					"subscription_plan_id",
-				), func(s string) string {
+				), func(_ int, s string) string {
 					return fmt.Sprintf("sqlc.arg(%s)", s)
 				}), ",\n\t"),
 			)),
@@ -114,14 +114,14 @@ WHERE households.archived_at IS NULL
 	AND households.id = sqlc.arg(id);`,
 				strings.Join(append(
 					append(
-						applyToEach(householdsColumns, func(s string) string {
+						applyToEach(householdsColumns, func(_ int, s string) string {
 							return fmt.Sprintf("%s.%s", householdsTableName, s)
 						}),
-						applyToEach(usersColumns, func(s string) string {
+						applyToEach(usersColumns, func(_ int, s string) string {
 							return fmt.Sprintf("%s.%s as user_%s", usersTableName, s, s)
 						})...,
 					),
-					applyToEach(householdUserMembershipsColumns, func(s string) string {
+					applyToEach(householdUserMembershipsColumns, func(_ int, s string) string {
 						return fmt.Sprintf("%s.%s as membership_%s", householdUserMembershipsTableName, s, s)
 					})...,
 				), ",\n\t")),
@@ -141,8 +141,7 @@ WHERE households.archived_at IS NULL
             households
             JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
         WHERE households.archived_at IS NULL
-            AND household_user_memberships.belongs_to_user = sqlc.arg(user_id)
-			%s
+            AND household_user_memberships.belongs_to_user = sqlc.arg(user_id)%s
 	) as filtered_count,
     %s
 FROM households
@@ -154,13 +153,18 @@ WHERE households.archived_at IS NULL
 	%s
 	LIMIT sqlc.narg(query_limit)
 	OFFSET sqlc.narg(query_offset);`,
-				strings.Join(applyToEach(householdsColumns, func(s string) string {
+				strings.Join(applyToEach(householdsColumns, func(_ int, s string) string {
 					return fmt.Sprintf("%s.%s", householdsTableName, s)
 				}), ",\n\t"),
-				buildFilterConditions(
+				strings.Join(applyToEach(strings.Split(buildFilterConditions(
 					householdsTableName,
 					true,
-				),
+				), "\n"), func(i int, s string) string {
+					if i == 0 {
+						return fmt.Sprintf("\n\t\t\t%s", s)
+					}
+					return fmt.Sprintf("\n\t\t%s", s)
+				}), ""),
 				buildTotalCountSelect(
 					householdsTableName,
 				),
@@ -194,7 +198,7 @@ WHERE archived_at IS NULL
 							"last_payment_provider_sync_occurred_at",
 							"webhook_hmac_secret",
 						),
-						func(s string) string {
+						func(_ int, s string) string {
 							return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
 						},
 					),

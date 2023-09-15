@@ -40,8 +40,6 @@ func createPasswordResetTokenForTest(t *testing.T, ctx context.Context, exampleP
 }
 
 func TestQuerier_Integration_PasswordResetTokens(t *testing.T) {
-	t.Parallel()
-
 	if !runningContainerTests {
 		t.SkipNow()
 	}

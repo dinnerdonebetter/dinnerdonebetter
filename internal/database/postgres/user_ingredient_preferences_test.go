@@ -43,8 +43,6 @@ func createUserIngredientPreferenceForTest(t *testing.T, ctx context.Context, ex
 }
 
 func TestQuerier_Integration_UserIngredientPreferences(t *testing.T) {
-	t.Parallel()
-
 	if !runningContainerTests {
 		t.SkipNow()
 	}

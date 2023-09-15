@@ -18,11 +18,11 @@ const (
 	belongsToUserColumn      = "belongs_to_user"
 )
 
-func applyToEach(x []string, f func(string) string) []string {
+func applyToEach(x []string, f func(int, string) string) []string {
 	output := []string{}
 
-	for _, v := range x {
-		output = append(output, f(v))
+	for i, v := range x {
+		output = append(output, f(i, v))
 	}
 
 	return output

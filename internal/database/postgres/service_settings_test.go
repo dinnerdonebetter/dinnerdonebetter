@@ -38,8 +38,6 @@ func createServiceSettingForTest(t *testing.T, ctx context.Context, exampleServi
 }
 
 func TestQuerier_Integration_ServiceSettings(t *testing.T) {
-	t.Parallel()
-
 	if !runningContainerTests {
 		t.SkipNow()
 	}

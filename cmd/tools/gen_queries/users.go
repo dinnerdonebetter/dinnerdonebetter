@@ -136,7 +136,7 @@ func buildUsersQueries() []*Query {
     %s
 );`,
 				strings.Join(insertColumns, ",\n\t"),
-				strings.Join(applyToEach(insertColumns, func(s string) string {
+				strings.Join(applyToEach(insertColumns, func(_ int, s string) string {
 					return fmt.Sprintf("sqlc.arg(%s)", s)
 				}), ",\n\t"),
 			)),
@@ -154,7 +154,7 @@ WHERE users.archived_at IS NULL
 	AND users.username = sqlc.arg(username)
 	AND users.two_factor_secret_verified_at IS NOT NULL;`,
 
-				strings.Join(applyToEach(usersColumns, func(s string) string {
+				strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 					return fmt.Sprintf("%s.%s", usersTableName, s)
 				}), ",\n\t"),
 			)),
@@ -169,7 +169,7 @@ WHERE users.archived_at IS NULL
 FROM users
 WHERE users.archived_at IS NULL
 	AND users.email_address = sqlc.arg(email_address);`,
-				strings.Join(applyToEach(usersColumns, func(s string) string {
+				strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 					return fmt.Sprintf("%s.%s", usersTableName, s)
 				}), ",\n\t"),
 			)),
@@ -184,7 +184,7 @@ WHERE users.archived_at IS NULL
 FROM users
 WHERE users.archived_at IS NULL
 	AND users.email_address_verification_token = sqlc.arg(email_address_verification_token);`,
-				strings.Join(applyToEach(usersColumns, func(s string) string {
+				strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 					return fmt.Sprintf("%s.%s", usersTableName, s)
 				}), ",\n\t"),
 			)),
@@ -199,7 +199,7 @@ WHERE users.archived_at IS NULL
 FROM users
 WHERE users.archived_at IS NULL
 	AND users.id = sqlc.arg(id);`,
-				strings.Join(applyToEach(usersColumns, func(s string) string {
+				strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 					return fmt.Sprintf("%s.%s", usersTableName, s)
 				}), ",\n\t"),
 			)),
@@ -214,7 +214,7 @@ WHERE users.archived_at IS NULL
 FROM users
 WHERE users.archived_at IS NULL
 	AND users.username = sqlc.arg(username);`,
-				strings.Join(applyToEach(usersColumns, func(s string) string {
+				strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 					return fmt.Sprintf("%s.%s", usersTableName, s)
 				}), ",\n\t"),
 			)),
@@ -246,7 +246,7 @@ WHERE users.archived_at IS NULL
 	%s
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);`,
-				strings.Join(applyToEach(usersColumns, func(s string) string {
+				strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 					return fmt.Sprintf("%s.%s", usersTableName, s)
 				}), ",\n\t"),
 				buildFilterCountSelect(
@@ -287,7 +287,7 @@ FROM users
 WHERE users.archived_at IS NULL
 	AND users.id = sqlc.arg(id)
 	AND users.two_factor_secret_verified_at IS NULL;`,
-				strings.Join(applyToEach(usersColumns, func(s string) string {
+				strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 					return fmt.Sprintf("%s.%s", usersTableName, s)
 				}), ",\n\t"),
 			)),
@@ -303,7 +303,7 @@ FROM users
 WHERE users.archived_at IS NULL
 	AND users.id = sqlc.arg(id)
 	AND users.two_factor_secret_verified_at IS NOT NULL;`,
-				strings.Join(applyToEach(usersColumns, func(s string) string {
+				strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 					return fmt.Sprintf("%s.%s", usersTableName, s)
 				}), ",\n\t"),
 			)),
@@ -366,7 +366,7 @@ WHERE %s IS NULL
 FROM users
 WHERE users.username %s
 AND users.archived_at IS NULL;`,
-				strings.Join(applyToEach(usersColumns, func(s string) string {
+				strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 					return fmt.Sprintf("%s.%s", usersTableName, s)
 				}), ",\n\t"),
 				`ILIKE '%' || sqlc.arg(username)::text || '%'`,

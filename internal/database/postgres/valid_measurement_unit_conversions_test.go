@@ -43,8 +43,6 @@ func createValidMeasurementUnitConversionForTest(t *testing.T, ctx context.Conte
 }
 
 func TestQuerier_Integration_ValidMeasurementUnitConversions(t *testing.T) {
-	t.Parallel()
-
 	if !runningContainerTests {
 		t.SkipNow()
 	}
