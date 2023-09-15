@@ -98,35 +98,52 @@ func TestQuerier_Integration_Users(t *testing.T) {
 	assert.NotEmpty(t, foundForUsername)
 
 	// update first user's username
-	firstUser.Username = fmt.Sprintf("%s_new", firstUser.Username)
-	assert.NoError(t, dbc.UpdateUserUsername(ctx, firstUser.ID, firstUser.Username))
+	newUsername := fmt.Sprintf("%s_new", firstUser.Username)
+	assert.NoError(t, dbc.UpdateUserUsername(ctx, firstUser.ID, newUsername))
+	firstUser, err = dbc.GetUser(ctx, firstUser.ID)
+	require.NoError(t, err)
+	assert.Equal(t, firstUser.Username, newUsername)
 
 	// update first user's details
+	newFirstName, newLastName, birthday := "new_first", "new_last", time.Now()
 	assert.NoError(t, dbc.UpdateUserDetails(ctx, firstUser.ID, &types.UserDetailsDatabaseUpdateInput{
-		FirstName: firstUser.FirstName,
-		LastName:  firstUser.LastName,
-		Birthday:  time.Now(),
+		FirstName: newFirstName,
+		LastName:  newLastName,
+		Birthday:  birthday,
 	}))
+	firstUser, err = dbc.GetUser(ctx, firstUser.ID)
+	require.NoError(t, err)
+	assert.Equal(t, firstUser.FirstName, newFirstName)
+	assert.Equal(t, firstUser.LastName, newLastName)
+	assert.Equal(t, firstUser.Birthday.Round(time.Second), birthday.Round(time.Second))
 
 	// update first user's avatar
 	newAvatarSource := fakes.BuildFakeID()
 	assert.NoError(t, dbc.UpdateUserAvatar(ctx, firstUser.ID, newAvatarSource))
-	firstUser.AvatarSrc = &newAvatarSource
+	firstUser, err = dbc.GetUser(ctx, firstUser.ID)
+	require.NoError(t, err)
+	assert.Equal(t, *firstUser.AvatarSrc, newAvatarSource)
 
 	// update first user's email address
 	newEmailAddress := fakes.BuildFakeID()
 	assert.NoError(t, dbc.UpdateUserEmailAddress(ctx, firstUser.ID, newEmailAddress))
-	firstUser.EmailAddress = newEmailAddress
+	firstUser, err = dbc.GetUser(ctx, firstUser.ID)
+	require.NoError(t, err)
+	assert.Equal(t, firstUser.EmailAddress, newEmailAddress)
 
 	// update first user's password
 	newPassword := fakes.BuildFakeID()
 	assert.NoError(t, dbc.UpdateUserPassword(ctx, firstUser.ID, newPassword))
-	firstUser.HashedPassword = newPassword
+	firstUser, err = dbc.GetUser(ctx, firstUser.ID)
+	require.NoError(t, err)
+	assert.Equal(t, firstUser.HashedPassword, newPassword)
 
 	// update first user's two factor secret
 	new2FASecret := fakes.BuildFakeID()
 	assert.NoError(t, dbc.UpdateUserTwoFactorSecret(ctx, firstUser.ID, new2FASecret))
-	firstUser.TwoFactorSecret = new2FASecret
+	firstUser, err = dbc.GetUser(ctx, firstUser.ID)
+	require.NoError(t, err)
+	assert.Equal(t, firstUser.TwoFactorSecret, new2FASecret)
 
 	assert.NoError(t, dbc.MarkUserTwoFactorSecretAsVerified(ctx, firstUser.ID))
 	assert.NoError(t, dbc.MarkUserTwoFactorSecretAsUnverified(ctx, firstUser.ID, fakes.BuildFakeID()))

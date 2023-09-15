@@ -82,24 +82,6 @@ func Test_filterForInsert(T *testing.T) {
 	})
 }
 
-func Test_formatQuery(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		example := `SELECT stuff
-FROM things
-				WHERE id = 1
-`
-
-		expected := "SELECT stuff FROM things WHERE id = 1;"
-		actual := formatQuery(example)
-
-		assert.Equal(t, expected, actual)
-	})
-}
-
 func Test_fullColumnName(T *testing.T) {
 	T.Parallel()
 

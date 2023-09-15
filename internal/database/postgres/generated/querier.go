@@ -348,7 +348,6 @@ type Querier interface {
 	UpdateRecipeStepProduct(ctx context.Context, db DBTX, arg *UpdateRecipeStepProductParams) (int64, error)
 	UpdateRecipeStepVessel(ctx context.Context, db DBTX, arg *UpdateRecipeStepVesselParams) (int64, error)
 	UpdateServiceSettingConfiguration(ctx context.Context, db DBTX, arg *UpdateServiceSettingConfigurationParams) (int64, error)
-	UpdateUser(ctx context.Context, db DBTX, arg *UpdateUserParams) (int64, error)
 	UpdateUserAvatarSrc(ctx context.Context, db DBTX, arg *UpdateUserAvatarSrcParams) (int64, error)
 	UpdateUserDetails(ctx context.Context, db DBTX, arg *UpdateUserDetailsParams) (int64, error)
 	UpdateUserEmailAddress(ctx context.Context, db DBTX, arg *UpdateUserEmailAddressParams) (int64, error)

@@ -13,7 +13,10 @@ import (
 
 const acceptPrivacyPolicyForUser = `-- name: AcceptPrivacyPolicyForUser :exec
 
-UPDATE users SET last_accepted_privacy_policy = NOW() WHERE archived_at IS NULL AND id = $1
+UPDATE users SET
+	last_accepted_privacy_policy = NOW()
+WHERE archived_at IS NULL
+	AND id = $1
 `
 
 func (q *Queries) AcceptPrivacyPolicyForUser(ctx context.Context, db DBTX, id string) error {
@@ -23,7 +26,10 @@ func (q *Queries) AcceptPrivacyPolicyForUser(ctx context.Context, db DBTX, id st
 
 const acceptTermsOfServiceForUser = `-- name: AcceptTermsOfServiceForUser :exec
 
-UPDATE users SET last_accepted_terms_of_service = NOW() WHERE archived_at IS NULL AND id = $1
+UPDATE users SET
+	last_accepted_terms_of_service = NOW()
+WHERE archived_at IS NULL
+	AND id = $1
 `
 
 func (q *Queries) AcceptTermsOfServiceForUser(ctx context.Context, db DBTX, id string) error {
@@ -46,7 +52,9 @@ func (q *Queries) ArchiveUser(ctx context.Context, db DBTX, id string) (int64, e
 
 const archiveUserMemberships = `-- name: ArchiveUserMemberships :execrows
 
-UPDATE household_user_memberships SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_user = $1
+UPDATE household_user_memberships
+SET archived_at = NOW()
+WHERE archived_at IS NULL AND belongs_to_user = $1
 `
 
 func (q *Queries) ArchiveUserMemberships(ctx context.Context, db DBTX, id string) (int64, error) {
@@ -59,44 +67,40 @@ func (q *Queries) ArchiveUserMemberships(ctx context.Context, db DBTX, id string
 
 const createUser = `-- name: CreateUser :exec
 
-INSERT
-INTO
-	users
-		(
-			id,
-			username,
-			avatar_src,
-			email_address,
-			hashed_password,
-			requires_password_change,
-			two_factor_secret,
-			two_factor_secret_verified_at,
-			service_role,
-			user_account_status,
-			user_account_status_explanation,
-			birthday,
-			email_address_verification_token,
-			first_name,
-			last_name
-		)
-VALUES
-	(
-		$1,
-		$2,
-		$3,
-		$4,
-		$5,
-		$6,
-		$7,
-		$8,
-		$9,
-		$10,
-		$11,
-		$12,
-		$13,
-		$14,
-		$15
-	)
+INSERT INTO users
+(
+    id,
+	username,
+	avatar_src,
+	email_address,
+	hashed_password,
+	requires_password_change,
+	two_factor_secret,
+	two_factor_secret_verified_at,
+	service_role,
+	user_account_status,
+	user_account_status_explanation,
+	birthday,
+	email_address_verification_token,
+	first_name,
+	last_name
+) VALUES (
+    $1,
+	$2,
+	$3,
+	$4,
+	$5,
+	$6,
+	$7,
+	$8,
+	$9,
+	$10,
+	$11,
+	$12,
+	$13,
+	$14,
+	$15
+)
 `
 
 type CreateUserParams struct {
@@ -142,23 +146,25 @@ const getAdminUserByUsername = `-- name: GetAdminUserByUsername :one
 
 SELECT
 	users.id,
-	users.first_name,
-	users.last_name,
 	users.username,
-	users.email_address,
-	users.email_address_verified_at,
 	users.avatar_src,
+	users.email_address,
 	users.hashed_password,
-	users.requires_password_change,
 	users.password_last_changed_at,
+	users.requires_password_change,
 	users.two_factor_secret,
 	users.two_factor_secret_verified_at,
 	users.service_role,
 	users.user_account_status,
 	users.user_account_status_explanation,
 	users.birthday,
+	users.email_address_verification_token,
+	users.email_address_verified_at,
+	users.first_name,
+	users.last_name,
 	users.last_accepted_terms_of_service,
-    users.last_accepted_privacy_policy,
+	users.last_accepted_privacy_policy,
+	users.last_indexed_at,
 	users.created_at,
 	users.last_updated_at,
 	users.archived_at
@@ -170,27 +176,29 @@ WHERE users.archived_at IS NULL
 `
 
 type GetAdminUserByUsernameRow struct {
-	CreatedAt                    time.Time
-	Birthday                     sql.NullTime
-	ArchivedAt                   sql.NullTime
-	PasswordLastChangedAt        sql.NullTime
-	LastUpdatedAt                sql.NullTime
-	EmailAddressVerifiedAt       sql.NullTime
-	LastAcceptedPrivacyPolicy    sql.NullTime
-	LastAcceptedTermsOfService   sql.NullTime
-	TwoFactorSecretVerifiedAt    sql.NullTime
-	UserAccountStatusExplanation string
-	FirstName                    string
-	ServiceRole                  string
-	UserAccountStatus            string
-	LastName                     string
-	ID                           string
-	HashedPassword               string
-	TwoFactorSecret              string
-	EmailAddress                 string
-	Username                     string
-	AvatarSrc                    sql.NullString
-	RequiresPasswordChange       bool
+	CreatedAt                     time.Time
+	Birthday                      sql.NullTime
+	ArchivedAt                    sql.NullTime
+	LastUpdatedAt                 sql.NullTime
+	LastIndexedAt                 sql.NullTime
+	PasswordLastChangedAt         sql.NullTime
+	LastAcceptedPrivacyPolicy     sql.NullTime
+	LastAcceptedTermsOfService    sql.NullTime
+	TwoFactorSecretVerifiedAt     sql.NullTime
+	EmailAddressVerifiedAt        sql.NullTime
+	UserAccountStatus             string
+	UserAccountStatusExplanation  string
+	ID                            string
+	ServiceRole                   string
+	FirstName                     string
+	LastName                      string
+	TwoFactorSecret               string
+	HashedPassword                string
+	EmailAddress                  string
+	Username                      string
+	EmailAddressVerificationToken sql.NullString
+	AvatarSrc                     sql.NullString
+	RequiresPasswordChange        bool
 }
 
 func (q *Queries) GetAdminUserByUsername(ctx context.Context, db DBTX, username string) (*GetAdminUserByUsernameRow, error) {
@@ -198,23 +206,25 @@ func (q *Queries) GetAdminUserByUsername(ctx context.Context, db DBTX, username 
 	var i GetAdminUserByUsernameRow
 	err := row.Scan(
 		&i.ID,
-		&i.FirstName,
-		&i.LastName,
 		&i.Username,
-		&i.EmailAddress,
-		&i.EmailAddressVerifiedAt,
 		&i.AvatarSrc,
+		&i.EmailAddress,
 		&i.HashedPassword,
-		&i.RequiresPasswordChange,
 		&i.PasswordLastChangedAt,
+		&i.RequiresPasswordChange,
 		&i.TwoFactorSecret,
 		&i.TwoFactorSecretVerifiedAt,
 		&i.ServiceRole,
 		&i.UserAccountStatus,
 		&i.UserAccountStatusExplanation,
 		&i.Birthday,
+		&i.EmailAddressVerificationToken,
+		&i.EmailAddressVerifiedAt,
+		&i.FirstName,
+		&i.LastName,
 		&i.LastAcceptedTermsOfService,
 		&i.LastAcceptedPrivacyPolicy,
+		&i.LastIndexedAt,
 		&i.CreatedAt,
 		&i.LastUpdatedAt,
 		&i.ArchivedAt,
@@ -243,23 +253,25 @@ const getUserByEmail = `-- name: GetUserByEmail :one
 
 SELECT
 	users.id,
-	users.first_name,
-	users.last_name,
 	users.username,
-	users.email_address,
-	users.email_address_verified_at,
 	users.avatar_src,
+	users.email_address,
 	users.hashed_password,
-	users.requires_password_change,
 	users.password_last_changed_at,
+	users.requires_password_change,
 	users.two_factor_secret,
 	users.two_factor_secret_verified_at,
 	users.service_role,
 	users.user_account_status,
 	users.user_account_status_explanation,
 	users.birthday,
+	users.email_address_verification_token,
+	users.email_address_verified_at,
+	users.first_name,
+	users.last_name,
 	users.last_accepted_terms_of_service,
-    users.last_accepted_privacy_policy,
+	users.last_accepted_privacy_policy,
+	users.last_indexed_at,
 	users.created_at,
 	users.last_updated_at,
 	users.archived_at
@@ -269,27 +281,29 @@ WHERE users.archived_at IS NULL
 `
 
 type GetUserByEmailRow struct {
-	CreatedAt                    time.Time
-	Birthday                     sql.NullTime
-	ArchivedAt                   sql.NullTime
-	PasswordLastChangedAt        sql.NullTime
-	LastUpdatedAt                sql.NullTime
-	EmailAddressVerifiedAt       sql.NullTime
-	LastAcceptedPrivacyPolicy    sql.NullTime
-	LastAcceptedTermsOfService   sql.NullTime
-	TwoFactorSecretVerifiedAt    sql.NullTime
-	UserAccountStatusExplanation string
-	FirstName                    string
-	ServiceRole                  string
-	UserAccountStatus            string
-	LastName                     string
-	ID                           string
-	HashedPassword               string
-	TwoFactorSecret              string
-	EmailAddress                 string
-	Username                     string
-	AvatarSrc                    sql.NullString
-	RequiresPasswordChange       bool
+	CreatedAt                     time.Time
+	Birthday                      sql.NullTime
+	ArchivedAt                    sql.NullTime
+	LastUpdatedAt                 sql.NullTime
+	LastIndexedAt                 sql.NullTime
+	PasswordLastChangedAt         sql.NullTime
+	LastAcceptedPrivacyPolicy     sql.NullTime
+	LastAcceptedTermsOfService    sql.NullTime
+	TwoFactorSecretVerifiedAt     sql.NullTime
+	EmailAddressVerifiedAt        sql.NullTime
+	UserAccountStatus             string
+	UserAccountStatusExplanation  string
+	ID                            string
+	ServiceRole                   string
+	FirstName                     string
+	LastName                      string
+	TwoFactorSecret               string
+	HashedPassword                string
+	EmailAddress                  string
+	Username                      string
+	EmailAddressVerificationToken sql.NullString
+	AvatarSrc                     sql.NullString
+	RequiresPasswordChange        bool
 }
 
 func (q *Queries) GetUserByEmail(ctx context.Context, db DBTX, emailAddress string) (*GetUserByEmailRow, error) {
@@ -297,23 +311,25 @@ func (q *Queries) GetUserByEmail(ctx context.Context, db DBTX, emailAddress stri
 	var i GetUserByEmailRow
 	err := row.Scan(
 		&i.ID,
-		&i.FirstName,
-		&i.LastName,
 		&i.Username,
-		&i.EmailAddress,
-		&i.EmailAddressVerifiedAt,
 		&i.AvatarSrc,
+		&i.EmailAddress,
 		&i.HashedPassword,
-		&i.RequiresPasswordChange,
 		&i.PasswordLastChangedAt,
+		&i.RequiresPasswordChange,
 		&i.TwoFactorSecret,
 		&i.TwoFactorSecretVerifiedAt,
 		&i.ServiceRole,
 		&i.UserAccountStatus,
 		&i.UserAccountStatusExplanation,
 		&i.Birthday,
+		&i.EmailAddressVerificationToken,
+		&i.EmailAddressVerifiedAt,
+		&i.FirstName,
+		&i.LastName,
 		&i.LastAcceptedTermsOfService,
 		&i.LastAcceptedPrivacyPolicy,
+		&i.LastIndexedAt,
 		&i.CreatedAt,
 		&i.LastUpdatedAt,
 		&i.ArchivedAt,
@@ -325,23 +341,25 @@ const getUserByEmailAddressVerificationToken = `-- name: GetUserByEmailAddressVe
 
 SELECT
 	users.id,
-	users.first_name,
-	users.last_name,
 	users.username,
-	users.email_address,
-	users.email_address_verified_at,
 	users.avatar_src,
+	users.email_address,
 	users.hashed_password,
-	users.requires_password_change,
 	users.password_last_changed_at,
+	users.requires_password_change,
 	users.two_factor_secret,
 	users.two_factor_secret_verified_at,
 	users.service_role,
 	users.user_account_status,
 	users.user_account_status_explanation,
 	users.birthday,
+	users.email_address_verification_token,
+	users.email_address_verified_at,
+	users.first_name,
+	users.last_name,
 	users.last_accepted_terms_of_service,
-    users.last_accepted_privacy_policy,
+	users.last_accepted_privacy_policy,
+	users.last_indexed_at,
 	users.created_at,
 	users.last_updated_at,
 	users.archived_at
@@ -351,27 +369,29 @@ WHERE users.archived_at IS NULL
 `
 
 type GetUserByEmailAddressVerificationTokenRow struct {
-	CreatedAt                    time.Time
-	Birthday                     sql.NullTime
-	ArchivedAt                   sql.NullTime
-	PasswordLastChangedAt        sql.NullTime
-	LastUpdatedAt                sql.NullTime
-	EmailAddressVerifiedAt       sql.NullTime
-	LastAcceptedPrivacyPolicy    sql.NullTime
-	LastAcceptedTermsOfService   sql.NullTime
-	TwoFactorSecretVerifiedAt    sql.NullTime
-	UserAccountStatusExplanation string
-	FirstName                    string
-	ServiceRole                  string
-	UserAccountStatus            string
-	LastName                     string
-	ID                           string
-	HashedPassword               string
-	TwoFactorSecret              string
-	EmailAddress                 string
-	Username                     string
-	AvatarSrc                    sql.NullString
-	RequiresPasswordChange       bool
+	CreatedAt                     time.Time
+	Birthday                      sql.NullTime
+	ArchivedAt                    sql.NullTime
+	LastUpdatedAt                 sql.NullTime
+	LastIndexedAt                 sql.NullTime
+	PasswordLastChangedAt         sql.NullTime
+	LastAcceptedPrivacyPolicy     sql.NullTime
+	LastAcceptedTermsOfService    sql.NullTime
+	TwoFactorSecretVerifiedAt     sql.NullTime
+	EmailAddressVerifiedAt        sql.NullTime
+	UserAccountStatus             string
+	UserAccountStatusExplanation  string
+	ID                            string
+	ServiceRole                   string
+	FirstName                     string
+	LastName                      string
+	TwoFactorSecret               string
+	HashedPassword                string
+	EmailAddress                  string
+	Username                      string
+	EmailAddressVerificationToken sql.NullString
+	AvatarSrc                     sql.NullString
+	RequiresPasswordChange        bool
 }
 
 func (q *Queries) GetUserByEmailAddressVerificationToken(ctx context.Context, db DBTX, emailAddressVerificationToken sql.NullString) (*GetUserByEmailAddressVerificationTokenRow, error) {
@@ -379,23 +399,25 @@ func (q *Queries) GetUserByEmailAddressVerificationToken(ctx context.Context, db
 	var i GetUserByEmailAddressVerificationTokenRow
 	err := row.Scan(
 		&i.ID,
-		&i.FirstName,
-		&i.LastName,
 		&i.Username,
-		&i.EmailAddress,
-		&i.EmailAddressVerifiedAt,
 		&i.AvatarSrc,
+		&i.EmailAddress,
 		&i.HashedPassword,
-		&i.RequiresPasswordChange,
 		&i.PasswordLastChangedAt,
+		&i.RequiresPasswordChange,
 		&i.TwoFactorSecret,
 		&i.TwoFactorSecretVerifiedAt,
 		&i.ServiceRole,
 		&i.UserAccountStatus,
 		&i.UserAccountStatusExplanation,
 		&i.Birthday,
+		&i.EmailAddressVerificationToken,
+		&i.EmailAddressVerifiedAt,
+		&i.FirstName,
+		&i.LastName,
 		&i.LastAcceptedTermsOfService,
 		&i.LastAcceptedPrivacyPolicy,
+		&i.LastIndexedAt,
 		&i.CreatedAt,
 		&i.LastUpdatedAt,
 		&i.ArchivedAt,
@@ -407,23 +429,25 @@ const getUserByID = `-- name: GetUserByID :one
 
 SELECT
 	users.id,
-	users.first_name,
-	users.last_name,
 	users.username,
-	users.email_address,
-	users.email_address_verified_at,
 	users.avatar_src,
+	users.email_address,
 	users.hashed_password,
-	users.requires_password_change,
 	users.password_last_changed_at,
+	users.requires_password_change,
 	users.two_factor_secret,
 	users.two_factor_secret_verified_at,
 	users.service_role,
 	users.user_account_status,
 	users.user_account_status_explanation,
 	users.birthday,
+	users.email_address_verification_token,
+	users.email_address_verified_at,
+	users.first_name,
+	users.last_name,
 	users.last_accepted_terms_of_service,
-    users.last_accepted_privacy_policy,
+	users.last_accepted_privacy_policy,
+	users.last_indexed_at,
 	users.created_at,
 	users.last_updated_at,
 	users.archived_at
@@ -433,27 +457,29 @@ WHERE users.archived_at IS NULL
 `
 
 type GetUserByIDRow struct {
-	CreatedAt                    time.Time
-	Birthday                     sql.NullTime
-	ArchivedAt                   sql.NullTime
-	PasswordLastChangedAt        sql.NullTime
-	LastUpdatedAt                sql.NullTime
-	EmailAddressVerifiedAt       sql.NullTime
-	LastAcceptedPrivacyPolicy    sql.NullTime
-	LastAcceptedTermsOfService   sql.NullTime
-	TwoFactorSecretVerifiedAt    sql.NullTime
-	UserAccountStatusExplanation string
-	FirstName                    string
-	ServiceRole                  string
-	UserAccountStatus            string
-	LastName                     string
-	ID                           string
-	HashedPassword               string
-	TwoFactorSecret              string
-	EmailAddress                 string
-	Username                     string
-	AvatarSrc                    sql.NullString
-	RequiresPasswordChange       bool
+	CreatedAt                     time.Time
+	Birthday                      sql.NullTime
+	ArchivedAt                    sql.NullTime
+	LastUpdatedAt                 sql.NullTime
+	LastIndexedAt                 sql.NullTime
+	PasswordLastChangedAt         sql.NullTime
+	LastAcceptedPrivacyPolicy     sql.NullTime
+	LastAcceptedTermsOfService    sql.NullTime
+	TwoFactorSecretVerifiedAt     sql.NullTime
+	EmailAddressVerifiedAt        sql.NullTime
+	UserAccountStatus             string
+	UserAccountStatusExplanation  string
+	ID                            string
+	ServiceRole                   string
+	FirstName                     string
+	LastName                      string
+	TwoFactorSecret               string
+	HashedPassword                string
+	EmailAddress                  string
+	Username                      string
+	EmailAddressVerificationToken sql.NullString
+	AvatarSrc                     sql.NullString
+	RequiresPasswordChange        bool
 }
 
 func (q *Queries) GetUserByID(ctx context.Context, db DBTX, id string) (*GetUserByIDRow, error) {
@@ -461,23 +487,25 @@ func (q *Queries) GetUserByID(ctx context.Context, db DBTX, id string) (*GetUser
 	var i GetUserByIDRow
 	err := row.Scan(
 		&i.ID,
-		&i.FirstName,
-		&i.LastName,
 		&i.Username,
-		&i.EmailAddress,
-		&i.EmailAddressVerifiedAt,
 		&i.AvatarSrc,
+		&i.EmailAddress,
 		&i.HashedPassword,
-		&i.RequiresPasswordChange,
 		&i.PasswordLastChangedAt,
+		&i.RequiresPasswordChange,
 		&i.TwoFactorSecret,
 		&i.TwoFactorSecretVerifiedAt,
 		&i.ServiceRole,
 		&i.UserAccountStatus,
 		&i.UserAccountStatusExplanation,
 		&i.Birthday,
+		&i.EmailAddressVerificationToken,
+		&i.EmailAddressVerifiedAt,
+		&i.FirstName,
+		&i.LastName,
 		&i.LastAcceptedTermsOfService,
 		&i.LastAcceptedPrivacyPolicy,
+		&i.LastIndexedAt,
 		&i.CreatedAt,
 		&i.LastUpdatedAt,
 		&i.ArchivedAt,
@@ -489,23 +517,25 @@ const getUserByUsername = `-- name: GetUserByUsername :one
 
 SELECT
 	users.id,
-	users.first_name,
-	users.last_name,
 	users.username,
-	users.email_address,
-	users.email_address_verified_at,
 	users.avatar_src,
+	users.email_address,
 	users.hashed_password,
-	users.requires_password_change,
 	users.password_last_changed_at,
+	users.requires_password_change,
 	users.two_factor_secret,
 	users.two_factor_secret_verified_at,
 	users.service_role,
 	users.user_account_status,
 	users.user_account_status_explanation,
 	users.birthday,
+	users.email_address_verification_token,
+	users.email_address_verified_at,
+	users.first_name,
+	users.last_name,
 	users.last_accepted_terms_of_service,
-    users.last_accepted_privacy_policy,
+	users.last_accepted_privacy_policy,
+	users.last_indexed_at,
 	users.created_at,
 	users.last_updated_at,
 	users.archived_at
@@ -515,27 +545,29 @@ WHERE users.archived_at IS NULL
 `
 
 type GetUserByUsernameRow struct {
-	CreatedAt                    time.Time
-	Birthday                     sql.NullTime
-	ArchivedAt                   sql.NullTime
-	PasswordLastChangedAt        sql.NullTime
-	LastUpdatedAt                sql.NullTime
-	EmailAddressVerifiedAt       sql.NullTime
-	LastAcceptedPrivacyPolicy    sql.NullTime
-	LastAcceptedTermsOfService   sql.NullTime
-	TwoFactorSecretVerifiedAt    sql.NullTime
-	UserAccountStatusExplanation string
-	FirstName                    string
-	ServiceRole                  string
-	UserAccountStatus            string
-	LastName                     string
-	ID                           string
-	HashedPassword               string
-	TwoFactorSecret              string
-	EmailAddress                 string
-	Username                     string
-	AvatarSrc                    sql.NullString
-	RequiresPasswordChange       bool
+	CreatedAt                     time.Time
+	Birthday                      sql.NullTime
+	ArchivedAt                    sql.NullTime
+	LastUpdatedAt                 sql.NullTime
+	LastIndexedAt                 sql.NullTime
+	PasswordLastChangedAt         sql.NullTime
+	LastAcceptedPrivacyPolicy     sql.NullTime
+	LastAcceptedTermsOfService    sql.NullTime
+	TwoFactorSecretVerifiedAt     sql.NullTime
+	EmailAddressVerifiedAt        sql.NullTime
+	UserAccountStatus             string
+	UserAccountStatusExplanation  string
+	ID                            string
+	ServiceRole                   string
+	FirstName                     string
+	LastName                      string
+	TwoFactorSecret               string
+	HashedPassword                string
+	EmailAddress                  string
+	Username                      string
+	EmailAddressVerificationToken sql.NullString
+	AvatarSrc                     sql.NullString
+	RequiresPasswordChange        bool
 }
 
 func (q *Queries) GetUserByUsername(ctx context.Context, db DBTX, username string) (*GetUserByUsernameRow, error) {
@@ -543,23 +575,25 @@ func (q *Queries) GetUserByUsername(ctx context.Context, db DBTX, username strin
 	var i GetUserByUsernameRow
 	err := row.Scan(
 		&i.ID,
-		&i.FirstName,
-		&i.LastName,
 		&i.Username,
-		&i.EmailAddress,
-		&i.EmailAddressVerifiedAt,
 		&i.AvatarSrc,
+		&i.EmailAddress,
 		&i.HashedPassword,
-		&i.RequiresPasswordChange,
 		&i.PasswordLastChangedAt,
+		&i.RequiresPasswordChange,
 		&i.TwoFactorSecret,
 		&i.TwoFactorSecretVerifiedAt,
 		&i.ServiceRole,
 		&i.UserAccountStatus,
 		&i.UserAccountStatusExplanation,
 		&i.Birthday,
+		&i.EmailAddressVerificationToken,
+		&i.EmailAddressVerifiedAt,
+		&i.FirstName,
+		&i.LastName,
 		&i.LastAcceptedTermsOfService,
 		&i.LastAcceptedPrivacyPolicy,
+		&i.LastIndexedAt,
 		&i.CreatedAt,
 		&i.LastUpdatedAt,
 		&i.ArchivedAt,
@@ -570,15 +604,12 @@ func (q *Queries) GetUserByUsername(ctx context.Context, db DBTX, username strin
 const getUserIDsNeedingIndexing = `-- name: GetUserIDsNeedingIndexing :many
 
 SELECT users.id
-  FROM users
- WHERE (users.archived_at IS NULL)
-       AND (
-			(
-				users.last_indexed_at IS NULL
-			)
-			OR users.last_indexed_at
-				< now() - '24 hours'::INTERVAL
-		)
+FROM users
+WHERE (users.archived_at IS NULL)
+AND users.last_indexed_at IS NULL
+OR (
+    users.last_indexed_at < NOW() - '24 hours'::INTERVAL
+)
 `
 
 func (q *Queries) GetUserIDsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error) {
@@ -608,23 +639,25 @@ const getUserWithUnverifiedTwoFactor = `-- name: GetUserWithUnverifiedTwoFactor 
 
 SELECT
 	users.id,
-	users.first_name,
-	users.last_name,
 	users.username,
-	users.email_address,
-	users.email_address_verified_at,
 	users.avatar_src,
+	users.email_address,
 	users.hashed_password,
-	users.requires_password_change,
 	users.password_last_changed_at,
+	users.requires_password_change,
 	users.two_factor_secret,
 	users.two_factor_secret_verified_at,
 	users.service_role,
 	users.user_account_status,
 	users.user_account_status_explanation,
 	users.birthday,
+	users.email_address_verification_token,
+	users.email_address_verified_at,
+	users.first_name,
+	users.last_name,
 	users.last_accepted_terms_of_service,
-    users.last_accepted_privacy_policy,
+	users.last_accepted_privacy_policy,
+	users.last_indexed_at,
 	users.created_at,
 	users.last_updated_at,
 	users.archived_at
@@ -635,27 +668,29 @@ WHERE users.archived_at IS NULL
 `
 
 type GetUserWithUnverifiedTwoFactorRow struct {
-	CreatedAt                    time.Time
-	Birthday                     sql.NullTime
-	ArchivedAt                   sql.NullTime
-	PasswordLastChangedAt        sql.NullTime
-	LastUpdatedAt                sql.NullTime
-	EmailAddressVerifiedAt       sql.NullTime
-	LastAcceptedPrivacyPolicy    sql.NullTime
-	LastAcceptedTermsOfService   sql.NullTime
-	TwoFactorSecretVerifiedAt    sql.NullTime
-	UserAccountStatusExplanation string
-	FirstName                    string
-	ServiceRole                  string
-	UserAccountStatus            string
-	LastName                     string
-	ID                           string
-	HashedPassword               string
-	TwoFactorSecret              string
-	EmailAddress                 string
-	Username                     string
-	AvatarSrc                    sql.NullString
-	RequiresPasswordChange       bool
+	CreatedAt                     time.Time
+	Birthday                      sql.NullTime
+	ArchivedAt                    sql.NullTime
+	LastUpdatedAt                 sql.NullTime
+	LastIndexedAt                 sql.NullTime
+	PasswordLastChangedAt         sql.NullTime
+	LastAcceptedPrivacyPolicy     sql.NullTime
+	LastAcceptedTermsOfService    sql.NullTime
+	TwoFactorSecretVerifiedAt     sql.NullTime
+	EmailAddressVerifiedAt        sql.NullTime
+	UserAccountStatus             string
+	UserAccountStatusExplanation  string
+	ID                            string
+	ServiceRole                   string
+	FirstName                     string
+	LastName                      string
+	TwoFactorSecret               string
+	HashedPassword                string
+	EmailAddress                  string
+	Username                      string
+	EmailAddressVerificationToken sql.NullString
+	AvatarSrc                     sql.NullString
+	RequiresPasswordChange        bool
 }
 
 func (q *Queries) GetUserWithUnverifiedTwoFactor(ctx context.Context, db DBTX, id string) (*GetUserWithUnverifiedTwoFactorRow, error) {
@@ -663,23 +698,25 @@ func (q *Queries) GetUserWithUnverifiedTwoFactor(ctx context.Context, db DBTX, i
 	var i GetUserWithUnverifiedTwoFactorRow
 	err := row.Scan(
 		&i.ID,
-		&i.FirstName,
-		&i.LastName,
 		&i.Username,
-		&i.EmailAddress,
-		&i.EmailAddressVerifiedAt,
 		&i.AvatarSrc,
+		&i.EmailAddress,
 		&i.HashedPassword,
-		&i.RequiresPasswordChange,
 		&i.PasswordLastChangedAt,
+		&i.RequiresPasswordChange,
 		&i.TwoFactorSecret,
 		&i.TwoFactorSecretVerifiedAt,
 		&i.ServiceRole,
 		&i.UserAccountStatus,
 		&i.UserAccountStatusExplanation,
 		&i.Birthday,
+		&i.EmailAddressVerificationToken,
+		&i.EmailAddressVerifiedAt,
+		&i.FirstName,
+		&i.LastName,
 		&i.LastAcceptedTermsOfService,
 		&i.LastAcceptedPrivacyPolicy,
+		&i.LastIndexedAt,
 		&i.CreatedAt,
 		&i.LastUpdatedAt,
 		&i.ArchivedAt,
@@ -691,23 +728,25 @@ const getUserWithVerifiedTwoFactor = `-- name: GetUserWithVerifiedTwoFactor :one
 
 SELECT
 	users.id,
-	users.first_name,
-	users.last_name,
 	users.username,
-	users.email_address,
-	users.email_address_verified_at,
 	users.avatar_src,
+	users.email_address,
 	users.hashed_password,
-	users.requires_password_change,
 	users.password_last_changed_at,
+	users.requires_password_change,
 	users.two_factor_secret,
 	users.two_factor_secret_verified_at,
 	users.service_role,
 	users.user_account_status,
 	users.user_account_status_explanation,
 	users.birthday,
+	users.email_address_verification_token,
+	users.email_address_verified_at,
+	users.first_name,
+	users.last_name,
 	users.last_accepted_terms_of_service,
-    users.last_accepted_privacy_policy,
+	users.last_accepted_privacy_policy,
+	users.last_indexed_at,
 	users.created_at,
 	users.last_updated_at,
 	users.archived_at
@@ -718,27 +757,29 @@ WHERE users.archived_at IS NULL
 `
 
 type GetUserWithVerifiedTwoFactorRow struct {
-	CreatedAt                    time.Time
-	Birthday                     sql.NullTime
-	ArchivedAt                   sql.NullTime
-	PasswordLastChangedAt        sql.NullTime
-	LastUpdatedAt                sql.NullTime
-	EmailAddressVerifiedAt       sql.NullTime
-	LastAcceptedPrivacyPolicy    sql.NullTime
-	LastAcceptedTermsOfService   sql.NullTime
-	TwoFactorSecretVerifiedAt    sql.NullTime
-	UserAccountStatusExplanation string
-	FirstName                    string
-	ServiceRole                  string
-	UserAccountStatus            string
-	LastName                     string
-	ID                           string
-	HashedPassword               string
-	TwoFactorSecret              string
-	EmailAddress                 string
-	Username                     string
-	AvatarSrc                    sql.NullString
-	RequiresPasswordChange       bool
+	CreatedAt                     time.Time
+	Birthday                      sql.NullTime
+	ArchivedAt                    sql.NullTime
+	LastUpdatedAt                 sql.NullTime
+	LastIndexedAt                 sql.NullTime
+	PasswordLastChangedAt         sql.NullTime
+	LastAcceptedPrivacyPolicy     sql.NullTime
+	LastAcceptedTermsOfService    sql.NullTime
+	TwoFactorSecretVerifiedAt     sql.NullTime
+	EmailAddressVerifiedAt        sql.NullTime
+	UserAccountStatus             string
+	UserAccountStatusExplanation  string
+	ID                            string
+	ServiceRole                   string
+	FirstName                     string
+	LastName                      string
+	TwoFactorSecret               string
+	HashedPassword                string
+	EmailAddress                  string
+	Username                      string
+	EmailAddressVerificationToken sql.NullString
+	AvatarSrc                     sql.NullString
+	RequiresPasswordChange        bool
 }
 
 func (q *Queries) GetUserWithVerifiedTwoFactor(ctx context.Context, db DBTX, id string) (*GetUserWithVerifiedTwoFactorRow, error) {
@@ -746,23 +787,25 @@ func (q *Queries) GetUserWithVerifiedTwoFactor(ctx context.Context, db DBTX, id 
 	var i GetUserWithVerifiedTwoFactorRow
 	err := row.Scan(
 		&i.ID,
-		&i.FirstName,
-		&i.LastName,
 		&i.Username,
-		&i.EmailAddress,
-		&i.EmailAddressVerifiedAt,
 		&i.AvatarSrc,
+		&i.EmailAddress,
 		&i.HashedPassword,
-		&i.RequiresPasswordChange,
 		&i.PasswordLastChangedAt,
+		&i.RequiresPasswordChange,
 		&i.TwoFactorSecret,
 		&i.TwoFactorSecretVerifiedAt,
 		&i.ServiceRole,
 		&i.UserAccountStatus,
 		&i.UserAccountStatusExplanation,
 		&i.Birthday,
+		&i.EmailAddressVerificationToken,
+		&i.EmailAddressVerifiedAt,
+		&i.FirstName,
+		&i.LastName,
 		&i.LastAcceptedTermsOfService,
 		&i.LastAcceptedPrivacyPolicy,
+		&i.LastIndexedAt,
 		&i.CreatedAt,
 		&i.LastUpdatedAt,
 		&i.ArchivedAt,
@@ -773,69 +816,63 @@ func (q *Queries) GetUserWithVerifiedTwoFactor(ctx context.Context, db DBTX, id 
 const getUsers = `-- name: GetUsers :many
 
 SELECT
-	users.id,
-	users.first_name,
-	users.last_name,
+    users.id,
 	users.username,
-	users.email_address,
-	users.email_address_verified_at,
 	users.avatar_src,
+	users.email_address,
 	users.hashed_password,
-	users.requires_password_change,
 	users.password_last_changed_at,
+	users.requires_password_change,
 	users.two_factor_secret,
 	users.two_factor_secret_verified_at,
 	users.service_role,
 	users.user_account_status,
 	users.user_account_status_explanation,
 	users.birthday,
+	users.email_address_verification_token,
+	users.email_address_verified_at,
+	users.first_name,
+	users.last_name,
 	users.last_accepted_terms_of_service,
-    users.last_accepted_privacy_policy,
+	users.last_accepted_privacy_policy,
+	users.last_indexed_at,
 	users.created_at,
 	users.last_updated_at,
 	users.archived_at,
     (
-        SELECT
-            COUNT(users.id)
-        FROM
-            users
-        WHERE
-            users.archived_at IS NULL
-          AND users.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-          AND users.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-          AND (
-                users.last_updated_at IS NULL
-                OR users.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-            )
-          AND (
-                users.last_updated_at IS NULL
-                OR users.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-            )
-        OFFSET $5
-    ) as filtered_count,
+		SELECT COUNT(users.id)
+		FROM users
+		WHERE users.archived_at IS NULL
+			AND users.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND users.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				users.last_updated_at IS NULL
+				OR users.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				users.last_updated_at IS NULL
+				OR users.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+	) AS filtered_count,
     (
-        SELECT
-            COUNT(users.id)
-        FROM
-            users
-        WHERE
-            users.archived_at IS NULL
-    ) as total_count
+        SELECT COUNT(users.id)
+        FROM users
+        WHERE users.archived_at IS NULL
+    ) AS total_count
 FROM users
-WHERE
-    users.archived_at IS NULL
-  AND users.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-  AND users.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-  AND (
-        users.last_updated_at IS NULL
-        OR users.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-    )
-  AND (
-        users.last_updated_at IS NULL
-        OR users.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-    )
-OFFSET $5
+WHERE users.archived_at IS NULL
+	AND users.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+    AND users.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		users.last_updated_at IS NULL
+		OR users.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		users.last_updated_at IS NULL
+		OR users.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+	)
 LIMIT $6
+OFFSET $5
 `
 
 type GetUsersParams struct {
@@ -848,29 +885,31 @@ type GetUsersParams struct {
 }
 
 type GetUsersRow struct {
-	CreatedAt                    time.Time
-	Birthday                     sql.NullTime
-	PasswordLastChangedAt        sql.NullTime
-	TwoFactorSecretVerifiedAt    sql.NullTime
-	ArchivedAt                   sql.NullTime
-	EmailAddressVerifiedAt       sql.NullTime
-	LastUpdatedAt                sql.NullTime
-	LastAcceptedPrivacyPolicy    sql.NullTime
-	LastAcceptedTermsOfService   sql.NullTime
-	HashedPassword               string
-	TwoFactorSecret              string
-	ServiceRole                  string
-	Username                     string
-	UserAccountStatus            string
-	UserAccountStatusExplanation string
-	ID                           string
-	EmailAddress                 string
-	LastName                     string
-	FirstName                    string
-	AvatarSrc                    sql.NullString
-	FilteredCount                int64
-	TotalCount                   int64
-	RequiresPasswordChange       bool
+	CreatedAt                     time.Time
+	LastAcceptedPrivacyPolicy     sql.NullTime
+	LastAcceptedTermsOfService    sql.NullTime
+	Birthday                      sql.NullTime
+	LastUpdatedAt                 sql.NullTime
+	PasswordLastChangedAt         sql.NullTime
+	LastIndexedAt                 sql.NullTime
+	EmailAddressVerifiedAt        sql.NullTime
+	TwoFactorSecretVerifiedAt     sql.NullTime
+	ArchivedAt                    sql.NullTime
+	Username                      string
+	UserAccountStatusExplanation  string
+	ServiceRole                   string
+	EmailAddress                  string
+	TwoFactorSecret               string
+	UserAccountStatus             string
+	LastName                      string
+	FirstName                     string
+	ID                            string
+	HashedPassword                string
+	EmailAddressVerificationToken sql.NullString
+	AvatarSrc                     sql.NullString
+	FilteredCount                 int64
+	TotalCount                    int64
+	RequiresPasswordChange        bool
 }
 
 func (q *Queries) GetUsers(ctx context.Context, db DBTX, arg *GetUsersParams) ([]*GetUsersRow, error) {
@@ -891,23 +930,25 @@ func (q *Queries) GetUsers(ctx context.Context, db DBTX, arg *GetUsersParams) ([
 		var i GetUsersRow
 		if err := rows.Scan(
 			&i.ID,
-			&i.FirstName,
-			&i.LastName,
 			&i.Username,
-			&i.EmailAddress,
-			&i.EmailAddressVerifiedAt,
 			&i.AvatarSrc,
+			&i.EmailAddress,
 			&i.HashedPassword,
-			&i.RequiresPasswordChange,
 			&i.PasswordLastChangedAt,
+			&i.RequiresPasswordChange,
 			&i.TwoFactorSecret,
 			&i.TwoFactorSecretVerifiedAt,
 			&i.ServiceRole,
 			&i.UserAccountStatus,
 			&i.UserAccountStatusExplanation,
 			&i.Birthday,
+			&i.EmailAddressVerificationToken,
+			&i.EmailAddressVerifiedAt,
+			&i.FirstName,
+			&i.LastName,
 			&i.LastAcceptedTermsOfService,
 			&i.LastAcceptedPrivacyPolicy,
+			&i.LastIndexedAt,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
@@ -932,7 +973,8 @@ const markEmailAddressAsVerified = `-- name: MarkEmailAddressAsVerified :exec
 UPDATE users SET
 	email_address_verified_at = NOW(),
 	last_updated_at = NOW()
-WHERE email_address_verified_at IS NULL
+WHERE archived_at IS NULL
+    AND email_address_verified_at IS NULL
 	AND id = $1
 	AND email_address_verification_token = $2
 `
@@ -985,23 +1027,25 @@ const searchUsersByUsername = `-- name: SearchUsersByUsername :many
 
 SELECT
 	users.id,
-	users.first_name,
-	users.last_name,
 	users.username,
-	users.email_address,
-	users.email_address_verified_at,
 	users.avatar_src,
+	users.email_address,
 	users.hashed_password,
-	users.requires_password_change,
 	users.password_last_changed_at,
+	users.requires_password_change,
 	users.two_factor_secret,
 	users.two_factor_secret_verified_at,
 	users.service_role,
 	users.user_account_status,
 	users.user_account_status_explanation,
 	users.birthday,
+	users.email_address_verification_token,
+	users.email_address_verified_at,
+	users.first_name,
+	users.last_name,
 	users.last_accepted_terms_of_service,
-    users.last_accepted_privacy_policy,
+	users.last_accepted_privacy_policy,
+	users.last_indexed_at,
 	users.created_at,
 	users.last_updated_at,
 	users.archived_at
@@ -1011,27 +1055,29 @@ AND users.archived_at IS NULL
 `
 
 type SearchUsersByUsernameRow struct {
-	CreatedAt                    time.Time
-	Birthday                     sql.NullTime
-	ArchivedAt                   sql.NullTime
-	PasswordLastChangedAt        sql.NullTime
-	LastUpdatedAt                sql.NullTime
-	EmailAddressVerifiedAt       sql.NullTime
-	LastAcceptedPrivacyPolicy    sql.NullTime
-	LastAcceptedTermsOfService   sql.NullTime
-	TwoFactorSecretVerifiedAt    sql.NullTime
-	UserAccountStatusExplanation string
-	FirstName                    string
-	ServiceRole                  string
-	UserAccountStatus            string
-	LastName                     string
-	ID                           string
-	HashedPassword               string
-	TwoFactorSecret              string
-	EmailAddress                 string
-	Username                     string
-	AvatarSrc                    sql.NullString
-	RequiresPasswordChange       bool
+	CreatedAt                     time.Time
+	Birthday                      sql.NullTime
+	ArchivedAt                    sql.NullTime
+	LastUpdatedAt                 sql.NullTime
+	LastIndexedAt                 sql.NullTime
+	PasswordLastChangedAt         sql.NullTime
+	LastAcceptedPrivacyPolicy     sql.NullTime
+	LastAcceptedTermsOfService    sql.NullTime
+	TwoFactorSecretVerifiedAt     sql.NullTime
+	EmailAddressVerifiedAt        sql.NullTime
+	UserAccountStatus             string
+	UserAccountStatusExplanation  string
+	ID                            string
+	ServiceRole                   string
+	FirstName                     string
+	LastName                      string
+	TwoFactorSecret               string
+	HashedPassword                string
+	EmailAddress                  string
+	Username                      string
+	EmailAddressVerificationToken sql.NullString
+	AvatarSrc                     sql.NullString
+	RequiresPasswordChange        bool
 }
 
 func (q *Queries) SearchUsersByUsername(ctx context.Context, db DBTX, username string) ([]*SearchUsersByUsernameRow, error) {
@@ -1045,23 +1091,25 @@ func (q *Queries) SearchUsersByUsername(ctx context.Context, db DBTX, username s
 		var i SearchUsersByUsernameRow
 		if err := rows.Scan(
 			&i.ID,
-			&i.FirstName,
-			&i.LastName,
 			&i.Username,
-			&i.EmailAddress,
-			&i.EmailAddressVerifiedAt,
 			&i.AvatarSrc,
+			&i.EmailAddress,
 			&i.HashedPassword,
-			&i.RequiresPasswordChange,
 			&i.PasswordLastChangedAt,
+			&i.RequiresPasswordChange,
 			&i.TwoFactorSecret,
 			&i.TwoFactorSecretVerifiedAt,
 			&i.ServiceRole,
 			&i.UserAccountStatus,
 			&i.UserAccountStatusExplanation,
 			&i.Birthday,
+			&i.EmailAddressVerificationToken,
+			&i.EmailAddressVerifiedAt,
+			&i.FirstName,
+			&i.LastName,
 			&i.LastAcceptedTermsOfService,
 			&i.LastAcceptedPrivacyPolicy,
+			&i.LastIndexedAt,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
@@ -1077,46 +1125,6 @@ func (q *Queries) SearchUsersByUsername(ctx context.Context, db DBTX, username s
 		return nil, err
 	}
 	return items, nil
-}
-
-const updateUser = `-- name: UpdateUser :execrows
-
-UPDATE users SET
-	username = $1,
-	first_name = $2,
-	last_name = $3,
-	hashed_password = $4,
-	avatar_src = $5,
-	birthday = $6,
-	last_updated_at = NOW()
-WHERE archived_at IS NULL
-	AND id = $7
-`
-
-type UpdateUserParams struct {
-	Birthday       sql.NullTime
-	Username       string
-	FirstName      string
-	LastName       string
-	HashedPassword string
-	ID             string
-	AvatarSrc      sql.NullString
-}
-
-func (q *Queries) UpdateUser(ctx context.Context, db DBTX, arg *UpdateUserParams) (int64, error) {
-	result, err := db.ExecContext(ctx, updateUser,
-		arg.Username,
-		arg.FirstName,
-		arg.LastName,
-		arg.HashedPassword,
-		arg.AvatarSrc,
-		arg.Birthday,
-		arg.ID,
-	)
-	if err != nil {
-		return 0, err
-	}
-	return result.RowsAffected()
 }
 
 const updateUserAvatarSrc = `-- name: UpdateUserAvatarSrc :execrows

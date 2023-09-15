@@ -2,13 +2,10 @@ package main
 
 import (
 	"fmt"
-	"regexp"
 	"slices"
 	"strings"
 
-	"github.com/cockroachdb/cockroachdb-parser/pkg/sql/sem/tree"
 	"github.com/cristalhq/builq"
-	"github.com/mjibson/sqlfmt"
 )
 
 const (
@@ -60,31 +57,6 @@ func filterForInsert(columns []string, exceptions ...string) []string {
 
 func fullColumnName(tableName, columnName string) string {
 	return fmt.Sprintf("%s.%s", tableName, columnName)
-}
-
-func formatQuery(query string) string {
-	cfg := tree.PrettyCfg{
-		LineWidth: 128,
-		Align:     tree.PrettyAlignAndDeindent,
-		Simplify:  true,
-		TabWidth:  4,
-		UseTabs:   true,
-		Case:      strings.ToUpper,
-		JSONFmt:   true,
-	}
-
-	formatted, err := sqlfmt.FmtSQL(cfg, []string{query})
-	if err != nil {
-		panic(err)
-	}
-
-	output := strings.NewReplacer("now()", "NOW()", "count(", "COUNT(").Replace(formatted)
-
-	return regexp.MustCompile(`sqlc\.arg\(\s+(\w+)\s+\)`).ReplaceAllStringFunc(output, func(s string) string {
-		replacement := regexp.MustCompile(`\s+`).ReplaceAllString(s, "")
-
-		return replacement
-	})
 }
 
 func mergeColumns(columns1, columns2 []string, indexToInsertSecondSet uint) []string {
@@ -206,47 +178,4 @@ func buildTotalCountSelect(tableName string, conditions ...string) string {
 		archivedAtColumn,
 		allConditons,
 	)))
-}
-
-func buildCreateQuery(tableName string, columns []string) string {
-	var createQueryBuilder builq.Builder
-
-	values := applyToEach(columns, func(s string) string {
-		return fmt.Sprintf("sqlc.arg(%s)", s)
-	})
-
-	builder := createQueryBuilder.Addf(
-		`INSERT INTO %s (
-	%s
-) VALUES (
-	%s
-);`,
-		tableName,
-		strings.Join(columns, ",\n\t"),
-		strings.Join(values, ",\n\t"),
-	)
-
-	return buildRawQuery(builder)
-}
-
-func buildArchiveQuery(tableName, ownershipColumn string) string {
-	var archiveQueryBuilder builq.Builder
-
-	addendum := ""
-	if ownershipColumn != "" {
-		parts := strings.Split(ownershipColumn, "_")
-		addendum = fmt.Sprintf(" AND %s = sqlc.arg(%s_id)", ownershipColumn, parts[len(parts)-1])
-	}
-
-	builder := archiveQueryBuilder.Addf(
-		`UPDATE %s SET %s = NOW() WHERE %s IS NULL AND %s = sqlc.arg(%s)%s`,
-		tableName,
-		archivedAtColumn,
-		archivedAtColumn,
-		idColumn,
-		idColumn,
-		addendum,
-	)
-
-	return buildRawQuery(builder)
 }

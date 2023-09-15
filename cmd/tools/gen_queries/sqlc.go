@@ -6,11 +6,11 @@ type QueryType string
 
 const (
 	ExecType       QueryType = ":exec"
-	ExecResultType QueryType = ":execresult"
 	ExecRowsType   QueryType = ":execrows"
-	ExecLastIDType QueryType = ":execlastid"
 	ManyType       QueryType = ":many"
 	OneType        QueryType = ":one"
+	ExecResultType QueryType = ":execresult"
+	ExecLastIDType QueryType = ":execlastid"
 	BatchExecType  QueryType = ":batchexec"
 	BatchManyType  QueryType = ":batchmany"
 	BatchOneType   QueryType = ":batchone"

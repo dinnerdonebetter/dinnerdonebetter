@@ -11,7 +11,7 @@ func main() {
 	queryOutput := map[string][]*Query{
 		"admin.sql":    buildAdminQueries(),
 		"webhooks.sql": buildWebhooksQueries(),
-		//"users.sql":    buildUsersQueries(),
+		"users.sql":    buildUsersQueries(),
 	}
 
 	for filePath, queries := range queryOutput {
