@@ -865,19 +865,19 @@ WHERE users.archived_at IS NULL
     AND users.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		users.last_updated_at IS NULL
-		OR users.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+		OR users.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
 	)
 	AND (
 		users.last_updated_at IS NULL
-		OR users.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+		OR users.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
 LIMIT $6
 OFFSET $5
 `
 
 type GetUsersParams struct {
-	CreatedBefore sql.NullTime
 	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
 	UpdatedBefore sql.NullTime
 	UpdatedAfter  sql.NullTime
 	QueryOffset   sql.NullInt32
@@ -914,8 +914,8 @@ type GetUsersRow struct {
 
 func (q *Queries) GetUsers(ctx context.Context, db DBTX, arg *GetUsersParams) ([]*GetUsersRow, error) {
 	rows, err := db.QueryContext(ctx, getUsers,
-		arg.CreatedBefore,
 		arg.CreatedAfter,
+		arg.CreatedBefore,
 		arg.UpdatedBefore,
 		arg.UpdatedAfter,
 		arg.QueryOffset,

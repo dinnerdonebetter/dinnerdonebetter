@@ -79,16 +79,7 @@ SET archived_at = NOW()
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
-    (
-        SELECT
-            COUNT(service_settings.id)
-        FROM
-            service_settings
-        WHERE
-            service_settings.archived_at IS NULL
-            %s
-        OFFSET sqlc.narg(query_offset)
-    ) AS filtered_count,
+    %s,
     %s
 FROM service_settings
 WHERE service_settings.archived_at IS NULL
@@ -99,14 +90,14 @@ LIMIT sqlc.narg(query_limit);`,
 					return fmt.Sprintf("%s.%s", serviceSettingsTableName, s)
 				}), ",\n\t"),
 				buildFilterCountSelect(
-					usersTableName,
+					serviceSettingsTableName,
 					true,
 				),
 				buildTotalCountSelect(
-					usersTableName,
+					serviceSettingsTableName,
 				),
 				buildFilterConditions(
-					usersTableName,
+					serviceSettingsTableName,
 					true,
 				),
 			)),

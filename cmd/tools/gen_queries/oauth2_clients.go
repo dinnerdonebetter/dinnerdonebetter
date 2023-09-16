@@ -96,27 +96,32 @@ WHERE oauth2_clients.archived_at IS NULL
             oauth2_clients
         WHERE
             oauth2_clients.archived_at IS NULL
-          AND oauth2_clients.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
-          AND oauth2_clients.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+			%s
     ) as filtered_count,
-    (
-        SELECT
-            COUNT(oauth2_clients.id)
-        FROM
-            oauth2_clients
-        WHERE
-            oauth2_clients.archived_at IS NULL
-    ) as total_count
+    %s
 FROM oauth2_clients
 WHERE oauth2_clients.archived_at IS NULL
-    AND oauth2_clients.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
-    AND oauth2_clients.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+	%s
     OFFSET sqlc.narg(query_offset)
     LIMIT sqlc.narg(query_limit);
 `,
 				strings.Join(applyToEach(oauth2ClientsColumns, func(_ int, s string) string {
 					return fmt.Sprintf("%s.%s", oauth2ClientsTableName, s)
 				}), ",\n\t"),
+				strings.Join(strings.Split(
+					buildFilterConditions(
+						oauth2ClientsTableName,
+						false,
+					), "\n"),
+					"\n\t\t",
+				),
+				buildTotalCountSelect(
+					usersTableName,
+				),
+				buildFilterConditions(
+					oauth2ClientsTableName,
+					false,
+				),
 			)),
 		},
 	}

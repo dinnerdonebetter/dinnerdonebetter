@@ -137,44 +137,37 @@ SELECT
 	service_settings.last_updated_at,
 	service_settings.archived_at,
     (
-        SELECT
-            COUNT(service_settings.id)
-        FROM
-            service_settings
-        WHERE
-            service_settings.archived_at IS NULL
-            AND service_settings.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-            AND service_settings.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-            AND (
-                service_settings.last_updated_at IS NULL
-                OR service_settings.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-            )
-            AND (
-                service_settings.last_updated_at IS NULL
-                OR service_settings.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-            )
-        OFFSET $5
-    ) AS filtered_count,
+		SELECT COUNT(service_settings.id)
+		FROM service_settings
+		WHERE service_settings.archived_at IS NULL
+			AND service_settings.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND service_settings.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				service_settings.last_updated_at IS NULL
+				OR service_settings.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				service_settings.last_updated_at IS NULL
+				OR service_settings.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+	) AS filtered_count,
     (
-        SELECT
-            COUNT(service_settings.id)
-        FROM
-            service_settings
-        WHERE
-            service_settings.archived_at IS NULL
+        SELECT COUNT(service_settings.id)
+        FROM service_settings
+        WHERE service_settings.archived_at IS NULL
     ) AS total_count
 FROM service_settings
 WHERE service_settings.archived_at IS NULL
-    AND service_settings.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-    AND service_settings.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-    AND (
-        service_settings.last_updated_at IS NULL
-        OR service_settings.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-    )
-    AND (
-        service_settings.last_updated_at IS NULL
-        OR service_settings.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-    )
+    AND service_settings.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+    AND service_settings.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		service_settings.last_updated_at IS NULL
+		OR service_settings.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		service_settings.last_updated_at IS NULL
+		OR service_settings.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
 OFFSET $5
 LIMIT $6
 `
@@ -182,8 +175,8 @@ LIMIT $6
 type GetServiceSettingsParams struct {
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
-	UpdatedAfter  sql.NullTime
 	UpdatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
@@ -207,8 +200,8 @@ func (q *Queries) GetServiceSettings(ctx context.Context, db DBTX, arg *GetServi
 	rows, err := db.QueryContext(ctx, getServiceSettings,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
-		arg.UpdatedAfter,
 		arg.UpdatedBefore,
+		arg.UpdatedAfter,
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)

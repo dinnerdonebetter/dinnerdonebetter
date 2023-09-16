@@ -226,11 +226,11 @@ WHERE webhooks.archived_at IS NULL
     AND webhooks.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		webhooks.last_updated_at IS NULL
-		OR webhooks.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+		OR webhooks.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
 	)
 	AND (
 		webhooks.last_updated_at IS NULL
-		OR webhooks.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+		OR webhooks.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
 	AND webhooks.belongs_to_household = $5
 	AND webhook_trigger_events.archived_at IS NULL
@@ -239,8 +239,8 @@ OFFSET $6
 `
 
 type GetWebhooksForHouseholdParams struct {
-	CreatedBefore sql.NullTime
 	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
 	UpdatedBefore sql.NullTime
 	UpdatedAfter  sql.NullTime
 	HouseholdID   string
@@ -269,8 +269,8 @@ type GetWebhooksForHouseholdRow struct {
 
 func (q *Queries) GetWebhooksForHousehold(ctx context.Context, db DBTX, arg *GetWebhooksForHouseholdParams) ([]*GetWebhooksForHouseholdRow, error) {
 	rows, err := db.QueryContext(ctx, getWebhooksForHousehold,
-		arg.CreatedBefore,
 		arg.CreatedAfter,
+		arg.CreatedBefore,
 		arg.UpdatedBefore,
 		arg.UpdatedAfter,
 		arg.HouseholdID,

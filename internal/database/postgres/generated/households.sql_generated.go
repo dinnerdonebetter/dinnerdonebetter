@@ -402,10 +402,10 @@ WHERE households.archived_at IS NULL
 
 type GetHouseholdsForUserParams struct {
 	UserID        string
-	CreatedBefore sql.NullTime
 	CreatedAfter  sql.NullTime
-	UpdatedBefore sql.NullTime
+	CreatedBefore sql.NullTime
 	UpdatedAfter  sql.NullTime
+	UpdatedBefore sql.NullTime
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
@@ -439,10 +439,10 @@ type GetHouseholdsForUserRow struct {
 func (q *Queries) GetHouseholdsForUser(ctx context.Context, db DBTX, arg *GetHouseholdsForUserParams) ([]*GetHouseholdsForUserRow, error) {
 	rows, err := db.QueryContext(ctx, getHouseholdsForUser,
 		arg.UserID,
-		arg.CreatedBefore,
 		arg.CreatedAfter,
-		arg.UpdatedBefore,
+		arg.CreatedBefore,
 		arg.UpdatedAfter,
+		arg.UpdatedBefore,
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)

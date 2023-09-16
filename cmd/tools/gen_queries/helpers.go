@@ -85,11 +85,11 @@ func buildFilterConditions(tableName string, withUpdateColumn bool, conditions .
 		updateAddendum = fmt.Sprintf("\n\t%s", strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`
 	AND (
 		%s.%s IS NULL
-		OR %s.%s > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
+		OR %s.%s > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
 	)
 	AND (
 		%s.%s IS NULL
-		OR %s.%s < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
+		OR %s.%s < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
 		`,
 			tableName,
@@ -108,8 +108,8 @@ func buildFilterConditions(tableName string, withUpdateColumn bool, conditions .
 		allConditions += fmt.Sprintf("\n\tAND %s", condition)
 	}
 
-	return strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`AND %s.%s > COALESCE(sqlc.narg(created_before), (SELECT NOW() - '999 years'::INTERVAL))
-    AND %s.%s < COALESCE(sqlc.narg(created_after), (SELECT NOW() + '999 years'::INTERVAL))%s%s`,
+	return strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`AND %s.%s > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+    AND %s.%s < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))%s%s`,
 		tableName,
 		createdAtColumn,
 		tableName,
@@ -152,8 +152,8 @@ func buildFilterCountSelect(tableName string, withUpdateColumn bool, conditions 
 		SELECT COUNT(%s.id)
 		FROM %s
 		WHERE %s.%s IS NULL
-			AND %s.%s > COALESCE(sqlc.narg(created_before), (SELECT NOW() - '999 years'::INTERVAL))
-			AND %s.%s < COALESCE(sqlc.narg(created_after), (SELECT NOW() + '999 years'::INTERVAL))%s%s
+			AND %s.%s > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND %s.%s < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))%s%s
 	) AS filtered_count`,
 		tableName,
 		tableName,
