@@ -27,7 +27,63 @@ func buildHouseholdInvitationsQueries() []*Query {
 	return []*Query{
 		{
 			Annotation: QueryAnnotation{
-				Name: "",
+				Name: "AttachHouseholdInvitationsToUserID",
+				Type: ExecType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
+		{
+			Annotation: QueryAnnotation{
+				Name: "CreateHouseholdInvitation",
+				Type: ExecType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
+		{
+			Annotation: QueryAnnotation{
+				Name: "CheckHouseholdInvitationExistence",
+				Type: OneType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
+		{
+			Annotation: QueryAnnotation{
+				Name: "GetHouseholdInvitationByEmailAndToken",
+				Type: OneType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
+		{
+			Annotation: QueryAnnotation{
+				Name: "GetHouseholdInvitationByHouseholdAndID",
+				Type: OneType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
+		{
+			Annotation: QueryAnnotation{
+				Name: "GetHouseholdInvitationByTokenAndID",
+				Type: OneType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
+		{
+			Annotation: QueryAnnotation{
+				Name: "GetPendingInvitesFromUser",
+				Type: ManyType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
+		{
+			Annotation: QueryAnnotation{
+				Name: "GetPendingInvitesForUser",
+				Type: ManyType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
+		{
+			Annotation: QueryAnnotation{
+				Name: "SetHouseholdInvitationStatus",
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(``)),

@@ -16,7 +16,7 @@ var validIngredientGroupsColumns = []string{
 	archivedAtColumn,
 }
 
-func buildValidIngredientGroupQueries() []*Query {
+func buildValidIngredientGroupsQueries() []*Query {
 	return []*Query{
 		{
 			Annotation: QueryAnnotation{

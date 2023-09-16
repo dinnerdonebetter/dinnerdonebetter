@@ -4,11 +4,15 @@
 
 The following tools are prerequisites for development work:
 
-- [go](https://golang.org/) 1.20
+- [go](https://golang.org/) 1.21
 - [docker](https://docs.docker.com/get-docker/) &&  [docker-compose](https://docs.docker.com/compose/install/)
 - [wire](https://github.com/google/wire) for dependency management
 - [make](https://www.gnu.org/software/make/) for task running
+- [sqlc](https://sqlc.dev/) for generating database code
+- [gci](https://github.com/daixiang0/gci) for sorting imports
+- [tagalign](github.com/4meepo/tagalign) for aligning struct tags
 - [terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) for deploying/formatting
+- [cloud_sql_proxy](https://cloud.google.com/sql/docs/postgres/sql-proxy) for production database access
 - [fieldalignment](https://pkg.go.dev/golang.org/x/tools/go/analysis/passes/fieldalignment) (`go install golang.org/x/tools/go/analysis/passes/fieldalignment/cmd/fieldalignment@latest`)
 
 ## dev setup

@@ -5,15 +5,10 @@ import "fmt"
 type QueryType string
 
 const (
-	ExecType       QueryType = ":exec"
-	ExecRowsType   QueryType = ":execrows"
-	ManyType       QueryType = ":many"
-	OneType        QueryType = ":one"
-	ExecResultType QueryType = ":execresult"
-	ExecLastIDType QueryType = ":execlastid"
-	BatchExecType  QueryType = ":batchexec"
-	BatchManyType  QueryType = ":batchmany"
-	BatchOneType   QueryType = ":batchone"
+	ExecType     QueryType = ":exec"
+	ExecRowsType QueryType = ":execrows"
+	ManyType     QueryType = ":many"
+	OneType      QueryType = ":one"
 )
 
 type QueryAnnotation struct {
