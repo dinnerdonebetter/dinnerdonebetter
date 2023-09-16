@@ -18,9 +18,8 @@ func main() {
 		"password_reset_tokens.sql":      buildPasswordResetTokensQueries(),
 		"oauth2_client_tokens.sql":       buildOAuth2ClientTokensQueries(),
 		"oauth2_clients.sql":             buildOAuth2ClientsQueries(),
-		//
-		//"service_settings.sql":                buildServiceSettingQueries(),
-		//"service_settings_configurations.sql": buildServiceSettingConfigurationQueries(),
+		"service_settings.sql":           buildServiceSettingQueries(),
+		// "service_settings_configurations.sql": buildServiceSettingConfigurationQueries(),
 	}
 
 	for filePath, queries := range queryOutput {
