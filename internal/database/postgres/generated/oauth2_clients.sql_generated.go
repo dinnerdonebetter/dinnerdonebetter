@@ -29,7 +29,17 @@ func (q *Queries) ArchiveOAuth2Client(ctx context.Context, db DBTX, id string) (
 
 const createOAuth2Client = `-- name: CreateOAuth2Client :exec
 
-INSERT INTO oauth2_clients (id,"name",client_id,client_secret) VALUES ($1,$2,$3,$4)
+INSERT INTO oauth2_clients (
+    id,
+    name,
+    client_id,
+    client_secret
+) VALUES (
+    $1,
+    $2,
+    $3,
+    $4
+)
 `
 
 type CreateOAuth2ClientParams struct {
