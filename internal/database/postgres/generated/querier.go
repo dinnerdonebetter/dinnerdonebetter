@@ -189,7 +189,7 @@ type Querier interface {
 	GetOAuth2ClientTokenByCode(ctx context.Context, db DBTX, code string) (*Oauth2ClientTokens, error)
 	GetOAuth2ClientTokenByRefresh(ctx context.Context, db DBTX, refresh string) (*Oauth2ClientTokens, error)
 	GetOAuth2Clients(ctx context.Context, db DBTX, arg *GetOAuth2ClientsParams) ([]*GetOAuth2ClientsRow, error)
-	GetPasswordResetToken(ctx context.Context, db DBTX, token string) (*PasswordResetTokens, error)
+	GetPasswordResetToken(ctx context.Context, db DBTX, token string) (*GetPasswordResetTokenRow, error)
 	GetPendingInvitesForUser(ctx context.Context, db DBTX, arg *GetPendingInvitesForUserParams) ([]*GetPendingInvitesForUserRow, error)
 	GetPendingInvitesFromUser(ctx context.Context, db DBTX, arg *GetPendingInvitesFromUserParams) ([]*GetPendingInvitesFromUserRow, error)
 	GetRandomValidIngredient(ctx context.Context, db DBTX) (*GetRandomValidIngredientRow, error)

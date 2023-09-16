@@ -7,11 +7,23 @@ package generated
 
 import (
 	"context"
+	"database/sql"
+	"time"
 )
 
 const createPasswordResetToken = `-- name: CreatePasswordResetToken :exec
 
-INSERT INTO password_reset_tokens (id,token,expires_at,belongs_to_user) VALUES ($1,$2,NOW() + (30 * interval '1 minutes'),$3)
+INSERT INTO password_reset_tokens (
+    id,
+	token,
+	expires_at,
+	belongs_to_user
+) VALUES (
+    $1,
+    $2,
+    NOW() + (30 * interval '1 minutes'),
+    $3
+)
 `
 
 type CreatePasswordResetTokenParams struct {
@@ -31,34 +43,47 @@ SELECT
 	password_reset_tokens.id,
 	password_reset_tokens.token,
 	password_reset_tokens.expires_at,
-	password_reset_tokens.created_at,
-	password_reset_tokens.last_updated_at,
 	password_reset_tokens.redeemed_at,
-	password_reset_tokens.belongs_to_user
+	password_reset_tokens.belongs_to_user,
+	password_reset_tokens.created_at,
+	password_reset_tokens.last_updated_at
 FROM password_reset_tokens
 WHERE password_reset_tokens.redeemed_at IS NULL
 	AND NOW() < password_reset_tokens.expires_at
 	AND password_reset_tokens.token = $1
 `
 
-func (q *Queries) GetPasswordResetToken(ctx context.Context, db DBTX, token string) (*PasswordResetTokens, error) {
+type GetPasswordResetTokenRow struct {
+	ID            string
+	Token         string
+	ExpiresAt     time.Time
+	RedeemedAt    sql.NullTime
+	BelongsToUser string
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+}
+
+func (q *Queries) GetPasswordResetToken(ctx context.Context, db DBTX, token string) (*GetPasswordResetTokenRow, error) {
 	row := db.QueryRowContext(ctx, getPasswordResetToken, token)
-	var i PasswordResetTokens
+	var i GetPasswordResetTokenRow
 	err := row.Scan(
 		&i.ID,
 		&i.Token,
 		&i.ExpiresAt,
-		&i.CreatedAt,
-		&i.LastUpdatedAt,
 		&i.RedeemedAt,
 		&i.BelongsToUser,
+		&i.CreatedAt,
+		&i.LastUpdatedAt,
 	)
 	return &i, err
 }
 
 const redeemPasswordResetToken = `-- name: RedeemPasswordResetToken :exec
 
-UPDATE password_reset_tokens SET redeemed_at = NOW() WHERE redeemed_at IS NULL AND id = $1
+UPDATE password_reset_tokens SET
+    redeemed_at = NOW()
+WHERE redeemed_at IS NULL
+    AND id = $1
 `
 
 func (q *Queries) RedeemPasswordResetToken(ctx context.Context, db DBTX, id string) error {

@@ -1071,16 +1071,6 @@ type Oauth2Clients struct {
 	ArchivedAt   sql.NullTime
 }
 
-type PasswordResetTokens struct {
-	ID            string
-	Token         string
-	ExpiresAt     time.Time
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	RedeemedAt    sql.NullTime
-	BelongsToUser string
-}
-
 type RecipeRatings struct {
 	CreatedAt     time.Time
 	LastUpdatedAt sql.NullTime

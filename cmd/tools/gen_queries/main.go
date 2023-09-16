@@ -15,8 +15,8 @@ func main() {
 		"households.sql":                 buildHouseholdsQueries(),
 		"household_user_memberships.sql": buildHouseholdUserMembershipsQueries(),
 		"webhook_trigger_events.sql":     buildWebhookTriggerEventsQueries(),
+		"password_reset_tokens.sql":      buildPasswordResetTokensQueries(),
 		//
-		//"password_reset_tokens.sql":           buildPasswordResetTokensQueries(),
 		//"oauth2_client_tokens.sql":            buildOAuth2ClientTokensQueries(),
 		//"oauth2_clients.sql":                  buildOAuth2ClientsQueries(),
 		//"service_settings.sql":                buildServiceSettingQueries(),
