@@ -9,22 +9,24 @@ WHERE archived_at IS NULL
 
 INSERT INTO oauth2_clients (
     id,
-    name,
-    client_id,
-    client_secret
+	name,
+	description,
+	client_id,
+	client_secret
 ) VALUES (
-    $1,
-    $2,
-    $3,
-    $4
+    sqlc.arg(id),
+	sqlc.arg(name),
+	sqlc.arg(description),
+	sqlc.arg(client_id),
+	sqlc.arg(client_secret)
 );
 
 -- name: GetOAuth2ClientByClientID :one
 
 SELECT
 	oauth2_clients.id,
-    oauth2_clients.name,
-    oauth2_clients.description,
+	oauth2_clients.name,
+	oauth2_clients.description,
 	oauth2_clients.client_id,
 	oauth2_clients.client_secret,
 	oauth2_clients.created_at,
@@ -36,27 +38,27 @@ WHERE oauth2_clients.archived_at IS NULL
 -- name: GetOAuth2ClientByDatabaseID :one
 
 SELECT
-    oauth2_clients.id,
-    oauth2_clients.name,
-    oauth2_clients.description,
-    oauth2_clients.client_id,
-    oauth2_clients.client_secret,
-    oauth2_clients.created_at,
-    oauth2_clients.archived_at
+	oauth2_clients.id,
+	oauth2_clients.name,
+	oauth2_clients.description,
+	oauth2_clients.client_id,
+	oauth2_clients.client_secret,
+	oauth2_clients.created_at,
+	oauth2_clients.archived_at
 FROM oauth2_clients
 WHERE oauth2_clients.archived_at IS NULL
-  AND oauth2_clients.id = $1;
+	AND oauth2_clients.id = $1;
 
 -- name: GetOAuth2Clients :many
 
 SELECT
     oauth2_clients.id,
-    oauth2_clients.name,
-    oauth2_clients.description,
-    oauth2_clients.client_id,
-    oauth2_clients.client_secret,
-    oauth2_clients.created_at,
-    oauth2_clients.archived_at,
+	oauth2_clients.name,
+	oauth2_clients.description,
+	oauth2_clients.client_id,
+	oauth2_clients.client_secret,
+	oauth2_clients.created_at,
+	oauth2_clients.archived_at,
     (
         SELECT
             COUNT(oauth2_clients.id)
