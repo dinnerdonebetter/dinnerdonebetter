@@ -66,6 +66,18 @@ func fullColumnName(tableName, columnName string) string {
 	return fmt.Sprintf("%s.%s", tableName, columnName)
 }
 
+func filterFromSlice(slice []string, filtered ...string) []string {
+	output := []string{}
+
+	for _, s := range slice {
+		if !slices.Contains(filtered, s) {
+			output = append(output, s)
+		}
+	}
+
+	return output
+}
+
 func mergeColumns(columns1, columns2 []string, indexToInsertSecondSet uint) []string {
 	output := []string{}
 

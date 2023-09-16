@@ -29,7 +29,12 @@ func (q *Queries) ArchiveServiceSettingConfiguration(ctx context.Context, db DBT
 
 const checkServiceSettingConfigurationExistence = `-- name: CheckServiceSettingConfigurationExistence :one
 
-SELECT EXISTS ( SELECT service_setting_configurations.id FROM service_setting_configurations WHERE service_setting_configurations.archived_at IS NULL AND service_setting_configurations.id = $1 )
+SELECT EXISTS (
+    SELECT service_setting_configurations.id
+    FROM service_setting_configurations
+    WHERE service_setting_configurations.archived_at IS NULL
+    AND service_setting_configurations.id = $1
+)
 `
 
 func (q *Queries) CheckServiceSettingConfigurationExistence(ctx context.Context, db DBTX, id string) (bool, error) {
@@ -43,18 +48,18 @@ const createServiceSettingConfiguration = `-- name: CreateServiceSettingConfigur
 
 INSERT INTO service_setting_configurations (
     id,
-    value,
-    notes,
-    service_setting_id,
-    belongs_to_user,
-    belongs_to_household
+	value,
+	notes,
+	service_setting_id,
+	belongs_to_user,
+	belongs_to_household
 ) VALUES (
     $1,
-    $2,
-    $3,
-    $4,
-    $5,
-    $6
+	$2,
+	$3,
+	$4,
+	$5,
+	$6
 )
 `
 
@@ -83,23 +88,23 @@ const getServiceSettingConfigurationByID = `-- name: GetServiceSettingConfigurat
 
 SELECT
 	service_setting_configurations.id,
-    service_setting_configurations.value,
-    service_setting_configurations.notes,
+	service_setting_configurations.value,
+	service_setting_configurations.notes,
 	service_settings.id as service_setting_id,
-    service_settings.name as service_setting_name,
-    service_settings.type as service_setting_type,
-    service_settings.description as service_setting_description,
-    service_settings.default_value as service_setting_default_value,
-    service_settings.enumeration as service_setting_enumeration,
-    service_settings.admins_only as service_setting_admins_only,
-    service_settings.created_at as service_setting_created_at,
-    service_settings.last_updated_at as service_setting_last_updated_at,
-    service_settings.archived_at as service_setting_archived_at,
-    service_setting_configurations.belongs_to_user,
-    service_setting_configurations.belongs_to_household,
-    service_setting_configurations.created_at,
-    service_setting_configurations.last_updated_at,
-    service_setting_configurations.archived_at
+	service_settings.name as service_setting_name,
+	service_settings.type as service_setting_type,
+	service_settings.description as service_setting_description,
+	service_settings.default_value as service_setting_default_value,
+	service_settings.enumeration as service_setting_enumeration,
+	service_settings.admins_only as service_setting_admins_only,
+	service_settings.created_at as service_setting_created_at,
+	service_settings.last_updated_at as service_setting_last_updated_at,
+	service_settings.archived_at as service_setting_archived_at,
+	service_setting_configurations.belongs_to_user,
+	service_setting_configurations.belongs_to_household,
+	service_setting_configurations.created_at,
+	service_setting_configurations.last_updated_at,
+	service_setting_configurations.archived_at
 FROM service_setting_configurations
     JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
 WHERE service_settings.archived_at IS NULL
@@ -158,23 +163,23 @@ const getServiceSettingConfigurationForHouseholdBySettingName = `-- name: GetSer
 
 SELECT
     service_setting_configurations.id,
-    service_setting_configurations.value,
-    service_setting_configurations.notes,
-    service_settings.id as service_setting_id,
-    service_settings.name as service_setting_name,
-    service_settings.type as service_setting_type,
-    service_settings.description as service_setting_description,
-    service_settings.default_value as service_setting_default_value,
-    service_settings.enumeration as service_setting_enumeration,
-    service_settings.admins_only as service_setting_admins_only,
-    service_settings.created_at as service_setting_created_at,
-    service_settings.last_updated_at as service_setting_last_updated_at,
-    service_settings.archived_at as service_setting_archived_at,
-    service_setting_configurations.belongs_to_user,
-    service_setting_configurations.belongs_to_household,
-    service_setting_configurations.created_at,
-    service_setting_configurations.last_updated_at,
-    service_setting_configurations.archived_at
+	service_setting_configurations.value,
+	service_setting_configurations.notes,
+	service_settings.id as service_setting_id,
+	service_settings.name as service_setting_name,
+	service_settings.type as service_setting_type,
+	service_settings.description as service_setting_description,
+	service_settings.default_value as service_setting_default_value,
+	service_settings.enumeration as service_setting_enumeration,
+	service_settings.admins_only as service_setting_admins_only,
+	service_settings.created_at as service_setting_created_at,
+	service_settings.last_updated_at as service_setting_last_updated_at,
+	service_settings.archived_at as service_setting_archived_at,
+	service_setting_configurations.belongs_to_user,
+	service_setting_configurations.belongs_to_household,
+	service_setting_configurations.created_at,
+	service_setting_configurations.last_updated_at,
+	service_setting_configurations.archived_at
 FROM service_setting_configurations
     JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
 WHERE service_settings.archived_at IS NULL
@@ -239,23 +244,23 @@ const getServiceSettingConfigurationForUserBySettingName = `-- name: GetServiceS
 
 SELECT
     service_setting_configurations.id,
-    service_setting_configurations.value,
-    service_setting_configurations.notes,
-    service_settings.id as service_setting_id,
-    service_settings.name as service_setting_name,
-    service_settings.type as service_setting_type,
-    service_settings.description as service_setting_description,
-    service_settings.default_value as service_setting_default_value,
-    service_settings.enumeration as service_setting_enumeration,
-    service_settings.admins_only as service_setting_admins_only,
-    service_settings.created_at as service_setting_created_at,
-    service_settings.last_updated_at as service_setting_last_updated_at,
-    service_settings.archived_at as service_setting_archived_at,
-    service_setting_configurations.belongs_to_user,
-    service_setting_configurations.belongs_to_household,
-    service_setting_configurations.created_at,
-    service_setting_configurations.last_updated_at,
-    service_setting_configurations.archived_at
+	service_setting_configurations.value,
+	service_setting_configurations.notes,
+	service_settings.id as service_setting_id,
+	service_settings.name as service_setting_name,
+	service_settings.type as service_setting_type,
+	service_settings.description as service_setting_description,
+	service_settings.default_value as service_setting_default_value,
+	service_settings.enumeration as service_setting_enumeration,
+	service_settings.admins_only as service_setting_admins_only,
+	service_settings.created_at as service_setting_created_at,
+	service_settings.last_updated_at as service_setting_last_updated_at,
+	service_settings.archived_at as service_setting_archived_at,
+	service_setting_configurations.belongs_to_user,
+	service_setting_configurations.belongs_to_household,
+	service_setting_configurations.created_at,
+	service_setting_configurations.last_updated_at,
+	service_setting_configurations.archived_at
 FROM service_setting_configurations
     JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
 WHERE service_settings.archived_at IS NULL
@@ -320,23 +325,23 @@ const getServiceSettingConfigurationsForHousehold = `-- name: GetServiceSettingC
 
 SELECT
     service_setting_configurations.id,
-    service_setting_configurations.value,
-    service_setting_configurations.notes,
-    service_settings.id as service_setting_id,
-    service_settings.name as service_setting_name,
-    service_settings.type as service_setting_type,
-    service_settings.description as service_setting_description,
-    service_settings.default_value as service_setting_default_value,
-    service_settings.enumeration as service_setting_enumeration,
-    service_settings.admins_only as service_setting_admins_only,
-    service_settings.created_at as service_setting_created_at,
-    service_settings.last_updated_at as service_setting_last_updated_at,
-    service_settings.archived_at as service_setting_archived_at,
-    service_setting_configurations.belongs_to_user,
-    service_setting_configurations.belongs_to_household,
-    service_setting_configurations.created_at,
-    service_setting_configurations.last_updated_at,
-    service_setting_configurations.archived_at
+	service_setting_configurations.value,
+	service_setting_configurations.notes,
+	service_settings.id as service_setting_id,
+	service_settings.name as service_setting_name,
+	service_settings.type as service_setting_type,
+	service_settings.description as service_setting_description,
+	service_settings.default_value as service_setting_default_value,
+	service_settings.enumeration as service_setting_enumeration,
+	service_settings.admins_only as service_setting_admins_only,
+	service_settings.created_at as service_setting_created_at,
+	service_settings.last_updated_at as service_setting_last_updated_at,
+	service_settings.archived_at as service_setting_archived_at,
+	service_setting_configurations.belongs_to_user,
+	service_setting_configurations.belongs_to_household,
+	service_setting_configurations.created_at,
+	service_setting_configurations.last_updated_at,
+	service_setting_configurations.archived_at
 FROM service_setting_configurations
     JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
 WHERE service_settings.archived_at IS NULL
@@ -411,23 +416,23 @@ const getServiceSettingConfigurationsForUser = `-- name: GetServiceSettingConfig
 
 SELECT
     service_setting_configurations.id,
-    service_setting_configurations.value,
-    service_setting_configurations.notes,
-    service_settings.id as service_setting_id,
-    service_settings.name as service_setting_name,
-    service_settings.type as service_setting_type,
-    service_settings.description as service_setting_description,
-    service_settings.default_value as service_setting_default_value,
-    service_settings.enumeration as service_setting_enumeration,
-    service_settings.admins_only as service_setting_admins_only,
-    service_settings.created_at as service_setting_created_at,
-    service_settings.last_updated_at as service_setting_last_updated_at,
-    service_settings.archived_at as service_setting_archived_at,
-    service_setting_configurations.belongs_to_user,
-    service_setting_configurations.belongs_to_household,
-    service_setting_configurations.created_at,
-    service_setting_configurations.last_updated_at,
-    service_setting_configurations.archived_at
+	service_setting_configurations.value,
+	service_setting_configurations.notes,
+	service_settings.id as service_setting_id,
+	service_settings.name as service_setting_name,
+	service_settings.type as service_setting_type,
+	service_settings.description as service_setting_description,
+	service_settings.default_value as service_setting_default_value,
+	service_settings.enumeration as service_setting_enumeration,
+	service_settings.admins_only as service_setting_admins_only,
+	service_settings.created_at as service_setting_created_at,
+	service_settings.last_updated_at as service_setting_last_updated_at,
+	service_settings.archived_at as service_setting_archived_at,
+	service_setting_configurations.belongs_to_user,
+	service_setting_configurations.belongs_to_household,
+	service_setting_configurations.created_at,
+	service_setting_configurations.last_updated_at,
+	service_setting_configurations.archived_at
 FROM service_setting_configurations
     JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
 WHERE service_settings.archived_at IS NULL
