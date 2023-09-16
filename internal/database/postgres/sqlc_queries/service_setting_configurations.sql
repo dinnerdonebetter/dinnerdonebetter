@@ -1,10 +1,27 @@
 -- name: ArchiveServiceSettingConfiguration :execrows
 
-UPDATE service_setting_configurations SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
+UPDATE service_setting_configurations SET
+    archived_at = NOW()
+WHERE archived_at IS NULL
+    AND id = sqlc.arg(id);
 
 -- name: CreateServiceSettingConfiguration :exec
 
-INSERT INTO service_setting_configurations (id,value,notes,service_setting_id,belongs_to_user,belongs_to_household) VALUES ($1,$2,$3,$4,$5,$6);
+INSERT INTO service_setting_configurations (
+    id,
+    value,
+    notes,
+    service_setting_id,
+    belongs_to_user,
+    belongs_to_household
+) VALUES (
+    sqlc.arg(id),
+    sqlc.arg(value),
+    sqlc.arg(notes),
+    sqlc.arg(service_setting_id),
+    sqlc.arg(belongs_to_user),
+    sqlc.arg(belongs_to_household)
+);
 
 -- name: CheckServiceSettingConfigurationExistence :one
 
@@ -32,10 +49,10 @@ SELECT
     service_setting_configurations.last_updated_at,
     service_setting_configurations.archived_at
 FROM service_setting_configurations
- JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
+    JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
 WHERE service_settings.archived_at IS NULL
-  AND service_setting_configurations.archived_at IS NULL
-  AND service_setting_configurations.id = $1;
+    AND service_setting_configurations.archived_at IS NULL
+    AND service_setting_configurations.id = $1;
 
 -- name: GetServiceSettingConfigurationForHouseholdBySettingName :one
 
@@ -59,11 +76,11 @@ SELECT
     service_setting_configurations.last_updated_at,
     service_setting_configurations.archived_at
 FROM service_setting_configurations
- JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
+    JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
 WHERE service_settings.archived_at IS NULL
-  AND service_setting_configurations.archived_at IS NULL
-  AND service_settings.name = $1
-  AND service_setting_configurations.belongs_to_household = $2;
+    AND service_setting_configurations.archived_at IS NULL
+    AND service_settings.name = $1
+    AND service_setting_configurations.belongs_to_household = $2;
 
 -- name: GetServiceSettingConfigurationForUserBySettingName :one
 
@@ -87,11 +104,11 @@ SELECT
     service_setting_configurations.last_updated_at,
     service_setting_configurations.archived_at
 FROM service_setting_configurations
- JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
+    JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
 WHERE service_settings.archived_at IS NULL
-  AND service_setting_configurations.archived_at IS NULL
-  AND service_settings.name = $1
-  AND service_setting_configurations.belongs_to_user = $2;
+    AND service_setting_configurations.archived_at IS NULL
+    AND service_settings.name = $1
+    AND service_setting_configurations.belongs_to_user = $2;
 
 -- name: GetServiceSettingConfigurationsForHousehold :many
 
@@ -115,10 +132,10 @@ SELECT
     service_setting_configurations.last_updated_at,
     service_setting_configurations.archived_at
 FROM service_setting_configurations
- JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
+    JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
 WHERE service_settings.archived_at IS NULL
-  AND service_setting_configurations.archived_at IS NULL
-  AND service_setting_configurations.belongs_to_household = $1;
+    AND service_setting_configurations.archived_at IS NULL
+    AND service_setting_configurations.belongs_to_household = $1;
 
 -- name: GetServiceSettingConfigurationsForUser :many
 
@@ -142,15 +159,14 @@ SELECT
     service_setting_configurations.last_updated_at,
     service_setting_configurations.archived_at
 FROM service_setting_configurations
- JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
+    JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
 WHERE service_settings.archived_at IS NULL
-  AND service_setting_configurations.archived_at IS NULL
-  AND service_setting_configurations.belongs_to_user = $1;
+    AND service_setting_configurations.archived_at IS NULL
+    AND service_setting_configurations.belongs_to_user = $1;
 
 -- name: UpdateServiceSettingConfiguration :execrows
 
-UPDATE service_setting_configurations
-SET
+UPDATE service_setting_configurations SET
     value = $1,
     notes = $2,
     service_setting_id = $3,
