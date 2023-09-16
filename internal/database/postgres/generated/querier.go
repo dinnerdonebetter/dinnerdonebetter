@@ -224,7 +224,7 @@ type Querier interface {
 	GetRecipeSteps(ctx context.Context, db DBTX, arg *GetRecipeStepsParams) ([]*GetRecipeStepsRow, error)
 	GetRecipes(ctx context.Context, db DBTX, arg *GetRecipesParams) ([]*GetRecipesRow, error)
 	GetRecipesNeedingIndexing(ctx context.Context, db DBTX) ([]string, error)
-	GetServiceSetting(ctx context.Context, db DBTX, id string) (*GetServiceSettingRow, error)
+	GetServiceSetting(ctx context.Context, db DBTX, id string) (*ServiceSettings, error)
 	GetServiceSettingConfigurationByID(ctx context.Context, db DBTX, id string) (*GetServiceSettingConfigurationByIDRow, error)
 	GetServiceSettingConfigurationForHouseholdBySettingName(ctx context.Context, db DBTX, arg *GetServiceSettingConfigurationForHouseholdBySettingNameParams) (*GetServiceSettingConfigurationForHouseholdBySettingNameRow, error)
 	GetServiceSettingConfigurationForUserBySettingName(ctx context.Context, db DBTX, arg *GetServiceSettingConfigurationForUserBySettingNameParams) (*GetServiceSettingConfigurationForUserBySettingNameRow, error)
@@ -311,7 +311,7 @@ type Querier interface {
 	RedeemPasswordResetToken(ctx context.Context, db DBTX, id string) error
 	RemoveUserFromHousehold(ctx context.Context, db DBTX, arg *RemoveUserFromHouseholdParams) error
 	SearchForMeals(ctx context.Context, db DBTX, arg *SearchForMealsParams) ([]*SearchForMealsRow, error)
-	SearchForServiceSettings(ctx context.Context, db DBTX, nameQuery string) ([]*SearchForServiceSettingsRow, error)
+	SearchForServiceSettings(ctx context.Context, db DBTX, nameQuery string) ([]*ServiceSettings, error)
 	SearchForValidIngredientGroups(ctx context.Context, db DBTX, arg *SearchForValidIngredientGroupsParams) ([]*SearchForValidIngredientGroupsRow, error)
 	SearchForValidIngredientStates(ctx context.Context, db DBTX, query string) ([]*SearchForValidIngredientStatesRow, error)
 	SearchForValidIngredients(ctx context.Context, db DBTX, query string) ([]*SearchForValidIngredientsRow, error)

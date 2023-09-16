@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/cristalhq/builq"
 	"strings"
+
+	"github.com/cristalhq/builq"
 )
 
 const serviceSettingsTableName = "service_settings"
@@ -76,14 +77,55 @@ SET archived_at = NOW()
 				Name: "GetServiceSettings",
 				Type: ManyType,
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s,
+    (
+        SELECT
+            COUNT(service_settings.id)
+        FROM
+            service_settings
+        WHERE
+            service_settings.archived_at IS NULL
+            %s
+        OFFSET sqlc.narg(query_offset)
+    ) AS filtered_count,
+    %s
+FROM service_settings
+WHERE service_settings.archived_at IS NULL
+    %s
+OFFSET sqlc.narg(query_offset)
+LIMIT sqlc.narg(query_limit);`,
+				strings.Join(applyToEach(serviceSettingsColumns, func(i int, s string) string {
+					return fmt.Sprintf("%s.%s", serviceSettingsTableName, s)
+				}), ",\n\t"),
+				buildFilterCountSelect(
+					usersTableName,
+					true,
+				),
+				buildTotalCountSelect(
+					usersTableName,
+				),
+				buildFilterConditions(
+					usersTableName,
+					true,
+				),
+			)),
 		},
 		{
 			Annotation: QueryAnnotation{
 				Name: "GetServiceSetting",
 				Type: OneType,
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s
+FROM %s
+WHERE service_settings.archived_at IS NULL
+	AND service_settings.id = sqlc.arg(id);`,
+				strings.Join(applyToEach(serviceSettingsColumns, func(i int, s string) string {
+					return fmt.Sprintf("%s.%s", serviceSettingsTableName, s)
+				}), ",\n\t"),
+				serviceSettingsTableName,
+			)),
 		},
 		{
 			Annotation: QueryAnnotation{
@@ -91,22 +133,16 @@ SET archived_at = NOW()
 				Type: ManyType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
-	service_settings.id,
-    service_settings.name,
-    service_settings.type,
-    service_settings.description,
-    service_settings.default_value,
-    service_settings.admins_only,
-    service_settings.enumeration,
-    service_settings.created_at,
-    service_settings.last_updated_at,
-    service_settings.archived_at
-FROM service_settings
+	%s
+FROM %s
 WHERE service_settings.archived_at IS NULL
 	AND service_settings.name %s
 LIMIT 50;`,
-
-				`ILIKE '%' || sqlc.arg(username)::text || '%'`,
+				strings.Join(applyToEach(serviceSettingsColumns, func(i int, s string) string {
+					return fmt.Sprintf("%s.%s", serviceSettingsTableName, s)
+				}), ",\n\t"),
+				serviceSettingsTableName,
+				`ILIKE '%' || sqlc.arg(name_query)::text || '%'`,
 			)),
 		},
 	}

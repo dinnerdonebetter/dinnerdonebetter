@@ -8,20 +8,20 @@ SET archived_at = NOW()
 
 INSERT INTO service_settings (
     id,
-    name,
-    type,
-    description,
-    default_value,
-    admins_only,
-    enumeration
+	name,
+	type,
+	description,
+	default_value,
+	enumeration,
+	admins_only
 ) VALUES (
     sqlc.arg(id),
-    sqlc.arg(name),
-    sqlc.arg(type),
-    sqlc.arg(description),
-    sqlc.arg(default_value),
-    sqlc.arg(admins_only),
-    sqlc.arg(enumeration)
+	sqlc.arg(name),
+	sqlc.arg(type),
+	sqlc.arg(description),
+	sqlc.arg(default_value),
+	sqlc.arg(enumeration),
+	sqlc.arg(admins_only)
 );
 
 -- name: CheckServiceSettingExistence :one
@@ -37,15 +37,15 @@ SELECT EXISTS (
 
 SELECT
 	service_settings.id,
-    service_settings.name,
-    service_settings.type,
-    service_settings.description,
-    service_settings.default_value,
-    service_settings.admins_only,
-    service_settings.enumeration,
-    service_settings.created_at,
-    service_settings.last_updated_at,
-    service_settings.archived_at,
+	service_settings.name,
+	service_settings.type,
+	service_settings.description,
+	service_settings.default_value,
+	service_settings.enumeration,
+	service_settings.admins_only,
+	service_settings.created_at,
+	service_settings.last_updated_at,
+	service_settings.archived_at,
     (
         SELECT
             COUNT(service_settings.id)
@@ -92,32 +92,32 @@ LIMIT sqlc.narg(query_limit);
 
 SELECT
 	service_settings.id,
-    service_settings.name,
-    service_settings.type,
-    service_settings.description,
-    service_settings.default_value,
-    service_settings.admins_only,
-    service_settings.enumeration,
-    service_settings.created_at,
-    service_settings.last_updated_at,
-    service_settings.archived_at
+	service_settings.name,
+	service_settings.type,
+	service_settings.description,
+	service_settings.default_value,
+	service_settings.enumeration,
+	service_settings.admins_only,
+	service_settings.created_at,
+	service_settings.last_updated_at,
+	service_settings.archived_at
 FROM service_settings
 WHERE service_settings.archived_at IS NULL
-	AND service_settings.id = slqc.arg(id);
+	AND service_settings.id = sqlc.arg(id);
 
 -- name: SearchForServiceSettings :many
 
 SELECT
 	service_settings.id,
-    service_settings.name,
-    service_settings.type,
-    service_settings.description,
-    service_settings.default_value,
-    service_settings.admins_only,
-    service_settings.enumeration,
-    service_settings.created_at,
-    service_settings.last_updated_at,
-    service_settings.archived_at
+	service_settings.name,
+	service_settings.type,
+	service_settings.description,
+	service_settings.default_value,
+	service_settings.enumeration,
+	service_settings.admins_only,
+	service_settings.created_at,
+	service_settings.last_updated_at,
+	service_settings.archived_at
 FROM service_settings
 WHERE service_settings.archived_at IS NULL
 	AND service_settings.name ILIKE '%' || sqlc.arg(name_query)::text || '%'

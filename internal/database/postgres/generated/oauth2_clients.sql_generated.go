@@ -31,20 +31,23 @@ const createOAuth2Client = `-- name: CreateOAuth2Client :exec
 
 INSERT INTO oauth2_clients (
     id,
-    name,
-    client_id,
-    client_secret
+	name,
+	description,
+	client_id,
+	client_secret
 ) VALUES (
     $1,
-    $2,
-    $3,
-    $4
+	$2,
+	$3,
+	$4,
+	$5
 )
 `
 
 type CreateOAuth2ClientParams struct {
 	ID           string
 	Name         string
+	Description  string
 	ClientID     string
 	ClientSecret string
 }
@@ -53,6 +56,7 @@ func (q *Queries) CreateOAuth2Client(ctx context.Context, db DBTX, arg *CreateOA
 	_, err := db.ExecContext(ctx, createOAuth2Client,
 		arg.ID,
 		arg.Name,
+		arg.Description,
 		arg.ClientID,
 		arg.ClientSecret,
 	)
@@ -63,8 +67,8 @@ const getOAuth2ClientByClientID = `-- name: GetOAuth2ClientByClientID :one
 
 SELECT
 	oauth2_clients.id,
-    oauth2_clients.name,
-    oauth2_clients.description,
+	oauth2_clients.name,
+	oauth2_clients.description,
 	oauth2_clients.client_id,
 	oauth2_clients.client_secret,
 	oauth2_clients.created_at,
@@ -92,16 +96,16 @@ func (q *Queries) GetOAuth2ClientByClientID(ctx context.Context, db DBTX, client
 const getOAuth2ClientByDatabaseID = `-- name: GetOAuth2ClientByDatabaseID :one
 
 SELECT
-    oauth2_clients.id,
-    oauth2_clients.name,
-    oauth2_clients.description,
-    oauth2_clients.client_id,
-    oauth2_clients.client_secret,
-    oauth2_clients.created_at,
-    oauth2_clients.archived_at
+	oauth2_clients.id,
+	oauth2_clients.name,
+	oauth2_clients.description,
+	oauth2_clients.client_id,
+	oauth2_clients.client_secret,
+	oauth2_clients.created_at,
+	oauth2_clients.archived_at
 FROM oauth2_clients
 WHERE oauth2_clients.archived_at IS NULL
-  AND oauth2_clients.id = $1
+	AND oauth2_clients.id = $1
 `
 
 func (q *Queries) GetOAuth2ClientByDatabaseID(ctx context.Context, db DBTX, id string) (*Oauth2Clients, error) {
@@ -123,12 +127,12 @@ const getOAuth2Clients = `-- name: GetOAuth2Clients :many
 
 SELECT
     oauth2_clients.id,
-    oauth2_clients.name,
-    oauth2_clients.description,
-    oauth2_clients.client_id,
-    oauth2_clients.client_secret,
-    oauth2_clients.created_at,
-    oauth2_clients.archived_at,
+	oauth2_clients.name,
+	oauth2_clients.description,
+	oauth2_clients.client_id,
+	oauth2_clients.client_secret,
+	oauth2_clients.created_at,
+	oauth2_clients.archived_at,
     (
         SELECT
             COUNT(oauth2_clients.id)

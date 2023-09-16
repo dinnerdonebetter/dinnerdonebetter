@@ -1086,6 +1086,19 @@ type RecipeRatings struct {
 	Overall       sql.NullString
 }
 
+type ServiceSettings struct {
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
+	ID            string
+	Name          string
+	Type          SettingType
+	Description   string
+	Enumeration   string
+	DefaultValue  sql.NullString
+	AdminsOnly    bool
+}
+
 type Webhooks struct {
 	ID                 string
 	Name               string

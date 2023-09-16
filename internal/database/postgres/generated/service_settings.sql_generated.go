@@ -28,7 +28,12 @@ func (q *Queries) ArchiveServiceSetting(ctx context.Context, db DBTX, id string)
 
 const checkServiceSettingExistence = `-- name: CheckServiceSettingExistence :one
 
-SELECT EXISTS ( SELECT service_settings.id FROM service_settings WHERE service_settings.archived_at IS NULL AND service_settings.id = $1 )
+SELECT EXISTS (
+    SELECT service_settings.id
+    FROM service_settings
+    WHERE service_settings.archived_at IS NULL
+    AND service_settings.id = $1
+)
 `
 
 func (q *Queries) CheckServiceSettingExistence(ctx context.Context, db DBTX, id string) (bool, error) {
@@ -40,8 +45,23 @@ func (q *Queries) CheckServiceSettingExistence(ctx context.Context, db DBTX, id 
 
 const createServiceSetting = `-- name: CreateServiceSetting :exec
 
-INSERT INTO service_settings (id,name,type,description,default_value,admins_only,enumeration) VALUES
-($1,$2,$3,$4,$5,$6,$7)
+INSERT INTO service_settings (
+    id,
+	name,
+	type,
+	description,
+	default_value,
+	enumeration,
+	admins_only
+) VALUES (
+    $1,
+	$2,
+	$3,
+	$4,
+	$5,
+	$6,
+	$7
+)
 `
 
 type CreateServiceSettingParams struct {
@@ -61,8 +81,8 @@ func (q *Queries) CreateServiceSetting(ctx context.Context, db DBTX, arg *Create
 		arg.Type,
 		arg.Description,
 		arg.DefaultValue,
-		arg.AdminsOnly,
 		arg.Enumeration,
+		arg.AdminsOnly,
 	)
 	return err
 }
@@ -71,44 +91,31 @@ const getServiceSetting = `-- name: GetServiceSetting :one
 
 SELECT
 	service_settings.id,
-    service_settings.name,
-    service_settings.type,
-    service_settings.description,
-    service_settings.default_value,
-    service_settings.admins_only,
-    service_settings.enumeration,
-    service_settings.created_at,
-    service_settings.last_updated_at,
-    service_settings.archived_at
+	service_settings.name,
+	service_settings.type,
+	service_settings.description,
+	service_settings.default_value,
+	service_settings.enumeration,
+	service_settings.admins_only,
+	service_settings.created_at,
+	service_settings.last_updated_at,
+	service_settings.archived_at
 FROM service_settings
 WHERE service_settings.archived_at IS NULL
 	AND service_settings.id = $1
 `
 
-type GetServiceSettingRow struct {
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	ArchivedAt    sql.NullTime
-	ID            string
-	Name          string
-	Type          SettingType
-	Description   string
-	Enumeration   string
-	DefaultValue  sql.NullString
-	AdminsOnly    bool
-}
-
-func (q *Queries) GetServiceSetting(ctx context.Context, db DBTX, id string) (*GetServiceSettingRow, error) {
+func (q *Queries) GetServiceSetting(ctx context.Context, db DBTX, id string) (*ServiceSettings, error) {
 	row := db.QueryRowContext(ctx, getServiceSetting, id)
-	var i GetServiceSettingRow
+	var i ServiceSettings
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
 		&i.Type,
 		&i.Description,
 		&i.DefaultValue,
-		&i.AdminsOnly,
 		&i.Enumeration,
+		&i.AdminsOnly,
 		&i.CreatedAt,
 		&i.LastUpdatedAt,
 		&i.ArchivedAt,
@@ -120,15 +127,15 @@ const getServiceSettings = `-- name: GetServiceSettings :many
 
 SELECT
 	service_settings.id,
-    service_settings.name,
-    service_settings.type,
-    service_settings.description,
-    service_settings.default_value,
-    service_settings.admins_only,
-    service_settings.enumeration,
-    service_settings.created_at,
-    service_settings.last_updated_at,
-    service_settings.archived_at,
+	service_settings.name,
+	service_settings.type,
+	service_settings.description,
+	service_settings.default_value,
+	service_settings.enumeration,
+	service_settings.admins_only,
+	service_settings.created_at,
+	service_settings.last_updated_at,
+	service_settings.archived_at,
     (
         SELECT
             COUNT(service_settings.id)
@@ -136,13 +143,13 @@ SELECT
             service_settings
         WHERE
             service_settings.archived_at IS NULL
-          AND service_settings.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-          AND service_settings.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-          AND (
+            AND service_settings.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+            AND service_settings.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+            AND (
                 service_settings.last_updated_at IS NULL
                 OR service_settings.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
             )
-          AND (
+            AND (
                 service_settings.last_updated_at IS NULL
                 OR service_settings.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
             )
@@ -158,15 +165,15 @@ SELECT
     ) AS total_count
 FROM service_settings
 WHERE service_settings.archived_at IS NULL
-  AND service_settings.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-  AND service_settings.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-  AND (
-    service_settings.last_updated_at IS NULL
-   OR service_settings.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+    AND service_settings.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+    AND service_settings.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+    AND (
+        service_settings.last_updated_at IS NULL
+        OR service_settings.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
     )
-  AND (
-    service_settings.last_updated_at IS NULL
-   OR service_settings.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+    AND (
+        service_settings.last_updated_at IS NULL
+        OR service_settings.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
     )
 OFFSET $5
 LIMIT $6
@@ -218,8 +225,8 @@ func (q *Queries) GetServiceSettings(ctx context.Context, db DBTX, arg *GetServi
 			&i.Type,
 			&i.Description,
 			&i.DefaultValue,
-			&i.AdminsOnly,
 			&i.Enumeration,
+			&i.AdminsOnly,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
@@ -243,51 +250,38 @@ const searchForServiceSettings = `-- name: SearchForServiceSettings :many
 
 SELECT
 	service_settings.id,
-    service_settings.name,
-    service_settings.type,
-    service_settings.description,
-    service_settings.default_value,
-    service_settings.admins_only,
-    service_settings.enumeration,
-    service_settings.created_at,
-    service_settings.last_updated_at,
-    service_settings.archived_at
+	service_settings.name,
+	service_settings.type,
+	service_settings.description,
+	service_settings.default_value,
+	service_settings.enumeration,
+	service_settings.admins_only,
+	service_settings.created_at,
+	service_settings.last_updated_at,
+	service_settings.archived_at
 FROM service_settings
 WHERE service_settings.archived_at IS NULL
 	AND service_settings.name ILIKE '%' || $1::text || '%'
 LIMIT 50
 `
 
-type SearchForServiceSettingsRow struct {
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	ArchivedAt    sql.NullTime
-	ID            string
-	Name          string
-	Type          SettingType
-	Description   string
-	Enumeration   string
-	DefaultValue  sql.NullString
-	AdminsOnly    bool
-}
-
-func (q *Queries) SearchForServiceSettings(ctx context.Context, db DBTX, nameQuery string) ([]*SearchForServiceSettingsRow, error) {
+func (q *Queries) SearchForServiceSettings(ctx context.Context, db DBTX, nameQuery string) ([]*ServiceSettings, error) {
 	rows, err := db.QueryContext(ctx, searchForServiceSettings, nameQuery)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []*SearchForServiceSettingsRow{}
+	items := []*ServiceSettings{}
 	for rows.Next() {
-		var i SearchForServiceSettingsRow
+		var i ServiceSettings
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
 			&i.Type,
 			&i.Description,
 			&i.DefaultValue,
-			&i.AdminsOnly,
 			&i.Enumeration,
+			&i.AdminsOnly,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
