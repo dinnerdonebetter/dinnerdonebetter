@@ -8,20 +8,10 @@ import (
 )
 
 const (
-	webhooksTableName             = "webhooks"
-	webhookTriggerEventsTableName = "webhook_trigger_events"
-	webhookTriggerEventsJoin      = "webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook"
+	webhooksTableName = "webhooks"
 )
 
 var (
-	webhookTriggerEventsColumns = []string{
-		"id",
-		"trigger_event",
-		"belongs_to_webhook",
-		createdAtColumn,
-		archivedAtColumn,
-	}
-
 	webhooksColumns = []string{
 		"id",
 		"name",
@@ -109,7 +99,7 @@ func buildWebhooksQueries() []*Query {
     %s,
     %s
 FROM webhooks
-	JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
+	JOIN %s
 WHERE webhooks.archived_at IS NULL
 	%s
 LIMIT sqlc.narg(query_limit)
@@ -125,6 +115,7 @@ OFFSET sqlc.narg(query_offset);`,
 					"webhooks.belongs_to_household = sqlc.arg(household_id)",
 					"webhook_trigger_events.archived_at IS NULL",
 				),
+				webhookTriggerEventsJoin,
 				buildFilterConditions(
 					webhooksTableName,
 					true,
@@ -141,7 +132,7 @@ OFFSET sqlc.narg(query_offset);`,
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT 
     %s
 FROM webhooks
-    JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
+    JOIN %s
 WHERE webhook_trigger_events.archived_at IS NULL
     AND webhook_trigger_events.trigger_event = sqlc.arg(trigger_event)
     AND webhooks.belongs_to_household = sqlc.arg(household_id)
@@ -149,6 +140,7 @@ WHERE webhook_trigger_events.archived_at IS NULL
 				strings.Join(applyToEach(webhooksColumns, func(_ int, s string) string {
 					return fullColumnName(webhooksTableName, s)
 				}), ",\n\t"),
+				webhookTriggerEventsJoin,
 			)),
 		},
 		{
@@ -159,7 +151,7 @@ WHERE webhook_trigger_events.archived_at IS NULL
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT 
 	%s
 FROM webhooks
-	JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
+	JOIN %s
 WHERE webhook_trigger_events.archived_at IS NULL
 	AND webhooks.belongs_to_household = sqlc.arg(household_id)
 	AND webhooks.archived_at IS NULL
@@ -170,6 +162,7 @@ WHERE webhook_trigger_events.archived_at IS NULL
 						s, strings.TrimSuffix(parts[0], "s"), parts[1],
 					)
 				}), ",\n\t"),
+				webhookTriggerEventsJoin,
 			)),
 		},
 	}
