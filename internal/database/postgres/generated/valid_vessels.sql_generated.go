@@ -28,7 +28,12 @@ func (q *Queries) ArchiveValidVessel(ctx context.Context, db DBTX, id string) (i
 
 const checkValidVesselExistence = `-- name: CheckValidVesselExistence :one
 
-SELECT EXISTS ( SELECT valid_vessels.id FROM valid_vessels WHERE valid_vessels.archived_at IS NULL AND valid_vessels.id = $1 )
+SELECT EXISTS (
+    SELECT valid_vessels.id
+    FROM valid_vessels
+    WHERE valid_vessels.archived_at IS NULL
+        AND valid_vessels.id = $1
+)
 `
 
 func (q *Queries) CheckValidVesselExistence(ctx context.Context, db DBTX, id string) (bool, error) {
@@ -40,8 +45,39 @@ func (q *Queries) CheckValidVesselExistence(ctx context.Context, db DBTX, id str
 
 const createValidVessel = `-- name: CreateValidVessel :exec
 
-INSERT INTO valid_vessels (id,"name",plural_name,description,icon_path,usable_for_storage,slug,display_in_summary_lists,include_in_generated_instructions,capacity,capacity_unit,width_in_millimeters,length_in_millimeters,height_in_millimeters,shape)
-    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10::float,$11,$12::float,$13::float,$14::float,$15)
+INSERT INTO valid_vessels (
+    id,
+    name,
+    plural_name,
+    description,
+    icon_path,
+    usable_for_storage,
+    slug,
+    display_in_summary_lists,
+    include_in_generated_instructions,
+    capacity,
+    capacity_unit,
+    width_in_millimeters,
+    length_in_millimeters,
+    height_in_millimeters,
+    shape
+) VALUES (
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $6,
+    $7,
+    $8,
+    $9,
+    $10,
+    $11,
+    $12,
+    $13,
+    $14,
+    $15
+)
 `
 
 type CreateValidVesselParams struct {
@@ -52,11 +88,11 @@ type CreateValidVesselParams struct {
 	IconPath                       string
 	Shape                          VesselShape
 	Name                           string
+	Capacity                       string
 	CapacityUnit                   sql.NullString
-	Capacity                       float64
-	WidthInMillimeters             float64
-	LengthInMillimeters            float64
-	HeightInMillimeters            float64
+	WidthInMillimeters             sql.NullString
+	LengthInMillimeters            sql.NullString
+	HeightInMillimeters            sql.NullString
 	IncludeInGeneratedInstructions bool
 	DisplayInSummaryLists          bool
 	UsableForStorage               bool
@@ -715,8 +751,7 @@ func (q *Queries) SearchForValidVessels(ctx context.Context, db DBTX, query stri
 
 const updateValidVessel = `-- name: UpdateValidVessel :execrows
 
-UPDATE valid_vessels
-SET
+UPDATE valid_vessels SET
     name = $1,
     plural_name = $2,
     description = $3,

@@ -1,6 +1,6 @@
 -- name: ArchiveValidPreparationInstrument :execrows
 
-UPDATE valid_preparation_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
+UPDATE valid_preparation_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
 
 -- name: CreateValidPreparationInstrument :exec
 
@@ -8,7 +8,7 @@ INSERT INTO valid_preparation_instruments (id,notes,valid_preparation_id,valid_i
 
 -- name: CheckValidPreparationInstrumentExistence :one
 
-SELECT EXISTS ( SELECT valid_preparation_instruments.id FROM valid_preparation_instruments WHERE valid_preparation_instruments.archived_at IS NULL AND valid_preparation_instruments.id = $1 );
+SELECT EXISTS ( SELECT valid_preparation_instruments.id FROM valid_preparation_instruments WHERE valid_preparation_instruments.archived_at IS NULL AND valid_preparation_instruments.id = sqlc.arg(id) );
 
 -- name: GetValidPreparationInstrumentsForInstrument :many
 

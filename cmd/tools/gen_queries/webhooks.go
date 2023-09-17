@@ -102,8 +102,7 @@ FROM webhooks
 	JOIN %s
 WHERE webhooks.archived_at IS NULL
 	%s
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);`,
+%s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
 				buildFilterCountSelect(
 					webhooksTableName,
@@ -122,6 +121,7 @@ OFFSET sqlc.narg(query_offset);`,
 					"webhooks.belongs_to_household = sqlc.arg(household_id)",
 					"webhook_trigger_events.archived_at IS NULL",
 				),
+				offsetLimitAddendum,
 			)),
 		},
 		{

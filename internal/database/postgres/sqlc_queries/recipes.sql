@@ -8,7 +8,7 @@ INSERT INTO recipes (id,"name",slug,"source",description,inspired_by_recipe_id,m
 
 -- name: CheckRecipeExistence :one
 
-SELECT EXISTS ( SELECT recipes.id FROM recipes WHERE recipes.archived_at IS NULL AND recipes.id = $1 );
+SELECT EXISTS ( SELECT recipes.id FROM recipes WHERE recipes.archived_at IS NULL AND recipes.id = sqlc.arg(id) );
 
 -- name: GetRecipeByID :many
 
@@ -313,4 +313,4 @@ WHERE archived_at IS NULL
 
 -- name: UpdateRecipeLastIndexedAt :execrows
 
-UPDATE recipes SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL;
+UPDATE recipes SET last_indexed_at = NOW() WHERE id = sqlc.arg(id) AND archived_at IS NULL;

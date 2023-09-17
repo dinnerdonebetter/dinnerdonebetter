@@ -16,6 +16,9 @@ const (
 	lastIndexedAtColumn      = "last_indexed_at"
 	belongsToHouseholdColumn = "belongs_to_household"
 	belongsToUserColumn      = "belongs_to_user"
+
+	offsetLimitAddendum = `LIMIT sqlc.narg(query_limit)
+OFFSET sqlc.narg(query_offset)`
 )
 
 func applyToEach(x []string, f func(int, string) string) []string {

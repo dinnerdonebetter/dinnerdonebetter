@@ -1,6 +1,6 @@
 -- name: ArchiveValidIngredientGroup :execrows
 
-UPDATE valid_ingredient_groups SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
+UPDATE valid_ingredient_groups SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
 
 -- name: ArchiveValidIngredientGroupMember :execrows
 
@@ -27,7 +27,7 @@ INSERT INTO valid_ingredient_group_members
 
 -- name: CheckValidIngredientGroupExistence :one
 
-SELECT EXISTS ( SELECT valid_ingredient_groups.id FROM valid_ingredient_groups WHERE valid_ingredient_groups.archived_at IS NULL AND valid_ingredient_groups.id = $1 );
+SELECT EXISTS ( SELECT valid_ingredient_groups.id FROM valid_ingredient_groups WHERE valid_ingredient_groups.archived_at IS NULL AND valid_ingredient_groups.id = sqlc.arg(id) );
 
 -- name: GetValidIngredientGroups :many
 

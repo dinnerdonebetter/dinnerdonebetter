@@ -106,10 +106,10 @@ SELECT
 	valid_preparations.temperature_required,
 	valid_preparations.time_estimate_required,
 	valid_preparations.condition_expression_required,
-    valid_preparations.consumes_vessel,
-    valid_preparations.only_for_vessels,
-    valid_preparations.minimum_vessel_count,
-    valid_preparations.maximum_vessel_count,
+	valid_preparations.consumes_vessel,
+	valid_preparations.only_for_vessels,
+	valid_preparations.minimum_vessel_count,
+	valid_preparations.maximum_vessel_count,
 	valid_preparations.slug,
 	valid_preparations.past_tense,
 	valid_preparations.created_at,
@@ -190,11 +190,11 @@ SELECT
 	valid_preparations.maximum_instrument_count,
 	valid_preparations.temperature_required,
 	valid_preparations.time_estimate_required,
-    valid_preparations.condition_expression_required,
-    valid_preparations.consumes_vessel,
-    valid_preparations.only_for_vessels,
-    valid_preparations.minimum_vessel_count,
-    valid_preparations.maximum_vessel_count,
+	valid_preparations.condition_expression_required,
+	valid_preparations.consumes_vessel,
+	valid_preparations.only_for_vessels,
+	valid_preparations.minimum_vessel_count,
+	valid_preparations.maximum_vessel_count,
 	valid_preparations.slug,
 	valid_preparations.past_tense,
 	valid_preparations.created_at,
@@ -262,30 +262,31 @@ func (q *Queries) GetValidPreparation(ctx context.Context, db DBTX, id string) (
 
 const getValidPreparationByID = `-- name: GetValidPreparationByID :one
 
-SELECT valid_preparations.id,
-       valid_preparations.name,
-       valid_preparations.description,
-       valid_preparations.icon_path,
-       valid_preparations.yields_nothing,
-       valid_preparations.restrict_to_ingredients,
-       valid_preparations.minimum_ingredient_count,
-       valid_preparations.maximum_ingredient_count,
-       valid_preparations.minimum_instrument_count,
-       valid_preparations.maximum_instrument_count,
-       valid_preparations.temperature_required,
-       valid_preparations.time_estimate_required,
-       valid_preparations.condition_expression_required,
-       valid_preparations.consumes_vessel,
-       valid_preparations.only_for_vessels,
-       valid_preparations.minimum_vessel_count,
-       valid_preparations.maximum_vessel_count,
-       valid_preparations.slug,
-       valid_preparations.past_tense,
-       valid_preparations.created_at,
-       valid_preparations.last_updated_at,
-       valid_preparations.archived_at
-  FROM valid_preparations
- WHERE valid_preparations.archived_at IS NULL
+SELECT
+	valid_preparations.id,
+	valid_preparations.name,
+	valid_preparations.description,
+	valid_preparations.icon_path,
+	valid_preparations.yields_nothing,
+	valid_preparations.restrict_to_ingredients,
+	valid_preparations.minimum_ingredient_count,
+	valid_preparations.maximum_ingredient_count,
+	valid_preparations.minimum_instrument_count,
+	valid_preparations.maximum_instrument_count,
+	valid_preparations.temperature_required,
+	valid_preparations.time_estimate_required,
+	valid_preparations.condition_expression_required,
+	valid_preparations.consumes_vessel,
+	valid_preparations.only_for_vessels,
+	valid_preparations.minimum_vessel_count,
+	valid_preparations.maximum_vessel_count,
+	valid_preparations.slug,
+	valid_preparations.past_tense,
+	valid_preparations.created_at,
+	valid_preparations.last_updated_at,
+	valid_preparations.archived_at
+FROM valid_preparations
+WHERE valid_preparations.archived_at IS NULL
 `
 
 type GetValidPreparationByIDRow struct {
@@ -358,63 +359,59 @@ SELECT
 	valid_preparations.maximum_instrument_count,
 	valid_preparations.temperature_required,
 	valid_preparations.time_estimate_required,
-    valid_preparations.condition_expression_required,
-    valid_preparations.consumes_vessel,
-    valid_preparations.only_for_vessels,
-    valid_preparations.minimum_vessel_count,
-    valid_preparations.maximum_vessel_count,
+	valid_preparations.condition_expression_required,
+	valid_preparations.consumes_vessel,
+	valid_preparations.only_for_vessels,
+	valid_preparations.minimum_vessel_count,
+	valid_preparations.maximum_vessel_count,
 	valid_preparations.slug,
 	valid_preparations.past_tense,
 	valid_preparations.created_at,
 	valid_preparations.last_updated_at,
 	valid_preparations.archived_at,
-    (
-        SELECT
-            COUNT(valid_preparations.id)
-        FROM
-            valid_preparations
-        WHERE
-            valid_preparations.archived_at IS NULL
-          AND valid_preparations.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-          AND valid_preparations.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-          AND (
-                valid_preparations.last_updated_at IS NULL
-                OR valid_preparations.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-            )
-          AND (
-                valid_preparations.last_updated_at IS NULL
-                OR valid_preparations.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-            )
-    ) as filtered_count,
-    (
-        SELECT
-            COUNT(valid_preparations.id)
-        FROM
-            valid_preparations
-        WHERE
-            valid_preparations.archived_at IS NULL
-    ) as total_count
+	(
+		SELECT
+			COUNT(valid_preparations.id)
+		FROM
+			valid_preparations
+		WHERE
+			valid_preparations.archived_at IS NULL
+			AND valid_preparations.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+			AND valid_preparations.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+			AND (
+				valid_preparations.last_updated_at IS NULL
+				OR valid_preparations.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+			)
+			AND (
+				valid_preparations.last_updated_at IS NULL
+				OR valid_preparations.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+			)
+	) as filtered_count,
+	(
+		SELECT
+			COUNT(valid_preparations.id)
+		FROM
+			valid_preparations
+		WHERE
+			valid_preparations.archived_at IS NULL
+	) as total_count
 FROM valid_preparations
 WHERE
-    valid_preparations.archived_at IS NULL
-  AND valid_preparations.created_at > (COALESCE($1, (SELECT NOW() - interval '999 years')))
-  AND valid_preparations.created_at < (COALESCE($2, (SELECT NOW() + interval '999 years')))
-  AND (
-        valid_preparations.last_updated_at IS NULL
-        OR valid_preparations.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-    )
-  AND (
-        valid_preparations.last_updated_at IS NULL
-        OR valid_preparations.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-    )
-GROUP BY
-    valid_preparations.id
-ORDER BY
-    valid_preparations.id
-OFFSET
-    $5
-    LIMIT
-    $6
+	valid_preparations.archived_at IS NULL
+	AND valid_preparations.created_at > (COALESCE($1, (SELECT NOW() - interval '999 years')))
+	AND valid_preparations.created_at < (COALESCE($2, (SELECT NOW() + interval '999 years')))
+	AND (
+		valid_preparations.last_updated_at IS NULL
+		OR valid_preparations.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+	)
+	AND (
+		valid_preparations.last_updated_at IS NULL
+		OR valid_preparations.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+	)
+GROUP BY valid_preparations.id
+ORDER BY valid_preparations.id
+OFFSET $5
+LIMIT $6
 `
 
 type GetValidPreparationsParams struct {
@@ -511,13 +508,12 @@ func (q *Queries) GetValidPreparations(ctx context.Context, db DBTX, arg *GetVal
 const getValidPreparationsNeedingIndexing = `-- name: GetValidPreparationsNeedingIndexing :many
 
 SELECT valid_preparations.id
-  FROM valid_preparations
- WHERE (valid_preparations.archived_at IS NULL)
-       AND (
-			(valid_preparations.last_indexed_at IS NULL)
-			OR valid_preparations.last_indexed_at
-				< now() - '24 hours'::INTERVAL
-		)
+FROM valid_preparations
+WHERE (valid_preparations.archived_at IS NULL)
+AND (
+	valid_preparations.last_indexed_at IS NULL
+	OR valid_preparations.last_indexed_at < now() - '24 hours'::INTERVAL
+)
 `
 
 func (q *Queries) GetValidPreparationsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error) {
@@ -558,11 +554,11 @@ SELECT
 	valid_preparations.maximum_instrument_count,
 	valid_preparations.temperature_required,
 	valid_preparations.time_estimate_required,
-    valid_preparations.condition_expression_required,
-    valid_preparations.consumes_vessel,
-    valid_preparations.only_for_vessels,
-    valid_preparations.minimum_vessel_count,
-    valid_preparations.maximum_vessel_count,
+	valid_preparations.condition_expression_required,
+	valid_preparations.consumes_vessel,
+	valid_preparations.only_for_vessels,
+	valid_preparations.minimum_vessel_count,
+	valid_preparations.maximum_vessel_count,
 	valid_preparations.slug,
 	valid_preparations.past_tense,
 	valid_preparations.created_at,
@@ -660,10 +656,10 @@ SELECT
 	valid_preparations.temperature_required,
 	valid_preparations.time_estimate_required,
 	valid_preparations.condition_expression_required,
-    valid_preparations.consumes_vessel,
-    valid_preparations.only_for_vessels,
-    valid_preparations.minimum_vessel_count,
-    valid_preparations.maximum_vessel_count,
+	valid_preparations.consumes_vessel,
+	valid_preparations.only_for_vessels,
+	valid_preparations.minimum_vessel_count,
+	valid_preparations.maximum_vessel_count,
 	valid_preparations.slug,
 	valid_preparations.past_tense,
 	valid_preparations.created_at,
@@ -748,8 +744,7 @@ func (q *Queries) SearchForValidPreparations(ctx context.Context, db DBTX, query
 
 const updateValidPreparation = `-- name: UpdateValidPreparation :execrows
 
-UPDATE valid_preparations
-SET
+UPDATE valid_preparations SET
 	name = $1,
 	description = $2,
 	icon_path = $3,
@@ -762,10 +757,10 @@ SET
 	temperature_required = $10,
 	time_estimate_required = $11,
 	condition_expression_required = $12,
-    consumes_vessel = $13,
-    only_for_vessels = $14,
-    minimum_vessel_count = $15,
-    maximum_vessel_count = $16,
+	consumes_vessel = $13,
+	only_for_vessels = $14,
+	minimum_vessel_count = $15,
+	maximum_vessel_count = $16,
 	slug = $17,
 	past_tense = $18,
 	last_updated_at = NOW()

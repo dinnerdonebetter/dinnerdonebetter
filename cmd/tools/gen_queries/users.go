@@ -244,8 +244,7 @@ WHERE users.archived_at IS NULL
 FROM users
 WHERE users.archived_at IS NULL
 	%s
-LIMIT sqlc.narg(query_limit)
-OFFSET sqlc.narg(query_offset);`,
+%s;`,
 				strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 					return fmt.Sprintf("%s.%s", usersTableName, s)
 				}), ",\n\t"),
@@ -260,6 +259,7 @@ OFFSET sqlc.narg(query_offset);`,
 					usersTableName,
 					true,
 				),
+				offsetLimitAddendum,
 			)),
 		},
 		{

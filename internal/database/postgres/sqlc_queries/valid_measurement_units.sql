@@ -1,6 +1,6 @@
 -- name: ArchiveValidMeasurementUnit :execrows
 
-UPDATE valid_measurement_units SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
+UPDATE valid_measurement_units SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
 
 -- name: CreateValidMeasurementUnit :exec
 
@@ -10,7 +10,7 @@ VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10);
 
 -- name: CheckValidMeasurementUnitExistence :one
 
-SELECT EXISTS ( SELECT valid_measurement_units.id FROM valid_measurement_units WHERE valid_measurement_units.archived_at IS NULL AND valid_measurement_units.id = $1 );
+SELECT EXISTS ( SELECT valid_measurement_units.id FROM valid_measurement_units WHERE valid_measurement_units.archived_at IS NULL AND valid_measurement_units.id = sqlc.arg(id) );
 
 -- name: GetValidMeasurementUnitByID :one
 
@@ -274,4 +274,4 @@ WHERE archived_at IS NULL AND id = $10;
 
 -- name: UpdateValidMeasurementUnitLastIndexedAt :execrows
 
-UPDATE valid_measurement_units SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL;
+UPDATE valid_measurement_units SET last_indexed_at = NOW() WHERE id = sqlc.arg(id) AND archived_at IS NULL;

@@ -1,15 +1,51 @@
 -- name: ArchiveValidVessel :execrows
 
-UPDATE valid_vessels SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
+UPDATE valid_vessels SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
 
 -- name: CreateValidVessel :exec
 
-INSERT INTO valid_vessels (id,"name",plural_name,description,icon_path,usable_for_storage,slug,display_in_summary_lists,include_in_generated_instructions,capacity,capacity_unit,width_in_millimeters,length_in_millimeters,height_in_millimeters,shape)
-    VALUES (sqlc.arg(id),sqlc.arg(name),sqlc.arg(plural_name),sqlc.arg(description),sqlc.arg(icon_path),sqlc.arg(usable_for_storage),sqlc.arg(slug),sqlc.arg(display_in_summary_lists),sqlc.arg(include_in_generated_instructions),sqlc.arg(capacity)::float,sqlc.arg(capacity_unit),sqlc.arg(width_in_millimeters)::float,sqlc.arg(length_in_millimeters)::float,sqlc.arg(height_in_millimeters)::float,sqlc.arg(shape));
+INSERT INTO valid_vessels (
+    id,
+    name,
+    plural_name,
+    description,
+    icon_path,
+    usable_for_storage,
+    slug,
+    display_in_summary_lists,
+    include_in_generated_instructions,
+    capacity,
+    capacity_unit,
+    width_in_millimeters,
+    length_in_millimeters,
+    height_in_millimeters,
+    shape
+) VALUES (
+    sqlc.arg(id),
+    sqlc.arg(name),
+    sqlc.arg(plural_name),
+    sqlc.arg(description),
+    sqlc.arg(icon_path),
+    sqlc.arg(usable_for_storage),
+    sqlc.arg(slug),
+    sqlc.arg(display_in_summary_lists),
+    sqlc.arg(include_in_generated_instructions),
+    sqlc.arg(capacity),
+    sqlc.arg(capacity_unit),
+    sqlc.arg(width_in_millimeters),
+    sqlc.arg(length_in_millimeters),
+    sqlc.arg(height_in_millimeters),
+    sqlc.arg(shape)
+);
 
 -- name: CheckValidVesselExistence :one
 
-SELECT EXISTS ( SELECT valid_vessels.id FROM valid_vessels WHERE valid_vessels.archived_at IS NULL AND valid_vessels.id = $1 );
+SELECT EXISTS (
+    SELECT valid_vessels.id
+    FROM valid_vessels
+    WHERE valid_vessels.archived_at IS NULL
+        AND valid_vessels.id = sqlc.arg(id)
+);
 
 -- name: GetValidVessels :many
 
@@ -239,8 +275,7 @@ WHERE valid_vessels.archived_at IS NULL
 
 -- name: UpdateValidVessel :execrows
 
-UPDATE valid_vessels
-SET
+UPDATE valid_vessels SET
     name = sqlc.arg(name),
     plural_name = sqlc.arg(plural_name),
     description = sqlc.arg(description),
@@ -261,4 +296,4 @@ WHERE archived_at IS NULL
 
 -- name: UpdateValidVesselLastIndexedAt :execrows
 
-UPDATE valid_vessels SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL;
+UPDATE valid_vessels SET last_indexed_at = NOW() WHERE id = sqlc.arg(id) AND archived_at IS NULL;

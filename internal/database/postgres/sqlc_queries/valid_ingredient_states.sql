@@ -1,6 +1,6 @@
 -- name: ArchiveValidIngredientState :execrows
 
-UPDATE valid_ingredient_states SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
+UPDATE valid_ingredient_states SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
 
 -- name: CreateValidIngredientState :exec
 
@@ -8,7 +8,7 @@ INSERT INTO valid_ingredient_states (id,"name",description,icon_path,past_tense,
 
 -- name: CheckValidIngredientStateExistence :one
 
-SELECT EXISTS ( SELECT valid_ingredient_states.id FROM valid_ingredient_states WHERE valid_ingredient_states.archived_at IS NULL AND valid_ingredient_states.id = $1 );
+SELECT EXISTS ( SELECT valid_ingredient_states.id FROM valid_ingredient_states WHERE valid_ingredient_states.archived_at IS NULL AND valid_ingredient_states.id = sqlc.arg(id) );
 
 -- name: GetValidIngredientStates :many
 
@@ -130,4 +130,4 @@ WHERE archived_at IS NULL
 
 -- name: UpdateValidIngredientStateLastIndexedAt :execrows
 
-UPDATE valid_ingredient_states SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL;
+UPDATE valid_ingredient_states SET last_indexed_at = NOW() WHERE id = sqlc.arg(id) AND archived_at IS NULL;

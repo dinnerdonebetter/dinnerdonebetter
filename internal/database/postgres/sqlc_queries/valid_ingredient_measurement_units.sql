@@ -1,6 +1,6 @@
 -- name: ArchiveValidIngredientMeasurementUnit :execrows
 
-UPDATE valid_ingredient_measurement_units SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
+UPDATE valid_ingredient_measurement_units SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
 
 -- name: CreateValidIngredientMeasurementUnit :exec
 
@@ -10,7 +10,7 @@ VALUES ($1,$2,$3,$4,$5,$6);
 
 -- name: CheckValidIngredientMeasurementUnitExistence :one
 
-SELECT EXISTS ( SELECT valid_ingredient_measurement_units.id FROM valid_ingredient_measurement_units WHERE valid_ingredient_measurement_units.archived_at IS NULL AND valid_ingredient_measurement_units.id = $1 );
+SELECT EXISTS ( SELECT valid_ingredient_measurement_units.id FROM valid_ingredient_measurement_units WHERE valid_ingredient_measurement_units.archived_at IS NULL AND valid_ingredient_measurement_units.id = sqlc.arg(id) );
 
 -- name: GetValidIngredientMeasurementUnitsForIngredient :many
 

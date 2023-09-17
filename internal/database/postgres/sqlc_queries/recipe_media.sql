@@ -1,6 +1,6 @@
 -- name: ArchiveRecipeMedia :execrows
 
-UPDATE recipe_media SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
+UPDATE recipe_media SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
 
 -- name: CreateRecipeMedia :exec
 
@@ -9,7 +9,7 @@ INSERT INTO recipe_media (id,belongs_to_recipe,belongs_to_recipe_step,mime_type,
 
 -- name: CheckRecipeMediaExistence :one
 
-SELECT EXISTS ( SELECT recipe_media.id FROM recipe_media WHERE recipe_media.archived_at IS NULL AND recipe_media.id = $1 );
+SELECT EXISTS ( SELECT recipe_media.id FROM recipe_media WHERE recipe_media.archived_at IS NULL AND recipe_media.id = sqlc.arg(id) );
 
 -- name: GetRecipeMediaForRecipe :many
 

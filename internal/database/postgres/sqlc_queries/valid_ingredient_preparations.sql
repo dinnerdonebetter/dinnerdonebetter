@@ -1,6 +1,6 @@
 -- name: ArchiveValidIngredientPreparation :execrows
 
-UPDATE valid_ingredient_preparations SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
+UPDATE valid_ingredient_preparations SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
 
 -- name: CreateValidIngredientPreparation :exec
 
@@ -8,7 +8,7 @@ INSERT INTO valid_ingredient_preparations (id,notes,valid_preparation_id,valid_i
 
 -- name: CheckValidIngredientPreparationExistence :one
 
-SELECT EXISTS ( SELECT valid_ingredient_preparations.id FROM valid_ingredient_preparations WHERE valid_ingredient_preparations.archived_at IS NULL AND valid_ingredient_preparations.id = $1 );
+SELECT EXISTS ( SELECT valid_ingredient_preparations.id FROM valid_ingredient_preparations WHERE valid_ingredient_preparations.archived_at IS NULL AND valid_ingredient_preparations.id = sqlc.arg(id) );
 
 -- name: GetValidIngredientPreparationsForIngredient :many
 

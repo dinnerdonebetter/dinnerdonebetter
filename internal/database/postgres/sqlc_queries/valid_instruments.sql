@@ -1,6 +1,6 @@
 -- name: ArchiveValidInstrument :execrows
 
-UPDATE valid_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1;
+UPDATE valid_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
 
 -- name: CreateValidInstrument :exec
 
@@ -8,7 +8,7 @@ INSERT INTO valid_instruments (id,"name",plural_name,description,icon_path,usabl
 
 -- name: CheckValidInstrumentExistence :one
 
-SELECT EXISTS ( SELECT valid_instruments.id FROM valid_instruments WHERE valid_instruments.archived_at IS NULL AND valid_instruments.id = $1 );
+SELECT EXISTS ( SELECT valid_instruments.id FROM valid_instruments WHERE valid_instruments.archived_at IS NULL AND valid_instruments.id = sqlc.arg(id) );
 
 -- name: GetValidInstruments :many
 
@@ -166,4 +166,4 @@ WHERE archived_at IS NULL
 
 -- name: UpdateValidInstrumentLastIndexedAt :execrows
 
-UPDATE valid_instruments SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL;
+UPDATE valid_instruments SET last_indexed_at = NOW() WHERE id = sqlc.arg(id) AND archived_at IS NULL;

@@ -256,7 +256,7 @@ func (q *Querier) SearchForValidIngredientsForPreparation(ctx context.Context, p
 
 	results, err := q.generatedQuerier.SearchValidIngredientsByPreparationAndIngredientName(ctx, q.db, &generated.SearchValidIngredientsByPreparationAndIngredientNameParams{
 		ValidPreparationID: preparationID,
-		Column2:            query,
+		NameQuery:          query,
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching valid ingredients for preparation")
@@ -501,8 +501,8 @@ func (q *Querier) CreateValidIngredient(ctx context.Context, input *types.ValidI
 		AnimalDerived:                           input.AnimalDerived,
 		PluralName:                              input.PluralName,
 		RestrictToPreparations:                  input.RestrictToPreparations,
-		MaximumIdealStorageTemperatureInCelsius: nullFloat64FromFloat32Pointer(input.MaximumIdealStorageTemperatureInCelsius),
-		MinimumIdealStorageTemperatureInCelsius: nullFloat64FromFloat32Pointer(input.MinimumIdealStorageTemperatureInCelsius),
+		MaximumIdealStorageTemperatureInCelsius: nullStringFromFloat32Pointer(input.MaximumIdealStorageTemperatureInCelsius),
+		MinimumIdealStorageTemperatureInCelsius: nullStringFromFloat32Pointer(input.MinimumIdealStorageTemperatureInCelsius),
 		StorageInstructions:                     input.StorageInstructions,
 		Slug:                                    input.Slug,
 		ContainsAlcohol:                         input.ContainsAlcohol,
@@ -585,8 +585,8 @@ func (q *Querier) UpdateValidIngredient(ctx context.Context, updated *types.Vali
 		Name:                                    updated.Name,
 		PluralName:                              updated.PluralName,
 		IconPath:                                updated.IconPath,
-		MaximumIdealStorageTemperatureInCelsius: nullFloat64FromFloat32Pointer(updated.MaximumIdealStorageTemperatureInCelsius),
-		MinimumIdealStorageTemperatureInCelsius: nullFloat64FromFloat32Pointer(updated.MinimumIdealStorageTemperatureInCelsius),
+		MaximumIdealStorageTemperatureInCelsius: nullStringFromFloat32Pointer(updated.MaximumIdealStorageTemperatureInCelsius),
+		MinimumIdealStorageTemperatureInCelsius: nullStringFromFloat32Pointer(updated.MinimumIdealStorageTemperatureInCelsius),
 		IsLiquid:                                nullBoolFromBool(updated.IsLiquid),
 		ContainsWheat:                           updated.ContainsWheat,
 		ContainsPeanut:                          updated.ContainsPeanut,

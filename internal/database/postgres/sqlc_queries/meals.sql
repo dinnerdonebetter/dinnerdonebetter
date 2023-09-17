@@ -8,7 +8,7 @@ INSERT INTO meals (id,"name",description,min_estimated_portions,max_estimated_po
 
 -- name: CheckMealExistence :one
 
-SELECT EXISTS ( SELECT meals.id FROM meals WHERE meals.archived_at IS NULL AND meals.id = $1 );
+SELECT EXISTS ( SELECT meals.id FROM meals WHERE meals.archived_at IS NULL AND meals.id = sqlc.arg(id) );
 
 -- name: GetMealsNeedingIndexing :many
 
@@ -135,4 +135,4 @@ WHERE meals.archived_at IS NULL
 
 -- name: UpdateMealLastIndexedAt :execrows
 
-UPDATE meals SET last_indexed_at = NOW() WHERE id = $1 AND archived_at IS NULL;
+UPDATE meals SET last_indexed_at = NOW() WHERE id = sqlc.arg(id) AND archived_at IS NULL;
