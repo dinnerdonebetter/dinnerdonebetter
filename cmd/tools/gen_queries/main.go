@@ -20,8 +20,7 @@ func main() {
 		"oauth2_clients.sql":                 buildOAuth2ClientsQueries(),
 		"service_settings.sql":               buildServiceSettingQueries(),
 		"service_setting_configurations.sql": buildServiceSettingConfigurationQueries(),
-		//
-		// "household_invitations.sql": buildHouseholdInvitationsQueries(),
+		"household_invitations.sql":          buildHouseholdInvitationsQueries(),
 		//
 		// "household_instrument_ownerships.sql":              buildHouseholdInstrumentOwnershipQueries(),
 		// "meal_components.sql":                              buildMealComponentsQueries(),

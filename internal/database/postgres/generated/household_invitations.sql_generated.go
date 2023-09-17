@@ -107,6 +107,10 @@ SELECT
 	households.name as household_name,
 	households.billing_status as household_billing_status,
 	households.contact_phone as household_contact_phone,
+	households.payment_processor_customer_id as household_payment_processor_customer_id,
+	households.subscription_plan_id as household_subscription_plan_id,
+	households.belongs_to_user as household_belongs_to_user,
+	households.time_zone as household_time_zone,
 	households.address_line_1 as household_address_line_1,
 	households.address_line_2 as household_address_line_2,
 	households.city as household_city,
@@ -115,41 +119,44 @@ SELECT
 	households.country as household_country,
 	households.latitude as household_latitude,
 	households.longitude as household_longitude,
-	households.payment_processor_customer_id as household_payment_processor_customer_id,
-	households.subscription_plan_id as household_subscription_plan_id,
+	households.last_payment_provider_sync_occurred_at as household_last_payment_provider_sync_occurred_at,
+	households.webhook_hmac_secret as household_webhook_hmac_secret,
 	households.created_at as household_created_at,
 	households.last_updated_at as household_last_updated_at,
 	households.archived_at as household_archived_at,
-	households.belongs_to_user as household_belongs_to_user,
-	household_invitations.to_email,
+	household_invitations.from_user,
 	household_invitations.to_user,
 	users.id as user_id,
-	users.first_name as user_first_name,
-	users.last_name as user_last_name,
 	users.username as user_username,
-	users.email_address as user_email_address,
-	users.email_address_verified_at as user_email_address_verified_at,
 	users.avatar_src as user_avatar_src,
+	users.email_address as user_email_address,
 	users.hashed_password as user_hashed_password,
-	users.requires_password_change as user_requires_password_change,
 	users.password_last_changed_at as user_password_last_changed_at,
+	users.requires_password_change as user_requires_password_change,
 	users.two_factor_secret as user_two_factor_secret,
 	users.two_factor_secret_verified_at as user_two_factor_secret_verified_at,
 	users.service_role as user_service_role,
 	users.user_account_status as user_user_account_status,
 	users.user_account_status_explanation as user_user_account_status_explanation,
 	users.birthday as user_birthday,
+	users.email_address_verification_token as user_email_address_verification_token,
+	users.email_address_verified_at as user_email_address_verified_at,
+	users.first_name as user_first_name,
+	users.last_name as user_last_name,
 	users.last_accepted_terms_of_service as user_last_accepted_terms_of_service,
 	users.last_accepted_privacy_policy as user_last_accepted_privacy_policy,
+	users.last_indexed_at as user_last_indexed_at,
 	users.created_at as user_created_at,
 	users.last_updated_at as user_last_updated_at,
 	users.archived_at as user_archived_at,
 	household_invitations.to_name,
-	household_invitations.status,
 	household_invitations.note,
-	household_invitations.status_note,
+	household_invitations.to_email,
 	household_invitations.token,
+	household_invitations.destination_household,
 	household_invitations.expires_at,
+	household_invitations.status,
+	household_invitations.status_note,
 	household_invitations.created_at,
 	household_invitations.last_updated_at,
 	household_invitations.archived_at
@@ -168,57 +175,64 @@ type GetHouseholdInvitationByEmailAndTokenParams struct {
 }
 
 type GetHouseholdInvitationByEmailAndTokenRow struct {
-	ExpiresAt                           time.Time
-	HouseholdCreatedAt                  time.Time
-	UserCreatedAt                       time.Time
-	CreatedAt                           time.Time
-	UserLastAcceptedPrivacyPolicy       sql.NullTime
-	UserArchivedAt                      sql.NullTime
-	UserLastUpdatedAt                   sql.NullTime
-	LastUpdatedAt                       sql.NullTime
-	HouseholdLastUpdatedAt              sql.NullTime
-	UserLastAcceptedTermsOfService      sql.NullTime
-	UserBirthday                        sql.NullTime
-	UserTwoFactorSecretVerifiedAt       sql.NullTime
-	UserPasswordLastChangedAt           sql.NullTime
-	UserEmailAddressVerifiedAt          sql.NullTime
-	HouseholdArchivedAt                 sql.NullTime
-	ArchivedAt                          sql.NullTime
-	UserUsername                        string
-	UserServiceRole                     string
-	HouseholdBelongsToUser              string
-	ToEmail                             string
-	HouseholdID                         string
-	UserID                              string
-	UserFirstName                       string
-	UserLastName                        string
-	ID                                  string
-	UserEmailAddress                    string
-	HouseholdPaymentProcessorCustomerID string
-	HouseholdName                       string
-	UserHashedPassword                  string
-	HouseholdBillingStatus              string
-	HouseholdContactPhone               string
-	UserTwoFactorSecret                 string
-	Token                               string
-	StatusNote                          string
-	UserUserAccountStatus               string
-	UserUserAccountStatusExplanation    string
-	HouseholdCountry                    string
-	HouseholdZipCode                    string
-	HouseholdState                      string
-	HouseholdCity                       string
-	HouseholdAddressLine2               string
-	HouseholdAddressLine1               string
-	ToName                              string
-	Status                              InvitationState
-	Note                                string
-	HouseholdSubscriptionPlanID         sql.NullString
-	HouseholdLatitude                   sql.NullString
-	HouseholdLongitude                  sql.NullString
-	UserAvatarSrc                       sql.NullString
-	ToUser                              sql.NullString
-	UserRequiresPasswordChange          bool
+	ExpiresAt                                  time.Time
+	HouseholdCreatedAt                         time.Time
+	UserCreatedAt                              time.Time
+	CreatedAt                                  time.Time
+	UserLastIndexedAt                          sql.NullTime
+	UserEmailAddressVerifiedAt                 sql.NullTime
+	UserLastUpdatedAt                          sql.NullTime
+	LastUpdatedAt                              sql.NullTime
+	ArchivedAt                                 sql.NullTime
+	UserLastAcceptedPrivacyPolicy              sql.NullTime
+	UserLastAcceptedTermsOfService             sql.NullTime
+	UserArchivedAt                             sql.NullTime
+	UserBirthday                               sql.NullTime
+	UserTwoFactorSecretVerifiedAt              sql.NullTime
+	UserPasswordLastChangedAt                  sql.NullTime
+	HouseholdArchivedAt                        sql.NullTime
+	HouseholdLastUpdatedAt                     sql.NullTime
+	HouseholdLastPaymentProviderSyncOccurredAt sql.NullTime
+	HouseholdCountry                           string
+	HouseholdPaymentProcessorCustomerID        string
+	HouseholdID                                string
+	HouseholdName                              string
+	FromUser                                   string
+	HouseholdBillingStatus                     string
+	UserID                                     string
+	UserUsername                               string
+	StatusNote                                 string
+	UserEmailAddress                           string
+	UserHashedPassword                         string
+	ID                                         string
+	Status                                     InvitationState
+	UserTwoFactorSecret                        string
+	HouseholdZipCode                           string
+	UserServiceRole                            string
+	UserUserAccountStatus                      string
+	UserUserAccountStatusExplanation           string
+	HouseholdState                             string
+	HouseholdContactPhone                      string
+	HouseholdCity                              string
+	UserFirstName                              string
+	UserLastName                               string
+	HouseholdAddressLine2                      string
+	HouseholdAddressLine1                      string
+	HouseholdTimeZone                          TimeZone
+	HouseholdBelongsToUser                     string
+	DestinationHousehold                       string
+	HouseholdWebhookHmacSecret                 string
+	ToName                                     string
+	Note                                       string
+	ToEmail                                    string
+	Token                                      string
+	HouseholdSubscriptionPlanID                sql.NullString
+	UserEmailAddressVerificationToken          sql.NullString
+	UserAvatarSrc                              sql.NullString
+	ToUser                                     sql.NullString
+	HouseholdLatitude                          sql.NullString
+	HouseholdLongitude                         sql.NullString
+	UserRequiresPasswordChange                 bool
 }
 
 func (q *Queries) GetHouseholdInvitationByEmailAndToken(ctx context.Context, db DBTX, arg *GetHouseholdInvitationByEmailAndTokenParams) (*GetHouseholdInvitationByEmailAndTokenRow, error) {
@@ -230,6 +244,10 @@ func (q *Queries) GetHouseholdInvitationByEmailAndToken(ctx context.Context, db 
 		&i.HouseholdName,
 		&i.HouseholdBillingStatus,
 		&i.HouseholdContactPhone,
+		&i.HouseholdPaymentProcessorCustomerID,
+		&i.HouseholdSubscriptionPlanID,
+		&i.HouseholdBelongsToUser,
+		&i.HouseholdTimeZone,
 		&i.HouseholdAddressLine1,
 		&i.HouseholdAddressLine2,
 		&i.HouseholdCity,
@@ -238,41 +256,44 @@ func (q *Queries) GetHouseholdInvitationByEmailAndToken(ctx context.Context, db 
 		&i.HouseholdCountry,
 		&i.HouseholdLatitude,
 		&i.HouseholdLongitude,
-		&i.HouseholdPaymentProcessorCustomerID,
-		&i.HouseholdSubscriptionPlanID,
+		&i.HouseholdLastPaymentProviderSyncOccurredAt,
+		&i.HouseholdWebhookHmacSecret,
 		&i.HouseholdCreatedAt,
 		&i.HouseholdLastUpdatedAt,
 		&i.HouseholdArchivedAt,
-		&i.HouseholdBelongsToUser,
-		&i.ToEmail,
+		&i.FromUser,
 		&i.ToUser,
 		&i.UserID,
-		&i.UserFirstName,
-		&i.UserLastName,
 		&i.UserUsername,
-		&i.UserEmailAddress,
-		&i.UserEmailAddressVerifiedAt,
 		&i.UserAvatarSrc,
+		&i.UserEmailAddress,
 		&i.UserHashedPassword,
-		&i.UserRequiresPasswordChange,
 		&i.UserPasswordLastChangedAt,
+		&i.UserRequiresPasswordChange,
 		&i.UserTwoFactorSecret,
 		&i.UserTwoFactorSecretVerifiedAt,
 		&i.UserServiceRole,
 		&i.UserUserAccountStatus,
 		&i.UserUserAccountStatusExplanation,
 		&i.UserBirthday,
+		&i.UserEmailAddressVerificationToken,
+		&i.UserEmailAddressVerifiedAt,
+		&i.UserFirstName,
+		&i.UserLastName,
 		&i.UserLastAcceptedTermsOfService,
 		&i.UserLastAcceptedPrivacyPolicy,
+		&i.UserLastIndexedAt,
 		&i.UserCreatedAt,
 		&i.UserLastUpdatedAt,
 		&i.UserArchivedAt,
 		&i.ToName,
-		&i.Status,
 		&i.Note,
-		&i.StatusNote,
+		&i.ToEmail,
 		&i.Token,
+		&i.DestinationHousehold,
 		&i.ExpiresAt,
+		&i.Status,
+		&i.StatusNote,
 		&i.CreatedAt,
 		&i.LastUpdatedAt,
 		&i.ArchivedAt,
@@ -288,6 +309,10 @@ SELECT
 	households.name as household_name,
 	households.billing_status as household_billing_status,
 	households.contact_phone as household_contact_phone,
+	households.payment_processor_customer_id as household_payment_processor_customer_id,
+	households.subscription_plan_id as household_subscription_plan_id,
+	households.belongs_to_user as household_belongs_to_user,
+	households.time_zone as household_time_zone,
 	households.address_line_1 as household_address_line_1,
 	households.address_line_2 as household_address_line_2,
 	households.city as household_city,
@@ -296,41 +321,44 @@ SELECT
 	households.country as household_country,
 	households.latitude as household_latitude,
 	households.longitude as household_longitude,
-	households.payment_processor_customer_id as household_payment_processor_customer_id,
-	households.subscription_plan_id as household_subscription_plan_id,
+	households.last_payment_provider_sync_occurred_at as household_last_payment_provider_sync_occurred_at,
+	households.webhook_hmac_secret as household_webhook_hmac_secret,
 	households.created_at as household_created_at,
 	households.last_updated_at as household_last_updated_at,
 	households.archived_at as household_archived_at,
-	households.belongs_to_user as household_belongs_to_user,
-	household_invitations.to_email,
+	household_invitations.from_user,
 	household_invitations.to_user,
 	users.id as user_id,
-	users.first_name as user_first_name,
-	users.last_name as user_last_name,
 	users.username as user_username,
-	users.email_address as user_email_address,
-	users.email_address_verified_at as user_email_address_verified_at,
 	users.avatar_src as user_avatar_src,
+	users.email_address as user_email_address,
 	users.hashed_password as user_hashed_password,
-	users.requires_password_change as user_requires_password_change,
 	users.password_last_changed_at as user_password_last_changed_at,
+	users.requires_password_change as user_requires_password_change,
 	users.two_factor_secret as user_two_factor_secret,
 	users.two_factor_secret_verified_at as user_two_factor_secret_verified_at,
 	users.service_role as user_service_role,
 	users.user_account_status as user_user_account_status,
 	users.user_account_status_explanation as user_user_account_status_explanation,
 	users.birthday as user_birthday,
+	users.email_address_verification_token as user_email_address_verification_token,
+	users.email_address_verified_at as user_email_address_verified_at,
+	users.first_name as user_first_name,
+	users.last_name as user_last_name,
 	users.last_accepted_terms_of_service as user_last_accepted_terms_of_service,
 	users.last_accepted_privacy_policy as user_last_accepted_privacy_policy,
+	users.last_indexed_at as user_last_indexed_at,
 	users.created_at as user_created_at,
 	users.last_updated_at as user_last_updated_at,
 	users.archived_at as user_archived_at,
 	household_invitations.to_name,
-	household_invitations.status,
 	household_invitations.note,
-	household_invitations.status_note,
+	household_invitations.to_email,
 	household_invitations.token,
+	household_invitations.destination_household,
 	household_invitations.expires_at,
+	household_invitations.status,
+	household_invitations.status_note,
 	household_invitations.created_at,
 	household_invitations.last_updated_at,
 	household_invitations.archived_at
@@ -350,57 +378,64 @@ type GetHouseholdInvitationByHouseholdAndIDParams struct {
 }
 
 type GetHouseholdInvitationByHouseholdAndIDRow struct {
-	ExpiresAt                           time.Time
-	HouseholdCreatedAt                  time.Time
-	UserCreatedAt                       time.Time
-	CreatedAt                           time.Time
-	UserLastAcceptedPrivacyPolicy       sql.NullTime
-	UserArchivedAt                      sql.NullTime
-	UserLastUpdatedAt                   sql.NullTime
-	LastUpdatedAt                       sql.NullTime
-	HouseholdLastUpdatedAt              sql.NullTime
-	UserLastAcceptedTermsOfService      sql.NullTime
-	UserBirthday                        sql.NullTime
-	UserTwoFactorSecretVerifiedAt       sql.NullTime
-	UserPasswordLastChangedAt           sql.NullTime
-	UserEmailAddressVerifiedAt          sql.NullTime
-	HouseholdArchivedAt                 sql.NullTime
-	ArchivedAt                          sql.NullTime
-	UserUsername                        string
-	UserServiceRole                     string
-	HouseholdBelongsToUser              string
-	ToEmail                             string
-	HouseholdID                         string
-	UserID                              string
-	UserFirstName                       string
-	UserLastName                        string
-	ID                                  string
-	UserEmailAddress                    string
-	HouseholdPaymentProcessorCustomerID string
-	HouseholdName                       string
-	UserHashedPassword                  string
-	HouseholdBillingStatus              string
-	HouseholdContactPhone               string
-	UserTwoFactorSecret                 string
-	Token                               string
-	StatusNote                          string
-	UserUserAccountStatus               string
-	UserUserAccountStatusExplanation    string
-	HouseholdCountry                    string
-	HouseholdZipCode                    string
-	HouseholdState                      string
-	HouseholdCity                       string
-	HouseholdAddressLine2               string
-	HouseholdAddressLine1               string
-	ToName                              string
-	Status                              InvitationState
-	Note                                string
-	HouseholdSubscriptionPlanID         sql.NullString
-	HouseholdLatitude                   sql.NullString
-	HouseholdLongitude                  sql.NullString
-	UserAvatarSrc                       sql.NullString
-	ToUser                              sql.NullString
-	UserRequiresPasswordChange          bool
+	ExpiresAt                                  time.Time
+	HouseholdCreatedAt                         time.Time
+	UserCreatedAt                              time.Time
+	CreatedAt                                  time.Time
+	UserLastIndexedAt                          sql.NullTime
+	UserEmailAddressVerifiedAt                 sql.NullTime
+	UserLastUpdatedAt                          sql.NullTime
+	LastUpdatedAt                              sql.NullTime
+	ArchivedAt                                 sql.NullTime
+	UserLastAcceptedPrivacyPolicy              sql.NullTime
+	UserLastAcceptedTermsOfService             sql.NullTime
+	UserArchivedAt                             sql.NullTime
+	UserBirthday                               sql.NullTime
+	UserTwoFactorSecretVerifiedAt              sql.NullTime
+	UserPasswordLastChangedAt                  sql.NullTime
+	HouseholdArchivedAt                        sql.NullTime
+	HouseholdLastUpdatedAt                     sql.NullTime
+	HouseholdLastPaymentProviderSyncOccurredAt sql.NullTime
+	HouseholdCountry                           string
+	HouseholdPaymentProcessorCustomerID        string
+	HouseholdID                                string
+	HouseholdName                              string
+	FromUser                                   string
+	HouseholdBillingStatus                     string
+	UserID                                     string
+	UserUsername                               string
+	StatusNote                                 string
+	UserEmailAddress                           string
+	UserHashedPassword                         string
+	ID                                         string
+	Status                                     InvitationState
+	UserTwoFactorSecret                        string
+	HouseholdZipCode                           string
+	UserServiceRole                            string
+	UserUserAccountStatus                      string
+	UserUserAccountStatusExplanation           string
+	HouseholdState                             string
+	HouseholdContactPhone                      string
+	HouseholdCity                              string
+	UserFirstName                              string
+	UserLastName                               string
+	HouseholdAddressLine2                      string
+	HouseholdAddressLine1                      string
+	HouseholdTimeZone                          TimeZone
+	HouseholdBelongsToUser                     string
+	DestinationHousehold                       string
+	HouseholdWebhookHmacSecret                 string
+	ToName                                     string
+	Note                                       string
+	ToEmail                                    string
+	Token                                      string
+	HouseholdSubscriptionPlanID                sql.NullString
+	UserEmailAddressVerificationToken          sql.NullString
+	UserAvatarSrc                              sql.NullString
+	ToUser                                     sql.NullString
+	HouseholdLatitude                          sql.NullString
+	HouseholdLongitude                         sql.NullString
+	UserRequiresPasswordChange                 bool
 }
 
 func (q *Queries) GetHouseholdInvitationByHouseholdAndID(ctx context.Context, db DBTX, arg *GetHouseholdInvitationByHouseholdAndIDParams) (*GetHouseholdInvitationByHouseholdAndIDRow, error) {
@@ -412,6 +447,10 @@ func (q *Queries) GetHouseholdInvitationByHouseholdAndID(ctx context.Context, db
 		&i.HouseholdName,
 		&i.HouseholdBillingStatus,
 		&i.HouseholdContactPhone,
+		&i.HouseholdPaymentProcessorCustomerID,
+		&i.HouseholdSubscriptionPlanID,
+		&i.HouseholdBelongsToUser,
+		&i.HouseholdTimeZone,
 		&i.HouseholdAddressLine1,
 		&i.HouseholdAddressLine2,
 		&i.HouseholdCity,
@@ -420,41 +459,44 @@ func (q *Queries) GetHouseholdInvitationByHouseholdAndID(ctx context.Context, db
 		&i.HouseholdCountry,
 		&i.HouseholdLatitude,
 		&i.HouseholdLongitude,
-		&i.HouseholdPaymentProcessorCustomerID,
-		&i.HouseholdSubscriptionPlanID,
+		&i.HouseholdLastPaymentProviderSyncOccurredAt,
+		&i.HouseholdWebhookHmacSecret,
 		&i.HouseholdCreatedAt,
 		&i.HouseholdLastUpdatedAt,
 		&i.HouseholdArchivedAt,
-		&i.HouseholdBelongsToUser,
-		&i.ToEmail,
+		&i.FromUser,
 		&i.ToUser,
 		&i.UserID,
-		&i.UserFirstName,
-		&i.UserLastName,
 		&i.UserUsername,
-		&i.UserEmailAddress,
-		&i.UserEmailAddressVerifiedAt,
 		&i.UserAvatarSrc,
+		&i.UserEmailAddress,
 		&i.UserHashedPassword,
-		&i.UserRequiresPasswordChange,
 		&i.UserPasswordLastChangedAt,
+		&i.UserRequiresPasswordChange,
 		&i.UserTwoFactorSecret,
 		&i.UserTwoFactorSecretVerifiedAt,
 		&i.UserServiceRole,
 		&i.UserUserAccountStatus,
 		&i.UserUserAccountStatusExplanation,
 		&i.UserBirthday,
+		&i.UserEmailAddressVerificationToken,
+		&i.UserEmailAddressVerifiedAt,
+		&i.UserFirstName,
+		&i.UserLastName,
 		&i.UserLastAcceptedTermsOfService,
 		&i.UserLastAcceptedPrivacyPolicy,
+		&i.UserLastIndexedAt,
 		&i.UserCreatedAt,
 		&i.UserLastUpdatedAt,
 		&i.UserArchivedAt,
 		&i.ToName,
-		&i.Status,
 		&i.Note,
-		&i.StatusNote,
+		&i.ToEmail,
 		&i.Token,
+		&i.DestinationHousehold,
 		&i.ExpiresAt,
+		&i.Status,
+		&i.StatusNote,
 		&i.CreatedAt,
 		&i.LastUpdatedAt,
 		&i.ArchivedAt,
@@ -470,6 +512,10 @@ SELECT
 	households.name as household_name,
 	households.billing_status as household_billing_status,
 	households.contact_phone as household_contact_phone,
+	households.payment_processor_customer_id as household_payment_processor_customer_id,
+	households.subscription_plan_id as household_subscription_plan_id,
+	households.belongs_to_user as household_belongs_to_user,
+	households.time_zone as household_time_zone,
 	households.address_line_1 as household_address_line_1,
 	households.address_line_2 as household_address_line_2,
 	households.city as household_city,
@@ -478,41 +524,44 @@ SELECT
 	households.country as household_country,
 	households.latitude as household_latitude,
 	households.longitude as household_longitude,
-	households.payment_processor_customer_id as household_payment_processor_customer_id,
-	households.subscription_plan_id as household_subscription_plan_id,
+	households.last_payment_provider_sync_occurred_at as household_last_payment_provider_sync_occurred_at,
+	households.webhook_hmac_secret as household_webhook_hmac_secret,
 	households.created_at as household_created_at,
 	households.last_updated_at as household_last_updated_at,
 	households.archived_at as household_archived_at,
-	households.belongs_to_user as household_belongs_to_user,
-	household_invitations.to_email,
+	household_invitations.from_user,
 	household_invitations.to_user,
 	users.id as user_id,
-	users.first_name as user_first_name,
-	users.last_name as user_last_name,
 	users.username as user_username,
-	users.email_address as user_email_address,
-	users.email_address_verified_at as user_email_address_verified_at,
 	users.avatar_src as user_avatar_src,
+	users.email_address as user_email_address,
 	users.hashed_password as user_hashed_password,
-	users.requires_password_change as user_requires_password_change,
 	users.password_last_changed_at as user_password_last_changed_at,
+	users.requires_password_change as user_requires_password_change,
 	users.two_factor_secret as user_two_factor_secret,
 	users.two_factor_secret_verified_at as user_two_factor_secret_verified_at,
 	users.service_role as user_service_role,
 	users.user_account_status as user_user_account_status,
 	users.user_account_status_explanation as user_user_account_status_explanation,
 	users.birthday as user_birthday,
+	users.email_address_verification_token as user_email_address_verification_token,
+	users.email_address_verified_at as user_email_address_verified_at,
+	users.first_name as user_first_name,
+	users.last_name as user_last_name,
 	users.last_accepted_terms_of_service as user_last_accepted_terms_of_service,
 	users.last_accepted_privacy_policy as user_last_accepted_privacy_policy,
+	users.last_indexed_at as user_last_indexed_at,
 	users.created_at as user_created_at,
 	users.last_updated_at as user_last_updated_at,
 	users.archived_at as user_archived_at,
 	household_invitations.to_name,
-	household_invitations.status,
 	household_invitations.note,
-	household_invitations.status_note,
+	household_invitations.to_email,
 	household_invitations.token,
+	household_invitations.destination_household,
 	household_invitations.expires_at,
+	household_invitations.status,
+	household_invitations.status_note,
 	household_invitations.created_at,
 	household_invitations.last_updated_at,
 	household_invitations.archived_at
@@ -531,57 +580,64 @@ type GetHouseholdInvitationByTokenAndIDParams struct {
 }
 
 type GetHouseholdInvitationByTokenAndIDRow struct {
-	ExpiresAt                           time.Time
-	HouseholdCreatedAt                  time.Time
-	UserCreatedAt                       time.Time
-	CreatedAt                           time.Time
-	UserLastAcceptedPrivacyPolicy       sql.NullTime
-	UserArchivedAt                      sql.NullTime
-	UserLastUpdatedAt                   sql.NullTime
-	LastUpdatedAt                       sql.NullTime
-	HouseholdLastUpdatedAt              sql.NullTime
-	UserLastAcceptedTermsOfService      sql.NullTime
-	UserBirthday                        sql.NullTime
-	UserTwoFactorSecretVerifiedAt       sql.NullTime
-	UserPasswordLastChangedAt           sql.NullTime
-	UserEmailAddressVerifiedAt          sql.NullTime
-	HouseholdArchivedAt                 sql.NullTime
-	ArchivedAt                          sql.NullTime
-	UserUsername                        string
-	UserServiceRole                     string
-	HouseholdBelongsToUser              string
-	ToEmail                             string
-	HouseholdID                         string
-	UserID                              string
-	UserFirstName                       string
-	UserLastName                        string
-	ID                                  string
-	UserEmailAddress                    string
-	HouseholdPaymentProcessorCustomerID string
-	HouseholdName                       string
-	UserHashedPassword                  string
-	HouseholdBillingStatus              string
-	HouseholdContactPhone               string
-	UserTwoFactorSecret                 string
-	Token                               string
-	StatusNote                          string
-	UserUserAccountStatus               string
-	UserUserAccountStatusExplanation    string
-	HouseholdCountry                    string
-	HouseholdZipCode                    string
-	HouseholdState                      string
-	HouseholdCity                       string
-	HouseholdAddressLine2               string
-	HouseholdAddressLine1               string
-	ToName                              string
-	Status                              InvitationState
-	Note                                string
-	HouseholdSubscriptionPlanID         sql.NullString
-	HouseholdLatitude                   sql.NullString
-	HouseholdLongitude                  sql.NullString
-	UserAvatarSrc                       sql.NullString
-	ToUser                              sql.NullString
-	UserRequiresPasswordChange          bool
+	ExpiresAt                                  time.Time
+	HouseholdCreatedAt                         time.Time
+	UserCreatedAt                              time.Time
+	CreatedAt                                  time.Time
+	UserLastIndexedAt                          sql.NullTime
+	UserEmailAddressVerifiedAt                 sql.NullTime
+	UserLastUpdatedAt                          sql.NullTime
+	LastUpdatedAt                              sql.NullTime
+	ArchivedAt                                 sql.NullTime
+	UserLastAcceptedPrivacyPolicy              sql.NullTime
+	UserLastAcceptedTermsOfService             sql.NullTime
+	UserArchivedAt                             sql.NullTime
+	UserBirthday                               sql.NullTime
+	UserTwoFactorSecretVerifiedAt              sql.NullTime
+	UserPasswordLastChangedAt                  sql.NullTime
+	HouseholdArchivedAt                        sql.NullTime
+	HouseholdLastUpdatedAt                     sql.NullTime
+	HouseholdLastPaymentProviderSyncOccurredAt sql.NullTime
+	HouseholdCountry                           string
+	HouseholdPaymentProcessorCustomerID        string
+	HouseholdID                                string
+	HouseholdName                              string
+	FromUser                                   string
+	HouseholdBillingStatus                     string
+	UserID                                     string
+	UserUsername                               string
+	StatusNote                                 string
+	UserEmailAddress                           string
+	UserHashedPassword                         string
+	ID                                         string
+	Status                                     InvitationState
+	UserTwoFactorSecret                        string
+	HouseholdZipCode                           string
+	UserServiceRole                            string
+	UserUserAccountStatus                      string
+	UserUserAccountStatusExplanation           string
+	HouseholdState                             string
+	HouseholdContactPhone                      string
+	HouseholdCity                              string
+	UserFirstName                              string
+	UserLastName                               string
+	HouseholdAddressLine2                      string
+	HouseholdAddressLine1                      string
+	HouseholdTimeZone                          TimeZone
+	HouseholdBelongsToUser                     string
+	DestinationHousehold                       string
+	HouseholdWebhookHmacSecret                 string
+	ToName                                     string
+	Note                                       string
+	ToEmail                                    string
+	Token                                      string
+	HouseholdSubscriptionPlanID                sql.NullString
+	UserEmailAddressVerificationToken          sql.NullString
+	UserAvatarSrc                              sql.NullString
+	ToUser                                     sql.NullString
+	HouseholdLatitude                          sql.NullString
+	HouseholdLongitude                         sql.NullString
+	UserRequiresPasswordChange                 bool
 }
 
 func (q *Queries) GetHouseholdInvitationByTokenAndID(ctx context.Context, db DBTX, arg *GetHouseholdInvitationByTokenAndIDParams) (*GetHouseholdInvitationByTokenAndIDRow, error) {
@@ -593,6 +649,10 @@ func (q *Queries) GetHouseholdInvitationByTokenAndID(ctx context.Context, db DBT
 		&i.HouseholdName,
 		&i.HouseholdBillingStatus,
 		&i.HouseholdContactPhone,
+		&i.HouseholdPaymentProcessorCustomerID,
+		&i.HouseholdSubscriptionPlanID,
+		&i.HouseholdBelongsToUser,
+		&i.HouseholdTimeZone,
 		&i.HouseholdAddressLine1,
 		&i.HouseholdAddressLine2,
 		&i.HouseholdCity,
@@ -601,41 +661,44 @@ func (q *Queries) GetHouseholdInvitationByTokenAndID(ctx context.Context, db DBT
 		&i.HouseholdCountry,
 		&i.HouseholdLatitude,
 		&i.HouseholdLongitude,
-		&i.HouseholdPaymentProcessorCustomerID,
-		&i.HouseholdSubscriptionPlanID,
+		&i.HouseholdLastPaymentProviderSyncOccurredAt,
+		&i.HouseholdWebhookHmacSecret,
 		&i.HouseholdCreatedAt,
 		&i.HouseholdLastUpdatedAt,
 		&i.HouseholdArchivedAt,
-		&i.HouseholdBelongsToUser,
-		&i.ToEmail,
+		&i.FromUser,
 		&i.ToUser,
 		&i.UserID,
-		&i.UserFirstName,
-		&i.UserLastName,
 		&i.UserUsername,
-		&i.UserEmailAddress,
-		&i.UserEmailAddressVerifiedAt,
 		&i.UserAvatarSrc,
+		&i.UserEmailAddress,
 		&i.UserHashedPassword,
-		&i.UserRequiresPasswordChange,
 		&i.UserPasswordLastChangedAt,
+		&i.UserRequiresPasswordChange,
 		&i.UserTwoFactorSecret,
 		&i.UserTwoFactorSecretVerifiedAt,
 		&i.UserServiceRole,
 		&i.UserUserAccountStatus,
 		&i.UserUserAccountStatusExplanation,
 		&i.UserBirthday,
+		&i.UserEmailAddressVerificationToken,
+		&i.UserEmailAddressVerifiedAt,
+		&i.UserFirstName,
+		&i.UserLastName,
 		&i.UserLastAcceptedTermsOfService,
 		&i.UserLastAcceptedPrivacyPolicy,
+		&i.UserLastIndexedAt,
 		&i.UserCreatedAt,
 		&i.UserLastUpdatedAt,
 		&i.UserArchivedAt,
 		&i.ToName,
-		&i.Status,
 		&i.Note,
-		&i.StatusNote,
+		&i.ToEmail,
 		&i.Token,
+		&i.DestinationHousehold,
 		&i.ExpiresAt,
+		&i.Status,
+		&i.StatusNote,
 		&i.CreatedAt,
 		&i.LastUpdatedAt,
 		&i.ArchivedAt,
@@ -651,6 +714,10 @@ SELECT
 	households.name as household_name,
 	households.billing_status as household_billing_status,
 	households.contact_phone as household_contact_phone,
+	households.payment_processor_customer_id as household_payment_processor_customer_id,
+	households.subscription_plan_id as household_subscription_plan_id,
+	households.belongs_to_user as household_belongs_to_user,
+	households.time_zone as household_time_zone,
 	households.address_line_1 as household_address_line_1,
 	households.address_line_2 as household_address_line_2,
 	households.city as household_city,
@@ -659,41 +726,44 @@ SELECT
 	households.country as household_country,
 	households.latitude as household_latitude,
 	households.longitude as household_longitude,
-	households.payment_processor_customer_id as household_payment_processor_customer_id,
-	households.subscription_plan_id as household_subscription_plan_id,
+	households.last_payment_provider_sync_occurred_at as household_last_payment_provider_sync_occurred_at,
+	households.webhook_hmac_secret as household_webhook_hmac_secret,
 	households.created_at as household_created_at,
 	households.last_updated_at as household_last_updated_at,
 	households.archived_at as household_archived_at,
-	households.belongs_to_user as household_belongs_to_user,
-	household_invitations.to_email,
+	household_invitations.from_user,
 	household_invitations.to_user,
 	users.id as user_id,
-	users.first_name as user_first_name,
-	users.last_name as user_last_name,
 	users.username as user_username,
-	users.email_address as user_email_address,
-	users.email_address_verified_at as user_email_address_verified_at,
 	users.avatar_src as user_avatar_src,
+	users.email_address as user_email_address,
 	users.hashed_password as user_hashed_password,
-	users.requires_password_change as user_requires_password_change,
 	users.password_last_changed_at as user_password_last_changed_at,
+	users.requires_password_change as user_requires_password_change,
 	users.two_factor_secret as user_two_factor_secret,
 	users.two_factor_secret_verified_at as user_two_factor_secret_verified_at,
 	users.service_role as user_service_role,
 	users.user_account_status as user_user_account_status,
 	users.user_account_status_explanation as user_user_account_status_explanation,
 	users.birthday as user_birthday,
+	users.email_address_verification_token as user_email_address_verification_token,
+	users.email_address_verified_at as user_email_address_verified_at,
+	users.first_name as user_first_name,
+	users.last_name as user_last_name,
 	users.last_accepted_terms_of_service as user_last_accepted_terms_of_service,
 	users.last_accepted_privacy_policy as user_last_accepted_privacy_policy,
+	users.last_indexed_at as user_last_indexed_at,
 	users.created_at as user_created_at,
 	users.last_updated_at as user_last_updated_at,
 	users.archived_at as user_archived_at,
 	household_invitations.to_name,
-	household_invitations.status,
 	household_invitations.note,
-	household_invitations.status_note,
+	household_invitations.to_email,
 	household_invitations.token,
+	household_invitations.destination_household,
 	household_invitations.expires_at,
+	household_invitations.status,
+	household_invitations.status_note,
 	household_invitations.created_at,
 	household_invitations.last_updated_at,
 	household_invitations.archived_at,
@@ -701,30 +771,38 @@ SELECT
 		SELECT COUNT(household_invitations.id)
 		FROM household_invitations
 		WHERE household_invitations.archived_at IS NULL
-		  AND household_invitations.to_user = $1
-		  AND household_invitations.status = $2
-		  AND household_invitations.created_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-		  AND household_invitations.created_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-		  AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at > COALESCE($5, (SELECT NOW() - interval '999 years')))
-		  AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at < COALESCE($6, (SELECT NOW() + interval '999 years')))
-	) as filtered_count,
+			AND household_invitations.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND household_invitations.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				household_invitations.last_updated_at IS NULL
+				OR household_invitations.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				household_invitations.last_updated_at IS NULL
+				OR household_invitations.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+	) AS filtered_count,
 	(
-		SELECT COUNT(household_invitations.id)
-		FROM household_invitations
-		WHERE household_invitations.archived_at IS NULL
-		  AND household_invitations.to_user = $1
-		  AND household_invitations.status = $2
-	) as total_count
+        SELECT COUNT(household_invitations.id)
+        FROM household_invitations
+        WHERE household_invitations.archived_at IS NULL
+    ) AS total_count
 FROM household_invitations
 	JOIN households ON household_invitations.destination_household = households.id
 	JOIN users ON household_invitations.from_user = users.id
 WHERE household_invitations.archived_at IS NULL
-	AND household_invitations.to_user = $1
-	AND household_invitations.status = $2
-	AND household_invitations.created_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-	AND household_invitations.created_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-	AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at > COALESCE($5, (SELECT NOW() - interval '999 years')))
-	AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at < COALESCE($6, (SELECT NOW() + interval '999 years')))
+	AND household_invitations.to_user = $5
+	AND household_invitations.status = $6
+	AND household_invitations.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+    AND household_invitations.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		household_invitations.last_updated_at IS NULL
+		OR household_invitations.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		household_invitations.last_updated_at IS NULL
+		OR household_invitations.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
 	OFFSET $7
 	LIMIT $8
 `
@@ -732,8 +810,8 @@ WHERE household_invitations.archived_at IS NULL
 type GetPendingInvitesForUserParams struct {
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
-	UpdatedAfter  sql.NullTime
 	UpdatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
 	Status        InvitationState
 	UserID        sql.NullString
 	QueryOffset   sql.NullInt32
@@ -741,69 +819,76 @@ type GetPendingInvitesForUserParams struct {
 }
 
 type GetPendingInvitesForUserRow struct {
-	ExpiresAt                           time.Time
-	HouseholdCreatedAt                  time.Time
-	UserCreatedAt                       time.Time
-	CreatedAt                           time.Time
-	UserLastAcceptedPrivacyPolicy       sql.NullTime
-	UserArchivedAt                      sql.NullTime
-	UserLastUpdatedAt                   sql.NullTime
-	LastUpdatedAt                       sql.NullTime
-	HouseholdLastUpdatedAt              sql.NullTime
-	UserLastAcceptedTermsOfService      sql.NullTime
-	UserBirthday                        sql.NullTime
-	UserTwoFactorSecretVerifiedAt       sql.NullTime
-	UserPasswordLastChangedAt           sql.NullTime
-	UserEmailAddressVerifiedAt          sql.NullTime
-	HouseholdArchivedAt                 sql.NullTime
-	ArchivedAt                          sql.NullTime
-	UserEmailAddress                    string
-	UserUserAccountStatusExplanation    string
-	HouseholdBelongsToUser              string
-	ToEmail                             string
-	HouseholdID                         string
-	UserID                              string
-	UserFirstName                       string
-	UserLastName                        string
-	UserUsername                        string
-	ID                                  string
-	HouseholdPaymentProcessorCustomerID string
-	HouseholdName                       string
-	UserHashedPassword                  string
-	HouseholdBillingStatus              string
-	HouseholdContactPhone               string
-	UserTwoFactorSecret                 string
-	Token                               string
-	UserServiceRole                     string
-	UserUserAccountStatus               string
-	StatusNote                          string
-	HouseholdCountry                    string
-	HouseholdZipCode                    string
-	HouseholdState                      string
-	HouseholdCity                       string
-	HouseholdAddressLine2               string
-	HouseholdAddressLine1               string
-	ToName                              string
-	Status                              InvitationState
-	Note                                string
-	HouseholdSubscriptionPlanID         sql.NullString
-	HouseholdLatitude                   sql.NullString
-	HouseholdLongitude                  sql.NullString
-	UserAvatarSrc                       sql.NullString
-	ToUser                              sql.NullString
-	FilteredCount                       int64
-	TotalCount                          int64
-	UserRequiresPasswordChange          bool
+	ExpiresAt                                  time.Time
+	HouseholdCreatedAt                         time.Time
+	UserCreatedAt                              time.Time
+	CreatedAt                                  time.Time
+	UserLastIndexedAt                          sql.NullTime
+	UserEmailAddressVerifiedAt                 sql.NullTime
+	UserLastUpdatedAt                          sql.NullTime
+	LastUpdatedAt                              sql.NullTime
+	ArchivedAt                                 sql.NullTime
+	UserLastAcceptedPrivacyPolicy              sql.NullTime
+	UserLastAcceptedTermsOfService             sql.NullTime
+	UserArchivedAt                             sql.NullTime
+	UserBirthday                               sql.NullTime
+	UserTwoFactorSecretVerifiedAt              sql.NullTime
+	UserPasswordLastChangedAt                  sql.NullTime
+	HouseholdArchivedAt                        sql.NullTime
+	HouseholdLastUpdatedAt                     sql.NullTime
+	HouseholdLastPaymentProviderSyncOccurredAt sql.NullTime
+	UserTwoFactorSecret                        string
+	UserFirstName                              string
+	HouseholdID                                string
+	HouseholdName                              string
+	FromUser                                   string
+	HouseholdBillingStatus                     string
+	UserID                                     string
+	UserUsername                               string
+	StatusNote                                 string
+	UserEmailAddress                           string
+	UserHashedPassword                         string
+	HouseholdCountry                           string
+	Status                                     InvitationState
+	ID                                         string
+	HouseholdZipCode                           string
+	UserServiceRole                            string
+	UserUserAccountStatus                      string
+	UserUserAccountStatusExplanation           string
+	HouseholdState                             string
+	HouseholdContactPhone                      string
+	HouseholdCity                              string
+	HouseholdWebhookHmacSecret                 string
+	UserLastName                               string
+	HouseholdAddressLine2                      string
+	HouseholdAddressLine1                      string
+	HouseholdTimeZone                          TimeZone
+	HouseholdBelongsToUser                     string
+	DestinationHousehold                       string
+	HouseholdPaymentProcessorCustomerID        string
+	ToName                                     string
+	Note                                       string
+	ToEmail                                    string
+	Token                                      string
+	HouseholdSubscriptionPlanID                sql.NullString
+	UserEmailAddressVerificationToken          sql.NullString
+	UserAvatarSrc                              sql.NullString
+	ToUser                                     sql.NullString
+	HouseholdLatitude                          sql.NullString
+	HouseholdLongitude                         sql.NullString
+	FilteredCount                              int64
+	TotalCount                                 int64
+	UserRequiresPasswordChange                 bool
 }
 
 func (q *Queries) GetPendingInvitesForUser(ctx context.Context, db DBTX, arg *GetPendingInvitesForUserParams) ([]*GetPendingInvitesForUserRow, error) {
 	rows, err := db.QueryContext(ctx, getPendingInvitesForUser,
-		arg.UserID,
-		arg.Status,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
-		arg.UpdatedAfter,
 		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.UserID,
+		arg.Status,
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)
@@ -820,6 +905,10 @@ func (q *Queries) GetPendingInvitesForUser(ctx context.Context, db DBTX, arg *Ge
 			&i.HouseholdName,
 			&i.HouseholdBillingStatus,
 			&i.HouseholdContactPhone,
+			&i.HouseholdPaymentProcessorCustomerID,
+			&i.HouseholdSubscriptionPlanID,
+			&i.HouseholdBelongsToUser,
+			&i.HouseholdTimeZone,
 			&i.HouseholdAddressLine1,
 			&i.HouseholdAddressLine2,
 			&i.HouseholdCity,
@@ -828,41 +917,44 @@ func (q *Queries) GetPendingInvitesForUser(ctx context.Context, db DBTX, arg *Ge
 			&i.HouseholdCountry,
 			&i.HouseholdLatitude,
 			&i.HouseholdLongitude,
-			&i.HouseholdPaymentProcessorCustomerID,
-			&i.HouseholdSubscriptionPlanID,
+			&i.HouseholdLastPaymentProviderSyncOccurredAt,
+			&i.HouseholdWebhookHmacSecret,
 			&i.HouseholdCreatedAt,
 			&i.HouseholdLastUpdatedAt,
 			&i.HouseholdArchivedAt,
-			&i.HouseholdBelongsToUser,
-			&i.ToEmail,
+			&i.FromUser,
 			&i.ToUser,
 			&i.UserID,
-			&i.UserFirstName,
-			&i.UserLastName,
 			&i.UserUsername,
-			&i.UserEmailAddress,
-			&i.UserEmailAddressVerifiedAt,
 			&i.UserAvatarSrc,
+			&i.UserEmailAddress,
 			&i.UserHashedPassword,
-			&i.UserRequiresPasswordChange,
 			&i.UserPasswordLastChangedAt,
+			&i.UserRequiresPasswordChange,
 			&i.UserTwoFactorSecret,
 			&i.UserTwoFactorSecretVerifiedAt,
 			&i.UserServiceRole,
 			&i.UserUserAccountStatus,
 			&i.UserUserAccountStatusExplanation,
 			&i.UserBirthday,
+			&i.UserEmailAddressVerificationToken,
+			&i.UserEmailAddressVerifiedAt,
+			&i.UserFirstName,
+			&i.UserLastName,
 			&i.UserLastAcceptedTermsOfService,
 			&i.UserLastAcceptedPrivacyPolicy,
+			&i.UserLastIndexedAt,
 			&i.UserCreatedAt,
 			&i.UserLastUpdatedAt,
 			&i.UserArchivedAt,
 			&i.ToName,
-			&i.Status,
 			&i.Note,
-			&i.StatusNote,
+			&i.ToEmail,
 			&i.Token,
+			&i.DestinationHousehold,
 			&i.ExpiresAt,
+			&i.Status,
+			&i.StatusNote,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
@@ -890,6 +982,10 @@ SELECT
 	households.name as household_name,
 	households.billing_status as household_billing_status,
 	households.contact_phone as household_contact_phone,
+	households.payment_processor_customer_id as household_payment_processor_customer_id,
+	households.subscription_plan_id as household_subscription_plan_id,
+	households.belongs_to_user as household_belongs_to_user,
+	households.time_zone as household_time_zone,
 	households.address_line_1 as household_address_line_1,
 	households.address_line_2 as household_address_line_2,
 	households.city as household_city,
@@ -898,41 +994,44 @@ SELECT
 	households.country as household_country,
 	households.latitude as household_latitude,
 	households.longitude as household_longitude,
-	households.payment_processor_customer_id as household_payment_processor_customer_id,
-	households.subscription_plan_id as household_subscription_plan_id,
+	households.last_payment_provider_sync_occurred_at as household_last_payment_provider_sync_occurred_at,
+	households.webhook_hmac_secret as household_webhook_hmac_secret,
 	households.created_at as household_created_at,
 	households.last_updated_at as household_last_updated_at,
 	households.archived_at as household_archived_at,
-	households.belongs_to_user as household_belongs_to_user,
-	household_invitations.to_email,
+	household_invitations.from_user,
 	household_invitations.to_user,
 	users.id as user_id,
-	users.first_name as user_first_name,
-	users.last_name as user_last_name,
 	users.username as user_username,
-	users.email_address as user_email_address,
-	users.email_address_verified_at as user_email_address_verified_at,
 	users.avatar_src as user_avatar_src,
+	users.email_address as user_email_address,
 	users.hashed_password as user_hashed_password,
-	users.requires_password_change as user_requires_password_change,
 	users.password_last_changed_at as user_password_last_changed_at,
+	users.requires_password_change as user_requires_password_change,
 	users.two_factor_secret as user_two_factor_secret,
 	users.two_factor_secret_verified_at as user_two_factor_secret_verified_at,
 	users.service_role as user_service_role,
 	users.user_account_status as user_user_account_status,
 	users.user_account_status_explanation as user_user_account_status_explanation,
 	users.birthday as user_birthday,
+	users.email_address_verification_token as user_email_address_verification_token,
+	users.email_address_verified_at as user_email_address_verified_at,
+	users.first_name as user_first_name,
+	users.last_name as user_last_name,
 	users.last_accepted_terms_of_service as user_last_accepted_terms_of_service,
 	users.last_accepted_privacy_policy as user_last_accepted_privacy_policy,
+	users.last_indexed_at as user_last_indexed_at,
 	users.created_at as user_created_at,
 	users.last_updated_at as user_last_updated_at,
 	users.archived_at as user_archived_at,
 	household_invitations.to_name,
-	household_invitations.status,
 	household_invitations.note,
-	household_invitations.status_note,
+	household_invitations.to_email,
 	household_invitations.token,
+	household_invitations.destination_household,
 	household_invitations.expires_at,
+	household_invitations.status,
+	household_invitations.status_note,
 	household_invitations.created_at,
 	household_invitations.last_updated_at,
 	household_invitations.archived_at,
@@ -940,109 +1039,124 @@ SELECT
 		SELECT COUNT(household_invitations.id)
 		FROM household_invitations
 		WHERE household_invitations.archived_at IS NULL
-		  AND household_invitations.from_user = $1
-		  AND household_invitations.status = $2
-		  AND household_invitations.created_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-		  AND household_invitations.created_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-		  AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at > COALESCE($5, (SELECT NOW() - interval '999 years')))
-		  AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at < COALESCE($6, (SELECT NOW() + interval '999 years')))
-	) as filtered_count,
+			AND household_invitations.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND household_invitations.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				household_invitations.last_updated_at IS NULL
+				OR household_invitations.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				household_invitations.last_updated_at IS NULL
+				OR household_invitations.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+	) AS filtered_count,
 	(
-		SELECT COUNT(household_invitations.id)
-		FROM household_invitations
-		WHERE household_invitations.archived_at IS NULL
-		  AND household_invitations.from_user = $1
-		  AND household_invitations.status = $2
-	) as total_count
+        SELECT COUNT(household_invitations.id)
+        FROM household_invitations
+        WHERE household_invitations.archived_at IS NULL
+    ) AS total_count
 FROM household_invitations
 	JOIN households ON household_invitations.destination_household = households.id
 	JOIN users ON household_invitations.from_user = users.id
 WHERE household_invitations.archived_at IS NULL
-	AND household_invitations.from_user = $1
-	AND household_invitations.status = $2
-	AND household_invitations.created_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-	AND household_invitations.created_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-	AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at > COALESCE($5, (SELECT NOW() - interval '999 years')))
-	AND (household_invitations.last_updated_at IS NULL OR household_invitations.last_updated_at < COALESCE($6, (SELECT NOW() + interval '999 years')))
+	AND household_invitations.from_user = $5
+	AND household_invitations.status = $6
+	AND household_invitations.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+    AND household_invitations.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		household_invitations.last_updated_at IS NULL
+		OR household_invitations.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		household_invitations.last_updated_at IS NULL
+		OR household_invitations.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
 	OFFSET $7
 	LIMIT $8
 `
 
 type GetPendingInvitesFromUserParams struct {
-	UserID        string
-	Status        InvitationState
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
-	UpdatedAfter  sql.NullTime
 	UpdatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	UserID        string
+	Status        InvitationState
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
 
 type GetPendingInvitesFromUserRow struct {
-	ExpiresAt                           time.Time
-	HouseholdCreatedAt                  time.Time
-	UserCreatedAt                       time.Time
-	CreatedAt                           time.Time
-	UserLastAcceptedPrivacyPolicy       sql.NullTime
-	UserArchivedAt                      sql.NullTime
-	UserLastUpdatedAt                   sql.NullTime
-	LastUpdatedAt                       sql.NullTime
-	HouseholdLastUpdatedAt              sql.NullTime
-	UserLastAcceptedTermsOfService      sql.NullTime
-	UserBirthday                        sql.NullTime
-	UserTwoFactorSecretVerifiedAt       sql.NullTime
-	UserPasswordLastChangedAt           sql.NullTime
-	UserEmailAddressVerifiedAt          sql.NullTime
-	HouseholdArchivedAt                 sql.NullTime
-	ArchivedAt                          sql.NullTime
-	UserEmailAddress                    string
-	UserUserAccountStatusExplanation    string
-	HouseholdBelongsToUser              string
-	ToEmail                             string
-	HouseholdID                         string
-	UserID                              string
-	UserFirstName                       string
-	UserLastName                        string
-	UserUsername                        string
-	ID                                  string
-	HouseholdPaymentProcessorCustomerID string
-	HouseholdName                       string
-	UserHashedPassword                  string
-	HouseholdBillingStatus              string
-	HouseholdContactPhone               string
-	UserTwoFactorSecret                 string
-	Token                               string
-	UserServiceRole                     string
-	UserUserAccountStatus               string
-	StatusNote                          string
-	HouseholdCountry                    string
-	HouseholdZipCode                    string
-	HouseholdState                      string
-	HouseholdCity                       string
-	HouseholdAddressLine2               string
-	HouseholdAddressLine1               string
-	ToName                              string
-	Status                              InvitationState
-	Note                                string
-	HouseholdSubscriptionPlanID         sql.NullString
-	HouseholdLatitude                   sql.NullString
-	HouseholdLongitude                  sql.NullString
-	UserAvatarSrc                       sql.NullString
-	ToUser                              sql.NullString
-	FilteredCount                       int64
-	TotalCount                          int64
-	UserRequiresPasswordChange          bool
+	ExpiresAt                                  time.Time
+	HouseholdCreatedAt                         time.Time
+	UserCreatedAt                              time.Time
+	CreatedAt                                  time.Time
+	UserLastIndexedAt                          sql.NullTime
+	UserEmailAddressVerifiedAt                 sql.NullTime
+	UserLastUpdatedAt                          sql.NullTime
+	LastUpdatedAt                              sql.NullTime
+	ArchivedAt                                 sql.NullTime
+	UserLastAcceptedPrivacyPolicy              sql.NullTime
+	UserLastAcceptedTermsOfService             sql.NullTime
+	UserArchivedAt                             sql.NullTime
+	UserBirthday                               sql.NullTime
+	UserTwoFactorSecretVerifiedAt              sql.NullTime
+	UserPasswordLastChangedAt                  sql.NullTime
+	HouseholdArchivedAt                        sql.NullTime
+	HouseholdLastUpdatedAt                     sql.NullTime
+	HouseholdLastPaymentProviderSyncOccurredAt sql.NullTime
+	UserTwoFactorSecret                        string
+	UserFirstName                              string
+	HouseholdID                                string
+	HouseholdName                              string
+	FromUser                                   string
+	HouseholdBillingStatus                     string
+	UserID                                     string
+	UserUsername                               string
+	StatusNote                                 string
+	UserEmailAddress                           string
+	UserHashedPassword                         string
+	HouseholdCountry                           string
+	Status                                     InvitationState
+	ID                                         string
+	HouseholdZipCode                           string
+	UserServiceRole                            string
+	UserUserAccountStatus                      string
+	UserUserAccountStatusExplanation           string
+	HouseholdState                             string
+	HouseholdContactPhone                      string
+	HouseholdCity                              string
+	HouseholdWebhookHmacSecret                 string
+	UserLastName                               string
+	HouseholdAddressLine2                      string
+	HouseholdAddressLine1                      string
+	HouseholdTimeZone                          TimeZone
+	HouseholdBelongsToUser                     string
+	DestinationHousehold                       string
+	HouseholdPaymentProcessorCustomerID        string
+	ToName                                     string
+	Note                                       string
+	ToEmail                                    string
+	Token                                      string
+	HouseholdSubscriptionPlanID                sql.NullString
+	UserEmailAddressVerificationToken          sql.NullString
+	UserAvatarSrc                              sql.NullString
+	ToUser                                     sql.NullString
+	HouseholdLatitude                          sql.NullString
+	HouseholdLongitude                         sql.NullString
+	FilteredCount                              int64
+	TotalCount                                 int64
+	UserRequiresPasswordChange                 bool
 }
 
 func (q *Queries) GetPendingInvitesFromUser(ctx context.Context, db DBTX, arg *GetPendingInvitesFromUserParams) ([]*GetPendingInvitesFromUserRow, error) {
 	rows, err := db.QueryContext(ctx, getPendingInvitesFromUser,
-		arg.UserID,
-		arg.Status,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
-		arg.UpdatedAfter,
 		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.UserID,
+		arg.Status,
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)
@@ -1059,6 +1173,10 @@ func (q *Queries) GetPendingInvitesFromUser(ctx context.Context, db DBTX, arg *G
 			&i.HouseholdName,
 			&i.HouseholdBillingStatus,
 			&i.HouseholdContactPhone,
+			&i.HouseholdPaymentProcessorCustomerID,
+			&i.HouseholdSubscriptionPlanID,
+			&i.HouseholdBelongsToUser,
+			&i.HouseholdTimeZone,
 			&i.HouseholdAddressLine1,
 			&i.HouseholdAddressLine2,
 			&i.HouseholdCity,
@@ -1067,41 +1185,44 @@ func (q *Queries) GetPendingInvitesFromUser(ctx context.Context, db DBTX, arg *G
 			&i.HouseholdCountry,
 			&i.HouseholdLatitude,
 			&i.HouseholdLongitude,
-			&i.HouseholdPaymentProcessorCustomerID,
-			&i.HouseholdSubscriptionPlanID,
+			&i.HouseholdLastPaymentProviderSyncOccurredAt,
+			&i.HouseholdWebhookHmacSecret,
 			&i.HouseholdCreatedAt,
 			&i.HouseholdLastUpdatedAt,
 			&i.HouseholdArchivedAt,
-			&i.HouseholdBelongsToUser,
-			&i.ToEmail,
+			&i.FromUser,
 			&i.ToUser,
 			&i.UserID,
-			&i.UserFirstName,
-			&i.UserLastName,
 			&i.UserUsername,
-			&i.UserEmailAddress,
-			&i.UserEmailAddressVerifiedAt,
 			&i.UserAvatarSrc,
+			&i.UserEmailAddress,
 			&i.UserHashedPassword,
-			&i.UserRequiresPasswordChange,
 			&i.UserPasswordLastChangedAt,
+			&i.UserRequiresPasswordChange,
 			&i.UserTwoFactorSecret,
 			&i.UserTwoFactorSecretVerifiedAt,
 			&i.UserServiceRole,
 			&i.UserUserAccountStatus,
 			&i.UserUserAccountStatusExplanation,
 			&i.UserBirthday,
+			&i.UserEmailAddressVerificationToken,
+			&i.UserEmailAddressVerifiedAt,
+			&i.UserFirstName,
+			&i.UserLastName,
 			&i.UserLastAcceptedTermsOfService,
 			&i.UserLastAcceptedPrivacyPolicy,
+			&i.UserLastIndexedAt,
 			&i.UserCreatedAt,
 			&i.UserLastUpdatedAt,
 			&i.UserArchivedAt,
 			&i.ToName,
-			&i.Status,
 			&i.Note,
-			&i.StatusNote,
+			&i.ToEmail,
 			&i.Token,
+			&i.DestinationHousehold,
 			&i.ExpiresAt,
+			&i.Status,
+			&i.StatusNote,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
