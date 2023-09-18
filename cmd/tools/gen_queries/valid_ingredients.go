@@ -26,16 +26,16 @@ var validIngredientsColumns = []string{
 	"contains_gluten",
 	"animal_flesh",
 	"volumetric",
-	"icon_path",
 	"is_liquid",
+	"icon_path",
 	"animal_derived",
 	"plural_name",
 	"restrict_to_preparations",
 	"minimum_ideal_storage_temperature_in_celsius",
 	"maximum_ideal_storage_temperature_in_celsius",
 	"storage_instructions",
-	"contains_alcohol",
 	"slug",
+	"contains_alcohol",
 	"shopping_suggestions",
 	"is_starch",
 	"is_protein",
@@ -52,6 +52,8 @@ var validIngredientsColumns = []string{
 }
 
 func buildValidIngredientsQueries() []*Query {
+	insertColumns := filterForInsert(validIngredientsColumns)
+
 	return []*Query{
 		{
 			Annotation: QueryAnnotation{
@@ -77,9 +79,15 @@ func buildValidIngredientsQueries() []*Query {
     %s
 );`,
 				validIngredientsTableName,
-				strings.Join(validIngredientsColumns, ",\n\t"),
-				strings.Join(applyToEach(validIngredientsColumns, func(i int, s string) string {
-					return fmt.Sprintf("sqlc.arg(%s)", s)
+				strings.Join(insertColumns, ",\n\t"),
+				strings.Join(applyToEach(insertColumns, func(i int, s string) string {
+					switch s {
+					case "minimum_ideal_storage_temperature_in_celsius",
+						"maximum_ideal_storage_temperature_in_celsius":
+						return fmt.Sprintf("sqlc.narg(%s)", s)
+					default:
+						return fmt.Sprintf("sqlc.arg(%s)", s)
+					}
 				}), ",\n\t"),
 			)),
 		},
@@ -302,7 +310,13 @@ WHERE %s IS NULL
     AND %s = sqlc.arg(%s);`,
 				validIngredientsTableName,
 				strings.Join(applyToEach(filterForUpdate(validIngredientsColumns), func(i int, s string) string {
-					return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
+					switch s {
+					case "minimum_ideal_storage_temperature_in_celsius",
+						"maximum_ideal_storage_temperature_in_celsius":
+						return fmt.Sprintf("%s = sqlc.narg(%s)", s, s)
+					default:
+						return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
+					}
 				}), ",\n\t"),
 				lastUpdatedAtColumn,
 				archivedAtColumn,
