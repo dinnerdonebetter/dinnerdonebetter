@@ -28,7 +28,12 @@ func (q *Queries) ArchiveValidPreparation(ctx context.Context, db DBTX, id strin
 
 const checkValidPreparationExistence = `-- name: CheckValidPreparationExistence :one
 
-SELECT EXISTS ( SELECT valid_preparations.id FROM valid_preparations WHERE valid_preparations.archived_at IS NULL AND valid_preparations.id = $1 )
+SELECT EXISTS (
+    SELECT valid_preparations.id
+    FROM valid_preparations
+    WHERE valid_preparations.archived_at IS NULL
+        AND valid_preparations.id = $1
+)
 `
 
 func (q *Queries) CheckValidPreparationExistence(ctx context.Context, db DBTX, id string) (bool, error) {
@@ -40,7 +45,47 @@ func (q *Queries) CheckValidPreparationExistence(ctx context.Context, db DBTX, i
 
 const createValidPreparation = `-- name: CreateValidPreparation :exec
 
-INSERT INTO valid_preparations (id,"name",description,icon_path,yields_nothing,restrict_to_ingredients,minimum_ingredient_count,maximum_ingredient_count,minimum_instrument_count,maximum_instrument_count,temperature_required,time_estimate_required,condition_expression_required,consumes_vessel,only_for_vessels,minimum_vessel_count,maximum_vessel_count,past_tense,slug) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)
+INSERT INTO valid_preparations (
+    id,
+	name,
+	description,
+	icon_path,
+	yields_nothing,
+	restrict_to_ingredients,
+	past_tense,
+	slug,
+	minimum_ingredient_count,
+	maximum_ingredient_count,
+	minimum_instrument_count,
+	maximum_instrument_count,
+	temperature_required,
+	time_estimate_required,
+	condition_expression_required,
+	consumes_vessel,
+	only_for_vessels,
+	minimum_vessel_count,
+	maximum_vessel_count
+) VALUES (
+    $1,
+	$2,
+	$3,
+	$4,
+	$5,
+	$6,
+	$7,
+	$8,
+	$9,
+	$10,
+	$11,
+	$12,
+	$13,
+	$14,
+	$15,
+	$16,
+	$17,
+	$18,
+	$19
+)
 `
 
 type CreateValidPreparationParams struct {
@@ -48,19 +93,19 @@ type CreateValidPreparationParams struct {
 	Description                 string
 	IconPath                    string
 	ID                          string
-	Slug                        string
 	PastTense                   string
+	Slug                        string
+	MaximumVesselCount          sql.NullInt32
 	MaximumIngredientCount      sql.NullInt32
 	MaximumInstrumentCount      sql.NullInt32
-	MaximumVesselCount          sql.NullInt32
 	MinimumVesselCount          int32
 	MinimumIngredientCount      int32
 	MinimumInstrumentCount      int32
 	YieldsNothing               bool
+	TimeEstimateRequired        bool
+	ConditionExpressionRequired bool
 	ConsumesVessel              bool
 	OnlyForVessels              bool
-	ConditionExpressionRequired bool
-	TimeEstimateRequired        bool
 	TemperatureRequired         bool
 	RestrictToIngredients       bool
 }
@@ -73,6 +118,8 @@ func (q *Queries) CreateValidPreparation(ctx context.Context, db DBTX, arg *Crea
 		arg.IconPath,
 		arg.YieldsNothing,
 		arg.RestrictToIngredients,
+		arg.PastTense,
+		arg.Slug,
 		arg.MinimumIngredientCount,
 		arg.MaximumIngredientCount,
 		arg.MinimumInstrumentCount,
@@ -84,8 +131,6 @@ func (q *Queries) CreateValidPreparation(ctx context.Context, db DBTX, arg *Crea
 		arg.OnlyForVessels,
 		arg.MinimumVesselCount,
 		arg.MaximumVesselCount,
-		arg.PastTense,
-		arg.Slug,
 	)
 	return err
 }
@@ -99,6 +144,8 @@ SELECT
 	valid_preparations.icon_path,
 	valid_preparations.yields_nothing,
 	valid_preparations.restrict_to_ingredients,
+	valid_preparations.past_tense,
+	valid_preparations.slug,
 	valid_preparations.minimum_ingredient_count,
 	valid_preparations.maximum_ingredient_count,
 	valid_preparations.minimum_instrument_count,
@@ -110,28 +157,28 @@ SELECT
 	valid_preparations.only_for_vessels,
 	valid_preparations.minimum_vessel_count,
 	valid_preparations.maximum_vessel_count,
-	valid_preparations.slug,
-	valid_preparations.past_tense,
+	valid_preparations.last_indexed_at,
 	valid_preparations.created_at,
 	valid_preparations.last_updated_at,
 	valid_preparations.archived_at
 FROM valid_preparations
 WHERE valid_preparations.archived_at IS NULL
-	ORDER BY random() LIMIT 1
+ORDER BY RANDOM() LIMIT 1
 `
 
 type GetRandomValidPreparationRow struct {
 	CreatedAt                   time.Time
 	LastUpdatedAt               sql.NullTime
 	ArchivedAt                  sql.NullTime
+	LastIndexedAt               sql.NullTime
 	Name                        string
-	Description                 string
 	IconPath                    string
 	ID                          string
-	Slug                        string
 	PastTense                   string
-	MaximumInstrumentCount      sql.NullInt32
+	Description                 string
+	Slug                        string
 	MaximumIngredientCount      sql.NullInt32
+	MaximumInstrumentCount      sql.NullInt32
 	MaximumVesselCount          sql.NullInt32
 	MinimumVesselCount          int32
 	MinimumInstrumentCount      int32
@@ -155,6 +202,8 @@ func (q *Queries) GetRandomValidPreparation(ctx context.Context, db DBTX) (*GetR
 		&i.IconPath,
 		&i.YieldsNothing,
 		&i.RestrictToIngredients,
+		&i.PastTense,
+		&i.Slug,
 		&i.MinimumIngredientCount,
 		&i.MaximumIngredientCount,
 		&i.MinimumInstrumentCount,
@@ -166,8 +215,7 @@ func (q *Queries) GetRandomValidPreparation(ctx context.Context, db DBTX) (*GetR
 		&i.OnlyForVessels,
 		&i.MinimumVesselCount,
 		&i.MaximumVesselCount,
-		&i.Slug,
-		&i.PastTense,
+		&i.LastIndexedAt,
 		&i.CreatedAt,
 		&i.LastUpdatedAt,
 		&i.ArchivedAt,
@@ -184,6 +232,8 @@ SELECT
 	valid_preparations.icon_path,
 	valid_preparations.yields_nothing,
 	valid_preparations.restrict_to_ingredients,
+	valid_preparations.past_tense,
+	valid_preparations.slug,
 	valid_preparations.minimum_ingredient_count,
 	valid_preparations.maximum_ingredient_count,
 	valid_preparations.minimum_instrument_count,
@@ -195,28 +245,28 @@ SELECT
 	valid_preparations.only_for_vessels,
 	valid_preparations.minimum_vessel_count,
 	valid_preparations.maximum_vessel_count,
-	valid_preparations.slug,
-	valid_preparations.past_tense,
+	valid_preparations.last_indexed_at,
 	valid_preparations.created_at,
 	valid_preparations.last_updated_at,
 	valid_preparations.archived_at
 FROM valid_preparations
 WHERE valid_preparations.archived_at IS NULL
-	AND valid_preparations.id = $1
+AND valid_preparations.id = $1
 `
 
 type GetValidPreparationRow struct {
 	CreatedAt                   time.Time
 	LastUpdatedAt               sql.NullTime
 	ArchivedAt                  sql.NullTime
+	LastIndexedAt               sql.NullTime
 	Name                        string
-	Description                 string
 	IconPath                    string
 	ID                          string
-	Slug                        string
 	PastTense                   string
-	MaximumInstrumentCount      sql.NullInt32
+	Description                 string
+	Slug                        string
 	MaximumIngredientCount      sql.NullInt32
+	MaximumInstrumentCount      sql.NullInt32
 	MaximumVesselCount          sql.NullInt32
 	MinimumVesselCount          int32
 	MinimumInstrumentCount      int32
@@ -240,6 +290,8 @@ func (q *Queries) GetValidPreparation(ctx context.Context, db DBTX, id string) (
 		&i.IconPath,
 		&i.YieldsNothing,
 		&i.RestrictToIngredients,
+		&i.PastTense,
+		&i.Slug,
 		&i.MinimumIngredientCount,
 		&i.MaximumIngredientCount,
 		&i.MinimumInstrumentCount,
@@ -251,8 +303,7 @@ func (q *Queries) GetValidPreparation(ctx context.Context, db DBTX, id string) (
 		&i.OnlyForVessels,
 		&i.MinimumVesselCount,
 		&i.MaximumVesselCount,
-		&i.Slug,
-		&i.PastTense,
+		&i.LastIndexedAt,
 		&i.CreatedAt,
 		&i.LastUpdatedAt,
 		&i.ArchivedAt,
@@ -269,6 +320,8 @@ SELECT
 	valid_preparations.icon_path,
 	valid_preparations.yields_nothing,
 	valid_preparations.restrict_to_ingredients,
+	valid_preparations.past_tense,
+	valid_preparations.slug,
 	valid_preparations.minimum_ingredient_count,
 	valid_preparations.maximum_ingredient_count,
 	valid_preparations.minimum_instrument_count,
@@ -280,8 +333,7 @@ SELECT
 	valid_preparations.only_for_vessels,
 	valid_preparations.minimum_vessel_count,
 	valid_preparations.maximum_vessel_count,
-	valid_preparations.slug,
-	valid_preparations.past_tense,
+	valid_preparations.last_indexed_at,
 	valid_preparations.created_at,
 	valid_preparations.last_updated_at,
 	valid_preparations.archived_at
@@ -293,14 +345,15 @@ type GetValidPreparationByIDRow struct {
 	CreatedAt                   time.Time
 	LastUpdatedAt               sql.NullTime
 	ArchivedAt                  sql.NullTime
+	LastIndexedAt               sql.NullTime
 	Name                        string
-	Description                 string
 	IconPath                    string
 	ID                          string
-	Slug                        string
 	PastTense                   string
-	MaximumInstrumentCount      sql.NullInt32
+	Description                 string
+	Slug                        string
 	MaximumIngredientCount      sql.NullInt32
+	MaximumInstrumentCount      sql.NullInt32
 	MaximumVesselCount          sql.NullInt32
 	MinimumVesselCount          int32
 	MinimumInstrumentCount      int32
@@ -324,6 +377,8 @@ func (q *Queries) GetValidPreparationByID(ctx context.Context, db DBTX) (*GetVal
 		&i.IconPath,
 		&i.YieldsNothing,
 		&i.RestrictToIngredients,
+		&i.PastTense,
+		&i.Slug,
 		&i.MinimumIngredientCount,
 		&i.MaximumIngredientCount,
 		&i.MinimumInstrumentCount,
@@ -335,8 +390,7 @@ func (q *Queries) GetValidPreparationByID(ctx context.Context, db DBTX) (*GetVal
 		&i.OnlyForVessels,
 		&i.MinimumVesselCount,
 		&i.MaximumVesselCount,
-		&i.Slug,
-		&i.PastTense,
+		&i.LastIndexedAt,
 		&i.CreatedAt,
 		&i.LastUpdatedAt,
 		&i.ArchivedAt,
@@ -353,6 +407,8 @@ SELECT
 	valid_preparations.icon_path,
 	valid_preparations.yields_nothing,
 	valid_preparations.restrict_to_ingredients,
+	valid_preparations.past_tense,
+	valid_preparations.slug,
 	valid_preparations.minimum_ingredient_count,
 	valid_preparations.maximum_ingredient_count,
 	valid_preparations.minimum_instrument_count,
@@ -364,61 +420,54 @@ SELECT
 	valid_preparations.only_for_vessels,
 	valid_preparations.minimum_vessel_count,
 	valid_preparations.maximum_vessel_count,
-	valid_preparations.slug,
-	valid_preparations.past_tense,
+	valid_preparations.last_indexed_at,
 	valid_preparations.created_at,
 	valid_preparations.last_updated_at,
 	valid_preparations.archived_at,
-	(
-		SELECT
-			COUNT(valid_preparations.id)
-		FROM
-			valid_preparations
-		WHERE
-			valid_preparations.archived_at IS NULL
-			AND valid_preparations.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-			AND valid_preparations.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+    (
+		SELECT COUNT(valid_preparations.id)
+		FROM valid_preparations
+		WHERE valid_preparations.archived_at IS NULL
+			AND valid_preparations.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND valid_preparations.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 			AND (
 				valid_preparations.last_updated_at IS NULL
-				OR valid_preparations.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+				OR valid_preparations.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
 			)
 			AND (
 				valid_preparations.last_updated_at IS NULL
-				OR valid_preparations.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+				OR valid_preparations.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
 			)
-	) as filtered_count,
-	(
-		SELECT
-			COUNT(valid_preparations.id)
-		FROM
-			valid_preparations
-		WHERE
-			valid_preparations.archived_at IS NULL
-	) as total_count
+	) AS filtered_count,
+    (
+        SELECT COUNT(valid_preparations.id)
+        FROM valid_preparations
+        WHERE valid_preparations.archived_at IS NULL
+    ) AS total_count
 FROM valid_preparations
 WHERE
 	valid_preparations.archived_at IS NULL
-	AND valid_preparations.created_at > (COALESCE($1, (SELECT NOW() - interval '999 years')))
-	AND valid_preparations.created_at < (COALESCE($2, (SELECT NOW() + interval '999 years')))
+	AND valid_preparations.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+    AND valid_preparations.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		valid_preparations.last_updated_at IS NULL
-		OR valid_preparations.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+		OR valid_preparations.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
 	)
 	AND (
 		valid_preparations.last_updated_at IS NULL
-		OR valid_preparations.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+		OR valid_preparations.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
 GROUP BY valid_preparations.id
 ORDER BY valid_preparations.id
-OFFSET $5
 LIMIT $6
+OFFSET $5
 `
 
 type GetValidPreparationsParams struct {
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
-	UpdatedAfter  sql.NullTime
 	UpdatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
@@ -427,24 +476,25 @@ type GetValidPreparationsRow struct {
 	CreatedAt                   time.Time
 	ArchivedAt                  sql.NullTime
 	LastUpdatedAt               sql.NullTime
+	LastIndexedAt               sql.NullTime
 	ID                          string
-	IconPath                    string
-	Description                 string
 	Name                        string
+	Description                 string
+	IconPath                    string
 	PastTense                   string
 	Slug                        string
 	TotalCount                  int64
 	FilteredCount               int64
 	MaximumVesselCount          sql.NullInt32
-	MaximumIngredientCount      sql.NullInt32
 	MaximumInstrumentCount      sql.NullInt32
-	MinimumIngredientCount      int32
+	MaximumIngredientCount      sql.NullInt32
 	MinimumVesselCount          int32
 	MinimumInstrumentCount      int32
-	OnlyForVessels              bool
-	ConsumesVessel              bool
-	ConditionExpressionRequired bool
+	MinimumIngredientCount      int32
 	TimeEstimateRequired        bool
+	ConditionExpressionRequired bool
+	ConsumesVessel              bool
+	OnlyForVessels              bool
 	TemperatureRequired         bool
 	RestrictToIngredients       bool
 	YieldsNothing               bool
@@ -454,8 +504,8 @@ func (q *Queries) GetValidPreparations(ctx context.Context, db DBTX, arg *GetVal
 	rows, err := db.QueryContext(ctx, getValidPreparations,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
-		arg.UpdatedAfter,
 		arg.UpdatedBefore,
+		arg.UpdatedAfter,
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)
@@ -473,6 +523,8 @@ func (q *Queries) GetValidPreparations(ctx context.Context, db DBTX, arg *GetVal
 			&i.IconPath,
 			&i.YieldsNothing,
 			&i.RestrictToIngredients,
+			&i.PastTense,
+			&i.Slug,
 			&i.MinimumIngredientCount,
 			&i.MaximumIngredientCount,
 			&i.MinimumInstrumentCount,
@@ -484,8 +536,7 @@ func (q *Queries) GetValidPreparations(ctx context.Context, db DBTX, arg *GetVal
 			&i.OnlyForVessels,
 			&i.MinimumVesselCount,
 			&i.MaximumVesselCount,
-			&i.Slug,
-			&i.PastTense,
+			&i.LastIndexedAt,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
@@ -509,10 +560,10 @@ const getValidPreparationsNeedingIndexing = `-- name: GetValidPreparationsNeedin
 
 SELECT valid_preparations.id
 FROM valid_preparations
-WHERE (valid_preparations.archived_at IS NULL)
-AND (
-	valid_preparations.last_indexed_at IS NULL
-	OR valid_preparations.last_indexed_at < now() - '24 hours'::INTERVAL
+WHERE valid_preparations.archived_at IS NULL
+    AND (
+    valid_preparations.last_indexed_at IS NULL
+    OR valid_preparations.last_indexed_at < NOW() - '24 hours'::INTERVAL
 )
 `
 
@@ -548,6 +599,8 @@ SELECT
 	valid_preparations.icon_path,
 	valid_preparations.yields_nothing,
 	valid_preparations.restrict_to_ingredients,
+	valid_preparations.past_tense,
+	valid_preparations.slug,
 	valid_preparations.minimum_ingredient_count,
 	valid_preparations.maximum_ingredient_count,
 	valid_preparations.minimum_instrument_count,
@@ -559,8 +612,7 @@ SELECT
 	valid_preparations.only_for_vessels,
 	valid_preparations.minimum_vessel_count,
 	valid_preparations.maximum_vessel_count,
-	valid_preparations.slug,
-	valid_preparations.past_tense,
+	valid_preparations.last_indexed_at,
 	valid_preparations.created_at,
 	valid_preparations.last_updated_at,
 	valid_preparations.archived_at
@@ -573,14 +625,15 @@ type GetValidPreparationsWithIDsRow struct {
 	CreatedAt                   time.Time
 	LastUpdatedAt               sql.NullTime
 	ArchivedAt                  sql.NullTime
+	LastIndexedAt               sql.NullTime
 	Name                        string
-	Description                 string
 	IconPath                    string
 	ID                          string
-	Slug                        string
 	PastTense                   string
-	MaximumInstrumentCount      sql.NullInt32
+	Description                 string
+	Slug                        string
 	MaximumIngredientCount      sql.NullInt32
+	MaximumInstrumentCount      sql.NullInt32
 	MaximumVesselCount          sql.NullInt32
 	MinimumVesselCount          int32
 	MinimumInstrumentCount      int32
@@ -594,8 +647,8 @@ type GetValidPreparationsWithIDsRow struct {
 	YieldsNothing               bool
 }
 
-func (q *Queries) GetValidPreparationsWithIDs(ctx context.Context, db DBTX, dollar_1 []string) ([]*GetValidPreparationsWithIDsRow, error) {
-	rows, err := db.QueryContext(ctx, getValidPreparationsWithIDs, pq.Array(dollar_1))
+func (q *Queries) GetValidPreparationsWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetValidPreparationsWithIDsRow, error) {
+	rows, err := db.QueryContext(ctx, getValidPreparationsWithIDs, pq.Array(ids))
 	if err != nil {
 		return nil, err
 	}
@@ -610,6 +663,8 @@ func (q *Queries) GetValidPreparationsWithIDs(ctx context.Context, db DBTX, doll
 			&i.IconPath,
 			&i.YieldsNothing,
 			&i.RestrictToIngredients,
+			&i.PastTense,
+			&i.Slug,
 			&i.MinimumIngredientCount,
 			&i.MaximumIngredientCount,
 			&i.MinimumInstrumentCount,
@@ -621,8 +676,7 @@ func (q *Queries) GetValidPreparationsWithIDs(ctx context.Context, db DBTX, doll
 			&i.OnlyForVessels,
 			&i.MinimumVesselCount,
 			&i.MaximumVesselCount,
-			&i.Slug,
-			&i.PastTense,
+			&i.LastIndexedAt,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
@@ -649,6 +703,8 @@ SELECT
 	valid_preparations.icon_path,
 	valid_preparations.yields_nothing,
 	valid_preparations.restrict_to_ingredients,
+	valid_preparations.past_tense,
+	valid_preparations.slug,
 	valid_preparations.minimum_ingredient_count,
 	valid_preparations.maximum_ingredient_count,
 	valid_preparations.minimum_instrument_count,
@@ -660,14 +716,13 @@ SELECT
 	valid_preparations.only_for_vessels,
 	valid_preparations.minimum_vessel_count,
 	valid_preparations.maximum_vessel_count,
-	valid_preparations.slug,
-	valid_preparations.past_tense,
+	valid_preparations.last_indexed_at,
 	valid_preparations.created_at,
 	valid_preparations.last_updated_at,
 	valid_preparations.archived_at
 FROM valid_preparations
-WHERE valid_preparations.archived_at IS NULL
-	AND valid_preparations.name ILIKE '%' || $1::text || '%'
+WHERE valid_preparations.name ILIKE '%' || $1::text || '%'
+	AND valid_preparations.archived_at IS NULL
 LIMIT 50
 `
 
@@ -675,14 +730,15 @@ type SearchForValidPreparationsRow struct {
 	CreatedAt                   time.Time
 	LastUpdatedAt               sql.NullTime
 	ArchivedAt                  sql.NullTime
+	LastIndexedAt               sql.NullTime
 	Name                        string
-	Description                 string
 	IconPath                    string
 	ID                          string
-	Slug                        string
 	PastTense                   string
-	MaximumInstrumentCount      sql.NullInt32
+	Description                 string
+	Slug                        string
 	MaximumIngredientCount      sql.NullInt32
+	MaximumInstrumentCount      sql.NullInt32
 	MaximumVesselCount          sql.NullInt32
 	MinimumVesselCount          int32
 	MinimumInstrumentCount      int32
@@ -696,8 +752,8 @@ type SearchForValidPreparationsRow struct {
 	YieldsNothing               bool
 }
 
-func (q *Queries) SearchForValidPreparations(ctx context.Context, db DBTX, query string) ([]*SearchForValidPreparationsRow, error) {
-	rows, err := db.QueryContext(ctx, searchForValidPreparations, query)
+func (q *Queries) SearchForValidPreparations(ctx context.Context, db DBTX, nameQuery string) ([]*SearchForValidPreparationsRow, error) {
+	rows, err := db.QueryContext(ctx, searchForValidPreparations, nameQuery)
 	if err != nil {
 		return nil, err
 	}
@@ -712,6 +768,8 @@ func (q *Queries) SearchForValidPreparations(ctx context.Context, db DBTX, query
 			&i.IconPath,
 			&i.YieldsNothing,
 			&i.RestrictToIngredients,
+			&i.PastTense,
+			&i.Slug,
 			&i.MinimumIngredientCount,
 			&i.MaximumIngredientCount,
 			&i.MinimumInstrumentCount,
@@ -723,8 +781,7 @@ func (q *Queries) SearchForValidPreparations(ctx context.Context, db DBTX, query
 			&i.OnlyForVessels,
 			&i.MinimumVesselCount,
 			&i.MaximumVesselCount,
-			&i.Slug,
-			&i.PastTense,
+			&i.LastIndexedAt,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
@@ -750,22 +807,22 @@ UPDATE valid_preparations SET
 	icon_path = $3,
 	yields_nothing = $4,
 	restrict_to_ingredients = $5,
-	minimum_ingredient_count = $6,
-	maximum_ingredient_count = $7,
-	minimum_instrument_count = $8,
-	maximum_instrument_count = $9,
-	temperature_required = $10,
-	time_estimate_required = $11,
-	condition_expression_required = $12,
-	consumes_vessel = $13,
-	only_for_vessels = $14,
-	minimum_vessel_count = $15,
-	maximum_vessel_count = $16,
-	slug = $17,
-	past_tense = $18,
+	past_tense = $6,
+	slug = $7,
+	minimum_ingredient_count = $8,
+	maximum_ingredient_count = $9,
+	minimum_instrument_count = $10,
+	maximum_instrument_count = $11,
+	temperature_required = $12,
+	time_estimate_required = $13,
+	condition_expression_required = $14,
+	consumes_vessel = $15,
+	only_for_vessels = $16,
+	minimum_vessel_count = $17,
+	maximum_vessel_count = $18,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND id = $19
+    AND id = $19
 `
 
 type UpdateValidPreparationParams struct {
@@ -782,9 +839,9 @@ type UpdateValidPreparationParams struct {
 	MinimumIngredientCount      int32
 	MinimumInstrumentCount      int32
 	RestrictToIngredients       bool
-	OnlyForVessels              bool
-	ConsumesVessel              bool
 	ConditionExpressionRequired bool
+	ConsumesVessel              bool
+	OnlyForVessels              bool
 	TimeEstimateRequired        bool
 	TemperatureRequired         bool
 	YieldsNothing               bool
@@ -797,6 +854,8 @@ func (q *Queries) UpdateValidPreparation(ctx context.Context, db DBTX, arg *Upda
 		arg.IconPath,
 		arg.YieldsNothing,
 		arg.RestrictToIngredients,
+		arg.PastTense,
+		arg.Slug,
 		arg.MinimumIngredientCount,
 		arg.MaximumIngredientCount,
 		arg.MinimumInstrumentCount,
@@ -808,8 +867,6 @@ func (q *Queries) UpdateValidPreparation(ctx context.Context, db DBTX, arg *Upda
 		arg.OnlyForVessels,
 		arg.MinimumVesselCount,
 		arg.MaximumVesselCount,
-		arg.Slug,
-		arg.PastTense,
 		arg.ID,
 	)
 	if err != nil {

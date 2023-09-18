@@ -121,7 +121,7 @@ func buildValidIngredientsQueries() []*Query {
 FROM %s
 WHERE %s.%s IS NULL;`,
 				strings.Join(applyToEach(validIngredientsColumns, func(i int, s string) string {
-					return fmt.Sprintf("valid_ingredients.%s", s)
+					return fmt.Sprintf("%s.%s", validIngredientsTableName, s)
 				}), ",\n\t"),
 				validIngredientsTableName,
 				validIngredientsTableName,
@@ -145,7 +145,7 @@ GROUP BY %s.%s
 ORDER BY %s.%s
 %s;`,
 				strings.Join(applyToEach(validIngredientsColumns, func(i int, s string) string {
-					return fmt.Sprintf("valid_ingredients.%s", s)
+					return fmt.Sprintf("%s.%s", validIngredientsTableName, s)
 				}), ",\n\t"),
 				buildFilterCountSelect(
 					validIngredientsTableName,
