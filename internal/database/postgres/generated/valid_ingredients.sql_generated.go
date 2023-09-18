@@ -45,8 +45,9 @@ func (q *Queries) CheckValidIngredientExistence(ctx context.Context, db DBTX, id
 
 const createValidIngredient = `-- name: CreateValidIngredient :exec
 
-INSERT INTO valid_ingredients (
-    id,
+INSERT INTO valid_ingredients
+(
+	id,
 	name,
 	description,
 	warning,
@@ -62,112 +63,100 @@ INSERT INTO valid_ingredients (
 	contains_gluten,
 	animal_flesh,
 	volumetric,
-	icon_path,
 	is_liquid,
+	icon_path,
 	animal_derived,
 	plural_name,
 	restrict_to_preparations,
 	minimum_ideal_storage_temperature_in_celsius,
 	maximum_ideal_storage_temperature_in_celsius,
 	storage_instructions,
-	contains_alcohol,
 	slug,
+	contains_alcohol,
 	shopping_suggestions,
-	is_starch,
-	is_protein,
-	is_grain,
-	is_fruit,
-	is_salt,
-	is_fat,
-	is_acid,
-	is_heat,
-	last_indexed_at,
-	created_at,
-	last_updated_at,
-	archived_at
+    is_starch,
+    is_protein,
+    is_grain,
+    is_fruit,
+    is_salt,
+    is_fat,
+    is_acid,
+    is_heat
 ) VALUES (
     $1,
-	$2,
-	$3,
-	$4,
-	$5,
-	$6,
-	$7,
-	$8,
-	$9,
-	$10,
-	$11,
-	$12,
-	$13,
-	$14,
-	$15,
-	$16,
-	$17,
-	$18,
-	$19,
-	$20,
-	$21,
-	$22,
-	$23,
-	$24,
-	$25,
-	$26,
-	$27,
-	$28,
-	$29,
-	$30,
-	$31,
-	$32,
-	$33,
-	$34,
-	$35,
-	$36,
-	$37,
-	$38,
-	$39
+    $2,
+    $3,
+    $4,
+    $5,
+    $6,
+    $7,
+    $8,
+    $9,
+    $10,
+    $11,
+    $12,
+    $13,
+    $14,
+    $15,
+    $16,
+    $17,
+    $18,
+    $19,
+    $20,
+    $21,
+    $22,
+    $23,
+    $24,
+    $25,
+    $26,
+    $27,
+    $28,
+    $29,
+    $30,
+    $31,
+    $32,
+    $33,
+    $34,
+    $35
 )
 `
 
 type CreateValidIngredientParams struct {
-	CreatedAt                               time.Time
-	ArchivedAt                              sql.NullTime
-	LastIndexedAt                           sql.NullTime
-	LastUpdatedAt                           sql.NullTime
-	ShoppingSuggestions                     string
-	Warning                                 string
-	Description                             string
+	ID                                      string
 	Name                                    string
-	IconPath                                string
+	Description                             string
+	Warning                                 string
+	ShoppingSuggestions                     string
 	Slug                                    string
 	StorageInstructions                     string
 	PluralName                              string
-	ID                                      string
+	IconPath                                string
 	MaximumIdealStorageTemperatureInCelsius sql.NullString
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
 	IsLiquid                                sql.NullBool
-	AnimalDerived                           bool
-	IsStarch                                bool
-	AnimalFlesh                             bool
-	ContainsGluten                          bool
-	RestrictToPreparations                  bool
+	ContainsTreeNut                         bool
+	IsHeat                                  bool
 	ContainsFish                            bool
+	Volumetric                              bool
 	ContainsSesame                          bool
 	ContainsShellfish                       bool
-	ContainsAlcohol                         bool
+	AnimalDerived                           bool
 	ContainsWheat                           bool
+	RestrictToPreparations                  bool
+	ContainsDairy                           bool
+	AnimalFlesh                             bool
+	ContainsGluten                          bool
 	ContainsSoy                             bool
-	Volumetric                              bool
+	ContainsAlcohol                         bool
+	ContainsEgg                             bool
+	IsStarch                                bool
 	IsProtein                               bool
 	IsGrain                                 bool
 	IsFruit                                 bool
 	IsSalt                                  bool
 	IsFat                                   bool
 	IsAcid                                  bool
-	IsHeat                                  bool
-	ContainsTreeNut                         bool
 	ContainsPeanut                          bool
-	ContainsDairy                           bool
-	ContainsEgg                             bool
 }
 
 func (q *Queries) CreateValidIngredient(ctx context.Context, db DBTX, arg *CreateValidIngredientParams) error {
@@ -188,16 +177,16 @@ func (q *Queries) CreateValidIngredient(ctx context.Context, db DBTX, arg *Creat
 		arg.ContainsGluten,
 		arg.AnimalFlesh,
 		arg.Volumetric,
-		arg.IconPath,
 		arg.IsLiquid,
+		arg.IconPath,
 		arg.AnimalDerived,
 		arg.PluralName,
 		arg.RestrictToPreparations,
 		arg.MinimumIdealStorageTemperatureInCelsius,
 		arg.MaximumIdealStorageTemperatureInCelsius,
 		arg.StorageInstructions,
-		arg.ContainsAlcohol,
 		arg.Slug,
+		arg.ContainsAlcohol,
 		arg.ShoppingSuggestions,
 		arg.IsStarch,
 		arg.IsProtein,
@@ -207,10 +196,6 @@ func (q *Queries) CreateValidIngredient(ctx context.Context, db DBTX, arg *Creat
 		arg.IsFat,
 		arg.IsAcid,
 		arg.IsHeat,
-		arg.LastIndexedAt,
-		arg.CreatedAt,
-		arg.LastUpdatedAt,
-		arg.ArchivedAt,
 	)
 	return err
 }
@@ -234,26 +219,25 @@ SELECT
 	valid_ingredients.contains_gluten,
 	valid_ingredients.animal_flesh,
 	valid_ingredients.volumetric,
-	valid_ingredients.icon_path,
 	valid_ingredients.is_liquid,
+	valid_ingredients.icon_path,
 	valid_ingredients.animal_derived,
 	valid_ingredients.plural_name,
 	valid_ingredients.restrict_to_preparations,
-	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
-	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
+    valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
+    valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions,
-	valid_ingredients.contains_alcohol,
 	valid_ingredients.slug,
+	valid_ingredients.contains_alcohol,
 	valid_ingredients.shopping_suggestions,
-	valid_ingredients.is_starch,
-	valid_ingredients.is_protein,
-	valid_ingredients.is_grain,
-	valid_ingredients.is_fruit,
-	valid_ingredients.is_salt,
-	valid_ingredients.is_fat,
-	valid_ingredients.is_acid,
-	valid_ingredients.is_heat,
-	valid_ingredients.last_indexed_at,
+    valid_ingredients.is_starch,
+    valid_ingredients.is_protein,
+    valid_ingredients.is_grain,
+    valid_ingredients.is_fruit,
+    valid_ingredients.is_salt,
+    valid_ingredients.is_fat,
+    valid_ingredients.is_acid,
+    valid_ingredients.is_heat,
 	valid_ingredients.created_at,
 	valid_ingredients.last_updated_at,
 	valid_ingredients.archived_at
@@ -265,32 +249,32 @@ ORDER BY RANDOM() LIMIT 1
 type GetRandomValidIngredientRow struct {
 	CreatedAt                               time.Time
 	ArchivedAt                              sql.NullTime
-	LastIndexedAt                           sql.NullTime
 	LastUpdatedAt                           sql.NullTime
-	ShoppingSuggestions                     string
 	Warning                                 string
 	Description                             string
 	Name                                    string
-	IconPath                                string
+	ShoppingSuggestions                     string
 	Slug                                    string
 	StorageInstructions                     string
 	PluralName                              string
 	ID                                      string
+	IconPath                                string
 	MaximumIdealStorageTemperatureInCelsius sql.NullString
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
 	IsLiquid                                sql.NullBool
 	AnimalDerived                           bool
-	IsStarch                                bool
+	ContainsTreeNut                         bool
 	AnimalFlesh                             bool
 	ContainsGluten                          bool
-	RestrictToPreparations                  bool
 	ContainsFish                            bool
+	RestrictToPreparations                  bool
 	ContainsSesame                          bool
 	ContainsShellfish                       bool
-	ContainsAlcohol                         bool
 	ContainsWheat                           bool
 	ContainsSoy                             bool
+	ContainsAlcohol                         bool
 	Volumetric                              bool
+	IsStarch                                bool
 	IsProtein                               bool
 	IsGrain                                 bool
 	IsFruit                                 bool
@@ -298,7 +282,6 @@ type GetRandomValidIngredientRow struct {
 	IsFat                                   bool
 	IsAcid                                  bool
 	IsHeat                                  bool
-	ContainsTreeNut                         bool
 	ContainsPeanut                          bool
 	ContainsDairy                           bool
 	ContainsEgg                             bool
@@ -324,16 +307,16 @@ func (q *Queries) GetRandomValidIngredient(ctx context.Context, db DBTX) (*GetRa
 		&i.ContainsGluten,
 		&i.AnimalFlesh,
 		&i.Volumetric,
-		&i.IconPath,
 		&i.IsLiquid,
+		&i.IconPath,
 		&i.AnimalDerived,
 		&i.PluralName,
 		&i.RestrictToPreparations,
 		&i.MinimumIdealStorageTemperatureInCelsius,
 		&i.MaximumIdealStorageTemperatureInCelsius,
 		&i.StorageInstructions,
-		&i.ContainsAlcohol,
 		&i.Slug,
+		&i.ContainsAlcohol,
 		&i.ShoppingSuggestions,
 		&i.IsStarch,
 		&i.IsProtein,
@@ -343,7 +326,6 @@ func (q *Queries) GetRandomValidIngredient(ctx context.Context, db DBTX) (*GetRa
 		&i.IsFat,
 		&i.IsAcid,
 		&i.IsHeat,
-		&i.LastIndexedAt,
 		&i.CreatedAt,
 		&i.LastUpdatedAt,
 		&i.ArchivedAt,
@@ -370,26 +352,25 @@ SELECT
 	valid_ingredients.contains_gluten,
 	valid_ingredients.animal_flesh,
 	valid_ingredients.volumetric,
-	valid_ingredients.icon_path,
 	valid_ingredients.is_liquid,
+	valid_ingredients.icon_path,
 	valid_ingredients.animal_derived,
 	valid_ingredients.plural_name,
 	valid_ingredients.restrict_to_preparations,
-	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
-	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
+    valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
+    valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions,
-	valid_ingredients.contains_alcohol,
 	valid_ingredients.slug,
+	valid_ingredients.contains_alcohol,
 	valid_ingredients.shopping_suggestions,
-	valid_ingredients.is_starch,
-	valid_ingredients.is_protein,
-	valid_ingredients.is_grain,
-	valid_ingredients.is_fruit,
-	valid_ingredients.is_salt,
-	valid_ingredients.is_fat,
-	valid_ingredients.is_acid,
-	valid_ingredients.is_heat,
-	valid_ingredients.last_indexed_at,
+    valid_ingredients.is_starch,
+    valid_ingredients.is_protein,
+    valid_ingredients.is_grain,
+    valid_ingredients.is_fruit,
+    valid_ingredients.is_salt,
+    valid_ingredients.is_fat,
+    valid_ingredients.is_acid,
+    valid_ingredients.is_heat,
 	valid_ingredients.created_at,
 	valid_ingredients.last_updated_at,
 	valid_ingredients.archived_at
@@ -401,32 +382,32 @@ AND valid_ingredients.id = $1
 type GetValidIngredientRow struct {
 	CreatedAt                               time.Time
 	ArchivedAt                              sql.NullTime
-	LastIndexedAt                           sql.NullTime
 	LastUpdatedAt                           sql.NullTime
-	ShoppingSuggestions                     string
 	Warning                                 string
 	Description                             string
 	Name                                    string
-	IconPath                                string
+	ShoppingSuggestions                     string
 	Slug                                    string
 	StorageInstructions                     string
 	PluralName                              string
 	ID                                      string
+	IconPath                                string
 	MaximumIdealStorageTemperatureInCelsius sql.NullString
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
 	IsLiquid                                sql.NullBool
 	AnimalDerived                           bool
-	IsStarch                                bool
+	ContainsTreeNut                         bool
 	AnimalFlesh                             bool
 	ContainsGluten                          bool
-	RestrictToPreparations                  bool
 	ContainsFish                            bool
+	RestrictToPreparations                  bool
 	ContainsSesame                          bool
 	ContainsShellfish                       bool
-	ContainsAlcohol                         bool
 	ContainsWheat                           bool
 	ContainsSoy                             bool
+	ContainsAlcohol                         bool
 	Volumetric                              bool
+	IsStarch                                bool
 	IsProtein                               bool
 	IsGrain                                 bool
 	IsFruit                                 bool
@@ -434,7 +415,6 @@ type GetValidIngredientRow struct {
 	IsFat                                   bool
 	IsAcid                                  bool
 	IsHeat                                  bool
-	ContainsTreeNut                         bool
 	ContainsPeanut                          bool
 	ContainsDairy                           bool
 	ContainsEgg                             bool
@@ -460,16 +440,16 @@ func (q *Queries) GetValidIngredient(ctx context.Context, db DBTX, id string) (*
 		&i.ContainsGluten,
 		&i.AnimalFlesh,
 		&i.Volumetric,
-		&i.IconPath,
 		&i.IsLiquid,
+		&i.IconPath,
 		&i.AnimalDerived,
 		&i.PluralName,
 		&i.RestrictToPreparations,
 		&i.MinimumIdealStorageTemperatureInCelsius,
 		&i.MaximumIdealStorageTemperatureInCelsius,
 		&i.StorageInstructions,
-		&i.ContainsAlcohol,
 		&i.Slug,
+		&i.ContainsAlcohol,
 		&i.ShoppingSuggestions,
 		&i.IsStarch,
 		&i.IsProtein,
@@ -479,7 +459,6 @@ func (q *Queries) GetValidIngredient(ctx context.Context, db DBTX, id string) (*
 		&i.IsFat,
 		&i.IsAcid,
 		&i.IsHeat,
-		&i.LastIndexedAt,
 		&i.CreatedAt,
 		&i.LastUpdatedAt,
 		&i.ArchivedAt,
@@ -490,78 +469,77 @@ func (q *Queries) GetValidIngredient(ctx context.Context, db DBTX, id string) (*
 const getValidIngredientByID = `-- name: GetValidIngredientByID :one
 
 SELECT
-	valid_ingredients.id,
-	valid_ingredients.name,
-	valid_ingredients.description,
-	valid_ingredients.warning,
-	valid_ingredients.contains_egg,
-	valid_ingredients.contains_dairy,
-	valid_ingredients.contains_peanut,
-	valid_ingredients.contains_tree_nut,
-	valid_ingredients.contains_soy,
-	valid_ingredients.contains_wheat,
-	valid_ingredients.contains_shellfish,
-	valid_ingredients.contains_sesame,
-	valid_ingredients.contains_fish,
-	valid_ingredients.contains_gluten,
-	valid_ingredients.animal_flesh,
-	valid_ingredients.volumetric,
-	valid_ingredients.icon_path,
-	valid_ingredients.is_liquid,
-	valid_ingredients.animal_derived,
-	valid_ingredients.plural_name,
-	valid_ingredients.restrict_to_preparations,
-	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
-	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
-	valid_ingredients.storage_instructions,
-	valid_ingredients.contains_alcohol,
-	valid_ingredients.slug,
-	valid_ingredients.shopping_suggestions,
-	valid_ingredients.is_starch,
-	valid_ingredients.is_protein,
-	valid_ingredients.is_grain,
-	valid_ingredients.is_fruit,
-	valid_ingredients.is_salt,
-	valid_ingredients.is_fat,
-	valid_ingredients.is_acid,
-	valid_ingredients.is_heat,
-	valid_ingredients.last_indexed_at,
-	valid_ingredients.created_at,
-	valid_ingredients.last_updated_at,
-	valid_ingredients.archived_at
-FROM valid_ingredients
-WHERE valid_ingredients.archived_at IS NULL
+    valid_ingredients.id,
+    valid_ingredients.name,
+    valid_ingredients.description,
+    valid_ingredients.warning,
+    valid_ingredients.contains_egg,
+    valid_ingredients.contains_dairy,
+    valid_ingredients.contains_peanut,
+    valid_ingredients.contains_tree_nut,
+    valid_ingredients.contains_soy,
+    valid_ingredients.contains_wheat,
+    valid_ingredients.contains_shellfish,
+    valid_ingredients.contains_sesame,
+    valid_ingredients.contains_fish,
+    valid_ingredients.contains_gluten,
+    valid_ingredients.animal_flesh,
+    valid_ingredients.volumetric,
+    valid_ingredients.is_liquid,
+    valid_ingredients.icon_path,
+    valid_ingredients.animal_derived,
+    valid_ingredients.plural_name,
+    valid_ingredients.restrict_to_preparations,
+    valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
+    valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
+    valid_ingredients.storage_instructions,
+    valid_ingredients.slug,
+    valid_ingredients.contains_alcohol,
+    valid_ingredients.shopping_suggestions,
+    valid_ingredients.is_starch,
+    valid_ingredients.is_protein,
+    valid_ingredients.is_grain,
+    valid_ingredients.is_fruit,
+    valid_ingredients.is_salt,
+    valid_ingredients.is_fat,
+    valid_ingredients.is_acid,
+    valid_ingredients.is_heat,
+    valid_ingredients.created_at,
+    valid_ingredients.last_updated_at,
+    valid_ingredients.archived_at
+    FROM valid_ingredients
+    WHERE valid_ingredients.archived_at IS NULL
 `
 
 type GetValidIngredientByIDRow struct {
 	CreatedAt                               time.Time
 	ArchivedAt                              sql.NullTime
-	LastIndexedAt                           sql.NullTime
 	LastUpdatedAt                           sql.NullTime
-	ShoppingSuggestions                     string
 	Warning                                 string
 	Description                             string
 	Name                                    string
-	IconPath                                string
+	ShoppingSuggestions                     string
 	Slug                                    string
 	StorageInstructions                     string
 	PluralName                              string
 	ID                                      string
+	IconPath                                string
 	MaximumIdealStorageTemperatureInCelsius sql.NullString
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
 	IsLiquid                                sql.NullBool
 	AnimalDerived                           bool
-	IsStarch                                bool
+	ContainsTreeNut                         bool
 	AnimalFlesh                             bool
 	ContainsGluten                          bool
-	RestrictToPreparations                  bool
 	ContainsFish                            bool
+	RestrictToPreparations                  bool
 	ContainsSesame                          bool
 	ContainsShellfish                       bool
-	ContainsAlcohol                         bool
 	ContainsWheat                           bool
 	ContainsSoy                             bool
+	ContainsAlcohol                         bool
 	Volumetric                              bool
+	IsStarch                                bool
 	IsProtein                               bool
 	IsGrain                                 bool
 	IsFruit                                 bool
@@ -569,7 +547,6 @@ type GetValidIngredientByIDRow struct {
 	IsFat                                   bool
 	IsAcid                                  bool
 	IsHeat                                  bool
-	ContainsTreeNut                         bool
 	ContainsPeanut                          bool
 	ContainsDairy                           bool
 	ContainsEgg                             bool
@@ -595,16 +572,16 @@ func (q *Queries) GetValidIngredientByID(ctx context.Context, db DBTX) (*GetVali
 		&i.ContainsGluten,
 		&i.AnimalFlesh,
 		&i.Volumetric,
-		&i.IconPath,
 		&i.IsLiquid,
+		&i.IconPath,
 		&i.AnimalDerived,
 		&i.PluralName,
 		&i.RestrictToPreparations,
 		&i.MinimumIdealStorageTemperatureInCelsius,
 		&i.MaximumIdealStorageTemperatureInCelsius,
 		&i.StorageInstructions,
-		&i.ContainsAlcohol,
 		&i.Slug,
+		&i.ContainsAlcohol,
 		&i.ShoppingSuggestions,
 		&i.IsStarch,
 		&i.IsProtein,
@@ -614,7 +591,6 @@ func (q *Queries) GetValidIngredientByID(ctx context.Context, db DBTX) (*GetVali
 		&i.IsFat,
 		&i.IsAcid,
 		&i.IsHeat,
-		&i.LastIndexedAt,
 		&i.CreatedAt,
 		&i.LastUpdatedAt,
 		&i.ArchivedAt,
@@ -625,78 +601,71 @@ func (q *Queries) GetValidIngredientByID(ctx context.Context, db DBTX) (*GetVali
 const getValidIngredients = `-- name: GetValidIngredients :many
 
 SELECT
-	valid_ingredients.id,
-	valid_ingredients.name,
-	valid_ingredients.description,
-	valid_ingredients.warning,
-	valid_ingredients.contains_egg,
-	valid_ingredients.contains_dairy,
-	valid_ingredients.contains_peanut,
-	valid_ingredients.contains_tree_nut,
-	valid_ingredients.contains_soy,
-	valid_ingredients.contains_wheat,
-	valid_ingredients.contains_shellfish,
-	valid_ingredients.contains_sesame,
-	valid_ingredients.contains_fish,
-	valid_ingredients.contains_gluten,
-	valid_ingredients.animal_flesh,
-	valid_ingredients.volumetric,
-	valid_ingredients.icon_path,
-	valid_ingredients.is_liquid,
-	valid_ingredients.animal_derived,
-	valid_ingredients.plural_name,
-	valid_ingredients.restrict_to_preparations,
-	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
-	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
-	valid_ingredients.storage_instructions,
-	valid_ingredients.contains_alcohol,
-	valid_ingredients.slug,
-	valid_ingredients.shopping_suggestions,
-	valid_ingredients.is_starch,
-	valid_ingredients.is_protein,
-	valid_ingredients.is_grain,
-	valid_ingredients.is_fruit,
-	valid_ingredients.is_salt,
-	valid_ingredients.is_fat,
-	valid_ingredients.is_acid,
-	valid_ingredients.is_heat,
-	valid_ingredients.last_indexed_at,
-	valid_ingredients.created_at,
-	valid_ingredients.last_updated_at,
-	valid_ingredients.archived_at,
+    valid_ingredients.id,
+    valid_ingredients.name,
+    valid_ingredients.description,
+    valid_ingredients.warning,
+    valid_ingredients.contains_egg,
+    valid_ingredients.contains_dairy,
+    valid_ingredients.contains_peanut,
+    valid_ingredients.contains_tree_nut,
+    valid_ingredients.contains_soy,
+    valid_ingredients.contains_wheat,
+    valid_ingredients.contains_shellfish,
+    valid_ingredients.contains_sesame,
+    valid_ingredients.contains_fish,
+    valid_ingredients.contains_gluten,
+    valid_ingredients.animal_flesh,
+    valid_ingredients.volumetric,
+    valid_ingredients.is_liquid,
+    valid_ingredients.icon_path,
+    valid_ingredients.animal_derived,
+    valid_ingredients.plural_name,
+    valid_ingredients.restrict_to_preparations,
+    valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
+    valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
+    valid_ingredients.storage_instructions,
+    valid_ingredients.slug,
+    valid_ingredients.contains_alcohol,
+    valid_ingredients.shopping_suggestions,
+    valid_ingredients.is_starch,
+    valid_ingredients.is_protein,
+    valid_ingredients.is_grain,
+    valid_ingredients.is_fruit,
+    valid_ingredients.is_salt,
+    valid_ingredients.is_fat,
+    valid_ingredients.is_acid,
+    valid_ingredients.is_heat,
+    valid_ingredients.created_at,
+    valid_ingredients.last_updated_at,
+    valid_ingredients.archived_at,
     (
-		SELECT COUNT(valid_ingredients.id)
-		FROM valid_ingredients
-		WHERE valid_ingredients.archived_at IS NULL
-			AND valid_ingredients.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-			AND valid_ingredients.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
-			AND (
-				valid_ingredients.last_updated_at IS NULL
-				OR valid_ingredients.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
-			)
-			AND (
-				valid_ingredients.last_updated_at IS NULL
-				OR valid_ingredients.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
-			)
-	) AS filtered_count,
+        SELECT
+            COUNT(valid_ingredients.id)
+        FROM
+            valid_ingredients
+        WHERE
+            valid_ingredients.archived_at IS NULL
+            AND valid_ingredients.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+            AND valid_ingredients.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+            AND (valid_ingredients.last_updated_at IS NULL OR valid_ingredients.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+            AND (valid_ingredients.last_updated_at IS NULL OR valid_ingredients.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+    ) as filtered_count,
     (
-        SELECT COUNT(valid_ingredients.id)
-        FROM valid_ingredients
-        WHERE valid_ingredients.archived_at IS NULL
-    ) AS total_count
+        SELECT
+            COUNT(valid_ingredients.id)
+        FROM
+            valid_ingredients
+        WHERE
+            valid_ingredients.archived_at IS NULL
+    ) as total_count
 FROM valid_ingredients
 WHERE
-	valid_ingredients.archived_at IS NULL
-	AND valid_ingredients.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-    AND valid_ingredients.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
-	AND (
-		valid_ingredients.last_updated_at IS NULL
-		OR valid_ingredients.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
-	)
-	AND (
-		valid_ingredients.last_updated_at IS NULL
-		OR valid_ingredients.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
-	)
+    valid_ingredients.archived_at IS NULL
+    AND valid_ingredients.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+    AND valid_ingredients.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+    AND (valid_ingredients.last_updated_at IS NULL OR valid_ingredients.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+    AND (valid_ingredients.last_updated_at IS NULL OR valid_ingredients.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
 GROUP BY valid_ingredients.id
 ORDER BY valid_ingredients.id
 LIMIT $6
@@ -706,8 +675,8 @@ OFFSET $5
 type GetValidIngredientsParams struct {
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
-	UpdatedBefore sql.NullTime
 	UpdatedAfter  sql.NullTime
+	UpdatedBefore sql.NullTime
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
@@ -715,40 +684,39 @@ type GetValidIngredientsParams struct {
 type GetValidIngredientsRow struct {
 	CreatedAt                               time.Time
 	ArchivedAt                              sql.NullTime
-	LastIndexedAt                           sql.NullTime
 	LastUpdatedAt                           sql.NullTime
-	StorageInstructions                     string
-	Slug                                    string
 	IconPath                                string
-	Warning                                 string
-	Description                             string
 	Name                                    string
-	ShoppingSuggestions                     string
-	ID                                      string
+	Description                             string
+	Warning                                 string
 	PluralName                              string
+	ID                                      string
+	ShoppingSuggestions                     string
+	Slug                                    string
+	StorageInstructions                     string
 	MaximumIdealStorageTemperatureInCelsius sql.NullString
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
 	FilteredCount                           int64
 	TotalCount                              int64
 	IsLiquid                                sql.NullBool
 	RestrictToPreparations                  bool
-	IsGrain                                 bool
+	IsProtein                               bool
 	Volumetric                              bool
 	AnimalFlesh                             bool
 	ContainsGluten                          bool
 	ContainsFish                            bool
-	ContainsAlcohol                         bool
 	ContainsSesame                          bool
 	ContainsShellfish                       bool
+	ContainsAlcohol                         bool
+	ContainsWheat                           bool
 	IsStarch                                bool
-	IsProtein                               bool
 	AnimalDerived                           bool
+	IsGrain                                 bool
 	IsFruit                                 bool
 	IsSalt                                  bool
 	IsFat                                   bool
 	IsAcid                                  bool
 	IsHeat                                  bool
-	ContainsWheat                           bool
 	ContainsSoy                             bool
 	ContainsTreeNut                         bool
 	ContainsPeanut                          bool
@@ -760,8 +728,8 @@ func (q *Queries) GetValidIngredients(ctx context.Context, db DBTX, arg *GetVali
 	rows, err := db.QueryContext(ctx, getValidIngredients,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
-		arg.UpdatedBefore,
 		arg.UpdatedAfter,
+		arg.UpdatedBefore,
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)
@@ -789,16 +757,16 @@ func (q *Queries) GetValidIngredients(ctx context.Context, db DBTX, arg *GetVali
 			&i.ContainsGluten,
 			&i.AnimalFlesh,
 			&i.Volumetric,
-			&i.IconPath,
 			&i.IsLiquid,
+			&i.IconPath,
 			&i.AnimalDerived,
 			&i.PluralName,
 			&i.RestrictToPreparations,
 			&i.MinimumIdealStorageTemperatureInCelsius,
 			&i.MaximumIdealStorageTemperatureInCelsius,
 			&i.StorageInstructions,
-			&i.ContainsAlcohol,
 			&i.Slug,
+			&i.ContainsAlcohol,
 			&i.ShoppingSuggestions,
 			&i.IsStarch,
 			&i.IsProtein,
@@ -808,7 +776,6 @@ func (q *Queries) GetValidIngredients(ctx context.Context, db DBTX, arg *GetVali
 			&i.IsFat,
 			&i.IsAcid,
 			&i.IsHeat,
-			&i.LastIndexedAt,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
@@ -832,8 +799,8 @@ const getValidIngredientsNeedingIndexing = `-- name: GetValidIngredientsNeedingI
 
 SELECT valid_ingredients.id
 FROM valid_ingredients
-WHERE valid_ingredients.archived_at IS NULL
-    AND (
+WHERE (valid_ingredients.archived_at IS NULL)
+AND (
     valid_ingredients.last_indexed_at IS NULL
     OR valid_ingredients.last_indexed_at < NOW() - '24 hours'::INTERVAL
 )
@@ -865,79 +832,79 @@ func (q *Queries) GetValidIngredientsNeedingIndexing(ctx context.Context, db DBT
 const getValidIngredientsWithIDs = `-- name: GetValidIngredientsWithIDs :many
 
 SELECT
-	valid_ingredients.id,
-	valid_ingredients.name,
-	valid_ingredients.description,
-	valid_ingredients.warning,
-	valid_ingredients.contains_egg,
-	valid_ingredients.contains_dairy,
-	valid_ingredients.contains_peanut,
-	valid_ingredients.contains_tree_nut,
-	valid_ingredients.contains_soy,
-	valid_ingredients.contains_wheat,
-	valid_ingredients.contains_shellfish,
-	valid_ingredients.contains_sesame,
-	valid_ingredients.contains_fish,
-	valid_ingredients.contains_gluten,
-	valid_ingredients.animal_flesh,
-	valid_ingredients.volumetric,
-	valid_ingredients.icon_path,
-	valid_ingredients.is_liquid,
-	valid_ingredients.animal_derived,
-	valid_ingredients.plural_name,
-	valid_ingredients.restrict_to_preparations,
-	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
-	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
-	valid_ingredients.storage_instructions,
-	valid_ingredients.contains_alcohol,
-	valid_ingredients.slug,
-	valid_ingredients.shopping_suggestions,
-	valid_ingredients.is_starch,
-	valid_ingredients.is_protein,
-	valid_ingredients.is_grain,
-	valid_ingredients.is_fruit,
-	valid_ingredients.is_salt,
-	valid_ingredients.is_fat,
-	valid_ingredients.is_acid,
-	valid_ingredients.is_heat,
-	valid_ingredients.last_indexed_at,
-	valid_ingredients.created_at,
-	valid_ingredients.last_updated_at,
-	valid_ingredients.archived_at
+    valid_ingredients.id,
+    valid_ingredients.name,
+    valid_ingredients.description,
+    valid_ingredients.warning,
+    valid_ingredients.contains_egg,
+    valid_ingredients.contains_dairy,
+    valid_ingredients.contains_peanut,
+    valid_ingredients.contains_tree_nut,
+    valid_ingredients.contains_soy,
+    valid_ingredients.contains_wheat,
+    valid_ingredients.contains_shellfish,
+    valid_ingredients.contains_sesame,
+    valid_ingredients.contains_fish,
+    valid_ingredients.contains_gluten,
+    valid_ingredients.animal_flesh,
+    valid_ingredients.volumetric,
+    valid_ingredients.is_liquid,
+    valid_ingredients.icon_path,
+    valid_ingredients.animal_derived,
+    valid_ingredients.plural_name,
+    valid_ingredients.restrict_to_preparations,
+    valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
+    valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
+    valid_ingredients.storage_instructions,
+    valid_ingredients.slug,
+    valid_ingredients.contains_alcohol,
+    valid_ingredients.shopping_suggestions,
+    valid_ingredients.is_starch,
+    valid_ingredients.is_protein,
+    valid_ingredients.is_grain,
+    valid_ingredients.is_fruit,
+    valid_ingredients.is_salt,
+    valid_ingredients.is_fat,
+    valid_ingredients.is_acid,
+    valid_ingredients.is_heat,
+    valid_ingredients.created_at,
+    valid_ingredients.last_updated_at,
+    valid_ingredients.archived_at
 FROM valid_ingredients
-WHERE valid_ingredients.archived_at IS NULL
-	AND valid_ingredients.id = ANY($1::text[])
+WHERE
+    valid_ingredients.archived_at IS NULL
+    AND valid_ingredients.id = ANY($1::text[])
 `
 
 type GetValidIngredientsWithIDsRow struct {
 	CreatedAt                               time.Time
 	ArchivedAt                              sql.NullTime
-	LastIndexedAt                           sql.NullTime
 	LastUpdatedAt                           sql.NullTime
-	ShoppingSuggestions                     string
 	Warning                                 string
 	Description                             string
 	Name                                    string
-	IconPath                                string
+	ShoppingSuggestions                     string
 	Slug                                    string
 	StorageInstructions                     string
 	PluralName                              string
 	ID                                      string
+	IconPath                                string
 	MaximumIdealStorageTemperatureInCelsius sql.NullString
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
 	IsLiquid                                sql.NullBool
 	AnimalDerived                           bool
-	IsStarch                                bool
+	ContainsTreeNut                         bool
 	AnimalFlesh                             bool
 	ContainsGluten                          bool
-	RestrictToPreparations                  bool
 	ContainsFish                            bool
+	RestrictToPreparations                  bool
 	ContainsSesame                          bool
 	ContainsShellfish                       bool
-	ContainsAlcohol                         bool
 	ContainsWheat                           bool
 	ContainsSoy                             bool
+	ContainsAlcohol                         bool
 	Volumetric                              bool
+	IsStarch                                bool
 	IsProtein                               bool
 	IsGrain                                 bool
 	IsFruit                                 bool
@@ -945,7 +912,6 @@ type GetValidIngredientsWithIDsRow struct {
 	IsFat                                   bool
 	IsAcid                                  bool
 	IsHeat                                  bool
-	ContainsTreeNut                         bool
 	ContainsPeanut                          bool
 	ContainsDairy                           bool
 	ContainsEgg                             bool
@@ -977,16 +943,16 @@ func (q *Queries) GetValidIngredientsWithIDs(ctx context.Context, db DBTX, ids [
 			&i.ContainsGluten,
 			&i.AnimalFlesh,
 			&i.Volumetric,
-			&i.IconPath,
 			&i.IsLiquid,
+			&i.IconPath,
 			&i.AnimalDerived,
 			&i.PluralName,
 			&i.RestrictToPreparations,
 			&i.MinimumIdealStorageTemperatureInCelsius,
 			&i.MaximumIdealStorageTemperatureInCelsius,
 			&i.StorageInstructions,
-			&i.ContainsAlcohol,
 			&i.Slug,
+			&i.ContainsAlcohol,
 			&i.ShoppingSuggestions,
 			&i.IsStarch,
 			&i.IsProtein,
@@ -996,7 +962,6 @@ func (q *Queries) GetValidIngredientsWithIDs(ctx context.Context, db DBTX, ids [
 			&i.IsFat,
 			&i.IsAcid,
 			&i.IsHeat,
-			&i.LastIndexedAt,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
@@ -1033,26 +998,25 @@ SELECT
 	valid_ingredients.contains_gluten,
 	valid_ingredients.animal_flesh,
 	valid_ingredients.volumetric,
-	valid_ingredients.icon_path,
 	valid_ingredients.is_liquid,
+	valid_ingredients.icon_path,
 	valid_ingredients.animal_derived,
 	valid_ingredients.plural_name,
 	valid_ingredients.restrict_to_preparations,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions,
-	valid_ingredients.contains_alcohol,
 	valid_ingredients.slug,
+	valid_ingredients.contains_alcohol,
 	valid_ingredients.shopping_suggestions,
-	valid_ingredients.is_starch,
-	valid_ingredients.is_protein,
-	valid_ingredients.is_grain,
-	valid_ingredients.is_fruit,
-	valid_ingredients.is_salt,
-	valid_ingredients.is_fat,
-	valid_ingredients.is_acid,
-	valid_ingredients.is_heat,
-	valid_ingredients.last_indexed_at,
+    valid_ingredients.is_starch,
+    valid_ingredients.is_protein,
+    valid_ingredients.is_grain,
+    valid_ingredients.is_fruit,
+    valid_ingredients.is_salt,
+    valid_ingredients.is_fat,
+    valid_ingredients.is_acid,
+    valid_ingredients.is_heat,
 	valid_ingredients.created_at,
 	valid_ingredients.last_updated_at,
 	valid_ingredients.archived_at
@@ -1065,32 +1029,32 @@ LIMIT 50
 type SearchForValidIngredientsRow struct {
 	CreatedAt                               time.Time
 	ArchivedAt                              sql.NullTime
-	LastIndexedAt                           sql.NullTime
 	LastUpdatedAt                           sql.NullTime
-	ShoppingSuggestions                     string
 	Warning                                 string
 	Description                             string
 	Name                                    string
-	IconPath                                string
+	ShoppingSuggestions                     string
 	Slug                                    string
 	StorageInstructions                     string
 	PluralName                              string
 	ID                                      string
+	IconPath                                string
 	MaximumIdealStorageTemperatureInCelsius sql.NullString
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
 	IsLiquid                                sql.NullBool
 	AnimalDerived                           bool
-	IsStarch                                bool
+	ContainsTreeNut                         bool
 	AnimalFlesh                             bool
 	ContainsGluten                          bool
-	RestrictToPreparations                  bool
 	ContainsFish                            bool
+	RestrictToPreparations                  bool
 	ContainsSesame                          bool
 	ContainsShellfish                       bool
-	ContainsAlcohol                         bool
 	ContainsWheat                           bool
 	ContainsSoy                             bool
+	ContainsAlcohol                         bool
 	Volumetric                              bool
+	IsStarch                                bool
 	IsProtein                               bool
 	IsGrain                                 bool
 	IsFruit                                 bool
@@ -1098,7 +1062,6 @@ type SearchForValidIngredientsRow struct {
 	IsFat                                   bool
 	IsAcid                                  bool
 	IsHeat                                  bool
-	ContainsTreeNut                         bool
 	ContainsPeanut                          bool
 	ContainsDairy                           bool
 	ContainsEgg                             bool
@@ -1130,16 +1093,16 @@ func (q *Queries) SearchForValidIngredients(ctx context.Context, db DBTX, nameQu
 			&i.ContainsGluten,
 			&i.AnimalFlesh,
 			&i.Volumetric,
-			&i.IconPath,
 			&i.IsLiquid,
+			&i.IconPath,
 			&i.AnimalDerived,
 			&i.PluralName,
 			&i.RestrictToPreparations,
 			&i.MinimumIdealStorageTemperatureInCelsius,
 			&i.MaximumIdealStorageTemperatureInCelsius,
 			&i.StorageInstructions,
-			&i.ContainsAlcohol,
 			&i.Slug,
+			&i.ContainsAlcohol,
 			&i.ShoppingSuggestions,
 			&i.IsStarch,
 			&i.IsProtein,
@@ -1149,7 +1112,6 @@ func (q *Queries) SearchForValidIngredients(ctx context.Context, db DBTX, nameQu
 			&i.IsFat,
 			&i.IsAcid,
 			&i.IsHeat,
-			&i.LastIndexedAt,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
@@ -1186,26 +1148,25 @@ SELECT
 	valid_ingredients.contains_gluten,
 	valid_ingredients.animal_flesh,
 	valid_ingredients.volumetric,
-	valid_ingredients.icon_path,
 	valid_ingredients.is_liquid,
+	valid_ingredients.icon_path,
 	valid_ingredients.animal_derived,
 	valid_ingredients.plural_name,
 	valid_ingredients.restrict_to_preparations,
 	valid_ingredients.minimum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions,
-	valid_ingredients.contains_alcohol,
 	valid_ingredients.slug,
+	valid_ingredients.contains_alcohol,
 	valid_ingredients.shopping_suggestions,
-	valid_ingredients.is_starch,
-	valid_ingredients.is_protein,
-	valid_ingredients.is_grain,
-	valid_ingredients.is_fruit,
-	valid_ingredients.is_salt,
-	valid_ingredients.is_fat,
-	valid_ingredients.is_acid,
-	valid_ingredients.is_heat,
-	valid_ingredients.last_indexed_at,
+    valid_ingredients.is_starch,
+    valid_ingredients.is_protein,
+    valid_ingredients.is_grain,
+    valid_ingredients.is_fruit,
+    valid_ingredients.is_salt,
+    valid_ingredients.is_fat,
+    valid_ingredients.is_acid,
+    valid_ingredients.is_heat,
 	valid_ingredients.created_at,
 	valid_ingredients.last_updated_at,
 	valid_ingredients.archived_at
@@ -1213,12 +1174,9 @@ FROM valid_ingredient_preparations
 	JOIN valid_ingredients ON valid_ingredient_preparations.valid_ingredient_id = valid_ingredients.id
 	JOIN valid_preparations ON valid_ingredient_preparations.valid_preparation_id = valid_preparations.id
 WHERE valid_ingredient_preparations.archived_at IS NULL
-	AND valid_ingredients.archived_at IS NULL
-	AND valid_preparations.archived_at IS NULL
-	AND (
-		valid_ingredient_preparations.valid_preparation_id = $1
-		OR valid_preparations.restrict_to_ingredients IS FALSE
-	)
+    AND valid_ingredients.archived_at IS NULL
+    AND valid_preparations.archived_at IS NULL
+	AND (valid_ingredient_preparations.valid_preparation_id = $1 OR valid_preparations.restrict_to_ingredients IS FALSE)
 	AND valid_ingredients.name ILIKE '%' || $2::text || '%'
 `
 
@@ -1230,32 +1188,32 @@ type SearchValidIngredientsByPreparationAndIngredientNameParams struct {
 type SearchValidIngredientsByPreparationAndIngredientNameRow struct {
 	CreatedAt                               time.Time
 	ArchivedAt                              sql.NullTime
-	LastIndexedAt                           sql.NullTime
 	LastUpdatedAt                           sql.NullTime
-	ShoppingSuggestions                     string
 	Warning                                 string
 	Description                             string
 	Name                                    string
-	IconPath                                string
+	ShoppingSuggestions                     string
 	Slug                                    string
 	StorageInstructions                     string
 	PluralName                              string
 	ID                                      string
+	IconPath                                string
 	MaximumIdealStorageTemperatureInCelsius sql.NullString
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
 	IsLiquid                                sql.NullBool
 	AnimalDerived                           bool
-	IsStarch                                bool
+	ContainsTreeNut                         bool
 	AnimalFlesh                             bool
 	ContainsGluten                          bool
-	RestrictToPreparations                  bool
 	ContainsFish                            bool
+	RestrictToPreparations                  bool
 	ContainsSesame                          bool
 	ContainsShellfish                       bool
-	ContainsAlcohol                         bool
 	ContainsWheat                           bool
 	ContainsSoy                             bool
+	ContainsAlcohol                         bool
 	Volumetric                              bool
+	IsStarch                                bool
 	IsProtein                               bool
 	IsGrain                                 bool
 	IsFruit                                 bool
@@ -1263,7 +1221,6 @@ type SearchValidIngredientsByPreparationAndIngredientNameRow struct {
 	IsFat                                   bool
 	IsAcid                                  bool
 	IsHeat                                  bool
-	ContainsTreeNut                         bool
 	ContainsPeanut                          bool
 	ContainsDairy                           bool
 	ContainsEgg                             bool
@@ -1295,16 +1252,16 @@ func (q *Queries) SearchValidIngredientsByPreparationAndIngredientName(ctx conte
 			&i.ContainsGluten,
 			&i.AnimalFlesh,
 			&i.Volumetric,
-			&i.IconPath,
 			&i.IsLiquid,
+			&i.IconPath,
 			&i.AnimalDerived,
 			&i.PluralName,
 			&i.RestrictToPreparations,
 			&i.MinimumIdealStorageTemperatureInCelsius,
 			&i.MaximumIdealStorageTemperatureInCelsius,
 			&i.StorageInstructions,
-			&i.ContainsAlcohol,
 			&i.Slug,
+			&i.ContainsAlcohol,
 			&i.ShoppingSuggestions,
 			&i.IsStarch,
 			&i.IsProtein,
@@ -1314,7 +1271,6 @@ func (q *Queries) SearchValidIngredientsByPreparationAndIngredientName(ctx conte
 			&i.IsFat,
 			&i.IsAcid,
 			&i.IsHeat,
-			&i.LastIndexedAt,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
@@ -1350,56 +1306,56 @@ UPDATE valid_ingredients SET
 	contains_gluten = $13,
 	animal_flesh = $14,
 	volumetric = $15,
-	icon_path = $16,
-	is_liquid = $17,
+	is_liquid = $16,
+	icon_path = $17,
 	animal_derived = $18,
 	plural_name = $19,
 	restrict_to_preparations = $20,
 	minimum_ideal_storage_temperature_in_celsius = $21,
 	maximum_ideal_storage_temperature_in_celsius = $22,
 	storage_instructions = $23,
-	contains_alcohol = $24,
-	slug = $25,
+	slug = $24,
+	contains_alcohol = $25,
 	shopping_suggestions = $26,
-	is_starch = $27,
-	is_protein = $28,
-	is_grain = $29,
-	is_fruit = $30,
-	is_salt = $31,
-	is_fat = $32,
-	is_acid = $33,
-	is_heat = $34,
+    is_starch = $27,
+    is_protein = $28,
+    is_grain = $29,
+    is_fruit = $30,
+    is_salt = $31,
+    is_fat = $32,
+    is_acid = $33,
+    is_heat = $34,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
     AND id = $35
 `
 
 type UpdateValidIngredientParams struct {
-	IconPath                                string
 	Description                             string
 	Warning                                 string
 	ID                                      string
 	ShoppingSuggestions                     string
 	Slug                                    string
 	StorageInstructions                     string
-	PluralName                              string
 	Name                                    string
+	PluralName                              string
+	IconPath                                string
 	MaximumIdealStorageTemperatureInCelsius sql.NullString
 	MinimumIdealStorageTemperatureInCelsius sql.NullString
 	IsLiquid                                sql.NullBool
-	ContainsTreeNut                         bool
-	ContainsEgg                             bool
-	ContainsGluten                          bool
-	ContainsFish                            bool
-	ContainsSesame                          bool
-	AnimalDerived                           bool
-	ContainsShellfish                       bool
-	RestrictToPreparations                  bool
 	ContainsWheat                           bool
 	ContainsPeanut                          bool
 	Volumetric                              bool
-	AnimalFlesh                             bool
+	ContainsGluten                          bool
+	ContainsFish                            bool
+	AnimalDerived                           bool
+	ContainsSesame                          bool
+	RestrictToPreparations                  bool
+	ContainsShellfish                       bool
 	ContainsSoy                             bool
+	ContainsTreeNut                         bool
+	AnimalFlesh                             bool
+	ContainsAlcohol                         bool
 	ContainsDairy                           bool
 	IsStarch                                bool
 	IsProtein                               bool
@@ -1409,7 +1365,7 @@ type UpdateValidIngredientParams struct {
 	IsFat                                   bool
 	IsAcid                                  bool
 	IsHeat                                  bool
-	ContainsAlcohol                         bool
+	ContainsEgg                             bool
 }
 
 func (q *Queries) UpdateValidIngredient(ctx context.Context, db DBTX, arg *UpdateValidIngredientParams) (int64, error) {
@@ -1429,16 +1385,16 @@ func (q *Queries) UpdateValidIngredient(ctx context.Context, db DBTX, arg *Updat
 		arg.ContainsGluten,
 		arg.AnimalFlesh,
 		arg.Volumetric,
-		arg.IconPath,
 		arg.IsLiquid,
+		arg.IconPath,
 		arg.AnimalDerived,
 		arg.PluralName,
 		arg.RestrictToPreparations,
 		arg.MinimumIdealStorageTemperatureInCelsius,
 		arg.MaximumIdealStorageTemperatureInCelsius,
 		arg.StorageInstructions,
-		arg.ContainsAlcohol,
 		arg.Slug,
+		arg.ContainsAlcohol,
 		arg.ShoppingSuggestions,
 		arg.IsStarch,
 		arg.IsProtein,
