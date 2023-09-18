@@ -339,6 +339,7 @@ SELECT
 	valid_preparations.archived_at
 FROM valid_preparations
 WHERE valid_preparations.archived_at IS NULL
+	AND valid_preparations.id = $1
 `
 
 type GetValidPreparationByIDRow struct {
@@ -367,8 +368,8 @@ type GetValidPreparationByIDRow struct {
 	YieldsNothing               bool
 }
 
-func (q *Queries) GetValidPreparationByID(ctx context.Context, db DBTX) (*GetValidPreparationByIDRow, error) {
-	row := db.QueryRowContext(ctx, getValidPreparationByID)
+func (q *Queries) GetValidPreparationByID(ctx context.Context, db DBTX, id string) (*GetValidPreparationByIDRow, error) {
+	row := db.QueryRowContext(ctx, getValidPreparationByID, id)
 	var i GetValidPreparationByIDRow
 	err := row.Scan(
 		&i.ID,

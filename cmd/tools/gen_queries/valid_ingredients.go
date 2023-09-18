@@ -119,13 +119,17 @@ func buildValidIngredientsQueries() []*Query {
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
-WHERE %s.%s IS NULL;`,
+WHERE %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(applyToEach(validIngredientsColumns, func(i int, s string) string {
 					return fmt.Sprintf("%s.%s", validIngredientsTableName, s)
 				}), ",\n\t"),
 				validIngredientsTableName,
 				validIngredientsTableName,
 				archivedAtColumn,
+				validIngredientsTableName,
+				idColumn,
+				idColumn,
 			)),
 		},
 		{

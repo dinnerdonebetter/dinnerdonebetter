@@ -97,13 +97,17 @@ func buildValidPreparationsQueries() []*Query {
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
-WHERE %s.%s IS NULL;`,
+WHERE %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(applyToEach(validPreparationsColumns, func(i int, s string) string {
 					return fmt.Sprintf("%s.%s", validPreparationsTableName, s)
 				}), ",\n\t"),
 				validPreparationsTableName,
 				validPreparationsTableName,
 				archivedAtColumn,
+				validPreparationsTableName,
+				idColumn,
+				idColumn,
 			)),
 		},
 		{

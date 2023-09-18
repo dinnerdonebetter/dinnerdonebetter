@@ -229,6 +229,7 @@ SELECT
 	valid_instruments.archived_at
 FROM valid_instruments
 WHERE valid_instruments.archived_at IS NULL
+	AND valid_instruments.id = $1
 `
 
 type GetValidInstrumentByIDRow struct {
@@ -247,8 +248,8 @@ type GetValidInstrumentByIDRow struct {
 	IncludeInGeneratedInstructions bool
 }
 
-func (q *Queries) GetValidInstrumentByID(ctx context.Context, db DBTX) (*GetValidInstrumentByIDRow, error) {
-	row := db.QueryRowContext(ctx, getValidInstrumentByID)
+func (q *Queries) GetValidInstrumentByID(ctx context.Context, db DBTX, id string) (*GetValidInstrumentByIDRow, error) {
+	row := db.QueryRowContext(ctx, getValidInstrumentByID, id)
 	var i GetValidInstrumentByIDRow
 	err := row.Scan(
 		&i.ID,

@@ -52,7 +52,8 @@ SELECT
 	valid_instruments.last_updated_at,
 	valid_instruments.archived_at
 FROM valid_instruments
-WHERE valid_instruments.archived_at IS NULL;
+WHERE valid_instruments.archived_at IS NULL
+	AND valid_instruments.id = sqlc.arg(id);
 
 -- name: GetValidInstruments :many
 

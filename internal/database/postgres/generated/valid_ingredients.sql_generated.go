@@ -515,6 +515,7 @@ SELECT
 	valid_ingredients.archived_at
 FROM valid_ingredients
 WHERE valid_ingredients.archived_at IS NULL
+	AND valid_ingredients.id = $1
 `
 
 type GetValidIngredientByIDRow struct {
@@ -559,8 +560,8 @@ type GetValidIngredientByIDRow struct {
 	ContainsEgg                             bool
 }
 
-func (q *Queries) GetValidIngredientByID(ctx context.Context, db DBTX) (*GetValidIngredientByIDRow, error) {
-	row := db.QueryRowContext(ctx, getValidIngredientByID)
+func (q *Queries) GetValidIngredientByID(ctx context.Context, db DBTX, id string) (*GetValidIngredientByIDRow, error) {
+	row := db.QueryRowContext(ctx, getValidIngredientByID, id)
 	var i GetValidIngredientByIDRow
 	err := row.Scan(
 		&i.ID,

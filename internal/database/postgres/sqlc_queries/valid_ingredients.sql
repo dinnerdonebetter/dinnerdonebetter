@@ -130,7 +130,8 @@ SELECT
 	valid_ingredients.last_updated_at,
 	valid_ingredients.archived_at
 FROM valid_ingredients
-WHERE valid_ingredients.archived_at IS NULL;
+WHERE valid_ingredients.archived_at IS NULL
+	AND valid_ingredients.id = sqlc.arg(id);
 
 -- name: GetValidIngredients :many
 

@@ -82,7 +82,8 @@ SELECT
 	valid_preparations.last_updated_at,
 	valid_preparations.archived_at
 FROM valid_preparations
-WHERE valid_preparations.archived_at IS NULL;
+WHERE valid_preparations.archived_at IS NULL
+	AND valid_preparations.id = sqlc.arg(id);
 
 -- name: GetValidPreparations :many
 

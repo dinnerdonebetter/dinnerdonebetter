@@ -240,6 +240,7 @@ SELECT
 	valid_measurement_units.archived_at
 FROM valid_measurement_units
 WHERE valid_measurement_units.archived_at IS NULL
+	AND valid_measurement_units.id = $1
 `
 
 type GetValidMeasurementUnitByIDRow struct {
@@ -259,8 +260,8 @@ type GetValidMeasurementUnitByIDRow struct {
 	Universal     bool
 }
 
-func (q *Queries) GetValidMeasurementUnitByID(ctx context.Context, db DBTX) (*GetValidMeasurementUnitByIDRow, error) {
-	row := db.QueryRowContext(ctx, getValidMeasurementUnitByID)
+func (q *Queries) GetValidMeasurementUnitByID(ctx context.Context, db DBTX, id string) (*GetValidMeasurementUnitByIDRow, error) {
+	row := db.QueryRowContext(ctx, getValidMeasurementUnitByID, id)
 	var i GetValidMeasurementUnitByIDRow
 	err := row.Scan(
 		&i.ID,

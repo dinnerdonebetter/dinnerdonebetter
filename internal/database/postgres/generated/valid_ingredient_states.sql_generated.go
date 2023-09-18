@@ -28,7 +28,12 @@ func (q *Queries) ArchiveValidIngredientState(ctx context.Context, db DBTX, id s
 
 const checkValidIngredientStateExistence = `-- name: CheckValidIngredientStateExistence :one
 
-SELECT EXISTS ( SELECT valid_ingredient_states.id FROM valid_ingredient_states WHERE valid_ingredient_states.archived_at IS NULL AND valid_ingredient_states.id = $1 )
+SELECT EXISTS (
+    SELECT valid_ingredient_states.id
+    FROM valid_ingredient_states
+    WHERE valid_ingredient_states.archived_at IS NULL
+        AND valid_ingredient_states.id = $1
+)
 `
 
 func (q *Queries) CheckValidIngredientStateExistence(ctx context.Context, db DBTX, id string) (bool, error) {
@@ -40,16 +45,32 @@ func (q *Queries) CheckValidIngredientStateExistence(ctx context.Context, db DBT
 
 const createValidIngredientState = `-- name: CreateValidIngredientState :exec
 
-INSERT INTO valid_ingredient_states (id,"name",description,icon_path,past_tense,slug,attribute_type) VALUES ($1,$2,$3,$4,$5,$6,$7)
+INSERT INTO valid_ingredient_states (
+    id,
+	name,
+	past_tense,
+	slug,
+	description,
+	icon_path,
+	attribute_type
+) VALUES (
+    $1,
+	$2,
+	$3,
+	$4,
+	$5,
+	$6,
+	$7
+)
 `
 
 type CreateValidIngredientStateParams struct {
 	ID            string
 	Name          string
-	Description   string
-	IconPath      string
 	PastTense     string
 	Slug          string
+	Description   string
+	IconPath      string
 	AttributeType IngredientAttributeType
 }
 
@@ -57,10 +78,10 @@ func (q *Queries) CreateValidIngredientState(ctx context.Context, db DBTX, arg *
 	_, err := db.ExecContext(ctx, createValidIngredientState,
 		arg.ID,
 		arg.Name,
-		arg.Description,
-		arg.IconPath,
 		arg.PastTense,
 		arg.Slug,
+		arg.Description,
+		arg.IconPath,
 		arg.AttributeType,
 	)
 	return err
@@ -71,27 +92,29 @@ const getValidIngredientState = `-- name: GetValidIngredientState :one
 SELECT
 	valid_ingredient_states.id,
 	valid_ingredient_states.name,
+	valid_ingredient_states.past_tense,
+	valid_ingredient_states.slug,
 	valid_ingredient_states.description,
 	valid_ingredient_states.icon_path,
-	valid_ingredient_states.slug,
-	valid_ingredient_states.past_tense,
 	valid_ingredient_states.attribute_type,
+	valid_ingredient_states.last_indexed_at,
 	valid_ingredient_states.created_at,
 	valid_ingredient_states.last_updated_at,
 	valid_ingredient_states.archived_at
 FROM valid_ingredient_states
 WHERE valid_ingredient_states.archived_at IS NULL
-	AND valid_ingredient_states.id = $1
+AND valid_ingredient_states.id = $1
 `
 
 type GetValidIngredientStateRow struct {
 	ID            string
 	Name          string
+	PastTense     string
+	Slug          string
 	Description   string
 	IconPath      string
-	Slug          string
-	PastTense     string
 	AttributeType IngredientAttributeType
+	LastIndexedAt sql.NullTime
 	CreatedAt     time.Time
 	LastUpdatedAt sql.NullTime
 	ArchivedAt    sql.NullTime
@@ -103,11 +126,64 @@ func (q *Queries) GetValidIngredientState(ctx context.Context, db DBTX, id strin
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
+		&i.PastTense,
+		&i.Slug,
 		&i.Description,
 		&i.IconPath,
-		&i.Slug,
-		&i.PastTense,
 		&i.AttributeType,
+		&i.LastIndexedAt,
+		&i.CreatedAt,
+		&i.LastUpdatedAt,
+		&i.ArchivedAt,
+	)
+	return &i, err
+}
+
+const getValidIngredientStateByID = `-- name: GetValidIngredientStateByID :one
+
+SELECT
+	valid_ingredient_states.id,
+	valid_ingredient_states.name,
+	valid_ingredient_states.past_tense,
+	valid_ingredient_states.slug,
+	valid_ingredient_states.description,
+	valid_ingredient_states.icon_path,
+	valid_ingredient_states.attribute_type,
+	valid_ingredient_states.last_indexed_at,
+	valid_ingredient_states.created_at,
+	valid_ingredient_states.last_updated_at,
+	valid_ingredient_states.archived_at
+FROM valid_ingredient_states
+WHERE valid_ingredient_states.archived_at IS NULL
+	AND valid_ingredient_states.id = $1
+`
+
+type GetValidIngredientStateByIDRow struct {
+	ID            string
+	Name          string
+	PastTense     string
+	Slug          string
+	Description   string
+	IconPath      string
+	AttributeType IngredientAttributeType
+	LastIndexedAt sql.NullTime
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+	ArchivedAt    sql.NullTime
+}
+
+func (q *Queries) GetValidIngredientStateByID(ctx context.Context, db DBTX, id string) (*GetValidIngredientStateByIDRow, error) {
+	row := db.QueryRowContext(ctx, getValidIngredientStateByID, id)
+	var i GetValidIngredientStateByIDRow
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.PastTense,
+		&i.Slug,
+		&i.Description,
+		&i.IconPath,
+		&i.AttributeType,
+		&i.LastIndexedAt,
 		&i.CreatedAt,
 		&i.LastUpdatedAt,
 		&i.ArchivedAt,
@@ -120,37 +196,50 @@ const getValidIngredientStates = `-- name: GetValidIngredientStates :many
 SELECT
 	valid_ingredient_states.id,
 	valid_ingredient_states.name,
+	valid_ingredient_states.past_tense,
+	valid_ingredient_states.slug,
 	valid_ingredient_states.description,
 	valid_ingredient_states.icon_path,
-	valid_ingredient_states.slug,
-	valid_ingredient_states.past_tense,
 	valid_ingredient_states.attribute_type,
+	valid_ingredient_states.last_indexed_at,
 	valid_ingredient_states.created_at,
 	valid_ingredient_states.last_updated_at,
 	valid_ingredient_states.archived_at,
     (
+		SELECT COUNT(valid_ingredient_states.id)
+		FROM valid_ingredient_states
+		WHERE valid_ingredient_states.archived_at IS NULL
+			AND valid_ingredient_states.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND valid_ingredient_states.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				valid_ingredient_states.last_updated_at IS NULL
+				OR valid_ingredient_states.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				valid_ingredient_states.last_updated_at IS NULL
+				OR valid_ingredient_states.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+	) AS filtered_count,
+    (
         SELECT COUNT(valid_ingredient_states.id)
         FROM valid_ingredient_states
         WHERE valid_ingredient_states.archived_at IS NULL
-        AND valid_ingredient_states.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-        AND valid_ingredient_states.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-        AND (valid_ingredient_states.last_updated_at IS NULL OR valid_ingredient_states.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-        AND (valid_ingredient_states.last_updated_at IS NULL OR valid_ingredient_states.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-    ) as filtered_count,
-    (
-        SELECT
-            COUNT(valid_ingredient_states.id)
-        FROM
-            valid_ingredient_states
-        WHERE
-            valid_ingredient_states.archived_at IS NULL
-    ) as total_count
+    ) AS total_count
 FROM valid_ingredient_states
-WHERE valid_ingredient_states.archived_at IS NULL
-    AND valid_ingredient_states.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-    AND valid_ingredient_states.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-    AND (valid_ingredient_states.last_updated_at IS NULL OR valid_ingredient_states.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-    AND (valid_ingredient_states.last_updated_at IS NULL OR valid_ingredient_states.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+WHERE
+	valid_ingredient_states.archived_at IS NULL
+	AND valid_ingredient_states.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+    AND valid_ingredient_states.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		valid_ingredient_states.last_updated_at IS NULL
+		OR valid_ingredient_states.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		valid_ingredient_states.last_updated_at IS NULL
+		OR valid_ingredient_states.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
+GROUP BY valid_ingredient_states.id
+ORDER BY valid_ingredient_states.id
 LIMIT $6
 OFFSET $5
 `
@@ -158,8 +247,8 @@ OFFSET $5
 type GetValidIngredientStatesParams struct {
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
-	UpdatedAfter  sql.NullTime
 	UpdatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
@@ -167,11 +256,12 @@ type GetValidIngredientStatesParams struct {
 type GetValidIngredientStatesRow struct {
 	ID            string
 	Name          string
+	PastTense     string
+	Slug          string
 	Description   string
 	IconPath      string
-	Slug          string
-	PastTense     string
 	AttributeType IngredientAttributeType
+	LastIndexedAt sql.NullTime
 	CreatedAt     time.Time
 	LastUpdatedAt sql.NullTime
 	ArchivedAt    sql.NullTime
@@ -183,8 +273,8 @@ func (q *Queries) GetValidIngredientStates(ctx context.Context, db DBTX, arg *Ge
 	rows, err := db.QueryContext(ctx, getValidIngredientStates,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
-		arg.UpdatedAfter,
 		arg.UpdatedBefore,
+		arg.UpdatedAfter,
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)
@@ -198,11 +288,12 @@ func (q *Queries) GetValidIngredientStates(ctx context.Context, db DBTX, arg *Ge
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
+			&i.PastTense,
+			&i.Slug,
 			&i.Description,
 			&i.IconPath,
-			&i.Slug,
-			&i.PastTense,
 			&i.AttributeType,
+			&i.LastIndexedAt,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
@@ -225,15 +316,12 @@ func (q *Queries) GetValidIngredientStates(ctx context.Context, db DBTX, arg *Ge
 const getValidIngredientStatesNeedingIndexing = `-- name: GetValidIngredientStatesNeedingIndexing :many
 
 SELECT valid_ingredient_states.id
-  FROM valid_ingredient_states
- WHERE (valid_ingredient_states.archived_at IS NULL)
-       AND (
-			(
-				valid_ingredient_states.last_indexed_at IS NULL
-			)
-			OR valid_ingredient_states.last_indexed_at
-				< now() - '24 hours'::INTERVAL
-		)
+FROM valid_ingredient_states
+WHERE valid_ingredient_states.archived_at IS NULL
+    AND (
+    valid_ingredient_states.last_indexed_at IS NULL
+    OR valid_ingredient_states.last_indexed_at < NOW() - '24 hours'::INTERVAL
+)
 `
 
 func (q *Queries) GetValidIngredientStatesNeedingIndexing(ctx context.Context, db DBTX) ([]string, error) {
@@ -264,11 +352,12 @@ const getValidIngredientStatesWithIDs = `-- name: GetValidIngredientStatesWithID
 SELECT
 	valid_ingredient_states.id,
 	valid_ingredient_states.name,
+	valid_ingredient_states.past_tense,
+	valid_ingredient_states.slug,
 	valid_ingredient_states.description,
 	valid_ingredient_states.icon_path,
-	valid_ingredient_states.slug,
-	valid_ingredient_states.past_tense,
 	valid_ingredient_states.attribute_type,
+	valid_ingredient_states.last_indexed_at,
 	valid_ingredient_states.created_at,
 	valid_ingredient_states.last_updated_at,
 	valid_ingredient_states.archived_at
@@ -280,18 +369,19 @@ WHERE valid_ingredient_states.archived_at IS NULL
 type GetValidIngredientStatesWithIDsRow struct {
 	ID            string
 	Name          string
+	PastTense     string
+	Slug          string
 	Description   string
 	IconPath      string
-	Slug          string
-	PastTense     string
 	AttributeType IngredientAttributeType
+	LastIndexedAt sql.NullTime
 	CreatedAt     time.Time
 	LastUpdatedAt sql.NullTime
 	ArchivedAt    sql.NullTime
 }
 
-func (q *Queries) GetValidIngredientStatesWithIDs(ctx context.Context, db DBTX, dollar_1 []string) ([]*GetValidIngredientStatesWithIDsRow, error) {
-	rows, err := db.QueryContext(ctx, getValidIngredientStatesWithIDs, pq.Array(dollar_1))
+func (q *Queries) GetValidIngredientStatesWithIDs(ctx context.Context, db DBTX, ids []string) ([]*GetValidIngredientStatesWithIDsRow, error) {
+	rows, err := db.QueryContext(ctx, getValidIngredientStatesWithIDs, pq.Array(ids))
 	if err != nil {
 		return nil, err
 	}
@@ -302,11 +392,12 @@ func (q *Queries) GetValidIngredientStatesWithIDs(ctx context.Context, db DBTX, 
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
+			&i.PastTense,
+			&i.Slug,
 			&i.Description,
 			&i.IconPath,
-			&i.Slug,
-			&i.PastTense,
 			&i.AttributeType,
+			&i.LastIndexedAt,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
@@ -329,35 +420,37 @@ const searchForValidIngredientStates = `-- name: SearchForValidIngredientStates 
 SELECT
 	valid_ingredient_states.id,
 	valid_ingredient_states.name,
+	valid_ingredient_states.past_tense,
+	valid_ingredient_states.slug,
 	valid_ingredient_states.description,
 	valid_ingredient_states.icon_path,
-	valid_ingredient_states.slug,
-	valid_ingredient_states.past_tense,
 	valid_ingredient_states.attribute_type,
+	valid_ingredient_states.last_indexed_at,
 	valid_ingredient_states.created_at,
 	valid_ingredient_states.last_updated_at,
 	valid_ingredient_states.archived_at
 FROM valid_ingredient_states
-WHERE valid_ingredient_states.archived_at IS NULL
-	AND valid_ingredient_states.name ILIKE '%' || $1::text || '%'
+WHERE valid_ingredient_states.name ILIKE '%' || $1::text || '%'
+	AND valid_ingredient_states.archived_at IS NULL
 LIMIT 50
 `
 
 type SearchForValidIngredientStatesRow struct {
 	ID            string
 	Name          string
+	PastTense     string
+	Slug          string
 	Description   string
 	IconPath      string
-	Slug          string
-	PastTense     string
 	AttributeType IngredientAttributeType
+	LastIndexedAt sql.NullTime
 	CreatedAt     time.Time
 	LastUpdatedAt sql.NullTime
 	ArchivedAt    sql.NullTime
 }
 
-func (q *Queries) SearchForValidIngredientStates(ctx context.Context, db DBTX, query string) ([]*SearchForValidIngredientStatesRow, error) {
-	rows, err := db.QueryContext(ctx, searchForValidIngredientStates, query)
+func (q *Queries) SearchForValidIngredientStates(ctx context.Context, db DBTX, nameQuery string) ([]*SearchForValidIngredientStatesRow, error) {
+	rows, err := db.QueryContext(ctx, searchForValidIngredientStates, nameQuery)
 	if err != nil {
 		return nil, err
 	}
@@ -368,11 +461,12 @@ func (q *Queries) SearchForValidIngredientStates(ctx context.Context, db DBTX, q
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
+			&i.PastTense,
+			&i.Slug,
 			&i.Description,
 			&i.IconPath,
-			&i.Slug,
-			&i.PastTense,
 			&i.AttributeType,
+			&i.LastIndexedAt,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
@@ -392,25 +486,24 @@ func (q *Queries) SearchForValidIngredientStates(ctx context.Context, db DBTX, q
 
 const updateValidIngredientState = `-- name: UpdateValidIngredientState :execrows
 
-UPDATE valid_ingredient_states
-SET
+UPDATE valid_ingredient_states SET
 	name = $1,
-	description = $2,
-	icon_path = $3,
-	slug = $4,
-	past_tense = $5,
+	past_tense = $2,
+	slug = $3,
+	description = $4,
+	icon_path = $5,
 	attribute_type = $6,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND id = $7
+    AND id = $7
 `
 
 type UpdateValidIngredientStateParams struct {
 	Name          string
+	PastTense     string
+	Slug          string
 	Description   string
 	IconPath      string
-	Slug          string
-	PastTense     string
 	AttributeType IngredientAttributeType
 	ID            string
 }
@@ -418,10 +511,10 @@ type UpdateValidIngredientStateParams struct {
 func (q *Queries) UpdateValidIngredientState(ctx context.Context, db DBTX, arg *UpdateValidIngredientStateParams) (int64, error) {
 	result, err := db.ExecContext(ctx, updateValidIngredientState,
 		arg.Name,
+		arg.PastTense,
+		arg.Slug,
 		arg.Description,
 		arg.IconPath,
-		arg.Slug,
-		arg.PastTense,
 		arg.AttributeType,
 		arg.ID,
 	)

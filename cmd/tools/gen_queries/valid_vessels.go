@@ -61,13 +61,7 @@ func buildValidVesselsQueries() []*Query {
 				validVesselsTableName,
 				strings.Join(insertColumns, ",\n\t"),
 				strings.Join(applyToEach(insertColumns, func(i int, s string) string {
-					switch s {
-					case "minimum_ideal_storage_temperature_in_celsius",
-						"maximum_ideal_storage_temperature_in_celsius":
-						return fmt.Sprintf("sqlc.narg(%s)", s)
-					default:
-						return fmt.Sprintf("sqlc.arg(%s)", s)
-					}
+					return fmt.Sprintf("sqlc.arg(%s)", s)
 				}), ",\n\t"),
 			)),
 		},
@@ -99,13 +93,17 @@ func buildValidVesselsQueries() []*Query {
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
-WHERE %s.%s IS NULL;`,
+WHERE %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(applyToEach(validVesselsColumns, func(i int, s string) string {
-					return fmt.Sprintf("valid_ingredients.%s", s)
+					return fmt.Sprintf("%s.%s", validVesselsTableName, s)
 				}), ",\n\t"),
 				validVesselsTableName,
 				validVesselsTableName,
 				archivedAtColumn,
+				validVesselsTableName,
+				idColumn,
+				idColumn,
 			)),
 		},
 		{
@@ -125,7 +123,7 @@ GROUP BY %s.%s
 ORDER BY %s.%s
 %s;`,
 				strings.Join(applyToEach(validVesselsColumns, func(i int, s string) string {
-					return fmt.Sprintf("valid_ingredients.%s", s)
+					return fmt.Sprintf("%s.%s", validVesselsTableName, s)
 				}), ",\n\t"),
 				buildFilterCountSelect(
 					validVesselsTableName,
@@ -253,33 +251,6 @@ LIMIT 50;`,
 		},
 		{
 			Annotation: QueryAnnotation{
-				Name: "SearchValidVesselsByPreparationAndIngredientName",
-				Type: ManyType,
-			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
-	%s
-FROM valid_ingredient_preparations
-	JOIN valid_ingredients ON valid_ingredient_preparations.valid_ingredient_id = valid_ingredients.id
-	JOIN valid_preparations ON valid_ingredient_preparations.valid_preparation_id = valid_preparations.id
-WHERE valid_ingredient_preparations.archived_at IS NULL
-	AND valid_ingredients.archived_at IS NULL
-	AND valid_preparations.archived_at IS NULL
-	AND (
-		valid_ingredient_preparations.valid_preparation_id = sqlc.arg(valid_preparation_id)
-		OR valid_preparations.restrict_to_ingredients IS FALSE
-	)
-	AND valid_ingredients.name %s;`,
-				strings.Join(applyToEach(validVesselsColumns, func(i int, s string) string {
-					if i == 0 {
-						return fmt.Sprintf("DISTINCT(%s.%s)", validVesselsTableName, s)
-					}
-					return fmt.Sprintf("%s.%s", validVesselsTableName, s)
-				}), ",\n\t"),
-				"ILIKE '%' || sqlc.arg(name_query)::text || '%'",
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
 				Name: "UpdateValidVessel",
 				Type: ExecRowsType,
 			},
@@ -290,13 +261,7 @@ WHERE %s IS NULL
     AND %s = sqlc.arg(%s);`,
 				validVesselsTableName,
 				strings.Join(applyToEach(filterForUpdate(validVesselsColumns), func(i int, s string) string {
-					switch s {
-					case "minimum_ideal_storage_temperature_in_celsius",
-						"maximum_ideal_storage_temperature_in_celsius":
-						return fmt.Sprintf("%s = sqlc.narg(%s)", s, s)
-					default:
-						return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
-					}
+					return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
 				}), ",\n\t"),
 				lastUpdatedAtColumn,
 				archivedAtColumn,
