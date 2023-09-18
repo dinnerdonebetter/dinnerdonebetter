@@ -34,6 +34,9 @@ func createValidIngredientGroupForTest(t *testing.T, ctx context.Context, exampl
 	assert.Equal(t, exampleValidIngredientGroup, created)
 
 	validIngredientGroup, err := dbc.GetValidIngredientGroup(ctx, created.ID)
+	require.NoError(t, err)
+	require.NotNil(t, validIngredientGroup)
+
 	exampleValidIngredientGroup.CreatedAt = validIngredientGroup.CreatedAt
 	for i := range exampleValidIngredientGroup.Members {
 		exampleValidIngredientGroup.Members[i].CreatedAt = validIngredientGroup.Members[i].CreatedAt

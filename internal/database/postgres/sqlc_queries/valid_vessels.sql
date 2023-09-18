@@ -5,7 +5,7 @@ UPDATE valid_vessels SET archived_at = NOW() WHERE archived_at IS NULL AND id = 
 -- name: CreateValidVessel :exec
 
 INSERT INTO valid_vessels (
-	id,
+    id,
 	name,
 	plural_name,
 	description,
@@ -21,7 +21,7 @@ INSERT INTO valid_vessels (
 	height_in_millimeters,
 	shape
 ) VALUES (
-	sqlc.arg(id),
+    sqlc.arg(id),
 	sqlc.arg(name),
 	sqlc.arg(plural_name),
 	sqlc.arg(description),
@@ -41,10 +41,10 @@ INSERT INTO valid_vessels (
 -- name: CheckValidVesselExistence :one
 
 SELECT EXISTS (
-	SELECT valid_vessels.id
-	FROM valid_vessels
-	WHERE valid_vessels.archived_at IS NULL
-		AND valid_vessels.id = sqlc.arg(id)
+    SELECT valid_vessels.id
+    FROM valid_vessels
+    WHERE valid_vessels.archived_at IS NULL
+        AND valid_vessels.id = sqlc.arg(id)
 );
 
 -- name: GetValidVessels :many
@@ -69,7 +69,7 @@ SELECT
 	valid_vessels.created_at,
 	valid_vessels.last_updated_at,
 	valid_vessels.archived_at,
-	(
+    (
 		SELECT COUNT(valid_vessels.id)
 		FROM valid_vessels
 		WHERE valid_vessels.archived_at IS NULL
@@ -84,16 +84,16 @@ SELECT
 				OR valid_vessels.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
 			)
 	) AS filtered_count,
-	(
-		SELECT COUNT(valid_vessels.id)
-		FROM valid_vessels
-		WHERE valid_vessels.archived_at IS NULL
-	) AS total_count
+    (
+        SELECT COUNT(valid_vessels.id)
+        FROM valid_vessels
+        WHERE valid_vessels.archived_at IS NULL
+    ) AS total_count
 FROM valid_vessels
 WHERE
 	valid_vessels.archived_at IS NULL
 	AND valid_vessels.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
-	AND valid_vessels.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+    AND valid_vessels.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		valid_vessels.last_updated_at IS NULL
 		OR valid_vessels.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
@@ -112,9 +112,9 @@ OFFSET sqlc.narg(query_offset);
 SELECT valid_vessels.id
 FROM valid_vessels
 WHERE valid_vessels.archived_at IS NULL
-	AND (
-	valid_vessels.last_indexed_at IS NULL
-	OR valid_vessels.last_indexed_at < NOW() - '24 hours'::INTERVAL
+    AND (
+    valid_vessels.last_indexed_at IS NULL
+    OR valid_vessels.last_indexed_at < NOW() - '24 hours'::INTERVAL
 );
 
 -- name: GetValidVessel :one
@@ -140,6 +140,7 @@ SELECT
 	valid_measurement_units.imperial as valid_measurement_unit_imperial,
 	valid_measurement_units.slug as valid_measurement_unit_slug,
 	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.last_indexed_at as valid_measurement_unit_last_indexed_at,
 	valid_measurement_units.created_at as valid_measurement_unit_created_at,
 	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
 	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
@@ -147,11 +148,12 @@ SELECT
 	valid_vessels.length_in_millimeters,
 	valid_vessels.height_in_millimeters,
 	valid_vessels.shape,
+	valid_vessels.last_indexed_at,
 	valid_vessels.created_at,
 	valid_vessels.last_updated_at,
 	valid_vessels.archived_at
 FROM valid_vessels
-	 JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
+	JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
 WHERE valid_vessels.archived_at IS NULL
 	AND valid_measurement_units.archived_at IS NULL
 	AND valid_vessels.id = sqlc.arg(id);
@@ -179,6 +181,7 @@ SELECT
 	valid_measurement_units.imperial as valid_measurement_unit_imperial,
 	valid_measurement_units.slug as valid_measurement_unit_slug,
 	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.last_indexed_at as valid_measurement_unit_last_indexed_at,
 	valid_measurement_units.created_at as valid_measurement_unit_created_at,
 	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
 	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
@@ -186,14 +189,15 @@ SELECT
 	valid_vessels.length_in_millimeters,
 	valid_vessels.height_in_millimeters,
 	valid_vessels.shape,
+	valid_vessels.last_indexed_at,
 	valid_vessels.created_at,
 	valid_vessels.last_updated_at,
 	valid_vessels.archived_at
 FROM valid_vessels
-	 JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
+	JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
 WHERE valid_vessels.archived_at IS NULL
 	AND valid_measurement_units.archived_at IS NULL
-	ORDER BY RANDOM() LIMIT 1;
+ORDER BY RANDOM() LIMIT 1;
 
 -- name: GetValidVesselsWithIDs :many
 
@@ -218,6 +222,7 @@ SELECT
 	valid_measurement_units.imperial as valid_measurement_unit_imperial,
 	valid_measurement_units.slug as valid_measurement_unit_slug,
 	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.last_indexed_at as valid_measurement_unit_last_indexed_at,
 	valid_measurement_units.created_at as valid_measurement_unit_created_at,
 	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
 	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
@@ -225,14 +230,15 @@ SELECT
 	valid_vessels.length_in_millimeters,
 	valid_vessels.height_in_millimeters,
 	valid_vessels.shape,
+	valid_vessels.last_indexed_at,
 	valid_vessels.created_at,
 	valid_vessels.last_updated_at,
 	valid_vessels.archived_at
 FROM valid_vessels
 	JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
 WHERE valid_vessels.archived_at IS NULL
-  AND valid_measurement_units.archived_at IS NULL
-  AND valid_vessels.id = ANY(sqlc.arg(ids)::text[]);
+	AND valid_measurement_units.archived_at IS NULL
+	AND valid_vessels.id = ANY(sqlc.arg(ids)::text[]);
 
 -- name: SearchForValidVessels :many
 
@@ -280,7 +286,7 @@ UPDATE valid_vessels SET
 	shape = sqlc.arg(shape),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND id = sqlc.arg(id);
+    AND id = sqlc.arg(id);
 
 -- name: UpdateValidVesselLastIndexedAt :execrows
 

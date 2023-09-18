@@ -20,8 +20,64 @@ func buildValidPreparationInstrumentsQueries() []*Query {
 	return []*Query{
 		{
 			Annotation: QueryAnnotation{
-				Name: "",
+				Name: "ArchiveValidPreparationInstrument",
+				Type: ExecRowsType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
+		{
+			Annotation: QueryAnnotation{
+				Name: "CreateValidPreparationInstrument",
 				Type: ExecType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
+		{
+			Annotation: QueryAnnotation{
+				Name: "CheckValidPreparationInstrumentExistence",
+				Type: OneType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
+		{
+			Annotation: QueryAnnotation{
+				Name: "GetValidPreparationInstrumentsForInstrument",
+				Type: ManyType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
+		{
+			Annotation: QueryAnnotation{
+				Name: "GetValidPreparationInstrumentsForPreparation",
+				Type: ManyType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
+		{
+			Annotation: QueryAnnotation{
+				Name: "GetValidPreparationInstruments",
+				Type: ManyType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
+		{
+			Annotation: QueryAnnotation{
+				Name: "GetValidPreparationInstrument",
+				Type: OneType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
+		{
+			Annotation: QueryAnnotation{
+				Name: "ValidPreparationInstrumentPairIsValid",
+				Type: OneType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+		},
+		{
+			Annotation: QueryAnnotation{
+				Name: "UpdateValidPreparationInstrument",
+				Type: ExecRowsType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
 		},

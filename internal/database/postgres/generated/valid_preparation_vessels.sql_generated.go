@@ -40,7 +40,17 @@ func (q *Queries) CheckValidPreparationVesselExistence(ctx context.Context, db D
 
 const createValidPreparationVessel = `-- name: CreateValidPreparationVessel :exec
 
-INSERT INTO valid_preparation_vessels (id,notes,valid_preparation_id,valid_vessel_id) VALUES ($1,$2,$3,$4)
+INSERT INTO valid_preparation_vessels (
+	id,
+	notes,
+	valid_preparation_id,
+	valid_vessel_id
+) VALUES (
+	$1,
+	$2,
+	$3,
+	$4
+)
 `
 
 type CreateValidPreparationVesselParams struct {
@@ -63,68 +73,67 @@ func (q *Queries) CreateValidPreparationVessel(ctx context.Context, db DBTX, arg
 const getValidPreparationVessel = `-- name: GetValidPreparationVessel :one
 
 SELECT
-    valid_preparation_vessels.id as valid_preparation_vessel_id,
-    valid_preparation_vessels.notes as valid_preparation_vessel_notes,
-    valid_preparations.id as valid_preparation_id,
-    valid_preparations.name as valid_preparation_name,
-    valid_preparations.description as valid_preparation_description,
-    valid_preparations.icon_path as valid_preparation_icon_path,
-    valid_preparations.yields_nothing as valid_preparation_yields_nothing,
-    valid_preparations.restrict_to_ingredients as valid_preparation_restrict_to_ingredients,
-    valid_preparations.minimum_ingredient_count as valid_preparation_minimum_ingredient_count,
-    valid_preparations.maximum_ingredient_count as valid_preparation_maximum_ingredient_count,
-    valid_preparations.minimum_instrument_count as valid_preparation_minimum_instrument_count,
-    valid_preparations.maximum_instrument_count as valid_preparation_maximum_instrument_count,
-    valid_preparations.temperature_required as valid_preparation_temperature_required,
-    valid_preparations.time_estimate_required as valid_preparation_time_estimate_required,
-    valid_preparations.condition_expression_required as valid_preparation_condition_expression_required,
-    valid_preparations.consumes_vessel as valid_preparation_consumes_vessel,
-    valid_preparations.only_for_vessels as valid_preparation_only_for_vessels,
-    valid_preparations.minimum_vessel_count as valid_preparation_minimum_vessel_count,
-    valid_preparations.maximum_vessel_count as valid_preparation_maximum_vessel_count,
-    valid_preparations.slug as valid_preparation_slug,
-    valid_preparations.past_tense as valid_preparation_past_tense,
-    valid_preparations.created_at as valid_preparation_created_at,
-    valid_preparations.last_updated_at as valid_preparation_last_updated_at,
-    valid_preparations.archived_at as valid_preparation_archived_at,
-    valid_vessels.id as valid_vessel_id,
-    valid_vessels.name as valid_vessel_name,
-    valid_vessels.plural_name as valid_vessel_plural_name,
-    valid_vessels.description as valid_vessel_description,
-    valid_vessels.icon_path as valid_vessel_icon_path,
-    valid_vessels.usable_for_storage as valid_vessel_usable_for_storage,
-    valid_vessels.slug as valid_vessel_slug,
-    valid_vessels.display_in_summary_lists as valid_vessel_display_in_summary_lists,
-    valid_vessels.include_in_generated_instructions as valid_vessel_include_in_generated_instructions,
-    valid_vessels.capacity::float as valid_vessel_capacity,
-    valid_measurement_units.id as valid_measurement_unit_id,
-    valid_measurement_units.name as valid_measurement_unit_name,
-    valid_measurement_units.description as valid_measurement_unit_description,
-    valid_measurement_units.volumetric as valid_measurement_unit_volumetric,
-    valid_measurement_units.icon_path as valid_measurement_unit_icon_path,
-    valid_measurement_units.universal as valid_measurement_unit_universal,
-    valid_measurement_units.metric as valid_measurement_unit_metric,
-    valid_measurement_units.imperial as valid_measurement_unit_imperial,
-    valid_measurement_units.slug as valid_measurement_unit_slug,
-    valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
-    valid_measurement_units.created_at as valid_measurement_unit_created_at,
-    valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
-    valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
-    valid_vessels.width_in_millimeters::float as valid_vessel_width_in_millimeters,
-    valid_vessels.length_in_millimeters::float as valid_vessel_length_in_millimeters,
-    valid_vessels.height_in_millimeters::float as valid_vessel_height_in_millimeters,
-    valid_vessels.shape as valid_vessel_shape,
-    valid_vessels.created_at as valid_vessel_created_at,
-    valid_vessels.last_updated_at as valid_vessel_last_updated_at,
-    valid_vessels.archived_at as valid_vessel_archived_at,
-    valid_preparation_vessels.created_at as valid_preparation_vessel_created_at,
-    valid_preparation_vessels.last_updated_at as valid_preparation_vessel_last_updated_at,
-    valid_preparation_vessels.archived_at as valid_preparation_vessel_archived_at
-FROM
-	valid_preparation_vessels
-	 JOIN valid_vessels ON valid_preparation_vessels.valid_vessel_id = valid_vessels.id
-	 LEFT JOIN valid_measurement_units ON valid_vessels.capacity_unit = valid_measurement_units.id
-	 JOIN valid_preparations ON valid_preparation_vessels.valid_preparation_id = valid_preparations.id
+	valid_preparation_vessels.id as valid_preparation_vessel_id,
+	valid_preparation_vessels.notes as valid_preparation_vessel_notes,
+	valid_preparations.id as valid_preparation_id,
+	valid_preparations.name as valid_preparation_name,
+	valid_preparations.description as valid_preparation_description,
+	valid_preparations.icon_path as valid_preparation_icon_path,
+	valid_preparations.yields_nothing as valid_preparation_yields_nothing,
+	valid_preparations.restrict_to_ingredients as valid_preparation_restrict_to_ingredients,
+	valid_preparations.minimum_ingredient_count as valid_preparation_minimum_ingredient_count,
+	valid_preparations.maximum_ingredient_count as valid_preparation_maximum_ingredient_count,
+	valid_preparations.minimum_instrument_count as valid_preparation_minimum_instrument_count,
+	valid_preparations.maximum_instrument_count as valid_preparation_maximum_instrument_count,
+	valid_preparations.temperature_required as valid_preparation_temperature_required,
+	valid_preparations.time_estimate_required as valid_preparation_time_estimate_required,
+	valid_preparations.condition_expression_required as valid_preparation_condition_expression_required,
+	valid_preparations.consumes_vessel as valid_preparation_consumes_vessel,
+	valid_preparations.only_for_vessels as valid_preparation_only_for_vessels,
+	valid_preparations.minimum_vessel_count as valid_preparation_minimum_vessel_count,
+	valid_preparations.maximum_vessel_count as valid_preparation_maximum_vessel_count,
+	valid_preparations.slug as valid_preparation_slug,
+	valid_preparations.past_tense as valid_preparation_past_tense,
+	valid_preparations.created_at as valid_preparation_created_at,
+	valid_preparations.last_updated_at as valid_preparation_last_updated_at,
+	valid_preparations.archived_at as valid_preparation_archived_at,
+	valid_vessels.id as valid_vessel_id,
+	valid_vessels.name as valid_vessel_name,
+	valid_vessels.plural_name as valid_vessel_plural_name,
+	valid_vessels.description as valid_vessel_description,
+	valid_vessels.icon_path as valid_vessel_icon_path,
+	valid_vessels.usable_for_storage as valid_vessel_usable_for_storage,
+	valid_vessels.slug as valid_vessel_slug,
+	valid_vessels.display_in_summary_lists as valid_vessel_display_in_summary_lists,
+	valid_vessels.include_in_generated_instructions as valid_vessel_include_in_generated_instructions,
+	valid_vessels.capacity::float as valid_vessel_capacity,
+	valid_measurement_units.id as valid_measurement_unit_id,
+	valid_measurement_units.name as valid_measurement_unit_name,
+	valid_measurement_units.description as valid_measurement_unit_description,
+	valid_measurement_units.volumetric as valid_measurement_unit_volumetric,
+	valid_measurement_units.icon_path as valid_measurement_unit_icon_path,
+	valid_measurement_units.universal as valid_measurement_unit_universal,
+	valid_measurement_units.metric as valid_measurement_unit_metric,
+	valid_measurement_units.imperial as valid_measurement_unit_imperial,
+	valid_measurement_units.slug as valid_measurement_unit_slug,
+	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.created_at as valid_measurement_unit_created_at,
+	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
+	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
+	valid_vessels.width_in_millimeters::float as valid_vessel_width_in_millimeters,
+	valid_vessels.length_in_millimeters::float as valid_vessel_length_in_millimeters,
+	valid_vessels.height_in_millimeters::float as valid_vessel_height_in_millimeters,
+	valid_vessels.shape as valid_vessel_shape,
+	valid_vessels.created_at as valid_vessel_created_at,
+	valid_vessels.last_updated_at as valid_vessel_last_updated_at,
+	valid_vessels.archived_at as valid_vessel_archived_at,
+	valid_preparation_vessels.created_at as valid_preparation_vessel_created_at,
+	valid_preparation_vessels.last_updated_at as valid_preparation_vessel_last_updated_at,
+	valid_preparation_vessels.archived_at as valid_preparation_vessel_archived_at
+FROM valid_preparation_vessels
+	JOIN valid_vessels ON valid_preparation_vessels.valid_vessel_id = valid_vessels.id
+	LEFT JOIN valid_measurement_units ON valid_vessels.capacity_unit = valid_measurement_units.id
+	JOIN valid_preparations ON valid_preparation_vessels.valid_preparation_id = valid_preparations.id
 WHERE
 	valid_preparation_vessels.archived_at IS NULL
 	AND valid_vessels.archived_at IS NULL
@@ -324,17 +333,17 @@ SELECT
 		FROM
 			valid_preparation_vessels
 		WHERE
-            valid_preparation_vessels.archived_at IS NULL
-            AND valid_preparation_vessels.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-            AND valid_preparation_vessels.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-            AND (
-                valid_preparation_vessels.last_updated_at IS NULL
-                OR valid_preparation_vessels.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-            )
-            AND (
-                valid_preparation_vessels.last_updated_at IS NULL
-                OR valid_preparation_vessels.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-            )
+			valid_preparation_vessels.archived_at IS NULL
+			AND valid_preparation_vessels.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+			AND valid_preparation_vessels.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+			AND (
+				valid_preparation_vessels.last_updated_at IS NULL
+				OR valid_preparation_vessels.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+			)
+			AND (
+				valid_preparation_vessels.last_updated_at IS NULL
+				OR valid_preparation_vessels.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+			)
 	) as filtered_count,
 	(
 		SELECT
@@ -344,33 +353,31 @@ SELECT
 		WHERE
 			valid_preparation_vessels.archived_at IS NULL
 	) as total_count
-FROM
-	valid_preparation_vessels
-		JOIN valid_vessels ON valid_preparation_vessels.valid_vessel_id = valid_vessels.id
-		JOIN valid_preparations ON valid_preparation_vessels.valid_preparation_id = valid_preparations.id
-		LEFT JOIN valid_measurement_units ON valid_vessels.capacity_unit = valid_measurement_units.id
+FROM valid_preparation_vessels
+	JOIN valid_vessels ON valid_preparation_vessels.valid_vessel_id = valid_vessels.id
+	JOIN valid_preparations ON valid_preparation_vessels.valid_preparation_id = valid_preparations.id
+	LEFT JOIN valid_measurement_units ON valid_vessels.capacity_unit = valid_measurement_units.id
 WHERE
 	valid_preparation_vessels.archived_at IS NULL
-    AND valid_vessels.archived_at IS NULL
-    AND valid_preparations.archived_at IS NULL
-    AND valid_measurement_units.archived_at IS NULL
-    AND valid_preparation_vessels.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-    AND valid_preparation_vessels.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-    AND (
-        valid_preparation_vessels.last_updated_at IS NULL
-        OR valid_preparation_vessels.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-    )
-    AND (
-        valid_preparation_vessels.last_updated_at IS NULL
-        OR valid_preparation_vessels.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-    )
+	AND valid_vessels.archived_at IS NULL
+	AND valid_preparations.archived_at IS NULL
+	AND valid_measurement_units.archived_at IS NULL
+	AND valid_preparation_vessels.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+	AND valid_preparation_vessels.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+	AND (
+		valid_preparation_vessels.last_updated_at IS NULL
+		OR valid_preparation_vessels.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+	)
+	AND (
+		valid_preparation_vessels.last_updated_at IS NULL
+		OR valid_preparation_vessels.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+	)
 GROUP BY
 	valid_preparation_vessels.id,
 	valid_preparations.id,
 	valid_vessels.id,
 	valid_measurement_units.id
-ORDER BY
-	valid_preparation_vessels.id
+ORDER BY valid_preparation_vessels.id
 OFFSET $5
 LIMIT $6
 `
@@ -538,110 +545,109 @@ func (q *Queries) GetValidPreparationVessels(ctx context.Context, db DBTX, arg *
 
 const getValidPreparationVesselsForPreparation = `-- name: GetValidPreparationVesselsForPreparation :many
 SELECT
-    valid_preparation_vessels.id as valid_preparation_vessel_id,
-    valid_preparation_vessels.notes as valid_preparation_vessel_notes,
-    valid_preparations.id as valid_preparation_id,
-    valid_preparations.name as valid_preparation_name,
-    valid_preparations.description as valid_preparation_description,
-    valid_preparations.icon_path as valid_preparation_icon_path,
-    valid_preparations.yields_nothing as valid_preparation_yields_nothing,
-    valid_preparations.restrict_to_ingredients as valid_preparation_restrict_to_ingredients,
-    valid_preparations.minimum_ingredient_count as valid_preparation_minimum_ingredient_count,
-    valid_preparations.maximum_ingredient_count as valid_preparation_maximum_ingredient_count,
-    valid_preparations.minimum_instrument_count as valid_preparation_minimum_instrument_count,
-    valid_preparations.maximum_instrument_count as valid_preparation_maximum_instrument_count,
-    valid_preparations.temperature_required as valid_preparation_temperature_required,
-    valid_preparations.time_estimate_required as valid_preparation_time_estimate_required,
-    valid_preparations.condition_expression_required as valid_preparation_condition_expression_required,
-    valid_preparations.consumes_vessel as valid_preparation_consumes_vessel,
-    valid_preparations.only_for_vessels as valid_preparation_only_for_vessels,
-    valid_preparations.minimum_vessel_count as valid_preparation_minimum_vessel_count,
-    valid_preparations.maximum_vessel_count as valid_preparation_maximum_vessel_count,
-    valid_preparations.slug as valid_preparation_slug,
-    valid_preparations.past_tense as valid_preparation_past_tense,
-    valid_preparations.created_at as valid_preparation_created_at,
-    valid_preparations.last_updated_at as valid_preparation_last_updated_at,
-    valid_preparations.archived_at as valid_preparation_archived_at,
-    valid_vessels.id as valid_vessel_id,
-    valid_vessels.name as valid_vessel_name,
-    valid_vessels.plural_name as valid_vessel_plural_name,
-    valid_vessels.description as valid_vessel_description,
-    valid_vessels.icon_path as valid_vessel_icon_path,
-    valid_vessels.usable_for_storage as valid_vessel_usable_for_storage,
-    valid_vessels.slug as valid_vessel_slug,
-    valid_vessels.display_in_summary_lists as valid_vessel_display_in_summary_lists,
-    valid_vessels.include_in_generated_instructions as valid_vessel_include_in_generated_instructions,
-    valid_vessels.capacity::float as valid_vessel_capacity,
-    valid_measurement_units.id as valid_measurement_unit_id,
-    valid_measurement_units.name as valid_measurement_unit_name,
-    valid_measurement_units.description as valid_measurement_unit_description,
-    valid_measurement_units.volumetric as valid_measurement_unit_volumetric,
-    valid_measurement_units.icon_path as valid_measurement_unit_icon_path,
-    valid_measurement_units.universal as valid_measurement_unit_universal,
-    valid_measurement_units.metric as valid_measurement_unit_metric,
-    valid_measurement_units.imperial as valid_measurement_unit_imperial,
-    valid_measurement_units.slug as valid_measurement_unit_slug,
-    valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
-    valid_measurement_units.created_at as valid_measurement_unit_created_at,
-    valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
-    valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
-    valid_vessels.width_in_millimeters::float as valid_vessel_width_in_millimeters,
-    valid_vessels.length_in_millimeters::float as valid_vessel_length_in_millimeters,
-    valid_vessels.height_in_millimeters::float as valid_vessel_height_in_millimeters,
-    valid_vessels.shape as valid_vessel_shape,
-    valid_vessels.created_at as valid_vessel_created_at,
-    valid_vessels.last_updated_at as valid_vessel_last_updated_at,
-    valid_vessels.archived_at as valid_vessel_archived_at,
-    valid_preparation_vessels.created_at as valid_preparation_vessel_created_at,
-    valid_preparation_vessels.last_updated_at as valid_preparation_vessel_last_updated_at,
-    valid_preparation_vessels.archived_at as valid_preparation_vessel_archived_at,
-    (
-        SELECT
-            COUNT(valid_preparation_vessels.id)
-        FROM
-            valid_preparation_vessels
-        WHERE
-            valid_preparation_vessels.archived_at IS NULL
-            AND valid_preparation_vessels.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-            AND valid_preparation_vessels.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-            AND (
-                valid_preparation_vessels.last_updated_at IS NULL
-                OR valid_preparation_vessels.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-            )
-            AND (
-                valid_preparation_vessels.last_updated_at IS NULL
-                OR valid_preparation_vessels.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-            )
-    ) as filtered_count,
-    (
-        SELECT
-            COUNT(valid_preparation_vessels.id)
-        FROM
-            valid_preparation_vessels
-        WHERE
-            valid_preparation_vessels.archived_at IS NULL
-    ) as total_count
-FROM
-    valid_preparation_vessels
-        JOIN valid_vessels ON valid_preparation_vessels.valid_vessel_id = valid_vessels.id
-        JOIN valid_preparations ON valid_preparation_vessels.valid_preparation_id = valid_preparations.id
-        LEFT JOIN valid_measurement_units ON valid_vessels.capacity_unit = valid_measurement_units.id
+	valid_preparation_vessels.id as valid_preparation_vessel_id,
+	valid_preparation_vessels.notes as valid_preparation_vessel_notes,
+	valid_preparations.id as valid_preparation_id,
+	valid_preparations.name as valid_preparation_name,
+	valid_preparations.description as valid_preparation_description,
+	valid_preparations.icon_path as valid_preparation_icon_path,
+	valid_preparations.yields_nothing as valid_preparation_yields_nothing,
+	valid_preparations.restrict_to_ingredients as valid_preparation_restrict_to_ingredients,
+	valid_preparations.minimum_ingredient_count as valid_preparation_minimum_ingredient_count,
+	valid_preparations.maximum_ingredient_count as valid_preparation_maximum_ingredient_count,
+	valid_preparations.minimum_instrument_count as valid_preparation_minimum_instrument_count,
+	valid_preparations.maximum_instrument_count as valid_preparation_maximum_instrument_count,
+	valid_preparations.temperature_required as valid_preparation_temperature_required,
+	valid_preparations.time_estimate_required as valid_preparation_time_estimate_required,
+	valid_preparations.condition_expression_required as valid_preparation_condition_expression_required,
+	valid_preparations.consumes_vessel as valid_preparation_consumes_vessel,
+	valid_preparations.only_for_vessels as valid_preparation_only_for_vessels,
+	valid_preparations.minimum_vessel_count as valid_preparation_minimum_vessel_count,
+	valid_preparations.maximum_vessel_count as valid_preparation_maximum_vessel_count,
+	valid_preparations.slug as valid_preparation_slug,
+	valid_preparations.past_tense as valid_preparation_past_tense,
+	valid_preparations.created_at as valid_preparation_created_at,
+	valid_preparations.last_updated_at as valid_preparation_last_updated_at,
+	valid_preparations.archived_at as valid_preparation_archived_at,
+	valid_vessels.id as valid_vessel_id,
+	valid_vessels.name as valid_vessel_name,
+	valid_vessels.plural_name as valid_vessel_plural_name,
+	valid_vessels.description as valid_vessel_description,
+	valid_vessels.icon_path as valid_vessel_icon_path,
+	valid_vessels.usable_for_storage as valid_vessel_usable_for_storage,
+	valid_vessels.slug as valid_vessel_slug,
+	valid_vessels.display_in_summary_lists as valid_vessel_display_in_summary_lists,
+	valid_vessels.include_in_generated_instructions as valid_vessel_include_in_generated_instructions,
+	valid_vessels.capacity::float as valid_vessel_capacity,
+	valid_measurement_units.id as valid_measurement_unit_id,
+	valid_measurement_units.name as valid_measurement_unit_name,
+	valid_measurement_units.description as valid_measurement_unit_description,
+	valid_measurement_units.volumetric as valid_measurement_unit_volumetric,
+	valid_measurement_units.icon_path as valid_measurement_unit_icon_path,
+	valid_measurement_units.universal as valid_measurement_unit_universal,
+	valid_measurement_units.metric as valid_measurement_unit_metric,
+	valid_measurement_units.imperial as valid_measurement_unit_imperial,
+	valid_measurement_units.slug as valid_measurement_unit_slug,
+	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.created_at as valid_measurement_unit_created_at,
+	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
+	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
+	valid_vessels.width_in_millimeters::float as valid_vessel_width_in_millimeters,
+	valid_vessels.length_in_millimeters::float as valid_vessel_length_in_millimeters,
+	valid_vessels.height_in_millimeters::float as valid_vessel_height_in_millimeters,
+	valid_vessels.shape as valid_vessel_shape,
+	valid_vessels.created_at as valid_vessel_created_at,
+	valid_vessels.last_updated_at as valid_vessel_last_updated_at,
+	valid_vessels.archived_at as valid_vessel_archived_at,
+	valid_preparation_vessels.created_at as valid_preparation_vessel_created_at,
+	valid_preparation_vessels.last_updated_at as valid_preparation_vessel_last_updated_at,
+	valid_preparation_vessels.archived_at as valid_preparation_vessel_archived_at,
+	(
+		SELECT
+			COUNT(valid_preparation_vessels.id)
+		FROM
+			valid_preparation_vessels
+		WHERE
+			valid_preparation_vessels.archived_at IS NULL
+			AND valid_preparation_vessels.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+			AND valid_preparation_vessels.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+			AND (
+				valid_preparation_vessels.last_updated_at IS NULL
+				OR valid_preparation_vessels.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+			)
+			AND (
+				valid_preparation_vessels.last_updated_at IS NULL
+				OR valid_preparation_vessels.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+			)
+	) as filtered_count,
+	(
+		SELECT
+			COUNT(valid_preparation_vessels.id)
+		FROM
+			valid_preparation_vessels
+		WHERE
+			valid_preparation_vessels.archived_at IS NULL
+	) as total_count
+FROM valid_preparation_vessels
+	JOIN valid_vessels ON valid_preparation_vessels.valid_vessel_id = valid_vessels.id
+	JOIN valid_preparations ON valid_preparation_vessels.valid_preparation_id = valid_preparations.id
+	LEFT JOIN valid_measurement_units ON valid_vessels.capacity_unit = valid_measurement_units.id
 WHERE
-    valid_preparation_vessels.archived_at IS NULL
-    AND valid_vessels.archived_at IS NULL
-    AND valid_preparations.archived_at IS NULL
-    AND valid_measurement_units.archived_at IS NULL
-    AND valid_preparation_vessels.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-    AND valid_preparation_vessels.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-    AND (
-        valid_preparation_vessels.last_updated_at IS NULL
-        OR valid_preparation_vessels.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-    )
-    AND (
-        valid_preparation_vessels.last_updated_at IS NULL
-        OR valid_preparation_vessels.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-    )
-    AND valid_preparation_vessels.valid_preparation_id = ANY($5::text[])
+	valid_preparation_vessels.archived_at IS NULL
+	AND valid_vessels.archived_at IS NULL
+	AND valid_preparations.archived_at IS NULL
+	AND valid_measurement_units.archived_at IS NULL
+	AND valid_preparation_vessels.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+	AND valid_preparation_vessels.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+	AND (
+		valid_preparation_vessels.last_updated_at IS NULL
+		OR valid_preparation_vessels.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+	)
+	AND (
+		valid_preparation_vessels.last_updated_at IS NULL
+		OR valid_preparation_vessels.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+	)
+	AND valid_preparation_vessels.valid_preparation_id = ANY($5::text[])
 OFFSET $6
 LIMIT $7
 `
@@ -811,110 +817,109 @@ func (q *Queries) GetValidPreparationVesselsForPreparation(ctx context.Context, 
 
 const getValidPreparationVesselsForVessel = `-- name: GetValidPreparationVesselsForVessel :many
 SELECT
-    valid_preparation_vessels.id as valid_preparation_vessel_id,
-    valid_preparation_vessels.notes as valid_preparation_vessel_notes,
-    valid_preparations.id as valid_preparation_id,
-    valid_preparations.name as valid_preparation_name,
-    valid_preparations.description as valid_preparation_description,
-    valid_preparations.icon_path as valid_preparation_icon_path,
-    valid_preparations.yields_nothing as valid_preparation_yields_nothing,
-    valid_preparations.restrict_to_ingredients as valid_preparation_restrict_to_ingredients,
-    valid_preparations.minimum_ingredient_count as valid_preparation_minimum_ingredient_count,
-    valid_preparations.maximum_ingredient_count as valid_preparation_maximum_ingredient_count,
-    valid_preparations.minimum_instrument_count as valid_preparation_minimum_instrument_count,
-    valid_preparations.maximum_instrument_count as valid_preparation_maximum_instrument_count,
-    valid_preparations.temperature_required as valid_preparation_temperature_required,
-    valid_preparations.time_estimate_required as valid_preparation_time_estimate_required,
-    valid_preparations.condition_expression_required as valid_preparation_condition_expression_required,
-    valid_preparations.consumes_vessel as valid_preparation_consumes_vessel,
-    valid_preparations.only_for_vessels as valid_preparation_only_for_vessels,
-    valid_preparations.minimum_vessel_count as valid_preparation_minimum_vessel_count,
-    valid_preparations.maximum_vessel_count as valid_preparation_maximum_vessel_count,
-    valid_preparations.slug as valid_preparation_slug,
-    valid_preparations.past_tense as valid_preparation_past_tense,
-    valid_preparations.created_at as valid_preparation_created_at,
-    valid_preparations.last_updated_at as valid_preparation_last_updated_at,
-    valid_preparations.archived_at as valid_preparation_archived_at,
-    valid_vessels.id as valid_vessel_id,
-    valid_vessels.name as valid_vessel_name,
-    valid_vessels.plural_name as valid_vessel_plural_name,
-    valid_vessels.description as valid_vessel_description,
-    valid_vessels.icon_path as valid_vessel_icon_path,
-    valid_vessels.usable_for_storage as valid_vessel_usable_for_storage,
-    valid_vessels.slug as valid_vessel_slug,
-    valid_vessels.display_in_summary_lists as valid_vessel_display_in_summary_lists,
-    valid_vessels.include_in_generated_instructions as valid_vessel_include_in_generated_instructions,
-    valid_vessels.capacity::float as valid_vessel_capacity,
-    valid_measurement_units.id as valid_measurement_unit_id,
-    valid_measurement_units.name as valid_measurement_unit_name,
-    valid_measurement_units.description as valid_measurement_unit_description,
-    valid_measurement_units.volumetric as valid_measurement_unit_volumetric,
-    valid_measurement_units.icon_path as valid_measurement_unit_icon_path,
-    valid_measurement_units.universal as valid_measurement_unit_universal,
-    valid_measurement_units.metric as valid_measurement_unit_metric,
-    valid_measurement_units.imperial as valid_measurement_unit_imperial,
-    valid_measurement_units.slug as valid_measurement_unit_slug,
-    valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
-    valid_measurement_units.created_at as valid_measurement_unit_created_at,
-    valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
-    valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
-    valid_vessels.width_in_millimeters::float as valid_vessel_width_in_millimeters,
-    valid_vessels.length_in_millimeters::float as valid_vessel_length_in_millimeters,
-    valid_vessels.height_in_millimeters::float as valid_vessel_height_in_millimeters,
-    valid_vessels.shape as valid_vessel_shape,
-    valid_vessels.created_at as valid_vessel_created_at,
-    valid_vessels.last_updated_at as valid_vessel_last_updated_at,
-    valid_vessels.archived_at as valid_vessel_archived_at,
-    valid_preparation_vessels.created_at as valid_preparation_vessel_created_at,
-    valid_preparation_vessels.last_updated_at as valid_preparation_vessel_last_updated_at,
-    valid_preparation_vessels.archived_at as valid_preparation_vessel_archived_at,
-    (
-        SELECT
-            COUNT(valid_preparation_vessels.id)
-        FROM
-            valid_preparation_vessels
-        WHERE
-            valid_preparation_vessels.archived_at IS NULL
-            AND valid_preparation_vessels.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-            AND valid_preparation_vessels.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-            AND (
-                valid_preparation_vessels.last_updated_at IS NULL
-                OR valid_preparation_vessels.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-            )
-            AND (
-                valid_preparation_vessels.last_updated_at IS NULL
-                OR valid_preparation_vessels.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-            )
-    ) as filtered_count,
-    (
-        SELECT
-            COUNT(valid_preparation_vessels.id)
-        FROM
-            valid_preparation_vessels
-        WHERE
-            valid_preparation_vessels.archived_at IS NULL
-    ) as total_count
-FROM
-    valid_preparation_vessels
-        JOIN valid_vessels ON valid_preparation_vessels.valid_vessel_id = valid_vessels.id
-        JOIN valid_preparations ON valid_preparation_vessels.valid_preparation_id = valid_preparations.id
-        LEFT JOIN valid_measurement_units ON valid_vessels.capacity_unit = valid_measurement_units.id
+	valid_preparation_vessels.id as valid_preparation_vessel_id,
+	valid_preparation_vessels.notes as valid_preparation_vessel_notes,
+	valid_preparations.id as valid_preparation_id,
+	valid_preparations.name as valid_preparation_name,
+	valid_preparations.description as valid_preparation_description,
+	valid_preparations.icon_path as valid_preparation_icon_path,
+	valid_preparations.yields_nothing as valid_preparation_yields_nothing,
+	valid_preparations.restrict_to_ingredients as valid_preparation_restrict_to_ingredients,
+	valid_preparations.minimum_ingredient_count as valid_preparation_minimum_ingredient_count,
+	valid_preparations.maximum_ingredient_count as valid_preparation_maximum_ingredient_count,
+	valid_preparations.minimum_instrument_count as valid_preparation_minimum_instrument_count,
+	valid_preparations.maximum_instrument_count as valid_preparation_maximum_instrument_count,
+	valid_preparations.temperature_required as valid_preparation_temperature_required,
+	valid_preparations.time_estimate_required as valid_preparation_time_estimate_required,
+	valid_preparations.condition_expression_required as valid_preparation_condition_expression_required,
+	valid_preparations.consumes_vessel as valid_preparation_consumes_vessel,
+	valid_preparations.only_for_vessels as valid_preparation_only_for_vessels,
+	valid_preparations.minimum_vessel_count as valid_preparation_minimum_vessel_count,
+	valid_preparations.maximum_vessel_count as valid_preparation_maximum_vessel_count,
+	valid_preparations.slug as valid_preparation_slug,
+	valid_preparations.past_tense as valid_preparation_past_tense,
+	valid_preparations.created_at as valid_preparation_created_at,
+	valid_preparations.last_updated_at as valid_preparation_last_updated_at,
+	valid_preparations.archived_at as valid_preparation_archived_at,
+	valid_vessels.id as valid_vessel_id,
+	valid_vessels.name as valid_vessel_name,
+	valid_vessels.plural_name as valid_vessel_plural_name,
+	valid_vessels.description as valid_vessel_description,
+	valid_vessels.icon_path as valid_vessel_icon_path,
+	valid_vessels.usable_for_storage as valid_vessel_usable_for_storage,
+	valid_vessels.slug as valid_vessel_slug,
+	valid_vessels.display_in_summary_lists as valid_vessel_display_in_summary_lists,
+	valid_vessels.include_in_generated_instructions as valid_vessel_include_in_generated_instructions,
+	valid_vessels.capacity::float as valid_vessel_capacity,
+	valid_measurement_units.id as valid_measurement_unit_id,
+	valid_measurement_units.name as valid_measurement_unit_name,
+	valid_measurement_units.description as valid_measurement_unit_description,
+	valid_measurement_units.volumetric as valid_measurement_unit_volumetric,
+	valid_measurement_units.icon_path as valid_measurement_unit_icon_path,
+	valid_measurement_units.universal as valid_measurement_unit_universal,
+	valid_measurement_units.metric as valid_measurement_unit_metric,
+	valid_measurement_units.imperial as valid_measurement_unit_imperial,
+	valid_measurement_units.slug as valid_measurement_unit_slug,
+	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.created_at as valid_measurement_unit_created_at,
+	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
+	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
+	valid_vessels.width_in_millimeters::float as valid_vessel_width_in_millimeters,
+	valid_vessels.length_in_millimeters::float as valid_vessel_length_in_millimeters,
+	valid_vessels.height_in_millimeters::float as valid_vessel_height_in_millimeters,
+	valid_vessels.shape as valid_vessel_shape,
+	valid_vessels.created_at as valid_vessel_created_at,
+	valid_vessels.last_updated_at as valid_vessel_last_updated_at,
+	valid_vessels.archived_at as valid_vessel_archived_at,
+	valid_preparation_vessels.created_at as valid_preparation_vessel_created_at,
+	valid_preparation_vessels.last_updated_at as valid_preparation_vessel_last_updated_at,
+	valid_preparation_vessels.archived_at as valid_preparation_vessel_archived_at,
+	(
+		SELECT
+			COUNT(valid_preparation_vessels.id)
+		FROM
+			valid_preparation_vessels
+		WHERE
+			valid_preparation_vessels.archived_at IS NULL
+			AND valid_preparation_vessels.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+			AND valid_preparation_vessels.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+			AND (
+				valid_preparation_vessels.last_updated_at IS NULL
+				OR valid_preparation_vessels.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+			)
+			AND (
+				valid_preparation_vessels.last_updated_at IS NULL
+				OR valid_preparation_vessels.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+			)
+	) as filtered_count,
+	(
+		SELECT
+			COUNT(valid_preparation_vessels.id)
+		FROM
+			valid_preparation_vessels
+		WHERE
+			valid_preparation_vessels.archived_at IS NULL
+	) as total_count
+FROM valid_preparation_vessels
+	JOIN valid_vessels ON valid_preparation_vessels.valid_vessel_id = valid_vessels.id
+	JOIN valid_preparations ON valid_preparation_vessels.valid_preparation_id = valid_preparations.id
+	LEFT JOIN valid_measurement_units ON valid_vessels.capacity_unit = valid_measurement_units.id
 WHERE
-    valid_preparation_vessels.archived_at IS NULL
-    AND valid_vessels.archived_at IS NULL
-    AND valid_preparations.archived_at IS NULL
-    AND valid_measurement_units.archived_at IS NULL
-    AND valid_preparation_vessels.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-    AND valid_preparation_vessels.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-    AND (
-        valid_preparation_vessels.last_updated_at IS NULL
-        OR valid_preparation_vessels.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-    )
-    AND (
-        valid_preparation_vessels.last_updated_at IS NULL
-        OR valid_preparation_vessels.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-    )
-    AND valid_preparation_vessels.valid_vessel_id = ANY($5::text[])
+	valid_preparation_vessels.archived_at IS NULL
+	AND valid_vessels.archived_at IS NULL
+	AND valid_preparations.archived_at IS NULL
+	AND valid_measurement_units.archived_at IS NULL
+	AND valid_preparation_vessels.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+	AND valid_preparation_vessels.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+	AND (
+		valid_preparation_vessels.last_updated_at IS NULL
+		OR valid_preparation_vessels.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+	)
+	AND (
+		valid_preparation_vessels.last_updated_at IS NULL
+		OR valid_preparation_vessels.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+	)
+	AND valid_preparation_vessels.valid_vessel_id = ANY($5::text[])
 OFFSET $6
 LIMIT $7
 `
@@ -1084,7 +1089,13 @@ func (q *Queries) GetValidPreparationVesselsForVessel(ctx context.Context, db DB
 
 const updateValidPreparationVessel = `-- name: UpdateValidPreparationVessel :execrows
 
-UPDATE valid_preparation_vessels SET notes = $1, valid_preparation_id = $2, valid_vessel_id = $3, last_updated_at = NOW() WHERE archived_at IS NULL AND id = $4
+UPDATE valid_preparation_vessels SET
+	notes = $1,
+	valid_preparation_id = $2,
+	valid_vessel_id = $3,
+	last_updated_at = NOW()
+WHERE archived_at IS NULL
+	AND id = $4
 `
 
 type UpdateValidPreparationVesselParams struct {

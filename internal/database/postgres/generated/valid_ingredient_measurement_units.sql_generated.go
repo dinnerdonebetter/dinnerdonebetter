@@ -26,7 +26,12 @@ func (q *Queries) ArchiveValidIngredientMeasurementUnit(ctx context.Context, db 
 
 const checkValidIngredientMeasurementUnitExistence = `-- name: CheckValidIngredientMeasurementUnitExistence :one
 
-SELECT EXISTS ( SELECT valid_ingredient_measurement_units.id FROM valid_ingredient_measurement_units WHERE valid_ingredient_measurement_units.archived_at IS NULL AND valid_ingredient_measurement_units.id = $1 )
+SELECT EXISTS (
+    SELECT valid_ingredient_measurement_units.id
+    FROM valid_ingredient_measurement_units
+    WHERE valid_ingredient_measurement_units.archived_at IS NULL
+        AND valid_ingredient_measurement_units.id = $1
+)
 `
 
 func (q *Queries) CheckValidIngredientMeasurementUnitExistence(ctx context.Context, db DBTX, id string) (bool, error) {
@@ -38,9 +43,21 @@ func (q *Queries) CheckValidIngredientMeasurementUnitExistence(ctx context.Conte
 
 const createValidIngredientMeasurementUnit = `-- name: CreateValidIngredientMeasurementUnit :exec
 
-INSERT INTO valid_ingredient_measurement_units
-(id,notes,valid_measurement_unit_id,valid_ingredient_id,minimum_allowable_quantity,maximum_allowable_quantity)
-VALUES ($1,$2,$3,$4,$5,$6)
+INSERT INTO valid_ingredient_measurement_units (
+	id,
+	notes,
+	valid_measurement_unit_id,
+	valid_ingredient_id,
+	minimum_allowable_quantity,
+	maximum_allowable_quantity
+) VALUES (
+	$1,
+	$2,
+	$3,
+	$4,
+	$5,
+	$6
+)
 `
 
 type CreateValidIngredientMeasurementUnitParams struct {
@@ -109,14 +126,14 @@ SELECT
 	valid_ingredients.slug as valid_ingredient_slug,
 	valid_ingredients.contains_alcohol as valid_ingredient_contains_alcohol,
 	valid_ingredients.shopping_suggestions as valid_ingredient_shopping_suggestions,
-    valid_ingredients.is_starch as valid_ingredient_is_starch,
-    valid_ingredients.is_protein as valid_ingredient_is_protein,
-    valid_ingredients.is_grain as valid_ingredient_is_grain,
-    valid_ingredients.is_fruit as valid_ingredient_is_fruit,
-    valid_ingredients.is_salt as valid_ingredient_is_salt,
-    valid_ingredients.is_fat as valid_ingredient_is_fat,
-    valid_ingredients.is_acid as valid_ingredient_is_acid,
-    valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.is_starch as valid_ingredient_is_starch,
+	valid_ingredients.is_protein as valid_ingredient_is_protein,
+	valid_ingredients.is_grain as valid_ingredient_is_grain,
+	valid_ingredients.is_fruit as valid_ingredient_is_fruit,
+	valid_ingredients.is_salt as valid_ingredient_is_salt,
+	valid_ingredients.is_fat as valid_ingredient_is_fat,
+	valid_ingredients.is_acid as valid_ingredient_is_acid,
+	valid_ingredients.is_heat as valid_ingredient_is_heat,
 	valid_ingredients.created_at as valid_ingredient_created_at,
 	valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
 	valid_ingredients.archived_at as valid_ingredient_archived_at,
@@ -304,14 +321,14 @@ SELECT
 	valid_ingredients.slug as valid_ingredient_slug,
 	valid_ingredients.contains_alcohol as valid_ingredient_contains_alcohol,
 	valid_ingredients.shopping_suggestions as valid_ingredient_shopping_suggestions,
-    valid_ingredients.is_starch as valid_ingredient_is_starch,
-    valid_ingredients.is_protein as valid_ingredient_is_protein,
-    valid_ingredients.is_grain as valid_ingredient_is_grain,
-    valid_ingredients.is_fruit as valid_ingredient_is_fruit,
-    valid_ingredients.is_salt as valid_ingredient_is_salt,
-    valid_ingredients.is_fat as valid_ingredient_is_fat,
-    valid_ingredients.is_acid as valid_ingredient_is_acid,
-    valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.is_starch as valid_ingredient_is_starch,
+	valid_ingredients.is_protein as valid_ingredient_is_protein,
+	valid_ingredients.is_grain as valid_ingredient_is_grain,
+	valid_ingredients.is_fruit as valid_ingredient_is_fruit,
+	valid_ingredients.is_salt as valid_ingredient_is_salt,
+	valid_ingredients.is_fat as valid_ingredient_is_fat,
+	valid_ingredients.is_acid as valid_ingredient_is_acid,
+	valid_ingredients.is_heat as valid_ingredient_is_heat,
 	valid_ingredients.created_at as valid_ingredient_created_at,
 	valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
 	valid_ingredients.archived_at as valid_ingredient_archived_at,
@@ -320,36 +337,33 @@ SELECT
 	valid_ingredient_measurement_units.created_at as valid_ingredient_measurement_unit_created_at,
 	valid_ingredient_measurement_units.last_updated_at as valid_ingredient_measurement_unit_last_updated_at,
 	valid_ingredient_measurement_units.archived_at as valid_ingredient_measurement_unit_archived_at,
-    (
-        SELECT
-            COUNT(valid_ingredient_measurement_units.id)
-        FROM
-            valid_ingredient_measurement_units
-        WHERE
-            valid_ingredient_measurement_units.archived_at IS NULL
-          AND valid_ingredient_measurement_units.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-          AND valid_ingredient_measurement_units.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-          AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-          AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-    ) as filtered_count,
-    (
-        SELECT
-            COUNT(valid_ingredient_measurement_units.id)
-        FROM
-            valid_ingredient_measurement_units
-        WHERE
-            valid_ingredient_measurement_units.archived_at IS NULL
-    ) as total_count
+	(
+		SELECT
+			COUNT(valid_ingredient_measurement_units.id)
+		FROM
+			valid_ingredient_measurement_units
+		WHERE
+			valid_ingredient_measurement_units.archived_at IS NULL
+            AND valid_ingredient_measurement_units.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+            AND valid_ingredient_measurement_units.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+            AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+            AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+	) as filtered_count,
+	(
+		SELECT COUNT(valid_ingredient_measurement_units.id)
+		FROM valid_ingredient_measurement_units
+		WHERE valid_ingredient_measurement_units.archived_at IS NULL
+	) as total_count
 FROM valid_ingredient_measurement_units
 	JOIN valid_measurement_units ON valid_ingredient_measurement_units.valid_measurement_unit_id = valid_measurement_units.id
 	JOIN valid_ingredients ON valid_ingredient_measurement_units.valid_ingredient_id = valid_ingredients.id
 WHERE valid_ingredient_measurement_units.archived_at IS NULL
-    AND valid_measurement_units.archived_at IS NULL
-    AND valid_ingredients.archived_at IS NULL
-    AND valid_ingredient_measurement_units.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-    AND valid_ingredient_measurement_units.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-    AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-    AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+	AND valid_measurement_units.archived_at IS NULL
+	AND valid_ingredients.archived_at IS NULL
+	AND valid_ingredient_measurement_units.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+	AND valid_ingredient_measurement_units.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+	AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+	AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
 OFFSET $5
 LIMIT $6
 `
@@ -562,14 +576,14 @@ SELECT
 	valid_ingredients.slug as valid_ingredient_slug,
 	valid_ingredients.contains_alcohol as valid_ingredient_contains_alcohol,
 	valid_ingredients.shopping_suggestions as valid_ingredient_shopping_suggestions,
-    valid_ingredients.is_starch as valid_ingredient_is_starch,
-    valid_ingredients.is_protein as valid_ingredient_is_protein,
-    valid_ingredients.is_grain as valid_ingredient_is_grain,
-    valid_ingredients.is_fruit as valid_ingredient_is_fruit,
-    valid_ingredients.is_salt as valid_ingredient_is_salt,
-    valid_ingredients.is_fat as valid_ingredient_is_fat,
-    valid_ingredients.is_acid as valid_ingredient_is_acid,
-    valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.is_starch as valid_ingredient_is_starch,
+	valid_ingredients.is_protein as valid_ingredient_is_protein,
+	valid_ingredients.is_grain as valid_ingredient_is_grain,
+	valid_ingredients.is_fruit as valid_ingredient_is_fruit,
+	valid_ingredients.is_salt as valid_ingredient_is_salt,
+	valid_ingredients.is_fat as valid_ingredient_is_fat,
+	valid_ingredients.is_acid as valid_ingredient_is_acid,
+	valid_ingredients.is_heat as valid_ingredient_is_heat,
 	valid_ingredients.created_at as valid_ingredient_created_at,
 	valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
 	valid_ingredients.archived_at as valid_ingredient_archived_at,
@@ -578,37 +592,34 @@ SELECT
 	valid_ingredient_measurement_units.created_at as valid_ingredient_measurement_unit_created_at,
 	valid_ingredient_measurement_units.last_updated_at as valid_ingredient_measurement_unit_last_updated_at,
 	valid_ingredient_measurement_units.archived_at as valid_ingredient_measurement_unit_archived_at,
-    (
-        SELECT
-            COUNT(valid_ingredient_measurement_units.id)
-        FROM
-            valid_ingredient_measurement_units
-        WHERE
-            valid_ingredient_measurement_units.archived_at IS NULL
-          AND valid_ingredient_measurement_units.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-          AND valid_ingredient_measurement_units.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-          AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-          AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-    ) as filtered_count,
-    (
-        SELECT
-            COUNT(valid_ingredient_measurement_units.id)
-        FROM
-            valid_ingredient_measurement_units
-        WHERE
-            valid_ingredient_measurement_units.archived_at IS NULL
-    ) as total_count
+	(
+		SELECT
+			COUNT(valid_ingredient_measurement_units.id)
+		FROM
+			valid_ingredient_measurement_units
+		WHERE
+			valid_ingredient_measurement_units.archived_at IS NULL
+            AND valid_ingredient_measurement_units.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+            AND valid_ingredient_measurement_units.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+            AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+            AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+	) as filtered_count,
+	(
+		SELECT COUNT(valid_ingredient_measurement_units.id)
+		FROM valid_ingredient_measurement_units
+		WHERE valid_ingredient_measurement_units.archived_at IS NULL
+	) as total_count
 FROM valid_ingredient_measurement_units
 	JOIN valid_measurement_units ON valid_ingredient_measurement_units.valid_measurement_unit_id = valid_measurement_units.id
 	JOIN valid_ingredients ON valid_ingredient_measurement_units.valid_ingredient_id = valid_ingredients.id
 WHERE valid_ingredient_measurement_units.archived_at IS NULL
-    AND valid_measurement_units.archived_at IS NULL
-    AND valid_ingredients.archived_at IS NULL
-    AND valid_ingredient_measurement_units.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-    AND valid_ingredient_measurement_units.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-    AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-    AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-    AND valid_ingredient_measurement_units.valid_ingredient_id = $5
+	AND valid_measurement_units.archived_at IS NULL
+	AND valid_ingredients.archived_at IS NULL
+	AND valid_ingredient_measurement_units.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+	AND valid_ingredient_measurement_units.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+	AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+	AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+	AND valid_ingredient_measurement_units.valid_ingredient_id = $5
 OFFSET $6
 LIMIT $7
 `
@@ -823,14 +834,14 @@ SELECT
 	valid_ingredients.slug as valid_ingredient_slug,
 	valid_ingredients.contains_alcohol as valid_ingredient_contains_alcohol,
 	valid_ingredients.shopping_suggestions as valid_ingredient_shopping_suggestions,
-    valid_ingredients.is_starch as valid_ingredient_is_starch,
-    valid_ingredients.is_protein as valid_ingredient_is_protein,
-    valid_ingredients.is_grain as valid_ingredient_is_grain,
-    valid_ingredients.is_fruit as valid_ingredient_is_fruit,
-    valid_ingredients.is_salt as valid_ingredient_is_salt,
-    valid_ingredients.is_fat as valid_ingredient_is_fat,
-    valid_ingredients.is_acid as valid_ingredient_is_acid,
-    valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.is_starch as valid_ingredient_is_starch,
+	valid_ingredients.is_protein as valid_ingredient_is_protein,
+	valid_ingredients.is_grain as valid_ingredient_is_grain,
+	valid_ingredients.is_fruit as valid_ingredient_is_fruit,
+	valid_ingredients.is_salt as valid_ingredient_is_salt,
+	valid_ingredients.is_fat as valid_ingredient_is_fat,
+	valid_ingredients.is_acid as valid_ingredient_is_acid,
+	valid_ingredients.is_heat as valid_ingredient_is_heat,
 	valid_ingredients.created_at as valid_ingredient_created_at,
 	valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
 	valid_ingredients.archived_at as valid_ingredient_archived_at,
@@ -839,37 +850,34 @@ SELECT
 	valid_ingredient_measurement_units.created_at as valid_ingredient_measurement_unit_created_at,
 	valid_ingredient_measurement_units.last_updated_at as valid_ingredient_measurement_unit_last_updated_at,
 	valid_ingredient_measurement_units.archived_at as valid_ingredient_measurement_unit_archived_at,
-    (
-        SELECT
-            COUNT(valid_ingredient_measurement_units.id)
-        FROM
-            valid_ingredient_measurement_units
-        WHERE
-            valid_ingredient_measurement_units.archived_at IS NULL
-          AND valid_ingredient_measurement_units.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-          AND valid_ingredient_measurement_units.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-          AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-          AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-    ) as filtered_count,
-    (
-        SELECT
-            COUNT(valid_ingredient_measurement_units.id)
-        FROM
-            valid_ingredient_measurement_units
-        WHERE
-            valid_ingredient_measurement_units.archived_at IS NULL
-    ) as total_count
+	(
+		SELECT
+			COUNT(valid_ingredient_measurement_units.id)
+		FROM
+			valid_ingredient_measurement_units
+		WHERE
+			valid_ingredient_measurement_units.archived_at IS NULL
+            AND valid_ingredient_measurement_units.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+            AND valid_ingredient_measurement_units.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+            AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+            AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+	) as filtered_count,
+	(
+		SELECT COUNT(valid_ingredient_measurement_units.id)
+		FROM valid_ingredient_measurement_units
+		WHERE valid_ingredient_measurement_units.archived_at IS NULL
+	) as total_count
 FROM valid_ingredient_measurement_units
 	JOIN valid_measurement_units ON valid_ingredient_measurement_units.valid_measurement_unit_id = valid_measurement_units.id
 	JOIN valid_ingredients ON valid_ingredient_measurement_units.valid_ingredient_id = valid_ingredients.id
 WHERE valid_ingredient_measurement_units.archived_at IS NULL
-    AND valid_measurement_units.archived_at IS NULL
-    AND valid_ingredients.archived_at IS NULL
-    AND valid_ingredient_measurement_units.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-    AND valid_ingredient_measurement_units.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-    AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-    AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-    AND valid_ingredient_measurement_units.valid_measurement_unit_id = $5
+	AND valid_measurement_units.archived_at IS NULL
+	AND valid_ingredients.archived_at IS NULL
+	AND valid_ingredient_measurement_units.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+	AND valid_ingredient_measurement_units.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+	AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+	AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+	AND valid_ingredient_measurement_units.valid_measurement_unit_id = $5
 OFFSET $6
 LIMIT $7
 `

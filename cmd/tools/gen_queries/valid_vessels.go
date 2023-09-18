@@ -34,6 +34,16 @@ var validVesselsColumns = []string{
 func buildValidVesselsQueries() []*Query {
 	insertColumns := filterForInsert(validVesselsColumns)
 
+	fullSelectColumns := mergeColumns(
+		applyToEach(filterFromSlice(validVesselsColumns, "capacity_unit"), func(i int, s string) string {
+			return fmt.Sprintf("%s.%s", validVesselsTableName, s)
+		}),
+		applyToEach(validMeasurementUnitsColumns, func(i int, s string) string {
+			return fmt.Sprintf("%s.%s as valid_measurement_unit_%s", validMeasurementUnitsTableName, s, s)
+		}),
+		10,
+	)
+
 	return []*Query{
 		{
 			Annotation: QueryAnnotation{
@@ -127,7 +137,7 @@ ORDER BY %s.%s
 		},
 		{
 			Annotation: QueryAnnotation{
-				Name: "GetValidVesselsNeedingIndexing",
+				Name: "GetValidVesselIDsNeedingIndexing",
 				Type: ManyType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT %s.%s
@@ -156,11 +166,11 @@ WHERE %s.%s IS NULL
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
+	JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
 WHERE %s.%s IS NULL
+	AND valid_measurement_units.archived_at IS NULL
 	AND %s.%s = sqlc.arg(%s);`,
-				strings.Join(applyToEach(validVesselsColumns, func(i int, s string) string {
-					return fmt.Sprintf("%s.%s", validVesselsTableName, s)
-				}), ",\n\t"),
+				strings.Join(fullSelectColumns, ",\n\t"),
 				validVesselsTableName,
 				validVesselsTableName,
 				archivedAtColumn,
@@ -177,11 +187,11 @@ WHERE %s.%s IS NULL
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
+	JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
 WHERE %s.%s IS NULL
+	AND valid_measurement_units.archived_at IS NULL
 ORDER BY RANDOM() LIMIT 1;`,
-				strings.Join(applyToEach(validVesselsColumns, func(i int, s string) string {
-					return fmt.Sprintf("%s.%s", validVesselsTableName, s)
-				}), ",\n\t"),
+				strings.Join(fullSelectColumns, ",\n\t"),
 				validVesselsTableName,
 				validVesselsTableName,
 				archivedAtColumn,
@@ -195,11 +205,11 @@ ORDER BY RANDOM() LIMIT 1;`,
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
+	JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
 WHERE %s.%s IS NULL
+	AND valid_measurement_units.archived_at IS NULL
 	AND %s.%s = ANY(sqlc.arg(ids)::text[]);`,
-				strings.Join(applyToEach(validVesselsColumns, func(i int, s string) string {
-					return fmt.Sprintf("%s.%s", validVesselsTableName, s)
-				}), ",\n\t"),
+				strings.Join(fullSelectColumns, ",\n\t"),
 				validVesselsTableName,
 				validVesselsTableName,
 				archivedAtColumn,

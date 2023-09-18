@@ -28,7 +28,12 @@ func (q *Queries) ArchiveValidPreparationInstrument(ctx context.Context, db DBTX
 
 const checkValidPreparationInstrumentExistence = `-- name: CheckValidPreparationInstrumentExistence :one
 
-SELECT EXISTS ( SELECT valid_preparation_instruments.id FROM valid_preparation_instruments WHERE valid_preparation_instruments.archived_at IS NULL AND valid_preparation_instruments.id = $1 )
+SELECT EXISTS (
+	SELECT valid_preparation_instruments.id
+	FROM valid_preparation_instruments
+	WHERE valid_preparation_instruments.archived_at IS NULL
+		AND valid_preparation_instruments.id = $1
+)
 `
 
 func (q *Queries) CheckValidPreparationInstrumentExistence(ctx context.Context, db DBTX, id string) (bool, error) {
@@ -40,7 +45,17 @@ func (q *Queries) CheckValidPreparationInstrumentExistence(ctx context.Context, 
 
 const createValidPreparationInstrument = `-- name: CreateValidPreparationInstrument :exec
 
-INSERT INTO valid_preparation_instruments (id,notes,valid_preparation_id,valid_instrument_id) VALUES ($1,$2,$3,$4)
+INSERT INTO valid_preparation_instruments (
+	id,
+	notes,
+	valid_preparation_id,
+	valid_instrument_id
+) VALUES (
+	$1,
+	$2,
+	$3,
+	$4
+)
 `
 
 type CreateValidPreparationInstrumentParams struct {
@@ -78,10 +93,10 @@ SELECT
 	valid_preparations.temperature_required as valid_preparation_temperature_required,
 	valid_preparations.time_estimate_required as valid_preparation_time_estimate_required,
 	valid_preparations.condition_expression_required as valid_preparation_condition_expression_required,
-    valid_preparations.consumes_vessel as valid_preparation_consumes_vessel,
-    valid_preparations.only_for_vessels as valid_preparation_only_for_vessels,
-    valid_preparations.minimum_vessel_count as valid_preparation_minimum_vessel_count,
-    valid_preparations.maximum_vessel_count as valid_preparation_maximum_vessel_count,
+	valid_preparations.consumes_vessel as valid_preparation_consumes_vessel,
+	valid_preparations.only_for_vessels as valid_preparation_only_for_vessels,
+	valid_preparations.minimum_vessel_count as valid_preparation_minimum_vessel_count,
+	valid_preparations.maximum_vessel_count as valid_preparation_maximum_vessel_count,
 	valid_preparations.slug as valid_preparation_slug,
 	valid_preparations.past_tense as valid_preparation_past_tense,
 	valid_preparations.created_at as valid_preparation_created_at,
@@ -103,13 +118,13 @@ SELECT
 	valid_preparation_instruments.last_updated_at as valid_preparation_instrument_last_updated_at,
 	valid_preparation_instruments.archived_at as valid_preparation_instrument_archived_at
 FROM
-	valid_preparation_instruments
-	 JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-	 JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+    valid_preparation_instruments
+    JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+    JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 WHERE
-    valid_preparation_instruments.archived_at IS NULL
-    AND valid_instruments.archived_at IS NULL
-    AND valid_preparations.archived_at IS NULL
+	valid_preparation_instruments.archived_at IS NULL
+	AND valid_instruments.archived_at IS NULL
+	AND valid_preparations.archived_at IS NULL
 	AND valid_preparation_instruments.id = $1
 `
 
@@ -205,105 +220,103 @@ func (q *Queries) GetValidPreparationInstrument(ctx context.Context, db DBTX, id
 const getValidPreparationInstruments = `-- name: GetValidPreparationInstruments :many
 
 SELECT
-    valid_preparation_instruments.id as valid_preparation_instrument_id,
-    valid_preparation_instruments.notes as valid_preparation_instrument_notes,
-    valid_preparations.id as valid_preparation_id,
-    valid_preparations.name as valid_preparation_name,
-    valid_preparations.description as valid_preparation_description,
-    valid_preparations.icon_path as valid_preparation_icon_path,
-    valid_preparations.yields_nothing as valid_preparation_yields_nothing,
-    valid_preparations.restrict_to_ingredients as valid_preparation_restrict_to_ingredients,
-    valid_preparations.minimum_ingredient_count as valid_preparation_minimum_ingredient_count,
-    valid_preparations.maximum_ingredient_count as valid_preparation_maximum_ingredient_count,
-    valid_preparations.minimum_instrument_count as valid_preparation_minimum_instrument_count,
-    valid_preparations.maximum_instrument_count as valid_preparation_maximum_instrument_count,
-    valid_preparations.temperature_required as valid_preparation_temperature_required,
-    valid_preparations.time_estimate_required as valid_preparation_time_estimate_required,
-    valid_preparations.condition_expression_required as valid_preparation_condition_expression_required,
-    valid_preparations.consumes_vessel as valid_preparation_consumes_vessel,
-    valid_preparations.only_for_vessels as valid_preparation_only_for_vessels,
-    valid_preparations.minimum_vessel_count as valid_preparation_minimum_vessel_count,
-    valid_preparations.maximum_vessel_count as valid_preparation_maximum_vessel_count,
-    valid_preparations.slug as valid_preparation_slug,
-    valid_preparations.past_tense as valid_preparation_past_tense,
-    valid_preparations.created_at as valid_preparation_created_at,
-    valid_preparations.last_updated_at as valid_preparation_last_updated_at,
-    valid_preparations.archived_at as valid_preparation_archived_at,
-    valid_instruments.id as valid_instrument_id,
-    valid_instruments.name as valid_instrument_name,
-    valid_instruments.plural_name as valid_instrument_plural_name,
-    valid_instruments.description as valid_instrument_description,
-    valid_instruments.icon_path as valid_instrument_icon_path,
-    valid_instruments.usable_for_storage as valid_instrument_usable_for_storage,
-    valid_instruments.display_in_summary_lists as valid_instrument_display_in_summary_lists,
-    valid_instruments.include_in_generated_instructions as valid_instrument_include_in_generated_instructions,
-    valid_instruments.slug as valid_instrument_slug,
-    valid_instruments.created_at as valid_instrument_created_at,
-    valid_instruments.last_updated_at as valid_instrument_last_updated_at,
-    valid_instruments.archived_at as valid_instrument_archived_at,
-    valid_preparation_instruments.created_at as valid_preparation_instrument_created_at,
-    valid_preparation_instruments.last_updated_at as valid_preparation_instrument_last_updated_at,
-    valid_preparation_instruments.archived_at as valid_preparation_instrument_archived_at,
-    (
-        SELECT
-            COUNT(valid_preparation_instruments.id)
-        FROM
-            valid_preparation_instruments
-                JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-                JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
-        WHERE
-            valid_preparation_instruments.archived_at IS NULL
-            AND valid_instruments.archived_at IS NULL
-            AND valid_preparations.archived_at IS NULL
-            AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-            AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-            AND (
-                valid_preparation_instruments.last_updated_at IS NULL
-                OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-            )
-            AND (
-                valid_preparation_instruments.last_updated_at IS NULL
-                OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-            )
-    ) as filtered_count,
-    (
-        SELECT
-            COUNT(valid_preparation_instruments.id)
-        FROM
-            valid_preparation_instruments
-                JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-                JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
-        WHERE
-            valid_preparation_instruments.archived_at IS NULL
-            AND valid_instruments.archived_at IS NULL
-            AND valid_preparations.archived_at IS NULL
-    ) as total_count
-FROM
-    valid_preparation_instruments
-    JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-    JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+	valid_preparation_instruments.id as valid_preparation_instrument_id,
+	valid_preparation_instruments.notes as valid_preparation_instrument_notes,
+	valid_preparations.id as valid_preparation_id,
+	valid_preparations.name as valid_preparation_name,
+	valid_preparations.description as valid_preparation_description,
+	valid_preparations.icon_path as valid_preparation_icon_path,
+	valid_preparations.yields_nothing as valid_preparation_yields_nothing,
+	valid_preparations.restrict_to_ingredients as valid_preparation_restrict_to_ingredients,
+	valid_preparations.minimum_ingredient_count as valid_preparation_minimum_ingredient_count,
+	valid_preparations.maximum_ingredient_count as valid_preparation_maximum_ingredient_count,
+	valid_preparations.minimum_instrument_count as valid_preparation_minimum_instrument_count,
+	valid_preparations.maximum_instrument_count as valid_preparation_maximum_instrument_count,
+	valid_preparations.temperature_required as valid_preparation_temperature_required,
+	valid_preparations.time_estimate_required as valid_preparation_time_estimate_required,
+	valid_preparations.condition_expression_required as valid_preparation_condition_expression_required,
+	valid_preparations.consumes_vessel as valid_preparation_consumes_vessel,
+	valid_preparations.only_for_vessels as valid_preparation_only_for_vessels,
+	valid_preparations.minimum_vessel_count as valid_preparation_minimum_vessel_count,
+	valid_preparations.maximum_vessel_count as valid_preparation_maximum_vessel_count,
+	valid_preparations.slug as valid_preparation_slug,
+	valid_preparations.past_tense as valid_preparation_past_tense,
+	valid_preparations.created_at as valid_preparation_created_at,
+	valid_preparations.last_updated_at as valid_preparation_last_updated_at,
+	valid_preparations.archived_at as valid_preparation_archived_at,
+	valid_instruments.id as valid_instrument_id,
+	valid_instruments.name as valid_instrument_name,
+	valid_instruments.plural_name as valid_instrument_plural_name,
+	valid_instruments.description as valid_instrument_description,
+	valid_instruments.icon_path as valid_instrument_icon_path,
+	valid_instruments.usable_for_storage as valid_instrument_usable_for_storage,
+	valid_instruments.display_in_summary_lists as valid_instrument_display_in_summary_lists,
+	valid_instruments.include_in_generated_instructions as valid_instrument_include_in_generated_instructions,
+	valid_instruments.slug as valid_instrument_slug,
+	valid_instruments.created_at as valid_instrument_created_at,
+	valid_instruments.last_updated_at as valid_instrument_last_updated_at,
+	valid_instruments.archived_at as valid_instrument_archived_at,
+	valid_preparation_instruments.created_at as valid_preparation_instrument_created_at,
+	valid_preparation_instruments.last_updated_at as valid_preparation_instrument_last_updated_at,
+	valid_preparation_instruments.archived_at as valid_preparation_instrument_archived_at,
+	(
+		SELECT
+			COUNT(valid_preparation_instruments.id)
+		FROM
+			valid_preparation_instruments
+				JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+				JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+		WHERE
+			valid_preparation_instruments.archived_at IS NULL
+			AND valid_instruments.archived_at IS NULL
+			AND valid_preparations.archived_at IS NULL
+			AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+			AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+			AND (
+				valid_preparation_instruments.last_updated_at IS NULL
+				OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+			)
+			AND (
+				valid_preparation_instruments.last_updated_at IS NULL
+				OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+			)
+	) as filtered_count,
+	(
+		SELECT
+			COUNT(valid_preparation_instruments.id)
+		FROM
+			valid_preparation_instruments
+				JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+				JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+		WHERE
+			valid_preparation_instruments.archived_at IS NULL
+			AND valid_instruments.archived_at IS NULL
+			AND valid_preparations.archived_at IS NULL
+	) as total_count
+FROM valid_preparation_instruments
+	JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+	JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 WHERE
-    valid_preparation_instruments.archived_at IS NULL
-    AND valid_instruments.archived_at IS NULL
-    AND valid_preparations.archived_at IS NULL
-    AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-    AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-    AND (
-        valid_preparation_instruments.last_updated_at IS NULL
-        OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-    )
-    AND (
-        valid_preparation_instruments.last_updated_at IS NULL
-        OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-    )
+	valid_preparation_instruments.archived_at IS NULL
+	AND valid_instruments.archived_at IS NULL
+	AND valid_preparations.archived_at IS NULL
+	AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+	AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+	AND (
+		valid_preparation_instruments.last_updated_at IS NULL
+		OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+	)
+	AND (
+		valid_preparation_instruments.last_updated_at IS NULL
+		OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+	)
 GROUP BY
-    valid_preparation_instruments.id,
-    valid_preparations.id,
-    valid_instruments.id
-ORDER BY
-    valid_preparation_instruments.id
-    LIMIT $6
-    OFFSET $5
+	valid_preparation_instruments.id,
+	valid_preparations.id,
+	valid_instruments.id
+ORDER BY valid_preparation_instruments.id
+LIMIT $6
+OFFSET $5
 `
 
 type GetValidPreparationInstrumentsParams struct {
@@ -434,106 +447,104 @@ func (q *Queries) GetValidPreparationInstruments(ctx context.Context, db DBTX, a
 const getValidPreparationInstrumentsForInstrument = `-- name: GetValidPreparationInstrumentsForInstrument :many
 
 SELECT
-    valid_preparation_instruments.id as valid_preparation_instrument_id,
-    valid_preparation_instruments.notes as valid_preparation_instrument_notes,
-    valid_preparations.id as valid_preparation_id,
-    valid_preparations.name as valid_preparation_name,
-    valid_preparations.description as valid_preparation_description,
-    valid_preparations.icon_path as valid_preparation_icon_path,
-    valid_preparations.yields_nothing as valid_preparation_yields_nothing,
-    valid_preparations.restrict_to_ingredients as valid_preparation_restrict_to_ingredients,
-    valid_preparations.minimum_ingredient_count as valid_preparation_minimum_ingredient_count,
-    valid_preparations.maximum_ingredient_count as valid_preparation_maximum_ingredient_count,
-    valid_preparations.minimum_instrument_count as valid_preparation_minimum_instrument_count,
-    valid_preparations.maximum_instrument_count as valid_preparation_maximum_instrument_count,
-    valid_preparations.temperature_required as valid_preparation_temperature_required,
-    valid_preparations.time_estimate_required as valid_preparation_time_estimate_required,
-    valid_preparations.condition_expression_required as valid_preparation_condition_expression_required,
-    valid_preparations.consumes_vessel as valid_preparation_consumes_vessel,
-    valid_preparations.only_for_vessels as valid_preparation_only_for_vessels,
-    valid_preparations.minimum_vessel_count as valid_preparation_minimum_vessel_count,
-    valid_preparations.maximum_vessel_count as valid_preparation_maximum_vessel_count,
-    valid_preparations.slug as valid_preparation_slug,
-    valid_preparations.past_tense as valid_preparation_past_tense,
-    valid_preparations.created_at as valid_preparation_created_at,
-    valid_preparations.last_updated_at as valid_preparation_last_updated_at,
-    valid_preparations.archived_at as valid_preparation_archived_at,
-    valid_instruments.id as valid_instrument_id,
-    valid_instruments.name as valid_instrument_name,
-    valid_instruments.plural_name as valid_instrument_plural_name,
-    valid_instruments.description as valid_instrument_description,
-    valid_instruments.icon_path as valid_instrument_icon_path,
-    valid_instruments.usable_for_storage as valid_instrument_usable_for_storage,
-    valid_instruments.display_in_summary_lists as valid_instrument_display_in_summary_lists,
-    valid_instruments.include_in_generated_instructions as valid_instrument_include_in_generated_instructions,
-    valid_instruments.slug as valid_instrument_slug,
-    valid_instruments.created_at as valid_instrument_created_at,
-    valid_instruments.last_updated_at as valid_instrument_last_updated_at,
-    valid_instruments.archived_at as valid_instrument_archived_at,
-    valid_preparation_instruments.created_at as valid_preparation_instrument_created_at,
-    valid_preparation_instruments.last_updated_at as valid_preparation_instrument_last_updated_at,
-    valid_preparation_instruments.archived_at as valid_preparation_instrument_archived_at,
-    (
-        SELECT
-            COUNT(valid_preparation_instruments.id)
-        FROM
-            valid_preparation_instruments
-                JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-                JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
-        WHERE
-            valid_preparation_instruments.archived_at IS NULL
-            AND valid_instruments.archived_at IS NULL
-            AND valid_preparations.archived_at IS NULL
-            AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-            AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-            AND (
-                valid_preparation_instruments.last_updated_at IS NULL
-                OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-            )
-            AND (
-                valid_preparation_instruments.last_updated_at IS NULL
-                OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-            )
-    ) as filtered_count,
-    (
-        SELECT
-            COUNT(valid_preparation_instruments.id)
-        FROM
-            valid_preparation_instruments
-                JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-                JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
-        WHERE
-            valid_preparation_instruments.archived_at IS NULL
-            AND valid_instruments.archived_at IS NULL
-            AND valid_preparations.archived_at IS NULL
-    ) as total_count
-FROM
-    valid_preparation_instruments
-    JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-    JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+	valid_preparation_instruments.id as valid_preparation_instrument_id,
+	valid_preparation_instruments.notes as valid_preparation_instrument_notes,
+	valid_preparations.id as valid_preparation_id,
+	valid_preparations.name as valid_preparation_name,
+	valid_preparations.description as valid_preparation_description,
+	valid_preparations.icon_path as valid_preparation_icon_path,
+	valid_preparations.yields_nothing as valid_preparation_yields_nothing,
+	valid_preparations.restrict_to_ingredients as valid_preparation_restrict_to_ingredients,
+	valid_preparations.minimum_ingredient_count as valid_preparation_minimum_ingredient_count,
+	valid_preparations.maximum_ingredient_count as valid_preparation_maximum_ingredient_count,
+	valid_preparations.minimum_instrument_count as valid_preparation_minimum_instrument_count,
+	valid_preparations.maximum_instrument_count as valid_preparation_maximum_instrument_count,
+	valid_preparations.temperature_required as valid_preparation_temperature_required,
+	valid_preparations.time_estimate_required as valid_preparation_time_estimate_required,
+	valid_preparations.condition_expression_required as valid_preparation_condition_expression_required,
+	valid_preparations.consumes_vessel as valid_preparation_consumes_vessel,
+	valid_preparations.only_for_vessels as valid_preparation_only_for_vessels,
+	valid_preparations.minimum_vessel_count as valid_preparation_minimum_vessel_count,
+	valid_preparations.maximum_vessel_count as valid_preparation_maximum_vessel_count,
+	valid_preparations.slug as valid_preparation_slug,
+	valid_preparations.past_tense as valid_preparation_past_tense,
+	valid_preparations.created_at as valid_preparation_created_at,
+	valid_preparations.last_updated_at as valid_preparation_last_updated_at,
+	valid_preparations.archived_at as valid_preparation_archived_at,
+	valid_instruments.id as valid_instrument_id,
+	valid_instruments.name as valid_instrument_name,
+	valid_instruments.plural_name as valid_instrument_plural_name,
+	valid_instruments.description as valid_instrument_description,
+	valid_instruments.icon_path as valid_instrument_icon_path,
+	valid_instruments.usable_for_storage as valid_instrument_usable_for_storage,
+	valid_instruments.display_in_summary_lists as valid_instrument_display_in_summary_lists,
+	valid_instruments.include_in_generated_instructions as valid_instrument_include_in_generated_instructions,
+	valid_instruments.slug as valid_instrument_slug,
+	valid_instruments.created_at as valid_instrument_created_at,
+	valid_instruments.last_updated_at as valid_instrument_last_updated_at,
+	valid_instruments.archived_at as valid_instrument_archived_at,
+	valid_preparation_instruments.created_at as valid_preparation_instrument_created_at,
+	valid_preparation_instruments.last_updated_at as valid_preparation_instrument_last_updated_at,
+	valid_preparation_instruments.archived_at as valid_preparation_instrument_archived_at,
+	(
+		SELECT
+			COUNT(valid_preparation_instruments.id)
+		FROM
+			valid_preparation_instruments
+				JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+				JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+		WHERE
+			valid_preparation_instruments.archived_at IS NULL
+			AND valid_instruments.archived_at IS NULL
+			AND valid_preparations.archived_at IS NULL
+			AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+			AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+			AND (
+				valid_preparation_instruments.last_updated_at IS NULL
+				OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+			)
+			AND (
+				valid_preparation_instruments.last_updated_at IS NULL
+				OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+			)
+	) as filtered_count,
+	(
+		SELECT
+			COUNT(valid_preparation_instruments.id)
+		FROM
+			valid_preparation_instruments
+				JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+				JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+		WHERE
+			valid_preparation_instruments.archived_at IS NULL
+			AND valid_instruments.archived_at IS NULL
+			AND valid_preparations.archived_at IS NULL
+	) as total_count
+FROM valid_preparation_instruments
+	JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+	JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 WHERE
-    valid_preparation_instruments.archived_at IS NULL
-    AND valid_preparation_instruments.valid_instrument_id = ANY($5::text[])
-    AND valid_instruments.archived_at IS NULL
-    AND valid_preparations.archived_at IS NULL
-    AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-    AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-    AND (
-        valid_preparation_instruments.last_updated_at IS NULL
-        OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-    )
-    AND (
-        valid_preparation_instruments.last_updated_at IS NULL
-        OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-    )
+	valid_preparation_instruments.archived_at IS NULL
+	AND valid_preparation_instruments.valid_instrument_id = ANY($5::text[])
+	AND valid_instruments.archived_at IS NULL
+	AND valid_preparations.archived_at IS NULL
+	AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+	AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+	AND (
+		valid_preparation_instruments.last_updated_at IS NULL
+		OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+	)
+	AND (
+		valid_preparation_instruments.last_updated_at IS NULL
+		OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+	)
 GROUP BY
-    valid_preparation_instruments.id,
-    valid_preparations.id,
-    valid_instruments.id
-ORDER BY
-    valid_preparation_instruments.id
-    LIMIT $7
-    OFFSET $6
+	valid_preparation_instruments.id,
+	valid_preparations.id,
+	valid_instruments.id
+ORDER BY valid_preparation_instruments.id
+LIMIT $7
+OFFSET $6
 `
 
 type GetValidPreparationInstrumentsForInstrumentParams struct {
@@ -666,106 +677,104 @@ func (q *Queries) GetValidPreparationInstrumentsForInstrument(ctx context.Contex
 const getValidPreparationInstrumentsForPreparation = `-- name: GetValidPreparationInstrumentsForPreparation :many
 
 SELECT
-    valid_preparation_instruments.id as valid_preparation_instrument_id,
-    valid_preparation_instruments.notes as valid_preparation_instrument_notes,
-    valid_preparations.id as valid_preparation_id,
-    valid_preparations.name as valid_preparation_name,
-    valid_preparations.description as valid_preparation_description,
-    valid_preparations.icon_path as valid_preparation_icon_path,
-    valid_preparations.yields_nothing as valid_preparation_yields_nothing,
-    valid_preparations.restrict_to_ingredients as valid_preparation_restrict_to_ingredients,
-    valid_preparations.minimum_ingredient_count as valid_preparation_minimum_ingredient_count,
-    valid_preparations.maximum_ingredient_count as valid_preparation_maximum_ingredient_count,
-    valid_preparations.minimum_instrument_count as valid_preparation_minimum_instrument_count,
-    valid_preparations.maximum_instrument_count as valid_preparation_maximum_instrument_count,
-    valid_preparations.temperature_required as valid_preparation_temperature_required,
-    valid_preparations.time_estimate_required as valid_preparation_time_estimate_required,
-    valid_preparations.condition_expression_required as valid_preparation_condition_expression_required,
-    valid_preparations.consumes_vessel as valid_preparation_consumes_vessel,
-    valid_preparations.only_for_vessels as valid_preparation_only_for_vessels,
-    valid_preparations.minimum_vessel_count as valid_preparation_minimum_vessel_count,
-    valid_preparations.maximum_vessel_count as valid_preparation_maximum_vessel_count,
-    valid_preparations.slug as valid_preparation_slug,
-    valid_preparations.past_tense as valid_preparation_past_tense,
-    valid_preparations.created_at as valid_preparation_created_at,
-    valid_preparations.last_updated_at as valid_preparation_last_updated_at,
-    valid_preparations.archived_at as valid_preparation_archived_at,
-    valid_instruments.id as valid_instrument_id,
-    valid_instruments.name as valid_instrument_name,
-    valid_instruments.plural_name as valid_instrument_plural_name,
-    valid_instruments.description as valid_instrument_description,
-    valid_instruments.icon_path as valid_instrument_icon_path,
-    valid_instruments.usable_for_storage as valid_instrument_usable_for_storage,
-    valid_instruments.display_in_summary_lists as valid_instrument_display_in_summary_lists,
-    valid_instruments.include_in_generated_instructions as valid_instrument_include_in_generated_instructions,
-    valid_instruments.slug as valid_instrument_slug,
-    valid_instruments.created_at as valid_instrument_created_at,
-    valid_instruments.last_updated_at as valid_instrument_last_updated_at,
-    valid_instruments.archived_at as valid_instrument_archived_at,
-    valid_preparation_instruments.created_at as valid_preparation_instrument_created_at,
-    valid_preparation_instruments.last_updated_at as valid_preparation_instrument_last_updated_at,
-    valid_preparation_instruments.archived_at as valid_preparation_instrument_archived_at,
-    (
-        SELECT
-            COUNT(valid_preparation_instruments.id)
-        FROM
-            valid_preparation_instruments
-                JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-                JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
-        WHERE
-            valid_preparation_instruments.archived_at IS NULL
-            AND valid_instruments.archived_at IS NULL
-            AND valid_preparations.archived_at IS NULL
-            AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-            AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-            AND (
-                valid_preparation_instruments.last_updated_at IS NULL
-                OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-            )
-            AND (
-                valid_preparation_instruments.last_updated_at IS NULL
-                OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-            )
-    ) as filtered_count,
-    (
-        SELECT
-            COUNT(valid_preparation_instruments.id)
-        FROM
-            valid_preparation_instruments
-                JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-                JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
-        WHERE
-            valid_preparation_instruments.archived_at IS NULL
-            AND valid_instruments.archived_at IS NULL
-            AND valid_preparations.archived_at IS NULL
-    ) as total_count
-FROM
-    valid_preparation_instruments
-    JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-    JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+	valid_preparation_instruments.id as valid_preparation_instrument_id,
+	valid_preparation_instruments.notes as valid_preparation_instrument_notes,
+	valid_preparations.id as valid_preparation_id,
+	valid_preparations.name as valid_preparation_name,
+	valid_preparations.description as valid_preparation_description,
+	valid_preparations.icon_path as valid_preparation_icon_path,
+	valid_preparations.yields_nothing as valid_preparation_yields_nothing,
+	valid_preparations.restrict_to_ingredients as valid_preparation_restrict_to_ingredients,
+	valid_preparations.minimum_ingredient_count as valid_preparation_minimum_ingredient_count,
+	valid_preparations.maximum_ingredient_count as valid_preparation_maximum_ingredient_count,
+	valid_preparations.minimum_instrument_count as valid_preparation_minimum_instrument_count,
+	valid_preparations.maximum_instrument_count as valid_preparation_maximum_instrument_count,
+	valid_preparations.temperature_required as valid_preparation_temperature_required,
+	valid_preparations.time_estimate_required as valid_preparation_time_estimate_required,
+	valid_preparations.condition_expression_required as valid_preparation_condition_expression_required,
+	valid_preparations.consumes_vessel as valid_preparation_consumes_vessel,
+	valid_preparations.only_for_vessels as valid_preparation_only_for_vessels,
+	valid_preparations.minimum_vessel_count as valid_preparation_minimum_vessel_count,
+	valid_preparations.maximum_vessel_count as valid_preparation_maximum_vessel_count,
+	valid_preparations.slug as valid_preparation_slug,
+	valid_preparations.past_tense as valid_preparation_past_tense,
+	valid_preparations.created_at as valid_preparation_created_at,
+	valid_preparations.last_updated_at as valid_preparation_last_updated_at,
+	valid_preparations.archived_at as valid_preparation_archived_at,
+	valid_instruments.id as valid_instrument_id,
+	valid_instruments.name as valid_instrument_name,
+	valid_instruments.plural_name as valid_instrument_plural_name,
+	valid_instruments.description as valid_instrument_description,
+	valid_instruments.icon_path as valid_instrument_icon_path,
+	valid_instruments.usable_for_storage as valid_instrument_usable_for_storage,
+	valid_instruments.display_in_summary_lists as valid_instrument_display_in_summary_lists,
+	valid_instruments.include_in_generated_instructions as valid_instrument_include_in_generated_instructions,
+	valid_instruments.slug as valid_instrument_slug,
+	valid_instruments.created_at as valid_instrument_created_at,
+	valid_instruments.last_updated_at as valid_instrument_last_updated_at,
+	valid_instruments.archived_at as valid_instrument_archived_at,
+	valid_preparation_instruments.created_at as valid_preparation_instrument_created_at,
+	valid_preparation_instruments.last_updated_at as valid_preparation_instrument_last_updated_at,
+	valid_preparation_instruments.archived_at as valid_preparation_instrument_archived_at,
+	(
+		SELECT
+			COUNT(valid_preparation_instruments.id)
+		FROM
+			valid_preparation_instruments
+				JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+				JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+		WHERE
+			valid_preparation_instruments.archived_at IS NULL
+			AND valid_instruments.archived_at IS NULL
+			AND valid_preparations.archived_at IS NULL
+			AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+			AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+			AND (
+				valid_preparation_instruments.last_updated_at IS NULL
+				OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+			)
+			AND (
+				valid_preparation_instruments.last_updated_at IS NULL
+				OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+			)
+	) as filtered_count,
+	(
+		SELECT
+			COUNT(valid_preparation_instruments.id)
+		FROM
+			valid_preparation_instruments
+				JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+				JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+		WHERE
+			valid_preparation_instruments.archived_at IS NULL
+			AND valid_instruments.archived_at IS NULL
+			AND valid_preparations.archived_at IS NULL
+	) as total_count
+FROM valid_preparation_instruments
+	JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+	JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 WHERE
-    valid_preparation_instruments.archived_at IS NULL
-    AND valid_preparation_instruments.valid_preparation_id = ANY($5::text[])
-    AND valid_instruments.archived_at IS NULL
-    AND valid_preparations.archived_at IS NULL
-    AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-    AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-    AND (
-        valid_preparation_instruments.last_updated_at IS NULL
-        OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-    )
-    AND (
-        valid_preparation_instruments.last_updated_at IS NULL
-        OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-    )
+	valid_preparation_instruments.archived_at IS NULL
+	AND valid_preparation_instruments.valid_preparation_id = ANY($5::text[])
+	AND valid_instruments.archived_at IS NULL
+	AND valid_preparations.archived_at IS NULL
+	AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+	AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+	AND (
+		valid_preparation_instruments.last_updated_at IS NULL
+		OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+	)
+	AND (
+		valid_preparation_instruments.last_updated_at IS NULL
+		OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+	)
 GROUP BY
-    valid_preparation_instruments.id,
-    valid_preparations.id,
-    valid_instruments.id
-ORDER BY
-    valid_preparation_instruments.id
-    LIMIT $7
-    OFFSET $6
+	valid_preparation_instruments.id,
+	valid_preparations.id,
+	valid_instruments.id
+ORDER BY valid_preparation_instruments.id
+LIMIT $7
+OFFSET $6
 `
 
 type GetValidPreparationInstrumentsForPreparationParams struct {
@@ -897,7 +906,13 @@ func (q *Queries) GetValidPreparationInstrumentsForPreparation(ctx context.Conte
 
 const updateValidPreparationInstrument = `-- name: UpdateValidPreparationInstrument :execrows
 
-UPDATE valid_preparation_instruments SET notes = $1, valid_preparation_id = $2, valid_instrument_id = $3, last_updated_at = NOW() WHERE archived_at IS NULL AND id = $4
+UPDATE valid_preparation_instruments SET
+	notes = $1,
+	valid_preparation_id = $2,
+	valid_instrument_id = $3,
+	last_updated_at = NOW()
+WHERE archived_at IS NULL
+	AND id = $4
 `
 
 type UpdateValidPreparationInstrumentParams struct {

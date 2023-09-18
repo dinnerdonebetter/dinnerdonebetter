@@ -28,7 +28,12 @@ func (q *Queries) ArchiveValidIngredientStateIngredient(ctx context.Context, db 
 
 const checkValidIngredientStateIngredientExistence = `-- name: CheckValidIngredientStateIngredientExistence :one
 
-SELECT EXISTS ( SELECT valid_ingredient_state_ingredients.id FROM valid_ingredient_state_ingredients WHERE valid_ingredient_state_ingredients.archived_at IS NULL AND valid_ingredient_state_ingredients.id = $1 )
+SELECT EXISTS (
+    SELECT valid_ingredient_state_ingredients.id
+    FROM valid_ingredient_state_ingredients
+    WHERE valid_ingredient_state_ingredients.archived_at IS NULL
+        AND valid_ingredient_state_ingredients.id = $1
+)
 `
 
 func (q *Queries) CheckValidIngredientStateIngredientExistence(ctx context.Context, db DBTX, id string) (bool, error) {
@@ -63,7 +68,17 @@ func (q *Queries) CheckValidityOfValidIngredientStateIngredientPair(ctx context.
 
 const createValidIngredientStateIngredient = `-- name: CreateValidIngredientStateIngredient :exec
 
-INSERT INTO valid_ingredient_state_ingredients (id,notes,valid_ingredient_state,valid_ingredient) VALUES ($1,$2,$3,$4)
+INSERT INTO valid_ingredient_state_ingredients (
+    id,
+    notes,
+    valid_ingredient_state,
+    valid_ingredient
+) VALUES (
+    $1,
+    $2,
+    $3,
+    $4
+)
 `
 
 type CreateValidIngredientStateIngredientParams struct {
@@ -326,27 +341,24 @@ SELECT
             valid_ingredient_state_ingredients
         WHERE
             valid_ingredient_state_ingredients.archived_at IS NULL
-          AND valid_ingredient_state_ingredients.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-          AND valid_ingredient_state_ingredients.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-          AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-          AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+            AND valid_ingredient_state_ingredients.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+            AND valid_ingredient_state_ingredients.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+            AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+            AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
     ) as filtered_count,
     (
-        SELECT
-            COUNT(valid_ingredient_state_ingredients.id)
-        FROM
-            valid_ingredient_state_ingredients
-        WHERE
-            valid_ingredient_state_ingredients.archived_at IS NULL
+        SELECT COUNT(valid_ingredient_state_ingredients.id)
+        FROM valid_ingredient_state_ingredients
+        WHERE valid_ingredient_state_ingredients.archived_at IS NULL
     ) as total_count
 FROM valid_ingredient_state_ingredients
 	JOIN valid_ingredients ON valid_ingredient_state_ingredients.valid_ingredient = valid_ingredients.id
 	JOIN valid_ingredient_states ON valid_ingredient_state_ingredients.valid_ingredient_state = valid_ingredient_states.id
 WHERE valid_ingredient_state_ingredients.archived_at IS NULL
-  AND valid_ingredient_state_ingredients.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-  AND valid_ingredient_state_ingredients.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-  AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-  AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+    AND valid_ingredient_state_ingredients.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+    AND valid_ingredient_state_ingredients.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+    AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+    AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
 OFFSET $5
 LIMIT $6
 `
@@ -573,22 +585,19 @@ SELECT
           AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
     ) as filtered_count,
     (
-        SELECT
-            COUNT(valid_ingredient_state_ingredients.id)
-        FROM
-            valid_ingredient_state_ingredients
-        WHERE
-            valid_ingredient_state_ingredients.archived_at IS NULL
+        SELECT COUNT(valid_ingredient_state_ingredients.id)
+        FROM valid_ingredient_state_ingredients
+        WHERE valid_ingredient_state_ingredients.archived_at IS NULL
     ) as total_count
 FROM valid_ingredient_state_ingredients
 	JOIN valid_ingredients ON valid_ingredient_state_ingredients.valid_ingredient = valid_ingredients.id
 	JOIN valid_ingredient_states ON valid_ingredient_state_ingredients.valid_ingredient_state = valid_ingredient_states.id
 WHERE valid_ingredient_state_ingredients.archived_at IS NULL
-  AND valid_ingredient_state_ingredients.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-  AND valid_ingredient_state_ingredients.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-  AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-  AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-  AND valid_ingredient_state_ingredients.valid_ingredient = $5
+    AND valid_ingredient_state_ingredients.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+    AND valid_ingredient_state_ingredients.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+    AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+    AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+    AND valid_ingredient_state_ingredients.valid_ingredient = $5
 OFFSET $6
 LIMIT $7
 `
@@ -811,28 +820,25 @@ SELECT
             valid_ingredient_state_ingredients
         WHERE
             valid_ingredient_state_ingredients.archived_at IS NULL
-          AND valid_ingredient_state_ingredients.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-          AND valid_ingredient_state_ingredients.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-          AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-          AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+            AND valid_ingredient_state_ingredients.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+            AND valid_ingredient_state_ingredients.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+            AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+            AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
     ) as filtered_count,
     (
-        SELECT
-            COUNT(valid_ingredient_state_ingredients.id)
-        FROM
-            valid_ingredient_state_ingredients
-        WHERE
-            valid_ingredient_state_ingredients.archived_at IS NULL
+        SELECT COUNT(valid_ingredient_state_ingredients.id)
+        FROM valid_ingredient_state_ingredients
+        WHERE valid_ingredient_state_ingredients.archived_at IS NULL
     ) as total_count
 FROM valid_ingredient_state_ingredients
 	JOIN valid_ingredients ON valid_ingredient_state_ingredients.valid_ingredient = valid_ingredients.id
 	JOIN valid_ingredient_states ON valid_ingredient_state_ingredients.valid_ingredient_state = valid_ingredient_states.id
 WHERE valid_ingredient_state_ingredients.archived_at IS NULL
-  AND valid_ingredient_state_ingredients.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-  AND valid_ingredient_state_ingredients.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-  AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-  AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-  AND valid_ingredient_state_ingredients.valid_ingredient_state = $5
+    AND valid_ingredient_state_ingredients.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+    AND valid_ingredient_state_ingredients.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+    AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+    AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+    AND valid_ingredient_state_ingredients.valid_ingredient_state = $5
 OFFSET $6
 LIMIT $7
 `
@@ -1052,7 +1058,7 @@ FROM valid_ingredient_state_ingredients
 	JOIN valid_ingredients ON valid_ingredient_state_ingredients.valid_ingredient = valid_ingredients.id
 	JOIN valid_ingredient_states ON valid_ingredient_state_ingredients.valid_ingredient_state = valid_ingredient_states.id
 WHERE valid_ingredient_state_ingredients.archived_at IS NULL
-  AND valid_ingredient_states_ingredients.id = ANY($1::text[])
+    AND valid_ingredient_states_ingredients.id = ANY($1::text[])
 `
 
 type GetValidIngredientStateIngredientsWithIDsRow struct {
@@ -1190,7 +1196,13 @@ func (q *Queries) GetValidIngredientStateIngredientsWithIDs(ctx context.Context,
 
 const updateValidIngredientStateIngredient = `-- name: UpdateValidIngredientStateIngredient :execrows
 
-UPDATE valid_ingredient_state_ingredients SET notes = $1, valid_ingredient_state = $2, valid_ingredient = $3, last_updated_at = NOW() WHERE archived_at IS NULL AND id = $4
+UPDATE valid_ingredient_state_ingredients SET
+    notes = $1,
+    valid_ingredient_state = $2,
+    valid_ingredient = $3,
+    last_updated_at = NOW()
+WHERE archived_at IS NULL
+    AND id = $4
 `
 
 type UpdateValidIngredientStateIngredientParams struct {
