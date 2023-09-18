@@ -87,27 +87,6 @@ func buildValidVesselsQueries() []*Query {
 		},
 		{
 			Annotation: QueryAnnotation{
-				Name: "GetValidVesselByID",
-				Type: OneType,
-			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
-	%s
-FROM %s
-WHERE %s.%s IS NULL
-	AND %s.%s = sqlc.arg(%s);`,
-				strings.Join(applyToEach(validVesselsColumns, func(i int, s string) string {
-					return fmt.Sprintf("%s.%s", validVesselsTableName, s)
-				}), ",\n\t"),
-				validVesselsTableName,
-				validVesselsTableName,
-				archivedAtColumn,
-				validVesselsTableName,
-				idColumn,
-				idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
 				Name: "GetValidVessels",
 				Type: ManyType,
 			},
@@ -178,7 +157,7 @@ WHERE %s.%s IS NULL
 	%s
 FROM %s
 WHERE %s.%s IS NULL
-AND %s.%s = sqlc.arg(%s);`,
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(applyToEach(validVesselsColumns, func(i int, s string) string {
 					return fmt.Sprintf("%s.%s", validVesselsTableName, s)
 				}), ",\n\t"),

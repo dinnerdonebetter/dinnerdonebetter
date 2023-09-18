@@ -211,64 +211,6 @@ func (q *Queries) GetValidInstrument(ctx context.Context, db DBTX, id string) (*
 	return &i, err
 }
 
-const getValidInstrumentByID = `-- name: GetValidInstrumentByID :one
-
-SELECT
-	valid_instruments.id,
-	valid_instruments.name,
-	valid_instruments.description,
-	valid_instruments.icon_path,
-	valid_instruments.plural_name,
-	valid_instruments.usable_for_storage,
-	valid_instruments.slug,
-	valid_instruments.display_in_summary_lists,
-	valid_instruments.include_in_generated_instructions,
-	valid_instruments.last_indexed_at,
-	valid_instruments.created_at,
-	valid_instruments.last_updated_at,
-	valid_instruments.archived_at
-FROM valid_instruments
-WHERE valid_instruments.archived_at IS NULL
-	AND valid_instruments.id = $1
-`
-
-type GetValidInstrumentByIDRow struct {
-	CreatedAt                      time.Time
-	LastIndexedAt                  sql.NullTime
-	ArchivedAt                     sql.NullTime
-	LastUpdatedAt                  sql.NullTime
-	IconPath                       string
-	Slug                           string
-	PluralName                     string
-	ID                             string
-	Description                    string
-	Name                           string
-	UsableForStorage               bool
-	DisplayInSummaryLists          bool
-	IncludeInGeneratedInstructions bool
-}
-
-func (q *Queries) GetValidInstrumentByID(ctx context.Context, db DBTX, id string) (*GetValidInstrumentByIDRow, error) {
-	row := db.QueryRowContext(ctx, getValidInstrumentByID, id)
-	var i GetValidInstrumentByIDRow
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.Description,
-		&i.IconPath,
-		&i.PluralName,
-		&i.UsableForStorage,
-		&i.Slug,
-		&i.DisplayInSummaryLists,
-		&i.IncludeInGeneratedInstructions,
-		&i.LastIndexedAt,
-		&i.CreatedAt,
-		&i.LastUpdatedAt,
-		&i.ArchivedAt,
-	)
-	return &i, err
-}
-
 const getValidInstruments = `-- name: GetValidInstruments :many
 
 SELECT

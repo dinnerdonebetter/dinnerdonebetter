@@ -81,27 +81,6 @@ func buildValidInstrumentsQueries() []*Query {
 		},
 		{
 			Annotation: QueryAnnotation{
-				Name: "GetValidInstrumentByID",
-				Type: OneType,
-			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
-	%s
-FROM %s
-WHERE %s.%s IS NULL
-	AND %s.%s = sqlc.arg(%s);`,
-				strings.Join(applyToEach(validInstrumentsColumns, func(i int, s string) string {
-					return fmt.Sprintf("%s.%s", validInstrumentsTableName, s)
-				}), ",\n\t"),
-				validInstrumentsTableName,
-				validInstrumentsTableName,
-				archivedAtColumn,
-				validInstrumentsTableName,
-				idColumn,
-				idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
 				Name: "GetValidInstruments",
 				Type: ManyType,
 			},

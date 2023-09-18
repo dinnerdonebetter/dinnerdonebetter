@@ -29,10 +29,10 @@ func (q *Queries) ArchiveValidVessel(ctx context.Context, db DBTX, id string) (i
 const checkValidVesselExistence = `-- name: CheckValidVesselExistence :one
 
 SELECT EXISTS (
-    SELECT valid_vessels.id
-    FROM valid_vessels
-    WHERE valid_vessels.archived_at IS NULL
-        AND valid_vessels.id = $1
+	SELECT valid_vessels.id
+	FROM valid_vessels
+	WHERE valid_vessels.archived_at IS NULL
+		AND valid_vessels.id = $1
 )
 `
 
@@ -46,37 +46,37 @@ func (q *Queries) CheckValidVesselExistence(ctx context.Context, db DBTX, id str
 const createValidVessel = `-- name: CreateValidVessel :exec
 
 INSERT INTO valid_vessels (
-    id,
-    name,
-    plural_name,
-    description,
-    icon_path,
-    usable_for_storage,
-    slug,
-    display_in_summary_lists,
-    include_in_generated_instructions,
-    capacity,
-    capacity_unit,
-    width_in_millimeters,
-    length_in_millimeters,
-    height_in_millimeters,
-    shape
+	id,
+	name,
+	plural_name,
+	description,
+	icon_path,
+	usable_for_storage,
+	slug,
+	display_in_summary_lists,
+	include_in_generated_instructions,
+	capacity,
+	capacity_unit,
+	width_in_millimeters,
+	length_in_millimeters,
+	height_in_millimeters,
+	shape
 ) VALUES (
-    $1,
-    $2,
-    $3,
-    $4,
-    $5,
-    $6,
-    $7,
-    $8,
-    $9,
-    $10,
-    $11,
-    $12,
-    $13,
-    $14,
-    $15
+	$1,
+	$2,
+	$3,
+	$4,
+	$5,
+	$6,
+	$7,
+	$8,
+	$9,
+	$10,
+	$11,
+	$12,
+	$13,
+	$14,
+	$15
 )
 `
 
@@ -123,35 +123,35 @@ const getRandomValidVessel = `-- name: GetRandomValidVessel :one
 
 SELECT
 	valid_vessels.id,
-    valid_vessels.name,
-    valid_vessels.plural_name,
-    valid_vessels.description,
-    valid_vessels.icon_path,
-    valid_vessels.usable_for_storage,
-    valid_vessels.slug,
-    valid_vessels.display_in_summary_lists,
-    valid_vessels.include_in_generated_instructions,
-    valid_vessels.capacity,
-    valid_measurement_units.id as valid_measurement_unit_id,
-    valid_measurement_units.name as valid_measurement_unit_name,
-    valid_measurement_units.description as valid_measurement_unit_description,
-    valid_measurement_units.volumetric as valid_measurement_unit_volumetric,
-    valid_measurement_units.icon_path as valid_measurement_unit_icon_path,
-    valid_measurement_units.universal as valid_measurement_unit_universal,
-    valid_measurement_units.metric as valid_measurement_unit_metric,
-    valid_measurement_units.imperial as valid_measurement_unit_imperial,
-    valid_measurement_units.slug as valid_measurement_unit_slug,
-    valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
-    valid_measurement_units.created_at as valid_measurement_unit_created_at,
-    valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
-    valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
-    valid_vessels.width_in_millimeters,
-    valid_vessels.length_in_millimeters,
-    valid_vessels.height_in_millimeters,
-    valid_vessels.shape,
-    valid_vessels.created_at,
-    valid_vessels.last_updated_at,
-    valid_vessels.archived_at
+	valid_vessels.name,
+	valid_vessels.plural_name,
+	valid_vessels.description,
+	valid_vessels.icon_path,
+	valid_vessels.usable_for_storage,
+	valid_vessels.slug,
+	valid_vessels.display_in_summary_lists,
+	valid_vessels.include_in_generated_instructions,
+	valid_vessels.capacity,
+	valid_measurement_units.id as valid_measurement_unit_id,
+	valid_measurement_units.name as valid_measurement_unit_name,
+	valid_measurement_units.description as valid_measurement_unit_description,
+	valid_measurement_units.volumetric as valid_measurement_unit_volumetric,
+	valid_measurement_units.icon_path as valid_measurement_unit_icon_path,
+	valid_measurement_units.universal as valid_measurement_unit_universal,
+	valid_measurement_units.metric as valid_measurement_unit_metric,
+	valid_measurement_units.imperial as valid_measurement_unit_imperial,
+	valid_measurement_units.slug as valid_measurement_unit_slug,
+	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.created_at as valid_measurement_unit_created_at,
+	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
+	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
+	valid_vessels.width_in_millimeters,
+	valid_vessels.length_in_millimeters,
+	valid_vessels.height_in_millimeters,
+	valid_vessels.shape,
+	valid_vessels.created_at,
+	valid_vessels.last_updated_at,
+	valid_vessels.archived_at
 FROM valid_vessels
 	 JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
 WHERE valid_vessels.archived_at IS NULL
@@ -234,15 +234,15 @@ const getValidVessel = `-- name: GetValidVessel :one
 
 SELECT
 	valid_vessels.id,
-    valid_vessels.name,
-    valid_vessels.plural_name,
-    valid_vessels.description,
-    valid_vessels.icon_path,
-    valid_vessels.usable_for_storage,
-    valid_vessels.slug,
-    valid_vessels.display_in_summary_lists,
-    valid_vessels.include_in_generated_instructions,
-    valid_vessels.capacity,
+	valid_vessels.name,
+	valid_vessels.plural_name,
+	valid_vessels.description,
+	valid_vessels.icon_path,
+	valid_vessels.usable_for_storage,
+	valid_vessels.slug,
+	valid_vessels.display_in_summary_lists,
+	valid_vessels.include_in_generated_instructions,
+	valid_vessels.capacity,
 	valid_measurement_units.id as valid_measurement_unit_id,
 	valid_measurement_units.name as valid_measurement_unit_name,
 	valid_measurement_units.description as valid_measurement_unit_description,
@@ -256,13 +256,13 @@ SELECT
 	valid_measurement_units.created_at as valid_measurement_unit_created_at,
 	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
 	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
-    valid_vessels.width_in_millimeters,
-    valid_vessels.length_in_millimeters,
-    valid_vessels.height_in_millimeters,
-    valid_vessels.shape,
-    valid_vessels.created_at,
-    valid_vessels.last_updated_at,
-    valid_vessels.archived_at
+	valid_vessels.width_in_millimeters,
+	valid_vessels.length_in_millimeters,
+	valid_vessels.height_in_millimeters,
+	valid_vessels.shape,
+	valid_vessels.created_at,
+	valid_vessels.last_updated_at,
+	valid_vessels.archived_at
 FROM valid_vessels
 	 JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
 WHERE valid_vessels.archived_at IS NULL
@@ -345,13 +345,11 @@ const getValidVesselIDsNeedingIndexing = `-- name: GetValidVesselIDsNeedingIndex
 
 SELECT valid_vessels.id
 FROM valid_vessels
-	 JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
-WHERE (valid_vessels.archived_at IS NULL AND valid_measurement_units.archived_at IS NULL)
-    AND (
-        valid_vessels.last_indexed_at IS NULL
-        OR valid_vessels.last_indexed_at
-            < NOW() - '24 hours'::INTERVAL
-    )
+WHERE valid_vessels.archived_at IS NULL
+	AND (
+	valid_vessels.last_indexed_at IS NULL
+	OR valid_vessels.last_indexed_at < NOW() - '24 hours'::INTERVAL
+)
 `
 
 func (q *Queries) GetValidVesselIDsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error) {
@@ -380,69 +378,69 @@ func (q *Queries) GetValidVesselIDsNeedingIndexing(ctx context.Context, db DBTX)
 const getValidVessels = `-- name: GetValidVessels :many
 
 SELECT
-    valid_vessels.id,
-    valid_vessels.name,
-    valid_vessels.plural_name,
-    valid_vessels.description,
-    valid_vessels.icon_path,
-    valid_vessels.usable_for_storage,
-    valid_vessels.slug,
-    valid_vessels.display_in_summary_lists,
-    valid_vessels.include_in_generated_instructions,
-    valid_vessels.capacity,
-    valid_vessels.capacity_unit,
-    valid_vessels.width_in_millimeters,
-    valid_vessels.length_in_millimeters,
-    valid_vessels.height_in_millimeters,
-    valid_vessels.shape,
-    valid_vessels.created_at,
-    valid_vessels.last_updated_at,
-    valid_vessels.archived_at,
-    (
-        SELECT COUNT(valid_vessels.id)
-        FROM valid_vessels
-        WHERE
-            valid_vessels.archived_at IS NULL
-            AND valid_vessels.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-            AND valid_vessels.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-            AND (
-                valid_vessels.last_updated_at IS NULL
-                OR valid_vessels.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-            )
-            AND (
-                valid_vessels.last_updated_at IS NULL
-                OR valid_vessels.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-            )
-    ) as filtered_count,
-    (
-        SELECT COUNT(valid_vessels.id)
-        FROM valid_vessels
-        WHERE valid_vessels.archived_at IS NULL
-    ) as total_count
+	valid_vessels.id,
+	valid_vessels.name,
+	valid_vessels.plural_name,
+	valid_vessels.description,
+	valid_vessels.icon_path,
+	valid_vessels.usable_for_storage,
+	valid_vessels.slug,
+	valid_vessels.display_in_summary_lists,
+	valid_vessels.include_in_generated_instructions,
+	valid_vessels.capacity,
+	valid_vessels.capacity_unit,
+	valid_vessels.width_in_millimeters,
+	valid_vessels.length_in_millimeters,
+	valid_vessels.height_in_millimeters,
+	valid_vessels.shape,
+	valid_vessels.last_indexed_at,
+	valid_vessels.created_at,
+	valid_vessels.last_updated_at,
+	valid_vessels.archived_at,
+	(
+		SELECT COUNT(valid_vessels.id)
+		FROM valid_vessels
+		WHERE valid_vessels.archived_at IS NULL
+			AND valid_vessels.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND valid_vessels.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				valid_vessels.last_updated_at IS NULL
+				OR valid_vessels.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				valid_vessels.last_updated_at IS NULL
+				OR valid_vessels.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+	) AS filtered_count,
+	(
+		SELECT COUNT(valid_vessels.id)
+		FROM valid_vessels
+		WHERE valid_vessels.archived_at IS NULL
+	) AS total_count
 FROM valid_vessels
 WHERE
-    valid_vessels.archived_at IS NULL
-    AND valid_vessels.created_at > (COALESCE($1, (SELECT NOW() - interval '999 years')))
-    AND valid_vessels.created_at < (COALESCE($2, (SELECT NOW() + interval '999 years')))
-    AND (
-        valid_vessels.last_updated_at IS NULL
-        OR valid_vessels.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-    )
-    AND (
-        valid_vessels.last_updated_at IS NULL
-        OR valid_vessels.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-    )
+	valid_vessels.archived_at IS NULL
+	AND valid_vessels.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND valid_vessels.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		valid_vessels.last_updated_at IS NULL
+		OR valid_vessels.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		valid_vessels.last_updated_at IS NULL
+		OR valid_vessels.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
 GROUP BY valid_vessels.id
 ORDER BY valid_vessels.id
-OFFSET $5
 LIMIT $6
+OFFSET $5
 `
 
 type GetValidVesselsParams struct {
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
-	UpdatedAfter  sql.NullTime
 	UpdatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
@@ -451,6 +449,7 @@ type GetValidVesselsRow struct {
 	CreatedAt                      time.Time
 	ArchivedAt                     sql.NullTime
 	LastUpdatedAt                  sql.NullTime
+	LastIndexedAt                  sql.NullTime
 	Shape                          VesselShape
 	Name                           string
 	PluralName                     string
@@ -460,8 +459,8 @@ type GetValidVesselsRow struct {
 	Capacity                       string
 	ID                             string
 	CapacityUnit                   sql.NullString
-	LengthInMillimeters            sql.NullString
 	HeightInMillimeters            sql.NullString
+	LengthInMillimeters            sql.NullString
 	WidthInMillimeters             sql.NullString
 	FilteredCount                  int64
 	TotalCount                     int64
@@ -474,8 +473,8 @@ func (q *Queries) GetValidVessels(ctx context.Context, db DBTX, arg *GetValidVes
 	rows, err := db.QueryContext(ctx, getValidVessels,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
-		arg.UpdatedAfter,
 		arg.UpdatedBefore,
+		arg.UpdatedAfter,
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)
@@ -502,6 +501,7 @@ func (q *Queries) GetValidVessels(ctx context.Context, db DBTX, arg *GetValidVes
 			&i.LengthInMillimeters,
 			&i.HeightInMillimeters,
 			&i.Shape,
+			&i.LastIndexedAt,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
@@ -524,38 +524,38 @@ func (q *Queries) GetValidVessels(ctx context.Context, db DBTX, arg *GetValidVes
 const getValidVesselsWithIDs = `-- name: GetValidVesselsWithIDs :many
 
 SELECT
-    valid_vessels.id,
-    valid_vessels.name,
-    valid_vessels.plural_name,
-    valid_vessels.description,
-    valid_vessels.icon_path,
-    valid_vessels.usable_for_storage,
-    valid_vessels.slug,
-    valid_vessels.display_in_summary_lists,
-    valid_vessels.include_in_generated_instructions,
-    valid_vessels.capacity,
-    valid_measurement_units.id as valid_measurement_unit_id,
-    valid_measurement_units.name as valid_measurement_unit_name,
-    valid_measurement_units.description as valid_measurement_unit_description,
-    valid_measurement_units.volumetric as valid_measurement_unit_volumetric,
-    valid_measurement_units.icon_path as valid_measurement_unit_icon_path,
-    valid_measurement_units.universal as valid_measurement_unit_universal,
-    valid_measurement_units.metric as valid_measurement_unit_metric,
-    valid_measurement_units.imperial as valid_measurement_unit_imperial,
-    valid_measurement_units.slug as valid_measurement_unit_slug,
-    valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
-    valid_measurement_units.created_at as valid_measurement_unit_created_at,
-    valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
-    valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
-    valid_vessels.width_in_millimeters,
-    valid_vessels.length_in_millimeters,
-    valid_vessels.height_in_millimeters,
-    valid_vessels.shape,
-    valid_vessels.created_at,
-    valid_vessels.last_updated_at,
-    valid_vessels.archived_at
+	valid_vessels.id,
+	valid_vessels.name,
+	valid_vessels.plural_name,
+	valid_vessels.description,
+	valid_vessels.icon_path,
+	valid_vessels.usable_for_storage,
+	valid_vessels.slug,
+	valid_vessels.display_in_summary_lists,
+	valid_vessels.include_in_generated_instructions,
+	valid_vessels.capacity,
+	valid_measurement_units.id as valid_measurement_unit_id,
+	valid_measurement_units.name as valid_measurement_unit_name,
+	valid_measurement_units.description as valid_measurement_unit_description,
+	valid_measurement_units.volumetric as valid_measurement_unit_volumetric,
+	valid_measurement_units.icon_path as valid_measurement_unit_icon_path,
+	valid_measurement_units.universal as valid_measurement_unit_universal,
+	valid_measurement_units.metric as valid_measurement_unit_metric,
+	valid_measurement_units.imperial as valid_measurement_unit_imperial,
+	valid_measurement_units.slug as valid_measurement_unit_slug,
+	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.created_at as valid_measurement_unit_created_at,
+	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
+	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
+	valid_vessels.width_in_millimeters,
+	valid_vessels.length_in_millimeters,
+	valid_vessels.height_in_millimeters,
+	valid_vessels.shape,
+	valid_vessels.created_at,
+	valid_vessels.last_updated_at,
+	valid_vessels.archived_at
 FROM valid_vessels
-    JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
+	JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
 WHERE valid_vessels.archived_at IS NULL
   AND valid_measurement_units.archived_at IS NULL
   AND valid_vessels.id = ANY($1::text[])
@@ -652,59 +652,39 @@ const searchForValidVessels = `-- name: SearchForValidVessels :many
 
 SELECT
 	valid_vessels.id,
-    valid_vessels.name,
-    valid_vessels.plural_name,
-    valid_vessels.description,
-    valid_vessels.icon_path,
-    valid_vessels.usable_for_storage,
-    valid_vessels.slug,
-    valid_vessels.display_in_summary_lists,
-    valid_vessels.include_in_generated_instructions,
-    valid_vessels.capacity,
-    valid_vessels.capacity_unit,
-    valid_vessels.width_in_millimeters,
-    valid_vessels.length_in_millimeters,
-    valid_vessels.height_in_millimeters,
-    valid_vessels.shape,
-    valid_vessels.created_at,
-    valid_vessels.last_updated_at,
-    valid_vessels.archived_at
+	valid_vessels.name,
+	valid_vessels.plural_name,
+	valid_vessels.description,
+	valid_vessels.icon_path,
+	valid_vessels.usable_for_storage,
+	valid_vessels.slug,
+	valid_vessels.display_in_summary_lists,
+	valid_vessels.include_in_generated_instructions,
+	valid_vessels.capacity,
+	valid_vessels.capacity_unit,
+	valid_vessels.width_in_millimeters,
+	valid_vessels.length_in_millimeters,
+	valid_vessels.height_in_millimeters,
+	valid_vessels.shape,
+	valid_vessels.last_indexed_at,
+	valid_vessels.created_at,
+	valid_vessels.last_updated_at,
+	valid_vessels.archived_at
 FROM valid_vessels
-WHERE valid_vessels.archived_at IS NULL
-    AND valid_vessels.name ILIKE '%' || $1::text || '%'
-	LIMIT 50
+WHERE valid_vessels.name ILIKE '%' || $1::text || '%'
+	AND valid_vessels.archived_at IS NULL
+LIMIT 50
 `
 
-type SearchForValidVesselsRow struct {
-	CreatedAt                      time.Time
-	ArchivedAt                     sql.NullTime
-	LastUpdatedAt                  sql.NullTime
-	ID                             string
-	Name                           string
-	PluralName                     string
-	Description                    string
-	IconPath                       string
-	Slug                           string
-	Capacity                       string
-	Shape                          VesselShape
-	LengthInMillimeters            sql.NullString
-	WidthInMillimeters             sql.NullString
-	HeightInMillimeters            sql.NullString
-	CapacityUnit                   sql.NullString
-	IncludeInGeneratedInstructions bool
-	DisplayInSummaryLists          bool
-	UsableForStorage               bool
-}
-
-func (q *Queries) SearchForValidVessels(ctx context.Context, db DBTX, query string) ([]*SearchForValidVesselsRow, error) {
-	rows, err := db.QueryContext(ctx, searchForValidVessels, query)
+func (q *Queries) SearchForValidVessels(ctx context.Context, db DBTX, nameQuery string) ([]*ValidVessels, error) {
+	rows, err := db.QueryContext(ctx, searchForValidVessels, nameQuery)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []*SearchForValidVesselsRow{}
+	items := []*ValidVessels{}
 	for rows.Next() {
-		var i SearchForValidVesselsRow
+		var i ValidVessels
 		if err := rows.Scan(
 			&i.ID,
 			&i.Name,
@@ -721,6 +701,7 @@ func (q *Queries) SearchForValidVessels(ctx context.Context, db DBTX, query stri
 			&i.LengthInMillimeters,
 			&i.HeightInMillimeters,
 			&i.Shape,
+			&i.LastIndexedAt,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
@@ -740,22 +721,21 @@ func (q *Queries) SearchForValidVessels(ctx context.Context, db DBTX, query stri
 
 const updateValidVessel = `-- name: UpdateValidVessel :execrows
 
-UPDATE valid_vessels
-SET
-    name = $1,
-    plural_name = $2,
-    description = $3,
-    icon_path = $4,
-    usable_for_storage = $5,
-    slug = $6,
-    display_in_summary_lists = $7,
-    include_in_generated_instructions = $8,
-    capacity = $9,
-    capacity_unit = $10,
-    width_in_millimeters = $11,
-    length_in_millimeters = $12,
-    height_in_millimeters = $13,
-    shape = $14,
+UPDATE valid_vessels SET
+	name = $1,
+	plural_name = $2,
+	description = $3,
+	icon_path = $4,
+	usable_for_storage = $5,
+	slug = $6,
+	display_in_summary_lists = $7,
+	include_in_generated_instructions = $8,
+	capacity = $9,
+	capacity_unit = $10,
+	width_in_millimeters = $11,
+	length_in_millimeters = $12,
+	height_in_millimeters = $13,
+	shape = $14,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = $15

@@ -80,27 +80,6 @@ func buildValidIngredientStatesQueries() []*Query {
 		},
 		{
 			Annotation: QueryAnnotation{
-				Name: "GetValidIngredientStateByID",
-				Type: OneType,
-			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
-	%s
-FROM %s
-WHERE %s.%s IS NULL
-	AND %s.%s = sqlc.arg(%s);`,
-				strings.Join(applyToEach(validIngredientStatesColumns, func(i int, s string) string {
-					return fmt.Sprintf("%s.%s", validIngredientStatesTableName, s)
-				}), ",\n\t"),
-				validIngredientStatesTableName,
-				validIngredientStatesTableName,
-				archivedAtColumn,
-				validIngredientStatesTableName,
-				idColumn,
-				idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
 				Name: "GetValidIngredientStates",
 				Type: ManyType,
 			},

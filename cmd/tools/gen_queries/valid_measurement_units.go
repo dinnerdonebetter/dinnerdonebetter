@@ -82,27 +82,6 @@ func buildValidMeasurementUnitsQueries() []*Query {
 		},
 		{
 			Annotation: QueryAnnotation{
-				Name: "GetValidMeasurementUnitByID",
-				Type: OneType,
-			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
-	%s
-FROM %s
-WHERE %s.%s IS NULL
-	AND %s.%s = sqlc.arg(%s);`,
-				strings.Join(applyToEach(validMeasurementUnitsColumns, func(i int, s string) string {
-					return fmt.Sprintf("%s.%s", validMeasurementUnitsTableName, s)
-				}), ",\n\t"),
-				validMeasurementUnitsTableName,
-				validMeasurementUnitsTableName,
-				archivedAtColumn,
-				validMeasurementUnitsTableName,
-				idColumn,
-				idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
 				Name: "GetValidMeasurementUnits",
 				Type: ManyType,
 			},

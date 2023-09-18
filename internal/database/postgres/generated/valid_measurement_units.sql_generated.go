@@ -221,67 +221,6 @@ func (q *Queries) GetValidMeasurementUnit(ctx context.Context, db DBTX, id strin
 	return &i, err
 }
 
-const getValidMeasurementUnitByID = `-- name: GetValidMeasurementUnitByID :one
-
-SELECT
-	valid_measurement_units.id,
-	valid_measurement_units.name,
-	valid_measurement_units.description,
-	valid_measurement_units.volumetric,
-	valid_measurement_units.icon_path,
-	valid_measurement_units.universal,
-	valid_measurement_units.metric,
-	valid_measurement_units.imperial,
-	valid_measurement_units.slug,
-	valid_measurement_units.plural_name,
-	valid_measurement_units.last_indexed_at,
-	valid_measurement_units.created_at,
-	valid_measurement_units.last_updated_at,
-	valid_measurement_units.archived_at
-FROM valid_measurement_units
-WHERE valid_measurement_units.archived_at IS NULL
-	AND valid_measurement_units.id = $1
-`
-
-type GetValidMeasurementUnitByIDRow struct {
-	CreatedAt     time.Time
-	LastIndexedAt sql.NullTime
-	ArchivedAt    sql.NullTime
-	LastUpdatedAt sql.NullTime
-	Name          string
-	Description   string
-	ID            string
-	IconPath      string
-	Slug          string
-	PluralName    string
-	Volumetric    sql.NullBool
-	Imperial      bool
-	Metric        bool
-	Universal     bool
-}
-
-func (q *Queries) GetValidMeasurementUnitByID(ctx context.Context, db DBTX, id string) (*GetValidMeasurementUnitByIDRow, error) {
-	row := db.QueryRowContext(ctx, getValidMeasurementUnitByID, id)
-	var i GetValidMeasurementUnitByIDRow
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.Description,
-		&i.Volumetric,
-		&i.IconPath,
-		&i.Universal,
-		&i.Metric,
-		&i.Imperial,
-		&i.Slug,
-		&i.PluralName,
-		&i.LastIndexedAt,
-		&i.CreatedAt,
-		&i.LastUpdatedAt,
-		&i.ArchivedAt,
-	)
-	return &i, err
-}
-
 const getValidMeasurementUnits = `-- name: GetValidMeasurementUnits :many
 
 SELECT

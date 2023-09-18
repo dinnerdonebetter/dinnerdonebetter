@@ -139,58 +139,6 @@ func (q *Queries) GetValidIngredientState(ctx context.Context, db DBTX, id strin
 	return &i, err
 }
 
-const getValidIngredientStateByID = `-- name: GetValidIngredientStateByID :one
-
-SELECT
-	valid_ingredient_states.id,
-	valid_ingredient_states.name,
-	valid_ingredient_states.past_tense,
-	valid_ingredient_states.slug,
-	valid_ingredient_states.description,
-	valid_ingredient_states.icon_path,
-	valid_ingredient_states.attribute_type,
-	valid_ingredient_states.last_indexed_at,
-	valid_ingredient_states.created_at,
-	valid_ingredient_states.last_updated_at,
-	valid_ingredient_states.archived_at
-FROM valid_ingredient_states
-WHERE valid_ingredient_states.archived_at IS NULL
-	AND valid_ingredient_states.id = $1
-`
-
-type GetValidIngredientStateByIDRow struct {
-	ID            string
-	Name          string
-	PastTense     string
-	Slug          string
-	Description   string
-	IconPath      string
-	AttributeType IngredientAttributeType
-	LastIndexedAt sql.NullTime
-	CreatedAt     time.Time
-	LastUpdatedAt sql.NullTime
-	ArchivedAt    sql.NullTime
-}
-
-func (q *Queries) GetValidIngredientStateByID(ctx context.Context, db DBTX, id string) (*GetValidIngredientStateByIDRow, error) {
-	row := db.QueryRowContext(ctx, getValidIngredientStateByID, id)
-	var i GetValidIngredientStateByIDRow
-	err := row.Scan(
-		&i.ID,
-		&i.Name,
-		&i.PastTense,
-		&i.Slug,
-		&i.Description,
-		&i.IconPath,
-		&i.AttributeType,
-		&i.LastIndexedAt,
-		&i.CreatedAt,
-		&i.LastUpdatedAt,
-		&i.ArchivedAt,
-	)
-	return &i, err
-}
-
 const getValidIngredientStates = `-- name: GetValidIngredientStates :many
 
 SELECT
