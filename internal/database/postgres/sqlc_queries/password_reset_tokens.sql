@@ -1,14 +1,14 @@
 -- name: CreatePasswordResetToken :exec
 
 INSERT INTO password_reset_tokens (
-    id,
+	id,
 	token,
 	expires_at,
 	belongs_to_user
 ) VALUES (
-    sqlc.arg(id),
-    sqlc.arg(token),
-    NOW() + (30 * interval '1 minutes'),
+	sqlc.arg(id),
+	sqlc.arg(token),
+	NOW() + (30 * interval '1 minutes'),
     sqlc.arg(belongs_to_user)
 );
 

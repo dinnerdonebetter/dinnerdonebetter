@@ -29,11 +29,11 @@ func buildPasswordResetTokensQueries() []*Query {
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
-    %s
+	%s
 ) VALUES (
-    sqlc.arg(id),
-    sqlc.arg(token),
-    NOW() + (30 * interval '1 minutes'),
+	sqlc.arg(id),
+	sqlc.arg(token),
+	NOW() + (30 * interval '1 minutes'),
     sqlc.arg(belongs_to_user)
 );`,
 				passwordResetTokensTableName,

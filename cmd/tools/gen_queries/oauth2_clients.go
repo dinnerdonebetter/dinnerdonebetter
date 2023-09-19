@@ -93,17 +93,17 @@ WHERE oauth2_clients.archived_at IS NULL
 		SELECT
 			COUNT(oauth2_clients.id)
 		FROM
-		    oauth2_clients
-        WHERE
-            oauth2_clients.archived_at IS NULL
+			oauth2_clients
+		WHERE
+			oauth2_clients.archived_at IS NULL
 			%s
-    ) as filtered_count,
-    %s
+	) as filtered_count,
+	%s
 FROM oauth2_clients
 WHERE oauth2_clients.archived_at IS NULL
 	%s
-    OFFSET sqlc.narg(query_offset)
-    LIMIT sqlc.narg(query_limit);
+	OFFSET sqlc.narg(query_offset)
+	LIMIT sqlc.narg(query_limit);
 `,
 				strings.Join(applyToEach(oauth2ClientsColumns, func(_ int, s string) string {
 					return fmt.Sprintf("%s.%s", oauth2ClientsTableName, s)

@@ -68,10 +68,10 @@ SELECT
 	(
 		SELECT COUNT(webhooks.id)
 		FROM webhooks
-	    WHERE webhooks.archived_at IS NULL
+		WHERE webhooks.archived_at IS NULL
 			AND webhooks.belongs_to_household = sqlc.arg(household_id)
 			AND webhook_trigger_events.archived_at IS NULL
-    ) AS total_count
+	) AS total_count
 FROM webhooks
 	JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
 WHERE webhooks.archived_at IS NULL

@@ -73,8 +73,8 @@ SELECT
     (
 		SELECT COUNT(valid_ingredient_groups.id)
 		FROM valid_ingredient_groups
-	    WHERE valid_ingredient_groups.archived_at IS NULL
-    ) AS total_count
+		WHERE valid_ingredient_groups.archived_at IS NULL
+	) AS total_count
 FROM valid_ingredient_groups
 WHERE
 	valid_ingredient_groups.archived_at IS NULL
@@ -189,8 +189,8 @@ SELECT
     (
 		SELECT COUNT(valid_ingredient_groups.id)
 		FROM valid_ingredient_groups
-	    WHERE valid_ingredient_groups.archived_at IS NULL
-    ) AS total_count
+		WHERE valid_ingredient_groups.archived_at IS NULL
+	) AS total_count
 FROM valid_ingredient_groups
 WHERE
 	valid_ingredient_groups.archived_at IS NULL

@@ -247,8 +247,8 @@ func buildTotalCountSelect(tableName string, conditions ...string) string {
 	return strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`(
 		SELECT COUNT(%s.id)
 		FROM %s
-	    WHERE %s.%s IS NULL%s
-    ) AS total_count`,
+		WHERE %s.%s IS NULL%s
+	) AS total_count`,
 		tableName,
 		tableName,
 		tableName,

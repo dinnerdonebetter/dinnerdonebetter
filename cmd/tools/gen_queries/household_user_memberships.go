@@ -28,9 +28,9 @@ func buildHouseholdUserMembershipsQueries() []*Query {
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
-    %s
+	%s
 ) VALUES (
-    %s
+	%s
 );`,
 				householdUserMembershipsTableName,
 				strings.Join(filterForInsert(householdUserMembershipsColumns, "default_household"), ",\n\t"),
@@ -45,9 +45,9 @@ func buildHouseholdUserMembershipsQueries() []*Query {
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
-    %s
+	%s
 ) VALUES (
-    %s
+	%s
 );`,
 				householdUserMembershipsTableName,
 				strings.Join(filterForInsert(householdUserMembershipsColumns), ",\n\t"),
@@ -103,9 +103,9 @@ WHERE %s IS NULL
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
-    household_role = sqlc.arg(household_role)
+	household_role = sqlc.arg(household_role)
 WHERE %s = sqlc.arg(%s)
-    AND %s = sqlc.arg(%s);`,
+	AND %s = sqlc.arg(%s);`,
 				householdUserMembershipsTableName,
 				belongsToHouseholdColumn,
 				belongsToHouseholdColumn,
@@ -142,10 +142,10 @@ WHERE %s.%s IS NULL
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
-    %s = sqlc.arg(%s)
+	%s = sqlc.arg(%s)
 WHERE %s IS NULL
-    AND %s = sqlc.arg(%s)
-    AND %s = sqlc.arg(%s);`,
+	AND %s = sqlc.arg(%s)
+	AND %s = sqlc.arg(%s);`,
 				householdUserMembershipsTableName,
 				belongsToUserColumn,
 				belongsToUserColumn,
@@ -162,7 +162,7 @@ WHERE %s IS NULL
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
-    %s = sqlc.arg(new_owner)
+	%s = sqlc.arg(new_owner)
 WHERE %s IS NULL
     AND %s = sqlc.arg(old_owner)
     AND id = sqlc.arg(household_id);`,

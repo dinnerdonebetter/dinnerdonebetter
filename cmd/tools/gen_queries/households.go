@@ -136,10 +136,10 @@ WHERE households.archived_at IS NULL
 	%s,
 	(
 		SELECT
-	        COUNT(households.id)
-        FROM
-            households
-            JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
+			COUNT(households.id)
+		FROM
+			households
+		    JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
         WHERE households.archived_at IS NULL
             AND household_user_memberships.belongs_to_user = sqlc.arg(user_id)%s
 	) as filtered_count,

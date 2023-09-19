@@ -272,7 +272,7 @@ FROM users
 WHERE (users.archived_at IS NULL)
 AND users.last_indexed_at IS NULL
 OR (
-    users.last_indexed_at < NOW() - '24 hours'::INTERVAL
+	users.last_indexed_at < NOW() - '24 hours'::INTERVAL
 );
 `,
 		},
@@ -317,7 +317,7 @@ WHERE users.archived_at IS NULL
 	email_address_verified_at = NOW(),
 	%s = NOW()
 WHERE %s IS NULL
-    AND email_address_verified_at IS NULL
+	AND email_address_verified_at IS NULL
 	AND id = sqlc.arg(id)
 	AND email_address_verification_token = sqlc.arg(email_address_verification_token);`,
 				usersTableName,

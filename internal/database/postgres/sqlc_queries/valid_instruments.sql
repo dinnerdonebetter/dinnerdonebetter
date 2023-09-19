@@ -69,8 +69,8 @@ SELECT
 	(
 		SELECT COUNT(valid_instruments.id)
 		FROM valid_instruments
-	    WHERE valid_instruments.archived_at IS NULL
-    ) AS total_count
+		WHERE valid_instruments.archived_at IS NULL
+	) AS total_count
 FROM valid_instruments
 WHERE
 	valid_instruments.archived_at IS NULL
