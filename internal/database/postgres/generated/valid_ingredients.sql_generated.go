@@ -531,8 +531,8 @@ SELECT
     (
 		SELECT COUNT(valid_ingredients.id)
 		FROM valid_ingredients
-	    WHERE valid_ingredients.archived_at IS NULL
-    ) AS total_count
+		WHERE valid_ingredients.archived_at IS NULL
+	) AS total_count
 FROM valid_ingredients
 WHERE
 	valid_ingredients.archived_at IS NULL

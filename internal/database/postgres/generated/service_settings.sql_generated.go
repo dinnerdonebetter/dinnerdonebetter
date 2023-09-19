@@ -152,8 +152,8 @@ SELECT
     (
 		SELECT COUNT(service_settings.id)
 		FROM service_settings
-	    WHERE service_settings.archived_at IS NULL
-    ) AS total_count
+		WHERE service_settings.archived_at IS NULL
+	) AS total_count
 FROM service_settings
 WHERE service_settings.archived_at IS NULL
     AND service_settings.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))

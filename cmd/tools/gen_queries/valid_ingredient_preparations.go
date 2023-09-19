@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/cristalhq/builq"
 	"strings"
+
+	"github.com/cristalhq/builq"
 )
 
 const validIngredientPreparationsTableName = "valid_ingredient_preparations"
@@ -102,18 +103,18 @@ FROM valid_ingredient_preparations
 	JOIN valid_preparations ON valid_ingredient_preparations.valid_preparation_id = valid_preparations.id
 WHERE
 	valid_ingredient_preparations.archived_at IS NULL
-	AND valid_ingredient_preparations.valid_ingredient_id = sqlc.arg(ids)
+	AND valid_ingredient_preparations.valid_ingredient_id = sqlc.arg(id)
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
 				buildFilterCountSelect(
-					validInstrumentsTableName,
+					validIngredientPreparationsTableName,
 					true,
 				),
 				buildTotalCountSelect(
-					validInstrumentsTableName,
+					validIngredientPreparationsTableName,
 				),
-				buildFilterConditions(validInstrumentsTableName, true),
+				buildFilterConditions(validIngredientPreparationsTableName, true),
 				offsetLimitAddendum,
 			)),
 		},
@@ -131,18 +132,18 @@ FROM valid_ingredient_preparations
 	JOIN valid_preparations ON valid_ingredient_preparations.valid_preparation_id = valid_preparations.id
 WHERE
 	valid_ingredient_preparations.archived_at IS NULL
-	AND valid_ingredient_preparations.valid_preparation_id = sqlc.arg(ids)
+	AND valid_ingredient_preparations.valid_preparation_id = sqlc.arg(id)
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
 				buildFilterCountSelect(
-					validInstrumentsTableName,
+					validIngredientPreparationsTableName,
 					true,
 				),
 				buildTotalCountSelect(
-					validInstrumentsTableName,
+					validIngredientPreparationsTableName,
 				),
-				buildFilterConditions(validInstrumentsTableName, true),
+				buildFilterConditions(validIngredientPreparationsTableName, true),
 				offsetLimitAddendum,
 			)),
 		},
@@ -164,13 +165,13 @@ WHERE
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
 				buildFilterCountSelect(
-					validInstrumentsTableName,
+					validIngredientPreparationsTableName,
 					true,
 				),
 				buildTotalCountSelect(
-					validInstrumentsTableName,
+					validIngredientPreparationsTableName,
 				),
-				buildFilterConditions(validInstrumentsTableName, true),
+				buildFilterConditions(validIngredientPreparationsTableName, true),
 				offsetLimitAddendum,
 			)),
 		},

@@ -355,8 +355,8 @@ SELECT
     (
 		SELECT COUNT(valid_preparations.id)
 		FROM valid_preparations
-	    WHERE valid_preparations.archived_at IS NULL
-    ) AS total_count
+		WHERE valid_preparations.archived_at IS NULL
+	) AS total_count
 FROM valid_preparations
 WHERE
 	valid_preparations.archived_at IS NULL

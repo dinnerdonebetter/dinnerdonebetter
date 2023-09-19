@@ -785,8 +785,8 @@ SELECT
 	(
 		SELECT COUNT(household_invitations.id)
 		FROM household_invitations
-	    WHERE household_invitations.archived_at IS NULL
-    ) AS total_count
+		WHERE household_invitations.archived_at IS NULL
+	) AS total_count
 FROM household_invitations
 	JOIN households ON household_invitations.destination_household = households.id
 	JOIN users ON household_invitations.from_user = users.id
@@ -1053,8 +1053,8 @@ SELECT
 	(
 		SELECT COUNT(household_invitations.id)
 		FROM household_invitations
-	    WHERE household_invitations.archived_at IS NULL
-    ) AS total_count
+		WHERE household_invitations.archived_at IS NULL
+	) AS total_count
 FROM household_invitations
 	JOIN households ON household_invitations.destination_household = households.id
 	JOIN users ON household_invitations.from_user = users.id

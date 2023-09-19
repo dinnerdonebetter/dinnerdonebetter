@@ -427,8 +427,8 @@ SELECT
 	(
 		SELECT COUNT(valid_vessels.id)
 		FROM valid_vessels
-	    WHERE valid_vessels.archived_at IS NULL
-    ) AS total_count
+		WHERE valid_vessels.archived_at IS NULL
+	) AS total_count
 FROM valid_vessels
 WHERE
 	valid_vessels.archived_at IS NULL

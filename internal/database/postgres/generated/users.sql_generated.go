@@ -608,7 +608,7 @@ FROM users
 WHERE (users.archived_at IS NULL)
 AND users.last_indexed_at IS NULL
 OR (
-    users.last_indexed_at < NOW() - '24 hours'::INTERVAL
+	users.last_indexed_at < NOW() - '24 hours'::INTERVAL
 )
 `
 
@@ -857,8 +857,8 @@ SELECT
 	(
 		SELECT COUNT(users.id)
 		FROM users
-	    WHERE users.archived_at IS NULL
-    ) AS total_count
+		WHERE users.archived_at IS NULL
+	) AS total_count
 FROM users
 WHERE users.archived_at IS NULL
 	AND users.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
@@ -974,7 +974,7 @@ UPDATE users SET
 	email_address_verified_at = NOW(),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-    AND email_address_verified_at IS NULL
+	AND email_address_verified_at IS NULL
 	AND id = $1
 	AND email_address_verification_token = $2
 `

@@ -358,10 +358,10 @@ SELECT
 	households.archived_at,
 	(
 		SELECT
-	        COUNT(households.id)
-        FROM
-            households
-            JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
+			COUNT(households.id)
+		FROM
+			households
+		    JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
         WHERE households.archived_at IS NULL
             AND household_user_memberships.belongs_to_user = $1
 			AND households.created_at > COALESCE($2, (SELECT NOW() - '999 years'::INTERVAL))
@@ -378,8 +378,8 @@ SELECT
     (
 		SELECT COUNT(households.id)
 		FROM households
-	    WHERE households.archived_at IS NULL
-    ) AS total_count
+		WHERE households.archived_at IS NULL
+	) AS total_count
 FROM households
 	JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
     JOIN users ON household_user_memberships.belongs_to_user = users.id

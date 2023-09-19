@@ -256,8 +256,8 @@ SELECT
     (
 		SELECT COUNT(valid_measurement_units.id)
 		FROM valid_measurement_units
-	    WHERE valid_measurement_units.archived_at IS NULL
-    ) AS total_count
+		WHERE valid_measurement_units.archived_at IS NULL
+	) AS total_count
 FROM valid_measurement_units
 WHERE
 	valid_measurement_units.archived_at IS NULL
@@ -580,8 +580,8 @@ SELECT
     (
 		SELECT COUNT(valid_measurement_units.id)
 		FROM valid_measurement_units
-	    WHERE valid_measurement_units.archived_at IS NULL
-    ) AS total_count
+		WHERE valid_measurement_units.archived_at IS NULL
+	) AS total_count
 FROM valid_measurement_units
 	JOIN valid_ingredient_measurement_units ON valid_ingredient_measurement_units.valid_measurement_unit_id = valid_measurement_units.id
 	JOIN valid_ingredients ON valid_ingredient_measurement_units.valid_ingredient_id = valid_ingredients.id
