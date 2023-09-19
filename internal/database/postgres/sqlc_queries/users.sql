@@ -26,7 +26,7 @@ WHERE archived_at IS NULL AND belongs_to_user = sqlc.arg(id);
 
 INSERT INTO users
 (
-    id,
+	id,
 	username,
 	avatar_src,
 	email_address,
@@ -42,7 +42,7 @@ INSERT INTO users
 	first_name,
 	last_name
 ) VALUES (
-    sqlc.arg(id),
+	sqlc.arg(id),
 	sqlc.arg(username),
 	sqlc.arg(avatar_src),
 	sqlc.arg(email_address),
@@ -217,13 +217,13 @@ SELECT
 	users.email_address_verification_token
 FROM users
 WHERE users.archived_at IS NULL
-    AND users.email_address_verified_at IS NULL
+	AND users.email_address_verified_at IS NULL
 	AND users.id = sqlc.arg(id);
 
 -- name: GetUsers :many
 
 SELECT
-    users.id,
+	users.id,
 	users.username,
 	users.avatar_src,
 	users.email_address,
@@ -246,7 +246,7 @@ SELECT
 	users.created_at,
 	users.last_updated_at,
 	users.archived_at,
-    (
+	(
 		SELECT COUNT(users.id)
 		FROM users
 		WHERE users.archived_at IS NULL
@@ -261,15 +261,15 @@ SELECT
 				OR users.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
 			)
 	) AS filtered_count,
-    (
-        SELECT COUNT(users.id)
-        FROM users
-        WHERE users.archived_at IS NULL
+	(
+		SELECT COUNT(users.id)
+		FROM users
+	    WHERE users.archived_at IS NULL
     ) AS total_count
 FROM users
 WHERE users.archived_at IS NULL
 	AND users.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
-    AND users.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+	AND users.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		users.last_updated_at IS NULL
 		OR users.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))

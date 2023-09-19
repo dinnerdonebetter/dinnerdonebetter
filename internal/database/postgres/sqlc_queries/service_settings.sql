@@ -1,13 +1,11 @@
 -- name: ArchiveServiceSetting :execrows
 
-UPDATE service_settings
-SET archived_at = NOW()
-    WHERE id = sqlc.arg(id);
+UPDATE service_settings SET archived_at = NOW() WHERE id = sqlc.arg(id);
 
 -- name: CreateServiceSetting :exec
 
 INSERT INTO service_settings (
-    id,
+	id,
 	name,
 	type,
 	description,
@@ -15,7 +13,7 @@ INSERT INTO service_settings (
 	enumeration,
 	admins_only
 ) VALUES (
-    sqlc.arg(id),
+	sqlc.arg(id),
 	sqlc.arg(name),
 	sqlc.arg(type),
 	sqlc.arg(description),
@@ -27,10 +25,10 @@ INSERT INTO service_settings (
 -- name: CheckServiceSettingExistence :one
 
 SELECT EXISTS (
-    SELECT service_settings.id
-    FROM service_settings
-    WHERE service_settings.archived_at IS NULL
-    AND service_settings.id = sqlc.arg(id)
+	SELECT service_settings.id
+	FROM service_settings
+	WHERE service_settings.archived_at IS NULL
+	AND service_settings.id = sqlc.arg(id)
 );
 
 -- name: GetServiceSettings :many
@@ -46,7 +44,7 @@ SELECT
 	service_settings.created_at,
 	service_settings.last_updated_at,
 	service_settings.archived_at,
-    (
+	(
 		SELECT COUNT(service_settings.id)
 		FROM service_settings
 		WHERE service_settings.archived_at IS NULL
@@ -62,14 +60,14 @@ SELECT
 			)
 	) AS filtered_count,
     (
-        SELECT COUNT(service_settings.id)
-        FROM service_settings
-        WHERE service_settings.archived_at IS NULL
+		SELECT COUNT(service_settings.id)
+		FROM service_settings
+	    WHERE service_settings.archived_at IS NULL
     ) AS total_count
 FROM service_settings
 WHERE service_settings.archived_at IS NULL
     AND service_settings.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
-    AND service_settings.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+	AND service_settings.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		service_settings.last_updated_at IS NULL
 		OR service_settings.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))

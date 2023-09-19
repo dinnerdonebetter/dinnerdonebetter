@@ -76,10 +76,10 @@ func buildOAuth2ClientTokensQueries() []*Query {
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
-    SELECT %s.id
-    FROM %s
-    WHERE %s.archived_at IS NULL
-        AND %s.id = $1
+	SELECT %s.id
+	FROM %s
+	WHERE %s.archived_at IS NULL
+	    AND %s.id = $1
 );`,
 				oauth2ClientTokensTableName,
 				oauth2ClientTokensTableName,

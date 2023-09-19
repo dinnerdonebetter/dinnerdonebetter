@@ -1,12 +1,12 @@
 -- name: AddToHouseholdDuringCreation :exec
 
 INSERT INTO household_user_memberships (
-    id,
+	id,
 	belongs_to_household,
 	belongs_to_user,
 	household_role
 ) VALUES (
-    sqlc.arg(id),
+	sqlc.arg(id),
 	sqlc.arg(belongs_to_household),
 	sqlc.arg(belongs_to_user),
 	sqlc.arg(household_role)
@@ -15,16 +15,16 @@ INSERT INTO household_user_memberships (
 -- name: ArchiveHousehold :execrows
 
 UPDATE households SET
-    last_updated_at = NOW(),
-    archived_at = NOW()
+	last_updated_at = NOW(),
+	archived_at = NOW()
 WHERE archived_at IS NULL
-    AND belongs_to_user = sqlc.arg(belongs_to_user)
-    AND id = sqlc.arg(id);
+	AND belongs_to_user = sqlc.arg(belongs_to_user)
+	AND id = sqlc.arg(id);
 
 -- name: CreateHousehold :exec
 
 INSERT INTO households (
-    id,
+	id,
 	name,
 	billing_status,
 	contact_phone,
@@ -39,7 +39,7 @@ INSERT INTO households (
 	longitude,
 	webhook_hmac_secret
 ) VALUES (
-    sqlc.arg(id),
+	sqlc.arg(id),
 	sqlc.arg(name),
 	sqlc.arg(billing_status),
 	sqlc.arg(contact_phone),
@@ -120,7 +120,7 @@ WHERE households.archived_at IS NULL
 -- name: GetHouseholdsForUser :many
 
 SELECT
-    households.id,
+	households.id,
 	households.name,
 	households.billing_status,
 	households.contact_phone,
@@ -141,16 +141,16 @@ SELECT
 	households.created_at,
 	households.last_updated_at,
 	households.archived_at,
-    (
-        SELECT
-            COUNT(households.id)
+	(
+		SELECT
+	        COUNT(households.id)
         FROM
             households
             JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
         WHERE households.archived_at IS NULL
             AND household_user_memberships.belongs_to_user = sqlc.arg(user_id)
 			AND households.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
-		    AND households.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+			AND households.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 			AND (
 				households.last_updated_at IS NULL
 				OR households.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
@@ -161,9 +161,9 @@ SELECT
 			)
 	) as filtered_count,
     (
-        SELECT COUNT(households.id)
-        FROM households
-        WHERE households.archived_at IS NULL
+		SELECT COUNT(households.id)
+		FROM households
+	    WHERE households.archived_at IS NULL
     ) AS total_count
 FROM households
 	JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
@@ -172,7 +172,7 @@ WHERE households.archived_at IS NULL
     AND household_user_memberships.archived_at IS NULL
     AND household_user_memberships.belongs_to_user = sqlc.arg(user_id)
 	AND households.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
-    AND households.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+	AND households.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		households.last_updated_at IS NULL
 		OR households.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))

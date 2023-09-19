@@ -29,10 +29,10 @@ func (q *Queries) ArchiveValidVessel(ctx context.Context, db DBTX, id string) (i
 const checkValidVesselExistence = `-- name: CheckValidVesselExistence :one
 
 SELECT EXISTS (
-    SELECT valid_vessels.id
-    FROM valid_vessels
-    WHERE valid_vessels.archived_at IS NULL
-        AND valid_vessels.id = $1
+	SELECT valid_vessels.id
+	FROM valid_vessels
+	WHERE valid_vessels.archived_at IS NULL
+		AND valid_vessels.id = $1
 )
 `
 
@@ -46,7 +46,7 @@ func (q *Queries) CheckValidVesselExistence(ctx context.Context, db DBTX, id str
 const createValidVessel = `-- name: CreateValidVessel :exec
 
 INSERT INTO valid_vessels (
-    id,
+	id,
 	name,
 	plural_name,
 	description,
@@ -62,7 +62,7 @@ INSERT INTO valid_vessels (
 	height_in_millimeters,
 	shape
 ) VALUES (
-    $1,
+	$1,
 	$2,
 	$3,
 	$4,
@@ -358,9 +358,9 @@ const getValidVesselIDsNeedingIndexing = `-- name: GetValidVesselIDsNeedingIndex
 SELECT valid_vessels.id
 FROM valid_vessels
 WHERE valid_vessels.archived_at IS NULL
-    AND (
-    valid_vessels.last_indexed_at IS NULL
-    OR valid_vessels.last_indexed_at < NOW() - '24 hours'::INTERVAL
+	AND (
+	valid_vessels.last_indexed_at IS NULL
+	OR valid_vessels.last_indexed_at < NOW() - '24 hours'::INTERVAL
 )
 `
 
@@ -409,7 +409,7 @@ SELECT
 	valid_vessels.created_at,
 	valid_vessels.last_updated_at,
 	valid_vessels.archived_at,
-    (
+	(
 		SELECT COUNT(valid_vessels.id)
 		FROM valid_vessels
 		WHERE valid_vessels.archived_at IS NULL
@@ -424,16 +424,16 @@ SELECT
 				OR valid_vessels.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
 			)
 	) AS filtered_count,
-    (
-        SELECT COUNT(valid_vessels.id)
-        FROM valid_vessels
-        WHERE valid_vessels.archived_at IS NULL
+	(
+		SELECT COUNT(valid_vessels.id)
+		FROM valid_vessels
+	    WHERE valid_vessels.archived_at IS NULL
     ) AS total_count
 FROM valid_vessels
 WHERE
 	valid_vessels.archived_at IS NULL
 	AND valid_vessels.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-    AND valid_vessels.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND valid_vessels.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		valid_vessels.last_updated_at IS NULL
 		OR valid_vessels.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))

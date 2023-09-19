@@ -34,11 +34,11 @@ func (q *Queries) ArchiveWebhook(ctx context.Context, db DBTX, arg *ArchiveWebho
 const checkWebhookExistence = `-- name: CheckWebhookExistence :one
 
 SELECT EXISTS(
-    SELECT webhooks.id
-    FROM webhooks
-    WHERE webhooks.archived_at IS NULL
-    AND webhooks.id = $1
-    AND webhooks.belongs_to_household = $2
+	SELECT webhooks.id
+	FROM webhooks
+	WHERE webhooks.archived_at IS NULL
+	AND webhooks.id = $1
+	AND webhooks.belongs_to_household = $2
 )
 `
 
@@ -57,14 +57,14 @@ func (q *Queries) CheckWebhookExistence(ctx context.Context, db DBTX, arg *Check
 const createWebhook = `-- name: CreateWebhook :exec
 
 INSERT INTO webhooks (
-    id,
+	id,
 	name,
 	content_type,
 	url,
 	method,
 	belongs_to_household
 ) VALUES (
-    $1,
+	$1,
 	$2,
 	$3,
 	$4,
@@ -182,7 +182,7 @@ func (q *Queries) GetWebhook(ctx context.Context, db DBTX, arg *GetWebhookParams
 const getWebhooksForHousehold = `-- name: GetWebhooksForHousehold :many
 
 SELECT
-    webhooks.id,
+	webhooks.id,
 	webhooks.name,
 	webhooks.content_type,
 	webhooks.url,
@@ -196,7 +196,7 @@ SELECT
 	webhooks.last_updated_at,
 	webhooks.archived_at,
 	webhooks.belongs_to_household,
-    (
+	(
 		SELECT COUNT(webhooks.id)
 		FROM webhooks
 		WHERE webhooks.archived_at IS NULL
@@ -212,10 +212,10 @@ SELECT
 			)
 			AND webhooks.belongs_to_household = $5
 	) AS filtered_count,
-    (
-        SELECT COUNT(webhooks.id)
-        FROM webhooks
-        WHERE webhooks.archived_at IS NULL
+	(
+		SELECT COUNT(webhooks.id)
+		FROM webhooks
+	    WHERE webhooks.archived_at IS NULL
 			AND webhooks.belongs_to_household = $5
 			AND webhook_trigger_events.archived_at IS NULL
     ) AS total_count
@@ -223,7 +223,7 @@ FROM webhooks
 	JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
 WHERE webhooks.archived_at IS NULL
 	AND webhooks.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-    AND webhooks.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND webhooks.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		webhooks.last_updated_at IS NULL
 		OR webhooks.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
@@ -318,7 +318,7 @@ func (q *Queries) GetWebhooksForHousehold(ctx context.Context, db DBTX, arg *Get
 const getWebhooksForHouseholdAndEvent = `-- name: GetWebhooksForHouseholdAndEvent :many
 
 SELECT
-    webhooks.id,
+	webhooks.id,
 	webhooks.name,
 	webhooks.content_type,
 	webhooks.url,
@@ -328,11 +328,11 @@ SELECT
 	webhooks.archived_at,
 	webhooks.belongs_to_household
 FROM webhooks
-    JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
+	JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
 WHERE webhook_trigger_events.archived_at IS NULL
-    AND webhook_trigger_events.trigger_event = $1
-    AND webhooks.belongs_to_household = $2
-    AND webhooks.archived_at IS NULL
+	AND webhook_trigger_events.trigger_event = $1
+	AND webhooks.belongs_to_household = $2
+	AND webhooks.archived_at IS NULL
 `
 
 type GetWebhooksForHouseholdAndEventParams struct {

@@ -29,8 +29,8 @@ func (q *Queries) ArchiveValidPreparation(ctx context.Context, db DBTX, id strin
 const checkValidPreparationExistence = `-- name: CheckValidPreparationExistence :one
 
 SELECT EXISTS (
-    SELECT valid_preparations.id
-    FROM valid_preparations
+	SELECT valid_preparations.id
+	FROM valid_preparations
     WHERE valid_preparations.archived_at IS NULL
         AND valid_preparations.id = $1
 )
@@ -46,7 +46,7 @@ func (q *Queries) CheckValidPreparationExistence(ctx context.Context, db DBTX, i
 const createValidPreparation = `-- name: CreateValidPreparation :exec
 
 INSERT INTO valid_preparations (
-    id,
+	id,
 	name,
 	description,
 	icon_path,
@@ -66,7 +66,7 @@ INSERT INTO valid_preparations (
 	minimum_vessel_count,
 	maximum_vessel_count
 ) VALUES (
-    $1,
+	$1,
 	$2,
 	$3,
 	$4,
@@ -353,15 +353,15 @@ SELECT
 			)
 	) AS filtered_count,
     (
-        SELECT COUNT(valid_preparations.id)
-        FROM valid_preparations
-        WHERE valid_preparations.archived_at IS NULL
+		SELECT COUNT(valid_preparations.id)
+		FROM valid_preparations
+	    WHERE valid_preparations.archived_at IS NULL
     ) AS total_count
 FROM valid_preparations
 WHERE
 	valid_preparations.archived_at IS NULL
 	AND valid_preparations.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-    AND valid_preparations.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND valid_preparations.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		valid_preparations.last_updated_at IS NULL
 		OR valid_preparations.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))

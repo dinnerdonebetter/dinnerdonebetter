@@ -28,8 +28,7 @@ func main() {
 		"valid_ingredient_states.sql":        buildValidIngredientStatesQueries(),
 		"valid_vessels.sql":                  buildValidVesselsQueries(),
 		"valid_ingredient_groups.sql":        buildValidIngredientGroupsQueries(),
-		//
-		// "valid_preparation_instruments.sql": buildValidPreparationInstrumentsQueries(),
+		"valid_preparation_instruments.sql":  buildValidPreparationInstrumentsQueries(),
 		//
 		// "valid_ingredient_measurement_units.sql":           buildValidIngredientMeasurementUnitsQueries(),
 		// "valid_ingredient_preparations.sql":                buildValidIngredientPreparationsQueries(),

@@ -14,12 +14,12 @@ import (
 const addToHouseholdDuringCreation = `-- name: AddToHouseholdDuringCreation :exec
 
 INSERT INTO household_user_memberships (
-    id,
+	id,
 	belongs_to_household,
 	belongs_to_user,
 	household_role
 ) VALUES (
-    $1,
+	$1,
 	$2,
 	$3,
 	$4
@@ -46,11 +46,11 @@ func (q *Queries) AddToHouseholdDuringCreation(ctx context.Context, db DBTX, arg
 const archiveHousehold = `-- name: ArchiveHousehold :execrows
 
 UPDATE households SET
-    last_updated_at = NOW(),
-    archived_at = NOW()
+	last_updated_at = NOW(),
+	archived_at = NOW()
 WHERE archived_at IS NULL
-    AND belongs_to_user = $1
-    AND id = $2
+	AND belongs_to_user = $1
+	AND id = $2
 `
 
 type ArchiveHouseholdParams struct {
@@ -69,7 +69,7 @@ func (q *Queries) ArchiveHousehold(ctx context.Context, db DBTX, arg *ArchiveHou
 const createHousehold = `-- name: CreateHousehold :exec
 
 INSERT INTO households (
-    id,
+	id,
 	name,
 	billing_status,
 	contact_phone,
@@ -84,7 +84,7 @@ INSERT INTO households (
 	longitude,
 	webhook_hmac_secret
 ) VALUES (
-    $1,
+	$1,
 	$2,
 	$3,
 	$4,
@@ -335,7 +335,7 @@ func (q *Queries) GetHouseholdByIDWithMemberships(ctx context.Context, db DBTX, 
 const getHouseholdsForUser = `-- name: GetHouseholdsForUser :many
 
 SELECT
-    households.id,
+	households.id,
 	households.name,
 	households.billing_status,
 	households.contact_phone,
@@ -356,16 +356,16 @@ SELECT
 	households.created_at,
 	households.last_updated_at,
 	households.archived_at,
-    (
-        SELECT
-            COUNT(households.id)
+	(
+		SELECT
+	        COUNT(households.id)
         FROM
             households
             JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
         WHERE households.archived_at IS NULL
             AND household_user_memberships.belongs_to_user = $1
 			AND households.created_at > COALESCE($2, (SELECT NOW() - '999 years'::INTERVAL))
-		    AND households.created_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+			AND households.created_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 			AND (
 				households.last_updated_at IS NULL
 				OR households.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
@@ -376,9 +376,9 @@ SELECT
 			)
 	) as filtered_count,
     (
-        SELECT COUNT(households.id)
-        FROM households
-        WHERE households.archived_at IS NULL
+		SELECT COUNT(households.id)
+		FROM households
+	    WHERE households.archived_at IS NULL
     ) AS total_count
 FROM households
 	JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
@@ -387,7 +387,7 @@ WHERE households.archived_at IS NULL
     AND household_user_memberships.archived_at IS NULL
     AND household_user_memberships.belongs_to_user = $1
 	AND households.created_at > COALESCE($2, (SELECT NOW() - '999 years'::INTERVAL))
-    AND households.created_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	AND households.created_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		households.last_updated_at IS NULL
 		OR households.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))

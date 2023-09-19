@@ -31,9 +31,7 @@ func buildServiceSettingQueries() []*Query {
 				Name: "ArchiveServiceSetting",
 				Type: ExecRowsType,
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s
-SET archived_at = NOW()
-    WHERE id = sqlc.arg(id);`,
+			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET archived_at = NOW() WHERE id = sqlc.arg(id);`,
 				serviceSettingsTableName,
 			)),
 		},
@@ -43,9 +41,9 @@ SET archived_at = NOW()
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
-    %s
+	%s
 ) VALUES (
-    %s
+	%s
 );`,
 				serviceSettingsTableName,
 				strings.Join(insertColumns, ",\n\t"),
@@ -60,10 +58,10 @@ SET archived_at = NOW()
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
-    SELECT %s.id
-    FROM %s
-    WHERE %s.%s IS NULL
-    AND %s.id = sqlc.arg(id)
+	SELECT %s.id
+	FROM %s
+	WHERE %s.%s IS NULL
+	AND %s.id = sqlc.arg(id)
 );`,
 				serviceSettingsTableName,
 				serviceSettingsTableName,
@@ -79,7 +77,7 @@ SET archived_at = NOW()
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
-    %s,
+	%s,
     %s
 FROM service_settings
 WHERE service_settings.archived_at IS NULL

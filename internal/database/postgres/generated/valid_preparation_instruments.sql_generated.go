@@ -9,8 +9,6 @@ import (
 	"context"
 	"database/sql"
 	"time"
-
-	"github.com/lib/pq"
 )
 
 const archiveValidPreparationInstrument = `-- name: ArchiveValidPreparationInstrument :execrows
@@ -29,10 +27,10 @@ func (q *Queries) ArchiveValidPreparationInstrument(ctx context.Context, db DBTX
 const checkValidPreparationInstrumentExistence = `-- name: CheckValidPreparationInstrumentExistence :one
 
 SELECT EXISTS (
-	SELECT valid_preparation_instruments.id
-	FROM valid_preparation_instruments
-	WHERE valid_preparation_instruments.archived_at IS NULL
-		AND valid_preparation_instruments.id = $1
+    SELECT valid_preparation_instruments.id
+    FROM valid_preparation_instruments
+    WHERE valid_preparation_instruments.archived_at IS NULL
+        AND valid_preparation_instruments.id = $1
 )
 `
 
@@ -46,12 +44,12 @@ func (q *Queries) CheckValidPreparationInstrumentExistence(ctx context.Context, 
 const createValidPreparationInstrument = `-- name: CreateValidPreparationInstrument :exec
 
 INSERT INTO valid_preparation_instruments (
-	id,
+    id,
 	notes,
 	valid_preparation_id,
 	valid_instrument_id
 ) VALUES (
-	$1,
+    $1,
 	$2,
 	$3,
 	$4
@@ -86,6 +84,8 @@ SELECT
 	valid_preparations.icon_path as valid_preparation_icon_path,
 	valid_preparations.yields_nothing as valid_preparation_yields_nothing,
 	valid_preparations.restrict_to_ingredients as valid_preparation_restrict_to_ingredients,
+	valid_preparations.past_tense as valid_preparation_past_tense,
+	valid_preparations.slug as valid_preparation_slug,
 	valid_preparations.minimum_ingredient_count as valid_preparation_minimum_ingredient_count,
 	valid_preparations.maximum_ingredient_count as valid_preparation_maximum_ingredient_count,
 	valid_preparations.minimum_instrument_count as valid_preparation_minimum_instrument_count,
@@ -97,20 +97,20 @@ SELECT
 	valid_preparations.only_for_vessels as valid_preparation_only_for_vessels,
 	valid_preparations.minimum_vessel_count as valid_preparation_minimum_vessel_count,
 	valid_preparations.maximum_vessel_count as valid_preparation_maximum_vessel_count,
-	valid_preparations.slug as valid_preparation_slug,
-	valid_preparations.past_tense as valid_preparation_past_tense,
+	valid_preparations.last_indexed_at as valid_preparation_last_indexed_at,
 	valid_preparations.created_at as valid_preparation_created_at,
 	valid_preparations.last_updated_at as valid_preparation_last_updated_at,
 	valid_preparations.archived_at as valid_preparation_archived_at,
 	valid_instruments.id as valid_instrument_id,
 	valid_instruments.name as valid_instrument_name,
-	valid_instruments.plural_name as valid_instrument_plural_name,
 	valid_instruments.description as valid_instrument_description,
 	valid_instruments.icon_path as valid_instrument_icon_path,
+	valid_instruments.plural_name as valid_instrument_plural_name,
 	valid_instruments.usable_for_storage as valid_instrument_usable_for_storage,
+	valid_instruments.slug as valid_instrument_slug,
 	valid_instruments.display_in_summary_lists as valid_instrument_display_in_summary_lists,
 	valid_instruments.include_in_generated_instructions as valid_instrument_include_in_generated_instructions,
-	valid_instruments.slug as valid_instrument_slug,
+	valid_instruments.last_indexed_at as valid_instrument_last_indexed_at,
 	valid_instruments.created_at as valid_instrument_created_at,
 	valid_instruments.last_updated_at as valid_instrument_last_updated_at,
 	valid_instruments.archived_at as valid_instrument_archived_at,
@@ -129,43 +129,45 @@ WHERE
 `
 
 type GetValidPreparationInstrumentRow struct {
+	ValidPreparationInstrumentCreatedAt           time.Time
 	ValidPreparationCreatedAt                     time.Time
 	ValidInstrumentCreatedAt                      time.Time
-	ValidPreparationInstrumentCreatedAt           time.Time
 	ValidInstrumentArchivedAt                     sql.NullTime
-	ValidPreparationLastUpdatedAt                 sql.NullTime
 	ValidInstrumentLastUpdatedAt                  sql.NullTime
 	ValidPreparationArchivedAt                    sql.NullTime
 	ValidPreparationInstrumentArchivedAt          sql.NullTime
 	ValidPreparationInstrumentLastUpdatedAt       sql.NullTime
+	ValidPreparationLastUpdatedAt                 sql.NullTime
+	ValidPreparationLastIndexedAt                 sql.NullTime
+	ValidInstrumentLastIndexedAt                  sql.NullTime
+	ValidPreparationID                            string
 	ValidPreparationIconPath                      string
-	ValidInstrumentPluralName                     string
-	ValidPreparationDescription                   string
-	ValidPreparationName                          string
-	ValidInstrumentSlug                           string
-	ValidInstrumentIconPath                       string
 	ValidInstrumentDescription                    string
-	ValidPreparationInstrumentID                  string
+	ValidInstrumentIconPath                       string
 	ValidInstrumentName                           string
+	ValidPreparationDescription                   string
+	ValidPreparationInstrumentID                  string
+	ValidInstrumentSlug                           string
+	ValidInstrumentPluralName                     string
 	ValidInstrumentID                             string
 	ValidPreparationSlug                          string
-	ValidPreparationPastTense                     string
-	ValidPreparationID                            string
 	ValidPreparationInstrumentNotes               string
-	ValidPreparationMaximumIngredientCount        sql.NullInt32
+	ValidPreparationPastTense                     string
+	ValidPreparationName                          string
 	ValidPreparationMaximumVesselCount            sql.NullInt32
+	ValidPreparationMaximumIngredientCount        sql.NullInt32
 	ValidPreparationMaximumInstrumentCount        sql.NullInt32
-	ValidPreparationMinimumVesselCount            int32
 	ValidPreparationMinimumIngredientCount        int32
+	ValidPreparationMinimumVesselCount            int32
 	ValidPreparationMinimumInstrumentCount        int32
-	ValidInstrumentDisplayInSummaryLists          bool
 	ValidInstrumentUsableForStorage               bool
+	ValidPreparationOnlyForVessels                bool
+	ValidInstrumentDisplayInSummaryLists          bool
 	ValidInstrumentIncludeInGeneratedInstructions bool
+	ValidPreparationConsumesVessel                bool
+	ValidPreparationConditionExpressionRequired   bool
 	ValidPreparationTimeEstimateRequired          bool
 	ValidPreparationTemperatureRequired           bool
-	ValidPreparationConditionExpressionRequired   bool
-	ValidPreparationConsumesVessel                bool
-	ValidPreparationOnlyForVessels                bool
 	ValidPreparationRestrictToIngredients         bool
 	ValidPreparationYieldsNothing                 bool
 }
@@ -182,6 +184,8 @@ func (q *Queries) GetValidPreparationInstrument(ctx context.Context, db DBTX, id
 		&i.ValidPreparationIconPath,
 		&i.ValidPreparationYieldsNothing,
 		&i.ValidPreparationRestrictToIngredients,
+		&i.ValidPreparationPastTense,
+		&i.ValidPreparationSlug,
 		&i.ValidPreparationMinimumIngredientCount,
 		&i.ValidPreparationMaximumIngredientCount,
 		&i.ValidPreparationMinimumInstrumentCount,
@@ -193,20 +197,20 @@ func (q *Queries) GetValidPreparationInstrument(ctx context.Context, db DBTX, id
 		&i.ValidPreparationOnlyForVessels,
 		&i.ValidPreparationMinimumVesselCount,
 		&i.ValidPreparationMaximumVesselCount,
-		&i.ValidPreparationSlug,
-		&i.ValidPreparationPastTense,
+		&i.ValidPreparationLastIndexedAt,
 		&i.ValidPreparationCreatedAt,
 		&i.ValidPreparationLastUpdatedAt,
 		&i.ValidPreparationArchivedAt,
 		&i.ValidInstrumentID,
 		&i.ValidInstrumentName,
-		&i.ValidInstrumentPluralName,
 		&i.ValidInstrumentDescription,
 		&i.ValidInstrumentIconPath,
+		&i.ValidInstrumentPluralName,
 		&i.ValidInstrumentUsableForStorage,
+		&i.ValidInstrumentSlug,
 		&i.ValidInstrumentDisplayInSummaryLists,
 		&i.ValidInstrumentIncludeInGeneratedInstructions,
-		&i.ValidInstrumentSlug,
+		&i.ValidInstrumentLastIndexedAt,
 		&i.ValidInstrumentCreatedAt,
 		&i.ValidInstrumentLastUpdatedAt,
 		&i.ValidInstrumentArchivedAt,
@@ -228,6 +232,8 @@ SELECT
 	valid_preparations.icon_path as valid_preparation_icon_path,
 	valid_preparations.yields_nothing as valid_preparation_yields_nothing,
 	valid_preparations.restrict_to_ingredients as valid_preparation_restrict_to_ingredients,
+	valid_preparations.past_tense as valid_preparation_past_tense,
+	valid_preparations.slug as valid_preparation_slug,
 	valid_preparations.minimum_ingredient_count as valid_preparation_minimum_ingredient_count,
 	valid_preparations.maximum_ingredient_count as valid_preparation_maximum_ingredient_count,
 	valid_preparations.minimum_instrument_count as valid_preparation_minimum_instrument_count,
@@ -239,20 +245,20 @@ SELECT
 	valid_preparations.only_for_vessels as valid_preparation_only_for_vessels,
 	valid_preparations.minimum_vessel_count as valid_preparation_minimum_vessel_count,
 	valid_preparations.maximum_vessel_count as valid_preparation_maximum_vessel_count,
-	valid_preparations.slug as valid_preparation_slug,
-	valid_preparations.past_tense as valid_preparation_past_tense,
+	valid_preparations.last_indexed_at as valid_preparation_last_indexed_at,
 	valid_preparations.created_at as valid_preparation_created_at,
 	valid_preparations.last_updated_at as valid_preparation_last_updated_at,
 	valid_preparations.archived_at as valid_preparation_archived_at,
 	valid_instruments.id as valid_instrument_id,
 	valid_instruments.name as valid_instrument_name,
-	valid_instruments.plural_name as valid_instrument_plural_name,
 	valid_instruments.description as valid_instrument_description,
 	valid_instruments.icon_path as valid_instrument_icon_path,
+	valid_instruments.plural_name as valid_instrument_plural_name,
 	valid_instruments.usable_for_storage as valid_instrument_usable_for_storage,
+	valid_instruments.slug as valid_instrument_slug,
 	valid_instruments.display_in_summary_lists as valid_instrument_display_in_summary_lists,
 	valid_instruments.include_in_generated_instructions as valid_instrument_include_in_generated_instructions,
-	valid_instruments.slug as valid_instrument_slug,
+	valid_instruments.last_indexed_at as valid_instrument_last_indexed_at,
 	valid_instruments.created_at as valid_instrument_created_at,
 	valid_instruments.last_updated_at as valid_instrument_last_updated_at,
 	valid_instruments.archived_at as valid_instrument_archived_at,
@@ -262,32 +268,30 @@ SELECT
 	(
 		SELECT
 			COUNT(valid_preparation_instruments.id)
-		FROM
-			valid_preparation_instruments
-				JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-				JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+		FROM valid_preparation_instruments
+            JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+            JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 		WHERE
 			valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
 			AND valid_preparations.archived_at IS NULL
-			AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-			AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-			AND (
-				valid_preparation_instruments.last_updated_at IS NULL
-				OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-			)
-			AND (
-				valid_preparation_instruments.last_updated_at IS NULL
-				OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-			)
+			AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		valid_preparation_instruments.last_updated_at IS NULL
+		OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		valid_preparation_instruments.last_updated_at IS NULL
+		OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+	)
 	) as filtered_count,
 	(
 		SELECT
 			COUNT(valid_preparation_instruments.id)
-		FROM
-			valid_preparation_instruments
-				JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-				JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+		FROM valid_preparation_instruments
+            JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+            JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 		WHERE
 			valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
@@ -300,15 +304,15 @@ WHERE
 	valid_preparation_instruments.archived_at IS NULL
 	AND valid_instruments.archived_at IS NULL
 	AND valid_preparations.archived_at IS NULL
-	AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-	AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+	AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		valid_preparation_instruments.last_updated_at IS NULL
-		OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+		OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
 	)
 	AND (
 		valid_preparation_instruments.last_updated_at IS NULL
-		OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+		OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
 	)
 GROUP BY
 	valid_preparation_instruments.id,
@@ -320,10 +324,10 @@ OFFSET $5
 `
 
 type GetValidPreparationInstrumentsParams struct {
-	CreatedBefore sql.NullTime
 	CreatedAfter  sql.NullTime
-	UpdatedBefore sql.NullTime
+	CreatedBefore sql.NullTime
 	UpdatedAfter  sql.NullTime
+	UpdatedBefore sql.NullTime
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
@@ -332,34 +336,36 @@ type GetValidPreparationInstrumentsRow struct {
 	ValidPreparationInstrumentCreatedAt           time.Time
 	ValidPreparationCreatedAt                     time.Time
 	ValidInstrumentCreatedAt                      time.Time
-	ValidInstrumentArchivedAt                     sql.NullTime
-	ValidPreparationInstrumentLastUpdatedAt       sql.NullTime
+	ValidPreparationLastIndexedAt                 sql.NullTime
+	ValidPreparationInstrumentArchivedAt          sql.NullTime
 	ValidPreparationArchivedAt                    sql.NullTime
 	ValidPreparationLastUpdatedAt                 sql.NullTime
+	ValidInstrumentLastIndexedAt                  sql.NullTime
 	ValidInstrumentLastUpdatedAt                  sql.NullTime
-	ValidPreparationInstrumentArchivedAt          sql.NullTime
+	ValidInstrumentArchivedAt                     sql.NullTime
+	ValidPreparationInstrumentLastUpdatedAt       sql.NullTime
 	ValidPreparationInstrumentID                  string
-	ValidPreparationID                            string
-	ValidInstrumentDescription                    string
-	ValidInstrumentPluralName                     string
-	ValidPreparationName                          string
-	ValidInstrumentIconPath                       string
-	ValidInstrumentName                           string
 	ValidPreparationIconPath                      string
-	ValidInstrumentSlug                           string
-	ValidInstrumentID                             string
+	ValidInstrumentPluralName                     string
+	ValidPreparationDescription                   string
+	ValidPreparationName                          string
 	ValidPreparationSlug                          string
 	ValidPreparationPastTense                     string
+	ValidPreparationID                            string
+	ValidInstrumentIconPath                       string
+	ValidInstrumentDescription                    string
+	ValidInstrumentSlug                           string
 	ValidPreparationInstrumentNotes               string
-	ValidPreparationDescription                   string
+	ValidInstrumentName                           string
+	ValidInstrumentID                             string
 	TotalCount                                    int64
 	FilteredCount                                 int64
-	ValidPreparationMaximumVesselCount            sql.NullInt32
 	ValidPreparationMaximumIngredientCount        sql.NullInt32
+	ValidPreparationMaximumVesselCount            sql.NullInt32
 	ValidPreparationMaximumInstrumentCount        sql.NullInt32
-	ValidPreparationMinimumInstrumentCount        int32
-	ValidPreparationMinimumVesselCount            int32
 	ValidPreparationMinimumIngredientCount        int32
+	ValidPreparationMinimumVesselCount            int32
+	ValidPreparationMinimumInstrumentCount        int32
 	ValidInstrumentUsableForStorage               bool
 	ValidInstrumentDisplayInSummaryLists          bool
 	ValidInstrumentIncludeInGeneratedInstructions bool
@@ -374,10 +380,10 @@ type GetValidPreparationInstrumentsRow struct {
 
 func (q *Queries) GetValidPreparationInstruments(ctx context.Context, db DBTX, arg *GetValidPreparationInstrumentsParams) ([]*GetValidPreparationInstrumentsRow, error) {
 	rows, err := db.QueryContext(ctx, getValidPreparationInstruments,
-		arg.CreatedBefore,
 		arg.CreatedAfter,
-		arg.UpdatedBefore,
+		arg.CreatedBefore,
 		arg.UpdatedAfter,
+		arg.UpdatedBefore,
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)
@@ -397,6 +403,8 @@ func (q *Queries) GetValidPreparationInstruments(ctx context.Context, db DBTX, a
 			&i.ValidPreparationIconPath,
 			&i.ValidPreparationYieldsNothing,
 			&i.ValidPreparationRestrictToIngredients,
+			&i.ValidPreparationPastTense,
+			&i.ValidPreparationSlug,
 			&i.ValidPreparationMinimumIngredientCount,
 			&i.ValidPreparationMaximumIngredientCount,
 			&i.ValidPreparationMinimumInstrumentCount,
@@ -408,20 +416,20 @@ func (q *Queries) GetValidPreparationInstruments(ctx context.Context, db DBTX, a
 			&i.ValidPreparationOnlyForVessels,
 			&i.ValidPreparationMinimumVesselCount,
 			&i.ValidPreparationMaximumVesselCount,
-			&i.ValidPreparationSlug,
-			&i.ValidPreparationPastTense,
+			&i.ValidPreparationLastIndexedAt,
 			&i.ValidPreparationCreatedAt,
 			&i.ValidPreparationLastUpdatedAt,
 			&i.ValidPreparationArchivedAt,
 			&i.ValidInstrumentID,
 			&i.ValidInstrumentName,
-			&i.ValidInstrumentPluralName,
 			&i.ValidInstrumentDescription,
 			&i.ValidInstrumentIconPath,
+			&i.ValidInstrumentPluralName,
 			&i.ValidInstrumentUsableForStorage,
+			&i.ValidInstrumentSlug,
 			&i.ValidInstrumentDisplayInSummaryLists,
 			&i.ValidInstrumentIncludeInGeneratedInstructions,
-			&i.ValidInstrumentSlug,
+			&i.ValidInstrumentLastIndexedAt,
 			&i.ValidInstrumentCreatedAt,
 			&i.ValidInstrumentLastUpdatedAt,
 			&i.ValidInstrumentArchivedAt,
@@ -455,6 +463,8 @@ SELECT
 	valid_preparations.icon_path as valid_preparation_icon_path,
 	valid_preparations.yields_nothing as valid_preparation_yields_nothing,
 	valid_preparations.restrict_to_ingredients as valid_preparation_restrict_to_ingredients,
+	valid_preparations.past_tense as valid_preparation_past_tense,
+	valid_preparations.slug as valid_preparation_slug,
 	valid_preparations.minimum_ingredient_count as valid_preparation_minimum_ingredient_count,
 	valid_preparations.maximum_ingredient_count as valid_preparation_maximum_ingredient_count,
 	valid_preparations.minimum_instrument_count as valid_preparation_minimum_instrument_count,
@@ -466,20 +476,20 @@ SELECT
 	valid_preparations.only_for_vessels as valid_preparation_only_for_vessels,
 	valid_preparations.minimum_vessel_count as valid_preparation_minimum_vessel_count,
 	valid_preparations.maximum_vessel_count as valid_preparation_maximum_vessel_count,
-	valid_preparations.slug as valid_preparation_slug,
-	valid_preparations.past_tense as valid_preparation_past_tense,
+	valid_preparations.last_indexed_at as valid_preparation_last_indexed_at,
 	valid_preparations.created_at as valid_preparation_created_at,
 	valid_preparations.last_updated_at as valid_preparation_last_updated_at,
 	valid_preparations.archived_at as valid_preparation_archived_at,
 	valid_instruments.id as valid_instrument_id,
 	valid_instruments.name as valid_instrument_name,
-	valid_instruments.plural_name as valid_instrument_plural_name,
 	valid_instruments.description as valid_instrument_description,
 	valid_instruments.icon_path as valid_instrument_icon_path,
+	valid_instruments.plural_name as valid_instrument_plural_name,
 	valid_instruments.usable_for_storage as valid_instrument_usable_for_storage,
+	valid_instruments.slug as valid_instrument_slug,
 	valid_instruments.display_in_summary_lists as valid_instrument_display_in_summary_lists,
 	valid_instruments.include_in_generated_instructions as valid_instrument_include_in_generated_instructions,
-	valid_instruments.slug as valid_instrument_slug,
+	valid_instruments.last_indexed_at as valid_instrument_last_indexed_at,
 	valid_instruments.created_at as valid_instrument_created_at,
 	valid_instruments.last_updated_at as valid_instrument_last_updated_at,
 	valid_instruments.archived_at as valid_instrument_archived_at,
@@ -489,32 +499,30 @@ SELECT
 	(
 		SELECT
 			COUNT(valid_preparation_instruments.id)
-		FROM
-			valid_preparation_instruments
-				JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-				JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+		FROM valid_preparation_instruments
+            JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+            JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 		WHERE
 			valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
 			AND valid_preparations.archived_at IS NULL
-			AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-			AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-			AND (
-				valid_preparation_instruments.last_updated_at IS NULL
-				OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-			)
-			AND (
-				valid_preparation_instruments.last_updated_at IS NULL
-				OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-			)
+			AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		valid_preparation_instruments.last_updated_at IS NULL
+		OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		valid_preparation_instruments.last_updated_at IS NULL
+		OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+	)
 	) as filtered_count,
 	(
 		SELECT
 			COUNT(valid_preparation_instruments.id)
-		FROM
-			valid_preparation_instruments
-				JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-				JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+		FROM valid_preparation_instruments
+            JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+            JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 		WHERE
 			valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
@@ -525,18 +533,18 @@ FROM valid_preparation_instruments
 	JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 WHERE
 	valid_preparation_instruments.archived_at IS NULL
-	AND valid_preparation_instruments.valid_instrument_id = ANY($5::text[])
+	AND valid_preparation_instruments.valid_instrument_id = $5
 	AND valid_instruments.archived_at IS NULL
 	AND valid_preparations.archived_at IS NULL
-	AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-	AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+	AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		valid_preparation_instruments.last_updated_at IS NULL
-		OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+		OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
 	)
 	AND (
 		valid_preparation_instruments.last_updated_at IS NULL
-		OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+		OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
 	)
 GROUP BY
 	valid_preparation_instruments.id,
@@ -548,11 +556,11 @@ OFFSET $6
 `
 
 type GetValidPreparationInstrumentsForInstrumentParams struct {
-	CreatedBefore sql.NullTime
 	CreatedAfter  sql.NullTime
-	UpdatedBefore sql.NullTime
+	CreatedBefore sql.NullTime
 	UpdatedAfter  sql.NullTime
-	IDs           []string
+	UpdatedBefore sql.NullTime
+	ID            string
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
@@ -561,34 +569,36 @@ type GetValidPreparationInstrumentsForInstrumentRow struct {
 	ValidPreparationInstrumentCreatedAt           time.Time
 	ValidPreparationCreatedAt                     time.Time
 	ValidInstrumentCreatedAt                      time.Time
-	ValidInstrumentArchivedAt                     sql.NullTime
-	ValidPreparationInstrumentLastUpdatedAt       sql.NullTime
+	ValidPreparationLastIndexedAt                 sql.NullTime
+	ValidPreparationInstrumentArchivedAt          sql.NullTime
 	ValidPreparationArchivedAt                    sql.NullTime
 	ValidPreparationLastUpdatedAt                 sql.NullTime
+	ValidInstrumentLastIndexedAt                  sql.NullTime
 	ValidInstrumentLastUpdatedAt                  sql.NullTime
-	ValidPreparationInstrumentArchivedAt          sql.NullTime
+	ValidInstrumentArchivedAt                     sql.NullTime
+	ValidPreparationInstrumentLastUpdatedAt       sql.NullTime
 	ValidPreparationInstrumentID                  string
-	ValidPreparationID                            string
-	ValidInstrumentDescription                    string
-	ValidInstrumentPluralName                     string
-	ValidPreparationName                          string
-	ValidInstrumentIconPath                       string
-	ValidInstrumentName                           string
 	ValidPreparationIconPath                      string
-	ValidInstrumentSlug                           string
-	ValidInstrumentID                             string
+	ValidInstrumentPluralName                     string
+	ValidPreparationDescription                   string
+	ValidPreparationName                          string
 	ValidPreparationSlug                          string
 	ValidPreparationPastTense                     string
+	ValidPreparationID                            string
+	ValidInstrumentIconPath                       string
+	ValidInstrumentDescription                    string
+	ValidInstrumentSlug                           string
 	ValidPreparationInstrumentNotes               string
-	ValidPreparationDescription                   string
+	ValidInstrumentName                           string
+	ValidInstrumentID                             string
 	TotalCount                                    int64
 	FilteredCount                                 int64
-	ValidPreparationMaximumVesselCount            sql.NullInt32
 	ValidPreparationMaximumIngredientCount        sql.NullInt32
+	ValidPreparationMaximumVesselCount            sql.NullInt32
 	ValidPreparationMaximumInstrumentCount        sql.NullInt32
-	ValidPreparationMinimumInstrumentCount        int32
-	ValidPreparationMinimumVesselCount            int32
 	ValidPreparationMinimumIngredientCount        int32
+	ValidPreparationMinimumVesselCount            int32
+	ValidPreparationMinimumInstrumentCount        int32
 	ValidInstrumentUsableForStorage               bool
 	ValidInstrumentDisplayInSummaryLists          bool
 	ValidInstrumentIncludeInGeneratedInstructions bool
@@ -603,11 +613,11 @@ type GetValidPreparationInstrumentsForInstrumentRow struct {
 
 func (q *Queries) GetValidPreparationInstrumentsForInstrument(ctx context.Context, db DBTX, arg *GetValidPreparationInstrumentsForInstrumentParams) ([]*GetValidPreparationInstrumentsForInstrumentRow, error) {
 	rows, err := db.QueryContext(ctx, getValidPreparationInstrumentsForInstrument,
-		arg.CreatedBefore,
 		arg.CreatedAfter,
-		arg.UpdatedBefore,
+		arg.CreatedBefore,
 		arg.UpdatedAfter,
-		pq.Array(arg.IDs),
+		arg.UpdatedBefore,
+		arg.ID,
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)
@@ -627,6 +637,8 @@ func (q *Queries) GetValidPreparationInstrumentsForInstrument(ctx context.Contex
 			&i.ValidPreparationIconPath,
 			&i.ValidPreparationYieldsNothing,
 			&i.ValidPreparationRestrictToIngredients,
+			&i.ValidPreparationPastTense,
+			&i.ValidPreparationSlug,
 			&i.ValidPreparationMinimumIngredientCount,
 			&i.ValidPreparationMaximumIngredientCount,
 			&i.ValidPreparationMinimumInstrumentCount,
@@ -638,20 +650,20 @@ func (q *Queries) GetValidPreparationInstrumentsForInstrument(ctx context.Contex
 			&i.ValidPreparationOnlyForVessels,
 			&i.ValidPreparationMinimumVesselCount,
 			&i.ValidPreparationMaximumVesselCount,
-			&i.ValidPreparationSlug,
-			&i.ValidPreparationPastTense,
+			&i.ValidPreparationLastIndexedAt,
 			&i.ValidPreparationCreatedAt,
 			&i.ValidPreparationLastUpdatedAt,
 			&i.ValidPreparationArchivedAt,
 			&i.ValidInstrumentID,
 			&i.ValidInstrumentName,
-			&i.ValidInstrumentPluralName,
 			&i.ValidInstrumentDescription,
 			&i.ValidInstrumentIconPath,
+			&i.ValidInstrumentPluralName,
 			&i.ValidInstrumentUsableForStorage,
+			&i.ValidInstrumentSlug,
 			&i.ValidInstrumentDisplayInSummaryLists,
 			&i.ValidInstrumentIncludeInGeneratedInstructions,
-			&i.ValidInstrumentSlug,
+			&i.ValidInstrumentLastIndexedAt,
 			&i.ValidInstrumentCreatedAt,
 			&i.ValidInstrumentLastUpdatedAt,
 			&i.ValidInstrumentArchivedAt,
@@ -685,6 +697,8 @@ SELECT
 	valid_preparations.icon_path as valid_preparation_icon_path,
 	valid_preparations.yields_nothing as valid_preparation_yields_nothing,
 	valid_preparations.restrict_to_ingredients as valid_preparation_restrict_to_ingredients,
+	valid_preparations.past_tense as valid_preparation_past_tense,
+	valid_preparations.slug as valid_preparation_slug,
 	valid_preparations.minimum_ingredient_count as valid_preparation_minimum_ingredient_count,
 	valid_preparations.maximum_ingredient_count as valid_preparation_maximum_ingredient_count,
 	valid_preparations.minimum_instrument_count as valid_preparation_minimum_instrument_count,
@@ -696,20 +710,20 @@ SELECT
 	valid_preparations.only_for_vessels as valid_preparation_only_for_vessels,
 	valid_preparations.minimum_vessel_count as valid_preparation_minimum_vessel_count,
 	valid_preparations.maximum_vessel_count as valid_preparation_maximum_vessel_count,
-	valid_preparations.slug as valid_preparation_slug,
-	valid_preparations.past_tense as valid_preparation_past_tense,
+	valid_preparations.last_indexed_at as valid_preparation_last_indexed_at,
 	valid_preparations.created_at as valid_preparation_created_at,
 	valid_preparations.last_updated_at as valid_preparation_last_updated_at,
 	valid_preparations.archived_at as valid_preparation_archived_at,
 	valid_instruments.id as valid_instrument_id,
 	valid_instruments.name as valid_instrument_name,
-	valid_instruments.plural_name as valid_instrument_plural_name,
 	valid_instruments.description as valid_instrument_description,
 	valid_instruments.icon_path as valid_instrument_icon_path,
+	valid_instruments.plural_name as valid_instrument_plural_name,
 	valid_instruments.usable_for_storage as valid_instrument_usable_for_storage,
+	valid_instruments.slug as valid_instrument_slug,
 	valid_instruments.display_in_summary_lists as valid_instrument_display_in_summary_lists,
 	valid_instruments.include_in_generated_instructions as valid_instrument_include_in_generated_instructions,
-	valid_instruments.slug as valid_instrument_slug,
+	valid_instruments.last_indexed_at as valid_instrument_last_indexed_at,
 	valid_instruments.created_at as valid_instrument_created_at,
 	valid_instruments.last_updated_at as valid_instrument_last_updated_at,
 	valid_instruments.archived_at as valid_instrument_archived_at,
@@ -719,32 +733,30 @@ SELECT
 	(
 		SELECT
 			COUNT(valid_preparation_instruments.id)
-		FROM
-			valid_preparation_instruments
-				JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-				JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+		FROM valid_preparation_instruments
+            JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+            JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 		WHERE
 			valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
 			AND valid_preparations.archived_at IS NULL
-			AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-			AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-			AND (
-				valid_preparation_instruments.last_updated_at IS NULL
-				OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-			)
-			AND (
-				valid_preparation_instruments.last_updated_at IS NULL
-				OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-			)
+			AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		valid_preparation_instruments.last_updated_at IS NULL
+		OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		valid_preparation_instruments.last_updated_at IS NULL
+		OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+	)
 	) as filtered_count,
 	(
 		SELECT
 			COUNT(valid_preparation_instruments.id)
-		FROM
-			valid_preparation_instruments
-				JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-				JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+		FROM valid_preparation_instruments
+            JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+            JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 		WHERE
 			valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
@@ -755,18 +767,18 @@ FROM valid_preparation_instruments
 	JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 WHERE
 	valid_preparation_instruments.archived_at IS NULL
-	AND valid_preparation_instruments.valid_preparation_id = ANY($5::text[])
+	AND valid_preparation_instruments.valid_preparation_id = $5
 	AND valid_instruments.archived_at IS NULL
 	AND valid_preparations.archived_at IS NULL
-	AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-	AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+	AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		valid_preparation_instruments.last_updated_at IS NULL
-		OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+		OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
 	)
 	AND (
 		valid_preparation_instruments.last_updated_at IS NULL
-		OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+		OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
 	)
 GROUP BY
 	valid_preparation_instruments.id,
@@ -778,11 +790,11 @@ OFFSET $6
 `
 
 type GetValidPreparationInstrumentsForPreparationParams struct {
-	CreatedBefore sql.NullTime
 	CreatedAfter  sql.NullTime
-	UpdatedBefore sql.NullTime
+	CreatedBefore sql.NullTime
 	UpdatedAfter  sql.NullTime
-	IDs           []string
+	UpdatedBefore sql.NullTime
+	ID            string
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
@@ -791,34 +803,36 @@ type GetValidPreparationInstrumentsForPreparationRow struct {
 	ValidPreparationInstrumentCreatedAt           time.Time
 	ValidPreparationCreatedAt                     time.Time
 	ValidInstrumentCreatedAt                      time.Time
-	ValidInstrumentArchivedAt                     sql.NullTime
-	ValidPreparationInstrumentLastUpdatedAt       sql.NullTime
+	ValidPreparationLastIndexedAt                 sql.NullTime
+	ValidPreparationInstrumentArchivedAt          sql.NullTime
 	ValidPreparationArchivedAt                    sql.NullTime
 	ValidPreparationLastUpdatedAt                 sql.NullTime
+	ValidInstrumentLastIndexedAt                  sql.NullTime
 	ValidInstrumentLastUpdatedAt                  sql.NullTime
-	ValidPreparationInstrumentArchivedAt          sql.NullTime
+	ValidInstrumentArchivedAt                     sql.NullTime
+	ValidPreparationInstrumentLastUpdatedAt       sql.NullTime
 	ValidPreparationInstrumentID                  string
-	ValidPreparationID                            string
-	ValidInstrumentDescription                    string
-	ValidInstrumentPluralName                     string
-	ValidPreparationName                          string
-	ValidInstrumentIconPath                       string
-	ValidInstrumentName                           string
 	ValidPreparationIconPath                      string
-	ValidInstrumentSlug                           string
-	ValidInstrumentID                             string
+	ValidInstrumentPluralName                     string
+	ValidPreparationDescription                   string
+	ValidPreparationName                          string
 	ValidPreparationSlug                          string
 	ValidPreparationPastTense                     string
+	ValidPreparationID                            string
+	ValidInstrumentIconPath                       string
+	ValidInstrumentDescription                    string
+	ValidInstrumentSlug                           string
 	ValidPreparationInstrumentNotes               string
-	ValidPreparationDescription                   string
+	ValidInstrumentName                           string
+	ValidInstrumentID                             string
 	TotalCount                                    int64
 	FilteredCount                                 int64
-	ValidPreparationMaximumVesselCount            sql.NullInt32
 	ValidPreparationMaximumIngredientCount        sql.NullInt32
+	ValidPreparationMaximumVesselCount            sql.NullInt32
 	ValidPreparationMaximumInstrumentCount        sql.NullInt32
-	ValidPreparationMinimumInstrumentCount        int32
-	ValidPreparationMinimumVesselCount            int32
 	ValidPreparationMinimumIngredientCount        int32
+	ValidPreparationMinimumVesselCount            int32
+	ValidPreparationMinimumInstrumentCount        int32
 	ValidInstrumentUsableForStorage               bool
 	ValidInstrumentDisplayInSummaryLists          bool
 	ValidInstrumentIncludeInGeneratedInstructions bool
@@ -833,11 +847,11 @@ type GetValidPreparationInstrumentsForPreparationRow struct {
 
 func (q *Queries) GetValidPreparationInstrumentsForPreparation(ctx context.Context, db DBTX, arg *GetValidPreparationInstrumentsForPreparationParams) ([]*GetValidPreparationInstrumentsForPreparationRow, error) {
 	rows, err := db.QueryContext(ctx, getValidPreparationInstrumentsForPreparation,
-		arg.CreatedBefore,
 		arg.CreatedAfter,
-		arg.UpdatedBefore,
+		arg.CreatedBefore,
 		arg.UpdatedAfter,
-		pq.Array(arg.IDs),
+		arg.UpdatedBefore,
+		arg.ID,
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)
@@ -857,6 +871,8 @@ func (q *Queries) GetValidPreparationInstrumentsForPreparation(ctx context.Conte
 			&i.ValidPreparationIconPath,
 			&i.ValidPreparationYieldsNothing,
 			&i.ValidPreparationRestrictToIngredients,
+			&i.ValidPreparationPastTense,
+			&i.ValidPreparationSlug,
 			&i.ValidPreparationMinimumIngredientCount,
 			&i.ValidPreparationMaximumIngredientCount,
 			&i.ValidPreparationMinimumInstrumentCount,
@@ -868,20 +884,20 @@ func (q *Queries) GetValidPreparationInstrumentsForPreparation(ctx context.Conte
 			&i.ValidPreparationOnlyForVessels,
 			&i.ValidPreparationMinimumVesselCount,
 			&i.ValidPreparationMaximumVesselCount,
-			&i.ValidPreparationSlug,
-			&i.ValidPreparationPastTense,
+			&i.ValidPreparationLastIndexedAt,
 			&i.ValidPreparationCreatedAt,
 			&i.ValidPreparationLastUpdatedAt,
 			&i.ValidPreparationArchivedAt,
 			&i.ValidInstrumentID,
 			&i.ValidInstrumentName,
-			&i.ValidInstrumentPluralName,
 			&i.ValidInstrumentDescription,
 			&i.ValidInstrumentIconPath,
+			&i.ValidInstrumentPluralName,
 			&i.ValidInstrumentUsableForStorage,
+			&i.ValidInstrumentSlug,
 			&i.ValidInstrumentDisplayInSummaryLists,
 			&i.ValidInstrumentIncludeInGeneratedInstructions,
-			&i.ValidInstrumentSlug,
+			&i.ValidInstrumentLastIndexedAt,
 			&i.ValidInstrumentCreatedAt,
 			&i.ValidInstrumentLastUpdatedAt,
 			&i.ValidInstrumentArchivedAt,

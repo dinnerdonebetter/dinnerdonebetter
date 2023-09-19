@@ -5,7 +5,7 @@ UPDATE valid_preparations SET archived_at = NOW() WHERE archived_at IS NULL AND 
 -- name: CreateValidPreparation :exec
 
 INSERT INTO valid_preparations (
-    id,
+	id,
 	name,
 	description,
 	icon_path,
@@ -25,7 +25,7 @@ INSERT INTO valid_preparations (
 	minimum_vessel_count,
 	maximum_vessel_count
 ) VALUES (
-    sqlc.arg(id),
+	sqlc.arg(id),
 	sqlc.arg(name),
 	sqlc.arg(description),
 	sqlc.arg(icon_path),
@@ -49,8 +49,8 @@ INSERT INTO valid_preparations (
 -- name: CheckValidPreparationExistence :one
 
 SELECT EXISTS (
-    SELECT valid_preparations.id
-    FROM valid_preparations
+	SELECT valid_preparations.id
+	FROM valid_preparations
     WHERE valid_preparations.archived_at IS NULL
         AND valid_preparations.id = sqlc.arg(id)
 );
@@ -97,15 +97,15 @@ SELECT
 			)
 	) AS filtered_count,
     (
-        SELECT COUNT(valid_preparations.id)
-        FROM valid_preparations
-        WHERE valid_preparations.archived_at IS NULL
+		SELECT COUNT(valid_preparations.id)
+		FROM valid_preparations
+	    WHERE valid_preparations.archived_at IS NULL
     ) AS total_count
 FROM valid_preparations
 WHERE
 	valid_preparations.archived_at IS NULL
 	AND valid_preparations.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
-    AND valid_preparations.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+	AND valid_preparations.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		valid_preparations.last_updated_at IS NULL
 		OR valid_preparations.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))

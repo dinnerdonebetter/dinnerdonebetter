@@ -29,10 +29,10 @@ func (q *Queries) ArchiveValidInstrument(ctx context.Context, db DBTX, id string
 const checkValidInstrumentExistence = `-- name: CheckValidInstrumentExistence :one
 
 SELECT EXISTS (
-    SELECT valid_instruments.id
-    FROM valid_instruments
-    WHERE valid_instruments.archived_at IS NULL
-        AND valid_instruments.id = $1
+	SELECT valid_instruments.id
+	FROM valid_instruments
+	WHERE valid_instruments.archived_at IS NULL
+		AND valid_instruments.id = $1
 )
 `
 
@@ -46,7 +46,7 @@ func (q *Queries) CheckValidInstrumentExistence(ctx context.Context, db DBTX, id
 const createValidInstrument = `-- name: CreateValidInstrument :exec
 
 INSERT INTO valid_instruments (
-    id,
+	id,
 	name,
 	description,
 	icon_path,
@@ -56,7 +56,7 @@ INSERT INTO valid_instruments (
 	display_in_summary_lists,
 	include_in_generated_instructions
 ) VALUES (
-    $1,
+	$1,
 	$2,
 	$3,
 	$4,
@@ -227,7 +227,7 @@ SELECT
 	valid_instruments.created_at,
 	valid_instruments.last_updated_at,
 	valid_instruments.archived_at,
-    (
+	(
 		SELECT COUNT(valid_instruments.id)
 		FROM valid_instruments
 		WHERE valid_instruments.archived_at IS NULL
@@ -242,16 +242,16 @@ SELECT
 				OR valid_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
 			)
 	) AS filtered_count,
-    (
-        SELECT COUNT(valid_instruments.id)
-        FROM valid_instruments
-        WHERE valid_instruments.archived_at IS NULL
+	(
+		SELECT COUNT(valid_instruments.id)
+		FROM valid_instruments
+	    WHERE valid_instruments.archived_at IS NULL
     ) AS total_count
 FROM valid_instruments
 WHERE
 	valid_instruments.archived_at IS NULL
 	AND valid_instruments.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-    AND valid_instruments.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND valid_instruments.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		valid_instruments.last_updated_at IS NULL
 		OR valid_instruments.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
@@ -344,7 +344,7 @@ const getValidInstrumentsNeedingIndexing = `-- name: GetValidInstrumentsNeedingI
 SELECT valid_instruments.id
 FROM valid_instruments
 WHERE valid_instruments.archived_at IS NULL
-    AND (
+	AND (
     valid_instruments.last_indexed_at IS NULL
     OR valid_instruments.last_indexed_at < NOW() - '24 hours'::INTERVAL
 )

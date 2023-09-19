@@ -58,9 +58,9 @@ func buildValidPreparationsQueries() []*Query {
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
-    %s
+	%s
 ) VALUES (
-    %s
+	%s
 );`,
 				validPreparationsTableName,
 				strings.Join(insertColumns, ",\n\t"),
@@ -75,8 +75,8 @@ func buildValidPreparationsQueries() []*Query {
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
-    SELECT %s.id
-    FROM %s
+	SELECT %s.id
+	FROM %s
     WHERE %s.%s IS NULL
         AND %s.%s = sqlc.arg(%s)
 );`,

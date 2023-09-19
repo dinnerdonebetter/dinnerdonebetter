@@ -52,10 +52,10 @@ func (q *Queries) ArchiveOAuth2ClientTokenByRefresh(ctx context.Context, db DBTX
 const checkOAuth2ClientTokenExistence = `-- name: CheckOAuth2ClientTokenExistence :one
 
 SELECT EXISTS (
-    SELECT oauth2_client_tokens.id
-    FROM oauth2_client_tokens
-    WHERE oauth2_client_tokens.archived_at IS NULL
-        AND oauth2_client_tokens.id = $1
+	SELECT oauth2_client_tokens.id
+	FROM oauth2_client_tokens
+	WHERE oauth2_client_tokens.archived_at IS NULL
+	    AND oauth2_client_tokens.id = $1
 )
 `
 

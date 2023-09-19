@@ -43,9 +43,9 @@ func buildHouseholdsQueries() []*Query {
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO household_user_memberships (
-    %s
+	%s
 ) VALUES (
-    %s
+	%s
 );`,
 				strings.Join(filterForInsert(householdUserMembershipsColumns, "default_household"), ",\n\t"),
 				strings.Join(applyToEach(filterForInsert(householdUserMembershipsColumns, "default_household"), func(_ int, s string) string {
@@ -59,11 +59,11 @@ func buildHouseholdsQueries() []*Query {
 				Type: ExecRowsType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
-    %s = NOW(),
-    %s = NOW()
+	%s = NOW(),
+	%s = NOW()
 WHERE %s IS NULL
-    AND belongs_to_user = sqlc.arg(belongs_to_user)
-    AND id = sqlc.arg(id);`,
+	AND belongs_to_user = sqlc.arg(belongs_to_user)
+	AND id = sqlc.arg(id);`,
 				householdsTableName,
 				lastUpdatedAtColumn,
 				archivedAtColumn,
@@ -76,9 +76,9 @@ WHERE %s IS NULL
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
-    %s
+	%s
 ) VALUES (
-    %s
+	%s
 );`,
 				householdsTableName,
 				strings.Join(filterForInsert(
@@ -133,10 +133,10 @@ WHERE households.archived_at IS NULL
 				Type: ManyType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
-    %s,
-    (
-        SELECT
-            COUNT(households.id)
+	%s,
+	(
+		SELECT
+	        COUNT(households.id)
         FROM
             households
             JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id

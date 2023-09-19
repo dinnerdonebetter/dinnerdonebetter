@@ -71,15 +71,15 @@ SELECT
 			)
 	) AS filtered_count,
     (
-        SELECT COUNT(valid_ingredient_groups.id)
-        FROM valid_ingredient_groups
-        WHERE valid_ingredient_groups.archived_at IS NULL
+		SELECT COUNT(valid_ingredient_groups.id)
+		FROM valid_ingredient_groups
+	    WHERE valid_ingredient_groups.archived_at IS NULL
     ) AS total_count
 FROM valid_ingredient_groups
 WHERE
 	valid_ingredient_groups.archived_at IS NULL
 	AND valid_ingredient_groups.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
-    AND valid_ingredient_groups.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+	AND valid_ingredient_groups.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		valid_ingredient_groups.last_updated_at IS NULL
 		OR valid_ingredient_groups.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
@@ -187,16 +187,16 @@ SELECT
 			)
 	) AS filtered_count,
     (
-        SELECT COUNT(valid_ingredient_groups.id)
-        FROM valid_ingredient_groups
-        WHERE valid_ingredient_groups.archived_at IS NULL
+		SELECT COUNT(valid_ingredient_groups.id)
+		FROM valid_ingredient_groups
+	    WHERE valid_ingredient_groups.archived_at IS NULL
     ) AS total_count
 FROM valid_ingredient_groups
 WHERE
 	valid_ingredient_groups.archived_at IS NULL
 	AND valid_ingredient_groups.name ILIKE '%' || sqlc.arg(name)::text || '%'
 	AND valid_ingredient_groups.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
-    AND valid_ingredient_groups.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+	AND valid_ingredient_groups.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		valid_ingredient_groups.last_updated_at IS NULL
 		OR valid_ingredient_groups.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))

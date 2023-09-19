@@ -5,7 +5,7 @@ UPDATE valid_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND i
 -- name: CreateValidInstrument :exec
 
 INSERT INTO valid_instruments (
-    id,
+	id,
 	name,
 	description,
 	icon_path,
@@ -15,7 +15,7 @@ INSERT INTO valid_instruments (
 	display_in_summary_lists,
 	include_in_generated_instructions
 ) VALUES (
-    sqlc.arg(id),
+	sqlc.arg(id),
 	sqlc.arg(name),
 	sqlc.arg(description),
 	sqlc.arg(icon_path),
@@ -29,10 +29,10 @@ INSERT INTO valid_instruments (
 -- name: CheckValidInstrumentExistence :one
 
 SELECT EXISTS (
-    SELECT valid_instruments.id
-    FROM valid_instruments
-    WHERE valid_instruments.archived_at IS NULL
-        AND valid_instruments.id = sqlc.arg(id)
+	SELECT valid_instruments.id
+	FROM valid_instruments
+	WHERE valid_instruments.archived_at IS NULL
+		AND valid_instruments.id = sqlc.arg(id)
 );
 
 -- name: GetValidInstruments :many
@@ -51,7 +51,7 @@ SELECT
 	valid_instruments.created_at,
 	valid_instruments.last_updated_at,
 	valid_instruments.archived_at,
-    (
+	(
 		SELECT COUNT(valid_instruments.id)
 		FROM valid_instruments
 		WHERE valid_instruments.archived_at IS NULL
@@ -66,16 +66,16 @@ SELECT
 				OR valid_instruments.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
 			)
 	) AS filtered_count,
-    (
-        SELECT COUNT(valid_instruments.id)
-        FROM valid_instruments
-        WHERE valid_instruments.archived_at IS NULL
+	(
+		SELECT COUNT(valid_instruments.id)
+		FROM valid_instruments
+	    WHERE valid_instruments.archived_at IS NULL
     ) AS total_count
 FROM valid_instruments
 WHERE
 	valid_instruments.archived_at IS NULL
 	AND valid_instruments.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
-    AND valid_instruments.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+	AND valid_instruments.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		valid_instruments.last_updated_at IS NULL
 		OR valid_instruments.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
@@ -94,7 +94,7 @@ OFFSET sqlc.narg(query_offset);
 SELECT valid_instruments.id
 FROM valid_instruments
 WHERE valid_instruments.archived_at IS NULL
-    AND (
+	AND (
     valid_instruments.last_indexed_at IS NULL
     OR valid_instruments.last_indexed_at < NOW() - '24 hours'::INTERVAL
 );

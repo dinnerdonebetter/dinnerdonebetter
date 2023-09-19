@@ -131,9 +131,9 @@ func buildUsersQueries() []*Query {
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO users
 (
-    %s
+	%s
 ) VALUES (
-    %s
+	%s
 );`,
 				strings.Join(insertColumns, ",\n\t"),
 				strings.Join(applyToEach(insertColumns, func(_ int, s string) string {
@@ -228,7 +228,7 @@ WHERE users.archived_at IS NULL
 	users.email_address_verification_token
 FROM users
 WHERE users.archived_at IS NULL
-    AND users.email_address_verified_at IS NULL
+	AND users.email_address_verified_at IS NULL
 	AND users.id = sqlc.arg(id);
 `,
 		},
@@ -238,9 +238,9 @@ WHERE users.archived_at IS NULL
 				Type: ManyType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
-    %s,
-    %s,
-    %s
+	%s,
+	%s,
+	%s
 FROM users
 WHERE users.archived_at IS NULL
 	%s

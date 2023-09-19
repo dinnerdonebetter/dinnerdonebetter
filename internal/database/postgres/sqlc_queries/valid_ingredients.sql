@@ -5,7 +5,7 @@ UPDATE valid_ingredients SET archived_at = NOW() WHERE archived_at IS NULL AND i
 -- name: CreateValidIngredient :exec
 
 INSERT INTO valid_ingredients (
-    id,
+	id,
 	name,
 	description,
 	warning,
@@ -41,7 +41,7 @@ INSERT INTO valid_ingredients (
 	is_acid,
 	is_heat
 ) VALUES (
-    sqlc.arg(id),
+	sqlc.arg(id),
 	sqlc.arg(name),
 	sqlc.arg(description),
 	sqlc.arg(warning),
@@ -81,10 +81,10 @@ INSERT INTO valid_ingredients (
 -- name: CheckValidIngredientExistence :one
 
 SELECT EXISTS (
-    SELECT valid_ingredients.id
-    FROM valid_ingredients
-    WHERE valid_ingredients.archived_at IS NULL
-        AND valid_ingredients.id = sqlc.arg(id)
+	SELECT valid_ingredients.id
+	FROM valid_ingredients
+	WHERE valid_ingredients.archived_at IS NULL
+	    AND valid_ingredients.id = sqlc.arg(id)
 );
 
 -- name: GetValidIngredients :many
@@ -145,15 +145,15 @@ SELECT
 			)
 	) AS filtered_count,
     (
-        SELECT COUNT(valid_ingredients.id)
-        FROM valid_ingredients
-        WHERE valid_ingredients.archived_at IS NULL
+		SELECT COUNT(valid_ingredients.id)
+		FROM valid_ingredients
+	    WHERE valid_ingredients.archived_at IS NULL
     ) AS total_count
 FROM valid_ingredients
 WHERE
 	valid_ingredients.archived_at IS NULL
 	AND valid_ingredients.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
-    AND valid_ingredients.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+	AND valid_ingredients.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		valid_ingredients.last_updated_at IS NULL
 		OR valid_ingredients.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))

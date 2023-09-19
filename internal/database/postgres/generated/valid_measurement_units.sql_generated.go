@@ -254,15 +254,15 @@ SELECT
 			)
 	) AS filtered_count,
     (
-        SELECT COUNT(valid_measurement_units.id)
-        FROM valid_measurement_units
-        WHERE valid_measurement_units.archived_at IS NULL
+		SELECT COUNT(valid_measurement_units.id)
+		FROM valid_measurement_units
+	    WHERE valid_measurement_units.archived_at IS NULL
     ) AS total_count
 FROM valid_measurement_units
 WHERE
 	valid_measurement_units.archived_at IS NULL
 	AND valid_measurement_units.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-    AND valid_measurement_units.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND valid_measurement_units.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		valid_measurement_units.last_updated_at IS NULL
 		OR valid_measurement_units.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
@@ -578,9 +578,9 @@ SELECT
 			)
 	) AS filtered_count,
     (
-        SELECT COUNT(valid_measurement_units.id)
-        FROM valid_measurement_units
-        WHERE valid_measurement_units.archived_at IS NULL
+		SELECT COUNT(valid_measurement_units.id)
+		FROM valid_measurement_units
+	    WHERE valid_measurement_units.archived_at IS NULL
     ) AS total_count
 FROM valid_measurement_units
 	JOIN valid_ingredient_measurement_units ON valid_ingredient_measurement_units.valid_measurement_unit_id = valid_measurement_units.id
@@ -594,7 +594,7 @@ WHERE
     AND valid_ingredients.archived_at IS NULL
 	AND valid_ingredient_measurement_units.archived_at IS NULL
 	AND valid_measurement_units.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-    AND valid_measurement_units.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND valid_measurement_units.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		valid_measurement_units.last_updated_at IS NULL
 		OR valid_measurement_units.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))

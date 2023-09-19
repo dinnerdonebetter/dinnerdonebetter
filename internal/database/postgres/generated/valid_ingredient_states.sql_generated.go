@@ -169,15 +169,15 @@ SELECT
 			)
 	) AS filtered_count,
     (
-        SELECT COUNT(valid_ingredient_states.id)
-        FROM valid_ingredient_states
-        WHERE valid_ingredient_states.archived_at IS NULL
+		SELECT COUNT(valid_ingredient_states.id)
+		FROM valid_ingredient_states
+	    WHERE valid_ingredient_states.archived_at IS NULL
     ) AS total_count
 FROM valid_ingredient_states
 WHERE
 	valid_ingredient_states.archived_at IS NULL
 	AND valid_ingredient_states.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-    AND valid_ingredient_states.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND valid_ingredient_states.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		valid_ingredient_states.last_updated_at IS NULL
 		OR valid_ingredient_states.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))

@@ -41,9 +41,9 @@ WHERE archived_at IS NULL
 				Type: ":exec",
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
-    %s
+	%s
 ) VALUES (
-    %s
+	%s
 );`,
 				oauth2ClientsTableName,
 				strings.Join(insertColumns, ",\n\t"),
@@ -88,12 +88,12 @@ WHERE oauth2_clients.archived_at IS NULL
 				Type: ":many",
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
-    %s,
-    (
-        SELECT
-            COUNT(oauth2_clients.id)
-        FROM
-            oauth2_clients
+	%s,
+	(
+		SELECT
+			COUNT(oauth2_clients.id)
+		FROM
+		    oauth2_clients
         WHERE
             oauth2_clients.archived_at IS NULL
 			%s

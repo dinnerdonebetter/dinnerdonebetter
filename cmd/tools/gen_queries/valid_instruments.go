@@ -48,9 +48,9 @@ func buildValidInstrumentsQueries() []*Query {
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
-    %s
+	%s
 ) VALUES (
-    %s
+	%s
 );`,
 				validInstrumentsTableName,
 				strings.Join(insertColumns, ",\n\t"),
@@ -65,10 +65,10 @@ func buildValidInstrumentsQueries() []*Query {
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
-    SELECT %s.id
-    FROM %s
-    WHERE %s.%s IS NULL
-        AND %s.%s = sqlc.arg(%s)
+	SELECT %s.id
+	FROM %s
+	WHERE %s.%s IS NULL
+		AND %s.%s = sqlc.arg(%s)
 );`,
 				validInstrumentsTableName,
 				validInstrumentsTableName,
@@ -86,8 +86,8 @@ func buildValidInstrumentsQueries() []*Query {
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
-    %s,
-    %s
+	%s,
+	%s
 FROM %s
 WHERE
 	%s.%s IS NULL
@@ -127,7 +127,7 @@ ORDER BY %s.%s
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT %s.%s
 FROM %s
 WHERE %s.%s IS NULL
-    AND (
+	AND (
     %s.%s IS NULL
     OR %s.%s < NOW() - '24 hours'::INTERVAL
 );`,

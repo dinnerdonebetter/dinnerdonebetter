@@ -13,9 +13,7 @@ import (
 
 const archiveServiceSetting = `-- name: ArchiveServiceSetting :execrows
 
-UPDATE service_settings
-SET archived_at = NOW()
-    WHERE id = $1
+UPDATE service_settings SET archived_at = NOW() WHERE id = $1
 `
 
 func (q *Queries) ArchiveServiceSetting(ctx context.Context, db DBTX, id string) (int64, error) {
@@ -29,10 +27,10 @@ func (q *Queries) ArchiveServiceSetting(ctx context.Context, db DBTX, id string)
 const checkServiceSettingExistence = `-- name: CheckServiceSettingExistence :one
 
 SELECT EXISTS (
-    SELECT service_settings.id
-    FROM service_settings
-    WHERE service_settings.archived_at IS NULL
-    AND service_settings.id = $1
+	SELECT service_settings.id
+	FROM service_settings
+	WHERE service_settings.archived_at IS NULL
+	AND service_settings.id = $1
 )
 `
 
@@ -46,7 +44,7 @@ func (q *Queries) CheckServiceSettingExistence(ctx context.Context, db DBTX, id 
 const createServiceSetting = `-- name: CreateServiceSetting :exec
 
 INSERT INTO service_settings (
-    id,
+	id,
 	name,
 	type,
 	description,
@@ -54,7 +52,7 @@ INSERT INTO service_settings (
 	enumeration,
 	admins_only
 ) VALUES (
-    $1,
+	$1,
 	$2,
 	$3,
 	$4,
@@ -136,7 +134,7 @@ SELECT
 	service_settings.created_at,
 	service_settings.last_updated_at,
 	service_settings.archived_at,
-    (
+	(
 		SELECT COUNT(service_settings.id)
 		FROM service_settings
 		WHERE service_settings.archived_at IS NULL
@@ -152,14 +150,14 @@ SELECT
 			)
 	) AS filtered_count,
     (
-        SELECT COUNT(service_settings.id)
-        FROM service_settings
-        WHERE service_settings.archived_at IS NULL
+		SELECT COUNT(service_settings.id)
+		FROM service_settings
+	    WHERE service_settings.archived_at IS NULL
     ) AS total_count
 FROM service_settings
 WHERE service_settings.archived_at IS NULL
     AND service_settings.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-    AND service_settings.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND service_settings.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		service_settings.last_updated_at IS NULL
 		OR service_settings.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))

@@ -124,7 +124,7 @@ func buildFilterConditions(tableName string, withUpdateColumn bool, conditions .
 	}
 
 	return strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`AND %s.%s > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
-    AND %s.%s < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))%s%s`,
+	AND %s.%s < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))%s%s`,
 		tableName,
 		createdAtColumn,
 		tableName,
@@ -183,6 +183,61 @@ func buildFilterCountSelect(tableName string, withUpdateColumn bool, conditions 
 	)))
 }
 
+func buildFilterCountSelectWithJoins(tableName string, withUpdateColumn bool, joins []string, conditions ...string) string {
+	updateAddendum := ""
+	if withUpdateColumn {
+		updateAddendum = fmt.Sprintf("\n\t\t\t%s", strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`
+			AND (
+				%s.%s IS NULL
+				OR %s.%s > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				%s.%s IS NULL
+				OR %s.%s < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
+			)
+		`,
+			tableName,
+			lastUpdatedAtColumn,
+			tableName,
+			lastUpdatedAtColumn,
+			tableName,
+			lastUpdatedAtColumn,
+			tableName,
+			lastUpdatedAtColumn,
+		))))
+	}
+
+	allConditions := ""
+	for _, condition := range conditions {
+		allConditions += fmt.Sprintf("\n\t\t\tAND %s", condition)
+	}
+
+	joinStatement := ""
+	for _, join := range joins {
+		joinStatement += fmt.Sprintf("\n\t\t\t%s", join)
+	}
+
+	return strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`(
+		SELECT COUNT(%s.id)
+		FROM %s%s
+		WHERE %s.%s IS NULL%s
+			AND %s.%s > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND %s.%s < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))%s%s
+	) AS filtered_count`,
+		tableName,
+		tableName,
+		joinStatement,
+		tableName,
+		archivedAtColumn,
+		tableName,
+		createdAtColumn,
+		tableName,
+		createdAtColumn,
+		updateAddendum,
+		allConditions,
+	)))
+}
+
 func buildTotalCountSelect(tableName string, conditions ...string) string {
 	allConditons := ""
 	for _, condition := range conditions {
@@ -190,9 +245,9 @@ func buildTotalCountSelect(tableName string, conditions ...string) string {
 	}
 
 	return strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`(
-        SELECT COUNT(%s.id)
-        FROM %s
-        WHERE %s.%s IS NULL%s
+		SELECT COUNT(%s.id)
+		FROM %s
+	    WHERE %s.%s IS NULL%s
     ) AS total_count`,
 		tableName,
 		tableName,

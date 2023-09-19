@@ -58,9 +58,9 @@ func buildWebhooksQueries() []*Query {
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
-    %s
+	%s
 ) VALUES (
-    %s
+	%s
 );`,
 				webhooksTableName,
 				strings.Join(insertColumns, ",\n\t"),
@@ -75,11 +75,11 @@ func buildWebhooksQueries() []*Query {
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS(
-    SELECT %s.id
-    FROM %s
-    WHERE %s.%s IS NULL
-    AND %s.id = sqlc.arg(id)
-    AND %s.belongs_to_household = sqlc.arg(household_id)
+	SELECT %s.id
+	FROM %s
+	WHERE %s.%s IS NULL
+	AND %s.id = sqlc.arg(id)
+	AND %s.belongs_to_household = sqlc.arg(household_id)
 );`,
 				webhooksTableName,
 				webhooksTableName,
@@ -95,9 +95,9 @@ func buildWebhooksQueries() []*Query {
 				Type: ManyType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
-    %s,
-    %s,
-    %s
+	%s,
+	%s,
+	%s
 FROM webhooks
 	JOIN %s
 WHERE webhooks.archived_at IS NULL
@@ -130,13 +130,13 @@ WHERE webhooks.archived_at IS NULL
 				Type: ManyType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT 
-    %s
+	%s
 FROM webhooks
-    JOIN %s
+	JOIN %s
 WHERE webhook_trigger_events.archived_at IS NULL
-    AND webhook_trigger_events.trigger_event = sqlc.arg(trigger_event)
-    AND webhooks.belongs_to_household = sqlc.arg(household_id)
-    AND webhooks.archived_at IS NULL;`,
+	AND webhook_trigger_events.trigger_event = sqlc.arg(trigger_event)
+	AND webhooks.belongs_to_household = sqlc.arg(household_id)
+	AND webhooks.archived_at IS NULL;`,
 				strings.Join(applyToEach(webhooksColumns, func(_ int, s string) string {
 					return fullColumnName(webhooksTableName, s)
 				}), ",\n\t"),

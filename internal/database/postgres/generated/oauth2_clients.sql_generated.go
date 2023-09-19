@@ -30,13 +30,13 @@ func (q *Queries) ArchiveOAuth2Client(ctx context.Context, db DBTX, id string) (
 const createOAuth2Client = `-- name: CreateOAuth2Client :exec
 
 INSERT INTO oauth2_clients (
-    id,
+	id,
 	name,
 	description,
 	client_id,
 	client_secret
 ) VALUES (
-    $1,
+	$1,
 	$2,
 	$3,
 	$4,
@@ -126,32 +126,32 @@ func (q *Queries) GetOAuth2ClientByDatabaseID(ctx context.Context, db DBTX, id s
 const getOAuth2Clients = `-- name: GetOAuth2Clients :many
 
 SELECT
-    oauth2_clients.id,
+	oauth2_clients.id,
 	oauth2_clients.name,
 	oauth2_clients.description,
 	oauth2_clients.client_id,
 	oauth2_clients.client_secret,
 	oauth2_clients.created_at,
 	oauth2_clients.archived_at,
-    (
-        SELECT
-            COUNT(oauth2_clients.id)
-        FROM
-            oauth2_clients
+	(
+		SELECT
+			COUNT(oauth2_clients.id)
+		FROM
+		    oauth2_clients
         WHERE
             oauth2_clients.archived_at IS NULL
 			AND oauth2_clients.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-		    AND oauth2_clients.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND oauth2_clients.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
     ) as filtered_count,
     (
-        SELECT COUNT(users.id)
-        FROM users
-        WHERE users.archived_at IS NULL
+		SELECT COUNT(users.id)
+		FROM users
+	    WHERE users.archived_at IS NULL
     ) AS total_count
 FROM oauth2_clients
 WHERE oauth2_clients.archived_at IS NULL
 	AND oauth2_clients.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-    AND oauth2_clients.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND oauth2_clients.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
     OFFSET $3
     LIMIT $4
 `
