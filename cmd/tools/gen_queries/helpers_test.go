@@ -145,3 +145,22 @@ func Test_buildFilterConditions(T *testing.T) {
 		assert.Equal(t, expected, actual)
 	})
 }
+
+func Test_buildFilterCountSelect(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		expected := `(
+		SELECT COUNT(things.id)
+		FROM things
+		WHERE things.archived_at IS NULL
+			AND things.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND things.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+	) AS filtered_count`
+		actual := buildFilterCountSelect("things", false)
+
+		assert.Equal(t, expected, actual)
+	})
+}

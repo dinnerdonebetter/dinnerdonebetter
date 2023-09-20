@@ -21,8 +21,8 @@ const (
 OFFSET sqlc.narg(query_offset)`
 )
 
-func applyToEach(x []string, f func(int, string) string) []string {
-	output := []string{}
+func applyToEach[T comparable](x []T, f func(int, T) T) []T {
+	output := []T{}
 
 	for i, v := range x {
 		output = append(output, f(i, v))

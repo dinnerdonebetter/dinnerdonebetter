@@ -98,12 +98,12 @@ func buildValidIngredientPreparationsQueries() []*Query {
 	%s,
 	%s,
 	%s
-FROM valid_ingredient_preparations
-	JOIN valid_ingredients ON valid_ingredient_preparations.valid_ingredient_id = valid_ingredients.id
-	JOIN valid_preparations ON valid_ingredient_preparations.valid_preparation_id = valid_preparations.id
+FROM %s
+	JOIN %s ON %s.valid_ingredient_id = %s.id
+	JOIN %s ON %s.valid_preparation_id = %s.id
 WHERE
-	valid_ingredient_preparations.archived_at IS NULL
-	AND valid_ingredient_preparations.valid_ingredient_id = sqlc.arg(id)
+	%s.archived_at IS NULL
+	AND %s.valid_ingredient_id = sqlc.arg(id)
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
@@ -114,6 +114,15 @@ WHERE
 				buildTotalCountSelect(
 					validIngredientPreparationsTableName,
 				),
+				validIngredientPreparationsTableName,
+				validIngredientsTableName,
+				validIngredientPreparationsTableName,
+				validIngredientsTableName,
+				validPreparationsTableName,
+				validIngredientPreparationsTableName,
+				validPreparationsTableName,
+				validIngredientPreparationsTableName,
+				validIngredientPreparationsTableName,
 				buildFilterConditions(validIngredientPreparationsTableName, true),
 				offsetLimitAddendum,
 			)),

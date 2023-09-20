@@ -30,11 +30,11 @@ func main() {
 		"valid_ingredient_groups.sql":        buildValidIngredientGroupsQueries(),
 		"valid_preparation_instruments.sql":  buildValidPreparationInstrumentsQueries(),
 		"valid_ingredient_preparations.sql":  buildValidIngredientPreparationsQueries(),
+		"valid_preparation_vessels.sql":      buildValidPreparationVesselsQueries(),
 		//
 		// "valid_ingredient_measurement_units.sql":           buildValidIngredientMeasurementUnitsQueries(),
 		// "valid_ingredient_state_ingredients.sql":           buildValidIngredientStateIngredientsQueries(),
 		// "valid_measurement_unit_conversions.sql":           buildValidMeasurementUnitConversionsQueries(),
-		// "valid_preparation_vessels.sql":                    buildValidPreparationVesselsQueries(),
 		// "household_instrument_ownerships.sql":              buildHouseholdInstrumentOwnershipQueries(),
 		// "meal_components.sql":                              buildMealComponentsQueries(),
 		// "meal_plan_events.sql":                             buildMealPlanEventsQueries(),

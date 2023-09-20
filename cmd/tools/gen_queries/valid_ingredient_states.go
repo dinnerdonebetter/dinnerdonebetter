@@ -24,7 +24,6 @@ var validIngredientStatesColumns = []string{
 }
 
 func buildValidIngredientStatesQueries() []*Query {
-
 	insertColumns := filterForInsert(validIngredientStatesColumns)
 
 	return []*Query{
