@@ -4,7 +4,9 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const mealComponentsTableName = "meal_components"
+const (
+	mealComponentsTableName = "meal_components"
+)
 
 var mealComponentsColumns = []string{
 	idColumn,

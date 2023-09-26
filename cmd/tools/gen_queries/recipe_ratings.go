@@ -4,7 +4,9 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const recipeRatingsTableName = "recipe_ratings"
+const (
+	recipeRatingsTableName = "recipe_ratings"
+)
 
 var recipeRatingsColumns = []string{
 	idColumn,
@@ -14,7 +16,7 @@ var recipeRatingsColumns = []string{
 	"cleanup",
 	"instructions",
 	"overall",
-	"notes",
+	notesColumn,
 	"by_user",
 	createdAtColumn,
 	lastUpdatedAtColumn,

@@ -7,12 +7,14 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const oauth2ClientsTableName = "oauth2_clients"
+const (
+	oauth2ClientsTableName = "oauth2_clients"
+)
 
 var oauth2ClientsColumns = []string{
 	idColumn,
-	"name",
-	"description",
+	nameColumn,
+	descriptionColumn,
 	"client_id",
 	"client_secret",
 	createdAtColumn,
@@ -26,19 +28,24 @@ func buildOAuth2ClientsQueries() []*Query {
 		{
 			Annotation: QueryAnnotation{
 				Name: "ArchiveOAuth2Client",
-				Type: ":execrows",
+				Type: ExecRowsType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
-	archived_at = NOW()
-WHERE archived_at IS NULL
-	AND id = $1;`,
+	%s = %s
+WHERE %s IS NULL
+	AND %s = sqlc.arg(%s);`,
 				oauth2ClientsTableName,
+				archivedAtColumn,
+				currentTimeExpression,
+				archivedAtColumn,
+				idColumn,
+				idColumn,
 			)),
 		},
 		{
 			Annotation: QueryAnnotation{
 				Name: "CreateOAuth2Client",
-				Type: ":exec",
+				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
 	%s
@@ -55,7 +62,7 @@ WHERE archived_at IS NULL
 		{
 			Annotation: QueryAnnotation{
 				Name: "GetOAuth2ClientByClientID",
-				Type: ":one",
+				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
@@ -70,7 +77,7 @@ WHERE oauth2_clients.archived_at IS NULL
 		{
 			Annotation: QueryAnnotation{
 				Name: "GetOAuth2ClientByDatabaseID",
-				Type: ":one",
+				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
@@ -85,7 +92,7 @@ WHERE oauth2_clients.archived_at IS NULL
 		{
 			Annotation: QueryAnnotation{
 				Name: "GetOAuth2Clients",
-				Type: ":many",
+				Type: ManyType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,

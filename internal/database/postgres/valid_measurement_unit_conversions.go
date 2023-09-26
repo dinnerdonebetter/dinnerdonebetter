@@ -54,11 +54,11 @@ func (q *Querier) GetValidMeasurementUnitConversion(ctx context.Context, validMe
 	}
 
 	validMeasurementUnitConversion := &types.ValidMeasurementUnitConversion{
-		CreatedAt:     result.CreatedAt,
-		LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
-		ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
-		Notes:         result.Notes,
-		ID:            result.ID,
+		CreatedAt:     result.ValidMeasurementUnitConversionCreatedAt,
+		LastUpdatedAt: timePointerFromNullTime(result.ValidMeasurementUnitConversionLastUpdatedAt),
+		ArchivedAt:    timePointerFromNullTime(result.ValidMeasurementUnitConversionArchivedAt),
+		Notes:         result.ValidMeasurementUnitConversionNotes,
+		ID:            result.ValidMeasurementUnitConversionID,
 		From: types.ValidMeasurementUnit{
 			CreatedAt:     result.FromUnitCreatedAt,
 			LastUpdatedAt: timePointerFromNullTime(result.FromUnitLastUpdatedAt),
@@ -89,7 +89,7 @@ func (q *Querier) GetValidMeasurementUnitConversion(ctx context.Context, validMe
 			Metric:        result.ToUnitMetric,
 			Imperial:      result.ToUnitImperial,
 		},
-		Modifier: float32FromString(result.Modifier),
+		Modifier: float32FromString(result.ValidMeasurementUnitConversionModifier),
 	}
 
 	if result.ValidIngredientID.Valid && result.ValidIngredientID.String != "" {
@@ -97,8 +97,8 @@ func (q *Querier) GetValidMeasurementUnitConversion(ctx context.Context, validMe
 			CreatedAt:                               result.ValidIngredientCreatedAt.Time,
 			LastUpdatedAt:                           &result.ValidIngredientLastUpdatedAt.Time,
 			ArchivedAt:                              &result.ValidIngredientArchivedAt.Time,
-			MaximumIdealStorageTemperatureInCelsius: float32PointerFromString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
-			MinimumIdealStorageTemperatureInCelsius: float32PointerFromString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
+			MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
+			MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 			IconPath:                                result.ValidIngredientIconPath.String,
 			Warning:                                 result.ValidIngredientWarning.String,
 			PluralName:                              result.ValidIngredientPluralName.String,
@@ -160,15 +160,15 @@ func (q *Querier) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context
 	for i, result := range results {
 		r := result
 		validMeasurementUnitConversions[i] = &types.ValidMeasurementUnitConversion{
-			CreatedAt:     r.CreatedAt,
-			LastUpdatedAt: timePointerFromNullTime(r.LastUpdatedAt),
-			ArchivedAt:    timePointerFromNullTime(r.ArchivedAt),
+			CreatedAt:     r.ValidMeasurementUnitConversionCreatedAt,
+			LastUpdatedAt: timePointerFromNullTime(r.ValidMeasurementUnitConversionLastUpdatedAt),
+			ArchivedAt:    timePointerFromNullTime(r.ValidMeasurementUnitConversionArchivedAt),
 			OnlyForIngredient: &types.ValidIngredient{
 				CreatedAt:                               r.ValidIngredientCreatedAt.Time,
 				LastUpdatedAt:                           &r.ValidIngredientLastUpdatedAt.Time,
 				ArchivedAt:                              &r.ValidIngredientArchivedAt.Time,
-				MaximumIdealStorageTemperatureInCelsius: float32PointerFromString(r.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
-				MinimumIdealStorageTemperatureInCelsius: float32PointerFromString(r.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
+				MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(r.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
+				MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(r.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 				IconPath:                                r.ValidIngredientIconPath.String,
 				Warning:                                 r.ValidIngredientWarning.String,
 				PluralName:                              r.ValidIngredientPluralName.String,
@@ -203,8 +203,8 @@ func (q *Querier) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context
 				IsAcid:                                  r.ValidIngredientIsAcid.Bool,
 				IsHeat:                                  r.ValidIngredientIsHeat.Bool,
 			},
-			Notes: r.Notes,
-			ID:    r.ID,
+			Notes: r.ValidMeasurementUnitConversionNotes,
+			ID:    r.ValidMeasurementUnitConversionID,
 			From: types.ValidMeasurementUnit{
 				CreatedAt:     r.FromUnitCreatedAt,
 				LastUpdatedAt: timePointerFromNullTime(r.FromUnitLastUpdatedAt),
@@ -235,7 +235,7 @@ func (q *Querier) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context
 				Metric:        r.ToUnitMetric,
 				Imperial:      r.ToUnitImperial,
 			},
-			Modifier: float32FromString(r.Modifier),
+			Modifier: float32FromString(r.ValidMeasurementUnitConversionModifier),
 		}
 	}
 
@@ -264,15 +264,15 @@ func (q *Querier) GetValidMeasurementUnitConversionsToUnit(ctx context.Context, 
 	for i, result := range results {
 		r := result
 		validMeasurementUnitConversions[i] = &types.ValidMeasurementUnitConversion{
-			CreatedAt:     r.CreatedAt,
-			LastUpdatedAt: timePointerFromNullTime(r.LastUpdatedAt),
-			ArchivedAt:    timePointerFromNullTime(r.ArchivedAt),
+			CreatedAt:     r.ValidMeasurementUnitConversionCreatedAt,
+			LastUpdatedAt: timePointerFromNullTime(r.ValidMeasurementUnitConversionLastUpdatedAt),
+			ArchivedAt:    timePointerFromNullTime(r.ValidMeasurementUnitConversionArchivedAt),
 			OnlyForIngredient: &types.ValidIngredient{
 				CreatedAt:                               r.ValidIngredientCreatedAt.Time,
 				LastUpdatedAt:                           &r.ValidIngredientLastUpdatedAt.Time,
 				ArchivedAt:                              &r.ValidIngredientArchivedAt.Time,
-				MaximumIdealStorageTemperatureInCelsius: float32PointerFromString(r.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
-				MinimumIdealStorageTemperatureInCelsius: float32PointerFromString(r.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
+				MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(r.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
+				MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(r.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 				IconPath:                                r.ValidIngredientIconPath.String,
 				Warning:                                 r.ValidIngredientWarning.String,
 				PluralName:                              r.ValidIngredientPluralName.String,
@@ -307,8 +307,8 @@ func (q *Querier) GetValidMeasurementUnitConversionsToUnit(ctx context.Context, 
 				IsAcid:                                  r.ValidIngredientIsAcid.Bool,
 				IsHeat:                                  r.ValidIngredientIsHeat.Bool,
 			},
-			Notes: r.Notes,
-			ID:    r.ID,
+			Notes: r.ValidMeasurementUnitConversionNotes,
+			ID:    r.ValidMeasurementUnitConversionID,
 			From: types.ValidMeasurementUnit{
 				CreatedAt:     r.FromUnitCreatedAt,
 				LastUpdatedAt: timePointerFromNullTime(r.FromUnitLastUpdatedAt),
@@ -339,7 +339,7 @@ func (q *Querier) GetValidMeasurementUnitConversionsToUnit(ctx context.Context, 
 				Metric:        r.ToUnitMetric,
 				Imperial:      r.ToUnitImperial,
 			},
-			Modifier: float32FromString(r.Modifier),
+			Modifier: float32FromString(r.ValidMeasurementUnitConversionModifier),
 		}
 	}
 

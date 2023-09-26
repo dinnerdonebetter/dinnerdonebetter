@@ -7,13 +7,15 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const validIngredientPreparationsTableName = "valid_ingredient_preparations"
+const (
+	validIngredientPreparationsTableName = "valid_ingredient_preparations"
+)
 
 var validIngredientPreparationsColumns = []string{
 	idColumn,
-	"notes",
-	"valid_preparation_id",
-	"valid_ingredient_id",
+	notesColumn,
+	validPreparationIDColumn,
+	validIngredientIDColumn,
 	createdAtColumn,
 	lastUpdatedAtColumn,
 	archivedAtColumn,
@@ -44,9 +46,10 @@ func buildValidIngredientPreparationsQueries() []*Query {
 				Name: "ArchiveValidIngredientPreparation",
 				Type: ExecRowsType,
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = NOW() WHERE %s IS NULL AND %s = sqlc.arg(%s);`,
+			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s IS NULL AND %s = sqlc.arg(%s);`,
 				validIngredientPreparationsTableName,
 				archivedAtColumn,
+				currentTimeExpression,
 				archivedAtColumn,
 				idColumn,
 				idColumn,
@@ -99,11 +102,11 @@ func buildValidIngredientPreparationsQueries() []*Query {
 	%s,
 	%s
 FROM %s
-	JOIN %s ON %s.valid_ingredient_id = %s.id
-	JOIN %s ON %s.valid_preparation_id = %s.id
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
 WHERE
-	%s.archived_at IS NULL
-	AND %s.valid_ingredient_id = sqlc.arg(id)
+	%s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s)
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
@@ -117,12 +120,19 @@ WHERE
 				validIngredientPreparationsTableName,
 				validIngredientsTableName,
 				validIngredientPreparationsTableName,
+				validIngredientIDColumn,
 				validIngredientsTableName,
+				idColumn,
 				validPreparationsTableName,
 				validIngredientPreparationsTableName,
+				validPreparationIDColumn,
 				validPreparationsTableName,
+				idColumn,
 				validIngredientPreparationsTableName,
+				archivedAtColumn,
 				validIngredientPreparationsTableName,
+				validIngredientIDColumn,
+				idColumn,
 				buildFilterConditions(validIngredientPreparationsTableName, true),
 				offsetLimitAddendum,
 			)),
@@ -136,12 +146,12 @@ WHERE
 	%s,
 	%s,
 	%s
-FROM valid_ingredient_preparations
-	JOIN valid_ingredients ON valid_ingredient_preparations.valid_ingredient_id = valid_ingredients.id
-	JOIN valid_preparations ON valid_ingredient_preparations.valid_preparation_id = valid_preparations.id
+FROM %s
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
 WHERE
-	valid_ingredient_preparations.archived_at IS NULL
-	AND valid_ingredient_preparations.valid_preparation_id = sqlc.arg(id)
+	%s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s)
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
@@ -152,6 +162,22 @@ WHERE
 				buildTotalCountSelect(
 					validIngredientPreparationsTableName,
 				),
+				validIngredientPreparationsTableName,
+				validIngredientsTableName,
+				validIngredientPreparationsTableName,
+				validIngredientIDColumn,
+				validIngredientsTableName,
+				idColumn,
+				validPreparationsTableName,
+				validIngredientPreparationsTableName,
+				validPreparationIDColumn,
+				validPreparationsTableName,
+				idColumn,
+				validIngredientPreparationsTableName,
+				archivedAtColumn,
+				validIngredientPreparationsTableName,
+				validPreparationIDColumn,
+				idColumn,
 				buildFilterConditions(validIngredientPreparationsTableName, true),
 				offsetLimitAddendum,
 			)),
@@ -165,11 +191,11 @@ WHERE
 	%s,
 	%s,
 	%s
-FROM valid_ingredient_preparations
-	JOIN valid_ingredients ON valid_ingredient_preparations.valid_ingredient_id = valid_ingredients.id
-	JOIN valid_preparations ON valid_ingredient_preparations.valid_preparation_id = valid_preparations.id
+FROM %s
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
 WHERE
-	valid_ingredient_preparations.archived_at IS NULL
+	%s.%s IS NULL
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
@@ -180,6 +206,19 @@ WHERE
 				buildTotalCountSelect(
 					validIngredientPreparationsTableName,
 				),
+				validIngredientPreparationsTableName,
+				validIngredientsTableName,
+				validIngredientPreparationsTableName,
+				validIngredientIDColumn,
+				validIngredientsTableName,
+				idColumn,
+				validPreparationsTableName,
+				validIngredientPreparationsTableName,
+				validPreparationIDColumn,
+				validPreparationsTableName,
+				idColumn,
+				validIngredientPreparationsTableName,
+				archivedAtColumn,
 				buildFilterConditions(validIngredientPreparationsTableName, true),
 				offsetLimitAddendum,
 			)),
@@ -191,15 +230,35 @@ WHERE
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
-FROM valid_ingredient_preparations
-	JOIN valid_ingredients ON valid_ingredient_preparations.valid_ingredient_id = valid_ingredients.id
-	JOIN valid_preparations ON valid_ingredient_preparations.valid_preparation_id = valid_preparations.id
+FROM %s
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
 WHERE
-	valid_ingredient_preparations.archived_at IS NULL
-	AND valid_ingredients.archived_at IS NULL
-	AND valid_preparations.archived_at IS NULL
-	AND valid_ingredient_preparations.id = sqlc.arg(id);`,
+	%s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(fullSelectColumns, ",\n\t"),
+				validIngredientPreparationsTableName,
+				validIngredientsTableName,
+				validIngredientPreparationsTableName,
+				validIngredientIDColumn,
+				validIngredientsTableName,
+				idColumn,
+				validPreparationsTableName,
+				validIngredientPreparationsTableName,
+				validPreparationIDColumn,
+				validPreparationsTableName,
+				idColumn,
+				validIngredientPreparationsTableName,
+				archivedAtColumn,
+				validIngredientsTableName,
+				archivedAtColumn,
+				validPreparationsTableName,
+				archivedAtColumn,
+				validIngredientPreparationsTableName,
+				idColumn,
+				idColumn,
 			)),
 		},
 		{
@@ -208,13 +267,18 @@ WHERE
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS(
-	SELECT id
+	SELECT %s
 	FROM %s
-	WHERE valid_ingredient_id = sqlc.arg(valid_ingredient_id)
-	AND valid_preparation_id = sqlc.arg(valid_preparation_id)
+	WHERE %s = sqlc.arg(%s)
+	AND %s = sqlc.arg(%s)
 	AND %s IS NULL
 );`,
+				idColumn,
 				validIngredientPreparationsTableName,
+				validIngredientIDColumn,
+				validIngredientIDColumn,
+				validPreparationIDColumn,
+				validPreparationIDColumn,
 				archivedAtColumn,
 			)),
 		},
@@ -225,16 +289,38 @@ WHERE
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
-FROM valid_ingredient_preparations
-	JOIN valid_ingredients ON valid_ingredient_preparations.valid_ingredient_id = valid_ingredients.id
-	JOIN valid_preparations ON valid_ingredient_preparations.valid_preparation_id = valid_preparations.id
+FROM %s
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
 WHERE
-	valid_ingredient_preparations.archived_at IS NULL
-	AND valid_ingredients.archived_at IS NULL
-	AND valid_preparations.archived_at IS NULL
-	AND valid_preparations.id = sqlc.arg(id)
-	AND valid_ingredients.name %s;`,
+	%s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s)
+	AND %s.%s %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
+				validIngredientPreparationsTableName,
+				validIngredientsTableName,
+				validIngredientPreparationsTableName,
+				validIngredientIDColumn,
+				validIngredientsTableName,
+				idColumn,
+				validPreparationsTableName,
+				validIngredientPreparationsTableName,
+				validPreparationIDColumn,
+				validPreparationsTableName,
+				idColumn,
+				validIngredientPreparationsTableName,
+				archivedAtColumn,
+				validIngredientsTableName,
+				archivedAtColumn,
+				validPreparationsTableName,
+				archivedAtColumn,
+				validPreparationsTableName,
+				idColumn,
+				idColumn,
+				validIngredientsTableName,
+				nameColumn,
 				"ILIKE '%' || sqlc.arg(name_query)::text || '%'",
 			)),
 		},
@@ -245,7 +331,7 @@ WHERE
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s,
-	%s = NOW()
+	%s = %s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
 				validIngredientPreparationsTableName,
@@ -253,6 +339,7 @@ WHERE %s IS NULL
 					return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
 				}), ",\n\t"),
 				lastUpdatedAtColumn,
+				currentTimeExpression,
 				archivedAtColumn,
 				idColumn,
 				idColumn,

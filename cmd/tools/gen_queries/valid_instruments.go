@@ -7,16 +7,18 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const validInstrumentsTableName = "valid_instruments"
+const (
+	validInstrumentsTableName = "valid_instruments"
+)
 
 var validInstrumentsColumns = []string{
 	idColumn,
-	"name",
-	"description",
-	"icon_path",
-	"plural_name",
+	nameColumn,
+	descriptionColumn,
+	iconPathColumn,
+	pluralNameColumn,
 	"usable_for_storage",
-	"slug",
+	slugColumn,
 	"display_in_summary_lists",
 	"include_in_generated_instructions",
 	lastIndexedAtColumn,
@@ -34,9 +36,10 @@ func buildValidInstrumentsQueries() []*Query {
 				Name: "ArchiveValidInstrument",
 				Type: ExecRowsType,
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = NOW() WHERE %s IS NULL AND %s = sqlc.arg(%s);`,
+			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s IS NULL AND %s = sqlc.arg(%s);`,
 				validInstrumentsTableName,
 				archivedAtColumn,
+				currentTimeExpression,
 				archivedAtColumn,
 				idColumn,
 				idColumn,
@@ -129,7 +132,7 @@ FROM %s
 WHERE %s.%s IS NULL
 	AND (
     %s.%s IS NULL
-    OR %s.%s < NOW() - '24 hours'::INTERVAL
+    OR %s.%s < %s - '24 hours'::INTERVAL
 );`,
 				validInstrumentsTableName,
 				idColumn,
@@ -140,6 +143,7 @@ WHERE %s.%s IS NULL
 				lastIndexedAtColumn,
 				validInstrumentsTableName,
 				lastIndexedAtColumn,
+				currentTimeExpression,
 			)),
 		},
 		{
@@ -229,7 +233,7 @@ LIMIT 50;`,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s,
-	%s = NOW()
+	%s = %s
 WHERE %s IS NULL
     AND %s = sqlc.arg(%s);`,
 				validInstrumentsTableName,
@@ -237,6 +241,7 @@ WHERE %s IS NULL
 					return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
 				}), ",\n\t"),
 				lastUpdatedAtColumn,
+				currentTimeExpression,
 				archivedAtColumn,
 				idColumn,
 				idColumn,
@@ -247,9 +252,10 @@ WHERE %s IS NULL
 				Name: "UpdateValidInstrumentLastIndexedAt",
 				Type: ExecRowsType,
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = NOW() WHERE %s = sqlc.arg(%s) AND %s IS NULL;`,
+			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s = sqlc.arg(%s) AND %s IS NULL;`,
 				validInstrumentsTableName,
 				lastIndexedAtColumn,
+				currentTimeExpression,
 				idColumn,
 				idColumn,
 				archivedAtColumn,

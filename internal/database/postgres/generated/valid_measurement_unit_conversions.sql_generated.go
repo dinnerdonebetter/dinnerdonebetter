@@ -27,10 +27,10 @@ func (q *Queries) ArchiveValidMeasurementUnitConversion(ctx context.Context, db 
 const checkValidMeasurementUnitConversionExistence = `-- name: CheckValidMeasurementUnitConversionExistence :one
 
 SELECT EXISTS (
-    SELECT valid_measurement_unit_conversions.id
-    FROM valid_measurement_unit_conversions
-    WHERE valid_measurement_unit_conversions.archived_at IS NULL
-        AND valid_measurement_unit_conversions.id = $1
+	SELECT valid_measurement_unit_conversions.id
+	FROM valid_measurement_unit_conversions
+	WHERE valid_measurement_unit_conversions.archived_at IS NULL
+		AND valid_measurement_unit_conversions.id = $1
 )
 `
 
@@ -44,19 +44,19 @@ func (q *Queries) CheckValidMeasurementUnitConversionExistence(ctx context.Conte
 const createValidMeasurementUnitConversion = `-- name: CreateValidMeasurementUnitConversion :exec
 
 INSERT INTO valid_measurement_unit_conversions (
-    id,
-    from_unit,
-    to_unit,
-    only_for_ingredient,
-    modifier,
-    notes
+	id,
+	from_unit,
+	to_unit,
+	only_for_ingredient,
+	modifier,
+	notes
 ) VALUES (
-    $1,
-    $2,
-    $3,
-    $4,
-    $5,
-    $6
+	$1,
+	$2,
+	$3,
+	$4,
+	$5,
+	$6
 )
 `
 
@@ -84,257 +84,7 @@ func (q *Queries) CreateValidMeasurementUnitConversion(ctx context.Context, db D
 const getAllValidMeasurementUnitConversionsFromMeasurementUnit = `-- name: GetAllValidMeasurementUnitConversionsFromMeasurementUnit :many
 
 SELECT
-    valid_measurement_unit_conversions.id,
-    valid_measurement_units_from.id as from_unit_id,
-    valid_measurement_units_from.name as from_unit_name,
-    valid_measurement_units_from.description as from_unit_description,
-    valid_measurement_units_from.volumetric as from_unit_volumetric,
-    valid_measurement_units_from.icon_path as from_unit_icon_path,
-    valid_measurement_units_from.universal as from_unit_universal,
-    valid_measurement_units_from.metric as from_unit_metric,
-    valid_measurement_units_from.imperial as from_unit_imperial,
-    valid_measurement_units_from.slug as from_unit_slug,
-    valid_measurement_units_from.plural_name as from_unit_plural_name,
-    valid_measurement_units_from.created_at as from_unit_created_at,
-    valid_measurement_units_from.last_updated_at as from_unit_last_updated_at,
-    valid_measurement_units_from.archived_at as from_unit_archived_at,
-    valid_measurement_units_to.id as to_unit_id,
-    valid_measurement_units_to.name as to_unit_name,
-    valid_measurement_units_to.description as to_unit_description,
-    valid_measurement_units_to.volumetric as to_unit_volumetric,
-    valid_measurement_units_to.icon_path as to_unit_icon_path,
-    valid_measurement_units_to.universal as to_unit_universal,
-    valid_measurement_units_to.metric as to_unit_metric,
-    valid_measurement_units_to.imperial as to_unit_imperial,
-    valid_measurement_units_to.slug as to_unit_slug,
-    valid_measurement_units_to.plural_name as to_unit_plural_name,
-    valid_measurement_units_to.created_at as to_unit_created_at,
-    valid_measurement_units_to.last_updated_at as to_unit_last_updated_at,
-    valid_measurement_units_to.archived_at as to_unit_archived_at,
-    valid_ingredients.id as valid_ingredient_id,
-    valid_ingredients.name as valid_ingredient_name,
-    valid_ingredients.description as valid_ingredient_description,
-    valid_ingredients.warning as valid_ingredient_warning,
-    valid_ingredients.contains_egg as valid_ingredient_contains_egg,
-    valid_ingredients.contains_dairy as valid_ingredient_contains_dairy,
-    valid_ingredients.contains_peanut as valid_ingredient_contains_peanut,
-    valid_ingredients.contains_tree_nut as valid_ingredient_contains_tree_nut,
-    valid_ingredients.contains_soy as valid_ingredient_contains_soy,
-    valid_ingredients.contains_wheat as valid_ingredient_contains_wheat,
-    valid_ingredients.contains_shellfish as valid_ingredient_contains_shellfish,
-    valid_ingredients.contains_sesame as valid_ingredient_contains_sesame,
-    valid_ingredients.contains_fish as valid_ingredient_contains_fish,
-    valid_ingredients.contains_gluten as valid_ingredient_contains_gluten,
-    valid_ingredients.animal_flesh as valid_ingredient_animal_flesh,
-    valid_ingredients.volumetric as valid_ingredient_volumetric,
-    valid_ingredients.is_liquid as valid_ingredient_is_liquid,
-    valid_ingredients.icon_path as valid_ingredient_icon_path,
-    valid_ingredients.animal_derived as valid_ingredient_animal_derived,
-    valid_ingredients.plural_name as valid_ingredient_plural_name,
-    valid_ingredients.restrict_to_preparations as valid_ingredient_restrict_to_preparations,
-    COALESCE(valid_ingredients.minimum_ideal_storage_temperature_in_celsius, -1) as valid_ingredient_minimum_ideal_storage_temperature_in_celsius,
-    COALESCE(valid_ingredients.maximum_ideal_storage_temperature_in_celsius, -1) as valid_ingredient_maximum_ideal_storage_temperature_in_celsius,
-    valid_ingredients.storage_instructions as valid_ingredient_storage_instructions,
-    valid_ingredients.slug as valid_ingredient_slug,
-    valid_ingredients.contains_alcohol as valid_ingredient_contains_alcohol,
-    valid_ingredients.shopping_suggestions as valid_ingredient_shopping_suggestions,
-    valid_ingredients.is_starch as valid_ingredient_is_starch,
-    valid_ingredients.is_protein as valid_ingredient_is_protein,
-    valid_ingredients.is_grain as valid_ingredient_is_grain,
-    valid_ingredients.is_fruit as valid_ingredient_is_fruit,
-    valid_ingredients.is_salt as valid_ingredient_is_salt,
-    valid_ingredients.is_fat as valid_ingredient_is_fat,
-    valid_ingredients.is_acid as valid_ingredient_is_acid,
-    valid_ingredients.is_heat as valid_ingredient_is_heat,
-    valid_ingredients.created_at as valid_ingredient_created_at,
-    valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
-    valid_ingredients.archived_at as valid_ingredient_archived_at,
-    valid_measurement_unit_conversions.modifier,
-    valid_measurement_unit_conversions.notes,
-    valid_measurement_unit_conversions.created_at,
-    valid_measurement_unit_conversions.last_updated_at,
-    valid_measurement_unit_conversions.archived_at
-FROM valid_measurement_unit_conversions
-     JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_unit_conversions.from_unit = valid_measurement_units_from.id
-     JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_unit_conversions.to_unit = valid_measurement_units_to.id
-     LEFT JOIN valid_ingredients ON valid_measurement_unit_conversions.only_for_ingredient = valid_ingredients.id
-WHERE valid_measurement_unit_conversions.archived_at IS NULL
-  AND valid_measurement_units_from.archived_at IS NULL
-  AND valid_measurement_units_to.archived_at IS NULL
-  AND valid_measurement_unit_conversions.from_unit = $1
-`
-
-type GetAllValidMeasurementUnitConversionsFromMeasurementUnitRow struct {
-	CreatedAt                                              time.Time
-	ToUnitCreatedAt                                        time.Time
-	FromUnitCreatedAt                                      time.Time
-	ValidIngredientCreatedAt                               sql.NullTime
-	FromUnitLastUpdatedAt                                  sql.NullTime
-	ToUnitArchivedAt                                       sql.NullTime
-	LastUpdatedAt                                          sql.NullTime
-	ToUnitLastUpdatedAt                                    sql.NullTime
-	ValidIngredientLastUpdatedAt                           sql.NullTime
-	ValidIngredientArchivedAt                              sql.NullTime
-	ArchivedAt                                             sql.NullTime
-	FromUnitArchivedAt                                     sql.NullTime
-	ToUnitDescription                                      string
-	ValidIngredientMinimumIdealStorageTemperatureInCelsius string
-	ToUnitID                                               string
-	ToUnitName                                             string
-	FromUnitPluralName                                     string
-	Modifier                                               string
-	ToUnitIconPath                                         string
-	FromUnitSlug                                           string
-	Notes                                                  string
-	FromUnitName                                           string
-	ToUnitSlug                                             string
-	ToUnitPluralName                                       string
-	FromUnitID                                             string
-	FromUnitDescription                                    string
-	FromUnitIconPath                                       string
-	ID                                                     string
-	ValidIngredientMaximumIdealStorageTemperatureInCelsius string
-	ValidIngredientSlug                                    sql.NullString
-	ValidIngredientWarning                                 sql.NullString
-	ValidIngredientShoppingSuggestions                     sql.NullString
-	ValidIngredientID                                      sql.NullString
-	ValidIngredientStorageInstructions                     sql.NullString
-	ValidIngredientName                                    sql.NullString
-	ValidIngredientDescription                             sql.NullString
-	ValidIngredientPluralName                              sql.NullString
-	ValidIngredientIconPath                                sql.NullString
-	ValidIngredientContainsGluten                          sql.NullBool
-	ValidIngredientContainsEgg                             sql.NullBool
-	ValidIngredientContainsSesame                          sql.NullBool
-	ValidIngredientAnimalFlesh                             sql.NullBool
-	ValidIngredientVolumetric                              sql.NullBool
-	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientContainsShellfish                       sql.NullBool
-	ValidIngredientAnimalDerived                           sql.NullBool
-	ValidIngredientContainsWheat                           sql.NullBool
-	ValidIngredientRestrictToPreparations                  sql.NullBool
-	ValidIngredientContainsSoy                             sql.NullBool
-	ValidIngredientContainsTreeNut                         sql.NullBool
-	ValidIngredientContainsPeanut                          sql.NullBool
-	ValidIngredientContainsDairy                           sql.NullBool
-	ValidIngredientContainsAlcohol                         sql.NullBool
-	ValidIngredientContainsFish                            sql.NullBool
-	ValidIngredientIsStarch                                sql.NullBool
-	ValidIngredientIsProtein                               sql.NullBool
-	ValidIngredientIsGrain                                 sql.NullBool
-	ValidIngredientIsFruit                                 sql.NullBool
-	ValidIngredientIsSalt                                  sql.NullBool
-	ValidIngredientIsFat                                   sql.NullBool
-	ValidIngredientIsAcid                                  sql.NullBool
-	ValidIngredientIsHeat                                  sql.NullBool
-	FromUnitVolumetric                                     sql.NullBool
-	ToUnitVolumetric                                       sql.NullBool
-	ToUnitUniversal                                        bool
-	ToUnitMetric                                           bool
-	FromUnitImperial                                       bool
-	FromUnitMetric                                         bool
-	FromUnitUniversal                                      bool
-	ToUnitImperial                                         bool
-}
-
-func (q *Queries) GetAllValidMeasurementUnitConversionsFromMeasurementUnit(ctx context.Context, db DBTX, id string) ([]*GetAllValidMeasurementUnitConversionsFromMeasurementUnitRow, error) {
-	rows, err := db.QueryContext(ctx, getAllValidMeasurementUnitConversionsFromMeasurementUnit, id)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []*GetAllValidMeasurementUnitConversionsFromMeasurementUnitRow{}
-	for rows.Next() {
-		var i GetAllValidMeasurementUnitConversionsFromMeasurementUnitRow
-		if err := rows.Scan(
-			&i.ID,
-			&i.FromUnitID,
-			&i.FromUnitName,
-			&i.FromUnitDescription,
-			&i.FromUnitVolumetric,
-			&i.FromUnitIconPath,
-			&i.FromUnitUniversal,
-			&i.FromUnitMetric,
-			&i.FromUnitImperial,
-			&i.FromUnitSlug,
-			&i.FromUnitPluralName,
-			&i.FromUnitCreatedAt,
-			&i.FromUnitLastUpdatedAt,
-			&i.FromUnitArchivedAt,
-			&i.ToUnitID,
-			&i.ToUnitName,
-			&i.ToUnitDescription,
-			&i.ToUnitVolumetric,
-			&i.ToUnitIconPath,
-			&i.ToUnitUniversal,
-			&i.ToUnitMetric,
-			&i.ToUnitImperial,
-			&i.ToUnitSlug,
-			&i.ToUnitPluralName,
-			&i.ToUnitCreatedAt,
-			&i.ToUnitLastUpdatedAt,
-			&i.ToUnitArchivedAt,
-			&i.ValidIngredientID,
-			&i.ValidIngredientName,
-			&i.ValidIngredientDescription,
-			&i.ValidIngredientWarning,
-			&i.ValidIngredientContainsEgg,
-			&i.ValidIngredientContainsDairy,
-			&i.ValidIngredientContainsPeanut,
-			&i.ValidIngredientContainsTreeNut,
-			&i.ValidIngredientContainsSoy,
-			&i.ValidIngredientContainsWheat,
-			&i.ValidIngredientContainsShellfish,
-			&i.ValidIngredientContainsSesame,
-			&i.ValidIngredientContainsFish,
-			&i.ValidIngredientContainsGluten,
-			&i.ValidIngredientAnimalFlesh,
-			&i.ValidIngredientVolumetric,
-			&i.ValidIngredientIsLiquid,
-			&i.ValidIngredientIconPath,
-			&i.ValidIngredientAnimalDerived,
-			&i.ValidIngredientPluralName,
-			&i.ValidIngredientRestrictToPreparations,
-			&i.ValidIngredientMinimumIdealStorageTemperatureInCelsius,
-			&i.ValidIngredientMaximumIdealStorageTemperatureInCelsius,
-			&i.ValidIngredientStorageInstructions,
-			&i.ValidIngredientSlug,
-			&i.ValidIngredientContainsAlcohol,
-			&i.ValidIngredientShoppingSuggestions,
-			&i.ValidIngredientIsStarch,
-			&i.ValidIngredientIsProtein,
-			&i.ValidIngredientIsGrain,
-			&i.ValidIngredientIsFruit,
-			&i.ValidIngredientIsSalt,
-			&i.ValidIngredientIsFat,
-			&i.ValidIngredientIsAcid,
-			&i.ValidIngredientIsHeat,
-			&i.ValidIngredientCreatedAt,
-			&i.ValidIngredientLastUpdatedAt,
-			&i.ValidIngredientArchivedAt,
-			&i.Modifier,
-			&i.Notes,
-			&i.CreatedAt,
-			&i.LastUpdatedAt,
-			&i.ArchivedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, &i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getAllValidMeasurementUnitConversionsToMeasurementUnit = `-- name: GetAllValidMeasurementUnitConversionsToMeasurementUnit :many
-
-SELECT
-	valid_measurement_unit_conversions.id,
+    valid_measurement_unit_conversions.id as valid_measurement_unit_conversion_id,
 	valid_measurement_units_from.id as from_unit_id,
 	valid_measurement_units_from.name as from_unit_name,
 	valid_measurement_units_from.description as from_unit_description,
@@ -345,6 +95,7 @@ SELECT
 	valid_measurement_units_from.imperial as from_unit_imperial,
 	valid_measurement_units_from.slug as from_unit_slug,
 	valid_measurement_units_from.plural_name as from_unit_plural_name,
+	valid_measurement_units_from.last_indexed_at as from_unit_last_indexed_at,
 	valid_measurement_units_from.created_at as from_unit_created_at,
 	valid_measurement_units_from.last_updated_at as from_unit_last_updated_at,
 	valid_measurement_units_from.archived_at as from_unit_archived_at,
@@ -358,6 +109,7 @@ SELECT
 	valid_measurement_units_to.imperial as to_unit_imperial,
 	valid_measurement_units_to.slug as to_unit_slug,
 	valid_measurement_units_to.plural_name as to_unit_plural_name,
+	valid_measurement_units_to.last_indexed_at as to_unit_last_indexed_at,
 	valid_measurement_units_to.created_at as to_unit_created_at,
 	valid_measurement_units_to.last_updated_at as to_unit_last_updated_at,
 	valid_measurement_units_to.archived_at as to_unit_archived_at,
@@ -382,101 +134,112 @@ SELECT
 	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
 	valid_ingredients.plural_name as valid_ingredient_plural_name,
 	valid_ingredients.restrict_to_preparations as valid_ingredient_restrict_to_preparations,
-    COALESCE(valid_ingredients.minimum_ideal_storage_temperature_in_celsius, -1) as valid_ingredient_minimum_ideal_storage_temperature_in_celsius,
-    COALESCE(valid_ingredients.maximum_ideal_storage_temperature_in_celsius, -1) as valid_ingredient_maximum_ideal_storage_temperature_in_celsius,
+	valid_ingredients.minimum_ideal_storage_temperature_in_celsius as valid_ingredient_minimum_ideal_storage_temperature_in_celsius,
+	valid_ingredients.maximum_ideal_storage_temperature_in_celsius as valid_ingredient_maximum_ideal_storage_temperature_in_celsius,
 	valid_ingredients.storage_instructions as valid_ingredient_storage_instructions,
 	valid_ingredients.slug as valid_ingredient_slug,
 	valid_ingredients.contains_alcohol as valid_ingredient_contains_alcohol,
 	valid_ingredients.shopping_suggestions as valid_ingredient_shopping_suggestions,
-    valid_ingredients.is_starch as valid_ingredient_is_starch,
-    valid_ingredients.is_protein as valid_ingredient_is_protein,
-    valid_ingredients.is_grain as valid_ingredient_is_grain,
-    valid_ingredients.is_fruit as valid_ingredient_is_fruit,
-    valid_ingredients.is_salt as valid_ingredient_is_salt,
-    valid_ingredients.is_fat as valid_ingredient_is_fat,
-    valid_ingredients.is_acid as valid_ingredient_is_acid,
-    valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.is_starch as valid_ingredient_is_starch,
+	valid_ingredients.is_protein as valid_ingredient_is_protein,
+	valid_ingredients.is_grain as valid_ingredient_is_grain,
+	valid_ingredients.is_fruit as valid_ingredient_is_fruit,
+	valid_ingredients.is_salt as valid_ingredient_is_salt,
+	valid_ingredients.is_fat as valid_ingredient_is_fat,
+	valid_ingredients.is_acid as valid_ingredient_is_acid,
+	valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.last_indexed_at as valid_ingredient_last_indexed_at,
 	valid_ingredients.created_at as valid_ingredient_created_at,
 	valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
 	valid_ingredients.archived_at as valid_ingredient_archived_at,
-	valid_measurement_unit_conversions.modifier,
-	valid_measurement_unit_conversions.notes,
-	valid_measurement_unit_conversions.created_at,
-	valid_measurement_unit_conversions.last_updated_at,
-	valid_measurement_unit_conversions.archived_at
+	valid_measurement_unit_conversions.from_unit as valid_measurement_unit_conversion_from_unit,
+	valid_measurement_unit_conversions.to_unit as valid_measurement_unit_conversion_to_unit,
+	valid_measurement_unit_conversions.only_for_ingredient as valid_measurement_unit_conversion_only_for_ingredient,
+	valid_measurement_unit_conversions.modifier as valid_measurement_unit_conversion_modifier,
+	valid_measurement_unit_conversions.notes as valid_measurement_unit_conversion_notes,
+	valid_measurement_unit_conversions.created_at as valid_measurement_unit_conversion_created_at,
+	valid_measurement_unit_conversions.last_updated_at as valid_measurement_unit_conversion_last_updated_at,
+	valid_measurement_unit_conversions.archived_at as valid_measurement_unit_conversion_archived_at
 FROM valid_measurement_unit_conversions
-     JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_unit_conversions.from_unit = valid_measurement_units_from.id
-     JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_unit_conversions.to_unit = valid_measurement_units_to.id
-     LEFT JOIN valid_ingredients ON valid_measurement_unit_conversions.only_for_ingredient = valid_ingredients.id
-WHERE valid_measurement_unit_conversions.archived_at IS NULL
-  AND valid_measurement_units_from.archived_at IS NULL
-  AND valid_measurement_units_to.archived_at IS NULL
-  AND valid_measurement_units_to.id = $1
+    JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_unit_conversions.from_unit = valid_measurement_units_from.id
+    JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_unit_conversions.to_unit = valid_measurement_units_to.id
+    LEFT JOIN valid_ingredients ON valid_measurement_unit_conversions.only_for_ingredient = valid_ingredients.id
+WHERE
+    valid_measurement_units_from.id = $1
+    AND valid_measurement_unit_conversions.archived_at IS NULL
+    AND valid_measurement_units_from.archived_at IS NULL
+    AND valid_measurement_units_to.archived_at IS NULL
 `
 
-type GetAllValidMeasurementUnitConversionsToMeasurementUnitRow struct {
-	CreatedAt                                              time.Time
+type GetAllValidMeasurementUnitConversionsFromMeasurementUnitRow struct {
+	ValidMeasurementUnitConversionCreatedAt                time.Time
 	ToUnitCreatedAt                                        time.Time
 	FromUnitCreatedAt                                      time.Time
-	ValidIngredientCreatedAt                               sql.NullTime
-	FromUnitLastUpdatedAt                                  sql.NullTime
-	ToUnitArchivedAt                                       sql.NullTime
-	LastUpdatedAt                                          sql.NullTime
-	ToUnitLastUpdatedAt                                    sql.NullTime
-	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidIngredientArchivedAt                              sql.NullTime
-	ArchivedAt                                             sql.NullTime
+	ValidIngredientLastUpdatedAt                           sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
+	ValidIngredientCreatedAt                               sql.NullTime
+	ValidMeasurementUnitConversionArchivedAt               sql.NullTime
+	ToUnitLastIndexedAt                                    sql.NullTime
+	ToUnitArchivedAt                                       sql.NullTime
+	ToUnitLastUpdatedAt                                    sql.NullTime
+	FromUnitLastIndexedAt                                  sql.NullTime
+	ValidMeasurementUnitConversionLastUpdatedAt            sql.NullTime
+	FromUnitLastUpdatedAt                                  sql.NullTime
 	FromUnitArchivedAt                                     sql.NullTime
-	ToUnitDescription                                      string
-	ValidIngredientMinimumIdealStorageTemperatureInCelsius string
-	ToUnitID                                               string
 	ToUnitName                                             string
-	FromUnitPluralName                                     string
-	Modifier                                               string
 	ToUnitIconPath                                         string
+	ToUnitID                                               string
+	ValidMeasurementUnitConversionModifier                 string
 	FromUnitSlug                                           string
-	Notes                                                  string
+	ValidMeasurementUnitConversionID                       string
+	ValidMeasurementUnitConversionToUnit                   string
+	ValidMeasurementUnitConversionFromUnit                 string
 	FromUnitName                                           string
-	ToUnitSlug                                             string
-	ToUnitPluralName                                       string
-	FromUnitID                                             string
-	FromUnitDescription                                    string
+	FromUnitPluralName                                     string
+	ValidMeasurementUnitConversionNotes                    string
 	FromUnitIconPath                                       string
-	ID                                                     string
-	ValidIngredientMaximumIdealStorageTemperatureInCelsius string
-	ValidIngredientSlug                                    sql.NullString
+	ToUnitPluralName                                       string
+	ToUnitSlug                                             string
+	ToUnitDescription                                      string
+	FromUnitDescription                                    string
+	FromUnitID                                             string
 	ValidIngredientWarning                                 sql.NullString
-	ValidIngredientShoppingSuggestions                     sql.NullString
-	ValidIngredientID                                      sql.NullString
-	ValidIngredientStorageInstructions                     sql.NullString
-	ValidIngredientName                                    sql.NullString
-	ValidIngredientDescription                             sql.NullString
-	ValidIngredientPluralName                              sql.NullString
 	ValidIngredientIconPath                                sql.NullString
-	ValidIngredientContainsGluten                          sql.NullBool
-	ValidIngredientContainsEgg                             sql.NullBool
-	ValidIngredientContainsSesame                          sql.NullBool
-	ValidIngredientAnimalFlesh                             sql.NullBool
-	ValidIngredientVolumetric                              sql.NullBool
-	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientContainsShellfish                       sql.NullBool
-	ValidIngredientAnimalDerived                           sql.NullBool
+	ValidIngredientID                                      sql.NullString
+	ValidIngredientPluralName                              sql.NullString
+	ValidIngredientDescription                             sql.NullString
+	ValidIngredientShoppingSuggestions                     sql.NullString
+	ValidMeasurementUnitConversionOnlyForIngredient        sql.NullString
+	ValidIngredientSlug                                    sql.NullString
+	ValidIngredientStorageInstructions                     sql.NullString
+	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientName                                    sql.NullString
 	ValidIngredientContainsWheat                           sql.NullBool
+	ValidIngredientIsFruit                                 sql.NullBool
+	ValidIngredientVolumetric                              sql.NullBool
+	ValidIngredientAnimalDerived                           sql.NullBool
+	ValidIngredientAnimalFlesh                             sql.NullBool
 	ValidIngredientRestrictToPreparations                  sql.NullBool
-	ValidIngredientContainsSoy                             sql.NullBool
-	ValidIngredientContainsTreeNut                         sql.NullBool
-	ValidIngredientContainsPeanut                          sql.NullBool
-	ValidIngredientContainsDairy                           sql.NullBool
-	ValidIngredientContainsAlcohol                         sql.NullBool
+	ValidIngredientContainsGluten                          sql.NullBool
 	ValidIngredientContainsFish                            sql.NullBool
+	ValidIngredientContainsSesame                          sql.NullBool
+	ValidIngredientContainsShellfish                       sql.NullBool
+	ValidIngredientContainsAlcohol                         sql.NullBool
+	ValidIngredientContainsSoy                             sql.NullBool
 	ValidIngredientIsStarch                                sql.NullBool
 	ValidIngredientIsProtein                               sql.NullBool
 	ValidIngredientIsGrain                                 sql.NullBool
-	ValidIngredientIsFruit                                 sql.NullBool
+	ValidIngredientIsLiquid                                sql.NullBool
 	ValidIngredientIsSalt                                  sql.NullBool
 	ValidIngredientIsFat                                   sql.NullBool
 	ValidIngredientIsAcid                                  sql.NullBool
 	ValidIngredientIsHeat                                  sql.NullBool
+	ValidIngredientContainsTreeNut                         sql.NullBool
+	ValidIngredientContainsPeanut                          sql.NullBool
+	ValidIngredientContainsDairy                           sql.NullBool
+	ValidIngredientContainsEgg                             sql.NullBool
 	FromUnitVolumetric                                     sql.NullBool
 	ToUnitVolumetric                                       sql.NullBool
 	ToUnitUniversal                                        bool
@@ -487,17 +250,17 @@ type GetAllValidMeasurementUnitConversionsToMeasurementUnitRow struct {
 	ToUnitImperial                                         bool
 }
 
-func (q *Queries) GetAllValidMeasurementUnitConversionsToMeasurementUnit(ctx context.Context, db DBTX, id string) ([]*GetAllValidMeasurementUnitConversionsToMeasurementUnitRow, error) {
-	rows, err := db.QueryContext(ctx, getAllValidMeasurementUnitConversionsToMeasurementUnit, id)
+func (q *Queries) GetAllValidMeasurementUnitConversionsFromMeasurementUnit(ctx context.Context, db DBTX, id string) ([]*GetAllValidMeasurementUnitConversionsFromMeasurementUnitRow, error) {
+	rows, err := db.QueryContext(ctx, getAllValidMeasurementUnitConversionsFromMeasurementUnit, id)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []*GetAllValidMeasurementUnitConversionsToMeasurementUnitRow{}
+	items := []*GetAllValidMeasurementUnitConversionsFromMeasurementUnitRow{}
 	for rows.Next() {
-		var i GetAllValidMeasurementUnitConversionsToMeasurementUnitRow
+		var i GetAllValidMeasurementUnitConversionsFromMeasurementUnitRow
 		if err := rows.Scan(
-			&i.ID,
+			&i.ValidMeasurementUnitConversionID,
 			&i.FromUnitID,
 			&i.FromUnitName,
 			&i.FromUnitDescription,
@@ -508,6 +271,7 @@ func (q *Queries) GetAllValidMeasurementUnitConversionsToMeasurementUnit(ctx con
 			&i.FromUnitImperial,
 			&i.FromUnitSlug,
 			&i.FromUnitPluralName,
+			&i.FromUnitLastIndexedAt,
 			&i.FromUnitCreatedAt,
 			&i.FromUnitLastUpdatedAt,
 			&i.FromUnitArchivedAt,
@@ -521,6 +285,7 @@ func (q *Queries) GetAllValidMeasurementUnitConversionsToMeasurementUnit(ctx con
 			&i.ToUnitImperial,
 			&i.ToUnitSlug,
 			&i.ToUnitPluralName,
+			&i.ToUnitLastIndexedAt,
 			&i.ToUnitCreatedAt,
 			&i.ToUnitLastUpdatedAt,
 			&i.ToUnitArchivedAt,
@@ -559,14 +324,287 @@ func (q *Queries) GetAllValidMeasurementUnitConversionsToMeasurementUnit(ctx con
 			&i.ValidIngredientIsFat,
 			&i.ValidIngredientIsAcid,
 			&i.ValidIngredientIsHeat,
+			&i.ValidIngredientLastIndexedAt,
 			&i.ValidIngredientCreatedAt,
 			&i.ValidIngredientLastUpdatedAt,
 			&i.ValidIngredientArchivedAt,
-			&i.Modifier,
-			&i.Notes,
-			&i.CreatedAt,
-			&i.LastUpdatedAt,
-			&i.ArchivedAt,
+			&i.ValidMeasurementUnitConversionFromUnit,
+			&i.ValidMeasurementUnitConversionToUnit,
+			&i.ValidMeasurementUnitConversionOnlyForIngredient,
+			&i.ValidMeasurementUnitConversionModifier,
+			&i.ValidMeasurementUnitConversionNotes,
+			&i.ValidMeasurementUnitConversionCreatedAt,
+			&i.ValidMeasurementUnitConversionLastUpdatedAt,
+			&i.ValidMeasurementUnitConversionArchivedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAllValidMeasurementUnitConversionsToMeasurementUnit = `-- name: GetAllValidMeasurementUnitConversionsToMeasurementUnit :many
+
+SELECT
+    valid_measurement_unit_conversions.id as valid_measurement_unit_conversion_id,
+	valid_measurement_units_from.id as from_unit_id,
+	valid_measurement_units_from.name as from_unit_name,
+	valid_measurement_units_from.description as from_unit_description,
+	valid_measurement_units_from.volumetric as from_unit_volumetric,
+	valid_measurement_units_from.icon_path as from_unit_icon_path,
+	valid_measurement_units_from.universal as from_unit_universal,
+	valid_measurement_units_from.metric as from_unit_metric,
+	valid_measurement_units_from.imperial as from_unit_imperial,
+	valid_measurement_units_from.slug as from_unit_slug,
+	valid_measurement_units_from.plural_name as from_unit_plural_name,
+	valid_measurement_units_from.last_indexed_at as from_unit_last_indexed_at,
+	valid_measurement_units_from.created_at as from_unit_created_at,
+	valid_measurement_units_from.last_updated_at as from_unit_last_updated_at,
+	valid_measurement_units_from.archived_at as from_unit_archived_at,
+	valid_measurement_units_to.id as to_unit_id,
+	valid_measurement_units_to.name as to_unit_name,
+	valid_measurement_units_to.description as to_unit_description,
+	valid_measurement_units_to.volumetric as to_unit_volumetric,
+	valid_measurement_units_to.icon_path as to_unit_icon_path,
+	valid_measurement_units_to.universal as to_unit_universal,
+	valid_measurement_units_to.metric as to_unit_metric,
+	valid_measurement_units_to.imperial as to_unit_imperial,
+	valid_measurement_units_to.slug as to_unit_slug,
+	valid_measurement_units_to.plural_name as to_unit_plural_name,
+	valid_measurement_units_to.last_indexed_at as to_unit_last_indexed_at,
+	valid_measurement_units_to.created_at as to_unit_created_at,
+	valid_measurement_units_to.last_updated_at as to_unit_last_updated_at,
+	valid_measurement_units_to.archived_at as to_unit_archived_at,
+	valid_ingredients.id as valid_ingredient_id,
+	valid_ingredients.name as valid_ingredient_name,
+	valid_ingredients.description as valid_ingredient_description,
+	valid_ingredients.warning as valid_ingredient_warning,
+	valid_ingredients.contains_egg as valid_ingredient_contains_egg,
+	valid_ingredients.contains_dairy as valid_ingredient_contains_dairy,
+	valid_ingredients.contains_peanut as valid_ingredient_contains_peanut,
+	valid_ingredients.contains_tree_nut as valid_ingredient_contains_tree_nut,
+	valid_ingredients.contains_soy as valid_ingredient_contains_soy,
+	valid_ingredients.contains_wheat as valid_ingredient_contains_wheat,
+	valid_ingredients.contains_shellfish as valid_ingredient_contains_shellfish,
+	valid_ingredients.contains_sesame as valid_ingredient_contains_sesame,
+	valid_ingredients.contains_fish as valid_ingredient_contains_fish,
+	valid_ingredients.contains_gluten as valid_ingredient_contains_gluten,
+	valid_ingredients.animal_flesh as valid_ingredient_animal_flesh,
+	valid_ingredients.volumetric as valid_ingredient_volumetric,
+	valid_ingredients.is_liquid as valid_ingredient_is_liquid,
+	valid_ingredients.icon_path as valid_ingredient_icon_path,
+	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
+	valid_ingredients.plural_name as valid_ingredient_plural_name,
+	valid_ingredients.restrict_to_preparations as valid_ingredient_restrict_to_preparations,
+	valid_ingredients.minimum_ideal_storage_temperature_in_celsius as valid_ingredient_minimum_ideal_storage_temperature_in_celsius,
+	valid_ingredients.maximum_ideal_storage_temperature_in_celsius as valid_ingredient_maximum_ideal_storage_temperature_in_celsius,
+	valid_ingredients.storage_instructions as valid_ingredient_storage_instructions,
+	valid_ingredients.slug as valid_ingredient_slug,
+	valid_ingredients.contains_alcohol as valid_ingredient_contains_alcohol,
+	valid_ingredients.shopping_suggestions as valid_ingredient_shopping_suggestions,
+	valid_ingredients.is_starch as valid_ingredient_is_starch,
+	valid_ingredients.is_protein as valid_ingredient_is_protein,
+	valid_ingredients.is_grain as valid_ingredient_is_grain,
+	valid_ingredients.is_fruit as valid_ingredient_is_fruit,
+	valid_ingredients.is_salt as valid_ingredient_is_salt,
+	valid_ingredients.is_fat as valid_ingredient_is_fat,
+	valid_ingredients.is_acid as valid_ingredient_is_acid,
+	valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.last_indexed_at as valid_ingredient_last_indexed_at,
+	valid_ingredients.created_at as valid_ingredient_created_at,
+	valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
+	valid_ingredients.archived_at as valid_ingredient_archived_at,
+	valid_measurement_unit_conversions.from_unit as valid_measurement_unit_conversion_from_unit,
+	valid_measurement_unit_conversions.to_unit as valid_measurement_unit_conversion_to_unit,
+	valid_measurement_unit_conversions.only_for_ingredient as valid_measurement_unit_conversion_only_for_ingredient,
+	valid_measurement_unit_conversions.modifier as valid_measurement_unit_conversion_modifier,
+	valid_measurement_unit_conversions.notes as valid_measurement_unit_conversion_notes,
+	valid_measurement_unit_conversions.created_at as valid_measurement_unit_conversion_created_at,
+	valid_measurement_unit_conversions.last_updated_at as valid_measurement_unit_conversion_last_updated_at,
+	valid_measurement_unit_conversions.archived_at as valid_measurement_unit_conversion_archived_at
+FROM valid_measurement_unit_conversions
+    JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_unit_conversions.from_unit = valid_measurement_units_from.id
+    JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_unit_conversions.to_unit = valid_measurement_units_to.id
+    LEFT JOIN valid_ingredients ON valid_measurement_unit_conversions.only_for_ingredient = valid_ingredients.id
+WHERE
+    valid_measurement_units_to.id = $1
+    AND valid_measurement_unit_conversions.archived_at IS NULL
+    AND valid_measurement_units_from.archived_at IS NULL
+    AND valid_measurement_units_to.archived_at IS NULL
+`
+
+type GetAllValidMeasurementUnitConversionsToMeasurementUnitRow struct {
+	ValidMeasurementUnitConversionCreatedAt                time.Time
+	ToUnitCreatedAt                                        time.Time
+	FromUnitCreatedAt                                      time.Time
+	ValidIngredientArchivedAt                              sql.NullTime
+	ValidIngredientLastUpdatedAt                           sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
+	ValidIngredientCreatedAt                               sql.NullTime
+	ValidMeasurementUnitConversionArchivedAt               sql.NullTime
+	ToUnitLastIndexedAt                                    sql.NullTime
+	ToUnitArchivedAt                                       sql.NullTime
+	ToUnitLastUpdatedAt                                    sql.NullTime
+	FromUnitLastIndexedAt                                  sql.NullTime
+	ValidMeasurementUnitConversionLastUpdatedAt            sql.NullTime
+	FromUnitLastUpdatedAt                                  sql.NullTime
+	FromUnitArchivedAt                                     sql.NullTime
+	ToUnitName                                             string
+	ToUnitIconPath                                         string
+	ToUnitID                                               string
+	ValidMeasurementUnitConversionModifier                 string
+	FromUnitSlug                                           string
+	ValidMeasurementUnitConversionID                       string
+	ValidMeasurementUnitConversionToUnit                   string
+	ValidMeasurementUnitConversionFromUnit                 string
+	FromUnitName                                           string
+	FromUnitPluralName                                     string
+	ValidMeasurementUnitConversionNotes                    string
+	FromUnitIconPath                                       string
+	ToUnitPluralName                                       string
+	ToUnitSlug                                             string
+	ToUnitDescription                                      string
+	FromUnitDescription                                    string
+	FromUnitID                                             string
+	ValidIngredientWarning                                 sql.NullString
+	ValidIngredientIconPath                                sql.NullString
+	ValidIngredientID                                      sql.NullString
+	ValidIngredientPluralName                              sql.NullString
+	ValidIngredientDescription                             sql.NullString
+	ValidIngredientShoppingSuggestions                     sql.NullString
+	ValidMeasurementUnitConversionOnlyForIngredient        sql.NullString
+	ValidIngredientSlug                                    sql.NullString
+	ValidIngredientStorageInstructions                     sql.NullString
+	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientName                                    sql.NullString
+	ValidIngredientContainsWheat                           sql.NullBool
+	ValidIngredientIsFruit                                 sql.NullBool
+	ValidIngredientVolumetric                              sql.NullBool
+	ValidIngredientAnimalDerived                           sql.NullBool
+	ValidIngredientAnimalFlesh                             sql.NullBool
+	ValidIngredientRestrictToPreparations                  sql.NullBool
+	ValidIngredientContainsGluten                          sql.NullBool
+	ValidIngredientContainsFish                            sql.NullBool
+	ValidIngredientContainsSesame                          sql.NullBool
+	ValidIngredientContainsShellfish                       sql.NullBool
+	ValidIngredientContainsAlcohol                         sql.NullBool
+	ValidIngredientContainsSoy                             sql.NullBool
+	ValidIngredientIsStarch                                sql.NullBool
+	ValidIngredientIsProtein                               sql.NullBool
+	ValidIngredientIsGrain                                 sql.NullBool
+	ValidIngredientIsLiquid                                sql.NullBool
+	ValidIngredientIsSalt                                  sql.NullBool
+	ValidIngredientIsFat                                   sql.NullBool
+	ValidIngredientIsAcid                                  sql.NullBool
+	ValidIngredientIsHeat                                  sql.NullBool
+	ValidIngredientContainsTreeNut                         sql.NullBool
+	ValidIngredientContainsPeanut                          sql.NullBool
+	ValidIngredientContainsDairy                           sql.NullBool
+	ValidIngredientContainsEgg                             sql.NullBool
+	FromUnitVolumetric                                     sql.NullBool
+	ToUnitVolumetric                                       sql.NullBool
+	ToUnitUniversal                                        bool
+	ToUnitMetric                                           bool
+	FromUnitImperial                                       bool
+	FromUnitMetric                                         bool
+	FromUnitUniversal                                      bool
+	ToUnitImperial                                         bool
+}
+
+func (q *Queries) GetAllValidMeasurementUnitConversionsToMeasurementUnit(ctx context.Context, db DBTX, id string) ([]*GetAllValidMeasurementUnitConversionsToMeasurementUnitRow, error) {
+	rows, err := db.QueryContext(ctx, getAllValidMeasurementUnitConversionsToMeasurementUnit, id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetAllValidMeasurementUnitConversionsToMeasurementUnitRow{}
+	for rows.Next() {
+		var i GetAllValidMeasurementUnitConversionsToMeasurementUnitRow
+		if err := rows.Scan(
+			&i.ValidMeasurementUnitConversionID,
+			&i.FromUnitID,
+			&i.FromUnitName,
+			&i.FromUnitDescription,
+			&i.FromUnitVolumetric,
+			&i.FromUnitIconPath,
+			&i.FromUnitUniversal,
+			&i.FromUnitMetric,
+			&i.FromUnitImperial,
+			&i.FromUnitSlug,
+			&i.FromUnitPluralName,
+			&i.FromUnitLastIndexedAt,
+			&i.FromUnitCreatedAt,
+			&i.FromUnitLastUpdatedAt,
+			&i.FromUnitArchivedAt,
+			&i.ToUnitID,
+			&i.ToUnitName,
+			&i.ToUnitDescription,
+			&i.ToUnitVolumetric,
+			&i.ToUnitIconPath,
+			&i.ToUnitUniversal,
+			&i.ToUnitMetric,
+			&i.ToUnitImperial,
+			&i.ToUnitSlug,
+			&i.ToUnitPluralName,
+			&i.ToUnitLastIndexedAt,
+			&i.ToUnitCreatedAt,
+			&i.ToUnitLastUpdatedAt,
+			&i.ToUnitArchivedAt,
+			&i.ValidIngredientID,
+			&i.ValidIngredientName,
+			&i.ValidIngredientDescription,
+			&i.ValidIngredientWarning,
+			&i.ValidIngredientContainsEgg,
+			&i.ValidIngredientContainsDairy,
+			&i.ValidIngredientContainsPeanut,
+			&i.ValidIngredientContainsTreeNut,
+			&i.ValidIngredientContainsSoy,
+			&i.ValidIngredientContainsWheat,
+			&i.ValidIngredientContainsShellfish,
+			&i.ValidIngredientContainsSesame,
+			&i.ValidIngredientContainsFish,
+			&i.ValidIngredientContainsGluten,
+			&i.ValidIngredientAnimalFlesh,
+			&i.ValidIngredientVolumetric,
+			&i.ValidIngredientIsLiquid,
+			&i.ValidIngredientIconPath,
+			&i.ValidIngredientAnimalDerived,
+			&i.ValidIngredientPluralName,
+			&i.ValidIngredientRestrictToPreparations,
+			&i.ValidIngredientMinimumIdealStorageTemperatureInCelsius,
+			&i.ValidIngredientMaximumIdealStorageTemperatureInCelsius,
+			&i.ValidIngredientStorageInstructions,
+			&i.ValidIngredientSlug,
+			&i.ValidIngredientContainsAlcohol,
+			&i.ValidIngredientShoppingSuggestions,
+			&i.ValidIngredientIsStarch,
+			&i.ValidIngredientIsProtein,
+			&i.ValidIngredientIsGrain,
+			&i.ValidIngredientIsFruit,
+			&i.ValidIngredientIsSalt,
+			&i.ValidIngredientIsFat,
+			&i.ValidIngredientIsAcid,
+			&i.ValidIngredientIsHeat,
+			&i.ValidIngredientLastIndexedAt,
+			&i.ValidIngredientCreatedAt,
+			&i.ValidIngredientLastUpdatedAt,
+			&i.ValidIngredientArchivedAt,
+			&i.ValidMeasurementUnitConversionFromUnit,
+			&i.ValidMeasurementUnitConversionToUnit,
+			&i.ValidMeasurementUnitConversionOnlyForIngredient,
+			&i.ValidMeasurementUnitConversionModifier,
+			&i.ValidMeasurementUnitConversionNotes,
+			&i.ValidMeasurementUnitConversionCreatedAt,
+			&i.ValidMeasurementUnitConversionLastUpdatedAt,
+			&i.ValidMeasurementUnitConversionArchivedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -584,149 +622,162 @@ func (q *Queries) GetAllValidMeasurementUnitConversionsToMeasurementUnit(ctx con
 const getValidMeasurementUnitConversion = `-- name: GetValidMeasurementUnitConversion :one
 
 SELECT
-    valid_measurement_unit_conversions.id,
-    valid_measurement_units_from.id as from_unit_id,
-    valid_measurement_units_from.name as from_unit_name,
-    valid_measurement_units_from.description as from_unit_description,
-    valid_measurement_units_from.volumetric as from_unit_volumetric,
-    valid_measurement_units_from.icon_path as from_unit_icon_path,
-    valid_measurement_units_from.universal as from_unit_universal,
-    valid_measurement_units_from.metric as from_unit_metric,
-    valid_measurement_units_from.imperial as from_unit_imperial,
-    valid_measurement_units_from.slug as from_unit_slug,
-    valid_measurement_units_from.plural_name as from_unit_plural_name,
-    valid_measurement_units_from.created_at as from_unit_created_at,
-    valid_measurement_units_from.last_updated_at as from_unit_last_updated_at,
-    valid_measurement_units_from.archived_at as from_unit_archived_at,
-    valid_measurement_units_to.id as to_unit_id,
-    valid_measurement_units_to.name as to_unit_name,
-    valid_measurement_units_to.description as to_unit_description,
-    valid_measurement_units_to.volumetric as to_unit_volumetric,
-    valid_measurement_units_to.icon_path as to_unit_icon_path,
-    valid_measurement_units_to.universal as to_unit_universal,
-    valid_measurement_units_to.metric as to_unit_metric,
-    valid_measurement_units_to.imperial as to_unit_imperial,
-    valid_measurement_units_to.slug as to_unit_slug,
-    valid_measurement_units_to.plural_name as to_unit_plural_name,
-    valid_measurement_units_to.created_at as to_unit_created_at,
-    valid_measurement_units_to.last_updated_at as to_unit_last_updated_at,
-    valid_measurement_units_to.archived_at as to_unit_archived_at,
-    valid_ingredients.id as valid_ingredient_id,
-    valid_ingredients.name as valid_ingredient_name,
-    valid_ingredients.description as valid_ingredient_description,
-    valid_ingredients.warning as valid_ingredient_warning,
-    valid_ingredients.contains_egg as valid_ingredient_contains_egg,
-    valid_ingredients.contains_dairy as valid_ingredient_contains_dairy,
-    valid_ingredients.contains_peanut as valid_ingredient_contains_peanut,
-    valid_ingredients.contains_tree_nut as valid_ingredient_contains_tree_nut,
-    valid_ingredients.contains_soy as valid_ingredient_contains_soy,
-    valid_ingredients.contains_wheat as valid_ingredient_contains_wheat,
-    valid_ingredients.contains_shellfish as valid_ingredient_contains_shellfish,
-    valid_ingredients.contains_sesame as valid_ingredient_contains_sesame,
-    valid_ingredients.contains_fish as valid_ingredient_contains_fish,
-    valid_ingredients.contains_gluten as valid_ingredient_contains_gluten,
-    valid_ingredients.animal_flesh as valid_ingredient_animal_flesh,
-    valid_ingredients.volumetric as valid_ingredient_volumetric,
-    valid_ingredients.is_liquid as valid_ingredient_is_liquid,
-    valid_ingredients.icon_path as valid_ingredient_icon_path,
-    valid_ingredients.animal_derived as valid_ingredient_animal_derived,
-    valid_ingredients.plural_name as valid_ingredient_plural_name,
-    valid_ingredients.restrict_to_preparations as valid_ingredient_restrict_to_preparations,
-    COALESCE(valid_ingredients.minimum_ideal_storage_temperature_in_celsius, -1) as valid_ingredient_minimum_ideal_storage_temperature_in_celsius,
-    COALESCE(valid_ingredients.maximum_ideal_storage_temperature_in_celsius, -1) as valid_ingredient_maximum_ideal_storage_temperature_in_celsius,
-    valid_ingredients.storage_instructions as valid_ingredient_storage_instructions,
-    valid_ingredients.slug as valid_ingredient_slug,
-    valid_ingredients.contains_alcohol as valid_ingredient_contains_alcohol,
-    valid_ingredients.shopping_suggestions as valid_ingredient_shopping_suggestions,
-    valid_ingredients.is_starch as valid_ingredient_is_starch,
-    valid_ingredients.is_protein as valid_ingredient_is_protein,
-    valid_ingredients.is_grain as valid_ingredient_is_grain,
-    valid_ingredients.is_fruit as valid_ingredient_is_fruit,
-    valid_ingredients.is_salt as valid_ingredient_is_salt,
-    valid_ingredients.is_fat as valid_ingredient_is_fat,
-    valid_ingredients.is_acid as valid_ingredient_is_acid,
-    valid_ingredients.is_heat as valid_ingredient_is_heat,
-    valid_ingredients.created_at as valid_ingredient_created_at,
-    valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
-    valid_ingredients.archived_at as valid_ingredient_archived_at,
-    valid_measurement_unit_conversions.modifier,
-    valid_measurement_unit_conversions.notes,
-    valid_measurement_unit_conversions.created_at,
-    valid_measurement_unit_conversions.last_updated_at,
-    valid_measurement_unit_conversions.archived_at
+    valid_measurement_unit_conversions.id as valid_measurement_unit_conversion_id,
+	valid_measurement_units_from.id as from_unit_id,
+	valid_measurement_units_from.name as from_unit_name,
+	valid_measurement_units_from.description as from_unit_description,
+	valid_measurement_units_from.volumetric as from_unit_volumetric,
+	valid_measurement_units_from.icon_path as from_unit_icon_path,
+	valid_measurement_units_from.universal as from_unit_universal,
+	valid_measurement_units_from.metric as from_unit_metric,
+	valid_measurement_units_from.imperial as from_unit_imperial,
+	valid_measurement_units_from.slug as from_unit_slug,
+	valid_measurement_units_from.plural_name as from_unit_plural_name,
+	valid_measurement_units_from.last_indexed_at as from_unit_last_indexed_at,
+	valid_measurement_units_from.created_at as from_unit_created_at,
+	valid_measurement_units_from.last_updated_at as from_unit_last_updated_at,
+	valid_measurement_units_from.archived_at as from_unit_archived_at,
+	valid_measurement_units_to.id as to_unit_id,
+	valid_measurement_units_to.name as to_unit_name,
+	valid_measurement_units_to.description as to_unit_description,
+	valid_measurement_units_to.volumetric as to_unit_volumetric,
+	valid_measurement_units_to.icon_path as to_unit_icon_path,
+	valid_measurement_units_to.universal as to_unit_universal,
+	valid_measurement_units_to.metric as to_unit_metric,
+	valid_measurement_units_to.imperial as to_unit_imperial,
+	valid_measurement_units_to.slug as to_unit_slug,
+	valid_measurement_units_to.plural_name as to_unit_plural_name,
+	valid_measurement_units_to.last_indexed_at as to_unit_last_indexed_at,
+	valid_measurement_units_to.created_at as to_unit_created_at,
+	valid_measurement_units_to.last_updated_at as to_unit_last_updated_at,
+	valid_measurement_units_to.archived_at as to_unit_archived_at,
+	valid_ingredients.id as valid_ingredient_id,
+	valid_ingredients.name as valid_ingredient_name,
+	valid_ingredients.description as valid_ingredient_description,
+	valid_ingredients.warning as valid_ingredient_warning,
+	valid_ingredients.contains_egg as valid_ingredient_contains_egg,
+	valid_ingredients.contains_dairy as valid_ingredient_contains_dairy,
+	valid_ingredients.contains_peanut as valid_ingredient_contains_peanut,
+	valid_ingredients.contains_tree_nut as valid_ingredient_contains_tree_nut,
+	valid_ingredients.contains_soy as valid_ingredient_contains_soy,
+	valid_ingredients.contains_wheat as valid_ingredient_contains_wheat,
+	valid_ingredients.contains_shellfish as valid_ingredient_contains_shellfish,
+	valid_ingredients.contains_sesame as valid_ingredient_contains_sesame,
+	valid_ingredients.contains_fish as valid_ingredient_contains_fish,
+	valid_ingredients.contains_gluten as valid_ingredient_contains_gluten,
+	valid_ingredients.animal_flesh as valid_ingredient_animal_flesh,
+	valid_ingredients.volumetric as valid_ingredient_volumetric,
+	valid_ingredients.is_liquid as valid_ingredient_is_liquid,
+	valid_ingredients.icon_path as valid_ingredient_icon_path,
+	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
+	valid_ingredients.plural_name as valid_ingredient_plural_name,
+	valid_ingredients.restrict_to_preparations as valid_ingredient_restrict_to_preparations,
+	valid_ingredients.minimum_ideal_storage_temperature_in_celsius as valid_ingredient_minimum_ideal_storage_temperature_in_celsius,
+	valid_ingredients.maximum_ideal_storage_temperature_in_celsius as valid_ingredient_maximum_ideal_storage_temperature_in_celsius,
+	valid_ingredients.storage_instructions as valid_ingredient_storage_instructions,
+	valid_ingredients.slug as valid_ingredient_slug,
+	valid_ingredients.contains_alcohol as valid_ingredient_contains_alcohol,
+	valid_ingredients.shopping_suggestions as valid_ingredient_shopping_suggestions,
+	valid_ingredients.is_starch as valid_ingredient_is_starch,
+	valid_ingredients.is_protein as valid_ingredient_is_protein,
+	valid_ingredients.is_grain as valid_ingredient_is_grain,
+	valid_ingredients.is_fruit as valid_ingredient_is_fruit,
+	valid_ingredients.is_salt as valid_ingredient_is_salt,
+	valid_ingredients.is_fat as valid_ingredient_is_fat,
+	valid_ingredients.is_acid as valid_ingredient_is_acid,
+	valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.last_indexed_at as valid_ingredient_last_indexed_at,
+	valid_ingredients.created_at as valid_ingredient_created_at,
+	valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
+	valid_ingredients.archived_at as valid_ingredient_archived_at,
+	valid_measurement_unit_conversions.from_unit as valid_measurement_unit_conversion_from_unit,
+	valid_measurement_unit_conversions.to_unit as valid_measurement_unit_conversion_to_unit,
+	valid_measurement_unit_conversions.only_for_ingredient as valid_measurement_unit_conversion_only_for_ingredient,
+	valid_measurement_unit_conversions.modifier as valid_measurement_unit_conversion_modifier,
+	valid_measurement_unit_conversions.notes as valid_measurement_unit_conversion_notes,
+	valid_measurement_unit_conversions.created_at as valid_measurement_unit_conversion_created_at,
+	valid_measurement_unit_conversions.last_updated_at as valid_measurement_unit_conversion_last_updated_at,
+	valid_measurement_unit_conversions.archived_at as valid_measurement_unit_conversion_archived_at
 FROM valid_measurement_unit_conversions
     JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_unit_conversions.from_unit = valid_measurement_units_from.id
     JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_unit_conversions.to_unit = valid_measurement_units_to.id
     LEFT JOIN valid_ingredients ON valid_measurement_unit_conversions.only_for_ingredient = valid_ingredients.id
-WHERE valid_measurement_unit_conversions.id = $1
+WHERE
+    valid_measurement_unit_conversions.id = $1
     AND valid_measurement_unit_conversions.archived_at IS NULL
     AND valid_measurement_units_from.archived_at IS NULL
     AND valid_measurement_units_to.archived_at IS NULL
 `
 
 type GetValidMeasurementUnitConversionRow struct {
-	CreatedAt                                              time.Time
+	ValidMeasurementUnitConversionCreatedAt                time.Time
 	ToUnitCreatedAt                                        time.Time
 	FromUnitCreatedAt                                      time.Time
-	ValidIngredientCreatedAt                               sql.NullTime
-	FromUnitLastUpdatedAt                                  sql.NullTime
-	ToUnitArchivedAt                                       sql.NullTime
-	LastUpdatedAt                                          sql.NullTime
-	ToUnitLastUpdatedAt                                    sql.NullTime
-	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidIngredientArchivedAt                              sql.NullTime
-	ArchivedAt                                             sql.NullTime
+	ValidIngredientLastUpdatedAt                           sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
+	ValidIngredientCreatedAt                               sql.NullTime
+	ValidMeasurementUnitConversionArchivedAt               sql.NullTime
+	ToUnitLastIndexedAt                                    sql.NullTime
+	ToUnitArchivedAt                                       sql.NullTime
+	ToUnitLastUpdatedAt                                    sql.NullTime
+	FromUnitLastIndexedAt                                  sql.NullTime
+	ValidMeasurementUnitConversionLastUpdatedAt            sql.NullTime
+	FromUnitLastUpdatedAt                                  sql.NullTime
 	FromUnitArchivedAt                                     sql.NullTime
-	ToUnitDescription                                      string
-	ValidIngredientMinimumIdealStorageTemperatureInCelsius string
-	ToUnitID                                               string
 	ToUnitName                                             string
-	FromUnitPluralName                                     string
-	Modifier                                               string
 	ToUnitIconPath                                         string
+	ToUnitID                                               string
+	ValidMeasurementUnitConversionModifier                 string
 	FromUnitSlug                                           string
-	Notes                                                  string
+	ValidMeasurementUnitConversionID                       string
+	ValidMeasurementUnitConversionToUnit                   string
+	ValidMeasurementUnitConversionFromUnit                 string
 	FromUnitName                                           string
-	ToUnitSlug                                             string
-	ToUnitPluralName                                       string
-	FromUnitID                                             string
-	FromUnitDescription                                    string
+	FromUnitPluralName                                     string
+	ValidMeasurementUnitConversionNotes                    string
 	FromUnitIconPath                                       string
-	ID                                                     string
-	ValidIngredientMaximumIdealStorageTemperatureInCelsius string
-	ValidIngredientSlug                                    sql.NullString
+	ToUnitPluralName                                       string
+	ToUnitSlug                                             string
+	ToUnitDescription                                      string
+	FromUnitDescription                                    string
+	FromUnitID                                             string
 	ValidIngredientWarning                                 sql.NullString
-	ValidIngredientShoppingSuggestions                     sql.NullString
-	ValidIngredientID                                      sql.NullString
-	ValidIngredientStorageInstructions                     sql.NullString
-	ValidIngredientName                                    sql.NullString
-	ValidIngredientDescription                             sql.NullString
-	ValidIngredientPluralName                              sql.NullString
 	ValidIngredientIconPath                                sql.NullString
-	ValidIngredientContainsGluten                          sql.NullBool
-	ValidIngredientContainsEgg                             sql.NullBool
-	ValidIngredientContainsSesame                          sql.NullBool
-	ValidIngredientAnimalFlesh                             sql.NullBool
-	ValidIngredientVolumetric                              sql.NullBool
-	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientContainsShellfish                       sql.NullBool
-	ValidIngredientAnimalDerived                           sql.NullBool
+	ValidIngredientID                                      sql.NullString
+	ValidIngredientPluralName                              sql.NullString
+	ValidIngredientDescription                             sql.NullString
+	ValidIngredientShoppingSuggestions                     sql.NullString
+	ValidMeasurementUnitConversionOnlyForIngredient        sql.NullString
+	ValidIngredientSlug                                    sql.NullString
+	ValidIngredientStorageInstructions                     sql.NullString
+	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientName                                    sql.NullString
 	ValidIngredientContainsWheat                           sql.NullBool
+	ValidIngredientIsFruit                                 sql.NullBool
+	ValidIngredientVolumetric                              sql.NullBool
+	ValidIngredientAnimalDerived                           sql.NullBool
+	ValidIngredientAnimalFlesh                             sql.NullBool
 	ValidIngredientRestrictToPreparations                  sql.NullBool
-	ValidIngredientContainsSoy                             sql.NullBool
-	ValidIngredientContainsTreeNut                         sql.NullBool
-	ValidIngredientContainsPeanut                          sql.NullBool
-	ValidIngredientContainsDairy                           sql.NullBool
-	ValidIngredientContainsAlcohol                         sql.NullBool
+	ValidIngredientContainsGluten                          sql.NullBool
 	ValidIngredientContainsFish                            sql.NullBool
+	ValidIngredientContainsSesame                          sql.NullBool
+	ValidIngredientContainsShellfish                       sql.NullBool
+	ValidIngredientContainsAlcohol                         sql.NullBool
+	ValidIngredientContainsSoy                             sql.NullBool
 	ValidIngredientIsStarch                                sql.NullBool
 	ValidIngredientIsProtein                               sql.NullBool
 	ValidIngredientIsGrain                                 sql.NullBool
-	ValidIngredientIsFruit                                 sql.NullBool
+	ValidIngredientIsLiquid                                sql.NullBool
 	ValidIngredientIsSalt                                  sql.NullBool
 	ValidIngredientIsFat                                   sql.NullBool
 	ValidIngredientIsAcid                                  sql.NullBool
 	ValidIngredientIsHeat                                  sql.NullBool
+	ValidIngredientContainsTreeNut                         sql.NullBool
+	ValidIngredientContainsPeanut                          sql.NullBool
+	ValidIngredientContainsDairy                           sql.NullBool
+	ValidIngredientContainsEgg                             sql.NullBool
 	FromUnitVolumetric                                     sql.NullBool
 	ToUnitVolumetric                                       sql.NullBool
 	ToUnitUniversal                                        bool
@@ -741,7 +792,7 @@ func (q *Queries) GetValidMeasurementUnitConversion(ctx context.Context, db DBTX
 	row := db.QueryRowContext(ctx, getValidMeasurementUnitConversion, id)
 	var i GetValidMeasurementUnitConversionRow
 	err := row.Scan(
-		&i.ID,
+		&i.ValidMeasurementUnitConversionID,
 		&i.FromUnitID,
 		&i.FromUnitName,
 		&i.FromUnitDescription,
@@ -752,6 +803,7 @@ func (q *Queries) GetValidMeasurementUnitConversion(ctx context.Context, db DBTX
 		&i.FromUnitImperial,
 		&i.FromUnitSlug,
 		&i.FromUnitPluralName,
+		&i.FromUnitLastIndexedAt,
 		&i.FromUnitCreatedAt,
 		&i.FromUnitLastUpdatedAt,
 		&i.FromUnitArchivedAt,
@@ -765,6 +817,7 @@ func (q *Queries) GetValidMeasurementUnitConversion(ctx context.Context, db DBTX
 		&i.ToUnitImperial,
 		&i.ToUnitSlug,
 		&i.ToUnitPluralName,
+		&i.ToUnitLastIndexedAt,
 		&i.ToUnitCreatedAt,
 		&i.ToUnitLastUpdatedAt,
 		&i.ToUnitArchivedAt,
@@ -803,14 +856,18 @@ func (q *Queries) GetValidMeasurementUnitConversion(ctx context.Context, db DBTX
 		&i.ValidIngredientIsFat,
 		&i.ValidIngredientIsAcid,
 		&i.ValidIngredientIsHeat,
+		&i.ValidIngredientLastIndexedAt,
 		&i.ValidIngredientCreatedAt,
 		&i.ValidIngredientLastUpdatedAt,
 		&i.ValidIngredientArchivedAt,
-		&i.Modifier,
-		&i.Notes,
-		&i.CreatedAt,
-		&i.LastUpdatedAt,
-		&i.ArchivedAt,
+		&i.ValidMeasurementUnitConversionFromUnit,
+		&i.ValidMeasurementUnitConversionToUnit,
+		&i.ValidMeasurementUnitConversionOnlyForIngredient,
+		&i.ValidMeasurementUnitConversionModifier,
+		&i.ValidMeasurementUnitConversionNotes,
+		&i.ValidMeasurementUnitConversionCreatedAt,
+		&i.ValidMeasurementUnitConversionLastUpdatedAt,
+		&i.ValidMeasurementUnitConversionArchivedAt,
 	)
 	return &i, err
 }

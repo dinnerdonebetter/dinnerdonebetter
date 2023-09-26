@@ -4,7 +4,9 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const mealPlanTasksTableName = "meal_plan_tasks"
+const (
+	mealPlanTasksTableName = "meal_plan_tasks"
+)
 
 var mealPlanTasksColumns = []string{
 	idColumn,

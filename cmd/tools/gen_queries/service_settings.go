@@ -7,13 +7,15 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const serviceSettingsTableName = "service_settings"
+const (
+	serviceSettingsTableName = "service_settings"
+)
 
 var serviceSettingsColumns = []string{
 	idColumn,
-	"name",
+	nameColumn,
 	"type",
-	"description",
+	descriptionColumn,
 	"default_value",
 	"enumeration",
 	"admins_only",
@@ -31,8 +33,12 @@ func buildServiceSettingQueries() []*Query {
 				Name: "ArchiveServiceSetting",
 				Type: ExecRowsType,
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET archived_at = NOW() WHERE id = sqlc.arg(id);`,
+			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s = sqlc.arg(%s);`,
 				serviceSettingsTableName,
+				archivedAtColumn,
+				currentTimeExpression,
+				idColumn,
+				idColumn,
 			)),
 		},
 		{

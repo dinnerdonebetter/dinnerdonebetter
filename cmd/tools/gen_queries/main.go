@@ -32,9 +32,10 @@ func main() {
 		"valid_ingredient_preparations.sql":  buildValidIngredientPreparationsQueries(),
 		"valid_preparation_vessels.sql":      buildValidPreparationVesselsQueries(),
 		//
-		// "valid_ingredient_measurement_units.sql":           buildValidIngredientMeasurementUnitsQueries(),
-		// "valid_ingredient_state_ingredients.sql":           buildValidIngredientStateIngredientsQueries(),
-		// "valid_measurement_unit_conversions.sql":           buildValidMeasurementUnitConversionsQueries(),
+		"valid_ingredient_measurement_units.sql": buildValidIngredientMeasurementUnitsQueries(),
+		"valid_ingredient_state_ingredients.sql": buildValidIngredientStateIngredientsQueries(),
+		"valid_measurement_unit_conversions.sql": buildValidMeasurementUnitConversionsQueries(),
+		//
 		// "household_instrument_ownerships.sql":              buildHouseholdInstrumentOwnershipQueries(),
 		// "meal_components.sql":                              buildMealComponentsQueries(),
 		// "meal_plan_events.sql":                             buildMealPlanEventsQueries(),
@@ -60,7 +61,8 @@ func main() {
 	}
 
 	for filePath, queries := range queryOutput {
-		existingFile, err := os.ReadFile(path.Join("internal", "database", "postgres", "sqlc_queries", filePath))
+		localFilePath := path.Join("internal", "database", "postgres", "sqlc_queries", filePath)
+		existingFile, err := os.ReadFile(localFilePath)
 		if err != nil {
 			panic(err)
 		}

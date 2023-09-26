@@ -14,7 +14,7 @@ const (
 var (
 	webhooksColumns = []string{
 		"id",
-		"name",
+		nameColumn,
 		"content_type",
 		"url",
 		"method",
@@ -44,11 +44,14 @@ func buildWebhooksQueries() []*Query {
 				Type: ExecRowsType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s
-   SET %s = NOW()
- WHERE %s IS NULL AND id = sqlc.arg(id) AND %s = sqlc.arg(household_id);`,
+   SET %s = %s
+ WHERE %s IS NULL AND %s = sqlc.arg(%s) AND %s = sqlc.arg(household_id);`,
 				webhooksTableName,
 				archivedAtColumn,
+				currentTimeExpression,
 				archivedAtColumn,
+				idColumn,
+				idColumn,
 				belongsToHouseholdColumn,
 			)),
 		},

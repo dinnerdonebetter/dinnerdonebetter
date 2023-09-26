@@ -7,11 +7,13 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const validPreparationInstrumentsTableName = "valid_preparation_instruments"
+const (
+	validPreparationInstrumentsTableName = "valid_preparation_instruments"
+)
 
 var validPreparationInstrumentsColumns = []string{
 	idColumn,
-	"notes",
+	notesColumn,
 	"valid_preparation_id",
 	"valid_instrument_id",
 	createdAtColumn,
@@ -44,9 +46,10 @@ func buildValidPreparationInstrumentsQueries() []*Query {
 				Name: "ArchiveValidPreparationInstrument",
 				Type: ExecRowsType,
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = NOW() WHERE %s IS NULL AND %s = sqlc.arg(%s);`,
+			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s IS NULL AND %s = sqlc.arg(%s);`,
 				validPreparationInstrumentsTableName,
 				archivedAtColumn,
+				currentTimeExpression,
 				archivedAtColumn,
 				idColumn,
 				idColumn,
@@ -301,7 +304,7 @@ WHERE
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s,
-	%s = NOW()
+	%s = %s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
 				validPreparationInstrumentsTableName,
@@ -309,6 +312,7 @@ WHERE %s IS NULL
 					return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
 				}), ",\n\t"),
 				lastUpdatedAtColumn,
+				currentTimeExpression,
 				archivedAtColumn,
 				idColumn,
 				idColumn,

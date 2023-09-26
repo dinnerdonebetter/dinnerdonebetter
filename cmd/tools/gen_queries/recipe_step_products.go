@@ -4,11 +4,13 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const recipeStepProductsTableName = "recipe_step_products"
+const (
+	recipeStepProductsTableName = "recipe_step_products"
+)
 
 var recipeStepProductsColumns = []string{
 	idColumn,
-	"name",
+	nameColumn,
 	"belongs_to_recipe_step",
 	"quantity_notes",
 	"minimum_quantity_value",

@@ -4,13 +4,15 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const recipeStepCompletionConditionsTableName = "recipe_step_completion_conditions"
+const (
+	recipeStepCompletionConditionsTableName = "recipe_step_completion_conditions"
+)
 
 var recipeStepCompletionConditionsColumns = []string{
 	idColumn,
 	"belongs_to_recipe_step",
 	"ingredient_state",
-	"notes",
+	notesColumn,
 	"optional",
 	createdAtColumn,
 	lastUpdatedAtColumn,

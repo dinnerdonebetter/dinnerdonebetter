@@ -8,13 +8,15 @@ import (
 )
 
 /* #nosec G101 */
-const oauth2ClientTokensTableName = "oauth2_client_tokens"
+const (
+	oauth2ClientTokensTableName = "oauth2_client_tokens"
+)
 
 /* #nosec G101 */
 var oauth2ClientTokensColumns = []string{
 	idColumn,
 	"client_id",
-	"belongs_to_user",
+	belongsToUserColumn,
 	"redirect_uri",
 	"scope",
 	"code",

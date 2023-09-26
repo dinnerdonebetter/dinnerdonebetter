@@ -7,19 +7,21 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const validMeasurementUnitsTableName = "valid_measurement_units"
+const (
+	validMeasurementUnitsTableName = "valid_measurement_units"
+)
 
 var validMeasurementUnitsColumns = []string{
 	idColumn,
-	"name",
-	"description",
+	nameColumn,
+	descriptionColumn,
 	"volumetric",
-	"icon_path",
+	iconPathColumn,
 	"universal",
 	"metric",
 	"imperial",
-	"slug",
-	"plural_name",
+	slugColumn,
+	pluralNameColumn,
 	lastIndexedAtColumn,
 	createdAtColumn,
 	lastUpdatedAtColumn,
@@ -35,9 +37,10 @@ func buildValidMeasurementUnitsQueries() []*Query {
 				Name: "ArchiveValidMeasurementUnit",
 				Type: ExecRowsType,
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = NOW() WHERE %s IS NULL AND %s = sqlc.arg(%s);`,
+			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s IS NULL AND %s = sqlc.arg(%s);`,
 				validMeasurementUnitsTableName,
 				archivedAtColumn,
+				currentTimeExpression,
 				archivedAtColumn,
 				idColumn,
 				idColumn,
@@ -130,7 +133,7 @@ FROM %s
 WHERE %s.%s IS NULL
     AND (
     %s.%s IS NULL
-    OR %s.%s < NOW() - '24 hours'::INTERVAL
+    OR %s.%s < %s - '24 hours'::INTERVAL
 );`,
 				validMeasurementUnitsTableName,
 				idColumn,
@@ -141,6 +144,7 @@ WHERE %s.%s IS NULL
 				lastIndexedAtColumn,
 				validMeasurementUnitsTableName,
 				lastIndexedAtColumn,
+				currentTimeExpression,
 			)),
 		},
 		{
@@ -267,7 +271,7 @@ WHERE
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s,
-	%s = NOW()
+	%s = %s
 WHERE %s IS NULL
     AND %s = sqlc.arg(%s);`,
 				validMeasurementUnitsTableName,
@@ -275,6 +279,7 @@ WHERE %s IS NULL
 					return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
 				}), ",\n\t"),
 				lastUpdatedAtColumn,
+				currentTimeExpression,
 				archivedAtColumn,
 				idColumn,
 				idColumn,
@@ -285,9 +290,10 @@ WHERE %s IS NULL
 				Name: "UpdateValidMeasurementUnitLastIndexedAt",
 				Type: ExecRowsType,
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = NOW() WHERE %s = sqlc.arg(%s) AND %s IS NULL;`,
+			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s = sqlc.arg(%s) AND %s IS NULL;`,
 				validMeasurementUnitsTableName,
 				lastIndexedAtColumn,
+				currentTimeExpression,
 				idColumn,
 				idColumn,
 				archivedAtColumn,

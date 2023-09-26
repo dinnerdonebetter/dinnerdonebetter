@@ -12,14 +12,21 @@ func buildAdminQueries() []*Query {
 				Type: ExecRowsType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
-	%s = NOW(),
-	user_account_status = sqlc.arg(user_account_status),
-	user_account_status_explanation = sqlc.arg(user_account_status_explanation)
+	%s = %s,
+	%s = sqlc.arg(%s),
+	%s = sqlc.arg(%s)
 WHERE %s IS NULL
-	AND id = sqlc.arg(id);`,
+	AND %s = sqlc.arg(%s);`,
 				usersTableName,
 				lastUpdatedAtColumn,
+				currentTimeExpression,
+				userAccountStatusColumn,
+				userAccountStatusColumn,
+				userAccountStatusExplanationColumn,
+				userAccountStatusExplanationColumn,
 				archivedAtColumn,
+				idColumn,
+				idColumn,
 			)),
 		},
 	}

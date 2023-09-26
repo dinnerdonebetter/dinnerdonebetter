@@ -174,7 +174,6 @@ FROM household_invitations
 	JOIN users ON household_invitations.from_user = users.id
 WHERE household_invitations.archived_at IS NULL
 	AND household_invitations.expires_at > NOW()
-	AND household_invitations.expires_at > NOW()
 	AND household_invitations.destination_household = $1
 	AND household_invitations.id = $2;
 

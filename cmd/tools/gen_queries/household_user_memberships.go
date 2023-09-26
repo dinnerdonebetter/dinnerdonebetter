@@ -7,12 +7,14 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const householdUserMembershipsTableName = "household_user_memberships"
+const (
+	householdUserMembershipsTableName = "household_user_memberships"
+)
 
 var householdUserMembershipsColumns = []string{
 	idColumn,
 	belongsToHouseholdColumn,
-	"belongs_to_user",
+	belongsToUserColumn,
 	"default_household",
 	"household_role",
 	createdAtColumn,
@@ -119,13 +121,14 @@ WHERE %s = sqlc.arg(%s)
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s
-SET %s = NOW(),
+SET %s = %s,
 	default_household = 'false'
 WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s)
 	AND %s.%s = sqlc.arg(%s);`,
 				householdUserMembershipsTableName,
 				archivedAtColumn,
+				currentTimeExpression,
 				householdUserMembershipsTableName,
 				archivedAtColumn,
 				householdUserMembershipsTableName,

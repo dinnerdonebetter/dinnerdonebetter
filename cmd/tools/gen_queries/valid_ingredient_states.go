@@ -7,15 +7,17 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const validIngredientStatesTableName = "valid_ingredient_states"
+const (
+	validIngredientStatesTableName = "valid_ingredient_states"
+)
 
 var validIngredientStatesColumns = []string{
 	idColumn,
-	"name",
+	nameColumn,
 	"past_tense",
-	"slug",
-	"description",
-	"icon_path",
+	slugColumn,
+	descriptionColumn,
+	iconPathColumn,
 	"attribute_type",
 	lastIndexedAtColumn,
 	createdAtColumn,
@@ -32,9 +34,10 @@ func buildValidIngredientStatesQueries() []*Query {
 				Name: "ArchiveValidIngredientState",
 				Type: ExecRowsType,
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = NOW() WHERE %s IS NULL AND %s = sqlc.arg(%s);`,
+			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s IS NULL AND %s = sqlc.arg(%s);`,
 				validIngredientStatesTableName,
 				archivedAtColumn,
+				currentTimeExpression,
 				archivedAtColumn,
 				idColumn,
 				idColumn,
@@ -127,7 +130,7 @@ FROM %s
 WHERE %s.%s IS NULL
     AND (
     %s.%s IS NULL
-    OR %s.%s < NOW() - '24 hours'::INTERVAL
+    OR %s.%s < %s - '24 hours'::INTERVAL
 );`,
 				validIngredientStatesTableName,
 				idColumn,
@@ -138,6 +141,7 @@ WHERE %s.%s IS NULL
 				lastIndexedAtColumn,
 				validIngredientStatesTableName,
 				lastIndexedAtColumn,
+				currentTimeExpression,
 			)),
 		},
 		{
@@ -209,7 +213,7 @@ LIMIT 50;`,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s,
-	%s = NOW()
+	%s = %s
 WHERE %s IS NULL
     AND %s = sqlc.arg(%s);`,
 				validIngredientStatesTableName,
@@ -217,6 +221,7 @@ WHERE %s IS NULL
 					return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
 				}), ",\n\t"),
 				lastUpdatedAtColumn,
+				currentTimeExpression,
 				archivedAtColumn,
 				idColumn,
 				idColumn,
@@ -227,9 +232,10 @@ WHERE %s IS NULL
 				Name: "UpdateValidIngredientStateLastIndexedAt",
 				Type: ExecRowsType,
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = NOW() WHERE %s = sqlc.arg(%s) AND %s IS NULL;`,
+			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s = sqlc.arg(%s) AND %s IS NULL;`,
 				validIngredientStatesTableName,
 				lastIndexedAtColumn,
+				currentTimeExpression,
 				idColumn,
 				idColumn,
 				archivedAtColumn,

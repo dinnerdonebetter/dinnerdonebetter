@@ -4,15 +4,17 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const userIngredientPreferencesTableName = "user_ingredient_preferences"
+const (
+	userIngredientPreferencesTableName = "user_ingredient_preferences"
+)
 
 var userIngredientPreferencesColumns = []string{
 	idColumn,
 	"ingredient",
 	"rating",
-	"notes",
+	notesColumn,
 	"allergy",
-	"belongs_to_user",
+	belongsToUserColumn,
 	createdAtColumn,
 	lastUpdatedAtColumn,
 	archivedAtColumn,

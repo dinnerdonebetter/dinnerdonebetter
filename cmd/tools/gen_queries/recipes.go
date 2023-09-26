@@ -4,13 +4,15 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const recipesTableName = "recipes"
+const (
+	recipesTableName = "recipes"
+)
 
 var recipesColumns = []string{
 	idColumn,
-	"name",
+	nameColumn,
 	"source",
-	"description",
+	descriptionColumn,
 	"inspired_by_recipe_id",
 	createdAtColumn,
 	lastUpdatedAtColumn,
@@ -18,7 +20,7 @@ var recipesColumns = []string{
 	"created_by_user",
 	"min_estimated_portions",
 	"seal_of_approval",
-	"slug",
+	slugColumn,
 	"portion_name",
 	"plural_portion_name",
 	"max_estimated_portions",

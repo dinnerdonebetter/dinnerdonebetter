@@ -4,12 +4,14 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const mealPlanOptionsTableName = "meal_plan_options"
+const (
+	mealPlanOptionsTableName = "meal_plan_options"
+)
 
 var mealPlanOptionsColumns = []string{
 	idColumn,
 	"meal_id",
-	"notes",
+	notesColumn,
 	"chosen",
 	"tiebroken",
 	"assigned_cook",

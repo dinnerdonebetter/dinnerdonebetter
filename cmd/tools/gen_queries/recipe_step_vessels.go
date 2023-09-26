@@ -4,12 +4,14 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const recipeStepVesselsTableName = "recipe_step_vessels"
+const (
+	recipeStepVesselsTableName = "recipe_step_vessels"
+)
 
 var recipeStepVesselsColumns = []string{
 	idColumn,
-	"name",
-	"notes",
+	nameColumn,
+	notesColumn,
 	"belongs_to_recipe_step",
 	"recipe_step_product_id",
 	"vessel_predicate",

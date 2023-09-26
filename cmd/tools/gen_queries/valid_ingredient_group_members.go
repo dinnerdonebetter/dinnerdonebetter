@@ -4,7 +4,9 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const validIngredientGroupMembersTableName = "valid_ingredient_group_members"
+const (
+	validIngredientGroupMembersTableName = "valid_ingredient_group_members"
+)
 
 var validIngredientGroupMembersColumns = []string{
 	idColumn,

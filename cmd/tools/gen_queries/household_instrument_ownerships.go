@@ -4,11 +4,13 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const householdInstrumentOwnershipsTableName = "household_instrument_ownerships"
+const (
+	householdInstrumentOwnershipsTableName = "household_instrument_ownerships"
+)
 
 var householdInstrumentOwnershipsColumns = []string{
 	idColumn,
-	"notes",
+	notesColumn,
 	"quantity",
 	"valid_instrument_id",
 	belongsToHouseholdColumn,

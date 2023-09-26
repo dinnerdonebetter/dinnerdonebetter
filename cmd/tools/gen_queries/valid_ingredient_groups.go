@@ -7,13 +7,15 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const validIngredientGroupsTableName = "valid_ingredient_groups"
+const (
+	validIngredientGroupsTableName = "valid_ingredient_groups"
+)
 
 var validIngredientGroupsColumns = []string{
 	idColumn,
-	"name",
-	"description",
-	"slug",
+	nameColumn,
+	descriptionColumn,
+	slugColumn,
 	createdAtColumn,
 	lastUpdatedAtColumn,
 	archivedAtColumn,
@@ -39,9 +41,10 @@ func buildValidIngredientGroupsQueries() []*Query {
 				Name: "ArchiveValidIngredientGroup",
 				Type: ExecRowsType,
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = NOW() WHERE %s IS NULL AND %s = sqlc.arg(%s);`,
+			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s IS NULL AND %s = sqlc.arg(%s);`,
 				validIngredientGroupsTableName,
 				archivedAtColumn,
+				currentTimeExpression,
 				archivedAtColumn,
 				idColumn,
 				idColumn,
@@ -53,12 +56,13 @@ func buildValidIngredientGroupsQueries() []*Query {
 				Type: ExecRowsType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
-	%s = NOW()
+	%s = %s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s)
 	AND belongs_to_group = sqlc.arg(group_id);`,
 				validIngredientGroupMembersTableName,
 				archivedAtColumn,
+				currentTimeExpression,
 				archivedAtColumn,
 				idColumn,
 				idColumn,
@@ -271,7 +275,7 @@ WHERE %s.%s IS NULL
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s,
-	%s = NOW()
+	%s = %s
 WHERE %s IS NULL
     AND %s = sqlc.arg(%s);`,
 				validIngredientGroupsTableName,
@@ -279,6 +283,7 @@ WHERE %s IS NULL
 					return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
 				}), ",\n\t"),
 				lastUpdatedAtColumn,
+				currentTimeExpression,
 				archivedAtColumn,
 				idColumn,
 				idColumn,

@@ -4,7 +4,9 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const recipeMediaTableName = "recipe_media"
+const (
+	recipeMediaTableName = "recipe_media"
+)
 
 var recipeMediaColumns = []string{
 	idColumn,

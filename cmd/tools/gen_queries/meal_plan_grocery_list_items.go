@@ -4,7 +4,9 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const mealPlanGroceryListItemsTableName = "meal_plan_grocery_list_items"
+const (
+	mealPlanGroceryListItemsTableName = "meal_plan_grocery_list_items"
+)
 
 var mealPlanGroceryListItemsColumns = []string{
 	idColumn,

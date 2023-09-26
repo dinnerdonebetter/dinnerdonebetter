@@ -4,7 +4,9 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const recipeStepCompletionConditionIngredientsTableName = "recipe_step_completion_condition_ingredients"
+const (
+	recipeStepCompletionConditionIngredientsTableName = "recipe_step_completion_condition_ingredients"
+)
 
 var recipeStepCompletionConditionIngredientsColumns = []string{
 	idColumn,

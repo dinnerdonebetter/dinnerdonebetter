@@ -4,13 +4,15 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const mealPlanOptionVotesTableName = "meal_plan_option_votes"
+const (
+	mealPlanOptionVotesTableName = "meal_plan_option_votes"
+)
 
 var mealPlanOptionVotesColumns = []string{
 	idColumn,
 	"rank",
 	"abstain",
-	"notes",
+	notesColumn,
 	"by_user",
 	"belongs_to_meal_plan_option",
 	createdAtColumn,

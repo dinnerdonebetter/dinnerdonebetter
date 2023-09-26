@@ -4,12 +4,14 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const mealsTableName = "meals"
+const (
+	mealsTableName = "meals"
+)
 
 var mealsColumns = []string{
 	idColumn,
-	"name",
-	"description",
+	nameColumn,
+	descriptionColumn,
 	"created_by_user",
 	"min_estimated_portions",
 	"max_estimated_portions",

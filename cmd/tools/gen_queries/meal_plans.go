@@ -4,11 +4,13 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const mealPlansTableName = "meal_plans"
+const (
+	mealPlansTableName = "meal_plans"
+)
 
 var mealPlansColumns = []string{
 	idColumn,
-	"notes",
+	notesColumn,
 	"status",
 	"voting_deadline",
 	belongsToHouseholdColumn,

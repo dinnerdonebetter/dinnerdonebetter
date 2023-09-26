@@ -27,10 +27,10 @@ func (q *Queries) ArchiveValidIngredientMeasurementUnit(ctx context.Context, db 
 const checkValidIngredientMeasurementUnitExistence = `-- name: CheckValidIngredientMeasurementUnitExistence :one
 
 SELECT EXISTS (
-    SELECT valid_ingredient_measurement_units.id
-    FROM valid_ingredient_measurement_units
-    WHERE valid_ingredient_measurement_units.archived_at IS NULL
-        AND valid_ingredient_measurement_units.id = $1
+	SELECT valid_ingredient_measurement_units.id
+	FROM valid_ingredient_measurement_units
+	WHERE valid_ingredient_measurement_units.archived_at IS NULL
+		AND valid_ingredient_measurement_units.id = $1
 )
 `
 
@@ -96,6 +96,7 @@ SELECT
 	valid_measurement_units.imperial as valid_measurement_unit_imperial,
 	valid_measurement_units.slug as valid_measurement_unit_slug,
 	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.last_indexed_at as valid_measurement_unit_last_indexed_at,
 	valid_measurement_units.created_at as valid_measurement_unit_created_at,
 	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
 	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
@@ -134,6 +135,7 @@ SELECT
 	valid_ingredients.is_fat as valid_ingredient_is_fat,
 	valid_ingredients.is_acid as valid_ingredient_is_acid,
 	valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.last_indexed_at as valid_ingredient_last_indexed_at,
 	valid_ingredients.created_at as valid_ingredient_created_at,
 	valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
 	valid_ingredients.archived_at as valid_ingredient_archived_at,
@@ -145,7 +147,10 @@ SELECT
 FROM valid_ingredient_measurement_units
 	JOIN valid_measurement_units ON valid_ingredient_measurement_units.valid_measurement_unit_id = valid_measurement_units.id
 	JOIN valid_ingredients ON valid_ingredient_measurement_units.valid_ingredient_id = valid_ingredients.id
-WHERE valid_ingredient_measurement_units.archived_at IS NULL
+WHERE
+	valid_ingredient_measurement_units.archived_at IS NULL
+	AND valid_measurement_units.archived_at IS NULL
+	AND valid_ingredients.archived_at IS NULL
 	AND valid_ingredient_measurement_units.id = $1
 `
 
@@ -154,44 +159,45 @@ type GetValidIngredientMeasurementUnitRow struct {
 	ValidIngredientCreatedAt                               time.Time
 	ValidIngredientMeasurementUnitCreatedAt                time.Time
 	ValidMeasurementUnitArchivedAt                         sql.NullTime
-	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
+	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
 	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidIngredientArchivedAt                              sql.NullTime
 	ValidIngredientMeasurementUnitLastUpdatedAt            sql.NullTime
 	ValidIngredientMeasurementUnitArchivedAt               sql.NullTime
+	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
 	ValidMeasurementUnitSlug                               string
-	ValidIngredientSlug                                    string
-	ValidIngredientID                                      string
+	ValidMeasurementUnitDescription                        string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
 	ValidIngredientWarning                                 string
-	ValidIngredientPluralName                              string
 	ValidIngredientIconPath                                string
+	ValidMeasurementUnitPluralName                         string
+	ValidIngredientPluralName                              string
 	ValidMeasurementUnitIconPath                           string
-	ValidMeasurementUnitDescription                        string
 	ValidIngredientMeasurementUnitID                       string
 	ValidIngredientMeasurementUnitMinimumAllowableQuantity string
+	ValidIngredientID                                      string
 	ValidMeasurementUnitName                               string
 	ValidMeasurementUnitID                                 string
 	ValidIngredientMeasurementUnitNotes                    string
 	ValidIngredientShoppingSuggestions                     string
-	ValidMeasurementUnitPluralName                         string
+	ValidIngredientSlug                                    string
 	ValidIngredientStorageInstructions                     string
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMeasurementUnitMaximumAllowableQuantity sql.NullString
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
-	ValidMeasurementUnitVolumetric                         sql.NullBool
 	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientContainsGluten                          bool
-	ValidIngredientAnimalDerived                           bool
-	ValidIngredientVolumetric                              bool
-	ValidIngredientRestrictToPreparations                  bool
+	ValidMeasurementUnitVolumetric                         sql.NullBool
 	ValidIngredientAnimalFlesh                             bool
+	ValidIngredientAnimalDerived                           bool
+	ValidIngredientRestrictToPreparations                  bool
+	ValidIngredientVolumetric                              bool
+	ValidIngredientContainsGluten                          bool
 	ValidIngredientContainsFish                            bool
 	ValidIngredientContainsSesame                          bool
-	ValidIngredientContainsShellfish                       bool
 	ValidIngredientContainsAlcohol                         bool
-	ValidIngredientContainsWheat                           bool
+	ValidIngredientContainsShellfish                       bool
 	ValidIngredientIsStarch                                bool
 	ValidIngredientIsProtein                               bool
 	ValidIngredientIsGrain                                 bool
@@ -200,6 +206,7 @@ type GetValidIngredientMeasurementUnitRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
+	ValidIngredientContainsWheat                           bool
 	ValidIngredientContainsSoy                             bool
 	ValidIngredientContainsTreeNut                         bool
 	ValidIngredientContainsPeanut                          bool
@@ -226,6 +233,7 @@ func (q *Queries) GetValidIngredientMeasurementUnit(ctx context.Context, db DBTX
 		&i.ValidMeasurementUnitImperial,
 		&i.ValidMeasurementUnitSlug,
 		&i.ValidMeasurementUnitPluralName,
+		&i.ValidMeasurementUnitLastIndexedAt,
 		&i.ValidMeasurementUnitCreatedAt,
 		&i.ValidMeasurementUnitLastUpdatedAt,
 		&i.ValidMeasurementUnitArchivedAt,
@@ -264,6 +272,7 @@ func (q *Queries) GetValidIngredientMeasurementUnit(ctx context.Context, db DBTX
 		&i.ValidIngredientIsFat,
 		&i.ValidIngredientIsAcid,
 		&i.ValidIngredientIsHeat,
+		&i.ValidIngredientLastIndexedAt,
 		&i.ValidIngredientCreatedAt,
 		&i.ValidIngredientLastUpdatedAt,
 		&i.ValidIngredientArchivedAt,
@@ -291,6 +300,7 @@ SELECT
 	valid_measurement_units.imperial as valid_measurement_unit_imperial,
 	valid_measurement_units.slug as valid_measurement_unit_slug,
 	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.last_indexed_at as valid_measurement_unit_last_indexed_at,
 	valid_measurement_units.created_at as valid_measurement_unit_created_at,
 	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
 	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
@@ -329,6 +339,7 @@ SELECT
 	valid_ingredients.is_fat as valid_ingredient_is_fat,
 	valid_ingredients.is_acid as valid_ingredient_is_acid,
 	valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.last_indexed_at as valid_ingredient_last_indexed_at,
 	valid_ingredients.created_at as valid_ingredient_created_at,
 	valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
 	valid_ingredients.archived_at as valid_ingredient_archived_at,
@@ -338,88 +349,99 @@ SELECT
 	valid_ingredient_measurement_units.last_updated_at as valid_ingredient_measurement_unit_last_updated_at,
 	valid_ingredient_measurement_units.archived_at as valid_ingredient_measurement_unit_archived_at,
 	(
-		SELECT
-			COUNT(valid_ingredient_measurement_units.id)
-		FROM
-			valid_ingredient_measurement_units
-		WHERE
-			valid_ingredient_measurement_units.archived_at IS NULL
-            AND valid_ingredient_measurement_units.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-            AND valid_ingredient_measurement_units.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-            AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-            AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-	) as filtered_count,
+		SELECT COUNT(valid_ingredient_measurement_units.id)
+		FROM valid_ingredient_measurement_units
+		WHERE valid_ingredient_measurement_units.archived_at IS NULL
+			AND valid_ingredient_measurement_units.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND valid_ingredient_measurement_units.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				valid_ingredient_measurement_units.last_updated_at IS NULL
+				OR valid_ingredient_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				valid_ingredient_measurement_units.last_updated_at IS NULL
+				OR valid_ingredient_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+	) AS filtered_count,
 	(
 		SELECT COUNT(valid_ingredient_measurement_units.id)
 		FROM valid_ingredient_measurement_units
 		WHERE valid_ingredient_measurement_units.archived_at IS NULL
-	) as total_count
+	) AS total_count
 FROM valid_ingredient_measurement_units
 	JOIN valid_measurement_units ON valid_ingredient_measurement_units.valid_measurement_unit_id = valid_measurement_units.id
 	JOIN valid_ingredients ON valid_ingredient_measurement_units.valid_ingredient_id = valid_ingredients.id
-WHERE valid_ingredient_measurement_units.archived_at IS NULL
+WHERE
+	valid_ingredient_measurement_units.archived_at IS NULL
 	AND valid_measurement_units.archived_at IS NULL
 	AND valid_ingredients.archived_at IS NULL
-	AND valid_ingredient_measurement_units.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-	AND valid_ingredient_measurement_units.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-	AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-	AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-OFFSET $5
+	AND valid_ingredient_measurement_units.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND valid_ingredient_measurement_units.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		valid_ingredient_measurement_units.last_updated_at IS NULL
+		OR valid_ingredient_measurement_units.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		valid_ingredient_measurement_units.last_updated_at IS NULL
+		OR valid_ingredient_measurement_units.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
 LIMIT $6
+OFFSET $5
 `
 
 type GetValidIngredientMeasurementUnitsParams struct {
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
-	UpdatedAfter  sql.NullTime
 	UpdatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
 
 type GetValidIngredientMeasurementUnitsRow struct {
+	ValidMeasurementUnitCreatedAt                          time.Time
 	ValidIngredientCreatedAt                               time.Time
 	ValidIngredientMeasurementUnitCreatedAt                time.Time
-	ValidMeasurementUnitCreatedAt                          time.Time
-	ValidIngredientMeasurementUnitArchivedAt               sql.NullTime
+	ValidMeasurementUnitArchivedAt                         sql.NullTime
+	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
 	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidIngredientArchivedAt                              sql.NullTime
 	ValidIngredientMeasurementUnitLastUpdatedAt            sql.NullTime
-	ValidMeasurementUnitArchivedAt                         sql.NullTime
+	ValidIngredientMeasurementUnitArchivedAt               sql.NullTime
 	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
-	ValidIngredientName                                    string
-	ValidIngredientMeasurementUnitMinimumAllowableQuantity string
 	ValidMeasurementUnitPluralName                         string
-	ValidIngredientIconPath                                string
 	ValidIngredientMeasurementUnitID                       string
-	ValidMeasurementUnitIconPath                           string
-	ValidIngredientID                                      string
-	ValidIngredientPluralName                              string
+	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
 	ValidIngredientWarning                                 string
+	ValidIngredientPluralName                              string
+	ValidIngredientIconPath                                string
 	ValidIngredientStorageInstructions                     string
-	ValidMeasurementUnitDescription                        string
-	ValidIngredientSlug                                    string
+	ValidIngredientID                                      string
 	ValidMeasurementUnitSlug                               string
+	ValidMeasurementUnitIconPath                           string
+	ValidIngredientSlug                                    string
+	ValidIngredientMeasurementUnitMinimumAllowableQuantity string
+	ValidMeasurementUnitDescription                        string
 	ValidMeasurementUnitName                               string
 	ValidMeasurementUnitID                                 string
 	ValidIngredientMeasurementUnitNotes                    string
 	ValidIngredientShoppingSuggestions                     string
 	ValidIngredientMeasurementUnitMaximumAllowableQuantity sql.NullString
-	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
-	TotalCount                                             int64
+	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	FilteredCount                                          int64
-	ValidMeasurementUnitVolumetric                         sql.NullBool
+	TotalCount                                             int64
 	ValidIngredientIsLiquid                                sql.NullBool
+	ValidMeasurementUnitVolumetric                         sql.NullBool
 	ValidIngredientAnimalFlesh                             bool
 	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientAnimalDerived                           bool
 	ValidIngredientVolumetric                              bool
 	ValidIngredientContainsGluten                          bool
-	ValidIngredientContainsFish                            bool
 	ValidIngredientContainsAlcohol                         bool
-	ValidIngredientContainsSesame                          bool
+	ValidIngredientContainsFish                            bool
 	ValidIngredientIsStarch                                bool
 	ValidIngredientIsProtein                               bool
 	ValidIngredientIsGrain                                 bool
@@ -428,6 +450,7 @@ type GetValidIngredientMeasurementUnitsRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
+	ValidIngredientContainsSesame                          bool
 	ValidIngredientContainsShellfish                       bool
 	ValidIngredientContainsWheat                           bool
 	ValidIngredientContainsSoy                             bool
@@ -444,8 +467,8 @@ func (q *Queries) GetValidIngredientMeasurementUnits(ctx context.Context, db DBT
 	rows, err := db.QueryContext(ctx, getValidIngredientMeasurementUnits,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
-		arg.UpdatedAfter,
 		arg.UpdatedBefore,
+		arg.UpdatedAfter,
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)
@@ -469,6 +492,7 @@ func (q *Queries) GetValidIngredientMeasurementUnits(ctx context.Context, db DBT
 			&i.ValidMeasurementUnitImperial,
 			&i.ValidMeasurementUnitSlug,
 			&i.ValidMeasurementUnitPluralName,
+			&i.ValidMeasurementUnitLastIndexedAt,
 			&i.ValidMeasurementUnitCreatedAt,
 			&i.ValidMeasurementUnitLastUpdatedAt,
 			&i.ValidMeasurementUnitArchivedAt,
@@ -507,6 +531,7 @@ func (q *Queries) GetValidIngredientMeasurementUnits(ctx context.Context, db DBT
 			&i.ValidIngredientIsFat,
 			&i.ValidIngredientIsAcid,
 			&i.ValidIngredientIsHeat,
+			&i.ValidIngredientLastIndexedAt,
 			&i.ValidIngredientCreatedAt,
 			&i.ValidIngredientLastUpdatedAt,
 			&i.ValidIngredientArchivedAt,
@@ -546,6 +571,7 @@ SELECT
 	valid_measurement_units.imperial as valid_measurement_unit_imperial,
 	valid_measurement_units.slug as valid_measurement_unit_slug,
 	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.last_indexed_at as valid_measurement_unit_last_indexed_at,
 	valid_measurement_units.created_at as valid_measurement_unit_created_at,
 	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
 	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
@@ -584,6 +610,7 @@ SELECT
 	valid_ingredients.is_fat as valid_ingredient_is_fat,
 	valid_ingredients.is_acid as valid_ingredient_is_acid,
 	valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.last_indexed_at as valid_ingredient_last_indexed_at,
 	valid_ingredients.created_at as valid_ingredient_created_at,
 	valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
 	valid_ingredients.archived_at as valid_ingredient_archived_at,
@@ -593,90 +620,101 @@ SELECT
 	valid_ingredient_measurement_units.last_updated_at as valid_ingredient_measurement_unit_last_updated_at,
 	valid_ingredient_measurement_units.archived_at as valid_ingredient_measurement_unit_archived_at,
 	(
-		SELECT
-			COUNT(valid_ingredient_measurement_units.id)
-		FROM
-			valid_ingredient_measurement_units
-		WHERE
-			valid_ingredient_measurement_units.archived_at IS NULL
-            AND valid_ingredient_measurement_units.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-            AND valid_ingredient_measurement_units.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-            AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-            AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-	) as filtered_count,
+		SELECT COUNT(valid_ingredient_measurement_units.id)
+		FROM valid_ingredient_measurement_units
+		WHERE valid_ingredient_measurement_units.archived_at IS NULL
+			AND valid_ingredient_measurement_units.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND valid_ingredient_measurement_units.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				valid_ingredient_measurement_units.last_updated_at IS NULL
+				OR valid_ingredient_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				valid_ingredient_measurement_units.last_updated_at IS NULL
+				OR valid_ingredient_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+	) AS filtered_count,
 	(
 		SELECT COUNT(valid_ingredient_measurement_units.id)
 		FROM valid_ingredient_measurement_units
 		WHERE valid_ingredient_measurement_units.archived_at IS NULL
-	) as total_count
+	) AS total_count
 FROM valid_ingredient_measurement_units
 	JOIN valid_measurement_units ON valid_ingredient_measurement_units.valid_measurement_unit_id = valid_measurement_units.id
 	JOIN valid_ingredients ON valid_ingredient_measurement_units.valid_ingredient_id = valid_ingredients.id
-WHERE valid_ingredient_measurement_units.archived_at IS NULL
+WHERE
+	valid_ingredient_measurement_units.archived_at IS NULL
 	AND valid_measurement_units.archived_at IS NULL
 	AND valid_ingredients.archived_at IS NULL
-	AND valid_ingredient_measurement_units.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-	AND valid_ingredient_measurement_units.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-	AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-	AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
 	AND valid_ingredient_measurement_units.valid_ingredient_id = $5
-OFFSET $6
+	AND valid_ingredient_measurement_units.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND valid_ingredient_measurement_units.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		valid_ingredient_measurement_units.last_updated_at IS NULL
+		OR valid_ingredient_measurement_units.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		valid_ingredient_measurement_units.last_updated_at IS NULL
+		OR valid_ingredient_measurement_units.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
 LIMIT $7
+OFFSET $6
 `
 
 type GetValidIngredientMeasurementUnitsForIngredientParams struct {
 	CreatedAfter      sql.NullTime
 	CreatedBefore     sql.NullTime
-	UpdatedAfter      sql.NullTime
 	UpdatedBefore     sql.NullTime
+	UpdatedAfter      sql.NullTime
 	ValidIngredientID string
 	QueryOffset       sql.NullInt32
 	QueryLimit        sql.NullInt32
 }
 
 type GetValidIngredientMeasurementUnitsForIngredientRow struct {
+	ValidMeasurementUnitCreatedAt                          time.Time
 	ValidIngredientCreatedAt                               time.Time
 	ValidIngredientMeasurementUnitCreatedAt                time.Time
-	ValidMeasurementUnitCreatedAt                          time.Time
-	ValidIngredientMeasurementUnitArchivedAt               sql.NullTime
+	ValidMeasurementUnitArchivedAt                         sql.NullTime
+	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
 	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidIngredientArchivedAt                              sql.NullTime
 	ValidIngredientMeasurementUnitLastUpdatedAt            sql.NullTime
-	ValidMeasurementUnitArchivedAt                         sql.NullTime
+	ValidIngredientMeasurementUnitArchivedAt               sql.NullTime
 	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
-	ValidIngredientName                                    string
-	ValidIngredientMeasurementUnitMinimumAllowableQuantity string
 	ValidMeasurementUnitPluralName                         string
-	ValidIngredientIconPath                                string
 	ValidIngredientMeasurementUnitID                       string
-	ValidMeasurementUnitIconPath                           string
-	ValidIngredientID                                      string
-	ValidIngredientPluralName                              string
+	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
 	ValidIngredientWarning                                 string
+	ValidIngredientPluralName                              string
+	ValidIngredientIconPath                                string
 	ValidIngredientStorageInstructions                     string
-	ValidMeasurementUnitDescription                        string
-	ValidIngredientSlug                                    string
+	ValidIngredientID                                      string
 	ValidMeasurementUnitSlug                               string
+	ValidMeasurementUnitIconPath                           string
+	ValidIngredientSlug                                    string
+	ValidIngredientMeasurementUnitMinimumAllowableQuantity string
+	ValidMeasurementUnitDescription                        string
 	ValidMeasurementUnitName                               string
 	ValidMeasurementUnitID                                 string
 	ValidIngredientMeasurementUnitNotes                    string
 	ValidIngredientShoppingSuggestions                     string
 	ValidIngredientMeasurementUnitMaximumAllowableQuantity sql.NullString
-	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
-	TotalCount                                             int64
+	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	FilteredCount                                          int64
-	ValidMeasurementUnitVolumetric                         sql.NullBool
+	TotalCount                                             int64
 	ValidIngredientIsLiquid                                sql.NullBool
+	ValidMeasurementUnitVolumetric                         sql.NullBool
 	ValidIngredientAnimalFlesh                             bool
 	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientAnimalDerived                           bool
 	ValidIngredientVolumetric                              bool
 	ValidIngredientContainsGluten                          bool
-	ValidIngredientContainsFish                            bool
 	ValidIngredientContainsAlcohol                         bool
-	ValidIngredientContainsSesame                          bool
+	ValidIngredientContainsFish                            bool
 	ValidIngredientIsStarch                                bool
 	ValidIngredientIsProtein                               bool
 	ValidIngredientIsGrain                                 bool
@@ -685,6 +723,7 @@ type GetValidIngredientMeasurementUnitsForIngredientRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
+	ValidIngredientContainsSesame                          bool
 	ValidIngredientContainsShellfish                       bool
 	ValidIngredientContainsWheat                           bool
 	ValidIngredientContainsSoy                             bool
@@ -701,8 +740,8 @@ func (q *Queries) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Co
 	rows, err := db.QueryContext(ctx, getValidIngredientMeasurementUnitsForIngredient,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
-		arg.UpdatedAfter,
 		arg.UpdatedBefore,
+		arg.UpdatedAfter,
 		arg.ValidIngredientID,
 		arg.QueryOffset,
 		arg.QueryLimit,
@@ -727,6 +766,7 @@ func (q *Queries) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Co
 			&i.ValidMeasurementUnitImperial,
 			&i.ValidMeasurementUnitSlug,
 			&i.ValidMeasurementUnitPluralName,
+			&i.ValidMeasurementUnitLastIndexedAt,
 			&i.ValidMeasurementUnitCreatedAt,
 			&i.ValidMeasurementUnitLastUpdatedAt,
 			&i.ValidMeasurementUnitArchivedAt,
@@ -765,6 +805,7 @@ func (q *Queries) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Co
 			&i.ValidIngredientIsFat,
 			&i.ValidIngredientIsAcid,
 			&i.ValidIngredientIsHeat,
+			&i.ValidIngredientLastIndexedAt,
 			&i.ValidIngredientCreatedAt,
 			&i.ValidIngredientLastUpdatedAt,
 			&i.ValidIngredientArchivedAt,
@@ -804,6 +845,7 @@ SELECT
 	valid_measurement_units.imperial as valid_measurement_unit_imperial,
 	valid_measurement_units.slug as valid_measurement_unit_slug,
 	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.last_indexed_at as valid_measurement_unit_last_indexed_at,
 	valid_measurement_units.created_at as valid_measurement_unit_created_at,
 	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
 	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
@@ -842,6 +884,7 @@ SELECT
 	valid_ingredients.is_fat as valid_ingredient_is_fat,
 	valid_ingredients.is_acid as valid_ingredient_is_acid,
 	valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.last_indexed_at as valid_ingredient_last_indexed_at,
 	valid_ingredients.created_at as valid_ingredient_created_at,
 	valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
 	valid_ingredients.archived_at as valid_ingredient_archived_at,
@@ -851,90 +894,101 @@ SELECT
 	valid_ingredient_measurement_units.last_updated_at as valid_ingredient_measurement_unit_last_updated_at,
 	valid_ingredient_measurement_units.archived_at as valid_ingredient_measurement_unit_archived_at,
 	(
-		SELECT
-			COUNT(valid_ingredient_measurement_units.id)
-		FROM
-			valid_ingredient_measurement_units
-		WHERE
-			valid_ingredient_measurement_units.archived_at IS NULL
-            AND valid_ingredient_measurement_units.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-            AND valid_ingredient_measurement_units.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-            AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-            AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-	) as filtered_count,
+		SELECT COUNT(valid_ingredient_measurement_units.id)
+		FROM valid_ingredient_measurement_units
+		WHERE valid_ingredient_measurement_units.archived_at IS NULL
+			AND valid_ingredient_measurement_units.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND valid_ingredient_measurement_units.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				valid_ingredient_measurement_units.last_updated_at IS NULL
+				OR valid_ingredient_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				valid_ingredient_measurement_units.last_updated_at IS NULL
+				OR valid_ingredient_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+	) AS filtered_count,
 	(
 		SELECT COUNT(valid_ingredient_measurement_units.id)
 		FROM valid_ingredient_measurement_units
 		WHERE valid_ingredient_measurement_units.archived_at IS NULL
-	) as total_count
+	) AS total_count
 FROM valid_ingredient_measurement_units
 	JOIN valid_measurement_units ON valid_ingredient_measurement_units.valid_measurement_unit_id = valid_measurement_units.id
 	JOIN valid_ingredients ON valid_ingredient_measurement_units.valid_ingredient_id = valid_ingredients.id
-WHERE valid_ingredient_measurement_units.archived_at IS NULL
+WHERE
+	valid_ingredient_measurement_units.archived_at IS NULL
 	AND valid_measurement_units.archived_at IS NULL
 	AND valid_ingredients.archived_at IS NULL
-	AND valid_ingredient_measurement_units.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-	AND valid_ingredient_measurement_units.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-	AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-	AND (valid_ingredient_measurement_units.last_updated_at IS NULL OR valid_ingredient_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
 	AND valid_ingredient_measurement_units.valid_measurement_unit_id = $5
-OFFSET $6
+	AND valid_ingredient_measurement_units.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND valid_ingredient_measurement_units.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		valid_ingredient_measurement_units.last_updated_at IS NULL
+		OR valid_ingredient_measurement_units.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		valid_ingredient_measurement_units.last_updated_at IS NULL
+		OR valid_ingredient_measurement_units.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
 LIMIT $7
+OFFSET $6
 `
 
 type GetValidIngredientMeasurementUnitsForMeasurementUnitParams struct {
 	CreatedAfter           sql.NullTime
 	CreatedBefore          sql.NullTime
-	UpdatedAfter           sql.NullTime
 	UpdatedBefore          sql.NullTime
+	UpdatedAfter           sql.NullTime
 	ValidMeasurementUnitID string
 	QueryOffset            sql.NullInt32
 	QueryLimit             sql.NullInt32
 }
 
 type GetValidIngredientMeasurementUnitsForMeasurementUnitRow struct {
+	ValidMeasurementUnitCreatedAt                          time.Time
 	ValidIngredientCreatedAt                               time.Time
 	ValidIngredientMeasurementUnitCreatedAt                time.Time
-	ValidMeasurementUnitCreatedAt                          time.Time
-	ValidIngredientMeasurementUnitArchivedAt               sql.NullTime
+	ValidMeasurementUnitArchivedAt                         sql.NullTime
+	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
 	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidIngredientArchivedAt                              sql.NullTime
 	ValidIngredientMeasurementUnitLastUpdatedAt            sql.NullTime
-	ValidMeasurementUnitArchivedAt                         sql.NullTime
+	ValidIngredientMeasurementUnitArchivedAt               sql.NullTime
 	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
-	ValidIngredientName                                    string
-	ValidIngredientMeasurementUnitMinimumAllowableQuantity string
 	ValidMeasurementUnitPluralName                         string
-	ValidIngredientIconPath                                string
 	ValidIngredientMeasurementUnitID                       string
-	ValidMeasurementUnitIconPath                           string
-	ValidIngredientID                                      string
-	ValidIngredientPluralName                              string
+	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
 	ValidIngredientWarning                                 string
+	ValidIngredientPluralName                              string
+	ValidIngredientIconPath                                string
 	ValidIngredientStorageInstructions                     string
-	ValidMeasurementUnitDescription                        string
-	ValidIngredientSlug                                    string
+	ValidIngredientID                                      string
 	ValidMeasurementUnitSlug                               string
+	ValidMeasurementUnitIconPath                           string
+	ValidIngredientSlug                                    string
+	ValidIngredientMeasurementUnitMinimumAllowableQuantity string
+	ValidMeasurementUnitDescription                        string
 	ValidMeasurementUnitName                               string
 	ValidMeasurementUnitID                                 string
 	ValidIngredientMeasurementUnitNotes                    string
 	ValidIngredientShoppingSuggestions                     string
 	ValidIngredientMeasurementUnitMaximumAllowableQuantity sql.NullString
-	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
-	TotalCount                                             int64
+	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	FilteredCount                                          int64
-	ValidMeasurementUnitVolumetric                         sql.NullBool
+	TotalCount                                             int64
 	ValidIngredientIsLiquid                                sql.NullBool
+	ValidMeasurementUnitVolumetric                         sql.NullBool
 	ValidIngredientAnimalFlesh                             bool
 	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientAnimalDerived                           bool
 	ValidIngredientVolumetric                              bool
 	ValidIngredientContainsGluten                          bool
-	ValidIngredientContainsFish                            bool
 	ValidIngredientContainsAlcohol                         bool
-	ValidIngredientContainsSesame                          bool
+	ValidIngredientContainsFish                            bool
 	ValidIngredientIsStarch                                bool
 	ValidIngredientIsProtein                               bool
 	ValidIngredientIsGrain                                 bool
@@ -943,6 +997,7 @@ type GetValidIngredientMeasurementUnitsForMeasurementUnitRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
+	ValidIngredientContainsSesame                          bool
 	ValidIngredientContainsShellfish                       bool
 	ValidIngredientContainsWheat                           bool
 	ValidIngredientContainsSoy                             bool
@@ -959,8 +1014,8 @@ func (q *Queries) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx conte
 	rows, err := db.QueryContext(ctx, getValidIngredientMeasurementUnitsForMeasurementUnit,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
-		arg.UpdatedAfter,
 		arg.UpdatedBefore,
+		arg.UpdatedAfter,
 		arg.ValidMeasurementUnitID,
 		arg.QueryOffset,
 		arg.QueryLimit,
@@ -985,6 +1040,7 @@ func (q *Queries) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx conte
 			&i.ValidMeasurementUnitImperial,
 			&i.ValidMeasurementUnitSlug,
 			&i.ValidMeasurementUnitPluralName,
+			&i.ValidMeasurementUnitLastIndexedAt,
 			&i.ValidMeasurementUnitCreatedAt,
 			&i.ValidMeasurementUnitLastUpdatedAt,
 			&i.ValidMeasurementUnitArchivedAt,
@@ -1023,6 +1079,7 @@ func (q *Queries) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx conte
 			&i.ValidIngredientIsFat,
 			&i.ValidIngredientIsAcid,
 			&i.ValidIngredientIsHeat,
+			&i.ValidIngredientLastIndexedAt,
 			&i.ValidIngredientCreatedAt,
 			&i.ValidIngredientLastUpdatedAt,
 			&i.ValidIngredientArchivedAt,
@@ -1049,8 +1106,7 @@ func (q *Queries) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx conte
 
 const updateValidIngredientMeasurementUnit = `-- name: UpdateValidIngredientMeasurementUnit :execrows
 
-UPDATE valid_ingredient_measurement_units
-SET
+UPDATE valid_ingredient_measurement_units SET
 	notes = $1,
 	valid_measurement_unit_id = $2,
 	valid_ingredient_id = $3,

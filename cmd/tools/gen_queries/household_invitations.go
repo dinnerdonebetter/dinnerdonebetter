@@ -7,7 +7,9 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const householdInvitationsTableName = "household_invitations"
+const (
+	householdInvitationsTableName = "household_invitations"
+)
 
 var householdInvitationsColumns = []string{
 	idColumn,
@@ -55,10 +57,13 @@ func buildHouseholdInvitationsQueries() []*Query {
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	to_user = sqlc.arg(user_id),
-	last_updated_at = NOW()
-WHERE archived_at IS NULL
+	%s = %s
+WHERE %s IS NULL
 	AND to_email = LOWER(sqlc.arg(email_address));`,
 				householdInvitationsTableName,
+				lastUpdatedAtColumn,
+				currentTimeExpression,
+				archivedAtColumn,
 			)),
 		},
 		{
@@ -106,11 +111,12 @@ FROM %s
 	JOIN households ON household_invitations.destination_household = households.id
 	JOIN users ON household_invitations.from_user = users.id
 WHERE household_invitations.archived_at IS NULL
-	AND household_invitations.expires_at > NOW()
+	AND household_invitations.expires_at > %s
 	AND household_invitations.to_email = LOWER(sqlc.arg(email_address))
 	AND household_invitations.token = sqlc.arg(token);`,
 				strings.Join(fullSelectColumns, ",\n\t"),
 				householdInvitationsTableName,
+				currentTimeExpression,
 			)),
 		},
 		{
@@ -124,12 +130,12 @@ FROM %s
 	JOIN households ON household_invitations.destination_household = households.id
 	JOIN users ON household_invitations.from_user = users.id
 WHERE household_invitations.archived_at IS NULL
-	AND household_invitations.expires_at > NOW()
-	AND household_invitations.expires_at > NOW()
+	AND household_invitations.expires_at > %s
 	AND household_invitations.destination_household = $1
 	AND household_invitations.id = $2;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
 				householdInvitationsTableName,
+				currentTimeExpression,
 			)),
 		},
 		{
@@ -143,11 +149,12 @@ FROM %s
 	JOIN households ON household_invitations.destination_household = households.id
 	JOIN users ON household_invitations.from_user = users.id
 WHERE household_invitations.archived_at IS NULL
-	AND household_invitations.expires_at > NOW()
+	AND household_invitations.expires_at > %s
 	AND household_invitations.token = $1
 	AND household_invitations.id = $2;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
 				householdInvitationsTableName,
+				currentTimeExpression,
 			)),
 		},
 		{
@@ -224,11 +231,18 @@ WHERE household_invitations.archived_at IS NULL
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	status = sqlc.arg(status),
 	status_note = sqlc.arg(status_note),
-	last_updated_at = NOW(),
-	archived_at = NOW()
-WHERE archived_at IS NULL
-	AND id = sqlc.arg(id);`,
+	%s = %s,
+	%s = %s
+WHERE %s IS NULL
+	AND %s = sqlc.arg(%s);`,
 				householdInvitationsTableName,
+				lastUpdatedAtColumn,
+				currentTimeExpression,
+				archivedAtColumn,
+				currentTimeExpression,
+				archivedAtColumn,
+				idColumn,
+				idColumn,
 			)),
 		},
 	}

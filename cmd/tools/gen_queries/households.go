@@ -7,16 +7,18 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const householdsTableName = "households"
+const (
+	householdsTableName = "households"
+)
 
 var householdsColumns = []string{
 	idColumn,
-	"name",
+	nameColumn,
 	"billing_status",
 	"contact_phone",
 	"payment_processor_customer_id",
 	"subscription_plan_id",
-	"belongs_to_user",
+	belongsToUserColumn,
 	"time_zone",
 	"address_line_1",
 	"address_line_2",
@@ -59,15 +61,21 @@ func buildHouseholdsQueries() []*Query {
 				Type: ExecRowsType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
-	%s = NOW(),
-	%s = NOW()
+	%s = %s,
+	%s = %s
 WHERE %s IS NULL
-	AND belongs_to_user = sqlc.arg(belongs_to_user)
-	AND id = sqlc.arg(id);`,
+	AND %s = sqlc.arg(%s)
+	AND %s = sqlc.arg(%s);`,
 				householdsTableName,
 				lastUpdatedAtColumn,
+				currentTimeExpression,
 				archivedAtColumn,
+				currentTimeExpression,
 				archivedAtColumn,
+				belongsToUserColumn,
+				belongsToUserColumn,
+				idColumn,
+				idColumn,
 			)),
 		},
 		{
@@ -181,10 +189,10 @@ WHERE households.archived_at IS NULL
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s,
-	last_updated_at = NOW()
-WHERE archived_at IS NULL
-	AND belongs_to_user = sqlc.arg(belongs_to_user)
-	AND id = sqlc.arg(id);`,
+	%s = %s
+WHERE %s IS NULL
+	AND %s = sqlc.arg(%s)
+	AND %s = sqlc.arg(%s);`,
 				householdsTableName,
 				strings.Join(
 					applyToEach(
@@ -193,7 +201,7 @@ WHERE archived_at IS NULL
 							"billing_status",
 							"payment_processor_customer_id",
 							"subscription_plan_id",
-							"belongs_to_user",
+							belongsToUserColumn,
 							"time_zone",
 							"last_payment_provider_sync_occurred_at",
 							"webhook_hmac_secret",
@@ -204,6 +212,13 @@ WHERE archived_at IS NULL
 					),
 					",\n\t",
 				),
+				lastUpdatedAtColumn,
+				currentTimeExpression,
+				archivedAtColumn,
+				belongsToUserColumn,
+				belongsToUserColumn,
+				idColumn,
+				idColumn,
 			)),
 		},
 		{
@@ -214,13 +229,18 @@ WHERE archived_at IS NULL
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s
 SET
     webhook_hmac_secret = sqlc.arg(webhook_hmac_secret),
-    %s = NOW()
+    %s = %s
 WHERE %s IS NULL
-    AND belongs_to_user = sqlc.arg(belongs_to_user)
-    AND id = sqlc.arg(id);`,
+    AND %s = sqlc.arg(%s)
+    AND %s = sqlc.arg(%s);`,
 				householdsTableName,
 				lastUpdatedAtColumn,
+				currentTimeExpression,
 				archivedAtColumn,
+				belongsToUserColumn,
+				belongsToUserColumn,
+				idColumn,
+				idColumn,
 			)),
 		},
 	}

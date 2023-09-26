@@ -4,7 +4,9 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const recipeStepsTableName = "recipe_steps"
+const (
+	recipeStepsTableName = "recipe_steps"
+)
 
 var recipeStepsColumns = []string{
 	idColumn,
@@ -13,7 +15,7 @@ var recipeStepsColumns = []string{
 	"minimum_estimated_time_in_seconds",
 	"maximum_estimated_time_in_seconds",
 	"minimum_temperature_in_celsius",
-	"notes",
+	notesColumn,
 	"belongs_to_recipe",
 	"optional",
 	"maximum_temperature_in_celsius",

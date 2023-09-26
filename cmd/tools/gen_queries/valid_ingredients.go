@@ -7,12 +7,15 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const validIngredientsTableName = "valid_ingredients"
+const (
+	validIngredientsTableName = "valid_ingredients"
+	validIngredientIDColumn   = "valid_ingredient_id"
+)
 
 var validIngredientsColumns = []string{
 	idColumn,
-	"name",
-	"description",
+	nameColumn,
+	descriptionColumn,
 	"warning",
 	"contains_egg",
 	"contains_dairy",
@@ -27,14 +30,14 @@ var validIngredientsColumns = []string{
 	"animal_flesh",
 	"volumetric",
 	"is_liquid",
-	"icon_path",
+	iconPathColumn,
 	"animal_derived",
-	"plural_name",
+	pluralNameColumn,
 	"restrict_to_preparations",
 	"minimum_ideal_storage_temperature_in_celsius",
 	"maximum_ideal_storage_temperature_in_celsius",
 	"storage_instructions",
-	"slug",
+	slugColumn,
 	"contains_alcohol",
 	"shopping_suggestions",
 	"is_starch",
@@ -60,9 +63,10 @@ func buildValidIngredientsQueries() []*Query {
 				Name: "ArchiveValidIngredient",
 				Type: ExecRowsType,
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = NOW() WHERE %s IS NULL AND %s = sqlc.arg(%s);`,
+			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s IS NULL AND %s = sqlc.arg(%s);`,
 				validIngredientsTableName,
 				archivedAtColumn,
+				currentTimeExpression,
 				archivedAtColumn,
 				idColumn,
 				idColumn,
@@ -161,7 +165,7 @@ FROM %s
 WHERE %s.%s IS NULL
     AND (
     %s.%s IS NULL
-    OR %s.%s < NOW() - '24 hours'::INTERVAL
+    OR %s.%s < %s - '24 hours'::INTERVAL
 );`,
 				validIngredientsTableName,
 				idColumn,
@@ -172,6 +176,7 @@ WHERE %s.%s IS NULL
 				lastIndexedAtColumn,
 				validIngredientsTableName,
 				lastIndexedAtColumn,
+				currentTimeExpression,
 			)),
 		},
 		{
@@ -288,7 +293,7 @@ WHERE valid_ingredient_preparations.archived_at IS NULL
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s,
-	%s = NOW()
+	%s = %s
 WHERE %s IS NULL
     AND %s = sqlc.arg(%s);`,
 				validIngredientsTableName,
@@ -302,6 +307,7 @@ WHERE %s IS NULL
 					}
 				}), ",\n\t"),
 				lastUpdatedAtColumn,
+				currentTimeExpression,
 				archivedAtColumn,
 				idColumn,
 				idColumn,
@@ -312,9 +318,10 @@ WHERE %s IS NULL
 				Name: "UpdateValidIngredientLastIndexedAt",
 				Type: ExecRowsType,
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = NOW() WHERE %s = sqlc.arg(%s) AND %s IS NULL;`,
+			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s = sqlc.arg(%s) AND %s IS NULL;`,
 				validIngredientsTableName,
 				lastIndexedAtColumn,
+				currentTimeExpression,
 				idColumn,
 				idColumn,
 				archivedAtColumn,

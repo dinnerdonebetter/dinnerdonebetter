@@ -29,10 +29,10 @@ func (q *Queries) ArchiveValidIngredientStateIngredient(ctx context.Context, db 
 const checkValidIngredientStateIngredientExistence = `-- name: CheckValidIngredientStateIngredientExistence :one
 
 SELECT EXISTS (
-    SELECT valid_ingredient_state_ingredients.id
-    FROM valid_ingredient_state_ingredients
-    WHERE valid_ingredient_state_ingredients.archived_at IS NULL
-        AND valid_ingredient_state_ingredients.id = $1
+	SELECT valid_ingredient_state_ingredients.id
+	FROM valid_ingredient_state_ingredients
+	WHERE valid_ingredient_state_ingredients.archived_at IS NULL
+		AND valid_ingredient_state_ingredients.id = $1
 )
 `
 
@@ -69,15 +69,15 @@ func (q *Queries) CheckValidityOfValidIngredientStateIngredientPair(ctx context.
 const createValidIngredientStateIngredient = `-- name: CreateValidIngredientStateIngredient :exec
 
 INSERT INTO valid_ingredient_state_ingredients (
-    id,
-    notes,
-    valid_ingredient_state,
-    valid_ingredient
+	id,
+	notes,
+	valid_ingredient_state,
+	valid_ingredient
 ) VALUES (
-    $1,
-    $2,
-    $3,
-    $4
+	$1,
+	$2,
+	$3,
+	$4
 )
 `
 
@@ -105,11 +105,12 @@ SELECT
 	valid_ingredient_state_ingredients.notes as valid_ingredient_state_ingredient_notes,
 	valid_ingredient_states.id as valid_ingredient_state_id,
 	valid_ingredient_states.name as valid_ingredient_state_name,
-    valid_ingredient_states.description as valid_ingredient_state_description,
-	valid_ingredient_states.icon_path as valid_ingredient_state_icon_path,
-	valid_ingredient_states.slug as valid_ingredient_state_slug,
 	valid_ingredient_states.past_tense as valid_ingredient_state_past_tense,
+	valid_ingredient_states.slug as valid_ingredient_state_slug,
+	valid_ingredient_states.description as valid_ingredient_state_description,
+	valid_ingredient_states.icon_path as valid_ingredient_state_icon_path,
 	valid_ingredient_states.attribute_type as valid_ingredient_state_attribute_type,
+	valid_ingredient_states.last_indexed_at as valid_ingredient_state_last_indexed_at,
 	valid_ingredient_states.created_at as valid_ingredient_state_created_at,
 	valid_ingredient_states.last_updated_at as valid_ingredient_state_last_updated_at,
 	valid_ingredient_states.archived_at as valid_ingredient_state_archived_at,
@@ -140,67 +141,74 @@ SELECT
 	valid_ingredients.slug as valid_ingredient_slug,
 	valid_ingredients.contains_alcohol as valid_ingredient_contains_alcohol,
 	valid_ingredients.shopping_suggestions as valid_ingredient_shopping_suggestions,
-    valid_ingredients.is_starch as valid_ingredient_is_starch,
-    valid_ingredients.is_protein as valid_ingredient_is_protein,
-    valid_ingredients.is_grain as valid_ingredient_is_grain,
-    valid_ingredients.is_fruit as valid_ingredient_is_fruit,
-    valid_ingredients.is_salt as valid_ingredient_is_salt,
-    valid_ingredients.is_fat as valid_ingredient_is_fat,
-    valid_ingredients.is_acid as valid_ingredient_is_acid,
-    valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.is_starch as valid_ingredient_is_starch,
+	valid_ingredients.is_protein as valid_ingredient_is_protein,
+	valid_ingredients.is_grain as valid_ingredient_is_grain,
+	valid_ingredients.is_fruit as valid_ingredient_is_fruit,
+	valid_ingredients.is_salt as valid_ingredient_is_salt,
+	valid_ingredients.is_fat as valid_ingredient_is_fat,
+	valid_ingredients.is_acid as valid_ingredient_is_acid,
+	valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.last_indexed_at as valid_ingredient_last_indexed_at,
 	valid_ingredients.created_at as valid_ingredient_created_at,
 	valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
 	valid_ingredients.archived_at as valid_ingredient_archived_at,
+	valid_ingredient_state_ingredients.valid_ingredient_state as valid_ingredient_state_ingredient_valid_ingredient_state,
+	valid_ingredient_state_ingredients.valid_ingredient as valid_ingredient_state_ingredient_valid_ingredient,
 	valid_ingredient_state_ingredients.created_at as valid_ingredient_state_ingredient_created_at,
 	valid_ingredient_state_ingredients.last_updated_at as valid_ingredient_state_ingredient_last_updated_at,
 	valid_ingredient_state_ingredients.archived_at as valid_ingredient_state_ingredient_archived_at
 FROM valid_ingredient_state_ingredients
 	JOIN valid_ingredients ON valid_ingredient_state_ingredients.valid_ingredient = valid_ingredients.id
 	JOIN valid_ingredient_states ON valid_ingredient_state_ingredients.valid_ingredient_state = valid_ingredient_states.id
-WHERE valid_ingredient_state_ingredients.archived_at IS NULL
+WHERE
+	valid_ingredient_state_ingredients.archived_at IS NULL
+	AND valid_ingredients.archived_at IS NULL
+	AND valid_ingredient_states.archived_at IS NULL
 	AND valid_ingredient_state_ingredients.id = $1
 `
 
 type GetValidIngredientStateIngredientRow struct {
-	ValidIngredientStateCreatedAt                          time.Time
 	ValidIngredientCreatedAt                               time.Time
 	ValidIngredientStateIngredientCreatedAt                time.Time
-	ValidIngredientStateIngredientArchivedAt               sql.NullTime
+	ValidIngredientStateCreatedAt                          time.Time
 	ValidIngredientStateLastUpdatedAt                      sql.NullTime
-	ValidIngredientStateArchivedAt                         sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
 	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidIngredientArchivedAt                              sql.NullTime
 	ValidIngredientStateIngredientLastUpdatedAt            sql.NullTime
-	ValidIngredientStateDescription                        string
-	ValidIngredientPluralName                              string
+	ValidIngredientStateIngredientArchivedAt               sql.NullTime
+	ValidIngredientStateArchivedAt                         sql.NullTime
+	ValidIngredientStateLastIndexedAt                      sql.NullTime
 	ValidIngredientStateAttributeType                      IngredientAttributeType
+	ValidIngredientStatePastTense                          string
 	ValidIngredientID                                      string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
 	ValidIngredientWarning                                 string
-	ValidIngredientIconPath                                string
-	ValidIngredientStorageInstructions                     string
-	ValidIngredientStateSlug                               string
 	ValidIngredientStateIconPath                           string
-	ValidIngredientStatePastTense                          string
+	ValidIngredientStateDescription                        string
+	ValidIngredientStateSlug                               string
+	ValidIngredientStateIngredientValidIngredient          string
+	ValidIngredientStateIngredientValidIngredientState     string
+	ValidIngredientPluralName                              string
 	ValidIngredientStateName                               string
 	ValidIngredientStateID                                 string
 	ValidIngredientStateIngredientNotes                    string
 	ValidIngredientShoppingSuggestions                     string
-	ValidIngredientSlug                                    string
 	ValidIngredientStateIngredientID                       string
-	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientSlug                                    string
+	ValidIngredientStorageInstructions                     string
+	ValidIngredientIconPath                                string
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientContainsFish                            bool
-	ValidIngredientAnimalDerived                           bool
-	ValidIngredientRestrictToPreparations                  bool
-	ValidIngredientVolumetric                              bool
 	ValidIngredientAnimalFlesh                             bool
-	ValidIngredientContainsGluten                          bool
-	ValidIngredientContainsSesame                          bool
+	ValidIngredientRestrictToPreparations                  bool
+	ValidIngredientAnimalDerived                           bool
+	ValidIngredientVolumetric                              bool
 	ValidIngredientContainsAlcohol                         bool
-	ValidIngredientContainsShellfish                       bool
+	ValidIngredientContainsGluten                          bool
 	ValidIngredientIsStarch                                bool
 	ValidIngredientIsProtein                               bool
 	ValidIngredientIsGrain                                 bool
@@ -209,6 +217,9 @@ type GetValidIngredientStateIngredientRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
+	ValidIngredientContainsFish                            bool
+	ValidIngredientContainsSesame                          bool
+	ValidIngredientContainsShellfish                       bool
 	ValidIngredientContainsWheat                           bool
 	ValidIngredientContainsSoy                             bool
 	ValidIngredientContainsTreeNut                         bool
@@ -225,11 +236,12 @@ func (q *Queries) GetValidIngredientStateIngredient(ctx context.Context, db DBTX
 		&i.ValidIngredientStateIngredientNotes,
 		&i.ValidIngredientStateID,
 		&i.ValidIngredientStateName,
+		&i.ValidIngredientStatePastTense,
+		&i.ValidIngredientStateSlug,
 		&i.ValidIngredientStateDescription,
 		&i.ValidIngredientStateIconPath,
-		&i.ValidIngredientStateSlug,
-		&i.ValidIngredientStatePastTense,
 		&i.ValidIngredientStateAttributeType,
+		&i.ValidIngredientStateLastIndexedAt,
 		&i.ValidIngredientStateCreatedAt,
 		&i.ValidIngredientStateLastUpdatedAt,
 		&i.ValidIngredientStateArchivedAt,
@@ -268,9 +280,12 @@ func (q *Queries) GetValidIngredientStateIngredient(ctx context.Context, db DBTX
 		&i.ValidIngredientIsFat,
 		&i.ValidIngredientIsAcid,
 		&i.ValidIngredientIsHeat,
+		&i.ValidIngredientLastIndexedAt,
 		&i.ValidIngredientCreatedAt,
 		&i.ValidIngredientLastUpdatedAt,
 		&i.ValidIngredientArchivedAt,
+		&i.ValidIngredientStateIngredientValidIngredientState,
+		&i.ValidIngredientStateIngredientValidIngredient,
 		&i.ValidIngredientStateIngredientCreatedAt,
 		&i.ValidIngredientStateIngredientLastUpdatedAt,
 		&i.ValidIngredientStateIngredientArchivedAt,
@@ -285,11 +300,12 @@ SELECT
 	valid_ingredient_state_ingredients.notes as valid_ingredient_state_ingredient_notes,
 	valid_ingredient_states.id as valid_ingredient_state_id,
 	valid_ingredient_states.name as valid_ingredient_state_name,
-    valid_ingredient_states.description as valid_ingredient_state_description,
-	valid_ingredient_states.icon_path as valid_ingredient_state_icon_path,
-	valid_ingredient_states.slug as valid_ingredient_state_slug,
 	valid_ingredient_states.past_tense as valid_ingredient_state_past_tense,
+	valid_ingredient_states.slug as valid_ingredient_state_slug,
+	valid_ingredient_states.description as valid_ingredient_state_description,
+	valid_ingredient_states.icon_path as valid_ingredient_state_icon_path,
 	valid_ingredient_states.attribute_type as valid_ingredient_state_attribute_type,
+	valid_ingredient_states.last_indexed_at as valid_ingredient_state_last_indexed_at,
 	valid_ingredient_states.created_at as valid_ingredient_state_created_at,
 	valid_ingredient_states.last_updated_at as valid_ingredient_state_last_updated_at,
 	valid_ingredient_states.archived_at as valid_ingredient_state_archived_at,
@@ -320,98 +336,114 @@ SELECT
 	valid_ingredients.slug as valid_ingredient_slug,
 	valid_ingredients.contains_alcohol as valid_ingredient_contains_alcohol,
 	valid_ingredients.shopping_suggestions as valid_ingredient_shopping_suggestions,
-    valid_ingredients.is_starch as valid_ingredient_is_starch,
-    valid_ingredients.is_protein as valid_ingredient_is_protein,
-    valid_ingredients.is_grain as valid_ingredient_is_grain,
-    valid_ingredients.is_fruit as valid_ingredient_is_fruit,
-    valid_ingredients.is_salt as valid_ingredient_is_salt,
-    valid_ingredients.is_fat as valid_ingredient_is_fat,
-    valid_ingredients.is_acid as valid_ingredient_is_acid,
-    valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.is_starch as valid_ingredient_is_starch,
+	valid_ingredients.is_protein as valid_ingredient_is_protein,
+	valid_ingredients.is_grain as valid_ingredient_is_grain,
+	valid_ingredients.is_fruit as valid_ingredient_is_fruit,
+	valid_ingredients.is_salt as valid_ingredient_is_salt,
+	valid_ingredients.is_fat as valid_ingredient_is_fat,
+	valid_ingredients.is_acid as valid_ingredient_is_acid,
+	valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.last_indexed_at as valid_ingredient_last_indexed_at,
 	valid_ingredients.created_at as valid_ingredient_created_at,
 	valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
 	valid_ingredients.archived_at as valid_ingredient_archived_at,
+	valid_ingredient_state_ingredients.valid_ingredient_state as valid_ingredient_state_ingredient_valid_ingredient_state,
+	valid_ingredient_state_ingredients.valid_ingredient as valid_ingredient_state_ingredient_valid_ingredient,
 	valid_ingredient_state_ingredients.created_at as valid_ingredient_state_ingredient_created_at,
 	valid_ingredient_state_ingredients.last_updated_at as valid_ingredient_state_ingredient_last_updated_at,
 	valid_ingredient_state_ingredients.archived_at as valid_ingredient_state_ingredient_archived_at,
-    (
-        SELECT
-            COUNT(valid_ingredient_state_ingredients.id)
-        FROM
-            valid_ingredient_state_ingredients
-        WHERE
-            valid_ingredient_state_ingredients.archived_at IS NULL
-            AND valid_ingredient_state_ingredients.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-            AND valid_ingredient_state_ingredients.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-            AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-            AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-    ) as filtered_count,
-    (
-        SELECT COUNT(valid_ingredient_state_ingredients.id)
-        FROM valid_ingredient_state_ingredients
-        WHERE valid_ingredient_state_ingredients.archived_at IS NULL
-    ) as total_count
+	(
+		SELECT COUNT(valid_ingredient_state_ingredients.id)
+		FROM valid_ingredient_state_ingredients
+		WHERE valid_ingredient_state_ingredients.archived_at IS NULL
+			AND valid_ingredient_state_ingredients.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND valid_ingredient_state_ingredients.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				valid_ingredient_state_ingredients.last_updated_at IS NULL
+				OR valid_ingredient_state_ingredients.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				valid_ingredient_state_ingredients.last_updated_at IS NULL
+				OR valid_ingredient_state_ingredients.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+	) AS filtered_count,
+	(
+		SELECT COUNT(valid_ingredient_state_ingredients.id)
+		FROM valid_ingredient_state_ingredients
+		WHERE valid_ingredient_state_ingredients.archived_at IS NULL
+	) AS total_count
 FROM valid_ingredient_state_ingredients
 	JOIN valid_ingredients ON valid_ingredient_state_ingredients.valid_ingredient = valid_ingredients.id
 	JOIN valid_ingredient_states ON valid_ingredient_state_ingredients.valid_ingredient_state = valid_ingredient_states.id
-WHERE valid_ingredient_state_ingredients.archived_at IS NULL
-    AND valid_ingredient_state_ingredients.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-    AND valid_ingredient_state_ingredients.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-    AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-    AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-OFFSET $5
+WHERE
+	valid_ingredient_state_ingredients.archived_at IS NULL
+	AND valid_ingredients.archived_at IS NULL
+	AND valid_ingredient_states.archived_at IS NULL
+	AND valid_ingredient_state_ingredients.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND valid_ingredient_state_ingredients.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		valid_ingredient_state_ingredients.last_updated_at IS NULL
+		OR valid_ingredient_state_ingredients.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		valid_ingredient_state_ingredients.last_updated_at IS NULL
+		OR valid_ingredient_state_ingredients.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
 LIMIT $6
+OFFSET $5
 `
 
 type GetValidIngredientStateIngredientsParams struct {
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
-	UpdatedAfter  sql.NullTime
 	UpdatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
 
 type GetValidIngredientStateIngredientsRow struct {
-	ValidIngredientStateCreatedAt                          time.Time
 	ValidIngredientCreatedAt                               time.Time
 	ValidIngredientStateIngredientCreatedAt                time.Time
-	ValidIngredientStateIngredientArchivedAt               sql.NullTime
+	ValidIngredientStateCreatedAt                          time.Time
 	ValidIngredientStateLastUpdatedAt                      sql.NullTime
-	ValidIngredientStateArchivedAt                         sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
 	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidIngredientArchivedAt                              sql.NullTime
 	ValidIngredientStateIngredientLastUpdatedAt            sql.NullTime
-	ValidIngredientStateIconPath                           string
-	ValidIngredientStateSlug                               string
-	ValidIngredientStateAttributeType                      IngredientAttributeType
+	ValidIngredientStateIngredientArchivedAt               sql.NullTime
+	ValidIngredientStateArchivedAt                         sql.NullTime
+	ValidIngredientStateLastIndexedAt                      sql.NullTime
+	ValidIngredientStateIngredientID                       string
+	ValidIngredientIconPath                                string
 	ValidIngredientID                                      string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
 	ValidIngredientWarning                                 string
-	ValidIngredientIconPath                                string
-	ValidIngredientPluralName                              string
-	ValidIngredientStorageInstructions                     string
 	ValidIngredientSlug                                    string
-	ValidIngredientStatePastTense                          string
-	ValidIngredientShoppingSuggestions                     string
+	ValidIngredientPluralName                              string
+	ValidIngredientStateIconPath                           string
 	ValidIngredientStateDescription                        string
+	ValidIngredientStateSlug                               string
+	ValidIngredientStateIngredientValidIngredient          string
+	ValidIngredientStateIngredientValidIngredientState     string
+	ValidIngredientStatePastTense                          string
 	ValidIngredientStateName                               string
 	ValidIngredientStateID                                 string
+	ValidIngredientStorageInstructions                     string
 	ValidIngredientStateIngredientNotes                    string
-	ValidIngredientStateIngredientID                       string
+	ValidIngredientShoppingSuggestions                     string
+	ValidIngredientStateAttributeType                      IngredientAttributeType
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	FilteredCount                                          int64
 	TotalCount                                             int64
 	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientContainsFish                            bool
-	ValidIngredientRestrictToPreparations                  bool
-	ValidIngredientAnimalDerived                           bool
-	ValidIngredientVolumetric                              bool
 	ValidIngredientAnimalFlesh                             bool
+	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientContainsAlcohol                         bool
-	ValidIngredientContainsGluten                          bool
+	ValidIngredientAnimalDerived                           bool
 	ValidIngredientIsStarch                                bool
 	ValidIngredientIsProtein                               bool
 	ValidIngredientIsGrain                                 bool
@@ -420,6 +452,9 @@ type GetValidIngredientStateIngredientsRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
+	ValidIngredientVolumetric                              bool
+	ValidIngredientContainsGluten                          bool
+	ValidIngredientContainsFish                            bool
 	ValidIngredientContainsSesame                          bool
 	ValidIngredientContainsShellfish                       bool
 	ValidIngredientContainsWheat                           bool
@@ -434,8 +469,8 @@ func (q *Queries) GetValidIngredientStateIngredients(ctx context.Context, db DBT
 	rows, err := db.QueryContext(ctx, getValidIngredientStateIngredients,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
-		arg.UpdatedAfter,
 		arg.UpdatedBefore,
+		arg.UpdatedAfter,
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)
@@ -451,11 +486,12 @@ func (q *Queries) GetValidIngredientStateIngredients(ctx context.Context, db DBT
 			&i.ValidIngredientStateIngredientNotes,
 			&i.ValidIngredientStateID,
 			&i.ValidIngredientStateName,
+			&i.ValidIngredientStatePastTense,
+			&i.ValidIngredientStateSlug,
 			&i.ValidIngredientStateDescription,
 			&i.ValidIngredientStateIconPath,
-			&i.ValidIngredientStateSlug,
-			&i.ValidIngredientStatePastTense,
 			&i.ValidIngredientStateAttributeType,
+			&i.ValidIngredientStateLastIndexedAt,
 			&i.ValidIngredientStateCreatedAt,
 			&i.ValidIngredientStateLastUpdatedAt,
 			&i.ValidIngredientStateArchivedAt,
@@ -494,9 +530,12 @@ func (q *Queries) GetValidIngredientStateIngredients(ctx context.Context, db DBT
 			&i.ValidIngredientIsFat,
 			&i.ValidIngredientIsAcid,
 			&i.ValidIngredientIsHeat,
+			&i.ValidIngredientLastIndexedAt,
 			&i.ValidIngredientCreatedAt,
 			&i.ValidIngredientLastUpdatedAt,
 			&i.ValidIngredientArchivedAt,
+			&i.ValidIngredientStateIngredientValidIngredientState,
+			&i.ValidIngredientStateIngredientValidIngredient,
 			&i.ValidIngredientStateIngredientCreatedAt,
 			&i.ValidIngredientStateIngredientLastUpdatedAt,
 			&i.ValidIngredientStateIngredientArchivedAt,
@@ -523,11 +562,12 @@ SELECT
 	valid_ingredient_state_ingredients.notes as valid_ingredient_state_ingredient_notes,
 	valid_ingredient_states.id as valid_ingredient_state_id,
 	valid_ingredient_states.name as valid_ingredient_state_name,
-    valid_ingredient_states.description as valid_ingredient_state_description,
-	valid_ingredient_states.icon_path as valid_ingredient_state_icon_path,
-	valid_ingredient_states.slug as valid_ingredient_state_slug,
 	valid_ingredient_states.past_tense as valid_ingredient_state_past_tense,
+	valid_ingredient_states.slug as valid_ingredient_state_slug,
+	valid_ingredient_states.description as valid_ingredient_state_description,
+	valid_ingredient_states.icon_path as valid_ingredient_state_icon_path,
 	valid_ingredient_states.attribute_type as valid_ingredient_state_attribute_type,
+	valid_ingredient_states.last_indexed_at as valid_ingredient_state_last_indexed_at,
 	valid_ingredient_states.created_at as valid_ingredient_state_created_at,
 	valid_ingredient_states.last_updated_at as valid_ingredient_state_last_updated_at,
 	valid_ingredient_states.archived_at as valid_ingredient_state_archived_at,
@@ -558,100 +598,116 @@ SELECT
 	valid_ingredients.slug as valid_ingredient_slug,
 	valid_ingredients.contains_alcohol as valid_ingredient_contains_alcohol,
 	valid_ingredients.shopping_suggestions as valid_ingredient_shopping_suggestions,
-    valid_ingredients.is_starch as valid_ingredient_is_starch,
-    valid_ingredients.is_protein as valid_ingredient_is_protein,
-    valid_ingredients.is_grain as valid_ingredient_is_grain,
-    valid_ingredients.is_fruit as valid_ingredient_is_fruit,
-    valid_ingredients.is_salt as valid_ingredient_is_salt,
-    valid_ingredients.is_fat as valid_ingredient_is_fat,
-    valid_ingredients.is_acid as valid_ingredient_is_acid,
-    valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.is_starch as valid_ingredient_is_starch,
+	valid_ingredients.is_protein as valid_ingredient_is_protein,
+	valid_ingredients.is_grain as valid_ingredient_is_grain,
+	valid_ingredients.is_fruit as valid_ingredient_is_fruit,
+	valid_ingredients.is_salt as valid_ingredient_is_salt,
+	valid_ingredients.is_fat as valid_ingredient_is_fat,
+	valid_ingredients.is_acid as valid_ingredient_is_acid,
+	valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.last_indexed_at as valid_ingredient_last_indexed_at,
 	valid_ingredients.created_at as valid_ingredient_created_at,
 	valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
 	valid_ingredients.archived_at as valid_ingredient_archived_at,
+	valid_ingredient_state_ingredients.valid_ingredient_state as valid_ingredient_state_ingredient_valid_ingredient_state,
+	valid_ingredient_state_ingredients.valid_ingredient as valid_ingredient_state_ingredient_valid_ingredient,
 	valid_ingredient_state_ingredients.created_at as valid_ingredient_state_ingredient_created_at,
 	valid_ingredient_state_ingredients.last_updated_at as valid_ingredient_state_ingredient_last_updated_at,
 	valid_ingredient_state_ingredients.archived_at as valid_ingredient_state_ingredient_archived_at,
-    (
-        SELECT
-            COUNT(valid_ingredient_state_ingredients.id)
-        FROM
-            valid_ingredient_state_ingredients
-        WHERE
-            valid_ingredient_state_ingredients.archived_at IS NULL
-          AND valid_ingredient_state_ingredients.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-          AND valid_ingredient_state_ingredients.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-          AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-          AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-    ) as filtered_count,
-    (
-        SELECT COUNT(valid_ingredient_state_ingredients.id)
-        FROM valid_ingredient_state_ingredients
-        WHERE valid_ingredient_state_ingredients.archived_at IS NULL
-    ) as total_count
+	(
+		SELECT COUNT(valid_ingredient_state_ingredients.id)
+		FROM valid_ingredient_state_ingredients
+		WHERE valid_ingredient_state_ingredients.archived_at IS NULL
+			AND valid_ingredient_state_ingredients.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND valid_ingredient_state_ingredients.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				valid_ingredient_state_ingredients.last_updated_at IS NULL
+				OR valid_ingredient_state_ingredients.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				valid_ingredient_state_ingredients.last_updated_at IS NULL
+				OR valid_ingredient_state_ingredients.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+	) AS filtered_count,
+	(
+		SELECT COUNT(valid_ingredient_state_ingredients.id)
+		FROM valid_ingredient_state_ingredients
+		WHERE valid_ingredient_state_ingredients.archived_at IS NULL
+	) AS total_count
 FROM valid_ingredient_state_ingredients
 	JOIN valid_ingredients ON valid_ingredient_state_ingredients.valid_ingredient = valid_ingredients.id
 	JOIN valid_ingredient_states ON valid_ingredient_state_ingredients.valid_ingredient_state = valid_ingredient_states.id
-WHERE valid_ingredient_state_ingredients.archived_at IS NULL
-    AND valid_ingredient_state_ingredients.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-    AND valid_ingredient_state_ingredients.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-    AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-    AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-    AND valid_ingredient_state_ingredients.valid_ingredient = $5
-OFFSET $6
+WHERE
+	valid_ingredient_state_ingredients.archived_at IS NULL
+	AND valid_ingredients.archived_at IS NULL
+	AND valid_ingredient_states.archived_at IS NULL
+	AND valid_ingredient_state_ingredients.valid_ingredient = $5
+	AND valid_ingredient_state_ingredients.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND valid_ingredient_state_ingredients.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		valid_ingredient_state_ingredients.last_updated_at IS NULL
+		OR valid_ingredient_state_ingredients.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		valid_ingredient_state_ingredients.last_updated_at IS NULL
+		OR valid_ingredient_state_ingredients.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
 LIMIT $7
+OFFSET $6
 `
 
 type GetValidIngredientStateIngredientsForIngredientParams struct {
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
-	UpdatedAfter    sql.NullTime
 	UpdatedBefore   sql.NullTime
+	UpdatedAfter    sql.NullTime
 	ValidIngredient string
 	QueryOffset     sql.NullInt32
 	QueryLimit      sql.NullInt32
 }
 
 type GetValidIngredientStateIngredientsForIngredientRow struct {
-	ValidIngredientStateCreatedAt                          time.Time
 	ValidIngredientCreatedAt                               time.Time
 	ValidIngredientStateIngredientCreatedAt                time.Time
-	ValidIngredientStateIngredientArchivedAt               sql.NullTime
+	ValidIngredientStateCreatedAt                          time.Time
 	ValidIngredientStateLastUpdatedAt                      sql.NullTime
-	ValidIngredientStateArchivedAt                         sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
 	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidIngredientArchivedAt                              sql.NullTime
 	ValidIngredientStateIngredientLastUpdatedAt            sql.NullTime
-	ValidIngredientStateIconPath                           string
-	ValidIngredientStateSlug                               string
-	ValidIngredientStateAttributeType                      IngredientAttributeType
+	ValidIngredientStateIngredientArchivedAt               sql.NullTime
+	ValidIngredientStateArchivedAt                         sql.NullTime
+	ValidIngredientStateLastIndexedAt                      sql.NullTime
+	ValidIngredientStateIngredientID                       string
+	ValidIngredientIconPath                                string
 	ValidIngredientID                                      string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
 	ValidIngredientWarning                                 string
-	ValidIngredientIconPath                                string
-	ValidIngredientPluralName                              string
-	ValidIngredientStorageInstructions                     string
 	ValidIngredientSlug                                    string
-	ValidIngredientStatePastTense                          string
-	ValidIngredientShoppingSuggestions                     string
+	ValidIngredientPluralName                              string
+	ValidIngredientStateIconPath                           string
 	ValidIngredientStateDescription                        string
+	ValidIngredientStateSlug                               string
+	ValidIngredientStateIngredientValidIngredient          string
+	ValidIngredientStateIngredientValidIngredientState     string
+	ValidIngredientStatePastTense                          string
 	ValidIngredientStateName                               string
 	ValidIngredientStateID                                 string
+	ValidIngredientStorageInstructions                     string
 	ValidIngredientStateIngredientNotes                    string
-	ValidIngredientStateIngredientID                       string
+	ValidIngredientShoppingSuggestions                     string
+	ValidIngredientStateAttributeType                      IngredientAttributeType
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	FilteredCount                                          int64
 	TotalCount                                             int64
 	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientContainsFish                            bool
-	ValidIngredientRestrictToPreparations                  bool
-	ValidIngredientAnimalDerived                           bool
-	ValidIngredientVolumetric                              bool
 	ValidIngredientAnimalFlesh                             bool
+	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientContainsAlcohol                         bool
-	ValidIngredientContainsGluten                          bool
+	ValidIngredientAnimalDerived                           bool
 	ValidIngredientIsStarch                                bool
 	ValidIngredientIsProtein                               bool
 	ValidIngredientIsGrain                                 bool
@@ -660,6 +716,9 @@ type GetValidIngredientStateIngredientsForIngredientRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
+	ValidIngredientVolumetric                              bool
+	ValidIngredientContainsGluten                          bool
+	ValidIngredientContainsFish                            bool
 	ValidIngredientContainsSesame                          bool
 	ValidIngredientContainsShellfish                       bool
 	ValidIngredientContainsWheat                           bool
@@ -674,8 +733,8 @@ func (q *Queries) GetValidIngredientStateIngredientsForIngredient(ctx context.Co
 	rows, err := db.QueryContext(ctx, getValidIngredientStateIngredientsForIngredient,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
-		arg.UpdatedAfter,
 		arg.UpdatedBefore,
+		arg.UpdatedAfter,
 		arg.ValidIngredient,
 		arg.QueryOffset,
 		arg.QueryLimit,
@@ -692,11 +751,12 @@ func (q *Queries) GetValidIngredientStateIngredientsForIngredient(ctx context.Co
 			&i.ValidIngredientStateIngredientNotes,
 			&i.ValidIngredientStateID,
 			&i.ValidIngredientStateName,
+			&i.ValidIngredientStatePastTense,
+			&i.ValidIngredientStateSlug,
 			&i.ValidIngredientStateDescription,
 			&i.ValidIngredientStateIconPath,
-			&i.ValidIngredientStateSlug,
-			&i.ValidIngredientStatePastTense,
 			&i.ValidIngredientStateAttributeType,
+			&i.ValidIngredientStateLastIndexedAt,
 			&i.ValidIngredientStateCreatedAt,
 			&i.ValidIngredientStateLastUpdatedAt,
 			&i.ValidIngredientStateArchivedAt,
@@ -735,9 +795,12 @@ func (q *Queries) GetValidIngredientStateIngredientsForIngredient(ctx context.Co
 			&i.ValidIngredientIsFat,
 			&i.ValidIngredientIsAcid,
 			&i.ValidIngredientIsHeat,
+			&i.ValidIngredientLastIndexedAt,
 			&i.ValidIngredientCreatedAt,
 			&i.ValidIngredientLastUpdatedAt,
 			&i.ValidIngredientArchivedAt,
+			&i.ValidIngredientStateIngredientValidIngredientState,
+			&i.ValidIngredientStateIngredientValidIngredient,
 			&i.ValidIngredientStateIngredientCreatedAt,
 			&i.ValidIngredientStateIngredientLastUpdatedAt,
 			&i.ValidIngredientStateIngredientArchivedAt,
@@ -764,11 +827,12 @@ SELECT
 	valid_ingredient_state_ingredients.notes as valid_ingredient_state_ingredient_notes,
 	valid_ingredient_states.id as valid_ingredient_state_id,
 	valid_ingredient_states.name as valid_ingredient_state_name,
-    valid_ingredient_states.description as valid_ingredient_state_description,
-	valid_ingredient_states.icon_path as valid_ingredient_state_icon_path,
-	valid_ingredient_states.slug as valid_ingredient_state_slug,
 	valid_ingredient_states.past_tense as valid_ingredient_state_past_tense,
+	valid_ingredient_states.slug as valid_ingredient_state_slug,
+	valid_ingredient_states.description as valid_ingredient_state_description,
+	valid_ingredient_states.icon_path as valid_ingredient_state_icon_path,
 	valid_ingredient_states.attribute_type as valid_ingredient_state_attribute_type,
+	valid_ingredient_states.last_indexed_at as valid_ingredient_state_last_indexed_at,
 	valid_ingredient_states.created_at as valid_ingredient_state_created_at,
 	valid_ingredient_states.last_updated_at as valid_ingredient_state_last_updated_at,
 	valid_ingredient_states.archived_at as valid_ingredient_state_archived_at,
@@ -799,100 +863,116 @@ SELECT
 	valid_ingredients.slug as valid_ingredient_slug,
 	valid_ingredients.contains_alcohol as valid_ingredient_contains_alcohol,
 	valid_ingredients.shopping_suggestions as valid_ingredient_shopping_suggestions,
-    valid_ingredients.is_starch as valid_ingredient_is_starch,
-    valid_ingredients.is_protein as valid_ingredient_is_protein,
-    valid_ingredients.is_grain as valid_ingredient_is_grain,
-    valid_ingredients.is_fruit as valid_ingredient_is_fruit,
-    valid_ingredients.is_salt as valid_ingredient_is_salt,
-    valid_ingredients.is_fat as valid_ingredient_is_fat,
-    valid_ingredients.is_acid as valid_ingredient_is_acid,
-    valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.is_starch as valid_ingredient_is_starch,
+	valid_ingredients.is_protein as valid_ingredient_is_protein,
+	valid_ingredients.is_grain as valid_ingredient_is_grain,
+	valid_ingredients.is_fruit as valid_ingredient_is_fruit,
+	valid_ingredients.is_salt as valid_ingredient_is_salt,
+	valid_ingredients.is_fat as valid_ingredient_is_fat,
+	valid_ingredients.is_acid as valid_ingredient_is_acid,
+	valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.last_indexed_at as valid_ingredient_last_indexed_at,
 	valid_ingredients.created_at as valid_ingredient_created_at,
 	valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
 	valid_ingredients.archived_at as valid_ingredient_archived_at,
+	valid_ingredient_state_ingredients.valid_ingredient_state as valid_ingredient_state_ingredient_valid_ingredient_state,
+	valid_ingredient_state_ingredients.valid_ingredient as valid_ingredient_state_ingredient_valid_ingredient,
 	valid_ingredient_state_ingredients.created_at as valid_ingredient_state_ingredient_created_at,
 	valid_ingredient_state_ingredients.last_updated_at as valid_ingredient_state_ingredient_last_updated_at,
 	valid_ingredient_state_ingredients.archived_at as valid_ingredient_state_ingredient_archived_at,
-    (
-        SELECT
-            COUNT(valid_ingredient_state_ingredients.id)
-        FROM
-            valid_ingredient_state_ingredients
-        WHERE
-            valid_ingredient_state_ingredients.archived_at IS NULL
-            AND valid_ingredient_state_ingredients.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-            AND valid_ingredient_state_ingredients.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-            AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-            AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-    ) as filtered_count,
-    (
-        SELECT COUNT(valid_ingredient_state_ingredients.id)
-        FROM valid_ingredient_state_ingredients
-        WHERE valid_ingredient_state_ingredients.archived_at IS NULL
-    ) as total_count
+	(
+		SELECT COUNT(valid_ingredient_state_ingredients.id)
+		FROM valid_ingredient_state_ingredients
+		WHERE valid_ingredient_state_ingredients.archived_at IS NULL
+			AND valid_ingredient_state_ingredients.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND valid_ingredient_state_ingredients.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				valid_ingredient_state_ingredients.last_updated_at IS NULL
+				OR valid_ingredient_state_ingredients.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				valid_ingredient_state_ingredients.last_updated_at IS NULL
+				OR valid_ingredient_state_ingredients.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+	) AS filtered_count,
+	(
+		SELECT COUNT(valid_ingredient_state_ingredients.id)
+		FROM valid_ingredient_state_ingredients
+		WHERE valid_ingredient_state_ingredients.archived_at IS NULL
+	) AS total_count
 FROM valid_ingredient_state_ingredients
 	JOIN valid_ingredients ON valid_ingredient_state_ingredients.valid_ingredient = valid_ingredients.id
 	JOIN valid_ingredient_states ON valid_ingredient_state_ingredients.valid_ingredient_state = valid_ingredient_states.id
-WHERE valid_ingredient_state_ingredients.archived_at IS NULL
-    AND valid_ingredient_state_ingredients.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-    AND valid_ingredient_state_ingredients.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-    AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-    AND (valid_ingredient_state_ingredients.last_updated_at IS NULL OR valid_ingredient_state_ingredients.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-    AND valid_ingredient_state_ingredients.valid_ingredient_state = $5
-OFFSET $6
+WHERE
+	valid_ingredient_state_ingredients.archived_at IS NULL
+	AND valid_ingredients.archived_at IS NULL
+	AND valid_ingredient_states.archived_at IS NULL
+	AND valid_ingredient_state_ingredients.valid_ingredient_state = $5
+	AND valid_ingredient_state_ingredients.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND valid_ingredient_state_ingredients.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		valid_ingredient_state_ingredients.last_updated_at IS NULL
+		OR valid_ingredient_state_ingredients.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		valid_ingredient_state_ingredients.last_updated_at IS NULL
+		OR valid_ingredient_state_ingredients.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
 LIMIT $7
+OFFSET $6
 `
 
 type GetValidIngredientStateIngredientsForIngredientStateParams struct {
 	CreatedAfter         sql.NullTime
 	CreatedBefore        sql.NullTime
-	UpdatedAfter         sql.NullTime
 	UpdatedBefore        sql.NullTime
+	UpdatedAfter         sql.NullTime
 	ValidIngredientState string
 	QueryOffset          sql.NullInt32
 	QueryLimit           sql.NullInt32
 }
 
 type GetValidIngredientStateIngredientsForIngredientStateRow struct {
-	ValidIngredientStateCreatedAt                          time.Time
 	ValidIngredientCreatedAt                               time.Time
 	ValidIngredientStateIngredientCreatedAt                time.Time
-	ValidIngredientStateIngredientArchivedAt               sql.NullTime
+	ValidIngredientStateCreatedAt                          time.Time
 	ValidIngredientStateLastUpdatedAt                      sql.NullTime
-	ValidIngredientStateArchivedAt                         sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
 	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidIngredientArchivedAt                              sql.NullTime
 	ValidIngredientStateIngredientLastUpdatedAt            sql.NullTime
-	ValidIngredientStateIconPath                           string
-	ValidIngredientStateSlug                               string
-	ValidIngredientStateAttributeType                      IngredientAttributeType
+	ValidIngredientStateIngredientArchivedAt               sql.NullTime
+	ValidIngredientStateArchivedAt                         sql.NullTime
+	ValidIngredientStateLastIndexedAt                      sql.NullTime
+	ValidIngredientStateIngredientID                       string
+	ValidIngredientIconPath                                string
 	ValidIngredientID                                      string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
 	ValidIngredientWarning                                 string
-	ValidIngredientIconPath                                string
-	ValidIngredientPluralName                              string
-	ValidIngredientStorageInstructions                     string
 	ValidIngredientSlug                                    string
-	ValidIngredientStatePastTense                          string
-	ValidIngredientShoppingSuggestions                     string
+	ValidIngredientPluralName                              string
+	ValidIngredientStateIconPath                           string
 	ValidIngredientStateDescription                        string
+	ValidIngredientStateSlug                               string
+	ValidIngredientStateIngredientValidIngredient          string
+	ValidIngredientStateIngredientValidIngredientState     string
+	ValidIngredientStatePastTense                          string
 	ValidIngredientStateName                               string
 	ValidIngredientStateID                                 string
+	ValidIngredientStorageInstructions                     string
 	ValidIngredientStateIngredientNotes                    string
-	ValidIngredientStateIngredientID                       string
+	ValidIngredientShoppingSuggestions                     string
+	ValidIngredientStateAttributeType                      IngredientAttributeType
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	FilteredCount                                          int64
 	TotalCount                                             int64
 	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientContainsFish                            bool
-	ValidIngredientRestrictToPreparations                  bool
-	ValidIngredientAnimalDerived                           bool
-	ValidIngredientVolumetric                              bool
 	ValidIngredientAnimalFlesh                             bool
+	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientContainsAlcohol                         bool
-	ValidIngredientContainsGluten                          bool
+	ValidIngredientAnimalDerived                           bool
 	ValidIngredientIsStarch                                bool
 	ValidIngredientIsProtein                               bool
 	ValidIngredientIsGrain                                 bool
@@ -901,6 +981,9 @@ type GetValidIngredientStateIngredientsForIngredientStateRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
+	ValidIngredientVolumetric                              bool
+	ValidIngredientContainsGluten                          bool
+	ValidIngredientContainsFish                            bool
 	ValidIngredientContainsSesame                          bool
 	ValidIngredientContainsShellfish                       bool
 	ValidIngredientContainsWheat                           bool
@@ -915,8 +998,8 @@ func (q *Queries) GetValidIngredientStateIngredientsForIngredientState(ctx conte
 	rows, err := db.QueryContext(ctx, getValidIngredientStateIngredientsForIngredientState,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
-		arg.UpdatedAfter,
 		arg.UpdatedBefore,
+		arg.UpdatedAfter,
 		arg.ValidIngredientState,
 		arg.QueryOffset,
 		arg.QueryLimit,
@@ -933,11 +1016,12 @@ func (q *Queries) GetValidIngredientStateIngredientsForIngredientState(ctx conte
 			&i.ValidIngredientStateIngredientNotes,
 			&i.ValidIngredientStateID,
 			&i.ValidIngredientStateName,
+			&i.ValidIngredientStatePastTense,
+			&i.ValidIngredientStateSlug,
 			&i.ValidIngredientStateDescription,
 			&i.ValidIngredientStateIconPath,
-			&i.ValidIngredientStateSlug,
-			&i.ValidIngredientStatePastTense,
 			&i.ValidIngredientStateAttributeType,
+			&i.ValidIngredientStateLastIndexedAt,
 			&i.ValidIngredientStateCreatedAt,
 			&i.ValidIngredientStateLastUpdatedAt,
 			&i.ValidIngredientStateArchivedAt,
@@ -976,9 +1060,12 @@ func (q *Queries) GetValidIngredientStateIngredientsForIngredientState(ctx conte
 			&i.ValidIngredientIsFat,
 			&i.ValidIngredientIsAcid,
 			&i.ValidIngredientIsHeat,
+			&i.ValidIngredientLastIndexedAt,
 			&i.ValidIngredientCreatedAt,
 			&i.ValidIngredientLastUpdatedAt,
 			&i.ValidIngredientArchivedAt,
+			&i.ValidIngredientStateIngredientValidIngredientState,
+			&i.ValidIngredientStateIngredientValidIngredient,
 			&i.ValidIngredientStateIngredientCreatedAt,
 			&i.ValidIngredientStateIngredientLastUpdatedAt,
 			&i.ValidIngredientStateIngredientArchivedAt,
@@ -1005,11 +1092,12 @@ SELECT
 	valid_ingredient_state_ingredients.notes as valid_ingredient_state_ingredient_notes,
 	valid_ingredient_states.id as valid_ingredient_state_id,
 	valid_ingredient_states.name as valid_ingredient_state_name,
-    valid_ingredient_states.description as valid_ingredient_state_description,
-	valid_ingredient_states.icon_path as valid_ingredient_state_icon_path,
-	valid_ingredient_states.slug as valid_ingredient_state_slug,
 	valid_ingredient_states.past_tense as valid_ingredient_state_past_tense,
+	valid_ingredient_states.slug as valid_ingredient_state_slug,
+	valid_ingredient_states.description as valid_ingredient_state_description,
+	valid_ingredient_states.icon_path as valid_ingredient_state_icon_path,
 	valid_ingredient_states.attribute_type as valid_ingredient_state_attribute_type,
+	valid_ingredient_states.last_indexed_at as valid_ingredient_state_last_indexed_at,
 	valid_ingredient_states.created_at as valid_ingredient_state_created_at,
 	valid_ingredient_states.last_updated_at as valid_ingredient_state_last_updated_at,
 	valid_ingredient_states.archived_at as valid_ingredient_state_archived_at,
@@ -1040,67 +1128,74 @@ SELECT
 	valid_ingredients.slug as valid_ingredient_slug,
 	valid_ingredients.contains_alcohol as valid_ingredient_contains_alcohol,
 	valid_ingredients.shopping_suggestions as valid_ingredient_shopping_suggestions,
-    valid_ingredients.is_starch as valid_ingredient_is_starch,
-    valid_ingredients.is_protein as valid_ingredient_is_protein,
-    valid_ingredients.is_grain as valid_ingredient_is_grain,
-    valid_ingredients.is_fruit as valid_ingredient_is_fruit,
-    valid_ingredients.is_salt as valid_ingredient_is_salt,
-    valid_ingredients.is_fat as valid_ingredient_is_fat,
-    valid_ingredients.is_acid as valid_ingredient_is_acid,
-    valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.is_starch as valid_ingredient_is_starch,
+	valid_ingredients.is_protein as valid_ingredient_is_protein,
+	valid_ingredients.is_grain as valid_ingredient_is_grain,
+	valid_ingredients.is_fruit as valid_ingredient_is_fruit,
+	valid_ingredients.is_salt as valid_ingredient_is_salt,
+	valid_ingredients.is_fat as valid_ingredient_is_fat,
+	valid_ingredients.is_acid as valid_ingredient_is_acid,
+	valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.last_indexed_at as valid_ingredient_last_indexed_at,
 	valid_ingredients.created_at as valid_ingredient_created_at,
 	valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
 	valid_ingredients.archived_at as valid_ingredient_archived_at,
+	valid_ingredient_state_ingredients.valid_ingredient_state as valid_ingredient_state_ingredient_valid_ingredient_state,
+	valid_ingredient_state_ingredients.valid_ingredient as valid_ingredient_state_ingredient_valid_ingredient,
 	valid_ingredient_state_ingredients.created_at as valid_ingredient_state_ingredient_created_at,
 	valid_ingredient_state_ingredients.last_updated_at as valid_ingredient_state_ingredient_last_updated_at,
 	valid_ingredient_state_ingredients.archived_at as valid_ingredient_state_ingredient_archived_at
 FROM valid_ingredient_state_ingredients
 	JOIN valid_ingredients ON valid_ingredient_state_ingredients.valid_ingredient = valid_ingredients.id
 	JOIN valid_ingredient_states ON valid_ingredient_state_ingredients.valid_ingredient_state = valid_ingredient_states.id
-WHERE valid_ingredient_state_ingredients.archived_at IS NULL
-    AND valid_ingredient_states_ingredients.id = ANY($1::text[])
+WHERE
+	valid_ingredient_state_ingredients.archived_at IS NULL
+	AND valid_ingredients.archived_at IS NULL
+	AND valid_ingredient_states.archived_at IS NULL
+	AND valid_ingredient_state_ingredients.id = ANY($1::text[])
 `
 
 type GetValidIngredientStateIngredientsWithIDsRow struct {
-	ValidIngredientStateCreatedAt                          time.Time
 	ValidIngredientCreatedAt                               time.Time
 	ValidIngredientStateIngredientCreatedAt                time.Time
-	ValidIngredientStateIngredientArchivedAt               sql.NullTime
+	ValidIngredientStateCreatedAt                          time.Time
 	ValidIngredientStateLastUpdatedAt                      sql.NullTime
-	ValidIngredientStateArchivedAt                         sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
 	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidIngredientArchivedAt                              sql.NullTime
 	ValidIngredientStateIngredientLastUpdatedAt            sql.NullTime
-	ValidIngredientStateDescription                        string
-	ValidIngredientPluralName                              string
+	ValidIngredientStateIngredientArchivedAt               sql.NullTime
+	ValidIngredientStateArchivedAt                         sql.NullTime
+	ValidIngredientStateLastIndexedAt                      sql.NullTime
 	ValidIngredientStateAttributeType                      IngredientAttributeType
+	ValidIngredientStatePastTense                          string
 	ValidIngredientID                                      string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
 	ValidIngredientWarning                                 string
-	ValidIngredientIconPath                                string
-	ValidIngredientStorageInstructions                     string
-	ValidIngredientStateSlug                               string
 	ValidIngredientStateIconPath                           string
-	ValidIngredientStatePastTense                          string
+	ValidIngredientStateDescription                        string
+	ValidIngredientStateSlug                               string
+	ValidIngredientStateIngredientValidIngredient          string
+	ValidIngredientStateIngredientValidIngredientState     string
+	ValidIngredientPluralName                              string
 	ValidIngredientStateName                               string
 	ValidIngredientStateID                                 string
 	ValidIngredientStateIngredientNotes                    string
 	ValidIngredientShoppingSuggestions                     string
-	ValidIngredientSlug                                    string
 	ValidIngredientStateIngredientID                       string
-	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientSlug                                    string
+	ValidIngredientStorageInstructions                     string
+	ValidIngredientIconPath                                string
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientContainsFish                            bool
-	ValidIngredientAnimalDerived                           bool
-	ValidIngredientRestrictToPreparations                  bool
-	ValidIngredientVolumetric                              bool
 	ValidIngredientAnimalFlesh                             bool
-	ValidIngredientContainsGluten                          bool
-	ValidIngredientContainsSesame                          bool
+	ValidIngredientRestrictToPreparations                  bool
+	ValidIngredientAnimalDerived                           bool
+	ValidIngredientVolumetric                              bool
 	ValidIngredientContainsAlcohol                         bool
-	ValidIngredientContainsShellfish                       bool
+	ValidIngredientContainsGluten                          bool
 	ValidIngredientIsStarch                                bool
 	ValidIngredientIsProtein                               bool
 	ValidIngredientIsGrain                                 bool
@@ -1109,6 +1204,9 @@ type GetValidIngredientStateIngredientsWithIDsRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
+	ValidIngredientContainsFish                            bool
+	ValidIngredientContainsSesame                          bool
+	ValidIngredientContainsShellfish                       bool
 	ValidIngredientContainsWheat                           bool
 	ValidIngredientContainsSoy                             bool
 	ValidIngredientContainsTreeNut                         bool
@@ -1131,11 +1229,12 @@ func (q *Queries) GetValidIngredientStateIngredientsWithIDs(ctx context.Context,
 			&i.ValidIngredientStateIngredientNotes,
 			&i.ValidIngredientStateID,
 			&i.ValidIngredientStateName,
+			&i.ValidIngredientStatePastTense,
+			&i.ValidIngredientStateSlug,
 			&i.ValidIngredientStateDescription,
 			&i.ValidIngredientStateIconPath,
-			&i.ValidIngredientStateSlug,
-			&i.ValidIngredientStatePastTense,
 			&i.ValidIngredientStateAttributeType,
+			&i.ValidIngredientStateLastIndexedAt,
 			&i.ValidIngredientStateCreatedAt,
 			&i.ValidIngredientStateLastUpdatedAt,
 			&i.ValidIngredientStateArchivedAt,
@@ -1174,9 +1273,12 @@ func (q *Queries) GetValidIngredientStateIngredientsWithIDs(ctx context.Context,
 			&i.ValidIngredientIsFat,
 			&i.ValidIngredientIsAcid,
 			&i.ValidIngredientIsHeat,
+			&i.ValidIngredientLastIndexedAt,
 			&i.ValidIngredientCreatedAt,
 			&i.ValidIngredientLastUpdatedAt,
 			&i.ValidIngredientArchivedAt,
+			&i.ValidIngredientStateIngredientValidIngredientState,
+			&i.ValidIngredientStateIngredientValidIngredient,
 			&i.ValidIngredientStateIngredientCreatedAt,
 			&i.ValidIngredientStateIngredientLastUpdatedAt,
 			&i.ValidIngredientStateIngredientArchivedAt,
@@ -1197,12 +1299,12 @@ func (q *Queries) GetValidIngredientStateIngredientsWithIDs(ctx context.Context,
 const updateValidIngredientStateIngredient = `-- name: UpdateValidIngredientStateIngredient :execrows
 
 UPDATE valid_ingredient_state_ingredients SET
-    notes = $1,
-    valid_ingredient_state = $2,
-    valid_ingredient = $3,
-    last_updated_at = NOW()
+	notes = $1,
+	valid_ingredient_state = $2,
+	valid_ingredient = $3,
+	last_updated_at = NOW()
 WHERE archived_at IS NULL
-    AND id = $4
+	AND id = $4
 `
 
 type UpdateValidIngredientStateIngredientParams struct {

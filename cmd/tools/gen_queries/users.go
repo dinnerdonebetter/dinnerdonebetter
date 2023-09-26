@@ -10,8 +10,10 @@ import (
 const (
 	usersTableName = "users"
 
-	lastAcceptedTOSColumn           = "last_accepted_terms_of_service"
-	lastAcceptedPrivacyPolicyColumn = "last_accepted_privacy_policy"
+	userAccountStatusColumn            = "user_account_status"
+	userAccountStatusExplanationColumn = "user_account_status_explanation"
+	lastAcceptedTOSColumn              = "last_accepted_terms_of_service"
+	lastAcceptedPrivacyPolicyColumn    = "last_accepted_privacy_policy"
 )
 
 var usersColumns = []string{
@@ -25,8 +27,8 @@ var usersColumns = []string{
 	"two_factor_secret",
 	"two_factor_secret_verified_at",
 	"service_role",
-	"user_account_status",
-	"user_account_status_explanation",
+	userAccountStatusColumn,
+	userAccountStatusExplanationColumn,
 	"birthday",
 	"email_address_verification_token",
 	"email_address_verified_at",
@@ -45,18 +47,20 @@ func buildUpdateHouseholdMembershipsQuery(ownershipColumn string, nowColumns []s
 
 	addendum := ""
 	for _, col := range nowColumns {
-		addendum = fmt.Sprintf(",\n\t%s = NOW()", col)
+		addendum = fmt.Sprintf(",\n\t%s = %s", col, currentTimeExpression)
 	}
 
 	builder := updateQueryBuilder.Addf(
 		`UPDATE %s 
-SET %s = NOW()%s
-WHERE %s IS NULL AND %s = sqlc.arg(id);`,
+SET %s = %s%s
+WHERE %s IS NULL AND %s = sqlc.arg(%s);`,
 		householdUserMembershipsTableName,
 		archivedAtColumn,
+		currentTimeExpression,
 		addendum,
 		archivedAtColumn,
 		ownershipColumn,
+		idColumn,
 	)
 
 	return buildRawQuery(builder)
@@ -67,16 +71,21 @@ func buildUserUpdateQuery(columnName string, nowColumns []string) string {
 
 	addendum := ""
 	for _, col := range nowColumns {
-		addendum = fmt.Sprintf(",\n\t%s = NOW()", col)
+		addendum = fmt.Sprintf(",\n\t%s = %s", col, currentTimeExpression)
 	}
 
 	builder := updateQueryBuilder.Addf(
-		`UPDATE users SET
-	%s = NOW()%s
-WHERE archived_at IS NULL
-	AND id = sqlc.arg(id);`,
+		`UPDATE %s SET
+	%s = %s%s
+WHERE %s IS NULL
+	AND %s = sqlc.arg(%s);`,
+		usersTableName,
 		columnName,
+		currentTimeExpression,
 		addendum,
+		archivedAtColumn,
+		idColumn,
+		idColumn,
 	)
 
 	return buildRawQuery(builder)
@@ -111,10 +120,13 @@ func buildUsersQueries() []*Query {
 				Name: "ArchiveUser",
 				Type: ExecRowsType,
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = NOW() WHERE %s IS NULL AND id = sqlc.arg(id);`,
+			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s IS NULL AND %s = sqlc.arg(%s);`,
 				usersTableName,
 				archivedAtColumn,
+				currentTimeExpression,
 				archivedAtColumn,
+				idColumn,
+				idColumn,
 			)),
 		},
 		{
@@ -437,13 +449,17 @@ WHERE %s IS NULL
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	hashed_password = sqlc.arg(hashed_password),
-	password_last_changed_at = NOW(),
-	%s = NOW()
+	password_last_changed_at = %s,
+	%s = %s
 WHERE %s IS NULL
-	AND id = sqlc.arg(id);`,
+	AND %s = sqlc.arg(%s);`,
 				usersTableName,
+				currentTimeExpression,
 				lastUpdatedAtColumn,
+				currentTimeExpression,
 				archivedAtColumn,
+				idColumn,
+				idColumn,
 			)),
 		},
 		{
@@ -454,12 +470,15 @@ WHERE %s IS NULL
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	two_factor_secret_verified_at = NULL,
 	two_factor_secret = sqlc.arg(two_factor_secret),
-	%s = NOW()
+	%s = %s
 WHERE %s IS NULL
-	AND id = sqlc.arg(id);`,
+	AND %s = sqlc.arg(%s);`,
 				usersTableName,
 				lastUpdatedAtColumn,
+				currentTimeExpression,
 				archivedAtColumn,
+				idColumn,
+				idColumn,
 			)),
 		},
 		{
@@ -469,12 +488,15 @@ WHERE %s IS NULL
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	username = sqlc.arg(username),
-	%s = NOW()
+	%s = %s
 WHERE %s IS NULL
-	AND id = sqlc.arg(id);`,
+	AND %s = sqlc.arg(%s);`,
 				usersTableName,
 				lastUpdatedAtColumn,
+				currentTimeExpression,
 				archivedAtColumn,
+				idColumn,
+				idColumn,
 			)),
 		},
 	}

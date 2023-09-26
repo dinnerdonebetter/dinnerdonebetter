@@ -4,7 +4,9 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const recipePrepTaskStepsTableName = "recipe_prep_task_steps"
+const (
+	recipePrepTaskStepsTableName = "recipe_prep_task_steps"
+)
 
 var recipePrepTaskStepsColumns = []string{
 	idColumn,

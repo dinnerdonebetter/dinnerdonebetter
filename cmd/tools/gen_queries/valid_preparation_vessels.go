@@ -7,13 +7,15 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const validPreparationVesselsTableName = "valid_preparation_vessels"
+const (
+	validPreparationVesselsTableName = "valid_preparation_vessels"
+)
 
 var validPreparationVesselsColumns = []string{
 	idColumn,
-	"notes",
-	"valid_preparation_id",
-	"valid_vessel_id",
+	notesColumn,
+	validPreparationIDColumn,
+	validVesselIDColumn,
 	createdAtColumn,
 	lastUpdatedAtColumn,
 	archivedAtColumn,
@@ -49,9 +51,10 @@ func buildValidPreparationVesselsQueries() []*Query {
 				Name: "ArchiveValidPreparationVessel",
 				Type: ExecRowsType,
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = NOW() WHERE %s IS NULL AND %s = sqlc.arg(%s);`,
+			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s IS NULL AND %s = sqlc.arg(%s);`,
 				validPreparationVesselsTableName,
 				archivedAtColumn,
+				currentTimeExpression,
 				archivedAtColumn,
 				idColumn,
 				idColumn,
@@ -80,12 +83,13 @@ func buildValidPreparationVesselsQueries() []*Query {
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
-	SELECT %s.id
+	SELECT %s.%s
 	FROM %s
 	WHERE %s.%s IS NULL
 		AND %s.%s = sqlc.arg(%s)
 );`,
 				validPreparationVesselsTableName,
+				idColumn,
 				validPreparationVesselsTableName,
 				validPreparationVesselsTableName,
 				archivedAtColumn,
@@ -104,15 +108,15 @@ func buildValidPreparationVesselsQueries() []*Query {
 	%s,
 	%s
 FROM %s
-	JOIN valid_vessels ON valid_preparation_vessels.valid_vessel_id = valid_vessels.id
-	JOIN valid_preparations ON valid_preparation_vessels.valid_preparation_id = valid_preparations.id
-	LEFT JOIN valid_measurement_units ON valid_vessels.capacity_unit = valid_measurement_units.id
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
+	LEFT JOIN %s ON %s.%s = %s.%s
 WHERE
-	valid_preparation_vessels.archived_at IS NULL
-	AND valid_vessels.archived_at IS NULL
-	AND valid_preparations.archived_at IS NULL
-	AND valid_measurement_units.archived_at IS NULL
-	AND valid_preparation_vessels.valid_preparation_id = sqlc.arg(id)
+	%s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s)
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
@@ -124,6 +128,32 @@ WHERE
 					validPreparationVesselsTableName,
 				),
 				validPreparationVesselsTableName,
+				validVesselsTableName,
+				validPreparationVesselsTableName,
+				validVesselIDColumn,
+				validVesselsTableName,
+				idColumn,
+				validPreparationsTableName,
+				validPreparationVesselsTableName,
+				validPreparationIDColumn,
+				validPreparationsTableName,
+				idColumn,
+				validMeasurementUnitsTableName,
+				validVesselsTableName,
+				capacityUnitColumn,
+				validMeasurementUnitsTableName,
+				idColumn,
+				validPreparationVesselsTableName,
+				archivedAtColumn,
+				validVesselsTableName,
+				archivedAtColumn,
+				validPreparationsTableName,
+				archivedAtColumn,
+				validMeasurementUnitsTableName,
+				archivedAtColumn,
+				validPreparationVesselsTableName,
+				validPreparationIDColumn,
+				idColumn,
 				buildFilterConditions(validPreparationVesselsTableName, true),
 				offsetLimitAddendum,
 			)),
@@ -138,15 +168,15 @@ WHERE
 	%s,
 	%s
 FROM %s
-	JOIN valid_vessels ON valid_preparation_vessels.valid_vessel_id = valid_vessels.id
-	JOIN valid_preparations ON valid_preparation_vessels.valid_preparation_id = valid_preparations.id
-	LEFT JOIN valid_measurement_units ON valid_vessels.capacity_unit = valid_measurement_units.id
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
+	LEFT JOIN %s ON %s.%s = %s.%s
 WHERE
-	valid_preparation_vessels.archived_at IS NULL
-	AND valid_vessels.archived_at IS NULL
-	AND valid_preparations.archived_at IS NULL
-	AND valid_measurement_units.archived_at IS NULL
-	AND valid_preparation_vessels.valid_vessel_id = sqlc.arg(id)
+	%s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s)
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
@@ -158,6 +188,33 @@ WHERE
 					validPreparationVesselsTableName,
 				),
 				validPreparationVesselsTableName,
+
+				validVesselsTableName,
+				validPreparationVesselsTableName,
+				validVesselIDColumn,
+				validVesselsTableName,
+				idColumn,
+				validPreparationsTableName,
+				validPreparationVesselsTableName,
+				validPreparationIDColumn,
+				validPreparationsTableName,
+				idColumn,
+				validMeasurementUnitsTableName,
+				validVesselsTableName,
+				capacityUnitColumn,
+				validMeasurementUnitsTableName,
+				idColumn,
+				validPreparationVesselsTableName,
+				archivedAtColumn,
+				validVesselsTableName,
+				archivedAtColumn,
+				validPreparationsTableName,
+				archivedAtColumn,
+				validMeasurementUnitsTableName,
+				archivedAtColumn,
+				validPreparationVesselsTableName,
+				validVesselIDColumn,
+				idColumn,
 				buildFilterConditions(validPreparationVesselsTableName, true),
 				offsetLimitAddendum,
 			)),
@@ -172,14 +229,14 @@ WHERE
 	%s,
 	%s
 FROM %s
-	JOIN valid_vessels ON valid_preparation_vessels.valid_vessel_id = valid_vessels.id
-	JOIN valid_preparations ON valid_preparation_vessels.valid_preparation_id = valid_preparations.id
-	LEFT JOIN valid_measurement_units ON valid_vessels.capacity_unit = valid_measurement_units.id
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
+	LEFT JOIN %s ON %s.%s = %s.%s
 WHERE
-	valid_preparation_vessels.archived_at IS NULL
-	AND valid_vessels.archived_at IS NULL
-	AND valid_preparations.archived_at IS NULL
-	AND valid_measurement_units.archived_at IS NULL
+	%s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
@@ -191,6 +248,29 @@ WHERE
 					validPreparationVesselsTableName,
 				),
 				validPreparationVesselsTableName,
+				validVesselsTableName,
+				validPreparationVesselsTableName,
+				validVesselIDColumn,
+				validVesselsTableName,
+				idColumn,
+				validPreparationsTableName,
+				validPreparationVesselsTableName,
+				validPreparationIDColumn,
+				validPreparationsTableName,
+				idColumn,
+				validMeasurementUnitsTableName,
+				validVesselsTableName,
+				capacityUnitColumn,
+				validMeasurementUnitsTableName,
+				idColumn,
+				validPreparationVesselsTableName,
+				archivedAtColumn,
+				validVesselsTableName,
+				archivedAtColumn,
+				validPreparationsTableName,
+				archivedAtColumn,
+				validMeasurementUnitsTableName,
+				archivedAtColumn,
 				buildFilterConditions(validPreparationVesselsTableName, true),
 				offsetLimitAddendum,
 			)),
@@ -203,17 +283,43 @@ WHERE
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
-	JOIN valid_vessels ON valid_preparation_vessels.valid_vessel_id = valid_vessels.id
-	JOIN valid_preparations ON valid_preparation_vessels.valid_preparation_id = valid_preparations.id
-	LEFT JOIN valid_measurement_units ON valid_vessels.capacity_unit = valid_measurement_units.id
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
+	LEFT JOIN %s ON %s.%s = %s.%s
 WHERE
-	valid_preparation_vessels.archived_at IS NULL
-	AND valid_vessels.archived_at IS NULL
-	AND valid_preparations.archived_at IS NULL
-	AND valid_measurement_units.archived_at IS NULL
-	AND valid_preparation_vessels.id = sqlc.arg(id);`,
+	%s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(fullSelectColumns, ",\n\t"),
 				validPreparationVesselsTableName,
+				validVesselsTableName,
+				validPreparationVesselsTableName,
+				validVesselIDColumn,
+				validVesselsTableName,
+				idColumn,
+				validPreparationsTableName,
+				validPreparationVesselsTableName,
+				validPreparationIDColumn,
+				validPreparationsTableName,
+				idColumn,
+				validMeasurementUnitsTableName,
+				validVesselsTableName,
+				capacityUnitColumn,
+				validMeasurementUnitsTableName,
+				idColumn,
+				validPreparationVesselsTableName,
+				archivedAtColumn,
+				validVesselsTableName,
+				archivedAtColumn,
+				validPreparationsTableName,
+				archivedAtColumn,
+				validMeasurementUnitsTableName,
+				archivedAtColumn,
+				validPreparationVesselsTableName,
+				idColumn,
+				idColumn,
 			)),
 		},
 		{
@@ -224,12 +330,16 @@ WHERE
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS(
 	SELECT %s
 	FROM %s
-	WHERE valid_vessel_id = sqlc.arg(valid_vessel_id)
-	AND valid_preparation_id = sqlc.arg(valid_preparation_id)
+	WHERE %s = sqlc.arg(%s)
+	AND %s = sqlc.arg(%s)
 	AND %s IS NULL
 );`,
 				idColumn,
 				validPreparationVesselsTableName,
+				validVesselIDColumn,
+				validVesselIDColumn,
+				validPreparationIDColumn,
+				validPreparationIDColumn,
 				archivedAtColumn,
 			)),
 		},
@@ -240,7 +350,7 @@ WHERE
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s,
-	%s = NOW()
+	%s = %s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
 				validPreparationVesselsTableName,
@@ -248,6 +358,7 @@ WHERE %s IS NULL
 					return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
 				}), ",\n\t"),
 				lastUpdatedAtColumn,
+				currentTimeExpression,
 				archivedAtColumn,
 				idColumn,
 				idColumn,

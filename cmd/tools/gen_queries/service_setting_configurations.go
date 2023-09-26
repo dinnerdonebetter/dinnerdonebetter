@@ -7,14 +7,18 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-const serviceSettingConfigurationsTableName = "service_setting_configurations"
+const (
+	serviceSettingConfigurationsTableName = "service_setting_configurations"
+
+	serviceSettingIDColumn = "service_setting_id"
+)
 
 var serviceSettingConfigurationsColumns = []string{
 	idColumn,
 	"value",
-	"notes",
-	"service_setting_id",
-	"belongs_to_user",
+	notesColumn,
+	serviceSettingIDColumn,
+	belongsToUserColumn,
 	belongsToHouseholdColumn,
 	createdAtColumn,
 	lastUpdatedAtColumn,
@@ -41,10 +45,16 @@ func buildServiceSettingConfigurationQueries() []*Query {
 				Type: ExecRowsType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
-    archived_at = NOW()
-WHERE archived_at IS NULL
-    AND id = sqlc.arg(id);`,
-				serviceSettingConfigurationsTableName)),
+    %s = %s
+WHERE %s IS NULL
+    AND %s = sqlc.arg(%s);`,
+				serviceSettingConfigurationsTableName,
+				archivedAtColumn,
+				currentTimeExpression,
+				archivedAtColumn,
+				idColumn,
+				idColumn,
+			)),
 		},
 		{
 			Annotation: QueryAnnotation{
@@ -170,12 +180,24 @@ WHERE service_settings.archived_at IS NULL
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE service_setting_configurations SET
     value = sqlc.arg(value),
     notes = sqlc.arg(notes),
-    service_setting_id = sqlc.arg(service_setting_id),
-    belongs_to_user = sqlc.arg(belongs_to_user),
-    belongs_to_household = sqlc.arg(belongs_to_household),
-	last_updated_at = NOW()
-WHERE archived_at IS NULL
-	AND id = sqlc.arg(id);`)),
+    %s = sqlc.arg(%s),
+    %s = sqlc.arg(%s),
+    %s = sqlc.arg(%s),
+	%s = %s
+WHERE %s IS NULL
+	AND %s = sqlc.arg(%s);`,
+				serviceSettingIDColumn,
+				serviceSettingIDColumn,
+				belongsToUserColumn,
+				belongsToUserColumn,
+				belongsToHouseholdColumn,
+				belongsToHouseholdColumn,
+				lastUpdatedAtColumn,
+				currentTimeExpression,
+				archivedAtColumn,
+				idColumn,
+				idColumn,
+			)),
 		},
 	}
 }
