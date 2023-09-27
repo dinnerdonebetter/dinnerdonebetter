@@ -4,9 +4,33 @@ UPDATE meal_plan_grocery_list_items SET archived_at = NOW() WHERE archived_at IS
 
 -- name: CreateMealPlanGroceryListItem :exec
 
-INSERT INTO meal_plan_grocery_list_items
-(id,belongs_to_meal_plan,valid_ingredient,valid_measurement_unit,minimum_quantity_needed,maximum_quantity_needed,quantity_purchased,purchased_measurement_unit,purchased_upc,purchase_price,status_explanation,status)
-VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12);
+INSERT INTO meal_plan_grocery_list_items (
+    id,
+    belongs_to_meal_plan,
+    valid_ingredient,
+    valid_measurement_unit,
+    minimum_quantity_needed,
+    maximum_quantity_needed,
+    quantity_purchased,
+    purchased_measurement_unit,
+    purchased_upc,
+    purchase_price,
+    status_explanation,
+    status
+) VALUES (
+    sqlc.arg(id),
+    sqlc.arg(belongs_to_meal_plan),
+    sqlc.arg(valid_ingredient),
+    sqlc.arg(valid_measurement_unit),
+    sqlc.arg(minimum_quantity_needed),
+    sqlc.arg(maximum_quantity_needed),
+    sqlc.arg(quantity_purchased),
+    sqlc.arg(purchased_measurement_unit),
+    sqlc.arg(purchased_upc),
+    sqlc.arg(purchase_price),
+    sqlc.arg(status_explanation),
+    sqlc.arg(status)
+);
 
 -- name: CheckMealPlanGroceryListItemExistence :one
 
@@ -166,7 +190,6 @@ FROM meal_plan_grocery_list_items
 	JOIN meal_plans ON meal_plan_grocery_list_items.belongs_to_meal_plan=meal_plans.id
     JOIN valid_ingredients ON meal_plan_grocery_list_items.valid_ingredient=valid_ingredients.id
     JOIN valid_measurement_units ON meal_plan_grocery_list_items.valid_measurement_unit=valid_measurement_units.id
-
 WHERE meal_plan_grocery_list_items.archived_at IS NULL
     AND valid_measurement_units.archived_at IS NULL
     AND valid_ingredients.archived_at IS NULL
@@ -175,19 +198,18 @@ WHERE meal_plan_grocery_list_items.archived_at IS NULL
 
 -- name: UpdateMealPlanGroceryListItem :execrows
 
-UPDATE meal_plan_grocery_list_items
-SET
-	belongs_to_meal_plan = $1,
-	valid_ingredient = $2,
-	valid_measurement_unit = $3,
-	minimum_quantity_needed = $4,
-	maximum_quantity_needed = $5,
-	quantity_purchased = $6,
-	purchased_measurement_unit = $7,
-	purchased_upc = $8,
-	purchase_price = $9,
-	status_explanation = $10,
-	status = $11,
+UPDATE meal_plan_grocery_list_items SET
+	belongs_to_meal_plan = sqlc.arg(belongs_to_meal_plan),
+	valid_ingredient = sqlc.arg(valid_ingredient),
+	valid_measurement_unit = sqlc.arg(valid_measurement_unit),
+	minimum_quantity_needed = sqlc.arg(minimum_quantity_needed),
+	maximum_quantity_needed = sqlc.arg(maximum_quantity_needed),
+	quantity_purchased = sqlc.arg(quantity_purchased),
+	purchased_measurement_unit = sqlc.arg(purchased_measurement_unit),
+	purchased_upc = sqlc.arg(purchased_upc),
+	purchase_price = sqlc.arg(purchase_price),
+	status_explanation = sqlc.arg(status_explanation),
+	status = sqlc.arg(status),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND id = $12;
+	AND id = sqlc.arg(id);

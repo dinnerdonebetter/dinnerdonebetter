@@ -78,8 +78,8 @@ WHERE oauth2_clients.archived_at IS NULL
 	AND oauth2_clients.client_id = $1
 `
 
-func (q *Queries) GetOAuth2ClientByClientID(ctx context.Context, db DBTX, clientID string) (*Oauth2Clients, error) {
-	row := db.QueryRowContext(ctx, getOAuth2ClientByClientID, clientID)
+func (q *Queries) GetOAuth2ClientByClientID(ctx context.Context, db DBTX, id string) (*Oauth2Clients, error) {
+	row := db.QueryRowContext(ctx, getOAuth2ClientByClientID, id)
 	var i Oauth2Clients
 	err := row.Scan(
 		&i.ID,

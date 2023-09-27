@@ -1,10 +1,10 @@
 -- name: AttachHouseholdInvitationsToUserID :exec
 
 UPDATE household_invitations SET
-	to_user = sqlc.arg(user_id),
+	to_user = sqlc.arg(to_user),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND to_email = LOWER(sqlc.arg(email_address));
+	AND to_email = LOWER(sqlc.arg(to_email));
 
 -- name: CreateHouseholdInvitation :exec
 
@@ -36,7 +36,7 @@ SELECT EXISTS (
 	SELECT household_invitations.id
 	FROM household_invitations
 	WHERE household_invitations.archived_at IS NULL
-	AND household_invitations.id = $1
+	AND household_invitations.id = sqlc.arg(id)
 );
 
 -- name: GetHouseholdInvitationByEmailAndToken :one
@@ -105,7 +105,7 @@ FROM household_invitations
 	JOIN users ON household_invitations.from_user = users.id
 WHERE household_invitations.archived_at IS NULL
 	AND household_invitations.expires_at > NOW()
-	AND household_invitations.to_email = LOWER(sqlc.arg(email_address))
+	AND household_invitations.to_email = LOWER(sqlc.arg(to_email))
 	AND household_invitations.token = sqlc.arg(token);
 
 -- name: GetHouseholdInvitationByHouseholdAndID :one
@@ -174,8 +174,8 @@ FROM household_invitations
 	JOIN users ON household_invitations.from_user = users.id
 WHERE household_invitations.archived_at IS NULL
 	AND household_invitations.expires_at > NOW()
-	AND household_invitations.destination_household = $1
-	AND household_invitations.id = $2;
+	AND household_invitations.destination_household = sqlc.arg(destination_household)
+	AND household_invitations.id = sqlc.arg(id);
 
 -- name: GetHouseholdInvitationByTokenAndID :one
 
@@ -243,8 +243,8 @@ FROM household_invitations
 	JOIN users ON household_invitations.from_user = users.id
 WHERE household_invitations.archived_at IS NULL
 	AND household_invitations.expires_at > NOW()
-	AND household_invitations.token = $1
-	AND household_invitations.id = $2;
+	AND household_invitations.token = sqlc.arg(token)
+	AND household_invitations.id = sqlc.arg(id);
 
 -- name: GetPendingInvitesFromUser :many
 
@@ -331,7 +331,7 @@ FROM household_invitations
 	JOIN households ON household_invitations.destination_household = households.id
 	JOIN users ON household_invitations.from_user = users.id
 WHERE household_invitations.archived_at IS NULL
-	AND household_invitations.from_user = sqlc.arg(user_id)
+	AND household_invitations.from_user = sqlc.arg(from_user)
 	AND household_invitations.status = sqlc.arg(status)
 	AND household_invitations.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 	AND household_invitations.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
@@ -343,8 +343,8 @@ WHERE household_invitations.archived_at IS NULL
 		household_invitations.last_updated_at IS NULL
 		OR household_invitations.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
-	OFFSET sqlc.narg(query_offset)
-	LIMIT sqlc.narg(query_limit);
+LIMIT sqlc.narg(query_limit)
+OFFSET sqlc.narg(query_offset);
 
 -- name: GetPendingInvitesForUser :many
 
@@ -431,7 +431,7 @@ FROM household_invitations
 	JOIN households ON household_invitations.destination_household = households.id
 	JOIN users ON household_invitations.from_user = users.id
 WHERE household_invitations.archived_at IS NULL
-	AND household_invitations.to_user = sqlc.arg(user_id)
+	AND household_invitations.to_user = sqlc.arg(to_user)
 	AND household_invitations.status = sqlc.arg(status)
 	AND household_invitations.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 	AND household_invitations.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
@@ -443,8 +443,8 @@ WHERE household_invitations.archived_at IS NULL
 		household_invitations.last_updated_at IS NULL
 		OR household_invitations.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
-	OFFSET sqlc.narg(query_offset)
-	LIMIT sqlc.narg(query_limit);
+LIMIT sqlc.narg(query_limit)
+OFFSET sqlc.narg(query_offset);
 
 -- name: SetHouseholdInvitationStatus :exec
 

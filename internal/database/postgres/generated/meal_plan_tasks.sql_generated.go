@@ -13,22 +13,26 @@ import (
 
 const changeMealPlanTaskStatus = `-- name: ChangeMealPlanTaskStatus :exec
 
-UPDATE meal_plan_tasks SET completed_at = $4, status_explanation = $3, status = $2 WHERE id = $1
+UPDATE meal_plan_tasks SET
+    completed_at = $1,
+    status_explanation = $2,
+    status = $3
+WHERE id = $4
 `
 
 type ChangeMealPlanTaskStatusParams struct {
-	ID                string
-	Status            PrepStepStatus
-	StatusExplanation string
 	CompletedAt       sql.NullTime
+	StatusExplanation string
+	Status            PrepStepStatus
+	ID                string
 }
 
 func (q *Queries) ChangeMealPlanTaskStatus(ctx context.Context, db DBTX, arg *ChangeMealPlanTaskStatusParams) error {
 	_, err := db.ExecContext(ctx, changeMealPlanTaskStatus,
-		arg.ID,
-		arg.Status,
-		arg.StatusExplanation,
 		arg.CompletedAt,
+		arg.StatusExplanation,
+		arg.Status,
+		arg.ID,
 	)
 	return err
 }
@@ -62,8 +66,23 @@ func (q *Queries) CheckMealPlanTaskExistence(ctx context.Context, db DBTX, arg *
 
 const createMealPlanTask = `-- name: CreateMealPlanTask :exec
 
-INSERT INTO meal_plan_tasks (id,status,status_explanation,creation_explanation,belongs_to_meal_plan_option,belongs_to_recipe_prep_task,assigned_to_user)
-VALUES ($1,$2,$3,$4,$5,$6,$7)
+INSERT INTO meal_plan_tasks (
+    id,
+    status,
+    status_explanation,
+    creation_explanation,
+    belongs_to_meal_plan_option,
+    belongs_to_recipe_prep_task,
+    assigned_to_user
+) VALUES (
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $6,
+    $7
+)
 `
 
 type CreateMealPlanTaskParams struct {

@@ -1,10 +1,40 @@
 -- name: ArchiveRecipe :execrows
 
-UPDATE recipes SET archived_at = NOW() WHERE archived_at IS NULL AND created_by_user = $1 AND id = $2;
+UPDATE recipes SET archived_at = NOW() WHERE archived_at IS NULL AND created_by_user = sqlc.arg(user_id) AND id = sqlc.arg(recipe_id);
 
 -- name: CreateRecipe :exec
 
-INSERT INTO recipes (id,"name",slug,"source",description,inspired_by_recipe_id,min_estimated_portions,max_estimated_portions,portion_name,plural_portion_name,seal_of_approval,eligible_for_meals,yields_component_type,created_by_user) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14);
+INSERT INTO recipes (
+    id,
+    name,
+    slug,
+    source,
+    description,
+    inspired_by_recipe_id,
+    min_estimated_portions,
+    max_estimated_portions,
+    portion_name,
+    plural_portion_name,
+    seal_of_approval,
+    eligible_for_meals,
+    yields_component_type,
+    created_by_user
+) VALUES (
+    sqlc.arg(id),
+    sqlc.arg(name),
+    sqlc.arg(slug),
+    sqlc.arg(source),
+    sqlc.arg(description),
+    sqlc.arg(inspired_by_recipe_id),
+    sqlc.arg(min_estimated_portions),
+    sqlc.arg(max_estimated_portions),
+    sqlc.arg(portion_name),
+    sqlc.arg(plural_portion_name),
+    sqlc.arg(seal_of_approval),
+    sqlc.arg(eligible_for_meals),
+    sqlc.arg(yields_component_type),
+    sqlc.arg(created_by_user)
+);
 
 -- name: CheckRecipeExistence :one
 
@@ -135,8 +165,8 @@ FROM recipes
 	FULL OUTER JOIN recipe_steps ON recipes.id=recipe_steps.belongs_to_recipe
 	FULL OUTER JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
 WHERE recipes.archived_at IS NULL
-	AND recipes.id = $1
-	AND recipes.created_by_user = $2
+	AND recipes.id = sqlc.arg(recipe_id)
+	AND recipes.created_by_user = sqlc.arg(created_by_user)
 ORDER BY recipe_steps.index;
 
 -- name: GetRecipes :many
@@ -179,12 +209,9 @@ SELECT
         OFFSET sqlc.narg(query_offset)
     ) AS filtered_count,
     (
-        SELECT
-            COUNT(recipes.id)
-        FROM
-            recipes
-        WHERE
-            recipes.archived_at IS NULL
+        SELECT COUNT(recipes.id)
+        FROM recipes
+        WHERE recipes.archived_at IS NULL
     ) AS total_count
 FROM recipes
     WHERE recipes.archived_at IS NULL
@@ -241,12 +268,9 @@ SELECT
         OFFSET sqlc.narg(query_offset)
     ) AS filtered_count,
     (
-        SELECT
-            COUNT(recipes.id)
-        FROM
-            recipes
-        WHERE
-            recipes.archived_at IS NULL
+        SELECT COUNT(recipes.id)
+        FROM recipes
+        WHERE recipes.archived_at IS NULL
     ) AS total_count
 FROM recipes
 WHERE recipes.archived_at IS NULL
@@ -267,25 +291,23 @@ LIMIT sqlc.narg(query_limit);;
 -- name: GetRecipesNeedingIndexing :many
 
 SELECT recipes.id
-  FROM recipes
- WHERE (recipes.archived_at IS NULL)
-       AND (
-			(recipes.last_indexed_at IS NULL)
-			OR recipes.last_indexed_at
-				< now() - '24 hours'::INTERVAL
-		);
+FROM recipes
+WHERE recipes.archived_at IS NULL
+    AND (
+        recipes.last_indexed_at IS NULL
+        OR recipes.last_indexed_at
+            < NOW() - '24 hours'::INTERVAL
+    );
 
 -- name: GetRecipeIDsForMeal :many
 
-SELECT
-	recipes.id
-FROM
-	recipes
-	 JOIN meal_components ON meal_components.recipe_id = recipes.id
-	 JOIN meals ON meal_components.meal_id = meals.id
+SELECT recipes.id
+FROM recipes
+    JOIN meal_components ON meal_components.recipe_id = recipes.id
+    JOIN meals ON meal_components.meal_id = meals.id
 WHERE
 	recipes.archived_at IS NULL
-	AND meals.id = $1
+	AND meals.id = sqlc.arg(meal_id)
 GROUP BY
 	recipes.id
 ORDER BY
@@ -294,22 +316,22 @@ ORDER BY
 -- name: UpdateRecipe :execrows
 
 UPDATE recipes SET
-    name = $1,
-    slug = $2,
-    source = $3,
-    description = $4,
-    inspired_by_recipe_id = $5,
-	min_estimated_portions = $6,
-	max_estimated_portions = $7,
-    portion_name = $8,
-    plural_portion_name = $9,
-    seal_of_approval = $10,
-    eligible_for_meals = $11,
-	yields_component_type = $12,
+    name = sqlc.arg(name),
+    slug = sqlc.arg(slug),
+    source = sqlc.arg(source),
+    description = sqlc.arg(description),
+    inspired_by_recipe_id = sqlc.arg(inspired_by_recipe_id),
+	min_estimated_portions = sqlc.arg(min_estimated_portions),
+	max_estimated_portions = sqlc.arg(max_estimated_portions),
+    portion_name = sqlc.arg(portion_name),
+    plural_portion_name = sqlc.arg(plural_portion_name),
+    seal_of_approval = sqlc.arg(seal_of_approval),
+    eligible_for_meals = sqlc.arg(eligible_for_meals),
+	yields_component_type = sqlc.arg(yields_component_type),
     last_updated_at = NOW()
 WHERE archived_at IS NULL
-  AND created_by_user = $13
-  AND id = $14;
+  AND created_by_user = sqlc.arg(created_by_user)
+  AND id = sqlc.arg(id);
 
 -- name: UpdateRecipeLastIndexedAt :execrows
 

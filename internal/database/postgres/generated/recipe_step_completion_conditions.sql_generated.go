@@ -31,7 +31,20 @@ func (q *Queries) ArchiveRecipeStepCompletionCondition(ctx context.Context, db D
 
 const checkRecipeStepCompletionConditionExistence = `-- name: CheckRecipeStepCompletionConditionExistence :one
 
-SELECT EXISTS ( SELECT recipe_step_completion_conditions.id FROM recipe_step_completion_conditions JOIN recipe_steps ON recipe_step_completion_conditions.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_completion_conditions.archived_at IS NULL AND recipe_step_completion_conditions.belongs_to_recipe_step = $1 AND recipe_step_completion_conditions.id = $2 AND recipe_steps.archived_at IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $1 AND recipes.archived_at IS NULL AND recipes.id = $3 )
+SELECT EXISTS (
+    SELECT recipe_step_completion_conditions.id
+    FROM recipe_step_completion_conditions
+        JOIN recipe_steps ON recipe_step_completion_conditions.belongs_to_recipe_step=recipe_steps.id
+        JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
+    WHERE recipe_step_completion_conditions.archived_at IS NULL
+        AND recipe_step_completion_conditions.belongs_to_recipe_step = $1
+        AND recipe_step_completion_conditions.id = $2
+        AND recipe_steps.archived_at IS NULL
+        AND recipe_steps.belongs_to_recipe = $3
+        AND recipe_steps.id = $1
+        AND recipes.archived_at IS NULL
+        AND recipes.id = $3
+)
 `
 
 type CheckRecipeStepCompletionConditionExistenceParams struct {
@@ -55,7 +68,13 @@ INSERT INTO recipe_step_completion_conditions (
 	ingredient_state,
 	optional,
 	notes
-) VALUES ($1,$2,$3,$4,$5)
+) VALUES (
+    $1,
+    $2,
+    $3,
+    $4,
+    $5
+)
 `
 
 type CreateRecipeStepCompletionConditionParams struct {
@@ -111,9 +130,10 @@ WHERE recipe_step_completion_conditions.archived_at IS NULL
     AND recipes.archived_at IS NULL
     AND valid_ingredient_states.archived_at IS NULL
     AND recipes.id = $1
-    GROUP BY recipe_step_completion_conditions.id,
-         recipe_step_completion_condition_ingredients.id,
-         valid_ingredient_states.id
+GROUP BY
+    recipe_step_completion_conditions.id,
+    recipe_step_completion_condition_ingredients.id,
+    valid_ingredient_states.id
 `
 
 type GetAllRecipeStepCompletionConditionsForRecipeRow struct {
@@ -341,12 +361,9 @@ SELECT
             AND (recipe_step_completion_conditions.last_updated_at IS NULL OR recipe_step_completion_conditions.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years')))
     ) as filtered_count,
     (
-        SELECT
-            COUNT(recipe_step_completion_conditions.id)
-        FROM
-            recipe_step_completion_conditions
-        WHERE
-            recipe_step_completion_conditions.archived_at IS NULL
+        SELECT COUNT(recipe_step_completion_conditions.id)
+        FROM recipe_step_completion_conditions
+        WHERE recipe_step_completion_conditions.archived_at IS NULL
     ) as total_count
 FROM recipe_step_completion_condition_ingredients
     JOIN recipe_step_completion_conditions ON recipe_step_completion_condition_ingredients.belongs_to_recipe_step_completion_condition = recipe_step_completion_conditions.id
@@ -358,8 +375,8 @@ WHERE recipe_step_completion_conditions.archived_at IS NULL
     AND recipe_step_completion_conditions.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
     AND (recipe_step_completion_conditions.last_updated_at IS NULL OR recipe_step_completion_conditions.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years')))
     AND (recipe_step_completion_conditions.last_updated_at IS NULL OR recipe_step_completion_conditions.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years')))
-    OFFSET $6
-    LIMIT $7
+OFFSET $6
+LIMIT $7
 `
 
 type GetRecipeStepCompletionConditionsParams struct {
@@ -459,8 +476,7 @@ func (q *Queries) GetRecipeStepCompletionConditions(ctx context.Context, db DBTX
 
 const updateRecipeStepCompletionCondition = `-- name: UpdateRecipeStepCompletionCondition :execrows
 
-UPDATE recipe_step_completion_conditions
-SET
+UPDATE recipe_step_completion_conditions SET
 	optional = $1,
 	notes = $2,
 	belongs_to_recipe_step = $3,

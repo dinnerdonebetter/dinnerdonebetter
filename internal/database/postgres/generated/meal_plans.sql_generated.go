@@ -31,7 +31,13 @@ func (q *Queries) ArchiveMealPlan(ctx context.Context, db DBTX, arg *ArchiveMeal
 
 const checkMealPlanExistence = `-- name: CheckMealPlanExistence :one
 
-SELECT EXISTS ( SELECT meal_plans.id FROM meal_plans WHERE meal_plans.archived_at IS NULL AND meal_plans.id = $1 AND meal_plans.belongs_to_household = $2 )
+SELECT EXISTS (
+    SELECT meal_plans.id
+    FROM meal_plans
+    WHERE meal_plans.archived_at IS NULL
+        AND meal_plans.id = $1
+        AND meal_plans.belongs_to_household = $2
+)
 `
 
 type CheckMealPlanExistenceParams struct {
@@ -48,7 +54,21 @@ func (q *Queries) CheckMealPlanExistence(ctx context.Context, db DBTX, arg *Chec
 
 const createMealPlan = `-- name: CreateMealPlan :exec
 
-INSERT INTO meal_plans (id,notes,status,voting_deadline,belongs_to_household,created_by_user) VALUES ($1,$2,$3,$4,$5,$6)
+INSERT INTO meal_plans (
+    id,
+    notes,
+    status,
+    voting_deadline,
+    belongs_to_household,
+    created_by_user
+) VALUES (
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $6
+)
 `
 
 type CreateMealPlanParams struct {
@@ -105,7 +125,7 @@ SELECT
 FROM meal_plans
 WHERE meal_plans.archived_at IS NULL
 	AND meal_plans.status = 'awaiting_votes'
-	AND voting_deadline < now()
+	AND voting_deadline < NOW()
 GROUP BY meal_plans.id
 ORDER BY meal_plans.id
 `
@@ -448,8 +468,8 @@ WHERE meal_plans.archived_at IS NULL
         meal_plans.last_updated_at IS NULL
         OR meal_plans.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
     )
-    OFFSET $6
-    LIMIT $7
+OFFSET $6
+LIMIT $7
 `
 
 type GetMealPlansParams struct {
@@ -557,7 +577,14 @@ func (q *Queries) MarkMealPlanAsPrepTasksCreated(ctx context.Context, db DBTX, i
 
 const updateMealPlan = `-- name: UpdateMealPlan :execrows
 
-UPDATE meal_plans SET notes = $1, status = $2, voting_deadline = $3, last_updated_at = NOW() WHERE archived_at IS NULL AND belongs_to_household = $4 AND id = $5
+UPDATE meal_plans SET
+    notes = $1,
+    status = $2,
+    voting_deadline = $3,
+    last_updated_at = NOW()
+WHERE archived_at IS NULL
+    AND belongs_to_household = $4
+    AND id = $5
 `
 
 type UpdateMealPlanParams struct {

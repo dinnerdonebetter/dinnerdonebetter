@@ -267,14 +267,19 @@ func buildTotalCountSelect(tableName string, conditions ...string) string {
 	}
 
 	return strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`(
-		SELECT COUNT(%s.id)
+		SELECT COUNT(%s.%s)
 		FROM %s
 		WHERE %s.%s IS NULL%s
 	) AS total_count`,
 		tableName,
+		idColumn,
 		tableName,
 		tableName,
 		archivedAtColumn,
 		allConditons,
 	)))
+}
+
+func buildILIKEForArgument(argumentName string) string {
+	return fmt.Sprintf(`ILIKE '%%' || sqlc.arg(%s)::text || '%%'`, argumentName)
 }

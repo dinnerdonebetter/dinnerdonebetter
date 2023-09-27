@@ -36,8 +36,8 @@ func (q *Querier) WebhookExists(ctx context.Context, webhookID, householdID stri
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	result, err := q.generatedQuerier.CheckWebhookExistence(ctx, q.db, &generated.CheckWebhookExistenceParams{
-		HouseholdID: householdID,
-		ID:          webhookID,
+		BelongsToHousehold: householdID,
+		ID:                 webhookID,
 	})
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing webhook existence check")
@@ -66,8 +66,8 @@ func (q *Querier) GetWebhook(ctx context.Context, webhookID, householdID string)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	results, err := q.generatedQuerier.GetWebhook(ctx, q.db, &generated.GetWebhookParams{
-		HouseholdID: householdID,
-		ID:          webhookID,
+		BelongsToHousehold: householdID,
+		ID:                 webhookID,
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching webhook")
@@ -172,8 +172,8 @@ func (q *Querier) GetWebhooksForHouseholdAndEvent(ctx context.Context, household
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	databaseResults, err := q.generatedQuerier.GetWebhooksForHouseholdAndEvent(ctx, q.db, &generated.GetWebhooksForHouseholdAndEventParams{
-		HouseholdID:  householdID,
-		TriggerEvent: generated.WebhookEvent(eventType),
+		BelongsToHousehold: householdID,
+		TriggerEvent:       generated.WebhookEvent(eventType),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching webhooks from database")
@@ -312,8 +312,8 @@ func (q *Querier) ArchiveWebhook(ctx context.Context, webhookID, householdID str
 	})
 
 	if _, err := q.generatedQuerier.ArchiveWebhook(ctx, q.db, &generated.ArchiveWebhookParams{
-		HouseholdID: householdID,
-		ID:          webhookID,
+		BelongsToHousehold: householdID,
+		ID:                 webhookID,
 	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving webhook")
 	}

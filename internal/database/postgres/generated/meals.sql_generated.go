@@ -43,7 +43,23 @@ func (q *Queries) CheckMealExistence(ctx context.Context, db DBTX, id string) (b
 
 const createMeal = `-- name: CreateMeal :exec
 
-INSERT INTO meals (id,"name",description,min_estimated_portions,max_estimated_portions,eligible_for_meal_plans,created_by_user) VALUES ($1,$2,$3,$4,$5,$6,$7)
+INSERT INTO meals (
+    id,
+    name,
+    description,
+    min_estimated_portions,
+    max_estimated_portions,
+    eligible_for_meal_plans,
+    created_by_user
+) VALUES (
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $6,
+    $7
+)
 `
 
 type CreateMealParams struct {
@@ -159,10 +175,8 @@ SELECT
     meals.archived_at,
     meals.created_by_user,
     (
-        SELECT
-            COUNT(meals.id)
-        FROM
-            meals
+        SELECT COUNT(meals.id)
+        FROM meals
         WHERE
             meals.archived_at IS NULL
             AND meals.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
@@ -171,12 +185,9 @@ SELECT
             AND (meals.last_updated_at IS NULL OR meals.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
     ) as filtered_count,
     (
-        SELECT
-            COUNT(meals.id)
-        FROM
-            meals
-        WHERE
-            meals.archived_at IS NULL
+        SELECT COUNT(meals.id)
+        FROM meals
+        WHERE meals.archived_at IS NULL
     ) as total_count
 FROM meals
 WHERE meals.archived_at IS NULL
@@ -184,8 +195,8 @@ WHERE meals.archived_at IS NULL
     AND meals.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
     AND (meals.last_updated_at IS NULL OR meals.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
     AND (meals.last_updated_at IS NULL OR meals.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-    OFFSET $5
-    LIMIT $6
+OFFSET $5
+LIMIT $6
 `
 
 type GetMealsParams struct {
@@ -259,11 +270,11 @@ const getMealsNeedingIndexing = `-- name: GetMealsNeedingIndexing :many
 
 SELECT meals.id
     FROM meals
-    WHERE (meals.archived_at IS NULL)
+    WHERE meals.archived_at IS NULL
     AND (
-        (meals.last_indexed_at IS NULL)
+        meals.last_indexed_at IS NULL
         OR meals.last_indexed_at
-            < now() - '24 hours'::INTERVAL
+            < NOW() - '24 hours'::INTERVAL
     )
 `
 
@@ -319,12 +330,9 @@ SELECT
             AND (meals.last_updated_at IS NULL OR meals.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
     ) as filtered_count,
     (
-        SELECT
-            COUNT(meals.id)
-        FROM
-            meals
-        WHERE
-            meals.archived_at IS NULL
+        SELECT COUNT(meals.id)
+        FROM meals
+        WHERE meals.archived_at IS NULL
     ) as total_count
 FROM meals
     JOIN meal_components ON meal_components.meal_id=meals.id
@@ -335,8 +343,8 @@ WHERE meals.archived_at IS NULL
     AND (meals.last_updated_at IS NULL OR meals.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
     AND (meals.last_updated_at IS NULL OR meals.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
     AND meal_components.archived_at IS NULL
-    OFFSET $6
-    LIMIT $7
+OFFSET $6
+LIMIT $7
 `
 
 type SearchForMealsParams struct {

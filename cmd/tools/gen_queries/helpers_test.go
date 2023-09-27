@@ -138,7 +138,7 @@ func Test_buildFilterConditions(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		expected := `AND things.created_at > COALESCE(sqlc.narg(created_before), (SELECT NOW() - '999 years'::INTERVAL))
+		expected := `AND things.created_at > COALESCE(sqlc.narg(created_before), (SELECT  NOW() - '999 years'::INTERVAL))
 	AND things.created_at < COALESCE(sqlc.narg(created_after), (SELECT NOW() + '999 years'::INTERVAL))`
 		actual := buildFilterConditions("things", false)
 

@@ -1,6 +1,6 @@
 -- name: ArchiveRecipeStepIngredient :execrows
 
-UPDATE recipe_step_ingredients SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2;
+UPDATE recipe_step_ingredients SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = sqlc.arg(recipe_step_id) AND id = sqlc.arg(id);
 
 -- name: CreateRecipeStepIngredient :exec
 
@@ -21,11 +21,41 @@ INSERT INTO recipe_step_ingredients (
     vessel_index,
     recipe_step_product_recipe_id,
 	belongs_to_recipe_step
-) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16);
+) VALUES (
+    sqlc.arg(id),
+    sqlc.arg(name),
+    sqlc.arg(optional),
+    sqlc.arg(ingredient_id),
+    sqlc.arg(measurement_unit),
+    sqlc.arg(minimum_quantity_value),
+    sqlc.arg(maximum_quantity_value),
+    sqlc.arg(quantity_notes),
+    sqlc.arg(recipe_step_product_id),
+    sqlc.arg(ingredient_notes),
+    sqlc.arg(option_index),
+    sqlc.arg(to_taste),
+    sqlc.arg(product_percentage_to_use),
+    sqlc.arg(vessel_index),
+    sqlc.arg(recipe_step_product_recipe_id),
+    sqlc.arg(belongs_to_recipe_step)
+);
 
 -- name: CheckRecipeStepIngredientExistence :one
 
-SELECT EXISTS ( SELECT recipe_step_ingredients.id FROM recipe_step_ingredients JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_ingredients.archived_at IS NULL AND recipe_step_ingredients.belongs_to_recipe_step = sqlc.arg(recipe_step_id) AND recipe_step_ingredients.id = sqlc.arg(recipe_step_ingredient_id) AND recipe_steps.archived_at IS NULL AND recipe_steps.belongs_to_recipe = sqlc.arg(recipe_id) AND recipe_steps.id = sqlc.arg(recipe_step_id) AND recipes.archived_at IS NULL AND recipes.id = sqlc.arg(recipe_id) );
+SELECT EXISTS (
+    SELECT recipe_step_ingredients.id
+    FROM recipe_step_ingredients
+        JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id
+        JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
+    WHERE recipe_step_ingredients.archived_at IS NULL
+        AND recipe_step_ingredients.belongs_to_recipe_step = sqlc.arg(recipe_step_id)
+        AND recipe_step_ingredients.id = sqlc.arg(recipe_step_ingredient_id)
+        AND recipe_steps.archived_at IS NULL
+        AND recipe_steps.belongs_to_recipe = sqlc.arg(recipe_id)
+        AND recipe_steps.id = sqlc.arg(recipe_step_id)
+        AND recipes.archived_at IS NULL
+        AND recipes.id = sqlc.arg(recipe_id)
+);
 
 -- name: GetAllRecipeStepIngredientsForRecipe :many
 
@@ -98,17 +128,15 @@ SELECT
     recipe_step_ingredients.last_updated_at,
     recipe_step_ingredients.archived_at,
     recipe_step_ingredients.belongs_to_recipe_step
-FROM
-    recipe_step_ingredients
-        JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
-        JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
-        LEFT JOIN valid_ingredients ON recipe_step_ingredients.ingredient_id = valid_ingredients.id
-        JOIN valid_measurement_units ON recipe_step_ingredients.measurement_unit = valid_measurement_units.id
+FROM recipe_step_ingredients
+    JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
+    JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
+    LEFT JOIN valid_ingredients ON recipe_step_ingredients.ingredient_id = valid_ingredients.id
+    JOIN valid_measurement_units ON recipe_step_ingredients.measurement_unit = valid_measurement_units.id
 WHERE
     recipe_step_ingredients.archived_at IS NULL
     AND recipes.id = sqlc.arg(recipe_id)
     AND recipe_steps.belongs_to_recipe = sqlc.arg(recipe_id);
-
 
 -- name: GetRecipeStepIngredients :many
 
@@ -200,23 +228,19 @@ SELECT
             AND (recipe_step_ingredients.last_updated_at IS NULL OR recipe_step_ingredients.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
     ) as filtered_count,
     (
-        SELECT
-            COUNT(recipe_step_ingredients.id)
-        FROM
-            recipe_step_ingredients
-                JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
-                JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
-        WHERE
-            recipe_step_ingredients.archived_at IS NULL
-          AND recipes.id = sqlc.arg(recipe_id)
-          AND recipe_step_ingredients.belongs_to_recipe_step = sqlc.arg(recipe_step_id)
+        SELECT COUNT(recipe_step_ingredients.id)
+        FROM recipe_step_ingredients
+            JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
+            JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
+        WHERE recipe_step_ingredients.archived_at IS NULL
+            AND recipes.id = sqlc.arg(recipe_id)
+            AND recipe_step_ingredients.belongs_to_recipe_step = sqlc.arg(recipe_step_id)
     ) as total_count
-FROM
-    recipe_step_ingredients
-        JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
-        JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
-        LEFT JOIN valid_ingredients ON recipe_step_ingredients.ingredient_id = valid_ingredients.id
-        JOIN valid_measurement_units ON recipe_step_ingredients.measurement_unit = valid_measurement_units.id
+FROM recipe_step_ingredients
+    JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
+    JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
+    LEFT JOIN valid_ingredients ON recipe_step_ingredients.ingredient_id = valid_ingredients.id
+    JOIN valid_measurement_units ON recipe_step_ingredients.measurement_unit = valid_measurement_units.id
 WHERE
     recipe_step_ingredients.archived_at IS NULL
     AND recipes.id = sqlc.arg(recipe_id)
@@ -227,8 +251,8 @@ WHERE
     AND recipe_step_ingredients.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
     AND (recipe_step_ingredients.last_updated_at IS NULL OR recipe_step_ingredients.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years')))
     AND (recipe_step_ingredients.last_updated_at IS NULL OR recipe_step_ingredients.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
-    OFFSET sqlc.narg(query_offset)
-    LIMIT sqlc.narg(query_limit);
+OFFSET sqlc.narg(query_offset)
+LIMIT sqlc.narg(query_limit);
 
 -- name: GetRecipeStepIngredient :one
 
@@ -302,10 +326,10 @@ SELECT
 	recipe_step_ingredients.archived_at,
 	recipe_step_ingredients.belongs_to_recipe_step
 FROM recipe_step_ingredients
-	 JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id
-	 JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
-	 JOIN valid_ingredients ON recipe_step_ingredients.ingredient_id=valid_ingredients.id
-	 JOIN valid_measurement_units ON recipe_step_ingredients.measurement_unit=valid_measurement_units.id
+    JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
+    JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
+    LEFT JOIN valid_ingredients ON recipe_step_ingredients.ingredient_id = valid_ingredients.id
+    JOIN valid_measurement_units ON recipe_step_ingredients.measurement_unit = valid_measurement_units.id
 WHERE recipe_step_ingredients.archived_at IS NULL
 	AND recipe_step_ingredients.belongs_to_recipe_step = sqlc.arg(recipe_step_id)
 	AND recipe_step_ingredients.id = sqlc.arg(recipe_step_ingredient_id)
@@ -318,20 +342,21 @@ WHERE recipe_step_ingredients.archived_at IS NULL
 -- name: UpdateRecipeStepIngredient :execrows
 
 UPDATE recipe_step_ingredients SET
-	ingredient_id = $1,
-	name = $2,
-	optional = $3,
-	measurement_unit = $4,
-	minimum_quantity_value = $5,
-	maximum_quantity_value = $6,
-	quantity_notes = $7,
-	recipe_step_product_id = $8,
-	ingredient_notes = $9,
-	option_index = $10,
-	to_taste = $11,
-	product_percentage_to_use = $12,
-    vessel_index = $13,
-    recipe_step_product_recipe_id = $14,
+	ingredient_id = sqlc.arg(ingredient_id),
+	name = sqlc.arg(name),
+	optional = sqlc.arg(optional),
+	measurement_unit = sqlc.arg(measurement_unit),
+	minimum_quantity_value = sqlc.arg(minimum_quantity_value),
+	maximum_quantity_value = sqlc.arg(maximum_quantity_value),
+	quantity_notes = sqlc.arg(quantity_notes),
+	recipe_step_product_id = sqlc.arg(recipe_step_product_id),
+	ingredient_notes = sqlc.arg(ingredient_notes),
+	option_index = sqlc.arg(option_index),
+	to_taste = sqlc.arg(to_taste),
+	product_percentage_to_use = sqlc.arg(product_percentage_to_use),
+    vessel_index = sqlc.arg(vessel_index),
+    recipe_step_product_recipe_id = sqlc.arg(recipe_step_product_recipe_id),
 	last_updated_at = NOW()
-WHERE archived_at IS NULL AND belongs_to_recipe_step = $15
-	AND id = $16;
+WHERE archived_at IS NULL
+    AND belongs_to_recipe_step = sqlc.arg(belongs_to_recipe_step)
+	AND id = sqlc.arg(id);

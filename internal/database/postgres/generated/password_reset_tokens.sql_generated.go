@@ -21,7 +21,7 @@ INSERT INTO password_reset_tokens (
 ) VALUES (
 	$1,
 	$2,
-	NOW() + (30 * interval '1 minutes'),
+	NOW() + (30 * '1 minutes'::INTERVAL),
     $3
 )
 `

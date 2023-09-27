@@ -1,14 +1,34 @@
 -- name: ArchiveUserIngredientPreference :execrows
 
-UPDATE user_ingredient_preferences SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1 AND belongs_to_user = $2;
+UPDATE user_ingredient_preferences SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id) AND belongs_to_user = sqlc.arg(belongs_to_user);
 
 -- name: CreateUserIngredientPreference :exec
 
-INSERT INTO user_ingredient_preferences (id,ingredient,rating,notes,allergy,belongs_to_user) VALUES ($1,$2,$3,$4,$5,$6);
+INSERT INTO user_ingredient_preferences (
+    id,
+    ingredient,
+    rating,
+    notes,
+    allergy,
+    belongs_to_user
+) VALUES (
+    sqlc.arg(id),
+    sqlc.arg(ingredient),
+    sqlc.arg(rating),
+    sqlc.arg(notes),
+    sqlc.arg(allergy),
+    sqlc.arg(belongs_to_user)
+);
 
 -- name: CheckUserIngredientPreferenceExistence :one
 
-SELECT EXISTS ( SELECT user_ingredient_preferences.id FROM user_ingredient_preferences WHERE user_ingredient_preferences.archived_at IS NULL AND user_ingredient_preferences.id = $1 AND user_ingredient_preferences.belongs_to_user = $2 );
+SELECT EXISTS (
+    SELECT user_ingredient_preferences.id
+    FROM user_ingredient_preferences
+    WHERE user_ingredient_preferences.archived_at IS NULL
+        AND user_ingredient_preferences.id = sqlc.arg(id)
+        AND user_ingredient_preferences.belongs_to_user = sqlc.arg(belongs_to_user)
+);
 
 -- name: GetUserIngredientPreferencesForUser :many
 
@@ -66,17 +86,16 @@ SELECT
             user_ingredient_preferences
         WHERE
             user_ingredient_preferences.archived_at IS NULL
-          AND user_ingredient_preferences.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
-          AND user_ingredient_preferences.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
-          AND (
+            AND user_ingredient_preferences.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
+            AND user_ingredient_preferences.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+            AND (
                 user_ingredient_preferences.last_updated_at IS NULL
                 OR user_ingredient_preferences.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years'))
             )
-          AND (
+            AND (
                 user_ingredient_preferences.last_updated_at IS NULL
                 OR user_ingredient_preferences.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
             )
-        OFFSET sqlc.narg(query_offset)
     ) AS filtered_count,
     (
         SELECT
@@ -87,7 +106,7 @@ SELECT
             user_ingredient_preferences.archived_at IS NULL
     ) AS total_count
 FROM user_ingredient_preferences
-  JOIN valid_ingredients ON valid_ingredients.id = user_ingredient_preferences.ingredient
+    JOIN valid_ingredients ON valid_ingredients.id = user_ingredient_preferences.ingredient
 WHERE user_ingredient_preferences.archived_at IS NULL
 	AND valid_ingredients.archived_at IS NULL
     AND user_ingredient_preferences.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
@@ -101,8 +120,8 @@ WHERE user_ingredient_preferences.archived_at IS NULL
         OR user_ingredient_preferences.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
     )
 	AND user_ingredient_preferences.belongs_to_user = sqlc.arg(user_id)
-    OFFSET sqlc.narg(query_offset)
-    LIMIT sqlc.narg(query_limit);
+OFFSET sqlc.narg(query_offset)
+LIMIT sqlc.narg(query_limit);
 
 -- name: GetUserIngredientPreference :one
 
@@ -154,7 +173,7 @@ SELECT
     user_ingredient_preferences.archived_at,
     user_ingredient_preferences.belongs_to_user
 FROM user_ingredient_preferences
-  JOIN valid_ingredients ON valid_ingredients.id = user_ingredient_preferences.ingredient
+    JOIN valid_ingredients ON valid_ingredients.id = user_ingredient_preferences.ingredient
 WHERE user_ingredient_preferences.archived_at IS NULL
 	AND valid_ingredients.archived_at IS NULL
 	AND user_ingredient_preferences.id = sqlc.arg(user_ingredient_preference_id)
@@ -164,11 +183,11 @@ WHERE user_ingredient_preferences.archived_at IS NULL
 
 UPDATE user_ingredient_preferences
 SET
-	ingredient = $1,
-	rating = $2,
-	notes = $3,
-	allergy = $4,
+	ingredient = sqlc.arg(ingredient),
+	rating = sqlc.arg(rating),
+	notes = sqlc.arg(notes),
+	allergy = sqlc.arg(allergy),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND id = $5
-	AND belongs_to_user = $6;
+	AND id = sqlc.arg(id)
+	AND belongs_to_user = sqlc.arg(belongs_to_user);

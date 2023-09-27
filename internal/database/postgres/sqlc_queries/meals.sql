@@ -1,10 +1,26 @@
 -- name: ArchiveMeal :execrows
 
-UPDATE meals SET archived_at = NOW() WHERE archived_at IS NULL AND created_by_user = $1 AND id = $2;
+UPDATE meals SET archived_at = NOW() WHERE archived_at IS NULL AND created_by_user = sqlc.arg(created_by_user) AND id = sqlc.arg(id);
 
 -- name: CreateMeal :exec
 
-INSERT INTO meals (id,"name",description,min_estimated_portions,max_estimated_portions,eligible_for_meal_plans,created_by_user) VALUES ($1,$2,$3,$4,$5,$6,$7);
+INSERT INTO meals (
+    id,
+    name,
+    description,
+    min_estimated_portions,
+    max_estimated_portions,
+    eligible_for_meal_plans,
+    created_by_user
+) VALUES (
+    sqlc.arg(id),
+    sqlc.arg(name),
+    sqlc.arg(description),
+    sqlc.arg(min_estimated_portions),
+    sqlc.arg(max_estimated_portions),
+    sqlc.arg(eligible_for_meal_plans),
+    sqlc.arg(created_by_user)
+);
 
 -- name: CheckMealExistence :one
 
@@ -14,11 +30,11 @@ SELECT EXISTS ( SELECT meals.id FROM meals WHERE meals.archived_at IS NULL AND m
 
 SELECT meals.id
     FROM meals
-    WHERE (meals.archived_at IS NULL)
+    WHERE meals.archived_at IS NULL
     AND (
-        (meals.last_indexed_at IS NULL)
+        meals.last_indexed_at IS NULL
         OR meals.last_indexed_at
-            < now() - '24 hours'::INTERVAL
+            < NOW() - '24 hours'::INTERVAL
     );
 
 -- name: GetMeal :many
@@ -41,7 +57,7 @@ FROM meals
     JOIN meal_components ON meal_components.meal_id=meals.id
 WHERE meals.archived_at IS NULL
   AND meal_components.archived_at IS NULL
-  AND meals.id = $1;
+  AND meals.id = sqlc.arg(id);
 
 -- name: GetMeals :many
 
@@ -57,10 +73,8 @@ SELECT
     meals.archived_at,
     meals.created_by_user,
     (
-        SELECT
-            COUNT(meals.id)
-        FROM
-            meals
+        SELECT COUNT(meals.id)
+        FROM meals
         WHERE
             meals.archived_at IS NULL
             AND meals.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
@@ -69,12 +83,9 @@ SELECT
             AND (meals.last_updated_at IS NULL OR meals.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
     ) as filtered_count,
     (
-        SELECT
-            COUNT(meals.id)
-        FROM
-            meals
-        WHERE
-            meals.archived_at IS NULL
+        SELECT COUNT(meals.id)
+        FROM meals
+        WHERE meals.archived_at IS NULL
     ) as total_count
 FROM meals
 WHERE meals.archived_at IS NULL
@@ -82,8 +93,8 @@ WHERE meals.archived_at IS NULL
     AND meals.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
     AND (meals.last_updated_at IS NULL OR meals.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years')))
     AND (meals.last_updated_at IS NULL OR meals.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
-    OFFSET sqlc.narg(query_offset)
-    LIMIT sqlc.narg(query_limit);
+OFFSET sqlc.narg(query_offset)
+LIMIT sqlc.narg(query_limit);
 
 -- name: SearchForMeals :many
 
@@ -114,12 +125,9 @@ SELECT
             AND (meals.last_updated_at IS NULL OR meals.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
     ) as filtered_count,
     (
-        SELECT
-            COUNT(meals.id)
-        FROM
-            meals
-        WHERE
-            meals.archived_at IS NULL
+        SELECT COUNT(meals.id)
+        FROM meals
+        WHERE meals.archived_at IS NULL
     ) as total_count
 FROM meals
     JOIN meal_components ON meal_components.meal_id=meals.id
@@ -130,8 +138,8 @@ WHERE meals.archived_at IS NULL
     AND (meals.last_updated_at IS NULL OR meals.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years')))
     AND (meals.last_updated_at IS NULL OR meals.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
     AND meal_components.archived_at IS NULL
-    OFFSET sqlc.narg(query_offset)
-    LIMIT sqlc.narg(query_limit);
+OFFSET sqlc.narg(query_offset)
+LIMIT sqlc.narg(query_limit);
 
 -- name: UpdateMealLastIndexedAt :execrows
 

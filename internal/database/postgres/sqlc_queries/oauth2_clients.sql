@@ -33,7 +33,7 @@ SELECT
 	oauth2_clients.archived_at
 FROM oauth2_clients
 WHERE oauth2_clients.archived_at IS NULL
-	AND oauth2_clients.client_id = $1;
+	AND oauth2_clients.client_id = sqlc.arg(id);
 
 -- name: GetOAuth2ClientByDatabaseID :one
 
@@ -47,7 +47,7 @@ SELECT
 	oauth2_clients.archived_at
 FROM oauth2_clients
 WHERE oauth2_clients.archived_at IS NULL
-	AND oauth2_clients.id = $1;
+	AND oauth2_clients.id = sqlc.arg(id);
 
 -- name: GetOAuth2Clients :many
 

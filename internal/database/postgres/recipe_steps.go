@@ -35,8 +35,8 @@ func (q *Querier) RecipeStepExists(ctx context.Context, recipeID, recipeStepID s
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
 	result, err := q.generatedQuerier.CheckRecipeStepExistence(ctx, q.db, &generated.CheckRecipeStepExistenceParams{
-		BelongsToRecipe: recipeID,
-		ID:              recipeStepID,
+		RecipeID:     recipeID,
+		RecipeStepID: recipeStepID,
 	})
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing recipe step existence check")
@@ -65,8 +65,8 @@ func (q *Querier) GetRecipeStep(ctx context.Context, recipeID, recipeStepID stri
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
 	result, err := q.generatedQuerier.GetRecipeStep(ctx, q.db, &generated.GetRecipeStepParams{
-		BelongsToRecipe: recipeID,
-		ID:              recipeStepID,
+		RecipeID:     recipeID,
+		RecipeStepID: recipeStepID,
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching recipe step")
@@ -444,8 +444,8 @@ func (q *Querier) ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID 
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
 	if _, err := q.generatedQuerier.ArchiveRecipeStep(ctx, q.db, &generated.ArchiveRecipeStepParams{
-		BelongsToRecipe: recipeID,
-		ID:              recipeStepID,
+		RecipeID:     recipeID,
+		RecipeStepID: recipeStepID,
 	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step")
 	}

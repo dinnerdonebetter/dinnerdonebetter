@@ -9,15 +9,15 @@ import (
 
 const (
 	webhookTriggerEventsTableName = "webhook_trigger_events"
-
-	webhookTriggerEventsJoin = "webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook"
+	belongsToWebhookColumn        = "belongs_to_webhook"
+	triggerEventColumn            = "trigger_event"
 )
 
 var (
 	webhookTriggerEventsColumns = []string{
-		"id",
-		"trigger_event",
-		"belongs_to_webhook",
+		idColumn,
+		triggerEventColumn,
+		belongsToWebhookColumn,
 		createdAtColumn,
 		archivedAtColumn,
 	}

@@ -10,30 +10,44 @@ import (
 const (
 	usersTableName = "users"
 
-	userAccountStatusColumn            = "user_account_status"
-	userAccountStatusExplanationColumn = "user_account_status_explanation"
-	lastAcceptedTOSColumn              = "last_accepted_terms_of_service"
-	lastAcceptedPrivacyPolicyColumn    = "last_accepted_privacy_policy"
+	usernameColumn                      = "username"
+	avatarSourceColumn                  = "avatar_src"
+	emailAddressColumn                  = "email_address"
+	hashedPasswordColumn                = "hashed_password"
+	passwordLastChangedAtColumn         = "password_last_changed_at"
+	requiresPasswordChangeColumn        = "requires_password_change"
+	twoFactorSecretColumn               = "two_factor_secret"
+	twoFactorSecretVerifiedAtColumn     = "two_factor_secret_verified_at"
+	serviceRoleColumn                   = "service_role"
+	userAccountStatusColumn             = "user_account_status"
+	userAccountStatusExplanationColumn  = "user_account_status_explanation"
+	birthdayColumn                      = "birthday"
+	emailAddressVerificationTokenColumn = "email_address_verification_token"
+	emailAddressVerifiedAtColumn        = "email_address_verified_at"
+	firstNameColumn                     = "first_name"
+	lastNameColumn                      = "last_name"
+	lastAcceptedTOSColumn               = "last_accepted_terms_of_service"
+	lastAcceptedPrivacyPolicyColumn     = "last_accepted_privacy_policy"
 )
 
 var usersColumns = []string{
 	idColumn,
-	"username",
-	"avatar_src",
-	"email_address",
-	"hashed_password",
-	"password_last_changed_at",
-	"requires_password_change",
-	"two_factor_secret",
-	"two_factor_secret_verified_at",
-	"service_role",
+	usernameColumn,
+	avatarSourceColumn,
+	emailAddressColumn,
+	hashedPasswordColumn,
+	passwordLastChangedAtColumn,
+	requiresPasswordChangeColumn,
+	twoFactorSecretColumn,
+	twoFactorSecretVerifiedAtColumn,
+	serviceRoleColumn,
 	userAccountStatusColumn,
 	userAccountStatusExplanationColumn,
-	"birthday",
-	"email_address_verification_token",
-	"email_address_verified_at",
-	"first_name",
-	"last_name",
+	birthdayColumn,
+	emailAddressVerificationTokenColumn,
+	emailAddressVerifiedAtColumn,
+	firstNameColumn,
+	lastNameColumn,
 	lastAcceptedTOSColumn,
 	lastAcceptedPrivacyPolicyColumn,
 	lastIndexedAtColumn,
@@ -53,7 +67,8 @@ func buildUpdateHouseholdMembershipsQuery(ownershipColumn string, nowColumns []s
 	builder := updateQueryBuilder.Addf(
 		`UPDATE %s 
 SET %s = %s%s
-WHERE %s IS NULL AND %s = sqlc.arg(%s);`,
+WHERE %s IS NULL
+	AND %s = sqlc.arg(%s);`,
 		householdUserMembershipsTableName,
 		archivedAtColumn,
 		currentTimeExpression,
@@ -141,12 +156,13 @@ func buildUsersQueries() []*Query {
 				Name: "CreateUser",
 				Type: ExecType,
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO users
+			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s
 (
 	%s
 ) VALUES (
 	%s
 );`,
+				usersTableName,
 				strings.Join(insertColumns, ",\n\t"),
 				strings.Join(applyToEach(insertColumns, func(_ int, s string) string {
 					return fmt.Sprintf("sqlc.arg(%s)", s)
@@ -160,15 +176,20 @@ func buildUsersQueries() []*Query {
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
-FROM users
-WHERE users.archived_at IS NULL
-	AND users.service_role = 'service_admin'
-	AND users.username = sqlc.arg(username)
-	AND users.two_factor_secret_verified_at IS NOT NULL;`,
+FROM %s
+WHERE %s.%s IS NULL
+	AND %s.%s = 'service_admin'
+	AND %s.%s = sqlc.arg(%s)
+	AND %s.%s IS NOT NULL;`,
 
 				strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 					return fmt.Sprintf("%s.%s", usersTableName, s)
 				}), ",\n\t"),
+				usersTableName,
+				usersTableName, archivedAtColumn,
+				usersTableName, serviceRoleColumn,
+				usersTableName, usernameColumn, usernameColumn,
+				usersTableName, twoFactorSecretVerifiedAtColumn,
 			)),
 		},
 		{
@@ -178,12 +199,15 @@ WHERE users.archived_at IS NULL
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
-FROM users
-WHERE users.archived_at IS NULL
-	AND users.email_address = sqlc.arg(email_address);`,
+FROM %s
+WHERE %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 					return fmt.Sprintf("%s.%s", usersTableName, s)
 				}), ",\n\t"),
+				usersTableName,
+				usersTableName, archivedAtColumn,
+				usersTableName, emailAddressColumn, emailAddressColumn,
 			)),
 		},
 		{
@@ -193,12 +217,15 @@ WHERE users.archived_at IS NULL
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
-FROM users
-WHERE users.archived_at IS NULL
-	AND users.email_address_verification_token = sqlc.arg(email_address_verification_token);`,
+FROM %s
+WHERE %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 					return fmt.Sprintf("%s.%s", usersTableName, s)
 				}), ",\n\t"),
+				usersTableName,
+				usersTableName, archivedAtColumn,
+				usersTableName, emailAddressVerificationTokenColumn, emailAddressVerificationTokenColumn,
 			)),
 		},
 		{
@@ -208,12 +235,15 @@ WHERE users.archived_at IS NULL
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
-FROM users
-WHERE users.archived_at IS NULL
-	AND users.id = sqlc.arg(id);`,
+FROM %s
+WHERE %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 					return fmt.Sprintf("%s.%s", usersTableName, s)
 				}), ",\n\t"),
+				usersTableName,
+				usersTableName, archivedAtColumn,
+				usersTableName, idColumn, idColumn,
 			)),
 		},
 		{
@@ -223,12 +253,15 @@ WHERE users.archived_at IS NULL
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
-FROM users
-WHERE users.archived_at IS NULL
-	AND users.username = sqlc.arg(username);`,
+FROM %s
+WHERE %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 					return fmt.Sprintf("%s.%s", usersTableName, s)
 				}), ",\n\t"),
+				usersTableName,
+				usersTableName, archivedAtColumn,
+				usersTableName, usernameColumn, usernameColumn,
 			)),
 		},
 		{
@@ -236,13 +269,18 @@ WHERE users.archived_at IS NULL
 				Name: "GetEmailVerificationTokenByUserID",
 				Type: OneType,
 			},
-			Content: `SELECT
-	users.email_address_verification_token
-FROM users
-WHERE users.archived_at IS NULL
-	AND users.email_address_verified_at IS NULL
-	AND users.id = sqlc.arg(id);
-`,
+			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s.%s
+FROM %s
+WHERE %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s);`,
+				usersTableName, emailAddressVerificationTokenColumn,
+				usersTableName,
+				usersTableName, archivedAtColumn,
+				usersTableName, emailAddressVerifiedAtColumn,
+				usersTableName, idColumn, idColumn,
+			)),
 		},
 		{
 			Annotation: QueryAnnotation{
@@ -253,8 +291,8 @@ WHERE users.archived_at IS NULL
 	%s,
 	%s,
 	%s
-FROM users
-WHERE users.archived_at IS NULL
+FROM %s
+WHERE %s.%s IS NULL
 	%s
 %s;`,
 				strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
@@ -267,6 +305,8 @@ WHERE users.archived_at IS NULL
 				buildTotalCountSelect(
 					usersTableName,
 				),
+				usersTableName,
+				usersTableName, archivedAtColumn,
 				buildFilterConditions(
 					usersTableName,
 					true,
@@ -279,14 +319,17 @@ WHERE users.archived_at IS NULL
 				Name: "GetUserIDsNeedingIndexing",
 				Type: ManyType,
 			},
-			Content: `SELECT users.id
-FROM users
-WHERE (users.archived_at IS NULL)
-AND users.last_indexed_at IS NULL
-OR (
-	users.last_indexed_at < NOW() - '24 hours'::INTERVAL
-);
-`,
+			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT %s.%s
+FROM %s
+WHERE %s.%s IS NULL
+	AND %s.%s IS NULL
+	OR %s.%s < %s - '24 hours'::INTERVAL;`,
+				usersTableName, idColumn,
+				usersTableName,
+				usersTableName, archivedAtColumn,
+				usersTableName, lastIndexedAtColumn,
+				usersTableName, lastIndexedAtColumn, currentTimeExpression,
+			)),
 		},
 		{
 			Annotation: QueryAnnotation{
@@ -295,13 +338,17 @@ OR (
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
-FROM users
-WHERE users.archived_at IS NULL
-	AND users.id = sqlc.arg(id)
-	AND users.two_factor_secret_verified_at IS NULL;`,
+FROM %s
+WHERE %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s)
+	AND %s.%s IS NULL;`,
 				strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 					return fmt.Sprintf("%s.%s", usersTableName, s)
 				}), ",\n\t"),
+				usersTableName,
+				usersTableName, archivedAtColumn,
+				usersTableName, idColumn, idColumn,
+				usersTableName, twoFactorSecretVerifiedAtColumn,
 			)),
 		},
 		{
@@ -311,13 +358,17 @@ WHERE users.archived_at IS NULL
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
-FROM users
-WHERE users.archived_at IS NULL
-	AND users.id = sqlc.arg(id)
-	AND users.two_factor_secret_verified_at IS NOT NULL;`,
+FROM %s
+WHERE %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s)
+	AND %s.%s IS NOT NULL;`,
 				strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 					return fmt.Sprintf("%s.%s", usersTableName, s)
 				}), ",\n\t"),
+				usersTableName,
+				usersTableName, archivedAtColumn,
+				usersTableName, idColumn, idColumn,
+				usersTableName, twoFactorSecretVerifiedAtColumn,
 			)),
 		},
 		{
@@ -326,15 +377,19 @@ WHERE users.archived_at IS NULL
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
-	email_address_verified_at = NOW(),
-	%s = NOW()
+	%s = %s,
+	%s = %s
 WHERE %s IS NULL
-	AND email_address_verified_at IS NULL
-	AND id = sqlc.arg(id)
-	AND email_address_verification_token = sqlc.arg(email_address_verification_token);`,
+	AND %s IS NULL
+	AND %s = sqlc.arg(%s)
+	AND %s = sqlc.arg(%s);`,
 				usersTableName,
-				lastUpdatedAtColumn,
+				emailAddressVerifiedAtColumn, currentTimeExpression,
+				lastUpdatedAtColumn, currentTimeExpression,
 				archivedAtColumn,
+				emailAddressVerifiedAtColumn,
+				idColumn, idColumn,
+				emailAddressVerificationTokenColumn, emailAddressVerificationTokenColumn,
 			)),
 		},
 		{
@@ -343,14 +398,19 @@ WHERE %s IS NULL
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
-	two_factor_secret_verified_at = NULL,
-	two_factor_secret = sqlc.arg(two_factor_secret),
-	%s = NOW()
+	%s = NULL,
+	%s = sqlc.arg(%s),
+	%s = %s
 WHERE %s IS NULL
-	AND id = sqlc.arg(id);`,
+	AND %s = sqlc.arg(%s);`,
 				usersTableName,
+				twoFactorSecretVerifiedAtColumn,
+				twoFactorSecretColumn, twoFactorSecretColumn,
 				lastUpdatedAtColumn,
+				currentTimeExpression,
 				archivedAtColumn,
+				idColumn,
+				idColumn,
 			)),
 		},
 		{
@@ -359,13 +419,15 @@ WHERE %s IS NULL
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
-	two_factor_secret_verified_at = NOW(),
-	%s = NOW()
+	%s = %s,
+	%s = %s
 WHERE %s IS NULL
-	AND id = sqlc.arg(id);`,
+	AND %s = sqlc.arg(%s);`,
 				usersTableName,
-				lastUpdatedAtColumn,
+				twoFactorSecretVerifiedAtColumn, currentTimeExpression,
+				lastUpdatedAtColumn, currentTimeExpression,
 				archivedAtColumn,
+				idColumn, idColumn,
 			)),
 		},
 		{
@@ -375,13 +437,15 @@ WHERE %s IS NULL
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
-FROM users
-WHERE users.username %s
-AND users.archived_at IS NULL;`,
+FROM %s
+WHERE %s.%s %s
+AND %s.%s IS NULL;`,
 				strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 					return fmt.Sprintf("%s.%s", usersTableName, s)
 				}), ",\n\t"),
-				`ILIKE '%' || sqlc.arg(username)::text || '%'`,
+				usersTableName,
+				usersTableName, usernameColumn, buildILIKEForArgument(usernameColumn),
+				usersTableName, archivedAtColumn,
 			)),
 		},
 		{
@@ -390,13 +454,15 @@ AND users.archived_at IS NULL;`,
 				Type: ExecRowsType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
-	avatar_src = sqlc.arg(avatar_src),
-	%s = NOW()
+	%s = sqlc.arg(%s),
+	%s = %s
 WHERE %s IS NULL
-	AND id = sqlc.arg(id);`,
+	AND %s = sqlc.arg(%s);`,
 				usersTableName,
-				lastUpdatedAtColumn,
+				avatarSourceColumn, avatarSourceColumn,
+				lastUpdatedAtColumn, currentTimeExpression,
 				archivedAtColumn,
+				idColumn, idColumn,
 			)),
 		},
 		{
@@ -405,15 +471,19 @@ WHERE %s IS NULL
 				Type: ExecRowsType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
-	first_name = sqlc.arg(first_name),
-	last_name = sqlc.arg(last_name),
-	birthday = sqlc.arg(birthday),
-	%s = NOW()
+	%s = sqlc.arg(%s),
+	%s = sqlc.arg(%s),
+	%s = sqlc.arg(%s),
+	%s = %s
 WHERE %s IS NULL
-	AND id = sqlc.arg(id);`,
+	AND %s = sqlc.arg(%s);`,
 				usersTableName,
-				lastUpdatedAtColumn,
+				firstNameColumn, firstNameColumn,
+				lastNameColumn, lastNameColumn,
+				birthdayColumn, birthdayColumn,
+				lastUpdatedAtColumn, currentTimeExpression,
 				archivedAtColumn,
+				idColumn, idColumn,
 			)),
 		},
 		{
@@ -422,14 +492,18 @@ WHERE %s IS NULL
 				Type: ExecRowsType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
-	email_address = sqlc.arg(email_address),
-	email_address_verified_at = NULL,
-	%s = NOW()
+	%s = sqlc.arg(%s),
+	%s = NULL,
+	%s = %s
 WHERE %s IS NULL
-	AND id = sqlc.arg(id);`,
+	AND %s = sqlc.arg(%s);`,
 				usersTableName,
+				emailAddressColumn, emailAddressColumn,
+				emailAddressVerifiedAtColumn,
 				lastUpdatedAtColumn,
+				currentTimeExpression,
 				archivedAtColumn,
+				idColumn, idColumn,
 			)),
 		},
 		{
@@ -437,8 +511,12 @@ WHERE %s IS NULL
 				Name: "UpdateUserLastIndexedAt",
 				Type: ExecRowsType,
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET last_indexed_at = NOW() WHERE id = sqlc.arg(id) AND %s IS NULL;`,
+			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s = sqlc.arg(%s) AND %s IS NULL;`,
 				usersTableName,
+				lastIndexedAtColumn,
+				currentTimeExpression,
+				idColumn,
+				idColumn,
 				archivedAtColumn,
 			)),
 		},
@@ -448,18 +526,17 @@ WHERE %s IS NULL
 				Type: ExecRowsType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
-	hashed_password = sqlc.arg(hashed_password),
-	password_last_changed_at = %s,
+	%s = sqlc.arg(%s),
+	%s = %s,
 	%s = %s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
 				usersTableName,
-				currentTimeExpression,
-				lastUpdatedAtColumn,
-				currentTimeExpression,
+				hashedPasswordColumn, hashedPasswordColumn,
+				passwordLastChangedAtColumn, currentTimeExpression,
+				lastUpdatedAtColumn, currentTimeExpression,
 				archivedAtColumn,
-				idColumn,
-				idColumn,
+				idColumn, idColumn,
 			)),
 		},
 		{
@@ -468,17 +545,17 @@ WHERE %s IS NULL
 				Type: ExecRowsType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
-	two_factor_secret_verified_at = NULL,
-	two_factor_secret = sqlc.arg(two_factor_secret),
+	%s = NULL,
+	%s = sqlc.arg(%s),
 	%s = %s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
 				usersTableName,
-				lastUpdatedAtColumn,
-				currentTimeExpression,
+				twoFactorSecretVerifiedAtColumn,
+				twoFactorSecretColumn, twoFactorSecretColumn,
+				lastUpdatedAtColumn, currentTimeExpression,
 				archivedAtColumn,
-				idColumn,
-				idColumn,
+				idColumn, idColumn,
 			)),
 		},
 		{
@@ -487,16 +564,15 @@ WHERE %s IS NULL
 				Type: ExecRowsType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
-	username = sqlc.arg(username),
+	%s = sqlc.arg(%s),
 	%s = %s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
 				usersTableName,
-				lastUpdatedAtColumn,
-				currentTimeExpression,
+				usernameColumn, usernameColumn,
+				lastUpdatedAtColumn, currentTimeExpression,
 				archivedAtColumn,
-				idColumn,
-				idColumn,
+				idColumn, idColumn,
 			)),
 		},
 	}

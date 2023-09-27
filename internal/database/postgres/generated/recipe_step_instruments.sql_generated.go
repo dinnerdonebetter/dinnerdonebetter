@@ -31,7 +31,20 @@ func (q *Queries) ArchiveRecipeStepInstrument(ctx context.Context, db DBTX, arg 
 
 const checkRecipeStepInstrumentExistence = `-- name: CheckRecipeStepInstrumentExistence :one
 
-SELECT EXISTS ( SELECT recipe_step_instruments.id FROM recipe_step_instruments JOIN recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_instruments.archived_at IS NULL AND recipe_step_instruments.belongs_to_recipe_step = $1 AND recipe_step_instruments.id = $2 AND recipe_steps.archived_at IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $1 AND recipes.archived_at IS NULL AND recipes.id = $3 )
+SELECT EXISTS (
+    SELECT recipe_step_instruments.id
+    FROM recipe_step_instruments
+        JOIN recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id
+        JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
+    WHERE recipe_step_instruments.archived_at IS NULL
+        AND recipe_step_instruments.belongs_to_recipe_step = $1
+        AND recipe_step_instruments.id = $2
+        AND recipe_steps.archived_at IS NULL
+        AND recipe_steps.belongs_to_recipe = $3
+        AND recipe_steps.id = $1
+        AND recipes.archived_at IS NULL
+        AND recipes.id = $3
+)
 `
 
 type CheckRecipeStepInstrumentExistenceParams struct {
@@ -49,9 +62,31 @@ func (q *Queries) CheckRecipeStepInstrumentExistence(ctx context.Context, db DBT
 
 const createRecipeStepInstrument = `-- name: CreateRecipeStepInstrument :exec
 
-INSERT INTO recipe_step_instruments
-(id,instrument_id,recipe_step_product_id,"name",notes,preference_rank,optional,option_index,minimum_quantity,maximum_quantity,belongs_to_recipe_step)
-VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
+INSERT INTO recipe_step_instruments (
+    id,
+    instrument_id,
+    recipe_step_product_id,
+    name,
+    notes,
+    preference_rank,
+    optional,
+    option_index,
+    minimum_quantity,
+    maximum_quantity,
+    belongs_to_recipe_step
+) VALUES (
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $6,
+    $7,
+    $8,
+    $9,
+    $10,
+    $11
+)
 `
 
 type CreateRecipeStepInstrumentParams struct {
@@ -236,17 +271,14 @@ SELECT
             AND (recipe_step_instruments.last_updated_at IS NULL OR recipe_step_instruments.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years')))
     ) as filtered_count,
     (
-        SELECT
-            COUNT(recipe_step_instruments.id)
-        FROM
-            recipe_step_instruments
-        WHERE
-            recipe_step_instruments.archived_at IS NULL
+        SELECT COUNT(recipe_step_instruments.id)
+        FROM recipe_step_instruments
+        WHERE recipe_step_instruments.archived_at IS NULL
     ) as total_count
 FROM recipe_step_instruments
-    LEFT JOIN valid_instruments ON recipe_step_instruments.instrument_id=valid_instruments.id
-    JOIN recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id
-    JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
+	LEFT JOIN valid_instruments ON recipe_step_instruments.instrument_id=valid_instruments.id
+	JOIN recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id
+	JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
 WHERE
     recipe_step_instruments.archived_at IS NULL
     AND recipe_step_instruments.belongs_to_recipe_step = $1
@@ -259,8 +291,8 @@ WHERE
     AND recipe_steps.id = $1
     AND recipes.archived_at IS NULL
     AND recipes.id = $6
-    OFFSET $7
-    LIMIT $8
+OFFSET $7
+LIMIT $8
 `
 
 type GetRecipeStepInstrumentsParams struct {
@@ -431,8 +463,8 @@ type GetRecipeStepInstrumentsForRecipeRow struct {
 	Optional                                      bool
 }
 
-func (q *Queries) GetRecipeStepInstrumentsForRecipe(ctx context.Context, db DBTX, belongsToRecipe string) ([]*GetRecipeStepInstrumentsForRecipeRow, error) {
-	rows, err := db.QueryContext(ctx, getRecipeStepInstrumentsForRecipe, belongsToRecipe)
+func (q *Queries) GetRecipeStepInstrumentsForRecipe(ctx context.Context, db DBTX, recipeID string) ([]*GetRecipeStepInstrumentsForRecipeRow, error) {
+	rows, err := db.QueryContext(ctx, getRecipeStepInstrumentsForRecipe, recipeID)
 	if err != nil {
 		return nil, err
 	}

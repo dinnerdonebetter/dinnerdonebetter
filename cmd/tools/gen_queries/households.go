@@ -9,6 +9,8 @@ import (
 
 const (
 	householdsTableName = "households"
+
+	webhookHMACSecretColumn = "webhook_hmac_secret"
 )
 
 var householdsColumns = []string{
@@ -29,7 +31,7 @@ var householdsColumns = []string{
 	"latitude",
 	"longitude",
 	"last_payment_provider_sync_occurred_at",
-	"webhook_hmac_secret",
+	webhookHMACSecretColumn,
 	createdAtColumn,
 	lastUpdatedAtColumn,
 	archivedAtColumn,
@@ -114,12 +116,12 @@ WHERE %s IS NULL
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
-FROM households
-	JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
-	JOIN users ON household_user_memberships.belongs_to_user = users.id
-WHERE households.archived_at IS NULL
-	AND household_user_memberships.archived_at IS NULL
-	AND households.id = sqlc.arg(id);`,
+FROM %s
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
+WHERE %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(append(
 					append(
 						applyToEach(householdsColumns, func(_ int, s string) string {
@@ -132,8 +134,14 @@ WHERE households.archived_at IS NULL
 					applyToEach(householdUserMembershipsColumns, func(_ int, s string) string {
 						return fmt.Sprintf("%s.%s as membership_%s", householdUserMembershipsTableName, s, s)
 					})...,
-				), ",\n\t")),
-			),
+				), ",\n\t"),
+				householdsTableName,
+				householdUserMembershipsTableName, householdUserMembershipsTableName, belongsToHouseholdColumn, householdsTableName, idColumn,
+				usersTableName, householdUserMembershipsTableName, belongsToUserColumn, usersTableName, idColumn,
+				householdsTableName, archivedAtColumn,
+				householdUserMembershipsTableName, archivedAtColumn,
+				householdsTableName, idColumn, idColumn,
+			)),
 		},
 		{
 			Annotation: QueryAnnotation{
@@ -143,27 +151,29 @@ WHERE households.archived_at IS NULL
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
 	(
-		SELECT
-			COUNT(households.id)
-		FROM
-			households
-		    JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
-        WHERE households.archived_at IS NULL
-            AND household_user_memberships.belongs_to_user = sqlc.arg(user_id)%s
+		SELECT COUNT(%s.%s)
+		FROM %s
+		    JOIN %s ON %s.%s = %s.%s
+        WHERE %s.%s IS NULL
+            AND %s.%s = sqlc.arg(%s)%s
 	) as filtered_count,
     %s
-FROM households
-	JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
-    JOIN users ON household_user_memberships.belongs_to_user = users.id
-WHERE households.archived_at IS NULL
-    AND household_user_memberships.archived_at IS NULL
-    AND household_user_memberships.belongs_to_user = sqlc.arg(user_id)
+FROM %s
+	JOIN %s ON %s.%s = %s.%s
+    JOIN %s ON %s.%s = %s.%s
+WHERE %s.%s IS NULL
+    AND %s.%s IS NULL
+    AND %s.%s = sqlc.arg(%s)
 	%s
-	LIMIT sqlc.narg(query_limit)
-	OFFSET sqlc.narg(query_offset);`,
+%s;`,
 				strings.Join(applyToEach(householdsColumns, func(_ int, s string) string {
 					return fmt.Sprintf("%s.%s", householdsTableName, s)
 				}), ",\n\t"),
+				householdsTableName, idColumn,
+				householdsTableName,
+				householdUserMembershipsTableName, householdUserMembershipsTableName, belongsToHouseholdColumn, householdsTableName, idColumn,
+				householdsTableName, archivedAtColumn,
+				householdUserMembershipsTableName, belongsToUserColumn, belongsToUserColumn,
 				strings.Join(applyToEach(strings.Split(buildFilterConditions(
 					householdsTableName,
 					true,
@@ -176,10 +186,17 @@ WHERE households.archived_at IS NULL
 				buildTotalCountSelect(
 					householdsTableName,
 				),
+				householdsTableName,
+				householdUserMembershipsTableName, householdUserMembershipsTableName, belongsToHouseholdColumn, householdsTableName, idColumn,
+				usersTableName, householdUserMembershipsTableName, belongsToUserColumn, usersTableName, idColumn,
+				householdsTableName, archivedAtColumn,
+				householdUserMembershipsTableName, archivedAtColumn,
+				householdUserMembershipsTableName, belongsToUserColumn, belongsToUserColumn,
 				buildFilterConditions(
 					householdsTableName,
 					true,
 				),
+				offsetLimitAddendum,
 			)),
 		},
 		{
@@ -228,19 +245,17 @@ WHERE %s IS NULL
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s
 SET
-    webhook_hmac_secret = sqlc.arg(webhook_hmac_secret),
+    %s = sqlc.arg(%s),
     %s = %s
 WHERE %s IS NULL
     AND %s = sqlc.arg(%s)
     AND %s = sqlc.arg(%s);`,
 				householdsTableName,
-				lastUpdatedAtColumn,
-				currentTimeExpression,
+				webhookHMACSecretColumn, webhookHMACSecretColumn,
+				lastUpdatedAtColumn, currentTimeExpression,
 				archivedAtColumn,
-				belongsToUserColumn,
-				belongsToUserColumn,
-				idColumn,
-				idColumn,
+				belongsToUserColumn, belongsToUserColumn,
+				idColumn, idColumn,
 			)),
 		},
 	}

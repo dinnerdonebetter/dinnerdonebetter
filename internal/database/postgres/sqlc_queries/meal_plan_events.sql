@@ -1,30 +1,38 @@
 -- name: ArchiveMealPlanEvent :execrows
 
-UPDATE meal_plan_events SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1 AND belongs_to_meal_plan = $2;
+UPDATE meal_plan_events SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id) AND belongs_to_meal_plan = sqlc.arg(belongs_to_meal_plan);
 
 -- name: CreateMealPlanEvent :exec
 
-INSERT INTO
-	meal_plan_events (id, notes, starts_at, ends_at, meal_name, belongs_to_meal_plan)
-VALUES
-	($1, $2, $3, $4, $5, $6);
+INSERT INTO meal_plan_events (
+    id,
+    notes,
+    starts_at,
+    ends_at,
+    meal_name,
+    belongs_to_meal_plan
+) VALUES (
+    sqlc.arg(id),
+    sqlc.arg(notes),
+    sqlc.arg(starts_at),
+    sqlc.arg(ends_at),
+    sqlc.arg(meal_name),
+    sqlc.arg(belongs_to_meal_plan)
+);
 
 -- name: MealPlanEventIsEligibleForVoting :one
 
-SELECT
-  EXISTS (
-    SELECT
-      meal_plan_events.id
-    FROM
-      meal_plan_events
-      JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan = meal_plans.id
+SELECT EXISTS (
+    SELECT meal_plan_events.id
+    FROM meal_plan_events
+        JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan = meal_plans.id
     WHERE
-      meal_plan_events.archived_at IS NULL
-      AND meal_plans.id = sqlc.arg(meal_plan_id)
-      AND meal_plans.status = 'awaiting_votes'
-      AND meal_plans.archived_at IS NULL
-      AND meal_plan_events.id = sqlc.arg(meal_plan_event_id)
-      AND meal_plan_events.archived_at IS NULL
+        meal_plan_events.archived_at IS NULL
+        AND meal_plans.id = sqlc.arg(meal_plan_id)
+        AND meal_plans.status = 'awaiting_votes'
+        AND meal_plans.archived_at IS NULL
+        AND meal_plan_events.id = sqlc.arg(meal_plan_event_id)
+        AND meal_plan_events.archived_at IS NULL
   );
 
 -- name: CheckMealPlanEventExistence :one
@@ -119,17 +127,17 @@ SELECT
 	meal_plan_events.archived_at
 FROM meal_plan_events
 WHERE meal_plan_events.archived_at IS NULL
-	AND meal_plan_events.id = $1
-	AND meal_plan_events.belongs_to_meal_plan = $2;
+	AND meal_plan_events.id = sqlc.arg(id)
+	AND meal_plan_events.belongs_to_meal_plan = sqlc.arg(belongs_to_meal_plan);
 
 -- name: UpdateMealPlanEvent :execrows
 
-UPDATE meal_plan_events
-SET notes = $1,
-	starts_at = $2,
-	ends_at = $3,
-	meal_name = $4,
-	belongs_to_meal_plan = $5,
+UPDATE meal_plan_events SET
+    notes = sqlc.arg(notes),
+	starts_at = sqlc.arg(starts_at),
+	ends_at = sqlc.arg(ends_at),
+	meal_name = sqlc.arg(meal_name),
+	belongs_to_meal_plan = sqlc.arg(belongs_to_meal_plan),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND id = $6;
+	AND id = sqlc.arg(id);

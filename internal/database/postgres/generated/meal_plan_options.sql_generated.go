@@ -13,12 +13,9 @@ import (
 
 const archiveMealPlanOption = `-- name: ArchiveMealPlanOption :execrows
 
-UPDATE
-	meal_plan_options
-SET
-	archived_at = NOW()
-WHERE
-	archived_at IS NULL
+UPDATE meal_plan_options SET
+    archived_at = NOW()
+WHERE archived_at IS NULL
 	AND belongs_to_meal_plan_event = $1
 	AND id = $2
 `
@@ -39,21 +36,18 @@ func (q *Queries) ArchiveMealPlanOption(ctx context.Context, db DBTX, arg *Archi
 const checkMealPlanOptionExistence = `-- name: CheckMealPlanOptionExistence :one
 
 SELECT EXISTS (
-	SELECT
-	 meal_plan_options.id
-	FROM
-	 meal_plan_options
-		JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event = meal_plan_events.id
-		JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan = meal_plans.id
-	WHERE
-	 meal_plan_options.archived_at IS NULL
-	AND meal_plan_options.belongs_to_meal_plan_event = $1
-	AND meal_plan_options.id = $2
-	AND meal_plan_events.archived_at IS NULL
-	AND meal_plan_events.belongs_to_meal_plan = $3
-	AND meal_plan_events.id = $1
-	AND meal_plans.archived_at IS NULL
-	AND meal_plans.id = $3
+	SELECT meal_plan_options.id
+	FROM meal_plan_options
+        JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event = meal_plan_events.id
+        JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan = meal_plans.id
+    WHERE meal_plan_options.archived_at IS NULL
+        AND meal_plan_options.belongs_to_meal_plan_event = $1
+        AND meal_plan_options.id = $2
+        AND meal_plan_events.archived_at IS NULL
+        AND meal_plan_events.belongs_to_meal_plan = $3
+        AND meal_plan_events.id = $1
+        AND meal_plans.archived_at IS NULL
+        AND meal_plans.id = $3
 )
 `
 
@@ -72,16 +66,24 @@ func (q *Queries) CheckMealPlanOptionExistence(ctx context.Context, db DBTX, arg
 
 const createMealPlanOption = `-- name: CreateMealPlanOption :exec
 
-INSERT INTO meal_plan_options (id,assigned_cook,assigned_dishwasher,meal_id,notes,meal_scale,belongs_to_meal_plan_event,chosen)
-VALUES (
-    $1, -- sqlc.arg(id),
-    $2, -- sqlc.arg(assigned_cook),
-    $3, -- sqlc.arg(assigned_dishwasher),
-    $4, -- sqlc.arg(meal_id),
-    $5, -- sqlc.arg(notes),
-    $6, -- sqlc.arg(meal_scale)::float,
-    $7, -- sqlc.arg(belongs_to_meal_plan_event),
-    $8  -- sqlc.arg(chosen)::bool
+INSERT INTO meal_plan_options (
+    id,
+    assigned_cook,
+    assigned_dishwasher,
+    meal_id,
+    notes,
+    meal_scale,
+    belongs_to_meal_plan_event,
+    chosen
+) VALUES (
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $6,
+    $7,
+    $8
 )
 `
 
@@ -112,17 +114,28 @@ func (q *Queries) CreateMealPlanOption(ctx context.Context, db DBTX, arg *Create
 
 const finalizeMealPlanOption = `-- name: FinalizeMealPlanOption :exec
 
-UPDATE meal_plan_options SET chosen = (belongs_to_meal_plan_event = $1 AND id = $2), tiebroken = $3 WHERE archived_at IS NULL AND belongs_to_meal_plan_event = $1 AND id = $2
+UPDATE meal_plan_options SET
+    chosen = (belongs_to_meal_plan_event = $1 AND id = $2),
+    tiebroken = $3
+WHERE archived_at IS NULL
+    AND belongs_to_meal_plan_event = $4
+    AND id = $2
 `
 
 type FinalizeMealPlanOptionParams struct {
 	ID                     string
+	MealPlanEventID        sql.NullString
 	BelongsToMealPlanEvent sql.NullString
 	Tiebroken              bool
 }
 
 func (q *Queries) FinalizeMealPlanOption(ctx context.Context, db DBTX, arg *FinalizeMealPlanOptionParams) error {
-	_, err := db.ExecContext(ctx, finalizeMealPlanOption, arg.BelongsToMealPlanEvent, arg.ID, arg.Tiebroken)
+	_, err := db.ExecContext(ctx, finalizeMealPlanOption,
+		arg.MealPlanEventID,
+		arg.ID,
+		arg.Tiebroken,
+		arg.BelongsToMealPlanEvent,
+	)
 	return err
 }
 
@@ -152,21 +165,21 @@ SELECT
     meals.archived_at as meal_archived_at,
     meals.created_by_user as meal_created_by_user
 FROM meal_plan_options
-         JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event = meal_plan_events.id
-         JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan = meal_plans.id
-         JOIN meals ON meal_plan_options.meal_id = meals.id
+    JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event = meal_plan_events.id
+    JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan = meal_plans.id
+    JOIN meals ON meal_plan_options.meal_id = meals.id
 WHERE
     meal_plan_options.archived_at IS NULL
-  AND meal_plan_options.belongs_to_meal_plan_event = $1
-  AND meal_plan_events.id = $1
-  AND meal_plan_events.belongs_to_meal_plan = $2
-  AND meal_plans.archived_at IS NULL
-  AND meal_plans.id = $2
+    AND meal_plan_options.belongs_to_meal_plan_event = $1
+    AND meal_plan_events.id = $1
+    AND meal_plan_events.belongs_to_meal_plan = $2
+    AND meal_plans.archived_at IS NULL
+    AND meal_plans.id = $2
 `
 
 type GetAllMealPlanOptionsForMealPlanEventParams struct {
-	BelongsToMealPlan      string
-	BelongsToMealPlanEvent sql.NullString
+	MealPlanID      string
+	MealPlanEventID sql.NullString
 }
 
 type GetAllMealPlanOptionsForMealPlanEventRow struct {
@@ -195,7 +208,7 @@ type GetAllMealPlanOptionsForMealPlanEventRow struct {
 }
 
 func (q *Queries) GetAllMealPlanOptionsForMealPlanEvent(ctx context.Context, db DBTX, arg *GetAllMealPlanOptionsForMealPlanEventParams) ([]*GetAllMealPlanOptionsForMealPlanEventRow, error) {
-	rows, err := db.QueryContext(ctx, getAllMealPlanOptionsForMealPlanEvent, arg.BelongsToMealPlanEvent, arg.BelongsToMealPlan)
+	rows, err := db.QueryContext(ctx, getAllMealPlanOptionsForMealPlanEvent, arg.MealPlanEventID, arg.MealPlanID)
 	if err != nil {
 		return nil, err
 	}
@@ -466,12 +479,9 @@ SELECT
             AND (meal_plan_options.last_updated_at IS NULL OR meal_plan_options.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years')))
     ) as filtered_count,
     (
-        SELECT
-            COUNT(meal_plan_options.id)
-        FROM
-            meal_plan_options
-        WHERE
-            meal_plan_options.archived_at IS NULL
+        SELECT COUNT(meal_plan_options.id)
+        FROM meal_plan_options
+        WHERE meal_plan_options.archived_at IS NULL
     ) as total_count
 FROM meal_plan_options
     JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event = meal_plan_events.id
@@ -484,8 +494,8 @@ WHERE
     AND meal_plan_events.belongs_to_meal_plan = $6
     AND meal_plans.archived_at IS NULL
     AND meal_plans.id = $6
-    OFFSET $7
-    LIMIT $8
+OFFSET $7
+LIMIT $8
 `
 
 type GetMealPlanOptionsParams struct {

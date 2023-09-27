@@ -17,12 +17,12 @@ UPDATE recipe_steps SET archived_at = NOW() WHERE archived_at IS NULL AND belong
 `
 
 type ArchiveRecipeStepParams struct {
-	BelongsToRecipe string
-	ID              string
+	RecipeID     string
+	RecipeStepID string
 }
 
 func (q *Queries) ArchiveRecipeStep(ctx context.Context, db DBTX, arg *ArchiveRecipeStepParams) (int64, error) {
-	result, err := db.ExecContext(ctx, archiveRecipeStep, arg.BelongsToRecipe, arg.ID)
+	result, err := db.ExecContext(ctx, archiveRecipeStep, arg.RecipeID, arg.RecipeStepID)
 	if err != nil {
 		return 0, err
 	}
@@ -34,22 +34,22 @@ const checkRecipeStepExistence = `-- name: CheckRecipeStepExistence :one
 SELECT EXISTS (
 	SELECT recipe_steps.id
 	FROM recipe_steps
-	JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
+	    JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
 	WHERE recipe_steps.archived_at IS NULL
-	  AND recipe_steps.belongs_to_recipe = $1
-	  AND recipe_steps.id = $2
-	  AND recipes.archived_at IS NULL
-	  AND recipes.id = $1
+        AND recipe_steps.belongs_to_recipe = $1
+        AND recipe_steps.id = $2
+        AND recipes.archived_at IS NULL
+        AND recipes.id = $1
 )
 `
 
 type CheckRecipeStepExistenceParams struct {
-	BelongsToRecipe string
-	ID              string
+	RecipeID     string
+	RecipeStepID string
 }
 
 func (q *Queries) CheckRecipeStepExistence(ctx context.Context, db DBTX, arg *CheckRecipeStepExistenceParams) (bool, error) {
-	row := db.QueryRowContext(ctx, checkRecipeStepExistence, arg.BelongsToRecipe, arg.ID)
+	row := db.QueryRowContext(ctx, checkRecipeStepExistence, arg.RecipeID, arg.RecipeStepID)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
@@ -57,9 +57,35 @@ func (q *Queries) CheckRecipeStepExistence(ctx context.Context, db DBTX, arg *Ch
 
 const createRecipeStep = `-- name: CreateRecipeStep :exec
 
-INSERT INTO recipe_steps
-(id,index,preparation_id,minimum_estimated_time_in_seconds,maximum_estimated_time_in_seconds,minimum_temperature_in_celsius,maximum_temperature_in_celsius,notes,explicit_instructions,condition_expression,optional,start_timer_automatically,belongs_to_recipe)
-VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+INSERT INTO recipe_steps (
+    id,
+    index,
+    preparation_id,
+    minimum_estimated_time_in_seconds,
+    maximum_estimated_time_in_seconds,
+    minimum_temperature_in_celsius,
+    maximum_temperature_in_celsius,
+    notes,
+    explicit_instructions,
+    condition_expression,
+    optional,
+    start_timer_automatically,
+    belongs_to_recipe
+) VALUES (
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $6,
+    $7,
+    $8,
+    $9,
+    $10,
+    $11,
+    $12,
+    $13
+)
 `
 
 type CreateRecipeStepParams struct {
@@ -148,8 +174,8 @@ WHERE recipe_steps.archived_at IS NULL
 `
 
 type GetRecipeStepParams struct {
-	BelongsToRecipe string
-	ID              string
+	RecipeID     string
+	RecipeStepID string
 }
 
 type GetRecipeStepRow struct {
@@ -193,7 +219,7 @@ type GetRecipeStepRow struct {
 }
 
 func (q *Queries) GetRecipeStep(ctx context.Context, db DBTX, arg *GetRecipeStepParams) (*GetRecipeStepRow, error) {
-	row := db.QueryRowContext(ctx, getRecipeStep, arg.BelongsToRecipe, arg.ID)
+	row := db.QueryRowContext(ctx, getRecipeStep, arg.RecipeID, arg.RecipeStepID)
 	var i GetRecipeStepRow
 	err := row.Scan(
 		&i.ID,

@@ -40,16 +40,15 @@ func createRecipeStepIngredientForTest(t *testing.T, ctx context.Context, recipe
 	assert.Equal(t, exampleRecipeStepIngredient, created)
 
 	recipeStepIngredient, err := dbc.GetRecipeStepIngredient(ctx, recipeID, exampleRecipeStepIngredient.BelongsToRecipeStep, exampleRecipeStepIngredient.ID)
+	require.NotNil(t, recipeStepIngredient)
+	require.NoError(t, err)
 
 	exampleRecipeStepIngredient.CreatedAt = recipeStepIngredient.CreatedAt
 	exampleRecipeStepIngredient.Ingredient.CreatedAt = recipeStepIngredient.Ingredient.CreatedAt
 	exampleRecipeStepIngredient.Ingredient = recipeStepIngredient.Ingredient
 	exampleRecipeStepIngredient.MeasurementUnit = recipeStepIngredient.MeasurementUnit
 
-	require.Equal(t, exampleRecipeStepIngredient, recipeStepIngredient)
-
-	assert.NoError(t, err)
-	assert.Equal(t, recipeStepIngredient, exampleRecipeStepIngredient)
+	assert.Equal(t, exampleRecipeStepIngredient, recipeStepIngredient)
 
 	return created
 }

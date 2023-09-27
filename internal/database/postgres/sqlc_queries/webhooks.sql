@@ -1,8 +1,10 @@
 -- name: ArchiveWebhook :execrows
 
-UPDATE webhooks
-   SET archived_at = NOW()
- WHERE archived_at IS NULL AND id = sqlc.arg(id) AND belongs_to_household = sqlc.arg(household_id);
+UPDATE webhooks SET
+	archived_at = NOW()
+WHERE archived_at IS NULL
+	AND id = sqlc.arg(id)
+	AND belongs_to_household = sqlc.arg(belongs_to_household);
 
 -- name: CreateWebhook :exec
 
@@ -29,7 +31,7 @@ SELECT EXISTS(
 	FROM webhooks
 	WHERE webhooks.archived_at IS NULL
 	AND webhooks.id = sqlc.arg(id)
-	AND webhooks.belongs_to_household = sqlc.arg(household_id)
+	AND webhooks.belongs_to_household = sqlc.arg(belongs_to_household)
 );
 
 -- name: GetWebhooksForHousehold :many
@@ -106,7 +108,7 @@ FROM webhooks
 	JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
 WHERE webhook_trigger_events.archived_at IS NULL
 	AND webhook_trigger_events.trigger_event = sqlc.arg(trigger_event)
-	AND webhooks.belongs_to_household = sqlc.arg(household_id)
+	AND webhooks.belongs_to_household = sqlc.arg(belongs_to_household)
 	AND webhooks.archived_at IS NULL;
 
 -- name: GetWebhook :many
@@ -129,6 +131,6 @@ SELECT
 FROM webhooks
 	JOIN webhook_trigger_events ON webhooks.id = webhook_trigger_events.belongs_to_webhook
 WHERE webhook_trigger_events.archived_at IS NULL
-	AND webhooks.belongs_to_household = sqlc.arg(household_id)
 	AND webhooks.archived_at IS NULL
+	AND webhooks.belongs_to_household = sqlc.arg(belongs_to_household)
 	AND webhooks.id = sqlc.arg(id);

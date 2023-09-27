@@ -357,10 +357,8 @@ SELECT
 	households.last_updated_at,
 	households.archived_at,
 	(
-		SELECT
-			COUNT(households.id)
-		FROM
-			households
+		SELECT COUNT(households.id)
+		FROM households
 		    JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
         WHERE households.archived_at IS NULL
             AND household_user_memberships.belongs_to_user = $1
@@ -396,12 +394,12 @@ WHERE households.archived_at IS NULL
 		households.last_updated_at IS NULL
 		OR households.last_updated_at < COALESCE($5, (SELECT NOW() + '999 years'::INTERVAL))
 	)
-	LIMIT $7
-	OFFSET $6
+LIMIT $7
+OFFSET $6
 `
 
 type GetHouseholdsForUserParams struct {
-	UserID        string
+	BelongsToUser string
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
 	UpdatedAfter  sql.NullTime
@@ -438,7 +436,7 @@ type GetHouseholdsForUserRow struct {
 
 func (q *Queries) GetHouseholdsForUser(ctx context.Context, db DBTX, arg *GetHouseholdsForUserParams) ([]*GetHouseholdsForUserRow, error) {
 	rows, err := db.QueryContext(ctx, getHouseholdsForUser,
-		arg.UserID,
+		arg.BelongsToUser,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
 		arg.UpdatedAfter,

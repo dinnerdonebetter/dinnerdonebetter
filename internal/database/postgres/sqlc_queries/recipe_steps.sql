@@ -1,24 +1,50 @@
 -- name: ArchiveRecipeStep :execrows
 
-UPDATE recipe_steps SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe = $1 AND id = $2;
+UPDATE recipe_steps SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe = sqlc.arg(recipe_id) AND id = sqlc.arg(recipe_step_id);
 
 -- name: CreateRecipeStep :exec
 
-INSERT INTO recipe_steps
-(id,index,preparation_id,minimum_estimated_time_in_seconds,maximum_estimated_time_in_seconds,minimum_temperature_in_celsius,maximum_temperature_in_celsius,notes,explicit_instructions,condition_expression,optional,start_timer_automatically,belongs_to_recipe)
-VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13);
+INSERT INTO recipe_steps (
+    id,
+    index,
+    preparation_id,
+    minimum_estimated_time_in_seconds,
+    maximum_estimated_time_in_seconds,
+    minimum_temperature_in_celsius,
+    maximum_temperature_in_celsius,
+    notes,
+    explicit_instructions,
+    condition_expression,
+    optional,
+    start_timer_automatically,
+    belongs_to_recipe
+) VALUES (
+    sqlc.arg(id),
+    sqlc.arg(index),
+    sqlc.arg(preparation_id),
+    sqlc.arg(minimum_estimated_time_in_seconds),
+    sqlc.arg(maximum_estimated_time_in_seconds),
+    sqlc.arg(minimum_temperature_in_celsius),
+    sqlc.arg(maximum_temperature_in_celsius),
+    sqlc.arg(notes),
+    sqlc.arg(explicit_instructions),
+    sqlc.arg(condition_expression),
+    sqlc.arg(optional),
+    sqlc.arg(start_timer_automatically),
+    sqlc.arg(belongs_to_recipe)
+);
 
 -- name: CheckRecipeStepExistence :one
 
 SELECT EXISTS (
 	SELECT recipe_steps.id
 	FROM recipe_steps
-	JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
+	    JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
 	WHERE recipe_steps.archived_at IS NULL
-	  AND recipe_steps.belongs_to_recipe = $1
-	  AND recipe_steps.id = $2
-	  AND recipes.archived_at IS NULL
-	  AND recipes.id = $1
+        AND recipe_steps.belongs_to_recipe = sqlc.arg(recipe_id)
+        AND recipe_steps.id = sqlc.arg(recipe_step_id)
+        AND recipes.archived_at IS NULL
+        AND recipes.id = sqlc.arg(recipe_id)
 );
 
 -- name: GetRecipeStep :one
@@ -65,10 +91,10 @@ FROM recipe_steps
     JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
     JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
 WHERE recipe_steps.archived_at IS NULL
-    AND recipe_steps.belongs_to_recipe = $1
-    AND recipe_steps.id = $2
+    AND recipe_steps.belongs_to_recipe = sqlc.arg(recipe_id)
+    AND recipe_steps.id = sqlc.arg(recipe_step_id)
     AND recipes.archived_at IS NULL
-    AND recipes.id = $1;
+    AND recipes.id = sqlc.arg(recipe_id);
 
 
 -- name: GetRecipeSteps :many
@@ -188,23 +214,23 @@ FROM recipe_steps
 	JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
 	JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
 WHERE recipe_steps.archived_at IS NULL
-	AND recipe_steps.id = $1;
+	AND recipe_steps.id = sqlc.arg(id);
 
 -- name: UpdateRecipeStep :execrows
 
 UPDATE recipe_steps SET
-	index = $1,
-	preparation_id = $2,
-	minimum_estimated_time_in_seconds = $3,
-	maximum_estimated_time_in_seconds = $4,
-	minimum_temperature_in_celsius = $5,
-	maximum_temperature_in_celsius = $6,
-	notes = $7,
-	explicit_instructions = $8,
-	condition_expression = $9,
-	optional = $10,
-	start_timer_automatically = $11,
+	index = sqlc.arg(index),
+	preparation_id = sqlc.arg(preparation_id),
+	minimum_estimated_time_in_seconds = sqlc.arg(minimum_estimated_time_in_seconds),
+	maximum_estimated_time_in_seconds = sqlc.arg(maximum_estimated_time_in_seconds),
+	minimum_temperature_in_celsius = sqlc.arg(minimum_temperature_in_celsius),
+	maximum_temperature_in_celsius = sqlc.arg(maximum_temperature_in_celsius),
+	notes = sqlc.arg(notes),
+	explicit_instructions = sqlc.arg(explicit_instructions),
+	condition_expression = sqlc.arg(condition_expression),
+	optional = sqlc.arg(optional),
+	start_timer_automatically = sqlc.arg(start_timer_automatically),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND belongs_to_recipe = $12
-	AND id = $13;
+	AND belongs_to_recipe = sqlc.arg(belongs_to_recipe)
+	AND id = sqlc.arg(id);

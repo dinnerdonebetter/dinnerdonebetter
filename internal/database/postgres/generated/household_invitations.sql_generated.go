@@ -21,12 +21,12 @@ WHERE archived_at IS NULL
 `
 
 type AttachHouseholdInvitationsToUserIDParams struct {
-	EmailAddress string
-	UserID       sql.NullString
+	ToEmail string
+	ToUser  sql.NullString
 }
 
 func (q *Queries) AttachHouseholdInvitationsToUserID(ctx context.Context, db DBTX, arg *AttachHouseholdInvitationsToUserIDParams) error {
-	_, err := db.ExecContext(ctx, attachHouseholdInvitationsToUserID, arg.UserID, arg.EmailAddress)
+	_, err := db.ExecContext(ctx, attachHouseholdInvitationsToUserID, arg.ToUser, arg.ToEmail)
 	return err
 }
 
@@ -170,8 +170,8 @@ WHERE household_invitations.archived_at IS NULL
 `
 
 type GetHouseholdInvitationByEmailAndTokenParams struct {
-	EmailAddress string
-	Token        string
+	ToEmail string
+	Token   string
 }
 
 type GetHouseholdInvitationByEmailAndTokenRow struct {
@@ -236,7 +236,7 @@ type GetHouseholdInvitationByEmailAndTokenRow struct {
 }
 
 func (q *Queries) GetHouseholdInvitationByEmailAndToken(ctx context.Context, db DBTX, arg *GetHouseholdInvitationByEmailAndTokenParams) (*GetHouseholdInvitationByEmailAndTokenRow, error) {
-	row := db.QueryRowContext(ctx, getHouseholdInvitationByEmailAndToken, arg.EmailAddress, arg.Token)
+	row := db.QueryRowContext(ctx, getHouseholdInvitationByEmailAndToken, arg.ToEmail, arg.Token)
 	var i GetHouseholdInvitationByEmailAndTokenRow
 	err := row.Scan(
 		&i.ID,
@@ -366,7 +366,6 @@ FROM household_invitations
 	JOIN households ON household_invitations.destination_household = households.id
 	JOIN users ON household_invitations.from_user = users.id
 WHERE household_invitations.archived_at IS NULL
-	AND household_invitations.expires_at > NOW()
 	AND household_invitations.expires_at > NOW()
 	AND household_invitations.destination_household = $1
 	AND household_invitations.id = $2
@@ -803,8 +802,8 @@ WHERE household_invitations.archived_at IS NULL
 		household_invitations.last_updated_at IS NULL
 		OR household_invitations.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
-	OFFSET $7
-	LIMIT $8
+LIMIT $8
+OFFSET $7
 `
 
 type GetPendingInvitesForUserParams struct {
@@ -813,7 +812,7 @@ type GetPendingInvitesForUserParams struct {
 	UpdatedBefore sql.NullTime
 	UpdatedAfter  sql.NullTime
 	Status        InvitationState
-	UserID        sql.NullString
+	ToUser        sql.NullString
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
@@ -887,7 +886,7 @@ func (q *Queries) GetPendingInvitesForUser(ctx context.Context, db DBTX, arg *Ge
 		arg.CreatedBefore,
 		arg.UpdatedBefore,
 		arg.UpdatedAfter,
-		arg.UserID,
+		arg.ToUser,
 		arg.Status,
 		arg.QueryOffset,
 		arg.QueryLimit,
@@ -1071,8 +1070,8 @@ WHERE household_invitations.archived_at IS NULL
 		household_invitations.last_updated_at IS NULL
 		OR household_invitations.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
-	OFFSET $7
-	LIMIT $8
+LIMIT $8
+OFFSET $7
 `
 
 type GetPendingInvitesFromUserParams struct {
@@ -1080,7 +1079,7 @@ type GetPendingInvitesFromUserParams struct {
 	CreatedBefore sql.NullTime
 	UpdatedBefore sql.NullTime
 	UpdatedAfter  sql.NullTime
-	UserID        string
+	FromUser      string
 	Status        InvitationState
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
@@ -1155,7 +1154,7 @@ func (q *Queries) GetPendingInvitesFromUser(ctx context.Context, db DBTX, arg *G
 		arg.CreatedBefore,
 		arg.UpdatedBefore,
 		arg.UpdatedAfter,
-		arg.UserID,
+		arg.FromUser,
 		arg.Status,
 		arg.QueryOffset,
 		arg.QueryLimit,

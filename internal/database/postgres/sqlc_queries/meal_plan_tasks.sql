@@ -1,11 +1,30 @@
 -- name: ChangeMealPlanTaskStatus :exec
 
-UPDATE meal_plan_tasks SET completed_at = $4, status_explanation = $3, status = $2 WHERE id = $1;
+UPDATE meal_plan_tasks SET
+    completed_at = sqlc.arg(completed_at),
+    status_explanation = sqlc.arg(status_explanation),
+    status = sqlc.arg(status)
+WHERE id = sqlc.arg(id);
 
 -- name: CreateMealPlanTask :exec
 
-INSERT INTO meal_plan_tasks (id,status,status_explanation,creation_explanation,belongs_to_meal_plan_option,belongs_to_recipe_prep_task,assigned_to_user)
-VALUES ($1,$2,$3,$4,$5,$6,$7);
+INSERT INTO meal_plan_tasks (
+    id,
+    status,
+    status_explanation,
+    creation_explanation,
+    belongs_to_meal_plan_option,
+    belongs_to_recipe_prep_task,
+    assigned_to_user
+) VALUES (
+    sqlc.arg(id),
+    sqlc.arg(status),
+    sqlc.arg(status_explanation),
+    sqlc.arg(creation_explanation),
+    sqlc.arg(belongs_to_meal_plan_option),
+    sqlc.arg(belongs_to_recipe_prep_task),
+    sqlc.arg(assigned_to_user)
+);
 
 -- name: CheckMealPlanTaskExistence :one
 
@@ -200,5 +219,5 @@ FROM meal_plan_tasks
 	 FULL OUTER JOIN meals ON meal_plan_options.meal_id=meals.id
 	 JOIN recipe_steps ON meal_plan_tasks.satisfies_recipe_step=recipe_steps.id
 	 JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
-WHERE meal_plan_tasks.belongs_to_meal_plan_option = $1
+WHERE meal_plan_tasks.belongs_to_meal_plan_option = sqlc.arg(belongs_to_meal_plan_option)
 AND meal_plan_tasks.completed_at IS NULL;

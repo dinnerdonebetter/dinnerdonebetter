@@ -9,20 +9,28 @@ import (
 
 const (
 	householdInvitationsTableName = "household_invitations"
+	destinationHouseholdColumn    = "destination_household"
+	fromUserColumn                = "from_user"
+	toUserColumn                  = "to_user"
+	toEmailColumn                 = "to_email"
+	tokenColumn                   = "token"
+	statusColumn                  = "status"
+	statusNoteColumn              = "status_note"
+	expiresAtColumn               = "expires_at"
 )
 
 var householdInvitationsColumns = []string{
 	idColumn,
-	"from_user",
-	"to_user",
+	fromUserColumn,
+	toUserColumn,
 	"to_name",
 	"note",
-	"to_email",
-	"token",
-	"destination_household",
-	"expires_at",
-	"status",
-	"status_note",
+	toEmailColumn,
+	tokenColumn,
+	destinationHouseholdColumn,
+	expiresAtColumn,
+	statusColumn,
+	statusNoteColumn,
 	createdAtColumn,
 	lastUpdatedAtColumn,
 	archivedAtColumn,
@@ -56,14 +64,15 @@ func buildHouseholdInvitationsQueries() []*Query {
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
-	to_user = sqlc.arg(user_id),
+	%s = sqlc.arg(%s),
 	%s = %s
 WHERE %s IS NULL
-	AND to_email = LOWER(sqlc.arg(email_address));`,
+	AND %s = LOWER(sqlc.arg(%s));`,
 				householdInvitationsTableName,
-				lastUpdatedAtColumn,
-				currentTimeExpression,
+				toUserColumn, toUserColumn,
+				lastUpdatedAtColumn, currentTimeExpression,
 				archivedAtColumn,
+				toEmailColumn, toEmailColumn,
 			)),
 		},
 		{
@@ -89,15 +98,15 @@ WHERE %s IS NULL
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
-	SELECT %s.id
+	SELECT %s.%s
 	FROM %s
-	WHERE %s.archived_at IS NULL
-	AND %s.id = $1
+	WHERE %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s)
 );`,
+				householdInvitationsTableName, idColumn,
 				householdInvitationsTableName,
-				householdInvitationsTableName,
-				householdInvitationsTableName,
-				householdInvitationsTableName,
+				householdInvitationsTableName, archivedAtColumn,
+				householdInvitationsTableName, idColumn, idColumn,
 			)),
 		},
 		{
@@ -108,15 +117,20 @@ WHERE %s IS NULL
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
-	JOIN households ON household_invitations.destination_household = households.id
-	JOIN users ON household_invitations.from_user = users.id
-WHERE household_invitations.archived_at IS NULL
-	AND household_invitations.expires_at > %s
-	AND household_invitations.to_email = LOWER(sqlc.arg(email_address))
-	AND household_invitations.token = sqlc.arg(token);`,
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
+WHERE %s.%s IS NULL
+	AND %s.%s > %s
+	AND %s.%s = LOWER(sqlc.arg(%s))
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(fullSelectColumns, ",\n\t"),
 				householdInvitationsTableName,
-				currentTimeExpression,
+				householdsTableName, householdInvitationsTableName, destinationHouseholdColumn, householdsTableName, idColumn,
+				usersTableName, householdInvitationsTableName, fromUserColumn, usersTableName, idColumn,
+				householdInvitationsTableName, archivedAtColumn,
+				householdInvitationsTableName, expiresAtColumn, currentTimeExpression,
+				householdInvitationsTableName, toEmailColumn, toEmailColumn,
+				householdInvitationsTableName, tokenColumn, tokenColumn,
 			)),
 		},
 		{
@@ -127,15 +141,20 @@ WHERE household_invitations.archived_at IS NULL
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
-	JOIN households ON household_invitations.destination_household = households.id
-	JOIN users ON household_invitations.from_user = users.id
-WHERE household_invitations.archived_at IS NULL
-	AND household_invitations.expires_at > %s
-	AND household_invitations.destination_household = $1
-	AND household_invitations.id = $2;`,
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
+WHERE %s.%s IS NULL
+	AND %s.%s > %s
+	AND %s.%s = sqlc.arg(%s)
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(fullSelectColumns, ",\n\t"),
 				householdInvitationsTableName,
-				currentTimeExpression,
+				householdsTableName, householdInvitationsTableName, destinationHouseholdColumn, householdsTableName, idColumn,
+				usersTableName, householdInvitationsTableName, fromUserColumn, usersTableName, idColumn,
+				householdInvitationsTableName, archivedAtColumn,
+				householdInvitationsTableName, expiresAtColumn, currentTimeExpression,
+				householdInvitationsTableName, destinationHouseholdColumn, destinationHouseholdColumn,
+				householdInvitationsTableName, idColumn, idColumn,
 			)),
 		},
 		{
@@ -146,15 +165,20 @@ WHERE household_invitations.archived_at IS NULL
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
-	JOIN households ON household_invitations.destination_household = households.id
-	JOIN users ON household_invitations.from_user = users.id
-WHERE household_invitations.archived_at IS NULL
-	AND household_invitations.expires_at > %s
-	AND household_invitations.token = $1
-	AND household_invitations.id = $2;`,
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
+WHERE %s.%s IS NULL
+	AND %s.%s > %s
+	AND %s.%s = sqlc.arg(%s)
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(fullSelectColumns, ",\n\t"),
 				householdInvitationsTableName,
-				currentTimeExpression,
+				householdsTableName, householdInvitationsTableName, destinationHouseholdColumn, householdsTableName, idColumn,
+				usersTableName, householdInvitationsTableName, fromUserColumn, usersTableName, idColumn,
+				householdInvitationsTableName, archivedAtColumn,
+				householdInvitationsTableName, expiresAtColumn, currentTimeExpression,
+				householdInvitationsTableName, tokenColumn, tokenColumn,
+				householdInvitationsTableName, idColumn, idColumn,
 			)),
 		},
 		{
@@ -167,14 +191,13 @@ WHERE household_invitations.archived_at IS NULL
 	%s,
 	%s
 FROM %s
-	JOIN households ON household_invitations.destination_household = households.id
-	JOIN users ON household_invitations.from_user = users.id
-WHERE household_invitations.archived_at IS NULL
-	AND household_invitations.from_user = sqlc.arg(user_id)
-	AND household_invitations.status = sqlc.arg(status)
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
+WHERE %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s)
+	AND %s.%s = sqlc.arg(%s)
 	%s
-	OFFSET sqlc.narg(query_offset)
-	LIMIT sqlc.narg(query_limit);`,
+%s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
 				buildFilterCountSelect(
 					householdInvitationsTableName,
@@ -184,10 +207,18 @@ WHERE household_invitations.archived_at IS NULL
 					householdInvitationsTableName,
 				),
 				householdInvitationsTableName,
+
+				householdsTableName, householdInvitationsTableName, destinationHouseholdColumn, householdsTableName, idColumn,
+				usersTableName, householdInvitationsTableName, fromUserColumn, usersTableName, idColumn,
+				householdInvitationsTableName, archivedAtColumn,
+				householdInvitationsTableName, fromUserColumn, fromUserColumn,
+				householdInvitationsTableName, statusColumn, statusColumn,
+
 				buildFilterConditions(
 					householdInvitationsTableName,
 					true,
 				),
+				offsetLimitAddendum,
 			)),
 		},
 		{
@@ -200,14 +231,13 @@ WHERE household_invitations.archived_at IS NULL
 	%s,
 	%s
 FROM %s
-	JOIN households ON household_invitations.destination_household = households.id
-	JOIN users ON household_invitations.from_user = users.id
-WHERE household_invitations.archived_at IS NULL
-	AND household_invitations.to_user = sqlc.arg(user_id)
-	AND household_invitations.status = sqlc.arg(status)
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
+WHERE %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s)
+	AND %s.%s = sqlc.arg(%s)
 	%s
-	OFFSET sqlc.narg(query_offset)
-	LIMIT sqlc.narg(query_limit);`,
+%s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
 				buildFilterCountSelect(
 					householdInvitationsTableName,
@@ -217,10 +247,16 @@ WHERE household_invitations.archived_at IS NULL
 					householdInvitationsTableName,
 				),
 				householdInvitationsTableName,
+				householdsTableName, householdInvitationsTableName, destinationHouseholdColumn, householdsTableName, idColumn,
+				usersTableName, householdInvitationsTableName, fromUserColumn, usersTableName, idColumn,
+				householdInvitationsTableName, archivedAtColumn,
+				householdInvitationsTableName, toUserColumn, toUserColumn,
+				householdInvitationsTableName, statusColumn, statusColumn,
 				buildFilterConditions(
 					householdInvitationsTableName,
 					true,
 				),
+				offsetLimitAddendum,
 			)),
 		},
 		{
@@ -229,20 +265,19 @@ WHERE household_invitations.archived_at IS NULL
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
-	status = sqlc.arg(status),
-	status_note = sqlc.arg(status_note),
+	%s = sqlc.arg(%s),
+	%s = sqlc.arg(%s),
 	%s = %s,
 	%s = %s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
 				householdInvitationsTableName,
-				lastUpdatedAtColumn,
-				currentTimeExpression,
+				statusColumn, statusColumn,
+				statusNoteColumn, statusNoteColumn,
+				lastUpdatedAtColumn, currentTimeExpression,
+				archivedAtColumn, currentTimeExpression,
 				archivedAtColumn,
-				currentTimeExpression,
-				archivedAtColumn,
-				idColumn,
-				idColumn,
+				idColumn, idColumn,
 			)),
 		},
 	}

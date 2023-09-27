@@ -54,7 +54,8 @@ const archiveUserMemberships = `-- name: ArchiveUserMemberships :execrows
 
 UPDATE household_user_memberships
 SET archived_at = NOW()
-WHERE archived_at IS NULL AND belongs_to_user = $1
+WHERE archived_at IS NULL
+	AND belongs_to_user = $1
 `
 
 func (q *Queries) ArchiveUserMemberships(ctx context.Context, db DBTX, id string) (int64, error) {
@@ -605,11 +606,9 @@ const getUserIDsNeedingIndexing = `-- name: GetUserIDsNeedingIndexing :many
 
 SELECT users.id
 FROM users
-WHERE (users.archived_at IS NULL)
-AND users.last_indexed_at IS NULL
-OR (
-	users.last_indexed_at < NOW() - '24 hours'::INTERVAL
-)
+WHERE users.archived_at IS NULL
+	AND users.last_indexed_at IS NULL
+	OR users.last_indexed_at < NOW() - '24 hours'::INTERVAL
 `
 
 func (q *Queries) GetUserIDsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error) {

@@ -17,12 +17,12 @@ UPDATE recipes SET archived_at = NOW() WHERE archived_at IS NULL AND created_by_
 `
 
 type ArchiveRecipeParams struct {
-	CreatedByUser string
-	ID            string
+	UserID   string
+	RecipeID string
 }
 
 func (q *Queries) ArchiveRecipe(ctx context.Context, db DBTX, arg *ArchiveRecipeParams) (int64, error) {
-	result, err := db.ExecContext(ctx, archiveRecipe, arg.CreatedByUser, arg.ID)
+	result, err := db.ExecContext(ctx, archiveRecipe, arg.UserID, arg.RecipeID)
 	if err != nil {
 		return 0, err
 	}
@@ -43,7 +43,37 @@ func (q *Queries) CheckRecipeExistence(ctx context.Context, db DBTX, id string) 
 
 const createRecipe = `-- name: CreateRecipe :exec
 
-INSERT INTO recipes (id,"name",slug,"source",description,inspired_by_recipe_id,min_estimated_portions,max_estimated_portions,portion_name,plural_portion_name,seal_of_approval,eligible_for_meals,yields_component_type,created_by_user) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+INSERT INTO recipes (
+    id,
+    name,
+    slug,
+    source,
+    description,
+    inspired_by_recipe_id,
+    min_estimated_portions,
+    max_estimated_portions,
+    portion_name,
+    plural_portion_name,
+    seal_of_approval,
+    eligible_for_meals,
+    yields_component_type,
+    created_by_user
+) VALUES (
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $6,
+    $7,
+    $8,
+    $9,
+    $10,
+    $11,
+    $12,
+    $13,
+    $14
+)
 `
 
 type CreateRecipeParams struct {
@@ -350,7 +380,7 @@ ORDER BY recipe_steps.index
 `
 
 type GetRecipeByIDAndAuthorIDParams struct {
-	ID            string
+	RecipeID      string
 	CreatedByUser string
 }
 
@@ -412,7 +442,7 @@ type GetRecipeByIDAndAuthorIDRow struct {
 }
 
 func (q *Queries) GetRecipeByIDAndAuthorID(ctx context.Context, db DBTX, arg *GetRecipeByIDAndAuthorIDParams) ([]*GetRecipeByIDAndAuthorIDRow, error) {
-	rows, err := db.QueryContext(ctx, getRecipeByIDAndAuthorID, arg.ID, arg.CreatedByUser)
+	rows, err := db.QueryContext(ctx, getRecipeByIDAndAuthorID, arg.RecipeID, arg.CreatedByUser)
 	if err != nil {
 		return nil, err
 	}
@@ -491,12 +521,10 @@ func (q *Queries) GetRecipeByIDAndAuthorID(ctx context.Context, db DBTX, arg *Ge
 
 const getRecipeIDsForMeal = `-- name: GetRecipeIDsForMeal :many
 
-SELECT
-	recipes.id
-FROM
-	recipes
-	 JOIN meal_components ON meal_components.recipe_id = recipes.id
-	 JOIN meals ON meal_components.meal_id = meals.id
+SELECT recipes.id
+FROM recipes
+    JOIN meal_components ON meal_components.recipe_id = recipes.id
+    JOIN meals ON meal_components.meal_id = meals.id
 WHERE
 	recipes.archived_at IS NULL
 	AND meals.id = $1
@@ -506,8 +534,8 @@ ORDER BY
 	recipes.id
 `
 
-func (q *Queries) GetRecipeIDsForMeal(ctx context.Context, db DBTX, id string) ([]string, error) {
-	rows, err := db.QueryContext(ctx, getRecipeIDsForMeal, id)
+func (q *Queries) GetRecipeIDsForMeal(ctx context.Context, db DBTX, mealID string) ([]string, error) {
+	rows, err := db.QueryContext(ctx, getRecipeIDsForMeal, mealID)
 	if err != nil {
 		return nil, err
 	}
@@ -569,12 +597,9 @@ SELECT
         OFFSET $5
     ) AS filtered_count,
     (
-        SELECT
-            COUNT(recipes.id)
-        FROM
-            recipes
-        WHERE
-            recipes.archived_at IS NULL
+        SELECT COUNT(recipes.id)
+        FROM recipes
+        WHERE recipes.archived_at IS NULL
     ) AS total_count
 FROM recipes
     WHERE recipes.archived_at IS NULL
@@ -676,13 +701,13 @@ func (q *Queries) GetRecipes(ctx context.Context, db DBTX, arg *GetRecipesParams
 const getRecipesNeedingIndexing = `-- name: GetRecipesNeedingIndexing :many
 
 SELECT recipes.id
-  FROM recipes
- WHERE (recipes.archived_at IS NULL)
-       AND (
-			(recipes.last_indexed_at IS NULL)
-			OR recipes.last_indexed_at
-				< now() - '24 hours'::INTERVAL
-		)
+FROM recipes
+WHERE recipes.archived_at IS NULL
+    AND (
+        recipes.last_indexed_at IS NULL
+        OR recipes.last_indexed_at
+            < NOW() - '24 hours'::INTERVAL
+    )
 `
 
 func (q *Queries) GetRecipesNeedingIndexing(ctx context.Context, db DBTX) ([]string, error) {
@@ -748,12 +773,9 @@ SELECT
         OFFSET $5
     ) AS filtered_count,
     (
-        SELECT
-            COUNT(recipes.id)
-        FROM
-            recipes
-        WHERE
-            recipes.archived_at IS NULL
+        SELECT COUNT(recipes.id)
+        FROM recipes
+        WHERE recipes.archived_at IS NULL
     ) AS total_count
 FROM recipes
 WHERE recipes.archived_at IS NULL

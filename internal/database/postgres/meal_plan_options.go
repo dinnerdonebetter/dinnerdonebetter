@@ -189,8 +189,8 @@ func (q *Querier) getMealPlanOptionsForMealPlanEvent(ctx context.Context, mealPl
 	tracing.AttachMealPlanIDToSpan(span, mealPlanEventID)
 
 	results, err := q.generatedQuerier.GetAllMealPlanOptionsForMealPlanEvent(ctx, q.db, &generated.GetAllMealPlanOptionsForMealPlanEventParams{
-		BelongsToMealPlan:      mealPlanID,
-		BelongsToMealPlanEvent: nullStringFromString(mealPlanEventID),
+		MealPlanID:      mealPlanID,
+		MealPlanEventID: nullStringFromString(mealPlanEventID),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing meal plan option query")

@@ -31,7 +31,13 @@ func (q *Queries) ArchiveUserIngredientPreference(ctx context.Context, db DBTX, 
 
 const checkUserIngredientPreferenceExistence = `-- name: CheckUserIngredientPreferenceExistence :one
 
-SELECT EXISTS ( SELECT user_ingredient_preferences.id FROM user_ingredient_preferences WHERE user_ingredient_preferences.archived_at IS NULL AND user_ingredient_preferences.id = $1 AND user_ingredient_preferences.belongs_to_user = $2 )
+SELECT EXISTS (
+    SELECT user_ingredient_preferences.id
+    FROM user_ingredient_preferences
+    WHERE user_ingredient_preferences.archived_at IS NULL
+        AND user_ingredient_preferences.id = $1
+        AND user_ingredient_preferences.belongs_to_user = $2
+)
 `
 
 type CheckUserIngredientPreferenceExistenceParams struct {
@@ -48,7 +54,21 @@ func (q *Queries) CheckUserIngredientPreferenceExistence(ctx context.Context, db
 
 const createUserIngredientPreference = `-- name: CreateUserIngredientPreference :exec
 
-INSERT INTO user_ingredient_preferences (id,ingredient,rating,notes,allergy,belongs_to_user) VALUES ($1,$2,$3,$4,$5,$6)
+INSERT INTO user_ingredient_preferences (
+    id,
+    ingredient,
+    rating,
+    notes,
+    allergy,
+    belongs_to_user
+) VALUES (
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $6
+)
 `
 
 type CreateUserIngredientPreferenceParams struct {
@@ -122,7 +142,7 @@ SELECT
     user_ingredient_preferences.archived_at,
     user_ingredient_preferences.belongs_to_user
 FROM user_ingredient_preferences
-  JOIN valid_ingredients ON valid_ingredients.id = user_ingredient_preferences.ingredient
+    JOIN valid_ingredients ON valid_ingredients.id = user_ingredient_preferences.ingredient
 WHERE user_ingredient_preferences.archived_at IS NULL
 	AND valid_ingredients.archived_at IS NULL
 	AND user_ingredient_preferences.id = $1
@@ -293,17 +313,16 @@ SELECT
             user_ingredient_preferences
         WHERE
             user_ingredient_preferences.archived_at IS NULL
-          AND user_ingredient_preferences.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-          AND user_ingredient_preferences.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-          AND (
+            AND user_ingredient_preferences.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+            AND user_ingredient_preferences.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+            AND (
                 user_ingredient_preferences.last_updated_at IS NULL
                 OR user_ingredient_preferences.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
             )
-          AND (
+            AND (
                 user_ingredient_preferences.last_updated_at IS NULL
                 OR user_ingredient_preferences.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
             )
-        OFFSET $5
     ) AS filtered_count,
     (
         SELECT
@@ -314,7 +333,7 @@ SELECT
             user_ingredient_preferences.archived_at IS NULL
     ) AS total_count
 FROM user_ingredient_preferences
-  JOIN valid_ingredients ON valid_ingredients.id = user_ingredient_preferences.ingredient
+    JOIN valid_ingredients ON valid_ingredients.id = user_ingredient_preferences.ingredient
 WHERE user_ingredient_preferences.archived_at IS NULL
 	AND valid_ingredients.archived_at IS NULL
     AND user_ingredient_preferences.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
@@ -327,9 +346,9 @@ WHERE user_ingredient_preferences.archived_at IS NULL
         user_ingredient_preferences.last_updated_at IS NULL
         OR user_ingredient_preferences.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
     )
-	AND user_ingredient_preferences.belongs_to_user = $6
-    OFFSET $5
-    LIMIT $7
+	AND user_ingredient_preferences.belongs_to_user = $5
+OFFSET $6
+LIMIT $7
 `
 
 type GetUserIngredientPreferencesForUserParams struct {
@@ -399,8 +418,8 @@ func (q *Queries) GetUserIngredientPreferencesForUser(ctx context.Context, db DB
 		arg.CreatedBefore,
 		arg.UpdatedAfter,
 		arg.UpdatedBefore,
-		arg.QueryOffset,
 		arg.UserID,
+		arg.QueryOffset,
 		arg.QueryLimit,
 	)
 	if err != nil {

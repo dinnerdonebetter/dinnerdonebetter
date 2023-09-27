@@ -29,7 +29,7 @@ SELECT EXISTS (
     SELECT service_setting_configurations.id
     FROM service_setting_configurations
     WHERE service_setting_configurations.archived_at IS NULL
-    AND service_setting_configurations.id = $1
+    AND service_setting_configurations.id = sqlc.arg(id)
 );
 
 -- name: GetServiceSettingConfigurationByID :one
@@ -57,7 +57,7 @@ FROM service_setting_configurations
     JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
 WHERE service_settings.archived_at IS NULL
     AND service_setting_configurations.archived_at IS NULL
-    AND service_setting_configurations.id = $1;
+    AND service_setting_configurations.id = sqlc.arg(id);
 
 -- name: GetServiceSettingConfigurationForHouseholdBySettingName :one
 
@@ -84,8 +84,8 @@ FROM service_setting_configurations
     JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
 WHERE service_settings.archived_at IS NULL
     AND service_setting_configurations.archived_at IS NULL
-    AND service_settings.name = $1
-    AND service_setting_configurations.belongs_to_household = $2;
+    AND service_settings.name = sqlc.arg(name)
+    AND service_setting_configurations.belongs_to_household = sqlc.arg(belongs_to_household);
 
 -- name: GetServiceSettingConfigurationForUserBySettingName :one
 
@@ -112,8 +112,8 @@ FROM service_setting_configurations
     JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
 WHERE service_settings.archived_at IS NULL
     AND service_setting_configurations.archived_at IS NULL
-    AND service_settings.name = $1
-    AND service_setting_configurations.belongs_to_user = $2;
+    AND service_settings.name = sqlc.arg(name)
+    AND service_setting_configurations.belongs_to_user = sqlc.arg(belongs_to_user);
 
 -- name: GetServiceSettingConfigurationsForHousehold :many
 
@@ -140,7 +140,7 @@ FROM service_setting_configurations
     JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
 WHERE service_settings.archived_at IS NULL
     AND service_setting_configurations.archived_at IS NULL
-    AND service_setting_configurations.belongs_to_household = $1;
+    AND service_setting_configurations.belongs_to_household = sqlc.arg(belongs_to_household);
 
 -- name: GetServiceSettingConfigurationsForUser :many
 
@@ -167,7 +167,7 @@ FROM service_setting_configurations
     JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
 WHERE service_settings.archived_at IS NULL
     AND service_setting_configurations.archived_at IS NULL
-    AND service_setting_configurations.belongs_to_user = $1;
+    AND service_setting_configurations.belongs_to_user = sqlc.arg(belongs_to_user);
 
 -- name: UpdateServiceSettingConfiguration :execrows
 

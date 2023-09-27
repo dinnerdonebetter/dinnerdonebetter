@@ -13,7 +13,7 @@ const (
 
 var (
 	webhooksColumns = []string{
-		"id",
+		idColumn,
 		nameColumn,
 		"content_type",
 		"url",
@@ -43,16 +43,16 @@ func buildWebhooksQueries() []*Query {
 				Name: "ArchiveWebhook",
 				Type: ExecRowsType,
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s
-   SET %s = %s
- WHERE %s IS NULL AND %s = sqlc.arg(%s) AND %s = sqlc.arg(household_id);`,
+			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+	%s = %s
+WHERE %s IS NULL
+	AND %s = sqlc.arg(%s)
+	AND %s = sqlc.arg(%s);`,
 				webhooksTableName,
+				archivedAtColumn, currentTimeExpression,
 				archivedAtColumn,
-				currentTimeExpression,
-				archivedAtColumn,
-				idColumn,
-				idColumn,
-				belongsToHouseholdColumn,
+				idColumn, idColumn,
+				belongsToHouseholdColumn, belongsToHouseholdColumn,
 			)),
 		},
 		{
@@ -78,18 +78,17 @@ func buildWebhooksQueries() []*Query {
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS(
-	SELECT %s.id
+	SELECT %s.%s
 	FROM %s
 	WHERE %s.%s IS NULL
-	AND %s.id = sqlc.arg(id)
-	AND %s.belongs_to_household = sqlc.arg(household_id)
+	AND %s.%s = sqlc.arg(%s)
+	AND %s.%s = sqlc.arg(%s)
 );`,
+				webhooksTableName, idColumn,
 				webhooksTableName,
-				webhooksTableName,
-				webhooksTableName,
-				archivedAtColumn,
-				webhooksTableName,
-				webhooksTableName,
+				webhooksTableName, archivedAtColumn,
+				webhooksTableName, idColumn, idColumn,
+				webhooksTableName, belongsToHouseholdColumn, belongsToHouseholdColumn,
 			)),
 		},
 		{
@@ -101,9 +100,9 @@ func buildWebhooksQueries() []*Query {
 	%s,
 	%s,
 	%s
-FROM webhooks
-	JOIN %s
-WHERE webhooks.archived_at IS NULL
+FROM %s
+	JOIN %s ON %s.%s = %s.%s
+WHERE %s.%s IS NULL
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
@@ -117,7 +116,9 @@ WHERE webhooks.archived_at IS NULL
 					"webhooks.belongs_to_household = sqlc.arg(household_id)",
 					"webhook_trigger_events.archived_at IS NULL",
 				),
-				webhookTriggerEventsJoin,
+				webhooksTableName,
+				webhookTriggerEventsTableName, webhooksTableName, idColumn, webhookTriggerEventsTableName, belongsToWebhookColumn,
+				webhooksTableName, archivedAtColumn,
 				buildFilterConditions(
 					webhooksTableName,
 					true,
@@ -134,16 +135,21 @@ WHERE webhooks.archived_at IS NULL
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT 
 	%s
-FROM webhooks
-	JOIN %s
-WHERE webhook_trigger_events.archived_at IS NULL
-	AND webhook_trigger_events.trigger_event = sqlc.arg(trigger_event)
-	AND webhooks.belongs_to_household = sqlc.arg(household_id)
-	AND webhooks.archived_at IS NULL;`,
+FROM %s
+	JOIN %s ON %s.%s = %s.%s
+WHERE %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s)
+	AND %s.%s = sqlc.arg(%s)
+	AND %s.%s IS NULL;`,
 				strings.Join(applyToEach(webhooksColumns, func(_ int, s string) string {
 					return fullColumnName(webhooksTableName, s)
 				}), ",\n\t"),
-				webhookTriggerEventsJoin,
+				webhooksTableName,
+				webhookTriggerEventsTableName, webhooksTableName, idColumn, webhookTriggerEventsTableName, belongsToWebhookColumn,
+				webhookTriggerEventsTableName, archivedAtColumn,
+				webhookTriggerEventsTableName, triggerEventColumn, triggerEventColumn,
+				webhooksTableName, belongsToHouseholdColumn, belongsToHouseholdColumn,
+				webhooksTableName, archivedAtColumn,
 			)),
 		},
 		{
@@ -153,19 +159,24 @@ WHERE webhook_trigger_events.archived_at IS NULL
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT 
 	%s
-FROM webhooks
-	JOIN %s
-WHERE webhook_trigger_events.archived_at IS NULL
-	AND webhooks.belongs_to_household = sqlc.arg(household_id)
-	AND webhooks.archived_at IS NULL
-	AND webhooks.id = sqlc.arg(id);`,
+FROM %s
+	JOIN %s ON %s.%s = %s.%s
+WHERE %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s)
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(applyToEach(fullSelectColumns, func(_ int, s string) string {
 					parts := strings.Split(s, ".")
 					return fmt.Sprintf("%s as %s_%s",
 						s, strings.TrimSuffix(parts[0], "s"), parts[1],
 					)
 				}), ",\n\t"),
-				webhookTriggerEventsJoin,
+				webhooksTableName,
+				webhookTriggerEventsTableName, webhooksTableName, idColumn, webhookTriggerEventsTableName, belongsToWebhookColumn,
+				webhookTriggerEventsTableName, archivedAtColumn,
+				webhooksTableName, archivedAtColumn,
+				webhooksTableName, belongsToHouseholdColumn, belongsToHouseholdColumn,
+				webhooksTableName, idColumn, idColumn,
 			)),
 		},
 	}

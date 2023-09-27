@@ -4,7 +4,11 @@ INSERT INTO recipe_step_completion_condition_ingredients (
 	id,
 	belongs_to_recipe_step_completion_condition,
 	recipe_step_ingredient
-) VALUES ($1,$2,$3);
+) VALUES (
+    sqlc.arg(id),
+    sqlc.arg(belongs_to_recipe_step_completion_condition),
+    sqlc.arg(recipe_step_ingredient)
+);
 
 -- name: GetAllRecipeStepCompletionConditionIngredientsForRecipeCompletionIDs :many
 
@@ -26,6 +30,6 @@ FROM recipe_step_completion_condition_ingredients
     JOIN recipe_step_completion_conditions ON recipe_step_completion_condition_ingredients.belongs_to_recipe_step_completion_condition = recipe_step_completion_conditions.id
     JOIN valid_ingredient_states ON recipe_step_completion_conditions.ingredient_state = valid_ingredient_states.id
 WHERE recipe_step_completion_conditions.archived_at IS NULL
-  AND recipe_step_completion_condition_ingredients.archived_at IS NULL
-  AND recipe_step_completion_condition_ingredients.belongs_to_recipe_step_completion_condition = ANY(sqlc.arg(recipe_step_completion_condition_id)::text[])
-  AND valid_ingredient_states.archived_at IS NULL;
+    AND recipe_step_completion_condition_ingredients.archived_at IS NULL
+    AND recipe_step_completion_condition_ingredients.belongs_to_recipe_step_completion_condition = ANY(sqlc.arg(recipe_step_completion_condition_id)::text[])
+    AND valid_ingredient_states.archived_at IS NULL;

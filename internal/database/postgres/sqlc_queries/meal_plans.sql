@@ -1,18 +1,38 @@
 -- name: ArchiveMealPlan :execrows
 
-UPDATE meal_plans SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_household = $1 AND id = $2;
+UPDATE meal_plans SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_household = sqlc.arg(belongs_to_household) AND id = sqlc.arg(id);
 
 -- name: CreateMealPlan :exec
 
-INSERT INTO meal_plans (id,notes,status,voting_deadline,belongs_to_household,created_by_user) VALUES ($1,$2,$3,$4,$5,$6);
+INSERT INTO meal_plans (
+    id,
+    notes,
+    status,
+    voting_deadline,
+    belongs_to_household,
+    created_by_user
+) VALUES (
+    sqlc.arg(id),
+    sqlc.arg(notes),
+    sqlc.arg(status),
+    sqlc.arg(voting_deadline),
+    sqlc.arg(belongs_to_household),
+    sqlc.arg(created_by_user)
+);
 
 -- name: CheckMealPlanExistence :one
 
-SELECT EXISTS ( SELECT meal_plans.id FROM meal_plans WHERE meal_plans.archived_at IS NULL AND meal_plans.id = sqlc.arg(meal_plan_id) AND meal_plans.belongs_to_household = sqlc.arg(household_id) );
+SELECT EXISTS (
+    SELECT meal_plans.id
+    FROM meal_plans
+    WHERE meal_plans.archived_at IS NULL
+        AND meal_plans.id = sqlc.arg(meal_plan_id)
+        AND meal_plans.belongs_to_household = sqlc.arg(household_id)
+);
 
 -- name: FinalizeMealPlan :exec
 
-UPDATE meal_plans SET status = $1 WHERE archived_at IS NULL AND id = $2;
+UPDATE meal_plans SET status = sqlc.arg(status) WHERE archived_at IS NULL AND id = sqlc.arg(id);
 
 -- name: GetExpiredAndUnresolvedMealPlans :many
 
@@ -32,7 +52,7 @@ SELECT
 FROM meal_plans
 WHERE meal_plans.archived_at IS NULL
 	AND meal_plans.status = 'awaiting_votes'
-	AND voting_deadline < now()
+	AND voting_deadline < NOW()
 GROUP BY meal_plans.id
 ORDER BY meal_plans.id;
 
@@ -91,8 +111,8 @@ SELECT
     meal_plans.created_by_user
 FROM meal_plans
 WHERE meal_plans.archived_at IS NULL
-  AND meal_plans.id = $1
-  AND meal_plans.belongs_to_household = $2;
+  AND meal_plans.id = sqlc.arg(id)
+  AND meal_plans.belongs_to_household = sqlc.arg(belongs_to_household);
 
 -- name: GetMealPlans :many
 
@@ -152,8 +172,8 @@ WHERE meal_plans.archived_at IS NULL
         meal_plans.last_updated_at IS NULL
         OR meal_plans.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
     )
-    OFFSET sqlc.narg(query_offset)
-    LIMIT sqlc.narg(query_limit);
+OFFSET sqlc.narg(query_offset)
+LIMIT sqlc.narg(query_limit);
 
 -- name: GetMealPlanPastVotingDeadline :one
 
@@ -184,7 +204,7 @@ SET
 	grocery_list_initialized = 'true',
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND id = $1;
+	AND id = sqlc.arg(id);
 
 -- name: MarkMealPlanAsPrepTasksCreated :exec
 
@@ -193,8 +213,15 @@ SET
 	tasks_created = 'true',
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND id = $1;
+	AND id = sqlc.arg(id);
 
 -- name: UpdateMealPlan :execrows
 
-UPDATE meal_plans SET notes = $1, status = $2, voting_deadline = $3, last_updated_at = NOW() WHERE archived_at IS NULL AND belongs_to_household = $4 AND id = $5;
+UPDATE meal_plans SET
+    notes = sqlc.arg(notes),
+    status = sqlc.arg(status),
+    voting_deadline = sqlc.arg(voting_deadline),
+    last_updated_at = NOW()
+WHERE archived_at IS NULL
+    AND belongs_to_household = sqlc.arg(belongs_to_household)
+    AND id = sqlc.arg(id);

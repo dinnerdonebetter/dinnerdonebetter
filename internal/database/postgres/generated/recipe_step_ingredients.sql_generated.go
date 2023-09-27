@@ -17,12 +17,12 @@ UPDATE recipe_step_ingredients SET archived_at = NOW() WHERE archived_at IS NULL
 `
 
 type ArchiveRecipeStepIngredientParams struct {
-	BelongsToRecipeStep string
-	ID                  string
+	RecipeStepID string
+	ID           string
 }
 
 func (q *Queries) ArchiveRecipeStepIngredient(ctx context.Context, db DBTX, arg *ArchiveRecipeStepIngredientParams) (int64, error) {
-	result, err := db.ExecContext(ctx, archiveRecipeStepIngredient, arg.BelongsToRecipeStep, arg.ID)
+	result, err := db.ExecContext(ctx, archiveRecipeStepIngredient, arg.RecipeStepID, arg.ID)
 	if err != nil {
 		return 0, err
 	}
@@ -31,7 +31,20 @@ func (q *Queries) ArchiveRecipeStepIngredient(ctx context.Context, db DBTX, arg 
 
 const checkRecipeStepIngredientExistence = `-- name: CheckRecipeStepIngredientExistence :one
 
-SELECT EXISTS ( SELECT recipe_step_ingredients.id FROM recipe_step_ingredients JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id WHERE recipe_step_ingredients.archived_at IS NULL AND recipe_step_ingredients.belongs_to_recipe_step = $1 AND recipe_step_ingredients.id = $2 AND recipe_steps.archived_at IS NULL AND recipe_steps.belongs_to_recipe = $3 AND recipe_steps.id = $1 AND recipes.archived_at IS NULL AND recipes.id = $3 )
+SELECT EXISTS (
+    SELECT recipe_step_ingredients.id
+    FROM recipe_step_ingredients
+        JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id
+        JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
+    WHERE recipe_step_ingredients.archived_at IS NULL
+        AND recipe_step_ingredients.belongs_to_recipe_step = $1
+        AND recipe_step_ingredients.id = $2
+        AND recipe_steps.archived_at IS NULL
+        AND recipe_steps.belongs_to_recipe = $3
+        AND recipe_steps.id = $1
+        AND recipes.archived_at IS NULL
+        AND recipes.id = $3
+)
 `
 
 type CheckRecipeStepIngredientExistenceParams struct {
@@ -66,7 +79,24 @@ INSERT INTO recipe_step_ingredients (
     vessel_index,
     recipe_step_product_recipe_id,
 	belongs_to_recipe_step
-) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
+) VALUES (
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $6,
+    $7,
+    $8,
+    $9,
+    $10,
+    $11,
+    $12,
+    $13,
+    $14,
+    $15,
+    $16
+)
 `
 
 type CreateRecipeStepIngredientParams struct {
@@ -181,12 +211,11 @@ SELECT
     recipe_step_ingredients.last_updated_at,
     recipe_step_ingredients.archived_at,
     recipe_step_ingredients.belongs_to_recipe_step
-FROM
-    recipe_step_ingredients
-        JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
-        JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
-        LEFT JOIN valid_ingredients ON recipe_step_ingredients.ingredient_id = valid_ingredients.id
-        JOIN valid_measurement_units ON recipe_step_ingredients.measurement_unit = valid_measurement_units.id
+FROM recipe_step_ingredients
+    JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
+    JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
+    LEFT JOIN valid_ingredients ON recipe_step_ingredients.ingredient_id = valid_ingredients.id
+    JOIN valid_measurement_units ON recipe_step_ingredients.measurement_unit = valid_measurement_units.id
 WHERE
     recipe_step_ingredients.archived_at IS NULL
     AND recipes.id = $1
@@ -428,10 +457,10 @@ SELECT
 	recipe_step_ingredients.archived_at,
 	recipe_step_ingredients.belongs_to_recipe_step
 FROM recipe_step_ingredients
-	 JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id
-	 JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
-	 JOIN valid_ingredients ON recipe_step_ingredients.ingredient_id=valid_ingredients.id
-	 JOIN valid_measurement_units ON recipe_step_ingredients.measurement_unit=valid_measurement_units.id
+    JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
+    JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
+    LEFT JOIN valid_ingredients ON recipe_step_ingredients.ingredient_id = valid_ingredients.id
+    JOIN valid_measurement_units ON recipe_step_ingredients.measurement_unit = valid_measurement_units.id
 WHERE recipe_step_ingredients.archived_at IS NULL
 	AND recipe_step_ingredients.belongs_to_recipe_step = $1
 	AND recipe_step_ingredients.id = $2
@@ -450,72 +479,72 @@ type GetRecipeStepIngredientParams struct {
 
 type GetRecipeStepIngredientRow struct {
 	CreatedAt                                              time.Time
-	ValidIngredientCreatedAt                               time.Time
 	ValidMeasurementUnitCreatedAt                          time.Time
-	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
-	ValidMeasurementUnitArchivedAt                         sql.NullTime
+	ValidIngredientCreatedAt                               sql.NullTime
+	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidIngredientArchivedAt                              sql.NullTime
+	ValidMeasurementUnitArchivedAt                         sql.NullTime
 	ArchivedAt                                             sql.NullTime
 	LastUpdatedAt                                          sql.NullTime
-	ValidIngredientIconPath                                string
-	ValidMeasurementUnitPluralName                         string
-	Name                                                   string
-	BelongsToRecipeStep                                    string
 	ValidMeasurementUnitID                                 string
+	ValidMeasurementUnitDescription                        string
+	ValidMeasurementUnitIconPath                           string
+	ValidMeasurementUnitSlug                               string
+	ValidMeasurementUnitPluralName                         string
 	IngredientNotes                                        string
 	ValidMeasurementUnitName                               string
 	QuantityNotes                                          string
 	ID                                                     string
-	ValidMeasurementUnitDescription                        string
-	ValidMeasurementUnitIconPath                           string
-	ValidIngredientWarning                                 string
+	BelongsToRecipeStep                                    string
 	MinimumQuantityValue                                   string
-	ValidIngredientPluralName                              string
-	ValidIngredientDescription                             string
-	ValidMeasurementUnitSlug                               string
-	ValidIngredientID                                      string
-	ValidIngredientStorageInstructions                     string
-	ValidIngredientSlug                                    string
-	ValidIngredientName                                    string
-	ValidIngredientShoppingSuggestions                     string
-	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
-	RecipeStepProductRecipeID                              sql.NullString
-	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
+	Name                                                   string
 	MaximumQuantityValue                                   sql.NullString
+	ValidIngredientWarning                                 sql.NullString
+	ValidIngredientIconPath                                sql.NullString
+	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientStorageInstructions                     sql.NullString
+	ValidIngredientSlug                                    sql.NullString
 	RecipeStepProductID                                    sql.NullString
+	ValidIngredientShoppingSuggestions                     sql.NullString
+	ValidIngredientID                                      sql.NullString
 	ProductPercentageToUse                                 sql.NullString
+	ValidIngredientName                                    sql.NullString
+	RecipeStepProductRecipeID                              sql.NullString
+	ValidIngredientPluralName                              sql.NullString
+	ValidIngredientDescription                             sql.NullString
 	VesselIndex                                            sql.NullInt32
 	OptionIndex                                            int32
-	ValidIngredientIsLiquid                                sql.NullBool
+	ValidIngredientAnimalFlesh                             sql.NullBool
+	ValidIngredientContainsAlcohol                         sql.NullBool
+	ValidIngredientIsAcid                                  sql.NullBool
+	ValidIngredientIsFat                                   sql.NullBool
+	ValidIngredientIsSalt                                  sql.NullBool
+	ValidIngredientIsFruit                                 sql.NullBool
 	ValidMeasurementUnitVolumetric                         sql.NullBool
-	ValidIngredientAnimalFlesh                             bool
-	ValidIngredientIsHeat                                  bool
-	ValidIngredientIsAcid                                  bool
-	ValidIngredientIsFat                                   bool
-	ValidIngredientIsSalt                                  bool
-	ValidIngredientIsFruit                                 bool
+	ValidIngredientIsGrain                                 sql.NullBool
+	ValidIngredientIsHeat                                  sql.NullBool
+	ValidIngredientContainsEgg                             sql.NullBool
+	ValidIngredientContainsDairy                           sql.NullBool
+	ValidIngredientIsProtein                               sql.NullBool
+	ValidIngredientIsStarch                                sql.NullBool
+	ValidIngredientContainsTreeNut                         sql.NullBool
+	ValidIngredientRestrictToPreparations                  sql.NullBool
+	ValidIngredientAnimalDerived                           sql.NullBool
+	ValidIngredientIsLiquid                                sql.NullBool
+	ValidIngredientVolumetric                              sql.NullBool
+	ValidIngredientContainsGluten                          sql.NullBool
+	ValidIngredientContainsFish                            sql.NullBool
+	ValidIngredientContainsSesame                          sql.NullBool
+	ValidIngredientContainsShellfish                       sql.NullBool
+	ValidIngredientContainsPeanut                          sql.NullBool
+	ValidIngredientContainsWheat                           sql.NullBool
+	ValidIngredientContainsSoy                             sql.NullBool
 	ValidMeasurementUnitUniversal                          bool
-	ValidMeasurementUnitMetric                             bool
-	ValidMeasurementUnitImperial                           bool
-	ValidIngredientIsGrain                                 bool
-	ValidIngredientIsProtein                               bool
-	ValidIngredientIsStarch                                bool
-	ValidIngredientContainsAlcohol                         bool
-	ValidIngredientRestrictToPreparations                  bool
-	ValidIngredientAnimalDerived                           bool
-	ValidIngredientVolumetric                              bool
-	ValidIngredientContainsGluten                          bool
-	ValidIngredientContainsFish                            bool
-	ValidIngredientContainsSesame                          bool
-	ValidIngredientContainsShellfish                       bool
 	ToTaste                                                bool
-	ValidIngredientContainsWheat                           bool
-	ValidIngredientContainsSoy                             bool
-	ValidIngredientContainsTreeNut                         bool
-	ValidIngredientContainsPeanut                          bool
-	ValidIngredientContainsDairy                           bool
-	ValidIngredientContainsEgg                             bool
+	ValidMeasurementUnitImperial                           bool
+	ValidMeasurementUnitMetric                             bool
 	Optional                                               bool
 }
 
@@ -685,23 +714,19 @@ SELECT
             AND (recipe_step_ingredients.last_updated_at IS NULL OR recipe_step_ingredients.last_updated_at < COALESCE($6, (SELECT NOW() + interval '999 years')))
     ) as filtered_count,
     (
-        SELECT
-            COUNT(recipe_step_ingredients.id)
-        FROM
-            recipe_step_ingredients
-                JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
-                JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
-        WHERE
-            recipe_step_ingredients.archived_at IS NULL
-          AND recipes.id = $1
-          AND recipe_step_ingredients.belongs_to_recipe_step = $2
+        SELECT COUNT(recipe_step_ingredients.id)
+        FROM recipe_step_ingredients
+            JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
+            JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
+        WHERE recipe_step_ingredients.archived_at IS NULL
+            AND recipes.id = $1
+            AND recipe_step_ingredients.belongs_to_recipe_step = $2
     ) as total_count
-FROM
-    recipe_step_ingredients
-        JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
-        JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
-        LEFT JOIN valid_ingredients ON recipe_step_ingredients.ingredient_id = valid_ingredients.id
-        JOIN valid_measurement_units ON recipe_step_ingredients.measurement_unit = valid_measurement_units.id
+FROM recipe_step_ingredients
+    JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
+    JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
+    LEFT JOIN valid_ingredients ON recipe_step_ingredients.ingredient_id = valid_ingredients.id
+    JOIN valid_measurement_units ON recipe_step_ingredients.measurement_unit = valid_measurement_units.id
 WHERE
     recipe_step_ingredients.archived_at IS NULL
     AND recipes.id = $1
@@ -712,8 +737,8 @@ WHERE
     AND recipe_step_ingredients.created_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
     AND (recipe_step_ingredients.last_updated_at IS NULL OR recipe_step_ingredients.last_updated_at > COALESCE($5, (SELECT NOW() - interval '999 years')))
     AND (recipe_step_ingredients.last_updated_at IS NULL OR recipe_step_ingredients.last_updated_at < COALESCE($6, (SELECT NOW() + interval '999 years')))
-    OFFSET $7
-    LIMIT $8
+OFFSET $7
+LIMIT $8
 `
 
 type GetRecipeStepIngredientsParams struct {
@@ -921,7 +946,8 @@ UPDATE recipe_step_ingredients SET
     vessel_index = $13,
     recipe_step_product_recipe_id = $14,
 	last_updated_at = NOW()
-WHERE archived_at IS NULL AND belongs_to_recipe_step = $15
+WHERE archived_at IS NULL
+    AND belongs_to_recipe_step = $15
 	AND id = $16
 `
 

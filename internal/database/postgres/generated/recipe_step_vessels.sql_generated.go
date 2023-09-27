@@ -62,9 +62,29 @@ func (q *Queries) CheckRecipeStepVesselExistence(ctx context.Context, db DBTX, a
 
 const createRecipeStepVessel = `-- name: CreateRecipeStepVessel :exec
 
-INSERT INTO recipe_step_vessels
-(id,"name",notes,belongs_to_recipe_step,recipe_step_product_id,valid_vessel_id,vessel_predicate,minimum_quantity,maximum_quantity,unavailable_after_step)
-VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+INSERT INTO recipe_step_vessels (
+    id,
+    name,
+    notes,
+    belongs_to_recipe_step,
+    recipe_step_product_id,
+    valid_vessel_id,
+    vessel_predicate,
+    minimum_quantity,
+    maximum_quantity,
+    unavailable_after_step
+) VALUES (
+    $1,
+    $2,
+    $3,
+    $4,
+    $5,
+    $6,
+    $7,
+    $8,
+    $9,
+    $10
+)
 `
 
 type CreateRecipeStepVesselParams struct {
@@ -303,24 +323,19 @@ SELECT
     recipe_step_vessels.last_updated_at,
     recipe_step_vessels.archived_at,
     (
-        SELECT
-            COUNT(recipe_step_vessels.id)
-        FROM
-            recipe_step_vessels
+        SELECT COUNT(recipe_step_vessels.id)
+        FROM recipe_step_vessels
         WHERE
             recipe_step_vessels.archived_at IS NULL
-          AND recipe_step_vessels.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-          AND recipe_step_vessels.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-          AND (recipe_step_vessels.last_updated_at IS NULL OR recipe_step_vessels.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-          AND (recipe_step_vessels.last_updated_at IS NULL OR recipe_step_vessels.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+            AND recipe_step_vessels.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+            AND recipe_step_vessels.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+            AND (recipe_step_vessels.last_updated_at IS NULL OR recipe_step_vessels.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+            AND (recipe_step_vessels.last_updated_at IS NULL OR recipe_step_vessels.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
     ) as filtered_count,
     (
-        SELECT
-            COUNT(recipe_step_vessels.id)
-        FROM
-            recipe_step_vessels
-        WHERE
-            recipe_step_vessels.archived_at IS NULL
+        SELECT COUNT(recipe_step_vessels.id)
+        FROM recipe_step_vessels
+        WHERE recipe_step_vessels.archived_at IS NULL
     ) as total_count
 FROM recipe_step_vessels
      LEFT JOIN valid_vessels ON recipe_step_vessels.valid_vessel_id=valid_vessels.id
@@ -338,8 +353,8 @@ WHERE recipe_step_vessels.archived_at IS NULL
     AND recipe_steps.id = $5
     AND recipes.archived_at IS NULL
     AND recipes.id = $6
-    OFFSET $7
-    LIMIT $8
+OFFSET $7
+LIMIT $8
 `
 
 type GetRecipeStepVesselsParams struct {
@@ -579,8 +594,8 @@ type GetRecipeStepVesselsForRecipeRow struct {
 	UnavailableAfterStep                      bool
 }
 
-func (q *Queries) GetRecipeStepVesselsForRecipe(ctx context.Context, db DBTX, belongsToRecipe string) ([]*GetRecipeStepVesselsForRecipeRow, error) {
-	rows, err := db.QueryContext(ctx, getRecipeStepVesselsForRecipe, belongsToRecipe)
+func (q *Queries) GetRecipeStepVesselsForRecipe(ctx context.Context, db DBTX, recipeID string) ([]*GetRecipeStepVesselsForRecipeRow, error) {
+	rows, err := db.QueryContext(ctx, getRecipeStepVesselsForRecipe, recipeID)
 	if err != nil {
 		return nil, err
 	}

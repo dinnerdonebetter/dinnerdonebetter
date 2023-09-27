@@ -1,12 +1,32 @@
 -- name: ArchiveRecipeStepVessel :execrows
 
-UPDATE recipe_step_vessels SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = $1 AND id = $2;
+UPDATE recipe_step_vessels SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = sqlc.arg(belongs_to_recipe_step) AND id = sqlc.arg(id);
 
 -- name: CreateRecipeStepVessel :exec
 
-INSERT INTO recipe_step_vessels
-(id,"name",notes,belongs_to_recipe_step,recipe_step_product_id,valid_vessel_id,vessel_predicate,minimum_quantity,maximum_quantity,unavailable_after_step)
-VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10);
+INSERT INTO recipe_step_vessels (
+    id,
+    name,
+    notes,
+    belongs_to_recipe_step,
+    recipe_step_product_id,
+    valid_vessel_id,
+    vessel_predicate,
+    minimum_quantity,
+    maximum_quantity,
+    unavailable_after_step
+) VALUES (
+    sqlc.arg(id),
+    sqlc.arg(name),
+    sqlc.arg(notes),
+    sqlc.arg(belongs_to_recipe_step),
+    sqlc.arg(recipe_step_product_id),
+    sqlc.arg(valid_vessel_id),
+    sqlc.arg(vessel_predicate),
+    sqlc.arg(minimum_quantity),
+    sqlc.arg(maximum_quantity),
+    sqlc.arg(unavailable_after_step)
+);
 
 -- name: CheckRecipeStepVesselExistence :one
 
@@ -77,9 +97,9 @@ FROM recipe_step_vessels
     JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
 WHERE recipe_step_vessels.archived_at IS NULL
     AND recipe_steps.archived_at IS NULL
-    AND recipe_steps.belongs_to_recipe = $1
+    AND recipe_steps.belongs_to_recipe = sqlc.arg(recipe_id)
     AND recipes.archived_at IS NULL
-    AND recipes.id = $1;
+    AND recipes.id = sqlc.arg(recipe_id);
 
 -- name: GetRecipeStepVessel :one
 
@@ -186,24 +206,19 @@ SELECT
     recipe_step_vessels.last_updated_at,
     recipe_step_vessels.archived_at,
     (
-        SELECT
-            COUNT(recipe_step_vessels.id)
-        FROM
-            recipe_step_vessels
+        SELECT COUNT(recipe_step_vessels.id)
+        FROM recipe_step_vessels
         WHERE
             recipe_step_vessels.archived_at IS NULL
-          AND recipe_step_vessels.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
-          AND recipe_step_vessels.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
-          AND (recipe_step_vessels.last_updated_at IS NULL OR recipe_step_vessels.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years')))
-          AND (recipe_step_vessels.last_updated_at IS NULL OR recipe_step_vessels.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
+            AND recipe_step_vessels.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
+            AND recipe_step_vessels.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+            AND (recipe_step_vessels.last_updated_at IS NULL OR recipe_step_vessels.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years')))
+            AND (recipe_step_vessels.last_updated_at IS NULL OR recipe_step_vessels.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
     ) as filtered_count,
     (
-        SELECT
-            COUNT(recipe_step_vessels.id)
-        FROM
-            recipe_step_vessels
-        WHERE
-            recipe_step_vessels.archived_at IS NULL
+        SELECT COUNT(recipe_step_vessels.id)
+        FROM recipe_step_vessels
+        WHERE recipe_step_vessels.archived_at IS NULL
     ) as total_count
 FROM recipe_step_vessels
      LEFT JOIN valid_vessels ON recipe_step_vessels.valid_vessel_id=valid_vessels.id
@@ -221,8 +236,8 @@ WHERE recipe_step_vessels.archived_at IS NULL
     AND recipe_steps.id = sqlc.arg(recipe_step_id)
     AND recipes.archived_at IS NULL
     AND recipes.id = sqlc.arg(recipe_id)
-    OFFSET sqlc.narg(query_offset)
-    LIMIT sqlc.narg(query_limit);
+OFFSET sqlc.narg(query_offset)
+LIMIT sqlc.narg(query_limit);
 
 -- name: UpdateRecipeStepVessel :execrows
 

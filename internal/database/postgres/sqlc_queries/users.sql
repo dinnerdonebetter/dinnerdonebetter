@@ -20,7 +20,8 @@ UPDATE users SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg
 
 UPDATE household_user_memberships
 SET archived_at = NOW()
-WHERE archived_at IS NULL AND belongs_to_user = sqlc.arg(id);
+WHERE archived_at IS NULL
+	AND belongs_to_user = sqlc.arg(id);
 
 -- name: CreateUser :exec
 
@@ -285,11 +286,9 @@ OFFSET sqlc.narg(query_offset);
 
 SELECT users.id
 FROM users
-WHERE (users.archived_at IS NULL)
-AND users.last_indexed_at IS NULL
-OR (
-	users.last_indexed_at < NOW() - '24 hours'::INTERVAL
-);
+WHERE users.archived_at IS NULL
+	AND users.last_indexed_at IS NULL
+	OR users.last_indexed_at < NOW() - '24 hours'::INTERVAL;
 
 -- name: GetUserWithUnverifiedTwoFactor :one
 
