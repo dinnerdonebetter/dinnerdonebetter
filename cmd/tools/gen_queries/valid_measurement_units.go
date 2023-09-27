@@ -9,6 +9,8 @@ import (
 
 const (
 	validMeasurementUnitsTableName = "valid_measurement_units"
+
+	validMeasurementUnitsUniversalColumn = "universal"
 )
 
 var validMeasurementUnitsColumns = []string{
@@ -17,7 +19,7 @@ var validMeasurementUnitsColumns = []string{
 	descriptionColumn,
 	"volumetric",
 	iconPathColumn,
-	"universal",
+	validMeasurementUnitsUniversalColumn,
 	"metric",
 	"imperial",
 	slugColumn,
@@ -52,9 +54,9 @@ func buildValidMeasurementUnitsQueries() []*Query {
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
-    %s
+	%s
 ) VALUES (
-    %s
+	%s
 );`,
 				validMeasurementUnitsTableName,
 				strings.Join(insertColumns, ",\n\t"),
@@ -69,18 +71,15 @@ func buildValidMeasurementUnitsQueries() []*Query {
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
-    SELECT %s.id
-    FROM %s
-    WHERE %s.%s IS NULL
-        AND %s.%s = sqlc.arg(%s)
+	SELECT %s.%s
+	FROM %s
+	WHERE %s.%s IS NULL
+		AND %s.%s = sqlc.arg(%s)
 );`,
+				validMeasurementUnitsTableName, idColumn,
 				validMeasurementUnitsTableName,
-				validMeasurementUnitsTableName,
-				validMeasurementUnitsTableName,
-				archivedAtColumn,
-				validMeasurementUnitsTableName,
-				idColumn,
-				idColumn,
+				validMeasurementUnitsTableName, archivedAtColumn,
+				validMeasurementUnitsTableName, idColumn, idColumn,
 			)),
 		},
 		{
@@ -90,8 +89,8 @@ func buildValidMeasurementUnitsQueries() []*Query {
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
-    %s,
-    %s
+	%s,
+	%s
 FROM %s
 WHERE
 	%s.%s IS NULL
@@ -131,9 +130,9 @@ ORDER BY %s.%s
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT %s.%s
 FROM %s
 WHERE %s.%s IS NULL
-    AND (
-    %s.%s IS NULL
-    OR %s.%s < %s - '24 hours'::INTERVAL
+	AND (
+	%s.%s IS NULL
+	OR %s.%s < %s - '24 hours'::INTERVAL
 );`,
 				validMeasurementUnitsTableName,
 				idColumn,
@@ -214,15 +213,14 @@ WHERE %s.%s IS NULL
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
-WHERE %s.name %s
+WHERE %s.%s %s
 	AND %s.%s IS NULL
 LIMIT 50;`,
 				strings.Join(applyToEach(validMeasurementUnitsColumns, func(i int, s string) string {
 					return fmt.Sprintf("%s.%s", validMeasurementUnitsTableName, s)
 				}), ",\n\t"),
 				validMeasurementUnitsTableName,
-				validMeasurementUnitsTableName,
-				"ILIKE '%' || sqlc.arg(name_query)::text || '%'",
+				validMeasurementUnitsTableName, nameColumn, buildILIKEForArgument("name_query"),
 				validMeasurementUnitsTableName,
 				archivedAtColumn,
 			)),
@@ -234,19 +232,19 @@ LIMIT 50;`,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
-    %s,
-    %s
-FROM valid_measurement_units
-	JOIN valid_ingredient_measurement_units ON valid_ingredient_measurement_units.valid_measurement_unit_id = valid_measurement_units.id
-	JOIN valid_ingredients ON valid_ingredient_measurement_units.valid_ingredient_id = valid_ingredients.id
+	%s,
+	%s
+FROM %s
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
 WHERE
 	(
-	    valid_ingredient_measurement_units.valid_ingredient_id = sqlc.arg(valid_ingredient_id)
-	    OR valid_measurement_units.universal = true
+		%s.%s = sqlc.arg(%s)
+		OR %s.%s = TRUE
 	)
-    AND valid_measurement_units.archived_at IS NULL
-    AND valid_ingredients.archived_at IS NULL
-	AND valid_ingredient_measurement_units.archived_at IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
 	%s
 %s;`,
 				strings.Join(applyToEach(validMeasurementUnitsColumns, func(i int, s string) string {
@@ -255,11 +253,23 @@ WHERE
 					}
 					return fmt.Sprintf("%s.%s", validMeasurementUnitsTableName, s)
 				}), ",\n\t"),
-				buildFilterCountSelect(validMeasurementUnitsTableName, true, ` (
+				buildFilterCountSelect(
+					validMeasurementUnitsTableName,
+					true,
+					` (
 				valid_ingredient_measurement_units.valid_ingredient_id = sqlc.arg(valid_ingredient_id)
 				OR valid_measurement_units.universal = true
-			)`),
+			)`,
+				),
 				buildTotalCountSelect(validMeasurementUnitsTableName),
+				validMeasurementUnitsTableName,
+				validIngredientMeasurementUnitsTableName, validIngredientMeasurementUnitsTableName, validMeasurementUnitIDColumn, validMeasurementUnitsTableName, idColumn,
+				validIngredientsTableName, validIngredientMeasurementUnitsTableName, validIngredientIDColumn, validIngredientsTableName, idColumn,
+				validIngredientMeasurementUnitsTableName, validIngredientIDColumn, validIngredientIDColumn,
+				validMeasurementUnitsTableName, validMeasurementUnitsUniversalColumn,
+				validMeasurementUnitsTableName, archivedAtColumn,
+				validIngredientsTableName, archivedAtColumn,
+				validIngredientMeasurementUnitsTableName, archivedAtColumn,
 				buildFilterConditions(validMeasurementUnitsTableName, true),
 				offsetLimitAddendum,
 			)),
@@ -273,7 +283,7 @@ WHERE
 	%s,
 	%s = %s
 WHERE %s IS NULL
-    AND %s = sqlc.arg(%s);`,
+	AND %s = sqlc.arg(%s);`,
 				validMeasurementUnitsTableName,
 				strings.Join(applyToEach(filterForUpdate(validMeasurementUnitsColumns), func(i int, s string) string {
 					return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)

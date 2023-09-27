@@ -8,17 +8,17 @@ UPDATE valid_ingredient_group_members SET
 	archived_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id)
-	AND belongs_to_group = sqlc.arg(group_id);
+	AND belongs_to_group = sqlc.arg(belongs_to_group);
 
 -- name: CreateValidIngredientGroup :exec
 
 INSERT INTO valid_ingredient_groups (
-    id,
+	id,
 	name,
 	description,
 	slug
 ) VALUES (
-    sqlc.arg(id),
+	sqlc.arg(id),
 	sqlc.arg(name),
 	sqlc.arg(description),
 	sqlc.arg(slug)
@@ -27,11 +27,11 @@ INSERT INTO valid_ingredient_groups (
 -- name: CreateValidIngredientGroupMember :exec
 
 INSERT INTO valid_ingredient_group_members (
-    id,
+	id,
 	belongs_to_group,
 	valid_ingredient
 ) VALUES (
-    sqlc.arg(id),
+	sqlc.arg(id),
 	sqlc.arg(belongs_to_group),
 	sqlc.arg(valid_ingredient)
 );
@@ -39,10 +39,10 @@ INSERT INTO valid_ingredient_group_members (
 -- name: CheckValidIngredientGroupExistence :one
 
 SELECT EXISTS (
-    SELECT valid_ingredient_groups.id
-    FROM valid_ingredient_groups
-    WHERE valid_ingredient_groups.archived_at IS NULL
-        AND valid_ingredient_groups.id = sqlc.arg(id)
+	SELECT valid_ingredient_groups.id
+	FROM valid_ingredient_groups
+	WHERE valid_ingredient_groups.archived_at IS NULL
+		AND valid_ingredient_groups.id = sqlc.arg(id)
 );
 
 -- name: GetValidIngredientGroups :many
@@ -55,7 +55,7 @@ SELECT
 	valid_ingredient_groups.created_at,
 	valid_ingredient_groups.last_updated_at,
 	valid_ingredient_groups.archived_at,
-    (
+	(
 		SELECT COUNT(valid_ingredient_groups.id)
 		FROM valid_ingredient_groups
 		WHERE valid_ingredient_groups.archived_at IS NULL
@@ -70,7 +70,7 @@ SELECT
 				OR valid_ingredient_groups.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
 			)
 	) AS filtered_count,
-    (
+	(
 		SELECT COUNT(valid_ingredient_groups.id)
 		FROM valid_ingredient_groups
 		WHERE valid_ingredient_groups.archived_at IS NULL
@@ -145,7 +145,7 @@ FROM valid_ingredient_group_members
 WHERE
 	valid_ingredient_groups.archived_at IS NULL
 	AND valid_ingredient_group_members.archived_at IS NULL
-	AND valid_ingredient_group_members.belongs_to_group = sqlc.arg(group_id);
+	AND valid_ingredient_group_members.belongs_to_group = sqlc.arg(belongs_to_group);
 
 -- name: GetValidIngredientGroup :one
 
@@ -171,7 +171,7 @@ SELECT
 	valid_ingredient_groups.created_at,
 	valid_ingredient_groups.last_updated_at,
 	valid_ingredient_groups.archived_at,
-    (
+	(
 		SELECT COUNT(valid_ingredient_groups.id)
 		FROM valid_ingredient_groups
 		WHERE valid_ingredient_groups.archived_at IS NULL
@@ -186,7 +186,7 @@ SELECT
 				OR valid_ingredient_groups.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
 			)
 	) AS filtered_count,
-    (
+	(
 		SELECT COUNT(valid_ingredient_groups.id)
 		FROM valid_ingredient_groups
 		WHERE valid_ingredient_groups.archived_at IS NULL
@@ -232,4 +232,4 @@ UPDATE valid_ingredient_groups SET
 	slug = sqlc.arg(slug),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-    AND id = sqlc.arg(id);
+	AND id = sqlc.arg(id);

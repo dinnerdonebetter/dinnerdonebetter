@@ -16,7 +16,7 @@ INSERT INTO webhook_trigger_events (
 	trigger_event,
 	belongs_to_webhook
 ) VALUES (
-    $1,
+	$1,
 	$2,
 	$3
 )

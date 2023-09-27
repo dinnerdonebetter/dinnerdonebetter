@@ -153,17 +153,17 @@ WHERE %s.%s IS NULL
 	(
 		SELECT COUNT(%s.%s)
 		FROM %s
-		    JOIN %s ON %s.%s = %s.%s
-        WHERE %s.%s IS NULL
-            AND %s.%s = sqlc.arg(%s)%s
+			JOIN %s ON %s.%s = %s.%s
+		WHERE %s.%s IS NULL
+			AND %s.%s = sqlc.arg(%s)%s
 	) as filtered_count,
-    %s
+	%s
 FROM %s
 	JOIN %s ON %s.%s = %s.%s
-    JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
 WHERE %s.%s IS NULL
-    AND %s.%s IS NULL
-    AND %s.%s = sqlc.arg(%s)
+	AND %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s)
 	%s
 %s;`,
 				strings.Join(applyToEach(householdsColumns, func(_ int, s string) string {
@@ -245,11 +245,11 @@ WHERE %s IS NULL
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s
 SET
-    %s = sqlc.arg(%s),
-    %s = %s
+	%s = sqlc.arg(%s),
+	%s = %s
 WHERE %s IS NULL
-    AND %s = sqlc.arg(%s)
-    AND %s = sqlc.arg(%s);`,
+	AND %s = sqlc.arg(%s)
+	AND %s = sqlc.arg(%s);`,
 				householdsTableName,
 				webhookHMACSecretColumn, webhookHMACSecretColumn,
 				lastUpdatedAtColumn, currentTimeExpression,

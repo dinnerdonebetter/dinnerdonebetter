@@ -27,10 +27,10 @@ func (q *Queries) ArchiveValidIngredientPreparation(ctx context.Context, db DBTX
 const checkValidIngredientPreparationExistence = `-- name: CheckValidIngredientPreparationExistence :one
 
 SELECT EXISTS (
-    SELECT valid_ingredient_preparations.id
-    FROM valid_ingredient_preparations
-    WHERE valid_ingredient_preparations.archived_at IS NULL
-        AND valid_ingredient_preparations.id = $1
+	SELECT valid_ingredient_preparations.id
+	FROM valid_ingredient_preparations
+	WHERE valid_ingredient_preparations.archived_at IS NULL
+		AND valid_ingredient_preparations.id = $1
 )
 `
 
@@ -44,12 +44,12 @@ func (q *Queries) CheckValidIngredientPreparationExistence(ctx context.Context, 
 const createValidIngredientPreparation = `-- name: CreateValidIngredientPreparation :exec
 
 INSERT INTO valid_ingredient_preparations (
-    id,
+	id,
 	notes,
 	valid_preparation_id,
 	valid_ingredient_id
 ) VALUES (
-    $1,
+	$1,
 	$2,
 	$3,
 	$4

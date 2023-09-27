@@ -33,7 +33,7 @@ SELECT
 	oauth2_clients.archived_at
 FROM oauth2_clients
 WHERE oauth2_clients.archived_at IS NULL
-	AND oauth2_clients.client_id = sqlc.arg(id);
+	AND oauth2_clients.client_id = sqlc.arg(client_id);
 
 -- name: GetOAuth2ClientByDatabaseID :one
 
@@ -60,12 +60,9 @@ SELECT
 	oauth2_clients.created_at,
 	oauth2_clients.archived_at,
 	(
-		SELECT
-			COUNT(oauth2_clients.id)
-		FROM
-			oauth2_clients
-		WHERE
-			oauth2_clients.archived_at IS NULL
+		SELECT COUNT(oauth2_clients.id)
+		FROM oauth2_clients
+		WHERE oauth2_clients.archived_at IS NULL
 			AND oauth2_clients.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 			AND oauth2_clients.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 	) as filtered_count,
@@ -78,5 +75,5 @@ FROM oauth2_clients
 WHERE oauth2_clients.archived_at IS NULL
 	AND oauth2_clients.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 	AND oauth2_clients.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
-	OFFSET sqlc.narg(query_offset)
-	LIMIT sqlc.narg(query_limit);
+LIMIT sqlc.narg(query_limit)
+OFFSET sqlc.narg(query_offset);

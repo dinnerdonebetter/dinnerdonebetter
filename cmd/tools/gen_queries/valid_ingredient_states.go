@@ -49,9 +49,9 @@ func buildValidIngredientStatesQueries() []*Query {
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
-    %s
+	%s
 ) VALUES (
-    %s
+	%s
 );`,
 				validIngredientStatesTableName,
 				strings.Join(insertColumns, ",\n\t"),
@@ -66,12 +66,12 @@ func buildValidIngredientStatesQueries() []*Query {
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
-    SELECT %s.id
-    FROM %s
-    WHERE %s.%s IS NULL
-        AND %s.%s = sqlc.arg(%s)
+	SELECT %s.%s
+	FROM %s
+	WHERE %s.%s IS NULL
+		AND %s.%s = sqlc.arg(%s)
 );`,
-				validIngredientStatesTableName,
+				validIngredientStatesTableName, idColumn,
 				validIngredientStatesTableName,
 				validIngredientStatesTableName,
 				archivedAtColumn,
@@ -87,8 +87,8 @@ func buildValidIngredientStatesQueries() []*Query {
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
-    %s,
-    %s
+	%s,
+	%s
 FROM %s
 WHERE
 	%s.%s IS NULL
@@ -128,9 +128,9 @@ ORDER BY %s.%s
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT %s.%s
 FROM %s
 WHERE %s.%s IS NULL
-    AND (
-    %s.%s IS NULL
-    OR %s.%s < %s - '24 hours'::INTERVAL
+	AND (
+	%s.%s IS NULL
+	OR %s.%s < %s - '24 hours'::INTERVAL
 );`,
 				validIngredientStatesTableName,
 				idColumn,
@@ -193,15 +193,14 @@ WHERE %s.%s IS NULL
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
-WHERE %s.name %s
+WHERE %s.%s %s
 	AND %s.%s IS NULL
 LIMIT 50;`,
 				strings.Join(applyToEach(validIngredientStatesColumns, func(i int, s string) string {
 					return fmt.Sprintf("%s.%s", validIngredientStatesTableName, s)
 				}), ",\n\t"),
 				validIngredientStatesTableName,
-				validIngredientStatesTableName,
-				"ILIKE '%' || sqlc.arg(name_query)::text || '%'",
+				validIngredientStatesTableName, nameColumn, buildILIKEForArgument("name_query"),
 				validIngredientStatesTableName,
 				archivedAtColumn,
 			)),
@@ -215,7 +214,7 @@ LIMIT 50;`,
 	%s,
 	%s = %s
 WHERE %s IS NULL
-    AND %s = sqlc.arg(%s);`,
+	AND %s = sqlc.arg(%s);`,
 				validIngredientStatesTableName,
 				strings.Join(applyToEach(filterForUpdate(validIngredientStatesColumns), func(i int, s string) string {
 					return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)

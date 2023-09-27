@@ -22,7 +22,7 @@ INSERT INTO password_reset_tokens (
 	$1,
 	$2,
 	NOW() + (30 * '1 minutes'::INTERVAL),
-    $3
+	$3
 )
 `
 
@@ -81,9 +81,9 @@ func (q *Queries) GetPasswordResetToken(ctx context.Context, db DBTX, token stri
 const redeemPasswordResetToken = `-- name: RedeemPasswordResetToken :exec
 
 UPDATE password_reset_tokens SET
-    redeemed_at = NOW()
+	redeemed_at = NOW()
 WHERE redeemed_at IS NULL
-    AND id = $1
+	AND id = $1
 `
 
 func (q *Queries) RedeemPasswordResetToken(ctx context.Context, db DBTX, id string) error {

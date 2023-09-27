@@ -286,7 +286,7 @@ UPDATE valid_vessels SET
 	shape = sqlc.arg(shape),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-    AND id = sqlc.arg(id);
+	AND id = sqlc.arg(id);
 
 -- name: UpdateValidVesselLastIndexedAt :execrows
 

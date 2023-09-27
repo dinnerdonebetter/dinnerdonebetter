@@ -5,35 +5,35 @@ UPDATE recipes SET archived_at = NOW() WHERE archived_at IS NULL AND created_by_
 -- name: CreateRecipe :exec
 
 INSERT INTO recipes (
-    id,
-    name,
-    slug,
-    source,
-    description,
-    inspired_by_recipe_id,
-    min_estimated_portions,
-    max_estimated_portions,
-    portion_name,
-    plural_portion_name,
-    seal_of_approval,
-    eligible_for_meals,
-    yields_component_type,
-    created_by_user
+	id,
+	name,
+	slug,
+	source,
+	description,
+	inspired_by_recipe_id,
+	min_estimated_portions,
+	max_estimated_portions,
+	portion_name,
+	plural_portion_name,
+	seal_of_approval,
+	eligible_for_meals,
+	yields_component_type,
+	created_by_user
 ) VALUES (
-    sqlc.arg(id),
-    sqlc.arg(name),
-    sqlc.arg(slug),
-    sqlc.arg(source),
-    sqlc.arg(description),
-    sqlc.arg(inspired_by_recipe_id),
-    sqlc.arg(min_estimated_portions),
-    sqlc.arg(max_estimated_portions),
-    sqlc.arg(portion_name),
-    sqlc.arg(plural_portion_name),
-    sqlc.arg(seal_of_approval),
-    sqlc.arg(eligible_for_meals),
-    sqlc.arg(yields_component_type),
-    sqlc.arg(created_by_user)
+	sqlc.arg(id),
+	sqlc.arg(name),
+	sqlc.arg(slug),
+	sqlc.arg(source),
+	sqlc.arg(description),
+	sqlc.arg(inspired_by_recipe_id),
+	sqlc.arg(min_estimated_portions),
+	sqlc.arg(max_estimated_portions),
+	sqlc.arg(portion_name),
+	sqlc.arg(plural_portion_name),
+	sqlc.arg(seal_of_approval),
+	sqlc.arg(eligible_for_meals),
+	sqlc.arg(yields_component_type),
+	sqlc.arg(created_by_user)
 );
 
 -- name: CheckRecipeExistence :one
@@ -75,10 +75,10 @@ SELECT
 	valid_preparations.temperature_required as recipe_step_preparation_temperature_required,
 	valid_preparations.time_estimate_required as recipe_step_preparation_time_estimate_required,
 	valid_preparations.condition_expression_required as recipe_step_preparation_condition_expression_required,
-    valid_preparations.consumes_vessel as recipe_step_preparation_consumes_vessel,
-    valid_preparations.only_for_vessels as recipe_step_preparation_only_for_vessels,
-    valid_preparations.minimum_vessel_count as recipe_step_preparation_minimum_vessel_count,
-    valid_preparations.maximum_vessel_count as recipe_step_preparation_maximum_vessel_count,
+	valid_preparations.consumes_vessel as recipe_step_preparation_consumes_vessel,
+	valid_preparations.only_for_vessels as recipe_step_preparation_only_for_vessels,
+	valid_preparations.minimum_vessel_count as recipe_step_preparation_minimum_vessel_count,
+	valid_preparations.maximum_vessel_count as recipe_step_preparation_maximum_vessel_count,
 	valid_preparations.slug as recipe_step_preparation_slug,
 	valid_preparations.past_tense as recipe_step_preparation_past_tense,
 	valid_preparations.created_at as recipe_step_preparation_created_at,
@@ -98,7 +98,7 @@ SELECT
 	recipe_steps.archived_at as recipe_step_archived_at,
 	recipe_steps.belongs_to_recipe as recipe_step_belongs_to_recipe
 FROM recipes
-    JOIN recipe_steps ON recipes.id=recipe_steps.belongs_to_recipe
+	JOIN recipe_steps ON recipes.id=recipe_steps.belongs_to_recipe
 	JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
 WHERE recipes.archived_at IS NULL
 	AND recipes.id = sqlc.arg(recipe_id)
@@ -139,10 +139,10 @@ SELECT
 	valid_preparations.temperature_required,
 	valid_preparations.time_estimate_required,
 	valid_preparations.condition_expression_required,
-    valid_preparations.consumes_vessel,
-    valid_preparations.only_for_vessels,
-    valid_preparations.minimum_vessel_count,
-    valid_preparations.maximum_vessel_count,
+	valid_preparations.consumes_vessel,
+	valid_preparations.only_for_vessels,
+	valid_preparations.minimum_vessel_count,
+	valid_preparations.maximum_vessel_count,
 	valid_preparations.slug,
 	valid_preparations.past_tense,
 	valid_preparations.created_at,
@@ -172,119 +172,119 @@ ORDER BY recipe_steps.index;
 -- name: GetRecipes :many
 
 SELECT
-    recipes.id,
-    recipes.name,
-    recipes.slug,
-    recipes.source,
-    recipes.description,
-    recipes.inspired_by_recipe_id,
-    recipes.min_estimated_portions,
-    recipes.max_estimated_portions,
-    recipes.portion_name,
-    recipes.plural_portion_name,
-    recipes.seal_of_approval,
-    recipes.eligible_for_meals,
-    recipes.yields_component_type,
-    recipes.created_at,
-    recipes.last_updated_at,
-    recipes.archived_at,
-    recipes.created_by_user,
-    (
-        SELECT
-            COUNT(recipes.id)
-        FROM
-            recipes
-        WHERE
-            recipes.archived_at IS NULL
-            AND recipes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
-            AND recipes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
-            AND (
-                recipes.last_updated_at IS NULL
-                OR recipes.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years'))
-            )
-            AND (
-                recipes.last_updated_at IS NULL
-                OR recipes.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
-            )
-        OFFSET sqlc.narg(query_offset)
-    ) AS filtered_count,
-    (
-        SELECT COUNT(recipes.id)
-        FROM recipes
-        WHERE recipes.archived_at IS NULL
-    ) AS total_count
+	recipes.id,
+	recipes.name,
+	recipes.slug,
+	recipes.source,
+	recipes.description,
+	recipes.inspired_by_recipe_id,
+	recipes.min_estimated_portions,
+	recipes.max_estimated_portions,
+	recipes.portion_name,
+	recipes.plural_portion_name,
+	recipes.seal_of_approval,
+	recipes.eligible_for_meals,
+	recipes.yields_component_type,
+	recipes.created_at,
+	recipes.last_updated_at,
+	recipes.archived_at,
+	recipes.created_by_user,
+	(
+		SELECT
+			COUNT(recipes.id)
+		FROM
+			recipes
+		WHERE
+			recipes.archived_at IS NULL
+			AND recipes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
+			AND recipes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+			AND (
+				recipes.last_updated_at IS NULL
+				OR recipes.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years'))
+			)
+			AND (
+				recipes.last_updated_at IS NULL
+				OR recipes.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
+			)
+		OFFSET sqlc.narg(query_offset)
+	) AS filtered_count,
+	(
+		SELECT COUNT(recipes.id)
+		FROM recipes
+		WHERE recipes.archived_at IS NULL
+	) AS total_count
 FROM recipes
-    WHERE recipes.archived_at IS NULL
-    AND recipes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
-    AND recipes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
-    AND (
-        recipes.last_updated_at IS NULL
-        OR recipes.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years'))
-    )
-    AND (
-        recipes.last_updated_at IS NULL
-        OR recipes.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
-    )
+	WHERE recipes.archived_at IS NULL
+	AND recipes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
+	AND recipes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+	AND (
+		recipes.last_updated_at IS NULL
+		OR recipes.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years'))
+	)
+	AND (
+		recipes.last_updated_at IS NULL
+		OR recipes.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
+	)
 OFFSET sqlc.narg(query_offset)
 LIMIT sqlc.narg(query_limit);
 
 -- name: RecipeSearch :many
 
 SELECT
-    recipes.id,
-    recipes.name,
-    recipes.slug,
-    recipes.source,
-    recipes.description,
-    recipes.inspired_by_recipe_id,
-    recipes.min_estimated_portions,
-    recipes.max_estimated_portions,
-    recipes.portion_name,
-    recipes.plural_portion_name,
-    recipes.seal_of_approval,
-    recipes.eligible_for_meals,
-    recipes.yields_component_type,
-    recipes.created_at,
-    recipes.last_updated_at,
-    recipes.archived_at,
-    recipes.created_by_user,
-    (
-        SELECT
-            COUNT(recipes.id)
-        FROM
-            recipes
-        WHERE
-            recipes.archived_at IS NULL
-          AND recipes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
-          AND recipes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
-          AND (
-                recipes.last_updated_at IS NULL
-                OR recipes.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years'))
-            )
-          AND (
-                recipes.last_updated_at IS NULL
-                OR recipes.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
-            )
-        OFFSET sqlc.narg(query_offset)
-    ) AS filtered_count,
-    (
-        SELECT COUNT(recipes.id)
-        FROM recipes
-        WHERE recipes.archived_at IS NULL
-    ) AS total_count
+	recipes.id,
+	recipes.name,
+	recipes.slug,
+	recipes.source,
+	recipes.description,
+	recipes.inspired_by_recipe_id,
+	recipes.min_estimated_portions,
+	recipes.max_estimated_portions,
+	recipes.portion_name,
+	recipes.plural_portion_name,
+	recipes.seal_of_approval,
+	recipes.eligible_for_meals,
+	recipes.yields_component_type,
+	recipes.created_at,
+	recipes.last_updated_at,
+	recipes.archived_at,
+	recipes.created_by_user,
+	(
+		SELECT
+			COUNT(recipes.id)
+		FROM
+			recipes
+		WHERE
+			recipes.archived_at IS NULL
+		  AND recipes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
+		  AND recipes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+		  AND (
+				recipes.last_updated_at IS NULL
+				OR recipes.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years'))
+			)
+		  AND (
+				recipes.last_updated_at IS NULL
+				OR recipes.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
+			)
+		OFFSET sqlc.narg(query_offset)
+	) AS filtered_count,
+	(
+		SELECT COUNT(recipes.id)
+		FROM recipes
+		WHERE recipes.archived_at IS NULL
+	) AS total_count
 FROM recipes
 WHERE recipes.archived_at IS NULL
-    AND recipes.name ILIKE '%' || sqlc.arg(query)::text || '%'
-    AND recipes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
-    AND recipes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
-    AND (
-        recipes.last_updated_at IS NULL
-        OR recipes.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years'))
-    )
-    AND (
-        recipes.last_updated_at IS NULL
-        OR recipes.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
-    )
+	AND recipes.name ILIKE '%' || sqlc.arg(query)::text || '%'
+	AND recipes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
+	AND recipes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+	AND (
+		recipes.last_updated_at IS NULL
+		OR recipes.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years'))
+	)
+	AND (
+		recipes.last_updated_at IS NULL
+		OR recipes.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
+	)
 OFFSET sqlc.narg(query_offset)
 LIMIT sqlc.narg(query_limit);;
 
@@ -293,18 +293,18 @@ LIMIT sqlc.narg(query_limit);;
 SELECT recipes.id
 FROM recipes
 WHERE recipes.archived_at IS NULL
-    AND (
-        recipes.last_indexed_at IS NULL
-        OR recipes.last_indexed_at
-            < NOW() - '24 hours'::INTERVAL
-    );
+	AND (
+		recipes.last_indexed_at IS NULL
+		OR recipes.last_indexed_at
+			< NOW() - '24 hours'::INTERVAL
+	);
 
 -- name: GetRecipeIDsForMeal :many
 
 SELECT recipes.id
 FROM recipes
-    JOIN meal_components ON meal_components.recipe_id = recipes.id
-    JOIN meals ON meal_components.meal_id = meals.id
+	JOIN meal_components ON meal_components.recipe_id = recipes.id
+	JOIN meals ON meal_components.meal_id = meals.id
 WHERE
 	recipes.archived_at IS NULL
 	AND meals.id = sqlc.arg(meal_id)
@@ -316,19 +316,19 @@ ORDER BY
 -- name: UpdateRecipe :execrows
 
 UPDATE recipes SET
-    name = sqlc.arg(name),
-    slug = sqlc.arg(slug),
-    source = sqlc.arg(source),
-    description = sqlc.arg(description),
-    inspired_by_recipe_id = sqlc.arg(inspired_by_recipe_id),
+	name = sqlc.arg(name),
+	slug = sqlc.arg(slug),
+	source = sqlc.arg(source),
+	description = sqlc.arg(description),
+	inspired_by_recipe_id = sqlc.arg(inspired_by_recipe_id),
 	min_estimated_portions = sqlc.arg(min_estimated_portions),
 	max_estimated_portions = sqlc.arg(max_estimated_portions),
-    portion_name = sqlc.arg(portion_name),
-    plural_portion_name = sqlc.arg(plural_portion_name),
-    seal_of_approval = sqlc.arg(seal_of_approval),
-    eligible_for_meals = sqlc.arg(eligible_for_meals),
+	portion_name = sqlc.arg(portion_name),
+	plural_portion_name = sqlc.arg(plural_portion_name),
+	seal_of_approval = sqlc.arg(seal_of_approval),
+	eligible_for_meals = sqlc.arg(eligible_for_meals),
 	yields_component_type = sqlc.arg(yields_component_type),
-    last_updated_at = NOW()
+	last_updated_at = NOW()
 WHERE archived_at IS NULL
   AND created_by_user = sqlc.arg(created_by_user)
   AND id = sqlc.arg(id);

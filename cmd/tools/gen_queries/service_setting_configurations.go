@@ -10,12 +10,13 @@ import (
 const (
 	serviceSettingConfigurationsTableName = "service_setting_configurations"
 
-	serviceSettingIDColumn = "service_setting_id"
+	serviceSettingIDColumn    = "service_setting_id"
+	serviceSettingValueColumn = "value"
 )
 
 var serviceSettingConfigurationsColumns = []string{
 	idColumn,
-	"value",
+	serviceSettingValueColumn,
 	notesColumn,
 	serviceSettingIDColumn,
 	belongsToUserColumn,
@@ -45,9 +46,9 @@ func buildServiceSettingConfigurationQueries() []*Query {
 				Type: ExecRowsType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
-    %s = %s
+	%s = %s
 WHERE %s IS NULL
-    AND %s = sqlc.arg(%s);`,
+	AND %s = sqlc.arg(%s);`,
 				serviceSettingConfigurationsTableName,
 				archivedAtColumn,
 				currentTimeExpression,
@@ -62,9 +63,9 @@ WHERE %s IS NULL
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
-    %s
+	%s
 ) VALUES (
-    %s
+	%s
 );`,
 				serviceSettingConfigurationsTableName,
 				strings.Join(insertColumns, ",\n\t"),
@@ -79,15 +80,15 @@ WHERE %s IS NULL
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
-    SELECT %s.id
-    FROM %s
-    WHERE %s.archived_at IS NULL
-    AND %s.id = $1
+	SELECT %s.%s
+	FROM %s
+	WHERE %s.%s IS NULL
+		AND %s.%s = sqlc.arg(%s)
 );`,
+				serviceSettingConfigurationsTableName, idColumn,
 				serviceSettingConfigurationsTableName,
-				serviceSettingConfigurationsTableName,
-				serviceSettingConfigurationsTableName,
-				serviceSettingConfigurationsTableName,
+				serviceSettingConfigurationsTableName, archivedAtColumn,
+				serviceSettingConfigurationsTableName, idColumn, idColumn,
 			)),
 		},
 		{
@@ -98,12 +99,16 @@ WHERE %s IS NULL
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
-    JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
-WHERE service_settings.archived_at IS NULL
-    AND service_setting_configurations.archived_at IS NULL
-    AND service_setting_configurations.id = $1;`,
+	JOIN %s ON %s.%s=%s.%s
+WHERE %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(selectColumnsWithServiceSettingColumns, ",\n\t"),
 				serviceSettingConfigurationsTableName,
+				serviceSettingsTableName, serviceSettingConfigurationsTableName, serviceSettingIDColumn, serviceSettingsTableName, idColumn,
+				serviceSettingsTableName, archivedAtColumn,
+				serviceSettingConfigurationsTableName, archivedAtColumn,
+				serviceSettingConfigurationsTableName, idColumn, idColumn,
 			)),
 		},
 		{
@@ -112,15 +117,20 @@ WHERE service_settings.archived_at IS NULL
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
-    %s
+	%s
 FROM %s
-    JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
-WHERE service_settings.archived_at IS NULL
-    AND service_setting_configurations.archived_at IS NULL
-    AND service_settings.name = $1
-    AND service_setting_configurations.belongs_to_household = $2;`,
+	JOIN %s ON %s.%s=%s.%s
+WHERE %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s)
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(selectColumnsWithServiceSettingColumns, ",\n\t"),
 				serviceSettingConfigurationsTableName,
+				serviceSettingsTableName, serviceSettingConfigurationsTableName, serviceSettingIDColumn, serviceSettingsTableName, idColumn,
+				serviceSettingsTableName, archivedAtColumn,
+				serviceSettingConfigurationsTableName, archivedAtColumn,
+				serviceSettingsTableName, nameColumn, nameColumn,
+				serviceSettingConfigurationsTableName, belongsToHouseholdColumn, belongsToHouseholdColumn,
 			)),
 		},
 		{
@@ -129,15 +139,20 @@ WHERE service_settings.archived_at IS NULL
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
-    %s
+	%s
 FROM %s
-    JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
-WHERE service_settings.archived_at IS NULL
-    AND service_setting_configurations.archived_at IS NULL
-    AND service_settings.name = $1
-    AND service_setting_configurations.belongs_to_user = $2;`,
+	JOIN %s ON %s.%s=%s.%s
+WHERE %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s)
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(selectColumnsWithServiceSettingColumns, ",\n\t"),
 				serviceSettingConfigurationsTableName,
+				serviceSettingsTableName, serviceSettingConfigurationsTableName, serviceSettingIDColumn, serviceSettingsTableName, idColumn,
+				serviceSettingsTableName, archivedAtColumn,
+				serviceSettingConfigurationsTableName, archivedAtColumn,
+				serviceSettingsTableName, nameColumn, nameColumn,
+				serviceSettingConfigurationsTableName, belongsToUserColumn, belongsToUserColumn,
 			)),
 		},
 		{
@@ -146,14 +161,18 @@ WHERE service_settings.archived_at IS NULL
 				Type: ManyType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
-    %s
+	%s
 FROM %s
-    JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
-WHERE service_settings.archived_at IS NULL
-    AND service_setting_configurations.archived_at IS NULL
-    AND service_setting_configurations.belongs_to_household = $1;`,
+	JOIN %s ON %s.%s=%s.%s
+WHERE %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(selectColumnsWithServiceSettingColumns, ",\n\t"),
 				serviceSettingConfigurationsTableName,
+				serviceSettingsTableName, serviceSettingConfigurationsTableName, serviceSettingIDColumn, serviceSettingsTableName, idColumn,
+				serviceSettingsTableName, archivedAtColumn,
+				serviceSettingConfigurationsTableName, archivedAtColumn,
+				serviceSettingConfigurationsTableName, belongsToHouseholdColumn, belongsToHouseholdColumn,
 			)),
 		},
 		{
@@ -162,14 +181,18 @@ WHERE service_settings.archived_at IS NULL
 				Type: ManyType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
-    %s
+	%s
 FROM %s
-    JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
-WHERE service_settings.archived_at IS NULL
-    AND service_setting_configurations.archived_at IS NULL
-    AND service_setting_configurations.belongs_to_user = $1;`,
+	JOIN %s ON %s.%s=%s.%s
+WHERE %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(selectColumnsWithServiceSettingColumns, ",\n\t"),
 				serviceSettingConfigurationsTableName,
+				serviceSettingsTableName, serviceSettingConfigurationsTableName, serviceSettingIDColumn, serviceSettingsTableName, idColumn,
+				serviceSettingsTableName, archivedAtColumn,
+				serviceSettingConfigurationsTableName, archivedAtColumn,
+				serviceSettingConfigurationsTableName, belongsToUserColumn, belongsToUserColumn,
 			)),
 		},
 		{
@@ -177,26 +200,18 @@ WHERE service_settings.archived_at IS NULL
 				Name: "UpdateServiceSettingConfiguration",
 				Type: ExecRowsType,
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE service_setting_configurations SET
-    value = sqlc.arg(value),
-    notes = sqlc.arg(notes),
-    %s = sqlc.arg(%s),
-    %s = sqlc.arg(%s),
-    %s = sqlc.arg(%s),
+			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+	%s,
 	%s = %s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
-				serviceSettingIDColumn,
-				serviceSettingIDColumn,
-				belongsToUserColumn,
-				belongsToUserColumn,
-				belongsToHouseholdColumn,
-				belongsToHouseholdColumn,
-				lastUpdatedAtColumn,
-				currentTimeExpression,
+				serviceSettingConfigurationsTableName,
+				strings.Join(applyToEach(filterForUpdate(serviceSettingConfigurationsColumns), func(i int, s string) string {
+					return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
+				}), ",\n\t"),
+				lastUpdatedAtColumn, currentTimeExpression,
 				archivedAtColumn,
-				idColumn,
-				idColumn,
+				idColumn, idColumn,
 			)),
 		},
 	}

@@ -9,14 +9,17 @@ import (
 
 const (
 	householdUserMembershipsTableName = "household_user_memberships"
+
+	defaultHouseholdColumn = "default_household"
+	householdRoleColumn    = "household_role"
 )
 
 var householdUserMembershipsColumns = []string{
 	idColumn,
 	belongsToHouseholdColumn,
 	belongsToUserColumn,
-	"default_household",
-	"household_role",
+	defaultHouseholdColumn,
+	householdRoleColumn,
 	createdAtColumn,
 	lastUpdatedAtColumn,
 	archivedAtColumn,
@@ -63,11 +66,17 @@ func buildHouseholdUserMembershipsQueries() []*Query {
 				Name: "GetDefaultHouseholdIDForUser",
 				Type: OneType,
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT households.id
-FROM households
-	JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
-WHERE household_user_memberships.belongs_to_user = sqlc.arg(belongs_to_user)
-	AND household_user_memberships.default_household = TRUE;`)),
+			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT %s.%s
+FROM %s
+	JOIN %s ON %s.%s = %s.%s
+WHERE %s.%s = sqlc.arg(%s)
+	AND %s.%s = TRUE;`,
+				householdsTableName, idColumn,
+				householdsTableName,
+				householdUserMembershipsTableName, householdUserMembershipsTableName, belongsToHouseholdColumn, householdsTableName, idColumn,
+				householdUserMembershipsTableName, belongsToUserColumn, belongsToUserColumn,
+				householdUserMembershipsTableName, defaultHouseholdColumn,
+			)),
 		},
 		{
 			Annotation: QueryAnnotation{
@@ -76,13 +85,17 @@ WHERE household_user_memberships.belongs_to_user = sqlc.arg(belongs_to_user)
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
-FROM household_user_memberships
-	JOIN households ON households.id = household_user_memberships.belongs_to_household
-WHERE household_user_memberships.archived_at IS NULL
-	AND household_user_memberships.belongs_to_user = sqlc.arg(belongs_to_user);`,
+FROM %s
+	JOIN %s ON %s.%s = %s.%s
+WHERE %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(applyToEach(householdUserMembershipsColumns, func(i int, s string) string {
 					return fmt.Sprintf("%s.%s", householdUserMembershipsTableName, s)
 				}), ",\n\t"),
+				householdUserMembershipsTableName,
+				householdsTableName, householdsTableName, idColumn, householdUserMembershipsTableName, belongsToHouseholdColumn,
+				householdUserMembershipsTableName, archivedAtColumn,
+				householdUserMembershipsTableName, belongsToUserColumn, belongsToUserColumn,
 			)),
 		},
 		{
@@ -91,12 +104,13 @@ WHERE household_user_memberships.archived_at IS NULL
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s
-SET default_household = (belongs_to_user = sqlc.arg(user_id) AND belongs_to_household = sqlc.arg(household_id))
+SET %s = (%s = sqlc.arg(%s) AND %s = sqlc.arg(%s))
 WHERE %s IS NULL
-	AND %s = sqlc.arg(user_id);`,
+	AND %s = sqlc.arg(%s);`,
 				householdUserMembershipsTableName,
+				defaultHouseholdColumn, belongsToUserColumn, belongsToUserColumn, belongsToHouseholdColumn, belongsToHouseholdColumn,
 				archivedAtColumn,
-				belongsToUserColumn,
+				belongsToUserColumn, belongsToUserColumn,
 			)),
 		},
 		{
@@ -105,14 +119,13 @@ WHERE %s IS NULL
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
-	household_role = sqlc.arg(household_role)
+	%s = sqlc.arg(%s)
 WHERE %s = sqlc.arg(%s)
 	AND %s = sqlc.arg(%s);`,
 				householdUserMembershipsTableName,
-				belongsToHouseholdColumn,
-				belongsToHouseholdColumn,
-				belongsToUserColumn,
-				belongsToUserColumn,
+				householdRoleColumn, householdRoleColumn,
+				belongsToHouseholdColumn, belongsToHouseholdColumn,
+				belongsToUserColumn, belongsToUserColumn,
 			)),
 		},
 		{
@@ -122,21 +135,16 @@ WHERE %s = sqlc.arg(%s)
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s
 SET %s = %s,
-	default_household = 'false'
+	%s = 'false'
 WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s)
 	AND %s.%s = sqlc.arg(%s);`,
 				householdUserMembershipsTableName,
-				archivedAtColumn,
-				currentTimeExpression,
-				householdUserMembershipsTableName,
-				archivedAtColumn,
-				householdUserMembershipsTableName,
-				belongsToHouseholdColumn,
-				belongsToHouseholdColumn,
-				householdUserMembershipsTableName,
-				belongsToUserColumn,
-				belongsToUserColumn,
+				archivedAtColumn, currentTimeExpression,
+				defaultHouseholdColumn,
+				householdUserMembershipsTableName, archivedAtColumn,
+				householdUserMembershipsTableName, belongsToHouseholdColumn, belongsToHouseholdColumn,
+				householdUserMembershipsTableName, belongsToUserColumn, belongsToUserColumn,
 			)),
 		},
 		{
@@ -167,12 +175,13 @@ WHERE %s IS NULL
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s = sqlc.arg(new_owner)
 WHERE %s IS NULL
-    AND %s = sqlc.arg(old_owner)
-    AND id = sqlc.arg(household_id);`,
+	AND %s = sqlc.arg(old_owner)
+	AND %s = sqlc.arg(household_id);`,
 				householdsTableName,
 				belongsToUserColumn,
 				archivedAtColumn,
 				belongsToUserColumn,
+				idColumn,
 			)),
 		},
 		{
@@ -181,22 +190,17 @@ WHERE %s IS NULL
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
-    SELECT %s.id
-    FROM %s
-    WHERE %s.%s IS NULL
-        AND %s.%s = sqlc.arg(%s)
-        AND %s.%s = sqlc.arg(%s)
+	SELECT %s.%s
+	FROM %s
+	WHERE %s.%s IS NULL
+		AND %s.%s = sqlc.arg(%s)
+		AND %s.%s = sqlc.arg(%s)
 );`,
+				householdUserMembershipsTableName, idColumn,
 				householdUserMembershipsTableName,
-				householdUserMembershipsTableName,
-				householdUserMembershipsTableName,
-				archivedAtColumn,
-				householdUserMembershipsTableName,
-				belongsToHouseholdColumn,
-				belongsToHouseholdColumn,
-				householdUserMembershipsTableName,
-				belongsToUserColumn,
-				belongsToUserColumn,
+				householdUserMembershipsTableName, archivedAtColumn,
+				householdUserMembershipsTableName, belongsToHouseholdColumn, belongsToHouseholdColumn,
+				householdUserMembershipsTableName, belongsToUserColumn, belongsToUserColumn,
 			)),
 		},
 	}

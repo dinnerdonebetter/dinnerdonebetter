@@ -32,7 +32,7 @@ SELECT EXISTS (
 	SELECT valid_ingredients.id
 	FROM valid_ingredients
 	WHERE valid_ingredients.archived_at IS NULL
-	    AND valid_ingredients.id = $1
+		AND valid_ingredients.id = $1
 )
 `
 
@@ -513,7 +513,7 @@ SELECT
 	valid_ingredients.created_at,
 	valid_ingredients.last_updated_at,
 	valid_ingredients.archived_at,
-    (
+	(
 		SELECT COUNT(valid_ingredients.id)
 		FROM valid_ingredients
 		WHERE valid_ingredients.archived_at IS NULL
@@ -528,7 +528,7 @@ SELECT
 				OR valid_ingredients.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
 			)
 	) AS filtered_count,
-    (
+	(
 		SELECT COUNT(valid_ingredients.id)
 		FROM valid_ingredients
 		WHERE valid_ingredients.archived_at IS NULL
@@ -682,9 +682,9 @@ const getValidIngredientsNeedingIndexing = `-- name: GetValidIngredientsNeedingI
 SELECT valid_ingredients.id
 FROM valid_ingredients
 WHERE valid_ingredients.archived_at IS NULL
-    AND (
-    valid_ingredients.last_indexed_at IS NULL
-    OR valid_ingredients.last_indexed_at < NOW() - '24 hours'::INTERVAL
+	AND (
+	valid_ingredients.last_indexed_at IS NULL
+	OR valid_ingredients.last_indexed_at < NOW() - '24 hours'::INTERVAL
 )
 `
 
@@ -1220,7 +1220,7 @@ UPDATE valid_ingredients SET
 	is_heat = $34,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-    AND id = $35
+	AND id = $35
 `
 
 type UpdateValidIngredientParams struct {

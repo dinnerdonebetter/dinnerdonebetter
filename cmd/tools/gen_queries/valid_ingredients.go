@@ -101,12 +101,12 @@ func buildValidIngredientsQueries() []*Query {
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
-	SELECT %s.id
+	SELECT %s.%s
 	FROM %s
 	WHERE %s.%s IS NULL
-	    AND %s.%s = sqlc.arg(%s)
+		AND %s.%s = sqlc.arg(%s)
 );`,
-				validIngredientsTableName,
+				validIngredientsTableName, idColumn,
 				validIngredientsTableName,
 				validIngredientsTableName,
 				archivedAtColumn,
@@ -122,8 +122,8 @@ func buildValidIngredientsQueries() []*Query {
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
-    %s,
-    %s
+	%s,
+	%s
 FROM %s
 WHERE
 	%s.%s IS NULL
@@ -163,9 +163,9 @@ ORDER BY %s.%s
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT %s.%s
 FROM %s
 WHERE %s.%s IS NULL
-    AND (
-    %s.%s IS NULL
-    OR %s.%s < %s - '24 hours'::INTERVAL
+	AND (
+	%s.%s IS NULL
+	OR %s.%s < %s - '24 hours'::INTERVAL
 );`,
 				validIngredientsTableName,
 				idColumn,
@@ -266,24 +266,32 @@ LIMIT 50;`,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
-FROM valid_ingredient_preparations
-	JOIN valid_ingredients ON valid_ingredient_preparations.valid_ingredient_id = valid_ingredients.id
-	JOIN valid_preparations ON valid_ingredient_preparations.valid_preparation_id = valid_preparations.id
-WHERE valid_ingredient_preparations.archived_at IS NULL
-	AND valid_ingredients.archived_at IS NULL
-	AND valid_preparations.archived_at IS NULL
+FROM %s
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
+WHERE %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
 	AND (
-		valid_ingredient_preparations.valid_preparation_id = sqlc.arg(valid_preparation_id)
-		OR valid_preparations.restrict_to_ingredients IS FALSE
+		%s.%s = sqlc.arg(%s)
+		OR %s.%s IS FALSE
 	)
-	AND valid_ingredients.name %s;`,
+	AND %s.%s %s;`,
 				strings.Join(applyToEach(validIngredientsColumns, func(i int, s string) string {
 					if i == 0 {
 						return fmt.Sprintf("DISTINCT(%s.%s)", validIngredientsTableName, s)
 					}
 					return fmt.Sprintf("%s.%s", validIngredientsTableName, s)
 				}), ",\n\t"),
-				"ILIKE '%' || sqlc.arg(name_query)::text || '%'",
+				validIngredientPreparationsTableName,
+				validIngredientsTableName, validIngredientPreparationsTableName, validIngredientIDColumn, validIngredientsTableName, idColumn,
+				validPreparationsTableName, validIngredientPreparationsTableName, validPreparationIDColumn, validPreparationsTableName, idColumn,
+				validIngredientPreparationsTableName, archivedAtColumn,
+				validIngredientsTableName, archivedAtColumn,
+				validPreparationsTableName, archivedAtColumn,
+				validIngredientPreparationsTableName, validPreparationIDColumn, validPreparationIDColumn,
+				validPreparationsTableName, restrictToIngredientsColumn,
+				validIngredientsTableName, nameColumn, buildILIKEForArgument("name_query"),
 			)),
 		},
 		{
@@ -295,7 +303,7 @@ WHERE valid_ingredient_preparations.archived_at IS NULL
 	%s,
 	%s = %s
 WHERE %s IS NULL
-    AND %s = sqlc.arg(%s);`,
+	AND %s = sqlc.arg(%s);`,
 				validIngredientsTableName,
 				strings.Join(applyToEach(filterForUpdate(validIngredientsColumns), func(i int, s string) string {
 					switch s {

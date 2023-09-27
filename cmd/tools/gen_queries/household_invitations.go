@@ -8,15 +8,15 @@ import (
 )
 
 const (
-	householdInvitationsTableName = "household_invitations"
-	destinationHouseholdColumn    = "destination_household"
-	fromUserColumn                = "from_user"
-	toUserColumn                  = "to_user"
-	toEmailColumn                 = "to_email"
-	tokenColumn                   = "token"
-	statusColumn                  = "status"
-	statusNoteColumn              = "status_note"
-	expiresAtColumn               = "expires_at"
+	householdInvitationsTableName        = "household_invitations"
+	destinationHouseholdColumn           = "destination_household"
+	fromUserColumn                       = "from_user"
+	toUserColumn                         = "to_user"
+	toEmailColumn                        = "to_email"
+	householdInvitationsTokenColumn      = "token"
+	householdInvitationsStatusColumn     = "status"
+	householdInvitationsStatusNoteColumn = "status_note"
+	householdInvitationsExpiresAtColumn  = "expires_at"
 )
 
 var householdInvitationsColumns = []string{
@@ -26,11 +26,11 @@ var householdInvitationsColumns = []string{
 	"to_name",
 	"note",
 	toEmailColumn,
-	tokenColumn,
+	householdInvitationsTokenColumn,
 	destinationHouseholdColumn,
-	expiresAtColumn,
-	statusColumn,
-	statusNoteColumn,
+	householdInvitationsExpiresAtColumn,
+	householdInvitationsStatusColumn,
+	householdInvitationsStatusNoteColumn,
 	createdAtColumn,
 	lastUpdatedAtColumn,
 	archivedAtColumn,
@@ -128,9 +128,9 @@ WHERE %s.%s IS NULL
 				householdsTableName, householdInvitationsTableName, destinationHouseholdColumn, householdsTableName, idColumn,
 				usersTableName, householdInvitationsTableName, fromUserColumn, usersTableName, idColumn,
 				householdInvitationsTableName, archivedAtColumn,
-				householdInvitationsTableName, expiresAtColumn, currentTimeExpression,
+				householdInvitationsTableName, householdInvitationsExpiresAtColumn, currentTimeExpression,
 				householdInvitationsTableName, toEmailColumn, toEmailColumn,
-				householdInvitationsTableName, tokenColumn, tokenColumn,
+				householdInvitationsTableName, householdInvitationsTokenColumn, householdInvitationsTokenColumn,
 			)),
 		},
 		{
@@ -152,7 +152,7 @@ WHERE %s.%s IS NULL
 				householdsTableName, householdInvitationsTableName, destinationHouseholdColumn, householdsTableName, idColumn,
 				usersTableName, householdInvitationsTableName, fromUserColumn, usersTableName, idColumn,
 				householdInvitationsTableName, archivedAtColumn,
-				householdInvitationsTableName, expiresAtColumn, currentTimeExpression,
+				householdInvitationsTableName, householdInvitationsExpiresAtColumn, currentTimeExpression,
 				householdInvitationsTableName, destinationHouseholdColumn, destinationHouseholdColumn,
 				householdInvitationsTableName, idColumn, idColumn,
 			)),
@@ -176,8 +176,8 @@ WHERE %s.%s IS NULL
 				householdsTableName, householdInvitationsTableName, destinationHouseholdColumn, householdsTableName, idColumn,
 				usersTableName, householdInvitationsTableName, fromUserColumn, usersTableName, idColumn,
 				householdInvitationsTableName, archivedAtColumn,
-				householdInvitationsTableName, expiresAtColumn, currentTimeExpression,
-				householdInvitationsTableName, tokenColumn, tokenColumn,
+				householdInvitationsTableName, householdInvitationsExpiresAtColumn, currentTimeExpression,
+				householdInvitationsTableName, householdInvitationsTokenColumn, householdInvitationsTokenColumn,
 				householdInvitationsTableName, idColumn, idColumn,
 			)),
 		},
@@ -212,7 +212,7 @@ WHERE %s.%s IS NULL
 				usersTableName, householdInvitationsTableName, fromUserColumn, usersTableName, idColumn,
 				householdInvitationsTableName, archivedAtColumn,
 				householdInvitationsTableName, fromUserColumn, fromUserColumn,
-				householdInvitationsTableName, statusColumn, statusColumn,
+				householdInvitationsTableName, householdInvitationsStatusColumn, householdInvitationsStatusColumn,
 
 				buildFilterConditions(
 					householdInvitationsTableName,
@@ -251,7 +251,7 @@ WHERE %s.%s IS NULL
 				usersTableName, householdInvitationsTableName, fromUserColumn, usersTableName, idColumn,
 				householdInvitationsTableName, archivedAtColumn,
 				householdInvitationsTableName, toUserColumn, toUserColumn,
-				householdInvitationsTableName, statusColumn, statusColumn,
+				householdInvitationsTableName, householdInvitationsStatusColumn, householdInvitationsStatusColumn,
 				buildFilterConditions(
 					householdInvitationsTableName,
 					true,
@@ -272,8 +272,8 @@ WHERE %s.%s IS NULL
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
 				householdInvitationsTableName,
-				statusColumn, statusColumn,
-				statusNoteColumn, statusNoteColumn,
+				householdInvitationsStatusColumn, householdInvitationsStatusColumn,
+				householdInvitationsStatusNoteColumn, householdInvitationsStatusNoteColumn,
 				lastUpdatedAtColumn, currentTimeExpression,
 				archivedAtColumn, currentTimeExpression,
 				archivedAtColumn,

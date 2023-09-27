@@ -104,16 +104,16 @@ func buildValidMeasurementUnitConversionsQueries() []*Query {
 				Type: ManyType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
-    %s
+	%s
 FROM %s
-    JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_unit_conversions.from_unit = valid_measurement_units_from.id
-    JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_unit_conversions.to_unit = valid_measurement_units_to.id
-    LEFT JOIN valid_ingredients ON valid_measurement_unit_conversions.only_for_ingredient = valid_ingredients.id
+	JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_unit_conversions.from_unit = valid_measurement_units_from.id
+	JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_unit_conversions.to_unit = valid_measurement_units_to.id
+	LEFT JOIN valid_ingredients ON valid_measurement_unit_conversions.only_for_ingredient = valid_ingredients.id
 WHERE
-    valid_measurement_units_from.id = sqlc.arg(id)
-    AND valid_measurement_unit_conversions.archived_at IS NULL
-    AND valid_measurement_units_from.archived_at IS NULL
-    AND valid_measurement_units_to.archived_at IS NULL;`,
+	valid_measurement_units_from.id = sqlc.arg(id)
+	AND valid_measurement_unit_conversions.archived_at IS NULL
+	AND valid_measurement_units_from.archived_at IS NULL
+	AND valid_measurement_units_to.archived_at IS NULL;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
 				validMeasurementUnitConversionsTableName,
 			)),
@@ -124,16 +124,16 @@ WHERE
 				Type: ManyType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
-    %s
+	%s
 FROM %s
-    JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_unit_conversions.from_unit = valid_measurement_units_from.id
-    JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_unit_conversions.to_unit = valid_measurement_units_to.id
-    LEFT JOIN valid_ingredients ON valid_measurement_unit_conversions.only_for_ingredient = valid_ingredients.id
+	JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_unit_conversions.from_unit = valid_measurement_units_from.id
+	JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_unit_conversions.to_unit = valid_measurement_units_to.id
+	LEFT JOIN valid_ingredients ON valid_measurement_unit_conversions.only_for_ingredient = valid_ingredients.id
 WHERE
-    valid_measurement_units_to.id = sqlc.arg(id)
-    AND valid_measurement_unit_conversions.archived_at IS NULL
-    AND valid_measurement_units_from.archived_at IS NULL
-    AND valid_measurement_units_to.archived_at IS NULL;`,
+	valid_measurement_units_to.id = sqlc.arg(id)
+	AND valid_measurement_unit_conversions.archived_at IS NULL
+	AND valid_measurement_units_from.archived_at IS NULL
+	AND valid_measurement_units_to.archived_at IS NULL;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
 				validMeasurementUnitConversionsTableName,
 			)),
@@ -144,16 +144,16 @@ WHERE
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
-    %s
+	%s
 FROM %s
-    JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_unit_conversions.from_unit = valid_measurement_units_from.id
-    JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_unit_conversions.to_unit = valid_measurement_units_to.id
-    LEFT JOIN valid_ingredients ON valid_measurement_unit_conversions.only_for_ingredient = valid_ingredients.id
+	JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_unit_conversions.from_unit = valid_measurement_units_from.id
+	JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_unit_conversions.to_unit = valid_measurement_units_to.id
+	LEFT JOIN valid_ingredients ON valid_measurement_unit_conversions.only_for_ingredient = valid_ingredients.id
 WHERE
-    valid_measurement_unit_conversions.id = sqlc.arg(id)
-    AND valid_measurement_unit_conversions.archived_at IS NULL
-    AND valid_measurement_units_from.archived_at IS NULL
-    AND valid_measurement_units_to.archived_at IS NULL;`,
+	valid_measurement_unit_conversions.id = sqlc.arg(id)
+	AND valid_measurement_unit_conversions.archived_at IS NULL
+	AND valid_measurement_units_from.archived_at IS NULL
+	AND valid_measurement_units_to.archived_at IS NULL;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
 				validMeasurementUnitConversionsTableName,
 			)),

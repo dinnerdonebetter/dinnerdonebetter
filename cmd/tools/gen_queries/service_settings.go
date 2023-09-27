@@ -64,16 +64,15 @@ func buildServiceSettingQueries() []*Query {
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
-	SELECT %s.id
+	SELECT %s.%s
 	FROM %s
 	WHERE %s.%s IS NULL
-	AND %s.id = sqlc.arg(id)
+	AND %s.%s = sqlc.arg(%s)
 );`,
+				serviceSettingsTableName, idColumn,
 				serviceSettingsTableName,
-				serviceSettingsTableName,
-				serviceSettingsTableName,
-				archivedAtColumn,
-				serviceSettingsTableName,
+				serviceSettingsTableName, archivedAtColumn,
+				serviceSettingsTableName, idColumn, idColumn,
 			)),
 		},
 		{
@@ -84,12 +83,11 @@ func buildServiceSettingQueries() []*Query {
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
 	%s,
-    %s
-FROM service_settings
-WHERE service_settings.archived_at IS NULL
-    %s
-OFFSET sqlc.narg(query_offset)
-LIMIT sqlc.narg(query_limit);`,
+	%s
+FROM %s
+WHERE %s.%s IS NULL
+	%s
+%s;`,
 				strings.Join(applyToEach(serviceSettingsColumns, func(i int, s string) string {
 					return fmt.Sprintf("%s.%s", serviceSettingsTableName, s)
 				}), ",\n\t"),
@@ -100,10 +98,13 @@ LIMIT sqlc.narg(query_limit);`,
 				buildTotalCountSelect(
 					serviceSettingsTableName,
 				),
+				serviceSettingsTableName,
+				serviceSettingsTableName, archivedAtColumn,
 				buildFilterConditions(
 					serviceSettingsTableName,
 					true,
 				),
+				offsetLimitAddendum,
 			)),
 		},
 		{
@@ -114,12 +115,14 @@ LIMIT sqlc.narg(query_limit);`,
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
-WHERE service_settings.archived_at IS NULL
-	AND service_settings.id = sqlc.arg(id);`,
+WHERE %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(applyToEach(serviceSettingsColumns, func(i int, s string) string {
 					return fmt.Sprintf("%s.%s", serviceSettingsTableName, s)
 				}), ",\n\t"),
 				serviceSettingsTableName,
+				serviceSettingsTableName, archivedAtColumn,
+				serviceSettingsTableName, idColumn, idColumn,
 			)),
 		},
 		{
@@ -130,14 +133,15 @@ WHERE service_settings.archived_at IS NULL
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
-WHERE service_settings.archived_at IS NULL
-	AND service_settings.name %s
+WHERE %s.%s IS NULL
+	AND %s.%s %s
 LIMIT 50;`,
 				strings.Join(applyToEach(serviceSettingsColumns, func(i int, s string) string {
 					return fmt.Sprintf("%s.%s", serviceSettingsTableName, s)
 				}), ",\n\t"),
 				serviceSettingsTableName,
-				`ILIKE '%' || sqlc.arg(name_query)::text || '%'`,
+				serviceSettingsTableName, archivedAtColumn,
+				serviceSettingsTableName, nameColumn, buildILIKEForArgument("name_query"),
 			)),
 		},
 	}

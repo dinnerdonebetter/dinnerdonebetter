@@ -61,9 +61,9 @@ func buildValidIngredientPreparationsQueries() []*Query {
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
-    %s
+	%s
 ) VALUES (
-    %s
+	%s
 );`,
 				validIngredientPreparationsTableName,
 				strings.Join(insertColumns, ",\n\t"),
@@ -78,12 +78,12 @@ func buildValidIngredientPreparationsQueries() []*Query {
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
-    SELECT %s.id
-    FROM %s
-    WHERE %s.%s IS NULL
-        AND %s.%s = sqlc.arg(%s)
+	SELECT %s.%s
+	FROM %s
+	WHERE %s.%s IS NULL
+		AND %s.%s = sqlc.arg(%s)
 );`,
-				validIngredientPreparationsTableName,
+				validIngredientPreparationsTableName, idColumn,
 				validIngredientPreparationsTableName,
 				validIngredientPreparationsTableName,
 				archivedAtColumn,

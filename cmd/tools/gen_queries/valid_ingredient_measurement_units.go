@@ -9,13 +9,14 @@ import (
 
 const (
 	validIngredientMeasurementUnitsTableName = "valid_ingredient_measurement_units"
+	validMeasurementUnitIDColumn             = "valid_measurement_unit_id"
 )
 
 var validIngredientMeasurementUnitsColumns = []string{
 	idColumn,
 	notesColumn,
-	"valid_measurement_unit_id",
-	"valid_ingredient_id",
+	validMeasurementUnitIDColumn,
+	validIngredientIDColumn,
 	"minimum_allowable_quantity",
 	"maximum_allowable_quantity",
 	createdAtColumn,
@@ -78,18 +79,15 @@ func buildValidIngredientMeasurementUnitsQueries() []*Query {
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
-	SELECT %s.id
+	SELECT %s.%s
 	FROM %s
 	WHERE %s.%s IS NULL
 		AND %s.%s = sqlc.arg(%s)
 );`,
+				validIngredientMeasurementUnitsTableName, idColumn,
 				validIngredientMeasurementUnitsTableName,
-				validIngredientMeasurementUnitsTableName,
-				validIngredientMeasurementUnitsTableName,
-				archivedAtColumn,
-				validIngredientMeasurementUnitsTableName,
-				idColumn,
-				idColumn,
+				validIngredientMeasurementUnitsTableName, archivedAtColumn,
+				validIngredientMeasurementUnitsTableName, idColumn, idColumn,
 			)),
 		},
 		{
@@ -102,13 +100,13 @@ func buildValidIngredientMeasurementUnitsQueries() []*Query {
 	%s,
 	%s
 FROM %s
-	JOIN valid_measurement_units ON valid_ingredient_measurement_units.valid_measurement_unit_id = valid_measurement_units.id
-	JOIN valid_ingredients ON valid_ingredient_measurement_units.valid_ingredient_id = valid_ingredients.id
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
 WHERE
-	valid_ingredient_measurement_units.archived_at IS NULL
-	AND valid_measurement_units.archived_at IS NULL
-	AND valid_ingredients.archived_at IS NULL
-	AND valid_ingredient_measurement_units.valid_ingredient_id = sqlc.arg(valid_ingredient_id)
+	%s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s)
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
@@ -120,6 +118,12 @@ WHERE
 					validIngredientMeasurementUnitsTableName,
 				),
 				validIngredientMeasurementUnitsTableName,
+				validMeasurementUnitsTableName, validIngredientMeasurementUnitsTableName, validMeasurementUnitIDColumn, validMeasurementUnitsTableName, idColumn,
+				validIngredientsTableName, validIngredientMeasurementUnitsTableName, validIngredientIDColumn, validIngredientsTableName, idColumn,
+				validIngredientMeasurementUnitsTableName, archivedAtColumn,
+				validMeasurementUnitsTableName, archivedAtColumn,
+				validIngredientsTableName, archivedAtColumn,
+				validIngredientMeasurementUnitsTableName, validIngredientIDColumn, validIngredientIDColumn,
 				buildFilterConditions(validIngredientMeasurementUnitsTableName, true),
 				offsetLimitAddendum,
 			)),
@@ -134,13 +138,13 @@ WHERE
 	%s,
 	%s
 FROM %s
-	JOIN valid_measurement_units ON valid_ingredient_measurement_units.valid_measurement_unit_id = valid_measurement_units.id
-	JOIN valid_ingredients ON valid_ingredient_measurement_units.valid_ingredient_id = valid_ingredients.id
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
 WHERE
-	valid_ingredient_measurement_units.archived_at IS NULL
-	AND valid_measurement_units.archived_at IS NULL
-	AND valid_ingredients.archived_at IS NULL
-	AND valid_ingredient_measurement_units.valid_measurement_unit_id = sqlc.arg(valid_measurement_unit_id)
+	%s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s)
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
@@ -152,6 +156,12 @@ WHERE
 					validIngredientMeasurementUnitsTableName,
 				),
 				validIngredientMeasurementUnitsTableName,
+				validMeasurementUnitsTableName, validIngredientMeasurementUnitsTableName, validMeasurementUnitIDColumn, validMeasurementUnitsTableName, idColumn,
+				validIngredientsTableName, validIngredientMeasurementUnitsTableName, validIngredientIDColumn, validIngredientsTableName, idColumn,
+				validIngredientMeasurementUnitsTableName, archivedAtColumn,
+				validMeasurementUnitsTableName, archivedAtColumn,
+				validIngredientsTableName, archivedAtColumn,
+				validIngredientMeasurementUnitsTableName, validMeasurementUnitIDColumn, validMeasurementUnitIDColumn,
 				buildFilterConditions(validIngredientMeasurementUnitsTableName, true),
 				offsetLimitAddendum,
 			)),
@@ -166,12 +176,12 @@ WHERE
 	%s,
 	%s
 FROM %s
-	JOIN valid_measurement_units ON valid_ingredient_measurement_units.valid_measurement_unit_id = valid_measurement_units.id
-	JOIN valid_ingredients ON valid_ingredient_measurement_units.valid_ingredient_id = valid_ingredients.id
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
 WHERE
-	valid_ingredient_measurement_units.archived_at IS NULL
-	AND valid_measurement_units.archived_at IS NULL
-	AND valid_ingredients.archived_at IS NULL
+	%s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
@@ -183,6 +193,11 @@ WHERE
 					validIngredientMeasurementUnitsTableName,
 				),
 				validIngredientMeasurementUnitsTableName,
+				validMeasurementUnitsTableName, validIngredientMeasurementUnitsTableName, validMeasurementUnitIDColumn, validMeasurementUnitsTableName, idColumn,
+				validIngredientsTableName, validIngredientMeasurementUnitsTableName, validIngredientIDColumn, validIngredientsTableName, idColumn,
+				validIngredientMeasurementUnitsTableName, archivedAtColumn,
+				validMeasurementUnitsTableName, archivedAtColumn,
+				validIngredientsTableName, archivedAtColumn,
 				buildFilterConditions(validIngredientMeasurementUnitsTableName, true),
 				offsetLimitAddendum,
 			)),
@@ -195,15 +210,21 @@ WHERE
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
-	JOIN valid_measurement_units ON valid_ingredient_measurement_units.valid_measurement_unit_id = valid_measurement_units.id
-	JOIN valid_ingredients ON valid_ingredient_measurement_units.valid_ingredient_id = valid_ingredients.id
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
 WHERE
-	valid_ingredient_measurement_units.archived_at IS NULL
-	AND valid_measurement_units.archived_at IS NULL
-	AND valid_ingredients.archived_at IS NULL
-	AND valid_ingredient_measurement_units.id = sqlc.arg(id);`,
+	%s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(fullSelectColumns, ",\n\t"),
 				validIngredientMeasurementUnitsTableName,
+				validMeasurementUnitsTableName, validIngredientMeasurementUnitsTableName, validMeasurementUnitIDColumn, validMeasurementUnitsTableName, idColumn,
+				validIngredientsTableName, validIngredientMeasurementUnitsTableName, validIngredientIDColumn, validIngredientsTableName, idColumn,
+				validIngredientMeasurementUnitsTableName, archivedAtColumn,
+				validMeasurementUnitsTableName, archivedAtColumn,
+				validIngredientsTableName, archivedAtColumn,
+				validIngredientMeasurementUnitsTableName, idColumn, idColumn,
 			)),
 		},
 		{
@@ -214,12 +235,14 @@ WHERE
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS(
 	SELECT %s
 	FROM %s
-	WHERE valid_measurement_unit_id = sqlc.arg(valid_measurement_unit_id)
-	AND valid_ingredient_id = sqlc.arg(valid_ingredient_id)
+	WHERE %s = sqlc.arg(%s)
+	AND %s = sqlc.arg(%s)
 	AND %s IS NULL
 );`,
 				idColumn,
 				validIngredientMeasurementUnitsTableName,
+				validMeasurementUnitIDColumn, validMeasurementUnitIDColumn,
+				validIngredientIDColumn, validIngredientIDColumn,
 				archivedAtColumn,
 			)),
 		},

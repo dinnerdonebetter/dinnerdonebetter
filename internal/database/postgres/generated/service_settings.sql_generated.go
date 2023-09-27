@@ -149,14 +149,14 @@ SELECT
 				OR service_settings.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
 			)
 	) AS filtered_count,
-    (
+	(
 		SELECT COUNT(service_settings.id)
 		FROM service_settings
 		WHERE service_settings.archived_at IS NULL
 	) AS total_count
 FROM service_settings
 WHERE service_settings.archived_at IS NULL
-    AND service_settings.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND service_settings.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 	AND service_settings.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		service_settings.last_updated_at IS NULL
@@ -166,8 +166,8 @@ WHERE service_settings.archived_at IS NULL
 		service_settings.last_updated_at IS NULL
 		OR service_settings.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
-OFFSET $5
 LIMIT $6
+OFFSET $5
 `
 
 type GetServiceSettingsParams struct {

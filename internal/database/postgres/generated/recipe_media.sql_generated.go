@@ -27,10 +27,10 @@ func (q *Queries) ArchiveRecipeMedia(ctx context.Context, db DBTX, id string) (i
 const checkRecipeMediaExistence = `-- name: CheckRecipeMediaExistence :one
 
 SELECT EXISTS (
-    SELECT recipe_media.id
-    FROM recipe_media
-    WHERE recipe_media.archived_at IS NULL
-        AND recipe_media.id = $1
+	SELECT recipe_media.id
+	FROM recipe_media
+	WHERE recipe_media.archived_at IS NULL
+		AND recipe_media.id = $1
 )
 `
 
@@ -44,21 +44,21 @@ func (q *Queries) CheckRecipeMediaExistence(ctx context.Context, db DBTX, id str
 const createRecipeMedia = `-- name: CreateRecipeMedia :exec
 
 INSERT INTO recipe_media (
-    id,
-    belongs_to_recipe,
-    belongs_to_recipe_step,
-    mime_type,
-    internal_path,
-    external_path,
-    index
+	id,
+	belongs_to_recipe,
+	belongs_to_recipe_step,
+	mime_type,
+	internal_path,
+	external_path,
+	index
 ) VALUES (
-    $1,
-    $2,
-    $3,
-    $4,
-    $5,
-    $6,
-    $7
+	$1,
+	$2,
+	$3,
+	$4,
+	$5,
+	$6,
+	$7
 )
 `
 
@@ -149,8 +149,8 @@ SELECT
 	recipe_media.archived_at
 FROM recipe_media
 WHERE recipe_media.belongs_to_recipe = $1
-    AND recipe_media.belongs_to_recipe_step IS NULL
-    AND recipe_media.archived_at IS NULL
+	AND recipe_media.belongs_to_recipe_step IS NULL
+	AND recipe_media.archived_at IS NULL
 GROUP BY recipe_media.id
 ORDER BY recipe_media.id
 `

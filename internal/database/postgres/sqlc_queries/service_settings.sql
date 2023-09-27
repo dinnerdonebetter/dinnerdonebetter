@@ -59,14 +59,14 @@ SELECT
 				OR service_settings.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
 			)
 	) AS filtered_count,
-    (
+	(
 		SELECT COUNT(service_settings.id)
 		FROM service_settings
 		WHERE service_settings.archived_at IS NULL
 	) AS total_count
 FROM service_settings
 WHERE service_settings.archived_at IS NULL
-    AND service_settings.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+	AND service_settings.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 	AND service_settings.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		service_settings.last_updated_at IS NULL
@@ -76,8 +76,8 @@ WHERE service_settings.archived_at IS NULL
 		service_settings.last_updated_at IS NULL
 		OR service_settings.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
-OFFSET sqlc.narg(query_offset)
-LIMIT sqlc.narg(query_limit);
+LIMIT sqlc.narg(query_limit)
+OFFSET sqlc.narg(query_offset);
 
 -- name: GetServiceSetting :one
 

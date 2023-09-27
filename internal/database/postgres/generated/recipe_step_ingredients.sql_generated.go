@@ -32,18 +32,18 @@ func (q *Queries) ArchiveRecipeStepIngredient(ctx context.Context, db DBTX, arg 
 const checkRecipeStepIngredientExistence = `-- name: CheckRecipeStepIngredientExistence :one
 
 SELECT EXISTS (
-    SELECT recipe_step_ingredients.id
-    FROM recipe_step_ingredients
-        JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id
-        JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
-    WHERE recipe_step_ingredients.archived_at IS NULL
-        AND recipe_step_ingredients.belongs_to_recipe_step = $1
-        AND recipe_step_ingredients.id = $2
-        AND recipe_steps.archived_at IS NULL
-        AND recipe_steps.belongs_to_recipe = $3
-        AND recipe_steps.id = $1
-        AND recipes.archived_at IS NULL
-        AND recipes.id = $3
+	SELECT recipe_step_ingredients.id
+	FROM recipe_step_ingredients
+		JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step=recipe_steps.id
+		JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
+	WHERE recipe_step_ingredients.archived_at IS NULL
+		AND recipe_step_ingredients.belongs_to_recipe_step = $1
+		AND recipe_step_ingredients.id = $2
+		AND recipe_steps.archived_at IS NULL
+		AND recipe_steps.belongs_to_recipe = $3
+		AND recipe_steps.id = $1
+		AND recipes.archived_at IS NULL
+		AND recipes.id = $3
 )
 `
 
@@ -76,26 +76,26 @@ INSERT INTO recipe_step_ingredients (
 	option_index,
 	to_taste,
 	product_percentage_to_use,
-    vessel_index,
-    recipe_step_product_recipe_id,
+	vessel_index,
+	recipe_step_product_recipe_id,
 	belongs_to_recipe_step
 ) VALUES (
-    $1,
-    $2,
-    $3,
-    $4,
-    $5,
-    $6,
-    $7,
-    $8,
-    $9,
-    $10,
-    $11,
-    $12,
-    $13,
-    $14,
-    $15,
-    $16
+	$1,
+	$2,
+	$3,
+	$4,
+	$5,
+	$6,
+	$7,
+	$8,
+	$9,
+	$10,
+	$11,
+	$12,
+	$13,
+	$14,
+	$15,
+	$16
 )
 `
 
@@ -143,83 +143,83 @@ func (q *Queries) CreateRecipeStepIngredient(ctx context.Context, db DBTX, arg *
 const getAllRecipeStepIngredientsForRecipe = `-- name: GetAllRecipeStepIngredientsForRecipe :many
 
 SELECT
-    recipe_step_ingredients.id,
-    recipe_step_ingredients.name,
-    recipe_step_ingredients.optional,
-    valid_ingredients.id as valid_ingredient_id,
-    valid_ingredients.name as valid_ingredient_name,
-    valid_ingredients.description as valid_ingredient_description,
-    valid_ingredients.warning as valid_ingredient_warning,
-    valid_ingredients.contains_egg as valid_ingredient_contains_egg,
-    valid_ingredients.contains_dairy as valid_ingredient_contains_dairy,
-    valid_ingredients.contains_peanut as valid_ingredient_contains_peanut,
-    valid_ingredients.contains_tree_nut as valid_ingredient_contains_tree_nut,
-    valid_ingredients.contains_soy as valid_ingredient_contains_soy,
-    valid_ingredients.contains_wheat as valid_ingredient_contains_wheat,
-    valid_ingredients.contains_shellfish as valid_ingredient_contains_shellfish,
-    valid_ingredients.contains_sesame as valid_ingredient_contains_sesame,
-    valid_ingredients.contains_fish as valid_ingredient_contains_fish,
-    valid_ingredients.contains_gluten as valid_ingredient_contains_gluten,
-    valid_ingredients.animal_flesh as valid_ingredient_animal_flesh,
-    valid_ingredients.volumetric as valid_ingredient_volumetric,
-    valid_ingredients.is_liquid as valid_ingredient_is_liquid,
-    valid_ingredients.icon_path as valid_ingredient_icon_path,
-    valid_ingredients.animal_derived as valid_ingredient_animal_derived,
-    valid_ingredients.plural_name as valid_ingredient_plural_name,
-    valid_ingredients.restrict_to_preparations as valid_ingredient_restrict_to_preparations,
-    valid_ingredients.minimum_ideal_storage_temperature_in_celsius as valid_ingredient_minimum_ideal_storage_temperature_in_celsius,
-    valid_ingredients.maximum_ideal_storage_temperature_in_celsius as valid_ingredient_maximum_ideal_storage_temperature_in_celsius,
-    valid_ingredients.storage_instructions as valid_ingredient_storage_instructions,
-    valid_ingredients.slug as valid_ingredient_slug,
-    valid_ingredients.contains_alcohol as valid_ingredient_contains_alcohol,
-    valid_ingredients.shopping_suggestions as valid_ingredient_shopping_suggestions,
-    valid_ingredients.is_starch as valid_ingredient_is_starch,
-    valid_ingredients.is_protein as valid_ingredient_is_protein,
-    valid_ingredients.is_grain as valid_ingredient_is_grain,
-    valid_ingredients.is_fruit as valid_ingredient_is_fruit,
-    valid_ingredients.is_salt as valid_ingredient_is_salt,
-    valid_ingredients.is_fat as valid_ingredient_is_fat,
-    valid_ingredients.is_acid as valid_ingredient_is_acid,
-    valid_ingredients.is_heat as valid_ingredient_is_heat,
-    valid_ingredients.created_at as valid_ingredient_created_at,
-    valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
-    valid_ingredients.archived_at as valid_ingredient_archived_at,
-    valid_measurement_units.id as valid_measurement_unit_id,
-    valid_measurement_units.name as valid_measurement_unit_name,
-    valid_measurement_units.description as valid_measurement_unit_description,
-    valid_measurement_units.volumetric as valid_measurement_unit_volumetric,
-    valid_measurement_units.icon_path as valid_measurement_unit_icon_path,
-    valid_measurement_units.universal as valid_measurement_unit_universal,
-    valid_measurement_units.metric as valid_measurement_unit_metric,
-    valid_measurement_units.imperial as valid_measurement_unit_imperial,
-    valid_measurement_units.slug as valid_measurement_unit_slug,
-    valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
-    valid_measurement_units.created_at as valid_measurement_unit_created_at,
-    valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
-    valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
-    recipe_step_ingredients.minimum_quantity_value,
-    recipe_step_ingredients.maximum_quantity_value,
-    recipe_step_ingredients.quantity_notes,
-    recipe_step_ingredients.recipe_step_product_id,
-    recipe_step_ingredients.ingredient_notes,
-    recipe_step_ingredients.option_index,
-    recipe_step_ingredients.to_taste,
-    recipe_step_ingredients.product_percentage_to_use,
-    recipe_step_ingredients.vessel_index,
-    recipe_step_ingredients.recipe_step_product_recipe_id,
-    recipe_step_ingredients.created_at,
-    recipe_step_ingredients.last_updated_at,
-    recipe_step_ingredients.archived_at,
-    recipe_step_ingredients.belongs_to_recipe_step
+	recipe_step_ingredients.id,
+	recipe_step_ingredients.name,
+	recipe_step_ingredients.optional,
+	valid_ingredients.id as valid_ingredient_id,
+	valid_ingredients.name as valid_ingredient_name,
+	valid_ingredients.description as valid_ingredient_description,
+	valid_ingredients.warning as valid_ingredient_warning,
+	valid_ingredients.contains_egg as valid_ingredient_contains_egg,
+	valid_ingredients.contains_dairy as valid_ingredient_contains_dairy,
+	valid_ingredients.contains_peanut as valid_ingredient_contains_peanut,
+	valid_ingredients.contains_tree_nut as valid_ingredient_contains_tree_nut,
+	valid_ingredients.contains_soy as valid_ingredient_contains_soy,
+	valid_ingredients.contains_wheat as valid_ingredient_contains_wheat,
+	valid_ingredients.contains_shellfish as valid_ingredient_contains_shellfish,
+	valid_ingredients.contains_sesame as valid_ingredient_contains_sesame,
+	valid_ingredients.contains_fish as valid_ingredient_contains_fish,
+	valid_ingredients.contains_gluten as valid_ingredient_contains_gluten,
+	valid_ingredients.animal_flesh as valid_ingredient_animal_flesh,
+	valid_ingredients.volumetric as valid_ingredient_volumetric,
+	valid_ingredients.is_liquid as valid_ingredient_is_liquid,
+	valid_ingredients.icon_path as valid_ingredient_icon_path,
+	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
+	valid_ingredients.plural_name as valid_ingredient_plural_name,
+	valid_ingredients.restrict_to_preparations as valid_ingredient_restrict_to_preparations,
+	valid_ingredients.minimum_ideal_storage_temperature_in_celsius as valid_ingredient_minimum_ideal_storage_temperature_in_celsius,
+	valid_ingredients.maximum_ideal_storage_temperature_in_celsius as valid_ingredient_maximum_ideal_storage_temperature_in_celsius,
+	valid_ingredients.storage_instructions as valid_ingredient_storage_instructions,
+	valid_ingredients.slug as valid_ingredient_slug,
+	valid_ingredients.contains_alcohol as valid_ingredient_contains_alcohol,
+	valid_ingredients.shopping_suggestions as valid_ingredient_shopping_suggestions,
+	valid_ingredients.is_starch as valid_ingredient_is_starch,
+	valid_ingredients.is_protein as valid_ingredient_is_protein,
+	valid_ingredients.is_grain as valid_ingredient_is_grain,
+	valid_ingredients.is_fruit as valid_ingredient_is_fruit,
+	valid_ingredients.is_salt as valid_ingredient_is_salt,
+	valid_ingredients.is_fat as valid_ingredient_is_fat,
+	valid_ingredients.is_acid as valid_ingredient_is_acid,
+	valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.created_at as valid_ingredient_created_at,
+	valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
+	valid_ingredients.archived_at as valid_ingredient_archived_at,
+	valid_measurement_units.id as valid_measurement_unit_id,
+	valid_measurement_units.name as valid_measurement_unit_name,
+	valid_measurement_units.description as valid_measurement_unit_description,
+	valid_measurement_units.volumetric as valid_measurement_unit_volumetric,
+	valid_measurement_units.icon_path as valid_measurement_unit_icon_path,
+	valid_measurement_units.universal as valid_measurement_unit_universal,
+	valid_measurement_units.metric as valid_measurement_unit_metric,
+	valid_measurement_units.imperial as valid_measurement_unit_imperial,
+	valid_measurement_units.slug as valid_measurement_unit_slug,
+	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.created_at as valid_measurement_unit_created_at,
+	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
+	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
+	recipe_step_ingredients.minimum_quantity_value,
+	recipe_step_ingredients.maximum_quantity_value,
+	recipe_step_ingredients.quantity_notes,
+	recipe_step_ingredients.recipe_step_product_id,
+	recipe_step_ingredients.ingredient_notes,
+	recipe_step_ingredients.option_index,
+	recipe_step_ingredients.to_taste,
+	recipe_step_ingredients.product_percentage_to_use,
+	recipe_step_ingredients.vessel_index,
+	recipe_step_ingredients.recipe_step_product_recipe_id,
+	recipe_step_ingredients.created_at,
+	recipe_step_ingredients.last_updated_at,
+	recipe_step_ingredients.archived_at,
+	recipe_step_ingredients.belongs_to_recipe_step
 FROM recipe_step_ingredients
-    JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
-    JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
-    LEFT JOIN valid_ingredients ON recipe_step_ingredients.ingredient_id = valid_ingredients.id
-    JOIN valid_measurement_units ON recipe_step_ingredients.measurement_unit = valid_measurement_units.id
+	JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
+	JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
+	LEFT JOIN valid_ingredients ON recipe_step_ingredients.ingredient_id = valid_ingredients.id
+	JOIN valid_measurement_units ON recipe_step_ingredients.measurement_unit = valid_measurement_units.id
 WHERE
-    recipe_step_ingredients.archived_at IS NULL
-    AND recipes.id = $1
-    AND recipe_steps.belongs_to_recipe = $1
+	recipe_step_ingredients.archived_at IS NULL
+	AND recipes.id = $1
+	AND recipe_steps.belongs_to_recipe = $1
 `
 
 type GetAllRecipeStepIngredientsForRecipeRow struct {
@@ -418,14 +418,14 @@ SELECT
 	valid_ingredients.slug as valid_ingredient_slug,
 	valid_ingredients.contains_alcohol as valid_ingredient_contains_alcohol,
 	valid_ingredients.shopping_suggestions as valid_ingredient_shopping_suggestions,
-    valid_ingredients.is_starch as valid_ingredient_is_starch,
-    valid_ingredients.is_protein as valid_ingredient_is_protein,
-    valid_ingredients.is_grain as valid_ingredient_is_grain,
-    valid_ingredients.is_fruit as valid_ingredient_is_fruit,
-    valid_ingredients.is_salt as valid_ingredient_is_salt,
-    valid_ingredients.is_fat as valid_ingredient_is_fat,
-    valid_ingredients.is_acid as valid_ingredient_is_acid,
-    valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.is_starch as valid_ingredient_is_starch,
+	valid_ingredients.is_protein as valid_ingredient_is_protein,
+	valid_ingredients.is_grain as valid_ingredient_is_grain,
+	valid_ingredients.is_fruit as valid_ingredient_is_fruit,
+	valid_ingredients.is_salt as valid_ingredient_is_salt,
+	valid_ingredients.is_fat as valid_ingredient_is_fat,
+	valid_ingredients.is_acid as valid_ingredient_is_acid,
+	valid_ingredients.is_heat as valid_ingredient_is_heat,
 	valid_ingredients.created_at as valid_ingredient_created_at,
 	valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
 	valid_ingredients.archived_at as valid_ingredient_archived_at,
@@ -450,17 +450,17 @@ SELECT
 	recipe_step_ingredients.option_index,
 	recipe_step_ingredients.to_taste,
 	recipe_step_ingredients.product_percentage_to_use,
-    recipe_step_ingredients.vessel_index,
-    recipe_step_ingredients.recipe_step_product_recipe_id,
+	recipe_step_ingredients.vessel_index,
+	recipe_step_ingredients.recipe_step_product_recipe_id,
 	recipe_step_ingredients.created_at,
 	recipe_step_ingredients.last_updated_at,
 	recipe_step_ingredients.archived_at,
 	recipe_step_ingredients.belongs_to_recipe_step
 FROM recipe_step_ingredients
-    JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
-    JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
-    LEFT JOIN valid_ingredients ON recipe_step_ingredients.ingredient_id = valid_ingredients.id
-    JOIN valid_measurement_units ON recipe_step_ingredients.measurement_unit = valid_measurement_units.id
+	JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
+	JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
+	LEFT JOIN valid_ingredients ON recipe_step_ingredients.ingredient_id = valid_ingredients.id
+	JOIN valid_measurement_units ON recipe_step_ingredients.measurement_unit = valid_measurement_units.id
 WHERE recipe_step_ingredients.archived_at IS NULL
 	AND recipe_step_ingredients.belongs_to_recipe_step = $1
 	AND recipe_step_ingredients.id = $2
@@ -627,116 +627,116 @@ func (q *Queries) GetRecipeStepIngredient(ctx context.Context, db DBTX, arg *Get
 const getRecipeStepIngredients = `-- name: GetRecipeStepIngredients :many
 
 SELECT
-    recipe_step_ingredients.id,
-    recipe_step_ingredients.name,
-    recipe_step_ingredients.optional,
-    valid_ingredients.id as valid_ingredient_id,
-    valid_ingredients.name as valid_ingredient_name,
-    valid_ingredients.description as valid_ingredient_description,
-    valid_ingredients.warning as valid_ingredient_warning,
-    valid_ingredients.contains_egg as valid_ingredient_contains_egg,
-    valid_ingredients.contains_dairy as valid_ingredient_contains_dairy,
-    valid_ingredients.contains_peanut as valid_ingredient_contains_peanut,
-    valid_ingredients.contains_tree_nut as valid_ingredient_contains_tree_nut,
-    valid_ingredients.contains_soy as valid_ingredient_contains_soy,
-    valid_ingredients.contains_wheat as valid_ingredient_contains_wheat,
-    valid_ingredients.contains_shellfish as valid_ingredient_contains_shellfish,
-    valid_ingredients.contains_sesame as valid_ingredient_contains_sesame,
-    valid_ingredients.contains_fish as valid_ingredient_contains_fish,
-    valid_ingredients.contains_gluten as valid_ingredient_contains_gluten,
-    valid_ingredients.animal_flesh as valid_ingredient_animal_flesh,
-    valid_ingredients.volumetric as valid_ingredient_volumetric,
-    valid_ingredients.is_liquid as valid_ingredient_is_liquid,
-    valid_ingredients.icon_path as valid_ingredient_icon_path,
-    valid_ingredients.animal_derived as valid_ingredient_animal_derived,
-    valid_ingredients.plural_name as valid_ingredient_plural_name,
-    valid_ingredients.restrict_to_preparations as valid_ingredient_restrict_to_preparations,
-    valid_ingredients.minimum_ideal_storage_temperature_in_celsius as valid_ingredient_minimum_ideal_storage_temperature_in_celsius,
-    valid_ingredients.maximum_ideal_storage_temperature_in_celsius as valid_ingredient_maximum_ideal_storage_temperature_in_celsius,
-    valid_ingredients.storage_instructions as valid_ingredient_storage_instructions,
-    valid_ingredients.slug as valid_ingredient_slug,
-    valid_ingredients.contains_alcohol as valid_ingredient_contains_alcohol,
-    valid_ingredients.shopping_suggestions as valid_ingredient_shopping_suggestions,
-    valid_ingredients.is_starch as valid_ingredient_is_starch,
-    valid_ingredients.is_protein as valid_ingredient_is_protein,
-    valid_ingredients.is_grain as valid_ingredient_is_grain,
-    valid_ingredients.is_fruit as valid_ingredient_is_fruit,
-    valid_ingredients.is_salt as valid_ingredient_is_salt,
-    valid_ingredients.is_fat as valid_ingredient_is_fat,
-    valid_ingredients.is_acid as valid_ingredient_is_acid,
-    valid_ingredients.is_heat as valid_ingredient_is_heat,
-    valid_ingredients.created_at as valid_ingredient_created_at,
-    valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
-    valid_ingredients.archived_at as valid_ingredient_archived_at,
-    valid_measurement_units.id as valid_measurement_unit_id,
-    valid_measurement_units.name as valid_measurement_unit_name,
-    valid_measurement_units.description as valid_measurement_unit_description,
-    valid_measurement_units.volumetric as valid_measurement_unit_volumetric,
-    valid_measurement_units.icon_path as valid_measurement_unit_icon_path,
-    valid_measurement_units.universal as valid_measurement_unit_universal,
-    valid_measurement_units.metric as valid_measurement_unit_metric,
-    valid_measurement_units.imperial as valid_measurement_unit_imperial,
-    valid_measurement_units.slug as valid_measurement_unit_slug,
-    valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
-    valid_measurement_units.created_at as valid_measurement_unit_created_at,
-    valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
-    valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
-    recipe_step_ingredients.minimum_quantity_value,
-    recipe_step_ingredients.maximum_quantity_value,
-    recipe_step_ingredients.quantity_notes,
-    recipe_step_ingredients.recipe_step_product_id,
-    recipe_step_ingredients.ingredient_notes,
-    recipe_step_ingredients.option_index,
-    recipe_step_ingredients.to_taste,
-    recipe_step_ingredients.product_percentage_to_use,
-    recipe_step_ingredients.vessel_index,
-    recipe_step_ingredients.recipe_step_product_recipe_id,
-    recipe_step_ingredients.created_at,
-    recipe_step_ingredients.last_updated_at,
-    recipe_step_ingredients.archived_at,
-    recipe_step_ingredients.belongs_to_recipe_step,
-    (
-        SELECT
-            COUNT(recipe_step_ingredients.id)
-        FROM
-            recipe_step_ingredients
-                JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
-                JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
-        WHERE
-            recipe_step_ingredients.archived_at IS NULL
-            AND recipes.id = $1
-            AND recipe_steps.id = $2
-            AND recipe_steps.belongs_to_recipe = $1
-            AND recipe_step_ingredients.belongs_to_recipe_step = $2
-            AND recipe_step_ingredients.created_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-            AND recipe_step_ingredients.created_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-            AND (recipe_step_ingredients.last_updated_at IS NULL OR recipe_step_ingredients.last_updated_at > COALESCE($5, (SELECT NOW() - interval '999 years')))
-            AND (recipe_step_ingredients.last_updated_at IS NULL OR recipe_step_ingredients.last_updated_at < COALESCE($6, (SELECT NOW() + interval '999 years')))
-    ) as filtered_count,
-    (
-        SELECT COUNT(recipe_step_ingredients.id)
-        FROM recipe_step_ingredients
-            JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
-            JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
-        WHERE recipe_step_ingredients.archived_at IS NULL
-            AND recipes.id = $1
-            AND recipe_step_ingredients.belongs_to_recipe_step = $2
-    ) as total_count
+	recipe_step_ingredients.id,
+	recipe_step_ingredients.name,
+	recipe_step_ingredients.optional,
+	valid_ingredients.id as valid_ingredient_id,
+	valid_ingredients.name as valid_ingredient_name,
+	valid_ingredients.description as valid_ingredient_description,
+	valid_ingredients.warning as valid_ingredient_warning,
+	valid_ingredients.contains_egg as valid_ingredient_contains_egg,
+	valid_ingredients.contains_dairy as valid_ingredient_contains_dairy,
+	valid_ingredients.contains_peanut as valid_ingredient_contains_peanut,
+	valid_ingredients.contains_tree_nut as valid_ingredient_contains_tree_nut,
+	valid_ingredients.contains_soy as valid_ingredient_contains_soy,
+	valid_ingredients.contains_wheat as valid_ingredient_contains_wheat,
+	valid_ingredients.contains_shellfish as valid_ingredient_contains_shellfish,
+	valid_ingredients.contains_sesame as valid_ingredient_contains_sesame,
+	valid_ingredients.contains_fish as valid_ingredient_contains_fish,
+	valid_ingredients.contains_gluten as valid_ingredient_contains_gluten,
+	valid_ingredients.animal_flesh as valid_ingredient_animal_flesh,
+	valid_ingredients.volumetric as valid_ingredient_volumetric,
+	valid_ingredients.is_liquid as valid_ingredient_is_liquid,
+	valid_ingredients.icon_path as valid_ingredient_icon_path,
+	valid_ingredients.animal_derived as valid_ingredient_animal_derived,
+	valid_ingredients.plural_name as valid_ingredient_plural_name,
+	valid_ingredients.restrict_to_preparations as valid_ingredient_restrict_to_preparations,
+	valid_ingredients.minimum_ideal_storage_temperature_in_celsius as valid_ingredient_minimum_ideal_storage_temperature_in_celsius,
+	valid_ingredients.maximum_ideal_storage_temperature_in_celsius as valid_ingredient_maximum_ideal_storage_temperature_in_celsius,
+	valid_ingredients.storage_instructions as valid_ingredient_storage_instructions,
+	valid_ingredients.slug as valid_ingredient_slug,
+	valid_ingredients.contains_alcohol as valid_ingredient_contains_alcohol,
+	valid_ingredients.shopping_suggestions as valid_ingredient_shopping_suggestions,
+	valid_ingredients.is_starch as valid_ingredient_is_starch,
+	valid_ingredients.is_protein as valid_ingredient_is_protein,
+	valid_ingredients.is_grain as valid_ingredient_is_grain,
+	valid_ingredients.is_fruit as valid_ingredient_is_fruit,
+	valid_ingredients.is_salt as valid_ingredient_is_salt,
+	valid_ingredients.is_fat as valid_ingredient_is_fat,
+	valid_ingredients.is_acid as valid_ingredient_is_acid,
+	valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.created_at as valid_ingredient_created_at,
+	valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
+	valid_ingredients.archived_at as valid_ingredient_archived_at,
+	valid_measurement_units.id as valid_measurement_unit_id,
+	valid_measurement_units.name as valid_measurement_unit_name,
+	valid_measurement_units.description as valid_measurement_unit_description,
+	valid_measurement_units.volumetric as valid_measurement_unit_volumetric,
+	valid_measurement_units.icon_path as valid_measurement_unit_icon_path,
+	valid_measurement_units.universal as valid_measurement_unit_universal,
+	valid_measurement_units.metric as valid_measurement_unit_metric,
+	valid_measurement_units.imperial as valid_measurement_unit_imperial,
+	valid_measurement_units.slug as valid_measurement_unit_slug,
+	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.created_at as valid_measurement_unit_created_at,
+	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
+	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
+	recipe_step_ingredients.minimum_quantity_value,
+	recipe_step_ingredients.maximum_quantity_value,
+	recipe_step_ingredients.quantity_notes,
+	recipe_step_ingredients.recipe_step_product_id,
+	recipe_step_ingredients.ingredient_notes,
+	recipe_step_ingredients.option_index,
+	recipe_step_ingredients.to_taste,
+	recipe_step_ingredients.product_percentage_to_use,
+	recipe_step_ingredients.vessel_index,
+	recipe_step_ingredients.recipe_step_product_recipe_id,
+	recipe_step_ingredients.created_at,
+	recipe_step_ingredients.last_updated_at,
+	recipe_step_ingredients.archived_at,
+	recipe_step_ingredients.belongs_to_recipe_step,
+	(
+		SELECT
+			COUNT(recipe_step_ingredients.id)
+		FROM
+			recipe_step_ingredients
+				JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
+				JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
+		WHERE
+			recipe_step_ingredients.archived_at IS NULL
+			AND recipes.id = $1
+			AND recipe_steps.id = $2
+			AND recipe_steps.belongs_to_recipe = $1
+			AND recipe_step_ingredients.belongs_to_recipe_step = $2
+			AND recipe_step_ingredients.created_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+			AND recipe_step_ingredients.created_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+			AND (recipe_step_ingredients.last_updated_at IS NULL OR recipe_step_ingredients.last_updated_at > COALESCE($5, (SELECT NOW() - interval '999 years')))
+			AND (recipe_step_ingredients.last_updated_at IS NULL OR recipe_step_ingredients.last_updated_at < COALESCE($6, (SELECT NOW() + interval '999 years')))
+	) as filtered_count,
+	(
+		SELECT COUNT(recipe_step_ingredients.id)
+		FROM recipe_step_ingredients
+			JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
+			JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
+		WHERE recipe_step_ingredients.archived_at IS NULL
+			AND recipes.id = $1
+			AND recipe_step_ingredients.belongs_to_recipe_step = $2
+	) as total_count
 FROM recipe_step_ingredients
-    JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
-    JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
-    LEFT JOIN valid_ingredients ON recipe_step_ingredients.ingredient_id = valid_ingredients.id
-    JOIN valid_measurement_units ON recipe_step_ingredients.measurement_unit = valid_measurement_units.id
+	JOIN recipe_steps ON recipe_step_ingredients.belongs_to_recipe_step = recipe_steps.id
+	JOIN recipes ON recipe_steps.belongs_to_recipe = recipes.id
+	LEFT JOIN valid_ingredients ON recipe_step_ingredients.ingredient_id = valid_ingredients.id
+	JOIN valid_measurement_units ON recipe_step_ingredients.measurement_unit = valid_measurement_units.id
 WHERE
-    recipe_step_ingredients.archived_at IS NULL
-    AND recipes.id = $1
-    AND recipe_steps.id = $2
-    AND recipe_steps.belongs_to_recipe = $1
-    AND recipe_step_ingredients.belongs_to_recipe_step = $2
-    AND recipe_step_ingredients.created_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-    AND recipe_step_ingredients.created_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-    AND (recipe_step_ingredients.last_updated_at IS NULL OR recipe_step_ingredients.last_updated_at > COALESCE($5, (SELECT NOW() - interval '999 years')))
-    AND (recipe_step_ingredients.last_updated_at IS NULL OR recipe_step_ingredients.last_updated_at < COALESCE($6, (SELECT NOW() + interval '999 years')))
+	recipe_step_ingredients.archived_at IS NULL
+	AND recipes.id = $1
+	AND recipe_steps.id = $2
+	AND recipe_steps.belongs_to_recipe = $1
+	AND recipe_step_ingredients.belongs_to_recipe_step = $2
+	AND recipe_step_ingredients.created_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+	AND recipe_step_ingredients.created_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+	AND (recipe_step_ingredients.last_updated_at IS NULL OR recipe_step_ingredients.last_updated_at > COALESCE($5, (SELECT NOW() - interval '999 years')))
+	AND (recipe_step_ingredients.last_updated_at IS NULL OR recipe_step_ingredients.last_updated_at < COALESCE($6, (SELECT NOW() + interval '999 years')))
 OFFSET $7
 LIMIT $8
 `
@@ -943,11 +943,11 @@ UPDATE recipe_step_ingredients SET
 	option_index = $10,
 	to_taste = $11,
 	product_percentage_to_use = $12,
-    vessel_index = $13,
-    recipe_step_product_recipe_id = $14,
+	vessel_index = $13,
+	recipe_step_product_recipe_id = $14,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-    AND belongs_to_recipe_step = $15
+	AND belongs_to_recipe_step = $15
 	AND id = $16
 `
 

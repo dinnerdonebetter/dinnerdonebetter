@@ -44,35 +44,35 @@ func (q *Queries) CheckRecipeExistence(ctx context.Context, db DBTX, id string) 
 const createRecipe = `-- name: CreateRecipe :exec
 
 INSERT INTO recipes (
-    id,
-    name,
-    slug,
-    source,
-    description,
-    inspired_by_recipe_id,
-    min_estimated_portions,
-    max_estimated_portions,
-    portion_name,
-    plural_portion_name,
-    seal_of_approval,
-    eligible_for_meals,
-    yields_component_type,
-    created_by_user
+	id,
+	name,
+	slug,
+	source,
+	description,
+	inspired_by_recipe_id,
+	min_estimated_portions,
+	max_estimated_portions,
+	portion_name,
+	plural_portion_name,
+	seal_of_approval,
+	eligible_for_meals,
+	yields_component_type,
+	created_by_user
 ) VALUES (
-    $1,
-    $2,
-    $3,
-    $4,
-    $5,
-    $6,
-    $7,
-    $8,
-    $9,
-    $10,
-    $11,
-    $12,
-    $13,
-    $14
+	$1,
+	$2,
+	$3,
+	$4,
+	$5,
+	$6,
+	$7,
+	$8,
+	$9,
+	$10,
+	$11,
+	$12,
+	$13,
+	$14
 )
 `
 
@@ -148,10 +148,10 @@ SELECT
 	valid_preparations.temperature_required as recipe_step_preparation_temperature_required,
 	valid_preparations.time_estimate_required as recipe_step_preparation_time_estimate_required,
 	valid_preparations.condition_expression_required as recipe_step_preparation_condition_expression_required,
-    valid_preparations.consumes_vessel as recipe_step_preparation_consumes_vessel,
-    valid_preparations.only_for_vessels as recipe_step_preparation_only_for_vessels,
-    valid_preparations.minimum_vessel_count as recipe_step_preparation_minimum_vessel_count,
-    valid_preparations.maximum_vessel_count as recipe_step_preparation_maximum_vessel_count,
+	valid_preparations.consumes_vessel as recipe_step_preparation_consumes_vessel,
+	valid_preparations.only_for_vessels as recipe_step_preparation_only_for_vessels,
+	valid_preparations.minimum_vessel_count as recipe_step_preparation_minimum_vessel_count,
+	valid_preparations.maximum_vessel_count as recipe_step_preparation_maximum_vessel_count,
 	valid_preparations.slug as recipe_step_preparation_slug,
 	valid_preparations.past_tense as recipe_step_preparation_past_tense,
 	valid_preparations.created_at as recipe_step_preparation_created_at,
@@ -171,7 +171,7 @@ SELECT
 	recipe_steps.archived_at as recipe_step_archived_at,
 	recipe_steps.belongs_to_recipe as recipe_step_belongs_to_recipe
 FROM recipes
-    JOIN recipe_steps ON recipes.id=recipe_steps.belongs_to_recipe
+	JOIN recipe_steps ON recipes.id=recipe_steps.belongs_to_recipe
 	JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
 WHERE recipes.archived_at IS NULL
 	AND recipes.id = $1
@@ -348,10 +348,10 @@ SELECT
 	valid_preparations.temperature_required,
 	valid_preparations.time_estimate_required,
 	valid_preparations.condition_expression_required,
-    valid_preparations.consumes_vessel,
-    valid_preparations.only_for_vessels,
-    valid_preparations.minimum_vessel_count,
-    valid_preparations.maximum_vessel_count,
+	valid_preparations.consumes_vessel,
+	valid_preparations.only_for_vessels,
+	valid_preparations.minimum_vessel_count,
+	valid_preparations.maximum_vessel_count,
 	valid_preparations.slug,
 	valid_preparations.past_tense,
 	valid_preparations.created_at,
@@ -523,8 +523,8 @@ const getRecipeIDsForMeal = `-- name: GetRecipeIDsForMeal :many
 
 SELECT recipes.id
 FROM recipes
-    JOIN meal_components ON meal_components.recipe_id = recipes.id
-    JOIN meals ON meal_components.meal_id = meals.id
+	JOIN meal_components ON meal_components.recipe_id = recipes.id
+	JOIN meals ON meal_components.meal_id = meals.id
 WHERE
 	recipes.archived_at IS NULL
 	AND meals.id = $1
@@ -560,59 +560,59 @@ func (q *Queries) GetRecipeIDsForMeal(ctx context.Context, db DBTX, mealID strin
 const getRecipes = `-- name: GetRecipes :many
 
 SELECT
-    recipes.id,
-    recipes.name,
-    recipes.slug,
-    recipes.source,
-    recipes.description,
-    recipes.inspired_by_recipe_id,
-    recipes.min_estimated_portions,
-    recipes.max_estimated_portions,
-    recipes.portion_name,
-    recipes.plural_portion_name,
-    recipes.seal_of_approval,
-    recipes.eligible_for_meals,
-    recipes.yields_component_type,
-    recipes.created_at,
-    recipes.last_updated_at,
-    recipes.archived_at,
-    recipes.created_by_user,
-    (
-        SELECT
-            COUNT(recipes.id)
-        FROM
-            recipes
-        WHERE
-            recipes.archived_at IS NULL
-            AND recipes.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-            AND recipes.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-            AND (
-                recipes.last_updated_at IS NULL
-                OR recipes.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-            )
-            AND (
-                recipes.last_updated_at IS NULL
-                OR recipes.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-            )
-        OFFSET $5
-    ) AS filtered_count,
-    (
-        SELECT COUNT(recipes.id)
-        FROM recipes
-        WHERE recipes.archived_at IS NULL
-    ) AS total_count
+	recipes.id,
+	recipes.name,
+	recipes.slug,
+	recipes.source,
+	recipes.description,
+	recipes.inspired_by_recipe_id,
+	recipes.min_estimated_portions,
+	recipes.max_estimated_portions,
+	recipes.portion_name,
+	recipes.plural_portion_name,
+	recipes.seal_of_approval,
+	recipes.eligible_for_meals,
+	recipes.yields_component_type,
+	recipes.created_at,
+	recipes.last_updated_at,
+	recipes.archived_at,
+	recipes.created_by_user,
+	(
+		SELECT
+			COUNT(recipes.id)
+		FROM
+			recipes
+		WHERE
+			recipes.archived_at IS NULL
+			AND recipes.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+			AND recipes.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+			AND (
+				recipes.last_updated_at IS NULL
+				OR recipes.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+			)
+			AND (
+				recipes.last_updated_at IS NULL
+				OR recipes.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+			)
+		OFFSET $5
+	) AS filtered_count,
+	(
+		SELECT COUNT(recipes.id)
+		FROM recipes
+		WHERE recipes.archived_at IS NULL
+	) AS total_count
 FROM recipes
-    WHERE recipes.archived_at IS NULL
-    AND recipes.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-    AND recipes.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-    AND (
-        recipes.last_updated_at IS NULL
-        OR recipes.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-    )
-    AND (
-        recipes.last_updated_at IS NULL
-        OR recipes.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-    )
+	WHERE recipes.archived_at IS NULL
+	AND recipes.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+	AND recipes.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+	AND (
+		recipes.last_updated_at IS NULL
+		OR recipes.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+	)
+	AND (
+		recipes.last_updated_at IS NULL
+		OR recipes.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+	)
 OFFSET $5
 LIMIT $6
 `
@@ -703,11 +703,11 @@ const getRecipesNeedingIndexing = `-- name: GetRecipesNeedingIndexing :many
 SELECT recipes.id
 FROM recipes
 WHERE recipes.archived_at IS NULL
-    AND (
-        recipes.last_indexed_at IS NULL
-        OR recipes.last_indexed_at
-            < NOW() - '24 hours'::INTERVAL
-    )
+	AND (
+		recipes.last_indexed_at IS NULL
+		OR recipes.last_indexed_at
+			< NOW() - '24 hours'::INTERVAL
+	)
 `
 
 func (q *Queries) GetRecipesNeedingIndexing(ctx context.Context, db DBTX) ([]string, error) {
@@ -736,60 +736,60 @@ func (q *Queries) GetRecipesNeedingIndexing(ctx context.Context, db DBTX) ([]str
 const recipeSearch = `-- name: RecipeSearch :many
 
 SELECT
-    recipes.id,
-    recipes.name,
-    recipes.slug,
-    recipes.source,
-    recipes.description,
-    recipes.inspired_by_recipe_id,
-    recipes.min_estimated_portions,
-    recipes.max_estimated_portions,
-    recipes.portion_name,
-    recipes.plural_portion_name,
-    recipes.seal_of_approval,
-    recipes.eligible_for_meals,
-    recipes.yields_component_type,
-    recipes.created_at,
-    recipes.last_updated_at,
-    recipes.archived_at,
-    recipes.created_by_user,
-    (
-        SELECT
-            COUNT(recipes.id)
-        FROM
-            recipes
-        WHERE
-            recipes.archived_at IS NULL
-          AND recipes.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-          AND recipes.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-          AND (
-                recipes.last_updated_at IS NULL
-                OR recipes.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-            )
-          AND (
-                recipes.last_updated_at IS NULL
-                OR recipes.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-            )
-        OFFSET $5
-    ) AS filtered_count,
-    (
-        SELECT COUNT(recipes.id)
-        FROM recipes
-        WHERE recipes.archived_at IS NULL
-    ) AS total_count
+	recipes.id,
+	recipes.name,
+	recipes.slug,
+	recipes.source,
+	recipes.description,
+	recipes.inspired_by_recipe_id,
+	recipes.min_estimated_portions,
+	recipes.max_estimated_portions,
+	recipes.portion_name,
+	recipes.plural_portion_name,
+	recipes.seal_of_approval,
+	recipes.eligible_for_meals,
+	recipes.yields_component_type,
+	recipes.created_at,
+	recipes.last_updated_at,
+	recipes.archived_at,
+	recipes.created_by_user,
+	(
+		SELECT
+			COUNT(recipes.id)
+		FROM
+			recipes
+		WHERE
+			recipes.archived_at IS NULL
+		  AND recipes.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+		  AND recipes.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+		  AND (
+				recipes.last_updated_at IS NULL
+				OR recipes.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+			)
+		  AND (
+				recipes.last_updated_at IS NULL
+				OR recipes.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+			)
+		OFFSET $5
+	) AS filtered_count,
+	(
+		SELECT COUNT(recipes.id)
+		FROM recipes
+		WHERE recipes.archived_at IS NULL
+	) AS total_count
 FROM recipes
 WHERE recipes.archived_at IS NULL
-    AND recipes.name ILIKE '%' || $6::text || '%'
-    AND recipes.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-    AND recipes.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-    AND (
-        recipes.last_updated_at IS NULL
-        OR recipes.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-    )
-    AND (
-        recipes.last_updated_at IS NULL
-        OR recipes.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-    )
+	AND recipes.name ILIKE '%' || $6::text || '%'
+	AND recipes.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+	AND recipes.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+	AND (
+		recipes.last_updated_at IS NULL
+		OR recipes.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+	)
+	AND (
+		recipes.last_updated_at IS NULL
+		OR recipes.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+	)
 OFFSET $5
 LIMIT $7
 `
@@ -880,19 +880,19 @@ func (q *Queries) RecipeSearch(ctx context.Context, db DBTX, arg *RecipeSearchPa
 const updateRecipe = `-- name: UpdateRecipe :execrows
 
 UPDATE recipes SET
-    name = $1,
-    slug = $2,
-    source = $3,
-    description = $4,
-    inspired_by_recipe_id = $5,
+	name = $1,
+	slug = $2,
+	source = $3,
+	description = $4,
+	inspired_by_recipe_id = $5,
 	min_estimated_portions = $6,
 	max_estimated_portions = $7,
-    portion_name = $8,
-    plural_portion_name = $9,
-    seal_of_approval = $10,
-    eligible_for_meals = $11,
+	portion_name = $8,
+	plural_portion_name = $9,
+	seal_of_approval = $10,
+	eligible_for_meals = $11,
 	yields_component_type = $12,
-    last_updated_at = NOW()
+	last_updated_at = NOW()
 WHERE archived_at IS NULL
   AND created_by_user = $13
   AND id = $14

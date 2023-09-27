@@ -31,8 +31,8 @@ const checkValidPreparationExistence = `-- name: CheckValidPreparationExistence 
 SELECT EXISTS (
 	SELECT valid_preparations.id
 	FROM valid_preparations
-    WHERE valid_preparations.archived_at IS NULL
-        AND valid_preparations.id = $1
+	WHERE valid_preparations.archived_at IS NULL
+		AND valid_preparations.id = $1
 )
 `
 
@@ -337,7 +337,7 @@ SELECT
 	valid_preparations.created_at,
 	valid_preparations.last_updated_at,
 	valid_preparations.archived_at,
-    (
+	(
 		SELECT COUNT(valid_preparations.id)
 		FROM valid_preparations
 		WHERE valid_preparations.archived_at IS NULL
@@ -352,7 +352,7 @@ SELECT
 				OR valid_preparations.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
 			)
 	) AS filtered_count,
-    (
+	(
 		SELECT COUNT(valid_preparations.id)
 		FROM valid_preparations
 		WHERE valid_preparations.archived_at IS NULL
@@ -474,9 +474,9 @@ const getValidPreparationsNeedingIndexing = `-- name: GetValidPreparationsNeedin
 SELECT valid_preparations.id
 FROM valid_preparations
 WHERE valid_preparations.archived_at IS NULL
-    AND (
-    valid_preparations.last_indexed_at IS NULL
-    OR valid_preparations.last_indexed_at < NOW() - '24 hours'::INTERVAL
+	AND (
+	valid_preparations.last_indexed_at IS NULL
+	OR valid_preparations.last_indexed_at < NOW() - '24 hours'::INTERVAL
 )
 `
 
@@ -735,7 +735,7 @@ UPDATE valid_preparations SET
 	maximum_vessel_count = $18,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-    AND id = $19
+	AND id = $19
 `
 
 type UpdateValidPreparationParams struct {

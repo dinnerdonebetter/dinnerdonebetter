@@ -9,6 +9,8 @@ import (
 
 const (
 	validInstrumentsTableName = "valid_instruments"
+
+	validInstrumentIDColumn = "valid_instrument_id"
 )
 
 var validInstrumentsColumns = []string{
@@ -68,12 +70,12 @@ func buildValidInstrumentsQueries() []*Query {
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
-	SELECT %s.id
+	SELECT %s.%s
 	FROM %s
 	WHERE %s.%s IS NULL
 		AND %s.%s = sqlc.arg(%s)
 );`,
-				validInstrumentsTableName,
+				validInstrumentsTableName, idColumn,
 				validInstrumentsTableName,
 				validInstrumentsTableName,
 				archivedAtColumn,
@@ -131,8 +133,8 @@ ORDER BY %s.%s
 FROM %s
 WHERE %s.%s IS NULL
 	AND (
-    %s.%s IS NULL
-    OR %s.%s < %s - '24 hours'::INTERVAL
+	%s.%s IS NULL
+	OR %s.%s < %s - '24 hours'::INTERVAL
 );`,
 				validInstrumentsTableName,
 				idColumn,
@@ -213,15 +215,14 @@ WHERE %s.%s IS NULL
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
-WHERE %s.name %s
+WHERE %s.%s %s
 	AND %s.%s IS NULL
 LIMIT 50;`,
 				strings.Join(applyToEach(validInstrumentsColumns, func(i int, s string) string {
 					return fmt.Sprintf("%s.%s", validInstrumentsTableName, s)
 				}), ",\n\t"),
 				validInstrumentsTableName,
-				validInstrumentsTableName,
-				"ILIKE '%' || sqlc.arg(name_query)::text || '%'",
+				validInstrumentsTableName, nameColumn, buildILIKEForArgument("name_query"),
 				validInstrumentsTableName,
 				archivedAtColumn,
 			)),
@@ -235,7 +236,7 @@ LIMIT 50;`,
 	%s,
 	%s = %s
 WHERE %s IS NULL
-    AND %s = sqlc.arg(%s);`,
+	AND %s = sqlc.arg(%s);`,
 				validInstrumentsTableName,
 				strings.Join(applyToEach(filterForUpdate(validInstrumentsColumns), func(i int, s string) string {
 					return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)

@@ -32,18 +32,18 @@ func (q *Queries) ArchiveRecipeStepVessel(ctx context.Context, db DBTX, arg *Arc
 const checkRecipeStepVesselExistence = `-- name: CheckRecipeStepVesselExistence :one
 
 SELECT EXISTS (
-    SELECT recipe_step_vessels.id
-    FROM recipe_step_vessels
-        JOIN recipe_steps ON recipe_step_vessels.belongs_to_recipe_step=recipe_steps.id
-        JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
-    WHERE recipe_step_vessels.archived_at IS NULL
-        AND recipe_step_vessels.belongs_to_recipe_step = $1
-        AND recipe_step_vessels.id = $2
-        AND recipe_steps.archived_at IS NULL
-        AND recipe_steps.belongs_to_recipe = $3
-        AND recipe_steps.id = $1
-        AND recipes.archived_at IS NULL
-        AND recipes.id = $3
+	SELECT recipe_step_vessels.id
+	FROM recipe_step_vessels
+		JOIN recipe_steps ON recipe_step_vessels.belongs_to_recipe_step=recipe_steps.id
+		JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
+	WHERE recipe_step_vessels.archived_at IS NULL
+		AND recipe_step_vessels.belongs_to_recipe_step = $1
+		AND recipe_step_vessels.id = $2
+		AND recipe_steps.archived_at IS NULL
+		AND recipe_steps.belongs_to_recipe = $3
+		AND recipe_steps.id = $1
+		AND recipes.archived_at IS NULL
+		AND recipes.id = $3
 )
 `
 
@@ -63,27 +63,27 @@ func (q *Queries) CheckRecipeStepVesselExistence(ctx context.Context, db DBTX, a
 const createRecipeStepVessel = `-- name: CreateRecipeStepVessel :exec
 
 INSERT INTO recipe_step_vessels (
-    id,
-    name,
-    notes,
-    belongs_to_recipe_step,
-    recipe_step_product_id,
-    valid_vessel_id,
-    vessel_predicate,
-    minimum_quantity,
-    maximum_quantity,
-    unavailable_after_step
+	id,
+	name,
+	notes,
+	belongs_to_recipe_step,
+	recipe_step_product_id,
+	valid_vessel_id,
+	vessel_predicate,
+	minimum_quantity,
+	maximum_quantity,
+	unavailable_after_step
 ) VALUES (
-    $1,
-    $2,
-    $3,
-    $4,
-    $5,
-    $6,
-    $7,
-    $8,
-    $9,
-    $10
+	$1,
+	$2,
+	$3,
+	$4,
+	$5,
+	$6,
+	$7,
+	$8,
+	$9,
+	$10
 )
 `
 
@@ -119,17 +119,17 @@ func (q *Queries) CreateRecipeStepVessel(ctx context.Context, db DBTX, arg *Crea
 const getRecipeStepVessel = `-- name: GetRecipeStepVessel :one
 
 SELECT
-    recipe_step_vessels.id,
+	recipe_step_vessels.id,
 	valid_vessels.id as valid_vessel_id,
-    valid_vessels.name as valid_vessel_name,
-    valid_vessels.plural_name as valid_vessel_plural_name,
-    valid_vessels.description as valid_vessel_description,
-    valid_vessels.icon_path as valid_vessel_icon_path,
-    valid_vessels.usable_for_storage as valid_vessel_usable_for_storage,
-    valid_vessels.slug as valid_vessel_slug,
-    valid_vessels.display_in_summary_lists as valid_vessel_display_in_summary_lists,
-    valid_vessels.include_in_generated_instructions as valid_vessel_include_in_generated_instructions,
-    valid_vessels.capacity as valid_vessel_capacity,
+	valid_vessels.name as valid_vessel_name,
+	valid_vessels.plural_name as valid_vessel_plural_name,
+	valid_vessels.description as valid_vessel_description,
+	valid_vessels.icon_path as valid_vessel_icon_path,
+	valid_vessels.usable_for_storage as valid_vessel_usable_for_storage,
+	valid_vessels.slug as valid_vessel_slug,
+	valid_vessels.display_in_summary_lists as valid_vessel_display_in_summary_lists,
+	valid_vessels.include_in_generated_instructions as valid_vessel_include_in_generated_instructions,
+	valid_vessels.capacity as valid_vessel_capacity,
 	valid_measurement_units.id as valid_measurement_unit_id,
 	valid_measurement_units.name as valid_measurement_unit_name,
 	valid_measurement_units.description as valid_measurement_unit_description,
@@ -143,27 +143,27 @@ SELECT
 	valid_measurement_units.created_at as valid_measurement_unit_created_at,
 	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
 	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
-    valid_vessels.width_in_millimeters as valid_vessel_width_in_millimeters,
-    valid_vessels.length_in_millimeters as valid_vessel_length_in_millimeters,
-    valid_vessels.height_in_millimeters as valid_vessel_height_in_millimeters,
-    valid_vessels.shape as valid_vessel_shape,
-    valid_vessels.created_at as valid_vessel_created_at,
-    valid_vessels.last_updated_at as valid_vessel_last_updated_at,
-    valid_vessels.archived_at as valid_vessel_archived_at,
-    recipe_step_vessels.name,
-    recipe_step_vessels.notes,
-    recipe_step_vessels.belongs_to_recipe_step,
-    recipe_step_vessels.recipe_step_product_id,
-    recipe_step_vessels.vessel_predicate,
-    recipe_step_vessels.minimum_quantity,
-    recipe_step_vessels.maximum_quantity,
-    recipe_step_vessels.unavailable_after_step,
-    recipe_step_vessels.created_at,
-    recipe_step_vessels.last_updated_at,
-    recipe_step_vessels.archived_at
+	valid_vessels.width_in_millimeters as valid_vessel_width_in_millimeters,
+	valid_vessels.length_in_millimeters as valid_vessel_length_in_millimeters,
+	valid_vessels.height_in_millimeters as valid_vessel_height_in_millimeters,
+	valid_vessels.shape as valid_vessel_shape,
+	valid_vessels.created_at as valid_vessel_created_at,
+	valid_vessels.last_updated_at as valid_vessel_last_updated_at,
+	valid_vessels.archived_at as valid_vessel_archived_at,
+	recipe_step_vessels.name,
+	recipe_step_vessels.notes,
+	recipe_step_vessels.belongs_to_recipe_step,
+	recipe_step_vessels.recipe_step_product_id,
+	recipe_step_vessels.vessel_predicate,
+	recipe_step_vessels.minimum_quantity,
+	recipe_step_vessels.maximum_quantity,
+	recipe_step_vessels.unavailable_after_step,
+	recipe_step_vessels.created_at,
+	recipe_step_vessels.last_updated_at,
+	recipe_step_vessels.archived_at
 FROM recipe_step_vessels
 	LEFT JOIN valid_vessels ON recipe_step_vessels.valid_vessel_id=valid_vessels.id
-    LEFT JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
+	LEFT JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
 	JOIN recipe_steps ON recipe_step_vessels.belongs_to_recipe_step=recipe_steps.id
 	JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
 WHERE recipe_step_vessels.archived_at IS NULL
@@ -280,79 +280,79 @@ func (q *Queries) GetRecipeStepVessel(ctx context.Context, db DBTX, arg *GetReci
 const getRecipeStepVessels = `-- name: GetRecipeStepVessels :many
 
 SELECT
-    recipe_step_vessels.id,
-    valid_vessels.id as valid_vessel_id,
-    valid_vessels.name as valid_vessel_name,
-    valid_vessels.plural_name as valid_vessel_plural_name,
-    valid_vessels.description as valid_vessel_description,
-    valid_vessels.icon_path as valid_vessel_icon_path,
-    valid_vessels.usable_for_storage as valid_vessel_usable_for_storage,
-    valid_vessels.slug as valid_vessel_slug,
-    valid_vessels.display_in_summary_lists as valid_vessel_display_in_summary_lists,
-    valid_vessels.include_in_generated_instructions as valid_vessel_include_in_generated_instructions,
-    valid_vessels.capacity as valid_vessel_capacity,
-    valid_measurement_units.id as valid_measurement_unit_id,
-    valid_measurement_units.name as valid_measurement_unit_name,
-    valid_measurement_units.description as valid_measurement_unit_description,
-    valid_measurement_units.volumetric as valid_measurement_unit_volumetric,
-    valid_measurement_units.icon_path as valid_measurement_unit_icon_path,
-    valid_measurement_units.universal as valid_measurement_unit_universal,
-    valid_measurement_units.metric as valid_measurement_unit_metric,
-    valid_measurement_units.imperial as valid_measurement_unit_imperial,
-    valid_measurement_units.slug as valid_measurement_unit_slug,
-    valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
-    valid_measurement_units.created_at as valid_measurement_unit_created_at,
-    valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
-    valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
-    valid_vessels.width_in_millimeters as valid_vessel_width_in_millimeters,
-    valid_vessels.length_in_millimeters as valid_vessel_length_in_millimeters,
-    valid_vessels.height_in_millimeters as valid_vessel_height_in_millimeters,
-    valid_vessels.shape as valid_vessel_shape,
-    valid_vessels.created_at as valid_vessel_created_at,
-    valid_vessels.last_updated_at as valid_vessel_last_updated_at,
-    valid_vessels.archived_at as valid_vessel_archived_at,
-    recipe_step_vessels.name,
-    recipe_step_vessels.notes,
-    recipe_step_vessels.belongs_to_recipe_step,
-    recipe_step_vessels.recipe_step_product_id,
-    recipe_step_vessels.vessel_predicate,
-    recipe_step_vessels.minimum_quantity,
-    recipe_step_vessels.maximum_quantity,
-    recipe_step_vessels.unavailable_after_step,
-    recipe_step_vessels.created_at,
-    recipe_step_vessels.last_updated_at,
-    recipe_step_vessels.archived_at,
-    (
-        SELECT COUNT(recipe_step_vessels.id)
-        FROM recipe_step_vessels
-        WHERE
-            recipe_step_vessels.archived_at IS NULL
-            AND recipe_step_vessels.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-            AND recipe_step_vessels.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-            AND (recipe_step_vessels.last_updated_at IS NULL OR recipe_step_vessels.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-            AND (recipe_step_vessels.last_updated_at IS NULL OR recipe_step_vessels.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-    ) as filtered_count,
-    (
-        SELECT COUNT(recipe_step_vessels.id)
-        FROM recipe_step_vessels
-        WHERE recipe_step_vessels.archived_at IS NULL
-    ) as total_count
+	recipe_step_vessels.id,
+	valid_vessels.id as valid_vessel_id,
+	valid_vessels.name as valid_vessel_name,
+	valid_vessels.plural_name as valid_vessel_plural_name,
+	valid_vessels.description as valid_vessel_description,
+	valid_vessels.icon_path as valid_vessel_icon_path,
+	valid_vessels.usable_for_storage as valid_vessel_usable_for_storage,
+	valid_vessels.slug as valid_vessel_slug,
+	valid_vessels.display_in_summary_lists as valid_vessel_display_in_summary_lists,
+	valid_vessels.include_in_generated_instructions as valid_vessel_include_in_generated_instructions,
+	valid_vessels.capacity as valid_vessel_capacity,
+	valid_measurement_units.id as valid_measurement_unit_id,
+	valid_measurement_units.name as valid_measurement_unit_name,
+	valid_measurement_units.description as valid_measurement_unit_description,
+	valid_measurement_units.volumetric as valid_measurement_unit_volumetric,
+	valid_measurement_units.icon_path as valid_measurement_unit_icon_path,
+	valid_measurement_units.universal as valid_measurement_unit_universal,
+	valid_measurement_units.metric as valid_measurement_unit_metric,
+	valid_measurement_units.imperial as valid_measurement_unit_imperial,
+	valid_measurement_units.slug as valid_measurement_unit_slug,
+	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.created_at as valid_measurement_unit_created_at,
+	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
+	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
+	valid_vessels.width_in_millimeters as valid_vessel_width_in_millimeters,
+	valid_vessels.length_in_millimeters as valid_vessel_length_in_millimeters,
+	valid_vessels.height_in_millimeters as valid_vessel_height_in_millimeters,
+	valid_vessels.shape as valid_vessel_shape,
+	valid_vessels.created_at as valid_vessel_created_at,
+	valid_vessels.last_updated_at as valid_vessel_last_updated_at,
+	valid_vessels.archived_at as valid_vessel_archived_at,
+	recipe_step_vessels.name,
+	recipe_step_vessels.notes,
+	recipe_step_vessels.belongs_to_recipe_step,
+	recipe_step_vessels.recipe_step_product_id,
+	recipe_step_vessels.vessel_predicate,
+	recipe_step_vessels.minimum_quantity,
+	recipe_step_vessels.maximum_quantity,
+	recipe_step_vessels.unavailable_after_step,
+	recipe_step_vessels.created_at,
+	recipe_step_vessels.last_updated_at,
+	recipe_step_vessels.archived_at,
+	(
+		SELECT COUNT(recipe_step_vessels.id)
+		FROM recipe_step_vessels
+		WHERE
+			recipe_step_vessels.archived_at IS NULL
+			AND recipe_step_vessels.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+			AND recipe_step_vessels.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+			AND (recipe_step_vessels.last_updated_at IS NULL OR recipe_step_vessels.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+			AND (recipe_step_vessels.last_updated_at IS NULL OR recipe_step_vessels.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+	) as filtered_count,
+	(
+		SELECT COUNT(recipe_step_vessels.id)
+		FROM recipe_step_vessels
+		WHERE recipe_step_vessels.archived_at IS NULL
+	) as total_count
 FROM recipe_step_vessels
-     LEFT JOIN valid_vessels ON recipe_step_vessels.valid_vessel_id=valid_vessels.id
-     LEFT JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
-     JOIN recipe_steps ON recipe_step_vessels.belongs_to_recipe_step=recipe_steps.id
-     JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
+	 LEFT JOIN valid_vessels ON recipe_step_vessels.valid_vessel_id=valid_vessels.id
+	 LEFT JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
+	 JOIN recipe_steps ON recipe_step_vessels.belongs_to_recipe_step=recipe_steps.id
+	 JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
 WHERE recipe_step_vessels.archived_at IS NULL
-    AND recipe_step_vessels.belongs_to_recipe_step = $5
-    AND recipe_step_vessels.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-    AND recipe_step_vessels.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-    AND (recipe_step_vessels.last_updated_at IS NULL OR recipe_step_vessels.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-    AND (recipe_step_vessels.last_updated_at IS NULL OR recipe_step_vessels.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-    AND recipe_steps.belongs_to_recipe = $6
-    AND recipe_steps.archived_at IS NULL
-    AND recipe_steps.id = $5
-    AND recipes.archived_at IS NULL
-    AND recipes.id = $6
+	AND recipe_step_vessels.belongs_to_recipe_step = $5
+	AND recipe_step_vessels.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+	AND recipe_step_vessels.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+	AND (recipe_step_vessels.last_updated_at IS NULL OR recipe_step_vessels.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+	AND (recipe_step_vessels.last_updated_at IS NULL OR recipe_step_vessels.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+	AND recipe_steps.belongs_to_recipe = $6
+	AND recipe_steps.archived_at IS NULL
+	AND recipe_steps.id = $5
+	AND recipes.archived_at IS NULL
+	AND recipes.id = $6
 OFFSET $7
 LIMIT $8
 `
@@ -495,58 +495,58 @@ func (q *Queries) GetRecipeStepVessels(ctx context.Context, db DBTX, arg *GetRec
 const getRecipeStepVesselsForRecipe = `-- name: GetRecipeStepVesselsForRecipe :many
 
 SELECT
-    recipe_step_vessels.id,
-    valid_vessels.id as valid_vessel_id,
-    valid_vessels.name as valid_vessel_name,
-    valid_vessels.plural_name as valid_vessel_plural_name,
-    valid_vessels.description as valid_vessel_description,
-    valid_vessels.icon_path as valid_vessel_icon_path,
-    valid_vessels.usable_for_storage as valid_vessel_usable_for_storage,
-    valid_vessels.slug as valid_vessel_slug,
-    valid_vessels.display_in_summary_lists as valid_vessel_display_in_summary_lists,
-    valid_vessels.include_in_generated_instructions as valid_vessel_include_in_generated_instructions,
-    valid_vessels.capacity as valid_vessel_capacity,
-    valid_measurement_units.id as valid_measurement_unit_id,
-    valid_measurement_units.name as valid_measurement_unit_name,
-    valid_measurement_units.description as valid_measurement_unit_description,
-    valid_measurement_units.volumetric as valid_measurement_unit_volumetric,
-    valid_measurement_units.icon_path as valid_measurement_unit_icon_path,
-    valid_measurement_units.universal as valid_measurement_unit_universal,
-    valid_measurement_units.metric as valid_measurement_unit_metric,
-    valid_measurement_units.imperial as valid_measurement_unit_imperial,
-    valid_measurement_units.slug as valid_measurement_unit_slug,
-    valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
-    valid_measurement_units.created_at as valid_measurement_unit_created_at,
-    valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
-    valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
-    valid_vessels.width_in_millimeters as valid_vessel_width_in_millimeters,
-    valid_vessels.length_in_millimeters as valid_vessel_length_in_millimeters,
-    valid_vessels.height_in_millimeters as valid_vessel_height_in_millimeters,
-    valid_vessels.shape as valid_vessel_shape,
-    valid_vessels.created_at as valid_vessel_created_at,
-    valid_vessels.last_updated_at as valid_vessel_last_updated_at,
-    valid_vessels.archived_at as valid_vessel_archived_at,
-    recipe_step_vessels.name,
-    recipe_step_vessels.notes,
-    recipe_step_vessels.belongs_to_recipe_step,
-    recipe_step_vessels.recipe_step_product_id,
-    recipe_step_vessels.vessel_predicate,
-    recipe_step_vessels.minimum_quantity,
-    recipe_step_vessels.maximum_quantity,
-    recipe_step_vessels.unavailable_after_step,
-    recipe_step_vessels.created_at,
-    recipe_step_vessels.last_updated_at,
-    recipe_step_vessels.archived_at
+	recipe_step_vessels.id,
+	valid_vessels.id as valid_vessel_id,
+	valid_vessels.name as valid_vessel_name,
+	valid_vessels.plural_name as valid_vessel_plural_name,
+	valid_vessels.description as valid_vessel_description,
+	valid_vessels.icon_path as valid_vessel_icon_path,
+	valid_vessels.usable_for_storage as valid_vessel_usable_for_storage,
+	valid_vessels.slug as valid_vessel_slug,
+	valid_vessels.display_in_summary_lists as valid_vessel_display_in_summary_lists,
+	valid_vessels.include_in_generated_instructions as valid_vessel_include_in_generated_instructions,
+	valid_vessels.capacity as valid_vessel_capacity,
+	valid_measurement_units.id as valid_measurement_unit_id,
+	valid_measurement_units.name as valid_measurement_unit_name,
+	valid_measurement_units.description as valid_measurement_unit_description,
+	valid_measurement_units.volumetric as valid_measurement_unit_volumetric,
+	valid_measurement_units.icon_path as valid_measurement_unit_icon_path,
+	valid_measurement_units.universal as valid_measurement_unit_universal,
+	valid_measurement_units.metric as valid_measurement_unit_metric,
+	valid_measurement_units.imperial as valid_measurement_unit_imperial,
+	valid_measurement_units.slug as valid_measurement_unit_slug,
+	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.created_at as valid_measurement_unit_created_at,
+	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
+	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
+	valid_vessels.width_in_millimeters as valid_vessel_width_in_millimeters,
+	valid_vessels.length_in_millimeters as valid_vessel_length_in_millimeters,
+	valid_vessels.height_in_millimeters as valid_vessel_height_in_millimeters,
+	valid_vessels.shape as valid_vessel_shape,
+	valid_vessels.created_at as valid_vessel_created_at,
+	valid_vessels.last_updated_at as valid_vessel_last_updated_at,
+	valid_vessels.archived_at as valid_vessel_archived_at,
+	recipe_step_vessels.name,
+	recipe_step_vessels.notes,
+	recipe_step_vessels.belongs_to_recipe_step,
+	recipe_step_vessels.recipe_step_product_id,
+	recipe_step_vessels.vessel_predicate,
+	recipe_step_vessels.minimum_quantity,
+	recipe_step_vessels.maximum_quantity,
+	recipe_step_vessels.unavailable_after_step,
+	recipe_step_vessels.created_at,
+	recipe_step_vessels.last_updated_at,
+	recipe_step_vessels.archived_at
 FROM recipe_step_vessels
-    LEFT JOIN valid_vessels ON recipe_step_vessels.valid_vessel_id=valid_vessels.id
-    LEFT JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
-    JOIN recipe_steps ON recipe_step_vessels.belongs_to_recipe_step=recipe_steps.id
-    JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
+	LEFT JOIN valid_vessels ON recipe_step_vessels.valid_vessel_id=valid_vessels.id
+	LEFT JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
+	JOIN recipe_steps ON recipe_step_vessels.belongs_to_recipe_step=recipe_steps.id
+	JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
 WHERE recipe_step_vessels.archived_at IS NULL
-    AND recipe_steps.archived_at IS NULL
-    AND recipe_steps.belongs_to_recipe = $1
-    AND recipes.archived_at IS NULL
-    AND recipes.id = $1
+	AND recipe_steps.archived_at IS NULL
+	AND recipe_steps.belongs_to_recipe = $1
+	AND recipes.archived_at IS NULL
+	AND recipes.id = $1
 `
 
 type GetRecipeStepVesselsForRecipeRow struct {
@@ -670,8 +670,8 @@ UPDATE recipe_step_vessels SET
 	valid_vessel_id = $5,
 	vessel_predicate = $6,
 	minimum_quantity = $7,
-    maximum_quantity = $8,
-    unavailable_after_step = $9,
+	maximum_quantity = $8,
+	unavailable_after_step = $9,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND belongs_to_recipe_step = $3

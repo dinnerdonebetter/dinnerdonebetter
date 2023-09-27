@@ -61,9 +61,9 @@ func buildValidPreparationInstrumentsQueries() []*Query {
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
-    %s
+	%s
 ) VALUES (
-    %s
+	%s
 );`,
 				validPreparationInstrumentsTableName,
 				strings.Join(insertColumns, ",\n\t"),
@@ -78,12 +78,12 @@ func buildValidPreparationInstrumentsQueries() []*Query {
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
-    SELECT %s.id
-    FROM %s
-    WHERE %s.%s IS NULL
-        AND %s.%s = sqlc.arg(%s)
+	SELECT %s.%s
+	FROM %s
+	WHERE %s.%s IS NULL
+		AND %s.%s = sqlc.arg(%s)
 );`,
-				validPreparationInstrumentsTableName,
+				validPreparationInstrumentsTableName, idColumn,
 				validPreparationInstrumentsTableName,
 				validPreparationInstrumentsTableName,
 				archivedAtColumn,
@@ -100,11 +100,10 @@ func buildValidPreparationInstrumentsQueries() []*Query {
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
 	(
-		SELECT
-			COUNT(valid_preparation_instruments.id)
+		SELECT COUNT(valid_preparation_instruments.id)
 		FROM valid_preparation_instruments
-            JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-            JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+			JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+			JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 		WHERE
 			valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
@@ -112,11 +111,10 @@ func buildValidPreparationInstrumentsQueries() []*Query {
 			%s
 	) as filtered_count,
 	(
-		SELECT
-			COUNT(valid_preparation_instruments.id)
+		SELECT COUNT(valid_preparation_instruments.id)
 		FROM valid_preparation_instruments
-            JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-            JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+			JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+			JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 		WHERE
 			valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
@@ -157,11 +155,10 @@ ORDER BY valid_preparation_instruments.id
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
 	(
-		SELECT
-			COUNT(valid_preparation_instruments.id)
+		SELECT COUNT(valid_preparation_instruments.id)
 		FROM valid_preparation_instruments
-            JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-            JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+			JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+			JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 		WHERE
 			valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
@@ -169,11 +166,10 @@ ORDER BY valid_preparation_instruments.id
 			%s
 	) as filtered_count,
 	(
-		SELECT
-			COUNT(valid_preparation_instruments.id)
+		SELECT COUNT(valid_preparation_instruments.id)
 		FROM valid_preparation_instruments
-            JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-            JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+			JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+			JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 		WHERE
 			valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
@@ -214,11 +210,10 @@ ORDER BY valid_preparation_instruments.id
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
 	(
-		SELECT
-			COUNT(valid_preparation_instruments.id)
+		SELECT COUNT(valid_preparation_instruments.id)
 		FROM valid_preparation_instruments
-            JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-            JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+			JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+			JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 		WHERE
 			valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
@@ -226,11 +221,10 @@ ORDER BY valid_preparation_instruments.id
 			%s
 	) as filtered_count,
 	(
-		SELECT
-			COUNT(valid_preparation_instruments.id)
+		SELECT COUNT(valid_preparation_instruments.id)
 		FROM valid_preparation_instruments
-            JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-            JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+			JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+			JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 		WHERE
 			valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
@@ -270,9 +264,9 @@ ORDER BY valid_preparation_instruments.id
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM
-    valid_preparation_instruments
-    JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-    JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+	valid_preparation_instruments
+	JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+	JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 WHERE
 	valid_preparation_instruments.archived_at IS NULL
 	AND valid_instruments.archived_at IS NULL
@@ -287,13 +281,16 @@ WHERE
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS(
-	SELECT id
+	SELECT %s.%s
 	FROM %s
-	WHERE valid_instrument_id = sqlc.arg(valid_instrument_id)
-	AND valid_preparation_id = sqlc.arg(valid_preparation_id)
+	WHERE %s = sqlc.arg(%s)
+	AND %s = sqlc.arg(%s)
 	AND %s IS NULL
 );`,
+				validPreparationInstrumentsTableName, idColumn,
 				validPreparationInstrumentsTableName,
+				validInstrumentIDColumn, validInstrumentIDColumn,
+				validPreparationIDColumn, validPreparationIDColumn,
 				archivedAtColumn,
 			)),
 		},

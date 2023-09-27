@@ -84,7 +84,7 @@ SELECT EXISTS (
 	SELECT valid_ingredients.id
 	FROM valid_ingredients
 	WHERE valid_ingredients.archived_at IS NULL
-	    AND valid_ingredients.id = sqlc.arg(id)
+		AND valid_ingredients.id = sqlc.arg(id)
 );
 
 -- name: GetValidIngredients :many
@@ -129,7 +129,7 @@ SELECT
 	valid_ingredients.created_at,
 	valid_ingredients.last_updated_at,
 	valid_ingredients.archived_at,
-    (
+	(
 		SELECT COUNT(valid_ingredients.id)
 		FROM valid_ingredients
 		WHERE valid_ingredients.archived_at IS NULL
@@ -144,7 +144,7 @@ SELECT
 				OR valid_ingredients.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
 			)
 	) AS filtered_count,
-    (
+	(
 		SELECT COUNT(valid_ingredients.id)
 		FROM valid_ingredients
 		WHERE valid_ingredients.archived_at IS NULL
@@ -172,9 +172,9 @@ OFFSET sqlc.narg(query_offset);
 SELECT valid_ingredients.id
 FROM valid_ingredients
 WHERE valid_ingredients.archived_at IS NULL
-    AND (
-    valid_ingredients.last_indexed_at IS NULL
-    OR valid_ingredients.last_indexed_at < NOW() - '24 hours'::INTERVAL
+	AND (
+	valid_ingredients.last_indexed_at IS NULL
+	OR valid_ingredients.last_indexed_at < NOW() - '24 hours'::INTERVAL
 );
 
 -- name: GetValidIngredient :one
@@ -455,7 +455,7 @@ UPDATE valid_ingredients SET
 	is_heat = sqlc.arg(is_heat),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-    AND id = sqlc.arg(id);
+	AND id = sqlc.arg(id);
 
 -- name: UpdateValidIngredientLastIndexedAt :execrows
 

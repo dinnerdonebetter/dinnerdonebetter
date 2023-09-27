@@ -9,13 +9,17 @@ import (
 
 const (
 	passwordResetTokensTableName = "password_reset_tokens"
+
+	passwordResetTokenColumn          = "token"
+	redeemedAtColumn                  = "redeemed_at"
+	passwordResetTokenExpiresAtColumn = "expires_at"
 )
 
 var passwordResetTokensColumns = []string{
 	idColumn,
-	"token",
-	"expires_at",
-	"redeemed_at",
+	passwordResetTokenColumn,
+	passwordResetTokenExpiresAtColumn,
+	redeemedAtColumn,
 	belongsToUserColumn,
 	createdAtColumn,
 	lastUpdatedAtColumn,
@@ -34,13 +38,14 @@ func buildPasswordResetTokensQueries() []*Query {
 	%s
 ) VALUES (
 	sqlc.arg(%s),
-	sqlc.arg(token),
+	sqlc.arg(%s),
 	%s + (30 * '1 minutes'::INTERVAL),
-    sqlc.arg(%s)
+	sqlc.arg(%s)
 );`,
 				passwordResetTokensTableName,
 				strings.Join(insertColumns, ",\n\t"),
 				idColumn,
+				passwordResetTokenColumn,
 				currentTimeExpression,
 				belongsToUserColumn,
 			)),
@@ -53,17 +58,16 @@ func buildPasswordResetTokensQueries() []*Query {
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
-WHERE %s.redeemed_at IS NULL
-	AND %s < %s.expires_at
-	AND %s.token = sqlc.arg(token);`,
+WHERE %s.%s IS NULL
+	AND %s < %s.%s
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(applyToEach(passwordResetTokensColumns, func(i int, s string) string {
 					return fmt.Sprintf("password_reset_tokens.%s", s)
 				}), ",\n\t"),
 				passwordResetTokensTableName,
-				passwordResetTokensTableName,
-				currentTimeExpression,
-				passwordResetTokensTableName,
-				passwordResetTokensTableName,
+				passwordResetTokensTableName, redeemedAtColumn,
+				currentTimeExpression, passwordResetTokensTableName, passwordResetTokenExpiresAtColumn,
+				passwordResetTokensTableName, passwordResetTokenColumn, passwordResetTokenColumn,
 			)),
 		},
 		{
@@ -72,11 +76,13 @@ WHERE %s.redeemed_at IS NULL
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
-    redeemed_at = %s
-WHERE redeemed_at IS NULL
-    AND id = sqlc.arg(id);`,
+	%s = %s
+WHERE %s IS NULL
+	AND %s = sqlc.arg(%s);`,
 				passwordResetTokensTableName,
-				currentTimeExpression,
+				redeemedAtColumn, currentTimeExpression,
+				redeemedAtColumn,
+				idColumn, idColumn,
 			)),
 		},
 	}

@@ -251,15 +251,14 @@ WHERE %s.%s IS NULL
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
-WHERE %s.name %s
+WHERE %s.%s %s
 	AND %s.%s IS NULL
 LIMIT 50;`,
 				strings.Join(applyToEach(validVesselsColumns, func(i int, s string) string {
 					return fmt.Sprintf("%s.%s", validVesselsTableName, s)
 				}), ",\n\t"),
 				validVesselsTableName,
-				validVesselsTableName,
-				"ILIKE '%' || sqlc.arg(name_query)::text || '%'",
+				validVesselsTableName, nameColumn, buildILIKEForArgument("name_query"),
 				validVesselsTableName,
 				archivedAtColumn,
 			)),
@@ -273,7 +272,7 @@ LIMIT 50;`,
 	%s,
 	%s = %s
 WHERE %s IS NULL
-    AND %s = sqlc.arg(%s);`,
+	AND %s = sqlc.arg(%s);`,
 				validVesselsTableName,
 				strings.Join(applyToEach(filterForUpdate(validVesselsColumns), func(i int, s string) string {
 					return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)

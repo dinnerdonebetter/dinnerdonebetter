@@ -44,21 +44,21 @@ func (q *Queries) CheckMealExistence(ctx context.Context, db DBTX, id string) (b
 const createMeal = `-- name: CreateMeal :exec
 
 INSERT INTO meals (
-    id,
-    name,
-    description,
-    min_estimated_portions,
-    max_estimated_portions,
-    eligible_for_meal_plans,
-    created_by_user
+	id,
+	name,
+	description,
+	min_estimated_portions,
+	max_estimated_portions,
+	eligible_for_meal_plans,
+	created_by_user
 ) VALUES (
-    $1,
-    $2,
-    $3,
-    $4,
-    $5,
-    $6,
-    $7
+	$1,
+	$2,
+	$3,
+	$4,
+	$5,
+	$6,
+	$7
 )
 `
 
@@ -88,21 +88,21 @@ func (q *Queries) CreateMeal(ctx context.Context, db DBTX, arg *CreateMealParams
 const getMeal = `-- name: GetMeal :many
 
 SELECT
-    meals.id,
-    meals.name,
-    meals.description,
-    meals.min_estimated_portions,
-    meals.max_estimated_portions,
-    meals.eligible_for_meal_plans,
-    meals.created_at,
-    meals.last_updated_at,
-    meals.archived_at,
-    meals.created_by_user,
-    meal_components.recipe_id as component_recipe_id,
-    meal_components.recipe_scale as component_recipe_scale,
-    meal_components.meal_component_type as component_meal_component_type
+	meals.id,
+	meals.name,
+	meals.description,
+	meals.min_estimated_portions,
+	meals.max_estimated_portions,
+	meals.eligible_for_meal_plans,
+	meals.created_at,
+	meals.last_updated_at,
+	meals.archived_at,
+	meals.created_by_user,
+	meal_components.recipe_id as component_recipe_id,
+	meal_components.recipe_scale as component_recipe_scale,
+	meal_components.meal_component_type as component_meal_component_type
 FROM meals
-    JOIN meal_components ON meal_components.meal_id=meals.id
+	JOIN meal_components ON meal_components.meal_id=meals.id
 WHERE meals.archived_at IS NULL
   AND meal_components.archived_at IS NULL
   AND meals.id = $1
@@ -164,37 +164,37 @@ func (q *Queries) GetMeal(ctx context.Context, db DBTX, id string) ([]*GetMealRo
 const getMeals = `-- name: GetMeals :many
 
 SELECT
-    meals.id,
-    meals.name,
-    meals.description,
-    meals.min_estimated_portions,
-    meals.max_estimated_portions,
-    meals.eligible_for_meal_plans,
-    meals.created_at,
-    meals.last_updated_at,
-    meals.archived_at,
-    meals.created_by_user,
-    (
-        SELECT COUNT(meals.id)
-        FROM meals
-        WHERE
-            meals.archived_at IS NULL
-            AND meals.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-            AND meals.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-            AND (meals.last_updated_at IS NULL OR meals.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-            AND (meals.last_updated_at IS NULL OR meals.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-    ) as filtered_count,
-    (
-        SELECT COUNT(meals.id)
-        FROM meals
-        WHERE meals.archived_at IS NULL
-    ) as total_count
+	meals.id,
+	meals.name,
+	meals.description,
+	meals.min_estimated_portions,
+	meals.max_estimated_portions,
+	meals.eligible_for_meal_plans,
+	meals.created_at,
+	meals.last_updated_at,
+	meals.archived_at,
+	meals.created_by_user,
+	(
+		SELECT COUNT(meals.id)
+		FROM meals
+		WHERE
+			meals.archived_at IS NULL
+			AND meals.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+			AND meals.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+			AND (meals.last_updated_at IS NULL OR meals.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+			AND (meals.last_updated_at IS NULL OR meals.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+	) as filtered_count,
+	(
+		SELECT COUNT(meals.id)
+		FROM meals
+		WHERE meals.archived_at IS NULL
+	) as total_count
 FROM meals
 WHERE meals.archived_at IS NULL
-    AND meals.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-    AND meals.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-    AND (meals.last_updated_at IS NULL OR meals.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-    AND (meals.last_updated_at IS NULL OR meals.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+	AND meals.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+	AND meals.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+	AND (meals.last_updated_at IS NULL OR meals.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+	AND (meals.last_updated_at IS NULL OR meals.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
 OFFSET $5
 LIMIT $6
 `
@@ -269,13 +269,13 @@ func (q *Queries) GetMeals(ctx context.Context, db DBTX, arg *GetMealsParams) ([
 const getMealsNeedingIndexing = `-- name: GetMealsNeedingIndexing :many
 
 SELECT meals.id
-    FROM meals
-    WHERE meals.archived_at IS NULL
-    AND (
-        meals.last_indexed_at IS NULL
-        OR meals.last_indexed_at
-            < NOW() - '24 hours'::INTERVAL
-    )
+	FROM meals
+	WHERE meals.archived_at IS NULL
+	AND (
+		meals.last_indexed_at IS NULL
+		OR meals.last_indexed_at
+			< NOW() - '24 hours'::INTERVAL
+	)
 `
 
 func (q *Queries) GetMealsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error) {
@@ -304,45 +304,45 @@ func (q *Queries) GetMealsNeedingIndexing(ctx context.Context, db DBTX) ([]strin
 const searchForMeals = `-- name: SearchForMeals :many
 
 SELECT
-    meals.id,
-    meals.name,
-    meals.description,
-    meals.min_estimated_portions,
-    meals.max_estimated_portions,
-    meals.eligible_for_meal_plans,
-    meals.created_at,
-    meals.last_updated_at,
-    meals.archived_at,
-    meals.created_by_user,
-    meal_components.recipe_id as component_recipe_id,
-    meal_components.recipe_scale as component_recipe_scale,
-    meal_components.meal_component_type as component_meal_component_type,
-    (
-        SELECT
-            COUNT(meals.id)
-        FROM
-            meals
-        WHERE
-            meals.archived_at IS NULL
-            AND meals.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-            AND meals.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-            AND (meals.last_updated_at IS NULL OR meals.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-            AND (meals.last_updated_at IS NULL OR meals.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-    ) as filtered_count,
-    (
-        SELECT COUNT(meals.id)
-        FROM meals
-        WHERE meals.archived_at IS NULL
-    ) as total_count
+	meals.id,
+	meals.name,
+	meals.description,
+	meals.min_estimated_portions,
+	meals.max_estimated_portions,
+	meals.eligible_for_meal_plans,
+	meals.created_at,
+	meals.last_updated_at,
+	meals.archived_at,
+	meals.created_by_user,
+	meal_components.recipe_id as component_recipe_id,
+	meal_components.recipe_scale as component_recipe_scale,
+	meal_components.meal_component_type as component_meal_component_type,
+	(
+		SELECT
+			COUNT(meals.id)
+		FROM
+			meals
+		WHERE
+			meals.archived_at IS NULL
+			AND meals.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+			AND meals.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+			AND (meals.last_updated_at IS NULL OR meals.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+			AND (meals.last_updated_at IS NULL OR meals.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+	) as filtered_count,
+	(
+		SELECT COUNT(meals.id)
+		FROM meals
+		WHERE meals.archived_at IS NULL
+	) as total_count
 FROM meals
-    JOIN meal_components ON meal_components.meal_id=meals.id
+	JOIN meal_components ON meal_components.meal_id=meals.id
 WHERE meals.archived_at IS NULL
-    AND meals.name ILIKE '%' || $5 || '%'
-    AND meals.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-    AND meals.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-    AND (meals.last_updated_at IS NULL OR meals.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-    AND (meals.last_updated_at IS NULL OR meals.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-    AND meal_components.archived_at IS NULL
+	AND meals.name ILIKE '%' || $5 || '%'
+	AND meals.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
+	AND meals.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+	AND (meals.last_updated_at IS NULL OR meals.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
+	AND (meals.last_updated_at IS NULL OR meals.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+	AND meal_components.archived_at IS NULL
 OFFSET $6
 LIMIT $7
 `

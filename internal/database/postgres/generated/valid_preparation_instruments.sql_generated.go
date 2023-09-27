@@ -27,10 +27,10 @@ func (q *Queries) ArchiveValidPreparationInstrument(ctx context.Context, db DBTX
 const checkValidPreparationInstrumentExistence = `-- name: CheckValidPreparationInstrumentExistence :one
 
 SELECT EXISTS (
-    SELECT valid_preparation_instruments.id
-    FROM valid_preparation_instruments
-    WHERE valid_preparation_instruments.archived_at IS NULL
-        AND valid_preparation_instruments.id = $1
+	SELECT valid_preparation_instruments.id
+	FROM valid_preparation_instruments
+	WHERE valid_preparation_instruments.archived_at IS NULL
+		AND valid_preparation_instruments.id = $1
 )
 `
 
@@ -44,12 +44,12 @@ func (q *Queries) CheckValidPreparationInstrumentExistence(ctx context.Context, 
 const createValidPreparationInstrument = `-- name: CreateValidPreparationInstrument :exec
 
 INSERT INTO valid_preparation_instruments (
-    id,
+	id,
 	notes,
 	valid_preparation_id,
 	valid_instrument_id
 ) VALUES (
-    $1,
+	$1,
 	$2,
 	$3,
 	$4
@@ -118,9 +118,9 @@ SELECT
 	valid_preparation_instruments.last_updated_at as valid_preparation_instrument_last_updated_at,
 	valid_preparation_instruments.archived_at as valid_preparation_instrument_archived_at
 FROM
-    valid_preparation_instruments
-    JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-    JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+	valid_preparation_instruments
+	JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+	JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 WHERE
 	valid_preparation_instruments.archived_at IS NULL
 	AND valid_instruments.archived_at IS NULL
@@ -266,11 +266,10 @@ SELECT
 	valid_preparation_instruments.last_updated_at as valid_preparation_instrument_last_updated_at,
 	valid_preparation_instruments.archived_at as valid_preparation_instrument_archived_at,
 	(
-		SELECT
-			COUNT(valid_preparation_instruments.id)
+		SELECT COUNT(valid_preparation_instruments.id)
 		FROM valid_preparation_instruments
-            JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-            JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+			JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+			JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 		WHERE
 			valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
@@ -287,11 +286,10 @@ SELECT
 	)
 	) as filtered_count,
 	(
-		SELECT
-			COUNT(valid_preparation_instruments.id)
+		SELECT COUNT(valid_preparation_instruments.id)
 		FROM valid_preparation_instruments
-            JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-            JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+			JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+			JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 		WHERE
 			valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
@@ -497,11 +495,10 @@ SELECT
 	valid_preparation_instruments.last_updated_at as valid_preparation_instrument_last_updated_at,
 	valid_preparation_instruments.archived_at as valid_preparation_instrument_archived_at,
 	(
-		SELECT
-			COUNT(valid_preparation_instruments.id)
+		SELECT COUNT(valid_preparation_instruments.id)
 		FROM valid_preparation_instruments
-            JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-            JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+			JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+			JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 		WHERE
 			valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
@@ -518,11 +515,10 @@ SELECT
 	)
 	) as filtered_count,
 	(
-		SELECT
-			COUNT(valid_preparation_instruments.id)
+		SELECT COUNT(valid_preparation_instruments.id)
 		FROM valid_preparation_instruments
-            JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-            JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+			JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+			JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 		WHERE
 			valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
@@ -731,11 +727,10 @@ SELECT
 	valid_preparation_instruments.last_updated_at as valid_preparation_instrument_last_updated_at,
 	valid_preparation_instruments.archived_at as valid_preparation_instrument_archived_at,
 	(
-		SELECT
-			COUNT(valid_preparation_instruments.id)
+		SELECT COUNT(valid_preparation_instruments.id)
 		FROM valid_preparation_instruments
-            JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-            JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+			JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+			JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 		WHERE
 			valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
@@ -752,11 +747,10 @@ SELECT
 	)
 	) as filtered_count,
 	(
-		SELECT
-			COUNT(valid_preparation_instruments.id)
+		SELECT COUNT(valid_preparation_instruments.id)
 		FROM valid_preparation_instruments
-            JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-            JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+			JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+			JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 		WHERE
 			valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
@@ -954,7 +948,7 @@ func (q *Queries) UpdateValidPreparationInstrument(ctx context.Context, db DBTX,
 const validPreparationInstrumentPairIsValid = `-- name: ValidPreparationInstrumentPairIsValid :one
 
 SELECT EXISTS(
-	SELECT id
+	SELECT valid_preparation_instruments.id
 	FROM valid_preparation_instruments
 	WHERE valid_instrument_id = $1
 	AND valid_preparation_id = $2

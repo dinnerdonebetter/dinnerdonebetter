@@ -756,7 +756,7 @@ UPDATE valid_vessels SET
 	shape = $14,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-    AND id = $15
+	AND id = $15
 `
 
 type UpdateValidVesselParams struct {

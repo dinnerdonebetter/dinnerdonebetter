@@ -29,10 +29,10 @@ func (q *Queries) ArchiveValidIngredientState(ctx context.Context, db DBTX, id s
 const checkValidIngredientStateExistence = `-- name: CheckValidIngredientStateExistence :one
 
 SELECT EXISTS (
-    SELECT valid_ingredient_states.id
-    FROM valid_ingredient_states
-    WHERE valid_ingredient_states.archived_at IS NULL
-        AND valid_ingredient_states.id = $1
+	SELECT valid_ingredient_states.id
+	FROM valid_ingredient_states
+	WHERE valid_ingredient_states.archived_at IS NULL
+		AND valid_ingredient_states.id = $1
 )
 `
 
@@ -46,7 +46,7 @@ func (q *Queries) CheckValidIngredientStateExistence(ctx context.Context, db DBT
 const createValidIngredientState = `-- name: CreateValidIngredientState :exec
 
 INSERT INTO valid_ingredient_states (
-    id,
+	id,
 	name,
 	past_tense,
 	slug,
@@ -54,7 +54,7 @@ INSERT INTO valid_ingredient_states (
 	icon_path,
 	attribute_type
 ) VALUES (
-    $1,
+	$1,
 	$2,
 	$3,
 	$4,
@@ -153,7 +153,7 @@ SELECT
 	valid_ingredient_states.created_at,
 	valid_ingredient_states.last_updated_at,
 	valid_ingredient_states.archived_at,
-    (
+	(
 		SELECT COUNT(valid_ingredient_states.id)
 		FROM valid_ingredient_states
 		WHERE valid_ingredient_states.archived_at IS NULL
@@ -168,7 +168,7 @@ SELECT
 				OR valid_ingredient_states.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
 			)
 	) AS filtered_count,
-    (
+	(
 		SELECT COUNT(valid_ingredient_states.id)
 		FROM valid_ingredient_states
 		WHERE valid_ingredient_states.archived_at IS NULL
@@ -266,9 +266,9 @@ const getValidIngredientStatesNeedingIndexing = `-- name: GetValidIngredientStat
 SELECT valid_ingredient_states.id
 FROM valid_ingredient_states
 WHERE valid_ingredient_states.archived_at IS NULL
-    AND (
-    valid_ingredient_states.last_indexed_at IS NULL
-    OR valid_ingredient_states.last_indexed_at < NOW() - '24 hours'::INTERVAL
+	AND (
+	valid_ingredient_states.last_indexed_at IS NULL
+	OR valid_ingredient_states.last_indexed_at < NOW() - '24 hours'::INTERVAL
 )
 `
 
@@ -443,7 +443,7 @@ UPDATE valid_ingredient_states SET
 	attribute_type = $6,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-    AND id = $7
+	AND id = $7
 `
 
 type UpdateValidIngredientStateParams struct {

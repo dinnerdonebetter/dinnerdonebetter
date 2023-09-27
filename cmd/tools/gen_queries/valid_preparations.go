@@ -8,8 +8,9 @@ import (
 )
 
 const (
-	validPreparationsTableName = "valid_preparations"
-	validPreparationIDColumn   = "valid_preparation_id"
+	validPreparationsTableName  = "valid_preparations"
+	validPreparationIDColumn    = "valid_preparation_id"
+	restrictToIngredientsColumn = "restrict_to_ingredients"
 )
 
 var validPreparationsColumns = []string{
@@ -18,7 +19,7 @@ var validPreparationsColumns = []string{
 	descriptionColumn,
 	iconPathColumn,
 	"yields_nothing",
-	"restrict_to_ingredients",
+	restrictToIngredientsColumn,
 	"past_tense",
 	slugColumn,
 	"minimum_ingredient_count",
@@ -81,8 +82,8 @@ func buildValidPreparationsQueries() []*Query {
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
 	SELECT %s.id
 	FROM %s
-    WHERE %s.%s IS NULL
-        AND %s.%s = sqlc.arg(%s)
+	WHERE %s.%s IS NULL
+		AND %s.%s = sqlc.arg(%s)
 );`,
 				validPreparationsTableName,
 				validPreparationsTableName,
@@ -100,8 +101,8 @@ func buildValidPreparationsQueries() []*Query {
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
-    %s,
-    %s
+	%s,
+	%s
 FROM %s
 WHERE
 	%s.%s IS NULL
@@ -141,9 +142,9 @@ ORDER BY %s.%s
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT %s.%s
 FROM %s
 WHERE %s.%s IS NULL
-    AND (
-    %s.%s IS NULL
-    OR %s.%s < %s - '24 hours'::INTERVAL
+	AND (
+	%s.%s IS NULL
+	OR %s.%s < %s - '24 hours'::INTERVAL
 );`,
 				validPreparationsTableName,
 				idColumn,
@@ -224,15 +225,14 @@ WHERE %s.%s IS NULL
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
-WHERE %s.name %s
+WHERE %s.%s %s
 	AND %s.%s IS NULL
 LIMIT 50;`,
 				strings.Join(applyToEach(validPreparationsColumns, func(i int, s string) string {
 					return fmt.Sprintf("%s.%s", validPreparationsTableName, s)
 				}), ",\n\t"),
 				validPreparationsTableName,
-				validPreparationsTableName,
-				"ILIKE '%' || sqlc.arg(name_query)::text || '%'",
+				validPreparationsTableName, nameColumn, buildILIKEForArgument("name_query"),
 				validPreparationsTableName,
 				archivedAtColumn,
 			)),
@@ -246,7 +246,7 @@ LIMIT 50;`,
 	%s,
 	%s = %s
 WHERE %s IS NULL
-    AND %s = sqlc.arg(%s);`,
+	AND %s = sqlc.arg(%s);`,
 				validPreparationsTableName,
 				strings.Join(applyToEach(filterForUpdate(validPreparationsColumns), func(i int, s string) string {
 					return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)

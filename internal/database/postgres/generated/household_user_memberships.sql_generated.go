@@ -151,12 +151,12 @@ WHERE archived_at IS NULL
 `
 
 type MarkHouseholdUserMembershipAsUserDefaultParams struct {
-	UserID      string
-	HouseholdID string
+	BelongsToUser      string
+	BelongsToHousehold string
 }
 
 func (q *Queries) MarkHouseholdUserMembershipAsUserDefault(ctx context.Context, db DBTX, arg *MarkHouseholdUserMembershipAsUserDefaultParams) error {
-	_, err := db.ExecContext(ctx, markHouseholdUserMembershipAsUserDefault, arg.UserID, arg.HouseholdID)
+	_, err := db.ExecContext(ctx, markHouseholdUserMembershipAsUserDefault, arg.BelongsToUser, arg.BelongsToHousehold)
 	return err
 }
 
@@ -223,8 +223,8 @@ const transferHouseholdOwnership = `-- name: TransferHouseholdOwnership :exec
 UPDATE households SET
 	belongs_to_user = $1
 WHERE archived_at IS NULL
-    AND belongs_to_user = $2
-    AND id = $3
+	AND belongs_to_user = $2
+	AND id = $3
 `
 
 type TransferHouseholdOwnershipParams struct {
@@ -241,11 +241,11 @@ func (q *Queries) TransferHouseholdOwnership(ctx context.Context, db DBTX, arg *
 const userIsHouseholdMember = `-- name: UserIsHouseholdMember :one
 
 SELECT EXISTS (
-    SELECT household_user_memberships.id
-    FROM household_user_memberships
-    WHERE household_user_memberships.archived_at IS NULL
-        AND household_user_memberships.belongs_to_household = $1
-        AND household_user_memberships.belongs_to_user = $2
+	SELECT household_user_memberships.id
+	FROM household_user_memberships
+	WHERE household_user_memberships.archived_at IS NULL
+		AND household_user_memberships.belongs_to_household = $1
+		AND household_user_memberships.belongs_to_user = $2
 )
 `
 

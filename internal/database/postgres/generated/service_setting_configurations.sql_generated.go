@@ -14,9 +14,9 @@ import (
 const archiveServiceSettingConfiguration = `-- name: ArchiveServiceSettingConfiguration :execrows
 
 UPDATE service_setting_configurations SET
-    archived_at = NOW()
+	archived_at = NOW()
 WHERE archived_at IS NULL
-    AND id = $1
+	AND id = $1
 `
 
 func (q *Queries) ArchiveServiceSettingConfiguration(ctx context.Context, db DBTX, id string) (int64, error) {
@@ -30,10 +30,10 @@ func (q *Queries) ArchiveServiceSettingConfiguration(ctx context.Context, db DBT
 const checkServiceSettingConfigurationExistence = `-- name: CheckServiceSettingConfigurationExistence :one
 
 SELECT EXISTS (
-    SELECT service_setting_configurations.id
-    FROM service_setting_configurations
-    WHERE service_setting_configurations.archived_at IS NULL
-    AND service_setting_configurations.id = $1
+	SELECT service_setting_configurations.id
+	FROM service_setting_configurations
+	WHERE service_setting_configurations.archived_at IS NULL
+		AND service_setting_configurations.id = $1
 )
 `
 
@@ -47,14 +47,14 @@ func (q *Queries) CheckServiceSettingConfigurationExistence(ctx context.Context,
 const createServiceSettingConfiguration = `-- name: CreateServiceSettingConfiguration :exec
 
 INSERT INTO service_setting_configurations (
-    id,
+	id,
 	value,
 	notes,
 	service_setting_id,
 	belongs_to_user,
 	belongs_to_household
 ) VALUES (
-    $1,
+	$1,
 	$2,
 	$3,
 	$4,
@@ -106,10 +106,10 @@ SELECT
 	service_setting_configurations.last_updated_at,
 	service_setting_configurations.archived_at
 FROM service_setting_configurations
-    JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
+	JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
 WHERE service_settings.archived_at IS NULL
-    AND service_setting_configurations.archived_at IS NULL
-    AND service_setting_configurations.id = $1
+	AND service_setting_configurations.archived_at IS NULL
+	AND service_setting_configurations.id = $1
 `
 
 type GetServiceSettingConfigurationByIDRow struct {
@@ -162,7 +162,7 @@ func (q *Queries) GetServiceSettingConfigurationByID(ctx context.Context, db DBT
 const getServiceSettingConfigurationForHouseholdBySettingName = `-- name: GetServiceSettingConfigurationForHouseholdBySettingName :one
 
 SELECT
-    service_setting_configurations.id,
+	service_setting_configurations.id,
 	service_setting_configurations.value,
 	service_setting_configurations.notes,
 	service_settings.id as service_setting_id,
@@ -181,11 +181,11 @@ SELECT
 	service_setting_configurations.last_updated_at,
 	service_setting_configurations.archived_at
 FROM service_setting_configurations
-    JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
+	JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
 WHERE service_settings.archived_at IS NULL
-    AND service_setting_configurations.archived_at IS NULL
-    AND service_settings.name = $1
-    AND service_setting_configurations.belongs_to_household = $2
+	AND service_setting_configurations.archived_at IS NULL
+	AND service_settings.name = $1
+	AND service_setting_configurations.belongs_to_household = $2
 `
 
 type GetServiceSettingConfigurationForHouseholdBySettingNameParams struct {
@@ -243,7 +243,7 @@ func (q *Queries) GetServiceSettingConfigurationForHouseholdBySettingName(ctx co
 const getServiceSettingConfigurationForUserBySettingName = `-- name: GetServiceSettingConfigurationForUserBySettingName :one
 
 SELECT
-    service_setting_configurations.id,
+	service_setting_configurations.id,
 	service_setting_configurations.value,
 	service_setting_configurations.notes,
 	service_settings.id as service_setting_id,
@@ -262,11 +262,11 @@ SELECT
 	service_setting_configurations.last_updated_at,
 	service_setting_configurations.archived_at
 FROM service_setting_configurations
-    JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
+	JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
 WHERE service_settings.archived_at IS NULL
-    AND service_setting_configurations.archived_at IS NULL
-    AND service_settings.name = $1
-    AND service_setting_configurations.belongs_to_user = $2
+	AND service_setting_configurations.archived_at IS NULL
+	AND service_settings.name = $1
+	AND service_setting_configurations.belongs_to_user = $2
 `
 
 type GetServiceSettingConfigurationForUserBySettingNameParams struct {
@@ -324,7 +324,7 @@ func (q *Queries) GetServiceSettingConfigurationForUserBySettingName(ctx context
 const getServiceSettingConfigurationsForHousehold = `-- name: GetServiceSettingConfigurationsForHousehold :many
 
 SELECT
-    service_setting_configurations.id,
+	service_setting_configurations.id,
 	service_setting_configurations.value,
 	service_setting_configurations.notes,
 	service_settings.id as service_setting_id,
@@ -343,10 +343,10 @@ SELECT
 	service_setting_configurations.last_updated_at,
 	service_setting_configurations.archived_at
 FROM service_setting_configurations
-    JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
+	JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
 WHERE service_settings.archived_at IS NULL
-    AND service_setting_configurations.archived_at IS NULL
-    AND service_setting_configurations.belongs_to_household = $1
+	AND service_setting_configurations.archived_at IS NULL
+	AND service_setting_configurations.belongs_to_household = $1
 `
 
 type GetServiceSettingConfigurationsForHouseholdRow struct {
@@ -415,7 +415,7 @@ func (q *Queries) GetServiceSettingConfigurationsForHousehold(ctx context.Contex
 const getServiceSettingConfigurationsForUser = `-- name: GetServiceSettingConfigurationsForUser :many
 
 SELECT
-    service_setting_configurations.id,
+	service_setting_configurations.id,
 	service_setting_configurations.value,
 	service_setting_configurations.notes,
 	service_settings.id as service_setting_id,
@@ -434,10 +434,10 @@ SELECT
 	service_setting_configurations.last_updated_at,
 	service_setting_configurations.archived_at
 FROM service_setting_configurations
-    JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
+	JOIN service_settings ON service_setting_configurations.service_setting_id=service_settings.id
 WHERE service_settings.archived_at IS NULL
-    AND service_setting_configurations.archived_at IS NULL
-    AND service_setting_configurations.belongs_to_user = $1
+	AND service_setting_configurations.archived_at IS NULL
+	AND service_setting_configurations.belongs_to_user = $1
 `
 
 type GetServiceSettingConfigurationsForUserRow struct {
@@ -506,11 +506,11 @@ func (q *Queries) GetServiceSettingConfigurationsForUser(ctx context.Context, db
 const updateServiceSettingConfiguration = `-- name: UpdateServiceSettingConfiguration :execrows
 
 UPDATE service_setting_configurations SET
-    value = $1,
-    notes = $2,
-    service_setting_id = $3,
-    belongs_to_user = $4,
-    belongs_to_household = $5,
+	value = $1,
+	notes = $2,
+	service_setting_id = $3,
+	belongs_to_user = $4,
+	belongs_to_household = $5,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = $6

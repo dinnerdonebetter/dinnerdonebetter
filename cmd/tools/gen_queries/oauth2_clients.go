@@ -9,13 +9,14 @@ import (
 
 const (
 	oauth2ClientsTableName = "oauth2_clients"
+	clientIDColumn         = "client_id"
 )
 
 var oauth2ClientsColumns = []string{
 	idColumn,
 	nameColumn,
 	descriptionColumn,
-	"client_id",
+	clientIDColumn,
 	"client_secret",
 	createdAtColumn,
 	archivedAtColumn,
@@ -66,12 +67,15 @@ WHERE %s IS NULL
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
-FROM oauth2_clients
-WHERE oauth2_clients.archived_at IS NULL
-	AND oauth2_clients.client_id = $1;`,
+FROM %s
+WHERE %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(applyToEach(oauth2ClientsColumns, func(_ int, s string) string {
 					return fmt.Sprintf("%s.%s", oauth2ClientsTableName, s)
 				}), ",\n\t"),
+				oauth2ClientsTableName,
+				oauth2ClientsTableName, archivedAtColumn,
+				oauth2ClientsTableName, clientIDColumn, clientIDColumn,
 			)),
 		},
 		{
@@ -81,12 +85,15 @@ WHERE oauth2_clients.archived_at IS NULL
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
-FROM oauth2_clients
-WHERE oauth2_clients.archived_at IS NULL
-	AND oauth2_clients.id = $1;`,
+FROM %s
+WHERE %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(applyToEach(oauth2ClientsColumns, func(_ int, s string) string {
 					return fmt.Sprintf("%s.%s", oauth2ClientsTableName, s)
 				}), ",\n\t"),
+				oauth2ClientsTableName,
+				oauth2ClientsTableName, archivedAtColumn,
+				oauth2ClientsTableName, idColumn, idColumn,
 			)),
 		},
 		{
@@ -97,24 +104,23 @@ WHERE oauth2_clients.archived_at IS NULL
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
 	(
-		SELECT
-			COUNT(oauth2_clients.id)
-		FROM
-			oauth2_clients
-		WHERE
-			oauth2_clients.archived_at IS NULL
+		SELECT COUNT(%s.%s)
+		FROM %s
+		WHERE %s.%s IS NULL
 			%s
 	) as filtered_count,
 	%s
-FROM oauth2_clients
-WHERE oauth2_clients.archived_at IS NULL
+FROM %s
+WHERE %s.%s IS NULL
 	%s
-	OFFSET sqlc.narg(query_offset)
-	LIMIT sqlc.narg(query_limit);
+%s;
 `,
 				strings.Join(applyToEach(oauth2ClientsColumns, func(_ int, s string) string {
 					return fmt.Sprintf("%s.%s", oauth2ClientsTableName, s)
 				}), ",\n\t"),
+				oauth2ClientsTableName, idColumn,
+				oauth2ClientsTableName,
+				oauth2ClientsTableName, archivedAtColumn,
 				strings.Join(strings.Split(
 					buildFilterConditions(
 						oauth2ClientsTableName,
@@ -125,10 +131,13 @@ WHERE oauth2_clients.archived_at IS NULL
 				buildTotalCountSelect(
 					usersTableName,
 				),
+				oauth2ClientsTableName,
+				oauth2ClientsTableName, archivedAtColumn,
 				buildFilterConditions(
 					oauth2ClientsTableName,
 					false,
 				),
+				offsetLimitAddendum,
 			)),
 		},
 	}

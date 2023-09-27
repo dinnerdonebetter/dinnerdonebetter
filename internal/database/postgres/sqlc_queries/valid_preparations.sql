@@ -51,8 +51,8 @@ INSERT INTO valid_preparations (
 SELECT EXISTS (
 	SELECT valid_preparations.id
 	FROM valid_preparations
-    WHERE valid_preparations.archived_at IS NULL
-        AND valid_preparations.id = sqlc.arg(id)
+	WHERE valid_preparations.archived_at IS NULL
+		AND valid_preparations.id = sqlc.arg(id)
 );
 
 -- name: GetValidPreparations :many
@@ -81,7 +81,7 @@ SELECT
 	valid_preparations.created_at,
 	valid_preparations.last_updated_at,
 	valid_preparations.archived_at,
-    (
+	(
 		SELECT COUNT(valid_preparations.id)
 		FROM valid_preparations
 		WHERE valid_preparations.archived_at IS NULL
@@ -96,7 +96,7 @@ SELECT
 				OR valid_preparations.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
 			)
 	) AS filtered_count,
-    (
+	(
 		SELECT COUNT(valid_preparations.id)
 		FROM valid_preparations
 		WHERE valid_preparations.archived_at IS NULL
@@ -124,9 +124,9 @@ OFFSET sqlc.narg(query_offset);
 SELECT valid_preparations.id
 FROM valid_preparations
 WHERE valid_preparations.archived_at IS NULL
-    AND (
-    valid_preparations.last_indexed_at IS NULL
-    OR valid_preparations.last_indexed_at < NOW() - '24 hours'::INTERVAL
+	AND (
+	valid_preparations.last_indexed_at IS NULL
+	OR valid_preparations.last_indexed_at < NOW() - '24 hours'::INTERVAL
 );
 
 -- name: GetValidPreparation :one
@@ -273,7 +273,7 @@ UPDATE valid_preparations SET
 	maximum_vessel_count = sqlc.arg(maximum_vessel_count),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-    AND id = sqlc.arg(id);
+	AND id = sqlc.arg(id);
 
 -- name: UpdateValidPreparationLastIndexedAt :execrows
 

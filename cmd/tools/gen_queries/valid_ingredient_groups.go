@@ -59,13 +59,12 @@ func buildValidIngredientGroupsQueries() []*Query {
 	%s = %s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s)
-	AND belongs_to_group = sqlc.arg(group_id);`,
+	AND %s = sqlc.arg(%s);`,
 				validIngredientGroupMembersTableName,
+				archivedAtColumn, currentTimeExpression,
 				archivedAtColumn,
-				currentTimeExpression,
-				archivedAtColumn,
-				idColumn,
-				idColumn,
+				idColumn, idColumn,
+				belongsToGroupColumn, belongsToGroupColumn,
 			)),
 		},
 		{
@@ -74,9 +73,9 @@ WHERE %s IS NULL
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
-    %s
+	%s
 ) VALUES (
-    %s
+	%s
 );`,
 				validIngredientGroupsTableName,
 				strings.Join(groupInsertColumns, ",\n\t"),
@@ -91,9 +90,9 @@ WHERE %s IS NULL
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
-    %s
+	%s
 ) VALUES (
-    %s
+	%s
 );`,
 				validIngredientGroupMembersTableName,
 				strings.Join(groupMemberInsertColumns, ",\n\t"),
@@ -108,18 +107,15 @@ WHERE %s IS NULL
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
-    SELECT %s.id
-    FROM %s
-    WHERE %s.%s IS NULL
-        AND %s.%s = sqlc.arg(%s)
+	SELECT %s.%s
+	FROM %s
+	WHERE %s.%s IS NULL
+		AND %s.%s = sqlc.arg(%s)
 );`,
+				validIngredientGroupsTableName, idColumn,
 				validIngredientGroupsTableName,
-				validIngredientGroupsTableName,
-				validIngredientGroupsTableName,
-				archivedAtColumn,
-				validIngredientGroupsTableName,
-				idColumn,
-				idColumn,
+				validIngredientGroupsTableName, archivedAtColumn,
+				validIngredientGroupsTableName, idColumn, idColumn,
 			)),
 		},
 		{
@@ -129,8 +125,8 @@ WHERE %s IS NULL
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
-    %s,
-    %s
+	%s,
+	%s
 FROM %s
 WHERE
 	%s.%s IS NULL
@@ -155,10 +151,8 @@ ORDER BY %s.%s
 					validIngredientGroupsTableName,
 					true,
 				),
-				validIngredientGroupsTableName,
-				idColumn,
-				validIngredientGroupsTableName,
-				idColumn,
+				validIngredientGroupsTableName, idColumn,
+				validIngredientGroupsTableName, idColumn,
 				offsetLimitAddendum,
 			)),
 		},
@@ -170,19 +164,19 @@ ORDER BY %s.%s
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
-	JOIN valid_ingredient_groups ON valid_ingredient_groups.id = valid_ingredient_group_members.belongs_to_group
-	JOIN valid_ingredients ON valid_ingredients.id = valid_ingredient_group_members.valid_ingredient
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
 WHERE 
 	%s.%s IS NULL
 	AND %s.%s IS NULL
-	AND %s.belongs_to_group = sqlc.arg(group_id);`,
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(fullMemberSelectColumns, ",\n\t"),
 				validIngredientGroupMembersTableName,
-				validIngredientGroupsTableName,
-				archivedAtColumn,
-				validIngredientGroupMembersTableName,
-				archivedAtColumn,
-				validIngredientGroupMembersTableName,
+				validIngredientGroupsTableName, validIngredientGroupsTableName, idColumn, validIngredientGroupMembersTableName, belongsToGroupColumn,
+				validIngredientsTableName, validIngredientsTableName, idColumn, validIngredientGroupMembersTableName, validIngredientGroupMemberValidIngredientColumn,
+				validIngredientGroupsTableName, archivedAtColumn,
+				validIngredientGroupMembersTableName, archivedAtColumn,
+				validIngredientGroupMembersTableName, belongsToGroupColumn, belongsToGroupColumn,
 			)),
 		},
 		{
@@ -213,12 +207,12 @@ AND %s.%s = sqlc.arg(%s);`,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
-    %s,
-    %s
+	%s,
+	%s
 FROM %s
 WHERE
 	%s.%s IS NULL
-	AND valid_ingredient_groups.name %s
+	AND %s.%s %s
 	%s
 GROUP BY %s.%s
 ORDER BY %s.%s
@@ -236,7 +230,7 @@ ORDER BY %s.%s
 				validIngredientGroupsTableName,
 				validIngredientGroupsTableName,
 				archivedAtColumn,
-				"ILIKE '%' || sqlc.arg(name)::text || '%'",
+				validIngredientGroupsTableName, nameColumn, buildILIKEForArgument("name"),
 				buildFilterConditions(
 					validIngredientGroupsTableName,
 					true,
@@ -277,7 +271,7 @@ WHERE %s.%s IS NULL
 	%s,
 	%s = %s
 WHERE %s IS NULL
-    AND %s = sqlc.arg(%s);`,
+	AND %s = sqlc.arg(%s);`,
 				validIngredientGroupsTableName,
 				strings.Join(applyToEach(filterForUpdate(validIngredientGroupsColumns), func(i int, s string) string {
 					return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)

@@ -36,12 +36,12 @@ WHERE archived_at IS NULL
 `
 
 type ArchiveValidIngredientGroupMemberParams struct {
-	ID      string
-	GroupID string
+	ID             string
+	BelongsToGroup string
 }
 
 func (q *Queries) ArchiveValidIngredientGroupMember(ctx context.Context, db DBTX, arg *ArchiveValidIngredientGroupMemberParams) (int64, error) {
-	result, err := db.ExecContext(ctx, archiveValidIngredientGroupMember, arg.ID, arg.GroupID)
+	result, err := db.ExecContext(ctx, archiveValidIngredientGroupMember, arg.ID, arg.BelongsToGroup)
 	if err != nil {
 		return 0, err
 	}
@@ -51,10 +51,10 @@ func (q *Queries) ArchiveValidIngredientGroupMember(ctx context.Context, db DBTX
 const checkValidIngredientGroupExistence = `-- name: CheckValidIngredientGroupExistence :one
 
 SELECT EXISTS (
-    SELECT valid_ingredient_groups.id
-    FROM valid_ingredient_groups
-    WHERE valid_ingredient_groups.archived_at IS NULL
-        AND valid_ingredient_groups.id = $1
+	SELECT valid_ingredient_groups.id
+	FROM valid_ingredient_groups
+	WHERE valid_ingredient_groups.archived_at IS NULL
+		AND valid_ingredient_groups.id = $1
 )
 `
 
@@ -68,12 +68,12 @@ func (q *Queries) CheckValidIngredientGroupExistence(ctx context.Context, db DBT
 const createValidIngredientGroup = `-- name: CreateValidIngredientGroup :exec
 
 INSERT INTO valid_ingredient_groups (
-    id,
+	id,
 	name,
 	description,
 	slug
 ) VALUES (
-    $1,
+	$1,
 	$2,
 	$3,
 	$4
@@ -100,11 +100,11 @@ func (q *Queries) CreateValidIngredientGroup(ctx context.Context, db DBTX, arg *
 const createValidIngredientGroupMember = `-- name: CreateValidIngredientGroupMember :exec
 
 INSERT INTO valid_ingredient_group_members (
-    id,
+	id,
 	belongs_to_group,
 	valid_ingredient
 ) VALUES (
-    $1,
+	$1,
 	$2,
 	$3
 )
@@ -262,8 +262,8 @@ type GetValidIngredientGroupMembersRow struct {
 	ValidIngredientContainsEgg                             bool
 }
 
-func (q *Queries) GetValidIngredientGroupMembers(ctx context.Context, db DBTX, groupID string) ([]*GetValidIngredientGroupMembersRow, error) {
-	rows, err := db.QueryContext(ctx, getValidIngredientGroupMembers, groupID)
+func (q *Queries) GetValidIngredientGroupMembers(ctx context.Context, db DBTX, belongsToGroup string) ([]*GetValidIngredientGroupMembersRow, error) {
+	rows, err := db.QueryContext(ctx, getValidIngredientGroupMembers, belongsToGroup)
 	if err != nil {
 		return nil, err
 	}
@@ -339,7 +339,7 @@ SELECT
 	valid_ingredient_groups.created_at,
 	valid_ingredient_groups.last_updated_at,
 	valid_ingredient_groups.archived_at,
-    (
+	(
 		SELECT COUNT(valid_ingredient_groups.id)
 		FROM valid_ingredient_groups
 		WHERE valid_ingredient_groups.archived_at IS NULL
@@ -354,7 +354,7 @@ SELECT
 				OR valid_ingredient_groups.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
 			)
 	) AS filtered_count,
-    (
+	(
 		SELECT COUNT(valid_ingredient_groups.id)
 		FROM valid_ingredient_groups
 		WHERE valid_ingredient_groups.archived_at IS NULL
@@ -505,7 +505,7 @@ SELECT
 	valid_ingredient_groups.created_at,
 	valid_ingredient_groups.last_updated_at,
 	valid_ingredient_groups.archived_at,
-    (
+	(
 		SELECT COUNT(valid_ingredient_groups.id)
 		FROM valid_ingredient_groups
 		WHERE valid_ingredient_groups.archived_at IS NULL
@@ -520,7 +520,7 @@ SELECT
 				OR valid_ingredient_groups.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
 			)
 	) AS filtered_count,
-    (
+	(
 		SELECT COUNT(valid_ingredient_groups.id)
 		FROM valid_ingredient_groups
 		WHERE valid_ingredient_groups.archived_at IS NULL
@@ -616,7 +616,7 @@ UPDATE valid_ingredient_groups SET
 	slug = $3,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-    AND id = $4
+	AND id = $4
 `
 
 type UpdateValidIngredientGroupParams struct {

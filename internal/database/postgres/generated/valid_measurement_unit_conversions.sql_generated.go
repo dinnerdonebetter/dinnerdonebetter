@@ -84,7 +84,7 @@ func (q *Queries) CreateValidMeasurementUnitConversion(ctx context.Context, db D
 const getAllValidMeasurementUnitConversionsFromMeasurementUnit = `-- name: GetAllValidMeasurementUnitConversionsFromMeasurementUnit :many
 
 SELECT
-    valid_measurement_unit_conversions.id as valid_measurement_unit_conversion_id,
+	valid_measurement_unit_conversions.id as valid_measurement_unit_conversion_id,
 	valid_measurement_units_from.id as from_unit_id,
 	valid_measurement_units_from.name as from_unit_name,
 	valid_measurement_units_from.description as from_unit_description,
@@ -161,14 +161,14 @@ SELECT
 	valid_measurement_unit_conversions.last_updated_at as valid_measurement_unit_conversion_last_updated_at,
 	valid_measurement_unit_conversions.archived_at as valid_measurement_unit_conversion_archived_at
 FROM valid_measurement_unit_conversions
-    JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_unit_conversions.from_unit = valid_measurement_units_from.id
-    JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_unit_conversions.to_unit = valid_measurement_units_to.id
-    LEFT JOIN valid_ingredients ON valid_measurement_unit_conversions.only_for_ingredient = valid_ingredients.id
+	JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_unit_conversions.from_unit = valid_measurement_units_from.id
+	JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_unit_conversions.to_unit = valid_measurement_units_to.id
+	LEFT JOIN valid_ingredients ON valid_measurement_unit_conversions.only_for_ingredient = valid_ingredients.id
 WHERE
-    valid_measurement_units_from.id = $1
-    AND valid_measurement_unit_conversions.archived_at IS NULL
-    AND valid_measurement_units_from.archived_at IS NULL
-    AND valid_measurement_units_to.archived_at IS NULL
+	valid_measurement_units_from.id = $1
+	AND valid_measurement_unit_conversions.archived_at IS NULL
+	AND valid_measurement_units_from.archived_at IS NULL
+	AND valid_measurement_units_to.archived_at IS NULL
 `
 
 type GetAllValidMeasurementUnitConversionsFromMeasurementUnitRow struct {
@@ -353,7 +353,7 @@ func (q *Queries) GetAllValidMeasurementUnitConversionsFromMeasurementUnit(ctx c
 const getAllValidMeasurementUnitConversionsToMeasurementUnit = `-- name: GetAllValidMeasurementUnitConversionsToMeasurementUnit :many
 
 SELECT
-    valid_measurement_unit_conversions.id as valid_measurement_unit_conversion_id,
+	valid_measurement_unit_conversions.id as valid_measurement_unit_conversion_id,
 	valid_measurement_units_from.id as from_unit_id,
 	valid_measurement_units_from.name as from_unit_name,
 	valid_measurement_units_from.description as from_unit_description,
@@ -430,14 +430,14 @@ SELECT
 	valid_measurement_unit_conversions.last_updated_at as valid_measurement_unit_conversion_last_updated_at,
 	valid_measurement_unit_conversions.archived_at as valid_measurement_unit_conversion_archived_at
 FROM valid_measurement_unit_conversions
-    JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_unit_conversions.from_unit = valid_measurement_units_from.id
-    JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_unit_conversions.to_unit = valid_measurement_units_to.id
-    LEFT JOIN valid_ingredients ON valid_measurement_unit_conversions.only_for_ingredient = valid_ingredients.id
+	JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_unit_conversions.from_unit = valid_measurement_units_from.id
+	JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_unit_conversions.to_unit = valid_measurement_units_to.id
+	LEFT JOIN valid_ingredients ON valid_measurement_unit_conversions.only_for_ingredient = valid_ingredients.id
 WHERE
-    valid_measurement_units_to.id = $1
-    AND valid_measurement_unit_conversions.archived_at IS NULL
-    AND valid_measurement_units_from.archived_at IS NULL
-    AND valid_measurement_units_to.archived_at IS NULL
+	valid_measurement_units_to.id = $1
+	AND valid_measurement_unit_conversions.archived_at IS NULL
+	AND valid_measurement_units_from.archived_at IS NULL
+	AND valid_measurement_units_to.archived_at IS NULL
 `
 
 type GetAllValidMeasurementUnitConversionsToMeasurementUnitRow struct {
@@ -622,7 +622,7 @@ func (q *Queries) GetAllValidMeasurementUnitConversionsToMeasurementUnit(ctx con
 const getValidMeasurementUnitConversion = `-- name: GetValidMeasurementUnitConversion :one
 
 SELECT
-    valid_measurement_unit_conversions.id as valid_measurement_unit_conversion_id,
+	valid_measurement_unit_conversions.id as valid_measurement_unit_conversion_id,
 	valid_measurement_units_from.id as from_unit_id,
 	valid_measurement_units_from.name as from_unit_name,
 	valid_measurement_units_from.description as from_unit_description,
@@ -699,14 +699,14 @@ SELECT
 	valid_measurement_unit_conversions.last_updated_at as valid_measurement_unit_conversion_last_updated_at,
 	valid_measurement_unit_conversions.archived_at as valid_measurement_unit_conversion_archived_at
 FROM valid_measurement_unit_conversions
-    JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_unit_conversions.from_unit = valid_measurement_units_from.id
-    JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_unit_conversions.to_unit = valid_measurement_units_to.id
-    LEFT JOIN valid_ingredients ON valid_measurement_unit_conversions.only_for_ingredient = valid_ingredients.id
+	JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_unit_conversions.from_unit = valid_measurement_units_from.id
+	JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_unit_conversions.to_unit = valid_measurement_units_to.id
+	LEFT JOIN valid_ingredients ON valid_measurement_unit_conversions.only_for_ingredient = valid_ingredients.id
 WHERE
-    valid_measurement_unit_conversions.id = $1
-    AND valid_measurement_unit_conversions.archived_at IS NULL
-    AND valid_measurement_units_from.archived_at IS NULL
-    AND valid_measurement_units_to.archived_at IS NULL
+	valid_measurement_unit_conversions.id = $1
+	AND valid_measurement_unit_conversions.archived_at IS NULL
+	AND valid_measurement_units_from.archived_at IS NULL
+	AND valid_measurement_units_to.archived_at IS NULL
 `
 
 type GetValidMeasurementUnitConversionRow struct {

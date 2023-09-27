@@ -5,13 +5,15 @@ import (
 )
 
 const (
-	validIngredientGroupMembersTableName = "valid_ingredient_group_members"
+	validIngredientGroupMembersTableName            = "valid_ingredient_group_members"
+	belongsToGroupColumn                            = "belongs_to_group"
+	validIngredientGroupMemberValidIngredientColumn = "valid_ingredient"
 )
 
 var validIngredientGroupMembersColumns = []string{
 	idColumn,
-	"belongs_to_group",
-	"valid_ingredient",
+	belongsToGroupColumn,
+	validIngredientGroupMemberValidIngredientColumn,
 	createdAtColumn,
 	archivedAtColumn,
 }

@@ -5,7 +5,7 @@ INSERT INTO webhook_trigger_events (
 	trigger_event,
 	belongs_to_webhook
 ) VALUES (
-    sqlc.arg(id),
+	sqlc.arg(id),
 	sqlc.arg(trigger_event),
 	sqlc.arg(belongs_to_webhook)
 );

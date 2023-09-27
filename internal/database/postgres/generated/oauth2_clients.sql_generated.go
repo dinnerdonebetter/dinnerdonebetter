@@ -78,8 +78,8 @@ WHERE oauth2_clients.archived_at IS NULL
 	AND oauth2_clients.client_id = $1
 `
 
-func (q *Queries) GetOAuth2ClientByClientID(ctx context.Context, db DBTX, id string) (*Oauth2Clients, error) {
-	row := db.QueryRowContext(ctx, getOAuth2ClientByClientID, id)
+func (q *Queries) GetOAuth2ClientByClientID(ctx context.Context, db DBTX, clientID string) (*Oauth2Clients, error) {
+	row := db.QueryRowContext(ctx, getOAuth2ClientByClientID, clientID)
 	var i Oauth2Clients
 	err := row.Scan(
 		&i.ID,
@@ -134,12 +134,9 @@ SELECT
 	oauth2_clients.created_at,
 	oauth2_clients.archived_at,
 	(
-		SELECT
-			COUNT(oauth2_clients.id)
-		FROM
-			oauth2_clients
-		WHERE
-			oauth2_clients.archived_at IS NULL
+		SELECT COUNT(oauth2_clients.id)
+		FROM oauth2_clients
+		WHERE oauth2_clients.archived_at IS NULL
 			AND oauth2_clients.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 			AND oauth2_clients.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	) as filtered_count,
@@ -152,8 +149,8 @@ FROM oauth2_clients
 WHERE oauth2_clients.archived_at IS NULL
 	AND oauth2_clients.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 	AND oauth2_clients.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
-	OFFSET $3
-	LIMIT $4
+LIMIT $4
+OFFSET $3
 `
 
 type GetOAuth2ClientsParams struct {

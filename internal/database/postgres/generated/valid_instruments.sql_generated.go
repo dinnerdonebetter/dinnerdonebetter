@@ -345,8 +345,8 @@ SELECT valid_instruments.id
 FROM valid_instruments
 WHERE valid_instruments.archived_at IS NULL
 	AND (
-    valid_instruments.last_indexed_at IS NULL
-    OR valid_instruments.last_indexed_at < NOW() - '24 hours'::INTERVAL
+	valid_instruments.last_indexed_at IS NULL
+	OR valid_instruments.last_indexed_at < NOW() - '24 hours'::INTERVAL
 )
 `
 
@@ -535,7 +535,7 @@ UPDATE valid_instruments SET
 	include_in_generated_instructions = $8,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-    AND id = $9
+	AND id = $9
 `
 
 type UpdateValidInstrumentParams struct {

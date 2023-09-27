@@ -49,19 +49,19 @@ func (q *Queries) CheckMealPlanEventExistence(ctx context.Context, db DBTX, arg 
 const createMealPlanEvent = `-- name: CreateMealPlanEvent :exec
 
 INSERT INTO meal_plan_events (
-    id,
-    notes,
-    starts_at,
-    ends_at,
-    meal_name,
-    belongs_to_meal_plan
+	id,
+	notes,
+	starts_at,
+	ends_at,
+	meal_name,
+	belongs_to_meal_plan
 ) VALUES (
-    $1,
-    $2,
-    $3,
-    $4,
-    $5,
-    $6
+	$1,
+	$2,
+	$3,
+	$4,
+	$5,
+	$6
 )
 `
 
@@ -89,18 +89,18 @@ func (q *Queries) CreateMealPlanEvent(ctx context.Context, db DBTX, arg *CreateM
 const getAllMealPlanEventsForMealPlan = `-- name: GetAllMealPlanEventsForMealPlan :many
 
 SELECT
-    meal_plan_events.id,
-    meal_plan_events.notes,
-    meal_plan_events.starts_at,
-    meal_plan_events.ends_at,
-    meal_plan_events.meal_name,
-    meal_plan_events.belongs_to_meal_plan,
-    meal_plan_events.created_at,
-    meal_plan_events.last_updated_at,
-    meal_plan_events.archived_at
+	meal_plan_events.id,
+	meal_plan_events.notes,
+	meal_plan_events.starts_at,
+	meal_plan_events.ends_at,
+	meal_plan_events.meal_name,
+	meal_plan_events.belongs_to_meal_plan,
+	meal_plan_events.created_at,
+	meal_plan_events.last_updated_at,
+	meal_plan_events.archived_at
 FROM meal_plan_events
 WHERE
-    meal_plan_events.archived_at IS NULL
+	meal_plan_events.archived_at IS NULL
   AND meal_plan_events.belongs_to_meal_plan = $1
 `
 
@@ -180,58 +180,58 @@ func (q *Queries) GetMealPlanEvent(ctx context.Context, db DBTX, arg *GetMealPla
 const getMealPlanEvents = `-- name: GetMealPlanEvents :many
 
 SELECT
-    meal_plan_events.id,
-    meal_plan_events.notes,
-    meal_plan_events.starts_at,
-    meal_plan_events.ends_at,
-    meal_plan_events.meal_name,
-    meal_plan_events.belongs_to_meal_plan,
-    meal_plan_events.created_at,
-    meal_plan_events.last_updated_at,
-    meal_plan_events.archived_at,
-    (
-        SELECT
-            COUNT(meal_plan_events.id)
-        FROM
-            meal_plan_events
-        WHERE
-            meal_plan_events.archived_at IS NULL
-          AND meal_plan_events.belongs_to_meal_plan = $1
-          AND meal_plan_events.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
-          AND meal_plan_events.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
-          AND (
-                meal_plan_events.last_updated_at IS NULL
-                OR meal_plan_events.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years'))
-            )
-          AND (
-                meal_plan_events.last_updated_at IS NULL
-                OR meal_plan_events.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
-            )
-    ) AS filtered_count,
-    (
-        SELECT
-            COUNT(meal_plan_events.id)
-        FROM
-            meal_plan_events
-        WHERE
-            meal_plan_events.archived_at IS NULL
-    ) AS total_count
+	meal_plan_events.id,
+	meal_plan_events.notes,
+	meal_plan_events.starts_at,
+	meal_plan_events.ends_at,
+	meal_plan_events.meal_name,
+	meal_plan_events.belongs_to_meal_plan,
+	meal_plan_events.created_at,
+	meal_plan_events.last_updated_at,
+	meal_plan_events.archived_at,
+	(
+		SELECT
+			COUNT(meal_plan_events.id)
+		FROM
+			meal_plan_events
+		WHERE
+			meal_plan_events.archived_at IS NULL
+		  AND meal_plan_events.belongs_to_meal_plan = $1
+		  AND meal_plan_events.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
+		  AND meal_plan_events.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
+		  AND (
+				meal_plan_events.last_updated_at IS NULL
+				OR meal_plan_events.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years'))
+			)
+		  AND (
+				meal_plan_events.last_updated_at IS NULL
+				OR meal_plan_events.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
+			)
+	) AS filtered_count,
+	(
+		SELECT
+			COUNT(meal_plan_events.id)
+		FROM
+			meal_plan_events
+		WHERE
+			meal_plan_events.archived_at IS NULL
+	) AS total_count
 FROM meal_plan_events
 WHERE
-    meal_plan_events.archived_at IS NULL
+	meal_plan_events.archived_at IS NULL
   AND meal_plan_events.belongs_to_meal_plan = $1
   AND meal_plan_events.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
   AND meal_plan_events.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
   AND (
-        meal_plan_events.last_updated_at IS NULL
-        OR meal_plan_events.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years'))
-    )
+		meal_plan_events.last_updated_at IS NULL
+		OR meal_plan_events.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years'))
+	)
   AND (
-        meal_plan_events.last_updated_at IS NULL
-        OR meal_plan_events.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
-    )
+		meal_plan_events.last_updated_at IS NULL
+		OR meal_plan_events.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
+	)
 OFFSET $6
-    LIMIT $7
+	LIMIT $7
 `
 
 type GetMealPlanEventsParams struct {
@@ -304,16 +304,16 @@ func (q *Queries) GetMealPlanEvents(ctx context.Context, db DBTX, arg *GetMealPl
 const mealPlanEventIsEligibleForVoting = `-- name: MealPlanEventIsEligibleForVoting :one
 
 SELECT EXISTS (
-    SELECT meal_plan_events.id
-    FROM meal_plan_events
-        JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan = meal_plans.id
-    WHERE
-        meal_plan_events.archived_at IS NULL
-        AND meal_plans.id = $1
-        AND meal_plans.status = 'awaiting_votes'
-        AND meal_plans.archived_at IS NULL
-        AND meal_plan_events.id = $2
-        AND meal_plan_events.archived_at IS NULL
+	SELECT meal_plan_events.id
+	FROM meal_plan_events
+		JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan = meal_plans.id
+	WHERE
+		meal_plan_events.archived_at IS NULL
+		AND meal_plans.id = $1
+		AND meal_plans.status = 'awaiting_votes'
+		AND meal_plans.archived_at IS NULL
+		AND meal_plan_events.id = $2
+		AND meal_plan_events.archived_at IS NULL
   )
 `
 
@@ -332,7 +332,7 @@ func (q *Queries) MealPlanEventIsEligibleForVoting(ctx context.Context, db DBTX,
 const updateMealPlanEvent = `-- name: UpdateMealPlanEvent :execrows
 
 UPDATE meal_plan_events SET
-    notes = $1,
+	notes = $1,
 	starts_at = $2,
 	ends_at = $3,
 	meal_name = $4,

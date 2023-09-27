@@ -14,9 +14,9 @@ import (
 const changeMealPlanTaskStatus = `-- name: ChangeMealPlanTaskStatus :exec
 
 UPDATE meal_plan_tasks SET
-    completed_at = $1,
-    status_explanation = $2,
-    status = $3
+	completed_at = $1,
+	status_explanation = $2,
+	status = $3
 WHERE id = $4
 `
 
@@ -67,21 +67,21 @@ func (q *Queries) CheckMealPlanTaskExistence(ctx context.Context, db DBTX, arg *
 const createMealPlanTask = `-- name: CreateMealPlanTask :exec
 
 INSERT INTO meal_plan_tasks (
-    id,
-    status,
-    status_explanation,
-    creation_explanation,
-    belongs_to_meal_plan_option,
-    belongs_to_recipe_prep_task,
-    assigned_to_user
+	id,
+	status,
+	status_explanation,
+	creation_explanation,
+	belongs_to_meal_plan_option,
+	belongs_to_recipe_prep_task,
+	assigned_to_user
 ) VALUES (
-    $1,
-    $2,
-    $3,
-    $4,
-    $5,
-    $6,
-    $7
+	$1,
+	$2,
+	$3,
+	$4,
+	$5,
+	$6,
+	$7
 )
 `
 
@@ -117,7 +117,7 @@ SELECT
 	meal_plan_options.assigned_dishwasher as meal_plan_option_assigned_dishwasher,
 	meal_plan_options.chosen as meal_plan_option_chosen,
 	meal_plan_options.tiebroken as meal_plan_option_tiebroken,
-    meal_plan_options.meal_scale as meal_plan_option_meal_scale,
+	meal_plan_options.meal_scale as meal_plan_option_meal_scale,
 	meal_plan_options.meal_id as meal_plan_option_meal_id,
 	meal_plan_options.notes as meal_plan_option_notes,
 	meal_plan_options.created_at as meal_plan_option_created_at,
@@ -258,45 +258,45 @@ func (q *Queries) GetMealPlanTask(ctx context.Context, db DBTX, mealPlanTaskID s
 const listAllMealPlanTasksByMealPlan = `-- name: ListAllMealPlanTasksByMealPlan :many
 
 SELECT
-    meal_plan_tasks.id,
-    meal_plan_options.id as meal_plan_option_id,
-    meal_plan_options.assigned_cook as meal_plan_option_assigned_cook,
-    meal_plan_options.assigned_dishwasher as meal_plan_option_assigned_dishwasher,
-    meal_plan_options.chosen as meal_plan_option_chosen,
-    meal_plan_options.tiebroken as meal_plan_option_tiebroken,
-    meal_plan_options.meal_scale as meal_plan_option_meal_scale,
-    meal_plan_options.meal_id as meal_plan_option_meal_id,
-    meal_plan_options.notes as meal_plan_option_notes,
-    meal_plan_options.created_at as meal_plan_option_created_at,
-    meal_plan_options.last_updated_at as meal_plan_option_last_updated_at,
-    meal_plan_options.archived_at as meal_plan_option_archived_at,
-    meal_plan_options.belongs_to_meal_plan_event as meal_plan_option_belongs_to_meal_plan_event,
-    recipe_prep_tasks.id as prep_task_id,
-    recipe_prep_tasks.name as prep_task_name,
-    recipe_prep_tasks.description as prep_task_description,
-    recipe_prep_tasks.notes as prep_task_notes,
-    recipe_prep_tasks.optional as prep_task_optional,
-    recipe_prep_tasks.explicit_storage_instructions as prep_task_explicit_storage_instructions,
-    recipe_prep_tasks.minimum_time_buffer_before_recipe_in_seconds as prep_task_minimum_time_buffer_before_recipe_in_seconds,
-    recipe_prep_tasks.maximum_time_buffer_before_recipe_in_seconds as prep_task_maximum_time_buffer_before_recipe_in_seconds,
-    recipe_prep_tasks.storage_type as prep_task_storage_type,
-    recipe_prep_tasks.minimum_storage_temperature_in_celsius as prep_task_minimum_storage_temperature_in_celsius,
-    recipe_prep_tasks.maximum_storage_temperature_in_celsius as prep_task_maximum_storage_temperature_in_celsius,
-    recipe_prep_tasks.belongs_to_recipe as prep_task_belongs_to_recipe,
-    recipe_prep_tasks.created_at as prep_task_created_at,
-    recipe_prep_tasks.last_updated_at as prep_task_last_updated_at,
-    recipe_prep_tasks.archived_at as prep_task_archived_at,
-    recipe_prep_task_steps.id as prep_task_step_id,
-    recipe_prep_task_steps.belongs_to_recipe_step as prep_task_step_belongs_to_recipe_step,
-    recipe_prep_task_steps.belongs_to_recipe_prep_task as prep_task_step_belongs_to_recipe_prep_task,
-    recipe_prep_task_steps.satisfies_recipe_step as prep_task_step_satisfies_recipe_step,
-    meal_plan_tasks.created_at,
-    meal_plan_tasks.last_updated_at,
-    meal_plan_tasks.completed_at,
-    meal_plan_tasks.status,
-    meal_plan_tasks.creation_explanation,
-    meal_plan_tasks.status_explanation,
-    meal_plan_tasks.assigned_to_user
+	meal_plan_tasks.id,
+	meal_plan_options.id as meal_plan_option_id,
+	meal_plan_options.assigned_cook as meal_plan_option_assigned_cook,
+	meal_plan_options.assigned_dishwasher as meal_plan_option_assigned_dishwasher,
+	meal_plan_options.chosen as meal_plan_option_chosen,
+	meal_plan_options.tiebroken as meal_plan_option_tiebroken,
+	meal_plan_options.meal_scale as meal_plan_option_meal_scale,
+	meal_plan_options.meal_id as meal_plan_option_meal_id,
+	meal_plan_options.notes as meal_plan_option_notes,
+	meal_plan_options.created_at as meal_plan_option_created_at,
+	meal_plan_options.last_updated_at as meal_plan_option_last_updated_at,
+	meal_plan_options.archived_at as meal_plan_option_archived_at,
+	meal_plan_options.belongs_to_meal_plan_event as meal_plan_option_belongs_to_meal_plan_event,
+	recipe_prep_tasks.id as prep_task_id,
+	recipe_prep_tasks.name as prep_task_name,
+	recipe_prep_tasks.description as prep_task_description,
+	recipe_prep_tasks.notes as prep_task_notes,
+	recipe_prep_tasks.optional as prep_task_optional,
+	recipe_prep_tasks.explicit_storage_instructions as prep_task_explicit_storage_instructions,
+	recipe_prep_tasks.minimum_time_buffer_before_recipe_in_seconds as prep_task_minimum_time_buffer_before_recipe_in_seconds,
+	recipe_prep_tasks.maximum_time_buffer_before_recipe_in_seconds as prep_task_maximum_time_buffer_before_recipe_in_seconds,
+	recipe_prep_tasks.storage_type as prep_task_storage_type,
+	recipe_prep_tasks.minimum_storage_temperature_in_celsius as prep_task_minimum_storage_temperature_in_celsius,
+	recipe_prep_tasks.maximum_storage_temperature_in_celsius as prep_task_maximum_storage_temperature_in_celsius,
+	recipe_prep_tasks.belongs_to_recipe as prep_task_belongs_to_recipe,
+	recipe_prep_tasks.created_at as prep_task_created_at,
+	recipe_prep_tasks.last_updated_at as prep_task_last_updated_at,
+	recipe_prep_tasks.archived_at as prep_task_archived_at,
+	recipe_prep_task_steps.id as prep_task_step_id,
+	recipe_prep_task_steps.belongs_to_recipe_step as prep_task_step_belongs_to_recipe_step,
+	recipe_prep_task_steps.belongs_to_recipe_prep_task as prep_task_step_belongs_to_recipe_prep_task,
+	recipe_prep_task_steps.satisfies_recipe_step as prep_task_step_satisfies_recipe_step,
+	meal_plan_tasks.created_at,
+	meal_plan_tasks.last_updated_at,
+	meal_plan_tasks.completed_at,
+	meal_plan_tasks.status,
+	meal_plan_tasks.creation_explanation,
+	meal_plan_tasks.status_explanation,
+	meal_plan_tasks.assigned_to_user
 FROM meal_plan_tasks
 	JOIN meal_plan_options ON meal_plan_tasks.belongs_to_meal_plan_option=meal_plan_options.id
 	JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event=meal_plan_events.id
@@ -427,7 +427,7 @@ SELECT
 	meal_plan_options.assigned_dishwasher,
 	meal_plan_options.chosen,
 	meal_plan_options.tiebroken,
-    meal_plan_options.meal_scale,
+	meal_plan_options.meal_scale,
 	meal_plan_options.meal_id,
 	meal_plan_options.notes,
 	meal_plan_options.created_at,
@@ -449,10 +449,10 @@ SELECT
 	valid_preparations.temperature_required,
 	valid_preparations.time_estimate_required,
 	valid_preparations.condition_expression_required,
-    valid_preparations.consumes_vessel,
-    valid_preparations.only_for_vessels,
-    valid_preparations.minimum_vessel_count,
-    valid_preparations.maximum_vessel_count,
+	valid_preparations.consumes_vessel,
+	valid_preparations.only_for_vessels,
+	valid_preparations.minimum_vessel_count,
+	valid_preparations.maximum_vessel_count,
 	valid_preparations.slug,
 	valid_preparations.past_tense,
 	valid_preparations.created_at,

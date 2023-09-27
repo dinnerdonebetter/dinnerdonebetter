@@ -29,10 +29,10 @@ func (q *Queries) ArchiveValidMeasurementUnit(ctx context.Context, db DBTX, id s
 const checkValidMeasurementUnitExistence = `-- name: CheckValidMeasurementUnitExistence :one
 
 SELECT EXISTS (
-    SELECT valid_measurement_units.id
-    FROM valid_measurement_units
-    WHERE valid_measurement_units.archived_at IS NULL
-        AND valid_measurement_units.id = $1
+	SELECT valid_measurement_units.id
+	FROM valid_measurement_units
+	WHERE valid_measurement_units.archived_at IS NULL
+		AND valid_measurement_units.id = $1
 )
 `
 
@@ -46,7 +46,7 @@ func (q *Queries) CheckValidMeasurementUnitExistence(ctx context.Context, db DBT
 const createValidMeasurementUnit = `-- name: CreateValidMeasurementUnit :exec
 
 INSERT INTO valid_measurement_units (
-    id,
+	id,
 	name,
 	description,
 	volumetric,
@@ -57,7 +57,7 @@ INSERT INTO valid_measurement_units (
 	slug,
 	plural_name
 ) VALUES (
-    $1,
+	$1,
 	$2,
 	$3,
 	$4,
@@ -238,7 +238,7 @@ SELECT
 	valid_measurement_units.created_at,
 	valid_measurement_units.last_updated_at,
 	valid_measurement_units.archived_at,
-    (
+	(
 		SELECT COUNT(valid_measurement_units.id)
 		FROM valid_measurement_units
 		WHERE valid_measurement_units.archived_at IS NULL
@@ -253,7 +253,7 @@ SELECT
 				OR valid_measurement_units.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
 			)
 	) AS filtered_count,
-    (
+	(
 		SELECT COUNT(valid_measurement_units.id)
 		FROM valid_measurement_units
 		WHERE valid_measurement_units.archived_at IS NULL
@@ -357,9 +357,9 @@ const getValidMeasurementUnitsNeedingIndexing = `-- name: GetValidMeasurementUni
 SELECT valid_measurement_units.id
 FROM valid_measurement_units
 WHERE valid_measurement_units.archived_at IS NULL
-    AND (
-    valid_measurement_units.last_indexed_at IS NULL
-    OR valid_measurement_units.last_indexed_at < NOW() - '24 hours'::INTERVAL
+	AND (
+	valid_measurement_units.last_indexed_at IS NULL
+	OR valid_measurement_units.last_indexed_at < NOW() - '24 hours'::INTERVAL
 )
 `
 
@@ -558,7 +558,7 @@ SELECT
 	valid_measurement_units.created_at,
 	valid_measurement_units.last_updated_at,
 	valid_measurement_units.archived_at,
-    (
+	(
 		SELECT COUNT(valid_measurement_units.id)
 		FROM valid_measurement_units
 		WHERE valid_measurement_units.archived_at IS NULL
@@ -577,7 +577,7 @@ SELECT
 				OR valid_measurement_units.universal = true
 			)
 	) AS filtered_count,
-    (
+	(
 		SELECT COUNT(valid_measurement_units.id)
 		FROM valid_measurement_units
 		WHERE valid_measurement_units.archived_at IS NULL
@@ -587,11 +587,11 @@ FROM valid_measurement_units
 	JOIN valid_ingredients ON valid_ingredient_measurement_units.valid_ingredient_id = valid_ingredients.id
 WHERE
 	(
-	    valid_ingredient_measurement_units.valid_ingredient_id = $5
-	    OR valid_measurement_units.universal = true
+		valid_ingredient_measurement_units.valid_ingredient_id = $5
+		OR valid_measurement_units.universal = TRUE
 	)
-    AND valid_measurement_units.archived_at IS NULL
-    AND valid_ingredients.archived_at IS NULL
+	AND valid_measurement_units.archived_at IS NULL
+	AND valid_ingredients.archived_at IS NULL
 	AND valid_ingredient_measurement_units.archived_at IS NULL
 	AND valid_measurement_units.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 	AND valid_measurement_units.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
@@ -698,7 +698,7 @@ UPDATE valid_measurement_units SET
 	plural_name = $9,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-    AND id = $10
+	AND id = $10
 `
 
 type UpdateValidMeasurementUnitParams struct {

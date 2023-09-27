@@ -76,18 +76,15 @@ func buildValidIngredientStateIngredientsQueries() []*Query {
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
-	SELECT %s.id
+	SELECT %s.%s
 	FROM %s
 	WHERE %s.%s IS NULL
 		AND %s.%s = sqlc.arg(%s)
 );`,
+				validIngredientStateIngredientsTableName, idColumn,
 				validIngredientStateIngredientsTableName,
-				validIngredientStateIngredientsTableName,
-				validIngredientStateIngredientsTableName,
-				archivedAtColumn,
-				validIngredientStateIngredientsTableName,
-				idColumn,
-				idColumn,
+				validIngredientStateIngredientsTableName, archivedAtColumn,
+				validIngredientStateIngredientsTableName, idColumn, idColumn,
 			)),
 		},
 		{

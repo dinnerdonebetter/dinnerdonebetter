@@ -35,7 +35,7 @@ func buildWebhookTriggerEventsQueries() []*Query {
 			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
 	%s
 ) VALUES (
-    %s
+	%s
 );`,
 				webhookTriggerEventsTableName,
 				strings.Join(insertColumns, ",\n\t"),

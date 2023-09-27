@@ -5,12 +5,12 @@ UPDATE valid_preparation_instruments SET archived_at = NOW() WHERE archived_at I
 -- name: CreateValidPreparationInstrument :exec
 
 INSERT INTO valid_preparation_instruments (
-    id,
+	id,
 	notes,
 	valid_preparation_id,
 	valid_instrument_id
 ) VALUES (
-    sqlc.arg(id),
+	sqlc.arg(id),
 	sqlc.arg(notes),
 	sqlc.arg(valid_preparation_id),
 	sqlc.arg(valid_instrument_id)
@@ -19,10 +19,10 @@ INSERT INTO valid_preparation_instruments (
 -- name: CheckValidPreparationInstrumentExistence :one
 
 SELECT EXISTS (
-    SELECT valid_preparation_instruments.id
-    FROM valid_preparation_instruments
-    WHERE valid_preparation_instruments.archived_at IS NULL
-        AND valid_preparation_instruments.id = sqlc.arg(id)
+	SELECT valid_preparation_instruments.id
+	FROM valid_preparation_instruments
+	WHERE valid_preparation_instruments.archived_at IS NULL
+		AND valid_preparation_instruments.id = sqlc.arg(id)
 );
 
 -- name: GetValidPreparationInstrumentsForInstrument :many
@@ -70,11 +70,10 @@ SELECT
 	valid_preparation_instruments.last_updated_at as valid_preparation_instrument_last_updated_at,
 	valid_preparation_instruments.archived_at as valid_preparation_instrument_archived_at,
 	(
-		SELECT
-			COUNT(valid_preparation_instruments.id)
+		SELECT COUNT(valid_preparation_instruments.id)
 		FROM valid_preparation_instruments
-            JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-            JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+			JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+			JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 		WHERE
 			valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
@@ -91,11 +90,10 @@ SELECT
 	)
 	) as filtered_count,
 	(
-		SELECT
-			COUNT(valid_preparation_instruments.id)
+		SELECT COUNT(valid_preparation_instruments.id)
 		FROM valid_preparation_instruments
-            JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-            JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+			JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+			JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 		WHERE
 			valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
@@ -172,11 +170,10 @@ SELECT
 	valid_preparation_instruments.last_updated_at as valid_preparation_instrument_last_updated_at,
 	valid_preparation_instruments.archived_at as valid_preparation_instrument_archived_at,
 	(
-		SELECT
-			COUNT(valid_preparation_instruments.id)
+		SELECT COUNT(valid_preparation_instruments.id)
 		FROM valid_preparation_instruments
-            JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-            JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+			JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+			JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 		WHERE
 			valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
@@ -193,11 +190,10 @@ SELECT
 	)
 	) as filtered_count,
 	(
-		SELECT
-			COUNT(valid_preparation_instruments.id)
+		SELECT COUNT(valid_preparation_instruments.id)
 		FROM valid_preparation_instruments
-            JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-            JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+			JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+			JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 		WHERE
 			valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
@@ -274,11 +270,10 @@ SELECT
 	valid_preparation_instruments.last_updated_at as valid_preparation_instrument_last_updated_at,
 	valid_preparation_instruments.archived_at as valid_preparation_instrument_archived_at,
 	(
-		SELECT
-			COUNT(valid_preparation_instruments.id)
+		SELECT COUNT(valid_preparation_instruments.id)
 		FROM valid_preparation_instruments
-            JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-            JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+			JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+			JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 		WHERE
 			valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
@@ -295,11 +290,10 @@ SELECT
 	)
 	) as filtered_count,
 	(
-		SELECT
-			COUNT(valid_preparation_instruments.id)
+		SELECT COUNT(valid_preparation_instruments.id)
 		FROM valid_preparation_instruments
-            JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-            JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+			JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+			JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 		WHERE
 			valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
@@ -375,9 +369,9 @@ SELECT
 	valid_preparation_instruments.last_updated_at as valid_preparation_instrument_last_updated_at,
 	valid_preparation_instruments.archived_at as valid_preparation_instrument_archived_at
 FROM
-    valid_preparation_instruments
-    JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-    JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+	valid_preparation_instruments
+	JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
+	JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 WHERE
 	valid_preparation_instruments.archived_at IS NULL
 	AND valid_instruments.archived_at IS NULL
@@ -387,7 +381,7 @@ WHERE
 -- name: ValidPreparationInstrumentPairIsValid :one
 
 SELECT EXISTS(
-	SELECT id
+	SELECT valid_preparation_instruments.id
 	FROM valid_preparation_instruments
 	WHERE valid_instrument_id = sqlc.arg(valid_instrument_id)
 	AND valid_preparation_id = sqlc.arg(valid_preparation_id)
