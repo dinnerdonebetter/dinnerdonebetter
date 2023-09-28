@@ -37,6 +37,7 @@ func main() {
 		"household_instrument_ownerships.sql":    buildHouseholdInstrumentOwnershipQueries(),
 		"meal_components.sql":                    buildMealComponentsQueries(),
 		"meal_plan_events.sql":                   buildMealPlanEventsQueries(),
+		"recipe_media.sql":                       buildRecipeMediaQueries(),
 		//
 		// "meal_plan_grocery_list_items.sql":                 buildMealPlanGroceryListItemsQueries(),
 		// "meal_plan_options.sql":                            buildMealPlanOptionsQueries(),
@@ -44,7 +45,6 @@ func main() {
 		// "meal_plans.sql":                                   buildMealPlansQueries(),
 		// "meal_plan_tasks.sql":                              buildMealPlanTasksQueries(),
 		// "meals.sql":                                        buildMealsQueries(),
-		// "recipe_media.sql":                                 buildRecipeMediaQueries(),
 		// "recipe_prep_tasks.sql":                            buildRecipePrepTasksQueries(),
 		// "recipe_prep_task_steps.sql":                       buildRecipePrepTaskStepsQueries(),
 		// "recipe_ratings.sql":                               buildRecipeRatingsQueries(),

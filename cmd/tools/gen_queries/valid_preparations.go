@@ -140,16 +140,11 @@ WHERE %s.%s IS NULL
 	%s.%s IS NULL
 	OR %s.%s < %s - '24 hours'::INTERVAL
 );`,
+				validPreparationsTableName, idColumn,
 				validPreparationsTableName,
-				idColumn,
-				validPreparationsTableName,
-				validPreparationsTableName,
-				archivedAtColumn,
-				validPreparationsTableName,
-				lastIndexedAtColumn,
-				validPreparationsTableName,
-				lastIndexedAtColumn,
-				currentTimeExpression,
+				validPreparationsTableName, archivedAtColumn,
+				validPreparationsTableName, lastIndexedAtColumn,
+				validPreparationsTableName, lastIndexedAtColumn, currentTimeExpression,
 			)),
 		},
 		{
@@ -166,11 +161,8 @@ WHERE %s.%s IS NULL
 					return fmt.Sprintf("%s.%s", validPreparationsTableName, s)
 				}), ",\n\t"),
 				validPreparationsTableName,
-				validPreparationsTableName,
-				archivedAtColumn,
-				validPreparationsTableName,
-				idColumn,
-				idColumn,
+				validPreparationsTableName, archivedAtColumn,
+				validPreparationsTableName, idColumn, idColumn,
 			)),
 		},
 		{
@@ -187,8 +179,7 @@ ORDER BY RANDOM() LIMIT 1;`,
 					return fmt.Sprintf("%s.%s", validPreparationsTableName, s)
 				}), ",\n\t"),
 				validPreparationsTableName,
-				validPreparationsTableName,
-				archivedAtColumn,
+				validPreparationsTableName, archivedAtColumn,
 			)),
 		},
 		{
@@ -205,10 +196,8 @@ WHERE %s.%s IS NULL
 					return fmt.Sprintf("%s.%s", validPreparationsTableName, s)
 				}), ",\n\t"),
 				validPreparationsTableName,
-				validPreparationsTableName,
-				archivedAtColumn,
-				validPreparationsTableName,
-				idColumn,
+				validPreparationsTableName, archivedAtColumn,
+				validPreparationsTableName, idColumn,
 			)),
 		},
 		{
@@ -227,8 +216,7 @@ LIMIT 50;`,
 				}), ",\n\t"),
 				validPreparationsTableName,
 				validPreparationsTableName, nameColumn, buildILIKEForArgument("name_query"),
-				validPreparationsTableName,
-				archivedAtColumn,
+				validPreparationsTableName, archivedAtColumn,
 			)),
 		},
 		{
@@ -245,11 +233,9 @@ WHERE %s IS NULL
 				strings.Join(applyToEach(filterForUpdate(validPreparationsColumns), func(i int, s string) string {
 					return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
 				}), ",\n\t"),
-				lastUpdatedAtColumn,
-				currentTimeExpression,
+				lastUpdatedAtColumn, currentTimeExpression,
 				archivedAtColumn,
-				idColumn,
-				idColumn,
+				idColumn, idColumn,
 			)),
 		},
 		{

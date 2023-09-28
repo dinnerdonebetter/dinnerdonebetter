@@ -6,6 +6,9 @@ import (
 
 const (
 	recipesTableName = "recipes"
+
+	belongsToRecipeColumn = "belongs_to_recipe"
+	recipeIDColumn        = "recipe_id"
 )
 
 var recipesColumns = []string{
