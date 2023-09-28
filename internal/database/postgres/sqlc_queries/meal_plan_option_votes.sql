@@ -80,23 +80,20 @@ SELECT
 	meal_plan_option_votes.archived_at,
 	meal_plan_option_votes.belongs_to_meal_plan_option,
 	(
-		SELECT
-			COUNT(meal_plan_events.id)
-		FROM
-			meal_plan_option_votes
-		WHERE
-			meal_plan_option_votes.archived_at IS NULL
+		SELECT COUNT(meal_plan_option_votes.id)
+		FROM meal_plan_option_votes
+		WHERE meal_plan_option_votes.archived_at IS NULL
+			AND meal_plan_option_votes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND meal_plan_option_votes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				meal_plan_option_votes.last_updated_at IS NULL
+				OR meal_plan_option_votes.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				meal_plan_option_votes.last_updated_at IS NULL
+				OR meal_plan_option_votes.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
+			)
 			AND meal_plan_option_votes.belongs_to_meal_plan_option = sqlc.arg(meal_plan_option_id)
-			AND meal_plan_option_votes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
-			AND meal_plan_option_votes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
-			AND (
-				meal_plan_option_votes.last_updated_at IS NULL
-				OR meal_plan_option_votes.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years'))
-			)
-			AND (
-				meal_plan_option_votes.last_updated_at IS NULL
-				OR meal_plan_option_votes.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
-			)
 	) AS filtered_count,
 	(
 		SELECT COUNT(meal_plan_option_votes.id)
@@ -117,23 +114,23 @@ WHERE meal_plan_option_votes.archived_at IS NULL
 	AND meal_plan_events.id = sqlc.arg(meal_plan_event_id)
 	AND meal_plans.archived_at IS NULL
 	AND meal_plans.id = sqlc.arg(meal_plan_id)
-	AND meal_plan_option_votes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
-	AND meal_plan_option_votes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+	AND meal_plan_option_votes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+	AND meal_plan_option_votes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		meal_plan_option_votes.last_updated_at IS NULL
-		OR meal_plan_option_votes.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years'))
+		OR meal_plan_option_votes.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
 	)
 	AND (
 		meal_plan_option_votes.last_updated_at IS NULL
-		OR meal_plan_option_votes.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
+		OR meal_plan_option_votes.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
 GROUP BY
 	meal_plan_option_votes.id,
 	meal_plan_options.id,
 	meal_plan_events.id,
 	meal_plans.id
-OFFSET sqlc.narg(query_offset)
-LIMIT sqlc.narg(query_limit);
+LIMIT sqlc.narg(query_limit)
+OFFSET sqlc.narg(query_offset);
 
 -- name: GetMealPlanOptionVote :one
 

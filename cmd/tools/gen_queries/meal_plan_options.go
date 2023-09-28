@@ -7,6 +7,7 @@ import (
 const (
 	mealPlanOptionsTableName = "meal_plan_options"
 
+	mealPlanOptionIDColumn      = "meal_plan_option_id"
 	mealPlanOptionsChosenColumn = "chosen"
 )
 

@@ -179,23 +179,20 @@ SELECT
 	meal_plan_option_votes.archived_at,
 	meal_plan_option_votes.belongs_to_meal_plan_option,
 	(
-		SELECT
-			COUNT(meal_plan_events.id)
-		FROM
-			meal_plan_option_votes
-		WHERE
-			meal_plan_option_votes.archived_at IS NULL
-			AND meal_plan_option_votes.belongs_to_meal_plan_option = $1
-			AND meal_plan_option_votes.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
-			AND meal_plan_option_votes.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
+		SELECT COUNT(meal_plan_option_votes.id)
+		FROM meal_plan_option_votes
+		WHERE meal_plan_option_votes.archived_at IS NULL
+			AND meal_plan_option_votes.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND meal_plan_option_votes.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 			AND (
 				meal_plan_option_votes.last_updated_at IS NULL
-				OR meal_plan_option_votes.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years'))
+				OR meal_plan_option_votes.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
 			)
 			AND (
 				meal_plan_option_votes.last_updated_at IS NULL
-				OR meal_plan_option_votes.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
+				OR meal_plan_option_votes.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
 			)
+			AND meal_plan_option_votes.belongs_to_meal_plan_option = $5
 	) AS filtered_count,
 	(
 		SELECT COUNT(meal_plan_option_votes.id)
@@ -207,39 +204,39 @@ FROM meal_plan_option_votes
 	JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event=meal_plan_events.id
 	JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan=meal_plans.id
 WHERE meal_plan_option_votes.archived_at IS NULL
-	AND meal_plan_option_votes.belongs_to_meal_plan_option = $1
+	AND meal_plan_option_votes.belongs_to_meal_plan_option = $5
 	AND meal_plan_options.archived_at IS NULL
 	AND meal_plan_options.belongs_to_meal_plan_event = $6
-	AND meal_plan_options.id = $1
+	AND meal_plan_options.id = $5
 	AND meal_plan_events.archived_at IS NULL
 	AND meal_plan_events.belongs_to_meal_plan = $7
 	AND meal_plan_events.id = $6
 	AND meal_plans.archived_at IS NULL
 	AND meal_plans.id = $7
-	AND meal_plan_option_votes.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
-	AND meal_plan_option_votes.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
+	AND meal_plan_option_votes.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND meal_plan_option_votes.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		meal_plan_option_votes.last_updated_at IS NULL
-		OR meal_plan_option_votes.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years'))
+		OR meal_plan_option_votes.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
 	)
 	AND (
 		meal_plan_option_votes.last_updated_at IS NULL
-		OR meal_plan_option_votes.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
+		OR meal_plan_option_votes.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
 GROUP BY
 	meal_plan_option_votes.id,
 	meal_plan_options.id,
 	meal_plan_events.id,
 	meal_plans.id
-OFFSET $8
 LIMIT $9
+OFFSET $8
 `
 
 type GetMealPlanOptionVotesParams struct {
 	CreatedAfter     sql.NullTime
 	CreatedBefore    sql.NullTime
-	UpdatedAfter     sql.NullTime
 	UpdatedBefore    sql.NullTime
+	UpdatedAfter     sql.NullTime
 	MealPlanOptionID string
 	MealPlanID       string
 	MealPlanEventID  sql.NullString
@@ -263,11 +260,11 @@ type GetMealPlanOptionVotesRow struct {
 
 func (q *Queries) GetMealPlanOptionVotes(ctx context.Context, db DBTX, arg *GetMealPlanOptionVotesParams) ([]*GetMealPlanOptionVotesRow, error) {
 	rows, err := db.QueryContext(ctx, getMealPlanOptionVotes,
-		arg.MealPlanOptionID,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
-		arg.UpdatedAfter,
 		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.MealPlanOptionID,
 		arg.MealPlanEventID,
 		arg.MealPlanID,
 		arg.QueryOffset,
