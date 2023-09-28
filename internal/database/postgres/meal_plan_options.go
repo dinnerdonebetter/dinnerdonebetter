@@ -559,9 +559,9 @@ func (q *Querier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPl
 	winner, tiebroken, chosen := q.decideOptionWinner(ctx, mealPlanEvent.Options)
 	if chosen {
 		if err = q.generatedQuerier.FinalizeMealPlanOption(ctx, q.db, &generated.FinalizeMealPlanOptionParams{
-			BelongsToMealPlanEvent: nullStringFromString(mealPlanEventID),
-			ID:                     winner,
-			Tiebroken:              tiebroken,
+			MealPlanEventID: nullStringFromString(mealPlanEventID),
+			ID:              winner,
+			Tiebroken:       tiebroken,
 		}); err != nil {
 			return false, observability.PrepareAndLogError(err, logger, span, "finalizing meal plan option")
 		}

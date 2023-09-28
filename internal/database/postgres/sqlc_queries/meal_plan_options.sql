@@ -51,7 +51,7 @@ UPDATE meal_plan_options SET
 	chosen = (belongs_to_meal_plan_event = sqlc.arg(meal_plan_event_id) AND id = sqlc.arg(id)),
 	tiebroken = sqlc.arg(tiebroken)
 WHERE archived_at IS NULL
-	AND belongs_to_meal_plan_event = sqlc.arg(belongs_to_meal_plan_event)
+	AND belongs_to_meal_plan_event = sqlc.arg(meal_plan_event_id)
 	AND id = sqlc.arg(id);
 
 -- name: GetAllMealPlanOptionsForMealPlanEvent :many

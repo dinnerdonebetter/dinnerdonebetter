@@ -144,7 +144,7 @@ WHERE %s.%s IS NULL
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
 				recipeRatingsTableName,
-				strings.Join(applyToEach(filterForUpdate(recipeRatingsColumns), func(i int, s string) string {
+				strings.Join(applyToEach(filterForUpdate(recipeRatingsColumns, "by_user"), func(i int, s string) string {
 					return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
 				}), ",\n\t"),
 				lastUpdatedAtColumn, currentTimeExpression,

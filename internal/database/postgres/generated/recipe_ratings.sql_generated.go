@@ -268,16 +268,14 @@ UPDATE recipe_ratings SET
 	instructions = $5,
 	overall = $6,
 	notes = $7,
-	by_user = $8,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND id = $9
+	AND id = $8
 `
 
 type UpdateRecipeRatingParams struct {
 	RecipeID     string
 	Notes        string
-	ByUser       string
 	ID           string
 	Taste        sql.NullString
 	Difficulty   sql.NullString
@@ -295,7 +293,6 @@ func (q *Queries) UpdateRecipeRating(ctx context.Context, db DBTX, arg *UpdateRe
 		arg.Instructions,
 		arg.Overall,
 		arg.Notes,
-		arg.ByUser,
 		arg.ID,
 	)
 	if err != nil {

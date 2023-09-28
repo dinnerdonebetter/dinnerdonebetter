@@ -387,9 +387,9 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, hou
 			logger = logger.WithValue("winner", winner).WithValue("tiebroken", tiebroken)
 
 			if err = q.generatedQuerier.FinalizeMealPlanOption(ctx, q.db, &generated.FinalizeMealPlanOptionParams{
-				BelongsToMealPlanEvent: nullStringFromString(event.ID),
-				ID:                     winner,
-				Tiebroken:              tiebroken,
+				MealPlanEventID: nullStringFromString(event.ID),
+				ID:              winner,
+				Tiebroken:       tiebroken,
 			}); err != nil {
 				return false, observability.PrepareAndLogError(err, logger, span, "finalizing meal plan option")
 			}

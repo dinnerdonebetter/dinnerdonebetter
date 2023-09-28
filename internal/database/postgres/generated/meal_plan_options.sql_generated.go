@@ -118,24 +118,18 @@ UPDATE meal_plan_options SET
 	chosen = (belongs_to_meal_plan_event = $1 AND id = $2),
 	tiebroken = $3
 WHERE archived_at IS NULL
-	AND belongs_to_meal_plan_event = $4
+	AND belongs_to_meal_plan_event = $1
 	AND id = $2
 `
 
 type FinalizeMealPlanOptionParams struct {
-	ID                     string
-	MealPlanEventID        sql.NullString
-	BelongsToMealPlanEvent sql.NullString
-	Tiebroken              bool
+	ID              string
+	MealPlanEventID sql.NullString
+	Tiebroken       bool
 }
 
 func (q *Queries) FinalizeMealPlanOption(ctx context.Context, db DBTX, arg *FinalizeMealPlanOptionParams) error {
-	_, err := db.ExecContext(ctx, finalizeMealPlanOption,
-		arg.MealPlanEventID,
-		arg.ID,
-		arg.Tiebroken,
-		arg.BelongsToMealPlanEvent,
-	)
+	_, err := db.ExecContext(ctx, finalizeMealPlanOption, arg.MealPlanEventID, arg.ID, arg.Tiebroken)
 	return err
 }
 

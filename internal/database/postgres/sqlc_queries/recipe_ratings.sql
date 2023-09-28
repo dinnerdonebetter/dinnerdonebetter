@@ -117,7 +117,6 @@ UPDATE recipe_ratings SET
 	instructions = sqlc.arg(instructions),
 	overall = sqlc.arg(overall),
 	notes = sqlc.arg(notes),
-	by_user = sqlc.arg(by_user),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
