@@ -157,7 +157,7 @@ SELECT
 	valid_preparations.archived_at
 FROM valid_preparations
 WHERE valid_preparations.archived_at IS NULL
-AND valid_preparations.id = sqlc.arg(id);
+	AND valid_preparations.id = sqlc.arg(id);
 
 -- name: GetRandomValidPreparation :one
 
