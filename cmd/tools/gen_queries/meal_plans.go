@@ -20,7 +20,7 @@ var mealPlansColumns = []string{
 	"grocery_list_initialized",
 	"tasks_created",
 	"election_method",
-	"created_by_user",
+	createdByUserColumn,
 	createdAtColumn,
 	lastUpdatedAtColumn,
 	archivedAtColumn,
@@ -31,7 +31,7 @@ func buildMealPlansQueries() []*Query {
 		{
 			Annotation: QueryAnnotation{
 				Name: "",
-				Type: ExecType,
+				Type: "",
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
 		},

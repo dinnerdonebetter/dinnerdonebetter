@@ -30,7 +30,7 @@ func buildRecipeStepInstrumentsQueries() []*Query {
 		{
 			Annotation: QueryAnnotation{
 				Name: "",
-				Type: ExecType,
+				Type: "",
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
 		},

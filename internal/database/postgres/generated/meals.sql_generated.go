@@ -31,7 +31,12 @@ func (q *Queries) ArchiveMeal(ctx context.Context, db DBTX, arg *ArchiveMealPara
 
 const checkMealExistence = `-- name: CheckMealExistence :one
 
-SELECT EXISTS ( SELECT meals.id FROM meals WHERE meals.archived_at IS NULL AND meals.id = $1 )
+SELECT EXISTS (
+	SELECT meals.id
+	FROM meals
+	WHERE meals.archived_at IS NULL
+		AND meals.id = $1
+)
 `
 
 func (q *Queries) CheckMealExistence(ctx context.Context, db DBTX, id string) (bool, error) {
@@ -94,13 +99,19 @@ SELECT
 	meals.min_estimated_portions,
 	meals.max_estimated_portions,
 	meals.eligible_for_meal_plans,
+	meals.last_indexed_at,
 	meals.created_at,
 	meals.last_updated_at,
 	meals.archived_at,
 	meals.created_by_user,
+	meal_components.id as component_id,
+	meal_components.meal_id as component_meal_id,
 	meal_components.recipe_id as component_recipe_id,
+	meal_components.meal_component_type as component_meal_component_type,
 	meal_components.recipe_scale as component_recipe_scale,
-	meal_components.meal_component_type as component_meal_component_type
+	meal_components.created_at as component_created_at,
+	meal_components.last_updated_at as component_last_updated_at,
+	meal_components.archived_at as component_archived_at
 FROM meals
 	JOIN meal_components ON meal_components.meal_id=meals.id
 WHERE meals.archived_at IS NULL
@@ -110,16 +121,22 @@ WHERE meals.archived_at IS NULL
 
 type GetMealRow struct {
 	CreatedAt                  time.Time
+	ComponentCreatedAt         time.Time
+	ComponentArchivedAt        sql.NullTime
+	ComponentLastUpdatedAt     sql.NullTime
 	ArchivedAt                 sql.NullTime
 	LastUpdatedAt              sql.NullTime
-	MinEstimatedPortions       string
+	LastIndexedAt              sql.NullTime
+	ComponentMealID            string
+	CreatedByUser              string
+	ComponentID                string
 	ID                         string
+	ComponentRecipeID          string
+	ComponentMealComponentType ComponentType
+	ComponentRecipeScale       string
+	MinEstimatedPortions       string
 	Description                string
 	Name                       string
-	CreatedByUser              string
-	ComponentRecipeID          string
-	ComponentRecipeScale       string
-	ComponentMealComponentType ComponentType
 	MaxEstimatedPortions       sql.NullString
 	EligibleForMealPlans       bool
 }
@@ -140,13 +157,19 @@ func (q *Queries) GetMeal(ctx context.Context, db DBTX, id string) ([]*GetMealRo
 			&i.MinEstimatedPortions,
 			&i.MaxEstimatedPortions,
 			&i.EligibleForMealPlans,
+			&i.LastIndexedAt,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
 			&i.CreatedByUser,
+			&i.ComponentID,
+			&i.ComponentMealID,
 			&i.ComponentRecipeID,
-			&i.ComponentRecipeScale,
 			&i.ComponentMealComponentType,
+			&i.ComponentRecipeScale,
+			&i.ComponentCreatedAt,
+			&i.ComponentLastUpdatedAt,
+			&i.ComponentArchivedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -170,6 +193,7 @@ SELECT
 	meals.min_estimated_portions,
 	meals.max_estimated_portions,
 	meals.eligible_for_meal_plans,
+	meals.last_indexed_at,
 	meals.created_at,
 	meals.last_updated_at,
 	meals.archived_at,
@@ -177,45 +201,58 @@ SELECT
 	(
 		SELECT COUNT(meals.id)
 		FROM meals
-		WHERE
-			meals.archived_at IS NULL
-			AND meals.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-			AND meals.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-			AND (meals.last_updated_at IS NULL OR meals.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-			AND (meals.last_updated_at IS NULL OR meals.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-	) as filtered_count,
+		WHERE meals.archived_at IS NULL
+			AND meals.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND meals.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				meals.last_updated_at IS NULL
+				OR meals.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				meals.last_updated_at IS NULL
+				OR meals.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+	) AS filtered_count,
 	(
 		SELECT COUNT(meals.id)
 		FROM meals
 		WHERE meals.archived_at IS NULL
-	) as total_count
+	) AS total_count
 FROM meals
-WHERE meals.archived_at IS NULL
-	AND meals.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-	AND meals.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-	AND (meals.last_updated_at IS NULL OR meals.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-	AND (meals.last_updated_at IS NULL OR meals.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-OFFSET $5
+WHERE
+	meals.archived_at IS NULL
+	AND meals.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND meals.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		meals.last_updated_at IS NULL
+		OR meals.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		meals.last_updated_at IS NULL
+		OR meals.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
 LIMIT $6
+OFFSET $5
 `
 
 type GetMealsParams struct {
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
-	UpdatedAfter  sql.NullTime
 	UpdatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
 
 type GetMealsRow struct {
 	CreatedAt            time.Time
-	LastUpdatedAt        sql.NullTime
 	ArchivedAt           sql.NullTime
-	ID                   string
-	Name                 string
+	LastIndexedAt        sql.NullTime
+	LastUpdatedAt        sql.NullTime
 	Description          string
 	MinEstimatedPortions string
+	Name                 string
+	ID                   string
 	CreatedByUser        string
 	MaxEstimatedPortions sql.NullString
 	FilteredCount        int64
@@ -227,8 +264,8 @@ func (q *Queries) GetMeals(ctx context.Context, db DBTX, arg *GetMealsParams) ([
 	rows, err := db.QueryContext(ctx, getMeals,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
-		arg.UpdatedAfter,
 		arg.UpdatedBefore,
+		arg.UpdatedAfter,
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)
@@ -246,6 +283,7 @@ func (q *Queries) GetMeals(ctx context.Context, db DBTX, arg *GetMealsParams) ([
 			&i.MinEstimatedPortions,
 			&i.MaxEstimatedPortions,
 			&i.EligibleForMealPlans,
+			&i.LastIndexedAt,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
@@ -273,8 +311,7 @@ SELECT meals.id
 	WHERE meals.archived_at IS NULL
 	AND (
 		meals.last_indexed_at IS NULL
-		OR meals.last_indexed_at
-			< NOW() - '24 hours'::INTERVAL
+		OR meals.last_indexed_at < NOW() - '24 hours'::INTERVAL
 	)
 `
 
@@ -310,65 +347,86 @@ SELECT
 	meals.min_estimated_portions,
 	meals.max_estimated_portions,
 	meals.eligible_for_meal_plans,
+	meals.last_indexed_at,
 	meals.created_at,
 	meals.last_updated_at,
 	meals.archived_at,
 	meals.created_by_user,
+	meal_components.id as component_id,
+	meal_components.meal_id as component_meal_id,
 	meal_components.recipe_id as component_recipe_id,
-	meal_components.recipe_scale as component_recipe_scale,
 	meal_components.meal_component_type as component_meal_component_type,
-	(
-		SELECT
-			COUNT(meals.id)
-		FROM
-			meals
-		WHERE
-			meals.archived_at IS NULL
-			AND meals.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-			AND meals.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-			AND (meals.last_updated_at IS NULL OR meals.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-			AND (meals.last_updated_at IS NULL OR meals.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-	) as filtered_count,
+	meal_components.recipe_scale as component_recipe_scale,
+	meal_components.created_at as component_created_at,
+	meal_components.last_updated_at as component_last_updated_at,
+	meal_components.archived_at as component_archived_at,
 	(
 		SELECT COUNT(meals.id)
 		FROM meals
 		WHERE meals.archived_at IS NULL
-	) as total_count
+			AND meals.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND meals.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				meals.last_updated_at IS NULL
+				OR meals.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				meals.last_updated_at IS NULL
+				OR meals.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+	) AS filtered_count,
+	(
+		SELECT COUNT(meals.id)
+		FROM meals
+		WHERE meals.archived_at IS NULL
+	) AS total_count
 FROM meals
 	JOIN meal_components ON meal_components.meal_id=meals.id
-WHERE meals.archived_at IS NULL
-	AND meals.name ILIKE '%' || $5 || '%'
-	AND meals.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-	AND meals.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-	AND (meals.last_updated_at IS NULL OR meals.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-	AND (meals.last_updated_at IS NULL OR meals.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-	AND meal_components.archived_at IS NULL
-OFFSET $6
+WHERE
+	meals.archived_at IS NULL
+	AND meals.name ILIKE '%' || $5::text || '%'
+	AND meals.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND meals.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		meals.last_updated_at IS NULL
+		OR meals.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		meals.last_updated_at IS NULL
+		OR meals.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
 LIMIT $7
+OFFSET $6
 `
 
 type SearchForMealsParams struct {
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
-	UpdatedAfter  sql.NullTime
 	UpdatedBefore sql.NullTime
-	Query         sql.NullString
+	UpdatedAfter  sql.NullTime
+	Query         string
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
 
 type SearchForMealsRow struct {
 	CreatedAt                  time.Time
+	ComponentCreatedAt         time.Time
+	ComponentArchivedAt        sql.NullTime
+	ComponentLastUpdatedAt     sql.NullTime
 	ArchivedAt                 sql.NullTime
 	LastUpdatedAt              sql.NullTime
-	MinEstimatedPortions       string
-	ID                         string
-	Description                string
-	Name                       string
-	CreatedByUser              string
-	ComponentRecipeID          string
+	LastIndexedAt              sql.NullTime
 	ComponentRecipeScale       string
 	ComponentMealComponentType ComponentType
+	Name                       string
+	CreatedByUser              string
+	ComponentID                string
+	ComponentMealID            string
+	ComponentRecipeID          string
+	Description                string
+	ID                         string
+	MinEstimatedPortions       string
 	MaxEstimatedPortions       sql.NullString
 	FilteredCount              int64
 	TotalCount                 int64
@@ -379,8 +437,8 @@ func (q *Queries) SearchForMeals(ctx context.Context, db DBTX, arg *SearchForMea
 	rows, err := db.QueryContext(ctx, searchForMeals,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
-		arg.UpdatedAfter,
 		arg.UpdatedBefore,
+		arg.UpdatedAfter,
 		arg.Query,
 		arg.QueryOffset,
 		arg.QueryLimit,
@@ -399,13 +457,19 @@ func (q *Queries) SearchForMeals(ctx context.Context, db DBTX, arg *SearchForMea
 			&i.MinEstimatedPortions,
 			&i.MaxEstimatedPortions,
 			&i.EligibleForMealPlans,
+			&i.LastIndexedAt,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
 			&i.CreatedByUser,
+			&i.ComponentID,
+			&i.ComponentMealID,
 			&i.ComponentRecipeID,
-			&i.ComponentRecipeScale,
 			&i.ComponentMealComponentType,
+			&i.ComponentRecipeScale,
+			&i.ComponentCreatedAt,
+			&i.ComponentLastUpdatedAt,
+			&i.ComponentArchivedAt,
 			&i.FilteredCount,
 			&i.TotalCount,
 		); err != nil {

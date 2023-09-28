@@ -10,6 +10,8 @@ import (
 const (
 	usersTableName = "users"
 
+	createdByUserColumn = "created_by_user"
+
 	usernameColumn               = "username"
 	avatarSourceColumn           = "avatar_src"
 	emailAddressColumn           = "email_address"

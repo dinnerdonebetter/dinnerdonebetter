@@ -20,7 +20,7 @@ var recipesColumns = []string{
 	createdAtColumn,
 	lastUpdatedAtColumn,
 	archivedAtColumn,
-	"created_by_user",
+	createdByUserColumn,
 	"min_estimated_portions",
 	"seal_of_approval",
 	slugColumn,
@@ -38,7 +38,7 @@ func buildRecipesQueries() []*Query {
 		{
 			Annotation: QueryAnnotation{
 				Name: "",
-				Type: ExecType,
+				Type: "",
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
 		},
