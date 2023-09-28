@@ -10,7 +10,8 @@ import (
 const (
 	recipeStepCompletionConditionsTableName = "recipe_step_completion_conditions"
 
-	ingredientStateColumn = "ingredient_state"
+	ingredientStateColumn                 = "ingredient_state"
+	recipeStepCompletionConditionIDColumn = "recipe_step_completion_condition_id"
 )
 
 var recipeStepCompletionConditionsColumns = []string{
@@ -88,26 +89,26 @@ func buildRecipeStepCompletionConditionQueries() []*Query {
 		JOIN %s ON %s.%s=%s.%s
 		JOIN %s ON %s.%s=%s.%s
 	WHERE %s.%s IS NULL
-		AND %s.%s = sqlc.arg(recipe_step_id)
-		AND %s.%s = sqlc.arg(recipe_step_completion_condition_id)
+		AND %s.%s = sqlc.arg(%s)
+		AND %s.%s = sqlc.arg(%s)
 		AND %s.%s IS NULL
-		AND %s.%s = sqlc.arg(recipe_id)
-		AND %s.%s = sqlc.arg(recipe_step_id)
+		AND %s.%s = sqlc.arg(%s)
+		AND %s.%s = sqlc.arg(%s)
 		AND %s.%s IS NULL
-		AND %s.%s = sqlc.arg(recipe_id)
+		AND %s.%s = sqlc.arg(%s)
 );`,
 				recipeStepCompletionConditionsTableName, idColumn,
 				recipeStepCompletionConditionsTableName,
 				recipeStepsTableName, recipeStepCompletionConditionsTableName, belongsToRecipeStepColumn, recipeStepsTableName, idColumn,
 				recipesTableName, recipeStepsTableName, belongsToRecipeColumn, recipesTableName, idColumn,
 				recipeStepCompletionConditionsTableName, archivedAtColumn,
-				recipeStepCompletionConditionsTableName, belongsToRecipeStepColumn,
-				recipeStepCompletionConditionsTableName, idColumn,
+				recipeStepCompletionConditionsTableName, belongsToRecipeStepColumn, recipeStepIDColumn,
+				recipeStepCompletionConditionsTableName, idColumn, recipeStepCompletionConditionIDColumn,
 				recipeStepsTableName, archivedAtColumn,
-				recipeStepsTableName, belongsToRecipeColumn,
-				recipeStepsTableName, idColumn,
+				recipeStepsTableName, belongsToRecipeColumn, recipeIDColumn,
+				recipeStepsTableName, idColumn, recipeStepIDColumn,
 				recipesTableName, archivedAtColumn,
-				recipesTableName, idColumn,
+				recipesTableName, idColumn, recipeIDColumn,
 			)),
 		},
 		{
@@ -155,31 +156,33 @@ GROUP BY
 				Type: ManyType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
-	%s
+	%s,
+    %s,
+    %s
 FROM %s
 	JOIN %s ON %s.%s = %s.%s
 	JOIN %s ON %s.%s = %s.%s
 	JOIN %s ON %s.%s = %s.%s
-	JOIN %s ON %s.%s = %s.%s
 WHERE %s.%s IS NULL
-	AND %s.%s IS NULL
-	AND %s.%s IS NULL
-	AND %s.%s IS NULL
-	AND %s.%s IS NULL
-	AND %s.%s = sqlc.arg(%s)
+	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
+				buildFilterCountSelect(
+					recipeStepCompletionConditionIngredientsTableName,
+					true,
+					"recipe_step_completion_conditions.belongs_to_recipe_step = sqlc.arg(recipe_step_id)",
+				),
+				buildTotalCountSelect(recipeStepCompletionConditionIngredientsTableName),
 				recipeStepCompletionConditionIngredientsTableName,
 				recipeStepCompletionConditionsTableName, recipeStepCompletionConditionIngredientsTableName, belongsToRecipeStepCompletionConditionColumn, recipeStepCompletionConditionsTableName, idColumn,
 				recipeStepsTableName, recipeStepCompletionConditionsTableName, belongsToRecipeStepColumn, recipeStepsTableName, idColumn,
-				recipesTableName, recipeStepsTableName, belongsToRecipeColumn, recipesTableName, idColumn,
 				validIngredientStatesTableName, recipeStepCompletionConditionsTableName, ingredientStateColumn, validIngredientStatesTableName, idColumn,
 				recipeStepCompletionConditionsTableName, archivedAtColumn,
-				recipeStepCompletionConditionIngredientsTableName, archivedAtColumn,
-				recipeStepsTableName, archivedAtColumn,
-				recipesTableName, archivedAtColumn,
-				validIngredientStatesTableName, archivedAtColumn,
-				recipesTableName, idColumn, idColumn,
+				buildFilterConditions(
+					recipeStepCompletionConditionIngredientsTableName,
+					true,
+					"recipe_step_completion_conditions.belongs_to_recipe_step = sqlc.arg(recipe_step_id)",
+				),
 				offsetLimitAddendum,
 			)),
 		},
@@ -197,8 +200,11 @@ FROM %s
 	JOIN %s ON %s.%s = %s.%s
 WHERE %s.%s IS NULL
 	AND %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s)
+	AND %s.%s = sqlc.arg(recipe_step_completion_condition_id)
 	AND %s.%s IS NULL
-	AND %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s)
+	AND %s.%s = sqlc.arg(%s)
 	AND %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(fullSelectColumns, ",\n\t"),
@@ -209,10 +215,13 @@ WHERE %s.%s IS NULL
 				validIngredientStatesTableName, recipeStepCompletionConditionsTableName, ingredientStateColumn, validIngredientStatesTableName, idColumn,
 				recipeStepCompletionConditionsTableName, archivedAtColumn,
 				recipeStepCompletionConditionIngredientsTableName, archivedAtColumn,
+				recipeStepCompletionConditionsTableName, belongsToRecipeStepColumn, recipeStepIDColumn,
+				recipeStepCompletionConditionsTableName, idColumn,
 				recipeStepsTableName, archivedAtColumn,
+				recipeStepsTableName, belongsToRecipeColumn, recipeIDColumn,
+				recipeStepsTableName, idColumn, recipeStepIDColumn,
 				recipesTableName, archivedAtColumn,
-				validIngredientStatesTableName, archivedAtColumn,
-				recipesTableName, idColumn, idColumn,
+				recipesTableName, idColumn, recipeIDColumn,
 			)),
 		},
 		{

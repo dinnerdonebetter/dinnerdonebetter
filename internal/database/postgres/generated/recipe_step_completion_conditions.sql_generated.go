@@ -373,44 +373,53 @@ SELECT
 	recipe_step_completion_condition_ingredients.created_at as recipe_step_completion_condition_ingredient_created_at,
 	recipe_step_completion_condition_ingredients.last_updated_at as recipe_step_completion_condition_ingredient_last_updated_at,
 	recipe_step_completion_condition_ingredients.archived_at as recipe_step_completion_condition_ingredient_archived_at,
-	(
-		SELECT
-			COUNT(recipe_step_completion_conditions.id)
-		FROM
-			recipe_step_completion_conditions
-		WHERE
-			recipe_step_completion_conditions.archived_at IS NULL
-			AND recipe_step_completion_conditions.belongs_to_recipe_step = $1
-			AND recipe_step_completion_conditions.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
-			AND recipe_step_completion_conditions.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
-			AND (recipe_step_completion_conditions.last_updated_at IS NULL OR recipe_step_completion_conditions.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years')))
-			AND (recipe_step_completion_conditions.last_updated_at IS NULL OR recipe_step_completion_conditions.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years')))
-	) as filtered_count,
-	(
-		SELECT COUNT(recipe_step_completion_conditions.id)
-		FROM recipe_step_completion_conditions
-		WHERE recipe_step_completion_conditions.archived_at IS NULL
-	) as total_count
+    (
+		SELECT COUNT(recipe_step_completion_condition_ingredients.id)
+		FROM recipe_step_completion_condition_ingredients
+		WHERE recipe_step_completion_condition_ingredients.archived_at IS NULL
+			AND recipe_step_completion_condition_ingredients.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND recipe_step_completion_condition_ingredients.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				recipe_step_completion_condition_ingredients.last_updated_at IS NULL
+				OR recipe_step_completion_condition_ingredients.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				recipe_step_completion_condition_ingredients.last_updated_at IS NULL
+				OR recipe_step_completion_condition_ingredients.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND recipe_step_completion_conditions.belongs_to_recipe_step = $5
+	) AS filtered_count,
+    (
+		SELECT COUNT(recipe_step_completion_condition_ingredients.id)
+		FROM recipe_step_completion_condition_ingredients
+		WHERE recipe_step_completion_condition_ingredients.archived_at IS NULL
+	) AS total_count
 FROM recipe_step_completion_condition_ingredients
 	JOIN recipe_step_completion_conditions ON recipe_step_completion_condition_ingredients.belongs_to_recipe_step_completion_condition = recipe_step_completion_conditions.id
 	JOIN recipe_steps ON recipe_step_completion_conditions.belongs_to_recipe_step = recipe_steps.id
 	JOIN valid_ingredient_states ON recipe_step_completion_conditions.ingredient_state = valid_ingredient_states.id
 WHERE recipe_step_completion_conditions.archived_at IS NULL
-	AND recipe_step_completion_conditions.belongs_to_recipe_step = $1
-	AND recipe_step_completion_conditions.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
-	AND recipe_step_completion_conditions.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
-	AND (recipe_step_completion_conditions.last_updated_at IS NULL OR recipe_step_completion_conditions.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years')))
-	AND (recipe_step_completion_conditions.last_updated_at IS NULL OR recipe_step_completion_conditions.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years')))
-OFFSET $6
+	AND recipe_step_completion_condition_ingredients.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND recipe_step_completion_condition_ingredients.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		recipe_step_completion_condition_ingredients.last_updated_at IS NULL
+		OR recipe_step_completion_condition_ingredients.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		recipe_step_completion_condition_ingredients.last_updated_at IS NULL
+		OR recipe_step_completion_condition_ingredients.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
+	AND recipe_step_completion_conditions.belongs_to_recipe_step = $5
 LIMIT $7
+OFFSET $6
 `
 
 type GetRecipeStepCompletionConditionsParams struct {
-	RecipeStepID  string
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
-	UpdatedAfter  sql.NullTime
 	UpdatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	RecipeStepID  string
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
@@ -447,11 +456,11 @@ type GetRecipeStepCompletionConditionsRow struct {
 
 func (q *Queries) GetRecipeStepCompletionConditions(ctx context.Context, db DBTX, arg *GetRecipeStepCompletionConditionsParams) ([]*GetRecipeStepCompletionConditionsRow, error) {
 	rows, err := db.QueryContext(ctx, getRecipeStepCompletionConditions,
-		arg.RecipeStepID,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
-		arg.UpdatedAfter,
 		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.RecipeStepID,
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)
