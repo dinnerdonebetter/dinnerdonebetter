@@ -41,8 +41,8 @@ func main() {
 		"recipe_prep_task_steps.sql":                       buildRecipePrepTaskStepsQueries(),
 		"recipe_ratings.sql":                               buildRecipeRatingsQueries(),
 		"recipe_step_completion_condition_ingredients.sql": buildRecipeStepCompletionConditionIngredientsQueries(),
+		"recipe_prep_tasks.sql":                            buildRecipePrepTasksQueries(),
 		//
-		// "recipe_prep_tasks.sql":                            buildRecipePrepTasksQueries(),
 		// "recipe_step_completion_conditions.sql":            buildRecipeStepCompletionConditionQueries(),
 		// "meal_plan_option_votes.sql":                       buildMealPlanOptionVotesQueries(),
 		// "meal_plan_options.sql":                            buildMealPlanOptionsQueries(),

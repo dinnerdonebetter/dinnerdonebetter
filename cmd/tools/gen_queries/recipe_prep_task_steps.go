@@ -13,8 +13,8 @@ const (
 
 var recipePrepTaskStepsColumns = []string{
 	idColumn,
-	"belongs_to_recipe_prep_task",
 	"belongs_to_recipe_step",
+	"belongs_to_recipe_prep_task",
 	"satisfies_recipe_step",
 }
 

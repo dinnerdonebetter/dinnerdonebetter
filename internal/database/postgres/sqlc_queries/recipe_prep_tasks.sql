@@ -70,8 +70,7 @@ SELECT
 FROM recipe_prep_tasks
 	JOIN recipe_prep_task_steps ON recipe_prep_tasks.id=recipe_prep_task_steps.belongs_to_recipe_prep_task
 WHERE recipe_prep_tasks.archived_at IS NULL
-	AND recipe_prep_tasks.id = sqlc.arg(recipe_prep_task_id)
-	AND recipe_prep_tasks.archived_at IS NULL;
+	AND recipe_prep_tasks.id = sqlc.arg(recipe_prep_task_id);
 
 -- name: ListAllRecipePrepTasksByRecipe :many
 
@@ -107,17 +106,17 @@ WHERE recipe_prep_tasks.archived_at IS NULL
 -- name: UpdateRecipePrepTask :execrows
 
 UPDATE recipe_prep_tasks SET
-	 name = sqlc.arg(name),
-	 description = sqlc.arg(description),
-	 notes = sqlc.arg(notes),
-	 optional = sqlc.arg(optional),
-	 explicit_storage_instructions = sqlc.arg(explicit_storage_instructions),
-	 minimum_time_buffer_before_recipe_in_seconds = sqlc.arg(minimum_time_buffer_before_recipe_in_seconds),
-	 maximum_time_buffer_before_recipe_in_seconds = sqlc.arg(maximum_time_buffer_before_recipe_in_seconds),
-	 storage_type = sqlc.arg(storage_type),
-	 minimum_storage_temperature_in_celsius = sqlc.arg(minimum_storage_temperature_in_celsius),
-	 maximum_storage_temperature_in_celsius = sqlc.arg(maximum_storage_temperature_in_celsius),
-	 belongs_to_recipe = sqlc.arg(belongs_to_recipe),
-	 last_updated_at = NOW()
+	name = sqlc.arg(name),
+	description = sqlc.arg(description),
+	notes = sqlc.arg(notes),
+	optional = sqlc.arg(optional),
+	explicit_storage_instructions = sqlc.arg(explicit_storage_instructions),
+	minimum_time_buffer_before_recipe_in_seconds = sqlc.arg(minimum_time_buffer_before_recipe_in_seconds),
+	maximum_time_buffer_before_recipe_in_seconds = sqlc.arg(maximum_time_buffer_before_recipe_in_seconds),
+	storage_type = sqlc.arg(storage_type),
+	minimum_storage_temperature_in_celsius = sqlc.arg(minimum_storage_temperature_in_celsius),
+	maximum_storage_temperature_in_celsius = sqlc.arg(maximum_storage_temperature_in_celsius),
+	belongs_to_recipe = sqlc.arg(belongs_to_recipe),
+	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
