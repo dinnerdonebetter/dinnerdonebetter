@@ -9,13 +9,16 @@ import (
 
 const (
 	validIngredientStateIngredientsTableName = "valid_ingredient_state_ingredients"
+
+	validIngredientStateColumn = "valid_ingredient_state"
+	validIngredientColumn      = "valid_ingredient"
 )
 
 var validIngredientStateIngredientsColumns = []string{
 	idColumn,
 	notesColumn,
-	"valid_ingredient_state",
-	"valid_ingredient",
+	validIngredientStateColumn,
+	validIngredientColumn,
 	createdAtColumn,
 	lastUpdatedAtColumn,
 	archivedAtColumn,
@@ -97,13 +100,13 @@ func buildValidIngredientStateIngredientsQueries() []*Query {
 	%s,
 	%s
 FROM %s
-	JOIN valid_ingredients ON valid_ingredient_state_ingredients.valid_ingredient = valid_ingredients.id
-	JOIN valid_ingredient_states ON valid_ingredient_state_ingredients.valid_ingredient_state = valid_ingredient_states.id
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
 WHERE
-	valid_ingredient_state_ingredients.archived_at IS NULL
-	AND valid_ingredients.archived_at IS NULL
-	AND valid_ingredient_states.archived_at IS NULL
-	AND valid_ingredient_state_ingredients.valid_ingredient = sqlc.arg(valid_ingredient)
+	%s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s)
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
@@ -115,6 +118,12 @@ WHERE
 					validIngredientStateIngredientsTableName,
 				),
 				validIngredientStateIngredientsTableName,
+				validIngredientsTableName, validIngredientStateIngredientsTableName, validIngredientColumn, validIngredientsTableName, idColumn,
+				validIngredientStatesTableName, validIngredientStateIngredientsTableName, validIngredientStateColumn, validIngredientStatesTableName, idColumn,
+				validIngredientStateIngredientsTableName, archivedAtColumn,
+				validIngredientsTableName, archivedAtColumn,
+				validIngredientStatesTableName, archivedAtColumn,
+				validIngredientStateIngredientsTableName, validIngredientColumn, validIngredientColumn,
 				buildFilterConditions(validIngredientStateIngredientsTableName, true),
 				offsetLimitAddendum,
 			)),
@@ -129,13 +138,13 @@ WHERE
 	%s,
 	%s
 FROM %s
-	JOIN valid_ingredients ON valid_ingredient_state_ingredients.valid_ingredient = valid_ingredients.id
-	JOIN valid_ingredient_states ON valid_ingredient_state_ingredients.valid_ingredient_state = valid_ingredient_states.id
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
 WHERE
-	valid_ingredient_state_ingredients.archived_at IS NULL
-	AND valid_ingredients.archived_at IS NULL
-	AND valid_ingredient_states.archived_at IS NULL
-	AND valid_ingredient_state_ingredients.valid_ingredient_state = sqlc.arg(valid_ingredient_state)
+	%s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s)
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
@@ -147,6 +156,12 @@ WHERE
 					validIngredientStateIngredientsTableName,
 				),
 				validIngredientStateIngredientsTableName,
+				validIngredientsTableName, validIngredientStateIngredientsTableName, validIngredientColumn, validIngredientsTableName, idColumn,
+				validIngredientStatesTableName, validIngredientStateIngredientsTableName, validIngredientStateColumn, validIngredientStatesTableName, idColumn,
+				validIngredientStateIngredientsTableName, archivedAtColumn,
+				validIngredientsTableName, archivedAtColumn,
+				validIngredientStatesTableName, archivedAtColumn,
+				validIngredientStateIngredientsTableName, validIngredientStateColumn, validIngredientStateColumn,
 				buildFilterConditions(validIngredientStateIngredientsTableName, true),
 				offsetLimitAddendum,
 			)),
@@ -161,12 +176,12 @@ WHERE
 	%s,
 	%s
 FROM %s
-	JOIN valid_ingredients ON valid_ingredient_state_ingredients.valid_ingredient = valid_ingredients.id
-	JOIN valid_ingredient_states ON valid_ingredient_state_ingredients.valid_ingredient_state = valid_ingredient_states.id
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
 WHERE
-	valid_ingredient_state_ingredients.archived_at IS NULL
-	AND valid_ingredients.archived_at IS NULL
-	AND valid_ingredient_states.archived_at IS NULL
+	%s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
@@ -178,6 +193,11 @@ WHERE
 					validIngredientStateIngredientsTableName,
 				),
 				validIngredientStateIngredientsTableName,
+				validIngredientsTableName, validIngredientStateIngredientsTableName, validIngredientColumn, validIngredientsTableName, idColumn,
+				validIngredientStatesTableName, validIngredientStateIngredientsTableName, validIngredientStateColumn, validIngredientStatesTableName, idColumn,
+				validIngredientStateIngredientsTableName, archivedAtColumn,
+				validIngredientsTableName, archivedAtColumn,
+				validIngredientStatesTableName, archivedAtColumn,
 				buildFilterConditions(validIngredientStateIngredientsTableName, true),
 				offsetLimitAddendum,
 			)),
@@ -190,15 +210,21 @@ WHERE
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
-	JOIN valid_ingredients ON valid_ingredient_state_ingredients.valid_ingredient = valid_ingredients.id
-	JOIN valid_ingredient_states ON valid_ingredient_state_ingredients.valid_ingredient_state = valid_ingredient_states.id
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
 WHERE
-	valid_ingredient_state_ingredients.archived_at IS NULL
-	AND valid_ingredients.archived_at IS NULL
-	AND valid_ingredient_states.archived_at IS NULL
-	AND valid_ingredient_state_ingredients.id = sqlc.arg(id);`,
+	%s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(fullSelectColumns, ",\n\t"),
 				validIngredientStateIngredientsTableName,
+				validIngredientsTableName, validIngredientStateIngredientsTableName, validIngredientColumn, validIngredientsTableName, idColumn,
+				validIngredientStatesTableName, validIngredientStateIngredientsTableName, validIngredientStateColumn, validIngredientStatesTableName, idColumn,
+				validIngredientStateIngredientsTableName, archivedAtColumn,
+				validIngredientsTableName, archivedAtColumn,
+				validIngredientStatesTableName, archivedAtColumn,
+				validIngredientStateIngredientsTableName, idColumn, idColumn,
 			)),
 		},
 		{
@@ -209,15 +235,21 @@ WHERE
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
-	JOIN valid_ingredients ON valid_ingredient_state_ingredients.valid_ingredient = valid_ingredients.id
-	JOIN valid_ingredient_states ON valid_ingredient_state_ingredients.valid_ingredient_state = valid_ingredient_states.id
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
 WHERE
-	valid_ingredient_state_ingredients.archived_at IS NULL
-	AND valid_ingredients.archived_at IS NULL
-	AND valid_ingredient_states.archived_at IS NULL
-	AND valid_ingredient_state_ingredients.id = ANY(sqlc.arg(ids)::text[]);`,
+	%s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s = ANY(sqlc.arg(ids)::text[]);`,
 				strings.Join(fullSelectColumns, ",\n\t"),
 				validIngredientStateIngredientsTableName,
+				validIngredientsTableName, validIngredientStateIngredientsTableName, validIngredientColumn, validIngredientsTableName, idColumn,
+				validIngredientStatesTableName, validIngredientStateIngredientsTableName, validIngredientStateColumn, validIngredientStatesTableName, idColumn,
+				validIngredientStateIngredientsTableName, archivedAtColumn,
+				validIngredientsTableName, archivedAtColumn,
+				validIngredientStatesTableName, archivedAtColumn,
+				validIngredientStateIngredientsTableName, idColumn,
 			)),
 		},
 		{
@@ -226,14 +258,16 @@ WHERE
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS(
-	SELECT %s
+	SELECT %s.%s
 	FROM %s
-	WHERE valid_ingredient = sqlc.arg(valid_ingredient)
-	AND valid_ingredient_state = sqlc.arg(valid_ingredient_state)
+	WHERE %s = sqlc.arg(%s)
+	AND %s = sqlc.arg(%s)
 	AND %s IS NULL
 );`,
-				idColumn,
+				validIngredientStateIngredientsTableName, idColumn,
 				validIngredientStateIngredientsTableName,
+				validIngredientColumn, validIngredientColumn,
+				validIngredientStateColumn, validIngredientStateColumn,
 				archivedAtColumn,
 			)),
 		},

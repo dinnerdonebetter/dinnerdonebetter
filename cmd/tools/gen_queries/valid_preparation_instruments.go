@@ -100,50 +100,79 @@ func buildValidPreparationInstrumentsQueries() []*Query {
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
 	(
-		SELECT COUNT(valid_preparation_instruments.id)
-		FROM valid_preparation_instruments
-			JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-			JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+		SELECT COUNT(%s.%s)
+		FROM %s
+			JOIN %s ON %s.%s = %s.%s
+			JOIN %s ON %s.%s = %s.%s
 		WHERE
-			valid_preparation_instruments.archived_at IS NULL
-			AND valid_instruments.archived_at IS NULL
-			AND valid_preparations.archived_at IS NULL
+			%s.%s IS NULL
+			AND %s.%s IS NULL
+			AND %s.%s IS NULL
+			AND %s.%s = sqlc.arg(%s)
 			%s
 	) as filtered_count,
 	(
-		SELECT COUNT(valid_preparation_instruments.id)
-		FROM valid_preparation_instruments
-			JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-			JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+		SELECT COUNT(%s.%s)
+		FROM %s
+			JOIN %s ON %s.%s = %s.%s
+			JOIN %s ON %s.%s = %s.%s
 		WHERE
-			valid_preparation_instruments.archived_at IS NULL
-			AND valid_instruments.archived_at IS NULL
-			AND valid_preparations.archived_at IS NULL
+			%s.%s IS NULL
+			AND %s.%s IS NULL
+			AND %s.%s IS NULL
+			AND %s.%s = sqlc.arg(%s)
 	) as total_count
-FROM valid_preparation_instruments
-	JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-	JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+FROM %s
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
 WHERE
-	valid_preparation_instruments.archived_at IS NULL
-	AND valid_preparation_instruments.valid_instrument_id = sqlc.arg(id)
-	AND valid_instruments.archived_at IS NULL
-	AND valid_preparations.archived_at IS NULL
+	%s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s)
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
 	%s
 GROUP BY
-	valid_preparation_instruments.id,
-	valid_preparations.id,
-	valid_instruments.id
-ORDER BY valid_preparation_instruments.id
+	%s.%s,
+	%s.%s,
+	%s.%s
+ORDER BY %s.%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
+				validPreparationInstrumentsTableName, idColumn,
+				validPreparationInstrumentsTableName,
+				validInstrumentsTableName, validPreparationInstrumentsTableName, validInstrumentIDColumn, validInstrumentsTableName, idColumn,
+				validPreparationsTableName, validPreparationInstrumentsTableName, validPreparationIDColumn, validPreparationsTableName, idColumn,
+				validPreparationInstrumentsTableName, archivedAtColumn,
+				validInstrumentsTableName, archivedAtColumn,
+				validPreparationsTableName, archivedAtColumn,
+				validPreparationInstrumentsTableName, validInstrumentIDColumn, idColumn, ///
 				buildFilterConditions(
 					validPreparationInstrumentsTableName,
 					true,
 				),
+				validPreparationInstrumentsTableName, idColumn,
+				validPreparationInstrumentsTableName,
+				validInstrumentsTableName, validPreparationInstrumentsTableName, validInstrumentIDColumn, validInstrumentsTableName, idColumn,
+				validPreparationsTableName, validPreparationInstrumentsTableName, validPreparationIDColumn, validPreparationsTableName, idColumn,
+				validPreparationInstrumentsTableName, archivedAtColumn,
+				validInstrumentsTableName, archivedAtColumn,
+				validPreparationsTableName, archivedAtColumn,
+				validPreparationInstrumentsTableName, validInstrumentIDColumn, idColumn, ///
+				validPreparationInstrumentsTableName,
+				validInstrumentsTableName, validPreparationInstrumentsTableName, validInstrumentIDColumn, validInstrumentsTableName, idColumn,
+				validPreparationsTableName, validPreparationInstrumentsTableName, validPreparationIDColumn, validPreparationsTableName, idColumn,
+				validPreparationInstrumentsTableName, archivedAtColumn,
+				validPreparationInstrumentsTableName, validInstrumentIDColumn, idColumn, ///
+				validInstrumentsTableName, archivedAtColumn,
+				validPreparationsTableName, archivedAtColumn,
 				buildFilterConditions(
 					validPreparationInstrumentsTableName,
 					true,
 				),
+				validPreparationInstrumentsTableName, idColumn,
+				validPreparationsTableName, idColumn,
+				validInstrumentsTableName, idColumn,
+				validPreparationInstrumentsTableName, idColumn,
 				offsetLimitAddendum,
 			)),
 		},
@@ -155,50 +184,79 @@ ORDER BY valid_preparation_instruments.id
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
 	(
-		SELECT COUNT(valid_preparation_instruments.id)
-		FROM valid_preparation_instruments
-			JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-			JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+		SELECT COUNT(%s.%s)
+		FROM %s
+			JOIN %s ON %s.%s = %s.%s
+			JOIN %s ON %s.%s = %s.%s
 		WHERE
-			valid_preparation_instruments.archived_at IS NULL
-			AND valid_instruments.archived_at IS NULL
-			AND valid_preparations.archived_at IS NULL
+			%s.%s IS NULL
+			AND %s.%s IS NULL
+			AND %s.%s IS NULL
+			AND %s.%s = sqlc.arg(%s)
 			%s
 	) as filtered_count,
 	(
-		SELECT COUNT(valid_preparation_instruments.id)
-		FROM valid_preparation_instruments
-			JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-			JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+		SELECT COUNT(%s.%s)
+		FROM %s
+			JOIN %s ON %s.%s = %s.%s
+			JOIN %s ON %s.%s = %s.%s
 		WHERE
-			valid_preparation_instruments.archived_at IS NULL
-			AND valid_instruments.archived_at IS NULL
-			AND valid_preparations.archived_at IS NULL
+			%s.%s IS NULL
+			AND %s.%s IS NULL
+			AND %s.%s IS NULL
+			AND %s.%s = sqlc.arg(%s)
 	) as total_count
-FROM valid_preparation_instruments
-	JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-	JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+FROM %s
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
 WHERE
-	valid_preparation_instruments.archived_at IS NULL
-	AND valid_preparation_instruments.valid_preparation_id = sqlc.arg(id)
-	AND valid_instruments.archived_at IS NULL
-	AND valid_preparations.archived_at IS NULL
+	%s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s)
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
 	%s
 GROUP BY
-	valid_preparation_instruments.id,
-	valid_preparations.id,
-	valid_instruments.id
-ORDER BY valid_preparation_instruments.id
+	%s.%s,
+	%s.%s,
+	%s.%s
+ORDER BY %s.%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
+				validPreparationInstrumentsTableName, idColumn,
+				validPreparationInstrumentsTableName,
+				validInstrumentsTableName, validPreparationInstrumentsTableName, validInstrumentIDColumn, validInstrumentsTableName, idColumn,
+				validPreparationsTableName, validPreparationInstrumentsTableName, validPreparationIDColumn, validPreparationsTableName, idColumn,
+				validPreparationInstrumentsTableName, archivedAtColumn,
+				validInstrumentsTableName, archivedAtColumn,
+				validPreparationsTableName, archivedAtColumn,
+				validPreparationInstrumentsTableName, validPreparationIDColumn, idColumn, ///
 				buildFilterConditions(
 					validPreparationInstrumentsTableName,
 					true,
 				),
+				validPreparationInstrumentsTableName, idColumn,
+				validPreparationInstrumentsTableName,
+				validInstrumentsTableName, validPreparationInstrumentsTableName, validInstrumentIDColumn, validInstrumentsTableName, idColumn,
+				validPreparationsTableName, validPreparationInstrumentsTableName, validPreparationIDColumn, validPreparationsTableName, idColumn,
+				validPreparationInstrumentsTableName, archivedAtColumn,
+				validInstrumentsTableName, archivedAtColumn,
+				validPreparationsTableName, archivedAtColumn,
+				validPreparationInstrumentsTableName, validPreparationIDColumn, idColumn, ///
+				validPreparationInstrumentsTableName,
+				validInstrumentsTableName, validPreparationInstrumentsTableName, validInstrumentIDColumn, validInstrumentsTableName, idColumn,
+				validPreparationsTableName, validPreparationInstrumentsTableName, validPreparationIDColumn, validPreparationsTableName, idColumn,
+				validPreparationInstrumentsTableName, archivedAtColumn,
+				validPreparationInstrumentsTableName, validPreparationIDColumn, idColumn, ///
+				validInstrumentsTableName, archivedAtColumn,
+				validPreparationsTableName, archivedAtColumn,
 				buildFilterConditions(
 					validPreparationInstrumentsTableName,
 					true,
 				),
+				validPreparationInstrumentsTableName, idColumn,
+				validPreparationsTableName, idColumn,
+				validInstrumentsTableName, idColumn,
+				validPreparationInstrumentsTableName, idColumn,
 				offsetLimitAddendum,
 			)),
 		},
@@ -210,49 +268,73 @@ ORDER BY valid_preparation_instruments.id
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
 	(
-		SELECT COUNT(valid_preparation_instruments.id)
-		FROM valid_preparation_instruments
-			JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-			JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+		SELECT COUNT(%s.%s)
+		FROM %s
+			JOIN %s ON %s.%s = %s.%s
+			JOIN %s ON %s.%s = %s.%s
 		WHERE
-			valid_preparation_instruments.archived_at IS NULL
-			AND valid_instruments.archived_at IS NULL
-			AND valid_preparations.archived_at IS NULL
+			%s.%s IS NULL
+			AND %s.%s IS NULL
+			AND %s.%s IS NULL
 			%s
 	) as filtered_count,
 	(
-		SELECT COUNT(valid_preparation_instruments.id)
-		FROM valid_preparation_instruments
-			JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-			JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+		SELECT COUNT(%s.%s)
+		FROM %s
+			JOIN %s ON %s.%s = %s.%s
+			JOIN %s ON %s.%s = %s.%s
 		WHERE
-			valid_preparation_instruments.archived_at IS NULL
-			AND valid_instruments.archived_at IS NULL
-			AND valid_preparations.archived_at IS NULL
+			%s.%s IS NULL
+			AND %s.%s IS NULL
+			AND %s.%s IS NULL
 	) as total_count
-FROM valid_preparation_instruments
-	JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-	JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+FROM %s
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
 WHERE
-	valid_preparation_instruments.archived_at IS NULL
-	AND valid_instruments.archived_at IS NULL
-	AND valid_preparations.archived_at IS NULL
+	%s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
 	%s
 GROUP BY
-	valid_preparation_instruments.id,
-	valid_preparations.id,
-	valid_instruments.id
-ORDER BY valid_preparation_instruments.id
+	%s.%s,
+	%s.%s,
+	%s.%s
+ORDER BY %s.%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
+				validPreparationInstrumentsTableName, idColumn,
+				validPreparationInstrumentsTableName,
+				validInstrumentsTableName, validPreparationInstrumentsTableName, validInstrumentIDColumn, validInstrumentsTableName, idColumn,
+				validPreparationsTableName, validPreparationInstrumentsTableName, validPreparationIDColumn, validPreparationsTableName, idColumn,
+				validPreparationInstrumentsTableName, archivedAtColumn,
+				validInstrumentsTableName, archivedAtColumn,
+				validPreparationsTableName, archivedAtColumn,
 				buildFilterConditions(
 					validPreparationInstrumentsTableName,
 					true,
 				),
+				validPreparationInstrumentsTableName, idColumn,
+				validPreparationInstrumentsTableName,
+				validInstrumentsTableName, validPreparationInstrumentsTableName, validInstrumentIDColumn, validInstrumentsTableName, idColumn,
+				validPreparationsTableName, validPreparationInstrumentsTableName, validPreparationIDColumn, validPreparationsTableName, idColumn,
+				validPreparationInstrumentsTableName, archivedAtColumn,
+				validInstrumentsTableName, archivedAtColumn,
+				validPreparationsTableName, archivedAtColumn,
+				validPreparationInstrumentsTableName,
+				validInstrumentsTableName, validPreparationInstrumentsTableName, validInstrumentIDColumn, validInstrumentsTableName, idColumn,
+				validPreparationsTableName, validPreparationInstrumentsTableName, validPreparationIDColumn, validPreparationsTableName, idColumn,
+				validPreparationInstrumentsTableName, archivedAtColumn,
+				validInstrumentsTableName, archivedAtColumn,
+				validPreparationsTableName, archivedAtColumn,
 				buildFilterConditions(
 					validPreparationInstrumentsTableName,
 					true,
 				),
+				validPreparationInstrumentsTableName, idColumn,
+				validPreparationsTableName, idColumn,
+				validInstrumentsTableName, idColumn,
+				validPreparationInstrumentsTableName, idColumn,
 				offsetLimitAddendum,
 			)),
 		},
@@ -264,15 +346,22 @@ ORDER BY valid_preparation_instruments.id
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM
-	valid_preparation_instruments
-	JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
-	JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
+	%s
+	JOIN %s ON %s.%s = %s.%s
+	JOIN %s ON %s.%s = %s.%s
 WHERE
-	valid_preparation_instruments.archived_at IS NULL
-	AND valid_instruments.archived_at IS NULL
-	AND valid_preparations.archived_at IS NULL
-	AND valid_preparation_instruments.id = sqlc.arg(id);`,
+	%s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s IS NULL
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(fullSelectColumns, ",\n\t"),
+				validPreparationInstrumentsTableName,
+				validInstrumentsTableName, validPreparationInstrumentsTableName, validInstrumentIDColumn, validInstrumentsTableName, idColumn,
+				validPreparationsTableName, validPreparationInstrumentsTableName, validPreparationIDColumn, validPreparationsTableName, idColumn,
+				validPreparationInstrumentsTableName, archivedAtColumn,
+				validInstrumentsTableName, archivedAtColumn,
+				validPreparationsTableName, archivedAtColumn,
+				validPreparationInstrumentsTableName, idColumn, idColumn,
 			)),
 		},
 		{

@@ -31,7 +31,6 @@ func main() {
 		"valid_ingredient_preparations.sql":      buildValidIngredientPreparationsQueries(),
 		"valid_preparation_vessels.sql":          buildValidPreparationVesselsQueries(),
 		"valid_ingredient_measurement_units.sql": buildValidIngredientMeasurementUnitsQueries(),
-		// above here cleared of constants
 		"valid_measurement_unit_conversions.sql": buildValidMeasurementUnitConversionsQueries(),
 		"valid_ingredient_state_ingredients.sql": buildValidIngredientStateIngredientsQueries(),
 		"valid_preparation_instruments.sql":      buildValidPreparationInstrumentsQueries(),

@@ -144,14 +144,6 @@ func float32FromString(s string) float32 {
 	return 0
 }
 
-func float32PointerFromString(s string) *float32 {
-	if parsedFloat, err := strconv.ParseFloat(s, 64); err == nil {
-		return pointers.Pointer(float32(parsedFloat))
-	}
-
-	return nil
-}
-
 func float32FromNullString(s sql.NullString) float32 {
 	if s.Valid {
 		return float32FromString(s.String)

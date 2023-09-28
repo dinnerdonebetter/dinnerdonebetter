@@ -10,13 +10,15 @@ import (
 const (
 	usersTableName = "users"
 
-	usernameColumn                      = "username"
-	avatarSourceColumn                  = "avatar_src"
-	emailAddressColumn                  = "email_address"
-	hashedPasswordColumn                = "hashed_password"
-	passwordLastChangedAtColumn         = "password_last_changed_at"
-	requiresPasswordChangeColumn        = "requires_password_change"
-	twoFactorSecretColumn               = "two_factor_secret"
+	usernameColumn               = "username"
+	avatarSourceColumn           = "avatar_src"
+	emailAddressColumn           = "email_address"
+	hashedPasswordColumn         = "hashed_password"
+	passwordLastChangedAtColumn  = "password_last_changed_at"
+	requiresPasswordChangeColumn = "requires_password_change"
+	/* #nosec G101 */
+	twoFactorSecretColumn = "two_factor_secret"
+	/* #nosec G101 */
 	twoFactorSecretVerifiedAtColumn     = "two_factor_secret_verified_at"
 	serviceRoleColumn                   = "service_role"
 	userAccountStatusColumn             = "user_account_status"

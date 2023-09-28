@@ -468,7 +468,7 @@ WHERE
 -- name: CheckValidityOfValidIngredientStateIngredientPair :one
 
 SELECT EXISTS(
-	SELECT id
+	SELECT valid_ingredient_state_ingredients.id
 	FROM valid_ingredient_state_ingredients
 	WHERE valid_ingredient = sqlc.arg(valid_ingredient)
 	AND valid_ingredient_state = sqlc.arg(valid_ingredient_state)

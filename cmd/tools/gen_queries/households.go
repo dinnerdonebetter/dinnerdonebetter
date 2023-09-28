@@ -10,6 +10,7 @@ import (
 const (
 	householdsTableName = "households"
 
+	/* #nosec G101 */
 	webhookHMACSecretColumn = "webhook_hmac_secret"
 )
 

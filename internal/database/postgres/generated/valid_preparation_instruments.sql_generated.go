@@ -503,15 +503,16 @@ SELECT
 			valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
 			AND valid_preparations.archived_at IS NULL
-			AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-	AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND valid_preparation_instruments.valid_instrument_id = $1
+			AND valid_preparation_instruments.created_at > COALESCE($2, (SELECT NOW() - '999 years'::INTERVAL))
+	AND valid_preparation_instruments.created_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		valid_preparation_instruments.last_updated_at IS NULL
-		OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+		OR valid_preparation_instruments.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
 	)
 	AND (
 		valid_preparation_instruments.last_updated_at IS NULL
-		OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+		OR valid_preparation_instruments.last_updated_at < COALESCE($5, (SELECT NOW() + '999 years'::INTERVAL))
 	)
 	) as filtered_count,
 	(
@@ -523,24 +524,25 @@ SELECT
 			valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
 			AND valid_preparations.archived_at IS NULL
+			AND valid_preparation_instruments.valid_instrument_id = $1
 	) as total_count
 FROM valid_preparation_instruments
 	JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
 	JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 WHERE
 	valid_preparation_instruments.archived_at IS NULL
-	AND valid_preparation_instruments.valid_instrument_id = $5
+	AND valid_preparation_instruments.valid_instrument_id = $1
 	AND valid_instruments.archived_at IS NULL
 	AND valid_preparations.archived_at IS NULL
-	AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-	AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND valid_preparation_instruments.created_at > COALESCE($2, (SELECT NOW() - '999 years'::INTERVAL))
+	AND valid_preparation_instruments.created_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		valid_preparation_instruments.last_updated_at IS NULL
-		OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+		OR valid_preparation_instruments.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
 	)
 	AND (
 		valid_preparation_instruments.last_updated_at IS NULL
-		OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+		OR valid_preparation_instruments.last_updated_at < COALESCE($5, (SELECT NOW() + '999 years'::INTERVAL))
 	)
 GROUP BY
 	valid_preparation_instruments.id,
@@ -552,11 +554,11 @@ OFFSET $6
 `
 
 type GetValidPreparationInstrumentsForInstrumentParams struct {
+	ID            string
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
 	UpdatedAfter  sql.NullTime
 	UpdatedBefore sql.NullTime
-	ID            string
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
@@ -609,11 +611,11 @@ type GetValidPreparationInstrumentsForInstrumentRow struct {
 
 func (q *Queries) GetValidPreparationInstrumentsForInstrument(ctx context.Context, db DBTX, arg *GetValidPreparationInstrumentsForInstrumentParams) ([]*GetValidPreparationInstrumentsForInstrumentRow, error) {
 	rows, err := db.QueryContext(ctx, getValidPreparationInstrumentsForInstrument,
+		arg.ID,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
 		arg.UpdatedAfter,
 		arg.UpdatedBefore,
-		arg.ID,
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)
@@ -735,15 +737,16 @@ SELECT
 			valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
 			AND valid_preparations.archived_at IS NULL
-			AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-	AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND valid_preparation_instruments.valid_preparation_id = $1
+			AND valid_preparation_instruments.created_at > COALESCE($2, (SELECT NOW() - '999 years'::INTERVAL))
+	AND valid_preparation_instruments.created_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		valid_preparation_instruments.last_updated_at IS NULL
-		OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+		OR valid_preparation_instruments.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
 	)
 	AND (
 		valid_preparation_instruments.last_updated_at IS NULL
-		OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+		OR valid_preparation_instruments.last_updated_at < COALESCE($5, (SELECT NOW() + '999 years'::INTERVAL))
 	)
 	) as filtered_count,
 	(
@@ -755,24 +758,25 @@ SELECT
 			valid_preparation_instruments.archived_at IS NULL
 			AND valid_instruments.archived_at IS NULL
 			AND valid_preparations.archived_at IS NULL
+			AND valid_preparation_instruments.valid_preparation_id = $1
 	) as total_count
 FROM valid_preparation_instruments
 	JOIN valid_instruments ON valid_preparation_instruments.valid_instrument_id = valid_instruments.id
 	JOIN valid_preparations ON valid_preparation_instruments.valid_preparation_id = valid_preparations.id
 WHERE
 	valid_preparation_instruments.archived_at IS NULL
-	AND valid_preparation_instruments.valid_preparation_id = $5
+	AND valid_preparation_instruments.valid_preparation_id = $1
 	AND valid_instruments.archived_at IS NULL
 	AND valid_preparations.archived_at IS NULL
-	AND valid_preparation_instruments.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-	AND valid_preparation_instruments.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND valid_preparation_instruments.created_at > COALESCE($2, (SELECT NOW() - '999 years'::INTERVAL))
+	AND valid_preparation_instruments.created_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		valid_preparation_instruments.last_updated_at IS NULL
-		OR valid_preparation_instruments.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+		OR valid_preparation_instruments.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
 	)
 	AND (
 		valid_preparation_instruments.last_updated_at IS NULL
-		OR valid_preparation_instruments.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+		OR valid_preparation_instruments.last_updated_at < COALESCE($5, (SELECT NOW() + '999 years'::INTERVAL))
 	)
 GROUP BY
 	valid_preparation_instruments.id,
@@ -784,11 +788,11 @@ OFFSET $6
 `
 
 type GetValidPreparationInstrumentsForPreparationParams struct {
+	ID            string
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
 	UpdatedAfter  sql.NullTime
 	UpdatedBefore sql.NullTime
-	ID            string
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
@@ -841,11 +845,11 @@ type GetValidPreparationInstrumentsForPreparationRow struct {
 
 func (q *Queries) GetValidPreparationInstrumentsForPreparation(ctx context.Context, db DBTX, arg *GetValidPreparationInstrumentsForPreparationParams) ([]*GetValidPreparationInstrumentsForPreparationRow, error) {
 	rows, err := db.QueryContext(ctx, getValidPreparationInstrumentsForPreparation,
+		arg.ID,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
 		arg.UpdatedAfter,
 		arg.UpdatedBefore,
-		arg.ID,
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)

@@ -9,13 +9,17 @@ import (
 
 const (
 	validMeasurementUnitConversionsTableName = "valid_measurement_unit_conversions"
+
+	validMeasurementUnitConversionsFromUnitColumn          = "from_unit"
+	validMeasurementUnitConversionsToUnitColumn            = "to_unit"
+	validMeasurementUnitConversionsOnlyForIngredientColumn = "only_for_ingredient"
 )
 
 var validMeasurementUnitConversionsColumns = []string{
 	idColumn,
 	"from_unit",
 	"to_unit",
-	"only_for_ingredient",
+	validMeasurementUnitConversionsOnlyForIngredientColumn,
 	"modifier",
 	notesColumn,
 	createdAtColumn,
@@ -33,10 +37,10 @@ func buildValidMeasurementUnitConversionsQueries() []*Query {
 		append(
 			append(
 				applyToEach(validMeasurementUnitsColumns, func(i int, s string) string {
-					return fmt.Sprintf("valid_measurement_units_from.%s as from_unit_%s", s, s)
+					return fmt.Sprintf("%s_from.%s as from_unit_%s", validMeasurementUnitsTableName, s, s)
 				}),
 				applyToEach(validMeasurementUnitsColumns, func(i int, s string) string {
-					return fmt.Sprintf("valid_measurement_units_to.%s as to_unit_%s", s, s)
+					return fmt.Sprintf("%s_to.%s as to_unit_%s", validMeasurementUnitsTableName, s, s)
 				})...,
 			),
 			applyToEach(validIngredientsColumns, func(i int, s string) string {
@@ -84,18 +88,15 @@ func buildValidMeasurementUnitConversionsQueries() []*Query {
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
-	SELECT %s.id
+	SELECT %s.%s
 	FROM %s
 	WHERE %s.%s IS NULL
 		AND %s.%s = sqlc.arg(%s)
 );`,
+				validMeasurementUnitConversionsTableName, idColumn,
 				validMeasurementUnitConversionsTableName,
-				validMeasurementUnitConversionsTableName,
-				validMeasurementUnitConversionsTableName,
-				archivedAtColumn,
-				validMeasurementUnitConversionsTableName,
-				idColumn,
-				idColumn,
+				validMeasurementUnitConversionsTableName, archivedAtColumn,
+				validMeasurementUnitConversionsTableName, idColumn, idColumn,
 			)),
 		},
 		{
@@ -106,16 +107,23 @@ func buildValidMeasurementUnitConversionsQueries() []*Query {
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
-	JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_unit_conversions.from_unit = valid_measurement_units_from.id
-	JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_unit_conversions.to_unit = valid_measurement_units_to.id
-	LEFT JOIN valid_ingredients ON valid_measurement_unit_conversions.only_for_ingredient = valid_ingredients.id
+	JOIN %s AS %s_from ON %s.%s = %s_from.%s
+	JOIN %s AS %s_to ON %s.%s = %s_to.%s
+	LEFT JOIN %s ON %s.%s = %s.%s
 WHERE
-	valid_measurement_units_from.id = sqlc.arg(id)
-	AND valid_measurement_unit_conversions.archived_at IS NULL
-	AND valid_measurement_units_from.archived_at IS NULL
-	AND valid_measurement_units_to.archived_at IS NULL;`,
+	%s_from.%s = sqlc.arg(%s)
+	AND %s.%s IS NULL
+	AND %s_from.%s IS NULL
+	AND %s_to.%s IS NULL;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
 				validMeasurementUnitConversionsTableName,
+				validMeasurementUnitsTableName, validMeasurementUnitsTableName, validMeasurementUnitConversionsTableName, validMeasurementUnitConversionsFromUnitColumn, validMeasurementUnitsTableName, idColumn,
+				validMeasurementUnitsTableName, validMeasurementUnitsTableName, validMeasurementUnitConversionsTableName, validMeasurementUnitConversionsToUnitColumn, validMeasurementUnitsTableName, idColumn,
+				validIngredientsTableName, validMeasurementUnitConversionsTableName, validMeasurementUnitConversionsOnlyForIngredientColumn, validIngredientsTableName, idColumn,
+				validMeasurementUnitsTableName, idColumn, idColumn,
+				validMeasurementUnitConversionsTableName, archivedAtColumn,
+				validMeasurementUnitsTableName, archivedAtColumn,
+				validMeasurementUnitsTableName, archivedAtColumn,
 			)),
 		},
 		{
@@ -126,16 +134,23 @@ WHERE
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
-	JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_unit_conversions.from_unit = valid_measurement_units_from.id
-	JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_unit_conversions.to_unit = valid_measurement_units_to.id
-	LEFT JOIN valid_ingredients ON valid_measurement_unit_conversions.only_for_ingredient = valid_ingredients.id
+	JOIN %s AS %s_from ON %s.%s = %s_from.%s
+	JOIN %s AS %s_to ON %s.%s = %s_to.%s
+	LEFT JOIN %s ON %s.%s = %s.%s
 WHERE
-	valid_measurement_units_to.id = sqlc.arg(id)
-	AND valid_measurement_unit_conversions.archived_at IS NULL
-	AND valid_measurement_units_from.archived_at IS NULL
-	AND valid_measurement_units_to.archived_at IS NULL;`,
+	%s_to.%s = sqlc.arg(%s)
+	AND %s.%s IS NULL
+	AND %s_from.%s IS NULL
+	AND %s_to.%s IS NULL;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
 				validMeasurementUnitConversionsTableName,
+				validMeasurementUnitsTableName, validMeasurementUnitsTableName, validMeasurementUnitConversionsTableName, validMeasurementUnitConversionsFromUnitColumn, validMeasurementUnitsTableName, idColumn,
+				validMeasurementUnitsTableName, validMeasurementUnitsTableName, validMeasurementUnitConversionsTableName, validMeasurementUnitConversionsToUnitColumn, validMeasurementUnitsTableName, idColumn,
+				validIngredientsTableName, validMeasurementUnitConversionsTableName, validMeasurementUnitConversionsOnlyForIngredientColumn, validIngredientsTableName, idColumn,
+				validMeasurementUnitsTableName, idColumn, idColumn,
+				validMeasurementUnitConversionsTableName, archivedAtColumn,
+				validMeasurementUnitsTableName, archivedAtColumn,
+				validMeasurementUnitsTableName, archivedAtColumn,
 			)),
 		},
 		{
@@ -146,16 +161,23 @@ WHERE
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
-	JOIN valid_measurement_units AS valid_measurement_units_from ON valid_measurement_unit_conversions.from_unit = valid_measurement_units_from.id
-	JOIN valid_measurement_units AS valid_measurement_units_to ON valid_measurement_unit_conversions.to_unit = valid_measurement_units_to.id
-	LEFT JOIN valid_ingredients ON valid_measurement_unit_conversions.only_for_ingredient = valid_ingredients.id
+	JOIN %s AS %s_from ON %s.%s = %s_from.%s
+	JOIN %s AS %s_to ON %s.%s = %s_to.%s
+	LEFT JOIN %s ON %s.%s = %s.%s
 WHERE
-	valid_measurement_unit_conversions.id = sqlc.arg(id)
-	AND valid_measurement_unit_conversions.archived_at IS NULL
-	AND valid_measurement_units_from.archived_at IS NULL
-	AND valid_measurement_units_to.archived_at IS NULL;`,
+	%s.%s = sqlc.arg(%s)
+	AND %s.%s IS NULL
+	AND %s_from.%s IS NULL
+	AND %s_to.%s IS NULL;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
 				validMeasurementUnitConversionsTableName,
+				validMeasurementUnitsTableName, validMeasurementUnitsTableName, validMeasurementUnitConversionsTableName, validMeasurementUnitConversionsFromUnitColumn, validMeasurementUnitsTableName, idColumn,
+				validMeasurementUnitsTableName, validMeasurementUnitsTableName, validMeasurementUnitConversionsTableName, validMeasurementUnitConversionsToUnitColumn, validMeasurementUnitsTableName, idColumn,
+				validIngredientsTableName, validMeasurementUnitConversionsTableName, validMeasurementUnitConversionsOnlyForIngredientColumn, validIngredientsTableName, idColumn,
+				validMeasurementUnitConversionsTableName, idColumn, idColumn,
+				validMeasurementUnitConversionsTableName, archivedAtColumn,
+				validMeasurementUnitsTableName, archivedAtColumn,
+				validMeasurementUnitsTableName, archivedAtColumn,
 			)),
 		},
 		{
