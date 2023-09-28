@@ -199,8 +199,7 @@ WHERE meal_plans.archived_at IS NULL
 
 -- name: MarkMealPlanAsGroceryListInitialized :exec
 
-UPDATE meal_plans
-SET
+UPDATE meal_plans SET
 	grocery_list_initialized = 'true',
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
@@ -208,8 +207,7 @@ WHERE archived_at IS NULL
 
 -- name: MarkMealPlanAsPrepTasksCreated :exec
 
-UPDATE meal_plans
-SET
+UPDATE meal_plans SET
 	tasks_created = 'true',
 	last_updated_at = NOW()
 WHERE archived_at IS NULL

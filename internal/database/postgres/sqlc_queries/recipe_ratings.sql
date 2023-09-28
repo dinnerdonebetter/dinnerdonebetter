@@ -96,8 +96,7 @@ WHERE recipe_ratings.archived_at IS NULL
 
 -- name: UpdateRecipeRating :execrows
 
-UPDATE recipe_ratings
-SET
+UPDATE recipe_ratings SET
 	recipe_id = sqlc.arg(recipe_id),
 	taste = sqlc.arg(taste),
 	difficulty = sqlc.arg(difficulty),

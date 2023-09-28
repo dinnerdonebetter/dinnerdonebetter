@@ -1,6 +1,10 @@
 -- name: ArchiveHouseholdInstrumentOwnership :execrows
 
-UPDATE household_instrument_ownerships SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id) AND belongs_to_household = sqlc.arg(belongs_to_household);
+UPDATE household_instrument_ownerships SET
+	archived_at = NOW()
+WHERE archived_at IS NULL
+	AND id = sqlc.arg(id)
+	AND belongs_to_household = sqlc.arg(belongs_to_household);
 
 -- name: CreateHouseholdInstrumentOwnership :exec
 
@@ -104,13 +108,14 @@ SELECT
 	household_instrument_ownerships.quantity,
 	valid_instruments.id as valid_instrument_id,
 	valid_instruments.name as valid_instrument_name,
-	valid_instruments.plural_name as valid_instrument_plural_name,
 	valid_instruments.description as valid_instrument_description,
 	valid_instruments.icon_path as valid_instrument_icon_path,
+	valid_instruments.plural_name as valid_instrument_plural_name,
 	valid_instruments.usable_for_storage as valid_instrument_usable_for_storage,
+	valid_instruments.slug as valid_instrument_slug,
 	valid_instruments.display_in_summary_lists as valid_instrument_display_in_summary_lists,
 	valid_instruments.include_in_generated_instructions as valid_instrument_include_in_generated_instructions,
-	valid_instruments.slug as valid_instrument_slug,
+	valid_instruments.last_indexed_at as valid_instrument_last_indexed_at,
 	valid_instruments.created_at as valid_instrument_created_at,
 	valid_instruments.last_updated_at as valid_instrument_last_updated_at,
 	valid_instruments.archived_at as valid_instrument_archived_at,
@@ -126,8 +131,7 @@ WHERE household_instrument_ownerships.archived_at IS NULL
 
 -- name: UpdateHouseholdInstrumentOwnership :execrows
 
-UPDATE household_instrument_ownerships
-SET
+UPDATE household_instrument_ownerships SET
 	notes = sqlc.arg(notes),
 	quantity = sqlc.arg(quantity),
 	valid_instrument_id = sqlc.arg(valid_instrument_id),

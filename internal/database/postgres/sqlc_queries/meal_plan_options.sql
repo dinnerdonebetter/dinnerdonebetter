@@ -219,8 +219,7 @@ WHERE meal_plan_options.archived_at IS NULL
 
 -- name: UpdateMealPlanOption :execrows
 
-UPDATE meal_plan_options
-SET
+UPDATE meal_plan_options SET
 	assigned_cook = sqlc.arg(assigned_cook),
 	assigned_dishwasher = sqlc.arg(assigned_dishwasher),
 	meal_id = sqlc.arg(meal_id),

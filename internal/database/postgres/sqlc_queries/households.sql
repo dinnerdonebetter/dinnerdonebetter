@@ -202,8 +202,7 @@ WHERE archived_at IS NULL
 
 -- name: UpdateHouseholdWebhookEncryptionKey :execrows
 
-UPDATE households
-SET
+UPDATE households SET
 	webhook_hmac_secret = sqlc.arg(webhook_hmac_secret),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL

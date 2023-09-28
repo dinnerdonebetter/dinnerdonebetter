@@ -181,8 +181,7 @@ WHERE user_ingredient_preferences.archived_at IS NULL
 
 -- name: UpdateUserIngredientPreference :execrows
 
-UPDATE user_ingredient_preferences
-SET
+UPDATE user_ingredient_preferences SET
 	ingredient = sqlc.arg(ingredient),
 	rating = sqlc.arg(rating),
 	notes = sqlc.arg(notes),

@@ -54,8 +54,7 @@ WHERE household_user_memberships.archived_at IS NULL
 
 -- name: MarkHouseholdUserMembershipAsUserDefault :exec
 
-UPDATE household_user_memberships
-SET default_household = (belongs_to_user = sqlc.arg(belongs_to_user) AND belongs_to_household = sqlc.arg(belongs_to_household))
+UPDATE household_user_memberships SET default_household = (belongs_to_user = sqlc.arg(belongs_to_user) AND belongs_to_household = sqlc.arg(belongs_to_household))
 WHERE archived_at IS NULL
 	AND belongs_to_user = sqlc.arg(belongs_to_user);
 
@@ -68,8 +67,7 @@ WHERE belongs_to_household = sqlc.arg(belongs_to_household)
 
 -- name: RemoveUserFromHousehold :exec
 
-UPDATE household_user_memberships
-SET archived_at = NOW(),
+UPDATE household_user_memberships SET archived_at = NOW(),
 	default_household = 'false'
 WHERE household_user_memberships.archived_at IS NULL
 	AND household_user_memberships.belongs_to_household = sqlc.arg(belongs_to_household)
