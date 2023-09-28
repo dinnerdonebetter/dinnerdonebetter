@@ -62,7 +62,6 @@ SELECT
 		FROM meal_plan_events
 		WHERE
 			meal_plan_events.archived_at IS NULL
-            AND meal_plan_events.belongs_to_meal_plan = sqlc.arg(meal_plan_id)
             AND meal_plan_events.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
             AND meal_plan_events.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
             AND (
@@ -73,6 +72,7 @@ SELECT
                 meal_plan_events.last_updated_at IS NULL
                 OR meal_plan_events.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
             )
+            AND meal_plan_events.belongs_to_meal_plan = sqlc.arg(meal_plan_id)
 	) AS filtered_count,
 	(
 		SELECT COUNT(meal_plan_events.id)
@@ -82,7 +82,6 @@ SELECT
 FROM meal_plan_events
 WHERE
 	meal_plan_events.archived_at IS NULL
-    AND meal_plan_events.belongs_to_meal_plan = sqlc.arg(meal_plan_id)
     AND meal_plan_events.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
     AND meal_plan_events.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
     AND (
@@ -93,6 +92,7 @@ WHERE
         meal_plan_events.last_updated_at IS NULL
         OR meal_plan_events.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
     )
+            AND meal_plan_events.belongs_to_meal_plan = sqlc.arg(meal_plan_id)
 OFFSET sqlc.narg(query_offset)
 LIMIT sqlc.narg(query_limit);
 
