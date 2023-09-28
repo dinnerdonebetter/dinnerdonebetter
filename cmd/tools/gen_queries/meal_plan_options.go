@@ -6,17 +6,19 @@ import (
 
 const (
 	mealPlanOptionsTableName = "meal_plan_options"
+
+	mealPlanOptionsChosenColumn = "chosen"
 )
 
 var mealPlanOptionsColumns = []string{
 	idColumn,
 	"meal_id",
 	notesColumn,
-	"chosen",
+	mealPlanOptionsChosenColumn,
 	"tiebroken",
 	"assigned_cook",
 	"assigned_dishwasher",
-	"belongs_to_meal_plan_event",
+	belongsToMealPlanEventColumn,
 	"meal_scale",
 	createdAtColumn,
 	lastUpdatedAtColumn,

@@ -21,13 +21,13 @@ WIRE_TARGETS                  := server/http/build
 ## non-PHONY folders/files
 
 clean:
-	rm --recursive --force $(ARTIFACTS_DIR)
+	rm -rf $(ARTIFACTS_DIR)
 
 $(ARTIFACTS_DIR):
 	@mkdir --parents $(ARTIFACTS_DIR)
 
 clean-$(ARTIFACTS_DIR):
-	@rm --recursive --force $(ARTIFACTS_DIR)
+	@rm -rf $(ARTIFACTS_DIR)
 
 .PHONY: setup
 setup: $(ARTIFACTS_DIR) revendor rewire configs
@@ -58,6 +58,12 @@ ifeq (, $(shell which gci))
 	$(shell go install github.com/daixiang0/gci@latest)
 endif
 
+.PHONY: ensure_sqlc_installed
+ensure_sqlc_installed:
+ifeq (, $(shell which sqlc))
+	$(shell go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest)
+endif
+
 .PHONY: ensure_scc_installed
 ensure_scc_installed:
 ifeq (, $(shell which scc))
@@ -66,7 +72,7 @@ endif
 
 .PHONY: clean_vendor
 clean_vendor:
-	rm --recursive --force vendor go.sum
+	rm -rf vendor go.sum
 
 vendor:
 	if [ ! -f go.mod ]; then go mod init; fi
@@ -151,7 +157,7 @@ querier: queries_lint
 		--volume $(PWD):/src \
 		--workdir /src \
 		--user $(MYSELF):$(MY_GROUP) \
-	$(SQL_GENERATOR_IMAGE) generate
+	$(SQL_GENERATOR_IMAGE) generate --no-database --no-remote
 
 .PHONY: golang_lint
 golang_lint:
@@ -192,7 +198,7 @@ queries:
 	go run $(THIS)/cmd/tools/gen_queries
 
 clean_ts:
-	rm --recursive --force $(ARTIFACTS_DIR)/typescript
+	rm -rf $(ARTIFACTS_DIR)/typescript
 
 typescript: clean_ts
 	mkdir --parents $(ARTIFACTS_DIR)/typescript

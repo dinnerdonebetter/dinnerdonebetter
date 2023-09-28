@@ -41,12 +41,12 @@ SELECT EXISTS (
 `
 
 type CheckMealPlanExistenceParams struct {
-	MealPlanID  string
-	HouseholdID string
+	MealPlanID         string
+	BelongsToHousehold string
 }
 
 func (q *Queries) CheckMealPlanExistence(ctx context.Context, db DBTX, arg *CheckMealPlanExistenceParams) (bool, error) {
-	row := db.QueryRowContext(ctx, checkMealPlanExistence, arg.MealPlanID, arg.HouseholdID)
+	row := db.QueryRowContext(ctx, checkMealPlanExistence, arg.MealPlanID, arg.BelongsToHousehold)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
@@ -425,56 +425,51 @@ SELECT
 	meal_plans.archived_at,
 	meal_plans.belongs_to_household,
 	meal_plans.created_by_user,
-	(
-		SELECT
-			COUNT(meal_plans.id)
-		FROM
-			meal_plans
-		WHERE
-			meal_plans.archived_at IS NULL
-			AND meal_plans.belongs_to_household = $1
-			AND meal_plans.belongs_to_household = $1
-			AND meal_plans.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
-			AND meal_plans.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
-			AND (
-				meal_plans.last_updated_at IS NULL
-				OR meal_plans.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years'))
-			)
-			AND (
-				meal_plans.last_updated_at IS NULL
-				OR meal_plans.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
-			)
-	) as filtered_count,
-	(
+    (
 		SELECT COUNT(meal_plans.id)
 		FROM meal_plans
 		WHERE meal_plans.archived_at IS NULL
-			AND meal_plans.belongs_to_household = $1
-	) as total_count
+			AND meal_plans.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND meal_plans.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				meal_plans.last_updated_at IS NULL
+				OR meal_plans.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				meal_plans.last_updated_at IS NULL
+				OR meal_plans.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+			AND meal_plans.belongs_to_household = $5
+	) AS filtered_count,
+    (
+		SELECT COUNT(meal_plans.id)
+		FROM meal_plans
+		WHERE meal_plans.archived_at IS NULL
+			AND meal_plans.belongs_to_household = $5
+	) AS total_count
 FROM meal_plans
 WHERE meal_plans.archived_at IS NULL
-	AND meal_plans.belongs_to_household = $1
-	AND meal_plans.belongs_to_household = $1
-	AND meal_plans.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
-	AND meal_plans.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
+	AND meal_plans.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND meal_plans.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		meal_plans.last_updated_at IS NULL
-		OR meal_plans.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years'))
+		OR meal_plans.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
 	)
 	AND (
 		meal_plans.last_updated_at IS NULL
-		OR meal_plans.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
+		OR meal_plans.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
-OFFSET $6
+	AND meal_plans.belongs_to_household = $5
 LIMIT $7
+OFFSET $6
 `
 
 type GetMealPlansParams struct {
-	HouseholdID   string
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
-	UpdatedAfter  sql.NullTime
 	UpdatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	HouseholdID   string
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
@@ -498,11 +493,11 @@ type GetMealPlansRow struct {
 
 func (q *Queries) GetMealPlans(ctx context.Context, db DBTX, arg *GetMealPlansParams) ([]*GetMealPlansRow, error) {
 	rows, err := db.QueryContext(ctx, getMealPlans,
-		arg.HouseholdID,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
-		arg.UpdatedAfter,
 		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.HouseholdID,
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)
@@ -545,7 +540,7 @@ func (q *Queries) GetMealPlans(ctx context.Context, db DBTX, arg *GetMealPlansPa
 const markMealPlanAsGroceryListInitialized = `-- name: MarkMealPlanAsGroceryListInitialized :exec
 
 UPDATE meal_plans SET
-	grocery_list_initialized = 'true',
+	grocery_list_initialized = TRUE,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = $1
@@ -559,7 +554,7 @@ func (q *Queries) MarkMealPlanAsGroceryListInitialized(ctx context.Context, db D
 const markMealPlanAsPrepTasksCreated = `-- name: MarkMealPlanAsPrepTasksCreated :exec
 
 UPDATE meal_plans SET
-	tasks_created = 'true',
+	tasks_created = TRUE,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = $1

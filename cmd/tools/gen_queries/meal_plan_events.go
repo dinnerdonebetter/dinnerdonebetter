@@ -10,8 +10,9 @@ import (
 const (
 	mealPlanEventsTableName = "meal_plan_events"
 
-	mealPlanEventIDColumn   = "meal_plan_event_id"
-	belongsToMealPlanColumn = "belongs_to_meal_plan"
+	belongsToMealPlanEventColumn = "belongs_to_meal_plan_event"
+	mealPlanEventIDColumn        = "meal_plan_event_id"
+	belongsToMealPlanColumn      = "belongs_to_meal_plan"
 )
 
 var mealPlanEventsColumns = []string{

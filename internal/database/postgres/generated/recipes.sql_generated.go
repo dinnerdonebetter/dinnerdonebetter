@@ -31,7 +31,12 @@ func (q *Queries) ArchiveRecipe(ctx context.Context, db DBTX, arg *ArchiveRecipe
 
 const checkRecipeExistence = `-- name: CheckRecipeExistence :one
 
-SELECT EXISTS ( SELECT recipes.id FROM recipes WHERE recipes.archived_at IS NULL AND recipes.id = $1 )
+SELECT EXISTS (
+    SELECT recipes.id
+    FROM recipes
+    WHERE recipes.archived_at IS NULL
+        AND recipes.id = $1
+)
 `
 
 func (q *Queries) CheckRecipeExistence(ctx context.Context, db DBTX, id string) (bool, error) {

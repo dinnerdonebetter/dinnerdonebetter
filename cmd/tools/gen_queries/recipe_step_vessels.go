@@ -12,7 +12,7 @@ var recipeStepVesselsColumns = []string{
 	idColumn,
 	nameColumn,
 	notesColumn,
-	"belongs_to_recipe_step",
+	belongsToRecipeStepColumn,
 	"recipe_step_product_id",
 	"vessel_predicate",
 	"minimum_quantity",

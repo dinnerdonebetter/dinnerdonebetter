@@ -12,7 +12,7 @@ var recipeStepInstrumentsColumns = []string{
 	idColumn,
 	"instrument_id",
 	notesColumn,
-	"belongs_to_recipe_step",
+	belongsToRecipeStepColumn,
 	"preference_rank",
 	"recipe_step_product_id",
 	nameColumn,

@@ -14,7 +14,7 @@ var recipeStepIngredientsColumns = []string{
 	"minimum_quantity_value",
 	"quantity_notes",
 	"ingredient_notes",
-	"belongs_to_recipe_step",
+	belongsToRecipeStepColumn,
 	nameColumn,
 	"recipe_step_product_id",
 	"maximum_quantity_value",

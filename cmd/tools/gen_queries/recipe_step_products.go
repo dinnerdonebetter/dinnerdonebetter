@@ -11,7 +11,7 @@ const (
 var recipeStepProductsColumns = []string{
 	idColumn,
 	nameColumn,
-	"belongs_to_recipe_step",
+	belongsToRecipeStepColumn,
 	"quantity_notes",
 	"minimum_quantity_value",
 	"maximum_quantity_value",
