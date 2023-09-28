@@ -159,12 +159,9 @@ SELECT
 			)
 	) AS filtered_count,
 	(
-		SELECT
-			COUNT(recipe_step_products.id)
-		FROM
-			recipe_step_products
-		WHERE
-			recipe_step_products.archived_at IS NULL
+		SELECT COUNT(recipe_step_products.id)
+		FROM recipe_step_products
+		WHERE recipe_step_products.archived_at IS NULL
 			AND recipe_step_products.belongs_to_recipe_step = sqlc.arg(recipe_step_id)
 	) AS total_count
 FROM recipe_step_products

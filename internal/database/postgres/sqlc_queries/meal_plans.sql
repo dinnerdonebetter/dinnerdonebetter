@@ -150,12 +150,9 @@ SELECT
 			)
 	) as filtered_count,
 	(
-		SELECT
-			COUNT(meal_plans.id)
-		FROM
-			meal_plans
-		WHERE
-			meal_plans.archived_at IS NULL
+		SELECT COUNT(meal_plans.id)
+		FROM meal_plans
+		WHERE meal_plans.archived_at IS NULL
 			AND meal_plans.belongs_to_household = sqlc.arg(household_id)
 	) as total_count
 FROM meal_plans

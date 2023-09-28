@@ -330,8 +330,8 @@ UPDATE recipes SET
 	yields_component_type = sqlc.arg(yields_component_type),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-  AND created_by_user = sqlc.arg(created_by_user)
-  AND id = sqlc.arg(id);
+    AND created_by_user = sqlc.arg(created_by_user)
+    AND id = sqlc.arg(id);
 
 -- name: UpdateRecipeLastIndexedAt :execrows
 

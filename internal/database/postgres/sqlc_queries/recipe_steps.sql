@@ -150,12 +150,9 @@ SELECT
 			AND (recipe_steps.last_updated_at IS NULL OR recipe_steps.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
 	) as filtered_count,
 	(
-		SELECT
-			COUNT(recipe_steps.id)
-		FROM
-			recipe_steps
-		WHERE
-			recipe_steps.archived_at IS NULL
+		SELECT COUNT(recipe_steps.id)
+		FROM recipe_steps
+		WHERE recipe_steps.archived_at IS NULL
 	) as total_count
 FROM recipe_steps
 	JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
@@ -167,8 +164,8 @@ WHERE recipe_steps.archived_at IS NULL
 	AND (recipe_steps.last_updated_at IS NULL OR recipe_steps.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
 	AND recipe_steps.belongs_to_recipe = sqlc.arg(recipe_id)
 	AND recipes.archived_at IS NULL
-	OFFSET sqlc.narg(query_offset)
-	LIMIT sqlc.narg(query_limit);
+OFFSET sqlc.narg(query_offset)
+LIMIT sqlc.narg(query_limit);
 
 -- name: GetRecipeStepByRecipeID :one
 
