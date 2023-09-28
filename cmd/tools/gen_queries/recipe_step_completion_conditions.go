@@ -6,12 +6,14 @@ import (
 
 const (
 	recipeStepCompletionConditionsTableName = "recipe_step_completion_conditions"
+
+	ingredientStateColumn = "ingredient_state"
 )
 
 var recipeStepCompletionConditionsColumns = []string{
 	idColumn,
 	"belongs_to_recipe_step",
-	"ingredient_state",
+	ingredientStateColumn,
 	notesColumn,
 	"optional",
 	createdAtColumn,

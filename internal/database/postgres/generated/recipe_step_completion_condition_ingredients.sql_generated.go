@@ -43,13 +43,17 @@ SELECT
 	recipe_step_completion_condition_ingredients.id as recipe_step_completion_condition_ingredient_id,
 	recipe_step_completion_condition_ingredients.belongs_to_recipe_step_completion_condition as recipe_step_completion_condition_ingredient_belongs_to_recipe_step_completion_condition,
 	recipe_step_completion_condition_ingredients.recipe_step_ingredient as recipe_step_completion_condition_ingredient_recipe_step_ingredient,
+	recipe_step_completion_condition_ingredients.created_at as recipe_step_completion_condition_ingredient_created_at,
+	recipe_step_completion_condition_ingredients.last_updated_at as recipe_step_completion_condition_ingredient_last_updated_at,
+	recipe_step_completion_condition_ingredients.archived_at as recipe_step_completion_condition_ingredient_archived_at,
 	valid_ingredient_states.id as valid_ingredient_state_id,
 	valid_ingredient_states.name as valid_ingredient_state_name,
+	valid_ingredient_states.past_tense as valid_ingredient_state_past_tense,
+	valid_ingredient_states.slug as valid_ingredient_state_slug,
 	valid_ingredient_states.description as valid_ingredient_state_description,
 	valid_ingredient_states.icon_path as valid_ingredient_state_icon_path,
-	valid_ingredient_states.slug as valid_ingredient_state_slug,
-	valid_ingredient_states.past_tense as valid_ingredient_state_past_tense,
 	valid_ingredient_states.attribute_type as valid_ingredient_state_attribute_type,
+	valid_ingredient_states.last_indexed_at as valid_ingredient_state_last_indexed_at,
 	valid_ingredient_states.created_at as valid_ingredient_state_created_at,
 	valid_ingredient_states.last_updated_at as valid_ingredient_state_last_updated_at,
 	valid_ingredient_states.archived_at as valid_ingredient_state_archived_at
@@ -66,20 +70,24 @@ type GetAllRecipeStepCompletionConditionIngredientsForRecipeCompletionIDsRow str
 	RecipeStepCompletionConditionIngredientID                string
 	RecipeStepCompletionConditionIngredientBelongsToRecipeS  string
 	RecipeStepCompletionConditionIngredientRecipeStepIngredi string
+	RecipeStepCompletionConditionIngredientCreatedAt         time.Time
+	RecipeStepCompletionConditionIngredientLastUpdatedAt     sql.NullTime
+	RecipeStepCompletionConditionIngredientArchivedAt        sql.NullTime
 	ValidIngredientStateID                                   string
 	ValidIngredientStateName                                 string
+	ValidIngredientStatePastTense                            string
+	ValidIngredientStateSlug                                 string
 	ValidIngredientStateDescription                          string
 	ValidIngredientStateIconPath                             string
-	ValidIngredientStateSlug                                 string
-	ValidIngredientStatePastTense                            string
 	ValidIngredientStateAttributeType                        IngredientAttributeType
+	ValidIngredientStateLastIndexedAt                        sql.NullTime
 	ValidIngredientStateCreatedAt                            time.Time
 	ValidIngredientStateLastUpdatedAt                        sql.NullTime
 	ValidIngredientStateArchivedAt                           sql.NullTime
 }
 
-func (q *Queries) GetAllRecipeStepCompletionConditionIngredientsForRecipeCompletionIDs(ctx context.Context, db DBTX, recipeStepCompletionConditionID []string) ([]*GetAllRecipeStepCompletionConditionIngredientsForRecipeCompletionIDsRow, error) {
-	rows, err := db.QueryContext(ctx, getAllRecipeStepCompletionConditionIngredientsForRecipeCompletionIDs, pq.Array(recipeStepCompletionConditionID))
+func (q *Queries) GetAllRecipeStepCompletionConditionIngredientsForRecipeCompletionIDs(ctx context.Context, db DBTX, ids []string) ([]*GetAllRecipeStepCompletionConditionIngredientsForRecipeCompletionIDsRow, error) {
+	rows, err := db.QueryContext(ctx, getAllRecipeStepCompletionConditionIngredientsForRecipeCompletionIDs, pq.Array(ids))
 	if err != nil {
 		return nil, err
 	}
@@ -91,13 +99,17 @@ func (q *Queries) GetAllRecipeStepCompletionConditionIngredientsForRecipeComplet
 			&i.RecipeStepCompletionConditionIngredientID,
 			&i.RecipeStepCompletionConditionIngredientBelongsToRecipeS,
 			&i.RecipeStepCompletionConditionIngredientRecipeStepIngredi,
+			&i.RecipeStepCompletionConditionIngredientCreatedAt,
+			&i.RecipeStepCompletionConditionIngredientLastUpdatedAt,
+			&i.RecipeStepCompletionConditionIngredientArchivedAt,
 			&i.ValidIngredientStateID,
 			&i.ValidIngredientStateName,
+			&i.ValidIngredientStatePastTense,
+			&i.ValidIngredientStateSlug,
 			&i.ValidIngredientStateDescription,
 			&i.ValidIngredientStateIconPath,
-			&i.ValidIngredientStateSlug,
-			&i.ValidIngredientStatePastTense,
 			&i.ValidIngredientStateAttributeType,
+			&i.ValidIngredientStateLastIndexedAt,
 			&i.ValidIngredientStateCreatedAt,
 			&i.ValidIngredientStateLastUpdatedAt,
 			&i.ValidIngredientStateArchivedAt,

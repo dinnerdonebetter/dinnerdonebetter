@@ -148,7 +148,7 @@ type Querier interface {
 	GetAdminUserByUsername(ctx context.Context, db DBTX, username string) (*GetAdminUserByUsernameRow, error)
 	GetAllMealPlanEventsForMealPlan(ctx context.Context, db DBTX, mealPlanID string) ([]*MealPlanEvents, error)
 	GetAllMealPlanOptionsForMealPlanEvent(ctx context.Context, db DBTX, arg *GetAllMealPlanOptionsForMealPlanEventParams) ([]*GetAllMealPlanOptionsForMealPlanEventRow, error)
-	GetAllRecipeStepCompletionConditionIngredientsForRecipeCompletionIDs(ctx context.Context, db DBTX, recipeStepCompletionConditionID []string) ([]*GetAllRecipeStepCompletionConditionIngredientsForRecipeCompletionIDsRow, error)
+	GetAllRecipeStepCompletionConditionIngredientsForRecipeCompletionIDs(ctx context.Context, db DBTX, ids []string) ([]*GetAllRecipeStepCompletionConditionIngredientsForRecipeCompletionIDsRow, error)
 	GetAllRecipeStepCompletionConditionsForRecipe(ctx context.Context, db DBTX, id string) ([]*GetAllRecipeStepCompletionConditionsForRecipeRow, error)
 	GetAllRecipeStepIngredientsForRecipe(ctx context.Context, db DBTX, recipeID string) ([]*GetAllRecipeStepIngredientsForRecipeRow, error)
 	GetAllValidMeasurementUnitConversionsFromMeasurementUnit(ctx context.Context, db DBTX, id string) ([]*GetAllValidMeasurementUnitConversionsFromMeasurementUnitRow, error)
