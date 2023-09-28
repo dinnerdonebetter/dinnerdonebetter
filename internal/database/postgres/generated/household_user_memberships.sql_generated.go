@@ -144,8 +144,8 @@ func (q *Queries) GetHouseholdUserMembershipsForUser(ctx context.Context, db DBT
 
 const markHouseholdUserMembershipAsUserDefault = `-- name: MarkHouseholdUserMembershipAsUserDefault :exec
 
-UPDATE household_user_memberships
-SET default_household = (belongs_to_user = $1 AND belongs_to_household = $2)
+UPDATE household_user_memberships SET
+	default_household = (belongs_to_user = $1 AND belongs_to_household = $2)
 WHERE archived_at IS NULL
 	AND belongs_to_user = $1
 `
@@ -181,8 +181,8 @@ func (q *Queries) ModifyHouseholdUserPermissions(ctx context.Context, db DBTX, a
 
 const removeUserFromHousehold = `-- name: RemoveUserFromHousehold :exec
 
-UPDATE household_user_memberships
-SET archived_at = NOW(),
+UPDATE household_user_memberships SET
+	archived_at = NOW(),
 	default_household = 'false'
 WHERE household_user_memberships.archived_at IS NULL
 	AND household_user_memberships.belongs_to_household = $1

@@ -18,7 +18,8 @@ UPDATE users SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg
 
 -- name: ArchiveUserMemberships :execrows
 
-UPDATE household_user_memberships SET archived_at = NOW()
+UPDATE household_user_memberships SET
+	archived_at = NOW()
 WHERE archived_at IS NULL
 	AND belongs_to_user = sqlc.arg(id);
 

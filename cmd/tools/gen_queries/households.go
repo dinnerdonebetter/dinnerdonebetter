@@ -244,8 +244,7 @@ WHERE %s IS NULL
 				Name: "UpdateHouseholdWebhookEncryptionKey",
 				Type: ExecRowsType,
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s
-SET
+			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s = sqlc.arg(%s),
 	%s = %s
 WHERE %s IS NULL

@@ -14,8 +14,8 @@ const (
 var validPreparationInstrumentsColumns = []string{
 	idColumn,
 	notesColumn,
-	"valid_preparation_id",
-	"valid_instrument_id",
+	validPreparationIDColumn,
+	validInstrumentIDColumn,
 	createdAtColumn,
 	lastUpdatedAtColumn,
 	archivedAtColumn,

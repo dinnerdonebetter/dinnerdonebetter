@@ -67,8 +67,8 @@ func buildUpdateHouseholdMembershipsQuery(ownershipColumn string, nowColumns []s
 	}
 
 	builder := updateQueryBuilder.Addf(
-		`UPDATE %s 
-SET %s = %s%s
+		`UPDATE %s SET
+	%s = %s%s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
 		householdUserMembershipsTableName,

@@ -52,8 +52,8 @@ func (q *Queries) ArchiveUser(ctx context.Context, db DBTX, id string) (int64, e
 
 const archiveUserMemberships = `-- name: ArchiveUserMemberships :execrows
 
-UPDATE household_user_memberships
-SET archived_at = NOW()
+UPDATE household_user_memberships SET
+	archived_at = NOW()
 WHERE archived_at IS NULL
 	AND belongs_to_user = $1
 `

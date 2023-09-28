@@ -13,7 +13,11 @@ import (
 
 const archiveHouseholdInstrumentOwnership = `-- name: ArchiveHouseholdInstrumentOwnership :execrows
 
-UPDATE household_instrument_ownerships SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1 AND belongs_to_household = $2
+UPDATE household_instrument_ownerships SET
+	archived_at = NOW()
+WHERE archived_at IS NULL
+	AND id = $1
+	AND belongs_to_household = $2
 `
 
 type ArchiveHouseholdInstrumentOwnershipParams struct {
@@ -96,13 +100,14 @@ SELECT
 	household_instrument_ownerships.quantity,
 	valid_instruments.id as valid_instrument_id,
 	valid_instruments.name as valid_instrument_name,
-	valid_instruments.plural_name as valid_instrument_plural_name,
 	valid_instruments.description as valid_instrument_description,
 	valid_instruments.icon_path as valid_instrument_icon_path,
+	valid_instruments.plural_name as valid_instrument_plural_name,
 	valid_instruments.usable_for_storage as valid_instrument_usable_for_storage,
+	valid_instruments.slug as valid_instrument_slug,
 	valid_instruments.display_in_summary_lists as valid_instrument_display_in_summary_lists,
 	valid_instruments.include_in_generated_instructions as valid_instrument_include_in_generated_instructions,
-	valid_instruments.slug as valid_instrument_slug,
+	valid_instruments.last_indexed_at as valid_instrument_last_indexed_at,
 	valid_instruments.created_at as valid_instrument_created_at,
 	valid_instruments.last_updated_at as valid_instrument_last_updated_at,
 	valid_instruments.archived_at as valid_instrument_archived_at,
@@ -123,18 +128,19 @@ type GetHouseholdInstrumentOwnershipParams struct {
 }
 
 type GetHouseholdInstrumentOwnershipRow struct {
-	ValidInstrumentCreatedAt                      time.Time
 	CreatedAt                                     time.Time
+	ValidInstrumentCreatedAt                      time.Time
+	ValidInstrumentLastIndexedAt                  sql.NullTime
 	ArchivedAt                                    sql.NullTime
 	LastUpdatedAt                                 sql.NullTime
 	ValidInstrumentArchivedAt                     sql.NullTime
 	ValidInstrumentLastUpdatedAt                  sql.NullTime
-	ValidInstrumentName                           string
-	ValidInstrumentIconPath                       string
-	ValidInstrumentSlug                           string
 	ValidInstrumentDescription                    string
+	ValidInstrumentSlug                           string
 	ValidInstrumentPluralName                     string
+	ValidInstrumentIconPath                       string
 	ID                                            string
+	ValidInstrumentName                           string
 	BelongsToHousehold                            string
 	ValidInstrumentID                             string
 	Notes                                         string
@@ -153,13 +159,14 @@ func (q *Queries) GetHouseholdInstrumentOwnership(ctx context.Context, db DBTX, 
 		&i.Quantity,
 		&i.ValidInstrumentID,
 		&i.ValidInstrumentName,
-		&i.ValidInstrumentPluralName,
 		&i.ValidInstrumentDescription,
 		&i.ValidInstrumentIconPath,
+		&i.ValidInstrumentPluralName,
 		&i.ValidInstrumentUsableForStorage,
+		&i.ValidInstrumentSlug,
 		&i.ValidInstrumentDisplayInSummaryLists,
 		&i.ValidInstrumentIncludeInGeneratedInstructions,
-		&i.ValidInstrumentSlug,
+		&i.ValidInstrumentLastIndexedAt,
 		&i.ValidInstrumentCreatedAt,
 		&i.ValidInstrumentLastUpdatedAt,
 		&i.ValidInstrumentArchivedAt,
@@ -179,13 +186,14 @@ SELECT
 	household_instrument_ownerships.quantity,
 	valid_instruments.id as valid_instrument_id,
 	valid_instruments.name as valid_instrument_name,
-	valid_instruments.plural_name as valid_instrument_plural_name,
 	valid_instruments.description as valid_instrument_description,
 	valid_instruments.icon_path as valid_instrument_icon_path,
+	valid_instruments.plural_name as valid_instrument_plural_name,
 	valid_instruments.usable_for_storage as valid_instrument_usable_for_storage,
+	valid_instruments.slug as valid_instrument_slug,
 	valid_instruments.display_in_summary_lists as valid_instrument_display_in_summary_lists,
 	valid_instruments.include_in_generated_instructions as valid_instrument_include_in_generated_instructions,
-	valid_instruments.slug as valid_instrument_slug,
+	valid_instruments.last_indexed_at as valid_instrument_last_indexed_at,
 	valid_instruments.created_at as valid_instrument_created_at,
 	valid_instruments.last_updated_at as valid_instrument_last_updated_at,
 	valid_instruments.archived_at as valid_instrument_archived_at,
@@ -196,91 +204,91 @@ SELECT
 	(
 		SELECT COUNT(household_instrument_ownerships.id)
 		FROM household_instrument_ownerships
-		WHERE
-			household_instrument_ownerships.belongs_to_household = $1
-			AND household_instrument_ownerships.archived_at IS NULL
-			AND household_instrument_ownerships.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
-			AND household_instrument_ownerships.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
+		WHERE household_instrument_ownerships.archived_at IS NULL
+			AND household_instrument_ownerships.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND household_instrument_ownerships.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 			AND (
 				household_instrument_ownerships.last_updated_at IS NULL
-				OR household_instrument_ownerships.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years'))
+				OR household_instrument_ownerships.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
 			)
 			AND (
 				household_instrument_ownerships.last_updated_at IS NULL
-				OR household_instrument_ownerships.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
+				OR household_instrument_ownerships.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
 			)
-	) as filtered_count,
+			AND household_instrument_ownerships.belongs_to_household = $5
+	) AS filtered_count,
 	(
 		SELECT COUNT(household_instrument_ownerships.id)
 		FROM household_instrument_ownerships
-		WHERE household_instrument_ownerships.belongs_to_household = $1
-			AND household_instrument_ownerships.archived_at IS NULL
-	) as total_count
-FROM
-	household_instrument_ownerships
-	JOIN valid_instruments ON valid_instruments.id = household_instrument_ownerships.valid_instrument_id
-WHERE household_instrument_ownerships.belongs_to_household = $1
-	AND household_instrument_ownerships.archived_at IS NULL
-	AND household_instrument_ownerships.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
-	AND household_instrument_ownerships.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
+		WHERE household_instrument_ownerships.archived_at IS NULL
+			AND household_instrument_ownerships.belongs_to_household = $5
+	) AS total_count
+FROM household_instrument_ownerships
+INNER JOIN valid_instruments ON household_instrument_ownerships.valid_instrument_id = valid_instruments.id
+WHERE
+	household_instrument_ownerships.archived_at IS NULL
+	AND household_instrument_ownerships.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND household_instrument_ownerships.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		household_instrument_ownerships.last_updated_at IS NULL
-		OR household_instrument_ownerships.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years'))
+		OR household_instrument_ownerships.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
 	)
 	AND (
 		household_instrument_ownerships.last_updated_at IS NULL
-		OR household_instrument_ownerships.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
+		OR household_instrument_ownerships.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
+	AND household_instrument_ownerships.belongs_to_household = $5
 GROUP BY
 	household_instrument_ownerships.id,
 	valid_instruments.id
 ORDER BY
 	household_instrument_ownerships.id
-OFFSET $6
 LIMIT $7
+OFFSET $6
 `
 
 type GetHouseholdInstrumentOwnershipsParams struct {
-	HouseholdID   string
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
-	UpdatedAfter  sql.NullTime
 	UpdatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	HouseholdID   string
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
 
 type GetHouseholdInstrumentOwnershipsRow struct {
-	ValidInstrumentCreatedAt                      time.Time
 	CreatedAt                                     time.Time
+	ValidInstrumentCreatedAt                      time.Time
+	ValidInstrumentLastIndexedAt                  sql.NullTime
 	ArchivedAt                                    sql.NullTime
 	LastUpdatedAt                                 sql.NullTime
 	ValidInstrumentArchivedAt                     sql.NullTime
 	ValidInstrumentLastUpdatedAt                  sql.NullTime
-	BelongsToHousehold                            string
+	ValidInstrumentDescription                    string
 	ValidInstrumentID                             string
+	ValidInstrumentSlug                           string
 	Notes                                         string
+	BelongsToHousehold                            string
+	ValidInstrumentPluralName                     string
 	ValidInstrumentIconPath                       string
 	ID                                            string
-	ValidInstrumentSlug                           string
-	ValidInstrumentDescription                    string
-	ValidInstrumentPluralName                     string
 	ValidInstrumentName                           string
 	FilteredCount                                 int64
 	TotalCount                                    int64
 	Quantity                                      int32
 	ValidInstrumentIncludeInGeneratedInstructions bool
-	ValidInstrumentDisplayInSummaryLists          bool
 	ValidInstrumentUsableForStorage               bool
+	ValidInstrumentDisplayInSummaryLists          bool
 }
 
 func (q *Queries) GetHouseholdInstrumentOwnerships(ctx context.Context, db DBTX, arg *GetHouseholdInstrumentOwnershipsParams) ([]*GetHouseholdInstrumentOwnershipsRow, error) {
 	rows, err := db.QueryContext(ctx, getHouseholdInstrumentOwnerships,
-		arg.HouseholdID,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
-		arg.UpdatedAfter,
 		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.HouseholdID,
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)
@@ -297,13 +305,14 @@ func (q *Queries) GetHouseholdInstrumentOwnerships(ctx context.Context, db DBTX,
 			&i.Quantity,
 			&i.ValidInstrumentID,
 			&i.ValidInstrumentName,
-			&i.ValidInstrumentPluralName,
 			&i.ValidInstrumentDescription,
 			&i.ValidInstrumentIconPath,
+			&i.ValidInstrumentPluralName,
 			&i.ValidInstrumentUsableForStorage,
+			&i.ValidInstrumentSlug,
 			&i.ValidInstrumentDisplayInSummaryLists,
 			&i.ValidInstrumentIncludeInGeneratedInstructions,
-			&i.ValidInstrumentSlug,
+			&i.ValidInstrumentLastIndexedAt,
 			&i.ValidInstrumentCreatedAt,
 			&i.ValidInstrumentLastUpdatedAt,
 			&i.ValidInstrumentArchivedAt,
@@ -329,8 +338,7 @@ func (q *Queries) GetHouseholdInstrumentOwnerships(ctx context.Context, db DBTX,
 
 const updateHouseholdInstrumentOwnership = `-- name: UpdateHouseholdInstrumentOwnership :execrows
 
-UPDATE household_instrument_ownerships
-SET
+UPDATE household_instrument_ownerships SET
 	notes = $1,
 	quantity = $2,
 	valid_instrument_id = $3,

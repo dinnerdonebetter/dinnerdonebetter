@@ -546,8 +546,7 @@ func (q *Queries) UpdateHousehold(ctx context.Context, db DBTX, arg *UpdateHouse
 
 const updateHouseholdWebhookEncryptionKey = `-- name: UpdateHouseholdWebhookEncryptionKey :execrows
 
-UPDATE households
-SET
+UPDATE households SET
 	webhook_hmac_secret = $1,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL

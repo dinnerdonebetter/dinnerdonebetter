@@ -247,8 +247,7 @@ func (q *Queries) GetRecipeRatings(ctx context.Context, db DBTX, arg *GetRecipeR
 
 const updateRecipeRating = `-- name: UpdateRecipeRating :execrows
 
-UPDATE recipe_ratings
-SET
+UPDATE recipe_ratings SET
 	recipe_id = $1,
 	taste = $2,
 	difficulty = $3,

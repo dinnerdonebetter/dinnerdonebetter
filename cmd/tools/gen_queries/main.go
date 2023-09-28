@@ -35,7 +35,7 @@ func main() {
 		"valid_ingredient_state_ingredients.sql": buildValidIngredientStateIngredientsQueries(),
 		"valid_preparation_instruments.sql":      buildValidPreparationInstrumentsQueries(),
 		//
-		// "household_instrument_ownerships.sql":              buildHouseholdInstrumentOwnershipQueries(),
+		"household_instrument_ownerships.sql": buildHouseholdInstrumentOwnershipQueries(),
 		// "meal_components.sql":                              buildMealComponentsQueries(),
 		// "meal_plan_events.sql":                             buildMealPlanEventsQueries(),
 		// "meal_plan_grocery_list_items.sql":                 buildMealPlanGroceryListItemsQueries(),

@@ -595,8 +595,7 @@ func (q *Queries) GetMealPlanOptions(ctx context.Context, db DBTX, arg *GetMealP
 
 const updateMealPlanOption = `-- name: UpdateMealPlanOption :execrows
 
-UPDATE meal_plan_options
-SET
+UPDATE meal_plan_options SET
 	assigned_cook = $1,
 	assigned_dishwasher = $2,
 	meal_id = $3,

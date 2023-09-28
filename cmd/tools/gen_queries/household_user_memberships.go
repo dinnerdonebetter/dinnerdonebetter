@@ -103,8 +103,8 @@ WHERE %s.%s IS NULL
 				Name: "MarkHouseholdUserMembershipAsUserDefault",
 				Type: ExecType,
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s
-SET %s = (%s = sqlc.arg(%s) AND %s = sqlc.arg(%s))
+			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+	%s = (%s = sqlc.arg(%s) AND %s = sqlc.arg(%s))
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
 				householdUserMembershipsTableName,
@@ -133,8 +133,8 @@ WHERE %s = sqlc.arg(%s)
 				Name: "RemoveUserFromHousehold",
 				Type: ExecType,
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s
-SET %s = %s,
+			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+	%s = %s,
 	%s = 'false'
 WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s)

@@ -494,8 +494,7 @@ func (q *Queries) GetUserIngredientPreferencesForUser(ctx context.Context, db DB
 
 const updateUserIngredientPreference = `-- name: UpdateUserIngredientPreference :execrows
 
-UPDATE user_ingredient_preferences
-SET
+UPDATE user_ingredient_preferences SET
 	ingredient = $1,
 	rating = $2,
 	notes = $3,
