@@ -80,18 +80,15 @@ func buildValidPreparationsQueries() []*Query {
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
-	SELECT %s.id
+	SELECT %s.%s
 	FROM %s
 	WHERE %s.%s IS NULL
 		AND %s.%s = sqlc.arg(%s)
 );`,
+				validPreparationsTableName, idColumn,
 				validPreparationsTableName,
-				validPreparationsTableName,
-				validPreparationsTableName,
-				archivedAtColumn,
-				validPreparationsTableName,
-				idColumn,
-				idColumn,
+				validPreparationsTableName, archivedAtColumn,
+				validPreparationsTableName, idColumn, idColumn,
 			)),
 		},
 		{
@@ -164,7 +161,7 @@ WHERE %s.%s IS NULL
 	%s
 FROM %s
 WHERE %s.%s IS NULL
-AND %s.%s = sqlc.arg(%s);`,
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(applyToEach(validPreparationsColumns, func(i int, s string) string {
 					return fmt.Sprintf("%s.%s", validPreparationsTableName, s)
 				}), ",\n\t"),

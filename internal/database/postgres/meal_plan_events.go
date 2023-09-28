@@ -35,8 +35,8 @@ func (q *Querier) MealPlanEventExists(ctx context.Context, mealPlanID, mealPlanE
 	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
 
 	result, err := q.generatedQuerier.CheckMealPlanEventExistence(ctx, q.db, &generated.CheckMealPlanEventExistenceParams{
-		MealPlanEventID: mealPlanEventID,
-		MealPlanID:      mealPlanID,
+		ID:         mealPlanEventID,
+		MealPlanID: mealPlanID,
 	})
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing meal plan event existence check")

@@ -31,16 +31,22 @@ func (q *Queries) ArchiveMealPlanEvent(ctx context.Context, db DBTX, arg *Archiv
 
 const checkMealPlanEventExistence = `-- name: CheckMealPlanEventExistence :one
 
-SELECT EXISTS ( SELECT meal_plan_events.id FROM meal_plan_events WHERE meal_plan_events.archived_at IS NULL AND meal_plan_events.id = $1 AND meal_plan_events.belongs_to_meal_plan = $2)
+SELECT EXISTS (
+	SELECT meal_plan_events.id
+	FROM meal_plan_events
+	WHERE meal_plan_events.archived_at IS NULL
+		AND meal_plan_events.id = $1
+        AND meal_plan_events.belongs_to_meal_plan = $2
+)
 `
 
 type CheckMealPlanEventExistenceParams struct {
-	MealPlanEventID string
-	MealPlanID      string
+	ID         string
+	MealPlanID string
 }
 
 func (q *Queries) CheckMealPlanEventExistence(ctx context.Context, db DBTX, arg *CheckMealPlanEventExistenceParams) (bool, error) {
-	row := db.QueryRowContext(ctx, checkMealPlanEventExistence, arg.MealPlanEventID, arg.MealPlanID)
+	row := db.QueryRowContext(ctx, checkMealPlanEventExistence, arg.ID, arg.MealPlanID)
 	var exists bool
 	err := row.Scan(&exists)
 	return exists, err
@@ -101,7 +107,7 @@ SELECT
 FROM meal_plan_events
 WHERE
 	meal_plan_events.archived_at IS NULL
-  AND meal_plan_events.belongs_to_meal_plan = $1
+    AND meal_plan_events.belongs_to_meal_plan = $1
 `
 
 func (q *Queries) GetAllMealPlanEventsForMealPlan(ctx context.Context, db DBTX, mealPlanID string) ([]*MealPlanEvents, error) {
@@ -190,56 +196,53 @@ SELECT
 	meal_plan_events.last_updated_at,
 	meal_plan_events.archived_at,
 	(
-		SELECT
-			COUNT(meal_plan_events.id)
-		FROM
-			meal_plan_events
-		WHERE
-			meal_plan_events.archived_at IS NULL
-		  AND meal_plan_events.belongs_to_meal_plan = $1
-		  AND meal_plan_events.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
-		  AND meal_plan_events.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
-		  AND (
+		SELECT COUNT(meal_plan_events.id)
+		FROM meal_plan_events
+		WHERE meal_plan_events.archived_at IS NULL
+			AND meal_plan_events.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND meal_plan_events.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
 				meal_plan_events.last_updated_at IS NULL
-				OR meal_plan_events.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years'))
+				OR meal_plan_events.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
 			)
-		  AND (
+			AND (
 				meal_plan_events.last_updated_at IS NULL
-				OR meal_plan_events.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
+				OR meal_plan_events.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
 			)
+			AND meal_plan_events.belongs_to_meal_plan = $5
 	) AS filtered_count,
 	(
-		SELECT
-			COUNT(meal_plan_events.id)
-		FROM
-			meal_plan_events
-		WHERE
-			meal_plan_events.archived_at IS NULL
+		SELECT COUNT(meal_plan_events.id)
+		FROM meal_plan_events
+		WHERE meal_plan_events.archived_at IS NULL
+			AND meal_plan_events.belongs_to_meal_plan = $5
 	) AS total_count
 FROM meal_plan_events
 WHERE
 	meal_plan_events.archived_at IS NULL
-  AND meal_plan_events.belongs_to_meal_plan = $1
-  AND meal_plan_events.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
-  AND meal_plan_events.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
-  AND (
+	AND meal_plan_events.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND meal_plan_events.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
 		meal_plan_events.last_updated_at IS NULL
-		OR meal_plan_events.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years'))
+		OR meal_plan_events.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
 	)
-  AND (
+	AND (
 		meal_plan_events.last_updated_at IS NULL
-		OR meal_plan_events.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
+		OR meal_plan_events.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 	)
+	AND meal_plan_events.belongs_to_meal_plan = $5
+GROUP BY meal_plan_events.id
+ORDER BY meal_plan_events.id
+LIMIT $7
 OFFSET $6
-	LIMIT $7
 `
 
 type GetMealPlanEventsParams struct {
-	MealPlanID    string
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
-	UpdatedAfter  sql.NullTime
 	UpdatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
+	MealPlanID    string
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
@@ -260,11 +263,11 @@ type GetMealPlanEventsRow struct {
 
 func (q *Queries) GetMealPlanEvents(ctx context.Context, db DBTX, arg *GetMealPlanEventsParams) ([]*GetMealPlanEventsRow, error) {
 	rows, err := db.QueryContext(ctx, getMealPlanEvents,
-		arg.MealPlanID,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
-		arg.UpdatedAfter,
 		arg.UpdatedBefore,
+		arg.UpdatedAfter,
+		arg.MealPlanID,
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)
@@ -314,7 +317,7 @@ SELECT EXISTS (
 		AND meal_plans.archived_at IS NULL
 		AND meal_plan_events.id = $2
 		AND meal_plan_events.archived_at IS NULL
-  )
+)
 `
 
 type MealPlanEventIsEligibleForVotingParams struct {

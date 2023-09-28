@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/cristalhq/builq"
 )
 
@@ -20,13 +23,25 @@ var mealComponentsColumns = []string{
 }
 
 func buildMealComponentsQueries() []*Query {
+	insertColumns := filterForInsert(mealComponentsColumns)
+
 	return []*Query{
 		{
 			Annotation: QueryAnnotation{
-				Name: "",
+				Name: "CreateMealComponent",
 				Type: ExecType,
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
+			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
+	%s
+) VALUES (
+	%s
+);`,
+				mealComponentsTableName,
+				strings.Join(insertColumns, ",\n\t"),
+				strings.Join(applyToEach(insertColumns, func(i int, s string) string {
+					return fmt.Sprintf("sqlc.arg(%s)", s)
+				}), ",\n\t"),
+			)),
 		},
 	}
 }

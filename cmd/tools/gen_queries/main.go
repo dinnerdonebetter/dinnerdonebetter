@@ -34,10 +34,10 @@ func main() {
 		"valid_measurement_unit_conversions.sql": buildValidMeasurementUnitConversionsQueries(),
 		"valid_ingredient_state_ingredients.sql": buildValidIngredientStateIngredientsQueries(),
 		"valid_preparation_instruments.sql":      buildValidPreparationInstrumentsQueries(),
+		"household_instrument_ownerships.sql":    buildHouseholdInstrumentOwnershipQueries(),
+		"meal_components.sql":                    buildMealComponentsQueries(),
+		"meal_plan_events.sql":                   buildMealPlanEventsQueries(),
 		//
-		"household_instrument_ownerships.sql": buildHouseholdInstrumentOwnershipQueries(),
-		// "meal_components.sql":                              buildMealComponentsQueries(),
-		// "meal_plan_events.sql":                             buildMealPlanEventsQueries(),
 		// "meal_plan_grocery_list_items.sql":                 buildMealPlanGroceryListItemsQueries(),
 		// "meal_plan_options.sql":                            buildMealPlanOptionsQueries(),
 		// "meal_plan_option_votes.sql":                       buildMealPlanOptionVotesQueries(),

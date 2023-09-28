@@ -6,12 +6,15 @@ import (
 
 const (
 	mealPlansTableName = "meal_plans"
+
+	mealPlanIDColumn     = "meal_plan_id"
+	mealPlanStatusColumn = "status"
 )
 
 var mealPlansColumns = []string{
 	idColumn,
 	notesColumn,
-	"status",
+	mealPlanStatusColumn,
 	"voting_deadline",
 	belongsToHouseholdColumn,
 	"grocery_list_initialized",
