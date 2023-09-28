@@ -28,7 +28,12 @@ INSERT INTO recipe_ratings (
 
 -- name: CheckRecipeRatingExistence :one
 
-SELECT EXISTS ( SELECT recipe_ratings.id FROM recipe_ratings WHERE recipe_ratings.archived_at IS NULL AND recipe_ratings.id = sqlc.arg(id) );
+SELECT EXISTS (
+	SELECT recipe_ratings.id
+	FROM recipe_ratings
+	WHERE recipe_ratings.archived_at IS NULL
+		AND recipe_ratings.id = sqlc.arg(id)
+);
 
 -- name: GetRecipeRatings :many
 
@@ -46,34 +51,42 @@ SELECT
 	recipe_ratings.last_updated_at,
 	recipe_ratings.archived_at,
 	(
-	 SELECT
-		COUNT(recipe_ratings.id)
-	 FROM
-		recipe_ratings
-	 WHERE
-		recipe_ratings.archived_at IS NULL
-		AND recipe_ratings.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
-		AND recipe_ratings.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
-		AND (recipe_ratings.last_updated_at IS NULL OR recipe_ratings.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years')))
-		AND (recipe_ratings.last_updated_at IS NULL OR recipe_ratings.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
-	) as filtered_count,
+		SELECT COUNT(recipe_ratings.id)
+		FROM recipe_ratings
+		WHERE recipe_ratings.archived_at IS NULL
+			AND recipe_ratings.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND recipe_ratings.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				recipe_ratings.last_updated_at IS NULL
+				OR recipe_ratings.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				recipe_ratings.last_updated_at IS NULL
+				OR recipe_ratings.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
+			)
+	) AS filtered_count,
 	(
-	 SELECT COUNT(recipe_ratings.id)
-	 FROM recipe_ratings
-	 WHERE recipe_ratings.archived_at IS NULL
-	) as total_count
-FROM
-	recipe_ratings
+		SELECT COUNT(recipe_ratings.id)
+		FROM recipe_ratings
+		WHERE recipe_ratings.archived_at IS NULL
+	) AS total_count
+FROM recipe_ratings
 WHERE
 	recipe_ratings.archived_at IS NULL
-	AND recipe_ratings.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
-	AND recipe_ratings.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
-	AND (recipe_ratings.last_updated_at IS NULL OR recipe_ratings.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years')))
-	AND (recipe_ratings.last_updated_at IS NULL OR recipe_ratings.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
+	AND recipe_ratings.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+	AND recipe_ratings.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		recipe_ratings.last_updated_at IS NULL
+		OR recipe_ratings.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		recipe_ratings.last_updated_at IS NULL
+		OR recipe_ratings.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
+	)
 GROUP BY recipe_ratings.id
 ORDER BY recipe_ratings.id
-OFFSET sqlc.narg(query_offset)
-LIMIT sqlc.narg(query_limit);
+LIMIT sqlc.narg(query_limit)
+OFFSET sqlc.narg(query_offset);
 
 -- name: GetRecipeRating :one
 
@@ -104,6 +117,7 @@ UPDATE recipe_ratings SET
 	instructions = sqlc.arg(instructions),
 	overall = sqlc.arg(overall),
 	notes = sqlc.arg(notes),
+	by_user = sqlc.arg(by_user),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);

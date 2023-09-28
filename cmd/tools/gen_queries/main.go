@@ -38,18 +38,17 @@ func main() {
 		"meal_components.sql":                    buildMealComponentsQueries(),
 		"meal_plan_events.sql":                   buildMealPlanEventsQueries(),
 		"recipe_media.sql":                       buildRecipeMediaQueries(),
+		"recipe_prep_task_steps.sql":             buildRecipePrepTaskStepsQueries(),
+		"recipe_ratings.sql":                     buildRecipeRatingsQueries(),
 		//
-		// "meal_plan_grocery_list_items.sql":                 buildMealPlanGroceryListItemsQueries(),
+		// "recipe_step_completion_condition_ingredients.sql": buildRecipeStepCompletionConditionIngredientsQueries(),
 		// "meal_plan_options.sql":                            buildMealPlanOptionsQueries(),
 		// "meal_plan_option_votes.sql":                       buildMealPlanOptionVotesQueries(),
 		// "meal_plans.sql":                                   buildMealPlansQueries(),
 		// "meal_plan_tasks.sql":                              buildMealPlanTasksQueries(),
 		// "meals.sql":                                        buildMealsQueries(),
 		// "recipe_prep_tasks.sql":                            buildRecipePrepTasksQueries(),
-		// "recipe_prep_task_steps.sql":                       buildRecipePrepTaskStepsQueries(),
-		// "recipe_ratings.sql":                               buildRecipeRatingsQueries(),
 		// "recipes.sql":                                      buildRecipesQueries(),
-		// "recipe_step_completion_condition_ingredients.sql": buildRecipeStepCompletionConditionIngredientsQueries(),
 		// "recipe_step_completion_conditions.sql":            buildRecipeStepCompletionConditionQueries(),
 		// "recipe_step_ingredients.sql":                      buildRecipeStepIngredientsQueries(),
 		// "recipe_step_instruments.sql":                      buildRecipeStepInstrumentsQueries(),
@@ -57,6 +56,7 @@ func main() {
 		// "recipe_steps.sql":                                 buildRecipeStepsQueries(),
 		// "recipe_step_vessels.sql":                          buildRecipeStepVesselsQueries(),
 		// "user_ingredient_preferences.sql":                  buildUserIngredientPreferencesQueries(),
+		// "meal_plan_grocery_list_items.sql":                 buildMealPlanGroceryListItemsQueries(),
 	}
 
 	for filePath, queries := range queryOutput {

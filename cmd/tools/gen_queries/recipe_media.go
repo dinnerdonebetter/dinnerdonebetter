@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/cristalhq/builq"
 	"strings"
+
+	"github.com/cristalhq/builq"
 )
 
 const (

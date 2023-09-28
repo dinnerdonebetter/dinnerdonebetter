@@ -26,7 +26,12 @@ func (q *Queries) ArchiveRecipeRating(ctx context.Context, db DBTX, id string) (
 
 const checkRecipeRatingExistence = `-- name: CheckRecipeRatingExistence :one
 
-SELECT EXISTS ( SELECT recipe_ratings.id FROM recipe_ratings WHERE recipe_ratings.archived_at IS NULL AND recipe_ratings.id = $1 )
+SELECT EXISTS (
+	SELECT recipe_ratings.id
+	FROM recipe_ratings
+	WHERE recipe_ratings.archived_at IS NULL
+		AND recipe_ratings.id = $1
+)
 `
 
 func (q *Queries) CheckRecipeRatingExistence(ctx context.Context, db DBTX, id string) (bool, error) {
@@ -144,41 +149,49 @@ SELECT
 	recipe_ratings.last_updated_at,
 	recipe_ratings.archived_at,
 	(
-	 SELECT
-		COUNT(recipe_ratings.id)
-	 FROM
-		recipe_ratings
-	 WHERE
-		recipe_ratings.archived_at IS NULL
-		AND recipe_ratings.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-		AND recipe_ratings.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-		AND (recipe_ratings.last_updated_at IS NULL OR recipe_ratings.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-		AND (recipe_ratings.last_updated_at IS NULL OR recipe_ratings.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-	) as filtered_count,
+		SELECT COUNT(recipe_ratings.id)
+		FROM recipe_ratings
+		WHERE recipe_ratings.archived_at IS NULL
+			AND recipe_ratings.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND recipe_ratings.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				recipe_ratings.last_updated_at IS NULL
+				OR recipe_ratings.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				recipe_ratings.last_updated_at IS NULL
+				OR recipe_ratings.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+	) AS filtered_count,
 	(
-	 SELECT COUNT(recipe_ratings.id)
-	 FROM recipe_ratings
-	 WHERE recipe_ratings.archived_at IS NULL
-	) as total_count
-FROM
-	recipe_ratings
+		SELECT COUNT(recipe_ratings.id)
+		FROM recipe_ratings
+		WHERE recipe_ratings.archived_at IS NULL
+	) AS total_count
+FROM recipe_ratings
 WHERE
 	recipe_ratings.archived_at IS NULL
-	AND recipe_ratings.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-	AND recipe_ratings.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-	AND (recipe_ratings.last_updated_at IS NULL OR recipe_ratings.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-	AND (recipe_ratings.last_updated_at IS NULL OR recipe_ratings.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+	AND recipe_ratings.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND recipe_ratings.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		recipe_ratings.last_updated_at IS NULL
+		OR recipe_ratings.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		recipe_ratings.last_updated_at IS NULL
+		OR recipe_ratings.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
 GROUP BY recipe_ratings.id
 ORDER BY recipe_ratings.id
-OFFSET $5
 LIMIT $6
+OFFSET $5
 `
 
 type GetRecipeRatingsParams struct {
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
-	UpdatedAfter  sql.NullTime
 	UpdatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
@@ -204,8 +217,8 @@ func (q *Queries) GetRecipeRatings(ctx context.Context, db DBTX, arg *GetRecipeR
 	rows, err := db.QueryContext(ctx, getRecipeRatings,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
-		arg.UpdatedAfter,
 		arg.UpdatedBefore,
+		arg.UpdatedAfter,
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)
@@ -255,14 +268,16 @@ UPDATE recipe_ratings SET
 	instructions = $5,
 	overall = $6,
 	notes = $7,
+	by_user = $8,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND id = $8
+	AND id = $9
 `
 
 type UpdateRecipeRatingParams struct {
 	RecipeID     string
 	Notes        string
+	ByUser       string
 	ID           string
 	Taste        sql.NullString
 	Difficulty   sql.NullString
@@ -280,6 +295,7 @@ func (q *Queries) UpdateRecipeRating(ctx context.Context, db DBTX, arg *UpdateRe
 		arg.Instructions,
 		arg.Overall,
 		arg.Notes,
+		arg.ByUser,
 		arg.ID,
 	)
 	if err != nil {
