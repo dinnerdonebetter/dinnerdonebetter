@@ -214,18 +214,23 @@ SELECT
 	(
 		SELECT COUNT(recipe_step_vessels.id)
 		FROM recipe_step_vessels
-		WHERE
-			recipe_step_vessels.archived_at IS NULL
-			AND recipe_step_vessels.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
-			AND recipe_step_vessels.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
-			AND (recipe_step_vessels.last_updated_at IS NULL OR recipe_step_vessels.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years')))
-			AND (recipe_step_vessels.last_updated_at IS NULL OR recipe_step_vessels.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
-	) as filtered_count,
+		WHERE recipe_step_vessels.archived_at IS NULL
+			AND recipe_step_vessels.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND recipe_step_vessels.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				recipe_step_vessels.last_updated_at IS NULL
+				OR recipe_step_vessels.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				recipe_step_vessels.last_updated_at IS NULL
+				OR recipe_step_vessels.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
+			)
+	) AS filtered_count,
 	(
 		SELECT COUNT(recipe_step_vessels.id)
 		FROM recipe_step_vessels
 		WHERE recipe_step_vessels.archived_at IS NULL
-	) as total_count
+	) AS total_count
 FROM recipe_step_vessels
 	 LEFT JOIN valid_vessels ON recipe_step_vessels.valid_vessel_id=valid_vessels.id
 	 LEFT JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
@@ -238,12 +243,18 @@ WHERE recipe_step_vessels.archived_at IS NULL
 	AND recipe_steps.id = sqlc.arg(recipe_step_id)
 	AND recipes.archived_at IS NULL
 	AND recipes.id = sqlc.arg(recipe_id)
-	AND recipe_step_vessels.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
-	AND recipe_step_vessels.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
-	AND (recipe_step_vessels.last_updated_at IS NULL OR recipe_step_vessels.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years')))
-	AND (recipe_step_vessels.last_updated_at IS NULL OR recipe_step_vessels.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
-OFFSET sqlc.narg(query_offset)
-LIMIT sqlc.narg(query_limit);
+	AND recipe_step_vessels.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+	AND recipe_step_vessels.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		recipe_step_vessels.last_updated_at IS NULL
+		OR recipe_step_vessels.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		recipe_step_vessels.last_updated_at IS NULL
+		OR recipe_step_vessels.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
+	)
+LIMIT sqlc.narg(query_limit)
+OFFSET sqlc.narg(query_offset);
 
 -- name: UpdateRecipeStepVessel :execrows
 

@@ -333,18 +333,23 @@ SELECT
 	(
 		SELECT COUNT(recipe_step_vessels.id)
 		FROM recipe_step_vessels
-		WHERE
-			recipe_step_vessels.archived_at IS NULL
-			AND recipe_step_vessels.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-			AND recipe_step_vessels.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-			AND (recipe_step_vessels.last_updated_at IS NULL OR recipe_step_vessels.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-			AND (recipe_step_vessels.last_updated_at IS NULL OR recipe_step_vessels.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-	) as filtered_count,
+		WHERE recipe_step_vessels.archived_at IS NULL
+			AND recipe_step_vessels.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND recipe_step_vessels.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				recipe_step_vessels.last_updated_at IS NULL
+				OR recipe_step_vessels.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				recipe_step_vessels.last_updated_at IS NULL
+				OR recipe_step_vessels.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+	) AS filtered_count,
 	(
 		SELECT COUNT(recipe_step_vessels.id)
 		FROM recipe_step_vessels
 		WHERE recipe_step_vessels.archived_at IS NULL
-	) as total_count
+	) AS total_count
 FROM recipe_step_vessels
 	 LEFT JOIN valid_vessels ON recipe_step_vessels.valid_vessel_id=valid_vessels.id
 	 LEFT JOIN valid_measurement_units ON valid_vessels.capacity_unit=valid_measurement_units.id
@@ -357,19 +362,25 @@ WHERE recipe_step_vessels.archived_at IS NULL
 	AND recipe_steps.id = $5
 	AND recipes.archived_at IS NULL
 	AND recipes.id = $6
-	AND recipe_step_vessels.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-	AND recipe_step_vessels.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-	AND (recipe_step_vessels.last_updated_at IS NULL OR recipe_step_vessels.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-	AND (recipe_step_vessels.last_updated_at IS NULL OR recipe_step_vessels.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-OFFSET $7
+	AND recipe_step_vessels.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND recipe_step_vessels.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		recipe_step_vessels.last_updated_at IS NULL
+		OR recipe_step_vessels.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		recipe_step_vessels.last_updated_at IS NULL
+		OR recipe_step_vessels.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
 LIMIT $8
+OFFSET $7
 `
 
 type GetRecipeStepVesselsParams struct {
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
-	UpdatedAfter  sql.NullTime
 	UpdatedBefore sql.NullTime
+	UpdatedAfter  sql.NullTime
 	RecipeStepID  string
 	RecipeID      string
 	QueryOffset   sql.NullInt32
@@ -429,8 +440,8 @@ func (q *Queries) GetRecipeStepVessels(ctx context.Context, db DBTX, arg *GetRec
 	rows, err := db.QueryContext(ctx, getRecipeStepVessels,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
-		arg.UpdatedAfter,
 		arg.UpdatedBefore,
+		arg.UpdatedAfter,
 		arg.RecipeStepID,
 		arg.RecipeID,
 		arg.QueryOffset,
