@@ -61,6 +61,8 @@ SELECT
 	recipes.seal_of_approval,
 	recipes.eligible_for_meals,
 	recipes.yields_component_type,
+	recipes.last_indexed_at,
+	recipes.last_validated_at,
 	recipes.created_at,
 	recipes.last_updated_at,
 	recipes.archived_at,
@@ -73,6 +75,8 @@ SELECT
 	valid_preparations.icon_path as recipe_step_preparation_icon_path,
 	valid_preparations.yields_nothing as recipe_step_preparation_yields_nothing,
 	valid_preparations.restrict_to_ingredients as recipe_step_preparation_restrict_to_ingredients,
+	valid_preparations.past_tense as recipe_step_preparation_past_tense,
+	valid_preparations.slug as recipe_step_preparation_slug,
 	valid_preparations.minimum_ingredient_count as recipe_step_preparation_minimum_ingredient_count,
 	valid_preparations.maximum_ingredient_count as recipe_step_preparation_maximum_ingredient_count,
 	valid_preparations.minimum_instrument_count as recipe_step_preparation_minimum_instrument_count,
@@ -84,24 +88,23 @@ SELECT
 	valid_preparations.only_for_vessels as recipe_step_preparation_only_for_vessels,
 	valid_preparations.minimum_vessel_count as recipe_step_preparation_minimum_vessel_count,
 	valid_preparations.maximum_vessel_count as recipe_step_preparation_maximum_vessel_count,
-	valid_preparations.slug as recipe_step_preparation_slug,
-	valid_preparations.past_tense as recipe_step_preparation_past_tense,
+	valid_preparations.last_indexed_at as recipe_step_preparation_last_indexed_at,
 	valid_preparations.created_at as recipe_step_preparation_created_at,
 	valid_preparations.last_updated_at as recipe_step_preparation_last_updated_at,
 	valid_preparations.archived_at as recipe_step_preparation_archived_at,
 	recipe_steps.minimum_estimated_time_in_seconds as recipe_step_minimum_estimated_time_in_seconds,
 	recipe_steps.maximum_estimated_time_in_seconds as recipe_step_maximum_estimated_time_in_seconds,
 	recipe_steps.minimum_temperature_in_celsius as recipe_step_minimum_temperature_in_celsius,
-	recipe_steps.maximum_temperature_in_celsius as recipe_step_maximum_temperature_in_celsius,
 	recipe_steps.notes as recipe_step_notes,
+	recipe_steps.belongs_to_recipe as recipe_step_belongs_to_recipe,
+	recipe_steps.optional as recipe_step_optional,
+	recipe_steps.maximum_temperature_in_celsius as recipe_step_maximum_temperature_in_celsius,
 	recipe_steps.explicit_instructions as recipe_step_explicit_instructions,
 	recipe_steps.condition_expression as recipe_step_condition_expression,
-	recipe_steps.optional as recipe_step_optional,
 	recipe_steps.start_timer_automatically as recipe_step_start_timer_automatically,
 	recipe_steps.created_at as recipe_step_created_at,
 	recipe_steps.last_updated_at as recipe_step_last_updated_at,
-	recipe_steps.archived_at as recipe_step_archived_at,
-	recipe_steps.belongs_to_recipe as recipe_step_belongs_to_recipe
+	recipe_steps.archived_at as recipe_step_archived_at
 FROM recipes
 	JOIN recipe_steps ON recipes.id=recipe_steps.belongs_to_recipe
 	JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
@@ -125,47 +128,50 @@ SELECT
 	recipes.seal_of_approval,
 	recipes.eligible_for_meals,
 	recipes.yields_component_type,
+	recipes.last_indexed_at,
+	recipes.last_validated_at,
 	recipes.created_at,
 	recipes.last_updated_at,
 	recipes.archived_at,
 	recipes.created_by_user,
-	recipe_steps.id,
-	recipe_steps.index,
-	valid_preparations.id,
-	valid_preparations.name,
-	valid_preparations.description,
-	valid_preparations.icon_path,
-	valid_preparations.yields_nothing,
-	valid_preparations.restrict_to_ingredients,
-	valid_preparations.minimum_ingredient_count,
-	valid_preparations.maximum_ingredient_count,
-	valid_preparations.minimum_instrument_count,
-	valid_preparations.maximum_instrument_count,
-	valid_preparations.temperature_required,
-	valid_preparations.time_estimate_required,
-	valid_preparations.condition_expression_required,
-	valid_preparations.consumes_vessel,
-	valid_preparations.only_for_vessels,
-	valid_preparations.minimum_vessel_count,
-	valid_preparations.maximum_vessel_count,
-	valid_preparations.slug,
-	valid_preparations.past_tense,
-	valid_preparations.created_at,
-	valid_preparations.last_updated_at,
-	valid_preparations.archived_at,
-	recipe_steps.minimum_estimated_time_in_seconds,
-	recipe_steps.maximum_estimated_time_in_seconds,
-	recipe_steps.minimum_temperature_in_celsius,
-	recipe_steps.maximum_temperature_in_celsius,
-	recipe_steps.notes,
-	recipe_steps.explicit_instructions,
-	recipe_steps.condition_expression,
-	recipe_steps.optional,
-	recipe_steps.start_timer_automatically,
-	recipe_steps.created_at,
-	recipe_steps.last_updated_at,
-	recipe_steps.archived_at,
-	recipe_steps.belongs_to_recipe
+	recipe_steps.id as recipe_step_id,
+	recipe_steps.index as recipe_step_index,
+	valid_preparations.id as recipe_step_preparation_id,
+	valid_preparations.name as recipe_step_preparation_name,
+	valid_preparations.description as recipe_step_preparation_description,
+	valid_preparations.icon_path as recipe_step_preparation_icon_path,
+	valid_preparations.yields_nothing as recipe_step_preparation_yields_nothing,
+	valid_preparations.restrict_to_ingredients as recipe_step_preparation_restrict_to_ingredients,
+	valid_preparations.past_tense as recipe_step_preparation_past_tense,
+	valid_preparations.slug as recipe_step_preparation_slug,
+	valid_preparations.minimum_ingredient_count as recipe_step_preparation_minimum_ingredient_count,
+	valid_preparations.maximum_ingredient_count as recipe_step_preparation_maximum_ingredient_count,
+	valid_preparations.minimum_instrument_count as recipe_step_preparation_minimum_instrument_count,
+	valid_preparations.maximum_instrument_count as recipe_step_preparation_maximum_instrument_count,
+	valid_preparations.temperature_required as recipe_step_preparation_temperature_required,
+	valid_preparations.time_estimate_required as recipe_step_preparation_time_estimate_required,
+	valid_preparations.condition_expression_required as recipe_step_preparation_condition_expression_required,
+	valid_preparations.consumes_vessel as recipe_step_preparation_consumes_vessel,
+	valid_preparations.only_for_vessels as recipe_step_preparation_only_for_vessels,
+	valid_preparations.minimum_vessel_count as recipe_step_preparation_minimum_vessel_count,
+	valid_preparations.maximum_vessel_count as recipe_step_preparation_maximum_vessel_count,
+	valid_preparations.last_indexed_at as recipe_step_preparation_last_indexed_at,
+	valid_preparations.created_at as recipe_step_preparation_created_at,
+	valid_preparations.last_updated_at as recipe_step_preparation_last_updated_at,
+	valid_preparations.archived_at as recipe_step_preparation_archived_at,
+	recipe_steps.minimum_estimated_time_in_seconds as recipe_step_minimum_estimated_time_in_seconds,
+	recipe_steps.maximum_estimated_time_in_seconds as recipe_step_maximum_estimated_time_in_seconds,
+	recipe_steps.minimum_temperature_in_celsius as recipe_step_minimum_temperature_in_celsius,
+	recipe_steps.notes as recipe_step_notes,
+	recipe_steps.belongs_to_recipe as recipe_step_belongs_to_recipe,
+	recipe_steps.optional as recipe_step_optional,
+	recipe_steps.maximum_temperature_in_celsius as recipe_step_maximum_temperature_in_celsius,
+	recipe_steps.explicit_instructions as recipe_step_explicit_instructions,
+	recipe_steps.condition_expression as recipe_step_condition_expression,
+	recipe_steps.start_timer_automatically as recipe_step_start_timer_automatically,
+	recipe_steps.created_at as recipe_step_created_at,
+	recipe_steps.last_updated_at as recipe_step_last_updated_at,
+	recipe_steps.archived_at as recipe_step_archived_at
 FROM recipes
 	FULL OUTER JOIN recipe_steps ON recipes.id=recipe_steps.belongs_to_recipe
 	FULL OUTER JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
@@ -190,28 +196,26 @@ SELECT
 	recipes.seal_of_approval,
 	recipes.eligible_for_meals,
 	recipes.yields_component_type,
+	recipes.last_indexed_at,
+	recipes.last_validated_at,
 	recipes.created_at,
 	recipes.last_updated_at,
 	recipes.archived_at,
 	recipes.created_by_user,
 	(
-		SELECT
-			COUNT(recipes.id)
-		FROM
-			recipes
-		WHERE
-			recipes.archived_at IS NULL
-			AND recipes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
-			AND recipes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+		SELECT COUNT(recipes.id)
+		FROM recipes
+		WHERE recipes.archived_at IS NULL
+			AND recipes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND recipes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 			AND (
 				recipes.last_updated_at IS NULL
-				OR recipes.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years'))
+				OR recipes.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
 			)
 			AND (
 				recipes.last_updated_at IS NULL
-				OR recipes.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
+				OR recipes.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
 			)
-		OFFSET sqlc.narg(query_offset)
 	) AS filtered_count,
 	(
 		SELECT COUNT(recipes.id)
@@ -220,18 +224,18 @@ SELECT
 	) AS total_count
 FROM recipes
 	WHERE recipes.archived_at IS NULL
-	AND recipes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
-	AND recipes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+	AND recipes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+	AND recipes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		recipes.last_updated_at IS NULL
-		OR recipes.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years'))
+		OR recipes.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
 	)
 	AND (
 		recipes.last_updated_at IS NULL
-		OR recipes.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
+		OR recipes.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
-OFFSET sqlc.narg(query_offset)
-LIMIT sqlc.narg(query_limit);
+LIMIT sqlc.narg(query_limit)
+OFFSET sqlc.narg(query_offset);
 
 -- name: RecipeSearch :many
 
@@ -249,28 +253,26 @@ SELECT
 	recipes.seal_of_approval,
 	recipes.eligible_for_meals,
 	recipes.yields_component_type,
+	recipes.last_indexed_at,
+	recipes.last_validated_at,
 	recipes.created_at,
 	recipes.last_updated_at,
 	recipes.archived_at,
 	recipes.created_by_user,
 	(
-		SELECT
-			COUNT(recipes.id)
-		FROM
-			recipes
-		WHERE
-			recipes.archived_at IS NULL
-		  AND recipes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
-		  AND recipes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
-		  AND (
+		SELECT COUNT(recipes.id)
+		FROM recipes
+		WHERE recipes.archived_at IS NULL
+			AND recipes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND recipes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
 				recipes.last_updated_at IS NULL
-				OR recipes.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years'))
+				OR recipes.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
 			)
-		  AND (
+			AND (
 				recipes.last_updated_at IS NULL
-				OR recipes.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
+				OR recipes.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
 			)
-		OFFSET sqlc.narg(query_offset)
 	) AS filtered_count,
 	(
 		SELECT COUNT(recipes.id)
@@ -280,18 +282,18 @@ SELECT
 FROM recipes
 WHERE recipes.archived_at IS NULL
 	AND recipes.name ILIKE '%' || sqlc.arg(query)::text || '%'
-	AND recipes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
-	AND recipes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+	AND recipes.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+	AND recipes.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		recipes.last_updated_at IS NULL
-		OR recipes.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years'))
+		OR recipes.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
 	)
 	AND (
 		recipes.last_updated_at IS NULL
-		OR recipes.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
+		OR recipes.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
 	)
-OFFSET sqlc.narg(query_offset)
-LIMIT sqlc.narg(query_limit);
+LIMIT sqlc.narg(query_limit)
+OFFSET sqlc.narg(query_offset);
 
 -- name: GetRecipesNeedingIndexing :many
 

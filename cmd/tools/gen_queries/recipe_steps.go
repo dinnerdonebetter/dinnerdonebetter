@@ -7,13 +7,14 @@ import (
 const (
 	recipeStepsTableName = "recipe_steps"
 
+	indexColumn               = "index"
 	recipeStepIDColumn        = "recipe_step_id"
 	belongsToRecipeStepColumn = "belongs_to_recipe_step"
 )
 
 var recipeStepsColumns = []string{
 	idColumn,
-	"index",
+	indexColumn,
 	preparationIDColumn,
 	"minimum_estimated_time_in_seconds",
 	"maximum_estimated_time_in_seconds",
