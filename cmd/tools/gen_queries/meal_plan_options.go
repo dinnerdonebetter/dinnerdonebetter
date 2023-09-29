@@ -165,8 +165,8 @@ WHERE
 	AND meal_plan_events.belongs_to_meal_plan = sqlc.arg(meal_plan_id)
 	AND meal_plans.archived_at IS NULL
 	AND meal_plans.id = sqlc.arg(meal_plan_id)
-OFFSET sqlc.narg(query_offset)
-LIMIT sqlc.narg(query_limit);`,
+	%s
+%s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
 				buildFilterCountSelect(
 					mealPlanOptionsTableName,
@@ -174,6 +174,12 @@ LIMIT sqlc.narg(query_limit);`,
 					"meal_plan_options.belongs_to_meal_plan_event = sqlc.arg(meal_plan_event_id)",
 				),
 				buildTotalCountSelect(mealPlanOptionsTableName),
+				buildFilterConditions(
+					mealPlanOptionsTableName,
+					true,
+					"meal_plan_options.belongs_to_meal_plan_event = sqlc.arg(meal_plan_event_id)",
+				),
+				offsetLimitAddendum,
 			)),
 		},
 		{

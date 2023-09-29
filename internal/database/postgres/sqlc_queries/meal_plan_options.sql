@@ -113,28 +113,32 @@ SELECT
 	meals.min_estimated_portions as meal_min_estimated_portions,
 	meals.max_estimated_portions as meal_max_estimated_portions,
 	meals.eligible_for_meal_plans as meal_eligible_for_meal_plans,
+	meals.last_indexed_at as meal_last_indexed_at,
 	meals.created_at as meal_created_at,
 	meals.last_updated_at as meal_last_updated_at,
 	meals.archived_at as meal_archived_at,
 	meals.created_by_user as meal_created_by_user,
 	(
-		SELECT
-			COUNT(meal_plan_options.id)
-		FROM
-			meal_plan_options
-		WHERE
-			meal_plan_options.archived_at IS NULL
-			AND meal_plan_options.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
-			AND meal_plan_options.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
-			AND (meal_plan_options.last_updated_at IS NULL OR meal_plan_options.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years')))
-			AND (meal_plan_options.last_updated_at IS NULL OR meal_plan_options.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
+		SELECT COUNT(meal_plan_options.id)
+		FROM meal_plan_options
+		WHERE meal_plan_options.archived_at IS NULL
+			AND meal_plan_options.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND meal_plan_options.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				meal_plan_options.last_updated_at IS NULL
+				OR meal_plan_options.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				meal_plan_options.last_updated_at IS NULL
+				OR meal_plan_options.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
+			)
 			AND meal_plan_options.belongs_to_meal_plan_event = sqlc.arg(meal_plan_event_id)
-	) as filtered_count,
+	) AS filtered_count,
 	(
 		SELECT COUNT(meal_plan_options.id)
 		FROM meal_plan_options
 		WHERE meal_plan_options.archived_at IS NULL
-	) as total_count
+	) AS total_count
 FROM meal_plan_options
 	JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event = meal_plan_events.id
 	JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan = meal_plans.id
@@ -146,12 +150,19 @@ WHERE
 	AND meal_plan_events.belongs_to_meal_plan = sqlc.arg(meal_plan_id)
 	AND meal_plans.archived_at IS NULL
 	AND meal_plans.id = sqlc.arg(meal_plan_id)
-    AND meal_plan_options.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
-    AND meal_plan_options.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
-    AND (meal_plan_options.last_updated_at IS NULL OR meal_plan_options.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years')))
-    AND (meal_plan_options.last_updated_at IS NULL OR meal_plan_options.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
-OFFSET sqlc.narg(query_offset)
-LIMIT sqlc.narg(query_limit);
+	AND meal_plan_options.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+	AND meal_plan_options.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		meal_plan_options.last_updated_at IS NULL
+		OR meal_plan_options.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		meal_plan_options.last_updated_at IS NULL
+		OR meal_plan_options.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
+	)
+	AND meal_plan_options.belongs_to_meal_plan_event = sqlc.arg(meal_plan_event_id)
+LIMIT sqlc.narg(query_limit)
+OFFSET sqlc.narg(query_offset);
 
 -- name: GetMealPlanOption :one
 
@@ -174,6 +185,7 @@ SELECT
 	meals.min_estimated_portions as meal_min_estimated_portions,
 	meals.max_estimated_portions as meal_max_estimated_portions,
 	meals.eligible_for_meal_plans as meal_eligible_for_meal_plans,
+	meals.last_indexed_at as meal_last_indexed_at,
 	meals.created_at as meal_created_at,
 	meals.last_updated_at as meal_last_updated_at,
 	meals.archived_at as meal_archived_at,

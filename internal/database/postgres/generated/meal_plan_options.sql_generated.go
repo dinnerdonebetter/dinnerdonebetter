@@ -271,6 +271,7 @@ SELECT
 	meals.min_estimated_portions as meal_min_estimated_portions,
 	meals.max_estimated_portions as meal_max_estimated_portions,
 	meals.eligible_for_meal_plans as meal_eligible_for_meal_plans,
+	meals.last_indexed_at as meal_last_indexed_at,
 	meals.created_at as meal_created_at,
 	meals.last_updated_at as meal_last_updated_at,
 	meals.archived_at as meal_archived_at,
@@ -299,24 +300,25 @@ type GetMealPlanOptionRow struct {
 	MealCreatedAt            time.Time
 	MealArchivedAt           sql.NullTime
 	MealLastUpdatedAt        sql.NullTime
+	MealLastIndexedAt        sql.NullTime
 	ArchivedAt               sql.NullTime
 	LastUpdatedAt            sql.NullTime
 	MealScale                string
-	MealMinEstimatedPortions string
+	MealCreatedByUser        string
 	MealID                   string
 	ID                       string
-	MealCreatedByUser        string
 	Notes                    string
 	MealID_2                 string
 	MealName                 string
 	MealDescription          string
-	MealMaxEstimatedPortions sql.NullString
+	MealMinEstimatedPortions string
 	BelongsToMealPlanEvent   sql.NullString
 	AssignedDishwasher       sql.NullString
 	AssignedCook             sql.NullString
+	MealMaxEstimatedPortions sql.NullString
 	MealEligibleForMealPlans bool
-	Chosen                   bool
 	Tiebroken                bool
+	Chosen                   bool
 }
 
 func (q *Queries) GetMealPlanOption(ctx context.Context, db DBTX, arg *GetMealPlanOptionParams) (*GetMealPlanOptionRow, error) {
@@ -341,6 +343,7 @@ func (q *Queries) GetMealPlanOption(ctx context.Context, db DBTX, arg *GetMealPl
 		&i.MealMinEstimatedPortions,
 		&i.MealMaxEstimatedPortions,
 		&i.MealEligibleForMealPlans,
+		&i.MealLastIndexedAt,
 		&i.MealCreatedAt,
 		&i.MealLastUpdatedAt,
 		&i.MealArchivedAt,
@@ -461,28 +464,32 @@ SELECT
 	meals.min_estimated_portions as meal_min_estimated_portions,
 	meals.max_estimated_portions as meal_max_estimated_portions,
 	meals.eligible_for_meal_plans as meal_eligible_for_meal_plans,
+	meals.last_indexed_at as meal_last_indexed_at,
 	meals.created_at as meal_created_at,
 	meals.last_updated_at as meal_last_updated_at,
 	meals.archived_at as meal_archived_at,
 	meals.created_by_user as meal_created_by_user,
 	(
-		SELECT
-			COUNT(meal_plan_options.id)
-		FROM
-			meal_plan_options
-		WHERE
-			meal_plan_options.archived_at IS NULL
-			AND meal_plan_options.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-			AND meal_plan_options.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-			AND (meal_plan_options.last_updated_at IS NULL OR meal_plan_options.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-			AND (meal_plan_options.last_updated_at IS NULL OR meal_plan_options.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
+		SELECT COUNT(meal_plan_options.id)
+		FROM meal_plan_options
+		WHERE meal_plan_options.archived_at IS NULL
+			AND meal_plan_options.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND meal_plan_options.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				meal_plan_options.last_updated_at IS NULL
+				OR meal_plan_options.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				meal_plan_options.last_updated_at IS NULL
+				OR meal_plan_options.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
+			)
 			AND meal_plan_options.belongs_to_meal_plan_event = $5
-	) as filtered_count,
+	) AS filtered_count,
 	(
 		SELECT COUNT(meal_plan_options.id)
 		FROM meal_plan_options
 		WHERE meal_plan_options.archived_at IS NULL
-	) as total_count
+	) AS total_count
 FROM meal_plan_options
 	JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event = meal_plan_events.id
 	JOIN meal_plans ON meal_plan_events.belongs_to_meal_plan = meal_plans.id
@@ -494,19 +501,26 @@ WHERE
 	AND meal_plan_events.belongs_to_meal_plan = $6
 	AND meal_plans.archived_at IS NULL
 	AND meal_plans.id = $6
-    AND meal_plan_options.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-    AND meal_plan_options.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-    AND (meal_plan_options.last_updated_at IS NULL OR meal_plan_options.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years')))
-    AND (meal_plan_options.last_updated_at IS NULL OR meal_plan_options.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years')))
-OFFSET $7
+	AND meal_plan_options.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND meal_plan_options.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		meal_plan_options.last_updated_at IS NULL
+		OR meal_plan_options.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		meal_plan_options.last_updated_at IS NULL
+		OR meal_plan_options.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
+	AND meal_plan_options.belongs_to_meal_plan_event = $5
 LIMIT $8
+OFFSET $7
 `
 
 type GetMealPlanOptionsParams struct {
 	CreatedAfter    sql.NullTime
 	CreatedBefore   sql.NullTime
-	UpdatedAfter    sql.NullTime
 	UpdatedBefore   sql.NullTime
+	UpdatedAfter    sql.NullTime
 	MealPlanID      string
 	MealPlanEventID sql.NullString
 	QueryOffset     sql.NullInt32
@@ -518,34 +532,35 @@ type GetMealPlanOptionsRow struct {
 	MealCreatedAt            time.Time
 	MealArchivedAt           sql.NullTime
 	MealLastUpdatedAt        sql.NullTime
+	MealLastIndexedAt        sql.NullTime
 	ArchivedAt               sql.NullTime
 	LastUpdatedAt            sql.NullTime
 	MealID                   string
-	MealMinEstimatedPortions string
+	Notes                    string
 	ID                       string
 	MealScale                string
 	MealCreatedByUser        string
-	Notes                    string
 	MealID_2                 string
 	MealName                 string
 	MealDescription          string
-	BelongsToMealPlanEvent   sql.NullString
+	MealMinEstimatedPortions string
 	MealMaxEstimatedPortions sql.NullString
 	AssignedDishwasher       sql.NullString
 	AssignedCook             sql.NullString
+	BelongsToMealPlanEvent   sql.NullString
 	FilteredCount            int64
 	TotalCount               int64
 	MealEligibleForMealPlans bool
-	Chosen                   bool
 	Tiebroken                bool
+	Chosen                   bool
 }
 
 func (q *Queries) GetMealPlanOptions(ctx context.Context, db DBTX, arg *GetMealPlanOptionsParams) ([]*GetMealPlanOptionsRow, error) {
 	rows, err := db.QueryContext(ctx, getMealPlanOptions,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
-		arg.UpdatedAfter,
 		arg.UpdatedBefore,
+		arg.UpdatedAfter,
 		arg.MealPlanEventID,
 		arg.MealPlanID,
 		arg.QueryOffset,
@@ -577,6 +592,7 @@ func (q *Queries) GetMealPlanOptions(ctx context.Context, db DBTX, arg *GetMealP
 			&i.MealMinEstimatedPortions,
 			&i.MealMaxEstimatedPortions,
 			&i.MealEligibleForMealPlans,
+			&i.MealLastIndexedAt,
 			&i.MealCreatedAt,
 			&i.MealLastUpdatedAt,
 			&i.MealArchivedAt,
