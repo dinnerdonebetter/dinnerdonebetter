@@ -8,6 +8,7 @@ import (
 )
 
 const (
+	preparationIDColumn         = "preparation_id"
 	validPreparationsTableName  = "valid_preparations"
 	validPreparationIDColumn    = "valid_preparation_id"
 	restrictToIngredientsColumn = "restrict_to_ingredients"

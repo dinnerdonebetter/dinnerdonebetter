@@ -9,13 +9,15 @@ import (
 
 const (
 	recipePrepTaskStepsTableName = "recipe_prep_task_steps"
+
+	satisfiesRecipeStepColumn = "satisfies_recipe_step"
 )
 
 var recipePrepTaskStepsColumns = []string{
 	idColumn,
 	belongsToRecipeStepColumn,
 	"belongs_to_recipe_prep_task",
-	"satisfies_recipe_step",
+	satisfiesRecipeStepColumn,
 }
 
 func buildRecipePrepTaskStepsQueries() []*Query {

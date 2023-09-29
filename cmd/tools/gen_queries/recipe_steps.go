@@ -14,7 +14,7 @@ const (
 var recipeStepsColumns = []string{
 	idColumn,
 	"index",
-	"preparation_id",
+	preparationIDColumn,
 	"minimum_estimated_time_in_seconds",
 	"maximum_estimated_time_in_seconds",
 	"minimum_temperature_in_celsius",
