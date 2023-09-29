@@ -58,6 +58,8 @@ SELECT
 	valid_preparations.icon_path as valid_preparation_icon_path,
 	valid_preparations.yields_nothing as valid_preparation_yields_nothing,
 	valid_preparations.restrict_to_ingredients as valid_preparation_restrict_to_ingredients,
+	valid_preparations.past_tense as valid_preparation_past_tense,
+	valid_preparations.slug as valid_preparation_slug,
 	valid_preparations.minimum_ingredient_count as valid_preparation_minimum_ingredient_count,
 	valid_preparations.maximum_ingredient_count as valid_preparation_maximum_ingredient_count,
 	valid_preparations.minimum_instrument_count as valid_preparation_minimum_instrument_count,
@@ -69,8 +71,7 @@ SELECT
 	valid_preparations.only_for_vessels as valid_preparation_only_for_vessels,
 	valid_preparations.minimum_vessel_count as valid_preparation_minimum_vessel_count,
 	valid_preparations.maximum_vessel_count as valid_preparation_maximum_vessel_count,
-	valid_preparations.slug as valid_preparation_slug,
-	valid_preparations.past_tense as valid_preparation_past_tense,
+	valid_preparations.last_indexed_at as valid_preparation_last_indexed_at,
 	valid_preparations.created_at as valid_preparation_created_at,
 	valid_preparations.last_updated_at as valid_preparation_last_updated_at,
 	valid_preparations.archived_at as valid_preparation_archived_at,
@@ -107,6 +108,8 @@ SELECT
 	valid_preparations.icon_path as valid_preparation_icon_path,
 	valid_preparations.yields_nothing as valid_preparation_yields_nothing,
 	valid_preparations.restrict_to_ingredients as valid_preparation_restrict_to_ingredients,
+	valid_preparations.past_tense as valid_preparation_past_tense,
+	valid_preparations.slug as valid_preparation_slug,
 	valid_preparations.minimum_ingredient_count as valid_preparation_minimum_ingredient_count,
 	valid_preparations.maximum_ingredient_count as valid_preparation_maximum_ingredient_count,
 	valid_preparations.minimum_instrument_count as valid_preparation_minimum_instrument_count,
@@ -118,8 +121,7 @@ SELECT
 	valid_preparations.only_for_vessels as valid_preparation_only_for_vessels,
 	valid_preparations.minimum_vessel_count as valid_preparation_minimum_vessel_count,
 	valid_preparations.maximum_vessel_count as valid_preparation_maximum_vessel_count,
-	valid_preparations.slug as valid_preparation_slug,
-	valid_preparations.past_tense as valid_preparation_past_tense,
+	valid_preparations.last_indexed_at as valid_preparation_last_indexed_at,
 	valid_preparations.created_at as valid_preparation_created_at,
 	valid_preparations.last_updated_at as valid_preparation_last_updated_at,
 	valid_preparations.archived_at as valid_preparation_archived_at,
@@ -137,34 +139,43 @@ SELECT
 	recipe_steps.archived_at,
 	recipe_steps.belongs_to_recipe,
 	(
-		SELECT
-			COUNT(recipe_steps.id)
-		FROM
-			recipe_steps
-		WHERE
-			recipe_steps.archived_at IS NULL
-			AND recipe_steps.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
-			AND recipe_steps.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
-			AND (recipe_steps.last_updated_at IS NULL OR recipe_steps.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years')))
-			AND (recipe_steps.last_updated_at IS NULL OR recipe_steps.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
-	) as filtered_count,
+		SELECT COUNT(recipe_steps.id)
+		FROM recipe_steps
+		WHERE recipe_steps.archived_at IS NULL
+			AND recipe_steps.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+			AND recipe_steps.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				recipe_steps.last_updated_at IS NULL
+				OR recipe_steps.last_updated_at > COALESCE(sqlc.narg(updated_before), (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				recipe_steps.last_updated_at IS NULL
+				OR recipe_steps.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
+			)
+	) AS filtered_count,
 	(
 		SELECT COUNT(recipe_steps.id)
 		FROM recipe_steps
 		WHERE recipe_steps.archived_at IS NULL
-	) as total_count
+	) AS total_count
 FROM recipe_steps
 	JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
 	JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
 WHERE recipe_steps.archived_at IS NULL
-	AND recipe_steps.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
-	AND recipe_steps.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
-	AND (recipe_steps.last_updated_at IS NULL OR recipe_steps.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years')))
-	AND (recipe_steps.last_updated_at IS NULL OR recipe_steps.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
 	AND recipe_steps.belongs_to_recipe = sqlc.arg(recipe_id)
 	AND recipes.archived_at IS NULL
-OFFSET sqlc.narg(query_offset)
-LIMIT sqlc.narg(query_limit);
+	AND recipe_steps.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
+	AND recipe_steps.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		recipe_steps.last_updated_at IS NULL
+		OR recipe_steps.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		recipe_steps.last_updated_at IS NULL
+		OR recipe_steps.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + '999 years'::INTERVAL))
+	)
+LIMIT sqlc.narg(query_limit)
+OFFSET sqlc.narg(query_offset);
 
 -- name: GetRecipeStepByRecipeID :one
 
@@ -177,6 +188,8 @@ SELECT
 	valid_preparations.icon_path as valid_preparation_icon_path,
 	valid_preparations.yields_nothing as valid_preparation_yields_nothing,
 	valid_preparations.restrict_to_ingredients as valid_preparation_restrict_to_ingredients,
+	valid_preparations.past_tense as valid_preparation_past_tense,
+	valid_preparations.slug as valid_preparation_slug,
 	valid_preparations.minimum_ingredient_count as valid_preparation_minimum_ingredient_count,
 	valid_preparations.maximum_ingredient_count as valid_preparation_maximum_ingredient_count,
 	valid_preparations.minimum_instrument_count as valid_preparation_minimum_instrument_count,
@@ -188,8 +201,7 @@ SELECT
 	valid_preparations.only_for_vessels as valid_preparation_only_for_vessels,
 	valid_preparations.minimum_vessel_count as valid_preparation_minimum_vessel_count,
 	valid_preparations.maximum_vessel_count as valid_preparation_maximum_vessel_count,
-	valid_preparations.slug as valid_preparation_slug,
-	valid_preparations.past_tense as valid_preparation_past_tense,
+	valid_preparations.last_indexed_at as valid_preparation_last_indexed_at,
 	valid_preparations.created_at as valid_preparation_created_at,
 	valid_preparations.last_updated_at as valid_preparation_last_updated_at,
 	valid_preparations.archived_at as valid_preparation_archived_at,

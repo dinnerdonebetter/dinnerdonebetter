@@ -51,12 +51,13 @@ func main() {
 		"recipes.sql":                                      buildRecipesQueries(),
 		"recipe_step_ingredients.sql":                      buildRecipeStepIngredientsQueries(),
 		"recipe_step_instruments.sql":                      buildRecipeStepInstrumentsQueries(),
-		//
-		// "recipe_step_products.sql":                      buildRecipeStepProductsQueries(),
-		// "recipe_steps.sql":                              buildRecipeStepsQueries(),
-		// "recipe_step_vessels.sql":                       buildRecipeStepVesselsQueries(),
-		// "user_ingredient_preferences.sql":               buildUserIngredientPreferencesQueries(),
-		// "meal_plan_grocery_list_items.sql":              buildMealPlanGroceryListItemsQueries(),
+		"recipe_step_products.sql":                         buildRecipeStepProductsQueries(),
+		"recipe_steps.sql":                                 buildRecipeStepsQueries(),
+		// being worked on
+		// "recipe_step_vessels.sql": buildRecipeStepVesselsQueries(),
+		// still need work
+		"user_ingredient_preferences.sql":  buildUserIngredientPreferencesQueries(),
+		"meal_plan_grocery_list_items.sql": buildMealPlanGroceryListItemsQueries(),
 	}
 
 	for filePath, queries := range queryOutput {

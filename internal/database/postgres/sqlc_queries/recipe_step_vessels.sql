@@ -69,6 +69,7 @@ SELECT
 	valid_measurement_units.imperial as valid_measurement_unit_imperial,
 	valid_measurement_units.slug as valid_measurement_unit_slug,
 	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.last_indexed_at as valid_measurement_unit_last_indexed_at,
 	valid_measurement_units.created_at as valid_measurement_unit_created_at,
 	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
 	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
@@ -76,6 +77,7 @@ SELECT
 	valid_vessels.length_in_millimeters as valid_vessel_length_in_millimeters,
 	valid_vessels.height_in_millimeters as valid_vessel_height_in_millimeters,
 	valid_vessels.shape as valid_vessel_shape,
+	valid_vessels.last_indexed_at as valid_vessel_last_indexed_at,
 	valid_vessels.created_at as valid_vessel_created_at,
 	valid_vessels.last_updated_at as valid_vessel_last_updated_at,
 	valid_vessels.archived_at as valid_vessel_archived_at,
@@ -125,6 +127,7 @@ SELECT
 	valid_measurement_units.imperial as valid_measurement_unit_imperial,
 	valid_measurement_units.slug as valid_measurement_unit_slug,
 	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.last_indexed_at as valid_measurement_unit_last_indexed_at,
 	valid_measurement_units.created_at as valid_measurement_unit_created_at,
 	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
 	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
@@ -132,6 +135,7 @@ SELECT
 	valid_vessels.length_in_millimeters as valid_vessel_length_in_millimeters,
 	valid_vessels.height_in_millimeters as valid_vessel_height_in_millimeters,
 	valid_vessels.shape as valid_vessel_shape,
+	valid_vessels.last_indexed_at as valid_vessel_last_indexed_at,
 	valid_vessels.created_at as valid_vessel_created_at,
 	valid_vessels.last_updated_at as valid_vessel_last_updated_at,
 	valid_vessels.archived_at as valid_vessel_archived_at,
@@ -184,6 +188,7 @@ SELECT
 	valid_measurement_units.imperial as valid_measurement_unit_imperial,
 	valid_measurement_units.slug as valid_measurement_unit_slug,
 	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.last_indexed_at as valid_measurement_unit_last_indexed_at,
 	valid_measurement_units.created_at as valid_measurement_unit_created_at,
 	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
 	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
@@ -191,6 +196,7 @@ SELECT
 	valid_vessels.length_in_millimeters as valid_vessel_length_in_millimeters,
 	valid_vessels.height_in_millimeters as valid_vessel_height_in_millimeters,
 	valid_vessels.shape as valid_vessel_shape,
+	valid_vessels.last_indexed_at as valid_vessel_last_indexed_at,
 	valid_vessels.created_at as valid_vessel_created_at,
 	valid_vessels.last_updated_at as valid_vessel_last_updated_at,
 	valid_vessels.archived_at as valid_vessel_archived_at,
@@ -227,15 +233,15 @@ FROM recipe_step_vessels
 	 JOIN recipes ON recipe_steps.belongs_to_recipe=recipes.id
 WHERE recipe_step_vessels.archived_at IS NULL
 	AND recipe_step_vessels.belongs_to_recipe_step = sqlc.arg(recipe_step_id)
-	AND recipe_step_vessels.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
-	AND recipe_step_vessels.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
-	AND (recipe_step_vessels.last_updated_at IS NULL OR recipe_step_vessels.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years')))
-	AND (recipe_step_vessels.last_updated_at IS NULL OR recipe_step_vessels.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
 	AND recipe_steps.belongs_to_recipe = sqlc.arg(recipe_id)
 	AND recipe_steps.archived_at IS NULL
 	AND recipe_steps.id = sqlc.arg(recipe_step_id)
 	AND recipes.archived_at IS NULL
 	AND recipes.id = sqlc.arg(recipe_id)
+	AND recipe_step_vessels.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - interval '999 years'))
+	AND recipe_step_vessels.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + interval '999 years'))
+	AND (recipe_step_vessels.last_updated_at IS NULL OR recipe_step_vessels.last_updated_at > COALESCE(sqlc.narg(updated_after), (SELECT NOW() - interval '999 years')))
+	AND (recipe_step_vessels.last_updated_at IS NULL OR recipe_step_vessels.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years')))
 OFFSET sqlc.narg(query_offset)
 LIMIT sqlc.narg(query_limit);
 

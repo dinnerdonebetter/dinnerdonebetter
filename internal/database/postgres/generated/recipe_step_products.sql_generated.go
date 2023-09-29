@@ -160,6 +160,7 @@ SELECT
 	valid_measurement_units.imperial as valid_measurement_unit_imperial,
 	valid_measurement_units.slug as valid_measurement_unit_slug,
 	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.last_indexed_at as valid_measurement_unit_last_indexed_at,
 	valid_measurement_units.created_at as valid_measurement_unit_created_at,
 	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
 	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
@@ -201,37 +202,38 @@ type GetRecipeStepProductParams struct {
 
 type GetRecipeStepProductRow struct {
 	CreatedAt                          time.Time
+	ValidMeasurementUnitLastIndexedAt  sql.NullTime
 	ArchivedAt                         sql.NullTime
+	LastUpdatedAt                      sql.NullTime
 	ValidMeasurementUnitArchivedAt     sql.NullTime
 	ValidMeasurementUnitLastUpdatedAt  sql.NullTime
 	ValidMeasurementUnitCreatedAt      sql.NullTime
-	LastUpdatedAt                      sql.NullTime
-	QuantityNotes                      string
-	Name                               string
-	ID                                 string
-	BelongsToRecipeStep                string
 	StorageInstructions                string
 	Type                               RecipeStepProductType
-	MinimumStorageTemperatureInCelsius sql.NullString
-	ValidMeasurementUnitName           sql.NullString
-	ValidMeasurementUnitID             sql.NullString
-	ValidMeasurementUnitSlug           sql.NullString
-	MinimumQuantityValue               sql.NullString
+	Name                               string
+	BelongsToRecipeStep                string
+	ID                                 string
+	QuantityNotes                      string
 	MaximumQuantityValue               sql.NullString
+	MinimumStorageTemperatureInCelsius sql.NullString
+	ValidMeasurementUnitDescription    sql.NullString
+	ValidMeasurementUnitName           sql.NullString
+	MinimumQuantityValue               sql.NullString
 	ValidMeasurementUnitIconPath       sql.NullString
 	ValidMeasurementUnitPluralName     sql.NullString
+	ValidMeasurementUnitID             sql.NullString
+	ValidMeasurementUnitSlug           sql.NullString
 	MaximumStorageTemperatureInCelsius sql.NullString
-	ValidMeasurementUnitDescription    sql.NullString
 	MaximumStorageDurationInSeconds    sql.NullInt32
 	ContainedInVesselIndex             sql.NullInt32
 	Index                              int32
-	ValidMeasurementUnitUniversal      sql.NullBool
+	ValidMeasurementUnitVolumetric     sql.NullBool
 	ValidMeasurementUnitImperial       sql.NullBool
 	ValidMeasurementUnitMetric         sql.NullBool
-	ValidMeasurementUnitVolumetric     sql.NullBool
+	ValidMeasurementUnitUniversal      sql.NullBool
+	Compostable                        bool
 	IsWaste                            bool
 	IsLiquid                           bool
-	Compostable                        bool
 }
 
 func (q *Queries) GetRecipeStepProduct(ctx context.Context, db DBTX, arg *GetRecipeStepProductParams) (*GetRecipeStepProductRow, error) {
@@ -251,6 +253,7 @@ func (q *Queries) GetRecipeStepProduct(ctx context.Context, db DBTX, arg *GetRec
 		&i.ValidMeasurementUnitImperial,
 		&i.ValidMeasurementUnitSlug,
 		&i.ValidMeasurementUnitPluralName,
+		&i.ValidMeasurementUnitLastIndexedAt,
 		&i.ValidMeasurementUnitCreatedAt,
 		&i.ValidMeasurementUnitLastUpdatedAt,
 		&i.ValidMeasurementUnitArchivedAt,
@@ -290,6 +293,7 @@ SELECT
 	valid_measurement_units.imperial as valid_measurement_unit_imperial,
 	valid_measurement_units.slug as valid_measurement_unit_slug,
 	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.last_indexed_at as valid_measurement_unit_last_indexed_at,
 	valid_measurement_units.created_at as valid_measurement_unit_created_at,
 	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
 	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
@@ -315,15 +319,15 @@ SELECT
 		WHERE
 			recipe_step_products.archived_at IS NULL
 			AND recipe_step_products.belongs_to_recipe_step = $1
-			AND recipe_step_products.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
-			AND recipe_step_products.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
+			AND recipe_step_products.created_at > COALESCE($2, (SELECT NOW() - '999 years'::INTERVAL))
+			AND recipe_step_products.created_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
 			AND (
 				recipe_step_products.last_updated_at IS NULL
-				OR recipe_step_products.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years'))
+				OR recipe_step_products.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
 			)
 			AND (
 				recipe_step_products.last_updated_at IS NULL
-				OR recipe_step_products.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years'))
+				OR recipe_step_products.last_updated_at < COALESCE($5, (SELECT NOW() + '999 years'::INTERVAL))
 			)
 	) AS filtered_count,
 	(
@@ -343,8 +347,18 @@ WHERE recipe_step_products.archived_at IS NULL
 	AND recipe_steps.belongs_to_recipe = $6
 	AND recipes.archived_at IS NULL
 	AND recipes.id = $6
-OFFSET $7
+	AND recipe_step_products.created_at > COALESCE($2, (SELECT NOW() - '999 years'::INTERVAL))
+	AND recipe_step_products.created_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		recipe_step_products.last_updated_at IS NULL
+		OR recipe_step_products.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		recipe_step_products.last_updated_at IS NULL
+		OR recipe_step_products.last_updated_at < COALESCE($5, (SELECT NOW() + '999 years'::INTERVAL))
+	)
 LIMIT $8
+OFFSET $7
 `
 
 type GetRecipeStepProductsParams struct {
@@ -360,39 +374,40 @@ type GetRecipeStepProductsParams struct {
 
 type GetRecipeStepProductsRow struct {
 	CreatedAt                          time.Time
-	ValidMeasurementUnitCreatedAt      sql.NullTime
-	LastUpdatedAt                      sql.NullTime
+	ValidMeasurementUnitLastIndexedAt  sql.NullTime
 	ArchivedAt                         sql.NullTime
+	LastUpdatedAt                      sql.NullTime
 	ValidMeasurementUnitArchivedAt     sql.NullTime
 	ValidMeasurementUnitLastUpdatedAt  sql.NullTime
+	ValidMeasurementUnitCreatedAt      sql.NullTime
+	StorageInstructions                string
+	BelongsToRecipeStep                string
 	Name                               string
 	Type                               RecipeStepProductType
-	StorageInstructions                string
-	QuantityNotes                      string
 	ID                                 string
-	BelongsToRecipeStep                string
-	ValidMeasurementUnitPluralName     sql.NullString
-	MaximumStorageTemperatureInCelsius sql.NullString
-	ValidMeasurementUnitSlug           sql.NullString
-	ValidMeasurementUnitID             sql.NullString
-	MinimumQuantityValue               sql.NullString
+	QuantityNotes                      string
 	MaximumQuantityValue               sql.NullString
-	ValidMeasurementUnitIconPath       sql.NullString
-	ValidMeasurementUnitName           sql.NullString
+	ValidMeasurementUnitID             sql.NullString
 	ValidMeasurementUnitDescription    sql.NullString
+	ValidMeasurementUnitName           sql.NullString
+	MinimumQuantityValue               sql.NullString
+	ValidMeasurementUnitSlug           sql.NullString
+	ValidMeasurementUnitPluralName     sql.NullString
+	ValidMeasurementUnitIconPath       sql.NullString
+	MaximumStorageTemperatureInCelsius sql.NullString
 	MinimumStorageTemperatureInCelsius sql.NullString
 	TotalCount                         int64
 	FilteredCount                      int64
-	ContainedInVesselIndex             sql.NullInt32
 	MaximumStorageDurationInSeconds    sql.NullInt32
+	ContainedInVesselIndex             sql.NullInt32
 	Index                              int32
+	ValidMeasurementUnitVolumetric     sql.NullBool
 	ValidMeasurementUnitUniversal      sql.NullBool
 	ValidMeasurementUnitImperial       sql.NullBool
 	ValidMeasurementUnitMetric         sql.NullBool
-	ValidMeasurementUnitVolumetric     sql.NullBool
+	Compostable                        bool
 	IsWaste                            bool
 	IsLiquid                           bool
-	Compostable                        bool
 }
 
 func (q *Queries) GetRecipeStepProducts(ctx context.Context, db DBTX, arg *GetRecipeStepProductsParams) ([]*GetRecipeStepProductsRow, error) {
@@ -427,6 +442,7 @@ func (q *Queries) GetRecipeStepProducts(ctx context.Context, db DBTX, arg *GetRe
 			&i.ValidMeasurementUnitImperial,
 			&i.ValidMeasurementUnitSlug,
 			&i.ValidMeasurementUnitPluralName,
+			&i.ValidMeasurementUnitLastIndexedAt,
 			&i.ValidMeasurementUnitCreatedAt,
 			&i.ValidMeasurementUnitLastUpdatedAt,
 			&i.ValidMeasurementUnitArchivedAt,
@@ -478,6 +494,7 @@ SELECT
 	valid_measurement_units.imperial as valid_measurement_unit_imperial,
 	valid_measurement_units.slug as valid_measurement_unit_slug,
 	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.last_indexed_at as valid_measurement_unit_last_indexed_at,
 	valid_measurement_units.created_at as valid_measurement_unit_created_at,
 	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
 	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
@@ -510,37 +527,38 @@ WHERE recipe_step_products.archived_at IS NULL
 
 type GetRecipeStepProductsForRecipeRow struct {
 	CreatedAt                          time.Time
+	ValidMeasurementUnitLastIndexedAt  sql.NullTime
 	ArchivedAt                         sql.NullTime
+	LastUpdatedAt                      sql.NullTime
 	ValidMeasurementUnitArchivedAt     sql.NullTime
 	ValidMeasurementUnitLastUpdatedAt  sql.NullTime
 	ValidMeasurementUnitCreatedAt      sql.NullTime
-	LastUpdatedAt                      sql.NullTime
-	QuantityNotes                      string
-	Name                               string
-	ID                                 string
-	BelongsToRecipeStep                string
 	StorageInstructions                string
 	Type                               RecipeStepProductType
-	MinimumStorageTemperatureInCelsius sql.NullString
-	ValidMeasurementUnitName           sql.NullString
-	ValidMeasurementUnitID             sql.NullString
-	ValidMeasurementUnitSlug           sql.NullString
-	MinimumQuantityValue               sql.NullString
+	Name                               string
+	BelongsToRecipeStep                string
+	ID                                 string
+	QuantityNotes                      string
 	MaximumQuantityValue               sql.NullString
+	MinimumStorageTemperatureInCelsius sql.NullString
+	ValidMeasurementUnitDescription    sql.NullString
+	ValidMeasurementUnitName           sql.NullString
+	MinimumQuantityValue               sql.NullString
 	ValidMeasurementUnitIconPath       sql.NullString
 	ValidMeasurementUnitPluralName     sql.NullString
+	ValidMeasurementUnitID             sql.NullString
+	ValidMeasurementUnitSlug           sql.NullString
 	MaximumStorageTemperatureInCelsius sql.NullString
-	ValidMeasurementUnitDescription    sql.NullString
 	MaximumStorageDurationInSeconds    sql.NullInt32
 	ContainedInVesselIndex             sql.NullInt32
 	Index                              int32
-	ValidMeasurementUnitUniversal      sql.NullBool
+	ValidMeasurementUnitVolumetric     sql.NullBool
 	ValidMeasurementUnitImperial       sql.NullBool
 	ValidMeasurementUnitMetric         sql.NullBool
-	ValidMeasurementUnitVolumetric     sql.NullBool
+	ValidMeasurementUnitUniversal      sql.NullBool
+	Compostable                        bool
 	IsWaste                            bool
 	IsLiquid                           bool
-	Compostable                        bool
 }
 
 func (q *Queries) GetRecipeStepProductsForRecipe(ctx context.Context, db DBTX, recipeID string) ([]*GetRecipeStepProductsForRecipeRow, error) {
@@ -566,6 +584,7 @@ func (q *Queries) GetRecipeStepProductsForRecipe(ctx context.Context, db DBTX, r
 			&i.ValidMeasurementUnitImperial,
 			&i.ValidMeasurementUnitSlug,
 			&i.ValidMeasurementUnitPluralName,
+			&i.ValidMeasurementUnitLastIndexedAt,
 			&i.ValidMeasurementUnitCreatedAt,
 			&i.ValidMeasurementUnitLastUpdatedAt,
 			&i.ValidMeasurementUnitArchivedAt,
