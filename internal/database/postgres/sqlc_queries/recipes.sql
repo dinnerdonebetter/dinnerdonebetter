@@ -291,7 +291,7 @@ WHERE recipes.archived_at IS NULL
 		OR recipes.last_updated_at < COALESCE(sqlc.narg(updated_before), (SELECT NOW() + interval '999 years'))
 	)
 OFFSET sqlc.narg(query_offset)
-LIMIT sqlc.narg(query_limit);;
+LIMIT sqlc.narg(query_limit);
 
 -- name: GetRecipesNeedingIndexing :many
 
