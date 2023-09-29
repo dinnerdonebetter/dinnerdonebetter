@@ -412,7 +412,7 @@ func (q *Querier) UpdateRecipeStepVessel(ctx context.Context, updated *types.Rec
 	if _, err := q.generatedQuerier.UpdateRecipeStepVessel(ctx, q.db, &generated.UpdateRecipeStepVesselParams{
 		Name:                 updated.Name,
 		Notes:                updated.Notes,
-		RecipeStepID:         updated.BelongsToRecipeStep,
+		BelongsToRecipeStep:  updated.BelongsToRecipeStep,
 		VesselPredicate:      updated.VesselPreposition,
 		ID:                   updated.ID,
 		RecipeStepProductID:  nullStringFromStringPointer(updated.RecipeStepProductID),

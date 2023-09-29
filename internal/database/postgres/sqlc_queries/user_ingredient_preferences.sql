@@ -1,6 +1,6 @@
 -- name: ArchiveUserIngredientPreference :execrows
 
-UPDATE user_ingredient_preferences SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id) AND belongs_to_user = sqlc.arg(belongs_to_user);
+UPDATE user_ingredient_preferences SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_user = sqlc.arg(belongs_to_user) AND id = sqlc.arg(id);
 
 -- name: CreateUserIngredientPreference :exec
 
@@ -188,5 +188,5 @@ UPDATE user_ingredient_preferences SET
 	allergy = sqlc.arg(allergy),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND id = sqlc.arg(id)
-	AND belongs_to_user = sqlc.arg(belongs_to_user);
+	AND belongs_to_user = sqlc.arg(belongs_to_user)
+	AND id = sqlc.arg(id);

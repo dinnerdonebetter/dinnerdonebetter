@@ -681,7 +681,7 @@ WHERE archived_at IS NULL
 type UpdateRecipeStepVesselParams struct {
 	Name                 string
 	Notes                string
-	RecipeStepID         string
+	BelongsToRecipeStep  string
 	VesselPredicate      string
 	ID                   string
 	RecipeStepProductID  sql.NullString
@@ -695,7 +695,7 @@ func (q *Queries) UpdateRecipeStepVessel(ctx context.Context, db DBTX, arg *Upda
 	result, err := db.ExecContext(ctx, updateRecipeStepVessel,
 		arg.Name,
 		arg.Notes,
-		arg.RecipeStepID,
+		arg.BelongsToRecipeStep,
 		arg.RecipeStepProductID,
 		arg.ValidVesselID,
 		arg.VesselPredicate,

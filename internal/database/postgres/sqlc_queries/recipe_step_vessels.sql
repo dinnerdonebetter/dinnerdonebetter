@@ -244,7 +244,7 @@ LIMIT sqlc.narg(query_limit);
 UPDATE recipe_step_vessels SET
 	name = sqlc.arg(name),
 	notes = sqlc.arg(notes),
-	belongs_to_recipe_step = sqlc.arg(recipe_step_id),
+	belongs_to_recipe_step = sqlc.arg(belongs_to_recipe_step),
 	recipe_step_product_id = sqlc.arg(recipe_step_product_id),
 	valid_vessel_id = sqlc.arg(valid_vessel_id),
 	vessel_predicate = sqlc.arg(vessel_predicate),
@@ -253,5 +253,5 @@ UPDATE recipe_step_vessels SET
 	unavailable_after_step = sqlc.arg(unavailable_after_step),
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND belongs_to_recipe_step = sqlc.arg(recipe_step_id)
+	AND belongs_to_recipe_step = sqlc.arg(belongs_to_recipe_step)
 	AND id = sqlc.arg(id);

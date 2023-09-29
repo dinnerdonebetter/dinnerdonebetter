@@ -13,16 +13,16 @@ import (
 
 const archiveUserIngredientPreference = `-- name: ArchiveUserIngredientPreference :execrows
 
-UPDATE user_ingredient_preferences SET archived_at = NOW() WHERE archived_at IS NULL AND id = $1 AND belongs_to_user = $2
+UPDATE user_ingredient_preferences SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_user = $1 AND id = $2
 `
 
 type ArchiveUserIngredientPreferenceParams struct {
-	ID            string
 	BelongsToUser string
+	ID            string
 }
 
 func (q *Queries) ArchiveUserIngredientPreference(ctx context.Context, db DBTX, arg *ArchiveUserIngredientPreferenceParams) (int64, error) {
-	result, err := db.ExecContext(ctx, archiveUserIngredientPreference, arg.ID, arg.BelongsToUser)
+	result, err := db.ExecContext(ctx, archiveUserIngredientPreference, arg.BelongsToUser, arg.ID)
 	if err != nil {
 		return 0, err
 	}
@@ -501,15 +501,15 @@ UPDATE user_ingredient_preferences SET
 	allergy = $4,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-	AND id = $5
-	AND belongs_to_user = $6
+	AND belongs_to_user = $5
+	AND id = $6
 `
 
 type UpdateUserIngredientPreferenceParams struct {
 	Ingredient    string
 	Notes         string
-	ID            string
 	BelongsToUser string
+	ID            string
 	Rating        int16
 	Allergy       bool
 }
@@ -520,8 +520,8 @@ func (q *Queries) UpdateUserIngredientPreference(ctx context.Context, db DBTX, a
 		arg.Rating,
 		arg.Notes,
 		arg.Allergy,
-		arg.ID,
 		arg.BelongsToUser,
+		arg.ID,
 	)
 	if err != nil {
 		return 0, err
