@@ -48,8 +48,8 @@ func main() {
 		"meal_plan_option_votes.sql":                       buildMealPlanOptionVotesQueries(),
 		"meal_plan_options.sql":                            buildMealPlanOptionsQueries(),
 		"meal_plan_tasks.sql":                              buildMealPlanTasksQueries(),
+		"recipes.sql":                                      buildRecipesQueries(),
 		//
-		// "recipes.sql":                                      buildRecipesQueries(),
 		// "recipe_step_ingredients.sql":                      buildRecipeStepIngredientsQueries(),
 		// "recipe_step_instruments.sql":                      buildRecipeStepInstrumentsQueries(),
 		// "recipe_step_products.sql":                         buildRecipeStepProductsQueries(),

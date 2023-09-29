@@ -1,6 +1,6 @@
 -- name: ArchiveRecipe :execrows
 
-UPDATE recipes SET archived_at = NOW() WHERE archived_at IS NULL AND created_by_user = sqlc.arg(user_id) AND id = sqlc.arg(recipe_id);
+UPDATE recipes SET archived_at = NOW() WHERE archived_at IS NULL AND created_by_user = sqlc.arg(created_by_user) AND id = sqlc.arg(id);
 
 -- name: CreateRecipe :exec
 
@@ -300,8 +300,7 @@ FROM recipes
 WHERE recipes.archived_at IS NULL
 	AND (
 		recipes.last_indexed_at IS NULL
-		OR recipes.last_indexed_at
-			< NOW() - '24 hours'::INTERVAL
+		OR recipes.last_indexed_at < NOW() - '24 hours'::INTERVAL
 	);
 
 -- name: GetRecipeIDsForMeal :many
@@ -313,10 +312,8 @@ FROM recipes
 WHERE
 	recipes.archived_at IS NULL
 	AND meals.id = sqlc.arg(meal_id)
-GROUP BY
-	recipes.id
-ORDER BY
-	recipes.id;
+GROUP BY recipes.id
+ORDER BY recipes.id;
 
 -- name: UpdateRecipe :execrows
 
@@ -336,7 +333,7 @@ UPDATE recipes SET
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
     AND created_by_user = sqlc.arg(created_by_user)
-    AND id = sqlc.arg(id);
+	AND id = sqlc.arg(id);
 
 -- name: UpdateRecipeLastIndexedAt :execrows
 

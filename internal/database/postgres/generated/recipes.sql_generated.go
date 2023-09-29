@@ -17,12 +17,12 @@ UPDATE recipes SET archived_at = NOW() WHERE archived_at IS NULL AND created_by_
 `
 
 type ArchiveRecipeParams struct {
-	UserID   string
-	RecipeID string
+	CreatedByUser string
+	ID            string
 }
 
 func (q *Queries) ArchiveRecipe(ctx context.Context, db DBTX, arg *ArchiveRecipeParams) (int64, error) {
-	result, err := db.ExecContext(ctx, archiveRecipe, arg.UserID, arg.RecipeID)
+	result, err := db.ExecContext(ctx, archiveRecipe, arg.CreatedByUser, arg.ID)
 	if err != nil {
 		return 0, err
 	}
@@ -533,10 +533,8 @@ FROM recipes
 WHERE
 	recipes.archived_at IS NULL
 	AND meals.id = $1
-GROUP BY
-	recipes.id
-ORDER BY
-	recipes.id
+GROUP BY recipes.id
+ORDER BY recipes.id
 `
 
 func (q *Queries) GetRecipeIDsForMeal(ctx context.Context, db DBTX, mealID string) ([]string, error) {
@@ -710,8 +708,7 @@ FROM recipes
 WHERE recipes.archived_at IS NULL
 	AND (
 		recipes.last_indexed_at IS NULL
-		OR recipes.last_indexed_at
-			< NOW() - '24 hours'::INTERVAL
+		OR recipes.last_indexed_at < NOW() - '24 hours'::INTERVAL
 	)
 `
 
@@ -900,7 +897,7 @@ UPDATE recipes SET
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
     AND created_by_user = $13
-    AND id = $14
+	AND id = $14
 `
 
 type UpdateRecipeParams struct {
