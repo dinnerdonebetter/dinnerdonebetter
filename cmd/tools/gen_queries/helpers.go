@@ -49,24 +49,7 @@ func buildRawQuery(builder *builq.Builder) string {
 }
 
 func filterForInsert(columns []string, exceptions ...string) []string {
-	output := []string{}
-
-	for _, column := range columns {
-		if column == archivedAtColumn ||
-			column == createdAtColumn ||
-			column == lastUpdatedAtColumn ||
-			column == lastIndexedAtColumn {
-			continue
-		}
-
-		if slices.Contains(exceptions, column) {
-			continue
-		}
-
-		output = append(output, column)
-	}
-
-	return output
+	return filterFromSlice(columns, append([]string{archivedAtColumn, createdAtColumn, lastUpdatedAtColumn, lastIndexedAtColumn}, exceptions...)...)
 }
 
 func filterForUpdate(columns []string, exceptions ...string) []string {
@@ -282,4 +265,15 @@ func buildTotalCountSelect(tableName string, conditions ...string) string {
 
 func buildILIKEForArgument(argumentName string) string {
 	return fmt.Sprintf(`ILIKE '%%' || sqlc.arg(%s)::text || '%%'`, argumentName)
+}
+
+type joinStatement struct {
+	joinTarget   string
+	targetColumn string
+	onTable      string
+	onColumn     string
+}
+
+func buildJoinStatement(js joinStatement) string {
+	return fmt.Sprintf("JOIN %s ON %s.%s=%s.%s", js.joinTarget, js.onTable, js.onColumn, js.joinTarget, js.targetColumn)
 }

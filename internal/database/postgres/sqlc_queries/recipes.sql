@@ -95,16 +95,16 @@ SELECT
 	recipe_steps.minimum_estimated_time_in_seconds as recipe_step_minimum_estimated_time_in_seconds,
 	recipe_steps.maximum_estimated_time_in_seconds as recipe_step_maximum_estimated_time_in_seconds,
 	recipe_steps.minimum_temperature_in_celsius as recipe_step_minimum_temperature_in_celsius,
-	recipe_steps.notes as recipe_step_notes,
-	recipe_steps.belongs_to_recipe as recipe_step_belongs_to_recipe,
-	recipe_steps.optional as recipe_step_optional,
 	recipe_steps.maximum_temperature_in_celsius as recipe_step_maximum_temperature_in_celsius,
+	recipe_steps.notes as recipe_step_notes,
 	recipe_steps.explicit_instructions as recipe_step_explicit_instructions,
 	recipe_steps.condition_expression as recipe_step_condition_expression,
+	recipe_steps.optional as recipe_step_optional,
 	recipe_steps.start_timer_automatically as recipe_step_start_timer_automatically,
 	recipe_steps.created_at as recipe_step_created_at,
 	recipe_steps.last_updated_at as recipe_step_last_updated_at,
-	recipe_steps.archived_at as recipe_step_archived_at
+	recipe_steps.archived_at as recipe_step_archived_at,
+	recipe_steps.belongs_to_recipe as recipe_step_belongs_to_recipe
 FROM recipes
 	JOIN recipe_steps ON recipes.id=recipe_steps.belongs_to_recipe
 	JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
@@ -162,16 +162,16 @@ SELECT
 	recipe_steps.minimum_estimated_time_in_seconds as recipe_step_minimum_estimated_time_in_seconds,
 	recipe_steps.maximum_estimated_time_in_seconds as recipe_step_maximum_estimated_time_in_seconds,
 	recipe_steps.minimum_temperature_in_celsius as recipe_step_minimum_temperature_in_celsius,
-	recipe_steps.notes as recipe_step_notes,
-	recipe_steps.belongs_to_recipe as recipe_step_belongs_to_recipe,
-	recipe_steps.optional as recipe_step_optional,
 	recipe_steps.maximum_temperature_in_celsius as recipe_step_maximum_temperature_in_celsius,
+	recipe_steps.notes as recipe_step_notes,
 	recipe_steps.explicit_instructions as recipe_step_explicit_instructions,
 	recipe_steps.condition_expression as recipe_step_condition_expression,
+	recipe_steps.optional as recipe_step_optional,
 	recipe_steps.start_timer_automatically as recipe_step_start_timer_automatically,
 	recipe_steps.created_at as recipe_step_created_at,
 	recipe_steps.last_updated_at as recipe_step_last_updated_at,
-	recipe_steps.archived_at as recipe_step_archived_at
+	recipe_steps.archived_at as recipe_step_archived_at,
+	recipe_steps.belongs_to_recipe as recipe_step_belongs_to_recipe
 FROM recipes
 	FULL OUTER JOIN recipe_steps ON recipes.id=recipe_steps.belongs_to_recipe
 	FULL OUTER JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id

@@ -24,10 +24,10 @@ var recipePrepTasksColumns = []string{
 	"storage_type",
 	"minimum_storage_temperature_in_celsius",
 	"maximum_storage_temperature_in_celsius",
-	"belongs_to_recipe",
 	createdAtColumn,
 	lastUpdatedAtColumn,
 	archivedAtColumn,
+	belongsToRecipeColumn,
 }
 
 func buildRecipePrepTasksQueries() []*Query {

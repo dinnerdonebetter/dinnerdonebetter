@@ -164,3 +164,23 @@ func Test_buildFilterCountSelect(T *testing.T) {
 		assert.Equal(t, expected, actual)
 	})
 }
+
+func Test_buildJoinStatement(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		exampleJoinStatement := joinStatement{
+			joinTarget:   "things",
+			targetColumn: "stuff_id",
+			onTable:      "stuff",
+			onColumn:     "id",
+		}
+
+		expected := `JOIN things ON stuff.id=things.stuff_id`
+		actual := buildJoinStatement(exampleJoinStatement)
+
+		assert.Equal(t, expected, actual)
+	})
+}

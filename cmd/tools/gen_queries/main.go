@@ -49,14 +49,15 @@ func main() {
 		"meal_plan_options.sql":                            buildMealPlanOptionsQueries(),
 		"meal_plan_tasks.sql":                              buildMealPlanTasksQueries(),
 		"recipes.sql":                                      buildRecipesQueries(),
+		"recipe_step_ingredients.sql":                      buildRecipeStepIngredientsQueries(),
+		"recipe_step_instruments.sql":                      buildRecipeStepInstrumentsQueries(),
 		//
-		// "recipe_step_ingredients.sql":                      buildRecipeStepIngredientsQueries(),
-		// "recipe_step_instruments.sql":                      buildRecipeStepInstrumentsQueries(),
-		// "recipe_step_products.sql":                         buildRecipeStepProductsQueries(),
-		// "recipe_steps.sql":                                 buildRecipeStepsQueries(),
-		// "recipe_step_vessels.sql":                          buildRecipeStepVesselsQueries(),
-		// "user_ingredient_preferences.sql":                  buildUserIngredientPreferencesQueries(),
-		// "meal_plan_grocery_list_items.sql":                 buildMealPlanGroceryListItemsQueries(),
+		// "recipe_step_products.sql":                      buildRecipeStepProductsQueries(),
+		// "recipe_steps.sql":                              buildRecipeStepsQueries(),
+		//
+		// "recipe_step_vessels.sql":                       buildRecipeStepVesselsQueries(),
+		// "user_ingredient_preferences.sql":               buildUserIngredientPreferencesQueries(),
+		// "meal_plan_grocery_list_items.sql":              buildMealPlanGroceryListItemsQueries(),
 	}
 
 	for filePath, queries := range queryOutput {

@@ -75,11 +75,11 @@ INSERT INTO recipe_step_products (
 	minimum_storage_temperature_in_celsius,
 	maximum_storage_temperature_in_celsius,
 	storage_instructions,
-	belongs_to_recipe_step,
 	is_liquid,
 	is_waste,
 	index,
-	contained_in_vessel_index
+	contained_in_vessel_index,
+	belongs_to_recipe_step
 ) VALUES (
 	$1,
 	$2,
@@ -102,23 +102,23 @@ INSERT INTO recipe_step_products (
 `
 
 type CreateRecipeStepProductParams struct {
-	QuantityNotes                      string
+	StorageInstructions                string
 	Name                               string
 	Type                               RecipeStepProductType
+	QuantityNotes                      string
 	BelongsToRecipeStep                string
 	ID                                 string
-	StorageInstructions                string
+	MeasurementUnit                    sql.NullString
 	MinimumQuantityValue               sql.NullString
+	MaximumQuantityValue               sql.NullString
 	MinimumStorageTemperatureInCelsius sql.NullString
 	MaximumStorageTemperatureInCelsius sql.NullString
-	MaximumQuantityValue               sql.NullString
-	MeasurementUnit                    sql.NullString
 	MaximumStorageDurationInSeconds    sql.NullInt32
 	ContainedInVesselIndex             sql.NullInt32
 	Index                              int32
-	Compostable                        bool
 	IsLiquid                           bool
 	IsWaste                            bool
+	Compostable                        bool
 }
 
 func (q *Queries) CreateRecipeStepProduct(ctx context.Context, db DBTX, arg *CreateRecipeStepProductParams) error {
@@ -135,11 +135,11 @@ func (q *Queries) CreateRecipeStepProduct(ctx context.Context, db DBTX, arg *Cre
 		arg.MinimumStorageTemperatureInCelsius,
 		arg.MaximumStorageTemperatureInCelsius,
 		arg.StorageInstructions,
-		arg.BelongsToRecipeStep,
 		arg.IsLiquid,
 		arg.IsWaste,
 		arg.Index,
 		arg.ContainedInVesselIndex,
+		arg.BelongsToRecipeStep,
 	)
 	return err
 }
@@ -310,10 +310,8 @@ SELECT
 	recipe_step_products.archived_at,
 	recipe_step_products.belongs_to_recipe_step,
 	(
-		SELECT
-			COUNT(recipe_step_products.id)
-		FROM
-			recipe_step_products
+		SELECT COUNT(recipe_step_products.id)
+		FROM recipe_step_products
 		WHERE
 			recipe_step_products.archived_at IS NULL
 			AND recipe_step_products.belongs_to_recipe_step = $1
@@ -345,8 +343,8 @@ WHERE recipe_step_products.archived_at IS NULL
 	AND recipe_steps.belongs_to_recipe = $6
 	AND recipes.archived_at IS NULL
 	AND recipes.id = $6
-	OFFSET $7
-	LIMIT $8
+OFFSET $7
+LIMIT $8
 `
 
 type GetRecipeStepProductsParams struct {

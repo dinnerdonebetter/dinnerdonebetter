@@ -128,10 +128,10 @@ SELECT
 	recipe_prep_tasks.storage_type,
 	recipe_prep_tasks.minimum_storage_temperature_in_celsius,
 	recipe_prep_tasks.maximum_storage_temperature_in_celsius,
-	recipe_prep_tasks.belongs_to_recipe,
 	recipe_prep_tasks.created_at,
 	recipe_prep_tasks.last_updated_at,
 	recipe_prep_tasks.archived_at,
+	recipe_prep_tasks.belongs_to_recipe,
 	recipe_prep_task_steps.id as task_step_id,
 	recipe_prep_task_steps.belongs_to_recipe_step as task_step_belongs_to_recipe_step,
 	recipe_prep_task_steps.belongs_to_recipe_prep_task as task_step_belongs_to_recipe_prep_task,
@@ -144,8 +144,8 @@ WHERE recipe_prep_tasks.archived_at IS NULL
 
 type GetRecipePrepTaskRow struct {
 	CreatedAt                              time.Time
-	ArchivedAt                             sql.NullTime
 	LastUpdatedAt                          sql.NullTime
+	ArchivedAt                             sql.NullTime
 	Name                                   string
 	Description                            string
 	Notes                                  string
@@ -185,10 +185,10 @@ func (q *Queries) GetRecipePrepTask(ctx context.Context, db DBTX, recipePrepTask
 			&i.StorageType,
 			&i.MinimumStorageTemperatureInCelsius,
 			&i.MaximumStorageTemperatureInCelsius,
-			&i.BelongsToRecipe,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
+			&i.BelongsToRecipe,
 			&i.TaskStepID,
 			&i.TaskStepBelongsToRecipeStep,
 			&i.TaskStepBelongsToRecipePrepTask,
@@ -221,10 +221,10 @@ SELECT
 	recipe_prep_tasks.storage_type,
 	recipe_prep_tasks.minimum_storage_temperature_in_celsius,
 	recipe_prep_tasks.maximum_storage_temperature_in_celsius,
-	recipe_prep_tasks.belongs_to_recipe,
 	recipe_prep_tasks.created_at,
 	recipe_prep_tasks.last_updated_at,
 	recipe_prep_tasks.archived_at,
+	recipe_prep_tasks.belongs_to_recipe,
 	recipe_prep_task_steps.id as task_step_id,
 	recipe_prep_task_steps.belongs_to_recipe_step as task_step_belongs_to_recipe_step,
 	recipe_prep_task_steps.belongs_to_recipe_prep_task as task_step_belongs_to_recipe_prep_task,
@@ -241,8 +241,8 @@ WHERE recipe_prep_tasks.archived_at IS NULL
 
 type ListAllRecipePrepTasksByRecipeRow struct {
 	CreatedAt                              time.Time
-	ArchivedAt                             sql.NullTime
 	LastUpdatedAt                          sql.NullTime
+	ArchivedAt                             sql.NullTime
 	Name                                   string
 	Description                            string
 	Notes                                  string
@@ -282,10 +282,10 @@ func (q *Queries) ListAllRecipePrepTasksByRecipe(ctx context.Context, db DBTX, r
 			&i.StorageType,
 			&i.MinimumStorageTemperatureInCelsius,
 			&i.MaximumStorageTemperatureInCelsius,
-			&i.BelongsToRecipe,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
+			&i.BelongsToRecipe,
 			&i.TaskStepID,
 			&i.TaskStepBelongsToRecipeStep,
 			&i.TaskStepBelongsToRecipePrepTask,

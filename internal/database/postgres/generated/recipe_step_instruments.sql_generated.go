@@ -70,9 +70,9 @@ INSERT INTO recipe_step_instruments (
 	notes,
 	preference_rank,
 	optional,
-	option_index,
 	minimum_quantity,
 	maximum_quantity,
+	option_index,
 	belongs_to_recipe_step
 ) VALUES (
 	$1,
@@ -98,8 +98,8 @@ type CreateRecipeStepInstrumentParams struct {
 	RecipeStepProductID sql.NullString
 	MaximumQuantity     sql.NullInt32
 	PreferenceRank      int32
-	OptionIndex         int32
 	MinimumQuantity     int32
+	OptionIndex         int32
 	Optional            bool
 }
 
@@ -112,9 +112,9 @@ func (q *Queries) CreateRecipeStepInstrument(ctx context.Context, db DBTX, arg *
 		arg.Notes,
 		arg.PreferenceRank,
 		arg.Optional,
-		arg.OptionIndex,
 		arg.MinimumQuantity,
 		arg.MaximumQuantity,
+		arg.OptionIndex,
 		arg.BelongsToRecipeStep,
 	)
 	return err
@@ -126,13 +126,14 @@ SELECT
 	recipe_step_instruments.id,
 	valid_instruments.id as valid_instrument_id,
 	valid_instruments.name as valid_instrument_name,
-	valid_instruments.plural_name as valid_instrument_plural_name,
 	valid_instruments.description as valid_instrument_description,
 	valid_instruments.icon_path as valid_instrument_icon_path,
+	valid_instruments.plural_name as valid_instrument_plural_name,
 	valid_instruments.usable_for_storage as valid_instrument_usable_for_storage,
+	valid_instruments.slug as valid_instrument_slug,
 	valid_instruments.display_in_summary_lists as valid_instrument_display_in_summary_lists,
 	valid_instruments.include_in_generated_instructions as valid_instrument_include_in_generated_instructions,
-	valid_instruments.slug as valid_instrument_slug,
+	valid_instruments.last_indexed_at as valid_instrument_last_indexed_at,
 	valid_instruments.created_at as valid_instrument_created_at,
 	valid_instruments.last_updated_at as valid_instrument_last_updated_at,
 	valid_instruments.archived_at as valid_instrument_archived_at,
@@ -170,29 +171,30 @@ type GetRecipeStepInstrumentParams struct {
 
 type GetRecipeStepInstrumentRow struct {
 	CreatedAt                                     time.Time
-	ValidInstrumentArchivedAt                     sql.NullTime
 	ArchivedAt                                    sql.NullTime
 	LastUpdatedAt                                 sql.NullTime
+	ValidInstrumentArchivedAt                     sql.NullTime
 	ValidInstrumentLastUpdatedAt                  sql.NullTime
 	ValidInstrumentCreatedAt                      sql.NullTime
+	ValidInstrumentLastIndexedAt                  sql.NullTime
 	Name                                          string
 	BelongsToRecipeStep                           string
-	ID                                            string
 	Notes                                         string
+	ID                                            string
+	RecipeStepProductID                           sql.NullString
+	ValidInstrumentIconPath                       sql.NullString
 	ValidInstrumentDescription                    sql.NullString
 	ValidInstrumentPluralName                     sql.NullString
-	ValidInstrumentIconPath                       sql.NullString
-	ValidInstrumentSlug                           sql.NullString
-	RecipeStepProductID                           sql.NullString
 	ValidInstrumentName                           sql.NullString
+	ValidInstrumentSlug                           sql.NullString
 	ValidInstrumentID                             sql.NullString
 	MaximumQuantity                               sql.NullInt32
+	PreferenceRank                                int32
 	MinimumQuantity                               int32
 	OptionIndex                                   int32
-	PreferenceRank                                int32
+	ValidInstrumentUsableForStorage               sql.NullBool
 	ValidInstrumentIncludeInGeneratedInstructions sql.NullBool
 	ValidInstrumentDisplayInSummaryLists          sql.NullBool
-	ValidInstrumentUsableForStorage               sql.NullBool
 	Optional                                      bool
 }
 
@@ -203,13 +205,14 @@ func (q *Queries) GetRecipeStepInstrument(ctx context.Context, db DBTX, arg *Get
 		&i.ID,
 		&i.ValidInstrumentID,
 		&i.ValidInstrumentName,
-		&i.ValidInstrumentPluralName,
 		&i.ValidInstrumentDescription,
 		&i.ValidInstrumentIconPath,
+		&i.ValidInstrumentPluralName,
 		&i.ValidInstrumentUsableForStorage,
+		&i.ValidInstrumentSlug,
 		&i.ValidInstrumentDisplayInSummaryLists,
 		&i.ValidInstrumentIncludeInGeneratedInstructions,
-		&i.ValidInstrumentSlug,
+		&i.ValidInstrumentLastIndexedAt,
 		&i.ValidInstrumentCreatedAt,
 		&i.ValidInstrumentLastUpdatedAt,
 		&i.ValidInstrumentArchivedAt,
@@ -235,13 +238,14 @@ SELECT
 	recipe_step_instruments.id,
 	valid_instruments.id as valid_instrument_id,
 	valid_instruments.name as valid_instrument_name,
-	valid_instruments.plural_name as valid_instrument_plural_name,
 	valid_instruments.description as valid_instrument_description,
 	valid_instruments.icon_path as valid_instrument_icon_path,
+	valid_instruments.plural_name as valid_instrument_plural_name,
 	valid_instruments.usable_for_storage as valid_instrument_usable_for_storage,
+	valid_instruments.slug as valid_instrument_slug,
 	valid_instruments.display_in_summary_lists as valid_instrument_display_in_summary_lists,
 	valid_instruments.include_in_generated_instructions as valid_instrument_include_in_generated_instructions,
-	valid_instruments.slug as valid_instrument_slug,
+	valid_instruments.last_indexed_at as valid_instrument_last_indexed_at,
 	valid_instruments.created_at as valid_instrument_created_at,
 	valid_instruments.last_updated_at as valid_instrument_last_updated_at,
 	valid_instruments.archived_at as valid_instrument_archived_at,
@@ -258,23 +262,27 @@ SELECT
 	recipe_step_instruments.archived_at,
 	recipe_step_instruments.belongs_to_recipe_step,
 	(
-		SELECT
-			COUNT(recipe_step_instruments.id)
-		FROM
-			recipe_step_instruments
+		SELECT COUNT(recipe_step_instruments.id)
+		FROM recipe_step_instruments
 		WHERE
 			recipe_step_instruments.archived_at IS NULL
 			AND recipe_step_instruments.belongs_to_recipe_step = $1
-			AND recipe_step_instruments.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
-			AND recipe_step_instruments.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
-			AND (recipe_step_instruments.last_updated_at IS NULL OR recipe_step_instruments.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years')))
-			AND (recipe_step_instruments.last_updated_at IS NULL OR recipe_step_instruments.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years')))
-	) as filtered_count,
+			AND recipe_step_instruments.created_at > COALESCE($2, (SELECT NOW() - '999 years'::INTERVAL))
+			AND recipe_step_instruments.created_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+			AND (
+				recipe_step_instruments.last_updated_at IS NULL
+				OR recipe_step_instruments.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+			)
+			AND (
+				recipe_step_instruments.last_updated_at IS NULL
+				OR recipe_step_instruments.last_updated_at < COALESCE($5, (SELECT NOW() + '999 years'::INTERVAL))
+			)
+	) AS filtered_count,
 	(
 		SELECT COUNT(recipe_step_instruments.id)
 		FROM recipe_step_instruments
 		WHERE recipe_step_instruments.archived_at IS NULL
-	) as total_count
+	) AS total_count
 FROM recipe_step_instruments
 	LEFT JOIN valid_instruments ON recipe_step_instruments.instrument_id=valid_instruments.id
 	JOIN recipe_steps ON recipe_step_instruments.belongs_to_recipe_step=recipe_steps.id
@@ -282,17 +290,23 @@ FROM recipe_step_instruments
 WHERE
 	recipe_step_instruments.archived_at IS NULL
 	AND recipe_step_instruments.belongs_to_recipe_step = $1
-	AND recipe_step_instruments.created_at > COALESCE($2, (SELECT NOW() - interval '999 years'))
-	AND recipe_step_instruments.created_at < COALESCE($3, (SELECT NOW() + interval '999 years'))
-	AND (recipe_step_instruments.last_updated_at IS NULL OR recipe_step_instruments.last_updated_at > COALESCE($4, (SELECT NOW() - interval '999 years')))
-	AND (recipe_step_instruments.last_updated_at IS NULL OR recipe_step_instruments.last_updated_at < COALESCE($5, (SELECT NOW() + interval '999 years')))
 	AND recipe_steps.archived_at IS NULL
 	AND recipe_steps.belongs_to_recipe = $6
 	AND recipe_steps.id = $1
 	AND recipes.archived_at IS NULL
 	AND recipes.id = $6
-OFFSET $7
+	AND recipe_step_instruments.created_at > COALESCE($2, (SELECT NOW() - '999 years'::INTERVAL))
+	AND recipe_step_instruments.created_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		recipe_step_instruments.last_updated_at IS NULL
+		OR recipe_step_instruments.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		recipe_step_instruments.last_updated_at IS NULL
+		OR recipe_step_instruments.last_updated_at < COALESCE($5, (SELECT NOW() + '999 years'::INTERVAL))
+	)
 LIMIT $8
+OFFSET $7
 `
 
 type GetRecipeStepInstrumentsParams struct {
@@ -309,30 +323,31 @@ type GetRecipeStepInstrumentsParams struct {
 type GetRecipeStepInstrumentsRow struct {
 	CreatedAt                                     time.Time
 	ValidInstrumentCreatedAt                      sql.NullTime
-	LastUpdatedAt                                 sql.NullTime
 	ArchivedAt                                    sql.NullTime
+	LastUpdatedAt                                 sql.NullTime
 	ValidInstrumentArchivedAt                     sql.NullTime
 	ValidInstrumentLastUpdatedAt                  sql.NullTime
+	ValidInstrumentLastIndexedAt                  sql.NullTime
+	BelongsToRecipeStep                           string
 	Notes                                         string
 	Name                                          string
-	BelongsToRecipeStep                           string
 	ID                                            string
-	ValidInstrumentName                           sql.NullString
-	ValidInstrumentIconPath                       sql.NullString
-	ValidInstrumentDescription                    sql.NullString
 	RecipeStepProductID                           sql.NullString
-	ValidInstrumentPluralName                     sql.NullString
+	ValidInstrumentName                           sql.NullString
 	ValidInstrumentID                             sql.NullString
 	ValidInstrumentSlug                           sql.NullString
-	TotalCount                                    int64
+	ValidInstrumentDescription                    sql.NullString
+	ValidInstrumentPluralName                     sql.NullString
+	ValidInstrumentIconPath                       sql.NullString
 	FilteredCount                                 int64
+	TotalCount                                    int64
 	MaximumQuantity                               sql.NullInt32
 	MinimumQuantity                               int32
 	OptionIndex                                   int32
 	PreferenceRank                                int32
+	ValidInstrumentUsableForStorage               sql.NullBool
 	ValidInstrumentIncludeInGeneratedInstructions sql.NullBool
 	ValidInstrumentDisplayInSummaryLists          sql.NullBool
-	ValidInstrumentUsableForStorage               sql.NullBool
 	Optional                                      bool
 }
 
@@ -358,13 +373,14 @@ func (q *Queries) GetRecipeStepInstruments(ctx context.Context, db DBTX, arg *Ge
 			&i.ID,
 			&i.ValidInstrumentID,
 			&i.ValidInstrumentName,
-			&i.ValidInstrumentPluralName,
 			&i.ValidInstrumentDescription,
 			&i.ValidInstrumentIconPath,
+			&i.ValidInstrumentPluralName,
 			&i.ValidInstrumentUsableForStorage,
+			&i.ValidInstrumentSlug,
 			&i.ValidInstrumentDisplayInSummaryLists,
 			&i.ValidInstrumentIncludeInGeneratedInstructions,
-			&i.ValidInstrumentSlug,
+			&i.ValidInstrumentLastIndexedAt,
 			&i.ValidInstrumentCreatedAt,
 			&i.ValidInstrumentLastUpdatedAt,
 			&i.ValidInstrumentArchivedAt,
@@ -402,13 +418,14 @@ SELECT
 	recipe_step_instruments.id,
 	valid_instruments.id as valid_instrument_id,
 	valid_instruments.name as valid_instrument_name,
-	valid_instruments.plural_name as valid_instrument_plural_name,
 	valid_instruments.description as valid_instrument_description,
 	valid_instruments.icon_path as valid_instrument_icon_path,
+	valid_instruments.plural_name as valid_instrument_plural_name,
 	valid_instruments.usable_for_storage as valid_instrument_usable_for_storage,
+	valid_instruments.slug as valid_instrument_slug,
 	valid_instruments.display_in_summary_lists as valid_instrument_display_in_summary_lists,
 	valid_instruments.include_in_generated_instructions as valid_instrument_include_in_generated_instructions,
-	valid_instruments.slug as valid_instrument_slug,
+	valid_instruments.last_indexed_at as valid_instrument_last_indexed_at,
 	valid_instruments.created_at as valid_instrument_created_at,
 	valid_instruments.last_updated_at as valid_instrument_last_updated_at,
 	valid_instruments.archived_at as valid_instrument_archived_at,
@@ -437,29 +454,30 @@ WHERE recipe_step_instruments.archived_at IS NULL
 
 type GetRecipeStepInstrumentsForRecipeRow struct {
 	CreatedAt                                     time.Time
-	ValidInstrumentArchivedAt                     sql.NullTime
 	ArchivedAt                                    sql.NullTime
 	LastUpdatedAt                                 sql.NullTime
+	ValidInstrumentArchivedAt                     sql.NullTime
 	ValidInstrumentLastUpdatedAt                  sql.NullTime
 	ValidInstrumentCreatedAt                      sql.NullTime
+	ValidInstrumentLastIndexedAt                  sql.NullTime
 	Name                                          string
 	BelongsToRecipeStep                           string
-	ID                                            string
 	Notes                                         string
+	ID                                            string
+	RecipeStepProductID                           sql.NullString
+	ValidInstrumentIconPath                       sql.NullString
 	ValidInstrumentDescription                    sql.NullString
 	ValidInstrumentPluralName                     sql.NullString
-	ValidInstrumentIconPath                       sql.NullString
-	ValidInstrumentSlug                           sql.NullString
-	RecipeStepProductID                           sql.NullString
 	ValidInstrumentName                           sql.NullString
+	ValidInstrumentSlug                           sql.NullString
 	ValidInstrumentID                             sql.NullString
 	MaximumQuantity                               sql.NullInt32
+	PreferenceRank                                int32
 	MinimumQuantity                               int32
 	OptionIndex                                   int32
-	PreferenceRank                                int32
+	ValidInstrumentUsableForStorage               sql.NullBool
 	ValidInstrumentIncludeInGeneratedInstructions sql.NullBool
 	ValidInstrumentDisplayInSummaryLists          sql.NullBool
-	ValidInstrumentUsableForStorage               sql.NullBool
 	Optional                                      bool
 }
 
@@ -476,13 +494,14 @@ func (q *Queries) GetRecipeStepInstrumentsForRecipe(ctx context.Context, db DBTX
 			&i.ID,
 			&i.ValidInstrumentID,
 			&i.ValidInstrumentName,
-			&i.ValidInstrumentPluralName,
 			&i.ValidInstrumentDescription,
 			&i.ValidInstrumentIconPath,
+			&i.ValidInstrumentPluralName,
 			&i.ValidInstrumentUsableForStorage,
+			&i.ValidInstrumentSlug,
 			&i.ValidInstrumentDisplayInSummaryLists,
 			&i.ValidInstrumentIncludeInGeneratedInstructions,
-			&i.ValidInstrumentSlug,
+			&i.ValidInstrumentLastIndexedAt,
 			&i.ValidInstrumentCreatedAt,
 			&i.ValidInstrumentLastUpdatedAt,
 			&i.ValidInstrumentArchivedAt,
@@ -521,9 +540,9 @@ UPDATE recipe_step_instruments SET
 	notes = $4,
 	preference_rank = $5,
 	optional = $6,
-	option_index = $7,
-	minimum_quantity = $8,
-	maximum_quantity = $9,
+	minimum_quantity = $7,
+	maximum_quantity = $8,
+	option_index = $9,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND belongs_to_recipe_step = $10
@@ -539,8 +558,8 @@ type UpdateRecipeStepInstrumentParams struct {
 	RecipeStepProductID sql.NullString
 	MaximumQuantity     sql.NullInt32
 	PreferenceRank      int32
-	OptionIndex         int32
 	MinimumQuantity     int32
+	OptionIndex         int32
 	Optional            bool
 }
 
@@ -552,9 +571,9 @@ func (q *Queries) UpdateRecipeStepInstrument(ctx context.Context, db DBTX, arg *
 		arg.Notes,
 		arg.PreferenceRank,
 		arg.Optional,
-		arg.OptionIndex,
 		arg.MinimumQuantity,
 		arg.MaximumQuantity,
+		arg.OptionIndex,
 		arg.BelongsToRecipeStep,
 		arg.ID,
 	)

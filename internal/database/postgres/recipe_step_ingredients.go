@@ -527,8 +527,8 @@ func (q *Querier) ArchiveRecipeStepIngredient(ctx context.Context, recipeStepID,
 	tracing.AttachRecipeStepIngredientIDToSpan(span, recipeStepIngredientID)
 
 	if _, err := q.generatedQuerier.ArchiveRecipeStepIngredient(ctx, q.db, &generated.ArchiveRecipeStepIngredientParams{
-		RecipeStepID: recipeStepID,
-		ID:           recipeStepIngredientID,
+		BelongsToRecipeStep: recipeStepID,
+		ID:                  recipeStepIngredientID,
 	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step ingredient")
 	}

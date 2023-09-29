@@ -168,16 +168,16 @@ SELECT
 	recipe_steps.minimum_estimated_time_in_seconds as recipe_step_minimum_estimated_time_in_seconds,
 	recipe_steps.maximum_estimated_time_in_seconds as recipe_step_maximum_estimated_time_in_seconds,
 	recipe_steps.minimum_temperature_in_celsius as recipe_step_minimum_temperature_in_celsius,
-	recipe_steps.notes as recipe_step_notes,
-	recipe_steps.belongs_to_recipe as recipe_step_belongs_to_recipe,
-	recipe_steps.optional as recipe_step_optional,
 	recipe_steps.maximum_temperature_in_celsius as recipe_step_maximum_temperature_in_celsius,
+	recipe_steps.notes as recipe_step_notes,
 	recipe_steps.explicit_instructions as recipe_step_explicit_instructions,
 	recipe_steps.condition_expression as recipe_step_condition_expression,
+	recipe_steps.optional as recipe_step_optional,
 	recipe_steps.start_timer_automatically as recipe_step_start_timer_automatically,
 	recipe_steps.created_at as recipe_step_created_at,
 	recipe_steps.last_updated_at as recipe_step_last_updated_at,
-	recipe_steps.archived_at as recipe_step_archived_at
+	recipe_steps.archived_at as recipe_step_archived_at,
+	recipe_steps.belongs_to_recipe as recipe_step_belongs_to_recipe
 FROM recipes
 	JOIN recipe_steps ON recipes.id=recipe_steps.belongs_to_recipe
 	JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
@@ -199,30 +199,30 @@ type GetRecipeByIDRow struct {
 	ArchivedAt                                       sql.NullTime
 	LastUpdatedAt                                    sql.NullTime
 	LastValidatedAt                                  sql.NullTime
-	RecipeStepNotes                                  string
+	ID                                               string
 	PortionName                                      string
-	MinEstimatedPortions                             string
+	RecipeStepBelongsToRecipe                        string
 	Source                                           string
-	Name                                             string
+	MinEstimatedPortions                             string
 	PluralPortionName                                string
 	CreatedByUser                                    string
 	RecipeStepID                                     string
-	RecipeStepExplicitInstructions                   string
+	Name                                             string
 	RecipeStepPreparationID                          string
 	RecipeStepPreparationName                        string
 	RecipeStepPreparationDescription                 string
 	RecipeStepPreparationIconPath                    string
-	RecipeStepBelongsToRecipe                        string
-	YieldsComponentType                              ComponentType
+	RecipeStepConditionExpression                    string
+	RecipeStepExplicitInstructions                   string
 	RecipeStepPreparationPastTense                   string
 	RecipeStepPreparationSlug                        string
-	ID                                               string
-	RecipeStepConditionExpression                    string
+	RecipeStepNotes                                  string
+	YieldsComponentType                              ComponentType
 	Description                                      string
 	Slug                                             string
 	RecipeStepMinimumTemperatureInCelsius            sql.NullString
-	InspiredByRecipeID                               sql.NullString
 	RecipeStepMaximumTemperatureInCelsius            sql.NullString
+	InspiredByRecipeID                               sql.NullString
 	MaxEstimatedPortions                             sql.NullString
 	RecipeStepMaximumEstimatedTimeInSeconds          sql.NullInt64
 	RecipeStepMinimumEstimatedTimeInSeconds          sql.NullInt64
@@ -234,16 +234,16 @@ type GetRecipeByIDRow struct {
 	RecipeStepPreparationMinimumVesselCount          int32
 	RecipeStepIndex                                  int32
 	RecipeStepPreparationOnlyForVessels              bool
+	RecipeStepStartTimerAutomatically                bool
+	RecipeStepPreparationConditionExpressionRequired bool
 	RecipeStepPreparationRestrictToIngredients       bool
 	RecipeStepPreparationYieldsNothing               bool
 	RecipeStepOptional                               bool
-	RecipeStepPreparationConditionExpressionRequired bool
 	RecipeStepPreparationConsumesVessel              bool
 	RecipeStepPreparationTemperatureRequired         bool
-	RecipeStepStartTimerAutomatically                bool
 	SealOfApproval                                   bool
-	EligibleForMeals                                 bool
 	RecipeStepPreparationTimeEstimateRequired        bool
+	EligibleForMeals                                 bool
 }
 
 func (q *Queries) GetRecipeByID(ctx context.Context, db DBTX, recipeID string) ([]*GetRecipeByIDRow, error) {
@@ -303,16 +303,16 @@ func (q *Queries) GetRecipeByID(ctx context.Context, db DBTX, recipeID string) (
 			&i.RecipeStepMinimumEstimatedTimeInSeconds,
 			&i.RecipeStepMaximumEstimatedTimeInSeconds,
 			&i.RecipeStepMinimumTemperatureInCelsius,
-			&i.RecipeStepNotes,
-			&i.RecipeStepBelongsToRecipe,
-			&i.RecipeStepOptional,
 			&i.RecipeStepMaximumTemperatureInCelsius,
+			&i.RecipeStepNotes,
 			&i.RecipeStepExplicitInstructions,
 			&i.RecipeStepConditionExpression,
+			&i.RecipeStepOptional,
 			&i.RecipeStepStartTimerAutomatically,
 			&i.RecipeStepCreatedAt,
 			&i.RecipeStepLastUpdatedAt,
 			&i.RecipeStepArchivedAt,
+			&i.RecipeStepBelongsToRecipe,
 		); err != nil {
 			return nil, err
 		}
@@ -377,16 +377,16 @@ SELECT
 	recipe_steps.minimum_estimated_time_in_seconds as recipe_step_minimum_estimated_time_in_seconds,
 	recipe_steps.maximum_estimated_time_in_seconds as recipe_step_maximum_estimated_time_in_seconds,
 	recipe_steps.minimum_temperature_in_celsius as recipe_step_minimum_temperature_in_celsius,
-	recipe_steps.notes as recipe_step_notes,
-	recipe_steps.belongs_to_recipe as recipe_step_belongs_to_recipe,
-	recipe_steps.optional as recipe_step_optional,
 	recipe_steps.maximum_temperature_in_celsius as recipe_step_maximum_temperature_in_celsius,
+	recipe_steps.notes as recipe_step_notes,
 	recipe_steps.explicit_instructions as recipe_step_explicit_instructions,
 	recipe_steps.condition_expression as recipe_step_condition_expression,
+	recipe_steps.optional as recipe_step_optional,
 	recipe_steps.start_timer_automatically as recipe_step_start_timer_automatically,
 	recipe_steps.created_at as recipe_step_created_at,
 	recipe_steps.last_updated_at as recipe_step_last_updated_at,
-	recipe_steps.archived_at as recipe_step_archived_at
+	recipe_steps.archived_at as recipe_step_archived_at,
+	recipe_steps.belongs_to_recipe as recipe_step_belongs_to_recipe
 FROM recipes
 	FULL OUTER JOIN recipe_steps ON recipes.id=recipe_steps.belongs_to_recipe
 	FULL OUTER JOIN valid_preparations ON recipe_steps.preparation_id=valid_preparations.id
@@ -416,47 +416,47 @@ type GetRecipeByIDAndAuthorIDRow struct {
 	LastValidatedAt                                  sql.NullTime
 	MinEstimatedPortions                             sql.NullString
 	RecipeStepMinimumTemperatureInCelsius            sql.NullString
+	RecipeStepBelongsToRecipe                        sql.NullString
 	Slug                                             sql.NullString
-	Source                                           sql.NullString
 	PluralPortionName                                sql.NullString
 	PortionName                                      sql.NullString
 	CreatedByUser                                    sql.NullString
+	Source                                           sql.NullString
 	Description                                      sql.NullString
-	RecipeStepConditionExpression                    sql.NullString
 	RecipeStepPreparationID                          sql.NullString
 	RecipeStepPreparationName                        sql.NullString
 	RecipeStepPreparationDescription                 sql.NullString
 	RecipeStepPreparationIconPath                    sql.NullString
+	RecipeStepConditionExpression                    sql.NullString
 	RecipeStepExplicitInstructions                   sql.NullString
-	RecipeStepMaximumTemperatureInCelsius            sql.NullString
 	RecipeStepPreparationPastTense                   sql.NullString
 	RecipeStepPreparationSlug                        sql.NullString
 	Name                                             sql.NullString
 	RecipeStepID                                     sql.NullString
-	RecipeStepBelongsToRecipe                        sql.NullString
 	RecipeStepNotes                                  sql.NullString
+	RecipeStepMaximumTemperatureInCelsius            sql.NullString
 	YieldsComponentType                              NullComponentType
 	InspiredByRecipeID                               sql.NullString
 	ID                                               sql.NullString
 	MaxEstimatedPortions                             sql.NullString
 	RecipeStepMinimumEstimatedTimeInSeconds          sql.NullInt64
 	RecipeStepMaximumEstimatedTimeInSeconds          sql.NullInt64
+	RecipeStepPreparationMaximumInstrumentCount      sql.NullInt32
+	RecipeStepPreparationMinimumVesselCount          sql.NullInt32
+	RecipeStepPreparationMaximumVesselCount          sql.NullInt32
+	RecipeStepPreparationMaximumIngredientCount      sql.NullInt32
+	RecipeStepPreparationMinimumIngredientCount      sql.NullInt32
 	RecipeStepIndex                                  sql.NullInt32
 	RecipeStepPreparationMinimumInstrumentCount      sql.NullInt32
-	RecipeStepPreparationMinimumIngredientCount      sql.NullInt32
-	RecipeStepPreparationMaximumIngredientCount      sql.NullInt32
-	RecipeStepPreparationMaximumInstrumentCount      sql.NullInt32
-	RecipeStepPreparationMaximumVesselCount          sql.NullInt32
-	RecipeStepPreparationMinimumVesselCount          sql.NullInt32
+	RecipeStepPreparationConditionExpressionRequired sql.NullBool
 	RecipeStepPreparationTemperatureRequired         sql.NullBool
 	RecipeStepPreparationTimeEstimateRequired        sql.NullBool
-	RecipeStepPreparationConsumesVessel              sql.NullBool
-	RecipeStepOptional                               sql.NullBool
 	RecipeStepPreparationRestrictToIngredients       sql.NullBool
 	RecipeStepPreparationYieldsNothing               sql.NullBool
-	RecipeStepPreparationOnlyForVessels              sql.NullBool
+	RecipeStepOptional                               sql.NullBool
 	RecipeStepStartTimerAutomatically                sql.NullBool
-	RecipeStepPreparationConditionExpressionRequired sql.NullBool
+	RecipeStepPreparationOnlyForVessels              sql.NullBool
+	RecipeStepPreparationConsumesVessel              sql.NullBool
 	SealOfApproval                                   sql.NullBool
 	EligibleForMeals                                 sql.NullBool
 }
@@ -518,16 +518,16 @@ func (q *Queries) GetRecipeByIDAndAuthorID(ctx context.Context, db DBTX, arg *Ge
 			&i.RecipeStepMinimumEstimatedTimeInSeconds,
 			&i.RecipeStepMaximumEstimatedTimeInSeconds,
 			&i.RecipeStepMinimumTemperatureInCelsius,
-			&i.RecipeStepNotes,
-			&i.RecipeStepBelongsToRecipe,
-			&i.RecipeStepOptional,
 			&i.RecipeStepMaximumTemperatureInCelsius,
+			&i.RecipeStepNotes,
 			&i.RecipeStepExplicitInstructions,
 			&i.RecipeStepConditionExpression,
+			&i.RecipeStepOptional,
 			&i.RecipeStepStartTimerAutomatically,
 			&i.RecipeStepCreatedAt,
 			&i.RecipeStepLastUpdatedAt,
 			&i.RecipeStepArchivedAt,
+			&i.RecipeStepBelongsToRecipe,
 		); err != nil {
 			return nil, err
 		}

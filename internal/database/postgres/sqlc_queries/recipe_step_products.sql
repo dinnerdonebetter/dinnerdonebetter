@@ -17,11 +17,11 @@ INSERT INTO recipe_step_products (
 	minimum_storage_temperature_in_celsius,
 	maximum_storage_temperature_in_celsius,
 	storage_instructions,
-	belongs_to_recipe_step,
 	is_liquid,
 	is_waste,
 	index,
-	contained_in_vessel_index
+	contained_in_vessel_index,
+	belongs_to_recipe_step
 ) VALUES (
 	sqlc.arg(id),
 	sqlc.arg(name),
@@ -35,11 +35,11 @@ INSERT INTO recipe_step_products (
 	sqlc.arg(minimum_storage_temperature_in_celsius),
 	sqlc.arg(maximum_storage_temperature_in_celsius),
 	sqlc.arg(storage_instructions),
-	sqlc.arg(belongs_to_recipe_step),
 	sqlc.arg(is_liquid),
 	sqlc.arg(is_waste),
 	sqlc.arg(index),
-	sqlc.arg(contained_in_vessel_index)
+	sqlc.arg(contained_in_vessel_index),
+	sqlc.arg(belongs_to_recipe_step)
 );
 
 -- name: CheckRecipeStepProductExistence :one
@@ -140,10 +140,8 @@ SELECT
 	recipe_step_products.archived_at,
 	recipe_step_products.belongs_to_recipe_step,
 	(
-		SELECT
-			COUNT(recipe_step_products.id)
-		FROM
-			recipe_step_products
+		SELECT COUNT(recipe_step_products.id)
+		FROM recipe_step_products
 		WHERE
 			recipe_step_products.archived_at IS NULL
 			AND recipe_step_products.belongs_to_recipe_step = sqlc.arg(recipe_step_id)
@@ -175,8 +173,8 @@ WHERE recipe_step_products.archived_at IS NULL
 	AND recipe_steps.belongs_to_recipe = sqlc.arg(recipe_id)
 	AND recipes.archived_at IS NULL
 	AND recipes.id = sqlc.arg(recipe_id)
-	OFFSET sqlc.narg(query_offset)
-	LIMIT sqlc.narg(query_limit);
+OFFSET sqlc.narg(query_offset)
+LIMIT sqlc.narg(query_limit);
 
 -- name: GetRecipeStepProduct :one
 

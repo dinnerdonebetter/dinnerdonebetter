@@ -444,8 +444,8 @@ func (q *Querier) ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID 
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
 	if _, err := q.generatedQuerier.ArchiveRecipeStep(ctx, q.db, &generated.ArchiveRecipeStepParams{
-		RecipeID:     recipeID,
-		RecipeStepID: recipeStepID,
+		BelongsToRecipe: recipeID,
+		ID:              recipeStepID,
 	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step")
 	}

@@ -135,10 +135,10 @@ SELECT
 	recipe_prep_tasks.storage_type as prep_task_storage_type,
 	recipe_prep_tasks.minimum_storage_temperature_in_celsius as prep_task_minimum_storage_temperature_in_celsius,
 	recipe_prep_tasks.maximum_storage_temperature_in_celsius as prep_task_maximum_storage_temperature_in_celsius,
-	recipe_prep_tasks.belongs_to_recipe as prep_task_belongs_to_recipe,
 	recipe_prep_tasks.created_at as prep_task_created_at,
 	recipe_prep_tasks.last_updated_at as prep_task_last_updated_at,
 	recipe_prep_tasks.archived_at as prep_task_archived_at,
+	recipe_prep_tasks.belongs_to_recipe as prep_task_belongs_to_recipe,
 	recipe_prep_task_steps.id as prep_task_step_id,
 	recipe_prep_task_steps.belongs_to_recipe_step as prep_task_step_belongs_to_recipe_step,
 	recipe_prep_task_steps.belongs_to_recipe_prep_task as prep_task_step_belongs_to_recipe_prep_task,
@@ -193,10 +193,10 @@ type GetMealPlanTaskRow struct {
 	StatusExplanation                              string
 	Status                                         PrepStepStatus
 	ID                                             string
-	PrepTaskBelongsToRecipe                        string
 	MealPlanOptionMealScale                        string
 	PrepTaskStepBelongsToRecipeStep                string
 	MealPlanOptionID                               string
+	PrepTaskBelongsToRecipe                        string
 	MealPlanOptionAssignedDishwasher               sql.NullString
 	AssignedToUser                                 sql.NullString
 	PrepTaskMaximumStorageTemperatureInCelsius     sql.NullString
@@ -240,10 +240,10 @@ func (q *Queries) GetMealPlanTask(ctx context.Context, db DBTX, mealPlanTaskID s
 		&i.PrepTaskStorageType,
 		&i.PrepTaskMinimumStorageTemperatureInCelsius,
 		&i.PrepTaskMaximumStorageTemperatureInCelsius,
-		&i.PrepTaskBelongsToRecipe,
 		&i.PrepTaskCreatedAt,
 		&i.PrepTaskLastUpdatedAt,
 		&i.PrepTaskArchivedAt,
+		&i.PrepTaskBelongsToRecipe,
 		&i.PrepTaskStepID,
 		&i.PrepTaskStepBelongsToRecipeStep,
 		&i.PrepTaskStepBelongsToRecipePrepTask,
@@ -288,10 +288,10 @@ SELECT
 	recipe_prep_tasks.storage_type as prep_task_storage_type,
 	recipe_prep_tasks.minimum_storage_temperature_in_celsius as prep_task_minimum_storage_temperature_in_celsius,
 	recipe_prep_tasks.maximum_storage_temperature_in_celsius as prep_task_maximum_storage_temperature_in_celsius,
-	recipe_prep_tasks.belongs_to_recipe as prep_task_belongs_to_recipe,
 	recipe_prep_tasks.created_at as prep_task_created_at,
 	recipe_prep_tasks.last_updated_at as prep_task_last_updated_at,
 	recipe_prep_tasks.archived_at as prep_task_archived_at,
+	recipe_prep_tasks.belongs_to_recipe as prep_task_belongs_to_recipe,
 	recipe_prep_task_steps.id as prep_task_step_id,
 	recipe_prep_task_steps.belongs_to_recipe_step as prep_task_step_belongs_to_recipe_step,
 	recipe_prep_task_steps.belongs_to_recipe_prep_task as prep_task_step_belongs_to_recipe_prep_task,
@@ -346,10 +346,10 @@ type ListAllMealPlanTasksByMealPlanRow struct {
 	StatusExplanation                              string
 	Status                                         PrepStepStatus
 	ID                                             string
-	PrepTaskBelongsToRecipe                        string
 	MealPlanOptionMealScale                        string
 	PrepTaskStepBelongsToRecipeStep                string
 	MealPlanOptionID                               string
+	PrepTaskBelongsToRecipe                        string
 	MealPlanOptionAssignedDishwasher               sql.NullString
 	AssignedToUser                                 sql.NullString
 	PrepTaskMaximumStorageTemperatureInCelsius     sql.NullString
@@ -399,10 +399,10 @@ func (q *Queries) ListAllMealPlanTasksByMealPlan(ctx context.Context, db DBTX, m
 			&i.PrepTaskStorageType,
 			&i.PrepTaskMinimumStorageTemperatureInCelsius,
 			&i.PrepTaskMaximumStorageTemperatureInCelsius,
-			&i.PrepTaskBelongsToRecipe,
 			&i.PrepTaskCreatedAt,
 			&i.PrepTaskLastUpdatedAt,
 			&i.PrepTaskArchivedAt,
+			&i.PrepTaskBelongsToRecipe,
 			&i.PrepTaskStepID,
 			&i.PrepTaskStepBelongsToRecipeStep,
 			&i.PrepTaskStepBelongsToRecipePrepTask,
@@ -475,16 +475,16 @@ SELECT
 	recipe_steps.minimum_estimated_time_in_seconds as recipe_step_minimum_estimated_time_in_seconds,
 	recipe_steps.maximum_estimated_time_in_seconds as recipe_step_maximum_estimated_time_in_seconds,
 	recipe_steps.minimum_temperature_in_celsius as recipe_step_minimum_temperature_in_celsius,
-	recipe_steps.notes as recipe_step_notes,
-	recipe_steps.belongs_to_recipe as recipe_step_belongs_to_recipe,
-	recipe_steps.optional as recipe_step_optional,
 	recipe_steps.maximum_temperature_in_celsius as recipe_step_maximum_temperature_in_celsius,
+	recipe_steps.notes as recipe_step_notes,
 	recipe_steps.explicit_instructions as recipe_step_explicit_instructions,
 	recipe_steps.condition_expression as recipe_step_condition_expression,
+	recipe_steps.optional as recipe_step_optional,
 	recipe_steps.start_timer_automatically as recipe_step_start_timer_automatically,
 	recipe_steps.created_at as recipe_step_created_at,
 	recipe_steps.last_updated_at as recipe_step_last_updated_at,
 	recipe_steps.archived_at as recipe_step_archived_at,
+	recipe_steps.belongs_to_recipe as recipe_step_belongs_to_recipe,
 	meal_plan_tasks.status,
 	meal_plan_tasks.status_explanation,
 	meal_plan_tasks.creation_explanation,
@@ -508,64 +508,64 @@ type ListIncompleteMealPlanTasksByMealPlanOptionRow struct {
 	RecipeStepCreatedAt                         time.Time
 	ValidPreparationCreatedAt                   time.Time
 	CompletedAt                                 sql.NullTime
-	ValidPreparationArchivedAt                  sql.NullTime
+	ValidPreparationLastIndexedAt               sql.NullTime
 	RecipeStepArchivedAt                        sql.NullTime
 	RecipeStepLastUpdatedAt                     sql.NullTime
 	CreatedAt                                   sql.NullTime
-	LastUpdatedAt                               sql.NullTime
+	ValidPreparationArchivedAt                  sql.NullTime
 	ValidPreparationLastUpdatedAt               sql.NullTime
 	MealPlanOptionCreatedAt                     sql.NullTime
 	MealPlanOptionLastUpdatedAt                 sql.NullTime
 	MealPlanOptionArchivedAt                    sql.NullTime
-	ValidPreparationLastIndexedAt               sql.NullTime
-	RecipeStepBelongsToRecipe                   string
-	RecipeStepNotes                             string
+	LastUpdatedAt                               sql.NullTime
+	RecipeStepConditionExpression               string
+	RecipeStepPreparationID                     string
 	ValidPreparationID                          string
 	ValidPreparationName                        string
 	ValidPreparationDescription                 string
 	ValidPreparationIconPath                    string
-	RecipeStepPreparationID                     string
-	RecipeStepID                                string
+	RecipeStepExplicitInstructions              string
+	RecipeStepNotes                             string
 	ValidPreparationPastTense                   string
 	ValidPreparationSlug                        string
-	RecipeStepExplicitInstructions              string
-	RecipeStepConditionExpression               string
-	RecipeStepMaximumTemperatureInCelsius       sql.NullString
-	StatusExplanation                           sql.NullString
-	AssignedToUser                              sql.NullString
-	MealPlanOptionID                            sql.NullString
-	MealPlanOptionAssignedCook                  sql.NullString
-	MealPlanOptionAssignedDishwasher            sql.NullString
-	BelongsToRecipePrepTask                     sql.NullString
-	BelongsToMealPlanOption                     sql.NullString
-	ID                                          sql.NullString
+	RecipeStepID                                string
+	RecipeStepBelongsToRecipe                   string
+	MealPlanOptionBelongsToMealPlanEvent        sql.NullString
 	CreationExplanation                         sql.NullString
+	MealPlanOptionAssignedDishwasher            sql.NullString
 	MealPlanOptionMealID                        sql.NullString
 	MealPlanOptionNotes                         sql.NullString
+	StatusExplanation                           sql.NullString
 	Status                                      NullPrepStepStatus
+	ID                                          sql.NullString
+	AssignedToUser                              sql.NullString
+	MealPlanOptionAssignedCook                  sql.NullString
+	BelongsToRecipePrepTask                     sql.NullString
+	MealPlanOptionID                            sql.NullString
+	BelongsToMealPlanOption                     sql.NullString
 	MealPlanOptionMealScale                     sql.NullString
-	MealPlanOptionBelongsToMealPlanEvent        sql.NullString
+	RecipeStepMaximumTemperatureInCelsius       sql.NullString
 	RecipeStepMinimumTemperatureInCelsius       sql.NullString
 	RecipeStepMaximumEstimatedTimeInSeconds     sql.NullInt64
 	RecipeStepMinimumEstimatedTimeInSeconds     sql.NullInt64
 	ValidPreparationMaximumInstrumentCount      sql.NullInt32
-	ValidPreparationMaximumIngredientCount      sql.NullInt32
 	ValidPreparationMaximumVesselCount          sql.NullInt32
+	ValidPreparationMaximumIngredientCount      sql.NullInt32
+	ValidPreparationMinimumInstrumentCount      int32
 	RecipeStepIndex                             int32
 	ValidPreparationMinimumIngredientCount      int32
 	ValidPreparationMinimumVesselCount          int32
-	ValidPreparationMinimumInstrumentCount      int32
 	MealPlanOptionTiebroken                     sql.NullBool
 	MealPlanOptionChosen                        sql.NullBool
-	ValidPreparationRestrictToIngredients       bool
-	RecipeStepOptional                          bool
-	ValidPreparationYieldsNothing               bool
-	RecipeStepStartTimerAutomatically           bool
-	ValidPreparationOnlyForVessels              bool
 	ValidPreparationConsumesVessel              bool
+	RecipeStepStartTimerAutomatically           bool
 	ValidPreparationConditionExpressionRequired bool
 	ValidPreparationTimeEstimateRequired        bool
 	ValidPreparationTemperatureRequired         bool
+	ValidPreparationOnlyForVessels              bool
+	RecipeStepOptional                          bool
+	ValidPreparationRestrictToIngredients       bool
+	ValidPreparationYieldsNothing               bool
 }
 
 func (q *Queries) ListIncompleteMealPlanTasksByMealPlanOption(ctx context.Context, db DBTX, belongsToMealPlanOption string) ([]*ListIncompleteMealPlanTasksByMealPlanOptionRow, error) {
@@ -620,16 +620,16 @@ func (q *Queries) ListIncompleteMealPlanTasksByMealPlanOption(ctx context.Contex
 			&i.RecipeStepMinimumEstimatedTimeInSeconds,
 			&i.RecipeStepMaximumEstimatedTimeInSeconds,
 			&i.RecipeStepMinimumTemperatureInCelsius,
-			&i.RecipeStepNotes,
-			&i.RecipeStepBelongsToRecipe,
-			&i.RecipeStepOptional,
 			&i.RecipeStepMaximumTemperatureInCelsius,
+			&i.RecipeStepNotes,
 			&i.RecipeStepExplicitInstructions,
 			&i.RecipeStepConditionExpression,
+			&i.RecipeStepOptional,
 			&i.RecipeStepStartTimerAutomatically,
 			&i.RecipeStepCreatedAt,
 			&i.RecipeStepLastUpdatedAt,
 			&i.RecipeStepArchivedAt,
+			&i.RecipeStepBelongsToRecipe,
 			&i.Status,
 			&i.StatusExplanation,
 			&i.CreationExplanation,
