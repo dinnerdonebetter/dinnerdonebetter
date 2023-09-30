@@ -151,6 +151,7 @@ SELECT
 	valid_ingredients.is_fat as valid_ingredient_is_fat,
 	valid_ingredients.is_acid as valid_ingredient_is_acid,
 	valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.last_indexed_at as valid_ingredient_last_indexed_at,
 	valid_ingredients.created_at as valid_ingredient_created_at,
 	valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
 	valid_ingredients.archived_at as valid_ingredient_archived_at,
@@ -164,6 +165,7 @@ SELECT
 	valid_measurement_units.imperial as valid_measurement_unit_imperial,
 	valid_measurement_units.slug as valid_measurement_unit_slug,
 	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.last_indexed_at as valid_measurement_unit_last_indexed_at,
 	valid_measurement_units.created_at as valid_measurement_unit_created_at,
 	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
 	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
@@ -198,47 +200,48 @@ type GetMealPlanGroceryListItemRow struct {
 	ValidIngredientCreatedAt                               time.Time
 	ValidMeasurementUnitCreatedAt                          time.Time
 	CreatedAt                                              time.Time
-	ValidIngredientLastUpdatedAt                           sql.NullTime
-	ValidIngredientArchivedAt                              sql.NullTime
-	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
 	ValidMeasurementUnitArchivedAt                         sql.NullTime
+	ValidIngredientLastUpdatedAt                           sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
+	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
 	ArchivedAt                                             sql.NullTime
 	LastUpdatedAt                                          sql.NullTime
-	Status                                                 GroceryListItemStatus
-	ValidMeasurementUnitIconPath                           string
+	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
+	ValidIngredientArchivedAt                              sql.NullTime
+	StatusExplanation                                      string
+	ValidIngredientSlug                                    string
 	BelongsToMealPlan                                      string
 	ValidIngredientID                                      string
+	ValidIngredientName                                    string
+	MinimumQuantityNeeded                                  string
 	ValidMeasurementUnitID                                 string
 	ValidMeasurementUnitName                               string
+	ValidIngredientIconPath                                string
+	Status                                                 GroceryListItemStatus
+	ValidIngredientPluralName                              string
+	ValidIngredientWarning                                 string
 	ValidMeasurementUnitDescription                        string
 	ID                                                     string
-	MinimumQuantityNeeded                                  string
-	StatusExplanation                                      string
-	ValidIngredientIconPath                                string
-	ValidIngredientWarning                                 string
-	ValidIngredientPluralName                              string
-	ValidIngredientDescription                             string
-	ValidMeasurementUnitSlug                               string
-	ValidMeasurementUnitPluralName                         string
 	ValidIngredientStorageInstructions                     string
-	ValidIngredientSlug                                    string
-	ValidIngredientName                                    string
+	ValidMeasurementUnitIconPath                           string
+	ValidIngredientDescription                             string
 	ValidIngredientShoppingSuggestions                     string
+	ValidMeasurementUnitPluralName                         string
+	ValidMeasurementUnitSlug                               string
+	PurchasedUpc                                           sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
+	PurchasePrice                                          sql.NullString
 	MaximumQuantityNeeded                                  sql.NullString
 	QuantityPurchased                                      sql.NullString
 	PurchasedMeasurementUnit                               sql.NullString
-	PurchasedUpc                                           sql.NullString
-	PurchasePrice                                          sql.NullString
-	ValidIngredientIsLiquid                                sql.NullBool
 	ValidMeasurementUnitVolumetric                         sql.NullBool
-	ValidIngredientAnimalFlesh                             bool
+	ValidIngredientIsLiquid                                sql.NullBool
+	ValidIngredientIsFruit                                 bool
 	ValidIngredientIsHeat                                  bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsSalt                                  bool
-	ValidIngredientIsFruit                                 bool
 	ValidIngredientIsGrain                                 bool
 	ValidMeasurementUnitUniversal                          bool
 	ValidMeasurementUnitMetric                             bool
@@ -249,6 +252,7 @@ type GetMealPlanGroceryListItemRow struct {
 	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientAnimalDerived                           bool
 	ValidIngredientVolumetric                              bool
+	ValidIngredientAnimalFlesh                             bool
 	ValidIngredientContainsGluten                          bool
 	ValidIngredientContainsFish                            bool
 	ValidIngredientContainsSesame                          bool
@@ -302,6 +306,7 @@ func (q *Queries) GetMealPlanGroceryListItem(ctx context.Context, db DBTX, arg *
 		&i.ValidIngredientIsFat,
 		&i.ValidIngredientIsAcid,
 		&i.ValidIngredientIsHeat,
+		&i.ValidIngredientLastIndexedAt,
 		&i.ValidIngredientCreatedAt,
 		&i.ValidIngredientLastUpdatedAt,
 		&i.ValidIngredientArchivedAt,
@@ -315,6 +320,7 @@ func (q *Queries) GetMealPlanGroceryListItem(ctx context.Context, db DBTX, arg *
 		&i.ValidMeasurementUnitImperial,
 		&i.ValidMeasurementUnitSlug,
 		&i.ValidMeasurementUnitPluralName,
+		&i.ValidMeasurementUnitLastIndexedAt,
 		&i.ValidMeasurementUnitCreatedAt,
 		&i.ValidMeasurementUnitLastUpdatedAt,
 		&i.ValidMeasurementUnitArchivedAt,
@@ -373,6 +379,7 @@ SELECT
 	valid_ingredients.is_fat as valid_ingredient_is_fat,
 	valid_ingredients.is_acid as valid_ingredient_is_acid,
 	valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.last_indexed_at as valid_ingredient_last_indexed_at,
 	valid_ingredients.created_at as valid_ingredient_created_at,
 	valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
 	valid_ingredients.archived_at as valid_ingredient_archived_at,
@@ -386,6 +393,7 @@ SELECT
 	valid_measurement_units.imperial as valid_measurement_unit_imperial,
 	valid_measurement_units.slug as valid_measurement_unit_slug,
 	valid_measurement_units.plural_name as valid_measurement_unit_plural_name,
+	valid_measurement_units.last_indexed_at as valid_measurement_unit_last_indexed_at,
 	valid_measurement_units.created_at as valid_measurement_unit_created_at,
 	valid_measurement_units.last_updated_at as valid_measurement_unit_last_updated_at,
 	valid_measurement_units.archived_at as valid_measurement_unit_archived_at,
@@ -421,47 +429,48 @@ type GetMealPlanGroceryListItemsForMealPlanRow struct {
 	ValidIngredientCreatedAt                               time.Time
 	ValidMeasurementUnitCreatedAt                          time.Time
 	CreatedAt                                              time.Time
-	ValidIngredientLastUpdatedAt                           sql.NullTime
-	ValidIngredientArchivedAt                              sql.NullTime
-	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
 	ValidMeasurementUnitArchivedAt                         sql.NullTime
+	ValidIngredientLastUpdatedAt                           sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
+	ValidMeasurementUnitLastIndexedAt                      sql.NullTime
 	ArchivedAt                                             sql.NullTime
 	LastUpdatedAt                                          sql.NullTime
-	Status                                                 GroceryListItemStatus
-	ValidMeasurementUnitIconPath                           string
+	ValidMeasurementUnitLastUpdatedAt                      sql.NullTime
+	ValidIngredientArchivedAt                              sql.NullTime
+	StatusExplanation                                      string
+	ValidIngredientSlug                                    string
 	BelongsToMealPlan                                      string
 	ValidIngredientID                                      string
+	ValidIngredientName                                    string
+	MinimumQuantityNeeded                                  string
 	ValidMeasurementUnitID                                 string
 	ValidMeasurementUnitName                               string
+	ValidIngredientIconPath                                string
+	Status                                                 GroceryListItemStatus
+	ValidIngredientPluralName                              string
+	ValidIngredientWarning                                 string
 	ValidMeasurementUnitDescription                        string
 	ID                                                     string
-	MinimumQuantityNeeded                                  string
-	StatusExplanation                                      string
-	ValidIngredientIconPath                                string
-	ValidIngredientWarning                                 string
-	ValidIngredientPluralName                              string
-	ValidIngredientDescription                             string
-	ValidMeasurementUnitSlug                               string
-	ValidMeasurementUnitPluralName                         string
 	ValidIngredientStorageInstructions                     string
-	ValidIngredientSlug                                    string
-	ValidIngredientName                                    string
+	ValidMeasurementUnitIconPath                           string
+	ValidIngredientDescription                             string
 	ValidIngredientShoppingSuggestions                     string
+	ValidMeasurementUnitPluralName                         string
+	ValidMeasurementUnitSlug                               string
+	PurchasedUpc                                           sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
+	PurchasePrice                                          sql.NullString
 	MaximumQuantityNeeded                                  sql.NullString
 	QuantityPurchased                                      sql.NullString
 	PurchasedMeasurementUnit                               sql.NullString
-	PurchasedUpc                                           sql.NullString
-	PurchasePrice                                          sql.NullString
-	ValidIngredientIsLiquid                                sql.NullBool
 	ValidMeasurementUnitVolumetric                         sql.NullBool
-	ValidIngredientAnimalFlesh                             bool
+	ValidIngredientIsLiquid                                sql.NullBool
+	ValidIngredientIsFruit                                 bool
 	ValidIngredientIsHeat                                  bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsSalt                                  bool
-	ValidIngredientIsFruit                                 bool
 	ValidIngredientIsGrain                                 bool
 	ValidMeasurementUnitUniversal                          bool
 	ValidMeasurementUnitMetric                             bool
@@ -472,6 +481,7 @@ type GetMealPlanGroceryListItemsForMealPlanRow struct {
 	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientAnimalDerived                           bool
 	ValidIngredientVolumetric                              bool
+	ValidIngredientAnimalFlesh                             bool
 	ValidIngredientContainsGluten                          bool
 	ValidIngredientContainsFish                            bool
 	ValidIngredientContainsSesame                          bool
@@ -531,6 +541,7 @@ func (q *Queries) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, db
 			&i.ValidIngredientIsFat,
 			&i.ValidIngredientIsAcid,
 			&i.ValidIngredientIsHeat,
+			&i.ValidIngredientLastIndexedAt,
 			&i.ValidIngredientCreatedAt,
 			&i.ValidIngredientLastUpdatedAt,
 			&i.ValidIngredientArchivedAt,
@@ -544,6 +555,7 @@ func (q *Queries) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, db
 			&i.ValidMeasurementUnitImperial,
 			&i.ValidMeasurementUnitSlug,
 			&i.ValidMeasurementUnitPluralName,
+			&i.ValidMeasurementUnitLastIndexedAt,
 			&i.ValidMeasurementUnitCreatedAt,
 			&i.ValidMeasurementUnitLastUpdatedAt,
 			&i.ValidMeasurementUnitArchivedAt,

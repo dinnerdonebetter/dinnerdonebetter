@@ -55,8 +55,7 @@ func main() {
 		"recipe_steps.sql":                                 buildRecipeStepsQueries(),
 		"recipe_step_vessels.sql":                          buildRecipeStepVesselsQueries(),
 		"user_ingredient_preferences.sql":                  buildUserIngredientPreferencesQueries(),
-		// being worked on
-		// "meal_plan_grocery_list_items.sql": buildMealPlanGroceryListItemsQueries(),
+		"meal_plan_grocery_list_items.sql":                 buildMealPlanGroceryListItemsQueries(),
 	}
 
 	for filePath, queries := range queryOutput {

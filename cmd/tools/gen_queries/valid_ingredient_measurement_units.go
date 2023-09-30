@@ -9,6 +9,7 @@ import (
 
 const (
 	validIngredientMeasurementUnitsTableName = "valid_ingredient_measurement_units"
+	validMeasurementUnitColumn               = "valid_measurement_unit"
 	validMeasurementUnitIDColumn             = "valid_measurement_unit_id"
 )
 
