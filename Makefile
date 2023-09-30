@@ -150,15 +150,6 @@ queries_lint:
 		--user $(MYSELF):$(MY_GROUP) \
 		$(SQL_GENERATOR_IMAGE) vet --no-database --no-remote
 
-.PHONY: querier
-querier: queries queries_lint
-	rm --recursive --force internal/database/postgres/generated/*.go
-	docker run --rm \
-		--volume $(PWD):/src \
-		--workdir /src \
-		--user $(MYSELF):$(MY_GROUP) \
-	$(SQL_GENERATOR_IMAGE) generate --no-database --no-remote
-
 .PHONY: golang_lint
 golang_lint:
 	@docker pull --quiet $(LINTER_IMAGE)
@@ -204,6 +195,19 @@ typescript: clean_ts
 	mkdir --parents $(ARTIFACTS_DIR)/typescript
 	go run $(THIS)/cmd/tools/codegen/gen_typescript
 	(cd ../frontend && make format)
+
+.PHONY: querier
+querier: queries queries_lint
+	rm --recursive --force internal/database/postgres/generated/*.go
+	docker run --rm \
+		--volume $(PWD):/src \
+		--workdir /src \
+		--user $(MYSELF):$(MY_GROUP) \
+	$(SQL_GENERATOR_IMAGE) generate --no-database --no-remote
+
+.PHONY: sqlc_struct_check
+sqlc_struct_check:
+	go run $(THIS)/cmd/tools/sqlcstructchecker
 
 ## Integration tests
 
