@@ -12,7 +12,7 @@ import (
 )
 
 var (
-	checkOnly = pflag.Bool("check", false, "only check if files match")
+	checkOnlyFlag = pflag.Bool("check", false, "only check if files match")
 )
 
 func main() {
@@ -70,11 +70,13 @@ func main() {
 		"meal_plan_grocery_list_items.sql":                 buildMealPlanGroceryListItemsQueries(),
 	}
 
+	checkOnly := *checkOnlyFlag
+
 	for filePath, queries := range queryOutput {
 		localFilePath := path.Join("internal", "database", "postgres", "sqlc_queries", filePath)
 		existingFile, err := os.ReadFile(localFilePath)
 		if err != nil {
-			panic(err)
+			log.Fatal(err)
 		}
 
 		var fileContent string
@@ -90,13 +92,13 @@ func main() {
 			fileOutput += strings.TrimSuffix(line, " ") + "\n"
 		}
 
-		if string(existingFile) != fileOutput && *checkOnly {
+		if string(existingFile) != fileOutput && checkOnly {
 			errors = multierror.Append(errors, fmt.Errorf("files don't match: %s", filePath))
-		} else {
-			if !*checkOnly {
-				if err = os.WriteFile(localFilePath, []byte(fileOutput), 0644); err != nil {
-					errors = multierror.Append(errors, err)
-				}
+		}
+
+		if !checkOnly {
+			if err = os.WriteFile(localFilePath, []byte(fileOutput), 0o644); err != nil {
+				errors = multierror.Append(errors, err)
 			}
 		}
 	}
