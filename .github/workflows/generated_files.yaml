@@ -33,7 +33,7 @@ jobs:
         run: git diff --exit-code
 
       - name: Check for struct usage
-        run: go run github.com/dinnerdonebetter/backend/cmd/sqlcstructchecker
+        run: go run github.com/dinnerdonebetter/backend/cmd/tools/sqlcstructchecker
 
   configs:
     timeout-minutes: 10
