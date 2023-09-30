@@ -10,6 +10,7 @@ concurrency:
 name: Lint Terraform code
 jobs:
   terraform:
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     strategy:
       matrix:

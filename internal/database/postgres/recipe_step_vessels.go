@@ -270,7 +270,7 @@ func (q *Querier) getRecipeStepVesselsForRecipe(ctx context.Context, recipeID st
 
 	results, err := q.generatedQuerier.GetRecipeStepVesselsForRecipe(ctx, q.db, recipeID)
 	if err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe step vessels list retrieval query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "getting recipe step vessels for a recipe")
 	}
 
 	recipeStepVessels := []*types.RecipeStepVessel{}
@@ -412,7 +412,7 @@ func (q *Querier) UpdateRecipeStepVessel(ctx context.Context, updated *types.Rec
 	if _, err := q.generatedQuerier.UpdateRecipeStepVessel(ctx, q.db, &generated.UpdateRecipeStepVesselParams{
 		Name:                 updated.Name,
 		Notes:                updated.Notes,
-		RecipeStepID:         updated.BelongsToRecipeStep,
+		BelongsToRecipeStep:  updated.BelongsToRecipeStep,
 		VesselPredicate:      updated.VesselPreposition,
 		ID:                   updated.ID,
 		RecipeStepProductID:  nullStringFromStringPointer(updated.RecipeStepProductID),

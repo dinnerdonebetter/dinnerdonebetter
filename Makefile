@@ -11,7 +11,7 @@ TESTABLE_PACKAGE_LIST         := `go list $(THIS)/... | grep -Ev '(cmd|integrati
 ENVIRONMENTS_DIR              := environments
 TEST_DOCKER_COMPOSE_FILES_DIR := $(ENVIRONMENTS_DIR)/testing/compose_files
 GENERATED_QUERIES_DIR         := internal/database/postgres/generated
-SQL_GENERATOR_IMAGE           := sqlc/sqlc:1.20.0
+SQL_GENERATOR_IMAGE           := sqlc/sqlc:1.22.0
 LINTER_IMAGE                  := golangci/golangci-lint:v1.54.2
 CONTAINER_LINTER_IMAGE        := openpolicyagent/conftest:v0.45.0
 CLOUD_JOBS                    := meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator search_data_index_scheduler
@@ -21,13 +21,13 @@ WIRE_TARGETS                  := server/http/build
 ## non-PHONY folders/files
 
 clean:
-	rm --recursive --force $(ARTIFACTS_DIR)
+	rm -rf $(ARTIFACTS_DIR)
 
 $(ARTIFACTS_DIR):
 	@mkdir --parents $(ARTIFACTS_DIR)
 
 clean-$(ARTIFACTS_DIR):
-	@rm --recursive --force $(ARTIFACTS_DIR)
+	@rm -rf $(ARTIFACTS_DIR)
 
 .PHONY: setup
 setup: $(ARTIFACTS_DIR) revendor rewire configs
@@ -58,6 +58,12 @@ ifeq (, $(shell which gci))
 	$(shell go install github.com/daixiang0/gci@latest)
 endif
 
+.PHONY: ensure_sqlc_installed
+ensure_sqlc_installed:
+ifeq (, $(shell which sqlc))
+	$(shell go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest)
+endif
+
 .PHONY: ensure_scc_installed
 ensure_scc_installed:
 ifeq (, $(shell which scc))
@@ -66,7 +72,7 @@ endif
 
 .PHONY: clean_vendor
 clean_vendor:
-	rm --recursive --force vendor go.sum
+	rm -rf vendor go.sum
 
 vendor:
 	if [ ! -f go.mod ]; then go mod init; fi
@@ -144,15 +150,6 @@ queries_lint:
 		--user $(MYSELF):$(MY_GROUP) \
 		$(SQL_GENERATOR_IMAGE) vet --no-database --no-remote
 
-.PHONY: querier
-querier: queries_lint
-	rm --recursive --force internal/database/postgres/generated/*.go
-	docker run --rm \
-		--volume $(PWD):/src \
-		--workdir /src \
-		--user $(MYSELF):$(MY_GROUP) \
-	$(SQL_GENERATOR_IMAGE) generate
-
 .PHONY: golang_lint
 golang_lint:
 	@docker pull --quiet $(LINTER_IMAGE)
@@ -187,13 +184,30 @@ test: $(ARTIFACTS_DIR) vendor build
 configs:
 	go run $(THIS)/cmd/tools/gen_configs
 
+.PHONY: queries
+queries:
+	go run $(THIS)/cmd/tools/gen_queries
+
 clean_ts:
-	rm --recursive --force $(ARTIFACTS_DIR)/typescript
+	rm -rf $(ARTIFACTS_DIR)/typescript
 
 typescript: clean_ts
 	mkdir --parents $(ARTIFACTS_DIR)/typescript
 	go run $(THIS)/cmd/tools/codegen/gen_typescript
 	(cd ../frontend && make format)
+
+.PHONY: querier
+querier: queries queries_lint
+	rm --recursive --force internal/database/postgres/generated/*.go
+	docker run --rm \
+		--volume $(PWD):/src \
+		--workdir /src \
+		--user $(MYSELF):$(MY_GROUP) \
+	$(SQL_GENERATOR_IMAGE) generate --no-database --no-remote
+
+.PHONY: sqlc_struct_check
+sqlc_struct_check:
+	go run $(THIS)/cmd/tools/sqlcstructchecker
 
 ## Integration tests
 

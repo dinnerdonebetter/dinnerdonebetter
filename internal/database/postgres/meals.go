@@ -202,7 +202,7 @@ func (q *Querier) SearchForMeals(ctx context.Context, mealNameQuery string, filt
 	}
 
 	results, err := q.generatedQuerier.SearchForMeals(ctx, q.db, &generated.SearchForMealsParams{
-		Query:         nullStringFromString(mealNameQuery),
+		Query:         mealNameQuery,
 		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),

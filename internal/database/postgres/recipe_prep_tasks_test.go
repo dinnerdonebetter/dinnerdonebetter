@@ -32,9 +32,10 @@ func createRecipePrepTaskForTest(t *testing.T, ctx context.Context, exampleRecip
 	assert.Equal(t, exampleRecipePrepTask, created)
 
 	recipePrepTask, err := dbc.GetRecipePrepTask(ctx, created.BelongsToRecipe, created.ID)
+	require.NoError(t, err)
+	require.NotNil(t, recipePrepTask)
 	exampleRecipePrepTask.CreatedAt = recipePrepTask.CreatedAt
 
-	assert.NoError(t, err)
 	assert.Equal(t, exampleRecipePrepTask, recipePrepTask)
 
 	return created

@@ -126,8 +126,8 @@ func (q *Querier) getRecipeMediaForRecipeStep(ctx context.Context, recipeID, rec
 	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
 
 	results, err := q.generatedQuerier.GetRecipeMediaForRecipeStep(ctx, q.db, &generated.GetRecipeMediaForRecipeStepParams{
-		BelongsToRecipe:     nullStringFromString(recipeID),
-		BelongsToRecipeStep: nullStringFromString(recipeStepID),
+		RecipeID:     nullStringFromString(recipeID),
+		RecipeStepID: nullStringFromString(recipeStepID),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe media list retrieval query")

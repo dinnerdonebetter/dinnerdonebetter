@@ -76,13 +76,13 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (http.Server, error)
 	observabilityConfig := &cfg.Observability
 	configConfig := &observabilityConfig.Logging
 	logger := config2.ProvideLogger(configConfig)
-	config9 := &cfg.Database
-	config10 := &observabilityConfig.Tracing
-	tracerProvider, err := config3.ProvideTracerProvider(ctx, config10, logger)
+	config9 := &observabilityConfig.Tracing
+	tracerProvider, err := config3.ProvideTracerProvider(ctx, config9, logger)
 	if err != nil {
 		return nil, err
 	}
-	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, config9, tracerProvider)
+	config10 := &cfg.Database
+	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, config10)
 	if err != nil {
 		return nil, err
 	}

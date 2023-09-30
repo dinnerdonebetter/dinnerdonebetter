@@ -96,7 +96,7 @@ func TestQuerier_Integration_RecipeMedia(t *testing.T) {
 func TestQuerier_RecipeMediaExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid preparation ID", func(t *testing.T) {
+	T.Run("with invalid recipe media ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
@@ -112,7 +112,7 @@ func TestQuerier_RecipeMediaExists(T *testing.T) {
 func TestQuerier_GetRecipeMedia(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid preparation ID", func(t *testing.T) {
+	T.Run("with invalid recipe media ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
@@ -155,7 +155,7 @@ func TestQuerier_UpdateRecipeMedia(T *testing.T) {
 func TestQuerier_ArchiveRecipeMedia(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid valid preparation ID", func(t *testing.T) {
+	T.Run("with invalid recipe media ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()

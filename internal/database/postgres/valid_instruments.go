@@ -197,7 +197,7 @@ func (q *Querier) GetValidInstrumentsWithIDs(ctx context.Context, ids []string) 
 
 	logger := q.logger.Clone()
 
-	results, err := q.generatedQuerier.GetValidInstrumentWithIDs(ctx, q.db, ids)
+	results, err := q.generatedQuerier.GetValidInstrumentsWithIDs(ctx, q.db, ids)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid instruments id list retrieval query")
 	}

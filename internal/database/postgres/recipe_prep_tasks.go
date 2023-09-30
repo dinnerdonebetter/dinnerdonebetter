@@ -36,8 +36,8 @@ func (q *Querier) RecipePrepTaskExists(ctx context.Context, recipeID, recipePrep
 	tracing.AttachRecipePrepTaskIDToSpan(span, recipePrepTaskID)
 
 	result, err := q.generatedQuerier.CheckRecipePrepTaskExistence(ctx, q.db, &generated.CheckRecipePrepTaskExistenceParams{
-		BelongsToRecipe: recipeID,
-		ID:              recipePrepTaskID,
+		RecipeID:         recipeID,
+		RecipePrepTaskID: recipePrepTaskID,
 	})
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "performing recipe prep task existence check")

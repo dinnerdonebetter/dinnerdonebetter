@@ -84,10 +84,10 @@ func (q *Querier) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPla
 	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVoteID)
 
 	result, err := q.generatedQuerier.GetMealPlanOptionVote(ctx, q.db, &generated.GetMealPlanOptionVoteParams{
-		BelongsToMealPlanOption: mealPlanOptionID,
-		ID:                      mealPlanOptionVoteID,
-		BelongsToMealPlan:       mealPlanID,
-		BelongsToMealPlanEvent:  nullStringFromString(mealPlanEventID),
+		MealPlanOptionID:     mealPlanOptionID,
+		MealPlanOptionVoteID: mealPlanOptionVoteID,
+		MealPlanID:           mealPlanID,
+		MealPlanEventID:      nullStringFromString(mealPlanEventID),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "getting meal plan option vote")

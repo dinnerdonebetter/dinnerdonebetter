@@ -189,8 +189,8 @@ func (q *Querier) getMealPlanOptionsForMealPlanEvent(ctx context.Context, mealPl
 	tracing.AttachMealPlanIDToSpan(span, mealPlanEventID)
 
 	results, err := q.generatedQuerier.GetAllMealPlanOptionsForMealPlanEvent(ctx, q.db, &generated.GetAllMealPlanOptionsForMealPlanEventParams{
-		BelongsToMealPlan:      mealPlanID,
-		BelongsToMealPlanEvent: nullStringFromString(mealPlanEventID),
+		MealPlanID:      mealPlanID,
+		MealPlanEventID: nullStringFromString(mealPlanEventID),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing meal plan option query")
@@ -559,9 +559,9 @@ func (q *Querier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPl
 	winner, tiebroken, chosen := q.decideOptionWinner(ctx, mealPlanEvent.Options)
 	if chosen {
 		if err = q.generatedQuerier.FinalizeMealPlanOption(ctx, q.db, &generated.FinalizeMealPlanOptionParams{
-			BelongsToMealPlanEvent: nullStringFromString(mealPlanEventID),
-			ID:                     winner,
-			Tiebroken:              tiebroken,
+			MealPlanEventID: nullStringFromString(mealPlanEventID),
+			ID:              winner,
+			Tiebroken:       tiebroken,
 		}); err != nil {
 			return false, observability.PrepareAndLogError(err, logger, span, "finalizing meal plan option")
 		}

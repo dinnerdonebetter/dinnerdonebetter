@@ -52,7 +52,7 @@ func main() {
 		ConnectionDetails: os.Getenv("DATABASE_URL"),
 	}
 
-	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, dbConfig, tracerProvider)
+	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, dbConfig)
 	if dataManager != nil {
 		defer dataManager.Close()
 	}

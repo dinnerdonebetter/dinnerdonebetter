@@ -153,7 +153,7 @@ func buildDatabaseClientForTest(t *testing.T, ctx context.Context) (*Querier, *p
 	connStr, err := container.ConnectionString(ctx, "sslmode=disable")
 	require.NoError(t, err)
 
-	dbc, err := ProvideDatabaseClient(ctx, logging.NewNoopLogger(), &config.Config{ConnectionDetails: connStr, RunMigrations: true, OAuth2TokenEncryptionKey: "blahblahblahblahblahblahblahblah"}, tracing.NewNoopTracerProvider())
+	dbc, err := ProvideDatabaseClient(ctx, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), &config.Config{ConnectionDetails: connStr, RunMigrations: true, OAuth2TokenEncryptionKey: "blahblahblahblahblahblahblahblah"})
 	require.NoError(t, err)
 	require.NotNil(t, dbc)
 
@@ -229,7 +229,7 @@ func TestProvideDatabaseClient(T *testing.T) {
 			MaxPingAttempts:          1,
 		}
 
-		actual, err := ProvideDatabaseClient(ctx, logging.NewNoopLogger(), exampleConfig, tracing.NewNoopTracerProvider())
+		actual, err := ProvideDatabaseClient(ctx, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), exampleConfig)
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
 	})

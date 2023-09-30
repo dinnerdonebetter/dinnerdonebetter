@@ -66,8 +66,8 @@ func (q *Querier) GetWebhook(ctx context.Context, webhookID, householdID string)
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	results, err := q.generatedQuerier.GetWebhook(ctx, q.db, &generated.GetWebhookParams{
-		HouseholdID: householdID,
-		WebhookID:   webhookID,
+		BelongsToHousehold: householdID,
+		ID:                 webhookID,
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching webhook")
@@ -172,8 +172,8 @@ func (q *Querier) GetWebhooksForHouseholdAndEvent(ctx context.Context, household
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	databaseResults, err := q.generatedQuerier.GetWebhooksForHouseholdAndEvent(ctx, q.db, &generated.GetWebhooksForHouseholdAndEventParams{
-		HouseholdID:  householdID,
-		TriggerEvent: generated.WebhookEvent(eventType),
+		BelongsToHousehold: householdID,
+		TriggerEvent:       generated.WebhookEvent(eventType),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching webhooks from database")

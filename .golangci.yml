@@ -335,6 +335,10 @@ issues:
         - mnd
         - forcetypeassert
 
+    - path: cmd/tools/gen_queries
+      linters:
+        - unused
+
     - path: pkg/types/mock/
       linters:
         - forcetypeassert
@@ -371,6 +375,10 @@ issues:
       linters:
         - forcetypeassert
 
+    - path: internal/database/postgres
+      linters:
+        - paralleltest
+
     ## BEGIN SPECIAL SNOWFLAKES
 
     - path: cmd/gen_configs/main.go
@@ -384,10 +392,6 @@ issues:
     - path: internal/featureflags/launchdarkly/mock_client.go
       linters:
         - gocritic
-
-    - path: internal/database/postgres
-      linters:
-        - paralleltest
 
     - path: internal/featureflags/posthog
       linters:

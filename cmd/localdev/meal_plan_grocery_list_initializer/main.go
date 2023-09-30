@@ -66,7 +66,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, &cfg.Database, tracerProvider)
+	dataManager, err := postgres.ProvideDatabaseClient(ctx, logger, tracerProvider, &cfg.Database)
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -260,7 +260,7 @@ func (q *Querier) GetValidIngredientPreparationsForPreparation(ctx context.Conte
 	}
 
 	results, err := q.generatedQuerier.GetValidIngredientPreparationsForPreparation(ctx, q.db, &generated.GetValidIngredientPreparationsForPreparationParams{
-		IDs:           []string{preparationID},
+		ID:            preparationID,
 		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
@@ -375,7 +375,7 @@ func (q *Querier) GetValidIngredientPreparationsForIngredient(ctx context.Contex
 	}
 
 	results, err := q.generatedQuerier.GetValidIngredientPreparationsForIngredient(ctx, q.db, &generated.GetValidIngredientPreparationsForIngredientParams{
-		IDs:           []string{ingredientID},
+		ID:            ingredientID,
 		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),

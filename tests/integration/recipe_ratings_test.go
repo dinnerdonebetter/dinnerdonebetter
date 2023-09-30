@@ -49,17 +49,18 @@ func (s *TestSuite) TestRecipeRatings_CompleteLifecycle() {
 
 			newRecipeRating := fakes.BuildFakeRecipeRating()
 			newRecipeRating.RecipeID = createdRecipe.ID
+			newRecipeRating.ByUser = createdRecipeRating.ByUser
 			createdRecipeRating.Update(converters.ConvertRecipeRatingToRecipeRatingUpdateRequestInput(newRecipeRating))
-			assert.NoError(t, testClients.admin.UpdateRecipeRating(ctx, createdRecipeRating))
+			assert.NoError(t, testClients.user.UpdateRecipeRating(ctx, createdRecipeRating))
 
-			actual, err := testClients.admin.GetRecipeRating(ctx, createdRecipe.ID, createdRecipeRating.ID)
+			actual, err := testClients.user.GetRecipeRating(ctx, createdRecipe.ID, createdRecipeRating.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert recipe rating equality
 			checkRecipeRatingEquality(t, newRecipeRating, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
-			assert.NoError(t, testClients.admin.ArchiveRecipeRating(ctx, createdRecipe.ID, createdRecipeRating.ID))
+			assert.NoError(t, testClients.user.ArchiveRecipeRating(ctx, createdRecipe.ID, createdRecipeRating.ID))
 		}
 	})
 }

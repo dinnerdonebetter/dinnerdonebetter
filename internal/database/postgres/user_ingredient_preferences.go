@@ -65,8 +65,8 @@ func (q *Querier) GetUserIngredientPreference(ctx context.Context, userIngredien
 	tracing.AttachUserIDToSpan(span, userID)
 
 	result, err := q.generatedQuerier.GetUserIngredientPreference(ctx, q.db, &generated.GetUserIngredientPreferenceParams{
-		UserIngredientPreferenceID: userIngredientPreferenceID,
-		UserID:                     userID,
+		ID:            userIngredientPreferenceID,
+		BelongsToUser: userID,
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "scanning userIngredientPreference")
@@ -156,7 +156,7 @@ func (q *Querier) GetUserIngredientPreferences(ctx context.Context, userID strin
 		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
 		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
 		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
-		UserID:        userID,
+		BelongsToUser: userID,
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing user ingredient preferences list retrieval query")

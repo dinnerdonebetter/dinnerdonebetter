@@ -237,8 +237,8 @@ func (q *Querier) GetHouseholdInvitationByEmailAndToken(ctx context.Context, ema
 	tracing.AttachHouseholdInvitationTokenToSpan(span, token)
 
 	result, err := q.generatedQuerier.GetHouseholdInvitationByEmailAndToken(ctx, q.db, &generated.GetHouseholdInvitationByEmailAndTokenParams{
-		EmailAddress: emailAddress,
-		Token:        token,
+		ToEmail: emailAddress,
+		Token:   token,
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching household invitation")
@@ -378,7 +378,7 @@ func (q *Querier) GetPendingHouseholdInvitationsFromUser(ctx context.Context, us
 		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
 		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
 		Status:        generated.InvitationState(types.PendingHouseholdInvitationStatus),
-		UserID:        userID,
+		FromUser:      userID,
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing household invitation query")
@@ -474,7 +474,7 @@ func (q *Querier) GetPendingHouseholdInvitationsForUser(ctx context.Context, use
 		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
 		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
 		Status:        generated.InvitationState(types.PendingHouseholdInvitationStatus),
-		UserID:        nullStringFromString(userID),
+		ToUser:        nullStringFromString(userID),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing household invitation query")
@@ -652,8 +652,8 @@ func (q *Querier) attachInvitationsToUser(ctx context.Context, querier database.
 	tracing.AttachHouseholdInvitationIDToSpan(span, userID)
 
 	if err := q.generatedQuerier.AttachHouseholdInvitationsToUserID(ctx, querier, &generated.AttachHouseholdInvitationsToUserIDParams{
-		EmailAddress: userEmail,
-		UserID:       nullStringFromString(userID),
+		ToEmail: userEmail,
+		ToUser:  nullStringFromString(userID),
 	}); err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return observability.PrepareAndLogError(err, logger, span, "attaching invitations to user")
 	}

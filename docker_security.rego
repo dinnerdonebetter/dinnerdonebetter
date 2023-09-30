@@ -9,6 +9,7 @@ suspicious_env_keys = [
     "api_key",
     "apikey",
     "token",
+    "secret_key"
 ]
 
 pkg_update_commands = [

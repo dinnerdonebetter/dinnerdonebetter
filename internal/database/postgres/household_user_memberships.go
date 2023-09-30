@@ -107,8 +107,8 @@ func (q *Querier) markHouseholdAsUserDefault(ctx context.Context, querier databa
 	tracing.AttachHouseholdIDToSpan(span, householdID)
 
 	if err := q.generatedQuerier.MarkHouseholdUserMembershipAsUserDefault(ctx, querier, &generated.MarkHouseholdUserMembershipAsUserDefaultParams{
-		UserID:      userID,
-		HouseholdID: householdID,
+		BelongsToUser:      userID,
+		BelongsToHousehold: householdID,
 	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "assigning user default household")
 	}

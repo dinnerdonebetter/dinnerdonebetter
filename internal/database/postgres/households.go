@@ -122,7 +122,7 @@ func (q *Querier) getHouseholdsForUser(ctx context.Context, querier database.SQL
 	}
 
 	results, err := q.generatedQuerier.GetHouseholdsForUser(ctx, querier, &generated.GetHouseholdsForUserParams{
-		UserID:        userID,
+		BelongsToUser: userID,
 		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),

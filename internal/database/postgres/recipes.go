@@ -135,7 +135,7 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID string) (*types.Recipe
 
 	recipeMedia, err := q.getRecipeMediaForRecipe(ctx, recipeID)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "fetching recipe step ingredients for recipe")
+		return nil, observability.PrepareError(err, span, "fetching recipe step media for recipe")
 	}
 	if recipeMedia != nil {
 		x.Media = recipeMedia
@@ -204,7 +204,7 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID string) (*types.Recipe
 
 		recipeMedia, err = q.getRecipeMediaForRecipeStep(ctx, recipeID, step.ID)
 		if err != nil {
-			return nil, observability.PrepareError(err, span, "fetching recipe step ingredients for recipe")
+			return nil, observability.PrepareError(err, span, "fetching recipe media for recipe step")
 		}
 		x.Steps[i].Media = recipeMedia
 	}
