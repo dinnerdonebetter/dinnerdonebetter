@@ -131,16 +131,17 @@ SELECT
 	valid_ingredients.is_fat as valid_ingredient_is_fat,
 	valid_ingredients.is_acid as valid_ingredient_is_acid,
 	valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.last_indexed_at as valid_ingredient_last_indexed_at,
 	valid_ingredients.created_at as valid_ingredient_created_at,
 	valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
 	valid_ingredients.archived_at as valid_ingredient_archived_at,
 	user_ingredient_preferences.rating,
 	user_ingredient_preferences.notes,
 	user_ingredient_preferences.allergy,
+	user_ingredient_preferences.belongs_to_user,
 	user_ingredient_preferences.created_at,
 	user_ingredient_preferences.last_updated_at,
-	user_ingredient_preferences.archived_at,
-	user_ingredient_preferences.belongs_to_user
+	user_ingredient_preferences.archived_at
 FROM user_ingredient_preferences
 	JOIN valid_ingredients ON valid_ingredients.id = user_ingredient_preferences.ingredient
 WHERE user_ingredient_preferences.archived_at IS NULL
@@ -150,47 +151,48 @@ WHERE user_ingredient_preferences.archived_at IS NULL
 `
 
 type GetUserIngredientPreferenceParams struct {
-	UserIngredientPreferenceID string
-	UserID                     string
+	ID            string
+	BelongsToUser string
 }
 
 type GetUserIngredientPreferenceRow struct {
-	ValidIngredientCreatedAt                               time.Time
 	CreatedAt                                              time.Time
-	ArchivedAt                                             sql.NullTime
-	ValidIngredientLastUpdatedAt                           sql.NullTime
+	ValidIngredientCreatedAt                               time.Time
+	ValidIngredientLastIndexedAt                           sql.NullTime
 	ValidIngredientArchivedAt                              sql.NullTime
+	ValidIngredientLastUpdatedAt                           sql.NullTime
+	ArchivedAt                                             sql.NullTime
 	LastUpdatedAt                                          sql.NullTime
+	BelongsToUser                                          string
+	ValidIngredientID                                      string
+	Notes                                                  string
+	ValidIngredientStorageInstructions                     string
+	ID                                                     string
+	ValidIngredientName                                    string
+	ValidIngredientWarning                                 string
+	ValidIngredientDescription                             string
+	ValidIngredientPluralName                              string
 	ValidIngredientShoppingSuggestions                     string
 	ValidIngredientSlug                                    string
-	ValidIngredientWarning                                 string
-	Notes                                                  string
-	ValidIngredientPluralName                              string
-	ID                                                     string
-	ValidIngredientDescription                             string
-	ValidIngredientName                                    string
-	ValidIngredientID                                      string
-	ValidIngredientStorageInstructions                     string
-	BelongsToUser                                          string
 	ValidIngredientIconPath                                string
-	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	Rating                                                 int16
 	ValidIngredientIsLiquid                                sql.NullBool
 	ValidIngredientContainsShellfish                       bool
-	ValidIngredientIsFat                                   bool
+	ValidIngredientIsAcid                                  bool
 	ValidIngredientAnimalDerived                           bool
-	ValidIngredientVolumetric                              bool
 	ValidIngredientContainsAlcohol                         bool
-	ValidIngredientAnimalFlesh                             bool
+	ValidIngredientVolumetric                              bool
 	ValidIngredientIsStarch                                bool
 	ValidIngredientIsProtein                               bool
 	ValidIngredientIsGrain                                 bool
 	ValidIngredientIsFruit                                 bool
 	ValidIngredientIsSalt                                  bool
+	ValidIngredientIsFat                                   bool
 	ValidIngredientRestrictToPreparations                  bool
-	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
+	ValidIngredientAnimalFlesh                             bool
 	ValidIngredientContainsGluten                          bool
 	ValidIngredientContainsFish                            bool
 	ValidIngredientContainsSesame                          bool
@@ -204,7 +206,7 @@ type GetUserIngredientPreferenceRow struct {
 }
 
 func (q *Queries) GetUserIngredientPreference(ctx context.Context, db DBTX, arg *GetUserIngredientPreferenceParams) (*GetUserIngredientPreferenceRow, error) {
-	row := db.QueryRowContext(ctx, getUserIngredientPreference, arg.UserIngredientPreferenceID, arg.UserID)
+	row := db.QueryRowContext(ctx, getUserIngredientPreference, arg.ID, arg.BelongsToUser)
 	var i GetUserIngredientPreferenceRow
 	err := row.Scan(
 		&i.ID,
@@ -243,16 +245,17 @@ func (q *Queries) GetUserIngredientPreference(ctx context.Context, db DBTX, arg 
 		&i.ValidIngredientIsFat,
 		&i.ValidIngredientIsAcid,
 		&i.ValidIngredientIsHeat,
+		&i.ValidIngredientLastIndexedAt,
 		&i.ValidIngredientCreatedAt,
 		&i.ValidIngredientLastUpdatedAt,
 		&i.ValidIngredientArchivedAt,
 		&i.Rating,
 		&i.Notes,
 		&i.Allergy,
+		&i.BelongsToUser,
 		&i.CreatedAt,
 		&i.LastUpdatedAt,
 		&i.ArchivedAt,
-		&i.BelongsToUser,
 	)
 	return &i, err
 }
@@ -296,129 +299,125 @@ SELECT
 	valid_ingredients.is_fat as valid_ingredient_is_fat,
 	valid_ingredients.is_acid as valid_ingredient_is_acid,
 	valid_ingredients.is_heat as valid_ingredient_is_heat,
+	valid_ingredients.last_indexed_at as valid_ingredient_last_indexed_at,
 	valid_ingredients.created_at as valid_ingredient_created_at,
 	valid_ingredients.last_updated_at as valid_ingredient_last_updated_at,
 	valid_ingredients.archived_at as valid_ingredient_archived_at,
 	user_ingredient_preferences.rating,
 	user_ingredient_preferences.notes,
 	user_ingredient_preferences.allergy,
+	user_ingredient_preferences.belongs_to_user,
 	user_ingredient_preferences.created_at,
 	user_ingredient_preferences.last_updated_at,
 	user_ingredient_preferences.archived_at,
-	user_ingredient_preferences.belongs_to_user,
 	(
-		SELECT
-			COUNT(user_ingredient_preferences.id)
-		FROM
-			user_ingredient_preferences
-		WHERE
-			user_ingredient_preferences.archived_at IS NULL
-			AND user_ingredient_preferences.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-			AND user_ingredient_preferences.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
+		SELECT COUNT(user_ingredient_preferences.id)
+		FROM user_ingredient_preferences
+		WHERE user_ingredient_preferences.archived_at IS NULL
+			AND user_ingredient_preferences.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND user_ingredient_preferences.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 			AND (
 				user_ingredient_preferences.last_updated_at IS NULL
-				OR user_ingredient_preferences.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
+				OR user_ingredient_preferences.last_updated_at > COALESCE($3, (SELECT NOW() - '999 years'::INTERVAL))
 			)
 			AND (
 				user_ingredient_preferences.last_updated_at IS NULL
-				OR user_ingredient_preferences.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
+				OR user_ingredient_preferences.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
 			)
 	) AS filtered_count,
 	(
-		SELECT
-			COUNT(user_ingredient_preferences.id)
-		FROM
-			user_ingredient_preferences
-		WHERE
-			user_ingredient_preferences.archived_at IS NULL
+		SELECT COUNT(user_ingredient_preferences.id)
+		FROM user_ingredient_preferences
+		WHERE user_ingredient_preferences.archived_at IS NULL
 	) AS total_count
 FROM user_ingredient_preferences
 	JOIN valid_ingredients ON valid_ingredients.id = user_ingredient_preferences.ingredient
 WHERE user_ingredient_preferences.archived_at IS NULL
-	AND valid_ingredients.archived_at IS NULL
-	AND user_ingredient_preferences.created_at > COALESCE($1, (SELECT NOW() - interval '999 years'))
-	AND user_ingredient_preferences.created_at < COALESCE($2, (SELECT NOW() + interval '999 years'))
-	AND (
-		user_ingredient_preferences.last_updated_at IS NULL
-		OR user_ingredient_preferences.last_updated_at > COALESCE($3, (SELECT NOW() - interval '999 years'))
-	)
-	AND (
-		user_ingredient_preferences.last_updated_at IS NULL
-		OR user_ingredient_preferences.last_updated_at < COALESCE($4, (SELECT NOW() + interval '999 years'))
-	)
 	AND user_ingredient_preferences.belongs_to_user = $5
-OFFSET $6
+	AND valid_ingredients.archived_at IS NULL
+	AND user_ingredient_preferences.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND user_ingredient_preferences.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND (
+		user_ingredient_preferences.last_updated_at IS NULL
+		OR user_ingredient_preferences.last_updated_at > COALESCE($4, (SELECT NOW() - '999 years'::INTERVAL))
+	)
+	AND (
+		user_ingredient_preferences.last_updated_at IS NULL
+		OR user_ingredient_preferences.last_updated_at < COALESCE($3, (SELECT NOW() + '999 years'::INTERVAL))
+	)
 LIMIT $7
+OFFSET $6
 `
 
 type GetUserIngredientPreferencesForUserParams struct {
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
-	UpdatedAfter  sql.NullTime
 	UpdatedBefore sql.NullTime
-	UserID        string
+	UpdatedAfter  sql.NullTime
+	BelongsToUser string
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
 
 type GetUserIngredientPreferencesForUserRow struct {
-	ValidIngredientCreatedAt                               time.Time
 	CreatedAt                                              time.Time
+	ValidIngredientCreatedAt                               time.Time
+	ValidIngredientLastIndexedAt                           sql.NullTime
 	ArchivedAt                                             sql.NullTime
 	LastUpdatedAt                                          sql.NullTime
 	ValidIngredientArchivedAt                              sql.NullTime
 	ValidIngredientLastUpdatedAt                           sql.NullTime
 	ValidIngredientStorageInstructions                     string
-	ValidIngredientSlug                                    string
-	ID                                                     string
 	ValidIngredientPluralName                              string
-	BelongsToUser                                          string
+	ID                                                     string
+	ValidIngredientShoppingSuggestions                     string
 	ValidIngredientID                                      string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
+	BelongsToUser                                          string
 	Notes                                                  string
-	ValidIngredientIconPath                                string
+	ValidIngredientSlug                                    string
 	ValidIngredientWarning                                 string
-	ValidIngredientShoppingSuggestions                     string
-	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientIconPath                                string
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
 	FilteredCount                                          int64
 	TotalCount                                             int64
 	Rating                                                 int16
 	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientContainsDairy                           bool
-	ValidIngredientContainsWheat                           bool
-	ValidIngredientContainsAlcohol                         bool
-	ValidIngredientContainsPeanut                          bool
 	ValidIngredientIsStarch                                bool
+	ValidIngredientContainsPeanut                          bool
+	ValidIngredientRestrictToPreparations                  bool
+	ValidIngredientContainsTreeNut                         bool
 	ValidIngredientIsProtein                               bool
 	ValidIngredientIsGrain                                 bool
 	ValidIngredientIsFruit                                 bool
 	ValidIngredientIsSalt                                  bool
 	ValidIngredientIsFat                                   bool
-	ValidIngredientContainsTreeNut                         bool
+	ValidIngredientIsAcid                                  bool
+	ValidIngredientIsHeat                                  bool
+	ValidIngredientContainsAlcohol                         bool
+	ValidIngredientContainsDairy                           bool
+	ValidIngredientContainsEgg                             bool
 	ValidIngredientAnimalDerived                           bool
 	ValidIngredientVolumetric                              bool
-	ValidIngredientContainsEgg                             bool
-	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientAnimalFlesh                             bool
-	ValidIngredientContainsGluten                          bool
 	Allergy                                                bool
+	ValidIngredientContainsGluten                          bool
 	ValidIngredientContainsFish                            bool
 	ValidIngredientContainsSesame                          bool
 	ValidIngredientContainsShellfish                       bool
-	ValidIngredientIsHeat                                  bool
+	ValidIngredientContainsWheat                           bool
 	ValidIngredientContainsSoy                             bool
-	ValidIngredientIsAcid                                  bool
 }
 
 func (q *Queries) GetUserIngredientPreferencesForUser(ctx context.Context, db DBTX, arg *GetUserIngredientPreferencesForUserParams) ([]*GetUserIngredientPreferencesForUserRow, error) {
 	rows, err := db.QueryContext(ctx, getUserIngredientPreferencesForUser,
 		arg.CreatedAfter,
 		arg.CreatedBefore,
-		arg.UpdatedAfter,
 		arg.UpdatedBefore,
-		arg.UserID,
+		arg.UpdatedAfter,
+		arg.BelongsToUser,
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)
@@ -466,16 +465,17 @@ func (q *Queries) GetUserIngredientPreferencesForUser(ctx context.Context, db DB
 			&i.ValidIngredientIsFat,
 			&i.ValidIngredientIsAcid,
 			&i.ValidIngredientIsHeat,
+			&i.ValidIngredientLastIndexedAt,
 			&i.ValidIngredientCreatedAt,
 			&i.ValidIngredientLastUpdatedAt,
 			&i.ValidIngredientArchivedAt,
 			&i.Rating,
 			&i.Notes,
 			&i.Allergy,
+			&i.BelongsToUser,
 			&i.CreatedAt,
 			&i.LastUpdatedAt,
 			&i.ArchivedAt,
-			&i.BelongsToUser,
 			&i.FilteredCount,
 			&i.TotalCount,
 		); err != nil {
