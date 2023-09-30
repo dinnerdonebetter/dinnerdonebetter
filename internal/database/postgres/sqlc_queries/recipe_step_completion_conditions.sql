@@ -107,7 +107,7 @@ SELECT
 	recipe_step_completion_condition_ingredients.created_at as recipe_step_completion_condition_ingredient_created_at,
 	recipe_step_completion_condition_ingredients.last_updated_at as recipe_step_completion_condition_ingredient_last_updated_at,
 	recipe_step_completion_condition_ingredients.archived_at as recipe_step_completion_condition_ingredient_archived_at,
-    (
+	(
 		SELECT COUNT(recipe_step_completion_condition_ingredients.id)
 		FROM recipe_step_completion_condition_ingredients
 		WHERE recipe_step_completion_condition_ingredients.archived_at IS NULL
@@ -123,7 +123,7 @@ SELECT
 			)
 			AND recipe_step_completion_conditions.belongs_to_recipe_step = sqlc.arg(recipe_step_id)
 	) AS filtered_count,
-    (
+	(
 		SELECT COUNT(recipe_step_completion_condition_ingredients.id)
 		FROM recipe_step_completion_condition_ingredients
 		WHERE recipe_step_completion_condition_ingredients.archived_at IS NULL

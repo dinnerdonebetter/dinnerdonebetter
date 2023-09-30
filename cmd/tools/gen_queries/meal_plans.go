@@ -227,8 +227,8 @@ WHERE %s.%s IS NULL
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
-    %s,
-    %s
+	%s,
+	%s
 FROM %s
 WHERE %s.%s IS NULL
 	%s

@@ -157,8 +157,8 @@ GROUP BY
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
-    %s,
-    %s
+	%s,
+	%s
 FROM %s
 	JOIN %s ON %s.%s = %s.%s
 	JOIN %s ON %s.%s = %s.%s

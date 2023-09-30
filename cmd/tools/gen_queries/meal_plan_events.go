@@ -102,7 +102,7 @@ func buildMealPlanEventsQueries() []*Query {
 	FROM %s
 	WHERE %s.%s IS NULL
 		AND %s.%s = sqlc.arg(%s)
-        AND %s.%s = sqlc.arg(%s)
+		AND %s.%s = sqlc.arg(%s)
 );`,
 				mealPlanEventsTableName, idColumn,
 				mealPlanEventsTableName,
@@ -161,7 +161,7 @@ ORDER BY %s.%s
 FROM %s
 WHERE
 	%s.%s IS NULL
-    AND %s.%s = sqlc.arg(%s);`,
+	AND %s.%s = sqlc.arg(%s);`,
 				strings.Join(applyToEach(mealPlanEventsColumns, func(i int, s string) string {
 					return fmt.Sprintf("%s.%s", mealPlanEventsTableName, s)
 				}), ",\n\t"),

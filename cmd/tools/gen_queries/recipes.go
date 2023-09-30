@@ -95,10 +95,10 @@ func buildRecipesQueries() []*Query {
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
-    SELECT %s.%s
-    FROM %s
-    WHERE %s.%s IS NULL
-        AND %s.%s = sqlc.arg(%s)
+	SELECT %s.%s
+	FROM %s
+	WHERE %s.%s IS NULL
+		AND %s.%s = sqlc.arg(%s)
 );`,
 				recipesTableName, idColumn,
 				recipesTableName,
@@ -254,7 +254,7 @@ ORDER BY %s.%s;`,
 	%s,
 	%s = %s
 WHERE %s IS NULL
-    AND %s = sqlc.arg(%s)
+	AND %s = sqlc.arg(%s)
 	AND %s = sqlc.arg(%s);`,
 				recipesTableName,
 				strings.Join(applyToEach(filterForUpdate(recipesColumns, lastValidatedAtColumn, createdByUserColumn), func(i int, s string) string {

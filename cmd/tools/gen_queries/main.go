@@ -2,12 +2,24 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"path"
 	"strings"
+
+	"github.com/hashicorp/go-multierror"
+	"github.com/spf13/pflag"
+)
+
+var (
+	checkOnly = pflag.Bool("check", false, "only check if files match")
 )
 
 func main() {
+	pflag.Parse()
+
+	var errors *multierror.Error
+
 	queryOutput := map[string][]*Query{
 		"admin.sql":                                        buildAdminQueries(),
 		"webhooks.sql":                                     buildWebhooksQueries(),
@@ -78,10 +90,18 @@ func main() {
 			fileOutput += strings.TrimSuffix(line, " ") + "\n"
 		}
 
-		if string(existingFile) != fileOutput {
-			fmt.Printf("files don't match: %s\n", filePath)
+		if string(existingFile) != fileOutput && *checkOnly {
+			errors = multierror.Append(errors, fmt.Errorf("files don't match: %s", filePath))
+		} else {
+			if !*checkOnly {
+				if err = os.WriteFile(localFilePath, []byte(fileOutput), 0644); err != nil {
+					errors = multierror.Append(errors, err)
+				}
+			}
 		}
 	}
 
-	fmt.Println("done")
+	if errors.ErrorOrNil() != nil {
+		log.Fatal(errors)
+	}
 }

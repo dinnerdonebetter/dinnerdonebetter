@@ -425,7 +425,7 @@ SELECT
 	meal_plans.archived_at,
 	meal_plans.belongs_to_household,
 	meal_plans.created_by_user,
-    (
+	(
 		SELECT COUNT(meal_plans.id)
 		FROM meal_plans
 		WHERE meal_plans.archived_at IS NULL
@@ -441,7 +441,7 @@ SELECT
 			)
 			AND meal_plans.belongs_to_household = $5
 	) AS filtered_count,
-    (
+	(
 		SELECT COUNT(meal_plans.id)
 		FROM meal_plans
 		WHERE meal_plans.archived_at IS NULL

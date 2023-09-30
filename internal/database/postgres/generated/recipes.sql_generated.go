@@ -32,10 +32,10 @@ func (q *Queries) ArchiveRecipe(ctx context.Context, db DBTX, arg *ArchiveRecipe
 const checkRecipeExistence = `-- name: CheckRecipeExistence :one
 
 SELECT EXISTS (
-    SELECT recipes.id
-    FROM recipes
-    WHERE recipes.archived_at IS NULL
-        AND recipes.id = $1
+	SELECT recipes.id
+	FROM recipes
+	WHERE recipes.archived_at IS NULL
+		AND recipes.id = $1
 )
 `
 
@@ -918,7 +918,7 @@ UPDATE recipes SET
 	yields_component_type = $12,
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
-    AND created_by_user = $13
+	AND created_by_user = $13
 	AND id = $14
 `
 

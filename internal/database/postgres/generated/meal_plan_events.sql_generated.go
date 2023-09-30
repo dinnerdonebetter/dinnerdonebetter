@@ -36,7 +36,7 @@ SELECT EXISTS (
 	FROM meal_plan_events
 	WHERE meal_plan_events.archived_at IS NULL
 		AND meal_plan_events.id = $1
-        AND meal_plan_events.belongs_to_meal_plan = $2
+		AND meal_plan_events.belongs_to_meal_plan = $2
 )
 `
 
@@ -107,7 +107,7 @@ SELECT
 FROM meal_plan_events
 WHERE
 	meal_plan_events.archived_at IS NULL
-    AND meal_plan_events.belongs_to_meal_plan = $1
+	AND meal_plan_events.belongs_to_meal_plan = $1
 `
 
 func (q *Queries) GetAllMealPlanEventsForMealPlan(ctx context.Context, db DBTX, mealPlanID string) ([]*MealPlanEvents, error) {
