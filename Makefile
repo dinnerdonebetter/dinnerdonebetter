@@ -151,7 +151,7 @@ queries_lint:
 		$(SQL_GENERATOR_IMAGE) vet --no-database --no-remote
 
 .PHONY: querier
-querier: queries_lint
+querier: queries queries_lint
 	rm --recursive --force internal/database/postgres/generated/*.go
 	docker run --rm \
 		--volume $(PWD):/src \

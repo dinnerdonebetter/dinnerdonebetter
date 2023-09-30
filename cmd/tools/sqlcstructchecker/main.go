@@ -2,13 +2,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/hashicorp/go-multierror"
 	"go/ast"
 	"go/parser"
 	"go/token"
 	"log"
 	"os"
 	"strings"
+
+	"github.com/hashicorp/go-multierror"
 )
 
 func noTestFiles(f os.FileInfo) bool {
@@ -115,7 +116,7 @@ func main() {
 																			}
 
 																			structsForField := getFieldsForStruct(fieldDef)
-																			for fieldName, _ := range structsForField {
+																			for fieldName := range structsForField {
 																				if _, used := fieldsUsed[fieldName]; !used {
 																					errors = multierror.Append(errors, fmt.Errorf("field %s not used in %s in %s", fieldName, lookup, strings.TrimPrefix(fileName, "internal/database/postgres/")))
 																				}

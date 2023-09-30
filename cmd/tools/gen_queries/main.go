@@ -97,7 +97,7 @@ func main() {
 		}
 
 		if !checkOnly {
-			if err = os.WriteFile(localFilePath, []byte(fileOutput), 0o644); err != nil {
+			if err = os.WriteFile(localFilePath, []byte(fileOutput), 0o600); err != nil {
 				errors = multierror.Append(errors, err)
 			}
 		}
