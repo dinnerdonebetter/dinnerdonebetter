@@ -264,3 +264,4 @@ line_count: ensure_scc_installed
 .PHONY: proxy_dev_db
 proxy_dev_db:
 	cloud_sql_proxy dinner-done-better-dev:us-central1:dev --port 5434
+

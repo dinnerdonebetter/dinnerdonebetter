@@ -1,9 +1,0 @@
-ALTER TABLE households ADD COLUMN "address_line_1" TEXT NOT NULL DEFAULT '';
-ALTER TABLE households ADD COLUMN "address_line_2" TEXT NOT NULL DEFAULT '';
-ALTER TABLE households ADD COLUMN "city" TEXT NOT NULL DEFAULT '';
-ALTER TABLE households ADD COLUMN "state" TEXT NOT NULL DEFAULT '';
-ALTER TABLE households ADD COLUMN "zip_code" TEXT NOT NULL DEFAULT '';
-ALTER TABLE households ADD COLUMN "country" TEXT NOT NULL DEFAULT '';
-ALTER TABLE households ADD COLUMN "latitude" NUMERIC(14, 11);
-ALTER TABLE households ADD COLUMN "longitude" NUMERIC(14, 11);
-ALTER TABLE households DROP COLUMN IF EXISTS "contact_email";

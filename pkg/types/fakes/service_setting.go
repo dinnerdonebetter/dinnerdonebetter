@@ -8,13 +8,15 @@ import (
 
 // BuildFakeServiceSetting builds a faked service setting.
 func BuildFakeServiceSetting() *types.ServiceSetting {
+	defaultValue := buildUniqueString()
+
 	return &types.ServiceSetting{
 		ID:           BuildFakeID(),
 		Name:         buildUniqueString(),
 		Type:         "user",
 		Description:  buildUniqueString(),
-		Enumeration:  []string{},
-		DefaultValue: pointers.Pointer(buildUniqueString()),
+		Enumeration:  []string{defaultValue},
+		DefaultValue: pointers.Pointer(defaultValue),
 		AdminsOnly:   true,
 		CreatedAt:    BuildFakeTime(),
 	}
