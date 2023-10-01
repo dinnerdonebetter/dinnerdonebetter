@@ -360,6 +360,5 @@ func (x *RecipeUpdateRequestInput) ValidateWithContext(ctx context.Context) erro
 		validation.Field(&x.Source, validation.Required),
 		validation.Field(&x.Description, validation.Required),
 		validation.Field(&x.MinimumEstimatedPortions, validation.Required),
-		validation.Field(&x.InspiredByRecipeID, validation.Required),
 	)
 }

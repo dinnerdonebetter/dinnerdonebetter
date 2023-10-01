@@ -34,7 +34,7 @@ func BuildFakeRecipe() *types.Recipe {
 		Slug:                     buildUniqueString(),
 		Source:                   buildUniqueString(),
 		Description:              buildUniqueString(),
-		InspiredByRecipeID:       func(x string) *string { return &x }(buildUniqueString()),
+		InspiredByRecipeID:       nil,
 		CreatedAt:                BuildFakeTime(),
 		CreatedByUser:            BuildFakeID(),
 		Steps:                    steps,

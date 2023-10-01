@@ -1,2 +1,0 @@
-ALTER TABLE recipe_step_ingredients DROP COLUMN product_of_recipe_step;
-ALTER TABLE recipe_step_instruments DROP COLUMN product_of_recipe_step;

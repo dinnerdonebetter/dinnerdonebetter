@@ -1,7 +1,0 @@
-ALTER TABLE recipe_step_products ALTER COLUMN minimum_storage_temperature_in_celsius DROP DEFAULT;
-ALTER TABLE recipe_step_products ALTER COLUMN minimum_storage_temperature_in_celsius DROP NOT NULL;
-ALTER TABLE recipe_step_products ALTER COLUMN maximum_storage_temperature_in_celsius DROP DEFAULT;
-ALTER TABLE recipe_step_products ALTER COLUMN maximum_storage_temperature_in_celsius DROP NOT NULL;
-
-UPDATE recipe_step_products SET minimum_storage_temperature_in_celsius = NULL where minimum_storage_temperature_in_celsius = 0;
-UPDATE recipe_step_products SET maximum_storage_temperature_in_celsius = NULL where maximum_storage_temperature_in_celsius = 0;
