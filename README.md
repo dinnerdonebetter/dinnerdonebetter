@@ -60,3 +60,6 @@ flowchart LR
     OutboundEmailerWorker-->Sendgrid
     Algolia-->APIServer
 ```
+
+insert into "darwin_migrations" ("applied_at", "checksum", "description", "execution_time", "id", "version") values (1696129822, '68affbfc11a1a8bf3a10f1d5ad70337e', 'basic infrastructural tables', 297313120, 1, 1);
+insert into "darwin_migrations" ("applied_at", "checksum", "description", "execution_time", "id", "version") values (1696129823, 'fbee63c677c6b5f397426ab2ec90f520', 'service types and tables', 954821440, 2, 2);
