@@ -184,10 +184,6 @@ func (x *RecipePrepTask) Update(input *RecipePrepTaskUpdateRequestInput) {
 		x.MaximumStorageTemperatureInCelsius = input.MaximumStorageTemperatureInCelsius
 	}
 
-	if input.BelongsToRecipe != nil && *input.BelongsToRecipe != x.BelongsToRecipe {
-		x.BelongsToRecipe = *input.BelongsToRecipe
-	}
-
 	if input.Name != nil && *input.Name != x.Name {
 		x.Name = *input.Name
 	}
@@ -207,7 +203,7 @@ var _ validation.ValidatableWithContext = (*RecipePrepTaskCreationRequestInput)(
 func (x *RecipePrepTaskCreationRequestInput) ValidateWithContext(ctx context.Context) error {
 	var result *multierror.Error
 
-	err := validation.ValidateStructWithContext(
+	if err := validation.ValidateStructWithContext(
 		ctx,
 		x,
 		validation.Field(&x.BelongsToRecipe, validation.Required),
@@ -217,16 +213,14 @@ func (x *RecipePrepTaskCreationRequestInput) ValidateWithContext(ctx context.Con
 		validation.Field(&x.MinimumStorageTemperatureInCelsius, validation.Required),
 		validation.Field(&x.MaximumStorageTemperatureInCelsius, validation.Required),
 		validation.Field(&x.MinimumTimeBufferBeforeRecipeInSeconds, validation.Required),
-	)
+	); err != nil {
+		result = multierror.Append(err, result)
+	}
 
 	// TODO: uncomment me
 	// if x.MinimumStorageTemperatureInCelsius != nil && x.MaximumStorageTemperatureInCelsius != nil && *x.MinimumStorageTemperatureInCelsius > *x.MaximumStorageTemperatureInCelsius {
 	// 	result = multierror.Append(fmt.Errorf("minimum storage temperature (%d) is greater than maximum storage temperature (%d)", x.MinimumStorageTemperatureInCelsius, x.MaximumStorageTemperatureInCelsius))
 	// }
-
-	if err != nil {
-		result = multierror.Append(err, result)
-	}
 
 	return result.ErrorOrNil()
 }

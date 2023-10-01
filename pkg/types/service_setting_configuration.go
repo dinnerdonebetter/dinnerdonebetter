@@ -129,7 +129,6 @@ func (x *ServiceSettingConfigurationCreationRequestInput) ValidateWithContext(ct
 		ctx,
 		x,
 		validation.Field(&x.Value, validation.Required),
-		validation.Field(&x.Notes, validation.Required),
 		validation.Field(&x.BelongsToUser, validation.Required),
 	)
 }
@@ -155,6 +154,6 @@ func (x *ServiceSettingConfigurationUpdateRequestInput) ValidateWithContext(ctx 
 		ctx,
 		x,
 		validation.Field(&x.Value, validation.Required),
-		validation.Field(&x.BelongsToUser, validation.Required),
+		validation.Field(&x.ServiceSettingID, validation.Required),
 	)
 }

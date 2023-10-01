@@ -3,7 +3,6 @@ package types
 import (
 	"context"
 	"encoding/gob"
-	"errors"
 	"net/http"
 	"time"
 
@@ -196,10 +195,6 @@ func (x *RecipeStep) Update(input *RecipeStepUpdateRequestInput) {
 		x.Optional = *input.Optional
 	}
 
-	if input.MinimumTemperatureInCelsius != nil && (x.MinimumTemperatureInCelsius == nil || (*input.MinimumTemperatureInCelsius != 0 && *input.MinimumTemperatureInCelsius != *x.MinimumTemperatureInCelsius)) {
-		x.MinimumTemperatureInCelsius = input.MinimumTemperatureInCelsius
-	}
-
 	if input.ExplicitInstructions != nil && *input.ExplicitInstructions != x.ExplicitInstructions {
 		x.ExplicitInstructions = *input.ExplicitInstructions
 	}
@@ -214,7 +209,6 @@ func (x *RecipeStep) Update(input *RecipeStepUpdateRequestInput) {
 }
 
 var _ validation.ValidatableWithContext = (*RecipeStepCreationRequestInput)(nil)
-var errOneInstrumentOrVesselRequired = errors.New("at least one instrument or vessel is required")
 
 // ValidateWithContext validates a RecipeStepCreationRequestInput.
 func (x *RecipeStepCreationRequestInput) ValidateWithContext(ctx context.Context) error {

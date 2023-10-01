@@ -73,10 +73,10 @@ func TestMealUpdateRequestInput_Validate(T *testing.T) {
 		}
 
 		actual := x.ValidateWithContext(context.Background())
-		assert.Nil(t, actual)
+		assert.NoError(t, actual)
 	})
 
-	T.Run("with empty strings", func(t *testing.T) {
+	T.Run("with invalid structure", func(t *testing.T) {
 		t.Parallel()
 
 		x := &MealUpdateRequestInput{}
@@ -99,7 +99,7 @@ func TestMealComponentCreationRequestInput_ValidateWithContext(T *testing.T) {
 		}
 
 		actual := x.ValidateWithContext(context.Background())
-		assert.Nil(t, actual)
+		assert.NoError(t, actual)
 	})
 }
 
@@ -155,7 +155,7 @@ func TestMealComponent_Update(T *testing.T) {
 		x := &MealComponent{}
 		input := &MealComponentUpdateRequestInput{}
 
-		fake.Struct(&input)
+		assert.NoError(t, fake.Struct(&input))
 
 		x.Update(input)
 	})
@@ -170,7 +170,7 @@ func TestMeal_Update(T *testing.T) {
 		x := &Meal{}
 		input := &MealUpdateRequestInput{}
 
-		fake.Struct(&input)
+		assert.NoError(t, fake.Struct(&input))
 		input.EligibleForMealPlans = pointers.Pointer(true)
 
 		x.Update(input)

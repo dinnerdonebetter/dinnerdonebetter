@@ -23,7 +23,7 @@ func TestRecipeStepInstrument_Update(T *testing.T) {
 		}
 		input := &RecipeStepInstrumentUpdateRequestInput{}
 
-		fake.Struct(&input)
+		assert.NoError(t, fake.Struct(&input))
 		input.Optional = pointers.Pointer(true)
 		input.RecipeStepProductID = pointers.Pointer("whatever")
 		input.MaximumQuantity = pointers.Pointer(uint32(123))
@@ -50,13 +50,39 @@ func TestRecipeStepInstrumentCreationRequestInput_Validate(T *testing.T) {
 		}
 
 		actual := x.ValidateWithContext(context.Background())
-		assert.Nil(t, actual)
+		assert.NoError(t, actual)
 	})
 
 	T.Run("with invalid structure", func(t *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepInstrumentCreationRequestInput{}
+
+		actual := x.ValidateWithContext(context.Background())
+		assert.Error(t, actual)
+	})
+}
+
+func TestRecipeStepInstrumentDatabaseCreationInput_Validate(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeStepInstrumentDatabaseCreationInput{
+			ID:                  t.Name(),
+			InstrumentID:        pointers.Pointer(t.Name()),
+			BelongsToRecipeStep: t.Name(),
+		}
+
+		actual := x.ValidateWithContext(context.Background())
+		assert.NoError(t, actual)
+	})
+
+	T.Run("with invalid structure", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeStepInstrumentDatabaseCreationInput{}
 
 		actual := x.ValidateWithContext(context.Background())
 		assert.Error(t, actual)
@@ -82,10 +108,10 @@ func TestRecipeStepInstrumentUpdateRequestInput_Validate(T *testing.T) {
 		}
 
 		actual := x.ValidateWithContext(context.Background())
-		assert.Nil(t, actual)
+		assert.NoError(t, actual)
 	})
 
-	T.Run("with empty strings", func(t *testing.T) {
+	T.Run("with invalid structure", func(t *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepInstrumentUpdateRequestInput{}

@@ -21,7 +21,7 @@ func TestValidMeasurementUnit_Update(T *testing.T) {
 		}
 		input := &ValidMeasurementUnitUpdateRequestInput{}
 
-		fake.Struct(&input)
+		assert.NoError(t, fake.Struct(&input))
 		input.Volumetric = pointers.Pointer(true)
 		input.Universal = pointers.Pointer(true)
 		input.Imperial = pointers.Pointer(false)
@@ -38,24 +38,71 @@ func TestValidMeasurementUnitCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidMeasurementUnitCreationRequestInput{
-			Name:        t.Name(),
-			Description: t.Name(),
-			Volumetric:  fake.Bool(),
-			IconPath:    t.Name(),
-			Universal:   fake.Bool(),
-			Metric:      true,
-			Imperial:    false,
-			PluralName:  t.Name(),
+			Name:   t.Name(),
+			Metric: true,
 		}
 
 		actual := x.ValidateWithContext(context.Background())
-		assert.Nil(t, actual)
+		assert.NoError(t, actual)
+	})
+
+	T.Run("with both metric and imperial", func(t *testing.T) {
+		t.Parallel()
+
+		x := &ValidMeasurementUnitCreationRequestInput{
+			Name:     t.Name(),
+			Metric:   true,
+			Imperial: true,
+		}
+
+		actual := x.ValidateWithContext(context.Background())
+		assert.Error(t, actual)
 	})
 
 	T.Run("with invalid structure", func(t *testing.T) {
 		t.Parallel()
 
 		x := &ValidMeasurementUnitCreationRequestInput{}
+
+		actual := x.ValidateWithContext(context.Background())
+		assert.Error(t, actual)
+	})
+}
+
+func TestValidMeasurementUnitDatabaseCreationInput_Validate(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &ValidMeasurementUnitDatabaseCreationInput{
+			ID:       t.Name(),
+			Name:     t.Name(),
+			Imperial: true,
+		}
+
+		actual := x.ValidateWithContext(context.Background())
+		assert.NoError(t, actual)
+	})
+
+	T.Run("with both metric and imperial", func(t *testing.T) {
+		t.Parallel()
+
+		x := &ValidMeasurementUnitDatabaseCreationInput{
+			ID:       t.Name(),
+			Name:     t.Name(),
+			Imperial: true,
+			Metric:   true,
+		}
+
+		actual := x.ValidateWithContext(context.Background())
+		assert.Error(t, actual)
+	})
+
+	T.Run("with invalid structure", func(t *testing.T) {
+		t.Parallel()
+
+		x := &ValidMeasurementUnitDatabaseCreationInput{}
 
 		actual := x.ValidateWithContext(context.Background())
 		assert.Error(t, actual)
@@ -69,21 +116,14 @@ func TestValidMeasurementUnitUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidMeasurementUnitUpdateRequestInput{
-			Name:        pointers.Pointer(t.Name()),
-			Description: pointers.Pointer(t.Name()),
-			Volumetric:  pointers.Pointer(fake.Bool()),
-			IconPath:    pointers.Pointer(t.Name()),
-			Universal:   pointers.Pointer(fake.Bool()),
-			Metric:      pointers.Pointer(fake.Bool()),
-			Imperial:    pointers.Pointer(fake.Bool()),
-			PluralName:  pointers.Pointer(t.Name()),
+			Name: pointers.Pointer(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
-		assert.Nil(t, actual)
+		assert.NoError(t, actual)
 	})
 
-	T.Run("with empty strings", func(t *testing.T) {
+	T.Run("with invalid structure", func(t *testing.T) {
 		t.Parallel()
 
 		x := &ValidMeasurementUnitUpdateRequestInput{}

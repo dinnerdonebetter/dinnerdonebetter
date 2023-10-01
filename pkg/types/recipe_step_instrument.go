@@ -3,7 +3,6 @@ package types
 import (
 	"context"
 	"encoding/gob"
-	"errors"
 	"net/http"
 	"time"
 
@@ -156,7 +155,6 @@ func (x *RecipeStepInstrument) Update(input *RecipeStepInstrumentUpdateRequestIn
 }
 
 var _ validation.ValidatableWithContext = (*RecipeStepInstrumentCreationRequestInput)(nil)
-var errInstrumentIDOrProductIndicesRequired = errors.New("either instrumentID or productOfRecipeStepIndex and productOfRecipeStepProductIndex must be set")
 
 // ValidateWithContext validates a RecipeStepInstrumentCreationRequestInput.
 func (x *RecipeStepInstrumentCreationRequestInput) ValidateWithContext(ctx context.Context) error {
@@ -188,7 +186,6 @@ func (x *RecipeStepInstrumentDatabaseCreationInput) ValidateWithContext(ctx cont
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.InstrumentID, validation.Required),
 		validation.Field(&x.BelongsToRecipeStep, validation.Required),
-		validation.Field(&x.Notes, validation.Required),
 	)
 }
 

@@ -87,7 +87,7 @@ func TestMealPlanEvent_Update(T *testing.T) {
 		x := &MealPlanEvent{}
 		input := &MealPlanEventUpdateRequestInput{}
 
-		fake.Struct(&input)
+		assert.NoError(t, fake.Struct(&input))
 		input.StartsAt = pointers.Pointer(time.Now())
 		input.EndsAt = pointers.Pointer(time.Now())
 

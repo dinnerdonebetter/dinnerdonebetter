@@ -337,6 +337,10 @@ func (i *UserLoginInput) ValidateWithContext(ctx context.Context, minUsernameLen
 
 // ValidateWithContext ensures our provided PasswordUpdateInput meets expectations.
 func (i *PasswordUpdateInput) ValidateWithContext(ctx context.Context, minPasswordLength uint8) error {
+	if i.CurrentPassword == i.NewPassword {
+		return errNewPasswordSameAsOld
+	}
+
 	return validation.ValidateStructWithContext(ctx, i,
 		validation.Field(&i.CurrentPassword, validation.Required, validation.Length(int(minPasswordLength), math.MaxInt8)),
 		validation.Field(&i.NewPassword, validation.Required, validation.Length(int(minPasswordLength), math.MaxInt8)),
@@ -369,7 +373,7 @@ func (i *UsernameUpdateInput) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, i,
 		validation.Field(&i.NewUsername, validation.Required),
 		validation.Field(&i.CurrentPassword, validation.Required),
-		validation.Field(&i.TOTPToken, validation.Required, totpTokenLengthRule),
+		validation.Field(&i.TOTPToken, validation.When(i.TOTPToken != "", totpTokenLengthRule)),
 	)
 }
 
@@ -380,7 +384,7 @@ func (i *UserEmailAddressUpdateInput) ValidateWithContext(ctx context.Context) e
 	return validation.ValidateStructWithContext(ctx, i,
 		validation.Field(&i.NewEmailAddress, validation.Required),
 		validation.Field(&i.CurrentPassword, validation.Required),
-		validation.Field(&i.TOTPToken, validation.Required, totpTokenLengthRule),
+		validation.Field(&i.TOTPToken, validation.When(i.TOTPToken != "", totpTokenLengthRule)),
 	)
 }
 
@@ -391,6 +395,6 @@ func (i *UserDetailsUpdateRequestInput) ValidateWithContext(ctx context.Context)
 	return validation.ValidateStructWithContext(ctx, i,
 		validation.Field(&i.FirstName, validation.Required),
 		validation.Field(&i.CurrentPassword, validation.Required),
-		validation.Field(&i.TOTPToken, validation.Required, totpTokenLengthRule),
+		validation.Field(&i.TOTPToken, validation.When(i.TOTPToken != "", totpTokenLengthRule)),
 	)
 }

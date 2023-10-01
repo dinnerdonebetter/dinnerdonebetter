@@ -19,7 +19,7 @@ func TestRecipeRating_Update(T *testing.T) {
 		x := &RecipeRating{}
 		input := &RecipeRatingUpdateRequestInput{}
 
-		fake.Struct(&input)
+		assert.NoError(t, fake.Struct(&input))
 
 		x.Update(input)
 	})

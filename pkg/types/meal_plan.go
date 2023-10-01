@@ -3,7 +3,6 @@ package types
 import (
 	"context"
 	"encoding/gob"
-	"errors"
 	"net/http"
 	"time"
 
@@ -132,8 +131,6 @@ func (x *MealPlan) Update(input *MealPlanUpdateRequestInput) {
 		x.Notes = *input.Notes
 	}
 }
-
-var errInvalidVotingDeadline = errors.New("invalid voting deadline")
 
 var _ validation.ValidatableWithContext = (*MealPlanCreationRequestInput)(nil)
 

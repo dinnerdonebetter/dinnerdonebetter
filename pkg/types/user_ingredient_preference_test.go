@@ -5,6 +5,8 @@ import (
 	"math"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+
 	fake "github.com/brianvoe/gofakeit/v6"
 	"github.com/stretchr/testify/assert"
 )
@@ -18,7 +20,7 @@ func TestUserIngredientPreference_Update(T *testing.T) {
 		x := &UserIngredientPreference{}
 		input := &UserIngredientPreferenceUpdateRequestInput{}
 
-		fake.Struct(&input)
+		assert.NoError(t, fake.Struct(&input))
 
 		x.Update(input)
 	})
@@ -61,5 +63,56 @@ func TestUserIngredientPreferenceCreationRequestInput_ValidateWithContext(T *tes
 		}
 
 		assert.NoError(t, input.ValidateWithContext(ctx))
+	})
+}
+
+func TestUserIngredientPreferenceDatabaseCreationInput_Validate(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &UserIngredientPreferenceDatabaseCreationInput{
+			ValidIngredientID: t.Name(),
+			Rating:            minRating,
+			BelongsToUser:     t.Name(),
+		}
+
+		actual := x.ValidateWithContext(context.Background())
+		assert.NoError(t, actual)
+	})
+
+	T.Run("with invalid structure", func(t *testing.T) {
+		t.Parallel()
+
+		x := &UserIngredientPreferenceDatabaseCreationInput{}
+
+		actual := x.ValidateWithContext(context.Background())
+		assert.Error(t, actual)
+	})
+}
+
+func TestUserIngredientPreferenceUpdateRequestInput_Validate(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &UserIngredientPreferenceUpdateRequestInput{
+			IngredientID: pointers.Pointer(t.Name()),
+			Rating:       pointers.Pointer(minRating),
+		}
+
+		actual := x.ValidateWithContext(context.Background())
+		assert.NoError(t, actual)
+	})
+
+	T.Run("with invalid structure", func(t *testing.T) {
+		t.Parallel()
+
+		x := &UserIngredientPreferenceUpdateRequestInput{}
+
+		actual := x.ValidateWithContext(context.Background())
+		assert.Error(t, actual)
 	})
 }

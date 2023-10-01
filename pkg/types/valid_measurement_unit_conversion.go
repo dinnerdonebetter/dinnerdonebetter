@@ -123,6 +123,10 @@ var _ validation.ValidatableWithContext = (*ValidMeasurementUnitConversionCreati
 
 // ValidateWithContext validates a ValidMeasurementUnitConversionCreationRequestInput.
 func (x *ValidMeasurementUnitConversionCreationRequestInput) ValidateWithContext(ctx context.Context) error {
+	if x.From == x.To {
+		return validation.NewError("from", "cannot be the same as to")
+	}
+
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,

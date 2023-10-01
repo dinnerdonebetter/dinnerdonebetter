@@ -3,7 +3,6 @@ package types
 import (
 	"context"
 	"encoding/gob"
-	"errors"
 	"net/http"
 	"time"
 
@@ -207,8 +206,6 @@ func (x *MealComponent) Update(input *MealComponentUpdateRequestInput) {
 		x.RecipeScale = *input.RecipeScale
 	}
 }
-
-var errOneMainMinimumRequired = errors.New("at least one main required for meal creation")
 
 var _ validation.ValidatableWithContext = (*MealCreationRequestInput)(nil)
 
