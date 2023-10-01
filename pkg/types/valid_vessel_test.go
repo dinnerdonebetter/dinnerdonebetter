@@ -21,7 +21,7 @@ func TestValidVessel_Update(T *testing.T) {
 		}
 		input := &ValidVesselUpdateRequestInput{}
 
-		fake.Struct(&input)
+		assert.NoError(t, fake.Struct(&input))
 		input.CapacityUnitID = pointers.Pointer(t.Name())
 		input.UsableForStorage = pointers.Pointer(true)
 		input.DisplayInSummaryLists = pointers.Pointer(true)
@@ -46,7 +46,7 @@ func TestValidVesselCreationRequestInput_Validate(T *testing.T) {
 		}
 
 		actual := x.ValidateWithContext(context.Background())
-		assert.Nil(t, actual)
+		assert.NoError(t, actual)
 	})
 
 	T.Run("with invalid structure", func(t *testing.T) {
@@ -72,7 +72,7 @@ func TestValidVesselDatabaseCreationInput_Validate(T *testing.T) {
 		}
 
 		actual := x.ValidateWithContext(context.Background())
-		assert.Nil(t, actual)
+		assert.NoError(t, actual)
 	})
 
 	T.Run("with invalid structure", func(t *testing.T) {
@@ -98,7 +98,7 @@ func TestValidVesselUpdateRequestInput_Validate(T *testing.T) {
 		}
 
 		actual := x.ValidateWithContext(context.Background())
-		assert.Nil(t, actual)
+		assert.NoError(t, actual)
 	})
 
 	T.Run("with invalid structure", func(t *testing.T) {

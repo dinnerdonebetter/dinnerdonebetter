@@ -172,7 +172,6 @@ func (x *RecipeStepVesselDatabaseCreationInput) ValidateWithContext(ctx context.
 		x,
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.BelongsToRecipeStep, validation.Required),
-		validation.Field(&x.Notes, validation.Required),
 	)
 }
 

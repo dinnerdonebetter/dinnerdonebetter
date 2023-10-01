@@ -1,15 +1,10 @@
 package types
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
-)
-
-var (
-	errInvalidType = errors.New("unexpected type received")
 )
 
 var _ validation.Rule = (*stringDurationValidator)(nil)

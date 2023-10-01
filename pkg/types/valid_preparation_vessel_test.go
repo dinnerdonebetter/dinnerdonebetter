@@ -22,7 +22,7 @@ func TestValidPreparationVesselCreationRequestInput_Validate(T *testing.T) {
 		}
 
 		actual := x.ValidateWithContext(context.Background())
-		assert.Nil(t, actual)
+		assert.NoError(t, actual)
 	})
 
 	T.Run("with invalid structure", func(t *testing.T) {
@@ -48,10 +48,10 @@ func TestValidPreparationVesselUpdateRequestInput_Validate(T *testing.T) {
 		}
 
 		actual := x.ValidateWithContext(context.Background())
-		assert.Nil(t, actual)
+		assert.NoError(t, actual)
 	})
 
-	T.Run("with empty strings", func(t *testing.T) {
+	T.Run("with invalid structure", func(t *testing.T) {
 		t.Parallel()
 
 		x := &ValidPreparationVesselUpdateRequestInput{}

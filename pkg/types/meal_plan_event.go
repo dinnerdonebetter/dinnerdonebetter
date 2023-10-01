@@ -3,7 +3,6 @@ package types
 import (
 	"context"
 	"encoding/gob"
-	"errors"
 	"net/http"
 	"time"
 
@@ -132,8 +131,6 @@ func (x *MealPlanEvent) Update(input *MealPlanEventUpdateRequestInput) {
 }
 
 var _ validation.ValidatableWithContext = (*MealPlanEventCreationRequestInput)(nil)
-
-var errStartsAfterItEnds = errors.New("invalid start and end dates")
 
 // ValidateWithContext validates a MealPlanEventCreationRequestInput.
 func (x *MealPlanEventCreationRequestInput) ValidateWithContext(ctx context.Context) error {

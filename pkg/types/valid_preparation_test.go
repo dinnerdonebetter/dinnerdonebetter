@@ -26,7 +26,7 @@ func TestValidPreparationCreationRequestInput_Validate(T *testing.T) {
 		}
 
 		actual := x.ValidateWithContext(context.Background())
-		assert.Nil(t, actual)
+		assert.NoError(t, actual)
 	})
 
 	T.Run("with invalid structure", func(t *testing.T) {
@@ -55,10 +55,10 @@ func TestValidPreparationUpdateRequestInput_Validate(T *testing.T) {
 		}
 
 		actual := x.ValidateWithContext(context.Background())
-		assert.Nil(t, actual)
+		assert.NoError(t, actual)
 	})
 
-	T.Run("with empty strings", func(t *testing.T) {
+	T.Run("with invalid structure", func(t *testing.T) {
 		t.Parallel()
 
 		x := &ValidPreparationUpdateRequestInput{}
@@ -81,7 +81,7 @@ func TestValidPreparation_Update(T *testing.T) {
 		}
 		input := &ValidPreparationUpdateRequestInput{}
 
-		fake.Struct(&input)
+		assert.NoError(t, fake.Struct(&input))
 		input.YieldsNothing = pointers.Pointer(true)
 		input.RestrictToIngredients = pointers.Pointer(true)
 		input.MaximumIngredientCount = pointers.Pointer(int32(1))

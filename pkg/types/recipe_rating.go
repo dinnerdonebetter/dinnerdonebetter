@@ -3,7 +3,6 @@ package types
 import (
 	"context"
 	"encoding/gob"
-	"errors"
 	"net/http"
 	"time"
 
@@ -146,7 +145,7 @@ func (x *RecipeRatingCreationRequestInput) ValidateWithContext(ctx context.Conte
 	var errs *multierror.Error
 
 	if x.Cleanup == 0 && x.Difficulty == 0 && x.Instructions == 0 && x.Overall == 0 && x.Taste == 0 {
-		errs = multierror.Append(errs, errors.New("recipe rating must have at least one rating"))
+		errs = multierror.Append(errs, errAtLeastOneRatingRequired)
 	}
 
 	if err := validation.ValidateStructWithContext(
@@ -167,7 +166,7 @@ func (x *RecipeRatingDatabaseCreationInput) ValidateWithContext(ctx context.Cont
 	var errs *multierror.Error
 
 	if x.Cleanup == 0 && x.Difficulty == 0 && x.Instructions == 0 && x.Overall == 0 && x.Taste == 0 {
-		errs = multierror.Append(errs, errors.New("recipe rating must have at least one rating"))
+		errs = multierror.Append(errs, errAtLeastOneRatingRequired)
 	}
 
 	if err := validation.ValidateStructWithContext(

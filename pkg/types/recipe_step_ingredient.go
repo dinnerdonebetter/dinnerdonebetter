@@ -143,7 +143,7 @@ func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateRequestIn
 		x.RecipeStepProductID = input.RecipeStepProductID
 	}
 
-	if input.RecipeStepProductRecipeID != nil && x.RecipeStepProductRecipeID != nil && *input.RecipeStepProductRecipeID != *x.RecipeStepProductRecipeID {
+	if input.RecipeStepProductRecipeID != nil && ((x.RecipeStepProductRecipeID != nil && *input.RecipeStepProductRecipeID != *x.RecipeStepProductRecipeID) || x.RecipeStepProductRecipeID == nil) {
 		x.RecipeStepProductRecipeID = input.RecipeStepProductRecipeID
 	}
 
@@ -159,7 +159,7 @@ func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateRequestIn
 		x.MinimumQuantity = *input.MinimumQuantity
 	}
 
-	if input.MaximumQuantity != nil && x.MaximumQuantity != nil && *input.MaximumQuantity != *x.MaximumQuantity {
+	if input.MaximumQuantity != nil && ((x.MaximumQuantity != nil && *input.MaximumQuantity != *x.MaximumQuantity) || x.MaximumQuantity == nil) {
 		x.MaximumQuantity = input.MaximumQuantity
 	}
 
@@ -179,7 +179,7 @@ func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateRequestIn
 		x.OptionIndex = *input.OptionIndex
 	}
 
-	if input.VesselIndex != nil && x.VesselIndex != nil && *input.VesselIndex != *x.VesselIndex {
+	if input.VesselIndex != nil && ((x.VesselIndex != nil && *input.VesselIndex != *x.VesselIndex) || x.VesselIndex == nil) {
 		x.VesselIndex = input.VesselIndex
 	}
 
@@ -187,7 +187,7 @@ func (x *RecipeStepIngredient) Update(input *RecipeStepIngredientUpdateRequestIn
 		x.ToTaste = *input.ToTaste
 	}
 
-	if input.ProductPercentageToUse != nil && x.ProductPercentageToUse != nil && *input.ProductPercentageToUse != *x.ProductPercentageToUse {
+	if input.ProductPercentageToUse != nil && ((x.ProductPercentageToUse != nil && *input.ProductPercentageToUse != *x.ProductPercentageToUse) || x.ProductPercentageToUse == nil) {
 		x.ProductPercentageToUse = input.ProductPercentageToUse
 	}
 }

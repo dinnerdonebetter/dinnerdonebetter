@@ -3,7 +3,6 @@ package types
 import (
 	"context"
 	"encoding/gob"
-	"errors"
 	"net/http"
 	"time"
 
@@ -193,8 +192,8 @@ var _ validation.ValidatableWithContext = (*ValidMeasurementUnitCreationRequestI
 func (x *ValidMeasurementUnitCreationRequestInput) ValidateWithContext(ctx context.Context) error {
 	var result *multierror.Error
 
-	if x.Metric && x.Imperial {
-		result = multierror.Append(result, errors.New("cannot be both metric and imperial"))
+	if (x.Metric && x.Imperial) || (!x.Metric && !x.Imperial) {
+		result = multierror.Append(result, errMustBeEitherMetricOrImperial)
 	}
 
 	if err := validation.ValidateStructWithContext(
@@ -214,8 +213,8 @@ var _ validation.ValidatableWithContext = (*ValidMeasurementUnitDatabaseCreation
 func (x *ValidMeasurementUnitDatabaseCreationInput) ValidateWithContext(ctx context.Context) error {
 	var result *multierror.Error
 
-	if x.Metric && x.Imperial {
-		result = multierror.Append(result, errors.New("cannot be both metric and imperial"))
+	if (x.Metric && x.Imperial) || (!x.Metric && !x.Imperial) {
+		result = multierror.Append(result, errMustBeEitherMetricOrImperial)
 	}
 
 	if err := validation.ValidateStructWithContext(

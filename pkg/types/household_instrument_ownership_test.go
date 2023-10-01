@@ -19,7 +19,7 @@ func TestHouseholdInstrumentOwnership_Update(T *testing.T) {
 		x := &HouseholdInstrumentOwnership{}
 		input := &HouseholdInstrumentOwnershipUpdateRequestInput{}
 
-		fake.Struct(&input)
+		assert.NoError(t, fake.Struct(&input))
 
 		x.Update(input)
 	})

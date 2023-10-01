@@ -19,7 +19,7 @@ func TestMealPlanOption_Update(T *testing.T) {
 		x := &MealPlanOption{}
 		input := &MealPlanOptionUpdateRequestInput{}
 
-		fake.Struct(&input)
+		assert.NoError(t, fake.Struct(&input))
 
 		x.Update(input)
 	})
@@ -39,7 +39,7 @@ func TestMealPlanOptionCreationRequestInput_Validate(T *testing.T) {
 		}
 
 		actual := x.ValidateWithContext(context.Background())
-		assert.Nil(t, actual)
+		assert.NoError(t, actual)
 	})
 
 	T.Run("with invalid structure", func(t *testing.T) {
@@ -65,7 +65,7 @@ func TestMealPlanOptionDatabaseCreationInput_Validate(T *testing.T) {
 		}
 
 		actual := x.ValidateWithContext(context.Background())
-		assert.Nil(t, actual)
+		assert.NoError(t, actual)
 	})
 
 	T.Run("with invalid structure", func(t *testing.T) {
@@ -93,10 +93,10 @@ func TestMealPlanOptionUpdateRequestInput_Validate(T *testing.T) {
 		}
 
 		actual := x.ValidateWithContext(context.Background())
-		assert.Nil(t, actual)
+		assert.NoError(t, actual)
 	})
 
-	T.Run("with empty strings", func(t *testing.T) {
+	T.Run("with invalid structure", func(t *testing.T) {
 		t.Parallel()
 
 		x := &MealPlanOptionUpdateRequestInput{}

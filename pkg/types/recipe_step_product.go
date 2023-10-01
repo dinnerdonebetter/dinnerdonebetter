@@ -229,9 +229,8 @@ func (x *RecipeStepProductDatabaseCreationInput) ValidateWithContext(ctx context
 		x,
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.Name, validation.Required),
+		validation.Field(&x.BelongsToRecipeStep, validation.Required),
 		validation.Field(&x.Type, validation.In(RecipeStepProductIngredientType, RecipeStepProductInstrumentType, RecipeStepProductVesselType)),
-		validation.Field(&x.MinimumQuantity, validation.Required),
-		validation.Field(&x.MeasurementUnitID, validation.Required),
 	)
 }
 

@@ -82,7 +82,7 @@ func TestMealPlanGroceryListItem_Update(T *testing.T) {
 		}
 		input := &MealPlanGroceryListItemUpdateRequestInput{}
 
-		fake.Struct(&input)
+		assert.NoError(t, fake.Struct(&input))
 		input.PurchasedMeasurementUnitID = pointers.Pointer(t.Name())
 		input.MaximumQuantityNeeded = pointers.Pointer(float32(3.21))
 

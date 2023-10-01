@@ -17,8 +17,8 @@ const (
 	// UserIngredientPreferenceArchivedCustomerEventType indicates a user ingredient preference was archived.
 	UserIngredientPreferenceArchivedCustomerEventType CustomerEventType = "user_ingredient_preference_archived"
 
-	minRating = -10
-	maxRating = 10
+	minRating int8 = -10
+	maxRating int8 = 10
 )
 
 func init() {

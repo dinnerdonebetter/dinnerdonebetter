@@ -19,7 +19,7 @@ func TestRecipeStepCompletionCondition_Update(T *testing.T) {
 		x := &RecipeStepCompletionCondition{}
 		input := &RecipeStepCompletionConditionUpdateRequestInput{}
 
-		fake.Struct(&input)
+		assert.NoError(t, fake.Struct(&input))
 		input.Optional = pointers.Pointer(true)
 
 		x.Update(input)
@@ -40,13 +40,147 @@ func TestRecipeStepCompletionConditionCreationRequestInput_Validate(T *testing.T
 		}
 
 		actual := x.ValidateWithContext(context.Background())
-		assert.Nil(t, actual)
+		assert.NoError(t, actual)
 	})
 
 	T.Run("with invalid structure", func(t *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepCompletionConditionCreationRequestInput{}
+
+		actual := x.ValidateWithContext(context.Background())
+		assert.Error(t, actual)
+	})
+}
+
+func TestRecipeStepCompletionConditionIngredientCreationRequestInput_Validate(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeStepCompletionConditionIngredientCreationRequestInput{
+			RecipeStepIngredient: t.Name(),
+		}
+
+		actual := x.ValidateWithContext(context.Background())
+		assert.NoError(t, actual)
+	})
+
+	T.Run("with invalid structure", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeStepCompletionConditionIngredientCreationRequestInput{}
+
+		actual := x.ValidateWithContext(context.Background())
+		assert.Error(t, actual)
+	})
+}
+
+func TestRecipeStepCompletionConditionForExistingRecipeCreationRequestInput_Validate(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeStepCompletionConditionForExistingRecipeCreationRequestInput{
+			IngredientStateID: t.Name(),
+			Ingredients: []*RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput{
+				{
+					RecipeStepIngredient: t.Name(),
+				},
+			},
+		}
+
+		actual := x.ValidateWithContext(context.Background())
+		assert.NoError(t, actual)
+	})
+
+	T.Run("with invalid structure", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeStepCompletionConditionForExistingRecipeCreationRequestInput{}
+
+		actual := x.ValidateWithContext(context.Background())
+		assert.Error(t, actual)
+	})
+}
+
+func TestRecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput_Validate(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput{
+			RecipeStepIngredient: t.Name(),
+		}
+
+		actual := x.ValidateWithContext(context.Background())
+		assert.NoError(t, actual)
+	})
+
+	T.Run("with invalid structure", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput{}
+
+		actual := x.ValidateWithContext(context.Background())
+		assert.Error(t, actual)
+	})
+}
+
+func TestRecipeStepCompletionConditionDatabaseCreationInput_Validate(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeStepCompletionConditionDatabaseCreationInput{
+			ID:                  t.Name(),
+			IngredientStateID:   t.Name(),
+			BelongsToRecipeStep: t.Name(),
+			Ingredients: []*RecipeStepCompletionConditionIngredientDatabaseCreationInput{
+				{
+					RecipeStepIngredient:                   t.Name(),
+					BelongsToRecipeStepCompletionCondition: t.Name(),
+				},
+			},
+		}
+
+		actual := x.ValidateWithContext(context.Background())
+		assert.NoError(t, actual)
+	})
+
+	T.Run("with invalid structure", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeStepCompletionConditionDatabaseCreationInput{}
+
+		actual := x.ValidateWithContext(context.Background())
+		assert.Error(t, actual)
+	})
+}
+
+func TestRecipeStepCompletionConditionIngredientDatabaseCreationInput_Validate(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeStepCompletionConditionIngredientDatabaseCreationInput{
+			RecipeStepIngredient:                   t.Name(),
+			BelongsToRecipeStepCompletionCondition: t.Name(),
+		}
+
+		actual := x.ValidateWithContext(context.Background())
+		assert.NoError(t, actual)
+	})
+
+	T.Run("with invalid structure", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeStepCompletionConditionIngredientDatabaseCreationInput{}
 
 		actual := x.ValidateWithContext(context.Background())
 		assert.Error(t, actual)
@@ -66,10 +200,10 @@ func TestRecipeStepCompletionConditionUpdateRequestInput_Validate(T *testing.T) 
 		}
 
 		actual := x.ValidateWithContext(context.Background())
-		assert.Nil(t, actual)
+		assert.NoError(t, actual)
 	})
 
-	T.Run("with empty strings", func(t *testing.T) {
+	T.Run("with invalid structure", func(t *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepCompletionConditionUpdateRequestInput{}

@@ -19,7 +19,12 @@ func TestRecipeStepIngredient_Update(T *testing.T) {
 		x := &RecipeStepIngredient{}
 		input := &RecipeStepIngredientUpdateRequestInput{}
 
-		fake.Struct(&input)
+		assert.NoError(t, fake.Struct(&input))
+		input.RecipeStepProductRecipeID = pointers.Pointer(t.Name())
+		input.MaximumQuantity = pointers.Pointer(fake.Float32())
+		input.Optional = pointers.Pointer(true)
+		input.VesselIndex = pointers.Pointer(fake.Uint16())
+		input.ProductPercentageToUse = pointers.Pointer(fake.Float32())
 
 		x.Update(input)
 	})
@@ -41,13 +46,39 @@ func TestRecipeStepIngredientCreationRequestInput_Validate(T *testing.T) {
 		}
 
 		actual := x.ValidateWithContext(context.Background())
-		assert.Nil(t, actual)
+		assert.NoError(t, actual)
 	})
 
 	T.Run("with invalid structure", func(t *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepIngredientCreationRequestInput{}
+
+		actual := x.ValidateWithContext(context.Background())
+		assert.Error(t, actual)
+	})
+}
+
+func TestRecipeStepIngredientDatabaseCreationInput_Validate(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeStepIngredientDatabaseCreationInput{
+			ID:                t.Name(),
+			MeasurementUnitID: t.Name(),
+			MinimumQuantity:   fake.Float32(),
+		}
+
+		actual := x.ValidateWithContext(context.Background())
+		assert.NoError(t, actual)
+	})
+
+	T.Run("with invalid structure", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeStepIngredientDatabaseCreationInput{}
 
 		actual := x.ValidateWithContext(context.Background())
 		assert.Error(t, actual)
@@ -70,10 +101,10 @@ func TestRecipeStepIngredientUpdateRequestInput_Validate(T *testing.T) {
 		}
 
 		actual := x.ValidateWithContext(context.Background())
-		assert.Nil(t, actual)
+		assert.NoError(t, actual)
 	})
 
-	T.Run("with empty strings", func(t *testing.T) {
+	T.Run("with invalid structure", func(t *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepIngredientUpdateRequestInput{}

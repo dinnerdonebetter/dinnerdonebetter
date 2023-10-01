@@ -22,7 +22,7 @@ func TestRecipeStepProduct_Update(T *testing.T) {
 		}
 		input := &RecipeStepProductUpdateRequestInput{}
 
-		fake.Struct(&input)
+		assert.NoError(t, fake.Struct(&input))
 		input.Compostable = pointers.Pointer(true)
 		input.ContainedInVesselIndex = pointers.Pointer(uint16(1))
 		input.IsLiquid = pointers.Pointer(true)
@@ -51,7 +51,7 @@ func TestRecipeStepProductCreationRequestInput_Validate(T *testing.T) {
 		}
 
 		actual := x.ValidateWithContext(context.Background())
-		assert.Nil(t, actual)
+		assert.NoError(t, actual)
 	})
 
 	T.Run("with invalid structure", func(t *testing.T) {
@@ -84,10 +84,10 @@ func TestRecipeStepProductUpdateRequestInput_Validate(T *testing.T) {
 		}
 
 		actual := x.ValidateWithContext(context.Background())
-		assert.Nil(t, actual)
+		assert.NoError(t, actual)
 	})
 
-	T.Run("with empty strings", func(t *testing.T) {
+	T.Run("with invalid structure", func(t *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepProductUpdateRequestInput{}

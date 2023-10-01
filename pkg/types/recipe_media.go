@@ -129,7 +129,9 @@ func (x *RecipeMediaCreationRequestInput) ValidateWithContext(ctx context.Contex
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		// TODO: populate this
+		validation.Field(&x.BelongsToRecipe, validation.Required),
+		validation.Field(&x.MimeType, validation.Required),
+		validation.Field(&x.BelongsToRecipeStep, validation.NilOrNotEmpty),
 	)
 }
 
@@ -141,20 +143,10 @@ func (x *RecipeMediaDatabaseCreationInput) ValidateWithContext(ctx context.Conte
 		ctx,
 		x,
 		validation.Field(&x.ID, validation.Required),
+		validation.Field(&x.BelongsToRecipe, validation.Required),
 		validation.Field(&x.MimeType, validation.Required),
 		validation.Field(&x.InternalPath, validation.Required),
 		validation.Field(&x.ExternalPath, validation.Required),
 		validation.Field(&x.Index, validation.Required),
-	)
-}
-
-var _ validation.ValidatableWithContext = (*RecipeMediaUpdateRequestInput)(nil)
-
-// ValidateWithContext validates a RecipeMediaUpdateRequestInput.
-func (x *RecipeMediaUpdateRequestInput) ValidateWithContext(ctx context.Context) error {
-	return validation.ValidateStructWithContext(
-		ctx,
-		x,
-		// TODO: populate this
 	)
 }

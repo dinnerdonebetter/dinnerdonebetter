@@ -17,7 +17,7 @@ func TestHousehold_Update(T *testing.T) {
 		x := &Household{}
 		input := &HouseholdUpdateRequestInput{}
 
-		fake.Struct(&input)
+		assert.NoError(t, fake.Struct(&input))
 
 		x.Update(input)
 	})

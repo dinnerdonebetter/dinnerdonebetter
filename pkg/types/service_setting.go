@@ -3,8 +3,8 @@ package types
 import (
 	"context"
 	"encoding/gob"
-	"errors"
 	"net/http"
+	"slices"
 	"time"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
@@ -131,15 +131,8 @@ var _ validation.ValidatableWithContext = (*ServiceSettingCreationRequestInput)(
 func (x *ServiceSettingCreationRequestInput) ValidateWithContext(ctx context.Context) error {
 	var result *multierror.Error
 
-	var defaultValueFoundInEnumeration bool
-	for _, enum := range x.Enumeration {
-		if x.DefaultValue != nil && enum == *x.DefaultValue {
-			defaultValueFoundInEnumeration = true
-		}
-	}
-
-	if !defaultValueFoundInEnumeration && len(x.Enumeration) > 0 && x.DefaultValue != nil && *x.DefaultValue != "" {
-		result = multierror.Append(result, errors.New("default value must be in enumeration"))
+	if x.DefaultValue != nil && !slices.Contains(x.Enumeration, *x.DefaultValue) {
+		result = multierror.Append(result, errDefaultValueMustBeEnumerationValue)
 	}
 
 	if err := validation.ValidateStructWithContext(
@@ -147,6 +140,9 @@ func (x *ServiceSettingCreationRequestInput) ValidateWithContext(ctx context.Con
 		x,
 		validation.Field(&x.Name, validation.Required),
 		validation.Field(&x.Type, validation.Required),
+		validation.Field(&x.Description, validation.Required),
+		validation.Field(&x.Enumeration, validation.When(x.DefaultValue != nil, validation.Required)),
+		validation.Field(&x.DefaultValue, validation.When(len(x.Enumeration) != 0, validation.Required)),
 	); err != nil {
 		result = multierror.Append(result, err)
 	}
@@ -162,8 +158,11 @@ func (x *ServiceSettingDatabaseCreationInput) ValidateWithContext(ctx context.Co
 		ctx,
 		x,
 		validation.Field(&x.ID, validation.Required),
-		validation.Field(&x.Type, validation.Required),
 		validation.Field(&x.Name, validation.Required),
+		validation.Field(&x.Description, validation.Required),
+		validation.Field(&x.Type, validation.Required),
+		validation.Field(&x.Enumeration, validation.When(x.DefaultValue != nil, validation.Required)),
+		validation.Field(&x.DefaultValue, validation.When(len(x.Enumeration) != 0, validation.Required)),
 	)
 }
 
@@ -173,15 +172,8 @@ var _ validation.ValidatableWithContext = (*ServiceSettingUpdateRequestInput)(ni
 func (x *ServiceSettingUpdateRequestInput) ValidateWithContext(ctx context.Context) error {
 	var result *multierror.Error
 
-	var defaultValueFoundInEnumeration bool
-	for _, enum := range x.Enumeration {
-		if x.DefaultValue != nil && enum == *x.DefaultValue {
-			defaultValueFoundInEnumeration = true
-		}
-	}
-
-	if !defaultValueFoundInEnumeration && len(x.Enumeration) > 0 && x.DefaultValue != nil && *x.DefaultValue != "" {
-		result = multierror.Append(result, errors.New("default value must be in enumeration"))
+	if x.DefaultValue != nil && !slices.Contains(x.Enumeration, *x.DefaultValue) {
+		result = multierror.Append(result, errDefaultValueMustBeEnumerationValue)
 	}
 
 	if err := validation.ValidateStructWithContext(

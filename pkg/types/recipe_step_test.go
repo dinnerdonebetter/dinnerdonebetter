@@ -55,9 +55,9 @@ func TestRecipeStep_Update(T *testing.T) {
 		x := &RecipeStep{
 			MinimumTemperatureInCelsius: pointers.Pointer(float32(123.45)),
 		}
-		input := &RecipeStepUpdateRequestInput{}
 
-		fake.Struct(&input)
+		input := &RecipeStepUpdateRequestInput{}
+		assert.NoError(t, fake.Struct(&input))
 		input.Optional = pointers.Pointer(true)
 		input.StartTimerAutomatically = pointers.Pointer(true)
 		input.MinimumTemperatureInCelsius = pointers.Pointer(float32(543.21))
@@ -76,7 +76,7 @@ func TestRecipeStepCreationRequestInput_Validate(T *testing.T) {
 		x := buildValidRecipeStepCreationRequestInput()
 
 		actual := x.ValidateWithContext(context.Background())
-		assert.Nil(t, actual)
+		assert.NoError(t, actual)
 	})
 
 	T.Run("with invalid structure", func(t *testing.T) {
@@ -121,6 +121,39 @@ func TestRecipeStepCreationRequestInput_Validate(T *testing.T) {
 	})
 }
 
+func TestRecipeStepDatabaseCreationInput_Validate(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeStepDatabaseCreationInput{
+			ID:            t.Name(),
+			PreparationID: t.Name(),
+			Products: []*RecipeStepProductDatabaseCreationInput{
+				{
+					ID:                  t.Name(),
+					Name:                t.Name(),
+					Type:                RecipeStepProductIngredientType,
+					BelongsToRecipeStep: t.Name(),
+				},
+			},
+		}
+
+		actual := x.ValidateWithContext(context.Background())
+		assert.NoError(t, actual)
+	})
+
+	T.Run("with invalid structure", func(t *testing.T) {
+		t.Parallel()
+
+		x := &RecipeStepDatabaseCreationInput{}
+
+		actual := x.ValidateWithContext(context.Background())
+		assert.Error(t, actual)
+	})
+}
+
 func TestRecipeStepUpdateRequestInput_Validate(T *testing.T) {
 	T.Parallel()
 
@@ -138,10 +171,10 @@ func TestRecipeStepUpdateRequestInput_Validate(T *testing.T) {
 		}
 
 		actual := x.ValidateWithContext(context.Background())
-		assert.Nil(t, actual)
+		assert.NoError(t, actual)
 	})
 
-	T.Run("with empty strings", func(t *testing.T) {
+	T.Run("with invalid structure", func(t *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepUpdateRequestInput{}

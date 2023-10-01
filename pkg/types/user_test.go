@@ -21,10 +21,13 @@ func TestUser_Update(T *testing.T) {
 			TwoFactorSecret: "two factor secret",
 			Birthday:        pointers.Pointer[time.Time](time.Now()),
 		}
+
 		exampleInput := User{
 			Username:        "new_username",
 			HashedPassword:  "updated_hashed_pass",
 			TwoFactorSecret: "new fancy secret",
+			FirstName:       "first",
+			LastName:        "last",
 			Birthday:        pointers.Pointer[time.Time](time.Now()),
 		}
 
@@ -45,56 +48,7 @@ func TestUser_IsBanned(T *testing.T) {
 	})
 }
 
-func TestPasswordUpdateInput_ValidateWithContext(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		x := &PasswordUpdateInput{
-			NewPassword:     t.Name(),
-			CurrentPassword: t.Name(),
-			TOTPToken:       "123456",
-		}
-
-		assert.NoError(t, x.ValidateWithContext(ctx, 1))
-	})
-}
-
-func TestTOTPSecretRefreshInput_ValidateWithContext(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		x := &TOTPSecretRefreshInput{
-			CurrentPassword: t.Name(),
-			TOTPToken:       "123456",
-		}
-
-		assert.NoError(t, x.ValidateWithContext(ctx))
-	})
-}
-
-func TestTOTPSecretVerificationInput_ValidateWithContext(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		x := &TOTPSecretVerificationInput{
-			UserID:    "123",
-			TOTPToken: "123456",
-		}
-
-		assert.NoError(t, x.ValidateWithContext(ctx))
-	})
-}
-
-func TestUserCreationInput_ValidateWithContext(T *testing.T) {
+func TestUserRegistrationInput_ValidateWithContext(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {
@@ -125,6 +79,22 @@ func TestUserCreationInput_ValidateWithContext(T *testing.T) {
 	})
 }
 
+func TestTOTPSecretVerificationInput_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		x := &TOTPSecretVerificationInput{
+			UserID:    "123",
+			TOTPToken: "123456",
+		}
+
+		assert.NoError(t, x.ValidateWithContext(ctx))
+	})
+}
+
 func TestUserLoginInput_ValidateWithContext(T *testing.T) {
 	T.Parallel()
 
@@ -139,5 +109,117 @@ func TestUserLoginInput_ValidateWithContext(T *testing.T) {
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx, 1, 1))
+	})
+}
+
+func TestPasswordUpdateInput_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		x := &PasswordUpdateInput{
+			NewPassword:     "new_password",
+			CurrentPassword: t.Name(),
+			TOTPToken:       "123456",
+		}
+
+		assert.NoError(t, x.ValidateWithContext(ctx, 1))
+	})
+
+	T.Run("with identical passwords", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		x := &PasswordUpdateInput{
+			NewPassword:     t.Name(),
+			CurrentPassword: t.Name(),
+			TOTPToken:       "123456",
+		}
+
+		assert.Error(t, x.ValidateWithContext(ctx, 1))
+	})
+}
+
+func TestTOTPSecretRefreshInput_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		x := &TOTPSecretRefreshInput{
+			CurrentPassword: t.Name(),
+			TOTPToken:       "123456",
+		}
+
+		assert.NoError(t, x.ValidateWithContext(ctx))
+	})
+}
+
+func TestEmailAddressVerificationRequestInput_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		x := &EmailAddressVerificationRequestInput{
+			Token: "123456",
+		}
+
+		assert.NoError(t, x.ValidateWithContext(ctx))
+	})
+}
+
+func TestUsernameUpdateInput_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		x := &UsernameUpdateInput{
+			NewUsername:     t.Name(),
+			CurrentPassword: t.Name(),
+			TOTPToken:       "123456",
+		}
+
+		assert.NoError(t, x.ValidateWithContext(ctx))
+	})
+}
+
+func TestUserEmailAddressUpdateInput_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		x := &UserEmailAddressUpdateInput{
+			NewEmailAddress: t.Name(),
+			CurrentPassword: t.Name(),
+			TOTPToken:       "123456",
+		}
+
+		assert.NoError(t, x.ValidateWithContext(ctx))
+	})
+}
+
+func TestUserDetailsUpdateRequestInput_ValidateWithContext(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		x := &UserDetailsUpdateRequestInput{
+			FirstName:       t.Name(),
+			CurrentPassword: t.Name(),
+			TOTPToken:       "123456",
+		}
+
+		assert.NoError(t, x.ValidateWithContext(ctx))
 	})
 }
