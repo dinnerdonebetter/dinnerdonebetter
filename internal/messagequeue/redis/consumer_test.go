@@ -6,42 +6,28 @@ import (
 	"testing"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
-	"github.com/go-redis/redis/v8"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
 
-func Test_provideRedisConsumer(T *testing.T) {
-	T.Parallel()
+func buildRedisBackedConsumer(t *testing.T, ctx context.Context, cfg *Config, topic string, hf func(context.Context, []byte) error) messagequeue.Consumer {
+	t.Helper()
 
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
+	provider := ProvideRedisConsumerProvider(
+		logging.NewNoopLogger(),
+		tracing.NewNoopTracerProvider(),
+		*cfg,
+	)
 
-		ctx := context.Background()
-		logger := logging.NewNoopLogger()
+	consumer, err := provider.ProvideConsumer(ctx, topic, hf)
+	require.NoError(t, err)
 
-		actual := provideRedisConsumer(ctx, logger, redis.NewClusterClient(&redis.ClusterOptions{}), tracing.NewNoopTracerProvider(), t.Name(), nil)
-		assert.NotNil(t, actual)
-	})
+	return consumer
 }
-
-type mockChannelProvider struct {
-	mock.Mock
-}
-
-func (m *mockChannelProvider) Channel(options ...redis.ChannelOption) <-chan *redis.Message {
-	return m.Called(options).Get(0).(<-chan *redis.Message)
-}
-
-func convertChan(c chan *redis.Message) <-chan *redis.Message {
-	return c
-}
-
-// TODO: use testcontainers to properly test this: https://golang.testcontainers.org/modules/redis/
 
 func Test_redisConsumer_Consume(T *testing.T) {
 	T.Parallel()
@@ -50,108 +36,64 @@ func Test_redisConsumer_Consume(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
+
+		cfg, containerShutdown := buildContainerBackedRedisConfig(t, ctx)
+		defer func() {
+			assert.NoError(t, containerShutdown(ctx))
+		}()
 
 		hf := func(context.Context, []byte) error {
 			return nil
 		}
 
-		actual := provideRedisConsumer(ctx, logger, redis.NewClusterClient(&redis.ClusterOptions{}), tracing.NewNoopTracerProvider(), t.Name(), hf)
-		require.NotNil(t, actual)
+		consumer := buildRedisBackedConsumer(t, ctx, cfg, t.Name(), hf)
+		require.NotNil(t, consumer)
 
-		returnChan := make(chan *redis.Message)
-		mockSub := &mockChannelProvider{}
-		mockSub.On("Channel", []redis.ChannelOption(nil)).Return(convertChan(returnChan))
-
-		actual.subscription = mockSub
 		stopChan := make(chan bool)
 		errorsChan := make(chan error)
+		go consumer.Consume(stopChan, errorsChan)
 
-		go actual.Consume(stopChan, errorsChan)
-
-		returnChan <- &redis.Message{}
+		publisher := buildRedisBackedPublisher(t, cfg, t.Name())
+		require.NoError(t, publisher.Publish(ctx, []byte("blah")))
 
 		<-time.After(time.Second)
 		stopChan <- true
-
-		mock.AssertExpectationsForObjects(t, mockSub)
 	})
 
 	T.Run("with error handling message", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		logger := logging.NewNoopLogger()
+
+		cfg, containerShutdown := buildContainerBackedRedisConfig(t, ctx)
+		defer func() {
+			assert.NoError(t, containerShutdown(ctx))
+		}()
 
 		anticipatedError := errors.New("blah")
-
 		hf := func(context.Context, []byte) error {
 			return anticipatedError
 		}
 
-		actual := provideRedisConsumer(ctx, logger, redis.NewClusterClient(&redis.ClusterOptions{}), tracing.NewNoopTracerProvider(), t.Name(), hf)
-		require.NotNil(t, actual)
+		consumer := buildRedisBackedConsumer(t, ctx, cfg, t.Name(), hf)
+		require.NotNil(t, consumer)
 
-		returnChan := make(chan *redis.Message)
-		mockSub := &mockChannelProvider{}
-		mockSub.On("Channel", []redis.ChannelOption(nil)).Return(convertChan(returnChan))
-
-		actual.subscription = mockSub
 		stopChan := make(chan bool)
 		errorsChan := make(chan error)
+		go consumer.Consume(stopChan, errorsChan)
 
-		go actual.Consume(stopChan, errorsChan)
-
-		returnChan <- &redis.Message{}
+		publisher := buildRedisBackedPublisher(t, cfg, t.Name())
+		require.NoError(t, publisher.Publish(ctx, []byte("blah")))
 
 		err := <-errorsChan
 		assert.Error(t, err)
-		assert.Error(t, anticipatedError, err)
+		assert.Equal(t, anticipatedError, err)
 
 		stopChan <- true
-
-		mock.AssertExpectationsForObjects(t, mockSub)
-	})
-
-	T.Run("with nil returnChan", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-
-		actual := provideRedisConsumer(ctx, logger, redis.NewClusterClient(&redis.ClusterOptions{}), tracing.NewNoopTracerProvider(), t.Name(), nil)
-		require.NotNil(t, actual)
-
-		returnChan := make(<-chan *redis.Message)
-		mockSub := &mockChannelProvider{}
-		mockSub.On("Channel", []redis.ChannelOption(nil)).Return(returnChan)
-
-		actual.subscription = mockSub
-		errorsChan := make(chan error)
-
-		go actual.Consume(nil, errorsChan)
-
-		<-time.After(time.Second)
-
-		mock.AssertExpectationsForObjects(t, mockSub)
 	})
 }
 
-func TestProvideRedisConsumerProvider(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		logger := logging.NewNoopLogger()
-		cfg := Config{}
-
-		actual := ProvideRedisConsumerProvider(logger, tracing.NewNoopTracerProvider(), cfg)
-		assert.NotNil(t, actual)
-	})
-}
-
-func Test_consumerProvider_ProviderConsumer(T *testing.T) {
+func Test_consumerProvider_ProvideConsumer(T *testing.T) {
 	T.Parallel()
 
 	T.Run("standard", func(t *testing.T) {

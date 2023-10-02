@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	testutils "github.com/dinnerdonebetter/backend/tests/utils"
@@ -24,7 +25,20 @@ func (m *mockMessagePublisher) Publish(ctx context.Context, channel string, mess
 	return m.Called(ctx, channel, message).Get(0).(*redis.IntCmd)
 }
 
-// TODO: use testcontainers to properly test this: https://golang.testcontainers.org/modules/redis/
+func buildRedisBackedPublisher(t *testing.T, cfg *Config, topic string) messagequeue.Publisher {
+	t.Helper()
+
+	provider := ProvideRedisPublisherProvider(
+		logging.NewNoopLogger(),
+		tracing.NewNoopTracerProvider(),
+		*cfg,
+	)
+
+	publisher, err := provider.ProvidePublisher(topic)
+	require.NoError(t, err)
+
+	return publisher
+}
 
 func Test_redisPublisher_Publish(T *testing.T) {
 	T.Parallel()

@@ -46,13 +46,13 @@ func (sm *indexManager[T]) Index(ctx context.Context, id string, value any) erro
 		ErrorTrace:          false,
 		FilterPath:          nil,
 		Header:              nil,
-	}.Do(ctx, sm.esclient)
+	}.Do(ctx, sm.esClient)
 	if err != nil {
 		return observability.PrepareError(err, span, "indexing value")
 	}
 
-	if res.StatusCode != http.StatusOK {
-		println("")
+	if res.StatusCode != http.StatusCreated && res.StatusCode != http.StatusOK {
+		return observability.PrepareError(errors.New(res.String()), span, "indexing value")
 	}
 
 	return nil
@@ -127,9 +127,9 @@ func (sm *indexManager[T]) search(ctx context.Context, query string) (results []
 		return nil, observability.PrepareError(err, span, "encodign search query")
 	}
 
-	res, err := sm.esclient.Search(
-		sm.esclient.Search.WithIndex(sm.indexName),
-		sm.esclient.Search.WithBody(bytes.NewReader(queryBody)),
+	res, err := sm.esClient.Search(
+		sm.esClient.Search.WithIndex(sm.indexName),
+		sm.esClient.Search.WithBody(bytes.NewReader(queryBody)),
 	)
 	defer func() {
 		if res != nil {
@@ -176,7 +176,6 @@ func (sm *indexManager[T]) Search(ctx context.Context, query string) (ids []*T, 
 
 // Wipe implements our IndexManager interface.
 func (sm *indexManager[T]) Wipe(_ context.Context) (err error) {
-	// TODO: implement
 	return errors.New("unimplemented")
 }
 
@@ -190,7 +189,7 @@ func (sm *indexManager[T]) Delete(ctx context.Context, id string) error {
 	_, err := esapi.DeleteRequest{
 		Index:      sm.indexName,
 		DocumentID: id,
-	}.Do(ctx, sm.esclient)
+	}.Do(ctx, sm.esClient)
 	if err != nil {
 		return observability.PrepareError(err, span, "deleting from elasticsearch")
 	}

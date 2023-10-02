@@ -1,8 +1,11 @@
 package redis
 
 import (
+	"bytes"
 	"context"
-	"encoding/json"
+	"encoding/gob"
+	"fmt"
+	"strings"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/cache"
@@ -35,9 +38,11 @@ func (i *redisCacheImpl[T]) Get(ctx context.Context, key string) (*T, error) {
 		return nil, err
 	}
 
+	b := strings.NewReader(res)
+
 	var x *T
-	if unmarshalErr := json.Unmarshal([]byte(res), &x); unmarshalErr != nil {
-		return nil, unmarshalErr
+	if err = gob.NewDecoder(b).Decode(&x); err != nil {
+		return nil, fmt.Errorf("decoding from cache: %w", err)
 	}
 
 	if x == nil {
@@ -48,12 +53,12 @@ func (i *redisCacheImpl[T]) Get(ctx context.Context, key string) (*T, error) {
 }
 
 func (i *redisCacheImpl[T]) Set(ctx context.Context, key string, value *T) error {
-	content, err := json.Marshal(value)
-	if err != nil {
-		return err
+	var b bytes.Buffer
+	if err := gob.NewEncoder(&b).Encode(value); err != nil {
+		return fmt.Errorf("encoding for cache: %w", err)
 	}
 
-	if setErr := i.client.Set(ctx, key, content, i.expiration).Err(); setErr != nil {
+	if setErr := i.client.Set(ctx, key, b.String(), i.expiration).Err(); setErr != nil {
 		return setErr
 	}
 
