@@ -35,7 +35,7 @@ const (
 )
 
 var (
-	runningContainerTests = true // strings.ToLower(os.Getenv("RUN_DATABASE_CONTAINER_TESTS")) == "true"
+	runningContainerTests = true // strings.ToLower(os.Getenv("RUN_CONTAINER_TESTS")) == "true"
 )
 
 var _ sqlmock.Argument = (*idMatcher)(nil)
@@ -144,7 +144,7 @@ func buildDatabaseClientForTest(t *testing.T, ctx context.Context) (*Querier, *p
 		postgres.WithDatabase(splitReverseConcat(dbUsername)),
 		postgres.WithUsername(dbUsername),
 		postgres.WithPassword(reverseString(dbUsername)),
-		testcontainers.WithWaitStrategyAndDeadline(time.Minute, wait.ForLog("database system is ready to accept connections").WithOccurrence(2)),
+		testcontainers.WithWaitStrategyAndDeadline(2*time.Minute, wait.ForLog("database system is ready to accept connections").WithOccurrence(2)),
 	)
 
 	require.NoError(t, err)

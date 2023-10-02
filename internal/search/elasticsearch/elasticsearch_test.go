@@ -2,6 +2,8 @@ package elasticsearch
 
 import (
 	"context"
+	"os"
+	"strings"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -10,6 +12,10 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
 	elasticsearchcontainers "github.com/testcontainers/testcontainers-go/modules/elasticsearch"
+)
+
+var (
+	runningContainerTests = strings.ToLower(os.Getenv("RUN_CONTAINER_TESTS")) == "true"
 )
 
 func buildContainerBackedElasticsearchConfig(t *testing.T, ctx context.Context) (config *Config, shutdownFunction func(context.Context) error) {
@@ -36,6 +42,10 @@ func buildContainerBackedElasticsearchConfig(t *testing.T, ctx context.Context) 
 
 func Test_ProvideIndexManager(T *testing.T) {
 	T.Parallel()
+
+	if !runningContainerTests {
+		T.Skip("skipping container tests")
+	}
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
