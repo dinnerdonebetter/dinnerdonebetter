@@ -75,7 +75,7 @@ require (
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/edsrzf/mmap-go v1.1.0 // indirect
 	github.com/elastic/elastic-transport-go/v8 v8.3.0 // indirect
-	github.com/elastic/go-elasticsearch/v8 v8.9.0 // indirect
+	github.com/elastic/go-elasticsearch/v8 v8.10.0 // indirect
 	github.com/emirpasic/gods v1.18.1 // indirect
 	github.com/felixge/httpsnoop v1.0.3 // indirect
 	github.com/fogleman/gg v1.3.0 // indirect

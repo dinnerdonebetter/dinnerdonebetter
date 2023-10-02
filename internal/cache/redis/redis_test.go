@@ -19,6 +19,8 @@ const (
 )
 
 func buildContainerBackedRedisConfig(t *testing.T, ctx context.Context) (config *Config, shutdownFunction func(context.Context) error) {
+	t.Helper()
+
 	redisContainer, err := rediscontainers.RunContainer(ctx,
 		testcontainers.WithImage("docker.io/redis:7-bullseye"),
 		rediscontainers.WithLogLevel(rediscontainers.LogLevelNotice),

@@ -19,7 +19,7 @@ require (
 	github.com/brianvoe/gofakeit/v6 v6.23.2
 	github.com/cristalhq/builq v0.10.0
 	github.com/dustin/go-humanize v1.0.1
-	github.com/elastic/go-elasticsearch/v8 v8.9.0
+	github.com/elastic/go-elasticsearch/v8 v8.10.0
 	github.com/go-chi/chi/v5 v5.0.10
 	github.com/go-chi/cors v1.2.1
 	github.com/go-oauth2/oauth2/v4 v4.5.2
@@ -63,6 +63,7 @@ require (
 	github.com/stretchr/testify v1.8.4
 	github.com/stripe/stripe-go/v72 v72.122.0
 	github.com/testcontainers/testcontainers-go v0.25.0
+	github.com/testcontainers/testcontainers-go/modules/elasticsearch v0.25.0
 	github.com/testcontainers/testcontainers-go/modules/postgres v0.21.0
 	github.com/testcontainers/testcontainers-go/modules/redis v0.25.0
 	github.com/wagslane/go-password-validator v0.3.0

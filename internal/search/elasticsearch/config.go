@@ -11,6 +11,7 @@ type Config struct {
 	Address               string        `json:"address"               toml:"address,omitempty"`
 	Username              string        `json:"username"              toml:"username,omitempty"`
 	Password              string        `json:"password"              toml:"password,omitempty"`
+	CACert                []byte        `json:"caCert"                toml:"ca_cert,omitempty"`
 	IndexOperationTimeout time.Duration `json:"indexOperationTimeout" toml:"index_operation_timeout,omitempty"`
 }
 
@@ -21,6 +22,7 @@ func (cfg *Config) provideElasticsearchClient() (*elasticsearch.Client, error) {
 		},
 		Username:      cfg.Username,
 		Password:      cfg.Password,
+		CACert:        cfg.CACert,
 		RetryOnStatus: nil,
 		MaxRetries:    10,
 		Transport:     nil,

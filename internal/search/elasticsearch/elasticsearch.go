@@ -25,7 +25,7 @@ type (
 	indexManager[T search.Searchable] struct {
 		logger                logging.Logger
 		tracer                tracing.Tracer
-		esclient              *elasticsearch.Client
+		esClient              *elasticsearch.Client
 		indexName             string
 		indexOperationTimeout time.Duration
 	}
@@ -37,6 +37,8 @@ func ProvideIndexManager[T search.Searchable](ctx context.Context, logger loggin
 		return nil, fmt.Errorf("initializing search client: %w", err)
 	}
 
+	logger = logging.EnsureLogger(logger)
+
 	if ready := elasticsearchIsReady(ctx, cfg, logger, 10); !ready {
 		return nil, fmt.Errorf("initializing search client: %w", err)
 	}
@@ -44,7 +46,7 @@ func ProvideIndexManager[T search.Searchable](ctx context.Context, logger loggin
 	im := &indexManager[T]{
 		tracer:                tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(fmt.Sprintf("search_%s", indexName))),
 		logger:                logging.EnsureLogger(logger).WithName(indexName),
-		esclient:              c,
+		esClient:              c,
 		indexOperationTimeout: cfg.IndexOperationTimeout,
 		indexName:             indexName,
 	}
@@ -61,7 +63,7 @@ func elasticsearchIsReady(
 	cfg *Config,
 	l logging.Logger,
 	maxAttempts uint8,
-) (ready bool) {
+) bool {
 	attemptCount := 0
 
 	logger := l.WithValues(map[string]any{
@@ -71,19 +73,15 @@ func elasticsearchIsReady(
 
 	logger.Debug("checking if elasticsearch is ready")
 
-	for !ready {
-		c, err := cfg.provideElasticsearchClient()
-		if err != nil {
-			logger.WithValue("attempt_count", attemptCount).Debug("client setup failed, waiting for elasticsearch")
-			time.Sleep(time.Second)
+	c, err := cfg.provideElasticsearchClient()
+	if err != nil {
+		logger.WithValue("attempt_count", attemptCount).Debug("client setup failed, waiting for elasticsearch")
+	}
 
-			attemptCount++
-			if attemptCount >= int(maxAttempts) {
-				break
-			}
-		}
-
-		if res, infoReqErr := (esapi.InfoRequest{}).Do(ctx, c); infoReqErr != nil && !res.IsError() {
+	for {
+		var res *esapi.Response
+		res, err = (esapi.InfoRequest{}).Do(ctx, c)
+		if err != nil && res != nil && !res.IsError() {
 			logger.WithValue("attempt_count", attemptCount).Debug("ping failed, waiting for elasticsearch")
 			time.Sleep(time.Second)
 
@@ -92,13 +90,9 @@ func elasticsearchIsReady(
 				break
 			}
 		} else {
-			ready = true
-			logger.Debug("elasticsearch is ready")
-			return ready
+			return true
 		}
 	}
-
-	logger.Debug("elasticsearch is ready")
 
 	return false
 }
@@ -112,13 +106,13 @@ func (sm *indexManager[T]) ensureIndices(ctx context.Context) error {
 		IgnoreUnavailable: esapi.BoolPtr(false),
 		ErrorTrace:        false,
 		FilterPath:        nil,
-	}.Do(ctx, sm.esclient)
+	}.Do(ctx, sm.esClient)
 	if err != nil {
 		return observability.PrepareError(err, span, "checking index existence successfully")
 	}
 
 	if res.StatusCode == http.StatusNotFound {
-		if _, err = (esapi.IndicesCreateRequest{Index: strings.ToLower(sm.indexName)}).Do(ctx, sm.esclient); err != nil {
+		if _, err = (esapi.IndicesCreateRequest{Index: strings.ToLower(sm.indexName)}).Do(ctx, sm.esClient); err != nil {
 			return observability.PrepareError(err, span, "checking index existence")
 		}
 	}
