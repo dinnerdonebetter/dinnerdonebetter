@@ -55,7 +55,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input := converters.ConvertValidIngredientStateCreationRequestInputToValidIngredientStateDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
 
-	tracing.AttachValidIngredientStateIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, input.ID)
 
 	validIngredientState, err := s.validIngredientStateDataManager.CreateValidIngredientState(ctx, input)
 	if err != nil {
@@ -98,7 +98,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid ingredient state ID.
 	validIngredientStateID := s.validIngredientStateIDFetcher(req)
-	tracing.AttachValidIngredientStateIDToSpan(span, validIngredientStateID)
+	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, validIngredientStateID)
 	logger = logger.WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
 
 	// fetch valid ingredient state from database.
@@ -163,7 +163,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get("useDB"))) == "true"
 
 	query := req.URL.Query().Get(types.SearchQueryKey)
-	tracing.AttachSearchQueryToSpan(span, query)
+	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 
 	filter := types.ExtractQueryFilterFromRequest(req)
 	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
@@ -254,7 +254,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid ingredient state ID.
 	validIngredientStateID := s.validIngredientStateIDFetcher(req)
-	tracing.AttachValidIngredientStateIDToSpan(span, validIngredientStateID)
+	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, validIngredientStateID)
 	logger = logger.WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
 
 	// fetch valid ingredient state from database.
@@ -312,7 +312,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid ingredient state ID.
 	validIngredientStateID := s.validIngredientStateIDFetcher(req)
-	tracing.AttachValidIngredientStateIDToSpan(span, validIngredientStateID)
+	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, validIngredientStateID)
 	logger = logger.WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
 
 	exists, existenceCheckErr := s.validIngredientStateDataManager.ValidIngredientStateExists(ctx, validIngredientStateID)

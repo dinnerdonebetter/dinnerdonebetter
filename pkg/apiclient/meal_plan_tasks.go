@@ -20,13 +20,13 @@ func (c *Client) GetMealPlanTask(ctx context.Context, mealPlanID, mealPlanTaskID
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if mealPlanTaskID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanTaskIDKey, mealPlanTaskID)
-	tracing.AttachMealPlanTaskIDToSpan(span, mealPlanTaskID)
+	tracing.AttachToSpan(span, keys.MealPlanTaskIDKey, mealPlanTaskID)
 
 	req, err := c.requestBuilder.BuildGetMealPlanTaskRequest(ctx, mealPlanID, mealPlanTaskID)
 	if err != nil {
@@ -52,7 +52,7 @@ func (c *Client) CreateMealPlanTask(ctx context.Context, mealPlanID string, inpu
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if input == nil {
 		return nil, ErrInvalidIDProvided
@@ -86,7 +86,7 @@ func (c *Client) UpdateMealPlanTaskStatus(ctx context.Context, mealPlanID string
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")

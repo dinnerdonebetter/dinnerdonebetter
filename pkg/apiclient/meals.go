@@ -20,7 +20,7 @@ func (c *Client) GetMeal(ctx context.Context, mealID string) (*types.Meal, error
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealIDKey, mealID)
-	tracing.AttachMealIDToSpan(span, mealID)
+	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
 
 	req, err := c.requestBuilder.BuildGetMealRequest(ctx, mealID)
 	if err != nil {
@@ -64,7 +64,7 @@ func (c *Client) SearchForMeals(ctx context.Context, query string, filter *types
 
 	logger := filter.AttachToLogger(c.logger.Clone())
 
-	tracing.AttachSearchQueryToSpan(span, query)
+	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := c.requestBuilder.BuildSearchForMealsRequest(ctx, query, filter)
@@ -119,7 +119,7 @@ func (c *Client) ArchiveMeal(ctx context.Context, mealID string) error {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealIDKey, mealID)
-	tracing.AttachMealIDToSpan(span, mealID)
+	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
 
 	req, err := c.requestBuilder.BuildArchiveMealRequest(ctx, mealID)
 	if err != nil {

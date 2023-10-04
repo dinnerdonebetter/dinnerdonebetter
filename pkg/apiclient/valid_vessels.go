@@ -20,7 +20,7 @@ func (c *Client) GetValidVessel(ctx context.Context, validVesselID string) (*typ
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
-	tracing.AttachValidVesselIDToSpan(span, validVesselID)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
 
 	req, err := c.requestBuilder.BuildGetValidVesselRequest(ctx, validVesselID)
 	if err != nil {
@@ -146,7 +146,7 @@ func (c *Client) UpdateValidVessel(ctx context.Context, validVessel *types.Valid
 		return ErrNilInputProvided
 	}
 	logger = logger.WithValue(keys.ValidVesselIDKey, validVessel.ID)
-	tracing.AttachValidVesselIDToSpan(span, validVessel.ID)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVessel.ID)
 
 	req, err := c.requestBuilder.BuildUpdateValidVesselRequest(ctx, validVessel)
 	if err != nil {
@@ -171,7 +171,7 @@ func (c *Client) ArchiveValidVessel(ctx context.Context, validVesselID string) e
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
-	tracing.AttachValidVesselIDToSpan(span, validVesselID)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
 
 	req, err := c.requestBuilder.BuildArchiveValidVesselRequest(ctx, validVesselID)
 	if err != nil {

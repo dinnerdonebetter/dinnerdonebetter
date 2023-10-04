@@ -9,6 +9,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/panicking"
@@ -128,7 +129,7 @@ func (b *Builder) buildAPIV1URL(ctx context.Context, queryParams url.Values, par
 
 	out := tu.ResolveReference(u)
 
-	tracing.AttachURLToSpan(span, out)
+	tracing.AttachToSpan(span, keys.RequestURIKey, out.String())
 
 	return out
 }
@@ -196,7 +197,7 @@ func (b *Builder) buildDataRequest(ctx context.Context, method, uri string, in a
 	}
 
 	req.Header.Set("RawHTML-type", b.encoder.ContentType())
-	tracing.AttachURLToSpan(span, req.URL)
+	tracing.AttachToSpan(span, keys.RequestURIKey, req.URL.String())
 
 	return req, nil
 }

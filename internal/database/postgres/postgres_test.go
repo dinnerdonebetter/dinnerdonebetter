@@ -9,7 +9,6 @@ import (
 	"hash/fnv"
 	"io"
 	"log"
-	"os"
 	"testing"
 	"time"
 
@@ -135,7 +134,6 @@ func buildDatabaseClientForTest(t *testing.T, ctx context.Context) (*Querier, *p
 	t.Helper()
 
 	dbUsername := fmt.Sprintf("%d", hashStringToNumber(t.Name()))
-	assert.NoError(t, os.Setenv("TESTCONTAINERS_RYUK_DISABLED", "true"))
 	testcontainers.Logger = log.New(io.Discard, "", log.LstdFlags)
 
 	container, err := postgres.RunContainer(

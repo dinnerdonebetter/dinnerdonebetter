@@ -20,19 +20,19 @@ func (c *Client) GetRecipeStepInstrument(ctx context.Context, recipeID, recipeSt
 		return nil, buildInvalidIDError("recipe")
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return nil, buildInvalidIDError("recipe step")
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	if recipeStepInstrumentID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
-	tracing.AttachRecipeStepInstrumentIDToSpan(span, recipeStepInstrumentID)
+	tracing.AttachToSpan(span, keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
 
 	req, err := c.requestBuilder.BuildGetRecipeStepInstrumentRequest(ctx, recipeID, recipeStepID, recipeStepInstrumentID)
 	if err != nil {
@@ -59,13 +59,13 @@ func (c *Client) GetRecipeStepInstruments(ctx context.Context, recipeID, recipeS
 		return nil, buildInvalidIDError("recipe")
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return nil, buildInvalidIDError("recipe step")
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	req, err := c.requestBuilder.BuildGetRecipeStepInstrumentsRequest(ctx, recipeID, recipeStepID, filter)
 	if err != nil {
@@ -91,13 +91,13 @@ func (c *Client) CreateRecipeStepInstrument(ctx context.Context, recipeID, recip
 		return nil, buildInvalidIDError("recipe")
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return nil, buildInvalidIDError("recipe")
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -131,13 +131,13 @@ func (c *Client) UpdateRecipeStepInstrument(ctx context.Context, recipeID string
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepInstrument == nil {
 		return ErrNilInputProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepInstrumentIDKey, recipeStepInstrument.ID)
-	tracing.AttachRecipeStepInstrumentIDToSpan(span, recipeStepInstrument.ID)
+	tracing.AttachToSpan(span, keys.RecipeStepInstrumentIDKey, recipeStepInstrument.ID)
 
 	req, err := c.requestBuilder.BuildUpdateRecipeStepInstrumentRequest(ctx, recipeID, recipeStepInstrument)
 	if err != nil {
@@ -162,19 +162,19 @@ func (c *Client) ArchiveRecipeStepInstrument(ctx context.Context, recipeID, reci
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	if recipeStepInstrumentID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
-	tracing.AttachRecipeStepInstrumentIDToSpan(span, recipeStepInstrumentID)
+	tracing.AttachToSpan(span, keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
 
 	req, err := c.requestBuilder.BuildArchiveRecipeStepInstrumentRequest(ctx, recipeID, recipeStepID, recipeStepInstrumentID)
 	if err != nil {

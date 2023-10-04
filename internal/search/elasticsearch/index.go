@@ -106,7 +106,7 @@ func (sm *indexManager[T]) search(ctx context.Context, query string) (results []
 	_, span := sm.tracer.StartSpan(ctx)
 	defer span.End()
 
-	tracing.AttachSearchQueryToSpan(span, query)
+	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 	logger := sm.logger.WithValue(keys.SearchQueryKey, query)
 
 	if query == "" {

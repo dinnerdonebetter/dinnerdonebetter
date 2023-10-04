@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
@@ -22,17 +23,17 @@ func (b *Builder) BuildGetRecipeStepProductRequest(ctx context.Context, recipeID
 	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	if recipeStepProductID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachRecipeStepProductIDToSpan(span, recipeStepProductID)
+	tracing.AttachToSpan(span, keys.RecipeStepProductIDKey, recipeStepProductID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -44,7 +45,7 @@ func (b *Builder) BuildGetRecipeStepProductRequest(ctx context.Context, recipeID
 		recipeStepProductsBasePath,
 		recipeStepProductID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
@@ -62,12 +63,12 @@ func (b *Builder) BuildGetRecipeStepProductsRequest(ctx context.Context, recipeI
 	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -78,7 +79,7 @@ func (b *Builder) BuildGetRecipeStepProductsRequest(ctx context.Context, recipeI
 		recipeStepID,
 		recipeStepProductsBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
@@ -97,12 +98,12 @@ func (b *Builder) BuildCreateRecipeStepProductRequest(ctx context.Context, recip
 	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return nil, ErrEmptyInputProvided
 	}
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -121,7 +122,7 @@ func (b *Builder) BuildCreateRecipeStepProductRequest(ctx context.Context, recip
 		recipeStepID,
 		recipeStepProductsBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
 	if err != nil {
@@ -139,12 +140,12 @@ func (b *Builder) BuildUpdateRecipeStepProductRequest(ctx context.Context, recip
 	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepProduct == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachRecipeStepProductIDToSpan(span, recipeStepProduct.ID)
+	tracing.AttachToSpan(span, keys.RecipeStepProductIDKey, recipeStepProduct.ID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -156,7 +157,7 @@ func (b *Builder) BuildUpdateRecipeStepProductRequest(ctx context.Context, recip
 		recipeStepProductsBasePath,
 		recipeStepProduct.ID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	input := converters.ConvertRecipeStepProductToRecipeStepProductUpdateRequestInput(recipeStepProduct)
 
@@ -176,17 +177,17 @@ func (b *Builder) BuildArchiveRecipeStepProductRequest(ctx context.Context, reci
 	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	if recipeStepProductID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachRecipeStepProductIDToSpan(span, recipeStepProductID)
+	tracing.AttachToSpan(span, keys.RecipeStepProductIDKey, recipeStepProductID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -198,7 +199,7 @@ func (b *Builder) BuildArchiveRecipeStepProductRequest(ctx context.Context, reci
 		recipeStepProductsBasePath,
 		recipeStepProductID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {

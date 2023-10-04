@@ -20,7 +20,7 @@ func (c *Client) GetValidIngredientMeasurementUnit(ctx context.Context, validIng
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
-	tracing.AttachValidIngredientMeasurementUnitIDToSpan(span, validIngredientMeasurementUnitID)
+	tracing.AttachToSpan(span, keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
 
 	req, err := c.requestBuilder.BuildGetValidIngredientMeasurementUnitRequest(ctx, validIngredientMeasurementUnitID)
 	if err != nil {
@@ -69,7 +69,7 @@ func (c *Client) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Con
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
-	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
+	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
 
 	req, err := c.requestBuilder.BuildGetValidIngredientMeasurementUnitsForIngredientRequest(ctx, validIngredientID, filter)
 	if err != nil {
@@ -96,7 +96,7 @@ func (c *Client) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx contex
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientMeasurementUnitIDKey, validMeasurementUnitID)
-	tracing.AttachValidIngredientMeasurementUnitIDToSpan(span, validMeasurementUnitID)
+	tracing.AttachToSpan(span, keys.ValidIngredientMeasurementUnitIDKey, validMeasurementUnitID)
 
 	req, err := c.requestBuilder.BuildGetValidIngredientMeasurementUnitsForMeasurementUnitRequest(ctx, validMeasurementUnitID, filter)
 	if err != nil {
@@ -150,7 +150,7 @@ func (c *Client) UpdateValidIngredientMeasurementUnit(ctx context.Context, valid
 		return ErrNilInputProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnit.ID)
-	tracing.AttachValidIngredientMeasurementUnitIDToSpan(span, validIngredientMeasurementUnit.ID)
+	tracing.AttachToSpan(span, keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnit.ID)
 
 	req, err := c.requestBuilder.BuildUpdateValidIngredientMeasurementUnitRequest(ctx, validIngredientMeasurementUnit)
 	if err != nil {
@@ -175,7 +175,7 @@ func (c *Client) ArchiveValidIngredientMeasurementUnit(ctx context.Context, vali
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
-	tracing.AttachValidIngredientMeasurementUnitIDToSpan(span, validIngredientMeasurementUnitID)
+	tracing.AttachToSpan(span, keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
 
 	req, err := c.requestBuilder.BuildArchiveValidIngredientMeasurementUnitRequest(ctx, validIngredientMeasurementUnitID)
 	if err != nil {

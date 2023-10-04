@@ -79,7 +79,7 @@ func (g *standardGenerator) generateSecret(ctx context.Context, length int) ([]b
 	_, span := tracing.StartSpan(ctx)
 	defer span.End()
 
-	tracing.AttachIntToSpan(span, "generated_string.requested_length", length)
+	tracing.AttachToSpan(span, "generated_string.requested_length", length)
 
 	b := make([]byte, length)
 	if _, err := g.randReader.Read(b); err != nil {
@@ -94,7 +94,7 @@ func (g *standardGenerator) GenerateRawBytes(ctx context.Context, length int) ([
 	_, span := tracing.StartSpan(ctx)
 	defer span.End()
 
-	tracing.AttachIntToSpan(span, "rand_gen.requested_length", length)
+	tracing.AttachToSpan(span, "rand_gen.requested_length", length)
 
 	return g.generateSecret(ctx, length)
 }
@@ -104,7 +104,7 @@ func (g *standardGenerator) GenerateHexEncodedString(ctx context.Context, length
 	_, span := tracing.StartSpan(ctx)
 	defer span.End()
 
-	tracing.AttachIntToSpan(span, "rand_gen.requested_length", length)
+	tracing.AttachToSpan(span, "rand_gen.requested_length", length)
 
 	b, err := g.GenerateRawBytes(ctx, length)
 	if err != nil {
@@ -119,7 +119,7 @@ func (g *standardGenerator) GenerateBase32EncodedString(ctx context.Context, len
 	_, span := tracing.StartSpan(ctx)
 	defer span.End()
 
-	tracing.AttachIntToSpan(span, "rand_gen.requested_length", length)
+	tracing.AttachToSpan(span, "rand_gen.requested_length", length)
 
 	b, err := g.GenerateRawBytes(ctx, length)
 	if err != nil {
@@ -134,7 +134,7 @@ func (g *standardGenerator) GenerateBase64EncodedString(ctx context.Context, len
 	_, span := tracing.StartSpan(ctx)
 	defer span.End()
 
-	tracing.AttachIntToSpan(span, "rand_gen.requested_length", length)
+	tracing.AttachToSpan(span, "rand_gen.requested_length", length)
 
 	b, err := g.GenerateRawBytes(ctx, length)
 	if err != nil {

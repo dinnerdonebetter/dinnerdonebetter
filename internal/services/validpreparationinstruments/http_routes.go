@@ -58,7 +58,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input := converters.ConvertValidPreparationInstrumentCreationRequestInputToValidPreparationInstrumentDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
 
-	tracing.AttachValidPreparationInstrumentIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, input.ID)
 
 	validPreparationInstrument, err := s.validPreparationInstrumentDataManager.CreateValidPreparationInstrument(ctx, input)
 	if err != nil {
@@ -101,7 +101,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid preparation instrument ID.
 	validPreparationInstrumentID := s.validPreparationInstrumentIDFetcher(req)
-	tracing.AttachValidPreparationInstrumentIDToSpan(span, validPreparationInstrumentID)
+	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 	logger = logger.WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 
 	// fetch valid preparation instrument from database.
@@ -193,7 +193,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid preparation instrument ID.
 	validPreparationInstrumentID := s.validPreparationInstrumentIDFetcher(req)
-	tracing.AttachValidPreparationInstrumentIDToSpan(span, validPreparationInstrumentID)
+	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 	logger = logger.WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 
 	// fetch valid preparation instrument from database.
@@ -251,7 +251,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid preparation instrument ID.
 	validPreparationInstrumentID := s.validPreparationInstrumentIDFetcher(req)
-	tracing.AttachValidPreparationInstrumentIDToSpan(span, validPreparationInstrumentID)
+	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 	logger = logger.WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 
 	exists, existenceCheckErr := s.validPreparationInstrumentDataManager.ValidPreparationInstrumentExists(ctx, validPreparationInstrumentID)

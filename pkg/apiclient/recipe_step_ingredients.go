@@ -20,19 +20,19 @@ func (c *Client) GetRecipeStepIngredient(ctx context.Context, recipeID, recipeSt
 		return nil, buildInvalidIDError("recipe")
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return nil, buildInvalidIDError("recipe step")
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	if recipeStepIngredientID == "" {
 		return nil, buildInvalidIDError("recipe step ingredient")
 	}
 	logger = logger.WithValue(keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
-	tracing.AttachRecipeStepIngredientIDToSpan(span, recipeStepIngredientID)
+	tracing.AttachToSpan(span, keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 
 	req, err := c.requestBuilder.BuildGetRecipeStepIngredientRequest(ctx, recipeID, recipeStepID, recipeStepIngredientID)
 	if err != nil {
@@ -59,13 +59,13 @@ func (c *Client) GetRecipeStepIngredients(ctx context.Context, recipeID, recipeS
 		return nil, buildInvalidIDError("recipe")
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return nil, buildInvalidIDError("recipe step")
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	req, err := c.requestBuilder.BuildGetRecipeStepIngredientsRequest(ctx, recipeID, recipeStepID, filter)
 	if err != nil {
@@ -91,13 +91,13 @@ func (c *Client) CreateRecipeStepIngredient(ctx context.Context, recipeID, recip
 		return nil, buildInvalidIDError("recipe")
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return nil, buildInvalidIDError("recipeStep")
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -131,13 +131,13 @@ func (c *Client) UpdateRecipeStepIngredient(ctx context.Context, recipeID string
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepIngredient == nil {
 		return ErrNilInputProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepIngredientIDKey, recipeStepIngredient.ID)
-	tracing.AttachRecipeStepIngredientIDToSpan(span, recipeStepIngredient.ID)
+	tracing.AttachToSpan(span, keys.RecipeStepIngredientIDKey, recipeStepIngredient.ID)
 
 	req, err := c.requestBuilder.BuildUpdateRecipeStepIngredientRequest(ctx, recipeID, recipeStepIngredient)
 	if err != nil {
@@ -162,19 +162,19 @@ func (c *Client) ArchiveRecipeStepIngredient(ctx context.Context, recipeID, reci
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	if recipeStepIngredientID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
-	tracing.AttachRecipeStepIngredientIDToSpan(span, recipeStepIngredientID)
+	tracing.AttachToSpan(span, keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 
 	req, err := c.requestBuilder.BuildArchiveRecipeStepIngredientRequest(ctx, recipeID, recipeStepID, recipeStepIngredientID)
 	if err != nil {

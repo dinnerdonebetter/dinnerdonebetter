@@ -47,7 +47,7 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 	logger = logger.WithValue(keys.RequesterIDKey, userID)
 
 	householdID := s.householdIDFetcher(req)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 
 	// read parsed input struct from request body.
@@ -136,10 +136,10 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine relevant household invitation ID.
 	householdInvitationID := s.householdInvitationIDFetcher(req)
-	tracing.AttachHouseholdInvitationIDToSpan(span, householdInvitationID)
+	tracing.AttachToSpan(span, keys.HouseholdInvitationIDKey, householdInvitationID)
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
 
-	tracing.AttachHouseholdIDToSpan(span, sessionCtxData.ActiveHouseholdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, sessionCtxData.ActiveHouseholdID)
 	logger = logger.WithValue(keys.HouseholdIDKey, sessionCtxData.ActiveHouseholdID)
 
 	// fetch the household invitation from the database.
@@ -177,11 +177,11 @@ func (s *service) InboundInvitesHandler(res http.ResponseWriter, req *http.Reque
 	}
 
 	userID := sessionCtxData.Requester.UserID
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 	logger = logger.WithValue(keys.UserIDKey, userID)
 
 	householdID := s.householdIDFetcher(req)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 
 	invitations, err := s.householdInvitationDataManager.GetPendingHouseholdInvitationsForUser(ctx, userID, filter)
@@ -215,11 +215,11 @@ func (s *service) OutboundInvitesHandler(res http.ResponseWriter, req *http.Requ
 	}
 
 	userID := sessionCtxData.Requester.UserID
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 	logger = logger.WithValue(keys.UserIDKey, userID)
 
 	householdID := s.householdIDFetcher(req)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 
 	invitations, err := s.householdInvitationDataManager.GetPendingHouseholdInvitationsFromUser(ctx, userID, filter)
@@ -269,7 +269,7 @@ func (s *service) AcceptInviteHandler(res http.ResponseWriter, req *http.Request
 	logger = logger.WithValue(keys.UserIDKey, userID)
 
 	householdInvitationID := s.householdInvitationIDFetcher(req)
-	tracing.AttachHouseholdInvitationIDToSpan(span, householdInvitationID)
+	tracing.AttachToSpan(span, keys.HouseholdInvitationIDKey, householdInvitationID)
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
 
 	invitation, err := s.householdInvitationDataManager.GetHouseholdInvitationByTokenAndID(ctx, providedInput.Token, householdInvitationID)
@@ -334,11 +334,11 @@ func (s *service) CancelInviteHandler(res http.ResponseWriter, req *http.Request
 	// note, this is where you would call providedInput.ValidateWithContext, if that currently had any effect.
 
 	userID := sessionCtxData.Requester.UserID
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 	logger = logger.WithValue(keys.UserIDKey, userID)
 
 	householdInvitationID := s.householdInvitationIDFetcher(req)
-	tracing.AttachHouseholdInvitationIDToSpan(span, householdInvitationID)
+	tracing.AttachToSpan(span, keys.HouseholdInvitationIDKey, householdInvitationID)
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
 
 	invitation, err := s.householdInvitationDataManager.GetHouseholdInvitationByTokenAndID(ctx, providedInput.Token, householdInvitationID)
@@ -406,7 +406,7 @@ func (s *service) RejectInviteHandler(res http.ResponseWriter, req *http.Request
 	logger = logger.WithValue(keys.UserIDKey, userID)
 
 	householdInvitationID := s.householdInvitationIDFetcher(req)
-	tracing.AttachHouseholdInvitationIDToSpan(span, householdInvitationID)
+	tracing.AttachToSpan(span, keys.HouseholdInvitationIDKey, householdInvitationID)
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
 
 	invitation, err := s.householdInvitationDataManager.GetHouseholdInvitationByTokenAndID(ctx, providedInput.Token, householdInvitationID)

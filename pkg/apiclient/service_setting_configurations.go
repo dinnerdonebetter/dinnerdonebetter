@@ -17,7 +17,7 @@ func (c *Client) GetServiceSettingConfigurationForUserByName(ctx context.Context
 	logger := c.logger.Clone()
 	logger = filter.AttachToLogger(logger).WithValue(keys.ServiceSettingNameKey, settingName)
 	tracing.AttachQueryFilterToSpan(span, filter)
-	tracing.AttachServiceSettingNameToSpan(span, settingName)
+	tracing.AttachToSpan(span, keys.ServiceSettingNameKey, settingName)
 
 	req, err := c.requestBuilder.BuildGetServiceSettingConfigurationForUserByNameRequest(ctx, settingName, filter)
 	if err != nil {
@@ -115,7 +115,7 @@ func (c *Client) UpdateServiceSettingConfiguration(ctx context.Context, serviceS
 		return ErrNilInputProvided
 	}
 	logger = logger.WithValue(keys.ServiceSettingConfigurationIDKey, serviceSettingConfiguration.ID)
-	tracing.AttachServiceSettingConfigurationIDToSpan(span, serviceSettingConfiguration.ID)
+	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, serviceSettingConfiguration.ID)
 
 	req, err := c.requestBuilder.BuildUpdateServiceSettingConfigurationRequest(ctx, serviceSettingConfiguration)
 	if err != nil {
@@ -140,7 +140,7 @@ func (c *Client) ArchiveServiceSettingConfiguration(ctx context.Context, service
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
-	tracing.AttachServiceSettingConfigurationIDToSpan(span, serviceSettingConfigurationID)
+	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
 
 	req, err := c.requestBuilder.BuildArchiveServiceSettingConfigurationRequest(ctx, serviceSettingConfigurationID)
 	if err != nil {

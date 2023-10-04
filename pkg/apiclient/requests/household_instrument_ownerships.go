@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
@@ -22,7 +23,7 @@ func (b *Builder) BuildGetHouseholdInstrumentOwnershipRequest(ctx context.Contex
 	if householdInstrumentOwnershipID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachHouseholdInstrumentOwnershipIDToSpan(span, householdInstrumentOwnershipID)
+	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -31,7 +32,7 @@ func (b *Builder) BuildGetHouseholdInstrumentOwnershipRequest(ctx context.Contex
 		householdInstrumentOwnershipsBasePath,
 		householdInstrumentOwnershipID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
@@ -52,7 +53,7 @@ func (b *Builder) BuildGetHouseholdInstrumentOwnershipsRequest(ctx context.Conte
 		householdsBasePath,
 		householdInstrumentOwnershipsBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
@@ -82,7 +83,7 @@ func (b *Builder) BuildCreateHouseholdInstrumentOwnershipRequest(ctx context.Con
 		householdsBasePath,
 		householdInstrumentOwnershipsBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
 	if err != nil {
@@ -100,7 +101,7 @@ func (b *Builder) BuildUpdateHouseholdInstrumentOwnershipRequest(ctx context.Con
 	if householdInstrumentOwnership == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachHouseholdInstrumentOwnershipIDToSpan(span, householdInstrumentOwnership.ID)
+	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnership.ID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -109,7 +110,7 @@ func (b *Builder) BuildUpdateHouseholdInstrumentOwnershipRequest(ctx context.Con
 		householdInstrumentOwnershipsBasePath,
 		householdInstrumentOwnership.ID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	input := converters.ConvertHouseholdInstrumentOwnershipToHouseholdInstrumentOwnershipUpdateRequestInput(householdInstrumentOwnership)
 
@@ -129,7 +130,7 @@ func (b *Builder) BuildArchiveHouseholdInstrumentOwnershipRequest(ctx context.Co
 	if householdInstrumentOwnershipID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachHouseholdInstrumentOwnershipIDToSpan(span, householdInstrumentOwnershipID)
+	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -138,7 +139,7 @@ func (b *Builder) BuildArchiveHouseholdInstrumentOwnershipRequest(ctx context.Co
 		householdInstrumentOwnershipsBasePath,
 		householdInstrumentOwnershipID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {

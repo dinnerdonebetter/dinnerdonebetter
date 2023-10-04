@@ -25,7 +25,7 @@ func (q *Querier) RecipeExists(ctx context.Context, recipeID string) (exists boo
 	if recipeID == "" {
 		return false, ErrInvalidIDProvided
 	}
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	result, err := q.generatedQuerier.CheckRecipeExistence(ctx, q.db, recipeID)
 	if err != nil {
@@ -43,7 +43,7 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID string) (*types.Recipe
 	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	var x *types.Recipe
 	results, err := q.generatedQuerier.GetRecipeByID(ctx, q.db, recipeID)
@@ -377,7 +377,7 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 		return nil, ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(keys.RecipeIDKey, input.ID)
-	tracing.AttachRecipeIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, input.ID)
 
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -544,8 +544,8 @@ func (q *Querier) UpdateRecipe(ctx context.Context, updated *types.Recipe) error
 	}
 
 	logger := q.logger.WithValue(keys.RecipeIDKey, updated.ID)
-	tracing.AttachRecipeIDToSpan(span, updated.ID)
-	tracing.AttachUserIDToSpan(span, updated.CreatedByUser)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, updated.ID)
+	tracing.AttachToSpan(span, keys.UserIDKey, updated.CreatedByUser)
 
 	if _, err := q.generatedQuerier.UpdateRecipe(ctx, q.db, &generated.UpdateRecipeParams{
 		Name:                 updated.Name,
@@ -582,7 +582,7 @@ func (q *Querier) MarkRecipeAsIndexed(ctx context.Context, recipeID string) erro
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if _, err := q.generatedQuerier.UpdateRecipeLastIndexedAt(ctx, q.db, recipeID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking recipe as indexed")
@@ -602,13 +602,13 @@ func (q *Querier) ArchiveRecipe(ctx context.Context, recipeID, userID string) er
 		return ErrInvalidIDProvided
 	}
 	logger := q.logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if userID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
 	if _, err := q.generatedQuerier.ArchiveRecipe(ctx, q.db, &generated.ArchiveRecipeParams{
 		CreatedByUser: userID,

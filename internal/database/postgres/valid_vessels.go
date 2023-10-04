@@ -27,7 +27,7 @@ func (q *Querier) ValidVesselExists(ctx context.Context, validVesselID string) (
 		return false, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
-	tracing.AttachValidVesselIDToSpan(span, validVesselID)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
 
 	result, err := q.generatedQuerier.CheckValidVesselExistence(ctx, q.db, validVesselID)
 	if err != nil {
@@ -48,7 +48,7 @@ func (q *Querier) GetValidVessel(ctx context.Context, validVesselID string) (*ty
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
-	tracing.AttachValidVesselIDToSpan(span, validVesselID)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
 
 	result, err := q.generatedQuerier.GetValidVessel(ctx, q.db, validVesselID)
 	if err != nil {
@@ -152,7 +152,7 @@ func (q *Querier) SearchForValidVessels(ctx context.Context, query string) ([]*t
 		return nil, ErrEmptyInputProvided
 	}
 	logger = logger.WithValue(keys.SearchQueryKey, query)
-	tracing.AttachValidVesselIDToSpan(span, query)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, query)
 
 	results, err := q.generatedQuerier.SearchForValidVessels(ctx, q.db, query)
 	if err != nil {
@@ -386,7 +386,7 @@ func (q *Querier) CreateValidVessel(ctx context.Context, input *types.ValidVesse
 		x.CapacityUnit = &types.ValidMeasurementUnit{ID: *input.CapacityUnitID}
 	}
 
-	tracing.AttachValidVesselIDToSpan(span, x.ID)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, x.ID)
 	logger.Info("valid vessel created")
 
 	return x, nil
@@ -401,7 +401,7 @@ func (q *Querier) UpdateValidVessel(ctx context.Context, updated *types.ValidVes
 		return ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(keys.ValidVesselIDKey, updated.ID)
-	tracing.AttachValidVesselIDToSpan(span, updated.ID)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, updated.ID)
 
 	if updated.CapacityUnit == nil {
 		return fmt.Errorf("capacity unit: %w", ErrNilInputProvided)
@@ -443,7 +443,7 @@ func (q *Querier) MarkValidVesselAsIndexed(ctx context.Context, validVesselID st
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
-	tracing.AttachValidVesselIDToSpan(span, validVesselID)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
 
 	if _, err := q.generatedQuerier.UpdateValidVesselLastIndexedAt(ctx, q.db, validVesselID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking valid vessel as indexed")
@@ -465,7 +465,7 @@ func (q *Querier) ArchiveValidVessel(ctx context.Context, validVesselID string) 
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
-	tracing.AttachValidVesselIDToSpan(span, validVesselID)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validVesselID)
 
 	if _, err := q.generatedQuerier.ArchiveValidVessel(ctx, q.db, validVesselID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid vessel")

@@ -39,7 +39,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
 	// read parsed input struct from request body.
@@ -59,7 +59,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input := converters.ConvertMealPlanEventCreationRequestInputToMealPlanEventDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
 	input.BelongsToMealPlan = mealPlanID
-	tracing.AttachMealPlanEventIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, input.ID)
 
 	for i := range input.Options {
 		input.Options[i].ID = identifiers.New()
@@ -108,12 +108,12 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
 	// determine meal plan ID.
 	mealPlanEventID := s.mealPlanEventIDFetcher(req)
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 
 	// fetch meal plan from database.
@@ -158,7 +158,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
 	mealPlanEvents, err := s.mealPlanEventDataManager.GetMealPlanEvents(ctx, mealPlanID, filter)
@@ -210,12 +210,12 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
 	// determine meal plan ID.
 	mealPlanEventID := s.mealPlanEventIDFetcher(req)
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 
 	// fetch meal plan from database.
@@ -274,12 +274,12 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
 	// determine meal plan ID.
 	mealPlanEventID := s.mealPlanEventIDFetcher(req)
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 
 	exists, existenceCheckErr := s.mealPlanEventDataManager.MealPlanEventExists(ctx, mealPlanID, mealPlanEventID)

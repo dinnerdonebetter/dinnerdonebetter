@@ -25,7 +25,7 @@ func (q *Querier) RecipeMediaExists(ctx context.Context, recipeMediaID string) (
 		return false, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeMediaIDKey, recipeMediaID)
-	tracing.AttachRecipeMediaIDToSpan(span, recipeMediaID)
+	tracing.AttachToSpan(span, keys.RecipeMediaIDKey, recipeMediaID)
 
 	result, err := q.generatedQuerier.CheckRecipeMediaExistence(ctx, q.db, recipeMediaID)
 	if err != nil {
@@ -46,7 +46,7 @@ func (q *Querier) GetRecipeMedia(ctx context.Context, recipeMediaID string) (*ty
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeMediaIDKey, recipeMediaID)
-	tracing.AttachRecipeMediaIDToSpan(span, recipeMediaID)
+	tracing.AttachToSpan(span, keys.RecipeMediaIDKey, recipeMediaID)
 
 	result, err := q.generatedQuerier.GetRecipeMedia(ctx, q.db, recipeMediaID)
 	if err != nil {
@@ -80,7 +80,7 @@ func (q *Querier) getRecipeMediaForRecipe(ctx context.Context, recipeID string) 
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	results, err := q.generatedQuerier.GetRecipeMediaForRecipe(ctx, q.db, nullStringFromString(recipeID))
 	if err != nil {
@@ -117,13 +117,13 @@ func (q *Querier) getRecipeMediaForRecipeStep(ctx context.Context, recipeID, rec
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	results, err := q.generatedQuerier.GetRecipeMediaForRecipeStep(ctx, q.db, &generated.GetRecipeMediaForRecipeStepParams{
 		RecipeID:     nullStringFromString(recipeID),
@@ -187,7 +187,7 @@ func (q *Querier) CreateRecipeMedia(ctx context.Context, input *types.RecipeMedi
 		CreatedAt:           q.currentTime(),
 	}
 
-	tracing.AttachRecipeMediaIDToSpan(span, x.ID)
+	tracing.AttachToSpan(span, keys.RecipeMediaIDKey, x.ID)
 	logger.Info("recipe media created")
 
 	return x, nil
@@ -202,7 +202,7 @@ func (q *Querier) UpdateRecipeMedia(ctx context.Context, updated *types.RecipeMe
 		return ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(keys.RecipeMediaIDKey, updated.ID)
-	tracing.AttachRecipeMediaIDToSpan(span, updated.ID)
+	tracing.AttachToSpan(span, keys.RecipeMediaIDKey, updated.ID)
 
 	if _, err := q.generatedQuerier.UpdateRecipeMedia(ctx, q.db, &generated.UpdateRecipeMediaParams{
 		BelongsToRecipe:     nullStringFromStringPointer(updated.BelongsToRecipe),
@@ -231,7 +231,7 @@ func (q *Querier) ArchiveRecipeMedia(ctx context.Context, recipeMediaID string) 
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeMediaIDKey, recipeMediaID)
-	tracing.AttachRecipeMediaIDToSpan(span, recipeMediaID)
+	tracing.AttachToSpan(span, keys.RecipeMediaIDKey, recipeMediaID)
 
 	if _, err := q.generatedQuerier.ArchiveRecipeMedia(ctx, q.db, recipeMediaID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe media")

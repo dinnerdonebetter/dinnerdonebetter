@@ -20,13 +20,13 @@ func (c *Client) GetRecipePrepTask(ctx context.Context, recipeID, recipePrepTask
 		return nil, buildInvalidIDError("recipe")
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipePrepTaskID == "" {
 		return nil, buildInvalidIDError("recipe prep task")
 	}
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
-	tracing.AttachRecipePrepTaskIDToSpan(span, recipePrepTaskID)
+	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, recipePrepTaskID)
 
 	req, err := c.requestBuilder.BuildGetRecipePrepTaskRequest(ctx, recipeID, recipePrepTaskID)
 	if err != nil {
@@ -53,7 +53,7 @@ func (c *Client) GetRecipePrepTasks(ctx context.Context, recipeID string, filter
 		return nil, buildInvalidIDError("recipe")
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	req, err := c.requestBuilder.BuildGetRecipePrepTasksRequest(ctx, recipeID, filter)
 	if err != nil {
@@ -107,7 +107,7 @@ func (c *Client) UpdateRecipePrepTask(ctx context.Context, recipePrepTask *types
 		return ErrNilInputProvided
 	}
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTask.ID)
-	tracing.AttachRecipePrepTaskIDToSpan(span, recipePrepTask.ID)
+	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, recipePrepTask.ID)
 
 	req, err := c.requestBuilder.BuildUpdateRecipePrepTaskRequest(ctx, recipePrepTask)
 	if err != nil {
@@ -132,13 +132,13 @@ func (c *Client) ArchiveRecipePrepTask(ctx context.Context, recipeID, recipePrep
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipePrepTaskID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
-	tracing.AttachRecipePrepTaskIDToSpan(span, recipePrepTaskID)
+	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, recipePrepTaskID)
 
 	req, err := c.requestBuilder.BuildArchiveRecipePrepTaskRequest(ctx, recipeID, recipePrepTaskID)
 	if err != nil {

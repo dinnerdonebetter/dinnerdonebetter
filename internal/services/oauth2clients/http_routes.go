@@ -127,7 +127,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	tracing.AttachOAuth2ClientIDToSpan(span, client.ID)
+	tracing.AttachToSpan(span, keys.OAuth2ClientClientIDKey, client.ID)
 
 	dcm := &types.DataChangeMessage{
 		EventType:      types.OAuth2ClientCreatedCustomerEventType,
@@ -170,7 +170,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine OAuth2 client ID.
 	oauth2ClientID := s.urlClientIDExtractor(req)
-	tracing.AttachOAuth2ClientIDToSpan(span, oauth2ClientID)
+	tracing.AttachToSpan(span, keys.OAuth2ClientClientIDKey, oauth2ClientID)
 	logger = logger.WithValue(keys.OAuth2ClientIDKey, oauth2ClientID)
 
 	// fetch OAuth2 client from database.
@@ -210,7 +210,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	// determine OAuth2 client ID.
 	oauth2ClientID := s.urlClientIDExtractor(req)
 	logger = logger.WithValue(keys.OAuth2ClientIDKey, oauth2ClientID)
-	tracing.AttachOAuth2ClientIDToSpan(span, oauth2ClientID)
+	tracing.AttachToSpan(span, keys.OAuth2ClientClientIDKey, oauth2ClientID)
 
 	// archive the OAuth2 client in the database.
 	err = s.oauth2ClientDataManager.ArchiveOAuth2Client(ctx, oauth2ClientID)

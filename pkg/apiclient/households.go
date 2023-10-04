@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
@@ -17,7 +18,7 @@ func (c *Client) SwitchActiveHousehold(ctx context.Context, householdID string) 
 		return ErrInvalidIDProvided
 	}
 
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	if c.authMethod == cookieAuthMethod {
 		req, err := c.requestBuilder.BuildSwitchActiveHouseholdRequest(ctx, householdID)
@@ -62,7 +63,7 @@ func (c *Client) GetHousehold(ctx context.Context, householdID string) (*types.H
 		return nil, ErrInvalidIDProvided
 	}
 
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	req, err := c.requestBuilder.BuildGetHouseholdRequest(ctx, householdID)
 	if err != nil {
@@ -132,7 +133,7 @@ func (c *Client) UpdateHousehold(ctx context.Context, household *types.Household
 		return ErrNilInputProvided
 	}
 
-	tracing.AttachHouseholdIDToSpan(span, household.ID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, household.ID)
 
 	req, err := c.requestBuilder.BuildUpdateHouseholdRequest(ctx, household)
 	if err != nil {
@@ -155,7 +156,7 @@ func (c *Client) ArchiveHousehold(ctx context.Context, householdID string) error
 		return ErrInvalidIDProvided
 	}
 
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	req, err := c.requestBuilder.BuildArchiveHouseholdRequest(ctx, householdID)
 	if err != nil {
@@ -178,7 +179,7 @@ func (c *Client) InviteUserToHousehold(ctx context.Context, destinationHousehold
 		return nil, ErrNilInputProvided
 	}
 
-	tracing.AttachHouseholdIDToSpan(span, destinationHouseholdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, destinationHouseholdID)
 
 	// we don't validate here because it needs to have the user ID
 
@@ -204,7 +205,7 @@ func (c *Client) MarkAsDefault(ctx context.Context, householdID string) error {
 		return ErrInvalidIDProvided
 	}
 
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	req, err := c.requestBuilder.BuildMarkAsDefaultRequest(ctx, householdID)
 	if err != nil {
@@ -231,8 +232,8 @@ func (c *Client) RemoveUserFromHousehold(ctx context.Context, householdID, userI
 		return ErrInvalidIDProvided
 	}
 
-	tracing.AttachHouseholdIDToSpan(span, householdID)
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
 	req, err := c.requestBuilder.BuildRemoveUserRequest(ctx, householdID, userID, "")
 	if err != nil {
@@ -263,8 +264,8 @@ func (c *Client) ModifyMemberPermissions(ctx context.Context, householdID, userI
 		return ErrNilInputProvided
 	}
 
-	tracing.AttachHouseholdIDToSpan(span, householdID)
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return observability.PrepareError(err, span, "validating input")
@@ -295,8 +296,8 @@ func (c *Client) TransferHouseholdOwnership(ctx context.Context, householdID str
 		return ErrNilInputProvided
 	}
 
-	tracing.AttachStringToSpan(span, "old_owner", input.CurrentOwner)
-	tracing.AttachStringToSpan(span, "new_owner", input.NewOwner)
+	tracing.AttachToSpan(span, "old_owner", input.CurrentOwner)
+	tracing.AttachToSpan(span, "new_owner", input.NewOwner)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return observability.PrepareError(err, span, "validating input")

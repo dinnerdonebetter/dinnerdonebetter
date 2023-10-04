@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
@@ -24,7 +25,7 @@ func (b *Builder) BuildGetValidIngredientRequest(ctx context.Context, validIngre
 	if validIngredientID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
+	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -32,7 +33,7 @@ func (b *Builder) BuildGetValidIngredientRequest(ctx context.Context, validIngre
 		validIngredientsBasePath,
 		validIngredientID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
@@ -53,7 +54,7 @@ func (b *Builder) BuildGetRandomValidIngredientRequest(ctx context.Context) (*ht
 		validIngredientsBasePath,
 		randomBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
@@ -78,7 +79,7 @@ func (b *Builder) BuildSearchValidIngredientsRequest(ctx context.Context, query 
 		validIngredientsBasePath,
 		"search",
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
@@ -98,7 +99,7 @@ func (b *Builder) BuildGetValidIngredientsRequest(ctx context.Context, filter *t
 		filter.ToValues(),
 		validIngredientsBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
@@ -127,7 +128,7 @@ func (b *Builder) BuildCreateValidIngredientRequest(ctx context.Context, input *
 		nil,
 		validIngredientsBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
 	if err != nil {
@@ -145,7 +146,7 @@ func (b *Builder) BuildUpdateValidIngredientRequest(ctx context.Context, validIn
 	if validIngredient == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachValidIngredientIDToSpan(span, validIngredient.ID)
+	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredient.ID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -153,7 +154,7 @@ func (b *Builder) BuildUpdateValidIngredientRequest(ctx context.Context, validIn
 		validIngredientsBasePath,
 		validIngredient.ID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	input := converters.ConvertValidIngredientToValidIngredientUpdateRequestInput(validIngredient)
 
@@ -173,7 +174,7 @@ func (b *Builder) BuildArchiveValidIngredientRequest(ctx context.Context, validI
 	if validIngredientID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
+	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -181,7 +182,7 @@ func (b *Builder) BuildArchiveValidIngredientRequest(ctx context.Context, validI
 		validIngredientsBasePath,
 		validIngredientID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {

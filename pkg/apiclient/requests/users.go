@@ -6,6 +6,7 @@ import (
 	"net/url"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
@@ -23,7 +24,7 @@ func (b *Builder) BuildGetUserRequest(ctx context.Context, userID string) (*http
 		return nil, ErrInvalidIDProvided
 	}
 
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
 	uri := b.BuildURL(ctx, nil, usersBasePath, userID)
 
@@ -60,7 +61,7 @@ func (b *Builder) BuildSearchForUsersByUsernameRequest(ctx context.Context, user
 		return nil, ErrEmptyUsernameProvided
 	}
 
-	tracing.AttachUsernameToSpan(span, username)
+	tracing.AttachToSpan(span, keys.UsernameKey, username)
 
 	u := b.buildAPIV1URL(ctx, nil, usersBasePath, "search")
 	q := u.Query()
@@ -86,7 +87,7 @@ func (b *Builder) BuildCreateUserRequest(ctx context.Context, input *types.UserR
 		return nil, ErrNilInputProvided
 	}
 
-	tracing.AttachUsernameToSpan(span, input.Username)
+	tracing.AttachToSpan(span, keys.UsernameKey, input.Username)
 
 	qp := url.Values{}
 	if input.InvitationID != "" && input.InvitationToken != "" {
@@ -97,7 +98,7 @@ func (b *Builder) BuildCreateUserRequest(ctx context.Context, input *types.UserR
 	// deliberately not validating here
 	uri := b.buildUnversionedURL(ctx, qp, usersBasePath)
 
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	return b.buildDataRequest(ctx, http.MethodPost, uri, input)
 }
@@ -111,7 +112,7 @@ func (b *Builder) BuildArchiveUserRequest(ctx context.Context, userID string) (*
 		return nil, ErrInvalidIDProvided
 	}
 
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
 	// deliberately not validating here, maybe there should make a client-side validate method vs a server-side?
 

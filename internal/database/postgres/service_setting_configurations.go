@@ -26,7 +26,7 @@ func (q *Querier) ServiceSettingConfigurationExists(ctx context.Context, service
 		return false, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
-	tracing.AttachServiceSettingConfigurationIDToSpan(span, serviceSettingConfigurationID)
+	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
 
 	result, err := q.generatedQuerier.CheckServiceSettingConfigurationExistence(ctx, q.db, serviceSettingConfigurationID)
 	if err != nil {
@@ -46,7 +46,7 @@ func (q *Querier) GetServiceSettingConfiguration(ctx context.Context, serviceSet
 	if serviceSettingConfigurationID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachServiceSettingConfigurationIDToSpan(span, serviceSettingConfigurationID)
+	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
 	logger = logger.WithValue(keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
 
 	result, err := q.generatedQuerier.GetServiceSettingConfigurationByID(ctx, q.db, serviceSettingConfigurationID)
@@ -97,14 +97,14 @@ func (q *Querier) GetServiceSettingConfigurationForUserByName(ctx context.Contex
 	if userID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 	logger = logger.WithValue(keys.UserIDKey, userID)
 
 	if settingName == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ServiceSettingNameKey, settingName)
-	tracing.AttachServiceSettingNameToSpan(span, settingName)
+	tracing.AttachToSpan(span, keys.ServiceSettingNameKey, settingName)
 
 	result, err := q.generatedQuerier.GetServiceSettingConfigurationForUserBySettingName(ctx, q.db, &generated.GetServiceSettingConfigurationForUserBySettingNameParams{
 		Name:          settingName,
@@ -157,14 +157,14 @@ func (q *Querier) GetServiceSettingConfigurationForHouseholdByName(ctx context.C
 	if householdID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 
 	if settingName == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ServiceSettingNameKey, settingName)
-	tracing.AttachServiceSettingNameToSpan(span, settingName)
+	tracing.AttachToSpan(span, keys.ServiceSettingNameKey, settingName)
 
 	result, err := q.generatedQuerier.GetServiceSettingConfigurationForHouseholdBySettingName(ctx, q.db, &generated.GetServiceSettingConfigurationForHouseholdBySettingNameParams{
 		Name:               settingName,
@@ -217,7 +217,7 @@ func (q *Querier) GetServiceSettingConfigurationsForUser(ctx context.Context, us
 	if userID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 	logger = logger.WithValue(keys.UserIDKey, userID)
 
 	if filter == nil {
@@ -283,7 +283,7 @@ func (q *Querier) GetServiceSettingConfigurationsForHousehold(ctx context.Contex
 	if householdID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 
 	if filter == nil {
@@ -347,7 +347,7 @@ func (q *Querier) CreateServiceSettingConfiguration(ctx context.Context, input *
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachServiceSettingConfigurationIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, input.ID)
 	logger := q.logger.WithValue(keys.ServiceSettingConfigurationIDKey, input.ID)
 
 	// create the service setting configuration.
@@ -386,7 +386,7 @@ func (q *Querier) UpdateServiceSettingConfiguration(ctx context.Context, updated
 		return ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(keys.ServiceSettingConfigurationIDKey, updated.ID)
-	tracing.AttachServiceSettingConfigurationIDToSpan(span, updated.ID)
+	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, updated.ID)
 
 	if _, err := q.generatedQuerier.UpdateServiceSettingConfiguration(ctx, q.db, &generated.UpdateServiceSettingConfigurationParams{
 		Value:              updated.Value,
@@ -415,7 +415,7 @@ func (q *Querier) ArchiveServiceSettingConfiguration(ctx context.Context, servic
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
-	tracing.AttachServiceSettingConfigurationIDToSpan(span, serviceSettingConfigurationID)
+	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
 
 	if _, err := q.generatedQuerier.ArchiveServiceSettingConfiguration(ctx, q.db, serviceSettingConfigurationID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving service setting configuration")

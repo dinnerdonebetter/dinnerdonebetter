@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
@@ -22,7 +23,7 @@ func (b *Builder) BuildGetWebhookRequest(ctx context.Context, webhookID string) 
 		return nil, ErrInvalidIDProvided
 	}
 
-	tracing.AttachWebhookIDToSpan(span, webhookID)
+	tracing.AttachToSpan(span, keys.WebhookIDKey, webhookID)
 
 	uri := b.BuildURL(ctx, nil, webhooksBasePath, webhookID)
 
@@ -77,7 +78,7 @@ func (b *Builder) BuildArchiveWebhookRequest(ctx context.Context, webhookID stri
 		return nil, ErrInvalidIDProvided
 	}
 
-	tracing.AttachWebhookIDToSpan(span, webhookID)
+	tracing.AttachToSpan(span, keys.WebhookIDKey, webhookID)
 
 	uri := b.BuildURL(ctx, nil, webhooksBasePath, webhookID)
 

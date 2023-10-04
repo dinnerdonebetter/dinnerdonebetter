@@ -29,7 +29,7 @@ func (q *Querier) HouseholdInvitationExists(ctx context.Context, householdInvita
 		return false, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
-	tracing.AttachHouseholdInvitationIDToSpan(span, householdInvitationID)
+	tracing.AttachToSpan(span, keys.HouseholdInvitationIDKey, householdInvitationID)
 
 	result, err := q.generatedQuerier.CheckHouseholdInvitationExistence(ctx, q.db, householdInvitationID)
 	if err != nil {
@@ -50,13 +50,13 @@ func (q *Querier) GetHouseholdInvitationByHouseholdAndID(ctx context.Context, ho
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	if householdInvitationID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
-	tracing.AttachHouseholdInvitationIDToSpan(span, householdInvitationID)
+	tracing.AttachToSpan(span, keys.HouseholdInvitationIDKey, householdInvitationID)
 
 	result, err := q.generatedQuerier.GetHouseholdInvitationByHouseholdAndID(ctx, q.db, &generated.GetHouseholdInvitationByHouseholdAndIDParams{
 		DestinationHousehold: householdID,
@@ -143,7 +143,7 @@ func (q *Querier) GetHouseholdInvitationByTokenAndID(ctx context.Context, token,
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, invitationID)
-	tracing.AttachHouseholdInvitationIDToSpan(span, invitationID)
+	tracing.AttachToSpan(span, keys.HouseholdInvitationIDKey, invitationID)
 
 	logger.Debug("fetching household invitation")
 
@@ -228,13 +228,13 @@ func (q *Querier) GetHouseholdInvitationByEmailAndToken(ctx context.Context, ema
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.UserEmailAddressKey, emailAddress)
-	tracing.AttachEmailAddressToSpan(span, emailAddress)
+	tracing.AttachToSpan(span, keys.UserEmailAddressKey, emailAddress)
 
 	if token == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdInvitationTokenKey, token)
-	tracing.AttachHouseholdInvitationTokenToSpan(span, token)
+	tracing.AttachToSpan(span, keys.HouseholdInvitationTokenKey, token)
 
 	result, err := q.generatedQuerier.GetHouseholdInvitationByEmailAndToken(ctx, q.db, &generated.GetHouseholdInvitationByEmailAndTokenParams{
 		ToEmail: emailAddress,
@@ -316,7 +316,7 @@ func (q *Querier) CreateHouseholdInvitation(ctx context.Context, input *types.Ho
 	}
 
 	logger := q.logger.WithValue(keys.HouseholdInvitationIDKey, input.ID)
-	tracing.AttachHouseholdIDToSpan(span, input.DestinationHouseholdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, input.DestinationHouseholdID)
 
 	if err := q.generatedQuerier.CreateHouseholdInvitation(ctx, q.db, &generated.CreateHouseholdInvitationParams{
 		ExpiresAt:            input.ExpiresAt,
@@ -347,7 +347,7 @@ func (q *Querier) CreateHouseholdInvitation(ctx context.Context, input *types.Ho
 		CreatedAt:            q.currentTime(),
 	}
 
-	tracing.AttachHouseholdInvitationIDToSpan(span, x.ID)
+	tracing.AttachToSpan(span, keys.HouseholdInvitationIDKey, x.ID)
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, x.ID)
 
 	logger.Info("household invitation created")
@@ -557,7 +557,7 @@ func (q *Querier) setInvitationStatus(ctx context.Context, querier database.SQLQ
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
-	tracing.AttachHouseholdInvitationIDToSpan(span, householdInvitationID)
+	tracing.AttachToSpan(span, keys.HouseholdInvitationIDKey, householdInvitationID)
 
 	if err := q.generatedQuerier.SetHouseholdInvitationStatus(ctx, querier, &generated.SetHouseholdInvitationStatusParams{
 		Status:     generated.InvitationState(status),
@@ -588,7 +588,7 @@ func (q *Querier) AcceptHouseholdInvitation(ctx context.Context, householdInvita
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)
-	tracing.AttachHouseholdInvitationIDToSpan(span, householdInvitationID)
+	tracing.AttachToSpan(span, keys.HouseholdInvitationIDKey, householdInvitationID)
 
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -643,13 +643,13 @@ func (q *Querier) attachInvitationsToUser(ctx context.Context, querier database.
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.UserEmailAddressKey, userEmail)
-	tracing.AttachHouseholdIDToSpan(span, userEmail)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, userEmail)
 
 	if userID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachHouseholdInvitationIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.HouseholdInvitationIDKey, userID)
 
 	if err := q.generatedQuerier.AttachHouseholdInvitationsToUserID(ctx, querier, &generated.AttachHouseholdInvitationsToUserIDParams{
 		ToEmail: userEmail,

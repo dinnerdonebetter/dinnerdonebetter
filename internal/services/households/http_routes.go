@@ -123,7 +123,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	logger = logger.WithValue(keys.HouseholdIDKey, household.ID)
-	tracing.AttachHouseholdIDToSpan(span, household.ID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, household.ID)
 
 	// notify relevant parties.
 	logger.Debug("created household")
@@ -166,7 +166,7 @@ func (s *service) CurrentInfoHandler(res http.ResponseWriter, req *http.Request)
 	// determine household ID.
 	householdID := sessionCtxData.ActiveHouseholdID
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	// fetch household from database.
 	household, err := s.householdDataManager.GetHousehold(ctx, householdID)
@@ -209,7 +209,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	// determine household ID.
 	householdID := s.householdIDFetcher(req)
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	// fetch household from database.
 	household, err := s.householdDataManager.GetHousehold(ctx, householdID)
@@ -278,7 +278,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	// determine household ID.
 	householdID := s.householdIDFetcher(req)
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	// fetch household from database.
 	household, err := s.householdDataManager.GetHousehold(ctx, householdID)
@@ -337,7 +337,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine household ID.
 	householdID := s.householdIDFetcher(req)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 
 	// archive the household in the database.
@@ -403,11 +403,11 @@ func (s *service) ModifyMemberPermissionsHandler(res http.ResponseWriter, req *h
 
 	householdID := s.householdIDFetcher(req)
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	userID := s.userIDFetcher(req)
 	logger = logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
 	// create household in database.
 	if err = s.householdMembershipDataManager.ModifyUserPermissions(ctx, householdID, userID, input); err != nil {
@@ -462,7 +462,7 @@ func (s *service) TransferHouseholdOwnershipHandler(res http.ResponseWriter, req
 	}
 
 	householdID := s.householdIDFetcher(req)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 
 	requester := sessionCtxData.Requester.UserID
@@ -514,11 +514,11 @@ func (s *service) RemoveMemberHandler(res http.ResponseWriter, req *http.Request
 
 	householdID := s.householdIDFetcher(req)
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	userID := s.userIDFetcher(req)
 	logger = logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
 	// remove user from household in database.
 	if err = s.householdMembershipDataManager.RemoveUserFromHousehold(ctx, userID, householdID); err != nil {
@@ -551,7 +551,7 @@ func (s *service) MarkAsDefaultHouseholdHandler(res http.ResponseWriter, req *ht
 
 	householdID := s.householdIDFetcher(req)
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	// determine user ID.
 	sessionCtxData, err := s.sessionContextDataFetcher(req)

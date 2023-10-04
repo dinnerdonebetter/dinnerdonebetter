@@ -25,7 +25,7 @@ func (q *Querier) ValidMeasurementUnitExists(ctx context.Context, validMeasureme
 		return false, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
-	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	result, err := q.generatedQuerier.CheckValidMeasurementUnitExistence(ctx, q.db, validMeasurementUnitID)
 	if err != nil {
@@ -46,7 +46,7 @@ func (q *Querier) GetValidMeasurementUnit(ctx context.Context, validMeasurementU
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
-	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	result, err := q.generatedQuerier.GetValidMeasurementUnit(ctx, q.db, validMeasurementUnitID)
 	if err != nil {
@@ -112,7 +112,7 @@ func (q *Querier) SearchForValidMeasurementUnits(ctx context.Context, query stri
 		return nil, ErrEmptyInputProvided
 	}
 	logger = logger.WithValue(keys.SearchQueryKey, query)
-	tracing.AttachValidMeasurementUnitIDToSpan(span, query)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, query)
 
 	results, err := q.generatedQuerier.SearchForValidMeasurementUnits(ctx, q.db, query)
 	if err != nil {
@@ -162,7 +162,7 @@ func (q *Querier) ValidMeasurementUnitsForIngredientID(ctx context.Context, vali
 		return nil, ErrEmptyInputProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
-	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
+	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
 
 	results, err := q.generatedQuerier.SearchValidMeasurementUnitsByIngredientID(ctx, q.db, &generated.SearchValidMeasurementUnitsByIngredientIDParams{
 		CreatedBefore:     nullTimeFromTimePointer(filter.CreatedBefore),
@@ -311,7 +311,7 @@ func (q *Querier) CreateValidMeasurementUnit(ctx context.Context, input *types.V
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachValidMeasurementUnitIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, input.ID)
 	logger := q.logger.WithValue(keys.ValidMeasurementUnitIDKey, input.ID)
 
 	// create the valid measurement unit.
@@ -358,7 +358,7 @@ func (q *Querier) UpdateValidMeasurementUnit(ctx context.Context, updated *types
 		return ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(keys.ValidMeasurementUnitIDKey, updated.ID)
-	tracing.AttachValidMeasurementUnitIDToSpan(span, updated.ID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, updated.ID)
 
 	if _, err := q.generatedQuerier.UpdateValidMeasurementUnit(ctx, q.db, &generated.UpdateValidMeasurementUnitParams{
 		Name:        updated.Name,
@@ -391,7 +391,7 @@ func (q *Querier) MarkValidMeasurementUnitAsIndexed(ctx context.Context, validMe
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
-	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	if _, err := q.generatedQuerier.UpdateValidMeasurementUnitLastIndexedAt(ctx, q.db, validMeasurementUnitID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking valid measurement unit as indexed")
@@ -413,7 +413,7 @@ func (q *Querier) ArchiveValidMeasurementUnit(ctx context.Context, validMeasurem
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
-	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	if _, err := q.generatedQuerier.ArchiveValidMeasurementUnit(ctx, q.db, validMeasurementUnitID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid measurement unit")

@@ -22,7 +22,7 @@ func (q *Querier) GetPasswordResetTokenByToken(ctx context.Context, token string
 	if token == "" {
 		return nil, ErrEmptyInputProvided
 	}
-	tracing.AttachPasswordResetTokenToSpan(span, token)
+	tracing.AttachToSpan(span, keys.PasswordResetTokenIDKey, token)
 
 	result, err := q.generatedQuerier.GetPasswordResetToken(ctx, q.db, token)
 	if err != nil {
@@ -50,8 +50,8 @@ func (q *Querier) CreatePasswordResetToken(ctx context.Context, input *types.Pas
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachPasswordResetTokenIDToSpan(span, input.ID)
 	logger := q.logger.WithValue(keys.PasswordResetTokenIDKey, input.ID)
+	tracing.AttachToSpan(span, keys.PasswordResetTokenIDKey, input.ID)
 
 	// create the password reset token.
 	if err := q.generatedQuerier.CreatePasswordResetToken(ctx, q.db, &generated.CreatePasswordResetTokenParams{
@@ -86,7 +86,7 @@ func (q *Querier) RedeemPasswordResetToken(ctx context.Context, passwordResetTok
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.PasswordResetTokenIDKey, passwordResetTokenID)
-	tracing.AttachPasswordResetTokenIDToSpan(span, passwordResetTokenID)
+	tracing.AttachToSpan(span, keys.PasswordResetTokenIDKey, passwordResetTokenID)
 
 	if err := q.generatedQuerier.RedeemPasswordResetToken(ctx, q.db, passwordResetTokenID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving password reset token")

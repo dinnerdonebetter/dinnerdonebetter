@@ -26,7 +26,7 @@ func (q *Querier) GetHousehold(ctx context.Context, householdID string) (*types.
 	if householdID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	results, err := q.generatedQuerier.GetHouseholdByIDWithMemberships(ctx, q.db, householdID)
 	if err != nil {
@@ -109,7 +109,7 @@ func (q *Querier) getHouseholdsForUser(ctx context.Context, querier database.SQL
 	if userID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
 	if filter == nil {
 		filter = types.DefaultQueryFilter()
@@ -237,7 +237,7 @@ func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDat
 		return nil, observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
-	tracing.AttachHouseholdIDToSpan(span, household.ID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, household.ID)
 	logger.Info("household created")
 
 	return household, nil
@@ -252,7 +252,7 @@ func (q *Querier) UpdateHousehold(ctx context.Context, updated *types.Household)
 		return ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(keys.HouseholdIDKey, updated.ID)
-	tracing.AttachHouseholdIDToSpan(span, updated.ID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, updated.ID)
 
 	if _, err := q.generatedQuerier.UpdateHousehold(ctx, q.db, &generated.UpdateHouseholdParams{
 		Name:          updated.Name,
@@ -284,8 +284,8 @@ func (q *Querier) ArchiveHousehold(ctx context.Context, householdID, userID stri
 	if householdID == "" || userID == "" {
 		return ErrInvalidIDProvided
 	}
-	tracing.AttachUserIDToSpan(span, userID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	logger := q.logger.WithValues(map[string]any{
 		keys.HouseholdIDKey: householdID,

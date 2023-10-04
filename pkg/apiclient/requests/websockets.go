@@ -3,6 +3,7 @@ package requests
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 )
 
@@ -20,7 +21,7 @@ func (b *Builder) BuildSubscribeToDataChangesWebsocketURL(ctx context.Context) s
 		websocketsBasePath,
 		"data_changes",
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	return uri
 }

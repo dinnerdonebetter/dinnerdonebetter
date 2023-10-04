@@ -22,7 +22,7 @@ func (c *Client) GetRecipe(ctx context.Context, recipeID string) (*types.Recipe,
 		return nil, buildInvalidIDError("recipe")
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	req, err := c.requestBuilder.BuildGetRecipeRequest(ctx, recipeID)
 	if err != nil {
@@ -66,7 +66,7 @@ func (c *Client) SearchForRecipes(ctx context.Context, query string, filter *typ
 
 	logger := filter.AttachToLogger(c.logger.Clone())
 
-	tracing.AttachSearchQueryToSpan(span, query)
+	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := c.requestBuilder.BuildSearchForRecipesRequest(ctx, query, filter)
@@ -121,7 +121,7 @@ func (c *Client) UpdateRecipe(ctx context.Context, recipe *types.Recipe) error {
 		return ErrNilInputProvided
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipe.ID)
-	tracing.AttachRecipeIDToSpan(span, recipe.ID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipe.ID)
 
 	req, err := c.requestBuilder.BuildUpdateRecipeRequest(ctx, recipe)
 	if err != nil {
@@ -146,7 +146,7 @@ func (c *Client) ArchiveRecipe(ctx context.Context, recipeID string) error {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	req, err := c.requestBuilder.BuildArchiveRecipeRequest(ctx, recipeID)
 	if err != nil {
@@ -171,7 +171,7 @@ func (c *Client) GetMealPlanTasksForRecipe(ctx context.Context, recipeID string)
 		return nil, buildInvalidIDError("recipe")
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	req, err := c.requestBuilder.BuildGetRecipeMealPlanTasksRequest(ctx, recipeID)
 	if err != nil {
@@ -194,7 +194,7 @@ func (c *Client) UploadRecipeMedia(ctx context.Context, files map[string][]byte,
 	if recipeID == "" {
 		return buildInvalidIDError("recipe")
 	}
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if files == nil {
 		return ErrNilInputProvided
@@ -223,7 +223,7 @@ func (c *Client) GetRecipeDAG(ctx context.Context, recipeID string) (image.Image
 		return nil, buildInvalidIDError("recipe")
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	req, err := c.requestBuilder.BuildGetRecipeDAGRequest(ctx, recipeID)
 	if err != nil {
@@ -257,7 +257,7 @@ func (c *Client) CloneRecipe(ctx context.Context, recipeID string) (*types.Recip
 		return nil, buildInvalidIDError("recipe")
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	req, err := c.requestBuilder.BuildCloneRecipeRequest(ctx, recipeID)
 	if err != nil {

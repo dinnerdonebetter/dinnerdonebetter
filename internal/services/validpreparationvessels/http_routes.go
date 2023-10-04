@@ -58,7 +58,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input := converters.ConvertValidPreparationVesselCreationRequestInputToValidPreparationVesselDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
 
-	tracing.AttachValidPreparationVesselIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, input.ID)
 
 	validPreparationVessel, err := s.validPreparationVesselDataManager.CreateValidPreparationVessel(ctx, input)
 	if err != nil {
@@ -101,7 +101,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid preparation vessel ID.
 	validPreparationVesselID := s.validPreparationVesselIDFetcher(req)
-	tracing.AttachValidPreparationVesselIDToSpan(span, validPreparationVesselID)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validPreparationVesselID)
 	logger = logger.WithValue(keys.ValidPreparationVesselIDKey, validPreparationVesselID)
 
 	// fetch valid preparation vessel from database.
@@ -193,7 +193,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid preparation vessel ID.
 	validPreparationVesselID := s.validPreparationVesselIDFetcher(req)
-	tracing.AttachValidPreparationVesselIDToSpan(span, validPreparationVesselID)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validPreparationVesselID)
 	logger = logger.WithValue(keys.ValidPreparationVesselIDKey, validPreparationVesselID)
 
 	// fetch valid preparation vessel from database.
@@ -251,7 +251,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid preparation vessel ID.
 	validPreparationVesselID := s.validPreparationVesselIDFetcher(req)
-	tracing.AttachValidPreparationVesselIDToSpan(span, validPreparationVesselID)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validPreparationVesselID)
 	logger = logger.WithValue(keys.ValidPreparationVesselIDKey, validPreparationVesselID)
 
 	exists, existenceCheckErr := s.validPreparationVesselDataManager.ValidPreparationVesselExists(ctx, validPreparationVesselID)

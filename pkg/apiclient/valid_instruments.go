@@ -20,7 +20,7 @@ func (c *Client) GetValidInstrument(ctx context.Context, validInstrumentID strin
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
-	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
+	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
 
 	req, err := c.requestBuilder.BuildGetValidInstrumentRequest(ctx, validInstrumentID)
 	if err != nil {
@@ -146,7 +146,7 @@ func (c *Client) UpdateValidInstrument(ctx context.Context, validInstrument *typ
 		return ErrNilInputProvided
 	}
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrument.ID)
-	tracing.AttachValidInstrumentIDToSpan(span, validInstrument.ID)
+	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrument.ID)
 
 	req, err := c.requestBuilder.BuildUpdateValidInstrumentRequest(ctx, validInstrument)
 	if err != nil {
@@ -171,7 +171,7 @@ func (c *Client) ArchiveValidInstrument(ctx context.Context, validInstrumentID s
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
-	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
+	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
 
 	req, err := c.requestBuilder.BuildArchiveValidInstrumentRequest(ctx, validInstrumentID)
 	if err != nil {

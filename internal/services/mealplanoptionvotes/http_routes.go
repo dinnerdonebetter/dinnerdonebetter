@@ -39,12 +39,12 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
 	// determine meal plan event ID.
 	mealPlanEventID := s.mealPlanEventIDFetcher(req)
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 
 	// read parsed input struct from request body.
@@ -77,7 +77,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	for i := range input.Votes {
 		input.Votes[i].ID = identifiers.New()
 		input.Votes[i].ByUser = sessionCtxData.Requester.UserID
-		tracing.AttachMealPlanOptionVoteIDToSpan(span, input.Votes[i].ID)
+		tracing.AttachToSpan(span, keys.MealPlanOptionVoteIDKey, input.Votes[i].ID)
 	}
 	input.ByUser = sessionCtxData.Requester.UserID
 
@@ -183,22 +183,22 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
 	// determine meal plan event ID.
 	mealPlanEventID := s.mealPlanEventIDFetcher(req)
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 
 	// determine meal plan option ID.
 	mealPlanOptionID := s.mealPlanOptionIDFetcher(req)
-	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
+	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	// determine meal plan option vote ID.
 	mealPlanOptionVoteID := s.mealPlanOptionVoteIDFetcher(req)
-	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVoteID)
+	tracing.AttachToSpan(span, keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 
 	// fetch meal plan option vote from database.
@@ -243,17 +243,17 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
 	// determine meal plan event ID.
 	mealPlanEventID := s.mealPlanEventIDFetcher(req)
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 
 	// determine meal plan option ID.
 	mealPlanOptionID := s.mealPlanOptionIDFetcher(req)
-	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
+	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	mealPlanOptionVotes, err := s.dataManager.GetMealPlanOptionVotes(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, filter)
@@ -305,22 +305,22 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
 	// determine meal plan event ID.
 	mealPlanEventID := s.mealPlanEventIDFetcher(req)
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 
 	// determine meal plan option ID.
 	mealPlanOptionID := s.mealPlanOptionIDFetcher(req)
-	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
+	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	// determine meal plan option vote ID.
 	mealPlanOptionVoteID := s.mealPlanOptionVoteIDFetcher(req)
-	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVoteID)
+	tracing.AttachToSpan(span, keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 
 	// fetch meal plan option vote from database.
@@ -382,22 +382,22 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
 	// determine meal plan event ID.
 	mealPlanEventID := s.mealPlanEventIDFetcher(req)
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
 
 	// determine meal plan option ID.
 	mealPlanOptionID := s.mealPlanOptionIDFetcher(req)
-	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
+	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	// determine meal plan option vote ID.
 	mealPlanOptionVoteID := s.mealPlanOptionVoteIDFetcher(req)
-	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVoteID)
+	tracing.AttachToSpan(span, keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 
 	exists, existenceCheckErr := s.dataManager.MealPlanOptionVoteExists(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID)

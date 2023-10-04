@@ -56,11 +56,11 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine recipe step ID.
 	recipeStepID := s.recipeStepIDFetcher(req)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 
 	input.BelongsToRecipeStep = recipeStepID
-	tracing.AttachRecipeStepInstrumentIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.RecipeStepInstrumentIDKey, input.ID)
 
 	recipeStepInstrument, err := s.recipeStepInstrumentDataManager.CreateRecipeStepInstrument(ctx, input)
 	if err != nil {
@@ -104,17 +104,17 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
 	// determine recipe step ID.
 	recipeStepID := s.recipeStepIDFetcher(req)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 
 	// determine recipe step instrument ID.
 	recipeStepInstrumentID := s.recipeStepInstrumentIDFetcher(req)
-	tracing.AttachRecipeStepInstrumentIDToSpan(span, recipeStepInstrumentID)
+	tracing.AttachToSpan(span, keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
 	logger = logger.WithValue(keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
 
 	// fetch recipe step instrument from database.
@@ -161,12 +161,12 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
 	// determine recipe step ID.
 	recipeStepID := s.recipeStepIDFetcher(req)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 
 	recipeStepInstruments, err := s.recipeStepInstrumentDataManager.GetRecipeStepInstruments(ctx, recipeID, recipeStepID, filter)
@@ -218,17 +218,17 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
 	// determine recipe step ID.
 	recipeStepID := s.recipeStepIDFetcher(req)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 
 	// determine recipe step instrument ID.
 	recipeStepInstrumentID := s.recipeStepInstrumentIDFetcher(req)
-	tracing.AttachRecipeStepInstrumentIDToSpan(span, recipeStepInstrumentID)
+	tracing.AttachToSpan(span, keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
 	logger = logger.WithValue(keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
 
 	// fetch recipe step instrument from database.
@@ -287,17 +287,17 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
 	// determine recipe step ID.
 	recipeStepID := s.recipeStepIDFetcher(req)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 
 	// determine recipe step instrument ID.
 	recipeStepInstrumentID := s.recipeStepInstrumentIDFetcher(req)
-	tracing.AttachRecipeStepInstrumentIDToSpan(span, recipeStepInstrumentID)
+	tracing.AttachToSpan(span, keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
 	logger = logger.WithValue(keys.RecipeStepInstrumentIDKey, recipeStepInstrumentID)
 
 	exists, existenceCheckErr := s.recipeStepInstrumentDataManager.RecipeStepInstrumentExists(ctx, recipeID, recipeStepID, recipeStepInstrumentID)

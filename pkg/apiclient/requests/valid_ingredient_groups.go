@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
@@ -24,7 +25,7 @@ func (b *Builder) BuildGetValidIngredientGroupRequest(ctx context.Context, valid
 	if validIngredientGroupID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidIngredientGroupIDToSpan(span, validIngredientGroupID)
+	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, validIngredientGroupID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -32,7 +33,7 @@ func (b *Builder) BuildGetValidIngredientGroupRequest(ctx context.Context, valid
 		validIngredientGroupsBasePath,
 		validIngredientGroupID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
@@ -57,7 +58,7 @@ func (b *Builder) BuildSearchValidIngredientGroupsRequest(ctx context.Context, q
 		validIngredientGroupsBasePath,
 		"search",
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
@@ -77,7 +78,7 @@ func (b *Builder) BuildGetValidIngredientGroupsRequest(ctx context.Context, filt
 		filter.ToValues(),
 		validIngredientGroupsBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
@@ -106,7 +107,7 @@ func (b *Builder) BuildCreateValidIngredientGroupRequest(ctx context.Context, in
 		nil,
 		validIngredientGroupsBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
 	if err != nil {
@@ -124,7 +125,7 @@ func (b *Builder) BuildUpdateValidIngredientGroupRequest(ctx context.Context, va
 	if validIngredientGroup == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachValidIngredientGroupIDToSpan(span, validIngredientGroup.ID)
+	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, validIngredientGroup.ID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -132,7 +133,7 @@ func (b *Builder) BuildUpdateValidIngredientGroupRequest(ctx context.Context, va
 		validIngredientGroupsBasePath,
 		validIngredientGroup.ID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	input := converters.ConvertValidIngredientGroupToValidIngredientGroupUpdateRequestInput(validIngredientGroup)
 
@@ -152,7 +153,7 @@ func (b *Builder) BuildArchiveValidIngredientGroupRequest(ctx context.Context, v
 	if validIngredientGroupID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidIngredientGroupIDToSpan(span, validIngredientGroupID)
+	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, validIngredientGroupID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -160,7 +161,7 @@ func (b *Builder) BuildArchiveValidIngredientGroupRequest(ctx context.Context, v
 		validIngredientGroupsBasePath,
 		validIngredientGroupID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {

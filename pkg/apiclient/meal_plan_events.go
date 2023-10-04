@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
@@ -16,17 +17,17 @@ func (c *Client) GetMealPlanEvent(ctx context.Context, mealPlanID, mealPlanEvent
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if mealPlanEventID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanIDToSpan(span, mealPlanEventID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanEventID)
 
 	if mealPlanEventID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 
 	req, err := c.requestBuilder.BuildGetMealPlanEventRequest(ctx, mealPlanID, mealPlanEventID)
 	if err != nil {
@@ -51,7 +52,7 @@ func (c *Client) GetMealPlanEvents(ctx context.Context, mealPlanID string, filte
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	req, err := c.requestBuilder.BuildGetMealPlanEventsRequest(ctx, mealPlanID, filter)
 	if err != nil {
@@ -74,7 +75,7 @@ func (c *Client) CreateMealPlanEvent(ctx context.Context, mealPlanID string, inp
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -105,7 +106,7 @@ func (c *Client) UpdateMealPlanEvent(ctx context.Context, mealPlanEvent *types.M
 	if mealPlanEvent == nil {
 		return ErrNilInputProvided
 	}
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEvent.ID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEvent.ID)
 
 	req, err := c.requestBuilder.BuildUpdateMealPlanEventRequest(ctx, mealPlanEvent)
 	if err != nil {
@@ -127,17 +128,17 @@ func (c *Client) ArchiveMealPlanEvent(ctx context.Context, mealPlanID, mealPlanE
 	if mealPlanID == "" {
 		return ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if mealPlanEventID == "" {
 		return ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanIDToSpan(span, mealPlanEventID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanEventID)
 
 	if mealPlanEventID == "" {
 		return ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 
 	req, err := c.requestBuilder.BuildArchiveMealPlanEventRequest(ctx, mealPlanID, mealPlanEventID)
 	if err != nil {

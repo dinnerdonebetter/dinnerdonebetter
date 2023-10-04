@@ -56,7 +56,7 @@ func (s *service) CreateWebhookHandler(res http.ResponseWriter, req *http.Reques
 
 	input := converters.ConvertWebhookCreationRequestInputToWebhookDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
-	tracing.AttachWebhookIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.WebhookIDKey, input.ID)
 	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
 
 	webhook, err := s.webhookDataManager.CreateWebhook(ctx, input)
@@ -140,10 +140,10 @@ func (s *service) ReadWebhookHandler(res http.ResponseWriter, req *http.Request)
 
 	// determine relevant webhook ID.
 	webhookID := s.webhookIDFetcher(req)
-	tracing.AttachWebhookIDToSpan(span, webhookID)
+	tracing.AttachToSpan(span, keys.WebhookIDKey, webhookID)
 	logger = logger.WithValue(keys.WebhookIDKey, webhookID)
 
-	tracing.AttachHouseholdIDToSpan(span, sessionCtxData.ActiveHouseholdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, sessionCtxData.ActiveHouseholdID)
 	logger = logger.WithValue(keys.HouseholdIDKey, sessionCtxData.ActiveHouseholdID)
 
 	// fetch the webhook from the database.
@@ -186,7 +186,7 @@ func (s *service) ArchiveWebhookHandler(res http.ResponseWriter, req *http.Reque
 
 	// determine relevant webhook ID.
 	webhookID := s.webhookIDFetcher(req)
-	tracing.AttachWebhookIDToSpan(span, webhookID)
+	tracing.AttachToSpan(span, keys.WebhookIDKey, webhookID)
 	logger = logger.WithValue(keys.WebhookIDKey, webhookID)
 
 	exists, webhookExistenceCheckErr := s.webhookDataManager.WebhookExists(ctx, webhookID, householdID)

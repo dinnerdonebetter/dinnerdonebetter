@@ -144,7 +144,7 @@ func (p *uploadProcessor) processFile(ctx context.Context, file multipart.File, 
 	_, span := p.tracer.StartSpan(ctx)
 	defer span.End()
 
-	tracing.AttachStringToSpan(span, "filename", filename)
+	tracing.AttachToSpan(span, "filename", filename)
 
 	bs, err := io.ReadAll(file)
 	if err != nil {

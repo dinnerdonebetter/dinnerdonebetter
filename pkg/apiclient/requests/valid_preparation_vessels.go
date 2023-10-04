@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
@@ -22,7 +23,7 @@ func (b *Builder) BuildGetValidPreparationVesselRequest(ctx context.Context, val
 	if validPreparationVesselID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidPreparationVesselIDToSpan(span, validPreparationVesselID)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validPreparationVesselID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -30,7 +31,7 @@ func (b *Builder) BuildGetValidPreparationVesselRequest(ctx context.Context, val
 		validPreparationVesselsBasePath,
 		validPreparationVesselID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
@@ -50,7 +51,7 @@ func (b *Builder) BuildGetValidPreparationVesselsRequest(ctx context.Context, fi
 		filter.ToValues(),
 		validPreparationVesselsBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
@@ -71,7 +72,7 @@ func (b *Builder) BuildGetValidPreparationVesselsForPreparationRequest(ctx conte
 	if validPreparationID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidIngredientIDToSpan(span, validPreparationID)
+	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validPreparationID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -80,7 +81,7 @@ func (b *Builder) BuildGetValidPreparationVesselsForPreparationRequest(ctx conte
 		"by_preparation",
 		validPreparationID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
@@ -102,7 +103,7 @@ func (b *Builder) BuildGetValidPreparationVesselsForVesselRequest(ctx context.Co
 	if validInstrumentID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidIngredientIDToSpan(span, validInstrumentID)
+	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validInstrumentID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -111,7 +112,7 @@ func (b *Builder) BuildGetValidPreparationVesselsForVesselRequest(ctx context.Co
 		"by_vessel",
 		validInstrumentID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
@@ -141,7 +142,7 @@ func (b *Builder) BuildCreateValidPreparationVesselRequest(ctx context.Context, 
 		nil,
 		validPreparationVesselsBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
 	if err != nil {
@@ -159,7 +160,7 @@ func (b *Builder) BuildUpdateValidPreparationVesselRequest(ctx context.Context, 
 	if validPreparationVessel == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachValidPreparationVesselIDToSpan(span, validPreparationVessel.ID)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validPreparationVessel.ID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -167,7 +168,7 @@ func (b *Builder) BuildUpdateValidPreparationVesselRequest(ctx context.Context, 
 		validPreparationVesselsBasePath,
 		validPreparationVessel.ID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	input := converters.ConvertValidPreparationVesselToValidPreparationVesselUpdateRequestInput(validPreparationVessel)
 
@@ -187,7 +188,7 @@ func (b *Builder) BuildArchiveValidPreparationVesselRequest(ctx context.Context,
 	if validPreparationVesselID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidPreparationVesselIDToSpan(span, validPreparationVesselID)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validPreparationVesselID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -195,7 +196,7 @@ func (b *Builder) BuildArchiveValidPreparationVesselRequest(ctx context.Context,
 		validPreparationVesselsBasePath,
 		validPreparationVesselID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {

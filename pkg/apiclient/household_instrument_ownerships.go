@@ -20,7 +20,7 @@ func (c *Client) GetHouseholdInstrumentOwnership(ctx context.Context, validInstr
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, validInstrumentID)
-	tracing.AttachHouseholdInstrumentOwnershipIDToSpan(span, validInstrumentID)
+	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, validInstrumentID)
 
 	req, err := c.requestBuilder.BuildGetHouseholdInstrumentOwnershipRequest(ctx, validInstrumentID)
 	if err != nil {
@@ -96,7 +96,7 @@ func (c *Client) UpdateHouseholdInstrumentOwnership(ctx context.Context, validIn
 		return ErrNilInputProvided
 	}
 	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, validInstrument.ID)
-	tracing.AttachHouseholdInstrumentOwnershipIDToSpan(span, validInstrument.ID)
+	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, validInstrument.ID)
 
 	req, err := c.requestBuilder.BuildUpdateHouseholdInstrumentOwnershipRequest(ctx, validInstrument)
 	if err != nil {
@@ -121,7 +121,7 @@ func (c *Client) ArchiveHouseholdInstrumentOwnership(ctx context.Context, validI
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, validInstrumentID)
-	tracing.AttachHouseholdInstrumentOwnershipIDToSpan(span, validInstrumentID)
+	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, validInstrumentID)
 
 	req, err := c.requestBuilder.BuildArchiveHouseholdInstrumentOwnershipRequest(ctx, validInstrumentID)
 	if err != nil {

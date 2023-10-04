@@ -20,13 +20,13 @@ func (c *Client) GetRecipeRating(ctx context.Context, mealID, recipeRatingID str
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealIDKey, mealID)
-	tracing.AttachMealIDToSpan(span, mealID)
+	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
 
 	if recipeRatingID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeRatingIDKey, recipeRatingID)
-	tracing.AttachRecipeRatingIDToSpan(span, recipeRatingID)
+	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, recipeRatingID)
 
 	req, err := c.requestBuilder.BuildGetRecipeRatingRequest(ctx, mealID, recipeRatingID)
 	if err != nil {
@@ -54,7 +54,7 @@ func (c *Client) GetRecipeRatings(ctx context.Context, mealID string, filter *ty
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealIDKey, mealID)
-	tracing.AttachMealIDToSpan(span, mealID)
+	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
 
 	req, err := c.requestBuilder.BuildGetRecipeRatingsRequest(ctx, mealID, filter)
 	if err != nil {
@@ -80,7 +80,7 @@ func (c *Client) CreateRecipeRating(ctx context.Context, mealID string, input *t
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealIDKey, mealID)
-	tracing.AttachMealIDToSpan(span, mealID)
+	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -114,7 +114,7 @@ func (c *Client) UpdateRecipeRating(ctx context.Context, recipeRating *types.Rec
 		return ErrNilInputProvided
 	}
 	logger = logger.WithValue(keys.RecipeRatingIDKey, recipeRating.ID)
-	tracing.AttachRecipeRatingIDToSpan(span, recipeRating.ID)
+	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, recipeRating.ID)
 
 	req, err := c.requestBuilder.BuildUpdateRecipeRatingRequest(ctx, recipeRating)
 	if err != nil {
@@ -139,13 +139,13 @@ func (c *Client) ArchiveRecipeRating(ctx context.Context, mealID, recipeRatingID
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealIDKey, mealID)
-	tracing.AttachMealIDToSpan(span, mealID)
+	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
 
 	if recipeRatingID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeRatingIDKey, recipeRatingID)
-	tracing.AttachRecipeRatingIDToSpan(span, recipeRatingID)
+	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, recipeRatingID)
 
 	req, err := c.requestBuilder.BuildArchiveRecipeRatingRequest(ctx, mealID, recipeRatingID)
 	if err != nil {

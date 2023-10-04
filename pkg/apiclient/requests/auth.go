@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
@@ -38,7 +39,7 @@ func (b *Builder) BuildLoginRequest(ctx context.Context, input *types.UserLoginI
 		return nil, ErrNilInputProvided
 	}
 
-	tracing.AttachUsernameToSpan(span, input.Username)
+	tracing.AttachToSpan(span, keys.UsernameKey, input.Username)
 
 	// validating here requires settings knowledge, so we do not do it
 

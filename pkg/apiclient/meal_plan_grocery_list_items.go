@@ -20,13 +20,13 @@ func (c *Client) GetMealPlanGroceryListItem(ctx context.Context, mealPlanID, mea
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if mealPlanGroceryListItemID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
-	tracing.AttachMealPlanGroceryListItemIDToSpan(span, mealPlanGroceryListItemID)
+	tracing.AttachToSpan(span, keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 
 	req, err := c.requestBuilder.BuildGetMealPlanGroceryListItemRequest(ctx, mealPlanID, mealPlanGroceryListItemID)
 	if err != nil {
@@ -52,7 +52,7 @@ func (c *Client) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, mea
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	req, err := c.requestBuilder.BuildGetMealPlanGroceryListItemsForMealPlanRequest(ctx, mealPlanID)
 	if err != nil {
@@ -78,7 +78,7 @@ func (c *Client) CreateMealPlanGroceryListItem(ctx context.Context, mealPlanID s
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if input == nil {
 		return nil, ErrInvalidIDProvided
@@ -112,7 +112,7 @@ func (c *Client) UpdateMealPlanGroceryListItem(ctx context.Context, mealPlanID, 
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "validating input")
@@ -141,13 +141,13 @@ func (c *Client) ArchiveMealPlanGroceryListItem(ctx context.Context, mealPlanID,
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if mealPlanGroceryListItemID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
-	tracing.AttachMealPlanGroceryListItemIDToSpan(span, mealPlanGroceryListItemID)
+	tracing.AttachToSpan(span, keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 
 	req, err := c.requestBuilder.BuildArchiveMealPlanGroceryListItemRequest(ctx, mealPlanID, mealPlanGroceryListItemID)
 	if err != nil {

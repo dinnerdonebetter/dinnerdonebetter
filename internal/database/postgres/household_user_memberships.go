@@ -29,7 +29,7 @@ func (q *Querier) BuildSessionContextDataForUser(ctx context.Context, userID str
 	}
 
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
 	results, err := q.generatedQuerier.GetHouseholdUserMembershipsForUser(ctx, q.db, userID)
 	if err != nil {
@@ -78,7 +78,7 @@ func (q *Querier) GetDefaultHouseholdIDForUser(ctx context.Context, userID strin
 	if userID == "" {
 		return "", ErrInvalidIDProvided
 	}
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 	logger = logger.WithValue(keys.UserIDKey, userID)
 
 	id, err := q.generatedQuerier.GetDefaultHouseholdIDForUser(ctx, q.db, userID)
@@ -103,8 +103,8 @@ func (q *Querier) markHouseholdAsUserDefault(ctx context.Context, querier databa
 		keys.HouseholdIDKey: householdID,
 	})
 
-	tracing.AttachUserIDToSpan(span, userID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	if err := q.generatedQuerier.MarkHouseholdUserMembershipAsUserDefault(ctx, querier, &generated.MarkHouseholdUserMembershipAsUserDefaultParams{
 		BelongsToUser:      userID,
@@ -131,8 +131,8 @@ func (q *Querier) UserIsMemberOfHousehold(ctx context.Context, userID, household
 	if userID == "" || householdID == "" {
 		return false, ErrInvalidIDProvided
 	}
-	tracing.AttachUserIDToSpan(span, userID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	result, err := q.generatedQuerier.UserIsHouseholdMember(ctx, q.db, &generated.UserIsHouseholdMemberParams{
 		BelongsToHousehold: householdID,
@@ -164,8 +164,8 @@ func (q *Querier) ModifyUserPermissions(ctx context.Context, householdID, userID
 		"new_roles":         input.NewRole,
 	})
 
-	tracing.AttachUserIDToSpan(span, userID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	// modify the membership.
 	if err := q.generatedQuerier.ModifyHouseholdUserPermissions(ctx, q.db, &generated.ModifyHouseholdUserPermissionsParams{
@@ -200,8 +200,8 @@ func (q *Querier) TransferHouseholdOwnership(ctx context.Context, householdID st
 		"new_owner":         input.NewOwner,
 	})
 
-	tracing.AttachUserIDToSpan(span, input.NewOwner)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.UserIDKey, input.NewOwner)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	// begin household transfer transaction
 	tx, err := q.db.BeginTx(ctx, nil)
@@ -265,8 +265,8 @@ func (q *Querier) addUserToHousehold(ctx context.Context, querier database.SQLQu
 		keys.HouseholdIDKey: input.HouseholdID,
 	})
 
-	tracing.AttachUserIDToSpan(span, input.UserID)
-	tracing.AttachHouseholdIDToSpan(span, input.HouseholdID)
+	tracing.AttachToSpan(span, keys.UserIDKey, input.UserID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, input.HouseholdID)
 
 	// create the membership.
 	if err := q.generatedQuerier.AddUserToHousehold(ctx, querier, &generated.AddUserToHouseholdParams{
@@ -291,8 +291,8 @@ func (q *Querier) removeUserFromHousehold(ctx context.Context, querier database.
 	if userID == "" || householdID == "" {
 		return ErrInvalidIDProvided
 	}
-	tracing.AttachUserIDToSpan(span, userID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	logger := q.logger.WithValues(map[string]any{
 		keys.UserIDKey:      userID,
@@ -342,12 +342,12 @@ func (q *Querier) RemoveUserFromHousehold(ctx context.Context, userID, household
 	if userID == "" {
 		return ErrInvalidIDProvided
 	}
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
 	if householdID == "" {
 		return ErrInvalidIDProvided
 	}
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	logger := q.logger.WithValues(map[string]any{
 		keys.UserIDKey:      userID,

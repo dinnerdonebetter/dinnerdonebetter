@@ -20,19 +20,19 @@ func (c *Client) GetRecipeStepCompletionCondition(ctx context.Context, recipeID,
 		return nil, buildInvalidIDError("recipe")
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return nil, buildInvalidIDError("recipe step")
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	if recipeStepIngredientID == "" {
 		return nil, buildInvalidIDError("recipe step completion condition")
 	}
 	logger = logger.WithValue(keys.RecipeStepCompletionConditionIDKey, recipeStepIngredientID)
-	tracing.AttachRecipeStepCompletionConditionIDToSpan(span, recipeStepIngredientID)
+	tracing.AttachToSpan(span, keys.RecipeStepCompletionConditionIDKey, recipeStepIngredientID)
 
 	req, err := c.requestBuilder.BuildGetRecipeStepCompletionConditionRequest(ctx, recipeID, recipeStepID, recipeStepIngredientID)
 	if err != nil {
@@ -59,13 +59,13 @@ func (c *Client) GetRecipeStepCompletionConditions(ctx context.Context, recipeID
 		return nil, buildInvalidIDError("recipe")
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return nil, buildInvalidIDError("recipe step")
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	req, err := c.requestBuilder.BuildGetRecipeStepCompletionConditionsRequest(ctx, recipeID, recipeStepID, filter)
 	if err != nil {
@@ -91,13 +91,13 @@ func (c *Client) CreateRecipeStepCompletionCondition(ctx context.Context, recipe
 		return nil, buildInvalidIDError("recipe")
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return nil, buildInvalidIDError("recipeStep")
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -131,13 +131,13 @@ func (c *Client) UpdateRecipeStepCompletionCondition(ctx context.Context, recipe
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepIngredient == nil {
 		return ErrNilInputProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepCompletionConditionIDKey, recipeStepIngredient.ID)
-	tracing.AttachRecipeStepCompletionConditionIDToSpan(span, recipeStepIngredient.ID)
+	tracing.AttachToSpan(span, keys.RecipeStepCompletionConditionIDKey, recipeStepIngredient.ID)
 
 	req, err := c.requestBuilder.BuildUpdateRecipeStepCompletionConditionRequest(ctx, recipeID, recipeStepIngredient)
 	if err != nil {
@@ -162,19 +162,19 @@ func (c *Client) ArchiveRecipeStepCompletionCondition(ctx context.Context, recip
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	if recipeStepIngredientID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepCompletionConditionIDKey, recipeStepIngredientID)
-	tracing.AttachRecipeStepCompletionConditionIDToSpan(span, recipeStepIngredientID)
+	tracing.AttachToSpan(span, keys.RecipeStepCompletionConditionIDKey, recipeStepIngredientID)
 
 	req, err := c.requestBuilder.BuildArchiveRecipeStepCompletionConditionRequest(ctx, recipeID, recipeStepID, recipeStepIngredientID)
 	if err != nil {

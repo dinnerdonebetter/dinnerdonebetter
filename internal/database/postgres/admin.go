@@ -23,7 +23,7 @@ func (q *Querier) UpdateUserAccountStatus(ctx context.Context, userID string, in
 	}
 
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
 	rowsChanged, err := q.generatedQuerier.SetUserAccountStatus(ctx, q.db, &generated.SetUserAccountStatusParams{
 		UserAccountStatus:            input.NewStatus,

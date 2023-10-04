@@ -20,7 +20,7 @@ func (c *Client) GetValidIngredientPreparation(ctx context.Context, validIngredi
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
-	tracing.AttachValidIngredientPreparationIDToSpan(span, validIngredientPreparationID)
+	tracing.AttachToSpan(span, keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 
 	req, err := c.requestBuilder.BuildGetValidIngredientPreparationRequest(ctx, validIngredientPreparationID)
 	if err != nil {
@@ -69,7 +69,7 @@ func (c *Client) GetValidIngredientPreparationsForIngredient(ctx context.Context
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
-	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
+	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
 
 	req, err := c.requestBuilder.BuildGetValidIngredientPreparationsForIngredientRequest(ctx, validIngredientID, filter)
 	if err != nil {
@@ -96,7 +96,7 @@ func (c *Client) GetValidIngredientPreparationsForPreparation(ctx context.Contex
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
-	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
 
 	req, err := c.requestBuilder.BuildGetValidIngredientPreparationsForPreparationRequest(ctx, validPreparationID, filter)
 	if err != nil {
@@ -123,7 +123,7 @@ func (c *Client) GetValidIngredientPreparationsForPreparationAndIngredientName(c
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
-	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
 
 	req, err := c.requestBuilder.BuildGetValidIngredientPreparationsForPreparationAndIngredientNameRequest(ctx, validPreparationID, query, filter)
 	if err != nil {
@@ -177,7 +177,7 @@ func (c *Client) UpdateValidIngredientPreparation(ctx context.Context, validIngr
 		return ErrNilInputProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientPreparationIDKey, validIngredientPreparation.ID)
-	tracing.AttachValidIngredientPreparationIDToSpan(span, validIngredientPreparation.ID)
+	tracing.AttachToSpan(span, keys.ValidIngredientPreparationIDKey, validIngredientPreparation.ID)
 
 	req, err := c.requestBuilder.BuildUpdateValidIngredientPreparationRequest(ctx, validIngredientPreparation)
 	if err != nil {
@@ -202,7 +202,7 @@ func (c *Client) ArchiveValidIngredientPreparation(ctx context.Context, validIng
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
-	tracing.AttachValidIngredientPreparationIDToSpan(span, validIngredientPreparationID)
+	tracing.AttachToSpan(span, keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 
 	req, err := c.requestBuilder.BuildArchiveValidIngredientPreparationRequest(ctx, validIngredientPreparationID)
 	if err != nil {

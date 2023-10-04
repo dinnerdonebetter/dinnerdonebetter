@@ -20,25 +20,25 @@ func (c *Client) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlan
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if mealPlanEventID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 
 	if mealPlanOptionID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
-	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
+	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	if mealPlanOptionVoteID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
-	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVoteID)
+	tracing.AttachToSpan(span, keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 
 	req, err := c.requestBuilder.BuildGetMealPlanOptionVoteRequest(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID)
 	if err != nil {
@@ -65,19 +65,19 @@ func (c *Client) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPla
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if mealPlanEventID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 
 	if mealPlanOptionID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
-	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
+	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	req, err := c.requestBuilder.BuildGetMealPlanOptionVotesRequest(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, filter)
 	if err != nil {
@@ -103,13 +103,13 @@ func (c *Client) CreateMealPlanOptionVote(ctx context.Context, mealPlanID, mealP
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if mealPlanEventID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -143,19 +143,19 @@ func (c *Client) UpdateMealPlanOptionVote(ctx context.Context, mealPlanID, mealP
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if mealPlanEventID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 
 	if mealPlanOptionVote == nil {
 		return ErrNilInputProvided
 	}
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVote.ID)
-	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVote.ID)
+	tracing.AttachToSpan(span, keys.MealPlanOptionVoteIDKey, mealPlanOptionVote.ID)
 
 	req, err := c.requestBuilder.BuildUpdateMealPlanOptionVoteRequest(ctx, mealPlanID, mealPlanEventID, mealPlanOptionVote)
 	if err != nil {
@@ -180,25 +180,25 @@ func (c *Client) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanID, meal
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if mealPlanEventID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 
 	if mealPlanOptionID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
-	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
+	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	if mealPlanOptionVoteID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
-	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVoteID)
+	tracing.AttachToSpan(span, keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 
 	req, err := c.requestBuilder.BuildArchiveMealPlanOptionVoteRequest(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID)
 	if err != nil {

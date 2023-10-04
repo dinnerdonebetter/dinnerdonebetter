@@ -226,7 +226,7 @@ func (s *stripePaymentManager) UnsubscribeFromPlan(ctx context.Context, subscrip
 	_, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	tracing.AttachStringToSpan(span, "subscription.id", subscriptionID)
+	tracing.AttachToSpan(span, "subscription.id", subscriptionID)
 
 	params := buildCancellationParams()
 

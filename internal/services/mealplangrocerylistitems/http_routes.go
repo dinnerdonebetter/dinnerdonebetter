@@ -53,13 +53,13 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	input := converters.ConvertMealPlanGroceryListItemCreationRequestInputToMealPlanGroceryListItemDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
-	tracing.AttachMealPlanGroceryListItemIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.MealPlanGroceryListItemIDKey, input.ID)
 
 	logger = logger.WithValue("input", input)
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 	input.BelongsToMealPlan = mealPlanID
 
@@ -106,12 +106,12 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
 	// determine meal plan grocery list item ID.
 	mealPlanGroceryListItemID := s.mealPlanGroceryListItemIDFetcher(req)
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanGroceryListItemID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanGroceryListItemID)
 	logger = logger.WithValue(keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 
 	// fetch meal plan grocery list item from database.
@@ -156,7 +156,7 @@ func (s *service) ListByMealPlanHandler(res http.ResponseWriter, req *http.Reque
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
 	mealPlanGroceryListItems, err := s.mealPlanGroceryListItemDataManager.GetMealPlanGroceryListItemsForMealPlan(ctx, mealPlanID)
@@ -194,12 +194,12 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
 	// determine meal plan grocery list item ID.
 	mealPlanGroceryListItemID := s.mealPlanGroceryListItemIDFetcher(req)
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanGroceryListItemID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanGroceryListItemID)
 	logger = logger.WithValue(keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 
 	// read parsed input struct from request body.
@@ -270,12 +270,12 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
 	// determine meal plan grocery list item ID.
 	mealPlanGroceryListItemID := s.mealPlanGroceryListItemIDFetcher(req)
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanGroceryListItemID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanGroceryListItemID)
 	logger = logger.WithValue(keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 
 	// check that meal plan grocery list item exists in database.

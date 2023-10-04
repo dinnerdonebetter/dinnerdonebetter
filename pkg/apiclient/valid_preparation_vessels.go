@@ -20,7 +20,7 @@ func (c *Client) GetValidPreparationVessel(ctx context.Context, validPreparation
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidPreparationVesselIDKey, validPreparationVesselID)
-	tracing.AttachValidPreparationVesselIDToSpan(span, validPreparationVesselID)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validPreparationVesselID)
 
 	req, err := c.requestBuilder.BuildGetValidPreparationVesselRequest(ctx, validPreparationVesselID)
 	if err != nil {
@@ -69,7 +69,7 @@ func (c *Client) GetValidPreparationVesselsForPreparation(ctx context.Context, v
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
-	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
 
 	req, err := c.requestBuilder.BuildGetValidPreparationVesselsForPreparationRequest(ctx, validPreparationID, filter)
 	if err != nil {
@@ -96,7 +96,7 @@ func (c *Client) GetValidPreparationVesselsForVessel(ctx context.Context, validI
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
-	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
+	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
 
 	req, err := c.requestBuilder.BuildGetValidPreparationVesselsForVesselRequest(ctx, validInstrumentID, filter)
 	if err != nil {
@@ -150,7 +150,7 @@ func (c *Client) UpdateValidPreparationVessel(ctx context.Context, validPreparat
 		return ErrNilInputProvided
 	}
 	logger = logger.WithValue(keys.ValidPreparationVesselIDKey, validPreparationVessel.ID)
-	tracing.AttachValidPreparationVesselIDToSpan(span, validPreparationVessel.ID)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validPreparationVessel.ID)
 
 	req, err := c.requestBuilder.BuildUpdateValidPreparationVesselRequest(ctx, validPreparationVessel)
 	if err != nil {
@@ -175,7 +175,7 @@ func (c *Client) ArchiveValidPreparationVessel(ctx context.Context, validPrepara
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidPreparationVesselIDKey, validPreparationVesselID)
-	tracing.AttachValidPreparationVesselIDToSpan(span, validPreparationVesselID)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validPreparationVesselID)
 
 	req, err := c.requestBuilder.BuildArchiveValidPreparationVesselRequest(ctx, validPreparationVesselID)
 	if err != nil {

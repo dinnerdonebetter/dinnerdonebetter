@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
@@ -29,9 +30,9 @@ func (b *Builder) BuildGetServiceSettingConfigurationForUserByNameRequest(ctx co
 		"user",
 		settingName,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
-	tracing.AttachServiceSettingNameToSpan(span, settingName)
+	tracing.AttachToSpan(span, keys.ServiceSettingNameKey, settingName)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
@@ -56,7 +57,7 @@ func (b *Builder) BuildGetServiceSettingConfigurationsForUserRequest(ctx context
 		serviceSettingConfigurationsBasePath,
 		"user",
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
@@ -82,7 +83,7 @@ func (b *Builder) BuildGetServiceSettingConfigurationsForHouseholdRequest(ctx co
 		serviceSettingConfigurationsBasePath,
 		"household",
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
@@ -113,7 +114,7 @@ func (b *Builder) BuildCreateServiceSettingConfigurationRequest(ctx context.Cont
 		serviceSettingsBasePath,
 		serviceSettingConfigurationsBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
 	if err != nil {
@@ -131,7 +132,7 @@ func (b *Builder) BuildUpdateServiceSettingConfigurationRequest(ctx context.Cont
 	if serviceSettingConfiguration == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachServiceSettingConfigurationIDToSpan(span, serviceSettingConfiguration.ID)
+	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, serviceSettingConfiguration.ID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -140,7 +141,7 @@ func (b *Builder) BuildUpdateServiceSettingConfigurationRequest(ctx context.Cont
 		serviceSettingConfigurationsBasePath,
 		serviceSettingConfiguration.ID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	input := converters.ConvertServiceSettingConfigurationToServiceSettingConfigurationUpdateRequestInput(serviceSettingConfiguration)
 
@@ -160,7 +161,7 @@ func (b *Builder) BuildArchiveServiceSettingConfigurationRequest(ctx context.Con
 	if serviceSettingConfigurationID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachServiceSettingConfigurationIDToSpan(span, serviceSettingConfigurationID)
+	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -169,7 +170,7 @@ func (b *Builder) BuildArchiveServiceSettingConfigurationRequest(ctx context.Con
 		serviceSettingConfigurationsBasePath,
 		serviceSettingConfigurationID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {

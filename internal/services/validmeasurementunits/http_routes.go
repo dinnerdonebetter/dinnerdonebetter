@@ -57,7 +57,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input := converters.ConvertValidMeasurementUnitCreationRequestInputToValidMeasurementUnitDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
 
-	tracing.AttachValidMeasurementUnitIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, input.ID)
 
 	validMeasurementUnit, err := s.validMeasurementUnitDataManager.CreateValidMeasurementUnit(ctx, input)
 	if err != nil {
@@ -100,7 +100,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid measurement unit ID.
 	validMeasurementUnitID := s.validMeasurementUnitIDFetcher(req)
-	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	// fetch valid measurement unit from database.
@@ -165,7 +165,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get("useDB"))) == "true"
 
 	query := req.URL.Query().Get(types.SearchQueryKey)
-	tracing.AttachSearchQueryToSpan(span, query)
+	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 
 	filter := types.ExtractQueryFilterFromRequest(req)
 	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
@@ -242,7 +242,7 @@ func (s *service) SearchByIngredientIDHandler(res http.ResponseWriter, req *http
 
 	// determine valid ingredient ID.
 	validIngredientID := s.validIngredientIDFetcher(req)
-	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
+	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
 	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
 
 	// determine user ID.
@@ -305,7 +305,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid measurement unit ID.
 	validMeasurementUnitID := s.validMeasurementUnitIDFetcher(req)
-	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	// fetch valid measurement unit from database.
@@ -363,7 +363,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid measurement unit ID.
 	validMeasurementUnitID := s.validMeasurementUnitIDFetcher(req)
-	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	exists, existenceCheckErr := s.validMeasurementUnitDataManager.ValidMeasurementUnitExists(ctx, validMeasurementUnitID)

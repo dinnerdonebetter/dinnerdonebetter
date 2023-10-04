@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
@@ -24,7 +25,7 @@ func (b *Builder) BuildGetValidInstrumentRequest(ctx context.Context, validInstr
 	if validInstrumentID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
+	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -32,7 +33,7 @@ func (b *Builder) BuildGetValidInstrumentRequest(ctx context.Context, validInstr
 		validInstrumentsBasePath,
 		validInstrumentID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
@@ -53,7 +54,7 @@ func (b *Builder) BuildGetRandomValidInstrumentRequest(ctx context.Context) (*ht
 		validInstrumentsBasePath,
 		randomBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
@@ -78,7 +79,7 @@ func (b *Builder) BuildSearchValidInstrumentsRequest(ctx context.Context, query 
 		validInstrumentsBasePath,
 		"search",
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
@@ -98,7 +99,7 @@ func (b *Builder) BuildGetValidInstrumentsRequest(ctx context.Context, filter *t
 		filter.ToValues(),
 		validInstrumentsBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
@@ -127,7 +128,7 @@ func (b *Builder) BuildCreateValidInstrumentRequest(ctx context.Context, input *
 		nil,
 		validInstrumentsBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
 	if err != nil {
@@ -145,7 +146,7 @@ func (b *Builder) BuildUpdateValidInstrumentRequest(ctx context.Context, validIn
 	if validInstrument == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachValidInstrumentIDToSpan(span, validInstrument.ID)
+	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrument.ID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -153,7 +154,7 @@ func (b *Builder) BuildUpdateValidInstrumentRequest(ctx context.Context, validIn
 		validInstrumentsBasePath,
 		validInstrument.ID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	input := converters.ConvertValidInstrumentToValidInstrumentUpdateRequestInput(validInstrument)
 
@@ -173,7 +174,7 @@ func (b *Builder) BuildArchiveValidInstrumentRequest(ctx context.Context, validI
 	if validInstrumentID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
+	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -181,7 +182,7 @@ func (b *Builder) BuildArchiveValidInstrumentRequest(ctx context.Context, validI
 		validInstrumentsBasePath,
 		validInstrumentID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {

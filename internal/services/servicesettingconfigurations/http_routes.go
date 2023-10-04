@@ -58,7 +58,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input := converters.ConvertServiceSettingConfigurationCreationRequestInputToServiceSettingConfigurationDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
 
-	tracing.AttachServiceSettingConfigurationIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, input.ID)
 
 	serviceSettingConfiguration, err := s.serviceSettingConfigurationDataManager.CreateServiceSettingConfiguration(ctx, input)
 	if err != nil {
@@ -100,7 +100,7 @@ func (s *service) ForUserByNameHandler(res http.ResponseWriter, req *http.Reques
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	settingName := s.serviceSettingNameFetcher(req)
-	tracing.AttachServiceSettingNameToSpan(span, settingName)
+	tracing.AttachToSpan(span, keys.ServiceSettingNameKey, settingName)
 
 	// fetch service setting configurations from database.
 	x, err := s.serviceSettingConfigurationDataManager.GetServiceSettingConfigurationForUserByName(ctx, sessionCtxData.Requester.UserID, settingName)
@@ -176,7 +176,7 @@ func (s *service) ForHouseholdHandler(res http.ResponseWriter, req *http.Request
 
 	// determine service setting ID.
 	serviceSettingConfigurationID := s.serviceSettingConfigurationIDFetcher(req)
-	tracing.AttachServiceSettingConfigurationIDToSpan(span, serviceSettingConfigurationID)
+	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
 	logger = logger.WithValue(keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
 
 	// fetch service setting configurations from database.
@@ -229,7 +229,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine service setting ID.
 	serviceSettingConfigurationID := s.serviceSettingConfigurationIDFetcher(req)
-	tracing.AttachServiceSettingConfigurationIDToSpan(span, serviceSettingConfigurationID)
+	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
 	logger = logger.WithValue(keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
 
 	// fetch service setting from database.
@@ -287,7 +287,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine service setting ID.
 	serviceSettingConfigurationID := s.serviceSettingConfigurationIDFetcher(req)
-	tracing.AttachServiceSettingConfigurationIDToSpan(span, serviceSettingConfigurationID)
+	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
 	logger = logger.WithValue(keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
 
 	exists, existenceCheckErr := s.serviceSettingConfigurationDataManager.ServiceSettingConfigurationExists(ctx, serviceSettingConfigurationID)

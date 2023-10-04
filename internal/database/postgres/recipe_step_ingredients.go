@@ -26,19 +26,19 @@ func (q *Querier) RecipeStepIngredientExists(ctx context.Context, recipeID, reci
 		return false, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return false, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	if recipeStepIngredientID == "" {
 		return false, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
-	tracing.AttachRecipeStepIngredientIDToSpan(span, recipeStepIngredientID)
+	tracing.AttachToSpan(span, keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 
 	result, err := q.generatedQuerier.CheckRecipeStepIngredientExistence(ctx, q.db, &generated.CheckRecipeStepIngredientExistenceParams{
 		RecipeStepID:           recipeStepID,
@@ -63,19 +63,19 @@ func (q *Querier) GetRecipeStepIngredient(ctx context.Context, recipeID, recipeS
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	if recipeStepIngredientID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
-	tracing.AttachRecipeStepIngredientIDToSpan(span, recipeStepIngredientID)
+	tracing.AttachToSpan(span, keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 
 	result, err := q.generatedQuerier.GetRecipeStepIngredient(ctx, q.db, &generated.GetRecipeStepIngredientParams{
 		RecipeStepID:           recipeStepID,
@@ -178,7 +178,7 @@ func (q *Querier) getRecipeStepIngredientsForRecipe(ctx context.Context, recipeI
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	results, err := q.generatedQuerier.GetAllRecipeStepIngredientsForRecipe(ctx, q.db, recipeID)
 	if err != nil {
@@ -282,13 +282,13 @@ func (q *Querier) GetRecipeStepIngredients(ctx context.Context, recipeID, recipe
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	if filter == nil {
 		filter = types.DefaultQueryFilter()
@@ -455,7 +455,7 @@ func (q *Querier) createRecipeStepIngredient(ctx context.Context, db database.SQ
 		x.Ingredient = &types.ValidIngredient{ID: *input.IngredientID}
 	}
 
-	tracing.AttachRecipeStepIngredientIDToSpan(span, x.ID)
+	tracing.AttachToSpan(span, keys.RecipeStepIngredientIDKey, x.ID)
 
 	return x, nil
 }
@@ -474,7 +474,7 @@ func (q *Querier) UpdateRecipeStepIngredient(ctx context.Context, updated *types
 		return ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(keys.RecipeStepIngredientIDKey, updated.ID)
-	tracing.AttachRecipeStepIngredientIDToSpan(span, updated.ID)
+	tracing.AttachToSpan(span, keys.RecipeStepIngredientIDKey, updated.ID)
 
 	var ingredientID *string
 	if updated.Ingredient != nil {
@@ -518,13 +518,13 @@ func (q *Querier) ArchiveRecipeStepIngredient(ctx context.Context, recipeStepID,
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	if recipeStepIngredientID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
-	tracing.AttachRecipeStepIngredientIDToSpan(span, recipeStepIngredientID)
+	tracing.AttachToSpan(span, keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 
 	if _, err := q.generatedQuerier.ArchiveRecipeStepIngredient(ctx, q.db, &generated.ArchiveRecipeStepIngredientParams{
 		BelongsToRecipeStep: recipeStepID,

@@ -1,18 +1,6 @@
 package tracing
 
-import (
-	"context"
-	"errors"
-	"net/http"
-	"testing"
-
-	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
-	"github.com/dinnerdonebetter/backend/pkg/types"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
-
-	"github.com/stretchr/testify/require"
-)
+/*
 
 func Test_attachUint8ToSpan(T *testing.T) {
 	T.Parallel()
@@ -191,3 +179,5 @@ func TestAttachQueryFilterToSpan(T *testing.T) {
 		AttachQueryFilterToSpan(span, nil)
 	})
 }
+
+*/

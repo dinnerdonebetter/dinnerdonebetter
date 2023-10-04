@@ -58,7 +58,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input := converters.ConvertValidIngredientPreparationCreationRequestInputToValidIngredientPreparationDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
 
-	tracing.AttachValidIngredientPreparationIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.ValidIngredientPreparationIDKey, input.ID)
 
 	validIngredientPreparation, err := s.validIngredientPreparationDataManager.CreateValidIngredientPreparation(ctx, input)
 	if err != nil {
@@ -101,7 +101,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid ingredient preparation ID.
 	validIngredientPreparationID := s.validIngredientPreparationIDFetcher(req)
-	tracing.AttachValidIngredientPreparationIDToSpan(span, validIngredientPreparationID)
+	tracing.AttachToSpan(span, keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 	logger = logger.WithValue(keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 
 	// fetch valid ingredient preparation from database.
@@ -193,7 +193,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid ingredient preparation ID.
 	validIngredientPreparationID := s.validIngredientPreparationIDFetcher(req)
-	tracing.AttachValidIngredientPreparationIDToSpan(span, validIngredientPreparationID)
+	tracing.AttachToSpan(span, keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 	logger = logger.WithValue(keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 
 	// fetch valid ingredient preparation from database.
@@ -251,7 +251,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid ingredient preparation ID.
 	validIngredientPreparationID := s.validIngredientPreparationIDFetcher(req)
-	tracing.AttachValidIngredientPreparationIDToSpan(span, validIngredientPreparationID)
+	tracing.AttachToSpan(span, keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 	logger = logger.WithValue(keys.ValidIngredientPreparationIDKey, validIngredientPreparationID)
 
 	exists, existenceCheckErr := s.validIngredientPreparationDataManager.ValidIngredientPreparationExists(ctx, validIngredientPreparationID)

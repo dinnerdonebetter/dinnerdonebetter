@@ -25,7 +25,7 @@ func (q *Querier) ValidInstrumentExists(ctx context.Context, validInstrumentID s
 		return false, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
-	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
+	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
 
 	result, err := q.generatedQuerier.CheckValidInstrumentExistence(ctx, q.db, validInstrumentID)
 	if err != nil {
@@ -46,7 +46,7 @@ func (q *Querier) GetValidInstrument(ctx context.Context, validInstrumentID stri
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
-	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
+	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
 
 	result, err := q.generatedQuerier.GetValidInstrument(ctx, q.db, validInstrumentID)
 	if err != nil {
@@ -110,7 +110,7 @@ func (q *Querier) SearchForValidInstruments(ctx context.Context, query string) (
 		return nil, ErrEmptyInputProvided
 	}
 	logger = logger.WithValue(keys.SearchQueryKey, query)
-	tracing.AttachValidInstrumentIDToSpan(span, query)
+	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, query)
 
 	results, err := q.generatedQuerier.SearchForValidInstruments(ctx, q.db, query)
 	if err != nil {
@@ -244,7 +244,7 @@ func (q *Querier) CreateValidInstrument(ctx context.Context, input *types.ValidI
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachValidInstrumentIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, input.ID)
 	logger := q.logger.WithValue(keys.ValidInstrumentIDKey, input.ID)
 
 	// create the valid instrument.
@@ -289,7 +289,7 @@ func (q *Querier) UpdateValidInstrument(ctx context.Context, updated *types.Vali
 		return ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(keys.ValidInstrumentIDKey, updated.ID)
-	tracing.AttachValidInstrumentIDToSpan(span, updated.ID)
+	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, updated.ID)
 
 	if _, err := q.generatedQuerier.UpdateValidInstrument(ctx, q.db, &generated.UpdateValidInstrumentParams{
 		Name:                           updated.Name,
@@ -321,7 +321,7 @@ func (q *Querier) MarkValidInstrumentAsIndexed(ctx context.Context, validInstrum
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
-	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
+	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
 
 	if _, err := q.generatedQuerier.UpdateValidInstrumentLastIndexedAt(ctx, q.db, validInstrumentID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking valid instrument as indexed")
@@ -343,7 +343,7 @@ func (q *Querier) ArchiveValidInstrument(ctx context.Context, validInstrumentID 
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
-	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
+	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
 
 	if _, err := q.generatedQuerier.ArchiveValidInstrument(ctx, q.db, validInstrumentID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid instrument")

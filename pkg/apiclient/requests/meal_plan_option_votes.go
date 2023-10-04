@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
@@ -22,22 +23,22 @@ func (b *Builder) BuildGetMealPlanOptionVoteRequest(ctx context.Context, mealPla
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if mealPlanEventID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 
 	if mealPlanOptionID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
+	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	if mealPlanOptionVoteID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVoteID)
+	tracing.AttachToSpan(span, keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -51,7 +52,7 @@ func (b *Builder) BuildGetMealPlanOptionVoteRequest(ctx context.Context, mealPla
 		mealPlanOptionVotesBasePath,
 		mealPlanOptionVoteID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
@@ -69,17 +70,17 @@ func (b *Builder) BuildGetMealPlanOptionVotesRequest(ctx context.Context, mealPl
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if mealPlanEventID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 
 	if mealPlanOptionID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
+	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -92,7 +93,7 @@ func (b *Builder) BuildGetMealPlanOptionVotesRequest(ctx context.Context, mealPl
 		mealPlanOptionID,
 		mealPlanOptionVotesBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
@@ -111,12 +112,12 @@ func (b *Builder) BuildCreateMealPlanOptionVoteRequest(ctx context.Context, meal
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if mealPlanEventID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -135,7 +136,7 @@ func (b *Builder) BuildCreateMealPlanOptionVoteRequest(ctx context.Context, meal
 		mealPlanEventID,
 		"vote",
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
 	if err != nil {
@@ -153,17 +154,17 @@ func (b *Builder) BuildUpdateMealPlanOptionVoteRequest(ctx context.Context, meal
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if mealPlanEventID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 
 	if mealPlanOptionVote == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVote.ID)
+	tracing.AttachToSpan(span, keys.MealPlanOptionVoteIDKey, mealPlanOptionVote.ID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -177,7 +178,7 @@ func (b *Builder) BuildUpdateMealPlanOptionVoteRequest(ctx context.Context, meal
 		mealPlanOptionVotesBasePath,
 		mealPlanOptionVote.ID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	input := converters.ConvertMealPlanOptionVoteToMealPlanOptionVoteUpdateRequestInput(mealPlanOptionVote)
 
@@ -197,22 +198,22 @@ func (b *Builder) BuildArchiveMealPlanOptionVoteRequest(ctx context.Context, mea
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if mealPlanEventID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 
 	if mealPlanOptionID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
+	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	if mealPlanOptionVoteID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVoteID)
+	tracing.AttachToSpan(span, keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -226,7 +227,7 @@ func (b *Builder) BuildArchiveMealPlanOptionVoteRequest(ctx context.Context, mea
 		mealPlanOptionVotesBasePath,
 		mealPlanOptionVoteID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {
