@@ -23,7 +23,7 @@ func (q *Querier) GetOAuth2ClientTokenByCode(ctx context.Context, code string) (
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.OAuth2ClientTokenCodeKey, code)
-	tracing.AttachStringToSpan(span, keys.OAuth2ClientTokenCodeKey, code)
+	tracing.AttachToSpan(span, keys.OAuth2ClientTokenCodeKey, code)
 
 	encryptedCode, err := q.oauth2ClientTokenEncDec.Encrypt(ctx, code)
 	if err != nil {
@@ -90,7 +90,7 @@ func (q *Querier) GetOAuth2ClientTokenByAccess(ctx context.Context, access strin
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.OAuth2ClientTokenAccessKey, access)
-	tracing.AttachStringToSpan(span, keys.OAuth2ClientTokenAccessKey, access)
+	tracing.AttachToSpan(span, keys.OAuth2ClientTokenAccessKey, access)
 
 	encryptedAccess, err := q.oauth2ClientTokenEncDec.Encrypt(ctx, access)
 	if err != nil {
@@ -157,7 +157,7 @@ func (q *Querier) GetOAuth2ClientTokenByRefresh(ctx context.Context, refresh str
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.OAuth2ClientTokenRefreshKey, refresh)
-	tracing.AttachStringToSpan(span, keys.OAuth2ClientTokenRefreshKey, refresh)
+	tracing.AttachToSpan(span, keys.OAuth2ClientTokenRefreshKey, refresh)
 
 	encryptedRefresh, err := q.oauth2ClientTokenEncDec.Encrypt(ctx, refresh)
 	if err != nil {
@@ -297,7 +297,7 @@ func (q *Querier) ArchiveOAuth2ClientTokenByAccess(ctx context.Context, access s
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.OAuth2ClientTokenAccessKey, access)
-	tracing.AttachStringToSpan(span, keys.OAuth2ClientTokenAccessKey, access)
+	tracing.AttachToSpan(span, keys.OAuth2ClientTokenAccessKey, access)
 
 	encryptedAccess, err := q.oauth2ClientTokenEncDec.Encrypt(ctx, access)
 	if err != nil {
@@ -324,7 +324,7 @@ func (q *Querier) ArchiveOAuth2ClientTokenByCode(ctx context.Context, code strin
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.OAuth2ClientTokenCodeKey, code)
-	tracing.AttachStringToSpan(span, keys.OAuth2ClientTokenCodeKey, code)
+	tracing.AttachToSpan(span, keys.OAuth2ClientTokenCodeKey, code)
 
 	encryptedCode, err := q.oauth2ClientTokenEncDec.Encrypt(ctx, code)
 	if err != nil {
@@ -351,7 +351,7 @@ func (q *Querier) ArchiveOAuth2ClientTokenByRefresh(ctx context.Context, refresh
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.OAuth2ClientTokenRefreshKey, refresh)
-	tracing.AttachStringToSpan(span, keys.OAuth2ClientTokenRefreshKey, refresh)
+	tracing.AttachToSpan(span, keys.OAuth2ClientTokenRefreshKey, refresh)
 
 	encryptedRefresh, err := q.oauth2ClientTokenEncDec.Encrypt(ctx, refresh)
 	if err != nil {

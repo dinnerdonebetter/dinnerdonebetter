@@ -22,7 +22,7 @@ func (q *Querier) ValidPreparationInstrumentExists(ctx context.Context, validPre
 	if validPreparationInstrumentID == "" {
 		return false, ErrInvalidIDProvided
 	}
-	tracing.AttachValidPreparationInstrumentIDToSpan(span, validPreparationInstrumentID)
+	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 
 	result, err := q.generatedQuerier.CheckValidPreparationInstrumentExistence(ctx, q.db, validPreparationInstrumentID)
 	if err != nil {
@@ -40,7 +40,7 @@ func (q *Querier) GetValidPreparationInstrument(ctx context.Context, validPrepar
 	if validPreparationInstrumentID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidPreparationInstrumentIDToSpan(span, validPreparationInstrumentID)
+	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 
 	result, err := q.generatedQuerier.GetValidPreparationInstrument(ctx, q.db, validPreparationInstrumentID)
 	if err != nil {
@@ -190,7 +190,7 @@ func (q *Querier) GetValidPreparationInstrumentsForPreparation(ctx context.Conte
 	if preparationID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidPreparationInstrumentIDToSpan(span, preparationID)
+	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, preparationID)
 
 	if filter == nil {
 		filter = types.DefaultQueryFilter()
@@ -280,7 +280,7 @@ func (q *Querier) GetValidPreparationInstrumentsForInstrument(ctx context.Contex
 	if instrumentID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidPreparationInstrumentIDToSpan(span, instrumentID)
+	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, instrumentID)
 
 	if filter == nil {
 		filter = types.DefaultQueryFilter()
@@ -369,7 +369,7 @@ func (q *Querier) CreateValidPreparationInstrument(ctx context.Context, input *t
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachValidPreparationInstrumentIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, input.ID)
 	logger := q.logger.WithValue(keys.ValidPreparationInstrumentIDKey, input.ID)
 
 	// create the valid preparation instrument.
@@ -405,7 +405,7 @@ func (q *Querier) UpdateValidPreparationInstrument(ctx context.Context, updated 
 	}
 
 	logger := q.logger.WithValue(keys.ValidPreparationInstrumentIDKey, updated.ID)
-	tracing.AttachValidPreparationInstrumentIDToSpan(span, updated.ID)
+	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, updated.ID)
 
 	if _, err := q.generatedQuerier.UpdateValidPreparationInstrument(ctx, q.db, &generated.UpdateValidPreparationInstrumentParams{
 		Notes:              updated.Notes,
@@ -430,7 +430,7 @@ func (q *Querier) ArchiveValidPreparationInstrument(ctx context.Context, validPr
 		return ErrInvalidIDProvided
 	}
 	logger := q.logger.WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
-	tracing.AttachValidPreparationInstrumentIDToSpan(span, validPreparationInstrumentID)
+	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 
 	if _, err := q.generatedQuerier.ArchiveValidPreparationInstrument(ctx, q.db, validPreparationInstrumentID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation instrument")

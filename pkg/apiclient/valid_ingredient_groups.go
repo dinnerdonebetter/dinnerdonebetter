@@ -20,7 +20,7 @@ func (c *Client) GetValidIngredientGroup(ctx context.Context, validIngredientGro
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientGroupIDKey, validIngredientGroupID)
-	tracing.AttachValidIngredientGroupIDToSpan(span, validIngredientGroupID)
+	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, validIngredientGroupID)
 
 	req, err := c.requestBuilder.BuildGetValidIngredientGroupRequest(ctx, validIngredientGroupID)
 	if err != nil {
@@ -126,7 +126,7 @@ func (c *Client) UpdateValidIngredientGroup(ctx context.Context, validIngredient
 		return ErrNilInputProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientGroupIDKey, validIngredientGroup.ID)
-	tracing.AttachValidIngredientGroupIDToSpan(span, validIngredientGroup.ID)
+	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, validIngredientGroup.ID)
 
 	req, err := c.requestBuilder.BuildUpdateValidIngredientGroupRequest(ctx, validIngredientGroup)
 	if err != nil {
@@ -151,7 +151,7 @@ func (c *Client) ArchiveValidIngredientGroup(ctx context.Context, validIngredien
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientGroupIDKey, validIngredientGroupID)
-	tracing.AttachValidIngredientGroupIDToSpan(span, validIngredientGroupID)
+	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, validIngredientGroupID)
 
 	req, err := c.requestBuilder.BuildArchiveValidIngredientGroupRequest(ctx, validIngredientGroupID)
 	if err != nil {

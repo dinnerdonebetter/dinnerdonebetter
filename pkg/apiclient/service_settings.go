@@ -20,7 +20,7 @@ func (c *Client) GetServiceSetting(ctx context.Context, serviceSettingID string)
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ServiceSettingIDKey, serviceSettingID)
-	tracing.AttachServiceSettingIDToSpan(span, serviceSettingID)
+	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, serviceSettingID)
 
 	req, err := c.requestBuilder.BuildGetServiceSettingRequest(ctx, serviceSettingID)
 	if err != nil {
@@ -126,7 +126,7 @@ func (c *Client) ArchiveServiceSetting(ctx context.Context, serviceSettingID str
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ServiceSettingIDKey, serviceSettingID)
-	tracing.AttachServiceSettingIDToSpan(span, serviceSettingID)
+	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, serviceSettingID)
 
 	req, err := c.requestBuilder.BuildArchiveServiceSettingRequest(ctx, serviceSettingID)
 	if err != nil {

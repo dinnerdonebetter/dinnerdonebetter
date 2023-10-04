@@ -20,19 +20,19 @@ func (c *Client) GetRecipeStepProduct(ctx context.Context, recipeID, recipeStepI
 		return nil, buildInvalidIDError("recipe")
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return nil, buildInvalidIDError("recipe step")
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	if recipeStepProductID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepProductIDKey, recipeStepProductID)
-	tracing.AttachRecipeStepProductIDToSpan(span, recipeStepProductID)
+	tracing.AttachToSpan(span, keys.RecipeStepProductIDKey, recipeStepProductID)
 
 	req, err := c.requestBuilder.BuildGetRecipeStepProductRequest(ctx, recipeID, recipeStepID, recipeStepProductID)
 	if err != nil {
@@ -59,13 +59,13 @@ func (c *Client) GetRecipeStepProducts(ctx context.Context, recipeID, recipeStep
 		return nil, buildInvalidIDError("recipe")
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return nil, buildInvalidIDError("recipe step")
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	req, err := c.requestBuilder.BuildGetRecipeStepProductsRequest(ctx, recipeID, recipeStepID, filter)
 	if err != nil {
@@ -91,13 +91,13 @@ func (c *Client) CreateRecipeStepProduct(ctx context.Context, recipeID, recipeSt
 		return nil, buildInvalidIDError("recipe")
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return nil, buildInvalidIDError("recipe step")
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeStepID)
-	tracing.AttachRecipeIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeStepID)
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -131,13 +131,13 @@ func (c *Client) UpdateRecipeStepProduct(ctx context.Context, recipeID string, r
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepProduct == nil {
 		return ErrNilInputProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepProductIDKey, recipeStepProduct.ID)
-	tracing.AttachRecipeStepProductIDToSpan(span, recipeStepProduct.ID)
+	tracing.AttachToSpan(span, keys.RecipeStepProductIDKey, recipeStepProduct.ID)
 
 	req, err := c.requestBuilder.BuildUpdateRecipeStepProductRequest(ctx, recipeID, recipeStepProduct)
 	if err != nil {
@@ -162,19 +162,19 @@ func (c *Client) ArchiveRecipeStepProduct(ctx context.Context, recipeID, recipeS
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	if recipeStepProductID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepProductIDKey, recipeStepProductID)
-	tracing.AttachRecipeStepProductIDToSpan(span, recipeStepProductID)
+	tracing.AttachToSpan(span, keys.RecipeStepProductIDKey, recipeStepProductID)
 
 	req, err := c.requestBuilder.BuildArchiveRecipeStepProductRequest(ctx, recipeID, recipeStepID, recipeStepProductID)
 	if err != nil {

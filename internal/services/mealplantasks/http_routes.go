@@ -53,13 +53,13 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	input := converters.ConvertMealPlanTaskCreationRequestInputToMealPlanTaskDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
-	tracing.AttachMealPlanTaskIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.MealPlanTaskIDKey, input.ID)
 
 	logger = logger.WithValue("input", input)
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
 	mealPlanTask, err := s.mealPlanTaskDataManager.CreateMealPlanTask(ctx, input)
@@ -105,12 +105,12 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
 	// determine meal plan task ID.
 	mealPlanTaskID := s.mealPlanTaskIDFetcher(req)
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanTaskID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanTaskID)
 	logger = logger.WithValue(keys.MealPlanTaskIDKey, mealPlanTaskID)
 
 	// fetch meal plan task from database.
@@ -155,7 +155,7 @@ func (s *service) ListByMealPlanHandler(res http.ResponseWriter, req *http.Reque
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
 	mealPlanTasks, err := s.mealPlanTaskDataManager.GetMealPlanTasksForMealPlan(ctx, mealPlanID)
@@ -193,12 +193,12 @@ func (s *service) StatusChangeHandler(res http.ResponseWriter, req *http.Request
 
 	// determine meal plan ID.
 	mealPlanID := s.mealPlanIDFetcher(req)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
 	// determine meal plan task ID.
 	mealPlanTaskID := s.mealPlanTaskIDFetcher(req)
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanTaskID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanTaskID)
 	logger = logger.WithValue(keys.MealPlanTaskIDKey, mealPlanTaskID)
 
 	// read parsed input struct from request body.

@@ -54,7 +54,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input := converters.ConvertServiceSettingCreationRequestInputToServiceSettingDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
 
-	tracing.AttachServiceSettingIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, input.ID)
 
 	serviceSetting, err := s.serviceSettingDataManager.CreateServiceSetting(ctx, input)
 	if err != nil {
@@ -97,7 +97,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine service setting ID.
 	serviceSettingID := s.serviceSettingIDFetcher(req)
-	tracing.AttachServiceSettingIDToSpan(span, serviceSettingID)
+	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, serviceSettingID)
 	logger = logger.WithValue(keys.ServiceSettingIDKey, serviceSettingID)
 
 	// fetch service setting from database.
@@ -217,7 +217,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine service setting ID.
 	serviceSettingID := s.serviceSettingIDFetcher(req)
-	tracing.AttachServiceSettingIDToSpan(span, serviceSettingID)
+	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, serviceSettingID)
 	logger = logger.WithValue(keys.ServiceSettingIDKey, serviceSettingID)
 
 	exists, existenceCheckErr := s.serviceSettingDataManager.ServiceSettingExists(ctx, serviceSettingID)

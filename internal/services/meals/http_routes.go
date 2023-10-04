@@ -58,7 +58,7 @@ func (s *service) CreateMealHandler(res http.ResponseWriter, req *http.Request) 
 	input.ID = identifiers.New()
 
 	input.CreatedByUser = sessionCtxData.Requester.UserID
-	tracing.AttachMealIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.MealIDKey, input.ID)
 
 	meal, err := s.mealDataManager.CreateMeal(ctx, input)
 	if err != nil {
@@ -102,7 +102,7 @@ func (s *service) ReadMealHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine meal ID.
 	mealID := s.mealIDFetcher(req)
-	tracing.AttachMealIDToSpan(span, mealID)
+	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
 	logger = logger.WithValue(keys.MealIDKey, mealID)
 
 	// fetch meal from database.
@@ -169,7 +169,7 @@ func (s *service) SearchMealsHandler(res http.ResponseWriter, req *http.Request)
 	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get("useDB"))) == "true"
 
 	query := req.URL.Query().Get(types.SearchQueryKey)
-	tracing.AttachSearchQueryToSpan(span, query)
+	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 
 	filter := types.ExtractQueryFilterFromRequest(req)
 	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
@@ -251,7 +251,7 @@ func (s *service) ArchiveMealHandler(res http.ResponseWriter, req *http.Request)
 
 	// determine meal ID.
 	mealID := s.mealIDFetcher(req)
-	tracing.AttachMealIDToSpan(span, mealID)
+	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
 	logger = logger.WithValue(keys.MealIDKey, mealID)
 
 	exists, existenceCheckErr := s.mealDataManager.MealExists(ctx, mealID)

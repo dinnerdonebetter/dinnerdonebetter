@@ -28,7 +28,7 @@ func (q *Querier) MealExists(ctx context.Context, mealID string) (exists bool, e
 		return false, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealIDKey, mealID)
-	tracing.AttachMealIDToSpan(span, mealID)
+	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
 
 	result, err := q.generatedQuerier.CheckMealExistence(ctx, q.db, mealID)
 	if err != nil {
@@ -49,7 +49,7 @@ func (q *Querier) GetMeal(ctx context.Context, mealID string) (*types.Meal, erro
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealIDKey, mealID)
-	tracing.AttachMealIDToSpan(span, mealID)
+	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
 
 	results, err := q.generatedQuerier.GetMeal(ctx, q.db, mealID)
 	if err != nil {
@@ -298,7 +298,7 @@ func (q *Querier) createMeal(ctx context.Context, querier database.SQLQueryExecu
 		}
 	}
 
-	tracing.AttachMealIDToSpan(span, x.ID)
+	tracing.AttachToSpan(span, keys.MealIDKey, x.ID)
 	logger.Info("meal created")
 
 	return x, nil
@@ -345,7 +345,7 @@ func (q *Querier) CreateMealComponent(ctx context.Context, querier database.SQLQ
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealIDKey, mealID)
-	tracing.AttachMealIDToSpan(span, mealID)
+	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
 
 	// create the meal.
 	if err := q.generatedQuerier.CreateMealComponent(ctx, querier, &generated.CreateMealComponentParams{
@@ -372,7 +372,7 @@ func (q *Querier) MarkMealAsIndexed(ctx context.Context, mealID string) error {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealIDKey, mealID)
-	tracing.AttachMealIDToSpan(span, mealID)
+	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
 
 	if _, err := q.generatedQuerier.UpdateMealLastIndexedAt(ctx, q.db, mealID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking meal as indexed")
@@ -394,13 +394,13 @@ func (q *Querier) ArchiveMeal(ctx context.Context, mealID, userID string) error 
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealIDKey, mealID)
-	tracing.AttachMealIDToSpan(span, mealID)
+	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
 
 	if userID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
 	if _, err := q.generatedQuerier.ArchiveMeal(ctx, q.db, &generated.ArchiveMealParams{
 		CreatedByUser: userID,

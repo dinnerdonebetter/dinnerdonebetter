@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
@@ -22,7 +23,7 @@ func (b *Builder) BuildGetMealPlanRequest(ctx context.Context, mealPlanID string
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -30,7 +31,7 @@ func (b *Builder) BuildGetMealPlanRequest(ctx context.Context, mealPlanID string
 		mealPlansBasePath,
 		mealPlanID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
@@ -50,7 +51,7 @@ func (b *Builder) BuildGetMealPlansRequest(ctx context.Context, filter *types.Qu
 		filter.ToValues(),
 		mealPlansBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
@@ -79,7 +80,7 @@ func (b *Builder) BuildCreateMealPlanRequest(ctx context.Context, input *types.M
 		nil,
 		mealPlansBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
 	if err != nil {
@@ -97,7 +98,7 @@ func (b *Builder) BuildUpdateMealPlanRequest(ctx context.Context, mealPlan *type
 	if mealPlan == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachMealPlanIDToSpan(span, mealPlan.ID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlan.ID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -105,7 +106,7 @@ func (b *Builder) BuildUpdateMealPlanRequest(ctx context.Context, mealPlan *type
 		mealPlansBasePath,
 		mealPlan.ID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	input := converters.ConvertMealPlanToMealPlanUpdateRequestInput(mealPlan)
 
@@ -125,7 +126,7 @@ func (b *Builder) BuildArchiveMealPlanRequest(ctx context.Context, mealPlanID st
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -133,7 +134,7 @@ func (b *Builder) BuildArchiveMealPlanRequest(ctx context.Context, mealPlanID st
 		mealPlansBasePath,
 		mealPlanID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {
@@ -151,7 +152,7 @@ func (b *Builder) BuildFinalizeMealPlanRequest(ctx context.Context, mealPlanID s
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -160,7 +161,7 @@ func (b *Builder) BuildFinalizeMealPlanRequest(ctx context.Context, mealPlanID s
 		mealPlanID,
 		"finalize",
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, http.NoBody)
 	if err != nil {

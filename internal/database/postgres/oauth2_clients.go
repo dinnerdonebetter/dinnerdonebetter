@@ -27,7 +27,7 @@ func (q *Querier) GetOAuth2ClientByClientID(ctx context.Context, clientID string
 		return nil, ErrEmptyInputProvided
 	}
 	logger = logger.WithValue(keys.OAuth2ClientClientIDKey, clientID)
-	tracing.AttachOAuth2ClientClientIDToSpan(span, clientID)
+	tracing.AttachToSpan(span, keys.OAuth2ClientClientIDKey, clientID)
 
 	result, err := q.generatedQuerier.GetOAuth2ClientByClientID(ctx, q.db, clientID)
 	if err != nil {
@@ -58,7 +58,7 @@ func (q *Querier) GetOAuth2ClientByDatabaseID(ctx context.Context, clientID stri
 		return nil, ErrEmptyInputProvided
 	}
 	logger = logger.WithValue(keys.OAuth2ClientClientIDKey, clientID)
-	tracing.AttachOAuth2ClientIDToSpan(span, clientID)
+	tracing.AttachToSpan(span, keys.OAuth2ClientClientIDKey, clientID)
 
 	result, err := q.generatedQuerier.GetOAuth2ClientByDatabaseID(ctx, q.db, clientID)
 	if err != nil {
@@ -144,7 +144,7 @@ func (q *Querier) CreateOAuth2Client(ctx context.Context, input *types.OAuth2Cli
 		return nil, observability.PrepareError(writeErr, span, "creating OAuth2 client")
 	}
 
-	tracing.AttachOAuth2ClientIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.OAuth2ClientClientIDKey, input.ID)
 
 	client := &types.OAuth2Client{
 		ID:           input.ID,
@@ -167,7 +167,7 @@ func (q *Querier) ArchiveOAuth2Client(ctx context.Context, clientID string) erro
 	if clientID == "" {
 		return ErrNilInputProvided
 	}
-	tracing.AttachOAuth2ClientIDToSpan(span, clientID)
+	tracing.AttachToSpan(span, keys.OAuth2ClientClientIDKey, clientID)
 	logger := q.logger.WithValue(keys.OAuth2ClientIDKey, clientID)
 
 	if _, err := q.generatedQuerier.ArchiveOAuth2Client(ctx, q.db, clientID); err != nil {

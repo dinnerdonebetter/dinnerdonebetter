@@ -25,7 +25,7 @@ func (q *Querier) RecipeRatingExists(ctx context.Context, recipeRatingID string)
 		return false, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeRatingIDKey, recipeRatingID)
-	tracing.AttachRecipeRatingIDToSpan(span, recipeRatingID)
+	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, recipeRatingID)
 
 	result, err := q.generatedQuerier.CheckRecipeRatingExistence(ctx, q.db, recipeRatingID)
 	if err != nil {
@@ -46,7 +46,7 @@ func (q *Querier) GetRecipeRating(ctx context.Context, recipeRatingID string) (*
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeRatingIDKey, recipeRatingID)
-	tracing.AttachRecipeRatingIDToSpan(span, recipeRatingID)
+	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, recipeRatingID)
 
 	result, err := q.generatedQuerier.GetRecipeRating(ctx, q.db, recipeRatingID)
 	if err != nil {
@@ -161,7 +161,7 @@ func (q *Querier) CreateRecipeRating(ctx context.Context, input *types.RecipeRat
 		CreatedAt:    q.currentTime(),
 	}
 
-	tracing.AttachRecipeRatingIDToSpan(span, x.ID)
+	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, x.ID)
 	logger.Info("recipe rating created")
 
 	return x, nil
@@ -176,7 +176,7 @@ func (q *Querier) UpdateRecipeRating(ctx context.Context, updated *types.RecipeR
 		return ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(keys.RecipeRatingIDKey, updated.ID)
-	tracing.AttachRecipeRatingIDToSpan(span, updated.ID)
+	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, updated.ID)
 
 	if _, err := q.generatedQuerier.UpdateRecipeRating(ctx, q.db, &generated.UpdateRecipeRatingParams{
 		RecipeID:     updated.RecipeID,
@@ -207,7 +207,7 @@ func (q *Querier) ArchiveRecipeRating(ctx context.Context, recipeRatingID string
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.RecipeRatingIDKey, recipeRatingID)
-	tracing.AttachRecipeRatingIDToSpan(span, recipeRatingID)
+	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, recipeRatingID)
 
 	if _, err := q.generatedQuerier.ArchiveRecipeRating(ctx, q.db, recipeRatingID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe rating")

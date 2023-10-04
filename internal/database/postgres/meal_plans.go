@@ -30,13 +30,13 @@ func (q *Querier) MealPlanExists(ctx context.Context, mealPlanID, householdID st
 		return false, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if householdID == "" {
 		return false, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	result, err := q.generatedQuerier.CheckMealPlanExistence(ctx, q.db, &generated.CheckMealPlanExistenceParams{
 		MealPlanID:         mealPlanID,
@@ -60,13 +60,13 @@ func (q *Querier) getMealPlan(ctx context.Context, mealPlanID, householdID strin
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if householdID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	result, err := q.generatedQuerier.GetMealPlan(ctx, q.db, &generated.GetMealPlanParams{
 		ID:                 mealPlanID,
@@ -232,7 +232,7 @@ func (q *Querier) CreateMealPlan(ctx context.Context, input *types.MealPlanDatab
 		return nil, observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
-	tracing.AttachMealPlanIDToSpan(span, x.ID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, x.ID)
 	logger.Info("meal plan created")
 
 	return x, nil
@@ -247,8 +247,8 @@ func (q *Querier) UpdateMealPlan(ctx context.Context, updated *types.MealPlan) e
 		return ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(keys.MealPlanIDKey, updated.ID)
-	tracing.AttachMealPlanIDToSpan(span, updated.ID)
-	tracing.AttachHouseholdIDToSpan(span, updated.BelongsToHousehold)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, updated.ID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, updated.BelongsToHousehold)
 
 	if _, err := q.generatedQuerier.UpdateMealPlan(ctx, q.db, &generated.UpdateMealPlanParams{
 		Notes:              updated.Notes,
@@ -276,13 +276,13 @@ func (q *Querier) ArchiveMealPlan(ctx context.Context, mealPlanID, householdID s
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if householdID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	if _, err := q.generatedQuerier.ArchiveMealPlan(ctx, q.db, &generated.ArchiveMealPlanParams{
 		BelongsToHousehold: householdID,
@@ -307,13 +307,13 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, hou
 		return false, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if householdID == "" {
 		return false, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	logger.Info("attempting to finalize meal plan")
 
@@ -529,13 +529,13 @@ func (q *Querier) FetchMissingVotesForMealPlan(ctx context.Context, mealPlanID, 
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if householdID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	household, err := q.GetHousehold(ctx, householdID)
 	if err != nil {

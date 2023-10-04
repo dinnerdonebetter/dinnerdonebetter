@@ -58,7 +58,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input := converters.ConvertValidIngredientGroupCreationRequestInputToValidIngredientGroupDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
 
-	tracing.AttachValidIngredientGroupIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, input.ID)
 
 	validIngredientGroup, err := s.validIngredientGroupDataManager.CreateValidIngredientGroup(ctx, input)
 	if err != nil {
@@ -101,7 +101,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid ingredient ID.
 	validIngredientGroupID := s.validIngredientGroupIDFetcher(req)
-	tracing.AttachValidIngredientGroupIDToSpan(span, validIngredientGroupID)
+	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, validIngredientGroupID)
 	logger = logger.WithValue(keys.ValidIngredientGroupIDKey, validIngredientGroupID)
 
 	// fetch valid ingredient from database.
@@ -234,7 +234,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid ingredient ID.
 	validIngredientGroupID := s.validIngredientGroupIDFetcher(req)
-	tracing.AttachValidIngredientGroupIDToSpan(span, validIngredientGroupID)
+	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, validIngredientGroupID)
 	logger = logger.WithValue(keys.ValidIngredientGroupIDKey, validIngredientGroupID)
 
 	// fetch valid ingredient from database.
@@ -292,7 +292,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid ingredient ID.
 	validIngredientGroupID := s.validIngredientGroupIDFetcher(req)
-	tracing.AttachValidIngredientGroupIDToSpan(span, validIngredientGroupID)
+	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, validIngredientGroupID)
 	logger = logger.WithValue(keys.ValidIngredientGroupIDKey, validIngredientGroupID)
 
 	exists, existenceCheckErr := s.validIngredientGroupDataManager.ValidIngredientGroupExists(ctx, validIngredientGroupID)

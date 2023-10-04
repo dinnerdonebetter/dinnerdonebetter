@@ -149,7 +149,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine user ingredient preference ID.
 	userIngredientPreferenceID := s.userIngredientPreferenceIDFetcher(req)
-	tracing.AttachUserIngredientPreferenceIDToSpan(span, userIngredientPreferenceID)
+	tracing.AttachToSpan(span, keys.UserIngredientPreferenceIDKey, userIngredientPreferenceID)
 	logger = logger.WithValue(keys.UserIngredientPreferenceIDKey, userIngredientPreferenceID)
 
 	// fetch user ingredient preference from database.
@@ -208,7 +208,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine user ingredient preference ID.
 	userIngredientPreferenceID := s.userIngredientPreferenceIDFetcher(req)
-	tracing.AttachUserIngredientPreferenceIDToSpan(span, userIngredientPreferenceID)
+	tracing.AttachToSpan(span, keys.UserIngredientPreferenceIDKey, userIngredientPreferenceID)
 	logger = logger.WithValue(keys.UserIngredientPreferenceIDKey, userIngredientPreferenceID)
 
 	exists, existenceCheckErr := s.userIngredientPreferenceDataManager.UserIngredientPreferenceExists(ctx, userIngredientPreferenceID, requester)

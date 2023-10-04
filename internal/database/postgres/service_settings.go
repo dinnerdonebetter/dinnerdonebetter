@@ -30,7 +30,7 @@ func (q *Querier) ServiceSettingExists(ctx context.Context, serviceSettingID str
 		return false, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ServiceSettingIDKey, serviceSettingID)
-	tracing.AttachServiceSettingIDToSpan(span, serviceSettingID)
+	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, serviceSettingID)
 
 	result, err := q.generatedQuerier.CheckServiceSettingExistence(ctx, q.db, serviceSettingID)
 	if err != nil {
@@ -51,7 +51,7 @@ func (q *Querier) GetServiceSetting(ctx context.Context, serviceSettingID string
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ServiceSettingIDKey, serviceSettingID)
-	tracing.AttachServiceSettingIDToSpan(span, serviceSettingID)
+	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, serviceSettingID)
 
 	result, err := q.generatedQuerier.GetServiceSetting(ctx, q.db, serviceSettingID)
 	if err != nil {
@@ -92,7 +92,7 @@ func (q *Querier) SearchForServiceSettings(ctx context.Context, query string) ([
 		return nil, ErrEmptyInputProvided
 	}
 	logger = logger.WithValue(keys.SearchQueryKey, query)
-	tracing.AttachServiceSettingIDToSpan(span, query)
+	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, query)
 
 	results, err := q.generatedQuerier.SearchForServiceSettings(ctx, q.db, query)
 	if err != nil {
@@ -193,7 +193,7 @@ func (q *Querier) CreateServiceSetting(ctx context.Context, input *types.Service
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachServiceSettingIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, input.ID)
 	logger := q.logger.WithValue(keys.ServiceSettingIDKey, input.ID)
 
 	// create the service setting.
@@ -236,7 +236,7 @@ func (q *Querier) ArchiveServiceSetting(ctx context.Context, serviceSettingID st
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ServiceSettingIDKey, serviceSettingID)
-	tracing.AttachServiceSettingIDToSpan(span, serviceSettingID)
+	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, serviceSettingID)
 
 	if _, err := q.generatedQuerier.ArchiveServiceSetting(ctx, q.db, serviceSettingID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating service setting")

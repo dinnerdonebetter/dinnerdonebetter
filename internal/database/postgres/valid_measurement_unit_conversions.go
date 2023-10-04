@@ -25,7 +25,7 @@ func (q *Querier) ValidMeasurementUnitConversionExists(ctx context.Context, vali
 		return false, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
-	tracing.AttachValidMeasurementUnitConversionIDToSpan(span, validMeasurementUnitConversionID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 
 	result, err := q.generatedQuerier.CheckValidMeasurementUnitConversionExistence(ctx, q.db, validMeasurementUnitConversionID)
 	if err != nil {
@@ -46,7 +46,7 @@ func (q *Querier) GetValidMeasurementUnitConversion(ctx context.Context, validMe
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
-	tracing.AttachValidMeasurementUnitConversionIDToSpan(span, validMeasurementUnitConversionID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 
 	result, err := q.generatedQuerier.GetValidMeasurementUnitConversion(ctx, q.db, validMeasurementUnitConversionID)
 	if err != nil {
@@ -149,7 +149,7 @@ func (q *Querier) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
-	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	results, err := q.generatedQuerier.GetAllValidMeasurementUnitConversionsFromMeasurementUnit(ctx, q.db, validMeasurementUnitID)
 	if err != nil {
@@ -253,7 +253,7 @@ func (q *Querier) GetValidMeasurementUnitConversionsToUnit(ctx context.Context, 
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
-	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	results, err := q.generatedQuerier.GetAllValidMeasurementUnitConversionsToMeasurementUnit(ctx, q.db, validMeasurementUnitID)
 	if err != nil {
@@ -382,7 +382,7 @@ func (q *Querier) CreateValidMeasurementUnitConversion(ctx context.Context, inpu
 		x.OnlyForIngredient = &types.ValidIngredient{ID: *input.OnlyForIngredient}
 	}
 
-	tracing.AttachValidMeasurementUnitConversionIDToSpan(span, x.ID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, x.ID)
 	logger.Info("valid measurement conversion created")
 
 	return x, nil
@@ -398,7 +398,7 @@ func (q *Querier) UpdateValidMeasurementUnitConversion(ctx context.Context, upda
 	}
 
 	logger := q.logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, updated.ID)
-	tracing.AttachValidMeasurementUnitConversionIDToSpan(span, updated.ID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, updated.ID)
 
 	var ingredientID *string
 	if updated.OnlyForIngredient != nil {
@@ -432,7 +432,7 @@ func (q *Querier) ArchiveValidMeasurementUnitConversion(ctx context.Context, val
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
-	tracing.AttachValidMeasurementUnitConversionIDToSpan(span, validMeasurementUnitConversionID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 
 	if _, err := q.generatedQuerier.ArchiveValidMeasurementUnitConversion(ctx, q.db, validMeasurementUnitConversionID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid measurement conversion")

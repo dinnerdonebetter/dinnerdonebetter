@@ -20,13 +20,13 @@ func (c *Client) GetRecipeStep(ctx context.Context, recipeID, recipeStepID strin
 		return nil, buildInvalidIDError("recipe")
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return nil, buildInvalidIDError("recipe step")
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	req, err := c.requestBuilder.BuildGetRecipeStepRequest(ctx, recipeID, recipeStepID)
 	if err != nil {
@@ -53,7 +53,7 @@ func (c *Client) GetRecipeSteps(ctx context.Context, recipeID string, filter *ty
 		return nil, buildInvalidIDError("recipe")
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	req, err := c.requestBuilder.BuildGetRecipeStepsRequest(ctx, recipeID, filter)
 	if err != nil {
@@ -79,7 +79,7 @@ func (c *Client) CreateRecipeStep(ctx context.Context, recipeID string, input *t
 		return nil, buildInvalidIDError("recipe")
 	}
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -113,7 +113,7 @@ func (c *Client) UpdateRecipeStep(ctx context.Context, recipeStep *types.RecipeS
 		return ErrNilInputProvided
 	}
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStep.ID)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStep.ID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStep.ID)
 
 	req, err := c.requestBuilder.BuildUpdateRecipeStepRequest(ctx, recipeStep)
 	if err != nil {
@@ -135,12 +135,12 @@ func (c *Client) ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID s
 	if recipeID == "" {
 		return ErrInvalidIDProvided
 	}
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return ErrInvalidIDProvided
 	}
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	req, err := c.requestBuilder.BuildArchiveRecipeStepRequest(ctx, recipeID, recipeStepID)
 	if err != nil {
@@ -162,12 +162,12 @@ func (c *Client) UploadRecipeMediaForStep(ctx context.Context, files map[string]
 	if recipeID == "" {
 		return ErrInvalidIDProvided
 	}
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeStepID == "" {
 		return ErrInvalidIDProvided
 	}
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	if files == nil {
 		return ErrNilInputProvided

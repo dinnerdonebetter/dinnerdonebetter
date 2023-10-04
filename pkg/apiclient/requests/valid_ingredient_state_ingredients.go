@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
@@ -22,7 +23,7 @@ func (b *Builder) BuildGetValidIngredientStateIngredientRequest(ctx context.Cont
 	if validIngredientStateIngredientID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidIngredientStateIngredientIDToSpan(span, validIngredientStateIngredientID)
+	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -30,7 +31,7 @@ func (b *Builder) BuildGetValidIngredientStateIngredientRequest(ctx context.Cont
 		validIngredientStateIngredientsBasePath,
 		validIngredientStateIngredientID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
@@ -50,7 +51,7 @@ func (b *Builder) BuildGetValidIngredientStateIngredientsRequest(ctx context.Con
 		filter.ToValues(),
 		validIngredientStateIngredientsBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
@@ -69,7 +70,7 @@ func (b *Builder) BuildGetValidIngredientStateIngredientsForIngredientRequest(ct
 	if ingredientID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidIngredientIDToSpan(span, ingredientID)
+	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, ingredientID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -78,7 +79,7 @@ func (b *Builder) BuildGetValidIngredientStateIngredientsForIngredientRequest(ct
 		"by_ingredient",
 		ingredientID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
@@ -97,7 +98,7 @@ func (b *Builder) BuildGetValidIngredientStateIngredientsForPreparationRequest(c
 	if ingredientState == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidIngredientStateIDToSpan(span, ingredientState)
+	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, ingredientState)
 
 	uri := b.BuildURL(
 		ctx,
@@ -106,7 +107,7 @@ func (b *Builder) BuildGetValidIngredientStateIngredientsForPreparationRequest(c
 		"by_ingredient_state",
 		ingredientState,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
@@ -135,7 +136,7 @@ func (b *Builder) BuildCreateValidIngredientStateIngredientRequest(ctx context.C
 		nil,
 		validIngredientStateIngredientsBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
 	if err != nil {
@@ -153,7 +154,7 @@ func (b *Builder) BuildUpdateValidIngredientStateIngredientRequest(ctx context.C
 	if validIngredientStateIngredient == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachValidIngredientStateIngredientIDToSpan(span, validIngredientStateIngredient.ID)
+	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredient.ID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -161,7 +162,7 @@ func (b *Builder) BuildUpdateValidIngredientStateIngredientRequest(ctx context.C
 		validIngredientStateIngredientsBasePath,
 		validIngredientStateIngredient.ID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	input := converters.ConvertValidIngredientStateIngredientToValidIngredientStateIngredientUpdateRequestInput(validIngredientStateIngredient)
 
@@ -181,7 +182,7 @@ func (b *Builder) BuildArchiveValidIngredientStateIngredientRequest(ctx context.
 	if validIngredientStateIngredientID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidIngredientStateIngredientIDToSpan(span, validIngredientStateIngredientID)
+	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -189,7 +190,7 @@ func (b *Builder) BuildArchiveValidIngredientStateIngredientRequest(ctx context.
 		validIngredientStateIngredientsBasePath,
 		validIngredientStateIngredientID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {

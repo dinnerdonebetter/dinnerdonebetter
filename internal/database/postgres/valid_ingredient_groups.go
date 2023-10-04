@@ -26,7 +26,7 @@ func (q *Querier) ValidIngredientGroupExists(ctx context.Context, validIngredien
 		return false, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientGroupIDKey, validIngredientGroupID)
-	tracing.AttachValidIngredientGroupIDToSpan(span, validIngredientGroupID)
+	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, validIngredientGroupID)
 
 	result, err := q.generatedQuerier.CheckValidIngredientGroupExistence(ctx, q.db, validIngredientGroupID)
 	if err != nil {
@@ -47,7 +47,7 @@ func (q *Querier) GetValidIngredientGroup(ctx context.Context, validIngredientGr
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientGroupIDKey, validIngredientGroupID)
-	tracing.AttachValidIngredientGroupIDToSpan(span, validIngredientGroupID)
+	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, validIngredientGroupID)
 
 	result, err := q.generatedQuerier.GetValidIngredientGroup(ctx, q.db, validIngredientGroupID)
 	if err != nil {
@@ -133,7 +133,7 @@ func (q *Querier) SearchForValidIngredientGroups(ctx context.Context, query stri
 		return nil, ErrEmptyInputProvided
 	}
 	logger = logger.WithValue(keys.SearchQueryKey, query)
-	tracing.AttachValidIngredientGroupIDToSpan(span, query)
+	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, query)
 
 	if filter == nil {
 		filter = types.DefaultQueryFilter()
@@ -340,7 +340,7 @@ func (q *Querier) CreateValidIngredientGroup(ctx context.Context, input *types.V
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachValidIngredientGroupIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, input.ID)
 	logger := q.logger.WithValue(keys.ValidIngredientGroupIDKey, input.ID)
 
 	tx, err := q.db.BeginTx(ctx, nil)
@@ -399,7 +399,7 @@ func (q *Querier) CreateValidIngredientGroupMember(ctx context.Context, db datab
 		return nil, ErrNilInputProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientGroupIDKey, input.ID).WithValue(keys.ValidIngredientIDKey, input.ValidIngredientID)
-	tracing.AttachValidIngredientGroupIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, input.ID)
 
 	// create the valid ingredient group.
 	if err := q.generatedQuerier.CreateValidIngredientGroupMember(ctx, db, &generated.CreateValidIngredientGroupMemberParams{
@@ -417,7 +417,7 @@ func (q *Querier) CreateValidIngredientGroupMember(ctx context.Context, db datab
 		CreatedAt:       q.currentTime(),
 	}
 
-	tracing.AttachValidIngredientGroupIDToSpan(span, x.ID)
+	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, x.ID)
 	logger.Info("valid ingredient group member created")
 
 	return x, nil
@@ -432,7 +432,7 @@ func (q *Querier) UpdateValidIngredientGroup(ctx context.Context, updated *types
 		return ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(keys.ValidIngredientGroupIDKey, updated.ID)
-	tracing.AttachValidIngredientGroupIDToSpan(span, updated.ID)
+	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, updated.ID)
 
 	if _, err := q.generatedQuerier.UpdateValidIngredientGroup(ctx, q.db, &generated.UpdateValidIngredientGroupParams{
 		Name:        updated.Name,
@@ -459,7 +459,7 @@ func (q *Querier) ArchiveValidIngredientGroup(ctx context.Context, validIngredie
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientGroupIDKey, validIngredientGroupID)
-	tracing.AttachValidIngredientGroupIDToSpan(span, validIngredientGroupID)
+	tracing.AttachToSpan(span, keys.ValidIngredientGroupIDKey, validIngredientGroupID)
 
 	if _, err := q.generatedQuerier.ArchiveValidIngredientGroup(ctx, q.db, validIngredientGroupID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient group")

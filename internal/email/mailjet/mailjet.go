@@ -84,7 +84,7 @@ func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMes
 	_, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 
-	tracing.AttachStringToSpan(span, "to_email", details.ToAddress)
+	tracing.AttachToSpan(span, "to_email", details.ToAddress)
 
 	messagesInfo := []mailjet.InfoMessagesV31{
 		{

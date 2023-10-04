@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
@@ -26,7 +27,7 @@ func (b *Builder) BuildGetUserIngredientPreferencesRequest(ctx context.Context, 
 		filter.ToValues(),
 		userIngredientPreferencesBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
@@ -56,7 +57,7 @@ func (b *Builder) BuildCreateUserIngredientPreferenceRequest(ctx context.Context
 		nil,
 		userIngredientPreferencesBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
 	if err != nil {
@@ -74,7 +75,7 @@ func (b *Builder) BuildUpdateUserIngredientPreferenceRequest(ctx context.Context
 	if userIngredientPreference == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachUserIngredientPreferenceIDToSpan(span, userIngredientPreference.ID)
+	tracing.AttachToSpan(span, keys.UserIngredientPreferenceIDKey, userIngredientPreference.ID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -82,7 +83,7 @@ func (b *Builder) BuildUpdateUserIngredientPreferenceRequest(ctx context.Context
 		userIngredientPreferencesBasePath,
 		userIngredientPreference.ID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	input := converters.ConvertUserIngredientPreferenceToUserIngredientPreferenceUpdateRequestInput(userIngredientPreference)
 
@@ -102,7 +103,7 @@ func (b *Builder) BuildArchiveUserIngredientPreferenceRequest(ctx context.Contex
 	if userIngredientPreferenceID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachUserIngredientPreferenceIDToSpan(span, userIngredientPreferenceID)
+	tracing.AttachToSpan(span, keys.UserIngredientPreferenceIDKey, userIngredientPreferenceID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -110,7 +111,7 @@ func (b *Builder) BuildArchiveUserIngredientPreferenceRequest(ctx context.Contex
 		userIngredientPreferencesBasePath,
 		userIngredientPreferenceID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {

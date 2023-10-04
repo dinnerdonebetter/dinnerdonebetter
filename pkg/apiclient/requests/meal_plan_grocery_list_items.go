@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
@@ -21,12 +22,12 @@ func (b *Builder) BuildGetMealPlanGroceryListItemRequest(ctx context.Context, me
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if mealPlanGroceryListItemID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanGroceryListItemIDToSpan(span, mealPlanGroceryListItemID)
+	tracing.AttachToSpan(span, keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -36,7 +37,7 @@ func (b *Builder) BuildGetMealPlanGroceryListItemRequest(ctx context.Context, me
 		mealPlanGroceryListItemsBasePath,
 		mealPlanGroceryListItemID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
@@ -54,7 +55,7 @@ func (b *Builder) BuildCreateMealPlanGroceryListItemRequest(ctx context.Context,
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -67,7 +68,7 @@ func (b *Builder) BuildCreateMealPlanGroceryListItemRequest(ctx context.Context,
 		mealPlanID,
 		mealPlanGroceryListItemsBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
 	if err != nil {
@@ -85,7 +86,7 @@ func (b *Builder) BuildGetMealPlanGroceryListItemsForMealPlanRequest(ctx context
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -94,7 +95,7 @@ func (b *Builder) BuildGetMealPlanGroceryListItemsForMealPlanRequest(ctx context
 		mealPlanID,
 		mealPlanGroceryListItemsBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
@@ -112,12 +113,12 @@ func (b *Builder) BuildUpdateMealPlanGroceryListItemRequest(ctx context.Context,
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachMealPlanGroceryListItemIDToSpan(span, mealPlanGroceryListItemID)
+	tracing.AttachToSpan(span, keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -127,7 +128,7 @@ func (b *Builder) BuildUpdateMealPlanGroceryListItemRequest(ctx context.Context,
 		mealPlanGroceryListItemsBasePath,
 		mealPlanGroceryListItemID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := b.buildDataRequest(ctx, http.MethodPatch, uri, input)
 	if err != nil {
@@ -145,12 +146,12 @@ func (b *Builder) BuildArchiveMealPlanGroceryListItemRequest(ctx context.Context
 	if mealPlanID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if mealPlanGroceryListItemID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachMealPlanGroceryListItemIDToSpan(span, mealPlanGroceryListItemID)
+	tracing.AttachToSpan(span, keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -160,7 +161,7 @@ func (b *Builder) BuildArchiveMealPlanGroceryListItemRequest(ctx context.Context
 		mealPlanGroceryListItemsBasePath,
 		mealPlanGroceryListItemID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {

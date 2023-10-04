@@ -55,7 +55,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input := converters.ConvertValidInstrumentCreationRequestInputToValidInstrumentDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
 
-	tracing.AttachValidInstrumentIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, input.ID)
 
 	validInstrument, err := s.validInstrumentDataManager.CreateValidInstrument(ctx, input)
 	if err != nil {
@@ -98,7 +98,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid instrument ID.
 	validInstrumentID := s.validInstrumentIDFetcher(req)
-	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
+	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
 
 	// fetch valid instrument from database.
@@ -163,7 +163,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get("useDB"))) == "true"
 
 	query := req.URL.Query().Get(types.SearchQueryKey)
-	tracing.AttachSearchQueryToSpan(span, query)
+	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 
 	filter := types.ExtractQueryFilterFromRequest(req)
 	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
@@ -254,7 +254,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid instrument ID.
 	validInstrumentID := s.validInstrumentIDFetcher(req)
-	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
+	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
 
 	// fetch valid instrument from database.
@@ -312,7 +312,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid instrument ID.
 	validInstrumentID := s.validInstrumentIDFetcher(req)
-	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
+	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
 
 	exists, existenceCheckErr := s.validInstrumentDataManager.ValidInstrumentExists(ctx, validInstrumentID)

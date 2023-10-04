@@ -20,7 +20,7 @@ func (c *Client) GetValidPreparationInstrument(ctx context.Context, validPrepara
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
-	tracing.AttachValidPreparationInstrumentIDToSpan(span, validPreparationInstrumentID)
+	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 
 	req, err := c.requestBuilder.BuildGetValidPreparationInstrumentRequest(ctx, validPreparationInstrumentID)
 	if err != nil {
@@ -69,7 +69,7 @@ func (c *Client) GetValidPreparationInstrumentsForPreparation(ctx context.Contex
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
-	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
 
 	req, err := c.requestBuilder.BuildGetValidPreparationInstrumentsForPreparationRequest(ctx, validPreparationID, filter)
 	if err != nil {
@@ -96,7 +96,7 @@ func (c *Client) GetValidPreparationInstrumentsForInstrument(ctx context.Context
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidInstrumentIDKey, validInstrumentID)
-	tracing.AttachValidInstrumentIDToSpan(span, validInstrumentID)
+	tracing.AttachToSpan(span, keys.ValidInstrumentIDKey, validInstrumentID)
 
 	req, err := c.requestBuilder.BuildGetValidPreparationInstrumentsForInstrumentRequest(ctx, validInstrumentID, filter)
 	if err != nil {
@@ -150,7 +150,7 @@ func (c *Client) UpdateValidPreparationInstrument(ctx context.Context, validPrep
 		return ErrNilInputProvided
 	}
 	logger = logger.WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrument.ID)
-	tracing.AttachValidPreparationInstrumentIDToSpan(span, validPreparationInstrument.ID)
+	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, validPreparationInstrument.ID)
 
 	req, err := c.requestBuilder.BuildUpdateValidPreparationInstrumentRequest(ctx, validPreparationInstrument)
 	if err != nil {
@@ -175,7 +175,7 @@ func (c *Client) ArchiveValidPreparationInstrument(ctx context.Context, validPre
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
-	tracing.AttachValidPreparationInstrumentIDToSpan(span, validPreparationInstrumentID)
+	tracing.AttachToSpan(span, keys.ValidPreparationInstrumentIDKey, validPreparationInstrumentID)
 
 	req, err := c.requestBuilder.BuildArchiveValidPreparationInstrumentRequest(ctx, validPreparationInstrumentID)
 	if err != nil {

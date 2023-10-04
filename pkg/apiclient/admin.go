@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
@@ -17,7 +18,7 @@ func (c *Client) UpdateUserAccountStatus(ctx context.Context, input *types.UserA
 		return ErrNilInputProvided
 	}
 
-	tracing.AttachUserIDToSpan(span, input.TargetUserID)
+	tracing.AttachToSpan(span, keys.UserIDKey, input.TargetUserID)
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		return observability.PrepareError(err, span, "validating input")

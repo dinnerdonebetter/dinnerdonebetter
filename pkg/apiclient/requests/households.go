@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
@@ -24,7 +25,7 @@ func (b *Builder) BuildSwitchActiveHouseholdRequest(ctx context.Context, househo
 		return nil, ErrInvalidIDProvided
 	}
 
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	uri := b.buildAPIV1URL(ctx, nil, usersBasePath, "household", "select").String()
 
@@ -46,7 +47,7 @@ func (b *Builder) BuildGetCurrentHouseholdRequest(ctx context.Context) (*http.Re
 		householdsBasePath,
 		"current",
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
@@ -65,7 +66,7 @@ func (b *Builder) BuildGetHouseholdRequest(ctx context.Context, householdID stri
 		return nil, ErrInvalidIDProvided
 	}
 
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -73,7 +74,7 @@ func (b *Builder) BuildGetHouseholdRequest(ctx context.Context, householdID stri
 		householdsBasePath,
 		householdID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
@@ -90,7 +91,7 @@ func (b *Builder) BuildGetHouseholdsRequest(ctx context.Context, filter *types.Q
 
 	uri := b.BuildURL(ctx, filter.ToValues(), householdsBasePath)
 
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
@@ -115,7 +116,7 @@ func (b *Builder) BuildCreateHouseholdRequest(ctx context.Context, input *types.
 	}
 
 	uri := b.BuildURL(ctx, nil, householdsBasePath)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	return b.buildDataRequest(ctx, http.MethodPost, uri, input)
 }
@@ -135,7 +136,7 @@ func (b *Builder) BuildUpdateHouseholdRequest(ctx context.Context, household *ty
 		householdsBasePath,
 		household.ID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	input := converters.ConvertHouseholdToHouseholdUpdateRequestInput(household)
 
@@ -157,7 +158,7 @@ func (b *Builder) BuildArchiveHouseholdRequest(ctx context.Context, householdID 
 		householdsBasePath,
 		householdID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {
@@ -183,7 +184,7 @@ func (b *Builder) BuildInviteUserToHouseholdRequest(ctx context.Context, destina
 	// we don't validate here because it needs to have the user ID
 
 	uri := b.BuildURL(ctx, nil, householdsBasePath, destinationHouseholdID, "invite")
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	return b.buildDataRequest(ctx, http.MethodPost, uri, input)
 }
@@ -198,7 +199,7 @@ func (b *Builder) BuildMarkAsDefaultRequest(ctx context.Context, householdID str
 	}
 
 	uri := b.BuildURL(ctx, nil, householdsBasePath, householdID, "default")
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, http.NoBody)
 	if err != nil {
@@ -225,7 +226,7 @@ func (b *Builder) BuildRemoveUserRequest(ctx context.Context, householdID, userI
 		u.RawQuery = q.Encode()
 	}
 
-	tracing.AttachURLToSpan(span, u)
+	tracing.AttachToSpan(span, keys.RequestURIKey, u.String())
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, u.String(), http.NoBody)
 	if err != nil {
@@ -253,7 +254,7 @@ func (b *Builder) BuildModifyMemberPermissionsRequest(ctx context.Context, house
 	}
 
 	uri := b.BuildURL(ctx, nil, householdsBasePath, householdID, "members", userID, "permissions")
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	return b.buildDataRequest(ctx, http.MethodPatch, uri, input)
 }
@@ -276,7 +277,7 @@ func (b *Builder) BuildTransferHouseholdOwnershipRequest(ctx context.Context, ho
 	}
 
 	uri := b.BuildURL(ctx, nil, householdsBasePath, householdID, "transfer")
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	return b.buildDataRequest(ctx, http.MethodPost, uri, input)
 }

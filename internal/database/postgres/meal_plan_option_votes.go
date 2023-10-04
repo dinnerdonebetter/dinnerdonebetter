@@ -25,25 +25,25 @@ func (q *Querier) MealPlanOptionVoteExists(ctx context.Context, mealPlanID, meal
 		return false, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if mealPlanEventID == "" {
 		return false, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 
 	if mealPlanOptionID == "" {
 		return false, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
-	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
+	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	if mealPlanOptionVoteID == "" {
 		return false, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
-	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVoteID)
+	tracing.AttachToSpan(span, keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 
 	result, err := q.generatedQuerier.CheckMealPlanOptionVoteExistence(ctx, q.db, &generated.CheckMealPlanOptionVoteExistenceParams{
 		MealPlanOptionID:     mealPlanOptionID,
@@ -69,19 +69,19 @@ func (q *Querier) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPla
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if mealPlanOptionID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
-	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
+	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	if mealPlanOptionVoteID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
-	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVoteID)
+	tracing.AttachToSpan(span, keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 
 	result, err := q.generatedQuerier.GetMealPlanOptionVote(ctx, q.db, &generated.GetMealPlanOptionVoteParams{
 		MealPlanOptionID:     mealPlanOptionID,
@@ -119,19 +119,19 @@ func (q *Querier) GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, m
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if mealPlanEventID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 
 	if mealPlanOptionID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
-	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
+	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	results, err := q.generatedQuerier.GetMealPlanOptionVotesForMealPlanOption(ctx, q.db, &generated.GetMealPlanOptionVotesForMealPlanOptionParams{
 		MealPlanID:       mealPlanID,
@@ -171,19 +171,19 @@ func (q *Querier) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPl
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if mealPlanEventID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 
 	if mealPlanOptionID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
-	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
+	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	if filter == nil {
 		filter = types.DefaultQueryFilter()
@@ -269,7 +269,7 @@ func (q *Querier) CreateMealPlanOptionVote(ctx context.Context, input *types.Mea
 			CreatedAt:               q.currentTime(),
 		}
 
-		tracing.AttachMealPlanOptionVoteIDToSpan(span, x.ID)
+		tracing.AttachToSpan(span, keys.MealPlanOptionVoteIDKey, x.ID)
 		logger.Info("meal plan option vote created")
 
 		votes = append(votes, x)
@@ -291,7 +291,7 @@ func (q *Querier) UpdateMealPlanOptionVote(ctx context.Context, updated *types.M
 		return ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(keys.MealPlanOptionVoteIDKey, updated.ID)
-	tracing.AttachMealPlanOptionVoteIDToSpan(span, updated.ID)
+	tracing.AttachToSpan(span, keys.MealPlanOptionVoteIDKey, updated.ID)
 
 	if _, err := q.generatedQuerier.UpdateMealPlanOptionVote(ctx, q.db, &generated.UpdateMealPlanOptionVoteParams{
 		Notes:                   updated.Notes,
@@ -320,25 +320,25 @@ func (q *Querier) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanID, mea
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	if mealPlanEventID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanEventIDKey, mealPlanEventID)
-	tracing.AttachMealPlanEventIDToSpan(span, mealPlanEventID)
+	tracing.AttachToSpan(span, keys.MealPlanEventIDKey, mealPlanEventID)
 
 	if mealPlanOptionID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanOptionIDKey, mealPlanOptionID)
-	tracing.AttachMealPlanOptionIDToSpan(span, mealPlanOptionID)
+	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	if mealPlanOptionVoteID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
-	tracing.AttachMealPlanOptionVoteIDToSpan(span, mealPlanOptionVoteID)
+	tracing.AttachToSpan(span, keys.MealPlanOptionVoteIDKey, mealPlanOptionVoteID)
 
 	if _, err := q.generatedQuerier.ArchiveMealPlanOptionVote(ctx, q.db, &generated.ArchiveMealPlanOptionVoteParams{
 		BelongsToMealPlanOption: mealPlanOptionID,

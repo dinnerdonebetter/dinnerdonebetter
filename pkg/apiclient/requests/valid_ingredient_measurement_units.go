@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
@@ -22,7 +23,7 @@ func (b *Builder) BuildGetValidIngredientMeasurementUnitRequest(ctx context.Cont
 	if validIngredientMeasurementUnitID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidIngredientMeasurementUnitIDToSpan(span, validIngredientMeasurementUnitID)
+	tracing.AttachToSpan(span, keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -30,7 +31,7 @@ func (b *Builder) BuildGetValidIngredientMeasurementUnitRequest(ctx context.Cont
 		validIngredientMeasurementUnitsBasePath,
 		validIngredientMeasurementUnitID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
@@ -50,7 +51,7 @@ func (b *Builder) BuildGetValidIngredientMeasurementUnitsRequest(ctx context.Con
 		filter.ToValues(),
 		validIngredientMeasurementUnitsBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
@@ -69,7 +70,7 @@ func (b *Builder) BuildGetValidIngredientMeasurementUnitsForIngredientRequest(ct
 	if ingredientID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidIngredientIDToSpan(span, ingredientID)
+	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, ingredientID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -78,7 +79,7 @@ func (b *Builder) BuildGetValidIngredientMeasurementUnitsForIngredientRequest(ct
 		"by_ingredient",
 		ingredientID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
@@ -97,7 +98,7 @@ func (b *Builder) BuildGetValidIngredientMeasurementUnitsForMeasurementUnitReque
 	if validMeasurementUnitID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -106,7 +107,7 @@ func (b *Builder) BuildGetValidIngredientMeasurementUnitsForMeasurementUnitReque
 		"by_measurement_unit",
 		validMeasurementUnitID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
@@ -135,7 +136,7 @@ func (b *Builder) BuildCreateValidIngredientMeasurementUnitRequest(ctx context.C
 		nil,
 		validIngredientMeasurementUnitsBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
 	if err != nil {
@@ -153,7 +154,7 @@ func (b *Builder) BuildUpdateValidIngredientMeasurementUnitRequest(ctx context.C
 	if validIngredientMeasurementUnit == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachValidIngredientMeasurementUnitIDToSpan(span, validIngredientMeasurementUnit.ID)
+	tracing.AttachToSpan(span, keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnit.ID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -161,7 +162,7 @@ func (b *Builder) BuildUpdateValidIngredientMeasurementUnitRequest(ctx context.C
 		validIngredientMeasurementUnitsBasePath,
 		validIngredientMeasurementUnit.ID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	input := converters.ConvertValidIngredientMeasurementUnitToValidIngredientMeasurementUnitUpdateRequestInput(validIngredientMeasurementUnit)
 
@@ -181,7 +182,7 @@ func (b *Builder) BuildArchiveValidIngredientMeasurementUnitRequest(ctx context.
 	if validIngredientMeasurementUnitID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidIngredientMeasurementUnitIDToSpan(span, validIngredientMeasurementUnitID)
+	tracing.AttachToSpan(span, keys.ValidIngredientMeasurementUnitIDKey, validIngredientMeasurementUnitID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -189,7 +190,7 @@ func (b *Builder) BuildArchiveValidIngredientMeasurementUnitRequest(ctx context.
 		validIngredientMeasurementUnitsBasePath,
 		validIngredientMeasurementUnitID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {

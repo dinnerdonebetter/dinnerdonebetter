@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
@@ -19,15 +20,11 @@ func (b *Builder) BuildGetHouseholdInvitationRequest(ctx context.Context, househ
 	ctx, span := b.tracer.StartSpan(ctx)
 	defer span.End()
 
-	if householdID == "" {
+	if householdID == "" || invitationID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 
-	if invitationID == "" {
-		return nil, ErrInvalidIDProvided
-	}
-
-	tracing.AttachHouseholdInvitationIDToSpan(span, invitationID)
+	tracing.AttachToSpan(span, keys.HouseholdInvitationIDKey, invitationID)
 
 	uri := b.BuildURL(
 		ctx,

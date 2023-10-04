@@ -20,7 +20,7 @@ func (c *Client) GetValidIngredientStateIngredient(ctx context.Context, validIng
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
-	tracing.AttachValidIngredientStateIngredientIDToSpan(span, validIngredientStateIngredientID)
+	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
 
 	req, err := c.requestBuilder.BuildGetValidIngredientStateIngredientRequest(ctx, validIngredientStateIngredientID)
 	if err != nil {
@@ -69,7 +69,7 @@ func (c *Client) GetValidIngredientStateIngredientsForIngredient(ctx context.Con
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
-	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
+	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
 
 	req, err := c.requestBuilder.BuildGetValidIngredientStateIngredientsForIngredientRequest(ctx, validIngredientID, filter)
 	if err != nil {
@@ -96,7 +96,7 @@ func (c *Client) GetValidIngredientStateIngredientsForIngredientState(ctx contex
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientStateIDKey, ingredientState)
-	tracing.AttachValidIngredientStateIDToSpan(span, ingredientState)
+	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, ingredientState)
 
 	req, err := c.requestBuilder.BuildGetValidIngredientStateIngredientsForPreparationRequest(ctx, ingredientState, filter)
 	if err != nil {
@@ -150,7 +150,7 @@ func (c *Client) UpdateValidIngredientStateIngredient(ctx context.Context, valid
 		return ErrNilInputProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredient.ID)
-	tracing.AttachValidIngredientStateIngredientIDToSpan(span, validIngredientStateIngredient.ID)
+	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredient.ID)
 
 	req, err := c.requestBuilder.BuildUpdateValidIngredientStateIngredientRequest(ctx, validIngredientStateIngredient)
 	if err != nil {
@@ -175,7 +175,7 @@ func (c *Client) ArchiveValidIngredientStateIngredient(ctx context.Context, vali
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
-	tracing.AttachValidIngredientStateIngredientIDToSpan(span, validIngredientStateIngredientID)
+	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
 
 	req, err := c.requestBuilder.BuildArchiveValidIngredientStateIngredientRequest(ctx, validIngredientStateIngredientID)
 	if err != nil {

@@ -56,7 +56,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input := converters.ConvertValidMeasurementUnitConversionCreationRequestInputToValidMeasurementUnitConversionDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
 
-	tracing.AttachValidMeasurementUnitConversionIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, input.ID)
 
 	validMeasurementUnitConversion, err := s.validMeasurementUnitConversionDataManager.CreateValidMeasurementUnitConversion(ctx, input)
 	if err != nil {
@@ -99,7 +99,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid measurement conversion ID.
 	validMeasurementUnitConversionID := s.validMeasurementUnitConversionIDFetcher(req)
-	tracing.AttachValidMeasurementUnitConversionIDToSpan(span, validMeasurementUnitConversionID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 	logger = logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 
 	// fetch valid measurement conversion from database.
@@ -152,7 +152,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid measurement conversion ID.
 	validMeasurementUnitConversionID := s.validMeasurementUnitConversionIDFetcher(req)
-	tracing.AttachValidMeasurementUnitConversionIDToSpan(span, validMeasurementUnitConversionID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 	logger = logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 
 	// fetch valid measurement conversion from database.
@@ -210,7 +210,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid measurement conversion ID.
 	validMeasurementUnitConversionID := s.validMeasurementUnitConversionIDFetcher(req)
-	tracing.AttachValidMeasurementUnitConversionIDToSpan(span, validMeasurementUnitConversionID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 	logger = logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 
 	exists, existenceCheckErr := s.validMeasurementUnitConversionDataManager.ValidMeasurementUnitConversionExists(ctx, validMeasurementUnitConversionID)
@@ -262,7 +262,7 @@ func (s *service) FromMeasurementUnitHandler(res http.ResponseWriter, req *http.
 
 	// determine valid measurement conversion ID.
 	validMeasurementUnitID := s.validMeasurementUnitIDFetcher(req)
-	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	// fetch valid measurement conversion from database.
@@ -300,7 +300,7 @@ func (s *service) ToMeasurementUnitHandler(res http.ResponseWriter, req *http.Re
 
 	// determine valid measurement conversion ID.
 	validMeasurementUnitID := s.validMeasurementUnitIDFetcher(req)
-	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	// fetch valid measurement conversion from database.

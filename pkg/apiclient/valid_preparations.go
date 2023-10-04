@@ -20,7 +20,7 @@ func (c *Client) GetValidPreparation(ctx context.Context, validPreparationID str
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
-	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
 
 	req, err := c.requestBuilder.BuildGetValidPreparationRequest(ctx, validPreparationID)
 	if err != nil {
@@ -146,7 +146,7 @@ func (c *Client) UpdateValidPreparation(ctx context.Context, validPreparation *t
 		return ErrNilInputProvided
 	}
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparation.ID)
-	tracing.AttachValidPreparationIDToSpan(span, validPreparation.ID)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparation.ID)
 
 	req, err := c.requestBuilder.BuildUpdateValidPreparationRequest(ctx, validPreparation)
 	if err != nil {
@@ -171,7 +171,7 @@ func (c *Client) ArchiveValidPreparation(ctx context.Context, validPreparationID
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
-	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
 
 	req, err := c.requestBuilder.BuildArchiveValidPreparationRequest(ctx, validPreparationID)
 	if err != nil {

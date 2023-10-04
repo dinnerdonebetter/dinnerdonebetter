@@ -60,11 +60,11 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
 	input.BelongsToRecipe = recipeID
-	tracing.AttachRecipePrepTaskIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, input.ID)
 
 	recipePrepTask, err := s.recipePrepTaskDataManager.CreateRecipePrepTask(ctx, input)
 	if err != nil {
@@ -122,12 +122,12 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
 	// determine recipe prep task ID.
 	recipePrepTaskID := s.recipePrepTaskIDFetcher(req)
-	tracing.AttachRecipePrepTaskIDToSpan(span, recipePrepTaskID)
+	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, recipePrepTaskID)
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
 
 	// fetch recipe prep task from database.
@@ -172,7 +172,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
 	recipePrepTasks, err := s.recipePrepTaskDataManager.GetRecipePrepTasksForRecipe(ctx, recipeID)
@@ -224,12 +224,12 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
 	// determine recipe prep task ID.
 	recipePrepTaskID := s.recipePrepTaskIDFetcher(req)
-	tracing.AttachRecipePrepTaskIDToSpan(span, recipePrepTaskID)
+	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, recipePrepTaskID)
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
 
 	// fetch recipe prep task from database.
@@ -288,12 +288,12 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
 	// determine recipe prep task ID.
 	recipePrepTaskID := s.recipePrepTaskIDFetcher(req)
-	tracing.AttachRecipePrepTaskIDToSpan(span, recipePrepTaskID)
+	tracing.AttachToSpan(span, keys.RecipePrepTaskIDKey, recipePrepTaskID)
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
 
 	exists, existenceCheckErr := s.recipePrepTaskDataManager.RecipePrepTaskExists(ctx, recipeID, recipePrepTaskID)

@@ -25,13 +25,13 @@ func (q *Querier) HouseholdInstrumentOwnershipExists(ctx context.Context, househ
 		return false, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
-	tracing.AttachHouseholdInstrumentOwnershipIDToSpan(span, householdInstrumentOwnershipID)
+	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
 
 	if householdID == "" {
 		return false, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	result, err := q.generatedQuerier.CheckHouseholdInstrumentOwnershipExistence(ctx, q.db, &generated.CheckHouseholdInstrumentOwnershipExistenceParams{
 		ID:                 householdInstrumentOwnershipID,
@@ -55,13 +55,13 @@ func (q *Querier) GetHouseholdInstrumentOwnership(ctx context.Context, household
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
-	tracing.AttachHouseholdInstrumentOwnershipIDToSpan(span, householdInstrumentOwnershipID)
+	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
 
 	if householdID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	result, err := q.generatedQuerier.GetHouseholdInstrumentOwnership(ctx, q.db, &generated.GetHouseholdInstrumentOwnershipParams{
 		ID:                 householdInstrumentOwnershipID,
@@ -119,7 +119,7 @@ func (q *Querier) GetHouseholdInstrumentOwnerships(ctx context.Context, househol
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	results, err := q.generatedQuerier.GetHouseholdInstrumentOwnerships(ctx, q.db, &generated.GetHouseholdInstrumentOwnershipsParams{
 		HouseholdID:   householdID,
@@ -175,7 +175,7 @@ func (q *Querier) CreateHouseholdInstrumentOwnership(ctx context.Context, input 
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachHouseholdInstrumentOwnershipIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, input.ID)
 	logger := q.logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, input.ID)
 
 	// create the household instrument ownership.
@@ -212,7 +212,7 @@ func (q *Querier) UpdateHouseholdInstrumentOwnership(ctx context.Context, update
 		return ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, updated.ID)
-	tracing.AttachHouseholdInstrumentOwnershipIDToSpan(span, updated.ID)
+	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, updated.ID)
 
 	if _, err := q.generatedQuerier.UpdateHouseholdInstrumentOwnership(ctx, q.db, &generated.UpdateHouseholdInstrumentOwnershipParams{
 		Notes:              updated.Notes,
@@ -240,13 +240,13 @@ func (q *Querier) ArchiveHouseholdInstrumentOwnership(ctx context.Context, house
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
-	tracing.AttachHouseholdInstrumentOwnershipIDToSpan(span, householdInstrumentOwnershipID)
+	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
 
 	if householdID == "" {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	if _, err := q.generatedQuerier.ArchiveHouseholdInstrumentOwnership(ctx, q.db, &generated.ArchiveHouseholdInstrumentOwnershipParams{
 		ID:                 householdInstrumentOwnershipID,

@@ -32,7 +32,7 @@ func (q *Querier) GetUser(ctx context.Context, userID string) (*types.User, erro
 		return nil, ErrInvalidIDProvided
 	}
 
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
 	result, err := q.generatedQuerier.GetUserByID(ctx, q.db, userID)
 	if err != nil {
@@ -74,7 +74,7 @@ func (q *Querier) GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, user
 	if userID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
 	result, err := q.generatedQuerier.GetUserWithUnverifiedTwoFactor(ctx, q.db, userID)
 	if err != nil {
@@ -116,7 +116,7 @@ func (q *Querier) GetUserByUsername(ctx context.Context, username string) (*type
 	if username == "" {
 		return nil, ErrEmptyInputProvided
 	}
-	tracing.AttachUsernameToSpan(span, username)
+	tracing.AttachToSpan(span, keys.UsernameKey, username)
 
 	result, err := q.generatedQuerier.GetUserByUsername(ctx, q.db, username)
 	if err != nil {
@@ -158,7 +158,7 @@ func (q *Querier) GetAdminUserByUsername(ctx context.Context, username string) (
 	if username == "" {
 		return nil, ErrEmptyInputProvided
 	}
-	tracing.AttachUsernameToSpan(span, username)
+	tracing.AttachToSpan(span, keys.UsernameKey, username)
 
 	result, err := q.generatedQuerier.GetAdminUserByUsername(ctx, q.db, username)
 	if err != nil {
@@ -203,7 +203,7 @@ func (q *Querier) GetUserByEmail(ctx context.Context, email string) (*types.User
 	if email == "" {
 		return nil, ErrEmptyInputProvided
 	}
-	tracing.AttachEmailAddressToSpan(span, email)
+	tracing.AttachToSpan(span, keys.UserEmailAddressKey, email)
 
 	result, err := q.generatedQuerier.GetUserByEmail(ctx, q.db, email)
 	if err != nil {
@@ -245,7 +245,7 @@ func (q *Querier) SearchForUsersByUsername(ctx context.Context, usernameQuery st
 	if usernameQuery == "" {
 		return []*types.User{}, ErrEmptyInputProvided
 	}
-	tracing.AttachSearchQueryToSpan(span, usernameQuery)
+	tracing.AttachToSpan(span, keys.SearchQueryKey, usernameQuery)
 
 	results, err := q.generatedQuerier.SearchUsersByUsername(ctx, q.db, usernameQuery)
 	if err != nil {
@@ -372,7 +372,7 @@ func (q *Querier) MarkUserAsIndexed(ctx context.Context, userID string) error {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
 	if _, err := q.generatedQuerier.UpdateUserLastIndexedAt(ctx, q.db, userID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking user as indexed")
@@ -392,7 +392,7 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 		return nil, ErrNilInputProvided
 	}
 
-	tracing.AttachUsernameToSpan(span, input.Username)
+	tracing.AttachToSpan(span, keys.UsernameKey, input.Username)
 	logger := q.logger.WithValues(map[string]any{
 		keys.UsernameKey:                 input.Username,
 		keys.UserEmailAddressKey:         input.EmailAddress,
@@ -453,7 +453,7 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 		CreatedAt:       q.currentTime(),
 	}
 	logger = logger.WithValue(keys.UserIDKey, user.ID)
-	tracing.AttachUserIDToSpan(span, user.ID)
+	tracing.AttachToSpan(span, keys.UserIDKey, user.ID)
 
 	if strings.TrimSpace(input.HouseholdName) == "" {
 		input.HouseholdName = fmt.Sprintf("%s's cool household", input.Username)
@@ -493,7 +493,7 @@ func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.S
 
 	// standard registration: we need to create the household
 	householdID := identifiers.New()
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	hn := householdName
 	if householdName == "" {
@@ -551,13 +551,13 @@ func (q *Querier) UpdateUserUsername(ctx context.Context, userID, newUsername st
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
 	if newUsername == "" {
 		return ErrEmptyInputProvided
 	}
 	logger = logger.WithValue(keys.UsernameKey, newUsername)
-	tracing.AttachUsernameToSpan(span, newUsername)
+	tracing.AttachToSpan(span, keys.UsernameKey, newUsername)
 
 	if _, err := q.generatedQuerier.UpdateUserUsername(ctx, q.db, &generated.UpdateUserUsernameParams{
 		Username: newUsername,
@@ -580,12 +580,12 @@ func (q *Querier) UpdateUserEmailAddress(ctx context.Context, userID, newEmailAd
 		return ErrInvalidIDProvided
 	}
 	logger := q.logger.WithValue(keys.UserEmailAddressKey, newEmailAddress).WithValue(keys.UserIDKey, userID)
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
 	if newEmailAddress == "" {
 		return ErrEmptyInputProvided
 	}
-	tracing.AttachEmailAddressToSpan(span, newEmailAddress)
+	tracing.AttachToSpan(span, keys.UserEmailAddressKey, newEmailAddress)
 
 	if _, err := q.generatedQuerier.UpdateUserEmailAddress(ctx, q.db, &generated.UpdateUserEmailAddressParams{
 		EmailAddress: newEmailAddress,
@@ -611,7 +611,7 @@ func (q *Querier) UpdateUserDetails(ctx context.Context, userID string, input *t
 	if userID == "" {
 		return ErrInvalidIDProvided
 	}
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 
 	if _, err := q.generatedQuerier.UpdateUserDetails(ctx, q.db, &generated.UpdateUserDetailsParams{
@@ -640,7 +640,7 @@ func (q *Querier) UpdateUserAvatar(ctx context.Context, userID, newAvatarSrc str
 	if userID == "" {
 		return ErrInvalidIDProvided
 	}
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 
 	if _, err := q.generatedQuerier.UpdateUserAvatarSrc(ctx, q.db, &generated.UpdateUserAvatarSrcParams{
@@ -667,7 +667,7 @@ func (q *Querier) UpdateUserPassword(ctx context.Context, userID, newHash string
 	if userID == "" {
 		return ErrInvalidIDProvided
 	}
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 
 	if _, err := q.generatedQuerier.UpdateUserPassword(ctx, q.db, &generated.UpdateUserPasswordParams{
@@ -694,7 +694,7 @@ func (q *Querier) UpdateUserTwoFactorSecret(ctx context.Context, userID, newSecr
 	if userID == "" {
 		return ErrInvalidIDProvided
 	}
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 
 	if _, err := q.generatedQuerier.UpdateUserTwoFactorSecret(ctx, q.db, &generated.UpdateUserTwoFactorSecretParams{
@@ -716,7 +716,7 @@ func (q *Querier) MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID 
 	if userID == "" {
 		return ErrInvalidIDProvided
 	}
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 
 	if err := q.generatedQuerier.MarkTwoFactorSecretAsVerified(ctx, q.db, userID); err != nil {
@@ -740,7 +740,7 @@ func (q *Querier) MarkUserTwoFactorSecretAsUnverified(ctx context.Context, userI
 	if userID == "" {
 		return ErrInvalidIDProvided
 	}
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 
 	if err := q.generatedQuerier.MarkTwoFactorSecretAsUnverified(ctx, q.db, &generated.MarkTwoFactorSecretAsUnverifiedParams{
@@ -763,7 +763,7 @@ func (q *Querier) ArchiveUser(ctx context.Context, userID string) error {
 	if userID == "" {
 		return ErrInvalidIDProvided
 	}
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 
 	// begin archive user transaction
@@ -803,7 +803,7 @@ func (q *Querier) GetEmailAddressVerificationTokenForUser(ctx context.Context, u
 	if userID == "" {
 		return "", ErrInvalidIDProvided
 	}
-	tracing.AttachStringToSpan(span, keys.UserIDKey, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
 	result, err := q.generatedQuerier.GetEmailVerificationTokenByUserID(ctx, q.db, userID)
 	if err != nil {

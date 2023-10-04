@@ -20,7 +20,7 @@ func (c *Client) GetMealPlan(ctx context.Context, mealPlanID string) (*types.Mea
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	req, err := c.requestBuilder.BuildGetMealPlanRequest(ctx, mealPlanID)
 	if err != nil {
@@ -96,7 +96,7 @@ func (c *Client) UpdateMealPlan(ctx context.Context, mealPlan *types.MealPlan) e
 		return ErrNilInputProvided
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlan.ID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlan.ID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlan.ID)
 
 	req, err := c.requestBuilder.BuildUpdateMealPlanRequest(ctx, mealPlan)
 	if err != nil {
@@ -121,7 +121,7 @@ func (c *Client) ArchiveMealPlan(ctx context.Context, mealPlanID string) error {
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	req, err := c.requestBuilder.BuildArchiveMealPlanRequest(ctx, mealPlanID)
 	if err != nil {
@@ -146,7 +146,7 @@ func (c *Client) FinalizeMealPlan(ctx context.Context, mealPlanID string) error 
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
-	tracing.AttachMealPlanIDToSpan(span, mealPlanID)
+	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 
 	req, err := c.requestBuilder.BuildFinalizeMealPlanRequest(ctx, mealPlanID)
 	if err != nil {

@@ -20,7 +20,7 @@ func (c *Client) GetValidMeasurementUnitConversion(ctx context.Context, validMea
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
-	tracing.AttachValidMeasurementUnitConversionIDToSpan(span, validMeasurementUnitConversionID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 
 	req, err := c.requestBuilder.BuildGetValidMeasurementUnitConversionRequest(ctx, validMeasurementUnitConversionID)
 	if err != nil {
@@ -46,7 +46,7 @@ func (c *Client) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context,
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
-	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	req, err := c.requestBuilder.BuildGetValidMeasurementUnitConversionsFromUnitRequest(ctx, validMeasurementUnitID)
 	if err != nil {
@@ -72,7 +72,7 @@ func (c *Client) GetValidMeasurementUnitConversionToUnit(ctx context.Context, va
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
-	tracing.AttachValidMeasurementUnitIDToSpan(span, validMeasurementUnitID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitIDKey, validMeasurementUnitID)
 
 	req, err := c.requestBuilder.BuildGetValidMeasurementUnitConversionsToUnitRequest(ctx, validMeasurementUnitID)
 	if err != nil {
@@ -126,7 +126,7 @@ func (c *Client) UpdateValidMeasurementUnitConversion(ctx context.Context, valid
 		return ErrNilInputProvided
 	}
 	logger = logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversion.ID)
-	tracing.AttachValidMeasurementUnitConversionIDToSpan(span, validMeasurementUnitConversion.ID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversion.ID)
 
 	req, err := c.requestBuilder.BuildUpdateValidMeasurementUnitConversionRequest(ctx, validMeasurementUnitConversion)
 	if err != nil {
@@ -151,7 +151,7 @@ func (c *Client) ArchiveValidMeasurementUnitConversion(ctx context.Context, vali
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
-	tracing.AttachValidMeasurementUnitConversionIDToSpan(span, validMeasurementUnitConversionID)
+	tracing.AttachToSpan(span, keys.ValidMeasurementUnitConversionIDKey, validMeasurementUnitConversionID)
 
 	req, err := c.requestBuilder.BuildArchiveValidMeasurementUnitConversionRequest(ctx, validMeasurementUnitConversionID)
 	if err != nil {

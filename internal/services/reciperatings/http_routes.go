@@ -55,7 +55,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input.ID = identifiers.New()
 	input.ByUser = sessionCtxData.Requester.UserID
 
-	tracing.AttachRecipeRatingIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, input.ID)
 
 	recipeRating, err := s.recipeRatingDataManager.CreateRecipeRating(ctx, input)
 	if err != nil {
@@ -98,7 +98,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine recipe rating ID.
 	recipeRatingID := s.recipeRatingIDFetcher(req)
-	tracing.AttachRecipeRatingIDToSpan(span, recipeRatingID)
+	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, recipeRatingID)
 	logger = logger.WithValue(keys.RecipeRatingIDKey, recipeRatingID)
 
 	// fetch recipe rating from database.
@@ -190,7 +190,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine recipe rating ID.
 	recipeRatingID := s.recipeRatingIDFetcher(req)
-	tracing.AttachRecipeRatingIDToSpan(span, recipeRatingID)
+	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, recipeRatingID)
 	logger = logger.WithValue(keys.RecipeRatingIDKey, recipeRatingID)
 
 	// fetch recipe rating from database.
@@ -248,7 +248,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine recipe rating ID.
 	recipeRatingID := s.recipeRatingIDFetcher(req)
-	tracing.AttachRecipeRatingIDToSpan(span, recipeRatingID)
+	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, recipeRatingID)
 	logger = logger.WithValue(keys.RecipeRatingIDKey, recipeRatingID)
 
 	exists, existenceCheckErr := s.recipeRatingDataManager.RecipeRatingExists(ctx, recipeRatingID)

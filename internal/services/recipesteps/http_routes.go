@@ -70,11 +70,11 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
 	input.BelongsToRecipe = recipeID
-	tracing.AttachRecipeStepIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, input.ID)
 
 	recipeStep, err := s.recipeStepDataManager.CreateRecipeStep(ctx, input)
 	if err != nil {
@@ -118,12 +118,12 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
 	// determine recipe step ID.
 	recipeStepID := s.recipeStepIDFetcher(req)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 
 	// fetch recipe step from database.
@@ -168,7 +168,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
 	recipeSteps, err := s.recipeStepDataManager.GetRecipeSteps(ctx, recipeID, filter)
@@ -220,12 +220,12 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
 	// determine recipe step ID.
 	recipeStepID := s.recipeStepIDFetcher(req)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 
 	// fetch recipe step from database.
@@ -284,12 +284,12 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
 	// determine recipe step ID.
 	recipeStepID := s.recipeStepIDFetcher(req)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 
 	exists, existenceCheckErr := s.recipeStepDataManager.RecipeStepExists(ctx, recipeID, recipeStepID)
@@ -342,12 +342,12 @@ func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
 	// determine recipe step ID.
 	recipeStepID := s.recipeStepIDFetcher(req)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 
 	images, err := s.imageUploadProcessor.ProcessFiles(ctx, req, "upload")

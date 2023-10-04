@@ -27,13 +27,13 @@ func (q *Querier) WebhookExists(ctx context.Context, webhookID, householdID stri
 		return false, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.WebhookIDKey, webhookID)
-	tracing.AttachWebhookIDToSpan(span, webhookID)
+	tracing.AttachToSpan(span, keys.WebhookIDKey, webhookID)
 
 	if householdID == "" {
 		return false, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	result, err := q.generatedQuerier.CheckWebhookExistence(ctx, q.db, &generated.CheckWebhookExistenceParams{
 		BelongsToHousehold: householdID,
@@ -57,13 +57,13 @@ func (q *Querier) GetWebhook(ctx context.Context, webhookID, householdID string)
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.WebhookIDKey, webhookID)
-	tracing.AttachWebhookIDToSpan(span, webhookID)
+	tracing.AttachToSpan(span, keys.WebhookIDKey, webhookID)
 
 	if householdID == "" {
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	results, err := q.generatedQuerier.GetWebhook(ctx, q.db, &generated.GetWebhookParams{
 		BelongsToHousehold: householdID,
@@ -114,7 +114,7 @@ func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *t
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	if filter == nil {
 		filter = types.DefaultQueryFilter()
@@ -169,7 +169,7 @@ func (q *Querier) GetWebhooksForHouseholdAndEvent(ctx context.Context, household
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	databaseResults, err := q.generatedQuerier.GetWebhooksForHouseholdAndEvent(ctx, q.db, &generated.GetWebhooksForHouseholdAndEventParams{
 		BelongsToHousehold: householdID,
@@ -206,7 +206,7 @@ func (q *Querier) CreateWebhook(ctx context.Context, input *types.WebhookDatabas
 		return nil, ErrNilInputProvided
 	}
 
-	tracing.AttachHouseholdIDToSpan(span, input.BelongsToHousehold)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, input.BelongsToHousehold)
 	logger := q.logger.WithValue(keys.HouseholdIDKey, input.BelongsToHousehold)
 
 	logger.Debug("CreateWebhook invoked")
@@ -255,7 +255,7 @@ func (q *Querier) CreateWebhook(ctx context.Context, input *types.WebhookDatabas
 		return nil, observability.PrepareAndLogError(err, logger, span, "committing database transaction")
 	}
 
-	tracing.AttachWebhookIDToSpan(span, x.ID)
+	tracing.AttachToSpan(span, keys.WebhookIDKey, x.ID)
 
 	return x, nil
 }
@@ -270,7 +270,7 @@ func (q *Querier) createWebhookTriggerEvent(ctx context.Context, querier databas
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachWebhookIDToSpan(span, input.BelongsToWebhook)
+	tracing.AttachToSpan(span, keys.WebhookIDKey, input.BelongsToWebhook)
 
 	if err := q.generatedQuerier.CreateWebhookTriggerEvent(ctx, querier, &generated.CreateWebhookTriggerEventParams{
 		ID:               input.ID,
@@ -299,12 +299,12 @@ func (q *Querier) ArchiveWebhook(ctx context.Context, webhookID, householdID str
 	if webhookID == "" {
 		return ErrInvalidIDProvided
 	}
-	tracing.AttachWebhookIDToSpan(span, webhookID)
+	tracing.AttachToSpan(span, keys.WebhookIDKey, webhookID)
 
 	if householdID == "" {
 		return ErrInvalidIDProvided
 	}
-	tracing.AttachHouseholdIDToSpan(span, householdID)
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	logger := q.logger.WithValues(map[string]any{
 		keys.WebhookIDKey:   webhookID,

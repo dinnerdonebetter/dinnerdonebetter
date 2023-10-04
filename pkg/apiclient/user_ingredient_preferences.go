@@ -70,7 +70,7 @@ func (c *Client) UpdateUserIngredientPreference(ctx context.Context, userIngredi
 		return ErrNilInputProvided
 	}
 	logger = logger.WithValue(keys.UserIngredientPreferenceIDKey, userIngredientPreference.ID)
-	tracing.AttachUserIngredientPreferenceIDToSpan(span, userIngredientPreference.ID)
+	tracing.AttachToSpan(span, keys.UserIngredientPreferenceIDKey, userIngredientPreference.ID)
 
 	req, err := c.requestBuilder.BuildUpdateUserIngredientPreferenceRequest(ctx, userIngredientPreference)
 	if err != nil {
@@ -95,7 +95,7 @@ func (c *Client) ArchiveUserIngredientPreference(ctx context.Context, userIngred
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.UserIngredientPreferenceIDKey, userIngredientPreferenceID)
-	tracing.AttachUserIngredientPreferenceIDToSpan(span, userIngredientPreferenceID)
+	tracing.AttachToSpan(span, keys.UserIngredientPreferenceIDKey, userIngredientPreferenceID)
 
 	req, err := c.requestBuilder.BuildArchiveUserIngredientPreferenceRequest(ctx, userIngredientPreferenceID)
 	if err != nil {

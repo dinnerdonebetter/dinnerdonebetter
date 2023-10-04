@@ -55,7 +55,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input := converters.ConvertValidPreparationCreationRequestInputToValidPreparationDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
 
-	tracing.AttachValidPreparationIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, input.ID)
 
 	validPreparation, err := s.validPreparationDataManager.CreateValidPreparation(ctx, input)
 	if err != nil {
@@ -98,7 +98,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid preparation ID.
 	validPreparationID := s.validPreparationIDFetcher(req)
-	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
 
 	// fetch valid preparation from database.
@@ -163,7 +163,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get("useDB"))) == "true"
 
 	query := req.URL.Query().Get(types.SearchQueryKey)
-	tracing.AttachSearchQueryToSpan(span, query)
+	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 
 	filter := types.ExtractQueryFilterFromRequest(req)
 	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
@@ -254,7 +254,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid preparation ID.
 	validPreparationID := s.validPreparationIDFetcher(req)
-	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
 
 	// fetch valid preparation from database.
@@ -312,7 +312,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid preparation ID.
 	validPreparationID := s.validPreparationIDFetcher(req)
-	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
 
 	exists, existenceCheckErr := s.validPreparationDataManager.ValidPreparationExists(ctx, validPreparationID)

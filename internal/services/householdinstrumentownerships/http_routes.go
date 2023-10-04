@@ -55,7 +55,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input.ID = identifiers.New()
 	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
 
-	tracing.AttachHouseholdInstrumentOwnershipIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, input.ID)
 
 	householdInstrumentOwnership, err := s.householdInstrumentOwnershipDataManager.CreateHouseholdInstrumentOwnership(ctx, input)
 	if err != nil {
@@ -99,7 +99,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine household instrument ownership ID.
 	householdInstrumentOwnershipID := s.householdInstrumentOwnershipIDFetcher(req)
-	tracing.AttachHouseholdInstrumentOwnershipIDToSpan(span, householdInstrumentOwnershipID)
+	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
 	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
 
 	// fetch household instrument ownership from database.
@@ -193,7 +193,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine household instrument ownership ID.
 	householdInstrumentOwnershipID := s.householdInstrumentOwnershipIDFetcher(req)
-	tracing.AttachHouseholdInstrumentOwnershipIDToSpan(span, householdInstrumentOwnershipID)
+	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
 	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
 
 	// fetch household instrument ownership from database.
@@ -252,7 +252,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine household instrument ownership ID.
 	householdInstrumentOwnershipID := s.householdInstrumentOwnershipIDFetcher(req)
-	tracing.AttachHouseholdInstrumentOwnershipIDToSpan(span, householdInstrumentOwnershipID)
+	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
 	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
 
 	exists, existenceCheckErr := s.householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipExists(ctx, householdInstrumentOwnershipID, householdID)

@@ -59,7 +59,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input := converters.ConvertValidIngredientCreationRequestInputToValidIngredientDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
 
-	tracing.AttachValidIngredientIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, input.ID)
 
 	validIngredient, err := s.validIngredientDataManager.CreateValidIngredient(ctx, input)
 	if err != nil {
@@ -102,7 +102,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid ingredient ID.
 	validIngredientID := s.validIngredientIDFetcher(req)
-	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
+	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
 	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
 
 	// fetch valid ingredient from database.
@@ -167,7 +167,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get("useDB"))) == "true"
 
 	query := req.URL.Query().Get(types.SearchQueryKey)
-	tracing.AttachSearchQueryToSpan(span, query)
+	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 
 	filter := types.ExtractQueryFilterFromRequest(req)
 	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
@@ -292,12 +292,12 @@ func (s *service) ForValidIngredientStateHandler(res http.ResponseWriter, req *h
 
 	// determine valid ingredient ID.
 	validIngredientID := s.validIngredientIDFetcher(req)
-	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
+	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
 	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
 
 	// determine valid ingredient state ID.
 	validIngredientStateID := s.validIngredientStateIDFetcher(req)
-	tracing.AttachValidIngredientStateIDToSpan(span, validIngredientStateID)
+	tracing.AttachToSpan(span, keys.ValidIngredientStateIDKey, validIngredientStateID)
 	logger = logger.WithValue(keys.ValidIngredientStateIDKey, validIngredientStateID)
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
@@ -352,7 +352,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid ingredient ID.
 	validIngredientID := s.validIngredientIDFetcher(req)
-	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
+	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
 	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
 
 	// fetch valid ingredient from database.
@@ -410,7 +410,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine valid ingredient ID.
 	validIngredientID := s.validIngredientIDFetcher(req)
-	tracing.AttachValidIngredientIDToSpan(span, validIngredientID)
+	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
 	logger = logger.WithValue(keys.ValidIngredientIDKey, validIngredientID)
 
 	exists, existenceCheckErr := s.validIngredientDataManager.ValidIngredientExists(ctx, validIngredientID)

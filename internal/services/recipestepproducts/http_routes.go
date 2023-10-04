@@ -56,11 +56,11 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine recipe step ID.
 	recipeStepID := s.recipeStepIDFetcher(req)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 
 	input.BelongsToRecipeStep = recipeStepID
-	tracing.AttachRecipeStepProductIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.RecipeStepProductIDKey, input.ID)
 
 	recipeStepProduct, err := s.recipeStepProductDataManager.CreateRecipeStepProduct(ctx, input)
 	if err != nil {
@@ -104,17 +104,17 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
 	// determine recipe step ID.
 	recipeStepID := s.recipeStepIDFetcher(req)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 
 	// determine recipe step product ID.
 	recipeStepProductID := s.recipeStepProductIDFetcher(req)
-	tracing.AttachRecipeStepProductIDToSpan(span, recipeStepProductID)
+	tracing.AttachToSpan(span, keys.RecipeStepProductIDKey, recipeStepProductID)
 	logger = logger.WithValue(keys.RecipeStepProductIDKey, recipeStepProductID)
 
 	// fetch recipe step product from database.
@@ -159,12 +159,12 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
 	// determine recipe step ID.
 	recipeStepID := s.recipeStepIDFetcher(req)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 
 	recipeStepProducts, err := s.recipeStepProductDataManager.GetRecipeStepProducts(ctx, recipeID, recipeStepID, filter)
@@ -216,17 +216,17 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
 	// determine recipe step ID.
 	recipeStepID := s.recipeStepIDFetcher(req)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 
 	// determine recipe step product ID.
 	recipeStepProductID := s.recipeStepProductIDFetcher(req)
-	tracing.AttachRecipeStepProductIDToSpan(span, recipeStepProductID)
+	tracing.AttachToSpan(span, keys.RecipeStepProductIDKey, recipeStepProductID)
 	logger = logger.WithValue(keys.RecipeStepProductIDKey, recipeStepProductID)
 
 	// fetch recipe step product from database.
@@ -285,17 +285,17 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
 	// determine recipe step ID.
 	recipeStepID := s.recipeStepIDFetcher(req)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 
 	// determine recipe step product ID.
 	recipeStepProductID := s.recipeStepProductIDFetcher(req)
-	tracing.AttachRecipeStepProductIDToSpan(span, recipeStepProductID)
+	tracing.AttachToSpan(span, keys.RecipeStepProductIDKey, recipeStepProductID)
 	logger = logger.WithValue(keys.RecipeStepProductIDKey, recipeStepProductID)
 
 	exists, existenceCheckErr := s.recipeStepProductDataManager.RecipeStepProductExists(ctx, recipeID, recipeStepID, recipeStepProductID)

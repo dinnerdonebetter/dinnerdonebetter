@@ -26,7 +26,7 @@ func (q *Querier) ValidPreparationExists(ctx context.Context, validPreparationID
 		return false, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
-	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
 
 	exists, err := q.generatedQuerier.CheckValidPreparationExistence(ctx, q.db, validPreparationID)
 	if err != nil {
@@ -47,7 +47,7 @@ func (q *Querier) GetValidPreparation(ctx context.Context, validPreparationID st
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
-	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
 
 	result, err := q.generatedQuerier.GetValidPreparation(ctx, q.db, validPreparationID)
 	if err != nil {
@@ -131,7 +131,7 @@ func (q *Querier) SearchForValidPreparations(ctx context.Context, query string) 
 		return nil, ErrEmptyInputProvided
 	}
 	logger = logger.WithValue(keys.SearchQueryKey, query)
-	tracing.AttachValidPreparationIDToSpan(span, query)
+	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 
 	results, err := q.generatedQuerier.SearchForValidPreparations(ctx, q.db, query)
 	if err != nil {
@@ -238,7 +238,6 @@ func (q *Querier) GetValidPreparationsWithIDs(ctx context.Context, ids []string)
 	if len(ids) == 0 {
 		return nil, sql.ErrNoRows
 	}
-
 	logger := q.logger.WithValue("ids_count", len(ids))
 
 	results, err := q.generatedQuerier.GetValidPreparationsWithIDs(ctx, q.db, ids)
@@ -298,8 +297,8 @@ func (q *Querier) CreateValidPreparation(ctx context.Context, input *types.Valid
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachValidPreparationIDToSpan(span, input.ID)
 	logger := q.logger.WithValue(keys.ValidPreparationIDKey, input.ID)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, input.ID)
 
 	// create the valid preparation.
 	if err := q.generatedQuerier.CreateValidPreparation(ctx, q.db, &generated.CreateValidPreparationParams{
@@ -363,7 +362,7 @@ func (q *Querier) UpdateValidPreparation(ctx context.Context, updated *types.Val
 		return ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(keys.ValidPreparationIDKey, updated.ID)
-	tracing.AttachValidPreparationIDToSpan(span, updated.ID)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, updated.ID)
 
 	if _, err := q.generatedQuerier.UpdateValidPreparation(ctx, q.db, &generated.UpdateValidPreparationParams{
 		Description:                 updated.Description,
@@ -405,7 +404,7 @@ func (q *Querier) MarkValidPreparationAsIndexed(ctx context.Context, validPrepar
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
-	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
 
 	if _, err := q.generatedQuerier.UpdateValidPreparationLastIndexedAt(ctx, q.db, validPreparationID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "marking valid preparation as indexed")
@@ -427,7 +426,7 @@ func (q *Querier) ArchiveValidPreparation(ctx context.Context, validPreparationI
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidPreparationIDKey, validPreparationID)
-	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
 
 	if _, err := q.generatedQuerier.ArchiveValidPreparation(ctx, q.db, validPreparationID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation")

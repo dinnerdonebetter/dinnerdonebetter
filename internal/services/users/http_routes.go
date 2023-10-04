@@ -154,9 +154,9 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	registrationInput.Username = strings.TrimSpace(registrationInput.Username)
-	tracing.AttachUsernameToSpan(span, registrationInput.Username)
+	tracing.AttachToSpan(span, keys.UsernameKey, registrationInput.Username)
 	registrationInput.EmailAddress = strings.TrimSpace(strings.ToLower(registrationInput.EmailAddress))
-	tracing.AttachEmailAddressToSpan(span, registrationInput.EmailAddress)
+	tracing.AttachToSpan(span, keys.UserEmailAddressKey, registrationInput.EmailAddress)
 	registrationInput.Password = strings.TrimSpace(registrationInput.Password)
 
 	logger = logger.WithValues(map[string]any{
@@ -262,7 +262,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// notify the relevant parties.
-	tracing.AttachUserIDToSpan(span, user.ID)
+	tracing.AttachToSpan(span, keys.UserIDKey, user.ID)
 
 	dcm := &types.DataChangeMessage{
 		HouseholdID:            defaultHouseholdID,
@@ -367,7 +367,7 @@ func (s *service) SelfHandler(res http.ResponseWriter, req *http.Request) {
 	// figure out who this is all for.
 	requester := sessionCtxData.Requester.UserID
 	logger = logger.WithValue(keys.RequesterIDKey, requester)
-	tracing.AttachRequestingUserIDToSpan(span, requester)
+	tracing.AttachToSpan(span, keys.RequesterIDKey, requester)
 
 	// fetch user data.
 	user, err := s.userDataManager.GetUser(ctx, requester)
@@ -437,7 +437,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	// figure out who this is all for.
 	userID := s.userIDFetcher(req)
 	logger = logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
 	// fetch user data.
 	x, err := s.userDataManager.GetUser(ctx, userID)
@@ -487,8 +487,8 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 		return
 	}
 
-	tracing.AttachUserIDToSpan(span, user.ID)
-	tracing.AttachUsernameToSpan(span, user.Username)
+	tracing.AttachToSpan(span, keys.UserIDKey, user.ID)
+	tracing.AttachToSpan(span, keys.UsernameKey, user.Username)
 
 	if user.TwoFactorSecretVerifiedAt != nil {
 		// I suppose if this happens too many times, we might want to keep track of that
@@ -584,8 +584,8 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 	}
 
 	// document who this is for.
-	tracing.AttachRequestingUserIDToSpan(span, sessionCtxData.Requester.UserID)
-	tracing.AttachUsernameToSpan(span, user.Username)
+	tracing.AttachToSpan(span, keys.RequesterIDKey, sessionCtxData.Requester.UserID)
+	tracing.AttachToSpan(span, keys.UsernameKey, user.Username)
 	logger = logger.WithValue(keys.UserIDKey, user.ID)
 
 	// set the two factor secret.
@@ -654,7 +654,7 @@ func (s *service) UpdatePasswordHandler(res http.ResponseWriter, req *http.Reque
 	}
 
 	// determine relevant user ID.
-	tracing.AttachRequestingUserIDToSpan(span, sessionCtxData.Requester.UserID)
+	tracing.AttachToSpan(span, keys.RequesterIDKey, sessionCtxData.Requester.UserID)
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// make sure everything's on the up-and-up
@@ -671,7 +671,7 @@ func (s *service) UpdatePasswordHandler(res http.ResponseWriter, req *http.Reque
 		return
 	}
 
-	tracing.AttachUsernameToSpan(span, user.Username)
+	tracing.AttachToSpan(span, keys.UsernameKey, user.Username)
 
 	// ensure the password isn't garbage-tier
 	if err = passwordvalidator.Validate(input.NewPassword, minimumPasswordEntropy); err != nil {
@@ -730,7 +730,7 @@ func (s *service) UpdateUserEmailAddressHandler(res http.ResponseWriter, req *ht
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
 		return
 	}
-	tracing.AttachEmailAddressToSpan(span, input.NewEmailAddress)
+	tracing.AttachToSpan(span, keys.UserEmailAddressKey, input.NewEmailAddress)
 
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
@@ -740,7 +740,7 @@ func (s *service) UpdateUserEmailAddressHandler(res http.ResponseWriter, req *ht
 	}
 
 	// determine relevant user ID.
-	tracing.AttachRequestingUserIDToSpan(span, sessionCtxData.Requester.UserID)
+	tracing.AttachToSpan(span, keys.RequesterIDKey, sessionCtxData.Requester.UserID)
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// make sure everything's on the up-and-up
@@ -797,7 +797,7 @@ func (s *service) UpdateUserUsernameHandler(res http.ResponseWriter, req *http.R
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
 		return
 	}
-	tracing.AttachUsernameToSpan(span, input.NewUsername)
+	tracing.AttachToSpan(span, keys.UsernameKey, input.NewUsername)
 
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
@@ -807,7 +807,7 @@ func (s *service) UpdateUserUsernameHandler(res http.ResponseWriter, req *http.R
 	}
 
 	// determine relevant user ID.
-	tracing.AttachRequestingUserIDToSpan(span, sessionCtxData.Requester.UserID)
+	tracing.AttachToSpan(span, keys.RequesterIDKey, sessionCtxData.Requester.UserID)
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// make sure everything's on the up-and-up
@@ -873,7 +873,7 @@ func (s *service) UpdateUserDetailsHandler(res http.ResponseWriter, req *http.Re
 	}
 
 	// determine relevant user ID.
-	tracing.AttachRequestingUserIDToSpan(span, sessionCtxData.Requester.UserID)
+	tracing.AttachToSpan(span, keys.RequesterIDKey, sessionCtxData.Requester.UserID)
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// make sure everything's on the up-and-up
@@ -973,7 +973,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	// figure out who this is for.
 	userID := s.userIDFetcher(req)
 	logger = logger.WithValue(keys.UserIDKey, userID)
-	tracing.AttachUserIDToSpan(span, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
 	logger.Debug("archiving user")
 

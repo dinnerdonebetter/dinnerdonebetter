@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
@@ -23,7 +24,7 @@ func (b *Builder) BuildGetServiceSettingRequest(ctx context.Context, serviceSett
 	if serviceSettingID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachServiceSettingIDToSpan(span, serviceSettingID)
+	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, serviceSettingID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -31,7 +32,7 @@ func (b *Builder) BuildGetServiceSettingRequest(ctx context.Context, serviceSett
 		serviceSettingsBasePath,
 		serviceSettingID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
@@ -58,7 +59,7 @@ func (b *Builder) BuildSearchServiceSettingsRequest(ctx context.Context, query s
 		serviceSettingsBasePath,
 		"search",
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
@@ -81,7 +82,7 @@ func (b *Builder) BuildGetServiceSettingsRequest(ctx context.Context, filter *ty
 		filter.ToValues(),
 		serviceSettingsBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
@@ -111,7 +112,7 @@ func (b *Builder) BuildCreateServiceSettingRequest(ctx context.Context, input *t
 		nil,
 		serviceSettingsBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
 	if err != nil {
@@ -129,7 +130,7 @@ func (b *Builder) BuildArchiveServiceSettingRequest(ctx context.Context, service
 	if serviceSettingID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachServiceSettingIDToSpan(span, serviceSettingID)
+	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, serviceSettingID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -137,7 +138,7 @@ func (b *Builder) BuildArchiveServiceSettingRequest(ctx context.Context, service
 		serviceSettingsBasePath,
 		serviceSettingID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {

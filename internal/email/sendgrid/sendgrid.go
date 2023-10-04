@@ -80,7 +80,7 @@ func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMes
 	_, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 
-	tracing.AttachStringToSpan(span, "to_email", details.ToAddress)
+	tracing.AttachToSpan(span, "to_email", details.ToAddress)
 
 	to := mail.NewEmail(details.ToName, details.ToAddress)
 	from := mail.NewEmail(details.FromName, details.FromAddress)
@@ -95,7 +95,7 @@ func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMes
 	// no distinguishing feature of the response to let you know. Thanks, SendGrid!
 	if res.StatusCode != http.StatusAccepted {
 		e.logger.WithValue("sendgrid_api_token", e.config.APIToken).Info("sending email yielded an invalid response")
-		tracing.AttachStringToSpan(span, e.config.APIToken, "sendgrid_api_token")
+		tracing.AttachToSpan(span, e.config.APIToken, "sendgrid_api_token")
 		return observability.PrepareError(ErrSendgridAPIIssue, span, "sending email yielded a %d response", res.StatusCode)
 	}
 
@@ -118,7 +118,7 @@ func (e *Emailer) sendDynamicTemplateEmail(ctx context.Context, to, from *mail.E
 	_, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 
-	tracing.AttachStringToSpan(span, "to_email", to.Address)
+	tracing.AttachToSpan(span, "to_email", to.Address)
 
 	m := mail.NewV3Mail()
 	m.SetFrom(from).SetTemplateID(templateID).AddPersonalizations(e.preparePersonalization(to, data))

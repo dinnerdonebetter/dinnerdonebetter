@@ -23,7 +23,7 @@ func (q *Querier) ValidPreparationVesselExists(ctx context.Context, validPrepara
 	if validPreparationVesselID == "" {
 		return false, ErrInvalidIDProvided
 	}
-	tracing.AttachValidPreparationVesselIDToSpan(span, validPreparationVesselID)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validPreparationVesselID)
 
 	exists, err = q.generatedQuerier.CheckValidPreparationVesselExistence(ctx, q.db, validPreparationVesselID)
 	if err != nil {
@@ -41,7 +41,7 @@ func (q *Querier) GetValidPreparationVessel(ctx context.Context, validPreparatio
 	if validPreparationVesselID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidPreparationVesselIDToSpan(span, validPreparationVesselID)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validPreparationVesselID)
 
 	result, err := q.generatedQuerier.GetValidPreparationVessel(ctx, q.db, validPreparationVesselID)
 	if err != nil {
@@ -240,7 +240,7 @@ func (q *Querier) GetValidPreparationVesselsForPreparation(ctx context.Context, 
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidPreparationIDKey, preparationID)
-	tracing.AttachValidPreparationVesselIDToSpan(span, preparationID)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, preparationID)
 
 	if filter == nil {
 		filter = types.DefaultQueryFilter()
@@ -358,7 +358,7 @@ func (q *Querier) GetValidPreparationVesselsForVessel(ctx context.Context, vesse
 	if vesselID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidVesselIDToSpan(span, vesselID)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, vesselID)
 	logger = logger.WithValue(keys.ValidVesselIDKey, vesselID)
 
 	if filter == nil {
@@ -370,7 +370,6 @@ func (q *Querier) GetValidPreparationVesselsForVessel(ctx context.Context, vesse
 	x = &types.QueryFilteredResult[types.ValidPreparationVessel]{
 		Pagination: filter.ToPagination(),
 	}
-	tracing.AttachQueryFilterToSpan(span, filter)
 
 	results, err := q.generatedQuerier.GetValidPreparationVesselsForVessel(ctx, q.db, &generated.GetValidPreparationVesselsForVesselParams{
 		ID:            vesselID,
@@ -476,7 +475,7 @@ func (q *Querier) CreateValidPreparationVessel(ctx context.Context, input *types
 		return nil, ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(keys.ValidPreparationVesselIDKey, input.ID)
-	tracing.AttachValidPreparationVesselIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, input.ID)
 
 	// create the valid preparation vessel.
 	if err := q.generatedQuerier.CreateValidPreparationVessel(ctx, q.db, &generated.CreateValidPreparationVesselParams{
@@ -510,7 +509,7 @@ func (q *Querier) UpdateValidPreparationVessel(ctx context.Context, updated *typ
 		return ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(keys.ValidPreparationVesselIDKey, updated.ID)
-	tracing.AttachValidPreparationVesselIDToSpan(span, updated.ID)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, updated.ID)
 
 	if _, err := q.generatedQuerier.UpdateValidPreparationVessel(ctx, q.db, &generated.UpdateValidPreparationVesselParams{
 		Notes:              updated.Notes,
@@ -535,7 +534,7 @@ func (q *Querier) ArchiveValidPreparationVessel(ctx context.Context, validPrepar
 		return ErrInvalidIDProvided
 	}
 	logger := q.logger.WithValue(keys.ValidPreparationVesselIDKey, validPreparationVesselID)
-	tracing.AttachValidPreparationVesselIDToSpan(span, validPreparationVesselID)
+	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validPreparationVesselID)
 
 	if _, err := q.generatedQuerier.ArchiveValidPreparationVessel(ctx, q.db, validPreparationVesselID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid preparation vessel")

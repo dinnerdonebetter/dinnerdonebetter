@@ -25,7 +25,7 @@ func (q *Querier) ValidIngredientStateIngredientExists(ctx context.Context, vali
 		return false, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
-	tracing.AttachValidIngredientStateIngredientIDToSpan(span, validIngredientStateIngredientID)
+	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
 
 	result, err := q.generatedQuerier.CheckValidIngredientStateIngredientExistence(ctx, q.db, validIngredientStateIngredientID)
 	if err != nil {
@@ -46,7 +46,7 @@ func (q *Querier) GetValidIngredientStateIngredient(ctx context.Context, validIn
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
-	tracing.AttachValidIngredientStateIngredientIDToSpan(span, validIngredientStateIngredientID)
+	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
 
 	result, err := q.generatedQuerier.GetValidIngredientStateIngredient(ctx, q.db, validIngredientStateIngredientID)
 	if err != nil {
@@ -225,7 +225,7 @@ func (q *Querier) GetValidIngredientStateIngredientsForIngredientState(ctx conte
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientStateIDKey, ingredientStateID)
-	tracing.AttachValidIngredientStateIngredientIDToSpan(span, ingredientStateID)
+	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, ingredientStateID)
 
 	if filter == nil {
 		filter = types.DefaultQueryFilter()
@@ -330,7 +330,7 @@ func (q *Querier) GetValidIngredientStateIngredientsForIngredient(ctx context.Co
 		return nil, ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientIDKey, ingredientID)
-	tracing.AttachValidIngredientStateIngredientIDToSpan(span, ingredientID)
+	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, ingredientID)
 
 	if filter == nil {
 		filter = types.DefaultQueryFilter()
@@ -432,7 +432,7 @@ func (q *Querier) CreateValidIngredientStateIngredient(ctx context.Context, inpu
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachValidIngredientStateIngredientIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, input.ID)
 	logger := q.logger.WithValue(keys.ValidIngredientStateIngredientIDKey, input.ID)
 
 	// create the valid ingredient state ingredient.
@@ -453,7 +453,7 @@ func (q *Querier) CreateValidIngredientStateIngredient(ctx context.Context, inpu
 		CreatedAt:       q.currentTime(),
 	}
 
-	tracing.AttachValidIngredientStateIngredientIDToSpan(span, x.ID)
+	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, x.ID)
 	logger.Info("valid ingredient state ingredient created")
 
 	return x, nil
@@ -468,7 +468,7 @@ func (q *Querier) UpdateValidIngredientStateIngredient(ctx context.Context, upda
 		return ErrNilInputProvided
 	}
 	logger := q.logger.WithValue(keys.ValidIngredientStateIngredientIDKey, updated.ID)
-	tracing.AttachValidIngredientStateIngredientIDToSpan(span, updated.ID)
+	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, updated.ID)
 
 	if _, err := q.generatedQuerier.UpdateValidIngredientStateIngredient(ctx, q.db, &generated.UpdateValidIngredientStateIngredientParams{
 		Notes:                updated.Notes,
@@ -495,7 +495,7 @@ func (q *Querier) ArchiveValidIngredientStateIngredient(ctx context.Context, val
 		return ErrInvalidIDProvided
 	}
 	logger = logger.WithValue(keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
-	tracing.AttachValidIngredientStateIngredientIDToSpan(span, validIngredientStateIngredientID)
+	tracing.AttachToSpan(span, keys.ValidIngredientStateIngredientIDKey, validIngredientStateIngredientID)
 
 	if _, err := q.generatedQuerier.ArchiveValidIngredientStateIngredient(ctx, q.db, validIngredientStateIngredientID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient state ingredient")

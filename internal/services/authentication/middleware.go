@@ -53,7 +53,7 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 		if cookieContext, userID, err := s.getUserIDFromCookie(ctx, req); err == nil && userID != "" {
 			ctx = cookieContext
 
-			tracing.AttachRequestingUserIDToSpan(span, userID)
+			tracing.AttachToSpan(span, keys.RequesterIDKey, userID)
 			logger = logger.WithValue(keys.RequesterIDKey, userID)
 
 			sessionCtxData, sessionCtxDataErr := s.householdMembershipManager.BuildSessionContextDataForUser(ctx, userID)

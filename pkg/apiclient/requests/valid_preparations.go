@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
@@ -24,7 +25,7 @@ func (b *Builder) BuildGetValidPreparationRequest(ctx context.Context, validPrep
 	if validPreparationID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -32,7 +33,7 @@ func (b *Builder) BuildGetValidPreparationRequest(ctx context.Context, validPrep
 		validPreparationsBasePath,
 		validPreparationID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
@@ -53,7 +54,7 @@ func (b *Builder) BuildGetRandomValidPreparationRequest(ctx context.Context) (*h
 		validPreparationsBasePath,
 		randomBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
@@ -80,7 +81,7 @@ func (b *Builder) BuildSearchValidPreparationsRequest(ctx context.Context, query
 		validPreparationsBasePath,
 		"search",
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
@@ -103,7 +104,7 @@ func (b *Builder) BuildGetValidPreparationsRequest(ctx context.Context, filter *
 		filter.ToValues(),
 		validPreparationsBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 	tracing.AttachQueryFilterToSpan(span, filter)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
@@ -133,7 +134,7 @@ func (b *Builder) BuildCreateValidPreparationRequest(ctx context.Context, input 
 		nil,
 		validPreparationsBasePath,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := b.buildDataRequest(ctx, http.MethodPost, uri, input)
 	if err != nil {
@@ -151,7 +152,7 @@ func (b *Builder) BuildUpdateValidPreparationRequest(ctx context.Context, validP
 	if validPreparation == nil {
 		return nil, ErrNilInputProvided
 	}
-	tracing.AttachValidPreparationIDToSpan(span, validPreparation.ID)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparation.ID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -159,7 +160,7 @@ func (b *Builder) BuildUpdateValidPreparationRequest(ctx context.Context, validP
 		validPreparationsBasePath,
 		validPreparation.ID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	input := converters.ConvertValidPreparationToValidPreparationUpdateRequestInput(validPreparation)
 
@@ -179,7 +180,7 @@ func (b *Builder) BuildArchiveValidPreparationRequest(ctx context.Context, valid
 	if validPreparationID == "" {
 		return nil, ErrInvalidIDProvided
 	}
-	tracing.AttachValidPreparationIDToSpan(span, validPreparationID)
+	tracing.AttachToSpan(span, keys.ValidPreparationIDKey, validPreparationID)
 
 	uri := b.BuildURL(
 		ctx,
@@ -187,7 +188,7 @@ func (b *Builder) BuildArchiveValidPreparationRequest(ctx context.Context, valid
 		validPreparationsBasePath,
 		validPreparationID,
 	)
-	tracing.AttachRequestURIToSpan(span, uri)
+	tracing.AttachToSpan(span, keys.RequestURIKey, uri)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
 	if err != nil {

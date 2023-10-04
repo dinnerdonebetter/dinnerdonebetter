@@ -56,11 +56,11 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine recipe step ID.
 	recipeStepID := s.recipeStepIDFetcher(req)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 
 	input.BelongsToRecipeStep = recipeStepID
-	tracing.AttachRecipeStepVesselIDToSpan(span, input.ID)
+	tracing.AttachToSpan(span, keys.RecipeStepVesselIDKey, input.ID)
 
 	recipeStepVessel, err := s.recipeStepVesselDataManager.CreateRecipeStepVessel(ctx, input)
 	if err != nil {
@@ -104,17 +104,17 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
 	// determine recipe step ID.
 	recipeStepID := s.recipeStepIDFetcher(req)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 
 	// determine recipe step vessel ID.
 	recipeStepVesselID := s.recipeStepVesselIDFetcher(req)
-	tracing.AttachRecipeStepVesselIDToSpan(span, recipeStepVesselID)
+	tracing.AttachToSpan(span, keys.RecipeStepVesselIDKey, recipeStepVesselID)
 	logger = logger.WithValue(keys.RecipeStepVesselIDKey, recipeStepVesselID)
 
 	// fetch recipe step vessel from database.
@@ -161,12 +161,12 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
 	// determine recipe step ID.
 	recipeStepID := s.recipeStepIDFetcher(req)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 
 	recipeStepVessels, err := s.recipeStepVesselDataManager.GetRecipeStepVessels(ctx, recipeID, recipeStepID, filter)
@@ -218,17 +218,17 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
 	// determine recipe step ID.
 	recipeStepID := s.recipeStepIDFetcher(req)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 
 	// determine recipe step vessel ID.
 	recipeStepVesselID := s.recipeStepVesselIDFetcher(req)
-	tracing.AttachRecipeStepVesselIDToSpan(span, recipeStepVesselID)
+	tracing.AttachToSpan(span, keys.RecipeStepVesselIDKey, recipeStepVesselID)
 	logger = logger.WithValue(keys.RecipeStepVesselIDKey, recipeStepVesselID)
 
 	// fetch recipe step vessel from database.
@@ -287,17 +287,17 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
-	tracing.AttachRecipeIDToSpan(span, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
 	// determine recipe step ID.
 	recipeStepID := s.recipeStepIDFetcher(req)
-	tracing.AttachRecipeStepIDToSpan(span, recipeStepID)
+	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 
 	// determine recipe step vessel ID.
 	recipeStepVesselID := s.recipeStepVesselIDFetcher(req)
-	tracing.AttachRecipeStepVesselIDToSpan(span, recipeStepVesselID)
+	tracing.AttachToSpan(span, keys.RecipeStepVesselIDKey, recipeStepVesselID)
 	logger = logger.WithValue(keys.RecipeStepVesselIDKey, recipeStepVesselID)
 
 	exists, existenceCheckErr := s.recipeStepVesselDataManager.RecipeStepVesselExists(ctx, recipeID, recipeStepID, recipeStepVesselID)
