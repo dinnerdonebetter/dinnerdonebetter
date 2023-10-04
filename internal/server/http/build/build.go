@@ -64,6 +64,7 @@ import (
 	validpreparationvesselsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparationvessels"
 	validvesselsservice "github.com/dinnerdonebetter/backend/internal/services/validvessels"
 	webhooksservice "github.com/dinnerdonebetter/backend/internal/services/webhooks"
+	workersservice "github.com/dinnerdonebetter/backend/internal/services/workers"
 	"github.com/dinnerdonebetter/backend/internal/uploads/images"
 
 	"github.com/google/wire"
@@ -134,6 +135,7 @@ func Build(
 		validvesselsservice.Providers,
 		validpreparationvesselsservice.Providers,
 		analyticscfg.ProvidersAnalytics,
+		workersservice.Providers,
 	)
 
 	return nil, nil

@@ -88,7 +88,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 		mdm.MealPlanDataManagerMock.On("GetFinalizedMealPlanIDsForTheNextWeek", testutils.ContextMatcher).Return([]*types.FinalizedMealPlanDatabaseResult{}, nil)
 		w.dataManager = mdm
 
-		actual, err := w.DetermineCreatableMealPlanTasks(ctx)
+		actual, err := w.determineCreatableMealPlanTasks(ctx)
 		assert.NoError(t, err)
 		assert.Equal(t, expected, actual)
 
@@ -230,7 +230,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 			exampleFinalizedMealPlanResult.MealPlanID: expectedReturnResults,
 		}
 
-		actual, err := w.DetermineCreatableMealPlanTasks(ctx)
+		actual, err := w.determineCreatableMealPlanTasks(ctx)
 		assert.NoError(t, err)
 
 		// because we can't guarantee what this will be without too much effort
@@ -424,7 +424,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 			exampleFinalizedMealPlanResult.MealPlanID: expectedReturnResults,
 		}
 
-		actual, err := w.DetermineCreatableMealPlanTasks(ctx)
+		actual, err := w.determineCreatableMealPlanTasks(ctx)
 		assert.NoError(t, err)
 
 		assert.Equal(t, expected, actual)

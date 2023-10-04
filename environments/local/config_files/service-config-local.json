@@ -241,6 +241,9 @@
 			"dataChangesTopicName": "data_changes",
 			"searchFromDatabase": false
 		},
+		"workers": {
+			"dataChangesTopicName": "data_changes"
+		},
 		"recipes": {
 			"dataChangesTopicName": "data_changes",
 			"mediaUploadPrefix": "https://example.website.lol",

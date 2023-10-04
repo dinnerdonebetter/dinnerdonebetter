@@ -44,6 +44,7 @@ import (
 	validvesselsservice "github.com/dinnerdonebetter/backend/internal/services/validvessels"
 	webhooksservice "github.com/dinnerdonebetter/backend/internal/services/webhooks"
 	websocketsservice "github.com/dinnerdonebetter/backend/internal/services/websockets"
+	workersservice "github.com/dinnerdonebetter/backend/internal/services/workers"
 
 	"github.com/hashicorp/go-multierror"
 )
@@ -90,6 +91,7 @@ type (
 		ValidVessels                    validvesselsservice.Config                    `json:"validVessels"                    toml:"auth,omitempty"`
 		HouseholdInvitations            householdinvitationsservice.Config            `json:"householdInvitations"            toml:"household_invitations,omitempty"`
 		ValidPreparations               validpreparationsservice.Config               `json:"validPreparations"               toml:"valid_preparations,omitempty"`
+		Workers                         workersservice.Config                         `json:"workers"                         toml:"workers,omitempty"`
 		Recipes                         recipesservice.Config                         `json:"recipes"                         toml:"recipes,omitempty"`
 		Auth                            authservice.Config                            `json:"auth"                            toml:"recipes,omitempty"`
 	}
@@ -131,6 +133,7 @@ func (cfg *ServicesConfig) ValidateWithContext(ctx context.Context) error {
 		"UserIngredientPreferences":       cfg.UserIngredientPreferences.ValidateWithContext,
 		"ValidVessels":                    cfg.ValidVessels.ValidateWithContext,
 		"ValidPreparationVessels":         cfg.ValidPreparationVessels.ValidateWithContext,
+		"Workers":                         cfg.Workers.ValidateWithContext,
 	}
 
 	for name, validator := range validatorsToRun {

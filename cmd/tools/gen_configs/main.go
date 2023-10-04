@@ -68,6 +68,7 @@ import (
 	validvesselsservice "github.com/dinnerdonebetter/backend/internal/services/validvessels"
 	webhooksservice "github.com/dinnerdonebetter/backend/internal/services/webhooks"
 	websocketsservice "github.com/dinnerdonebetter/backend/internal/services/websockets"
+	workersservice "github.com/dinnerdonebetter/backend/internal/services/workers"
 	"github.com/dinnerdonebetter/backend/internal/uploads"
 )
 
@@ -563,6 +564,9 @@ func buildDevConfig() *config.InstanceConfig {
 			OAuth2Clients: oauth2clientsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
+			Workers: workersservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
 		},
 	}
 }
@@ -800,6 +804,9 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			HouseholdInstrumentOwnerships: householdinstrumentownershipsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			Workers: workersservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 		},

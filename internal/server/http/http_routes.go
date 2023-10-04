@@ -115,6 +115,16 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 				Post("/users/status", s.adminService.UserAccountStatusChangeHandler)
 		})
 
+		// Workers
+		adminRouter.Route("/workers", func(adminRouter routing.Router) {
+			adminRouter.
+				Post("/finalize_meal_plans", s.workerService.MealPlanFinalizationHandler)
+			adminRouter.
+				Post("/meal_plan_grocery_list_init", s.workerService.MealPlanGroceryListInitializationHandler)
+			adminRouter.
+				Post("/meal_plan_tasks", s.workerService.MealPlanTaskCreationHandler)
+		})
+
 		// Users
 		v1Router.Route("/users", func(usersRouter routing.Router) {
 			usersRouter.

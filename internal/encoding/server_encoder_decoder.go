@@ -105,7 +105,6 @@ func (e *serverEncoderDecoder) encodeResponse(ctx context.Context, res http.Resp
 	logger := e.logger.WithValue(keys.ResponseStatusKey, statusCode)
 
 	var enc encoder
-
 	switch contentTypeFromString(res.Header().Get(ContentTypeHeaderKey)) {
 	case ContentTypeXML:
 		res.Header().Set(ContentTypeHeaderKey, contentTypeXML)
@@ -121,7 +120,6 @@ func (e *serverEncoderDecoder) encodeResponse(ctx context.Context, res http.Resp
 	}
 
 	res.WriteHeader(statusCode)
-
 	if err := enc.Encode(v); err != nil {
 		observability.AcknowledgeError(err, logger, span, "encoding response")
 	}
@@ -152,7 +150,6 @@ func (e *serverEncoderDecoder) EncodeErrorResponse(ctx context.Context, res http
 	}
 
 	res.WriteHeader(statusCode)
-
 	if err := enc.Encode(&types.APIError{Message: msg, Code: statusCode}); err != nil {
 		observability.AcknowledgeError(err, logger, span, "encoding error response")
 	}
@@ -290,9 +287,4 @@ func ProvideServerEncoderDecoder(logger logging.Logger, tracerProvider tracing.T
 		panicker:    panicking.NewProductionPanicker(),
 		contentType: contentType,
 	}
-}
-
-// QuickJSONEncoderDecoder provides a ServerEncoderDecoder.
-func QuickJSONEncoderDecoder() ServerEncoderDecoder {
-	return ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), ContentTypeJSON)
 }
