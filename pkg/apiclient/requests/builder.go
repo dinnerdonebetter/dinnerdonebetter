@@ -3,13 +3,13 @@ package requests
 import (
 	"context"
 	"fmt"
-	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"net/http"
 	"net/url"
 	"path"
 
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/panicking"
