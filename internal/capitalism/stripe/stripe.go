@@ -33,8 +33,6 @@ type (
 		tracer         tracing.Tracer
 		client         *client.API
 		encoderDecoder encoding.ServerEncoderDecoder
-		successURL     string
-		cancelURL      string
 		webhookSecret  string
 	}
 )
@@ -48,8 +46,6 @@ func ProvideStripePaymentManager(logger logging.Logger, tracerProvider tracing.T
 	return &stripePaymentManager{
 		client:         client.New(cfg.APIKey, nil),
 		webhookSecret:  cfg.WebhookSecret,
-		successURL:     cfg.SuccessURL,
-		cancelURL:      cfg.CancelURL,
 		encoderDecoder: encoding.ProvideServerEncoderDecoder(logger, tracerProvider, encoding.ContentTypeJSON),
 		logger:         logging.EnsureLogger(logger),
 		tracer:         tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(implementationName)),
