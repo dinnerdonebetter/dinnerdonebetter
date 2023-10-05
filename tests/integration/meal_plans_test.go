@@ -62,8 +62,11 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
+			// create a user for the meal plan household
+			_, _, householdAdminUserClient, _ := createUserAndClientForTest(ctx, t, nil)
+
 			// create household members
-			currentStatus, statusErr := testClients.user.UserStatus(s.ctx)
+			currentStatus, statusErr := householdAdminUserClient.UserStatus(s.ctx)
 			requireNotNilAndNoProblems(t, currentStatus, statusErr)
 			relevantHouseholdID := currentStatus.ActiveHousehold
 
@@ -73,13 +76,13 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			for i := 0; i < 2; i++ {
 				u, _, c, _ := createUserAndClientForTest(ctx, t, nil)
 
-				invitation, err := testClients.user.InviteUserToHousehold(ctx, relevantHouseholdID, &types.HouseholdInvitationCreationRequestInput{
+				invitation, err := householdAdminUserClient.InviteUserToHousehold(ctx, relevantHouseholdID, &types.HouseholdInvitationCreationRequestInput{
 					Note:    t.Name(),
 					ToEmail: u.EmailAddress,
 				})
 				require.NoError(t, err)
 
-				sentInvitations, err := testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
+				sentInvitations, err := householdAdminUserClient.GetPendingHouseholdInvitationsFromUser(ctx, nil)
 				requireNotNilAndNoProblems(t, sentInvitations, err)
 				assert.NotEmpty(t, sentInvitations.Data)
 
@@ -88,7 +91,6 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 				assert.NotEmpty(t, invitations.Data)
 
 				require.NoError(t, c.AcceptHouseholdInvitation(ctx, invitation.ID, invitation.Token, t.Name()))
-
 				require.NoError(t, c.SwitchActiveHousehold(ctx, relevantHouseholdID))
 
 				createdUsers = append(createdUsers, u)
@@ -98,7 +100,7 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			// create recipes for meal plan
 			createdMeals := []*types.Meal{}
 			for i := 0; i < 3; i++ {
-				createdMeal := createMealForTest(ctx, t, testClients.admin, testClients.user, nil)
+				createdMeal := createMealForTest(ctx, t, testClients.admin, householdAdminUserClient, nil)
 				createdMeals = append(createdMeals, createdMeal)
 			}
 
@@ -134,13 +136,12 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			}
 
 			exampleMealPlanInput := converters.ConvertMealPlanToMealPlanCreationRequestInput(exampleMealPlan)
-			mealPlanCreationResult, err := testClients.user.CreateMealPlan(ctx, exampleMealPlanInput)
+			mealPlanCreationResult, err := householdAdminUserClient.CreateMealPlan(ctx, exampleMealPlanInput)
 			require.NotEmpty(t, mealPlanCreationResult.ID)
 			require.NoError(t, err)
 
-			createdMealPlan, err := testClients.user.GetMealPlan(ctx, mealPlanCreationResult.ID)
+			createdMealPlan, err := householdAdminUserClient.GetMealPlan(ctx, mealPlanCreationResult.ID)
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
-
 			checkMealPlanEquality(t, exampleMealPlan, createdMealPlan)
 
 			require.NotEmpty(t, createdMealPlan.Events)
@@ -208,13 +209,18 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForAllVotesReceived() {
 			require.NoError(t, err)
 			require.NotNil(t, createdMealPlanOptionVotesB)
 
-			createdMealPlanOptionVotesC, err := testClients.user.CreateMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, userCVotes)
+			createdMealPlanOptionVotesC, err := householdAdminUserClient.CreateMealPlanOptionVote(ctx, createdMealPlan.ID, createdMealPlanEvent.ID, userCVotes)
 			require.NoError(t, err)
 			require.NotNil(t, createdMealPlanOptionVotesC)
 
-			time.Sleep(baseDeadline * 2)
+			createdMealPlan.VotingDeadline = time.Now().Add(-time.Minute)
+			require.NoError(t, dbmanager.UpdateMealPlan(ctx, createdMealPlan))
 
-			createdMealPlan, err = testClients.user.GetMealPlan(ctx, createdMealPlan.ID)
+			runRes, err := testClients.admin.RunFinalizeMealPlansWorker(ctx, &types.FinalizeMealPlansRequest{ReturnCount: true})
+			require.NoError(t, err)
+			require.NotNil(t, runRes)
+
+			createdMealPlan, err = householdAdminUserClient.GetMealPlan(ctx, createdMealPlan.ID)
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
 			assert.Equal(t, string(types.MealPlanStatusFinalized), createdMealPlan.Status)
 
@@ -240,8 +246,11 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
 			defer span.End()
 
+			// create a user for the meal plan household
+			_, _, householdAdminUserClient, _ := createUserAndClientForTest(ctx, t, nil)
+
 			// create household members
-			currentStatus, statusErr := testClients.user.UserStatus(s.ctx)
+			currentStatus, statusErr := householdAdminUserClient.UserStatus(s.ctx)
 			requireNotNilAndNoProblems(t, currentStatus, statusErr)
 			relevantHouseholdID := currentStatus.ActiveHousehold
 
@@ -251,13 +260,13 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			for i := 0; i < 2; i++ {
 				u, _, c, _ := createUserAndClientForTest(ctx, t, nil)
 
-				invitation, err := testClients.user.InviteUserToHousehold(ctx, relevantHouseholdID, &types.HouseholdInvitationCreationRequestInput{
+				invitation, err := householdAdminUserClient.InviteUserToHousehold(ctx, relevantHouseholdID, &types.HouseholdInvitationCreationRequestInput{
 					Note:    t.Name(),
 					ToEmail: u.EmailAddress,
 				})
 				require.NoError(t, err)
 
-				sentInvitations, err := testClients.user.GetPendingHouseholdInvitationsFromUser(ctx, nil)
+				sentInvitations, err := householdAdminUserClient.GetPendingHouseholdInvitationsFromUser(ctx, nil)
 				requireNotNilAndNoProblems(t, sentInvitations, err)
 				assert.NotEmpty(t, sentInvitations.Data)
 
@@ -273,10 +282,10 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 				createdClients = append(createdClients, c)
 			}
 
-			// create recipes for meal plan
+			// create meals for meal plan
 			createdMeals := []*types.Meal{}
 			for i := 0; i < 3; i++ {
-				createdMeal := createMealForTest(ctx, t, testClients.admin, testClients.user, nil)
+				createdMeal := createMealForTest(ctx, t, testClients.admin, householdAdminUserClient, nil)
 				createdMeals = append(createdMeals, createdMeal)
 			}
 
@@ -312,11 +321,11 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			}
 
 			exampleMealPlanInput := converters.ConvertMealPlanToMealPlanCreationRequestInput(exampleMealPlan)
-			createdMealPlan, err := testClients.user.CreateMealPlan(ctx, exampleMealPlanInput)
+			createdMealPlan, err := householdAdminUserClient.CreateMealPlan(ctx, exampleMealPlanInput)
 			require.NotEmpty(t, createdMealPlan.ID)
 			require.NoError(t, err)
 
-			createdMealPlan, err = testClients.user.GetMealPlan(ctx, createdMealPlan.ID)
+			createdMealPlan, err = householdAdminUserClient.GetMealPlan(ctx, createdMealPlan.ID)
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
 			checkMealPlanEquality(t, exampleMealPlan, createdMealPlan)
 
@@ -364,16 +373,18 @@ func (s *TestSuite) TestMealPlans_CompleteLifecycleForSomeVotesReceived() {
 			require.NoError(t, err)
 			require.NotNil(t, createdMealPlanOptionVotesB)
 
-			createdMealPlan, err = testClients.user.GetMealPlan(ctx, createdMealPlan.ID)
+			createdMealPlan, err = householdAdminUserClient.GetMealPlan(ctx, createdMealPlan.ID)
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
 			assert.Equal(t, string(types.MealPlanStatusAwaitingVotes), createdMealPlan.Status)
 
 			createdMealPlan.VotingDeadline = time.Now().Add(-10 * time.Hour)
 			require.NoError(t, dbmanager.UpdateMealPlan(ctx, createdMealPlan))
 
-			time.Sleep(baseDeadline * 2)
+			runRes, err := testClients.admin.RunFinalizeMealPlansWorker(ctx, &types.FinalizeMealPlansRequest{ReturnCount: true})
+			require.NoError(t, err)
+			require.NotNil(t, runRes)
 
-			createdMealPlan, err = testClients.user.GetMealPlan(ctx, createdMealPlan.ID)
+			createdMealPlan, err = householdAdminUserClient.GetMealPlan(ctx, createdMealPlan.ID)
 			requireNotNilAndNoProblems(t, createdMealPlan, err)
 			assert.Equal(t, string(types.MealPlanStatusFinalized), createdMealPlan.Status)
 

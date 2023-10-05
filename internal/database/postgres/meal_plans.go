@@ -2,9 +2,9 @@ package postgres
 
 import (
 	"context"
-	"errors"
 	"strings"
 
+	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
@@ -14,9 +14,6 @@ import (
 
 var (
 	_ types.MealPlanDataManager = (*Querier)(nil)
-
-	// ErrAlreadyFinalized is returned when a meal plan is already finalized.
-	ErrAlreadyFinalized = errors.New("meal plan already finalized")
 )
 
 // MealPlanExists fetches whether a meal plan exists from the database.
@@ -330,9 +327,10 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, hou
 
 	votingDeadlineHasPassed := mealPlan.VotingDeadline.Before(q.currentTime())
 	if strings.EqualFold(mealPlan.Status, string(types.MealPlanStatusFinalized)) {
-		return false, ErrAlreadyFinalized
+		return false, database.ErrAlreadyFinalized
 	}
 
+	usersWhoHaveNotVoted := []string{}
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
@@ -348,7 +346,7 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, hou
 		// and then iterate through the votes and mark each voter as true
 		userHasVoted := map[string]bool{}
 		for _, member := range household.Members {
-			userHasVoted[member.BelongsToUser.ID] = true
+			userHasVoted[member.BelongsToUser.ID] = false
 		}
 
 		alreadyChosen := false
@@ -359,9 +357,7 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, hou
 			}
 
 			for _, vote := range opt.Votes {
-				if _, ok := userHasVoted[vote.ByUser]; ok {
-					userHasVoted[vote.ByUser] = false
-				}
+				userHasVoted[vote.ByUser] = true
 			}
 		}
 
@@ -370,14 +366,17 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, hou
 			continue
 		}
 
-		for _, hasVoted := range userHasVoted {
+		for userID, hasVoted := range userHasVoted {
 			if hasVoted {
 				allVotesAreSubmitted = false
+			} else {
+				usersWhoHaveNotVoted = append(usersWhoHaveNotVoted, userID)
 			}
 		}
 
 		// if we're missing votes from household members, and the deadline hasn't passed, then we can't finalize the meal plan.
 		if !allVotesAreSubmitted && !votingDeadlineHasPassed {
+			logger.WithValue("users_without_votes", usersWhoHaveNotVoted).Info("not all votes are submitted, and the voting deadline hasn't passed yet")
 			continue
 		}
 
@@ -394,11 +393,15 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, hou
 				return false, observability.PrepareAndLogError(err, logger, span, "finalizing meal plan option")
 			}
 
-			logger.Debug("finalized meal plan option")
+			logger.Info("finalized meal plan option")
+		} else {
+			logger.Info("no winner chosen")
 		}
 	}
 
-	if allVotesAreSubmitted {
+	if allVotesAreSubmitted || (!allVotesAreSubmitted && votingDeadlineHasPassed) {
+		logger.Info("finalizing meal plan")
+
 		if err = q.generatedQuerier.FinalizeMealPlan(ctx, q.db, &generated.FinalizeMealPlanParams{
 			Status: generated.MealPlanStatus(types.MealPlanStatusFinalized),
 			ID:     mealPlanID,
@@ -412,6 +415,12 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, hou
 	if err = tx.Commit(); err != nil {
 		return false, observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
+
+	logger.WithValue("finalized", finalized).
+		WithValue("usersWhoHaveNotVoted", usersWhoHaveNotVoted).
+		WithValue("allVotesAreSubmitted", allVotesAreSubmitted).
+		WithValue("votingDeadlineHasPassed", votingDeadlineHasPassed).
+		Info("done attempting to finalize meal plan")
 
 	return finalized, nil
 }

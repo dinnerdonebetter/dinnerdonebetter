@@ -63,6 +63,7 @@ var (
 			"HouseholdInstrumentOwnerships",
 			"ValidVessels",
 			"ValidPreparationVessels",
+			"Workers",
 		),
 	)
 )

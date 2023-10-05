@@ -111,8 +111,6 @@ func (q *Querier) GetRecipePrepTask(ctx context.Context, recipeID, recipePrepTas
 		return nil, sql.ErrNoRows
 	}
 
-	logger.Info("recipe prep tasks retrieved")
-
 	return x, nil
 }
 
@@ -306,8 +304,6 @@ func (q *Querier) getRecipePrepTasksForRecipe(ctx context.Context, recipeID stri
 	if currentRecipePrepTask != nil && currentRecipePrepTask.ID != "" {
 		x = append(x, currentRecipePrepTask)
 	}
-
-	logger.Info("recipe prep tasks retrieved")
 
 	return x, nil
 }

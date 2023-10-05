@@ -8,7 +8,6 @@ import (
 	"net/url"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/authorization"
@@ -70,12 +69,11 @@ func init() {
 		MaxPingAttempts:          500,
 	}
 
-	dbm, err := postgres.ProvideDatabaseClient(ctx, logger, tracing.NewNoopTracerProvider(), cfg)
+	var err error
+	dbmanager, err = postgres.ProvideDatabaseClient(ctx, logger, tracing.NewNoopTracerProvider(), cfg)
 	if err != nil {
 		panic(err)
 	}
-
-	dbmanager = dbm
 
 	hasher := authentication.ProvideArgon2Authenticator(logger, tracing.NewNoopTracerProvider())
 	actuallyHashedPass, err := hasher.HashPassword(ctx, premadeAdminUser.HashedPassword)
@@ -104,6 +102,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+
 	clientSecret, err := random.GenerateHexEncodedString(ctx, 16)
 	if err != nil {
 		panic(err)
@@ -133,6 +132,4 @@ func init() {
 
 	fiftySpaces := strings.Repeat("\n", 50)
 	fmt.Printf("%s\tRunning tests%s", fiftySpaces, fiftySpaces)
-
-	time.Sleep(3 * time.Second)
 }

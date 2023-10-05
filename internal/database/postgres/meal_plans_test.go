@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -181,7 +182,7 @@ func TestQuerier_Integration_MealPlans(t *testing.T) {
 	for _, mealPlan := range createdMealPlans {
 		_, err = dbc.AttemptToFinalizeMealPlan(ctx, mealPlan.ID, householdID)
 		assert.Error(t, err)
-		assert.ErrorIs(t, err, ErrAlreadyFinalized)
+		assert.ErrorIs(t, err, database.ErrAlreadyFinalized)
 		assert.NoError(t, dbc.ArchiveMealPlan(ctx, mealPlan.ID, householdID))
 
 		var exists bool
