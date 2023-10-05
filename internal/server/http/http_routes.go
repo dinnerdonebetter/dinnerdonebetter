@@ -1073,7 +1073,7 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 				singleMealPlanRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveMealPlansPermission)).
 					Delete(root, s.mealPlansService.ArchiveHandler)
-				mealPlansRouter.
+				singleMealPlanRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateMealPlansPermission)).
 					Post("/finalize", s.mealPlansService.FinalizeHandler)
 			})

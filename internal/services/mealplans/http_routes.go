@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
@@ -308,6 +309,8 @@ func (s *service) FinalizeHandler(res http.ResponseWriter, req *http.Request) {
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	logger.Info("attempting to finalize meal plan")
+
 	// determine user ID.
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
@@ -325,13 +328,15 @@ func (s *service) FinalizeHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
+	logger.Info("fetching meal plan to finalize")
+
 	// fetch meal plan from database.
 	mealPlan, err := s.mealPlanDataManager.GetMealPlan(ctx, mealPlanID, householdID)
 	if errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		return
 	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving meal plan for update")
+		observability.AcknowledgeError(err, logger, span, "retrieving meal plan for finalization")
 		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
@@ -339,9 +344,13 @@ func (s *service) FinalizeHandler(res http.ResponseWriter, req *http.Request) {
 	// update the meal plan.
 	worked, err := s.mealPlanDataManager.AttemptToFinalizeMealPlan(ctx, mealPlan.ID, householdID)
 	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "finalizing meal plan")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
-		return
+		if errors.Is(err, database.ErrAlreadyFinalized) {
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, nil, http.StatusAlreadyReported)
+		} else {
+			observability.AcknowledgeError(err, logger, span, "finalizing meal plan")
+			s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+			return
+		}
 	}
 
 	if !worked {

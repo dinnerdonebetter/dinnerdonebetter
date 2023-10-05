@@ -21,85 +21,12 @@ services:
             POSTGRES_USER: 'dbuser'
         ports:
             - '5432:5432'
-    queue_loader:
-        logging:
-            driver: none
-        container_name: queue_loader
-        environment:
-            TARGET_ADDRESS: 'http://api_server:8000'
-            CONFIGURATION_FILEPATH: '/etc/config'
-        volumes:
-            - source: '../../../'
-              target: '/go/src/github.com/dinnerdonebetter/backend'
-              type: 'bind'
-            - source: '../../../environments/local/config_files/queue-loader-config.json'
-              target: '/etc/config'
-              type: 'bind'
-        build:
-            context: '../../../'
-            dockerfile: 'environments/testing/dockerfiles/queue_loader.Dockerfile'
-    meal_plan_finalizer:
-        logging:
-            driver: none
-        container_name: meal_plan_finalizer
-        environment:
-            TARGET_ADDRESS: 'http://api_server:8000'
-            CONFIGURATION_FILEPATH: '/etc/config'
-        volumes:
-            - source: '../../../'
-              target: '/go/src/github.com/dinnerdonebetter/backend'
-              type: 'bind'
-            - source: '../../../environments/local/config_files/meal-plan-finalizer-config.json'
-              target: '/etc/config'
-              type: 'bind'
-        build:
-            context: '../../../'
-            dockerfile: 'environments/testing/dockerfiles/meal_plan_finalizer.Dockerfile'
-    meal_plan_grocery_list_initializer:
-        logging:
-            driver: none
-        container_name: meal_plan_grocery_list_initializer
-        environment:
-            TARGET_ADDRESS: 'http://api_server:8000'
-            CONFIGURATION_FILEPATH: '/etc/config'
-        volumes:
-            - source: '../../../'
-              target: '/go/src/github.com/dinnerdonebetter/backend'
-              type: 'bind'
-            - source: '../../../environments/local/config_files/meal-plan-grocery-list-initializer-config.json'
-              target: '/etc/config'
-              type: 'bind'
-        build:
-            context: '../../../'
-            dockerfile: 'environments/testing/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile'
-    meal_plan_task_creator:
-        logging:
-            driver: none
-        container_name: meal_plan_task_creator
-        environment:
-            TARGET_ADDRESS: 'http://api_server:8000'
-            CONFIGURATION_FILEPATH: '/etc/config'
-        volumes:
-            - source: '../../../'
-              target: '/go/src/github.com/dinnerdonebetter/backend'
-              type: 'bind'
-            - source: '../../../environments/local/config_files/meal-plan-task-creator-config.json'
-              target: '/etc/config'
-              type: 'bind'
-        build:
-            context: '../../../'
-            dockerfile: 'environments/testing/dockerfiles/meal_plan_task_creator.Dockerfile'
     api_server:
-        # logging:
-        #     driver: none
         hostname: api_server
         container_name: integration_tests_server
         depends_on:
             - postgres
             - redis
-            - queue_loader
-            - meal_plan_finalizer
-            - meal_plan_task_creator
         links:
             - postgres
             - redis
@@ -122,9 +49,6 @@ services:
         depends_on:
             - postgres
             - redis
-            - queue_loader
-            - meal_plan_finalizer
-            - meal_plan_task_creator
         links:
             - postgres
             - api_server

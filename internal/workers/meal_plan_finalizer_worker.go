@@ -46,10 +46,11 @@ func (w *MealPlanFinalizationWorker) finalizeExpiredMealPlans(ctx context.Contex
 	defer span.End()
 
 	logger := w.logger.Clone()
+	logger.Info("beginning finalization of expired meal plans")
 
-	mealPlans, fetchMealPlansErr := w.dataManager.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
-	if fetchMealPlansErr != nil {
-		return -1, observability.PrepareAndLogError(fetchMealPlansErr, logger, span, "fetching unfinalized and expired meal plan")
+	mealPlans, err := w.dataManager.GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx)
+	if err != nil {
+		return -1, observability.PrepareAndLogError(err, logger, span, "fetching unfinalized and expired meal plan")
 	}
 
 	if len(mealPlans) > 0 {
@@ -58,7 +59,8 @@ func (w *MealPlanFinalizationWorker) finalizeExpiredMealPlans(ctx context.Contex
 
 	var changedCount int
 	for _, mealPlan := range mealPlans {
-		changed, err := w.dataManager.AttemptToFinalizeMealPlan(ctx, mealPlan.ID, mealPlan.BelongsToHousehold)
+		var changed bool
+		changed, err = w.dataManager.AttemptToFinalizeMealPlan(ctx, mealPlan.ID, mealPlan.BelongsToHousehold)
 		if err != nil {
 			return -1, observability.PrepareError(err, span, "finalizing meal plan")
 		}
@@ -67,6 +69,8 @@ func (w *MealPlanFinalizationWorker) finalizeExpiredMealPlans(ctx context.Contex
 			changedCount++
 		}
 	}
+
+	logger.WithValue("changed_count", changedCount).Info("finalized expired meal plans")
 
 	return changedCount, nil
 }

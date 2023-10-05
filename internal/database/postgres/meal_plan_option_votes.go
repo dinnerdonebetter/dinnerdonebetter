@@ -236,7 +236,8 @@ func (q *Querier) CreateMealPlanOptionVote(ctx context.Context, input *types.Mea
 		return nil, ErrNilInputProvided
 	}
 
-	logger := q.logger.WithValue("vote_count", len(input.Votes)).WithValue(keys.UserIDKey, input.ByUser)
+	logger := q.logger.WithValue("vote_count", len(input.Votes)).
+		WithValue(keys.UserIDKey, input.ByUser)
 
 	// begin transaction
 	tx, err := q.db.BeginTx(ctx, nil)
@@ -246,6 +247,9 @@ func (q *Querier) CreateMealPlanOptionVote(ctx context.Context, input *types.Mea
 
 	votes := []*types.MealPlanOptionVote{}
 	for _, vote := range input.Votes {
+		l := logger.WithValue(keys.MealPlanOptionIDKey, vote.BelongsToMealPlanOption).
+			WithValue(keys.MealPlanOptionVoteIDKey, vote.ID)
+
 		// create the meal plan option vote.
 		if err = q.generatedQuerier.CreateMealPlanOptionVote(ctx, tx, &generated.CreateMealPlanOptionVoteParams{
 			ID:                      vote.ID,
@@ -256,7 +260,7 @@ func (q *Querier) CreateMealPlanOptionVote(ctx context.Context, input *types.Mea
 			Abstain:                 vote.Abstain,
 		}); err != nil {
 			q.rollbackTransaction(ctx, tx)
-			return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan option vote")
+			return nil, observability.PrepareAndLogError(err, l, span, "creating meal plan option vote")
 		}
 
 		x := &types.MealPlanOptionVote{
@@ -270,7 +274,7 @@ func (q *Querier) CreateMealPlanOptionVote(ctx context.Context, input *types.Mea
 		}
 
 		tracing.AttachToSpan(span, keys.MealPlanOptionVoteIDKey, x.ID)
-		logger.Info("meal plan option vote created")
+		l.Info("meal plan option vote created")
 
 		votes = append(votes, x)
 	}
