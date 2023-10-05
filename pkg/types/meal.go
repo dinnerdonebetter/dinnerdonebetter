@@ -47,7 +47,7 @@ func init() {
 type (
 	// Meal represents a meal.
 	Meal struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt                time.Time        `json:"createdAt"`
 		ArchivedAt               *time.Time       `json:"archivedAt"`
@@ -64,7 +64,7 @@ type (
 
 	// MealComponent is a recipe with some extra data attached to it.
 	MealComponent struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ComponentType string  `json:"componentType"`
 		Recipe        Recipe  `json:"recipe"`
@@ -73,7 +73,7 @@ type (
 
 	// MealCreationRequestInput represents what a user could set as input for creating meals.
 	MealCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		MaximumEstimatedPortions *float32                             `json:"maximumEstimatedPortions"`
 		Name                     string                               `json:"name"`
@@ -85,7 +85,7 @@ type (
 
 	// MealComponentCreationRequestInput represents what a user could set as input for creating meal recipes.
 	MealComponentCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		RecipeID      string  `json:"recipeID"`
 		ComponentType string  `json:"componentType"`
@@ -94,7 +94,7 @@ type (
 
 	// MealDatabaseCreationInput represents what a user could set as input for creating meals.
 	MealDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		MaximumEstimatedPortions *float32
 		ID                       string
@@ -108,7 +108,7 @@ type (
 
 	// MealComponentDatabaseCreationInput represents what a user could set as input for creating meal recipes.
 	MealComponentDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		RecipeID      string
 		ComponentType string
@@ -117,7 +117,8 @@ type (
 
 	// MealUpdateRequestInput represents what a user could set as input for updating meals.
 	MealUpdateRequestInput struct {
-		_                        struct{}
+		_ struct{} `json:"-"`
+
 		Name                     *string                            `json:"name,omitempty"`
 		Description              *string                            `json:"description,omitempty"`
 		CreatedByUser            *string                            `json:"-"`
@@ -129,7 +130,7 @@ type (
 
 	// MealComponentUpdateRequestInput represents what a user could set as input for creating meal recipes.
 	MealComponentUpdateRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		RecipeID      *string  `json:"recipeID"`
 		ComponentType *string  `json:"componentType"`
@@ -138,7 +139,7 @@ type (
 
 	// MealSearchSubset represents the subset of values suitable to index for search.
 	MealSearchSubset struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ID          string    `json:"id,omitempty"`
 		Name        string    `json:"name,omitempty"`

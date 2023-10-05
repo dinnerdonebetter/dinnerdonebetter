@@ -17,7 +17,7 @@ func init() {
 type (
 	// PasswordResetToken represents a password reset token.
 	PasswordResetToken struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt     time.Time  `json:"createdAt"`
 		ExpiresAt     time.Time  `json:"expiresAt"`
@@ -30,21 +30,21 @@ type (
 
 	// UsernameReminderRequestInput represents what a user could set as input for creating password reset tokens.
 	UsernameReminderRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		EmailAddress string `json:"emailAddress"`
 	}
 
 	// PasswordResetTokenCreationRequestInput represents what a user could set as input for creating password reset tokens.
 	PasswordResetTokenCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		EmailAddress string `json:"emailAddress"`
 	}
 
 	// PasswordResetTokenDatabaseCreationInput represents what a user could set as input for creating password reset tokens.
 	PasswordResetTokenDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ExpiresAt     time.Time
 		ID            string
@@ -54,7 +54,7 @@ type (
 
 	// PasswordResetTokenRedemptionRequestInput represents what a user could set as input for creating password reset tokens.
 	PasswordResetTokenRedemptionRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Token       string `json:"token"`
 		NewPassword string `json:"newPassword"`

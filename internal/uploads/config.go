@@ -10,7 +10,7 @@ import (
 
 // Config contains settings regarding search indices.
 type Config struct {
-	_ struct{}
+	_ struct{} `json:"-"`
 
 	Storage objectstorage.Config `json:"storageConfig" toml:"storage_config,omitempty"`
 	Debug   bool                 `json:"debug"         toml:"debug,omitempty"`

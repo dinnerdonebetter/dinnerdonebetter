@@ -27,7 +27,7 @@ func init() {
 type (
 	// ValidVessel represents a valid vessel.
 	ValidVessel struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt                      time.Time             `json:"createdAt"`
 		ArchivedAt                     *time.Time            `json:"archivedAt"`
@@ -51,7 +51,7 @@ type (
 
 	// NullableValidVessel represents a fully nullable valid vessel.
 	NullableValidVessel struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ID                             *string                       `json:"id"`
 		Name                           *string                       `json:"name"`
@@ -75,7 +75,7 @@ type (
 
 	// ValidVesselCreationRequestInput represents what a user could set as input for creating valid vessels.
 	ValidVesselCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CapacityUnitID                 *string `json:"capacityUnitID"`
 		Shape                          string  `json:"shape"`
@@ -95,7 +95,7 @@ type (
 
 	// ValidVesselDatabaseCreationInput represents what a user could set as input for creating valid vessels.
 	ValidVesselDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CapacityUnitID                 *string
 		ID                             string
@@ -116,7 +116,7 @@ type (
 
 	// ValidVesselUpdateRequestInput represents what a user could set as input for updating valid vessels.
 	ValidVesselUpdateRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Name                           *string  `json:"name"`
 		PluralName                     *string  `json:"pluralName"`
@@ -136,7 +136,7 @@ type (
 
 	// ValidVesselSearchSubset represents the subset of values suitable to index for search.
 	ValidVesselSearchSubset struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ID               string  `json:"id,omitempty"`
 		Name             string  `json:"name,omitempty"`

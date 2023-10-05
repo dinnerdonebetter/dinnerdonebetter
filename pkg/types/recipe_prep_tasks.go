@@ -37,7 +37,7 @@ func init() {
 type (
 	// RecipePrepTask represents a recipe prep task.
 	RecipePrepTask struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt                              time.Time             `json:"createdAt"`
 		MaximumStorageTemperatureInCelsius     *float32              `json:"maximumStorageTemperatureInCelsius"`
@@ -59,7 +59,7 @@ type (
 
 	// RecipePrepTaskCreationRequestInput represents what a user could set as input for creating recipes.
 	RecipePrepTaskCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		MaximumTimeBufferBeforeRecipeInSeconds *uint32                                   `json:"maximumTimeBufferBeforeRecipeInSeconds"`
 		MinimumStorageTemperatureInCelsius     *float32                                  `json:"minimumStorageTemperatureInCelsius"`
@@ -77,7 +77,7 @@ type (
 
 	// RecipePrepTaskWithinRecipeCreationRequestInput represents what a user could set as input for creating recipes.
 	RecipePrepTaskWithinRecipeCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		MaximumTimeBufferBeforeRecipeInSeconds *uint32                                               `json:"maximumTimeBufferBeforeRecipeInSeconds"`
 		MinimumStorageTemperatureInCelsius     *float32                                              `json:"minimumStorageTemperatureInCelsius"`
@@ -95,7 +95,7 @@ type (
 
 	// RecipePrepTaskDatabaseCreationInput represents what a user could set as input for creating recipes.
 	RecipePrepTaskDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		MaximumTimeBufferBeforeRecipeInSeconds *uint32
 		MinimumStorageTemperatureInCelsius     *float32
@@ -114,7 +114,7 @@ type (
 
 	// RecipePrepTaskUpdateRequestInput represents what a user could set as input for updating recipes.
 	RecipePrepTaskUpdateRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Notes                                  *string                                 `json:"notes,omitempty"`
 		ExplicitStorageInstructions            *string                                 `json:"explicitStorageInstructions,omitempty"`

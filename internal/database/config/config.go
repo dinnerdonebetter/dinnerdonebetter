@@ -15,7 +15,7 @@ import (
 type (
 	// Config represents our database configuration.
 	Config struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		OAuth2TokenEncryptionKey string        `json:"oauth2TokenEncryptionKey" toml:"oauth2_token_encryption_key,omitempty"`
 		ConnectionDetails        string        `json:"connectionDetails"        toml:"connection_details,omitempty"`

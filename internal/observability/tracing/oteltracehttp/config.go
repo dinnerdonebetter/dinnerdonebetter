@@ -9,7 +9,7 @@ import (
 type (
 	// Config contains settings related to tracing.
 	Config struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CollectorEndpoint         string  `json:"collector_endpoint,omitempty"        toml:"collector_endpoint,omitempty"`
 		ServiceName               string  `json:"service_name,omitempty"              toml:"service_name,omitempty"`

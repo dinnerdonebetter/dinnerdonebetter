@@ -22,7 +22,7 @@ const (
 
 // Config contains settings regarding search indices.
 type Config struct {
-	_ struct{}
+	_ struct{} `json:"-"`
 
 	Algolia       *algolia.Config       `json:"algolia"       toml:"algolia,omitempty"`
 	Elasticsearch *elasticsearch.Config `json:"elasticsearch" toml:"elasticsearch,omitempty"`

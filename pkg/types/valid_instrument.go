@@ -27,7 +27,7 @@ func init() {
 type (
 	// ValidInstrument represents a valid instrument.
 	ValidInstrument struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt                      time.Time  `json:"createdAt"`
 		LastUpdatedAt                  *time.Time `json:"lastUpdatedAt"`
@@ -45,7 +45,7 @@ type (
 
 	// NullableValidInstrument represents a fully nullable valid instrument.
 	NullableValidInstrument struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		LastUpdatedAt                  *time.Time
 		ArchivedAt                     *time.Time
@@ -63,7 +63,7 @@ type (
 
 	// ValidInstrumentCreationRequestInput represents what a user could set as input for creating valid instruments.
 	ValidInstrumentCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Name                           string `json:"name"`
 		PluralName                     string `json:"pluralName"`
@@ -77,7 +77,7 @@ type (
 
 	// ValidInstrumentDatabaseCreationInput represents what a user could set as input for creating valid instruments.
 	ValidInstrumentDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ID                             string
 		Name                           string
@@ -92,7 +92,7 @@ type (
 
 	// ValidInstrumentUpdateRequestInput represents what a user could set as input for updating valid instruments.
 	ValidInstrumentUpdateRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Name                           *string `json:"name,omitempty"`
 		PluralName                     *string `json:"pluralName,omitempty"`
@@ -106,7 +106,7 @@ type (
 
 	// ValidInstrumentSearchSubset represents the subset of values suitable to index for search.
 	ValidInstrumentSearchSubset struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ID          string `json:"id,omitempty"`
 		Name        string `json:"name,omitempty"`

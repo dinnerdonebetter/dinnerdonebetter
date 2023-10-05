@@ -28,7 +28,7 @@ func init() {
 type (
 	// ValidIngredientGroup represents a valid ingredient group.
 	ValidIngredientGroup struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt     time.Time                     `json:"createdAt"`
 		LastUpdatedAt *time.Time                    `json:"lastUpdatedAt"`
@@ -42,7 +42,7 @@ type (
 
 	// ValidIngredientGroupMember represents a valid ingredient group member.
 	ValidIngredientGroupMember struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt       time.Time       `json:"createdAt"`
 		ArchivedAt      *time.Time      `json:"archivedAt"`
@@ -53,7 +53,7 @@ type (
 
 	// ValidIngredientGroupCreationRequestInput represents what a user could set as input for creating valid ingredient groups.
 	ValidIngredientGroupCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Name        string                                            `json:"name"`
 		Slug        string                                            `json:"slug"`
@@ -63,14 +63,14 @@ type (
 
 	// ValidIngredientGroupMemberCreationRequestInput represents what a user could set as input for creating valid ingredient group members.
 	ValidIngredientGroupMemberCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ValidIngredientID string `json:"validIngredientID"`
 	}
 
 	// ValidIngredientGroupDatabaseCreationInput represents what a user could set as input for creating valid ingredient groups.
 	ValidIngredientGroupDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ID          string
 		Name        string
@@ -81,7 +81,7 @@ type (
 
 	// ValidIngredientGroupMemberDatabaseCreationInput represents what a user could set as input for creating valid ingredient groups.
 	ValidIngredientGroupMemberDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ID                string
 		ValidIngredientID string
@@ -89,7 +89,7 @@ type (
 
 	// ValidIngredientGroupUpdateRequestInput represents what a user could set as input for updating valid ingredient groups.
 	ValidIngredientGroupUpdateRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Name        *string `json:"name,omitempty"`
 		Slug        *string `json:"slug"`

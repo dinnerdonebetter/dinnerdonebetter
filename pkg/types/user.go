@@ -37,7 +37,7 @@ type (
 
 	// User represents a User.
 	User struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt                  time.Time  `json:"createdAt"`
 		PasswordLastChangedAt      *time.Time `json:"passwordLastChangedAt"`
@@ -64,7 +64,7 @@ type (
 
 	// UserSearchSubset represents the subset of values suitable to index for search.
 	UserSearchSubset struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ID           string `json:"id,omitempty"`
 		Username     string `json:"username,omitempty"`
@@ -75,7 +75,7 @@ type (
 
 	// UserRegistrationInput represents the input required from users to register an account.
 	UserRegistrationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Birthday              *time.Time `json:"birthday,omitempty"`
 		Password              string     `json:"password"`
@@ -92,7 +92,7 @@ type (
 
 	// UserDatabaseCreationInput is used by the User creation route to communicate with the data store.
 	UserDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Birthday               *time.Time
 		ID                     string
@@ -112,7 +112,7 @@ type (
 
 	// UserCreationResponse is a response structure for Users that doesn't contain passwords fields, but does contain the two factor secret.
 	UserCreationResponse struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt       time.Time  `json:"createdAt"`
 		Birthday        *time.Time `json:"birthday"`
@@ -130,7 +130,7 @@ type (
 
 	// UserLoginInput represents the payload used to log in a User.
 	UserLoginInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Username  string `json:"username"`
 		Password  string `json:"password"`
@@ -139,7 +139,7 @@ type (
 
 	// PasswordUpdateInput represents input a User would provide when updating their passwords.
 	PasswordUpdateInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		NewPassword     string `json:"newPassword"`
 		CurrentPassword string `json:"currentPassword"`
@@ -148,7 +148,7 @@ type (
 
 	// UsernameUpdateInput represents input a User would provide when updating their username.
 	UsernameUpdateInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		NewUsername     string `json:"newUsername"`
 		CurrentPassword string `json:"currentPassword"`
@@ -157,7 +157,7 @@ type (
 
 	// UserEmailAddressUpdateInput represents input a User would provide when updating their email address.
 	UserEmailAddressUpdateInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		NewEmailAddress string `json:"newEmailAddress"`
 		CurrentPassword string `json:"currentPassword"`
@@ -166,7 +166,7 @@ type (
 
 	// UserDetailsUpdateRequestInput represents input a User would provide when updating their information.
 	UserDetailsUpdateRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		FirstName       string    `json:"firstName"`
 		LastName        string    `json:"lastName"`
@@ -177,7 +177,8 @@ type (
 
 	// UserDetailsDatabaseUpdateInput represents input a User would provide when updating their information.
 	UserDetailsDatabaseUpdateInput struct {
-		_         struct{}
+		_ struct{} `json:"-"`
+
 		Birthday  time.Time `json:"-"`
 		FirstName string    `json:"-"`
 		LastName  string    `json:"-"`
@@ -185,14 +186,14 @@ type (
 
 	// AvatarUpdateInput represents input a User would provide when updating their passwords.
 	AvatarUpdateInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Base64EncodedData string `json:"base64EncodedData"`
 	}
 
 	// TOTPSecretRefreshInput represents input a User would provide when updating their 2FA secret.
 	TOTPSecretRefreshInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CurrentPassword string `json:"currentPassword"`
 		TOTPToken       string `json:"totpToken"`
@@ -200,7 +201,7 @@ type (
 
 	// TOTPSecretVerificationInput represents input a User would provide when validating their 2FA secret.
 	TOTPSecretVerificationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		TOTPToken string `json:"totpToken"`
 		UserID    string `json:"userID"`
@@ -208,7 +209,7 @@ type (
 
 	// TOTPSecretRefreshResponse represents the response we provide to a User when updating their 2FA secret.
 	TOTPSecretRefreshResponse struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		TwoFactorQRCode string `json:"qrCode"`
 		TwoFactorSecret string `json:"twoFactorSecret"`
@@ -216,7 +217,7 @@ type (
 
 	// EmailAddressVerificationRequestInput represents the request a User provides when verifying their email address.
 	EmailAddressVerificationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Token string `json:"emailVerificationToken"`
 	}

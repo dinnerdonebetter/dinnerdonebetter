@@ -22,7 +22,7 @@ const (
 type (
 	// Config contains settings related to tracing.
 	Config struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CloudTrace *cloudtrace.Config    `json:"cloudTrace,omitempty" toml:"cloud_trace,omitempty"`
 		Otel       *oteltracehttp.Config `json:"otel,omitempty"       toml:"otel,omitempty"`

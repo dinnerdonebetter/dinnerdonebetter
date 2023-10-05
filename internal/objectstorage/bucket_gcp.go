@@ -14,7 +14,7 @@ const (
 type (
 	// GCPConfig configures an GCP-based objectstorage provider.
 	GCPConfig struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		BucketName string `json:"bucketName" toml:"bucket_name,omitempty"`
 	}

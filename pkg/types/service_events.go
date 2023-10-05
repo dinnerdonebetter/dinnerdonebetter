@@ -13,7 +13,8 @@ type (
 
 	// DataChangeMessage represents an event that asks a worker to write data to the datastore.
 	DataChangeMessage struct {
-		_                                struct{}
+		_ struct{} `json:"-"`
+
 		HouseholdInvitation              *HouseholdInvitation            `json:"householdInvitation,omitempty"`
 		ValidMeasurementUnitConversion   *ValidMeasurementUnitConversion `json:"validMeasurementUnitConversion,omitempty"`
 		ValidInstrument                  *ValidInstrument                `json:"validInstrument,omitempty"`
@@ -86,7 +87,7 @@ type (
 
 	// ChoreMessage represents an event that asks a worker to perform a chore.
 	ChoreMessage struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ChoreType string `json:"choreType"`
 	}

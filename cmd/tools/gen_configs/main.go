@@ -179,15 +179,10 @@ func saveConfig(ctx context.Context, outputPath string, cfg *config.InstanceConf
 type configFunc func(ctx context.Context, filePath string) error
 
 var files = map[string]configFunc{
-	"environments/local/config_files/service-config.json":                            buildLocalDevelopmentServiceConfig(false),
-	"environments/local/config_files/service-config-local.json":                      buildLocalDevelopmentServiceConfig(true),
-	"environments/local/config_files/queue-loader-config.json":                       localDevelopmentWorkerConfig,
-	"environments/local/config_files/meal-plan-finalizer-config.json":                localDevelopmentWorkerConfig,
-	"environments/local/config_files/meal-plan-task-creator-config.json":             localDevelopmentWorkerConfig,
-	"environments/local/config_files/meal-plan-grocery-list-initializer-config.json": localDevelopmentWorkerConfig,
-	"environments/local/config_files/search-indexer-config.json":                     localDevelopmentWorkerConfig,
-	"environments/testing/config_files/integration-tests-config.json":                integrationTestConfig,
-	"environments/dev/config_files/service-config.json":                              devEnvironmentServerConfig,
+	"environments/local/config_files/service-config.json":             buildLocalDevelopmentServiceConfig(false),
+	"environments/local/config_files/service-config-local.json":       buildLocalDevelopmentServiceConfig(true),
+	"environments/testing/config_files/integration-tests-config.json": integrationTestConfig,
+	"environments/dev/config_files/service-config.json":               devEnvironmentServerConfig,
 }
 
 func buildDevEnvironmentServerConfig() *config.InstanceConfig {
@@ -588,15 +583,6 @@ func buildLocalDevelopmentServiceConfig(local bool) func(context.Context, string
 
 		return saveConfig(ctx, filePath, cfg, true, true)
 	}
-}
-
-func localDevelopmentWorkerConfig(ctx context.Context, filePath string) error {
-	cfg := buildDevConfig()
-
-	cfg.Database.LogQueries = false
-	cfg.Database.RunMigrations = false
-
-	return saveConfig(ctx, filePath, cfg, true, true)
 }
 
 func buildIntegrationTestsConfig() *config.InstanceConfig {

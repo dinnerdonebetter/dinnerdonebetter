@@ -10,7 +10,7 @@ import (
 type (
 	// HouseholdUserMembership defines a relationship between a user and a household.
 	HouseholdUserMembership struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt          time.Time  `json:"createdAt"`
 		LastUpdatedAt      *time.Time `json:"lastUpdatedAt"`
@@ -24,7 +24,7 @@ type (
 
 	// HouseholdUserMembershipWithUser defines a relationship between a user and a household.
 	HouseholdUserMembershipWithUser struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt          time.Time  `json:"createdAt"`
 		LastUpdatedAt      *time.Time `json:"lastUpdatedAt"`
@@ -38,7 +38,7 @@ type (
 
 	// HouseholdUserMembershipCreationRequestInput represents what a User could set as input for updating household user memberships.
 	HouseholdUserMembershipCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Reason string `json:"reason"`
 		UserID string `json:"userID"`
@@ -46,7 +46,7 @@ type (
 
 	// HouseholdUserMembershipDatabaseCreationInput represents what a User could set as input for updating household user memberships.
 	HouseholdUserMembershipDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ID            string
 		Reason        string
@@ -57,7 +57,7 @@ type (
 
 	// HouseholdOwnershipTransferInput represents what a User could set as input for updating household user memberships.
 	HouseholdOwnershipTransferInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Reason       string `json:"reason"`
 		CurrentOwner string `json:"currentOwner"`
@@ -66,7 +66,7 @@ type (
 
 	// ModifyUserPermissionsInput  represents what a User could set as input for updating household user memberships.
 	ModifyUserPermissionsInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Reason  string `json:"reason"`
 		NewRole string `json:"newRoles"`

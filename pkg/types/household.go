@@ -30,7 +30,8 @@ const (
 type (
 	// Household represents a household.
 	Household struct {
-		_                          struct{}
+		_ struct{} `json:"-"`
+
 		CreatedAt                  time.Time                          `json:"createdAt"`
 		SubscriptionPlanID         *string                            `json:"subscriptionPlanID"`
 		LastUpdatedAt              *time.Time                         `json:"lastUpdatedAt"`
@@ -55,7 +56,7 @@ type (
 
 	// HouseholdCreationRequestInput represents what a User could set as input for creating households.
 	HouseholdCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Latitude     *float64 `json:"latitude"`
 		Longitude    *float64 `json:"longitude"`
@@ -71,7 +72,7 @@ type (
 
 	// HouseholdDatabaseCreationInput represents what a User could set as input for creating households.
 	HouseholdDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ID                   string
 		Name                 string
@@ -90,7 +91,7 @@ type (
 
 	// HouseholdUpdateRequestInput represents what a User could set as input for updating households.
 	HouseholdUpdateRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Name          *string  `json:"name,omitempty"`
 		ContactPhone  *string  `json:"contactPhone,omitempty"`

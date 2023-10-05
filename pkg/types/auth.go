@@ -64,7 +64,7 @@ func init() {
 type (
 	// UserHouseholdMembershipInfo represents key information about a household membership.
 	UserHouseholdMembershipInfo struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		HouseholdName string
 		HouseholdID   string
@@ -73,7 +73,7 @@ type (
 
 	// SessionContextData represents what we encode in our passwords cookies.
 	SessionContextData struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		HouseholdPermissions map[string]authorization.HouseholdRolePermissionsChecker `json:"-"`
 		Requester            RequesterInfo                                            `json:"-"`
@@ -82,7 +82,7 @@ type (
 
 	// RequesterInfo contains data relevant to the user making a request.
 	RequesterInfo struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ServicePermissions       authorization.ServiceRolePermissionChecker `json:"-"`
 		AccountStatus            string                                     `json:"-"`
@@ -94,7 +94,7 @@ type (
 
 	// UserStatusResponse is what we encode when the frontend wants to check auth status.
 	UserStatusResponse struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		UserID                   string `json:"userID"`
 		AccountStatus            string `json:"accountStatus,omitempty"`
@@ -105,21 +105,21 @@ type (
 
 	// UserPermissionsRequestInput is what we decode when the frontend wants to check permission status.
 	UserPermissionsRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Permissions []string `json:"permissions"`
 	}
 
 	// UserPermissionsResponse is what we encode when the frontend wants to check permission status.
 	UserPermissionsResponse struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Permissions map[string]bool `json:"permissions"`
 	}
 
 	// ChangeActiveHouseholdInput represents what a User could set as input for switching households.
 	ChangeActiveHouseholdInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		HouseholdID string `json:"householdID"`
 	}

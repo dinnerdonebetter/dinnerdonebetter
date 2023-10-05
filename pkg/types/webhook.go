@@ -19,7 +19,7 @@ const (
 type (
 	// Webhook represents a webhook listener, an endpoint to send an HTTP request to upon an event.
 	Webhook struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt          time.Time              `json:"createdAt"`
 		ArchivedAt         *time.Time             `json:"archivedAt"`
@@ -35,7 +35,7 @@ type (
 
 	// WebhookTriggerEvent represents a webhook trigger event.
 	WebhookTriggerEvent struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt        time.Time  `json:"createdAt"`
 		ArchivedAt       *time.Time `json:"archivedAt"`
@@ -46,7 +46,7 @@ type (
 
 	// WebhookCreationRequestInput represents what a User could set as input for creating a webhook.
 	WebhookCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Name        string   `json:"name"`
 		ContentType string   `json:"contentType"`
@@ -57,7 +57,7 @@ type (
 
 	// WebhookDatabaseCreationInput is used for creating a webhook.
 	WebhookDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ID                 string
 		Name               string
@@ -70,7 +70,7 @@ type (
 
 	// WebhookTriggerEventDatabaseCreationInput is used for creating a webhook trigger event.
 	WebhookTriggerEventDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ID               string
 		BelongsToWebhook string
@@ -79,7 +79,8 @@ type (
 
 	// WebhookExecutionRequest represents a webhook listener, an endpoint to send an HTTP request to upon an event.
 	WebhookExecutionRequest struct {
-		_            struct{}
+		_ struct{} `json:"-"`
+
 		Payload      any    `json:"payload"`
 		WebhookID    string `json:"webhookID"`
 		HouseholdID  string `json:"householdID"`

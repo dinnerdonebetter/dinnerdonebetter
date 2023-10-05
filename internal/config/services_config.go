@@ -52,7 +52,8 @@ import (
 type (
 	// ServicesConfig collects the various service configurations.
 	ServicesConfig struct {
-		_                               struct{}
+		_ struct{} `json:"-"`
+
 		MealPlanOptions                 mealplanoptionsservice.Config                 `json:"mealPlanOptions"                 toml:"meal_plan_options,omitempty"`
 		ServiceSettings                 servicesettingsservice.Config                 `json:"serviceSettings"                 toml:"service_settings,omitempty"`
 		RecipeStepCompletionConditions  recipestepcompletionconditionsservice.Config  `json:"recipeStepCompletionConditions"  toml:"recipe_step_completion_conditions,omitempty"`

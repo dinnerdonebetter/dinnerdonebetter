@@ -42,7 +42,7 @@ type (
 
 	// Config configures our UploadManager.
 	Config struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		FilesystemConfig  *FilesystemConfig `json:"filesystem,omitempty"        toml:"filesystem,omitempty"`
 		S3Config          *S3Config         `json:"s3,omitempty"                toml:"s3,omitempty"`

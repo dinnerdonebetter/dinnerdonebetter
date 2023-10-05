@@ -10,7 +10,7 @@ import (
 type (
 	// Config describes the settings pertinent to the HTTP serving portion of the service.
 	Config struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		HTTPSCertificateFile    string        `json:"httpsCertificate,omitempty"    toml:"https_certificate,omitempty"`
 		HTTPSCertificateKeyFile string        `json:"httpsCertificateKey,omitempty" toml:"https_certificate_key,omitempty"`

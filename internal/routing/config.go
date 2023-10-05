@@ -13,7 +13,7 @@ const (
 
 // Config configures our router.
 type Config struct {
-	_ struct{}
+	_ struct{} `json:"-"`
 
 	Provider               string `json:"provider,omitempty"            toml:"provider,omitempty"`
 	EnableCORSForLocalhost bool   `json:"enableCORSForLocalhost"        toml:"enable_cors_for_localhost"`

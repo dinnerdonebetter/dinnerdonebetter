@@ -10,7 +10,7 @@ import (
 
 // Config configures the service.
 type Config struct {
-	_ struct{}
+	_ struct{} `json:"-"`
 
 	PublicMediaURLPrefix string         `json:"mediaUploadPrefix"              toml:"media_upload_prefix"`
 	DataChangesTopicName string         `json:"dataChangesTopicName,omitempty" toml:"data_changes_topic_name,omitempty"`

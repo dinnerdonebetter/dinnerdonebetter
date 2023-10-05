@@ -27,7 +27,7 @@ func init() {
 type (
 	// ValidIngredientStateIngredient represents a valid ingredient state ingredient.
 	ValidIngredientStateIngredient struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt       time.Time            `json:"createdAt"`
 		LastUpdatedAt   *time.Time           `json:"lastUpdatedAt"`
@@ -40,7 +40,7 @@ type (
 
 	// ValidIngredientStateIngredientCreationRequestInput represents what a user could set as input for creating valid ingredient state ingredients.
 	ValidIngredientStateIngredientCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Notes                  string `json:"notes"`
 		ValidIngredientStateID string `json:"validIngredientStateID"`
@@ -49,7 +49,7 @@ type (
 
 	// ValidIngredientStateIngredientDatabaseCreationInput represents what a user could set as input for creating valid ingredient state ingredients.
 	ValidIngredientStateIngredientDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ID                     string
 		Notes                  string
@@ -59,7 +59,7 @@ type (
 
 	// ValidIngredientStateIngredientUpdateRequestInput represents what a user could set as input for updating valid ingredient state ingredients.
 	ValidIngredientStateIngredientUpdateRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Notes                  *string `json:"notes,omitempty"`
 		ValidIngredientStateID *string `json:"validIngredientStateID,omitempty"`

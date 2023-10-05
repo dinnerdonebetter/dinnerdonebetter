@@ -18,7 +18,7 @@ const (
 type (
 	// OAuth2Client represents a user-authorized OAuth2 client.
 	OAuth2Client struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt    time.Time  `json:"createdAt"`
 		ArchivedAt   *time.Time `json:"archivedAt"`
@@ -31,7 +31,7 @@ type (
 
 	// OAuth2ClientCreationRequestInput is a struct for use when creating OAuth2 clients.
 	OAuth2ClientCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Name        string `json:"name"`
 		Description string `json:"description"`
@@ -39,7 +39,7 @@ type (
 
 	// OAuth2ClientDatabaseCreationInput is a struct for use when creating OAuth2 clients.
 	OAuth2ClientDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ID           string
 		Name         string
@@ -50,7 +50,7 @@ type (
 
 	// OAuth2ClientCreationResponse is a struct for informing users of what their OAuth2 client's secret key is.
 	OAuth2ClientCreationResponse struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ClientID     string `json:"clientID"`
 		ClientSecret string `json:"clientSecret"`

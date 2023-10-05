@@ -3,43 +3,20 @@ package stripe
 import (
 	"bytes"
 	"context"
-	"crypto/hmac"
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
-	"errors"
-	"fmt"
 	"net/http"
-	"net/http/httptest"
 	"testing"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
-	testutils "github.com/dinnerdonebetter/backend/tests/utils"
+	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"github.com/stripe/stripe-go/v72"
-	"github.com/stripe/stripe-go/v72/client"
-	"github.com/stripe/stripe-go/v72/webhook"
+	"github.com/stripe/stripe-go/v75"
+	"github.com/stripe/stripe-go/v75/webhook"
 )
-
-const (
-	fakeAPIKey = "fake_api_key"
-)
-
-func buildTestPaymentManager(t *testing.T) *stripePaymentManager {
-	t.Helper()
-
-	logger := logging.NewNoopLogger()
-
-	pm := ProvideStripePaymentManager(logger, tracing.NewNoopTracerProvider(), &Config{})
-
-	return pm.(*stripePaymentManager)
-}
 
 func TestNewStripePaymentManager(T *testing.T) {
 	T.Parallel()
@@ -54,642 +31,74 @@ func TestNewStripePaymentManager(T *testing.T) {
 	})
 }
 
-func Test_stripePaymentManager_CreateCheckoutSession(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleAPIKey := fakeAPIKey
-		pm := buildTestPaymentManager(t)
-
-		exampleSubscriptionPlanID := "example_subscription_plan_id"
-		expected := "example_session_id"
-
-		mockAPIBackend := &mockBackend{}
-		mockConnectBackend := &mockBackend{}
-		mockUploadsBackend := &mockBackend{}
-
-		mockAPIBackend.AnticipateCall(t, &stripe.CheckoutSession{ID: expected})
-		mockAPIBackend.On(
-			"Call",
-			http.MethodPost,
-			"/v1/checkout/sessions",
-			exampleAPIKey,
-			pm.buildCheckoutSessionParams(exampleSubscriptionPlanID),
-			mock.IsType(&stripe.CheckoutSession{}),
-		).Return(nil)
-
-		mockedBackends := &stripe.Backends{
-			API:     mockAPIBackend,
-			Connect: mockConnectBackend,
-			Uploads: mockUploadsBackend,
-		}
-		pm.client = client.New(exampleAPIKey, mockedBackends)
-
-		actual, err := pm.CreateCheckoutSession(ctx, exampleSubscriptionPlanID)
-		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
-	})
-
-	T.Run("with error executing request", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleAPIKey := fakeAPIKey
-		pm := buildTestPaymentManager(t)
-
-		exampleSubscriptionPlanID := "example_subscription_plan_id"
-		expected := "example_session_id"
-
-		mockAPIBackend := &mockBackend{}
-		mockConnectBackend := &mockBackend{}
-		mockUploadsBackend := &mockBackend{}
-
-		mockAPIBackend.AnticipateCall(t, &stripe.CheckoutSession{ID: expected})
-		mockAPIBackend.On(
-			"Call",
-			http.MethodPost,
-			"/v1/checkout/sessions",
-			exampleAPIKey,
-			pm.buildCheckoutSessionParams(exampleSubscriptionPlanID),
-			mock.IsType(&stripe.CheckoutSession{}),
-		).Return(errors.New("blah"))
-
-		mockedBackends := &stripe.Backends{
-			API:     mockAPIBackend,
-			Connect: mockConnectBackend,
-			Uploads: mockUploadsBackend,
-		}
-		pm.client = client.New(exampleAPIKey, mockedBackends)
-
-		actual, err := pm.CreateCheckoutSession(ctx, exampleSubscriptionPlanID)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-	})
-}
-
 func Test_stripePaymentManager_HandleSubscriptionEventWebhook(T *testing.T) {
 	T.Parallel()
 
-	T.Run("standard with webhookEventTypeCheckoutCompleted", func(t *testing.T) {
+	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		pm := buildTestPaymentManager(t)
+		ctx := context.Background()
+		pm := ProvideStripePaymentManager(nil, nil, &Config{}).(*stripePaymentManager)
 		pm.webhookSecret = "example_webhook_secret"
 
-		testEventTypes := []string{
-			webhookEventTypeCheckoutCompleted,
-			webhookEventTypeInvoicePaid,
-			webhookEventTypeInvoicePaymentFailed,
-			t.Name(),
+		paymentIntent := &stripe.PaymentIntent{
+			APIResource:      stripe.APIResource{},
+			Amount:           0,
+			AmountCapturable: 0,
+			AmountDetails:    nil,
+			AmountReceived:   0,
+			Customer:         nil,
+			ID:               "",
+			Invoice:          nil,
+			Metadata:         nil,
+			PaymentMethod:    nil,
+			ReceiptEmail:     "",
+			Status:           "",
 		}
 
-		for _, et := range testEventTypes {
-			exampleEvent := &stripe.Event{
-				Account: "whatever",
-				Created: time.Now().Unix(),
-				Data: &stripe.EventData{
-					Object: map[string]any{
-						"things": "stuff",
-					},
-					PreviousAttributes: map[string]any{
-						"things": "stuff",
-					},
-				},
-				ID:   "example",
-				Type: et,
-			}
-
-			var b bytes.Buffer
-			require.NoError(t, json.NewEncoder(&b).Encode(exampleEvent))
-
-			mac := hmac.New(sha256.New, []byte(pm.webhookSecret))
-			_, err := mac.Write(b.Bytes())
-			require.NoError(t, err)
-
-			now := time.Now()
-			exampleSig := webhook.ComputeSignature(now, b.Bytes(), pm.webhookSecret)
-			exampleSignature := fmt.Sprintf("t=%d,v1=%s", now.Unix(), hex.EncodeToString(exampleSig))
-
-			req := httptest.NewRequest(http.MethodPost, "/webhook_update", bytes.NewReader(b.Bytes()))
-			req.Header.Set(webhookHeaderName, exampleSignature)
-
-			err = pm.HandleSubscriptionEventWebhook(req)
-			assert.NoError(t, err)
-		}
-	})
-
-	T.Run("with invalid body", func(t *testing.T) {
-		t.Parallel()
-
-		pm := buildTestPaymentManager(t)
-		pm.webhookSecret = "example_webhook_secret"
-
-		exampleEvent := &stripe.Event{
-			Account: "whatever",
-			Created: time.Now().Unix(),
-			Data: &stripe.EventData{
-				Object: map[string]any{
-					"things": "stuff",
-				},
-				PreviousAttributes: map[string]any{
-					"things": "stuff",
-				},
-			},
-			ID:   "example",
-			Type: webhookEventTypeCheckoutCompleted,
-		}
-
-		var b bytes.Buffer
-		require.NoError(t, json.NewEncoder(&b).Encode(exampleEvent))
-
-		mac := hmac.New(sha256.New, []byte(pm.webhookSecret))
-		_, err := mac.Write(b.Bytes())
+		rawMessage, err := json.Marshal(paymentIntent)
 		require.NoError(t, err)
+		require.NotNil(t, rawMessage)
 
-		mrc := &testutils.MockReadCloser{}
-		mrc.On("Read", mock.IsType([]byte(""))).Return(int(0), errors.New("blah"))
-
-		req := httptest.NewRequest(http.MethodPost, "/webhook_update", mrc)
-		req.Header.Set(webhookHeaderName, "bad-sig")
-
-		err = pm.HandleSubscriptionEventWebhook(req)
-		assert.Error(t, err)
-	})
-
-	T.Run("with invalid signature", func(t *testing.T) {
-		t.Parallel()
-
-		pm := buildTestPaymentManager(t)
-
-		req := httptest.NewRequest(http.MethodPost, "/webhook_update", http.NoBody)
-		req.Header.Set(webhookHeaderName, "bad-sig")
-
-		err := pm.HandleSubscriptionEventWebhook(req)
-		assert.Error(t, err)
-	})
-}
-
-func Test_stripePaymentManager_GetCustomerID(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleAPIKey := fakeAPIKey
-		pm := buildTestPaymentManager(t)
-
-		expected := "fake_customer_id"
-
-		mockAPIBackend := &mockBackend{}
-		mockConnectBackend := &mockBackend{}
-		mockUploadsBackend := &mockBackend{}
-
-		mockAPIBackend.AnticipateCall(t, &stripe.Customer{ID: expected})
-		mockAPIBackend.On(
-			"Call",
-			http.MethodPost,
-			"/v1/customers",
-			exampleAPIKey,
-			buildGetCustomerParams(exampleHousehold),
-			mock.IsType(&stripe.Customer{}),
-		).Return(nil)
-
-		mockedBackends := &stripe.Backends{
-			API:     mockAPIBackend,
-			Connect: mockConnectBackend,
-			Uploads: mockUploadsBackend,
+		exampleInput := &stripe.Event{
+			APIResource: stripe.APIResource{},
+			Account:     "",
+			APIVersion:  "2023-08-16",
+			Created:     0,
+			Data: &stripe.EventData{
+				Object:             nil,
+				PreviousAttributes: nil,
+				Raw:                json.RawMessage(rawMessage),
+			},
+			ID:              "",
+			Livemode:        false,
+			Object:          "",
+			PendingWebhooks: 0,
+			Request:         nil,
+			Type:            stripe.EventTypePaymentIntentSucceeded,
 		}
-		pm.client = client.New(exampleAPIKey, mockedBackends)
+		jsonBytes := pm.encoderDecoder.MustEncode(ctx, exampleInput)
 
-		actual, err := pm.CreateCustomerID(ctx, exampleHousehold)
+		secret, err := random.GenerateHexEncodedString(ctx, 32)
+		require.NoError(t, err)
+		require.NotEmpty(t, secret)
+
+		now := time.Now()
+		signedPayload := webhook.GenerateTestSignedPayload(&webhook.UnsignedPayload{
+			Payload:   jsonBytes,
+			Secret:    secret,
+			Timestamp: now,
+		})
+
+		event, err := webhook.ConstructEvent(signedPayload.Payload, signedPayload.Header, signedPayload.Secret)
+		eventPayload := pm.encoderDecoder.MustEncode(ctx, event)
+
+		req, err := http.NewRequestWithContext(ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(eventPayload))
+		require.NoError(t, err)
+		require.NotNil(t, req)
+		req.Header.Set(stripeSignatureHeaderKey, signedPayload.Header)
+
+		err = pm.HandleEventWebhook(req)
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
-
-		mock.AssertExpectationsForObjects(t, mockAPIBackend, mockConnectBackend, mockUploadsBackend)
-	})
-
-	T.Run("with error executing request", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleHousehold := fakes.BuildFakeHousehold()
-		exampleAPIKey := fakeAPIKey
-		pm := buildTestPaymentManager(t)
-
-		expected := "fake_customer_id"
-
-		mockAPIBackend := &mockBackend{}
-		mockConnectBackend := &mockBackend{}
-		mockUploadsBackend := &mockBackend{}
-
-		mockAPIBackend.AnticipateCall(t, &stripe.Customer{ID: expected})
-		mockAPIBackend.On(
-			"Call",
-			http.MethodPost,
-			"/v1/customers",
-			exampleAPIKey,
-			buildGetCustomerParams(exampleHousehold),
-			mock.IsType(&stripe.Customer{}),
-		).Return(errors.New("blah"))
-
-		mockedBackends := &stripe.Backends{
-			API:     mockAPIBackend,
-			Connect: mockConnectBackend,
-			Uploads: mockUploadsBackend,
-		}
-		pm.client = client.New(exampleAPIKey, mockedBackends)
-
-		actual, err := pm.CreateCustomerID(ctx, exampleHousehold)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-
-		mock.AssertExpectationsForObjects(t, mockAPIBackend, mockConnectBackend, mockUploadsBackend)
-	})
-}
-
-func Test_stripePaymentManager_findSubscriptionID(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleAPIKey := fakeAPIKey
-		exampleCustomerID := "fake_customer"
-		examplePlanID := "fake_plan"
-		pm := buildTestPaymentManager(t)
-
-		mockAPIBackend := &mockBackend{}
-		mockConnectBackend := &mockBackend{}
-		mockUploadsBackend := &mockBackend{}
-
-		expected := "fake_subscription_id"
-
-		expectedCustomer := &stripe.Customer{
-			ID: exampleCustomerID,
-			Subscriptions: &stripe.SubscriptionList{
-				Data: []*stripe.Subscription{
-					{
-						ID: expected,
-						Plan: &stripe.Plan{
-							ID: examplePlanID,
-						},
-					},
-				},
-			},
-		}
-
-		mockAPIBackend.AnticipateCall(t, expectedCustomer)
-		mockAPIBackend.On(
-			"Call",
-			http.MethodGet,
-			fmt.Sprintf("/v1/customers/%s", exampleCustomerID),
-			exampleAPIKey,
-			mock.IsType(&stripe.CustomerParams{}),
-			mock.IsType(&stripe.Customer{}),
-		).Return(nil)
-
-		mockedBackends := &stripe.Backends{
-			API:     mockAPIBackend,
-			Connect: mockConnectBackend,
-			Uploads: mockUploadsBackend,
-		}
-		pm.client = client.New(fakeAPIKey, mockedBackends)
-
-		actual, err := pm.findSubscriptionID(ctx, exampleCustomerID, examplePlanID)
-		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
-
-		mock.AssertExpectationsForObjects(t, mockAPIBackend, mockConnectBackend, mockUploadsBackend)
-	})
-}
-
-func Test_stripePaymentManager_SubscribeToPlan(T *testing.T) {
-	T.Parallel()
-
-	T.Run("with pre-existing subscription", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleAPIKey := fakeAPIKey
-		exampleCustomerID := "fake_customer"
-		examplePlanID := "fake_plan"
-		examplePaymentMethodToken := "fake_payment_token"
-		expected := "fake_subscription"
-		pm := buildTestPaymentManager(t)
-
-		expectedCustomer := &stripe.Customer{
-			ID: exampleCustomerID,
-			Subscriptions: &stripe.SubscriptionList{
-				Data: []*stripe.Subscription{
-					{
-						ID: expected,
-						Plan: &stripe.Plan{
-							ID: examplePlanID,
-						},
-					},
-				},
-			},
-		}
-
-		mockAPIBackend := &mockBackend{}
-		mockConnectBackend := &mockBackend{}
-		mockUploadsBackend := &mockBackend{}
-
-		mockAPIBackend.AnticipateCall(t, expectedCustomer)
-		mockAPIBackend.On(
-			"Call",
-			http.MethodGet,
-			fmt.Sprintf("/v1/customers/%s", exampleCustomerID),
-			exampleAPIKey,
-			mock.IsType(&stripe.CustomerParams{}),
-			mock.IsType(&stripe.Customer{}),
-		).Return(nil)
-
-		mockedBackends := &stripe.Backends{
-			API:     mockAPIBackend,
-			Connect: mockConnectBackend,
-			Uploads: mockUploadsBackend,
-		}
-		pm.client = client.New(fakeAPIKey, mockedBackends)
-
-		actual, err := pm.SubscribeToPlan(ctx, exampleCustomerID, examplePaymentMethodToken, examplePlanID)
-		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
-
-		mock.AssertExpectationsForObjects(t, mockAPIBackend, mockConnectBackend, mockUploadsBackend)
-	})
-
-	T.Run("with error checking pre-existing subscription", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleAPIKey := fakeAPIKey
-		exampleCustomerID := "fake_customer"
-		examplePlanID := "fake_plan"
-		examplePaymentMethodToken := "fake_payment_token"
-		expected := "fake_subscription"
-		pm := buildTestPaymentManager(t)
-
-		expectedCustomer := &stripe.Customer{
-			ID: exampleCustomerID,
-			Subscriptions: &stripe.SubscriptionList{
-				Data: []*stripe.Subscription{
-					{
-						ID: expected,
-						Plan: &stripe.Plan{
-							ID: examplePlanID,
-						},
-					},
-				},
-			},
-		}
-
-		mockAPIBackend := &mockBackend{}
-		mockConnectBackend := &mockBackend{}
-		mockUploadsBackend := &mockBackend{}
-
-		mockAPIBackend.AnticipateCall(t, expectedCustomer)
-		mockAPIBackend.On(
-			"Call",
-			http.MethodGet,
-			fmt.Sprintf("/v1/customers/%s", exampleCustomerID),
-			exampleAPIKey,
-			mock.IsType(&stripe.CustomerParams{}),
-			mock.IsType(&stripe.Customer{}),
-		).Return(errors.New("blah"))
-
-		mockedBackends := &stripe.Backends{
-			API:     mockAPIBackend,
-			Connect: mockConnectBackend,
-			Uploads: mockUploadsBackend,
-		}
-		pm.client = client.New(fakeAPIKey, mockedBackends)
-
-		actual, err := pm.SubscribeToPlan(ctx, exampleCustomerID, examplePaymentMethodToken, examplePlanID)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-
-		mock.AssertExpectationsForObjects(t, mockAPIBackend, mockConnectBackend, mockUploadsBackend)
-	})
-
-	T.Run("without pre-existing subscription", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleAPIKey := fakeAPIKey
-		exampleCustomerID := "fake_customer"
-		exampleSubscriptionID := "fake_subscription"
-		examplePlanID := "fake_plan"
-		examplePaymentMethodToken := "fake_payment_token"
-		expected := "fake_subscription"
-		pm := buildTestPaymentManager(t)
-
-		expectedCustomer := &stripe.Customer{
-			ID: exampleCustomerID,
-			Subscriptions: &stripe.SubscriptionList{
-				Data: []*stripe.Subscription{},
-			},
-		}
-
-		mockAPIBackend := &mockBackend{}
-		mockConnectBackend := &mockBackend{}
-		mockUploadsBackend := &mockBackend{}
-
-		mockAPIBackend.AnticipateCall(t, expectedCustomer)
-		mockAPIBackend.On(
-			"Call",
-			http.MethodGet,
-			fmt.Sprintf("/v1/customers/%s", exampleCustomerID),
-			exampleAPIKey,
-			mock.IsType(&stripe.CustomerParams{}),
-			mock.IsType(&stripe.Customer{}),
-		).Return(nil)
-
-		expectedSubscription := &stripe.Subscription{
-			ID: exampleSubscriptionID,
-		}
-
-		mockAPIBackend.AnticipateCall(t, expectedSubscription)
-		mockAPIBackend.On(
-			"Call",
-			http.MethodPost,
-			"/v1/subscriptions",
-			exampleAPIKey,
-			mock.IsType(&stripe.SubscriptionParams{}),
-			mock.IsType(&stripe.Subscription{}),
-		).Return(nil)
-
-		mockedBackends := &stripe.Backends{
-			API:     mockAPIBackend,
-			Connect: mockConnectBackend,
-			Uploads: mockUploadsBackend,
-		}
-		pm.client = client.New(fakeAPIKey, mockedBackends)
-
-		actual, err := pm.SubscribeToPlan(ctx, exampleCustomerID, examplePaymentMethodToken, examplePlanID)
-		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
-
-		mock.AssertExpectationsForObjects(t, mockAPIBackend, mockConnectBackend, mockUploadsBackend)
-	})
-
-	T.Run("without pre-existing subscription and with error creating subscription", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleAPIKey := fakeAPIKey
-		exampleCustomerID := "fake_customer"
-		exampleSubscriptionID := "fake_subscription"
-		examplePlanID := "fake_plan"
-		examplePaymentMethodToken := "fake_payment_token"
-		pm := buildTestPaymentManager(t)
-
-		expectedCustomer := &stripe.Customer{
-			ID: exampleCustomerID,
-			Subscriptions: &stripe.SubscriptionList{
-				Data: []*stripe.Subscription{},
-			},
-		}
-
-		mockAPIBackend := &mockBackend{}
-		mockConnectBackend := &mockBackend{}
-		mockUploadsBackend := &mockBackend{}
-
-		mockAPIBackend.AnticipateCall(t, expectedCustomer)
-		mockAPIBackend.On(
-			"Call",
-			http.MethodGet,
-			fmt.Sprintf("/v1/customers/%s", exampleCustomerID),
-			exampleAPIKey,
-			mock.IsType(&stripe.CustomerParams{}),
-			mock.IsType(&stripe.Customer{}),
-		).Return(nil)
-
-		expectedSubscription := &stripe.Subscription{
-			ID: exampleSubscriptionID,
-		}
-
-		mockAPIBackend.AnticipateCall(t, expectedSubscription)
-		mockAPIBackend.On(
-			"Call",
-			http.MethodPost,
-			"/v1/subscriptions",
-			exampleAPIKey,
-			mock.IsType(&stripe.SubscriptionParams{}),
-			mock.IsType(&stripe.Subscription{}),
-		).Return(errors.New("blah"))
-
-		mockedBackends := &stripe.Backends{
-			API:     mockAPIBackend,
-			Connect: mockConnectBackend,
-			Uploads: mockUploadsBackend,
-		}
-		pm.client = client.New(fakeAPIKey, mockedBackends)
-
-		actual, err := pm.SubscribeToPlan(ctx, exampleCustomerID, examplePaymentMethodToken, examplePlanID)
-		assert.Error(t, err)
-		assert.Empty(t, actual)
-
-		mock.AssertExpectationsForObjects(t, mockAPIBackend, mockConnectBackend, mockUploadsBackend)
-	})
-}
-
-func Test_stripePaymentManager_UnsubscribeFromPlan(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleAPIKey := fakeAPIKey
-		exampleSubscriptionID := "fake_subscription_id"
-		pm := buildTestPaymentManager(t)
-
-		mockAPIBackend := &mockBackend{}
-		mockConnectBackend := &mockBackend{}
-		mockUploadsBackend := &mockBackend{}
-
-		expectedCustomer := &stripe.Customer{
-			Subscriptions: &stripe.SubscriptionList{
-				Data: []*stripe.Subscription{
-					{
-						ID: exampleSubscriptionID,
-					},
-				},
-			},
-		}
-
-		mockAPIBackend.AnticipateCall(t, expectedCustomer)
-		mockAPIBackend.On(
-			"Call",
-			http.MethodDelete,
-			fmt.Sprintf("/v1/subscriptions/%s", exampleSubscriptionID),
-			exampleAPIKey,
-			buildCancellationParams(),
-			mock.IsType(&stripe.Subscription{}),
-		).Return(nil)
-
-		mockedBackends := &stripe.Backends{
-			API:     mockAPIBackend,
-			Connect: mockConnectBackend,
-			Uploads: mockUploadsBackend,
-		}
-		pm.client = client.New(fakeAPIKey, mockedBackends)
-
-		err := pm.UnsubscribeFromPlan(ctx, exampleSubscriptionID)
-		assert.NoError(t, err)
-
-		mock.AssertExpectationsForObjects(t, mockAPIBackend, mockConnectBackend, mockUploadsBackend)
-	})
-
-	T.Run("with error executing request", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		exampleAPIKey := fakeAPIKey
-		exampleSubscriptionID := "fake_subscription_id"
-		pm := buildTestPaymentManager(t)
-
-		mockAPIBackend := &mockBackend{}
-		mockConnectBackend := &mockBackend{}
-		mockUploadsBackend := &mockBackend{}
-
-		expectedCustomer := &stripe.Customer{
-			Subscriptions: &stripe.SubscriptionList{
-				Data: []*stripe.Subscription{
-					{
-						ID: exampleSubscriptionID,
-					},
-				},
-			},
-		}
-
-		mockAPIBackend.AnticipateCall(t, expectedCustomer)
-		mockAPIBackend.On(
-			"Call",
-			http.MethodDelete,
-			fmt.Sprintf("/v1/subscriptions/%s", exampleSubscriptionID),
-			exampleAPIKey,
-			buildCancellationParams(),
-			mock.IsType(&stripe.Subscription{}),
-		).Return(errors.New("blah"))
-
-		mockedBackends := &stripe.Backends{
-			API:     mockAPIBackend,
-			Connect: mockConnectBackend,
-			Uploads: mockUploadsBackend,
-		}
-		pm.client = client.New(fakeAPIKey, mockedBackends)
-
-		err := pm.UnsubscribeFromPlan(ctx, exampleSubscriptionID)
-		assert.Error(t, err)
-
-		mock.AssertExpectationsForObjects(t, mockAPIBackend, mockConnectBackend, mockUploadsBackend)
 	})
 }

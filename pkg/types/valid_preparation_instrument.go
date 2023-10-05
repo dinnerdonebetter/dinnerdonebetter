@@ -27,7 +27,7 @@ func init() {
 type (
 	// ValidPreparationInstrument represents a valid preparation instrument.
 	ValidPreparationInstrument struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt     time.Time        `json:"createdAt"`
 		LastUpdatedAt *time.Time       `json:"lastUpdatedAt"`
@@ -40,7 +40,7 @@ type (
 
 	// ValidPreparationInstrumentCreationRequestInput represents what a user could set as input for creating valid preparation instruments.
 	ValidPreparationInstrumentCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Notes              string `json:"notes"`
 		ValidPreparationID string `json:"validPreparationID"`
@@ -49,7 +49,7 @@ type (
 
 	// ValidPreparationInstrumentDatabaseCreationInput represents what a user could set as input for creating valid preparation instruments.
 	ValidPreparationInstrumentDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ID                 string
 		Notes              string
@@ -59,7 +59,7 @@ type (
 
 	// ValidPreparationInstrumentUpdateRequestInput represents what a user could set as input for updating valid preparation instruments.
 	ValidPreparationInstrumentUpdateRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Notes              *string `json:"notes,omitempty"`
 		ValidPreparationID *string `json:"validPreparationID,omitempty"`

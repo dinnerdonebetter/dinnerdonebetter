@@ -14,7 +14,7 @@ const (
 type (
 	// FilesystemConfig configures a filesystem-based objectstorage provider.
 	FilesystemConfig struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		RootDirectory string `json:"rootDirectory" toml:"root_directory,omitempty"`
 	}

@@ -34,7 +34,7 @@ type (
 
 	// HouseholdInvitationCreationRequestInput represents what a User could set as input for creating household invitations.
 	HouseholdInvitationCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ExpiresAt *time.Time `json:"expiresAt"`
 		Note      string     `json:"note"`
@@ -44,7 +44,7 @@ type (
 
 	// HouseholdInvitationDatabaseCreationInput represents what a User could set as input for creating household invitations.
 	HouseholdInvitationDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ID                     string
 		FromUser               string
@@ -59,7 +59,7 @@ type (
 
 	// HouseholdInvitation represents a household invitation.
 	HouseholdInvitation struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt            time.Time  `json:"createdAt"`
 		LastUpdatedAt        *time.Time `json:"lastUpdatedAt"`

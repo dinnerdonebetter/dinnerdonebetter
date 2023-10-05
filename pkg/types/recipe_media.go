@@ -23,7 +23,7 @@ func init() {
 type (
 	// RecipeMedia represents recipe media.
 	RecipeMedia struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt           time.Time  `json:"createdAt"`
 		ArchivedAt          *time.Time `json:"archivedAt"`
@@ -39,7 +39,7 @@ type (
 
 	// RecipeMediaCreationRequestInput represents what a user could set as input for creating valid preparations.
 	RecipeMediaCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		BelongsToRecipe     *string `json:"belongsToRecipe"`
 		BelongsToRecipeStep *string `json:"belongsToRecipeStep"`
@@ -51,7 +51,7 @@ type (
 
 	// RecipeMediaDatabaseCreationInput represents what a user could set as input for creating valid preparations.
 	RecipeMediaDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ID                  string
 		BelongsToRecipe     *string
@@ -64,7 +64,7 @@ type (
 
 	// RecipeMediaUpdateRequestInput represents what a user could set as input for updating valid preparations.
 	RecipeMediaUpdateRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		BelongsToRecipe     *string `json:"belongsToRecipe,omitempty"`
 		BelongsToRecipeStep *string `json:"belongsToRecipeStep,omitempty"`

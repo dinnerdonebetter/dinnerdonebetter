@@ -19,7 +19,7 @@ const (
 type (
 	// CookieConfig holds our cookie settings.
 	CookieConfig struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Name       string        `json:"name,omitempty"       toml:"name,omitempty"`
 		Domain     string        `json:"domain,omitempty"     toml:"domain,omitempty"`
@@ -30,7 +30,7 @@ type (
 	}
 
 	GoogleSSOConfig struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ClientID     string `json:"clientID,omitempty"     toml:"client_id,omitempty"`
 		ClientSecret string `json:"clientSecret,omitempty" toml:"client_secret,omitempty"`
@@ -43,7 +43,8 @@ type (
 
 	// Config represents our passwords configuration.
 	Config struct {
-		_                     struct{}
+		_ struct{} `json:"-"`
+
 		SSO                   SSOConfigs   `json:"sso,omitempty"                   toml:"sso,omitempty"`
 		DataChangesTopicName  string       `json:"dataChanges,omitempty"           toml:"data_changes,omitempty"`
 		Cookies               CookieConfig `json:"cookies,omitempty"               toml:"cookies,omitempty"`
@@ -79,7 +80,7 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 
 // OAuth2Config represents our database configuration.
 type OAuth2Config struct {
-	_ struct{}
+	_ struct{} `json:"-"`
 
 	Domain               string        `json:"domain"               toml:"domain,omitempty"`
 	AccessTokenLifespan  time.Duration `json:"accessTokenLifespan"  toml:"access_token_lifespan,omitempty"`

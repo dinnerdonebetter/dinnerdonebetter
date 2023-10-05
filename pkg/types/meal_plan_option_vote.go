@@ -28,7 +28,7 @@ func init() {
 type (
 	// MealPlanOptionVote represents a meal plan option vote.
 	MealPlanOptionVote struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt               time.Time  `json:"createdAt"`
 		ArchivedAt              *time.Time `json:"archivedAt"`
@@ -43,7 +43,7 @@ type (
 
 	// NullableMealPlanOptionVote represents a fully nullable meal plan option vote.
 	NullableMealPlanOptionVote struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Rank                    *uint8
 		ID                      *string
@@ -58,7 +58,7 @@ type (
 
 	// MealPlanOptionVoteCreationInput represents what a user could set as input for creating meal plan option votes.
 	MealPlanOptionVoteCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ID                      string `json:"-"`
 		Notes                   string `json:"notes"`
@@ -70,14 +70,14 @@ type (
 
 	// MealPlanOptionVoteCreationRequestInput is a pending container for multiple votes.
 	MealPlanOptionVoteCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Votes []*MealPlanOptionVoteCreationInput `json:"votes"`
 	}
 
 	// MealPlanOptionVotesDatabaseCreationInput represents what a user could set as input for creating meal plan option votes.
 	MealPlanOptionVotesDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ByUser string
 		Votes  []*MealPlanOptionVoteCreationInput
@@ -85,7 +85,7 @@ type (
 
 	// MealPlanOptionVoteUpdateRequestInput represents what a user could set as input for updating meal plan option votes.
 	MealPlanOptionVoteUpdateRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Notes                   *string `json:"notes,omitempty"`
 		Rank                    *uint8  `json:"rank,omitempty"`

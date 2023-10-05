@@ -27,7 +27,7 @@ func init() {
 type (
 	// ValidPreparationVessel represents a valid preparation instrument.
 	ValidPreparationVessel struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt     time.Time        `json:"createdAt"`
 		LastUpdatedAt *time.Time       `json:"lastUpdatedAt"`
@@ -40,7 +40,7 @@ type (
 
 	// ValidPreparationVesselCreationRequestInput represents what a user could set as input for creating valid preparation instruments.
 	ValidPreparationVesselCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Notes              string `json:"notes"`
 		ValidPreparationID string `json:"validPreparationID"`
@@ -49,7 +49,7 @@ type (
 
 	// ValidPreparationVesselDatabaseCreationInput represents what a user could set as input for creating valid preparation instruments.
 	ValidPreparationVesselDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ID                 string
 		Notes              string
@@ -59,7 +59,7 @@ type (
 
 	// ValidPreparationVesselUpdateRequestInput represents what a user could set as input for updating valid preparation instruments.
 	ValidPreparationVesselUpdateRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Notes              *string `json:"notes,omitempty"`
 		ValidPreparationID *string `json:"validPreparationID,omitempty"`
