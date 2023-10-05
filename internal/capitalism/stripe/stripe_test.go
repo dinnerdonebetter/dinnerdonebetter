@@ -82,6 +82,7 @@ func Test_stripePaymentManager_HandleSubscriptionEventWebhook(T *testing.T) {
 		secret, err := random.GenerateHexEncodedString(ctx, 32)
 		require.NoError(t, err)
 		require.NotEmpty(t, secret)
+		pm.webhookSecret = secret
 
 		now := time.Now()
 		signedPayload := webhook.GenerateTestSignedPayload(&webhook.UnsignedPayload{
