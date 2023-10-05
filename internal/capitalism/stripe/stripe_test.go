@@ -92,6 +92,7 @@ func Test_stripePaymentManager_HandleSubscriptionEventWebhook(T *testing.T) {
 		})
 
 		event, err := webhook.ConstructEvent(signedPayload.Payload, signedPayload.Header, signedPayload.Secret)
+		require.NoError(t, err)
 		eventPayload := pm.encoderDecoder.MustEncode(ctx, event)
 
 		req, err := http.NewRequestWithContext(ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(eventPayload))

@@ -76,8 +76,8 @@ func (s *stripePaymentManager) HandleEventWebhook(req *http.Request) error {
 	switch event.Type {
 	case stripe.EventTypePaymentIntentSucceeded:
 		var paymentIntent stripe.PaymentIntent
-		if err = json.Unmarshal(event.Data.Raw, &paymentIntent); err != nil {
-			return err
+		if marshallErr := json.Unmarshal(event.Data.Raw, &paymentIntent); marshallErr != nil {
+			return marshallErr
 		}
 	default:
 		logger.WithValue("event_type", event.Type).Info("Unhandled event type")
