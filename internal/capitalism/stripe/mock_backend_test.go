@@ -7,8 +7,8 @@ import (
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
-	"github.com/stripe/stripe-go/v72"
-	"github.com/stripe/stripe-go/v72/form"
+	"github.com/stripe/stripe-go/v75"
+	"github.com/stripe/stripe-go/v75/form"
 )
 
 var _ stripe.Backend = (*mockBackend)(nil)

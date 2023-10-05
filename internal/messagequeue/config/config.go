@@ -41,7 +41,7 @@ type (
 
 	// MessageQueueConfig is used to indicate how the messaging provider should be configured.
 	MessageQueueConfig struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Provider Provider      `json:"provider,omitempty" toml:"provider,omitempty"`
 		SQS      sqs.Config    `json:"sqs,omitempty"      toml:"sqs,omitempty"`
@@ -51,7 +51,7 @@ type (
 
 	// Config is used to indicate how the messaging provider should be configured.
 	Config struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Consumers  MessageQueueConfig `json:"consumers,omitempty"  toml:"consumers,omitempty"`
 		Publishers MessageQueueConfig `json:"publishers,omitempty" toml:"publishers,omitempty"`

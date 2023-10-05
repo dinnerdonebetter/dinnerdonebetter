@@ -28,7 +28,7 @@ func init() {
 type (
 	// RecipeRating represents a recipe rating.
 	RecipeRating struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt     time.Time  `json:"createdAt"`
 		LastUpdatedAt *time.Time `json:"lastUpdatedAt"`
@@ -46,7 +46,7 @@ type (
 
 	// RecipeRatingCreationRequestInput represents what a user could set as input for creating recipe ratings.
 	RecipeRatingCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		RecipeID     string  `json:"recipeID"`
 		Notes        string  `json:"notes"`
@@ -60,7 +60,7 @@ type (
 
 	// RecipeRatingDatabaseCreationInput represents what a user could set as input for creating recipe ratings.
 	RecipeRatingDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ID           string
 		RecipeID     string
@@ -75,7 +75,7 @@ type (
 
 	// RecipeRatingUpdateRequestInput represents what a user could set as input for updating recipe ratings.
 	RecipeRatingUpdateRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		RecipeID     *string  `json:"recipeID"`
 		Taste        *float32 `json:"taste"`

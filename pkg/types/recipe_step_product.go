@@ -34,7 +34,7 @@ func init() {
 type (
 	// RecipeStepProduct represents a recipe step product.
 	RecipeStepProduct struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt                          time.Time             `json:"createdAt"`
 		MaximumStorageTemperatureInCelsius *float32              `json:"maximumStorageTemperatureInCelsius"`
@@ -60,7 +60,7 @@ type (
 
 	// RecipeStepProductCreationRequestInput represents what a user could set as input for creating recipe step products.
 	RecipeStepProductCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		MinimumQuantity                    *float32 `json:"minimumQuantity"`
 		MinimumStorageTemperatureInCelsius *float32 `json:"minimumStorageTemperatureInCelsius"`
@@ -81,7 +81,7 @@ type (
 
 	// RecipeStepProductDatabaseCreationInput represents what a user could set as input for creating recipe step products.
 	RecipeStepProductDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		MinimumQuantity                    *float32
 		MinimumStorageTemperatureInCelsius *float32
@@ -104,7 +104,7 @@ type (
 
 	// RecipeStepProductUpdateRequestInput represents what a user could set as input for updating recipe step products.
 	RecipeStepProductUpdateRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Name                               *string  `json:"name,omitempty"`
 		Type                               *string  `json:"type,omitempty"`

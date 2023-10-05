@@ -22,7 +22,7 @@ func init() {
 type (
 	// RecipePrepTaskStep represents a recipe prep task step.
 	RecipePrepTaskStep struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ID                      string `json:"id"`
 		BelongsToRecipeStep     string `json:"belongsToRecipeStep"`
@@ -32,7 +32,7 @@ type (
 
 	// RecipePrepTaskStepWithinRecipeCreationRequestInput represents a recipe prep task step.
 	RecipePrepTaskStepWithinRecipeCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		BelongsToRecipeStepIndex uint32 `json:"belongsToRecipeStepIndex"`
 		SatisfiesRecipeStep      bool   `json:"satisfiesRecipeStep"`
@@ -40,7 +40,7 @@ type (
 
 	// RecipePrepTaskStepCreationRequestInput represents a recipe prep task step.
 	RecipePrepTaskStepCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		BelongsToRecipeStep string `json:"belongsToRecipeStep"`
 		SatisfiesRecipeStep bool   `json:"satisfiesRecipeStep"`
@@ -48,7 +48,7 @@ type (
 
 	// RecipePrepTaskStepDatabaseCreationInput represents a recipe prep task step.
 	RecipePrepTaskStepDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ID                      string
 		BelongsToRecipeStep     string
@@ -58,7 +58,7 @@ type (
 
 	// RecipePrepTaskStepUpdateRequestInput represents a recipe prep task step.
 	RecipePrepTaskStepUpdateRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		SatisfiesRecipeStep     *bool   `json:"satisfiesRecipeStep,omitempty"`
 		BelongsToRecipeStep     *string `json:"belongsToRecipeStep,omitempty"`

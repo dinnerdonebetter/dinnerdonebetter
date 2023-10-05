@@ -27,7 +27,8 @@ func init() {
 type (
 	// RecipeStepIngredient represents a recipe step ingredient.
 	RecipeStepIngredient struct {
-		_                         struct{}
+		_ struct{} `json:"-"`
+
 		CreatedAt                 time.Time            `json:"createdAt"`
 		RecipeStepProductID       *string              `json:"recipeStepProductID"`
 		ArchivedAt                *time.Time           `json:"archivedAt"`
@@ -51,7 +52,8 @@ type (
 
 	// RecipeStepIngredientCreationRequestInput represents what a user could set as input for creating recipe step ingredients.
 	RecipeStepIngredientCreationRequestInput struct {
-		_                               struct{}
+		_ struct{} `json:"-"`
+
 		IngredientID                    *string  `json:"ingredientID"`
 		ProductOfRecipeStepIndex        *uint64  `json:"productOfRecipeStepIndex"`
 		ProductOfRecipeStepProductIndex *uint64  `json:"productOfRecipeStepProductIndex"`
@@ -71,7 +73,8 @@ type (
 
 	// RecipeStepIngredientDatabaseCreationInput represents what a user could set as input for creating recipe step ingredients.
 	RecipeStepIngredientDatabaseCreationInput struct {
-		_                               struct{}
+		_ struct{} `json:"-"`
+
 		RecipeStepProductRecipeID       *string
 		IngredientID                    *string
 		RecipeStepProductID             *string
@@ -94,8 +97,7 @@ type (
 
 	// RecipeStepIngredientUpdateRequestInput represents what a user could set as input for updating recipe step ingredients.
 	RecipeStepIngredientUpdateRequestInput struct {
-		_ struct{}
-		// IngredientID and RecipeStepProductID are already pointers, and I don't feel like making it a double pointer.
+		_                         struct{} `json:"-"` // IngredientID and RecipeStepProductID are already pointers, and I don't feel like making it a double pointer.
 		IngredientID              *string  `json:"ingredientID,omitempty"`
 		RecipeStepProductID       *string  `json:"recipeStepProductID,omitempty"`
 		Name                      *string  `json:"name,omitempty"`

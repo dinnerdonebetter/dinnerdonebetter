@@ -1,11 +1,9 @@
 package capitalismmock
 
 import (
-	"context"
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/capitalism"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/mock"
 )
@@ -22,40 +20,7 @@ func NewMockPaymentManager() *MockPaymentManager {
 	return &MockPaymentManager{}
 }
 
-// HandleSubscriptionEventWebhook satisfies our interface contract.
-func (m *MockPaymentManager) HandleSubscriptionEventWebhook(req *http.Request) error {
+// HandleEventWebhook satisfies our interface contract.
+func (m *MockPaymentManager) HandleEventWebhook(req *http.Request) error {
 	return m.Called(req).Error(0)
-}
-
-// CreateCustomerID satisfies our interface contract.
-func (m *MockPaymentManager) CreateCustomerID(ctx context.Context, household *types.Household) (string, error) {
-	returnValues := m.Called(ctx, household)
-
-	return returnValues.String(0), returnValues.Error(1)
-}
-
-// ListPlans satisfies our interface contract.
-func (m *MockPaymentManager) ListPlans(ctx context.Context) ([]capitalism.SubscriptionPlan, error) {
-	returnValues := m.Called(ctx)
-
-	return returnValues.Get(0).([]capitalism.SubscriptionPlan), returnValues.Error(1)
-}
-
-// SubscribeToPlan satisfies our interface contract.
-func (m *MockPaymentManager) SubscribeToPlan(ctx context.Context, customerID, paymentMethodToken, planID string) (string, error) {
-	returnValues := m.Called(ctx, customerID, paymentMethodToken, planID)
-
-	return returnValues.String(0), returnValues.Error(1)
-}
-
-// CreateCheckoutSession satisfies our interface contract.
-func (m *MockPaymentManager) CreateCheckoutSession(ctx context.Context, subscriptionPlanID string) (string, error) {
-	returnValues := m.Called(ctx, subscriptionPlanID)
-
-	return returnValues.String(0), returnValues.Error(1)
-}
-
-// UnsubscribeFromPlan satisfies our interface contract.
-func (m *MockPaymentManager) UnsubscribeFromPlan(ctx context.Context, subscriptionID string) error {
-	return m.Called(ctx, subscriptionID).Error(0)
 }

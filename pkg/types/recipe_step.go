@@ -30,7 +30,7 @@ func init() {
 type (
 	// RecipeStep represents a recipe step.
 	RecipeStep struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt                     time.Time                        `json:"createdAt"`
 		MinimumEstimatedTimeInSeconds *uint32                          `json:"minimumEstimatedTimeInSeconds"`
@@ -61,7 +61,8 @@ type (
 
 	// RecipeStepCreationRequestInput represents what a user could set as input for creating recipe steps.
 	RecipeStepCreationRequestInput struct {
-		_                             struct{}
+		_ struct{} `json:"-"`
+
 		MaximumTemperatureInCelsius   *float32                                             `json:"maximumTemperatureInCelsius"`
 		MinimumTemperatureInCelsius   *float32                                             `json:"minimumTemperatureInCelsius"`
 		MaximumEstimatedTimeInSeconds *uint32                                              `json:"maximumEstimatedTimeInSeconds"`
@@ -82,7 +83,8 @@ type (
 
 	// RecipeStepDatabaseCreationInput represents what a user could set as input for creating recipe steps.
 	RecipeStepDatabaseCreationInput struct {
-		_                             struct{}
+		_ struct{} `json:"-"`
+
 		MinimumEstimatedTimeInSeconds *uint32
 		MinimumTemperatureInCelsius   *float32
 		MaximumEstimatedTimeInSeconds *uint32
@@ -105,7 +107,8 @@ type (
 
 	// RecipeStepUpdateRequestInput represents what a user could set as input for updating recipe steps.
 	RecipeStepUpdateRequestInput struct {
-		_                             struct{}
+		_ struct{} `json:"-"`
+
 		MinimumEstimatedTimeInSeconds *uint32           `json:"minimumEstimatedTimeInSeconds,omitempty"`
 		MaximumTemperatureInCelsius   *float32          `json:"maximumTemperatureInCelsius,omitempty"`
 		Notes                         *string           `json:"notes,omitempty"`
@@ -122,7 +125,7 @@ type (
 
 	// RecipeStepSearchSubset represents the subset of values suitable to index for search.
 	RecipeStepSearchSubset struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Preparation string    `json:"preparation,omitempty"`
 		Ingredients []NamedID `json:"ingredients,omitempty"`

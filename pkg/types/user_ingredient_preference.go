@@ -30,7 +30,7 @@ func init() {
 type (
 	// UserIngredientPreference represents a user ingredient preference.
 	UserIngredientPreference struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt     time.Time       `json:"createdAt"`
 		LastUpdatedAt *time.Time      `json:"lastUpdatedAt"`
@@ -45,7 +45,7 @@ type (
 
 	// UserIngredientPreferenceCreationRequestInput represents what a user could set as input for creating user ingredient preferences.
 	UserIngredientPreferenceCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ValidIngredientGroupID string `json:"validIngredientGroupID"`
 		ValidIngredientID      string `json:"validIngredientID"`
@@ -56,7 +56,7 @@ type (
 
 	// UserIngredientPreferenceDatabaseCreationInput represents what a user could set as input for creating user ingredient preferences.
 	UserIngredientPreferenceDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ValidIngredientGroupID string
 		ValidIngredientID      string
@@ -68,7 +68,7 @@ type (
 
 	// UserIngredientPreferenceUpdateRequestInput represents what a user could set as input for updating user ingredient preferences.
 	UserIngredientPreferenceUpdateRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Notes        *string `json:"notes,omitempty"`
 		IngredientID *string `json:"ingredientID"`

@@ -21,7 +21,7 @@ const (
 type (
 	// Config configures a Logger.
 	Config struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Level    logging.Level `json:"level,omitempty"    toml:"level"`
 		Provider string        `json:"provider,omitempty" toml:"provider"`

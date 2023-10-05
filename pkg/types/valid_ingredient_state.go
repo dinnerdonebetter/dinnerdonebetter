@@ -46,7 +46,7 @@ func init() {
 type (
 	// ValidIngredientState represents a valid ingredient state.
 	ValidIngredientState struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt     time.Time  `json:"createdAt"`
 		ArchivedAt    *time.Time `json:"archivedAt"`
@@ -62,7 +62,7 @@ type (
 
 	// ValidIngredientStateCreationRequestInput represents what a user could set as input for creating valid ingredient states.
 	ValidIngredientStateCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Name          string `json:"name"`
 		Slug          string `json:"slug"`
@@ -74,7 +74,7 @@ type (
 
 	// ValidIngredientStateDatabaseCreationInput represents what a user could set as input for creating valid ingredient states.
 	ValidIngredientStateDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ID            string
 		Name          string
@@ -87,7 +87,7 @@ type (
 
 	// ValidIngredientStateUpdateRequestInput represents what a user could set as input for updating valid ingredient states.
 	ValidIngredientStateUpdateRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Name          *string `json:"name,omitempty"`
 		Slug          *string `json:"slug,omitempty"`
@@ -99,7 +99,7 @@ type (
 
 	// ValidIngredientStateSearchSubset represents the subset of values suitable to index for search.
 	ValidIngredientStateSearchSubset struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ID            string `json:"id,omitempty"`
 		PastTense     string `json:"pastTense,omitempty"`

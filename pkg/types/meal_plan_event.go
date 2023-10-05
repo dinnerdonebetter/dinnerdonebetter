@@ -41,7 +41,7 @@ func init() {
 type (
 	// MealPlanEvent represents a meal plan.
 	MealPlanEvent struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt         time.Time         `json:"createdAt"`
 		StartsAt          time.Time         `json:"startsAt"`
@@ -57,7 +57,7 @@ type (
 
 	// MealPlanEventCreationRequestInput represents what a user could set as input for creating meal plans.
 	MealPlanEventCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		EndsAt   time.Time                             `json:"endsAt"`
 		StartsAt time.Time                             `json:"startsAt"`
@@ -68,7 +68,7 @@ type (
 
 	// MealPlanEventDatabaseCreationInput represents what a user could set as input for creating meal plans.
 	MealPlanEventDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		StartsAt          time.Time
 		EndsAt            time.Time
@@ -81,7 +81,7 @@ type (
 
 	// MealPlanEventUpdateRequestInput represents what a user could set as input for updating meal plans.
 	MealPlanEventUpdateRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Notes             *string    `json:"notes,omitempty"`
 		StartsAt          *time.Time `json:"startsAt,omitempty"`

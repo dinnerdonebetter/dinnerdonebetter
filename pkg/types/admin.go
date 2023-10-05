@@ -15,7 +15,7 @@ type (
 
 	// UserAccountStatusUpdateInput represents what an admin User could provide as input for changing statuses.
 	UserAccountStatusUpdateInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		NewStatus    string `json:"newStatus"`
 		Reason       string `json:"reason"`

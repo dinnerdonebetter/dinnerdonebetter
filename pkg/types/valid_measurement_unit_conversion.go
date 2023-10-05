@@ -27,7 +27,7 @@ func init() {
 type (
 	// ValidMeasurementUnitConversion represents a valid measurement conversion.
 	ValidMeasurementUnitConversion struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt         time.Time            `json:"createdAt"`
 		LastUpdatedAt     *time.Time           `json:"lastUpdatedAt"`
@@ -42,7 +42,7 @@ type (
 
 	// ValidMeasurementUnitConversionCreationRequestInput represents what a user could set as input for creating valid measurement conversions.
 	ValidMeasurementUnitConversionCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		OnlyForIngredient *string `json:"onlyForIngredient"`
 		From              string  `json:"from"`
@@ -53,7 +53,7 @@ type (
 
 	// ValidMeasurementUnitConversionDatabaseCreationInput represents what a user could set as input for creating valid measurement conversions.
 	ValidMeasurementUnitConversionDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		OnlyForIngredient *string
 		ID                string
@@ -65,7 +65,7 @@ type (
 
 	// ValidMeasurementUnitConversionUpdateRequestInput represents what a user could set as input for updating valid measurement conversions.
 	ValidMeasurementUnitConversionUpdateRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		From              *string  `json:"from,omitempty"`
 		To                *string  `json:"to,omitempty"`

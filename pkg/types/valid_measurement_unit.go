@@ -28,7 +28,7 @@ func init() {
 type (
 	// ValidMeasurementUnit represents a valid measurement unit.
 	ValidMeasurementUnit struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt     time.Time  `json:"createdAt"`
 		LastUpdatedAt *time.Time `json:"lastUpdatedAt"`
@@ -47,7 +47,7 @@ type (
 
 	// NullableValidMeasurementUnit represents a nullable valid measurement unit.
 	NullableValidMeasurementUnit struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt     *time.Time
 		LastUpdatedAt *time.Time
@@ -66,7 +66,7 @@ type (
 
 	// ValidMeasurementUnitCreationRequestInput represents what a user could set as input for creating valid measurement units.
 	ValidMeasurementUnitCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Name        string `json:"name"`
 		Description string `json:"description"`
@@ -81,7 +81,7 @@ type (
 
 	// ValidMeasurementUnitDatabaseCreationInput represents what a user could set as input for creating valid measurement units.
 	ValidMeasurementUnitDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Name        string
 		Description string
@@ -97,7 +97,7 @@ type (
 
 	// ValidMeasurementUnitUpdateRequestInput represents what a user could set as input for updating valid measurement units.
 	ValidMeasurementUnitUpdateRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Name        *string `json:"name,omitempty"`
 		Description *string `json:"description,omitempty"`
@@ -112,7 +112,7 @@ type (
 
 	// ValidMeasurementUnitSearchSubset represents the subset of values suitable to index for search.
 	ValidMeasurementUnitSearchSubset struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Name        string `json:"name,omitempty"`
 		ID          string `json:"id,omitempty"`

@@ -27,7 +27,7 @@ func init() {
 type (
 	// ValidIngredient represents a valid ingredient.
 	ValidIngredient struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt                               time.Time  `json:"createdAt"`
 		LastUpdatedAt                           *time.Time `json:"lastUpdatedAt"`
@@ -71,7 +71,7 @@ type (
 
 	// NullableValidIngredient represents a nullable valid ingredient.
 	NullableValidIngredient struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt                               *time.Time
 		LastUpdatedAt                           *time.Time
@@ -115,7 +115,7 @@ type (
 
 	// ValidIngredientCreationRequestInput represents what a user could set as input for creating valid ingredients.
 	ValidIngredientCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		MinimumIdealStorageTemperatureInCelsius *float32 `json:"minimumIdealStorageTemperatureInCelsius"`
 		MaximumIdealStorageTemperatureInCelsius *float32 `json:"maximumIdealStorageTemperatureInCelsius"`
@@ -155,7 +155,7 @@ type (
 
 	// ValidIngredientDatabaseCreationInput represents what a user could set as input for creating valid ingredients.
 	ValidIngredientDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		MinimumIdealStorageTemperatureInCelsius *float32
 		MaximumIdealStorageTemperatureInCelsius *float32
@@ -196,7 +196,7 @@ type (
 
 	// ValidIngredientUpdateRequestInput represents what a user could set as input for updating valid ingredients.
 	ValidIngredientUpdateRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Name                                    *string  `json:"name,omitempty"`
 		Description                             *string  `json:"description,omitempty"`
@@ -236,7 +236,7 @@ type (
 
 	// ValidIngredientSearchSubset represents the subset of values suitable to index for search.
 	ValidIngredientSearchSubset struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		PluralName          string `json:"pluralName,omitempty"`
 		Name                string `json:"name,omitempty"`

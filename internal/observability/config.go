@@ -12,7 +12,7 @@ import (
 type (
 	// Config contains settings about how we report our metrics.
 	Config struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Logging loggingcfg.Config `json:"logging" toml:"logging,omitempty"`
 		Tracing tracingcfg.Config `json:"tracing" toml:"tracing,omitempty"`

@@ -10,8 +10,6 @@ type (
 	// Config configures our Stripe interface.
 	Config struct {
 		APIKey        string `json:"apiKey"        toml:"api_key"`
-		SuccessURL    string `json:"successURL"    toml:"success_url"`
-		CancelURL     string `json:"cancelURL"     toml:"cancel_url"`
 		WebhookSecret string `json:"webhookSecret" toml:"webhook_secret"`
 	}
 )

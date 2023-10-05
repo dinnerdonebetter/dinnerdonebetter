@@ -27,7 +27,7 @@ func init() {
 type (
 	// ValidPreparation represents a valid preparation.
 	ValidPreparation struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt                   time.Time  `json:"createdAt"`
 		MaximumInstrumentCount      *int32     `json:"maximumInstrumentCount"` // TODO: make these uint16
@@ -55,7 +55,7 @@ type (
 
 	// ValidPreparationCreationRequestInput represents what a user could set as input for creating valid preparations.
 	ValidPreparationCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		MaximumInstrumentCount      *int32 `json:"maximumInstrumentCount"`
 		MaximumIngredientCount      *int32 `json:"maximumIngredientCount"`
@@ -79,7 +79,7 @@ type (
 
 	// ValidPreparationDatabaseCreationInput represents what a user could set as input for creating valid preparations.
 	ValidPreparationDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		MaximumInstrumentCount      *int32
 		MaximumIngredientCount      *int32
@@ -104,7 +104,7 @@ type (
 
 	// ValidPreparationUpdateRequestInput represents what a user could set as input for updating valid preparations.
 	ValidPreparationUpdateRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Name                        *string `json:"name,omitempty"`
 		Description                 *string `json:"description,omitempty"`
@@ -128,7 +128,7 @@ type (
 
 	// ValidPreparationSearchSubset represents the subset of values suitable to index for search.
 	ValidPreparationSearchSubset struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		PastTense   string `json:"pastTense,omitempty"`
 		ID          string `json:"id,omitempty"`

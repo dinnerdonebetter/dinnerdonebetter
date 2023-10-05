@@ -42,7 +42,8 @@ const (
 type (
 	// DeliveryRequest is the type to use when requesting emails within the service.
 	DeliveryRequest struct {
-		_                      struct{}
+		_ struct{} `json:"-"`
+
 		TemplateParams         map[string]any             `json:"templateParams"`
 		Invitation             *types.HouseholdInvitation `json:"invitation,omitempty"`
 		PasswordResetToken     *types.PasswordResetToken  `json:"passwordResetToken,omitempty"`

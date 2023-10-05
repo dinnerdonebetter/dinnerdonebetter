@@ -255,7 +255,6 @@ func (e *serverEncoderDecoder) DecodeRequest(ctx context.Context, req *http.Requ
 	defer span.End()
 
 	var d decoder
-
 	switch contentTypeFromString(req.Header.Get(ContentTypeHeaderKey)) {
 	case ContentTypeXML:
 		d = xml.NewDecoder(req.Body)

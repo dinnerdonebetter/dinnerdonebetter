@@ -29,7 +29,7 @@ func init() {
 type (
 	// MealPlanOption represents a meal plan option.
 	MealPlanOption struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt              time.Time             `json:"createdAt"`
 		LastUpdatedAt          *time.Time            `json:"lastUpdatedAt"`
@@ -48,7 +48,7 @@ type (
 
 	// MealPlanOptionCreationRequestInput represents what a user could set as input for creating meal plan options.
 	MealPlanOptionCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		AssignedCook       *string `json:"assignedCook"`
 		AssignedDishwasher *string `json:"assignedDishwasher"`
@@ -59,7 +59,7 @@ type (
 
 	// MealPlanOptionDatabaseCreationInput represents what a user could set as input for creating meal plan options.
 	MealPlanOptionDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ID                     string
 		MealID                 string
@@ -72,7 +72,7 @@ type (
 
 	// MealPlanOptionUpdateRequestInput represents what a user could set as input for updating meal plan options.
 	MealPlanOptionUpdateRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		MealID                 *string  `json:"mealID,omitempty"`
 		Notes                  *string  `json:"notes,omitempty"`

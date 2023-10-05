@@ -8,7 +8,7 @@ import (
 
 // Config represents our database configuration.
 type Config struct {
-	_ struct{}
+	_ struct{} `json:"-"`
 
 	DataChangesTopicName string `json:"dataChangesTopicName,omitempty" toml:"data_changes_topic_name,omitempty"`
 	Debug                bool   `json:"debug"                          toml:"debug,omitempty"`

@@ -26,7 +26,7 @@ type (
 
 	// Pagination represents a pagination request.
 	Pagination struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Page          uint16 `json:"page"`
 		Limit         uint8  `json:"limit"`
@@ -43,7 +43,7 @@ type (
 
 	// APIError represents a response we might send to the User in the event of an error.
 	APIError struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Message string `json:"message"`
 		Code    int    `json:"code"`

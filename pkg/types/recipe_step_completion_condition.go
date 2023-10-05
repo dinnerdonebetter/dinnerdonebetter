@@ -27,7 +27,7 @@ func init() {
 type (
 	// RecipeStepCompletionCondition represents a recipe step completion condition. Effectively, this says "Ingredients must be in IngredientState".
 	RecipeStepCompletionCondition struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt           time.Time                                  `json:"createdAt"`
 		ArchivedAt          *time.Time                                 `json:"archivedAt"`
@@ -41,7 +41,7 @@ type (
 	}
 
 	RecipeStepCompletionConditionIngredient struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt                              time.Time  `json:"createdAt"`
 		ArchivedAt                             *time.Time `json:"archivedAt"`
@@ -53,7 +53,7 @@ type (
 
 	// RecipeStepCompletionConditionCreationRequestInput represents what a user could set as input for creating recipe step completion conditions.
 	RecipeStepCompletionConditionCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		IngredientStateID   string   `json:"ingredientState"`
 		BelongsToRecipeStep string   `json:"belongsToRecipeStep"`
@@ -64,14 +64,14 @@ type (
 
 	// RecipeStepCompletionConditionIngredientCreationRequestInput represents what a user could set as input for creating recipe step completion condition ingredient.
 	RecipeStepCompletionConditionIngredientCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		RecipeStepIngredient string `json:"recipeStepIngredient"`
 	}
 
 	// RecipeStepCompletionConditionForExistingRecipeCreationRequestInput represents what a user could set as input for creating recipe step completion conditions for existing recipes.
 	RecipeStepCompletionConditionForExistingRecipeCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		IngredientStateID   string                                                                          `json:"ingredientState"`
 		BelongsToRecipeStep string                                                                          `json:"belongsToRecipeStep"`
@@ -82,14 +82,14 @@ type (
 
 	// RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput represents what a user could set as input for creating recipe step completion condition for existing recipes.
 	RecipeStepCompletionConditionIngredientForExistingRecipeCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		RecipeStepIngredient string `json:"recipeStepIngredient"`
 	}
 
 	// RecipeStepCompletionConditionDatabaseCreationInput represents what a user could set as input for creating recipe step completion conditions.
 	RecipeStepCompletionConditionDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ID                  string
 		IngredientStateID   string
@@ -100,7 +100,7 @@ type (
 	}
 
 	RecipeStepCompletionConditionIngredientDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ID                                     string
 		BelongsToRecipeStepCompletionCondition string
@@ -109,7 +109,7 @@ type (
 
 	// RecipeStepCompletionConditionUpdateRequestInput represents what a user could set as input for updating recipe step completion conditions.
 	RecipeStepCompletionConditionUpdateRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		IngredientStateID   *string `json:"ingredientState,omitempty"`
 		BelongsToRecipeStep *string `json:"belongsToRecipeStep,omitempty"`

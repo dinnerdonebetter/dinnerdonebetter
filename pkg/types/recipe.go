@@ -29,7 +29,7 @@ func init() {
 type (
 	// Recipe represents a recipe.
 	Recipe struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt                time.Time         `json:"createdAt"`
 		InspiredByRecipeID       *string           `json:"inspiredByRecipeID"`
@@ -56,7 +56,7 @@ type (
 
 	// RecipeCreationRequestInput represents what a user could set as input for creating recipes.
 	RecipeCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		InspiredByRecipeID       *string                                           `json:"inspiredByRecipeID"`
 		MaximumEstimatedPortions *float32                                          `json:"maximumEstimatedPortions"`
@@ -77,7 +77,7 @@ type (
 
 	// RecipeDatabaseCreationInput represents what a user could set as input for creating recipes.
 	RecipeDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		InspiredByRecipeID       *string
 		MaximumEstimatedPortions *float32
@@ -100,7 +100,7 @@ type (
 
 	// RecipeUpdateRequestInput represents what a user could set as input for updating recipes.
 	RecipeUpdateRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Name                     *string  `json:"name,omitempty"`
 		Slug                     *string  `json:"slug"`
@@ -118,7 +118,7 @@ type (
 
 	// RecipeSearchSubset represents the subset of values suitable to index for search.
 	RecipeSearchSubset struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		ID          string                    `json:"id,omitempty"`
 		Name        string                    `json:"name,omitempty"`

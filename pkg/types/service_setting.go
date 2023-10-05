@@ -27,7 +27,7 @@ func init() {
 type (
 	// ServiceSetting represents a service setting.
 	ServiceSetting struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt     time.Time  `json:"createdAt"`
 		DefaultValue  *string    `json:"defaultValue"`
@@ -43,7 +43,7 @@ type (
 
 	// ServiceSettingCreationRequestInput represents what a user could set as input for creating settings.
 	ServiceSettingCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		DefaultValue *string  `json:"defaultValue"`
 		Name         string   `json:"name"`
@@ -55,7 +55,7 @@ type (
 
 	// ServiceSettingDatabaseCreationInput represents what a user could set as input for creating service settings.
 	ServiceSettingDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		DefaultValue *string
 		ID           string
@@ -68,7 +68,7 @@ type (
 
 	// ServiceSettingUpdateRequestInput represents what a user could set as input for updating service settings.
 	ServiceSettingUpdateRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Name         *string  `json:"name"`
 		Type         *string  `json:"type"`

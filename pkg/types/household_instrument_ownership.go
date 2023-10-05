@@ -27,7 +27,8 @@ func init() {
 type (
 	// HouseholdInstrumentOwnership represents a household instrument ownership.
 	HouseholdInstrumentOwnership struct {
-		_                  struct{}
+		_ struct{} `json:"-"`
+
 		CreatedAt          time.Time       `json:"createdAt"`
 		ArchivedAt         *time.Time      `json:"archivedAt"`
 		LastUpdatedAt      *time.Time      `json:"lastUpdatedAt"`
@@ -40,7 +41,8 @@ type (
 
 	// HouseholdInstrumentOwnershipCreationRequestInput represents what a user could set as input for creating household instrument ownerships.
 	HouseholdInstrumentOwnershipCreationRequestInput struct {
-		_                  struct{}
+		_ struct{} `json:"-"`
+
 		Notes              string `json:"notes"`
 		ValidInstrumentID  string `json:"validInstrumentID"`
 		BelongsToHousehold string `json:"belongsToHousehold"`
@@ -49,7 +51,8 @@ type (
 
 	// HouseholdInstrumentOwnershipDatabaseCreationInput represents what a user could set as input for creating household instrument ownerships.
 	HouseholdInstrumentOwnershipDatabaseCreationInput struct {
-		_                  struct{}
+		_ struct{} `json:"-"`
+
 		ID                 string
 		Notes              string
 		ValidInstrumentID  string
@@ -59,7 +62,7 @@ type (
 
 	// HouseholdInstrumentOwnershipUpdateRequestInput represents what a user could set as input for updating household instrument ownerships.
 	HouseholdInstrumentOwnershipUpdateRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Notes             *string `json:"notes"`
 		Quantity          *uint16 `json:"quantity"`

@@ -8,7 +8,7 @@ import (
 
 // Config configures the service.
 type Config struct {
-	_ struct{}
+	_ struct{} `json:"-"`
 
 	DataChangesTopicName string `json:"dataChangesTopicName,omitempty" toml:"data_changes_topic_name,omitempty"`
 	UseSearchService     bool   `json:"searchFromDatabase"             toml:"search_from_database,omitempty"`

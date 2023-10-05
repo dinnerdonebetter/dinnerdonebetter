@@ -34,7 +34,8 @@ func init() {
 type (
 	// MealPlanTask represents a meal plan task.
 	MealPlanTask struct {
-		_                   struct{}
+		_ struct{} `json:"-"`
+
 		RecipePrepTask      RecipePrepTask `json:"recipePrepTask"`
 		CreatedAt           time.Time      `json:"createdAt"`
 		LastUpdatedAt       *time.Time     `json:"lastUpdatedAt"`
@@ -49,7 +50,7 @@ type (
 
 	// MealPlanTaskCreationRequestInput represents a meal plan task.
 	MealPlanTaskCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		AssignedToUser      *string `json:"assignedToUser"`
 		Status              string  `json:"status"`
@@ -61,7 +62,7 @@ type (
 
 	// MealPlanTaskDatabaseCreationInput represents what a user could set as input for creating meal plan tasks.
 	MealPlanTaskDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		AssignedToUser      *string
 		CreationExplanation string
@@ -73,7 +74,7 @@ type (
 
 	// MealPlanTaskStatusChangeRequestInput represents what a user could set as input for updating meal plan tasks.
 	MealPlanTaskStatusChangeRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Status            *string `json:"status"`
 		StatusExplanation string  `json:"statusExplanation"`
@@ -83,7 +84,7 @@ type (
 
 	// MealPlanTaskDatabaseCreationEstimate represents what a user could set as input for creating meal plan tasks.
 	MealPlanTaskDatabaseCreationEstimate struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreationExplanation string `json:"creationExplanation"`
 	}

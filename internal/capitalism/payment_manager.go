@@ -1,10 +1,7 @@
 package capitalism
 
 import (
-	"context"
 	"net/http"
-
-	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
 type (
@@ -17,10 +14,6 @@ type (
 
 	// PaymentManager handles payments via 3rd-party providers.
 	PaymentManager interface {
-		CreateCustomerID(ctx context.Context, household *types.Household) (string, error)
-		HandleSubscriptionEventWebhook(req *http.Request) error
-		SubscribeToPlan(ctx context.Context, customerID, paymentMethodToken, planID string) (string, error)
-		CreateCheckoutSession(ctx context.Context, subscriptionPlanID string) (string, error)
-		UnsubscribeFromPlan(ctx context.Context, subscriptionID string) error
+		HandleEventWebhook(req *http.Request) error
 	}
 )

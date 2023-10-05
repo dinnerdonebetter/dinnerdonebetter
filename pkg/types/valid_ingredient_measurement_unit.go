@@ -27,7 +27,7 @@ func init() {
 type (
 	// ValidIngredientMeasurementUnit represents a valid ingredient measurement unit.
 	ValidIngredientMeasurementUnit struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		CreatedAt                time.Time            `json:"createdAt"`
 		LastUpdatedAt            *time.Time           `json:"lastUpdatedAt"`
@@ -42,7 +42,7 @@ type (
 
 	// ValidIngredientMeasurementUnitCreationRequestInput represents what a user could set as input for creating valid ingredient measurement units.
 	ValidIngredientMeasurementUnitCreationRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		MaximumAllowableQuantity *float32 `json:"maximumAllowableQuantity"`
 		Notes                    string   `json:"notes"`
@@ -53,7 +53,7 @@ type (
 
 	// ValidIngredientMeasurementUnitDatabaseCreationInput represents what a user could set as input for creating valid ingredient measurement units.
 	ValidIngredientMeasurementUnitDatabaseCreationInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		MaximumAllowableQuantity *float32
 		ID                       string
@@ -65,7 +65,7 @@ type (
 
 	// ValidIngredientMeasurementUnitUpdateRequestInput represents what a user could set as input for updating valid ingredient measurement units.
 	ValidIngredientMeasurementUnitUpdateRequestInput struct {
-		_ struct{}
+		_ struct{} `json:"-"`
 
 		Notes                    *string  `json:"notes,omitempty"`
 		ValidMeasurementUnitID   *string  `json:"validMeasurementUnitID,omitempty"`

@@ -61,7 +61,7 @@ require (
 	github.com/shopspring/decimal v1.3.1
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.8.4
-	github.com/stripe/stripe-go/v72 v72.122.0
+	github.com/stripe/stripe-go/v75 v75.9.0
 	github.com/testcontainers/testcontainers-go v0.25.0
 	github.com/testcontainers/testcontainers-go/modules/elasticsearch v0.25.0
 	github.com/testcontainers/testcontainers-go/modules/postgres v0.21.0
