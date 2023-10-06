@@ -14,8 +14,8 @@ resource "google_container_cluster" "primary" {
   remove_default_node_pool = true
   initial_node_count       = 1
 
-#  network    = google_compute_network.vpc.name
-#  subnetwork = google_compute_subnetwork.subnet.name
+  #  network    = google_compute_network.vpc.name
+  #  subnetwork = google_compute_subnetwork.subnet.name
 }
 
 # Separately Managed Node Pool
@@ -27,6 +27,10 @@ resource "google_container_node_pool" "primary_nodes" {
   version    = data.google_container_engine_versions.gke_version.release_channel_latest_version["STABLE"]
   node_count = 1
 
+  node_locations = [
+    "us-central1-a",
+  ]
+
   node_config {
     oauth_scopes = [
       "https://www.googleapis.com/auth/logging.write",
@@ -37,7 +41,8 @@ resource "google_container_node_pool" "primary_nodes" {
       env = local.project_id
     }
 
-    machine_type = "n1-standard-1"
+    preemptible  = true
+    machine_type = "e2-small"
     tags         = ["gke-node", local.environment]
     metadata = {
       disable-legacy-endpoints = "true"
