@@ -1,5 +1,5 @@
 terraform {
-  required_version = "1.6.0"
+  required_version = "1.4.6"
 
   backend "remote" {
     organization = "dinnerdonebetter"
@@ -15,15 +15,15 @@ terraform {
     }
     google = {
       source  = "hashicorp/google"
-      version = "5.0.0"
+      version = "4.73.1"
     }
     archive = {
       source  = "hashicorp/archive"
       version = "2.2.0"
     }
     algolia = {
-      source  = "k-yomo/algolia"
-      version = "0.5.7"
+      source  = "philippe-vandermoere/algolia"
+      version = "0.7.0"
     }
   }
 }
