@@ -18,6 +18,41 @@ resource "google_container_cluster" "primary" {
   #  subnetwork = google_compute_subnetwork.subnet.name
 }
 
+resource "google_project_iam_custom_role" "dev_cluster_role" {
+  role_id     = "dev_cluster_role"
+  title       = "Dev cluster role"
+  description = "An IAM role for the dev cluster"
+  permissions = [
+    "secretmanager.versions.access",
+    "cloudsql.instances.connect",
+    "cloudsql.instances.get",
+    "pubsub.topics.list",
+    "pubsub.topics.publish",
+    "cloudtrace.traces.patch",
+    "logging.buckets.create",
+    "logging.buckets.write",
+    "logging.buckets.list",
+    "logging.buckets.get",
+    "storage.objects.list",
+    "storage.objects.get",
+    "storage.objects.update",
+    "storage.objects.create",
+    "storage.objects.delete",
+    "storage.objects.get",
+  ]
+}
+
+resource "google_service_account" "dev_cluster_service_account" {
+  account_id   = "dev-cluster"
+  display_name = "dev Cluster Service Account"
+}
+
+resource "google_project_iam_member" "dev_cluster" {
+  project = local.project_id
+  role    = google_project_iam_custom_role.dev_cluster_role.id
+  member  = format("serviceAccount:%s", google_service_account.dev_cluster_service_account.email)
+}
+
 # Separately Managed Node Pool
 resource "google_container_node_pool" "primary_nodes" {
   name     = google_container_cluster.primary.name
