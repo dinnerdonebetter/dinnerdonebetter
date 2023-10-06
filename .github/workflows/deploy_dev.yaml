@@ -2,10 +2,10 @@ concurrency:
   group: ${{ github.ref }}
 
 on:
-  push:
-    branches:
-      - dev
-  # pull_request:
+#  push:
+#    branches:
+#      - dev
+  pull_request:
 
 name: deploy
 jobs:
@@ -36,7 +36,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
-          terraform_version: 1.4.6
+          terraform_version: 1.6.0
           cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
 
       - name: Terraform Init
