@@ -4,7 +4,7 @@ resource "google_secret_manager_secret" "api_service_config" {
   secret_id = "api_service_config"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -20,7 +20,7 @@ resource "google_secret_manager_secret" "data_changes_topic_name" {
   secret_id = "data_changes_topic_name"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -28,7 +28,7 @@ resource "google_secret_manager_secret" "outbound_emails_topic_name" {
   secret_id = "outbound_emails_topic_name"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -55,7 +55,7 @@ resource "google_secret_manager_secret" "oauth2_token_encryption_key" {
   secret_id = "oauth2_token_encryption_key"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -76,7 +76,7 @@ resource "google_secret_manager_secret" "cookie_hash_key" {
   secret_id = "cookie_hash_key"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -97,7 +97,7 @@ resource "google_secret_manager_secret" "cookie_block_key" {
   secret_id = "cookie_block_key"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -118,7 +118,7 @@ resource "google_secret_manager_secret" "sendgrid_api_token" {
   secret_id = "sendgrid_api_token"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -136,7 +136,7 @@ resource "google_secret_manager_secret" "segment_api_token" {
   secret_id = "segment_api_token"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -154,7 +154,7 @@ resource "google_secret_manager_secret" "posthog_api_key" {
   secret_id = "posthog_api_key"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -172,7 +172,7 @@ resource "google_secret_manager_secret" "posthog_personal_api_key" {
   secret_id = "posthog_personal_api_key"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -189,7 +189,7 @@ resource "google_secret_manager_secret" "algolia_application_id" {
   secret_id = "algolia_application_id"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -205,7 +205,7 @@ resource "google_secret_manager_secret" "algolia_api_key" {
   secret_id = "algolia_api_key"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -221,7 +221,7 @@ resource "google_secret_manager_secret" "google_sso_client_id" {
   secret_id = "google_sso_client_id"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
@@ -237,7 +237,7 @@ resource "google_secret_manager_secret" "google_sso_client_secret" {
   secret_id = "google_sso_client_secret"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 

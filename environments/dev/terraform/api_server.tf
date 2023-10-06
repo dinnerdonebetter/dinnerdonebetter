@@ -83,7 +83,7 @@ resource "google_secret_manager_secret" "api_user_database_password" {
   secret_id = "api_user_database_password"
 
   replication {
-    automatic = true
+    auto {}
   }
 }
 
