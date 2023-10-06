@@ -21,9 +21,9 @@ terraform {
       source  = "hashicorp/archive"
       version = "2.2.0"
     }
-#    algolia = {
-#      source  = "philippe-vandermoere/algolia"
-#      version = "0.7.0"
-#    }
+    algolia = {
+      source  = "k-yomo/algolia"
+      version = "0.5.7"
+    }
   }
 }
