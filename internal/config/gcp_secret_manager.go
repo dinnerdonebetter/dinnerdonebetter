@@ -60,21 +60,21 @@ type SecretVersionAccessor interface {
 // GetAPIServerConfigFromGoogleCloudRunEnvironment fetches an InstanceConfig from GCP Secret Manager.
 func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client SecretVersionAccessor) (*InstanceConfig, error) {
 	var cfg *InstanceConfig
-	configFilepath := os.Getenv(gcpConfigFilePathEnvVarKey)
 
-	configBytes, configReadErr := os.ReadFile(configFilepath)
-	if configReadErr != nil {
-		return nil, configReadErr
+	configBytes, err := fetchSecretFromSecretStore(ctx, client, "api_service_config")
+	if err != nil {
+		return nil, err
 	}
 
-	if encodeErr := json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); encodeErr != nil || cfg == nil {
-		return nil, encodeErr
+	if err = json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil || cfg == nil {
+		return nil, err
 	}
 
 	rawPort := os.Getenv(gcpPortEnvVarKey)
-	port, portParseErr := strconv.ParseUint(rawPort, 10, 64)
-	if portParseErr != nil {
-		return nil, fmt.Errorf("parsing port: %w", portParseErr)
+	var port uint64
+	port, err = strconv.ParseUint(rawPort, 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf("parsing port: %w", err)
 	}
 	cfg.Server.HTTPPort = uint16(port)
 

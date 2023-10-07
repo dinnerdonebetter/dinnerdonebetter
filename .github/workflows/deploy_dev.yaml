@@ -66,6 +66,13 @@ jobs:
         id: validate
         run: terraform validate -no-color
 
+      - name: Build and push API server container
+        run: |
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:${{  github.sha }} --file environments/dev/dockerfiles/api_server.Dockerfile .
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
+          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:${{  github.sha }}
+          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:latest
+
       - name: Terraform Apply
         run: terraform apply -auto-approve
         working-directory: environments/dev/terraform
