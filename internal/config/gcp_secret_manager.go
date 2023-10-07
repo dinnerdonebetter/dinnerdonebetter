@@ -57,34 +57,13 @@ type SecretVersionAccessor interface {
 	AccessSecretVersion(ctx context.Context, req *secretmanagerpb.AccessSecretVersionRequest, opts ...gax.CallOption) (*secretmanagerpb.AccessSecretVersionResponse, error)
 }
 
-// GetAPIServerConfigFromGoogleCloudRunEnvironment fetches an InstanceConfig from GCP Secret Manager.
-func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client SecretVersionAccessor) (*InstanceConfig, error) {
-	var cfg *InstanceConfig
-	configFilepath := os.Getenv(gcpConfigFilePathEnvVarKey)
-
-	configBytes, configReadErr := os.ReadFile(configFilepath)
-	if configReadErr != nil {
-		return nil, configReadErr
-	}
-
-	if encodeErr := json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); encodeErr != nil || cfg == nil {
-		return nil, encodeErr
-	}
-
-	rawPort := os.Getenv(gcpPortEnvVarKey)
-	port, portParseErr := strconv.ParseUint(rawPort, 10, 64)
-	if portParseErr != nil {
-		return nil, fmt.Errorf("parsing port: %w", portParseErr)
-	}
-	cfg.Server.HTTPPort = uint16(port)
-
+func buildDatabaseURIFromGCPEnvVars() string {
 	socketDir, isSet := os.LookupEnv(gcpDatabaseSocketDirEnvVarKey)
 	if !isSet {
 		socketDir = googleCloudCloudSQLSocket
 	}
 
-	// fetch supplementary data from env vars
-	dbURI := fmt.Sprintf(
+	return fmt.Sprintf(
 		"user=%s password=%s database=%s host=%s/%s",
 		os.Getenv(gcpDatabaseUserEnvVarKey),
 		os.Getenv(gcpDatabaseUserPasswordEnvVarKey),
@@ -92,6 +71,32 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client
 		socketDir,
 		os.Getenv(gcpDatabaseInstanceConnNameEnvVarKey),
 	)
+}
+
+// GetAPIServerConfigFromGoogleCloudRunEnvironment fetches an InstanceConfig from GCP Secret Manager.
+func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client SecretVersionAccessor) (*InstanceConfig, error) {
+	var cfg *InstanceConfig
+	configFilepath := os.Getenv(gcpConfigFilePathEnvVarKey)
+
+	configBytes, err := os.ReadFile(configFilepath)
+	if err != nil {
+		return nil, err
+	}
+
+	if err = json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil || cfg == nil {
+		return nil, err
+	}
+
+	rawPort := os.Getenv(gcpPortEnvVarKey)
+	var port uint64
+	port, err = strconv.ParseUint(rawPort, 10, 64)
+	if err != nil {
+		return nil, fmt.Errorf("parsing port: %w", err)
+	}
+	cfg.Server.HTTPPort = uint16(port)
+
+	// fetch supplementary data from env vars
+	dbURI := buildDatabaseURIFromGCPEnvVars()
 
 	cfg.Database.ConnectionDetails = dbURI
 	cfg.Database.OAuth2TokenEncryptionKey = os.Getenv(gcpOauth2TokenEncryptionKeyEnvVarKey)
@@ -159,8 +164,8 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client
 	cfg.Services.ValidPreparationVessels.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.Workers.DataChangesTopicName = dataChangesTopicName
 
-	if validationErr := cfg.ValidateWithContext(ctx, true); validationErr != nil {
-		return nil, validationErr
+	if err = cfg.ValidateWithContext(ctx, true); err != nil {
+		return nil, err
 	}
 
 	return cfg, nil
@@ -168,7 +173,7 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client
 
 var secretStorePrefix = os.Getenv("GOOGLE_CLOUD_SECRET_STORE_PREFIX")
 
-func buildSecretPathForSecretStore(secretName string) string {
+func buildSecretPathForGCPSecretStore(secretName string) string {
 	return fmt.Sprintf(
 		"%s/%s/versions/latest",
 		secretStorePrefix,
@@ -178,7 +183,7 @@ func buildSecretPathForSecretStore(secretName string) string {
 
 func fetchSecretFromSecretStore(ctx context.Context, client SecretVersionAccessor, secretName string) ([]byte, error) {
 	req := &secretmanagerpb.AccessSecretVersionRequest{
-		Name: buildSecretPathForSecretStore(secretName),
+		Name: buildSecretPathForGCPSecretStore(secretName),
 	}
 
 	result, err := client.AccessSecretVersion(ctx, req)
@@ -191,39 +196,27 @@ func fetchSecretFromSecretStore(ctx context.Context, client SecretVersionAccesso
 
 // getWorkerConfigFromGoogleCloudSecretManager fetches an InstanceConfig from GCP Secret Manager.
 func getWorkerConfigFromGoogleCloudSecretManager(ctx context.Context) (*InstanceConfig, error) {
-	client, secretManagerCreationErr := secretmanager.NewClient(ctx)
-	if secretManagerCreationErr != nil {
-		return nil, fmt.Errorf("failed to create secretmanager client: %w", secretManagerCreationErr)
+	client, err := secretmanager.NewClient(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create secretmanager client: %w", err)
 	}
 
 	var cfg *InstanceConfig
-	configBytes, configFetchErr := fetchSecretFromSecretStore(ctx, client, "api_service_config")
-	if configFetchErr != nil {
-		return nil, fmt.Errorf("fetching config from secret store: %w", configFetchErr)
+	configBytes, err := fetchSecretFromSecretStore(ctx, client, "api_service_config")
+	if err != nil {
+		return nil, fmt.Errorf("fetching config from secret store: %w", err)
 	}
 
-	if encodeErr := json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); encodeErr != nil {
-		return nil, encodeErr
+	if err = json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil {
+		return nil, err
 	}
 
 	if cfg == nil {
 		return nil, errors.New("config is nil")
 	}
 
-	socketDir, isSet := os.LookupEnv(gcpDatabaseSocketDirEnvVarKey)
-	if !isSet {
-		socketDir = googleCloudCloudSQLSocket
-	}
-
 	// fetch supplementary data from env vars
-	dbURI := fmt.Sprintf(
-		"user=%s password=%s database=%s host=%s/%s",
-		os.Getenv(gcpDatabaseUserEnvVarKey),
-		os.Getenv(gcpDatabaseUserPasswordEnvVarKey),
-		os.Getenv(gcpDatabaseNameEnvVarKey),
-		socketDir,
-		os.Getenv(gcpDatabaseInstanceConnNameEnvVarKey),
-	)
+	dbURI := buildDatabaseURIFromGCPEnvVars()
 
 	cfg.Search = searchcfg.Config{
 		Provider: searchcfg.AlgoliaProvider,
@@ -255,8 +248,8 @@ func GetDataChangesWorkerConfigFromGoogleCloudSecretManager(ctx context.Context)
 
 	cfg.Email = emailcfg.Config{}
 
-	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
-		return nil, validationErr
+	if err = cfg.ValidateWithContext(ctx, false); err != nil {
+		return nil, err
 	}
 
 	return cfg, nil
@@ -272,8 +265,8 @@ func GetMealPlanFinalizerConfigFromGoogleCloudSecretManager(ctx context.Context)
 	cfg.Analytics = analyticscfg.Config{}
 	cfg.Email = emailcfg.Config{}
 
-	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
-		return nil, validationErr
+	if err = cfg.ValidateWithContext(ctx, false); err != nil {
+		return nil, err
 	}
 
 	return cfg, nil
@@ -289,8 +282,8 @@ func GetMealPlanTaskCreatorWorkerConfigFromGoogleCloudSecretManager(ctx context.
 	cfg.Analytics = analyticscfg.Config{}
 	cfg.Email = emailcfg.Config{}
 
-	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
-		return nil, validationErr
+	if err = cfg.ValidateWithContext(ctx, false); err != nil {
+		return nil, err
 	}
 
 	return cfg, nil
@@ -306,8 +299,8 @@ func GetMealPlanGroceryListInitializerWorkerConfigFromGoogleCloudSecretManager(c
 	cfg.Analytics = analyticscfg.Config{}
 	cfg.Email = emailcfg.Config{}
 
-	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
-		return nil, validationErr
+	if err = cfg.ValidateWithContext(ctx, false); err != nil {
+		return nil, err
 	}
 
 	return cfg, nil
@@ -328,8 +321,8 @@ func GetOutboundEmailerConfigFromGoogleCloudSecretManager(ctx context.Context) (
 		},
 	}
 
-	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
-		return nil, validationErr
+	if err = cfg.ValidateWithContext(ctx, false); err != nil {
+		return nil, err
 	}
 
 	return cfg, nil
@@ -345,8 +338,8 @@ func GetSearchDataIndexSchedulerConfigFromGoogleCloudSecretManager(ctx context.C
 	cfg.Analytics = analyticscfg.Config{}
 	cfg.Email = emailcfg.Config{}
 
-	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
-		return nil, validationErr
+	if err = cfg.ValidateWithContext(ctx, false); err != nil {
+		return nil, err
 	}
 
 	return cfg, nil
@@ -362,8 +355,8 @@ func GetSearchDataIndexerConfigFromGoogleCloudSecretManager(ctx context.Context)
 	cfg.Analytics = analyticscfg.Config{}
 	cfg.Email = emailcfg.Config{}
 
-	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
-		return nil, validationErr
+	if err = cfg.ValidateWithContext(ctx, false); err != nil {
+		return nil, err
 	}
 
 	return cfg, nil
@@ -386,8 +379,8 @@ func GetEmailProberConfigFromGoogleCloudSecretManager(ctx context.Context) (*Ins
 		},
 	}
 
-	if validationErr := cfg.ValidateWithContext(ctx, false); validationErr != nil {
-		return nil, validationErr
+	if err = cfg.ValidateWithContext(ctx, false); err != nil {
+		return nil, err
 	}
 
 	return cfg, nil

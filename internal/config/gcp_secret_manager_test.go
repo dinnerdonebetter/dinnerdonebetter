@@ -154,7 +154,7 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 		client.On(
 			"AccessSecretVersion",
 			testutils.ContextMatcher,
-			&secretmanagerpb.AccessSecretVersionRequest{Name: buildSecretPathForSecretStore(dataChangesTopicAccessName)},
+			&secretmanagerpb.AccessSecretVersionRequest{Name: buildSecretPathForGCPSecretStore(dataChangesTopicAccessName)},
 			[]gax.CallOption(nil),
 		).Return(
 			&secretmanagerpb.AccessSecretVersionResponse{

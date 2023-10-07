@@ -162,7 +162,7 @@ resource "google_cloud_run_v2_service" "api_server" {
       }
 
       env {
-        name  = "RUNNING_IN_GOOGLE_CLOUD_RUN"
+        name  = "RUNNING_IN_GCP"
         value = "true"
       }
 
