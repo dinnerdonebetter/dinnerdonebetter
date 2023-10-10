@@ -13,17 +13,22 @@
 			"provider": "otel"
 		}
 	},
+	"analytics": {
+		"segment": null,
+		"posthog": null,
+		"rudderstack": null,
+		"provider": ""
+	},
 	"email": {
 		"sendgrid": null,
 		"mailgun": null,
 		"mailjet": null,
 		"provider": ""
 	},
-	"analytics": {
-		"segment": null,
-		"posthog": null,
-		"rudderstack": null,
-		"provider": ""
+	"featureFlags": {
+		"LaunchDarkly": null,
+		"PostHog": null,
+		"Provider": ""
 	},
 	"search": {
 		"algolia": {
@@ -34,21 +39,16 @@
 		"elasticsearch": null,
 		"provider": "algolia"
 	},
-	"featureFlags": {
-		"LaunchDarkly": null,
-		"PostHog": null,
-		"Provider": ""
-	},
 	"encoding": {
 		"contentType": "application/json"
-	},
-	"meta": {
-		"runMode": "development",
-		"debug": true
 	},
 	"routing": {
 		"provider": "chi",
 		"enableCORSForLocalhost": true
+	},
+	"meta": {
+		"runMode": "development",
+		"debug": true
 	},
 	"events": {
 		"consumers": {
@@ -93,28 +93,28 @@
 		"pingWaitPeriod": 1000000000
 	},
 	"services": {
-		"mealPlanOptions": {
+		"recipeStepProducts": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"serviceSettings": {
+		"mealPlanGroceryListItems": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"recipeStepCompletionConditions": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"recipeRatings": {
+		"mealPlanOptionVotes": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"validPreparationInstruments": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"validMeasurementUnitConversions": {
+		"validIngredientStateIngredients": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"validIngredientGroups": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"mealPlanGroceryListItems": {
+		"mealPlanTasks": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"validInstrumentMeasurementUnits": {
@@ -138,9 +138,6 @@
 		"userIngredientPreferences": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"websockets": {
-			"dataChangesTopicName": "data_changes"
-		},
 		"households": {
 			"dataChangesTopicName": "data_changes"
 		},
@@ -153,16 +150,16 @@
 		"validIngredientPreparations": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"recipeStepProducts": {
+		"mealPlanOptions": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"mealPlanOptionVotes": {
+		"recipeRatings": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"mealPlanTasks": {
+		"serviceSettings": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"validIngredientStateIngredients": {
+		"validMeasurementUnitConversions": {
 			"dataChangesTopicName": "data_changes"
 		},
 		"serviceSettingConfigurations": {
@@ -171,20 +168,11 @@
 		"validPreparationVessels": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"recipeSteps": {
-			"mediaUploadPrefix": "https://example.website.lol",
-			"dataChangesTopicName": "data_changes",
-			"uploads": {
-				"storageConfig": {
-					"filesystem": {
-						"rootDirectory": "/uploads"
-					},
-					"bucketName": "recipe_media",
-					"uploadFilenameKey": "recipe_media",
-					"provider": "filesystem"
-				},
-				"debug": true
-			}
+		"serverSentEvents": {
+			"dataChangesTopicName": "data_changes"
+		},
+		"workers": {
+			"dataChangesTopicName": "data_changes"
 		},
 		"users": {
 			"dataChangesTopicName": "data_changes",
@@ -201,17 +189,24 @@
 				"debug": true
 			}
 		},
-		"validIngredients": {
+		"recipeSteps": {
+			"mediaUploadPrefix": "https://example.website.lol",
+			"dataChangesTopicName": "data_changes",
+			"uploads": {
+				"storageConfig": {
+					"filesystem": {
+						"rootDirectory": "/uploads"
+					},
+					"bucketName": "recipe_media",
+					"uploadFilenameKey": "recipe_media",
+					"provider": "filesystem"
+				},
+				"debug": true
+			}
+		},
+		"validVessels": {
 			"dataChangesTopicName": "data_changes",
 			"searchFromDatabase": false
-		},
-		"validInstruments": {
-			"dataChangesTopicName": "data_changes",
-			"searchFromDatabase": false
-		},
-		"webhooks": {
-			"dataChangesTopicName": "data_changes",
-			"debug": false
 		},
 		"validMeasurementUnits": {
 			"dataChangesTopicName": "data_changes",
@@ -221,7 +216,7 @@
 			"dataChangesTopicName": "data_changes",
 			"searchFromDatabase": false
 		},
-		"validIngredientStates": {
+		"validIngredients": {
 			"dataChangesTopicName": "data_changes",
 			"searchFromDatabase": false
 		},
@@ -229,7 +224,7 @@
 			"dataChangesTopicName": "data_changes",
 			"creationEnabled": false
 		},
-		"validVessels": {
+		"validIngredientStates": {
 			"dataChangesTopicName": "data_changes",
 			"searchFromDatabase": false
 		},
@@ -241,8 +236,13 @@
 			"dataChangesTopicName": "data_changes",
 			"searchFromDatabase": false
 		},
-		"workers": {
-			"dataChangesTopicName": "data_changes"
+		"webhooks": {
+			"dataChangesTopicName": "data_changes",
+			"debug": false
+		},
+		"validInstruments": {
+			"dataChangesTopicName": "data_changes",
+			"searchFromDatabase": false
 		},
 		"recipes": {
 			"dataChangesTopicName": "data_changes",

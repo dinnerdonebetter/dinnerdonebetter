@@ -8,6 +8,24 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
+// GetSelf retrieves a user.
+func (c *Client) GetSelf(ctx context.Context) (*types.User, error) {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	req, err := c.requestBuilder.BuildGetSelfRequest(ctx)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "building get self request")
+	}
+
+	var user *types.User
+	if err = c.fetchAndUnmarshal(ctx, req, &user); err != nil {
+		return nil, observability.PrepareError(err, span, "fetching self")
+	}
+
+	return user, nil
+}
+
 // GetUser retrieves a user.
 func (c *Client) GetUser(ctx context.Context, userID string) (*types.User, error) {
 	ctx, span := c.tracer.StartSpan(ctx)

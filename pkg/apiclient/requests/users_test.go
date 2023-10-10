@@ -10,6 +10,36 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestBuilder_BuildGetSelfRequest(T *testing.T) {
+	T.Parallel()
+
+	const expectedPathFormat = "/api/v1/users/self"
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+
+		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat)
+
+		actual, err := helper.builder.BuildGetSelfRequest(helper.ctx)
+		assert.NoError(t, err)
+
+		assertRequestQuality(t, actual, spec)
+	})
+
+	T.Run("with invalid request builder", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		helper.builder = buildTestRequestBuilderWithInvalidURL()
+
+		actual, err := helper.builder.BuildGetSelfRequest(helper.ctx)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
 func TestBuilder_BuildGetUserRequest(T *testing.T) {
 	T.Parallel()
 

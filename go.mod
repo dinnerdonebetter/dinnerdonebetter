@@ -52,6 +52,7 @@ require (
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
 	github.com/posthog/posthog-go v0.0.0-20230801140217-d607812dee69
 	github.com/pquerna/otp v1.4.0
+	github.com/r3labs/sse v0.0.0-20210224172625-26fe804710bc
 	github.com/rs/xid v1.5.0
 	github.com/rs/zerolog v1.30.0
 	github.com/rudderlabs/analytics-go/v4 v4.2.0
@@ -237,5 +238,6 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230822172742-b8732ec3820d // indirect
 	google.golang.org/grpc v1.57.0 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
+	gopkg.in/cenkalti/backoff.v1 v1.1.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

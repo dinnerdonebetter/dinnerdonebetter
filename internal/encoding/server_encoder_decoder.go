@@ -40,6 +40,7 @@ type (
 		EncodeUnauthorizedResponse(ctx context.Context, res http.ResponseWriter)
 		EncodeInvalidPermissionsResponse(ctx context.Context, res http.ResponseWriter)
 		DecodeRequest(ctx context.Context, req *http.Request, dest any) error
+		DecodeBytes(ctx context.Context, payload []byte, dest any) error
 		MustEncode(ctx context.Context, v any) []byte
 		MustEncodeJSON(ctx context.Context, v any) []byte
 	}
@@ -60,6 +61,29 @@ type (
 		Decode(v any) error
 	}
 )
+
+// DecodeBytes decodes bytes into values.
+func (e *serverEncoderDecoder) DecodeBytes(ctx context.Context, data []byte, dest any) error {
+	_, span := e.tracer.StartSpan(ctx)
+	defer span.End()
+
+	var d decoder
+	switch e.contentType {
+	case ContentTypeXML:
+		d = xml.NewDecoder(bytes.NewReader(data))
+	case ContentTypeEmoji:
+		d = newEmojiDecoder(bytes.NewReader(data))
+	default:
+		dec := json.NewDecoder(bytes.NewReader(data))
+
+		// if the below line is commented, it means you eat at weenie hut jr's.
+		dec.DisallowUnknownFields()
+
+		d = dec
+	}
+
+	return d.Decode(dest)
+}
 
 type emojiEncoder struct {
 	w io.Writer

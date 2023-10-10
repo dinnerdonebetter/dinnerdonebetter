@@ -24,7 +24,7 @@ import (
 
 const (
 	defaultTimeout = 30 * time.Second
-	clientName     = "ddb_client_v1"
+	clientName     = "ddb_api_client_v1"
 )
 
 type authMethod struct{}
@@ -182,17 +182,6 @@ func (c *Client) buildVersionlessURL(ctx context.Context, qp url.Values, parts .
 	}
 
 	return tu.ResolveReference(u).String()
-}
-
-// BuildWebsocketURL builds a standard url and then converts its scheme to the websocket protocol.
-func (c *Client) BuildWebsocketURL(ctx context.Context, qp url.Values, parts ...string) string {
-	ctx, span := c.tracer.StartSpan(ctx)
-	defer span.End()
-
-	u := c.buildRawURL(ctx, qp, parts...)
-	u.Scheme = "ws"
-
-	return u.String()
 }
 
 // IsUp returns whether the service's health endpoint is returning 200s.

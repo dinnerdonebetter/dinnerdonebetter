@@ -49,6 +49,7 @@ import (
 	recipestepproductsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepproducts"
 	recipestepsservice "github.com/dinnerdonebetter/backend/internal/services/recipesteps"
 	recipestepvesselsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepvessels"
+	serversenteventsservice "github.com/dinnerdonebetter/backend/internal/services/serversentevents"
 	"github.com/dinnerdonebetter/backend/internal/services/servicesettingconfigurations"
 	"github.com/dinnerdonebetter/backend/internal/services/servicesettings"
 	useringredientpreferencesservice "github.com/dinnerdonebetter/backend/internal/services/useringredientpreferences"
@@ -67,7 +68,6 @@ import (
 	validpreparationvesselsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparationvessels"
 	validvesselsservice "github.com/dinnerdonebetter/backend/internal/services/validvessels"
 	webhooksservice "github.com/dinnerdonebetter/backend/internal/services/webhooks"
-	websocketsservice "github.com/dinnerdonebetter/backend/internal/services/websockets"
 	workersservice "github.com/dinnerdonebetter/backend/internal/services/workers"
 	"github.com/dinnerdonebetter/backend/internal/uploads"
 )
@@ -430,9 +430,6 @@ func buildDevConfig() *config.InstanceConfig {
 			Webhooks: webhooksservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
-			Websockets: websocketsservice.Config{
-				DataChangesTopicName: dataChangesTopicName,
-			},
 			ValidInstruments: validinstrumentsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
@@ -562,6 +559,9 @@ func buildDevConfig() *config.InstanceConfig {
 			Workers: workersservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
+			SSE: serversenteventsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
 		},
 	}
 }
@@ -670,9 +670,6 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			Webhooks: webhooksservice.Config{
-				DataChangesTopicName: dataChangesTopicName,
-			},
-			Websockets: websocketsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			ValidInstruments: validinstrumentsservice.Config{
@@ -793,6 +790,9 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			Workers: workersservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			SSE: serversenteventsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 		},

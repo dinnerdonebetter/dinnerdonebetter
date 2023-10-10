@@ -43,7 +43,6 @@ import (
 	validpreparationinstrumentsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparationinstruments"
 	validpreparationsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparations"
 	webhooksservice "github.com/dinnerdonebetter/backend/internal/services/webhooks"
-	websocketsservice "github.com/dinnerdonebetter/backend/internal/services/websockets"
 	testutils "github.com/dinnerdonebetter/backend/tests/utils"
 
 	"cloud.google.com/go/secretmanager/apiv1/secretmanagerpb"
@@ -95,7 +94,6 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 				MealPlanOptions:                 mealplanoptionsservice.Config{},
 				Households:                      householdsservice.Config{},
 				HouseholdInvitations:            householdinvitationsservice.Config{},
-				Websockets:                      websocketsservice.Config{},
 				Webhooks:                        webhooksservice.Config{},
 				Users:                           usersservice.Config{},
 				RecipePrepTasks:                 recipepreptasksservice.Config{},

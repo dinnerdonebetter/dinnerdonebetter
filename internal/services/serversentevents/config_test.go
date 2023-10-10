@@ -1,10 +1,10 @@
-package websockets
+package serversentevents
 
 import (
 	"context"
 	"testing"
 
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestConfig_ValidateWithContext(T *testing.T) {
@@ -14,8 +14,10 @@ func TestConfig_ValidateWithContext(T *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
-		cfg := &Config{}
+		cfg := &Config{
+			DataChangesTopicName: "blah",
+		}
 
-		require.NoError(t, cfg.ValidateWithContext(ctx))
+		assert.NoError(t, cfg.ValidateWithContext(ctx))
 	})
 }

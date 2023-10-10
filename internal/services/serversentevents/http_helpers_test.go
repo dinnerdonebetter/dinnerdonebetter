@@ -1,4 +1,4 @@
-package websockets
+package serversentevents
 
 import (
 	"context"
@@ -15,7 +15,7 @@ import (
 	testutils "github.com/dinnerdonebetter/backend/tests/utils"
 )
 
-type websocketsServiceHTTPRoutesTestHelper struct {
+type validVesselsServiceHTTPRoutesTestHelper struct {
 	ctx              context.Context
 	req              *http.Request
 	res              *httptest.ResponseRecorder
@@ -24,10 +24,10 @@ type websocketsServiceHTTPRoutesTestHelper struct {
 	exampleHousehold *types.Household
 }
 
-func buildTestHelper(t *testing.T) *websocketsServiceHTTPRoutesTestHelper {
+func buildTestHelper(t *testing.T) *validVesselsServiceHTTPRoutesTestHelper {
 	t.Helper()
 
-	helper := &websocketsServiceHTTPRoutesTestHelper{}
+	helper := &validVesselsServiceHTTPRoutesTestHelper{}
 
 	helper.ctx = context.Background()
 	helper.service = buildTestService()

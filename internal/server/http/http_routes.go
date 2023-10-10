@@ -125,6 +125,10 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 				Post("/meal_plan_tasks", s.workerService.MealPlanTaskCreationHandler)
 		})
 
+		v1Router.Route("/events", func(eventsRouter routing.Router) {
+			eventsRouter.Get(root, s.sseService.StreamSubscriptionHandler)
+		})
+
 		// Users
 		v1Router.Route("/users", func(usersRouter routing.Router) {
 			usersRouter.

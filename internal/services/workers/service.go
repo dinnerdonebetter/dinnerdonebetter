@@ -54,7 +54,7 @@ func ProvideService(
 ) (types.WorkerService, error) {
 	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
 	if err != nil {
-		return nil, fmt.Errorf("setting up valid vessels service data changes publisher: %w", err)
+		return nil, fmt.Errorf("setting up workers service data changes publisher: %w", err)
 	}
 
 	mealPlanFinalizationWorker := workers.ProvideMealPlanFinalizationWorker(

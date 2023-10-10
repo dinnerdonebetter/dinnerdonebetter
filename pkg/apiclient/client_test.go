@@ -211,25 +211,6 @@ func TestBuildVersionlessURL(T *testing.T) {
 	})
 }
 
-func TestClient_BuildWebsocketURL(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		c, _ := NewClient(
-			mustParseURL(exampleURI),
-			tracing.NewNoopTracerProvider(),
-		)
-		ctx := context.Background()
-
-		expected := "ws://whatever.whocares.gov/api/v1/things/and/stuff"
-		actual := c.BuildWebsocketURL(ctx, nil, "things", "and", "stuff")
-
-		assert.Equal(t, expected, actual)
-	})
-}
-
 func TestClient_IsUp(T *testing.T) {
 	T.Parallel()
 
