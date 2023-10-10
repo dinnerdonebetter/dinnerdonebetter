@@ -214,7 +214,7 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 		},
 		Events: msgconfig.Config{
 			Consumers: msgconfig.MessageQueueConfig{
-				Provider: msgconfig.ProviderRedis,
+				Provider: msgconfig.ProviderPubSub,
 			},
 			Publishers: msgconfig.MessageQueueConfig{
 				Provider: msgconfig.ProviderPubSub,
