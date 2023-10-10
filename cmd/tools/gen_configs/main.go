@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	serversenteventsservice "github.com/dinnerdonebetter/backend/internal/services/serversentevents"
 	"log"
 	"os"
 	"path/filepath"
@@ -50,6 +49,7 @@ import (
 	recipestepproductsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepproducts"
 	recipestepsservice "github.com/dinnerdonebetter/backend/internal/services/recipesteps"
 	recipestepvesselsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepvessels"
+	serversenteventsservice "github.com/dinnerdonebetter/backend/internal/services/serversentevents"
 	"github.com/dinnerdonebetter/backend/internal/services/servicesettingconfigurations"
 	"github.com/dinnerdonebetter/backend/internal/services/servicesettings"
 	useringredientpreferencesservice "github.com/dinnerdonebetter/backend/internal/services/useringredientpreferences"
