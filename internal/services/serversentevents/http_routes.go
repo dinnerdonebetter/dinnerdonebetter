@@ -9,8 +9,10 @@ func (s *service) StreamSubscriptionHandler(res http.ResponseWriter, req *http.R
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	logger := s.logger.WithRequest(req)
-	logger.Info("meal plan finalization worker invoked")
+	go func() {
+		<-ctx.Done()
+		return
+	}()
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, nil, http.StatusAccepted)
+	s.eventsServer.HTTPHandler(res, req)
 }
