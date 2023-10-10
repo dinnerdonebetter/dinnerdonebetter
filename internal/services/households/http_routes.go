@@ -232,7 +232,9 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	household.Members = append(admins, plainUsers...)
+	household.Members = []*types.HouseholdUserMembershipWithUser{}
+	household.Members = append(household.Members, admins...)
+	household.Members = append(household.Members, plainUsers...)
 
 	// encode our response and peace.
 	s.encoderDecoder.RespondWithData(ctx, res, household)

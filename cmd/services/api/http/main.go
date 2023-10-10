@@ -21,7 +21,7 @@ import (
 
 const (
 	configFilepathEnvVar       = "CONFIGURATION_FILEPATH"
-	googleCloudIndicatorEnvVar = "RUNNING_IN_GOOGLE_CLOUD_RUN"
+	googleCloudIndicatorEnvVar = "RUNNING_IN_GCP"
 )
 
 func getConfig(ctx context.Context) (*config.InstanceConfig, error) {

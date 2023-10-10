@@ -163,6 +163,7 @@ linters-settings:
     disabled-checks:
       - captLocal
       - singleCaseSwitch
+      - sloppyReassign
 
     # Enable multiple checks by tags, run `GL_DEBUG=gocritic golangci-lint` run to see all tags and checks.
     # Empty list by default. See https://github.com/go-critic/go-critic#usage -> section "Tags".
@@ -407,7 +408,7 @@ issues:
 
     - linters:
         - gocritic
-      text: "appendAssign: "
+      text: "captLocal: `T' should not be capitalized"
 
     # ignore this error type because it isn't defined anywhere, and it's detecting a false positive
     - linters:
