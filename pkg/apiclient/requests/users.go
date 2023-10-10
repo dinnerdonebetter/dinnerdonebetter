@@ -15,6 +15,21 @@ const (
 	usersBasePath = "users"
 )
 
+// BuildGetSelfRequest builds an HTTP request for fetching the requesting user's info.
+func (b *Builder) BuildGetSelfRequest(ctx context.Context) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	uri := b.BuildURL(ctx, nil, usersBasePath, "self")
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "building request")
+	}
+
+	return req, nil
+}
+
 // BuildGetUserRequest builds an HTTP request for fetching a user.
 func (b *Builder) BuildGetUserRequest(ctx context.Context, userID string) (*http.Request, error) {
 	ctx, span := b.tracer.StartSpan(ctx)

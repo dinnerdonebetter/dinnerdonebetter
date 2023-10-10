@@ -43,7 +43,6 @@ var (
 			"MealPlanOptions",
 			"Households",
 			"HouseholdInvitations",
-			"Websockets",
 			"Webhooks",
 			"Users",
 			"MealPlanTasks",
@@ -64,6 +63,7 @@ var (
 			"ValidVessels",
 			"ValidPreparationVessels",
 			"Workers",
+			"SSE",
 		),
 	)
 )

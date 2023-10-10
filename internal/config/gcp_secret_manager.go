@@ -75,14 +75,12 @@ func buildDatabaseURIFromGCPEnvVars() string {
 
 // GetAPIServerConfigFromGoogleCloudRunEnvironment fetches an InstanceConfig from GCP Secret Manager.
 func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client SecretVersionAccessor) (*InstanceConfig, error) {
-	var cfg *InstanceConfig
-	configFilepath := os.Getenv(gcpConfigFilePathEnvVarKey)
-
-	configBytes, err := os.ReadFile(configFilepath)
+	configBytes, err := os.ReadFile(os.Getenv(gcpConfigFilePathEnvVarKey))
 	if err != nil {
 		return nil, err
 	}
 
+	var cfg *InstanceConfig
 	if err = json.NewDecoder(bytes.NewReader(configBytes)).Decode(&cfg); err != nil || cfg == nil {
 		return nil, err
 	}
@@ -163,6 +161,7 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client
 	cfg.Services.ValidVessels.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.ValidPreparationVessels.DataChangesTopicName = dataChangesTopicName
 	cfg.Services.Workers.DataChangesTopicName = dataChangesTopicName
+	cfg.Services.SSE.DataChangesTopicName = dataChangesTopicName
 
 	if err = cfg.ValidateWithContext(ctx, true); err != nil {
 		return nil, err

@@ -2,16 +2,14 @@ package serversentevents
 
 import (
 	"context"
-	"errors"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/analytics"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
-	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	testutils "github.com/dinnerdonebetter/backend/tests/utils"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
@@ -40,19 +38,17 @@ func TestProvideValidVesselsService(T *testing.T) {
 			DataChangesTopicName: "data_changes",
 		}
 
-		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
+		pp := &mockpublishers.ConsumerProvider{}
+		pp.On("ProvideConsumer", testutils.ContextMatcher, cfg.DataChangesTopicName, mock.Anything).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideService(
 			ctx,
-			logger,
 			cfg,
+			logger,
 			database.NewMockDatabase(),
 			mockencoding.NewMockEncoderDecoder(),
 			pp,
 			tracing.NewNoopTracerProvider(),
-			analytics.NewNoopEventReporter(),
-			&recipeanalysis.MockRecipeAnalyzer{},
 		)
 
 		assert.NotNil(t, s)
@@ -71,19 +67,17 @@ func TestProvideValidVesselsService(T *testing.T) {
 			DataChangesTopicName: "data_changes",
 		}
 
-		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
+		pp := &mockpublishers.ConsumerProvider{}
+		pp.On("ProvideConsumer", testutils.ContextMatcher, cfg.DataChangesTopicName, mock.Anything).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideService(
 			ctx,
-			logger,
 			cfg,
+			logger,
 			database.NewMockDatabase(),
 			mockencoding.NewMockEncoderDecoder(),
 			pp,
 			tracing.NewNoopTracerProvider(),
-			analytics.NewNoopEventReporter(),
-			&recipeanalysis.MockRecipeAnalyzer{},
 		)
 
 		assert.Nil(t, s)
