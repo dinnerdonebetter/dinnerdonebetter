@@ -22,6 +22,8 @@ func (m *ConsumerProvider) ProvideConsumer(ctx context.Context, topic string, ha
 	return args.Get(0).(messagequeue.Consumer), args.Error(1)
 }
 
+var _ messagequeue.Consumer = (*Consumer)(nil)
+
 // Consumer is a mock consumers.Consumer.
 type Consumer struct {
 	mock.Mock

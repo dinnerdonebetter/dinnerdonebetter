@@ -24,11 +24,13 @@ func (s *service) StreamSubscriptionHandler(res http.ResponseWriter, req *http.R
 	}
 
 	s.eventsServer.CreateStream(sessionCtxData.Requester.UserID)
-	req.URL.Query().Set("stream", sessionCtxData.Requester.UserID)
+	q := req.URL.Query()
+	q.Set("stream", sessionCtxData.Requester.UserID)
+	req.URL.RawQuery = q.Encode()
 
 	go func() {
 		<-ctx.Done()
-		return
+		s.eventsServer.RemoveStream(sessionCtxData.Requester.UserID)
 	}()
 
 	s.eventsServer.HTTPHandler(res, req)

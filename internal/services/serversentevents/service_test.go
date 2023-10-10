@@ -2,6 +2,7 @@ package serversentevents
 
 import (
 	"context"
+	"errors"
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
@@ -38,8 +39,11 @@ func TestProvideValidVesselsService(T *testing.T) {
 			DataChangesTopicName: "data_changes",
 		}
 
+		mockConsumer := &mockpublishers.Consumer{}
+		mockConsumer.On("Consume", mock.Anything, mock.Anything).Return(nil)
+
 		pp := &mockpublishers.ConsumerProvider{}
-		pp.On("ProvideConsumer", testutils.ContextMatcher, cfg.DataChangesTopicName, mock.Anything).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProvideConsumer", testutils.ContextMatcher, cfg.DataChangesTopicName, mock.Anything).Return(mockConsumer, nil)
 
 		s, err := ProvideService(
 			ctx,
@@ -57,7 +61,7 @@ func TestProvideValidVesselsService(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, pp)
 	})
 
-	T.Run("with error providing data changes producer", func(t *testing.T) {
+	T.Run("with error providing data changes consumer", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
@@ -68,7 +72,7 @@ func TestProvideValidVesselsService(T *testing.T) {
 		}
 
 		pp := &mockpublishers.ConsumerProvider{}
-		pp.On("ProvideConsumer", testutils.ContextMatcher, cfg.DataChangesTopicName, mock.Anything).Return(&mockpublishers.Publisher{}, nil)
+		pp.On("ProvideConsumer", testutils.ContextMatcher, cfg.DataChangesTopicName, mock.Anything).Return((*mockpublishers.Consumer)(nil), errors.New("blah"))
 
 		s, err := ProvideService(
 			ctx,
