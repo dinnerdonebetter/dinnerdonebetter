@@ -26,6 +26,7 @@ func TestProvideConsumerProvider(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		cfg := &Config{
 			Consumers: MessageQueueConfig{
@@ -33,7 +34,7 @@ func TestProvideConsumerProvider(T *testing.T) {
 			},
 		}
 
-		provider, err := ProvideConsumerProvider(logger, tracing.NewNoopTracerProvider(), cfg)
+		provider, err := ProvideConsumerProvider(ctx, logger, tracing.NewNoopTracerProvider(), cfg)
 		assert.NoError(t, err)
 		assert.NotNil(t, provider)
 	})
@@ -41,10 +42,11 @@ func TestProvideConsumerProvider(T *testing.T) {
 	T.Run("with invalid provider", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 		cfg := &Config{}
 
-		provider, err := ProvideConsumerProvider(logger, tracing.NewNoopTracerProvider(), cfg)
+		provider, err := ProvideConsumerProvider(ctx, logger, tracing.NewNoopTracerProvider(), cfg)
 		assert.Error(t, err)
 		assert.Nil(t, provider)
 	})
