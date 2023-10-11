@@ -60,11 +60,9 @@ func (p *consumer) Consume(stopChan chan bool, errors chan error) {
 	}
 
 	go func() {
-		select {
-		case <-stopChan:
-			if err = sub.Delete(ctx); err != nil {
-				errors <- err
-			}
+		<-stopChan
+		if err = sub.Delete(ctx); err != nil {
+			errors <- err
 		}
 	}()
 
