@@ -63,10 +63,17 @@ func cleanString(s string) string {
 }
 
 // ProvideConsumerProvider provides a PublisherProvider.
-func ProvideConsumerProvider(logger logging.Logger, tracerProvider tracing.TracerProvider, c *Config) (messagequeue.ConsumerProvider, error) {
+func ProvideConsumerProvider(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, c *Config) (messagequeue.ConsumerProvider, error) {
 	switch cleanString(string(c.Consumers.Provider)) {
 	case ProviderRedis:
 		return redis.ProvideRedisConsumerProvider(logger, tracerProvider, c.Consumers.Redis), nil
+	case ProviderPubSub:
+		client, err := ps.NewClient(ctx, os.Getenv("GOOGLE_CLOUD_PROJECT_ID"))
+		if err != nil {
+			return nil, fmt.Errorf("establishing PubSub client: %w", err)
+		}
+
+		return pubsub.ProvidePubSubConsumerProvider(logger, tracerProvider, client), nil
 	default:
 		return nil, fmt.Errorf("invalid provider: %q", c.Consumers.Provider)
 	}

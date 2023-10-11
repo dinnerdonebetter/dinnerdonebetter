@@ -369,7 +369,7 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (http.Server, error)
 		return nil, err
 	}
 	serversenteventsConfig := &servicesConfig.SSE
-	consumerProvider, err := config5.ProvideConsumerProvider(logger, tracerProvider, config11)
+	consumerProvider, err := config5.ProvideConsumerProvider(ctx, logger, tracerProvider, config11)
 	if err != nil {
 		return nil, err
 	}
