@@ -21,7 +21,7 @@ type (
 		Publish(context.Context, *pubsub.Message) *pubsub.PublishResult
 	}
 
-	publisher struct {
+	pubSubPublisher struct {
 		tracer    tracing.Tracer
 		encoder   encoding.ClientEncoder
 		logger    logging.Logger
@@ -30,9 +30,9 @@ type (
 	}
 )
 
-// buildPubSubPublisher provides a Pub/Sub-backed publisher.
-func buildPubSubPublisher(logger logging.Logger, pubsubClient *pubsub.Topic, tracerProvider tracing.TracerProvider, topic string) *publisher {
-	return &publisher{
+// buildPubSubPublisher provides a Pub/Sub-backed pubSubPublisher.
+func buildPubSubPublisher(logger logging.Logger, pubsubClient *pubsub.Topic, tracerProvider tracing.TracerProvider, topic string) *pubSubPublisher {
+	return &pubSubPublisher{
 		topic:     topic,
 		encoder:   encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
 		logger:    logging.EnsureLogger(logger),
@@ -42,7 +42,7 @@ func buildPubSubPublisher(logger logging.Logger, pubsubClient *pubsub.Topic, tra
 }
 
 // Stop calls Stop on the topic.
-func (p *publisher) Stop() {
+func (p *pubSubPublisher) Stop() {
 	p.publisher.Stop()
 }
 
@@ -71,7 +71,7 @@ func (p *publisherProvider) Close() {
 	}
 }
 
-// ProvidePublisher returns a publisher for a given topic.
+// ProvidePublisher returns a pubSubPublisher for a given topic.
 func (p *publisherProvider) ProvidePublisher(topic string) (messagequeue.Publisher, error) {
 	if topic == "" {
 		return nil, messagequeue.ErrEmptyTopicName
@@ -93,19 +93,19 @@ func (p *publisherProvider) ProvidePublisher(topic string) (messagequeue.Publish
 	return pub, nil
 }
 
-func (r *publisher) Publish(ctx context.Context, data any) error {
-	_, span := r.tracer.StartSpan(ctx)
+func (p *pubSubPublisher) Publish(ctx context.Context, data any) error {
+	_, span := p.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := r.logger.Clone()
+	logger := p.logger.Clone()
 
 	var b bytes.Buffer
-	if err := r.encoder.Encode(ctx, &b, data); err != nil {
+	if err := p.encoder.Encode(ctx, &b, data); err != nil {
 		return observability.PrepareError(err, span, "encoding topic message")
 	}
 
 	msg := &pubsub.Message{Data: b.Bytes()}
-	result := r.publisher.Publish(ctx, msg)
+	result := p.publisher.Publish(ctx, msg)
 
 	<-result.Ready()
 
