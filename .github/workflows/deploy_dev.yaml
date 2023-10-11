@@ -1,11 +1,10 @@
 concurrency:
   group: ${{ github.ref }}
 
-on:
-  push:
-    branches:
-      - dev
-  # pull_request:
+on: [pull_request]
+#  push:
+#    branches:
+#      - dev
 
 name: deploy
 jobs:
