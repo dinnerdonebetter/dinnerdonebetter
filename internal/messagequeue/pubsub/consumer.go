@@ -77,7 +77,7 @@ func (p *consumer) Consume(stopChan chan bool, errors chan error) {
 	}
 }
 
-type consumerProvider struct {
+type pubsubConsumerProvider struct {
 	logger           logging.Logger
 	consumerCache    map[string]messagequeue.Consumer
 	pubsubClient     *pubsub.Client
@@ -87,7 +87,7 @@ type consumerProvider struct {
 
 // ProvidePubSubConsumerProvider returns a ConsumerProvider for a given address.
 func ProvidePubSubConsumerProvider(logger logging.Logger, tracerProvider tracing.TracerProvider, client *pubsub.Client) messagequeue.ConsumerProvider {
-	return &consumerProvider{
+	return &pubsubConsumerProvider{
 		logger:         logging.EnsureLogger(logger),
 		pubsubClient:   client,
 		consumerCache:  map[string]messagequeue.Consumer{},
@@ -96,14 +96,14 @@ func ProvidePubSubConsumerProvider(logger logging.Logger, tracerProvider tracing
 }
 
 // Close closes the connection topic.
-func (p *consumerProvider) Close() {
+func (p *pubsubConsumerProvider) Close() {
 	if err := p.pubsubClient.Close(); err != nil {
 		p.logger.Error(err, "closing pubsub connection")
 	}
 }
 
 // ProvideConsumer returns a consumer for a given topic.
-func (p *consumerProvider) ProvideConsumer(ctx context.Context, topic string, handlerFunc func(context.Context, []byte) error) (messagequeue.Consumer, error) {
+func (p *pubsubConsumerProvider) ProvideConsumer(_ context.Context, topic string, handlerFunc func(context.Context, []byte) error) (messagequeue.Consumer, error) {
 	if topic == "" {
 		return nil, messagequeue.ErrEmptyTopicName
 	}
