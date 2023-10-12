@@ -66,7 +66,7 @@ require (
 	github.com/testcontainers/testcontainers-go v0.25.0
 	github.com/testcontainers/testcontainers-go/modules/elasticsearch v0.25.0
 	github.com/testcontainers/testcontainers-go/modules/gcloud v0.25.0
-	github.com/testcontainers/testcontainers-go/modules/postgres v0.21.0
+	github.com/testcontainers/testcontainers-go/modules/postgres v0.25.0
 	github.com/testcontainers/testcontainers-go/modules/redis v0.25.0
 	github.com/wagslane/go-password-validator v0.3.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.45.0

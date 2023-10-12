@@ -1339,8 +1339,8 @@ github.com/testcontainers/testcontainers-go/modules/elasticsearch v0.25.0 h1:wfw
 github.com/testcontainers/testcontainers-go/modules/elasticsearch v0.25.0/go.mod h1:+noL+84vt2wfzweKoS6dc94av4lvxCAt7n+KQn2cudE=
 github.com/testcontainers/testcontainers-go/modules/gcloud v0.25.0 h1:o1bxsOJBnxlJgbC6v9t45LxAoo4NNEQZ20lpvUgvxho=
 github.com/testcontainers/testcontainers-go/modules/gcloud v0.25.0/go.mod h1:9NAPFWvrxzAY8OMYg5TPKmrYTr8bGzZH8sChcc3LIOg=
-github.com/testcontainers/testcontainers-go/modules/postgres v0.21.0 h1:rFPyTR7pPMiHcDktXwd5iZ+mA1cHH/WRa+knxBcY8wU=
-github.com/testcontainers/testcontainers-go/modules/postgres v0.21.0/go.mod h1:Uoia8PX1RewxkJTbeXGBK6vgMjlmRbnL/4n0EXH2Z54=
+github.com/testcontainers/testcontainers-go/modules/postgres v0.25.0 h1:8WNK1Edo9ohRYPrDCXWdoVY2cbg/oFh9y5uWZGSBESo=
+github.com/testcontainers/testcontainers-go/modules/postgres v0.25.0/go.mod h1:XpwOhyUXheL31hz73L8be8maW1rQq8H48x5qZeHtYr0=
 github.com/testcontainers/testcontainers-go/modules/redis v0.25.0 h1:Oml2QVZtDfLB8gosT7fRdWsWYSM8vihWKVSl7XZZtv0=
 github.com/testcontainers/testcontainers-go/modules/redis v0.25.0/go.mod h1:xmCaWbWOQoWzhb5isnZw4GGy4aIaDjq8lSCXYFZz1ME=
 github.com/tidwall/btree v0.0.0-20191029221954-400434d76274 h1:G6Z6HvJuPjG6XfNGi/feOATzeJrfgTNJY+rGrHbA04E=
