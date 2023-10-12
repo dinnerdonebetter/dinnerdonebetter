@@ -6,7 +6,7 @@ import (
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
-// Config configures a PubSub-backed consumer.
+// Config configures a PubSub-backed pubSubConsumer.
 type Config struct{}
 
 var _ validation.ValidatableWithContext = (*Config)(nil)
