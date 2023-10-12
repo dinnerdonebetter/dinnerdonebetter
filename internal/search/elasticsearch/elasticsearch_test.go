@@ -44,11 +44,15 @@ func Test_ProvideIndexManager(T *testing.T) {
 	T.Parallel()
 
 	if !runningContainerTests {
-		T.Skip("skipping container tests")
+		T.SkipNow()
 	}
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
+
+		if !runningContainerTests {
+			t.SkipNow()
+		}
 
 		ctx := context.Background()
 		cfg, shutdownFunc := buildContainerBackedElasticsearchConfig(t, ctx)
@@ -63,6 +67,10 @@ func Test_ProvideIndexManager(T *testing.T) {
 
 	T.Run("without available instance", func(t *testing.T) {
 		t.Parallel()
+
+		if !runningContainerTests {
+			t.SkipNow()
+		}
 
 		ctx := context.Background()
 		cfg := &Config{}
