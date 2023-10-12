@@ -25,9 +25,8 @@ func buildContainerBackedElasticsearchConfig(t *testing.T, ctx context.Context) 
 		testcontainers.WithImage("elasticsearch:8.10.2"),
 		elasticsearchcontainers.WithPassword("arbitraryPassword"),
 	)
-	if err != nil {
-		panic(err)
-	}
+	require.NoError(t, err)
+	require.NotNil(t, elasticsearchContainer)
 
 	cfg := &Config{
 		Address:               elasticsearchContainer.Settings.Address,
@@ -44,7 +43,7 @@ func Test_ProvideIndexManager(T *testing.T) {
 	T.Parallel()
 
 	if !runningContainerTests {
-		T.Skip("skipping container tests")
+		T.SkipNow()
 	}
 
 	T.Run("standard", func(t *testing.T) {

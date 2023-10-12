@@ -16,6 +16,7 @@ import (
 
 type (
 	messageConsumer interface {
+		Topic(string) *pubsub.Topic
 		CreateSubscription(ctx context.Context, id string, cfg pubsub.SubscriptionConfig) (*pubsub.Subscription, error)
 	}
 
@@ -53,7 +54,7 @@ func (c *pubSubConsumer) Consume(stopChan chan bool, errors chan error) {
 	}
 
 	ctx := context.Background()
-	sub, err := c.consumer.CreateSubscription(ctx, c.topic, pubsub.SubscriptionConfig{})
+	sub, err := c.consumer.CreateSubscription(ctx, c.topic, pubsub.SubscriptionConfig{Topic: c.consumer.Topic(c.topic)})
 	if err != nil {
 		errors <- err
 		return
