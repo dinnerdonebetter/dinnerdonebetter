@@ -15,6 +15,10 @@ import (
 func Test_indexManager_CompleteLifecycle(T *testing.T) {
 	T.Parallel()
 
+	if !runningContainerTests {
+		T.SkipNow()
+	}
+
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
