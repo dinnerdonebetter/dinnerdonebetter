@@ -81,7 +81,7 @@ func ProvideService(
 	go dataChangesConsumer.Consume(svc.stopChan, errors)
 	go func() {
 		for receivedErr := range errors {
-			logger.Error(receivedErr, "error consuming data changes")
+			logger.WithValue("topic_name", cfg.DataChangesTopicName).Error(receivedErr, "consuming data changes")
 		}
 	}()
 
