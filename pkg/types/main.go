@@ -63,8 +63,8 @@ type (
 	APIError struct {
 		_ struct{} `json:"-"`
 
-		Message string `json:"message"`
-		Code    int    `json:"code"`
+		Message string    `json:"message"`
+		Code    ErrorCode `json:"code"`
 	}
 
 	NamedID struct {
@@ -75,5 +75,16 @@ type (
 
 // Error returns the error message.
 func (e *APIError) Error() string {
-	return fmt.Sprintf("%d: %s", e.Code, e.Message)
+	return fmt.Sprintf("%s: %s", e.Code, e.Message)
+}
+
+// NewAPIErrorResponse returns a new APIResponse with an error field.
+func NewAPIErrorResponse(issue string, code ErrorCode, details ResponseDetails) *APIResponse[any] {
+	return &APIResponse[any]{
+		Error: &APIError{
+			Message: issue,
+			Code:    code,
+		},
+		Details: details,
+	}
 }

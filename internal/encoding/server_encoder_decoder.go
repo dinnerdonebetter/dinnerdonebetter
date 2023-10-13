@@ -13,7 +13,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/panicking"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
 const (
@@ -174,7 +173,7 @@ func (e *serverEncoderDecoder) EncodeErrorResponse(ctx context.Context, res http
 	}
 
 	res.WriteHeader(statusCode)
-	if err := enc.Encode(&types.APIError{Message: msg, Code: statusCode}); err != nil {
+	if err := enc.Encode(msg); err != nil {
 		observability.AcknowledgeError(err, logger, span, "encoding error response")
 	}
 }
