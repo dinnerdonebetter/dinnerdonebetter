@@ -74,7 +74,15 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validVessel, http.StatusCreated)
+	responseValue := &types.APIResponse[*types.ValidVessel]{
+		Details: types.ResponseDetails{
+			CurrentHouseholdID: sessionCtxData.ActiveHouseholdID,
+			TraceID:            span.SpanContext().TraceID().String(),
+		},
+		Data: validVessel,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a valid vessel.
@@ -112,8 +120,16 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[*types.ValidVessel]{
+		Details: types.ResponseDetails{
+			CurrentHouseholdID: sessionCtxData.ActiveHouseholdID,
+			TraceID:            span.SpanContext().TraceID().String(),
+		},
+		Data: x,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ListHandler is our list route.
@@ -122,10 +138,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	defer span.End()
 
 	filter := types.ExtractQueryFilterFromRequest(req)
-	logger := s.logger.WithRequest(req).
-		WithValue(keys.FilterLimitKey, filter.Limit).
-		WithValue(keys.FilterPageKey, filter.Page).
-		WithValue(keys.FilterSortByKey, filter.SortBy)
+	logger := s.logger.WithRequest(req)
+	logger = filter.AttachToLogger(logger)
 
 	tracing.AttachRequestToSpan(span, req)
 	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
@@ -151,8 +165,17 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.ValidVessel]{
+		Details: types.ResponseDetails{
+			CurrentHouseholdID: sessionCtxData.ActiveHouseholdID,
+			TraceID:            span.SpanContext().TraceID().String(),
+		},
+		Pagination: &validVessels.Pagination,
+		Data:       validVessels.Data,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, validVessels)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // SearchHandler is our search route.
@@ -169,11 +192,9 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
 
 	logger := s.logger.WithRequest(req).
-		WithValue(keys.FilterLimitKey, filter.Limit).
-		WithValue(keys.FilterPageKey, filter.Page).
-		WithValue(keys.FilterSortByKey, filter.SortBy).
 		WithValue(keys.SearchQueryKey, query).
 		WithValue("using_database", useDB)
+	logger = filter.AttachToLogger(logger)
 
 	// determine user ID.
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
@@ -215,8 +236,16 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.ValidVessel]{
+		Details: types.ResponseDetails{
+			CurrentHouseholdID: sessionCtxData.ActiveHouseholdID,
+			TraceID:            span.SpanContext().TraceID().String(),
+		},
+		Data: validVessels,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, validVessels)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // UpdateHandler returns a handler that updates a valid vessel.
@@ -287,8 +316,16 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
+	responseValue := &types.APIResponse[*types.ValidVessel]{
+		Details: types.ResponseDetails{
+			CurrentHouseholdID: sessionCtxData.ActiveHouseholdID,
+			TraceID:            span.SpanContext().TraceID().String(),
+		},
+		Data: validVessel,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, validVessel)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ArchiveHandler returns a handler that archives a valid vessel.
@@ -374,6 +411,14 @@ func (s *service) RandomHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[*types.ValidVessel]{
+		Details: types.ResponseDetails{
+			CurrentHouseholdID: sessionCtxData.ActiveHouseholdID,
+			TraceID:            span.SpanContext().TraceID().String(),
+		},
+		Data: x,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }

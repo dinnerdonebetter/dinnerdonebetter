@@ -211,7 +211,7 @@ func TestValidVesselsService_ReadHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.ValidVessel{}),
+			mock.IsType(&types.APIResponse[*types.ValidVessel]{}),
 		)
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -326,7 +326,7 @@ func TestValidVesselsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.QueryFilteredResult[types.ValidVessel]{}),
+			mock.IsType(&types.APIResponse[[]*types.ValidVessel]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -379,7 +379,7 @@ func TestValidVesselsService_ListHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.QueryFilteredResult[types.ValidVessel]{}),
+			mock.IsType(&types.APIResponse[[]*types.ValidVessel]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -449,7 +449,7 @@ func TestValidVesselsService_SearchHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType([]*types.ValidVessel{}),
+			mock.IsType(&types.APIResponse[[]*types.ValidVessel]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -548,7 +548,7 @@ func TestValidVesselsService_SearchHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType([]*types.ValidVessel{}),
+			mock.IsType(&types.APIResponse[[]*types.ValidVessel]{}),
 		).Return()
 		helper.service.encoderDecoder = encoderDecoder
 
@@ -1011,7 +1011,7 @@ func TestValidVesselsService_RandomHandler(T *testing.T) {
 			"RespondWithData",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.ValidVessel{}),
+			mock.IsType(&types.APIResponse[*types.ValidVessel]{}),
 		)
 		helper.service.encoderDecoder = encoderDecoder
 

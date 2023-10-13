@@ -41,6 +41,24 @@ type (
 		Pagination
 	}
 
+	// ResponseDetails represents details about the response.
+	ResponseDetails struct {
+		_ struct{} `json:"-"`
+
+		CurrentHouseholdID string `json:"currentHouseholdID"`
+		TraceID            string `json:"traceID"`
+	}
+
+	// APIResponse represents a response we might send to the user.
+	APIResponse[T any] struct {
+		_ struct{} `json:"-"`
+
+		Data       T               `json:"data,omitempty"`
+		Pagination *Pagination     `json:"pagination,omitempty"`
+		Error      *APIError       `json:"error,omitempty"`
+		Details    ResponseDetails `json:"details"`
+	}
+
 	// APIError represents a response we might send to the User in the event of an error.
 	APIError struct {
 		_ struct{} `json:"-"`
@@ -55,6 +73,7 @@ type (
 	}
 )
 
+// Error returns the error message.
 func (e *APIError) Error() string {
 	return fmt.Sprintf("%d: %s", e.Code, e.Message)
 }

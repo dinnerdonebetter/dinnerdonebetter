@@ -23,8 +23,9 @@ func TestValidVessels(t *testing.T) {
 type validVesselsBaseSuite struct {
 	suite.Suite
 
-	ctx                context.Context
-	exampleValidVessel *types.ValidVessel
+	ctx                        context.Context
+	exampleValidVessel         *types.ValidVessel
+	exampleValidVesselResponse *types.APIResponse[*types.ValidVessel]
 }
 
 var _ suite.SetupTestSuite = (*validVesselsBaseSuite)(nil)
@@ -32,6 +33,9 @@ var _ suite.SetupTestSuite = (*validVesselsBaseSuite)(nil)
 func (s *validVesselsBaseSuite) SetupTest() {
 	s.ctx = context.Background()
 	s.exampleValidVessel = fakes.BuildFakeValidVessel()
+	s.exampleValidVesselResponse = &types.APIResponse[*types.ValidVessel]{
+		Data: s.exampleValidVessel,
+	}
 }
 
 type validVesselsTestSuite struct {
@@ -47,7 +51,7 @@ func (s *validVesselsTestSuite) TestClient_GetValidVessel() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleValidVessel.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidVessel)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidVesselResponse)
 		actual, err := c.GetValidVessel(s.ctx, s.exampleValidVessel.ID)
 
 		require.NotNil(t, actual)
@@ -94,7 +98,7 @@ func (s *validVesselsTestSuite) TestClient_GetRandomValidVessel() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidVessel)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidVesselResponse)
 		actual, err := c.GetRandomValidVessel(s.ctx)
 
 		require.NotNil(t, actual)
@@ -133,9 +137,13 @@ func (s *validVesselsTestSuite) TestClient_GetValidVessels() {
 		filter := (*types.QueryFilter)(nil)
 
 		exampleValidVesselList := fakes.BuildFakeValidVesselList()
+		exampleValidVesselListAPIResponse := &types.APIResponse[[]*types.ValidVessel]{
+			Data:       exampleValidVesselList.Data,
+			Pagination: &exampleValidVesselList.Pagination,
+		}
 
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidVesselList)
+		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidVesselListAPIResponse)
 		actual, err := c.GetValidVessels(s.ctx, filter)
 
 		require.NotNil(t, actual)
@@ -178,9 +186,12 @@ func (s *validVesselsTestSuite) TestClient_SearchValidVessels() {
 		t := s.T()
 
 		exampleValidVesselList := fakes.BuildFakeValidVesselList()
+		exampleValidVesselListAPIResponse := &types.APIResponse[[]*types.ValidVessel]{
+			Data: exampleValidVesselList.Data,
+		}
 
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&q=whatever", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidVesselList.Data)
+		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidVesselListAPIResponse)
 		actual, err := c.SearchValidVessels(s.ctx, exampleQuery, 0)
 
 		require.NotNil(t, actual)
@@ -230,7 +241,7 @@ func (s *validVesselsTestSuite) TestClient_CreateValidVessel() {
 		exampleInput := fakes.BuildFakeValidVesselCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidVessel)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidVesselResponse)
 
 		actual, err := c.CreateValidVessel(s.ctx, exampleInput)
 		require.NotEmpty(t, actual)
@@ -291,7 +302,7 @@ func (s *validVesselsTestSuite) TestClient_UpdateValidVessel() {
 		t := s.T()
 
 		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, s.exampleValidVessel.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidVessel)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidVesselResponse)
 
 		err := c.UpdateValidVessel(s.ctx, s.exampleValidVessel)
 		assert.NoError(t, err)

@@ -14,8 +14,8 @@ func (c *Client) GetServiceSettingConfigurationForUserByName(ctx context.Context
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger.Clone()
-	logger = filter.AttachToLogger(logger).WithValue(keys.ServiceSettingNameKey, settingName)
+	logger := c.logger.WithValue(keys.ServiceSettingNameKey, settingName)
+	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 	tracing.AttachToSpan(span, keys.ServiceSettingNameKey, settingName)
 

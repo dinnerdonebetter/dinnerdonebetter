@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	// LoggerNameKey is a key we can use to denote zerologLogger names across implementations.
+	// LoggerNameKey is a key we can use to denote logger names across implementations.
 	LoggerNameKey = "_name_"
 )
 
@@ -35,9 +35,9 @@ var (
 )
 
 // Logger represents a simple logging interface we can build wrappers around.
-// Note that someone, naive and green, may be enticed to add a method to this interface akin to:
+// NOTICE: someone, naive and green, may be enticed to add a method to this interface akin to:
 // WithQueryFilter(*types.QueryFilter) Logger
-// This is a fool's errand, which would introduce a disallowed import cycle.
+// This is a fool's errand, it would introduce a disallowed import cycle.
 type Logger interface {
 	Info(string)
 	Debug(string)
