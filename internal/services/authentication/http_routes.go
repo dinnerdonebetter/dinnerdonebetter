@@ -425,7 +425,8 @@ func (s *service) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *htt
 
 	if err = input.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 

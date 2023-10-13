@@ -58,6 +58,9 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 
 		helper.service.CreateWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleWebhook)
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -187,6 +190,9 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 
 		helper.service.CreateWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleWebhook)
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -221,6 +227,9 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 
 		helper.service.ListWebhooksHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, exampleWebhookList.Data)
 
 		mock.AssertExpectationsForObjects(t, wd)
 	})
@@ -319,6 +328,9 @@ func TestWebhooksService_ReadWebhookHandler(T *testing.T) {
 
 		helper.service.ReadWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleWebhook)
 
 		mock.AssertExpectationsForObjects(t, wd)
 	})

@@ -122,7 +122,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		helper.exampleInput.NewStatus = string(types.BannedUserAccountStatus)
 
 		helper.service.UserAccountStatusChangeHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
 
 	T.Run("with no input attached to request", func(t *testing.T) {

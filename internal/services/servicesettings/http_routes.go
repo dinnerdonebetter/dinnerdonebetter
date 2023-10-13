@@ -53,7 +53,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if err = providedInput.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
@@ -65,7 +66,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	serviceSetting, err := s.serviceSettingDataManager.CreateServiceSetting(ctx, input)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating service setting")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -118,7 +120,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving service setting")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -160,7 +163,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		serviceSettings = &types.QueryFilteredResult[types.ServiceSetting]{Data: []*types.ServiceSetting{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving service settings")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -205,7 +209,8 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 		serviceSettings = []*types.ServiceSetting{}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "searching service settings")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -245,7 +250,8 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	exists, existenceCheckErr := s.serviceSettingDataManager.ServiceSettingExists(ctx, serviceSettingID)
 	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
 		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking service setting existence")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
@@ -254,7 +260,8 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	if err = s.serviceSettingDataManager.ArchiveServiceSetting(ctx, serviceSettingID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving service setting")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 

@@ -53,7 +53,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if err = providedInput.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
@@ -71,7 +72,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	recipeStepProduct, err := s.recipeStepProductDataManager.CreateRecipeStepProduct(ctx, input)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating recipe step product")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -230,7 +232,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if err = input.ValidateWithContext(ctx); err != nil {
 		logger.Error(err, "provided input was invalid")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 

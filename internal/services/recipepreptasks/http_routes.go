@@ -53,7 +53,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if err = providedInput.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
@@ -75,7 +76,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	recipePrepTask, err := s.recipePrepTaskDataManager.CreateRecipePrepTask(ctx, input)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating recipe prep task")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -148,7 +150,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving recipe prep task")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -195,7 +198,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		recipePrepTasks = []*types.RecipePrepTask{}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving recipe prep tasks")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -238,7 +242,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if err = input.ValidateWithContext(ctx); err != nil {
 		logger.Error(err, "provided input was invalid")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
@@ -259,7 +264,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving recipe prep task for update")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -268,7 +274,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if err = s.recipePrepTaskDataManager.UpdateRecipePrepTask(ctx, recipePrepTask); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating recipe prep task")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -324,7 +331,8 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	exists, existenceCheckErr := s.recipePrepTaskDataManager.RecipePrepTaskExists(ctx, recipeID, recipePrepTaskID)
 	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
 		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking recipe prep task existence")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
@@ -333,7 +341,8 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	if err = s.recipePrepTaskDataManager.ArchiveRecipePrepTask(ctx, recipeID, recipePrepTaskID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving recipe prep task")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 

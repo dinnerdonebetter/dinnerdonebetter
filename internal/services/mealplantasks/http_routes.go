@@ -53,7 +53,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if err = providedInput.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
@@ -71,7 +72,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	mealPlanTask, err := s.mealPlanTaskDataManager.CreateMealPlanTask(ctx, input)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating meal plan")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -131,7 +133,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving meal plan task")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -178,7 +181,8 @@ func (s *service) ListByMealPlanHandler(res http.ResponseWriter, req *http.Reque
 		mealPlanTasks = []*types.MealPlanTask{}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving meal plan tasks for meal plan")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -232,14 +236,16 @@ func (s *service) StatusChangeHandler(res http.ResponseWriter, req *http.Request
 
 	if err := providedInput.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
 	mealPlanTask, fetchMealPlanTaskErr := s.mealPlanTaskDataManager.GetMealPlanTask(ctx, mealPlanTaskID)
 	if fetchMealPlanTaskErr != nil && !errors.Is(fetchMealPlanTaskErr, sql.ErrNoRows) {
 		observability.AcknowledgeError(fetchMealPlanTaskErr, logger, span, "checking meal plan task existence")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	} else if errors.Is(fetchMealPlanTaskErr, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
@@ -250,7 +256,8 @@ func (s *service) StatusChangeHandler(res http.ResponseWriter, req *http.Request
 
 	if err := s.mealPlanTaskDataManager.ChangeMealPlanTaskStatus(ctx, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving meal plan task")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 

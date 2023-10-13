@@ -31,7 +31,8 @@ func (s *service) UserAccountStatusChangeHandler(res http.ResponseWriter, req *h
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
 
@@ -49,7 +50,8 @@ func (s *service) UserAccountStatusChangeHandler(res http.ResponseWriter, req *h
 
 	if err = input.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
@@ -70,7 +72,8 @@ func (s *service) UserAccountStatusChangeHandler(res http.ResponseWriter, req *h
 			s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		} else {
 			observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-			s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+			errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		}
 		return
 	}

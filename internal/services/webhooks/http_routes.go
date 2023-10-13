@@ -56,7 +56,8 @@ func (s *service) CreateWebhookHandler(res http.ResponseWriter, req *http.Reques
 
 	if err = providedInput.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
@@ -69,7 +70,8 @@ func (s *service) CreateWebhookHandler(res http.ResponseWriter, req *http.Reques
 	logger.Debug("database call executed")
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating webhook in database")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -84,7 +86,12 @@ func (s *service) CreateWebhookHandler(res http.ResponseWriter, req *http.Reques
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, webhook, http.StatusCreated)
+	responseValue := &types.APIResponse[*types.Webhook]{
+		Details: responseDetails,
+		Data:    webhook,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
 // ListWebhooksHandler is our list route.
@@ -122,12 +129,19 @@ func (s *service) ListWebhooksHandler(res http.ResponseWriter, req *http.Request
 		}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching webhooks")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.Webhook]{
+		Details:    responseDetails,
+		Pagination: &webhooks.Pagination,
+		Data:       webhooks.Data,
+	}
+
 	// encode the response.
-	s.encoderDecoder.RespondWithData(ctx, res, webhooks)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ReadWebhookHandler returns a GET handler that returns an webhook.
@@ -170,12 +184,18 @@ func (s *service) ReadWebhookHandler(res http.ResponseWriter, req *http.Request)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching webhook from database")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
+	responseValue := &types.APIResponse[*types.Webhook]{
+		Details: responseDetails,
+		Data:    webhook,
+	}
+
 	// encode the response.
-	s.encoderDecoder.RespondWithData(ctx, res, webhook)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ArchiveWebhookHandler returns a handler that archives an webhook.
@@ -212,7 +232,8 @@ func (s *service) ArchiveWebhookHandler(res http.ResponseWriter, req *http.Reque
 
 	exists, webhookExistenceCheckErr := s.webhookDataManager.WebhookExists(ctx, webhookID, householdID)
 	if webhookExistenceCheckErr != nil && !errors.Is(webhookExistenceCheckErr, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		observability.AcknowledgeError(webhookExistenceCheckErr, logger, span, "checking item existence")
 		return
 	} else if !exists || errors.Is(webhookExistenceCheckErr, sql.ErrNoRows) {
@@ -222,7 +243,8 @@ func (s *service) ArchiveWebhookHandler(res http.ResponseWriter, req *http.Reque
 
 	if err = s.webhookDataManager.ArchiveWebhook(ctx, webhookID, householdID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving webhook in database")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 

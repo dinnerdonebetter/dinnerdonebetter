@@ -60,7 +60,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching OAuth2 clients from database")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -84,7 +85,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
 
@@ -102,7 +104,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if err = input.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
@@ -131,7 +134,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	client, err := s.oauth2ClientDataManager.CreateOAuth2Client(ctx, dbInput)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating OAuth2 client")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -193,7 +197,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching OAuth2 client from database")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -237,7 +242,8 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving OAuth2 client")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 

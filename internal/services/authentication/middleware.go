@@ -49,6 +49,10 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 			logger = logger.WithValue(fmt.Sprintf("cookie.%s", cookie.Name), cookie.Value)
 		}
 
+		responseDetails := types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		}
+
 		// handle cookies if relevant.
 		if cookieContext, userID, err := s.getUserIDFromCookie(ctx, req); err == nil && userID != "" {
 			ctx = cookieContext
@@ -59,7 +63,8 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 			sessionCtxData, sessionCtxDataErr := s.householdMembershipManager.BuildSessionContextDataForUser(ctx, userID)
 			if sessionCtxDataErr != nil {
 				observability.AcknowledgeError(sessionCtxDataErr, logger, span, "fetching user info for cookie")
-				s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+				errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+				s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 				return
 			}
 
@@ -80,7 +85,8 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 				sessionCtxData, sessionCtxDataErr := s.householdMembershipManager.BuildSessionContextDataForUser(ctx, userID)
 				if sessionCtxDataErr != nil {
 					observability.AcknowledgeError(sessionCtxDataErr, logger, span, "fetching user info for cookie")
-					s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+					errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+					s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 					return
 				}
 

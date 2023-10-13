@@ -56,7 +56,8 @@ func (s *service) CreateMealHandler(res http.ResponseWriter, req *http.Request) 
 
 	if err = providedInput.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
@@ -69,7 +70,8 @@ func (s *service) CreateMealHandler(res http.ResponseWriter, req *http.Request) 
 	meal, err := s.mealDataManager.CreateMeal(ctx, input)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating meal")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -123,7 +125,8 @@ func (s *service) ReadMealHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving meal")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -165,7 +168,8 @@ func (s *service) ListMealsHandler(res http.ResponseWriter, req *http.Request) {
 		meals = &types.QueryFilteredResult[types.Meal]{Data: []*types.Meal{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving meals")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -219,7 +223,8 @@ func (s *service) SearchMealsHandler(res http.ResponseWriter, req *http.Request)
 		mealSubsets, err = s.searchIndex.Search(ctx, query)
 		if err != nil {
 			observability.AcknowledgeError(err, logger, span, "searching for meals")
-			s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+			errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 			return
 		}
 
@@ -239,7 +244,8 @@ func (s *service) SearchMealsHandler(res http.ResponseWriter, req *http.Request)
 		}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "searching for meals")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -279,7 +285,8 @@ func (s *service) ArchiveMealHandler(res http.ResponseWriter, req *http.Request)
 	exists, existenceCheckErr := s.mealDataManager.MealExists(ctx, mealID)
 	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
 		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking meal existence")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
@@ -288,7 +295,8 @@ func (s *service) ArchiveMealHandler(res http.ResponseWriter, req *http.Request)
 
 	if err = s.mealDataManager.ArchiveMeal(ctx, mealID, sessionCtxData.Requester.UserID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving meal")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 

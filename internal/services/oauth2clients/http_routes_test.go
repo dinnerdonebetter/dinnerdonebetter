@@ -204,7 +204,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		helper.service.CreateHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 	})
 
 	T.Run("without input attached to request", func(t *testing.T) {

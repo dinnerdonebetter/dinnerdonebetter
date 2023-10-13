@@ -22,9 +22,10 @@ func TestWebhooks(t *testing.T) {
 type webhooksTestSuite struct {
 	suite.Suite
 
-	ctx                context.Context
-	exampleWebhook     *types.Webhook
-	exampleWebhookList *types.QueryFilteredResult[types.Webhook]
+	ctx                    context.Context
+	exampleWebhook         *types.Webhook
+	exampleWebhookResponse *types.APIResponse[*types.Webhook]
+	exampleWebhookList     *types.QueryFilteredResult[types.Webhook]
 }
 
 var _ suite.SetupTestSuite = (*webhooksTestSuite)(nil)
@@ -32,6 +33,9 @@ var _ suite.SetupTestSuite = (*webhooksTestSuite)(nil)
 func (s *webhooksTestSuite) SetupTest() {
 	s.ctx = context.Background()
 	s.exampleWebhook = fakes.BuildFakeWebhook()
+	s.exampleWebhookResponse = &types.APIResponse[*types.Webhook]{
+		Data: s.exampleWebhook,
+	}
 	s.exampleWebhookList = fakes.BuildFakeWebhookList()
 }
 
@@ -42,7 +46,7 @@ func (s *webhooksTestSuite) TestClient_GetWebhook() {
 		t := s.T()
 
 		spec := newRequestSpec(false, http.MethodGet, "", expectedPathFormat, s.exampleWebhook.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleWebhook)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleWebhookResponse)
 
 		actual, err := c.GetWebhook(s.ctx, s.exampleWebhook.ID)
 		assert.NoError(t, err)
@@ -86,8 +90,13 @@ func (s *webhooksTestSuite) TestClient_GetWebhooks() {
 	s.Run("standard", func() {
 		t := s.T()
 
+		exampleValidVesselListAPIResponse := &types.APIResponse[[]*types.Webhook]{
+			Data:       s.exampleWebhookList.Data,
+			Pagination: &s.exampleWebhookList.Pagination,
+		}
+
 		spec := newRequestSpec(false, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleWebhookList)
+		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidVesselListAPIResponse)
 
 		actual, err := c.GetWebhooks(s.ctx, nil)
 		assert.NoError(t, err)
@@ -124,7 +133,7 @@ func (s *webhooksTestSuite) TestClient_CreateWebhook() {
 		exampleInput := converters.ConvertWebhookToWebhookCreationRequestInput(s.exampleWebhook)
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleWebhook)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleWebhookResponse)
 
 		actual, err := c.CreateWebhook(s.ctx, exampleInput)
 		assert.NoError(t, err)

@@ -72,7 +72,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	eligible, err := s.dataManager.MealPlanEventIsEligibleForVoting(ctx, mealPlanID, mealPlanEventID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "checking event vote eligibility")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 	if !eligible {
@@ -320,7 +321,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if err = input.ValidateWithContext(ctx); err != nil {
 		logger.Error(err, "provided input was invalid")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
