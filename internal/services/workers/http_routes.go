@@ -15,6 +15,10 @@ func (s *service) MealPlanFinalizationHandler(res http.ResponseWriter, req *http
 	logger := s.logger.WithRequest(req)
 	logger.Info("meal plan finalization worker invoked")
 
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
 	var request *types.FinalizeMealPlansRequest
 	if err := s.encoderDecoder.DecodeRequest(ctx, req, &request); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request")
@@ -42,7 +46,12 @@ func (s *service) MealPlanFinalizationHandler(res http.ResponseWriter, req *http
 
 	logger.WithValue("finalized_count", response.Count).Info("meal plan finalization worker completed")
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, response, http.StatusAccepted)
+	responseValue := &types.APIResponse[*types.FinalizeMealPlansRequest]{
+		Data:    request,
+		Details: responseDetails,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // MealPlanGroceryListInitializationHandler initializes a grocery list for a given meal plan.

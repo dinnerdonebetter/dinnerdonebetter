@@ -53,7 +53,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 			&analyticsmock.EventReporter{},
 			tracing.NewNoopTracerProvider(),
 			&grocerylistpreparation.MockGroceryListCreator{},
-		)
+		).(*mealPlanGroceryListInitializer)
 		assert.NotNil(t, w)
 
 		onion := fakes.BuildFakeValidIngredient()

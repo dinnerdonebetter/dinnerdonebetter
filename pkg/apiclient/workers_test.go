@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
@@ -37,9 +38,12 @@ func (s *workersTestSuite) TestClient_RunFinalizeMealPlansWorker() {
 
 		exampleInput := fakes.BuildFakeFinalizeMealPlansRequest()
 		exampleResponse := fakes.BuildFakeFinalizeMealPlansResponse()
+		exampleAPIResponse := &types.APIResponse[*types.FinalizeMealPlansResponse]{
+			Data: exampleResponse,
+		}
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleResponse)
+		c, _ := buildTestClientWithJSONResponse(t, spec, exampleAPIResponse)
 
 		actual, err := c.RunFinalizeMealPlansWorker(s.ctx, exampleInput)
 		assert.NoError(t, err)

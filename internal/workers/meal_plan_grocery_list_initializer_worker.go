@@ -21,19 +21,26 @@ const (
 	mealPlanGroceryListInitializerName = "meal_plan_grocery_list_initializer"
 )
 
-// MealPlanGroceryListInitializer ensurers meal plan tasks are created.
-type MealPlanGroceryListInitializer struct {
-	logger                 logging.Logger
-	tracer                 tracing.Tracer
-	analyzer               recipeanalysis.RecipeAnalyzer
-	encoder                encoding.ClientEncoder
-	dataManager            database.DataManager
-	postUpdatesPublisher   messagequeue.Publisher
-	analyticsEventReporter analytics.EventReporter
-	groceryListCreator     grocerylistpreparation.GroceryListCreator
-}
+type (
+	// MealPlanGroceryListInitializer initializes grocery lists for finalized meal plans.
+	MealPlanGroceryListInitializer interface {
+		InitializeGroceryListsForFinalizedMealPlans(ctx context.Context, _ []byte) error
+	}
 
-// ProvideMealPlanGroceryListInitializer provides a MealPlanGroceryListInitializer.
+	// mealPlanGroceryListInitializer ensurers meal plan tasks are created.
+	mealPlanGroceryListInitializer struct {
+		logger                 logging.Logger
+		tracer                 tracing.Tracer
+		analyzer               recipeanalysis.RecipeAnalyzer
+		encoder                encoding.ClientEncoder
+		dataManager            database.DataManager
+		postUpdatesPublisher   messagequeue.Publisher
+		analyticsEventReporter analytics.EventReporter
+		groceryListCreator     grocerylistpreparation.GroceryListCreator
+	}
+)
+
+// ProvideMealPlanGroceryListInitializer provides a mealPlanGroceryListInitializer.
 func ProvideMealPlanGroceryListInitializer(
 	logger logging.Logger,
 	dataManager database.DataManager,
@@ -42,8 +49,8 @@ func ProvideMealPlanGroceryListInitializer(
 	analyticsEventReporter analytics.EventReporter,
 	tracerProvider tracing.TracerProvider,
 	groceryListCreator grocerylistpreparation.GroceryListCreator,
-) *MealPlanGroceryListInitializer {
-	return &MealPlanGroceryListInitializer{
+) MealPlanGroceryListInitializer {
+	return &mealPlanGroceryListInitializer{
 		logger:                 logging.EnsureLogger(logger).WithName(mealPlanGroceryListInitializerName),
 		tracer:                 tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(mealPlanGroceryListInitializerName)),
 		encoder:                encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
@@ -56,7 +63,7 @@ func ProvideMealPlanGroceryListInitializer(
 }
 
 // InitializeGroceryListsForFinalizedMealPlans handles a pending write.
-func (w *MealPlanGroceryListInitializer) InitializeGroceryListsForFinalizedMealPlans(ctx context.Context, _ []byte) error {
+func (w *mealPlanGroceryListInitializer) InitializeGroceryListsForFinalizedMealPlans(ctx context.Context, _ []byte) error {
 	ctx, span := w.tracer.StartSpan(ctx)
 	defer span.End()
 

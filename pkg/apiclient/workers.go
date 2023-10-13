@@ -23,12 +23,12 @@ func (c *Client) RunFinalizeMealPlansWorker(ctx context.Context, input *types.Fi
 		return nil, observability.PrepareAndLogError(err, logger, span, "building worker execution request")
 	}
 
-	var finalizeResponse *types.FinalizeMealPlansResponse
+	var finalizeResponse *types.APIResponse[*types.FinalizeMealPlansResponse]
 	if err = c.fetchAndUnmarshal(ctx, req, &finalizeResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "finalizing meal plan")
 	}
 
-	return finalizeResponse, nil
+	return finalizeResponse.Data, nil
 }
 
 // RunMealPlanGroceryListInitializationWorker runs a worker.
