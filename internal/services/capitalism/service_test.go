@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	capitalismmock "github.com/dinnerdonebetter/backend/internal/capitalism/mock"
+	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
@@ -19,7 +20,7 @@ import (
 func buildTestService() *service {
 	return &service{
 		logger:         logging.NewNoopLogger(),
-		encoderDecoder: mockencoding.NewMockEncoderDecoder(),
+		encoderDecoder: encoding.ProvideServerEncoderDecoder(nil, nil, encoding.ContentTypeJSON),
 		tracer:         tracing.NewTracerForTest("test"),
 		paymentManager: capitalismmock.NewMockPaymentManager(),
 		cfg: &Config{

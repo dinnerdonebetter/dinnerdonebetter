@@ -234,7 +234,6 @@ func TestService_UsernameSearchHandler(T *testing.T) {
 			testutils.HTTPResponseWriterMatcher,
 			mock.IsType([]*types.User{}),
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		v := helper.req.URL.Query()
 		v.Set(types.SearchQueryKey, helper.exampleUser.Username)
@@ -244,7 +243,7 @@ func TestService_UsernameSearchHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 
 	T.Run("with error reading from database", func(t *testing.T) {
@@ -266,7 +265,6 @@ func TestService_UsernameSearchHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		v := helper.req.URL.Query()
 		v.Set(types.SearchQueryKey, helper.exampleUser.Username)
@@ -276,7 +274,7 @@ func TestService_UsernameSearchHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 }
 
@@ -305,13 +303,12 @@ func TestService_ListHandler(T *testing.T) {
 			testutils.HTTPResponseWriterMatcher,
 			mock.IsType(&types.QueryFilteredResult[types.User]{}),
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 
 	T.Run("with error reading from database", func(t *testing.T) {
@@ -333,13 +330,12 @@ func TestService_ListHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 }
 
@@ -1078,13 +1074,12 @@ func TestService_SelfHandler(T *testing.T) {
 			testutils.HTTPResponseWriterMatcher,
 			mock.IsType(&types.User{}),
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.SelfHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -1099,13 +1094,12 @@ func TestService_SelfHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.SelfHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, encoderDecoder)
+		mock.AssertExpectationsForObjects(t)
 	})
 
 	T.Run("with no rows found", func(t *testing.T) {
@@ -1127,13 +1121,12 @@ func TestService_SelfHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.SelfHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 
 	T.Run("with error reading from database", func(t *testing.T) {
@@ -1155,13 +1148,12 @@ func TestService_SelfHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.SelfHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 }
 
@@ -1198,13 +1190,12 @@ func TestService_PermissionsHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.PermissionsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, encoderDecoder)
+		mock.AssertExpectationsForObjects(t)
 	})
 
 	T.Run("with error decoding input", func(t *testing.T) {
@@ -1229,10 +1220,10 @@ func TestService_PermissionsHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 
 		encoderDecoder.On(
-			"EncodeErrorResponse",
+			"EncodeResponseWithStatus",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			"invalid request content",
+			mock.IsType(types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, types.ResponseDetails{})),
 			http.StatusBadRequest,
 		).Return(errors.New("blah"))
 		helper.service.encoderDecoder = encoderDecoder
@@ -1268,13 +1259,12 @@ func TestService_ReadHandler(T *testing.T) {
 			testutils.HTTPResponseWriterMatcher,
 			mock.IsType(&types.User{}),
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 
 	T.Run("with no rows found", func(t *testing.T) {
@@ -1296,13 +1286,12 @@ func TestService_ReadHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 
 	T.Run("with error reading from database", func(t *testing.T) {
@@ -1324,13 +1313,12 @@ func TestService_ReadHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mockDB, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 }
 
@@ -2493,13 +2481,10 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.AvatarUploadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, encoderDecoder)
 	})
 
 	T.Run("with error fetching user", func(t *testing.T) {
@@ -3681,7 +3666,6 @@ func TestService_VerifyUserEmailAddressHandler(T *testing.T) {
 			"invalid request content",
 			http.StatusBadRequest,
 		)
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.VerifyUserEmailAddressHandler(helper.res, helper.req)
 

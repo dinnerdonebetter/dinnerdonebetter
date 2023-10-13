@@ -43,20 +43,11 @@ func TestHouseholdsService_ListHandler(T *testing.T) {
 		).Return(exampleHouseholdList, nil)
 		helper.service.householdDataManager = householdDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.QueryFilteredResult[types.Household]{}),
-		)
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, householdDataManager)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -73,13 +64,12 @@ func TestHouseholdsService_ListHandler(T *testing.T) {
 			"unauthenticated",
 			http.StatusUnauthorized,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, encoderDecoder)
+		mock.AssertExpectationsForObjects(t)
 	})
 
 	T.Run("with now rows returned", func(t *testing.T) {
@@ -103,13 +93,12 @@ func TestHouseholdsService_ListHandler(T *testing.T) {
 			testutils.HTTPResponseWriterMatcher,
 			mock.IsType(&types.QueryFilteredResult[types.Household]{}),
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, householdDataManager)
 	})
 
 	T.Run("with error fetching households from database", func(t *testing.T) {
@@ -132,13 +121,12 @@ func TestHouseholdsService_ListHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, householdDataManager)
 	})
 }
 
@@ -328,13 +316,12 @@ func TestHouseholdsService_InfoHandler(T *testing.T) {
 			testutils.HTTPResponseWriterMatcher,
 			mock.IsType(&types.Household{}),
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.CurrentInfoHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, householdDataManager)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -352,13 +339,12 @@ func TestHouseholdsService_InfoHandler(T *testing.T) {
 			"unauthenticated",
 			http.StatusUnauthorized,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.CurrentInfoHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, encoderDecoder)
+		mock.AssertExpectationsForObjects(t)
 	})
 
 	T.Run("with no such household in database", func(t *testing.T) {
@@ -380,13 +366,12 @@ func TestHouseholdsService_InfoHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.CurrentInfoHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, householdDataManager)
 	})
 
 	T.Run("with error reading from database", func(t *testing.T) {
@@ -408,13 +393,12 @@ func TestHouseholdsService_InfoHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.CurrentInfoHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, householdDataManager)
 	})
 }
 
@@ -441,13 +425,12 @@ func TestHouseholdsService_ReadHandler(T *testing.T) {
 			testutils.HTTPResponseWriterMatcher,
 			mock.IsType(&types.Household{}),
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, householdDataManager)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -465,13 +448,12 @@ func TestHouseholdsService_ReadHandler(T *testing.T) {
 			"unauthenticated",
 			http.StatusUnauthorized,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, encoderDecoder)
+		mock.AssertExpectationsForObjects(t)
 	})
 
 	T.Run("with no such household in database", func(t *testing.T) {
@@ -493,13 +475,12 @@ func TestHouseholdsService_ReadHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, householdDataManager)
 	})
 
 	T.Run("with error reading from database", func(t *testing.T) {
@@ -521,13 +502,12 @@ func TestHouseholdsService_ReadHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, householdDataManager)
 	})
 }
 
@@ -816,13 +796,10 @@ func TestHouseholdsService_ArchiveHandler(T *testing.T) {
 			"unauthenticated",
 			http.StatusUnauthorized,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, encoderDecoder)
 	})
 
 	T.Run("with no such household in database", func(t *testing.T) {
@@ -845,13 +822,12 @@ func TestHouseholdsService_ArchiveHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		)
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, householdDataManager)
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
@@ -874,13 +850,12 @@ func TestHouseholdsService_ArchiveHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, householdDataManager)
 	})
 
 	T.Run("with error publishing data change message", func(t *testing.T) {
@@ -1296,13 +1271,10 @@ func TestHouseholdsService_RemoveMemberHandler(T *testing.T) {
 			"unauthenticated",
 			http.StatusUnauthorized,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.RemoveMemberHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, encoderDecoder)
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
@@ -1328,13 +1300,12 @@ func TestHouseholdsService_RemoveMemberHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.RemoveMemberHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdMembershipDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, householdMembershipDataManager)
 	})
 
 	T.Run("with error publishing data change message", func(t *testing.T) {
@@ -1417,13 +1388,10 @@ func TestHouseholdsService_MarkAsDefaultHouseholdHandler(T *testing.T) {
 			"unauthenticated",
 			http.StatusUnauthorized,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.MarkAsDefaultHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, encoderDecoder)
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
@@ -1446,13 +1414,12 @@ func TestHouseholdsService_MarkAsDefaultHouseholdHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.MarkAsDefaultHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, householdMembershipDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, householdMembershipDataManager)
 	})
 
 	T.Run("with error publishing data change message", func(t *testing.T) {

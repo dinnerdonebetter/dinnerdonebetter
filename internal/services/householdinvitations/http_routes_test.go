@@ -108,10 +108,10 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 
 		ed.On(
-			"EncodeErrorResponse",
+			"EncodeResponseWithStatus",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			"invalid request content",
+			mock.IsType(types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, types.ResponseDetails{})),
 			http.StatusBadRequest,
 		).Return(errors.New("blah"))
 		helper.service.encoderDecoder = ed
@@ -123,6 +123,8 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 
 		helper.service.InviteMemberHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		mock.AssertExpectationsForObjects(t, ed)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -432,12 +434,11 @@ func Test_service_ReadHandler(T *testing.T) {
 			testutils.HTTPResponseWriterMatcher,
 			mock.IsType(&types.HouseholdInvitation{}),
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ReadHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, wd)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -471,12 +472,11 @@ func Test_service_ReadHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ReadHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, wd)
 	})
 
 	T.Run("with error fetching household invitation from database", func(t *testing.T) {
@@ -499,12 +499,11 @@ func Test_service_ReadHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ReadHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, wd)
 	})
 }
 
@@ -533,12 +532,11 @@ func Test_service_InboundInvitesHandler(T *testing.T) {
 			testutils.HTTPResponseWriterMatcher,
 			mock.IsType(&types.QueryFilteredResult[types.HouseholdInvitation]{}),
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.InboundInvitesHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, wd)
 	})
 
 	T.Run("with error fetching session context data", func(t *testing.T) {
@@ -599,12 +597,11 @@ func Test_service_OutboundInvitesHandler(T *testing.T) {
 			testutils.HTTPResponseWriterMatcher,
 			mock.IsType(&types.QueryFilteredResult[types.HouseholdInvitation]{}),
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.OutboundInvitesHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, wd)
 	})
 
 	T.Run("with error fetching session context data", func(t *testing.T) {

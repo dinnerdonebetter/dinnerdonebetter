@@ -102,12 +102,11 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 			mock.IsType(""),
 			http.StatusBadRequest,
 		).Return(nil)
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.CreateWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, encoderDecoder)
+		mock.AssertExpectationsForObjects(t)
 	})
 
 	T.Run("with invalid content attached to request", func(t *testing.T) {
@@ -219,12 +218,11 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 			testutils.HTTPResponseWriterMatcher,
 			mock.IsType(&types.QueryFilteredResult[types.Webhook]{}),
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ListWebhooksHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, wd)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -259,12 +257,11 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 			testutils.HTTPResponseWriterMatcher,
 			mock.IsType(&types.QueryFilteredResult[types.Webhook]{}),
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ListWebhooksHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, wd)
 	})
 
 	T.Run("with error fetching webhooks from database", func(t *testing.T) {
@@ -287,12 +284,11 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ListWebhooksHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, wd)
 	})
 }
 
@@ -320,12 +316,11 @@ func TestWebhooksService_ReadWebhookHandler(T *testing.T) {
 			testutils.HTTPResponseWriterMatcher,
 			mock.IsType(&types.Webhook{}),
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ReadWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, wd)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -359,12 +354,11 @@ func TestWebhooksService_ReadWebhookHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ReadWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, wd)
 	})
 
 	T.Run("with error fetching webhook from database", func(t *testing.T) {
@@ -387,12 +381,11 @@ func TestWebhooksService_ReadWebhookHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ReadWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, wd)
 	})
 }
 
@@ -465,7 +458,6 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
@@ -493,12 +485,11 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, wd)
 	})
 
 	T.Run("with error archiving in database", func(t *testing.T) {

@@ -216,13 +216,12 @@ func TestMealsService_ReadMealHandler(T *testing.T) {
 			testutils.HTTPResponseWriterMatcher,
 			mock.IsType(&types.Meal{}),
 		)
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ReadMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mealDataManager)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -238,7 +237,6 @@ func TestMealsService_ReadMealHandler(T *testing.T) {
 			"unauthenticated",
 			http.StatusUnauthorized,
 		)
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
@@ -246,7 +244,7 @@ func TestMealsService_ReadMealHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, encoderDecoder)
+		mock.AssertExpectationsForObjects(t)
 	})
 
 	T.Run("with no such meal in the database", func(t *testing.T) {
@@ -271,13 +269,12 @@ func TestMealsService_ReadMealHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ReadMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mealDataManager)
 	})
 
 	T.Run("with error fetching from database", func(t *testing.T) {
@@ -302,13 +299,12 @@ func TestMealsService_ReadMealHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		)
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ReadMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mealDataManager)
 	})
 }
 
@@ -337,13 +333,12 @@ func TestMealsService_ListMealsHandler(T *testing.T) {
 			testutils.HTTPResponseWriterMatcher,
 			mock.IsType(&types.QueryFilteredResult[types.Meal]{}),
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ListMealsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mealDataManager)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -359,7 +354,6 @@ func TestMealsService_ListMealsHandler(T *testing.T) {
 			"unauthenticated",
 			http.StatusUnauthorized,
 		)
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
@@ -367,7 +361,7 @@ func TestMealsService_ListMealsHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, encoderDecoder)
+		mock.AssertExpectationsForObjects(t)
 	})
 
 	T.Run("with no rows returned", func(t *testing.T) {
@@ -390,13 +384,12 @@ func TestMealsService_ListMealsHandler(T *testing.T) {
 			testutils.HTTPResponseWriterMatcher,
 			mock.IsType(&types.QueryFilteredResult[types.Meal]{}),
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ListMealsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mealDataManager)
 	})
 
 	T.Run("with error retrieving meals from database", func(t *testing.T) {
@@ -418,13 +411,12 @@ func TestMealsService_ListMealsHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ListMealsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mealDataManager)
 	})
 }
 
@@ -456,13 +448,12 @@ func TestMealsService_SearchMealsHandler(T *testing.T) {
 			testutils.HTTPResponseWriterMatcher,
 			mock.IsType(&types.QueryFilteredResult[types.Meal]{}),
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.SearchMealsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mealDataManager)
 	})
 
 	T.Run("using external service", func(t *testing.T) {
@@ -541,13 +532,12 @@ func TestMealsService_SearchMealsHandler(T *testing.T) {
 			testutils.HTTPResponseWriterMatcher,
 			mock.IsType(&types.QueryFilteredResult[types.Meal]{}),
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.SearchMealsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mealDataManager)
 	})
 
 	T.Run("with error reading from database", func(t *testing.T) {
@@ -624,7 +614,6 @@ func TestMealsService_ArchiveMealHandler(T *testing.T) {
 			"unauthenticated",
 			http.StatusUnauthorized,
 		)
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
@@ -632,7 +621,7 @@ func TestMealsService_ArchiveMealHandler(T *testing.T) {
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, encoderDecoder)
+		mock.AssertExpectationsForObjects(t)
 	})
 
 	T.Run("with no such meal in the database", func(t *testing.T) {
@@ -654,13 +643,12 @@ func TestMealsService_ArchiveMealHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ArchiveMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, mealDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mealDataManager)
 	})
 
 	T.Run("with error checking for item in database", func(t *testing.T) {

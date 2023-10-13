@@ -107,7 +107,7 @@ func TestServerEncoderDecoder_EncodeErrorResponse(T *testing.T) {
 		res := httptest.NewRecorder()
 
 		encoderDecoder.EncodeErrorResponse(ctx, res, exampleMessage, exampleCode)
-		assert.Equal(t, res.Body.String(), fmt.Sprintf("{\"message\":%q,\"code\":%d}\n", exampleMessage, exampleCode))
+		assert.Equal(t, "\"something went awry\"\n", res.Body.String())
 		assert.Equal(t, exampleCode, res.Code, "expected status code to match")
 	})
 
@@ -123,7 +123,7 @@ func TestServerEncoderDecoder_EncodeErrorResponse(T *testing.T) {
 		res.Header().Set(ContentTypeHeaderKey, contentTypeXML)
 
 		encoderDecoder.EncodeErrorResponse(ctx, res, exampleMessage, exampleCode)
-		assert.Equal(t, fmt.Sprintf("<APIError><Message>%s</Message><Code>%d</Code></APIError>", exampleMessage, exampleCode), res.Body.String())
+		assert.Equal(t, "<string>something went awry</string>", res.Body.String())
 		assert.Equal(t, exampleCode, res.Code, "expected status code to match")
 	})
 

@@ -210,13 +210,12 @@ func TestServiceSettingConfigurationsService_ByNameHandler(T *testing.T) {
 			testutils.HTTPResponseWriterMatcher,
 			helper.exampleServiceSettingConfiguration,
 		)
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ForUserByNameHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, serviceSettingConfigurationDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, serviceSettingConfigurationDataManager)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -232,15 +231,12 @@ func TestServiceSettingConfigurationsService_ByNameHandler(T *testing.T) {
 			"unauthenticated",
 			http.StatusUnauthorized,
 		)
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ForUserByNameHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, encoderDecoder)
 	})
 
 	T.Run("with no such service setting configuration in the database", func(t *testing.T) {
@@ -263,13 +259,12 @@ func TestServiceSettingConfigurationsService_ByNameHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ForUserByNameHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, serviceSettingConfigurationDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, serviceSettingConfigurationDataManager)
 	})
 
 	T.Run("with error fetching from database", func(t *testing.T) {
@@ -292,13 +287,12 @@ func TestServiceSettingConfigurationsService_ByNameHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		)
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ForUserByNameHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, serviceSettingConfigurationDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, serviceSettingConfigurationDataManager)
 	})
 }
 
@@ -326,13 +320,12 @@ func TestServiceSettingConfigurationsService_ForUserHandler(T *testing.T) {
 			testutils.HTTPResponseWriterMatcher,
 			helper.exampleServiceSettingConfigurationList,
 		)
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ForUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, serviceSettingConfigurationDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, serviceSettingConfigurationDataManager)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -348,15 +341,12 @@ func TestServiceSettingConfigurationsService_ForUserHandler(T *testing.T) {
 			"unauthenticated",
 			http.StatusUnauthorized,
 		)
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ForUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, encoderDecoder)
 	})
 
 	T.Run("with no such service setting configuration in the database", func(t *testing.T) {
@@ -379,13 +369,12 @@ func TestServiceSettingConfigurationsService_ForUserHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ForUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, serviceSettingConfigurationDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, serviceSettingConfigurationDataManager)
 	})
 
 	T.Run("with error fetching from database", func(t *testing.T) {
@@ -408,13 +397,12 @@ func TestServiceSettingConfigurationsService_ForUserHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		)
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ForUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, serviceSettingConfigurationDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, serviceSettingConfigurationDataManager)
 	})
 }
 
@@ -442,13 +430,12 @@ func TestServiceSettingConfigurationsService_ForHouseholdHandler(T *testing.T) {
 			testutils.HTTPResponseWriterMatcher,
 			helper.exampleServiceSettingConfigurationList,
 		)
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ForHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, serviceSettingConfigurationDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, serviceSettingConfigurationDataManager)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -464,15 +451,12 @@ func TestServiceSettingConfigurationsService_ForHouseholdHandler(T *testing.T) {
 			"unauthenticated",
 			http.StatusUnauthorized,
 		)
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ForHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, encoderDecoder)
 	})
 
 	T.Run("with no such service setting configuration in the database", func(t *testing.T) {
@@ -495,13 +479,12 @@ func TestServiceSettingConfigurationsService_ForHouseholdHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ForHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, serviceSettingConfigurationDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, serviceSettingConfigurationDataManager)
 	})
 
 	T.Run("with error fetching from database", func(t *testing.T) {
@@ -524,13 +507,12 @@ func TestServiceSettingConfigurationsService_ForHouseholdHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		)
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ForHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, serviceSettingConfigurationDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, serviceSettingConfigurationDataManager)
 	})
 }
 
@@ -813,15 +795,12 @@ func TestServiceSettingConfigurationsService_ArchiveHandler(T *testing.T) {
 			"unauthenticated",
 			http.StatusUnauthorized,
 		)
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, encoderDecoder)
 	})
 
 	T.Run("with no such service setting configuration in the database", func(t *testing.T) {
@@ -843,13 +822,12 @@ func TestServiceSettingConfigurationsService_ArchiveHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
 		).Return()
-		helper.service.encoderDecoder = encoderDecoder
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, serviceSettingConfigurationDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, serviceSettingConfigurationDataManager)
 	})
 
 	T.Run("with error checking for item in database", func(t *testing.T) {
