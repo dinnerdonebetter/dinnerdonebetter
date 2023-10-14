@@ -105,7 +105,7 @@ func (s *service) UsernameSearchHandler(res http.ResponseWriter, req *http.Reque
 		}
 
 		observability.AcknowledgeError(err, logger, span, "searching for users")
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
@@ -133,7 +133,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	users, err := s.userDataManager.GetUsers(ctx, qf)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching users")
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
@@ -204,7 +204,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 			return
 		} else if err != nil {
 			observability.AcknowledgeError(err, logger, span, "retrieving invitation")
-			errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 			return
 		}
@@ -260,7 +260,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 			return
 		}
 
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
@@ -270,14 +270,14 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	defaultHouseholdID, err := s.householdUserMembershipDataManager.GetDefaultHouseholdIDForUser(ctx, user.ID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching default household ID for user")
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
 	emailVerificationToken, emailVerificationTokenErr := s.userDataManager.GetEmailAddressVerificationTokenForUser(ctx, user.ID)
 	if emailVerificationTokenErr != nil {
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
@@ -402,7 +402,7 @@ func (s *service) SelfHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching user")
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
@@ -482,7 +482,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching user from database")
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
@@ -525,7 +525,7 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 	user, fetchUserErr := s.userDataManager.GetUserWithUnverifiedTwoFactorSecret(ctx, input.UserID)
 	if fetchUserErr != nil {
 		observability.AcknowledgeError(fetchUserErr, logger, span, "fetching user to verify two factor secret")
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
@@ -548,7 +548,7 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 
 	if err := s.userDataManager.MarkUserTwoFactorSecretAsVerified(ctx, user.ID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "verifying user two factor secret")
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
@@ -612,7 +612,7 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 			return
 		}
 		observability.AcknowledgeError(err, logger, span, "fetching user from database")
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
@@ -651,7 +651,7 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 	// update the user in the database.
 	if err = s.userDataManager.MarkUserTwoFactorSecretAsUnverified(ctx, user.ID, tfs); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating 2FA secret")
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
@@ -750,7 +750,8 @@ func (s *service) UpdatePasswordHandler(res http.ResponseWriter, req *http.Reque
 	// update the user.
 	if err = s.userDataManager.UpdateUserPassword(ctx, user.ID, newPasswordHash); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating user")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -825,7 +826,8 @@ func (s *service) UpdateUserEmailAddressHandler(res http.ResponseWriter, req *ht
 	// update the user.
 	if err = s.userDataManager.UpdateUserEmailAddress(ctx, user.ID, input.NewEmailAddress); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating user")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -898,7 +900,8 @@ func (s *service) UpdateUserUsernameHandler(res http.ResponseWriter, req *http.R
 	// update the user.
 	if err = s.userDataManager.UpdateUserUsername(ctx, user.ID, input.NewUsername); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating user")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -972,7 +975,8 @@ func (s *service) UpdateUserDetailsHandler(res http.ResponseWriter, req *http.Re
 	// update the user.
 	if err = s.userDataManager.UpdateUserDetails(ctx, user.ID, dbInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating user")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -1023,7 +1027,8 @@ func (s *service) AvatarUploadHandler(res http.ResponseWriter, req *http.Request
 	user, err := s.userDataManager.GetUser(ctx, sessionCtxData.Requester.UserID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching associated user")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -1032,7 +1037,8 @@ func (s *service) AvatarUploadHandler(res http.ResponseWriter, req *http.Request
 
 	if err = s.userDataManager.UpdateUserAvatar(ctx, user.ID, input.Base64EncodedData); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating user info")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 }
@@ -1044,6 +1050,10 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
+
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
 
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
@@ -1066,7 +1076,8 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving user")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 

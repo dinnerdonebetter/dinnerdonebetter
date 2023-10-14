@@ -72,7 +72,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	eligible, err := s.dataManager.MealPlanEventIsEligibleForVoting(ctx, mealPlanID, mealPlanEventID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "checking event vote eligibility")
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
@@ -92,7 +92,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	mealPlanOptionVotes, err := s.dataManager.CreateMealPlanOptionVote(ctx, input)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating meal plan option vote")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -119,7 +120,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		mealPlanOptionFinalized, optionFinalizationErr := s.dataManager.FinalizeMealPlanOption(ctx, mealPlanID, mealPlanEventID, lastVote.BelongsToMealPlanOption, sessionCtxData.ActiveHouseholdID)
 		if optionFinalizationErr != nil {
 			observability.AcknowledgeError(optionFinalizationErr, logger, span, "finalizing meal plan option vote")
-			s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 			return
 		}
 
@@ -144,7 +146,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 			mealPlanFinalized, finalizationErr := s.dataManager.AttemptToFinalizeMealPlan(ctx, mealPlanID, sessionCtxData.ActiveHouseholdID)
 			if finalizationErr != nil {
 				observability.AcknowledgeError(err, logger, span, "finalizing meal plan option vote")
-				s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+				errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+				s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 				return
 			}
 
@@ -278,7 +281,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		mealPlanOptionVotes = &types.QueryFilteredResult[types.MealPlanOptionVote]{Data: []*types.MealPlanOptionVote{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving meal plan option votes")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -353,7 +357,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving meal plan option vote for update")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -362,7 +367,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if err = s.dataManager.UpdateMealPlanOptionVote(ctx, mealPlanOptionVote); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating meal plan option vote")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -431,7 +437,8 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	exists, existenceCheckErr := s.dataManager.MealPlanOptionVoteExists(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID)
 	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
 		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking meal plan option vote existence")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
@@ -440,7 +447,8 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	if err = s.dataManager.ArchiveMealPlanOptionVote(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving meal plan option vote")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 

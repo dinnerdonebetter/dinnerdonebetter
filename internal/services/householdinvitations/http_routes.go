@@ -94,7 +94,7 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 	user, err := s.userDataManager.GetUserByEmail(ctx, input.ToEmail)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		observability.AcknowledgeError(err, logger, span, "fetching user ID by email")
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
@@ -106,7 +106,8 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 	householdInvitation, err := s.householdInvitationDataManager.CreateHouseholdInvitation(ctx, input)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating household invitation")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -163,7 +164,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching household invitation from database")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -205,7 +207,8 @@ func (s *service) InboundInvitesHandler(res http.ResponseWriter, req *http.Reque
 	invitations, err := s.householdInvitationDataManager.GetPendingHouseholdInvitationsForUser(ctx, userID, filter)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching outbound invites")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -248,7 +251,8 @@ func (s *service) OutboundInvitesHandler(res http.ResponseWriter, req *http.Requ
 	invitations, err := s.householdInvitationDataManager.GetPendingHouseholdInvitationsFromUser(ctx, userID, filter)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching outbound invites")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -308,7 +312,8 @@ func (s *service) AcceptInviteHandler(res http.ResponseWriter, req *http.Request
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving invitation")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -384,7 +389,8 @@ func (s *service) CancelInviteHandler(res http.ResponseWriter, req *http.Request
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving invitation")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -459,7 +465,8 @@ func (s *service) RejectInviteHandler(res http.ResponseWriter, req *http.Request
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving invitation")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 

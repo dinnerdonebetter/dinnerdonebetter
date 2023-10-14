@@ -72,7 +72,7 @@ func (s *service) UserAccountStatusChangeHandler(res http.ResponseWriter, req *h
 			s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
 		} else {
 			observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-			errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		}
 		return

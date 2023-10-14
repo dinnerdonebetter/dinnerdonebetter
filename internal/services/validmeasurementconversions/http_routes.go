@@ -68,7 +68,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	validMeasurementUnitConversion, err := s.validMeasurementUnitConversionDataManager.CreateValidMeasurementUnitConversion(ctx, input)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating valid measurement conversions")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 

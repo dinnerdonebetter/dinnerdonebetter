@@ -70,7 +70,7 @@ func (s *service) CreateWebhookHandler(res http.ResponseWriter, req *http.Reques
 	logger.Debug("database call executed")
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating webhook in database")
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
@@ -129,7 +129,7 @@ func (s *service) ListWebhooksHandler(res http.ResponseWriter, req *http.Request
 		}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching webhooks")
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
@@ -184,7 +184,7 @@ func (s *service) ReadWebhookHandler(res http.ResponseWriter, req *http.Request)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching webhook from database")
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
@@ -232,7 +232,7 @@ func (s *service) ArchiveWebhookHandler(res http.ResponseWriter, req *http.Reque
 
 	exists, webhookExistenceCheckErr := s.webhookDataManager.WebhookExists(ctx, webhookID, householdID)
 	if webhookExistenceCheckErr != nil && !errors.Is(webhookExistenceCheckErr, sql.ErrNoRows) {
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		observability.AcknowledgeError(webhookExistenceCheckErr, logger, span, "checking item existence")
 		return
@@ -243,7 +243,7 @@ func (s *service) ArchiveWebhookHandler(res http.ResponseWriter, req *http.Reque
 
 	if err = s.webhookDataManager.ArchiveWebhook(ctx, webhookID, householdID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving webhook in database")
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}

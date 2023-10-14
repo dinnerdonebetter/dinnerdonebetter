@@ -72,7 +72,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	mealPlanTask, err := s.mealPlanTaskDataManager.CreateMealPlanTask(ctx, input)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating meal plan")
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
@@ -133,7 +133,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving meal plan task")
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
@@ -181,7 +181,7 @@ func (s *service) ListByMealPlanHandler(res http.ResponseWriter, req *http.Reque
 		mealPlanTasks = []*types.MealPlanTask{}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving meal plan tasks for meal plan")
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
@@ -244,7 +244,7 @@ func (s *service) StatusChangeHandler(res http.ResponseWriter, req *http.Request
 	mealPlanTask, fetchMealPlanTaskErr := s.mealPlanTaskDataManager.GetMealPlanTask(ctx, mealPlanTaskID)
 	if fetchMealPlanTaskErr != nil && !errors.Is(fetchMealPlanTaskErr, sql.ErrNoRows) {
 		observability.AcknowledgeError(fetchMealPlanTaskErr, logger, span, "checking meal plan task existence")
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	} else if errors.Is(fetchMealPlanTaskErr, sql.ErrNoRows) {
@@ -256,7 +256,7 @@ func (s *service) StatusChangeHandler(res http.ResponseWriter, req *http.Request
 
 	if err := s.mealPlanTaskDataManager.ChangeMealPlanTaskStatus(ctx, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving meal plan task")
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}

@@ -63,7 +63,7 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 			sessionCtxData, sessionCtxDataErr := s.householdMembershipManager.BuildSessionContextDataForUser(ctx, userID)
 			if sessionCtxDataErr != nil {
 				observability.AcknowledgeError(sessionCtxDataErr, logger, span, "fetching user info for cookie")
-				errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+				errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 				s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 				return
 			}
@@ -85,7 +85,7 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 				sessionCtxData, sessionCtxDataErr := s.householdMembershipManager.BuildSessionContextDataForUser(ctx, userID)
 				if sessionCtxDataErr != nil {
 					observability.AcknowledgeError(sessionCtxDataErr, logger, span, "fetching user info for cookie")
-					errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrTalkingToDatabase, responseDetails)
+					errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 					s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 					return
 				}

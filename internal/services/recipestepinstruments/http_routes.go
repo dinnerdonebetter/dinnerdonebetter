@@ -72,7 +72,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	recipeStepInstrument, err := s.recipeStepInstrumentDataManager.CreateRecipeStepInstrument(ctx, input)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating recipe step ingredient")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -136,7 +137,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving recipe step instrument")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -190,7 +192,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		recipeStepInstruments = &types.QueryFilteredResult[types.RecipeStepInstrument]{Data: []*types.RecipeStepInstrument{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving recipe step instruments")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 

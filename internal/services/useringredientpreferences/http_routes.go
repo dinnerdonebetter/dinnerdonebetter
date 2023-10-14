@@ -63,7 +63,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	userIngredientPreference, err := s.userIngredientPreferenceDataManager.CreateUserIngredientPreference(ctx, input)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating user ingredient preferences")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -115,7 +116,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		userIngredientPreferences = &types.QueryFilteredResult[types.UserIngredientPreference]{Data: []*types.UserIngredientPreference{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving user ingredient preferences")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -176,7 +178,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving user ingredient preference for update")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -185,7 +188,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if err = s.userIngredientPreferenceDataManager.UpdateUserIngredientPreference(ctx, userIngredientPreference); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating user ingredient preferences")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
