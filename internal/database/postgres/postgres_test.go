@@ -158,17 +158,6 @@ func buildDatabaseClientForTest(t *testing.T, ctx context.Context) (*Querier, *p
 	return dbc.(*Querier), container
 }
 
-func buildErroneousMockRow() *sqlmock.Rows {
-	exampleRows := sqlmock.NewRows([]string{"columns", "don't", "match", "lol"}).AddRow(
-		"doesn't",
-		"matter",
-		"what",
-		"goes",
-	)
-
-	return exampleRows
-}
-
 // end helper funcs
 
 func TestQuerier_IsReady(T *testing.T) {

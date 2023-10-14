@@ -16,6 +16,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	servertiming "github.com/mitchellh/go-server-timing"
 )
 
 const (
@@ -76,6 +77,9 @@ func buildChiMux(logger logging.Logger, tracer tracing.Tracer, cfg *routing.Conf
 		chimiddleware.Timeout(maxTimeout),
 		buildLoggingMiddleware(logging.EnsureLogger(logger).WithName("router"), cfg.SilenceRouteLogging),
 		corsHandler.Handler,
+		func(next http.Handler) http.Handler {
+			return servertiming.Middleware(next, nil)
+		},
 	)
 
 	// all middleware must be defined before routes on a mux.

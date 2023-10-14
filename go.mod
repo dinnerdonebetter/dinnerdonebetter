@@ -47,6 +47,7 @@ require (
 	github.com/markbates/goth v1.78.0
 	github.com/matcornic/hermes/v2 v2.1.0
 	github.com/mikespook/gorbac/v2 v2.3.3
+	github.com/mitchellh/go-server-timing v1.0.1
 	github.com/moul/http2curl v1.0.0
 	github.com/mssola/useragent v1.0.0
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
@@ -148,6 +149,7 @@ require (
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
+	github.com/golang/gddo v0.0.0-20180823221919-9d8ff1c67be5 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/google/go-cmp v0.6.0 // indirect
