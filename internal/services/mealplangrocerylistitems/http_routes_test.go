@@ -48,7 +48,7 @@ func TestMealPlanGroceryListItemsService_ReadHandler(T *testing.T) {
 
 		helper.service.ReadHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mealPlanGroceryListItemDataManager)
 	})
@@ -159,7 +159,7 @@ func TestMealPlanGroceryListItemsService_ListHandler(T *testing.T) {
 
 		helper.service.ListByMealPlanHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mealPlanGroceryListItemDataManager)
 	})
@@ -208,7 +208,7 @@ func TestMealPlanGroceryListItemsService_ListHandler(T *testing.T) {
 
 		helper.service.ListByMealPlanHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mealPlanGroceryListItemDataManager)
 	})
@@ -431,7 +431,7 @@ func TestMealPlanGroceryListItemsService_ArchiveHandler(T *testing.T) {
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusNoContent, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mealPlanGroceryListItemDataManager)
 	})
@@ -453,7 +453,7 @@ func TestMealPlanGroceryListItemsService_ArchiveHandler(T *testing.T) {
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusNotFound, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mealPlanGroceryListItemDataManager)
 	})
@@ -480,7 +480,7 @@ func TestMealPlanGroceryListItemsService_ArchiveHandler(T *testing.T) {
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mealPlanGroceryListItemDataManager)
 	})

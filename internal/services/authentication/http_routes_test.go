@@ -1559,7 +1559,7 @@ func TestAuthenticationService_StatusHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		helper.service.StatusHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 	})
 
 	T.Run("with problem fetching session context data", func(t *testing.T) {
@@ -1570,7 +1570,7 @@ func TestAuthenticationService_StatusHandler(T *testing.T) {
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.StatusHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
 }
 

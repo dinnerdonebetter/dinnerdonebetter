@@ -85,7 +85,12 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validPreparationVessel, http.StatusCreated)
+	responseValue := &types.APIResponse[*types.ValidPreparationVessel]{
+		Details: responseDetails,
+		Data:    validPreparationVessel,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a valid preparation vessel.
@@ -129,8 +134,13 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[*types.ValidPreparationVessel]{
+		Details: responseDetails,
+		Data:    x,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ListHandler is our list route.
@@ -172,8 +182,14 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.ValidPreparationVessel]{
+		Details:    responseDetails,
+		Data:       validPreparationVessels.Data,
+		Pagination: &validPreparationVessels.Pagination,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, validPreparationVessels)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // UpdateHandler returns a handler that updates a valid preparation vessel.
@@ -253,8 +269,13 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
+	responseValue := &types.APIResponse[*types.ValidPreparationVessel]{
+		Details: responseDetails,
+		Data:    validPreparationVessel,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, validPreparationVessel)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ArchiveHandler returns a handler that archives a valid preparation vessel.
@@ -353,7 +374,13 @@ func (s *service) SearchByPreparationHandler(res http.ResponseWriter, req *http.
 		return
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validPreparationVessels, http.StatusOK)
+	responseValue := &types.APIResponse[[]*types.ValidPreparationVessel]{
+		Details:    responseDetails,
+		Data:       validPreparationVessels.Data,
+		Pagination: &validPreparationVessels.Pagination,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // SearchByVesselHandler is our valid preparation vessel search route by vessel.
@@ -395,5 +422,11 @@ func (s *service) SearchByVesselHandler(res http.ResponseWriter, req *http.Reque
 		return
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validPreparationVessels, http.StatusOK)
+	responseValue := &types.APIResponse[[]*types.ValidPreparationVessel]{
+		Details:    responseDetails,
+		Data:       validPreparationVessels.Data,
+		Pagination: &validPreparationVessels.Pagination,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }

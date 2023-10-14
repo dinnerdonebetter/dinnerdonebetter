@@ -51,7 +51,7 @@ func TestOAuth2ClientsService_ListHandler(T *testing.T) {
 		).Return()
 
 		helper.service.ListHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -73,7 +73,7 @@ func TestOAuth2ClientsService_ListHandler(T *testing.T) {
 		).Return()
 
 		helper.service.ListHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t)
 	})
@@ -101,7 +101,7 @@ func TestOAuth2ClientsService_ListHandler(T *testing.T) {
 		).Return()
 
 		helper.service.ListHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -204,7 +204,7 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		helper.service.CreateHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
 
 	T.Run("without input attached to request", func(t *testing.T) {
@@ -455,7 +455,7 @@ func TestOAuth2ClientsService_ReadHandler(T *testing.T) {
 
 		helper.service.ReadHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, oauth2ClientDataManager)
 	})
@@ -477,7 +477,7 @@ func TestOAuth2ClientsService_ReadHandler(T *testing.T) {
 
 		helper.service.ReadHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t)
 	})
@@ -504,7 +504,7 @@ func TestOAuth2ClientsService_ReadHandler(T *testing.T) {
 
 		helper.service.ReadHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusNotFound, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, oauth2ClientDataManager)
 	})
@@ -531,7 +531,7 @@ func TestOAuth2ClientsService_ReadHandler(T *testing.T) {
 
 		helper.service.ReadHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, oauth2ClientDataManager)
 	})
@@ -563,7 +563,7 @@ func TestOAuth2ClientsService_ArchiveHandler(T *testing.T) {
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusNoContent, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, oauth2ClientDataManager, dataChangesPublisher)
 	})
@@ -585,7 +585,7 @@ func TestOAuth2ClientsService_ArchiveHandler(T *testing.T) {
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t)
 	})
@@ -612,7 +612,7 @@ func TestOAuth2ClientsService_ArchiveHandler(T *testing.T) {
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusNotFound, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, oauth2ClientDataManager)
 	})
@@ -639,7 +639,7 @@ func TestOAuth2ClientsService_ArchiveHandler(T *testing.T) {
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, oauth2ClientDataManager)
 	})
@@ -667,7 +667,7 @@ func TestOAuth2ClientsService_ArchiveHandler(T *testing.T) {
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusNoContent, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusNoContent, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, oauth2ClientDataManager, dataChangesPublisher)
 	})

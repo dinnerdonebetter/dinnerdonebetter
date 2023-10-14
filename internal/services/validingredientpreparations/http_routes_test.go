@@ -212,7 +212,7 @@ func TestValidIngredientPreparationsService_ReadHandler(T *testing.T) {
 
 		helper.service.ReadHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, validIngredientPreparationDataManager)
 	})
@@ -321,7 +321,7 @@ func TestValidIngredientPreparationsService_ListHandler(T *testing.T) {
 
 		helper.service.ListHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, validIngredientPreparationDataManager)
 	})
@@ -370,7 +370,7 @@ func TestValidIngredientPreparationsService_ListHandler(T *testing.T) {
 
 		helper.service.ListHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, validIngredientPreparationDataManager)
 	})
@@ -444,7 +444,7 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 
 		helper.service.UpdateHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -465,7 +465,7 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 
 		helper.service.UpdateHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusBadRequest, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -583,7 +583,7 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 
 		helper.service.UpdateHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, dbManager)
 	})
@@ -626,7 +626,7 @@ func TestValidIngredientPreparationsService_UpdateHandler(T *testing.T) {
 
 		helper.service.UpdateHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -828,7 +828,7 @@ func TestValidIngredientPreparationsService_SearchByIngredientHandler(T *testing
 
 		helper.service.SearchByIngredientHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, validIngredientPreparationDataManager)
 	})
@@ -844,7 +844,7 @@ func TestValidIngredientPreparationsService_SearchByIngredientHandler(T *testing
 
 		helper.service.SearchByIngredientHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
 
 	T.Run("with error fetching data from database", func(t *testing.T) {
@@ -863,7 +863,7 @@ func TestValidIngredientPreparationsService_SearchByIngredientHandler(T *testing
 
 		helper.service.SearchByIngredientHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, validIngredientPreparationDataManager)
 	})
@@ -899,7 +899,7 @@ func TestValidIngredientPreparationsService_SearchByPreparationHandler(T *testin
 
 		helper.service.SearchByPreparationHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, validIngredientPreparationDataManager)
 	})
@@ -915,7 +915,7 @@ func TestValidIngredientPreparationsService_SearchByPreparationHandler(T *testin
 
 		helper.service.SearchByPreparationHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
 
 	T.Run("with error fetching data from database", func(t *testing.T) {
@@ -934,7 +934,7 @@ func TestValidIngredientPreparationsService_SearchByPreparationHandler(T *testin
 
 		helper.service.SearchByPreparationHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, validIngredientPreparationDataManager)
 	})

@@ -46,7 +46,7 @@ func TestMealPlanTasksService_ReadHandler(T *testing.T) {
 
 		helper.service.ReadHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mealPlanTaskDataManager)
 	})
@@ -157,7 +157,7 @@ func TestMealPlanTasksService_ListHandler(T *testing.T) {
 
 		helper.service.ListByMealPlanHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mealPlanTaskDataManager)
 	})
@@ -208,7 +208,7 @@ func TestMealPlanTasksService_ListHandler(T *testing.T) {
 
 		helper.service.ListByMealPlanHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mealPlanTaskDataManager)
 	})

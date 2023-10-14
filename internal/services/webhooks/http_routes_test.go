@@ -226,7 +226,7 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 		).Return()
 
 		helper.service.ListWebhooksHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.Webhook]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, exampleWebhookList.Data)
@@ -268,7 +268,7 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 		).Return()
 
 		helper.service.ListWebhooksHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, wd)
 	})
@@ -327,7 +327,7 @@ func TestWebhooksService_ReadWebhookHandler(T *testing.T) {
 		).Return()
 
 		helper.service.ReadWebhookHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.Webhook]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, helper.exampleWebhook)

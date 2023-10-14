@@ -212,7 +212,7 @@ func TestRecipesService_ReadHandler(T *testing.T) {
 
 		helper.service.ReadHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, recipeDataManager)
 	})
@@ -329,7 +329,7 @@ func TestRecipesService_ListHandler(T *testing.T) {
 
 		helper.service.ListHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, recipeDataManager)
 	})
@@ -380,7 +380,7 @@ func TestRecipesService_ListHandler(T *testing.T) {
 
 		helper.service.ListHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, recipeDataManager)
 	})
@@ -444,7 +444,7 @@ func TestRecipesService_SearchHandler(T *testing.T) {
 
 		helper.service.SearchHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, recipeDataManager)
 	})
@@ -487,7 +487,7 @@ func TestRecipesService_SearchHandler(T *testing.T) {
 
 		helper.service.SearchHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, recipeDataManager, searchIndex)
 	})
@@ -500,7 +500,7 @@ func TestRecipesService_SearchHandler(T *testing.T) {
 
 		helper.service.SearchHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
 
 	T.Run("with no rows returned", func(t *testing.T) {
@@ -528,7 +528,7 @@ func TestRecipesService_SearchHandler(T *testing.T) {
 
 		helper.service.SearchHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, recipeDataManager)
 	})
@@ -550,7 +550,7 @@ func TestRecipesService_SearchHandler(T *testing.T) {
 
 		helper.service.SearchHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, recipeDataManager)
 	})
@@ -597,7 +597,7 @@ func TestRecipesService_UpdateHandler(T *testing.T) {
 
 		helper.service.UpdateHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -618,7 +618,7 @@ func TestRecipesService_UpdateHandler(T *testing.T) {
 
 		helper.service.UpdateHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusBadRequest, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -736,7 +736,7 @@ func TestRecipesService_UpdateHandler(T *testing.T) {
 
 		helper.service.UpdateHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, dbManager)
 	})
@@ -779,7 +779,7 @@ func TestRecipesService_UpdateHandler(T *testing.T) {
 
 		helper.service.UpdateHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -984,7 +984,7 @@ func TestRecipesService_DAGHandler(T *testing.T) {
 
 		helper.service.DAGHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, recipeDataManager, mockGrapher)
 	})
@@ -1003,7 +1003,7 @@ func TestRecipesService_DAGHandler(T *testing.T) {
 
 		helper.service.DAGHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
 
 	T.Run("with error fetching recipe", func(t *testing.T) {
@@ -1024,7 +1024,7 @@ func TestRecipesService_DAGHandler(T *testing.T) {
 
 		helper.service.DAGHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, recipeDataManager)
 	})
@@ -1056,7 +1056,7 @@ func TestRecipesService_DAGHandler(T *testing.T) {
 
 		helper.service.DAGHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, recipeDataManager, mockGrapher)
 	})
@@ -1092,7 +1092,7 @@ func TestRecipesService_EstimatedPrepStepsHandler(T *testing.T) {
 
 		helper.service.EstimatedPrepStepsHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, recipeDataManager, mockGrapher)
 	})
@@ -1136,7 +1136,7 @@ func TestRecipesService_MermaidHandler(T *testing.T) {
 
 		helper.service.MermaidHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, recipeDataManager, mockGrapher)
 	})
@@ -1252,7 +1252,7 @@ func TestRecipesService_CloneHandler(T *testing.T) {
 
 		helper.service.CloneHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, recipeDataManager)
 	})
@@ -1275,7 +1275,7 @@ func TestRecipesService_CloneHandler(T *testing.T) {
 
 		helper.service.CloneHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, recipeDataManager)
 	})
@@ -1306,7 +1306,7 @@ func TestRecipesService_CloneHandler(T *testing.T) {
 
 		helper.service.CloneHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, recipeDataManager)
 	})

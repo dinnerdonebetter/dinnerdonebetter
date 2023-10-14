@@ -219,7 +219,7 @@ func TestMealsService_ReadMealHandler(T *testing.T) {
 
 		helper.service.ReadMealHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mealDataManager)
 	})
@@ -336,7 +336,7 @@ func TestMealsService_ListMealsHandler(T *testing.T) {
 
 		helper.service.ListMealsHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mealDataManager)
 	})
@@ -387,7 +387,7 @@ func TestMealsService_ListMealsHandler(T *testing.T) {
 
 		helper.service.ListMealsHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mealDataManager)
 	})
@@ -451,7 +451,7 @@ func TestMealsService_SearchMealsHandler(T *testing.T) {
 
 		helper.service.SearchMealsHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mealDataManager)
 	})
@@ -494,7 +494,7 @@ func TestMealsService_SearchMealsHandler(T *testing.T) {
 
 		helper.service.SearchMealsHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mealDataManager, searchIndex)
 	})
@@ -507,7 +507,7 @@ func TestMealsService_SearchMealsHandler(T *testing.T) {
 
 		helper.service.SearchMealsHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
 
 	T.Run("with no rows returned", func(t *testing.T) {
@@ -535,7 +535,7 @@ func TestMealsService_SearchMealsHandler(T *testing.T) {
 
 		helper.service.SearchMealsHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mealDataManager)
 	})
@@ -557,7 +557,7 @@ func TestMealsService_SearchMealsHandler(T *testing.T) {
 
 		helper.service.SearchMealsHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mealDataManager)
 	})
