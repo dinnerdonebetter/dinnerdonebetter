@@ -59,6 +59,9 @@ func TestValidPreparationInstrumentsService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleValidPreparationInstrument)
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -213,6 +216,9 @@ func TestValidPreparationInstrumentsService_ReadHandler(T *testing.T) {
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleValidPreparationInstrument)
 
 		mock.AssertExpectationsForObjects(t, validPreparationInstrumentDataManager)
 	})
@@ -322,6 +328,10 @@ func TestValidPreparationInstrumentsService_ListHandler(T *testing.T) {
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, exampleValidPreparationInstrumentList.Data)
+		assert.Equal(t, *actual.Pagination, exampleValidPreparationInstrumentList.Pagination)
 
 		mock.AssertExpectationsForObjects(t, validPreparationInstrumentDataManager)
 	})
@@ -445,6 +455,9 @@ func TestValidPreparationInstrumentsService_UpdateHandler(T *testing.T) {
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleValidPreparationInstrument)
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -806,7 +819,7 @@ func TestValidPreparationInstrumentsService_SearchByPreparationHandler(T *testin
 
 		helper := buildTestHelper(t)
 
-		exampleResponse := fakes.BuildFakeValidPreparationInstrumentList()
+		exampleValidPreparationInstrumentList := fakes.BuildFakeValidPreparationInstrumentList()
 
 		validPreparationInstrumentDataManager := &mocktypes.ValidPreparationInstrumentDataManagerMock{}
 		validPreparationInstrumentDataManager.On(
@@ -814,7 +827,7 @@ func TestValidPreparationInstrumentsService_SearchByPreparationHandler(T *testin
 			testutils.ContextMatcher,
 			helper.exampleValidPreparation.ID,
 			testutils.QueryFilterMatcher,
-		).Return(exampleResponse, nil)
+		).Return(exampleValidPreparationInstrumentList, nil)
 		helper.service.validPreparationInstrumentDataManager = validPreparationInstrumentDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -822,13 +835,17 @@ func TestValidPreparationInstrumentsService_SearchByPreparationHandler(T *testin
 			"EncodeResponseWithStatus",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			exampleResponse,
+			exampleValidPreparationInstrumentList,
 			http.StatusOK,
 		)
 
 		helper.service.SearchByPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, exampleValidPreparationInstrumentList.Data)
+		assert.Equal(t, *actual.Pagination, exampleValidPreparationInstrumentList.Pagination)
 
 		mock.AssertExpectationsForObjects(t, validPreparationInstrumentDataManager)
 	})
@@ -876,8 +893,7 @@ func TestValidPreparationInstrumentsService_SearchByInstrumentHandler(T *testing
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
-		exampleResponse := fakes.BuildFakeValidPreparationInstrumentList()
+		exampleValidPreparationInstrumentList := fakes.BuildFakeValidPreparationInstrumentList()
 
 		validPreparationInstrumentDataManager := &mocktypes.ValidPreparationInstrumentDataManagerMock{}
 		validPreparationInstrumentDataManager.On(
@@ -885,7 +901,7 @@ func TestValidPreparationInstrumentsService_SearchByInstrumentHandler(T *testing
 			testutils.ContextMatcher,
 			helper.exampleValidInstrument.ID,
 			testutils.QueryFilterMatcher,
-		).Return(exampleResponse, nil)
+		).Return(exampleValidPreparationInstrumentList, nil)
 		helper.service.validPreparationInstrumentDataManager = validPreparationInstrumentDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -893,13 +909,17 @@ func TestValidPreparationInstrumentsService_SearchByInstrumentHandler(T *testing
 			"EncodeResponseWithStatus",
 			testutils.ContextMatcher,
 			testutils.HTTPResponseWriterMatcher,
-			exampleResponse,
+			exampleValidPreparationInstrumentList,
 			http.StatusOK,
 		)
 
 		helper.service.SearchByInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, exampleValidPreparationInstrumentList.Data)
+		assert.Equal(t, *actual.Pagination, exampleValidPreparationInstrumentList.Pagination)
 
 		mock.AssertExpectationsForObjects(t, validPreparationInstrumentDataManager)
 	})
