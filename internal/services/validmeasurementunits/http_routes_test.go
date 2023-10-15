@@ -63,6 +63,9 @@ func TestValidMeasurementUnitsService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidMeasurementUnit]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleValidMeasurementUnit)
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -217,6 +220,9 @@ func TestValidMeasurementUnitsService_ReadHandler(T *testing.T) {
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidMeasurementUnit]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleValidMeasurementUnit)
 
 		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
 	})
@@ -326,6 +332,10 @@ func TestValidMeasurementUnitsService_ListHandler(T *testing.T) {
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.ValidMeasurementUnit]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, exampleValidMeasurementUnitList.Data)
+		assert.Equal(t, *actual.Pagination, exampleValidMeasurementUnitList.Pagination)
 
 		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
 	})
@@ -443,6 +453,9 @@ func TestValidMeasurementUnitsService_SearchHandler(T *testing.T) {
 		helper.service.SearchHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.ValidMeasurementUnit]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, exampleValidMeasurementUnitList.Data)
 
 		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
 	})
@@ -610,7 +623,10 @@ func TestValidMeasurementUnitsService_SearchByIngredientIDHandler(T *testing.T) 
 		helper.service.SearchByIngredientIDHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-
+		var actual *types.APIResponse[[]*types.ValidMeasurementUnit]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, exampleValidMeasurementUnitList.Data)
+		assert.Equal(t, *actual.Pagination, exampleValidMeasurementUnitList.Pagination)
 		mock.AssertExpectationsForObjects(t, validMeasurementUnitDataManager)
 	})
 
@@ -743,6 +759,9 @@ func TestValidMeasurementUnitsService_UpdateHandler(T *testing.T) {
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidMeasurementUnit]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleValidMeasurementUnit)
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})

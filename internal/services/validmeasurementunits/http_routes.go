@@ -84,7 +84,12 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validMeasurementUnit, http.StatusCreated)
+	responseValue := &types.APIResponse[*types.ValidMeasurementUnit]{
+		Details: responseDetails,
+		Data:    validMeasurementUnit,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a valid measurement unit.
@@ -128,8 +133,13 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[*types.ValidMeasurementUnit]{
+		Details: responseDetails,
+		Data:    x,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ListHandler is our list route.
@@ -171,8 +181,14 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.ValidMeasurementUnit]{
+		Details:    responseDetails,
+		Data:       validMeasurementUnits.Data,
+		Pagination: &validMeasurementUnits.Pagination,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, validMeasurementUnits)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // SearchHandler is our search route.
@@ -243,8 +259,13 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.ValidMeasurementUnit]{
+		Details: responseDetails,
+		Data:    validMeasurementUnits,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, validMeasurementUnits)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // SearchByIngredientIDHandler is our search route.
@@ -293,8 +314,14 @@ func (s *service) SearchByIngredientIDHandler(res http.ResponseWriter, req *http
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.ValidMeasurementUnit]{
+		Details:    responseDetails,
+		Data:       validMeasurementUnits.Data,
+		Pagination: &validMeasurementUnits.Pagination,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, validMeasurementUnits)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // UpdateHandler returns a handler that updates a valid measurement unit.
@@ -374,8 +401,13 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
+	responseValue := &types.APIResponse[*types.ValidMeasurementUnit]{
+		Details: responseDetails,
+		Data:    validMeasurementUnit,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, validMeasurementUnit)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ArchiveHandler returns a handler that archives a valid measurement unit.
