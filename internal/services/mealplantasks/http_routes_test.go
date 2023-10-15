@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
-	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -36,14 +35,6 @@ func TestMealPlanTasksService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleMealPlanTask, nil)
 		helper.service.mealPlanTaskDataManager = mealPlanTaskDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.MealPlanTask{}),
-		)
-
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
@@ -56,22 +47,11 @@ func TestMealPlanTasksService_ReadHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t)
 	})
 
 	T.Run("with no such meal plan in the database", func(t *testing.T) {
@@ -86,13 +66,6 @@ func TestMealPlanTasksService_ReadHandler(T *testing.T) {
 			helper.exampleMealPlanTask.ID,
 		).Return((*types.MealPlanTask)(nil), sql.ErrNoRows)
 		helper.service.mealPlanTaskDataManager = mealPlanTaskDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeNotFoundResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		helper.service.ReadHandler(helper.res, helper.req)
 
@@ -113,13 +86,6 @@ func TestMealPlanTasksService_ReadHandler(T *testing.T) {
 			helper.exampleMealPlanTask.ID,
 		).Return((*types.MealPlanTask)(nil), errors.New("blah"))
 		helper.service.mealPlanTaskDataManager = mealPlanTaskDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		)
 
 		helper.service.ReadHandler(helper.res, helper.req)
 
@@ -147,14 +113,6 @@ func TestMealPlanTasksService_ListHandler(T *testing.T) {
 		).Return(exampleMealPlanTaskList, nil)
 		helper.service.mealPlanTaskDataManager = mealPlanTaskDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType([]*types.MealPlanTask{}),
-		).Return()
-
 		helper.service.ListByMealPlanHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
@@ -167,22 +125,11 @@ func TestMealPlanTasksService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ListByMealPlanHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t)
 	})
 
 	T.Run("with no rows returned", func(t *testing.T) {
@@ -197,14 +144,6 @@ func TestMealPlanTasksService_ListHandler(T *testing.T) {
 			helper.exampleMealPlan.ID,
 		).Return([]*types.MealPlanTask(nil), sql.ErrNoRows)
 		helper.service.mealPlanTaskDataManager = mealPlanTaskDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType([]*types.MealPlanTask{}),
-		).Return()
 
 		helper.service.ListByMealPlanHandler(helper.res, helper.req)
 
@@ -225,13 +164,6 @@ func TestMealPlanTasksService_ListHandler(T *testing.T) {
 			helper.exampleMealPlan.ID,
 		).Return([]*types.MealPlanTask(nil), errors.New("blah"))
 		helper.service.mealPlanTaskDataManager = mealPlanTaskDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		helper.service.ListByMealPlanHandler(helper.res, helper.req)
 
@@ -296,22 +228,11 @@ func TestMealPlanTasksService_StatusChangeHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.StatusChangeHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t)
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {

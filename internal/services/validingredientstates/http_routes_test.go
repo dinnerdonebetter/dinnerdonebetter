@@ -11,7 +11,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -209,14 +208,6 @@ func TestValidIngredientStatesService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleValidIngredientState, nil)
 		helper.service.validIngredientStateDataManager = validIngredientStateDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.ValidIngredientState{}),
-		)
-
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
@@ -231,15 +222,6 @@ func TestValidIngredientStatesService_ReadHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		)
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
@@ -261,13 +243,6 @@ func TestValidIngredientStatesService_ReadHandler(T *testing.T) {
 		).Return((*types.ValidIngredientState)(nil), sql.ErrNoRows)
 		helper.service.validIngredientStateDataManager = validIngredientStateDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeNotFoundResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
@@ -287,13 +262,6 @@ func TestValidIngredientStatesService_ReadHandler(T *testing.T) {
 			helper.exampleValidIngredientState.ID,
 		).Return((*types.ValidIngredientState)(nil), errors.New("blah"))
 		helper.service.validIngredientStateDataManager = validIngredientStateDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		)
 
 		helper.service.ReadHandler(helper.res, helper.req)
 
@@ -321,14 +289,6 @@ func TestValidIngredientStatesService_ListHandler(T *testing.T) {
 		).Return(exampleValidIngredientStateList, nil)
 		helper.service.validIngredientStateDataManager = validIngredientStateDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.QueryFilteredResult[types.ValidIngredientState]{}),
-		).Return()
-
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
@@ -343,15 +303,6 @@ func TestValidIngredientStatesService_ListHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		)
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
@@ -373,14 +324,6 @@ func TestValidIngredientStatesService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.ValidIngredientState])(nil), sql.ErrNoRows)
 		helper.service.validIngredientStateDataManager = validIngredientStateDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.QueryFilteredResult[types.ValidIngredientState]{}),
-		).Return()
-
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
@@ -400,13 +343,6 @@ func TestValidIngredientStatesService_ListHandler(T *testing.T) {
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.QueryFilteredResult[types.ValidIngredientState])(nil), errors.New("blah"))
 		helper.service.validIngredientStateDataManager = validIngredientStateDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		helper.service.ListHandler(helper.res, helper.req)
 
@@ -440,14 +376,6 @@ func TestValidIngredientStatesService_SearchHandler(T *testing.T) {
 			exampleQuery,
 		).Return(exampleValidIngredientStateList.Data, nil)
 		helper.service.validIngredientStateDataManager = validIngredientStateDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType([]*types.ValidIngredientState{}),
-		).Return()
 
 		helper.service.SearchHandler(helper.res, helper.req)
 
@@ -505,15 +433,6 @@ func TestValidIngredientStatesService_SearchHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.SearchHandler(helper.res, helper.req)
@@ -539,14 +458,6 @@ func TestValidIngredientStatesService_SearchHandler(T *testing.T) {
 		).Return([]*types.ValidIngredientState{}, sql.ErrNoRows)
 		helper.service.validIngredientStateDataManager = validIngredientStateDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType([]*types.ValidIngredientState{}),
-		).Return()
-
 		helper.service.SearchHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
@@ -570,13 +481,6 @@ func TestValidIngredientStatesService_SearchHandler(T *testing.T) {
 			exampleQuery,
 		).Return([]*types.ValidIngredientState{}, errors.New("blah"))
 		helper.service.validIngredientStateDataManager = validIngredientStateDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		helper.service.SearchHandler(helper.res, helper.req)
 
@@ -860,15 +764,6 @@ func TestValidIngredientStatesService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
@@ -888,13 +783,6 @@ func TestValidIngredientStatesService_ArchiveHandler(T *testing.T) {
 			helper.exampleValidIngredientState.ID,
 		).Return(false, nil)
 		helper.service.validIngredientStateDataManager = validIngredientStateDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeNotFoundResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 

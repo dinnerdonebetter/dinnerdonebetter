@@ -9,7 +9,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -59,6 +58,9 @@ func TestValidIngredientStateIngredientsService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidIngredientStateIngredient]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleValidIngredientStateIngredient)
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -202,17 +204,12 @@ func TestValidIngredientStateIngredientsService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleValidIngredientStateIngredient, nil)
 		helper.service.validIngredientStateIngredientDataManager = validIngredientStateIngredientDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.ValidIngredientStateIngredient{}),
-		)
-
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidIngredientStateIngredient]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleValidIngredientStateIngredient)
 
 		mock.AssertExpectationsForObjects(t, validIngredientStateIngredientDataManager)
 	})
@@ -221,15 +218,6 @@ func TestValidIngredientStateIngredientsService_ReadHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		)
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
@@ -251,13 +239,6 @@ func TestValidIngredientStateIngredientsService_ReadHandler(T *testing.T) {
 		).Return((*types.ValidIngredientStateIngredient)(nil), sql.ErrNoRows)
 		helper.service.validIngredientStateIngredientDataManager = validIngredientStateIngredientDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeNotFoundResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
@@ -277,13 +258,6 @@ func TestValidIngredientStateIngredientsService_ReadHandler(T *testing.T) {
 			helper.exampleValidIngredientStateIngredient.ID,
 		).Return((*types.ValidIngredientStateIngredient)(nil), errors.New("blah"))
 		helper.service.validIngredientStateIngredientDataManager = validIngredientStateIngredientDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		)
 
 		helper.service.ReadHandler(helper.res, helper.req)
 
@@ -311,17 +285,13 @@ func TestValidIngredientStateIngredientsService_ListHandler(T *testing.T) {
 		).Return(exampleValidIngredientStateIngredientList, nil)
 		helper.service.validIngredientStateIngredientDataManager = validIngredientStateIngredientDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.QueryFilteredResult[types.ValidIngredientStateIngredient]{}),
-		).Return()
-
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.ValidIngredientStateIngredient]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, exampleValidIngredientStateIngredientList.Data)
+		assert.Equal(t, *actual.Pagination, exampleValidIngredientStateIngredientList.Pagination)
 
 		mock.AssertExpectationsForObjects(t, validIngredientStateIngredientDataManager)
 	})
@@ -330,15 +300,6 @@ func TestValidIngredientStateIngredientsService_ListHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		)
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
@@ -360,14 +321,6 @@ func TestValidIngredientStateIngredientsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.ValidIngredientStateIngredient])(nil), sql.ErrNoRows)
 		helper.service.validIngredientStateIngredientDataManager = validIngredientStateIngredientDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.QueryFilteredResult[types.ValidIngredientStateIngredient]{}),
-		).Return()
-
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
@@ -387,13 +340,6 @@ func TestValidIngredientStateIngredientsService_ListHandler(T *testing.T) {
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.QueryFilteredResult[types.ValidIngredientStateIngredient])(nil), errors.New("blah"))
 		helper.service.validIngredientStateIngredientDataManager = validIngredientStateIngredientDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		helper.service.ListHandler(helper.res, helper.req)
 
@@ -445,6 +391,9 @@ func TestValidIngredientStateIngredientsService_UpdateHandler(T *testing.T) {
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidIngredientStateIngredient]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleValidIngredientStateIngredient)
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -674,15 +623,6 @@ func TestValidIngredientStateIngredientsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
@@ -702,13 +642,6 @@ func TestValidIngredientStateIngredientsService_ArchiveHandler(T *testing.T) {
 			helper.exampleValidIngredientStateIngredient.ID,
 		).Return(false, nil)
 		helper.service.validIngredientStateIngredientDataManager = validIngredientStateIngredientDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeNotFoundResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
@@ -806,7 +739,7 @@ func TestValidIngredientStateIngredientsService_SearchByIngredientHandler(T *tes
 
 		helper := buildTestHelper(t)
 
-		exampleResponse := fakes.BuildFakeValidIngredientStateIngredientList()
+		exampleValidIngredientStateIngredientList := fakes.BuildFakeValidIngredientStateIngredientList()
 
 		validIngredientStateIngredientDataManager := &mocktypes.ValidIngredientStateIngredientDataManagerMock{}
 		validIngredientStateIngredientDataManager.On(
@@ -814,21 +747,16 @@ func TestValidIngredientStateIngredientsService_SearchByIngredientHandler(T *tes
 			testutils.ContextMatcher,
 			helper.exampleValidIngredient.ID,
 			testutils.QueryFilterMatcher,
-		).Return(exampleResponse, nil)
+		).Return(exampleValidIngredientStateIngredientList, nil)
 		helper.service.validIngredientStateIngredientDataManager = validIngredientStateIngredientDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeResponseWithStatus",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			exampleResponse,
-			http.StatusOK,
-		)
 
 		helper.service.SearchByIngredientHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.ValidIngredientStateIngredient]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, exampleValidIngredientStateIngredientList.Data)
+		assert.Equal(t, *actual.Pagination, exampleValidIngredientStateIngredientList.Pagination)
 
 		mock.AssertExpectationsForObjects(t, validIngredientStateIngredientDataManager)
 	})
@@ -877,29 +805,24 @@ func TestValidIngredientStateIngredientsService_SearchByPreparationHandler(T *te
 
 		helper := buildTestHelper(t)
 
-		exampleResponse := fakes.BuildFakeValidIngredientStateIngredientList()
+		exampleValidIngredientStateIngredientList := fakes.BuildFakeValidIngredientStateIngredientList()
 
 		validIngredientStateIngredientDataManager := &mocktypes.ValidIngredientStateIngredientDataManagerMock{}
 		validIngredientStateIngredientDataManager.On(
 			"GetValidIngredientStateIngredientsForIngredientState",
 			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
+			helper.exampleValidIngredientState.ID,
 			testutils.QueryFilterMatcher,
-		).Return(exampleResponse, nil)
+		).Return(exampleValidIngredientStateIngredientList, nil)
 		helper.service.validIngredientStateIngredientDataManager = validIngredientStateIngredientDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeResponseWithStatus",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			exampleResponse,
-			http.StatusOK,
-		)
 
 		helper.service.SearchByIngredientStateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.ValidIngredientStateIngredient]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, exampleValidIngredientStateIngredientList.Data)
+		assert.Equal(t, *actual.Pagination, exampleValidIngredientStateIngredientList.Pagination)
 
 		mock.AssertExpectationsForObjects(t, validIngredientStateIngredientDataManager)
 	})
@@ -927,7 +850,7 @@ func TestValidIngredientStateIngredientsService_SearchByPreparationHandler(T *te
 		validIngredientStateIngredientDataManager.On(
 			"GetValidIngredientStateIngredientsForIngredientState",
 			testutils.ContextMatcher,
-			helper.exampleValidPreparation.ID,
+			helper.exampleValidIngredientState.ID,
 			testutils.QueryFilterMatcher,
 		).Return((*types.QueryFilteredResult[types.ValidIngredientStateIngredient])(nil), errors.New("blah"))
 		helper.service.validIngredientStateIngredientDataManager = validIngredientStateIngredientDataManager

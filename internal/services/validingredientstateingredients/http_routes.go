@@ -84,7 +84,12 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validIngredientStateIngredient, http.StatusCreated)
+	responseValue := &types.APIResponse[*types.ValidIngredientStateIngredient]{
+		Details: responseDetails,
+		Data:    validIngredientStateIngredient,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a valid ingredient state ingredient.
@@ -127,8 +132,13 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[*types.ValidIngredientStateIngredient]{
+		Details: responseDetails,
+		Data:    x,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ListHandler is our list route.
@@ -169,8 +179,14 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.ValidIngredientStateIngredient]{
+		Details:    responseDetails,
+		Data:       validIngredientStateIngredients.Data,
+		Pagination: &validIngredientStateIngredients.Pagination,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, validIngredientStateIngredients)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // UpdateHandler returns a handler that updates a valid ingredient state ingredient.
@@ -248,8 +264,13 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
+	responseValue := &types.APIResponse[*types.ValidIngredientStateIngredient]{
+		Details: responseDetails,
+		Data:    validIngredientStateIngredient,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, validIngredientStateIngredient)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ArchiveHandler returns a handler that archives a valid ingredient state ingredient.
@@ -349,7 +370,13 @@ func (s *service) SearchByIngredientHandler(res http.ResponseWriter, req *http.R
 		return
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validIngredientStateIngredients, http.StatusOK)
+	responseValue := &types.APIResponse[[]*types.ValidIngredientStateIngredient]{
+		Details:    responseDetails,
+		Data:       validIngredientStateIngredients.Data,
+		Pagination: &validIngredientStateIngredients.Pagination,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // SearchByIngredientStateHandler is our valid ingredient state ingredient search route.
@@ -391,5 +418,11 @@ func (s *service) SearchByIngredientStateHandler(res http.ResponseWriter, req *h
 		return
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validIngredientStateIngredients, http.StatusOK)
+	responseValue := &types.APIResponse[[]*types.ValidIngredientStateIngredient]{
+		Details:    responseDetails,
+		Data:       validIngredientStateIngredients.Data,
+		Pagination: &validIngredientStateIngredients.Pagination,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }

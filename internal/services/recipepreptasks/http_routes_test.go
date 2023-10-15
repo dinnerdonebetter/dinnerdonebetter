@@ -9,7 +9,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -203,14 +202,6 @@ func TestRecipePrepTasksService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleRecipePrepTask, nil)
 		helper.service.recipePrepTaskDataManager = recipePrepTaskDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.RecipePrepTask{}),
-		)
-
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
@@ -222,15 +213,6 @@ func TestRecipePrepTasksService_ReadHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		)
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
@@ -253,13 +235,6 @@ func TestRecipePrepTasksService_ReadHandler(T *testing.T) {
 		).Return((*types.RecipePrepTask)(nil), sql.ErrNoRows)
 		helper.service.recipePrepTaskDataManager = recipePrepTaskDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeNotFoundResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
@@ -280,13 +255,6 @@ func TestRecipePrepTasksService_ReadHandler(T *testing.T) {
 			helper.exampleRecipePrepTask.ID,
 		).Return((*types.RecipePrepTask)(nil), errors.New("blah"))
 		helper.service.recipePrepTaskDataManager = recipePrepTaskDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		)
 
 		helper.service.ReadHandler(helper.res, helper.req)
 
@@ -314,14 +282,6 @@ func TestRecipePrepTasksService_ListHandler(T *testing.T) {
 		).Return(exampleRecipePrepTaskList, nil)
 		helper.service.recipePrepTaskDataManager = recipePrepTaskDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType([]*types.RecipePrepTask{}),
-		).Return()
-
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
@@ -333,15 +293,6 @@ func TestRecipePrepTasksService_ListHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		)
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
@@ -363,14 +314,6 @@ func TestRecipePrepTasksService_ListHandler(T *testing.T) {
 		).Return([]*types.RecipePrepTask(nil), sql.ErrNoRows)
 		helper.service.recipePrepTaskDataManager = recipePrepTaskDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType([]*types.RecipePrepTask{}),
-		).Return()
-
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
@@ -390,13 +333,6 @@ func TestRecipePrepTasksService_ListHandler(T *testing.T) {
 			helper.exampleRecipe.ID,
 		).Return([]*types.RecipePrepTask(nil), errors.New("blah"))
 		helper.service.recipePrepTaskDataManager = recipePrepTaskDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		helper.service.ListHandler(helper.res, helper.req)
 
@@ -684,15 +620,6 @@ func TestRecipePrepTasksService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
@@ -713,13 +640,6 @@ func TestRecipePrepTasksService_ArchiveHandler(T *testing.T) {
 			helper.exampleRecipePrepTask.ID,
 		).Return(false, nil)
 		helper.service.recipePrepTaskDataManager = recipePrepTaskDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeNotFoundResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 

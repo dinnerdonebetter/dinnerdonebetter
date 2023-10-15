@@ -212,7 +212,7 @@ func (qf *QueryFilter) ToPagination() Pagination {
 
 // ExtractQueryFilterFromRequest can extract a QueryFilter from a request.
 func ExtractQueryFilterFromRequest(req *http.Request) *QueryFilter {
-	qf := &QueryFilter{}
+	qf := DefaultQueryFilter()
 	qf.FromParams(req.URL.Query())
 
 	if qf.Limit != nil {

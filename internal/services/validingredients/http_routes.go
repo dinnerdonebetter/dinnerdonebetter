@@ -86,7 +86,12 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validIngredient, http.StatusCreated)
+	responseValue := &types.APIResponse[*types.ValidIngredient]{
+		Details: responseDetails,
+		Data:    validIngredient,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a valid ingredient.
@@ -130,8 +135,13 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[*types.ValidIngredient]{
+		Details: responseDetails,
+		Data:    x,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ListHandler is our list route.
@@ -173,8 +183,14 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.ValidIngredient]{
+		Details:    responseDetails,
+		Data:       validIngredients.Data,
+		Pagination: &validIngredients.Pagination,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, validIngredients)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // SearchHandler is our search route.
@@ -242,8 +258,14 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.ValidIngredient]{
+		Details:    responseDetails,
+		Data:       validIngredients.Data,
+		Pagination: &validIngredients.Pagination,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, validIngredients)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // SearchByPreparationAndIngredientNameHandler is our valid ingredient measurement unit search route.
@@ -282,7 +304,7 @@ func (s *service) SearchByPreparationAndIngredientNameHandler(res http.ResponseW
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	validIngredientPreparations, err := s.validIngredientDataManager.SearchForValidIngredientsForPreparation(ctx, validPreparationID, query, nil)
+	validIngredients, err := s.validIngredientDataManager.SearchForValidIngredientsForPreparation(ctx, validPreparationID, query, filter)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "searching for valid ingredient preparations")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
@@ -290,7 +312,13 @@ func (s *service) SearchByPreparationAndIngredientNameHandler(res http.ResponseW
 		return
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validIngredientPreparations, http.StatusOK)
+	responseValue := &types.APIResponse[[]*types.ValidIngredient]{
+		Details:    responseDetails,
+		Data:       validIngredients.Data,
+		Pagination: &validIngredients.Pagination,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // ForValidIngredientStateHandler is our valid ingredient state filter route.
@@ -333,10 +361,13 @@ func (s *service) ForValidIngredientStateHandler(res http.ResponseWriter, req *h
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
-	validIngredients, err := s.validIngredientDataManager.SearchForValidIngredients(ctx, "help me", filter)
+	validIngredients, err := s.validIngredientDataManager.SearchForValidIngredients(ctx, query, filter)
 	if errors.Is(err, sql.ErrNoRows) {
-		// in the event no rows exist, return an empty list.
-		validIngredients.Data = []*types.ValidIngredient{}
+		// in the event no rows exist, return an empty list
+		validIngredients = &types.QueryFilteredResult[types.ValidIngredient]{
+			Data:       []*types.ValidIngredient{},
+			Pagination: filter.ToPagination(),
+		}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "searching for valid ingredients for valid ingredient state")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
@@ -344,8 +375,14 @@ func (s *service) ForValidIngredientStateHandler(res http.ResponseWriter, req *h
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.ValidIngredient]{
+		Details:    responseDetails,
+		Data:       validIngredients.Data,
+		Pagination: &validIngredients.Pagination,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, validIngredients)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // UpdateHandler returns a handler that updates a valid ingredient.
@@ -425,8 +462,13 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
+	responseValue := &types.APIResponse[*types.ValidIngredient]{
+		Details: responseDetails,
+		Data:    validIngredient,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, validIngredient)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ArchiveHandler returns a handler that archives a valid ingredient.
@@ -525,6 +567,11 @@ func (s *service) RandomHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[*types.ValidIngredient]{
+		Details: responseDetails,
+		Data:    x,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }

@@ -227,14 +227,6 @@ func TestService_UsernameSearchHandler(T *testing.T) {
 		).Return(exampleUserList.Data, nil)
 		helper.service.userDataManager = mockDB
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType([]*types.User{}),
-		).Return()
-
 		v := helper.req.URL.Query()
 		v.Set(types.SearchQueryKey, helper.exampleUser.Username)
 		helper.req.URL.RawQuery = v.Encode()
@@ -258,13 +250,6 @@ func TestService_UsernameSearchHandler(T *testing.T) {
 			helper.exampleUser.Username,
 		).Return([]*types.User{}, errors.New("blah"))
 		helper.service.userDataManager = mockDB
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		v := helper.req.URL.Query()
 		v.Set(types.SearchQueryKey, helper.exampleUser.Username)
@@ -296,14 +281,6 @@ func TestService_ListHandler(T *testing.T) {
 		).Return(exampleUserList, nil)
 		helper.service.userDataManager = mockDB
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.QueryFilteredResult[types.User]{}),
-		).Return()
-
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
@@ -323,13 +300,6 @@ func TestService_ListHandler(T *testing.T) {
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.QueryFilteredResult[types.User])(nil), errors.New("blah"))
 		helper.service.userDataManager = mockDB
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		helper.service.ListHandler(helper.res, helper.req)
 
@@ -1067,14 +1037,6 @@ func TestService_SelfHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = mockDB
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.User{}),
-		).Return()
-
 		helper.service.SelfHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
@@ -1088,18 +1050,9 @@ func TestService_SelfHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnauthorizedResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-
 		helper.service.SelfHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t)
 	})
 
 	T.Run("with no rows found", func(t *testing.T) {
@@ -1114,13 +1067,6 @@ func TestService_SelfHandler(T *testing.T) {
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, sql.ErrNoRows)
 		helper.service.userDataManager = mockDB
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeNotFoundResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		helper.service.SelfHandler(helper.res, helper.req)
 
@@ -1141,13 +1087,6 @@ func TestService_SelfHandler(T *testing.T) {
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, errors.New("blah"))
 		helper.service.userDataManager = mockDB
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		helper.service.SelfHandler(helper.res, helper.req)
 
@@ -1184,18 +1123,9 @@ func TestService_PermissionsHandler(T *testing.T) {
 		helper := newTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnauthorizedResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-
 		helper.service.PermissionsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t)
 	})
 
 	T.Run("with error decoding input", func(t *testing.T) {
@@ -1252,14 +1182,6 @@ func TestService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleUser, nil)
 		helper.service.userDataManager = mockDB
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.User{}),
-		).Return()
-
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
@@ -1280,13 +1202,6 @@ func TestService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleUser, sql.ErrNoRows)
 		helper.service.userDataManager = mockDB
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeNotFoundResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
@@ -1306,13 +1221,6 @@ func TestService_ReadHandler(T *testing.T) {
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, errors.New("blah"))
 		helper.service.userDataManager = mockDB
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		helper.service.ReadHandler(helper.res, helper.req)
 
@@ -2474,13 +2382,6 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnauthorizedResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		helper.service.AvatarUploadHandler(helper.res, helper.req)
 
@@ -3650,22 +3551,6 @@ func TestService_VerifyUserEmailAddressHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"DecodeRequest",
-			testutils.ContextMatcher,
-			testutils.HTTPRequestMatcher,
-			mock.IsType(&types.EmailAddressVerificationRequestInput{}),
-		).Return(errors.New("blah"))
-
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"invalid request content",
-			http.StatusBadRequest,
-		)
 
 		helper.service.VerifyUserEmailAddressHandler(helper.res, helper.req)
 

@@ -9,7 +9,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -203,14 +202,6 @@ func TestServiceSettingConfigurationsService_ByNameHandler(T *testing.T) {
 		).Return(helper.exampleServiceSettingConfiguration, nil)
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			helper.exampleServiceSettingConfiguration,
-		)
-
 		helper.service.ForUserByNameHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
@@ -222,15 +213,6 @@ func TestServiceSettingConfigurationsService_ByNameHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		)
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
@@ -253,13 +235,6 @@ func TestServiceSettingConfigurationsService_ByNameHandler(T *testing.T) {
 		).Return((*types.ServiceSettingConfiguration)(nil), sql.ErrNoRows)
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeNotFoundResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-
 		helper.service.ForUserByNameHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
@@ -280,13 +255,6 @@ func TestServiceSettingConfigurationsService_ByNameHandler(T *testing.T) {
 			helper.exampleServiceSettingConfiguration.ServiceSetting.Name,
 		).Return((*types.ServiceSettingConfiguration)(nil), errors.New("blah"))
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		)
 
 		helper.service.ForUserByNameHandler(helper.res, helper.req)
 
@@ -313,14 +281,6 @@ func TestServiceSettingConfigurationsService_ForUserHandler(T *testing.T) {
 		).Return(helper.exampleServiceSettingConfigurationList, nil)
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			helper.exampleServiceSettingConfigurationList,
-		)
-
 		helper.service.ForUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
@@ -332,15 +292,6 @@ func TestServiceSettingConfigurationsService_ForUserHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		)
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
@@ -363,13 +314,6 @@ func TestServiceSettingConfigurationsService_ForUserHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.ServiceSettingConfiguration])(nil), sql.ErrNoRows)
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeNotFoundResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-
 		helper.service.ForUserHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
@@ -390,13 +334,6 @@ func TestServiceSettingConfigurationsService_ForUserHandler(T *testing.T) {
 			testutils.QueryFilterMatcher,
 		).Return((*types.QueryFilteredResult[types.ServiceSettingConfiguration])(nil), errors.New("blah"))
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		)
 
 		helper.service.ForUserHandler(helper.res, helper.req)
 
@@ -423,14 +360,6 @@ func TestServiceSettingConfigurationsService_ForHouseholdHandler(T *testing.T) {
 		).Return(helper.exampleServiceSettingConfigurationList, nil)
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			helper.exampleServiceSettingConfigurationList,
-		)
-
 		helper.service.ForHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
@@ -442,15 +371,6 @@ func TestServiceSettingConfigurationsService_ForHouseholdHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		)
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
@@ -473,13 +393,6 @@ func TestServiceSettingConfigurationsService_ForHouseholdHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.ServiceSettingConfiguration])(nil), sql.ErrNoRows)
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeNotFoundResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-
 		helper.service.ForHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
@@ -500,13 +413,6 @@ func TestServiceSettingConfigurationsService_ForHouseholdHandler(T *testing.T) {
 			testutils.QueryFilterMatcher,
 		).Return((*types.QueryFilteredResult[types.ServiceSettingConfiguration])(nil), errors.New("blah"))
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		)
 
 		helper.service.ForHouseholdHandler(helper.res, helper.req)
 
@@ -787,15 +693,6 @@ func TestServiceSettingConfigurationsService_ArchiveHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
@@ -815,13 +712,6 @@ func TestServiceSettingConfigurationsService_ArchiveHandler(T *testing.T) {
 			helper.exampleServiceSettingConfiguration.ID,
 		).Return(false, nil)
 		helper.service.serviceSettingConfigurationDataManager = serviceSettingConfigurationDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeNotFoundResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 

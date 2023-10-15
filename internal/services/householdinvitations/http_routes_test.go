@@ -427,14 +427,6 @@ func Test_service_ReadHandler(T *testing.T) {
 		).Return(helper.exampleHouseholdInvitation, nil)
 		helper.service.householdInvitationDataManager = wd
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.HouseholdInvitation{}),
-		).Return()
-
 		helper.service.ReadHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 
@@ -466,13 +458,6 @@ func Test_service_ReadHandler(T *testing.T) {
 		).Return((*types.HouseholdInvitation)(nil), sql.ErrNoRows)
 		helper.service.householdInvitationDataManager = wd
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeNotFoundResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-
 		helper.service.ReadHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
@@ -492,13 +477,6 @@ func Test_service_ReadHandler(T *testing.T) {
 			helper.exampleHouseholdInvitation.ID,
 		).Return((*types.HouseholdInvitation)(nil), errors.New("blah"))
 		helper.service.householdInvitationDataManager = wd
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		helper.service.ReadHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
@@ -524,14 +502,6 @@ func Test_service_InboundInvitesHandler(T *testing.T) {
 			mock.IsType(&types.QueryFilter{}),
 		).Return(exampleHouseholdInvitations, nil)
 		helper.service.householdInvitationDataManager = wd
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.QueryFilteredResult[types.HouseholdInvitation]{}),
-		).Return()
 
 		helper.service.InboundInvitesHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusOK, helper.res.Code)
@@ -589,14 +559,6 @@ func Test_service_OutboundInvitesHandler(T *testing.T) {
 			mock.IsType(&types.QueryFilter{}),
 		).Return(exampleHouseholdInvitations, nil)
 		helper.service.householdInvitationDataManager = wd
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.QueryFilteredResult[types.HouseholdInvitation]{}),
-		).Return()
 
 		helper.service.OutboundInvitesHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusOK, helper.res.Code)

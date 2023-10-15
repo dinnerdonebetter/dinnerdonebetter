@@ -217,8 +217,9 @@ func TestExtractQueryFilter(T *testing.T) {
 		ctx := context.Background()
 
 		expected := &QueryFilter{
-			Page:  pointers.Pointer(uint16(1)),
-			Limit: pointers.Pointer(uint8(DefaultLimit)),
+			Page:   pointers.Pointer(uint16(1)),
+			Limit:  pointers.Pointer(uint8(DefaultLimit)),
+			SortBy: SortAscending,
 		}
 		exampleInput := url.Values{
 			pageQueryKey:  []string{"0"},

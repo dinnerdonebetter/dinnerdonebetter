@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
@@ -34,14 +33,6 @@ func TestServiceSettingsService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleServiceSetting, nil)
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.ServiceSetting{}),
-		)
-
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
@@ -53,15 +44,6 @@ func TestServiceSettingsService_ReadHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		)
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
@@ -83,13 +65,6 @@ func TestServiceSettingsService_ReadHandler(T *testing.T) {
 		).Return((*types.ServiceSetting)(nil), sql.ErrNoRows)
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeNotFoundResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
@@ -109,13 +84,6 @@ func TestServiceSettingsService_ReadHandler(T *testing.T) {
 			helper.exampleServiceSetting.ID,
 		).Return((*types.ServiceSetting)(nil), errors.New("blah"))
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		)
 
 		helper.service.ReadHandler(helper.res, helper.req)
 
@@ -143,14 +111,6 @@ func TestServiceSettingsService_ListHandler(T *testing.T) {
 		).Return(exampleServiceSettingList, nil)
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.QueryFilteredResult[types.ServiceSetting]{}),
-		).Return()
-
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
@@ -162,15 +122,6 @@ func TestServiceSettingsService_ListHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		)
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
@@ -192,14 +143,6 @@ func TestServiceSettingsService_ListHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.ServiceSetting])(nil), sql.ErrNoRows)
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.QueryFilteredResult[types.ServiceSetting]{}),
-		).Return()
-
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
@@ -219,13 +162,6 @@ func TestServiceSettingsService_ListHandler(T *testing.T) {
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.QueryFilteredResult[types.ServiceSetting])(nil), errors.New("blah"))
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		helper.service.ListHandler(helper.res, helper.req)
 
@@ -260,14 +196,6 @@ func TestServiceSettingsService_SearchHandler(T *testing.T) {
 		).Return(exampleServiceSettingList.Data, nil)
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType([]*types.ServiceSetting{}),
-		).Return()
-
 		helper.service.SearchHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
@@ -279,15 +207,6 @@ func TestServiceSettingsService_SearchHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		)
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
@@ -314,14 +233,6 @@ func TestServiceSettingsService_SearchHandler(T *testing.T) {
 		).Return([]*types.ServiceSetting{}, sql.ErrNoRows)
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType([]*types.ServiceSetting{}),
-		).Return()
-
 		helper.service.SearchHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
@@ -345,13 +256,6 @@ func TestServiceSettingsService_SearchHandler(T *testing.T) {
 			exampleQuery,
 		).Return([]*types.ServiceSetting{}, errors.New("blah"))
 		helper.service.serviceSettingDataManager = serviceSettingDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		helper.service.SearchHandler(helper.res, helper.req)
 

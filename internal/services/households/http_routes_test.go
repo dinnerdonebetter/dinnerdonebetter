@@ -10,7 +10,6 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -56,20 +55,9 @@ func TestHouseholdsService_ListHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		).Return()
-
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t)
 	})
 
 	T.Run("with now rows returned", func(t *testing.T) {
@@ -85,14 +73,6 @@ func TestHouseholdsService_ListHandler(T *testing.T) {
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.QueryFilteredResult[types.Household])(nil), sql.ErrNoRows)
 		helper.service.householdDataManager = householdDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.QueryFilteredResult[types.Household]{}),
-		).Return()
 
 		helper.service.ListHandler(helper.res, helper.req)
 
@@ -114,13 +94,6 @@ func TestHouseholdsService_ListHandler(T *testing.T) {
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.QueryFilteredResult[types.Household])(nil), errors.New("blah"))
 		helper.service.householdDataManager = householdDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		helper.service.ListHandler(helper.res, helper.req)
 
@@ -309,14 +282,6 @@ func TestHouseholdsService_InfoHandler(T *testing.T) {
 		).Return(helper.exampleHousehold, nil)
 		helper.service.householdDataManager = householdDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.Household{}),
-		).Return()
-
 		helper.service.CurrentInfoHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
@@ -331,20 +296,9 @@ func TestHouseholdsService_InfoHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		).Return()
-
 		helper.service.CurrentInfoHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t)
 	})
 
 	T.Run("with no such household in database", func(t *testing.T) {
@@ -359,13 +313,6 @@ func TestHouseholdsService_InfoHandler(T *testing.T) {
 			helper.exampleHousehold.ID,
 		).Return((*types.Household)(nil), sql.ErrNoRows)
 		helper.service.householdDataManager = householdDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeNotFoundResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		helper.service.CurrentInfoHandler(helper.res, helper.req)
 
@@ -386,13 +333,6 @@ func TestHouseholdsService_InfoHandler(T *testing.T) {
 			helper.exampleHousehold.ID,
 		).Return((*types.Household)(nil), errors.New("blah"))
 		helper.service.householdDataManager = householdDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		helper.service.CurrentInfoHandler(helper.res, helper.req)
 
@@ -418,14 +358,6 @@ func TestHouseholdsService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleHousehold, nil)
 		helper.service.householdDataManager = householdDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.Household{}),
-		).Return()
-
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
@@ -440,20 +372,9 @@ func TestHouseholdsService_ReadHandler(T *testing.T) {
 
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		).Return()
-
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t)
 	})
 
 	T.Run("with no such household in database", func(t *testing.T) {
@@ -468,13 +389,6 @@ func TestHouseholdsService_ReadHandler(T *testing.T) {
 			helper.exampleHousehold.ID,
 		).Return((*types.Household)(nil), sql.ErrNoRows)
 		helper.service.householdDataManager = householdDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeNotFoundResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		helper.service.ReadHandler(helper.res, helper.req)
 
@@ -495,13 +409,6 @@ func TestHouseholdsService_ReadHandler(T *testing.T) {
 			helper.exampleHousehold.ID,
 		).Return((*types.Household)(nil), errors.New("blah"))
 		helper.service.householdDataManager = householdDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		helper.service.ReadHandler(helper.res, helper.req)
 
@@ -788,15 +695,6 @@ func TestHouseholdsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		).Return()
-
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
@@ -815,13 +713,6 @@ func TestHouseholdsService_ArchiveHandler(T *testing.T) {
 			helper.exampleUser.ID,
 		).Return(sql.ErrNoRows)
 		helper.service.householdDataManager = householdDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeNotFoundResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		)
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
@@ -843,13 +734,6 @@ func TestHouseholdsService_ArchiveHandler(T *testing.T) {
 			helper.exampleUser.ID,
 		).Return(errors.New("blah"))
 		helper.service.householdDataManager = householdDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
@@ -1263,15 +1147,6 @@ func TestHouseholdsService_RemoveMemberHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		).Return()
-
 		helper.service.RemoveMemberHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
@@ -1293,13 +1168,6 @@ func TestHouseholdsService_RemoveMemberHandler(T *testing.T) {
 			helper.exampleHousehold.ID,
 		).Return(errors.New("blah"))
 		helper.service.householdMembershipDataManager = householdMembershipDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		helper.service.RemoveMemberHandler(helper.res, helper.req)
 
@@ -1380,15 +1248,6 @@ func TestHouseholdsService_MarkAsDefaultHouseholdHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		).Return()
-
 		helper.service.MarkAsDefaultHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
@@ -1407,13 +1266,6 @@ func TestHouseholdsService_MarkAsDefaultHouseholdHandler(T *testing.T) {
 			helper.exampleHousehold.ID,
 		).Return(errors.New("blah"))
 		helper.service.householdMembershipDataManager = householdMembershipDataManager
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		helper.service.MarkAsDefaultHouseholdHandler(helper.res, helper.req)
 

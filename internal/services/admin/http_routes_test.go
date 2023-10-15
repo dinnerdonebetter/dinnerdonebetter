@@ -187,8 +187,6 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.UserAccountStatusChangeHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusForbidden, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t)
 	})
 
 	T.Run("with inadequate admin user attempting to terminate households", func(t *testing.T) {
@@ -218,8 +216,6 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.UserAccountStatusChangeHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusForbidden, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t)
 	})
 
 	T.Run("with admin that has inadequate permissions", func(t *testing.T) {

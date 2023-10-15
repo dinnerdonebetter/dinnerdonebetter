@@ -9,7 +9,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -90,26 +89,8 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"DecodeRequest",
-			testutils.ContextMatcher,
-			testutils.HTTPRequestMatcher,
-			mock.IsType(&types.WebhookCreationRequestInput{}),
-		).Return(errors.New("blah"))
-
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(""),
-			http.StatusBadRequest,
-		).Return(nil)
-
 		helper.service.CreateWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t)
 	})
 
 	T.Run("with invalid content attached to request", func(t *testing.T) {
@@ -217,14 +198,6 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 		).Return(exampleWebhookList, nil)
 		helper.service.webhookDataManager = wd
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.QueryFilteredResult[types.Webhook]{}),
-		).Return()
-
 		helper.service.ListWebhooksHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.Webhook]
@@ -259,14 +232,6 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.Webhook])(nil), sql.ErrNoRows)
 		helper.service.webhookDataManager = wd
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.QueryFilteredResult[types.Webhook]{}),
-		).Return()
-
 		helper.service.ListWebhooksHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 
@@ -286,13 +251,6 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.QueryFilteredResult[types.Webhook])(nil), errors.New("blah"))
 		helper.service.webhookDataManager = wd
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		helper.service.ListWebhooksHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
@@ -317,14 +275,6 @@ func TestWebhooksService_ReadWebhookHandler(T *testing.T) {
 			helper.exampleHousehold.ID,
 		).Return(helper.exampleWebhook, nil)
 		helper.service.webhookDataManager = wd
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.Webhook{}),
-		).Return()
 
 		helper.service.ReadWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusOK, helper.res.Code)
@@ -360,13 +310,6 @@ func TestWebhooksService_ReadWebhookHandler(T *testing.T) {
 		).Return((*types.Webhook)(nil), sql.ErrNoRows)
 		helper.service.webhookDataManager = wd
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeNotFoundResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-
 		helper.service.ReadWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
@@ -386,13 +329,6 @@ func TestWebhooksService_ReadWebhookHandler(T *testing.T) {
 			helper.exampleHousehold.ID,
 		).Return((*types.Webhook)(nil), errors.New("blah"))
 		helper.service.webhookDataManager = wd
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		helper.service.ReadWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
@@ -464,13 +400,6 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 		).Return(false, errors.New("blah"))
 		helper.service.webhookDataManager = wd
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-
 		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
@@ -490,13 +419,6 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 			helper.exampleHousehold.ID,
 		).Return(false, sql.ErrNoRows)
 		helper.service.webhookDataManager = wd
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeNotFoundResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
 
 		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
