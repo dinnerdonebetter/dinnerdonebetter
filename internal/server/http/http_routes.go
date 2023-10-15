@@ -40,7 +40,7 @@ import (
 	validingredientstateingredientsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientstateingredients"
 	validingredientstatesservice "github.com/dinnerdonebetter/backend/internal/services/validingredientstates"
 	validinstrumentsservice "github.com/dinnerdonebetter/backend/internal/services/validinstruments"
-	validmeasurementconversionsservice "github.com/dinnerdonebetter/backend/internal/services/validmeasurementconversions"
+	validmeasurementconversionsservice "github.com/dinnerdonebetter/backend/internal/services/validmeasurementunitconversions"
 	validmeasurementunitsservice "github.com/dinnerdonebetter/backend/internal/services/validmeasurementunits"
 	validpreparationinstrumentsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparationinstruments"
 	validpreparationsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparations"

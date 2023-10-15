@@ -59,7 +59,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/services/validingredientstateingredients"
 	"github.com/dinnerdonebetter/backend/internal/services/validingredientstates"
 	"github.com/dinnerdonebetter/backend/internal/services/validinstruments"
-	"github.com/dinnerdonebetter/backend/internal/services/validmeasurementconversions"
+	"github.com/dinnerdonebetter/backend/internal/services/validmeasurementunitconversions"
 	"github.com/dinnerdonebetter/backend/internal/services/validmeasurementunits"
 	"github.com/dinnerdonebetter/backend/internal/services/validpreparationinstruments"
 	"github.com/dinnerdonebetter/backend/internal/services/validpreparations"
@@ -285,7 +285,7 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (http.Server, error)
 	}
 	validmeasurementconversionsConfig := &servicesConfig.ValidMeasurementUnitConversions
 	validMeasurementUnitConversionDataManager := database.ProvideValidMeasurementUnitConversionDataManager(dataManager)
-	validMeasurementUnitConversionDataService, err := validmeasurementconversions.ProvideService(ctx, logger, validmeasurementconversionsConfig, validMeasurementUnitConversionDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	validMeasurementUnitConversionDataService, err := validmeasurementunitconversions.ProvideService(ctx, logger, validmeasurementconversionsConfig, validMeasurementUnitConversionDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}

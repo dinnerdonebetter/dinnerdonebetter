@@ -1,4 +1,4 @@
-package validmeasurementconversions
+package validmeasurementunitconversions
 
 import (
 	"database/sql"
@@ -83,7 +83,12 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validMeasurementUnitConversion, http.StatusCreated)
+	responseValue := &types.APIResponse[*types.ValidMeasurementUnitConversion]{
+		Details: responseDetails,
+		Data:    validMeasurementUnitConversion,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a valid measurement conversion.
@@ -126,8 +131,13 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[*types.ValidMeasurementUnitConversion]{
+		Details: responseDetails,
+		Data:    x,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // UpdateHandler returns a handler that updates a valid measurement conversion.
@@ -205,8 +215,13 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
+	responseValue := &types.APIResponse[*types.ValidMeasurementUnitConversion]{
+		Details: responseDetails,
+		Data:    validMeasurementUnitConversion,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, validMeasurementUnitConversion)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ArchiveHandler returns a handler that archives a valid measurement conversion.
@@ -306,8 +321,13 @@ func (s *service) FromMeasurementUnitHandler(res http.ResponseWriter, req *http.
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.ValidMeasurementUnitConversion]{
+		Details: responseDetails,
+		Data:    x,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 func (s *service) ToMeasurementUnitHandler(res http.ResponseWriter, req *http.Request) {
@@ -349,6 +369,11 @@ func (s *service) ToMeasurementUnitHandler(res http.ResponseWriter, req *http.Re
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.ValidMeasurementUnitConversion]{
+		Details: responseDetails,
+		Data:    x,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }

@@ -37,7 +37,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/services/validingredientstateingredients"
 	"github.com/dinnerdonebetter/backend/internal/services/validingredientstates"
 	validinstrumentsservice "github.com/dinnerdonebetter/backend/internal/services/validinstruments"
-	"github.com/dinnerdonebetter/backend/internal/services/validmeasurementconversions"
+	"github.com/dinnerdonebetter/backend/internal/services/validmeasurementunitconversions"
 	validmeasurementunitsservice "github.com/dinnerdonebetter/backend/internal/services/validmeasurementunits"
 	validpreparationinstrumentsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparationinstruments"
 	validpreparationsservice "github.com/dinnerdonebetter/backend/internal/services/validpreparations"
@@ -75,7 +75,7 @@ type (
 		MealPlanOptions                 mealplanoptionsservice.Config                 `json:"mealPlanOptions"                 toml:"meal_plan_options,omitempty"`
 		RecipeRatings                   reciperatingsservice.Config                   `json:"recipeRatings"                   toml:"recipe_ratings,omitempty"`
 		ServiceSettings                 servicesettingsservice.Config                 `json:"serviceSettings"                 toml:"service_settings,omitempty"`
-		ValidMeasurementUnitConversions validmeasurementconversions.Config            `json:"validMeasurementUnitConversions" toml:"valid_measurement_conversions,omitempty"`
+		ValidMeasurementUnitConversions validmeasurementunitconversions.Config        `json:"validMeasurementUnitConversions" toml:"valid_measurement_conversions,omitempty"`
 		ServiceSettingConfigurations    servicesettingconfigurationsservice.Config    `json:"serviceSettingConfigurations"    toml:"service_setting_configurations,omitempty"`
 		ValidPreparationVessels         validpreparationvessels.Config                `json:"validPreparationVessels"         toml:"valid_preparation_vessels,omitempty"`
 		SSE                             serversenteventsservice.Config                `json:"serverSentEvents"                toml:"server_sent_events,omitempty"`

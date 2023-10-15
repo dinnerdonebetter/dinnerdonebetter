@@ -1,4 +1,4 @@
-package validmeasurementconversions
+package validmeasurementunitconversions
 
 import (
 	"bytes"
@@ -59,6 +59,9 @@ func TestValidMeasurementUnitConversionsService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleValidMeasurementUnitConversion)
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -213,6 +216,9 @@ func TestValidMeasurementUnitConversionsService_ReadHandler(T *testing.T) {
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleValidMeasurementUnitConversion)
 
 		mock.AssertExpectationsForObjects(t, validMeasurementUnitConversionDataManager)
 	})
@@ -335,6 +341,9 @@ func TestValidMeasurementUnitConversionsService_UpdateHandler(T *testing.T) {
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleValidMeasurementUnitConversion)
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -695,13 +704,14 @@ func TestValidMeasurementUnitConversionsService_FromMeasurementUnitHandler(T *te
 		t.Parallel()
 
 		helper := buildTestHelper(t)
+		expected := []*types.ValidMeasurementUnitConversion{helper.exampleValidMeasurementUnitConversion}
 
 		validMeasurementUnitConversionDataManager := &mocktypes.ValidMeasurementUnitConversionDataManagerMock{}
 		validMeasurementUnitConversionDataManager.On(
 			"GetValidMeasurementUnitConversionsFromUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementUnit.ID,
-		).Return([]*types.ValidMeasurementUnitConversion{helper.exampleValidMeasurementUnitConversion}, nil)
+		).Return(expected, nil)
 		helper.service.validMeasurementUnitConversionDataManager = validMeasurementUnitConversionDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -715,6 +725,9 @@ func TestValidMeasurementUnitConversionsService_FromMeasurementUnitHandler(T *te
 		helper.service.FromMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.ValidMeasurementUnitConversion]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, expected)
 
 		mock.AssertExpectationsForObjects(t, validMeasurementUnitConversionDataManager)
 	})
@@ -802,13 +815,14 @@ func TestValidMeasurementUnitConversionsService_ToMeasurementUnitHandler(T *test
 		t.Parallel()
 
 		helper := buildTestHelper(t)
+		expected := []*types.ValidMeasurementUnitConversion{helper.exampleValidMeasurementUnitConversion}
 
 		validMeasurementUnitConversionDataManager := &mocktypes.ValidMeasurementUnitConversionDataManagerMock{}
 		validMeasurementUnitConversionDataManager.On(
 			"GetValidMeasurementUnitConversionsToUnit",
 			testutils.ContextMatcher,
 			helper.exampleValidMeasurementUnit.ID,
-		).Return([]*types.ValidMeasurementUnitConversion{helper.exampleValidMeasurementUnitConversion}, nil)
+		).Return(expected, nil)
 		helper.service.validMeasurementUnitConversionDataManager = validMeasurementUnitConversionDataManager
 
 		encoderDecoder := mockencoding.NewMockEncoderDecoder()
@@ -822,6 +836,9 @@ func TestValidMeasurementUnitConversionsService_ToMeasurementUnitHandler(T *test
 		helper.service.ToMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.ValidMeasurementUnitConversion]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, expected)
 
 		mock.AssertExpectationsForObjects(t, validMeasurementUnitConversionDataManager)
 	})

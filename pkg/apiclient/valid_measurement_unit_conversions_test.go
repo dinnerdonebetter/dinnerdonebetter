@@ -22,11 +22,12 @@ func TestValidMeasurementUnitConversions(t *testing.T) {
 
 type validMeasurementUnitConversionsBaseSuite struct {
 	suite.Suite
-
-	ctx                                       context.Context
-	exampleValidMeasurementUnit               *types.ValidMeasurementUnit
-	exampleValidMeasurementUnitConversion     *types.ValidMeasurementUnitConversion
-	exampleValidMeasurementUnitConversionList []*types.ValidMeasurementUnitConversion
+	ctx                                               context.Context
+	exampleValidMeasurementUnit                       *types.ValidMeasurementUnit
+	exampleValidMeasurementUnitConversion             *types.ValidMeasurementUnitConversion
+	exampleValidMeasurementUnitConversionResponse     *types.APIResponse[*types.ValidMeasurementUnitConversion]
+	exampleValidMeasurementUnitConversionListResponse *types.APIResponse[[]*types.ValidMeasurementUnitConversion]
+	exampleValidMeasurementUnitConversionList         []*types.ValidMeasurementUnitConversion
 }
 
 var _ suite.SetupTestSuite = (*validMeasurementUnitConversionsBaseSuite)(nil)
@@ -37,6 +38,14 @@ func (s *validMeasurementUnitConversionsBaseSuite) SetupTest() {
 	s.exampleValidMeasurementUnitConversion = fakes.BuildFakeValidMeasurementUnitConversion()
 	s.exampleValidMeasurementUnitConversionList = []*types.ValidMeasurementUnitConversion{
 		s.exampleValidMeasurementUnitConversion,
+	}
+
+	s.exampleValidMeasurementUnitConversionResponse = &types.APIResponse[*types.ValidMeasurementUnitConversion]{
+		Data: s.exampleValidMeasurementUnitConversion,
+	}
+
+	s.exampleValidMeasurementUnitConversionListResponse = &types.APIResponse[[]*types.ValidMeasurementUnitConversion]{
+		Data: s.exampleValidMeasurementUnitConversionList,
 	}
 }
 
@@ -53,7 +62,7 @@ func (s *validMeasurementUnitConversionsTestSuite) TestClient_GetValidMeasuremen
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleValidMeasurementUnitConversion.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidMeasurementUnitConversion)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidMeasurementUnitConversionResponse)
 		actual, err := c.GetValidMeasurementUnitConversion(s.ctx, s.exampleValidMeasurementUnitConversion.ID)
 
 		require.NotNil(t, actual)
@@ -100,7 +109,7 @@ func (s *validMeasurementUnitConversionsTestSuite) TestClient_GetValidMeasuremen
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleValidMeasurementUnit.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidMeasurementUnitConversionList)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidMeasurementUnitConversionListResponse)
 		actual, err := c.GetValidMeasurementUnitConversionsFromUnit(s.ctx, s.exampleValidMeasurementUnit.ID)
 
 		require.NotNil(t, actual)
@@ -149,7 +158,7 @@ func (s *validMeasurementUnitConversionsTestSuite) TestClient_CreateValidMeasure
 		exampleInput := fakes.BuildFakeValidMeasurementUnitConversionCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidMeasurementUnitConversion)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidMeasurementUnitConversionResponse)
 
 		actual, err := c.CreateValidMeasurementUnitConversion(s.ctx, exampleInput)
 		require.NotEmpty(t, actual)
@@ -210,7 +219,7 @@ func (s *validMeasurementUnitConversionsTestSuite) TestClient_UpdateValidMeasure
 		t := s.T()
 
 		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, s.exampleValidMeasurementUnitConversion.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidMeasurementUnitConversion)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidMeasurementUnitConversionResponse)
 
 		err := c.UpdateValidMeasurementUnitConversion(s.ctx, s.exampleValidMeasurementUnitConversion)
 		assert.NoError(t, err)

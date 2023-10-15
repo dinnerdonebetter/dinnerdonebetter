@@ -1,4 +1,4 @@
-package validmeasurementconversions
+package validmeasurementunitconversions
 
 import (
 	"context"
