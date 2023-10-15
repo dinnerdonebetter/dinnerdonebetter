@@ -22,9 +22,11 @@ func TestValidInstruments(t *testing.T) {
 
 type validInstrumentsBaseSuite struct {
 	suite.Suite
-
-	ctx                    context.Context
-	exampleValidInstrument *types.ValidInstrument
+	ctx                                context.Context
+	exampleValidInstrument             *types.ValidInstrument
+	exampleValidInstrumentListResponse types.APIResponse[[]*types.ValidInstrument]
+	exampleValidInstrumentResponse     types.APIResponse[*types.ValidInstrument]
+	exampleValidInstrumentList         []*types.ValidInstrument
 }
 
 var _ suite.SetupTestSuite = (*validInstrumentsBaseSuite)(nil)
@@ -32,6 +34,16 @@ var _ suite.SetupTestSuite = (*validInstrumentsBaseSuite)(nil)
 func (s *validInstrumentsBaseSuite) SetupTest() {
 	s.ctx = context.Background()
 	s.exampleValidInstrument = fakes.BuildFakeValidInstrument()
+	s.exampleValidInstrumentResponse = types.APIResponse[*types.ValidInstrument]{
+		Data: s.exampleValidInstrument,
+	}
+
+	exampleList := fakes.BuildFakeValidInstrumentList()
+	s.exampleValidInstrumentList = exampleList.Data
+	s.exampleValidInstrumentListResponse = types.APIResponse[[]*types.ValidInstrument]{
+		Data:       s.exampleValidInstrumentList,
+		Pagination: &exampleList.Pagination,
+	}
 }
 
 type validInstrumentsTestSuite struct {
@@ -47,7 +59,7 @@ func (s *validInstrumentsTestSuite) TestClient_GetValidInstrument() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleValidInstrument.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidInstrument)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidInstrumentResponse)
 		actual, err := c.GetValidInstrument(s.ctx, s.exampleValidInstrument.ID)
 
 		require.NotNil(t, actual)
@@ -94,7 +106,7 @@ func (s *validInstrumentsTestSuite) TestClient_GetRandomValidInstrument() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidInstrument)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidInstrumentResponse)
 		actual, err := c.GetRandomValidInstrument(s.ctx)
 
 		require.NotNil(t, actual)
@@ -132,15 +144,13 @@ func (s *validInstrumentsTestSuite) TestClient_GetValidInstruments() {
 
 		filter := (*types.QueryFilter)(nil)
 
-		exampleValidInstrumentList := fakes.BuildFakeValidInstrumentList()
-
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidInstrumentList)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidInstrumentListResponse)
 		actual, err := c.GetValidInstruments(s.ctx, filter)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidInstrumentList, actual)
+		assert.Equal(t, s.exampleValidInstrumentList, actual.Data)
 	})
 
 	s.Run("with error building request", func() {
@@ -177,15 +187,13 @@ func (s *validInstrumentsTestSuite) TestClient_SearchValidInstruments() {
 	s.Run("standard", func() {
 		t := s.T()
 
-		exampleValidInstrumentList := fakes.BuildFakeValidInstrumentList()
-
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&q=whatever", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidInstrumentList.Data)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidInstrumentListResponse)
 		actual, err := c.SearchValidInstruments(s.ctx, exampleQuery, 0)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidInstrumentList.Data, actual)
+		assert.Equal(t, s.exampleValidInstrumentList, actual)
 	})
 
 	s.Run("with empty query", func() {
@@ -230,7 +238,7 @@ func (s *validInstrumentsTestSuite) TestClient_CreateValidInstrument() {
 		exampleInput := fakes.BuildFakeValidInstrumentCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidInstrument)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidInstrumentResponse)
 
 		actual, err := c.CreateValidInstrument(s.ctx, exampleInput)
 		assert.NoError(t, err)
@@ -289,7 +297,7 @@ func (s *validInstrumentsTestSuite) TestClient_UpdateValidInstrument() {
 		t := s.T()
 
 		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, s.exampleValidInstrument.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidInstrument)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidInstrumentResponse)
 
 		err := c.UpdateValidInstrument(s.ctx, s.exampleValidInstrument)
 		assert.NoError(t, err)

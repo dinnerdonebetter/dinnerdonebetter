@@ -63,6 +63,9 @@ func TestValidInstrumentsService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleValidInstrument)
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -217,6 +220,9 @@ func TestValidInstrumentsService_ReadHandler(T *testing.T) {
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleValidInstrument)
 
 		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
 	})
@@ -326,6 +332,10 @@ func TestValidInstrumentsService_ListHandler(T *testing.T) {
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.ValidInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, exampleValidInstrumentList.Data)
+		assert.Equal(t, *actual.Pagination, exampleValidInstrumentList.Pagination)
 
 		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
 	})
@@ -443,6 +453,9 @@ func TestValidInstrumentsService_SearchHandler(T *testing.T) {
 		helper.service.SearchHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.ValidInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, exampleValidInstrumentList.Data)
 
 		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
 	})
@@ -616,6 +629,9 @@ func TestValidInstrumentsService_UpdateHandler(T *testing.T) {
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleValidInstrument)
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -995,6 +1011,9 @@ func TestValidInstrumentsService_RandomHandler(T *testing.T) {
 		helper.service.RandomHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleValidInstrument)
 
 		mock.AssertExpectationsForObjects(t, validInstrumentDataManager)
 	})

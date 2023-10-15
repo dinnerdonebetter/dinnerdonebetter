@@ -82,7 +82,12 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validInstrument, http.StatusCreated)
+	responseValue := &types.APIResponse[*types.ValidInstrument]{
+		Details: responseDetails,
+		Data:    validInstrument,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a valid instrument.
@@ -126,8 +131,13 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[*types.ValidInstrument]{
+		Details: responseDetails,
+		Data:    x,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ListHandler is our list route.
@@ -169,8 +179,14 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.ValidInstrument]{
+		Details:    responseDetails,
+		Data:       validInstruments.Data,
+		Pagination: &validInstruments.Pagination,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, validInstruments)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // SearchHandler is our search route.
@@ -238,8 +254,13 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.ValidInstrument]{
+		Details: responseDetails,
+		Data:    validInstruments,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, validInstruments)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // UpdateHandler returns a handler that updates a valid instrument.
@@ -319,8 +340,13 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
+	responseValue := &types.APIResponse[*types.ValidInstrument]{
+		Details: responseDetails,
+		Data:    validInstrument,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, validInstrument)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ArchiveHandler returns a handler that archives a valid instrument.
@@ -419,6 +445,11 @@ func (s *service) RandomHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[*types.ValidInstrument]{
+		Details: responseDetails,
+		Data:    x,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
