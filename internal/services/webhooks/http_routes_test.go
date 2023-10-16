@@ -60,6 +60,7 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 		var actual *types.APIResponse[*types.Webhook]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, helper.exampleWebhook)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -82,6 +83,10 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 		helper.service.CreateWebhookHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with error decoding request", func(t *testing.T) {
@@ -91,6 +96,10 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 
 		helper.service.CreateWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with invalid content attached to request", func(t *testing.T) {
@@ -109,6 +118,10 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 
 		helper.service.CreateWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
@@ -135,6 +148,10 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 
 		helper.service.CreateWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dbManager)
 	})
@@ -203,6 +220,7 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 		var actual *types.APIResponse[[]*types.Webhook]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, exampleWebhookList.Data)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, wd)
 	})
@@ -216,6 +234,10 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 		helper.service.ListWebhooksHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[[]*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with no rows returned", func(t *testing.T) {
@@ -234,6 +256,10 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 
 		helper.service.ListWebhooksHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, wd)
 	})
@@ -254,6 +280,10 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 
 		helper.service.ListWebhooksHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[[]*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, wd)
 	})
@@ -281,6 +311,7 @@ func TestWebhooksService_ReadWebhookHandler(T *testing.T) {
 		var actual *types.APIResponse[*types.Webhook]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, helper.exampleWebhook)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, wd)
 	})
@@ -294,6 +325,10 @@ func TestWebhooksService_ReadWebhookHandler(T *testing.T) {
 		helper.service.ReadWebhookHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with no such webhook in database", func(t *testing.T) {
@@ -312,6 +347,10 @@ func TestWebhooksService_ReadWebhookHandler(T *testing.T) {
 
 		helper.service.ReadWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, wd)
 	})
@@ -332,6 +371,10 @@ func TestWebhooksService_ReadWebhookHandler(T *testing.T) {
 
 		helper.service.ReadWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, wd)
 	})
@@ -370,7 +413,11 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusNoContent, helper.res.Code)
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dataManager, dataChangesPublisher)
 	})
@@ -384,6 +431,10 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with error checking webhook existence", func(t *testing.T) {
@@ -402,6 +453,10 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 
 		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, wd)
 	})
@@ -422,6 +477,10 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 
 		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, wd)
 	})
@@ -449,6 +508,10 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 
 		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dataManager)
 	})
@@ -483,7 +546,7 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusNoContent, helper.res.Code)
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, dataManager, dataChangesPublisher)
 	})

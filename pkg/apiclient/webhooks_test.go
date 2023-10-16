@@ -190,7 +190,7 @@ func (s *webhooksTestSuite) TestClient_ArchiveWebhook() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, s.exampleWebhook.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleWebhookResponse)
 
 		err := c.ArchiveWebhook(s.ctx, s.exampleWebhook.ID)
 		assert.NoError(t, err)

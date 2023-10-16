@@ -85,7 +85,12 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validIngredientPreparation, http.StatusCreated)
+	responseValue := &types.APIResponse[*types.ValidIngredientPreparation]{
+		Details: responseDetails,
+		Data:    validIngredientPreparation,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a valid ingredient preparation.
@@ -129,8 +134,13 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[*types.ValidIngredientPreparation]{
+		Details: responseDetails,
+		Data:    x,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ListHandler is our list route.
@@ -171,8 +181,14 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.ValidIngredientPreparation]{
+		Details:    responseDetails,
+		Data:       validIngredientPreparations.Data,
+		Pagination: &validIngredientPreparations.Pagination,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, validIngredientPreparations)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // UpdateHandler returns a handler that updates a valid ingredient preparation.
@@ -250,8 +266,13 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
+	responseValue := &types.APIResponse[*types.ValidIngredientPreparation]{
+		Details: responseDetails,
+		Data:    validIngredientPreparation,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, validIngredientPreparation)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ArchiveHandler returns a handler that archives a valid ingredient preparation.
@@ -308,8 +329,12 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
+	responseValue := &types.APIResponse[[]*types.ValidIngredientPreparation]{
+		Details: responseDetails,
+	}
+
 	// encode our response and peace.
-	res.WriteHeader(http.StatusNoContent)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // SearchByIngredientHandler is our valid ingredient measurement unit search route.
@@ -351,7 +376,13 @@ func (s *service) SearchByIngredientHandler(res http.ResponseWriter, req *http.R
 		return
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validIngredientPreparations, http.StatusOK)
+	responseValue := &types.APIResponse[[]*types.ValidIngredientPreparation]{
+		Details:    responseDetails,
+		Data:       validIngredientPreparations.Data,
+		Pagination: &validIngredientPreparations.Pagination,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // SearchByPreparationHandler is our valid ingredient measurement unit search route.
@@ -393,5 +424,11 @@ func (s *service) SearchByPreparationHandler(res http.ResponseWriter, req *http.
 		return
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validIngredientPreparations, http.StatusOK)
+	responseValue := &types.APIResponse[[]*types.ValidIngredientPreparation]{
+		Details:    responseDetails,
+		Data:       validIngredientPreparations.Data,
+		Pagination: &validIngredientPreparations.Pagination,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }

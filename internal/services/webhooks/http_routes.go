@@ -123,15 +123,17 @@ func (s *service) ListWebhooksHandler(res http.ResponseWriter, req *http.Request
 
 	// find the webhooks.
 	webhooks, err := s.webhookDataManager.GetWebhooks(ctx, sessionCtxData.ActiveHouseholdID, filter)
-	if errors.Is(err, sql.ErrNoRows) {
-		webhooks = &types.QueryFilteredResult[types.Webhook]{
-			Data: []*types.Webhook{},
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			webhooks = &types.QueryFilteredResult[types.Webhook]{
+				Data: []*types.Webhook{},
+			}
+		} else {
+			observability.AcknowledgeError(err, logger, span, "fetching webhooks")
+			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
+			return
 		}
-	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "fetching webhooks")
-		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
-		return
 	}
 
 	responseValue := &types.APIResponse[[]*types.Webhook]{
@@ -144,7 +146,7 @@ func (s *service) ListWebhooksHandler(res http.ResponseWriter, req *http.Request
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ReadWebhookHandler returns a GET handler that returns an webhook.
+// ReadWebhookHandler returns a GET handler that returns a webhook.
 func (s *service) ReadWebhookHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -178,15 +180,18 @@ func (s *service) ReadWebhookHandler(res http.ResponseWriter, req *http.Request)
 
 	// fetch the webhook from the database.
 	webhook, err := s.webhookDataManager.GetWebhook(ctx, webhookID, sessionCtxData.ActiveHouseholdID)
-	if errors.Is(err, sql.ErrNoRows) {
-		logger.Debug("No rows found in webhook database")
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
-		return
-	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "fetching webhook from database")
-		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
-		return
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			logger.Debug("No rows found in webhook database")
+			errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
+			return
+		} else {
+			observability.AcknowledgeError(err, logger, span, "fetching webhook from database")
+			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
+			return
+		}
 	}
 
 	responseValue := &types.APIResponse[*types.Webhook]{
@@ -198,7 +203,7 @@ func (s *service) ReadWebhookHandler(res http.ResponseWriter, req *http.Request)
 	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
-// ArchiveWebhookHandler returns a handler that archives an webhook.
+// ArchiveWebhookHandler returns a handler that archives a webhook.
 func (s *service) ArchiveWebhookHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
@@ -237,7 +242,8 @@ func (s *service) ArchiveWebhookHandler(res http.ResponseWriter, req *http.Reque
 		observability.AcknowledgeError(webhookExistenceCheckErr, logger, span, "checking item existence")
 		return
 	} else if !exists || errors.Is(webhookExistenceCheckErr, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	}
 
@@ -258,6 +264,10 @@ func (s *service) ArchiveWebhookHandler(res http.ResponseWriter, req *http.Reque
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
+	responseValue := &types.APIResponse[*types.Webhook]{
+		Details: responseDetails,
+	}
+
 	// let everybody go home.
-	res.WriteHeader(http.StatusNoContent)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }

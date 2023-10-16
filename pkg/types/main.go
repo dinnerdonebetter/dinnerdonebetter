@@ -78,6 +78,14 @@ func (e *APIError) Error() string {
 	return fmt.Sprintf("%s: %s", e.Code, e.Message)
 }
 
+// AsError returns the error message.
+func (e *APIError) AsError() error {
+	if e == nil {
+		return nil
+	}
+	return e
+}
+
 // NewAPIErrorResponse returns a new APIResponse with an error field.
 func NewAPIErrorResponse(issue string, code ErrorCode, details ResponseDetails) *APIResponse[any] {
 	return &APIResponse[any]{
