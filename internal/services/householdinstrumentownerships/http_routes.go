@@ -67,7 +67,9 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	householdInstrumentOwnership, err := s.householdInstrumentOwnershipDataManager.CreateHouseholdInstrumentOwnership(ctx, input)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating household instrument ownership")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -117,11 +119,14 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	// fetch household instrument ownership from database.
 	x, err := s.householdInstrumentOwnershipDataManager.GetHouseholdInstrumentOwnership(ctx, householdInstrumentOwnershipID, householdID)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving household instrument ownership")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -164,7 +169,9 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		householdInstrumentOwnerships = &types.QueryFilteredResult[types.HouseholdInstrumentOwnership]{Data: []*types.HouseholdInstrumentOwnership{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving household instrument ownerships")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -221,11 +228,14 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	// fetch household instrument ownership from database.
 	householdInstrumentOwnership, err := s.householdInstrumentOwnershipDataManager.GetHouseholdInstrumentOwnership(ctx, householdInstrumentOwnershipID, householdID)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving household instrument ownership for update")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -234,7 +244,9 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if err = s.householdInstrumentOwnershipDataManager.UpdateHouseholdInstrumentOwnership(ctx, householdInstrumentOwnership); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating household instrument ownership")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -285,16 +297,21 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	exists, existenceCheckErr := s.householdInstrumentOwnershipDataManager.HouseholdInstrumentOwnershipExists(ctx, householdInstrumentOwnershipID, householdID)
 	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
 		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking household instrument ownership existence")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	}
 
 	if err = s.householdInstrumentOwnershipDataManager.ArchiveHouseholdInstrumentOwnership(ctx, householdInstrumentOwnershipID, householdID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving household instrument ownership")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 

@@ -77,7 +77,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 	if !eligible {
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "meal plan event is not eligible for voting", http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse("meal plan event is not eligible for voting", types.ErrNothingSpecific, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
@@ -220,11 +221,14 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	// fetch meal plan option vote from database.
 	x, err := s.dataManager.GetMealPlanOptionVote(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving meal plan option vote")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -353,7 +357,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	// fetch meal plan option vote from database.
 	mealPlanOptionVote, err := s.dataManager.GetMealPlanOptionVote(ctx, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving meal plan option vote for update")
@@ -441,7 +446,8 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	}
 

@@ -146,7 +146,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	// fetch recipe prep task from database.
 	x, err := s.recipePrepTaskDataManager.GetRecipePrepTask(ctx, recipeID, recipePrepTaskID)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving recipe prep task")
@@ -260,7 +261,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	// fetch recipe prep task from database.
 	recipePrepTask, err := s.recipePrepTaskDataManager.GetRecipePrepTask(ctx, recipeID, recipePrepTaskID)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving recipe prep task for update")
@@ -335,7 +337,8 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	}
 

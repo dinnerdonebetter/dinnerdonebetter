@@ -129,7 +129,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	// fetch meal plan task from database.
 	x, err := s.mealPlanTaskDataManager.GetMealPlanTask(ctx, mealPlanTaskID)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving meal plan task")
@@ -248,7 +249,8 @@ func (s *service) StatusChangeHandler(res http.ResponseWriter, req *http.Request
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	} else if errors.Is(fetchMealPlanTaskErr, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	}
 

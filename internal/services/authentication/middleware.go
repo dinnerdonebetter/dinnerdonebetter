@@ -195,18 +195,21 @@ func (s *service) PermissionFilterMiddleware(permissions ...authorization.Permis
 
 // ServiceAdminMiddleware restricts requests to admin users only.
 func (s *service) ServiceAdminMiddleware(next http.Handler) http.Handler {
-	const staticError = "admin status required"
-
 	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 		ctx, span := s.tracer.StartSpan(req.Context())
 		defer span.End()
 
 		logger := s.logger.WithRequest(req)
 
+		responseDetails := types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		}
+
 		sessionCtxData, err := s.sessionContextDataFetcher(req)
 		if err != nil {
 			observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-			s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, http.StatusUnauthorized)
+			errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 			return
 		}
 
@@ -215,7 +218,8 @@ func (s *service) ServiceAdminMiddleware(next http.Handler) http.Handler {
 
 		if !sessionCtxData.Requester.ServicePermissions.IsServiceAdmin() {
 			logger.Debug("ServiceAdminMiddleware called by non-admin user")
-			s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, http.StatusUnauthorized)
+			errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrUserIsNotAuthorized, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 			return
 		}
 

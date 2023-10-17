@@ -84,7 +84,8 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 
 		if err := loginData.ValidateWithContext(ctx, s.config.MinimumUsernameLength, s.config.MinimumPasswordLength); err != nil {
 			observability.AcknowledgeError(err, logger, span, "validating input")
-			s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid login body", http.StatusBadRequest)
+			errRes := types.NewAPIErrorResponse("invalid login body", types.ErrValidatingRequestInput, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 			return
 		}
 
@@ -103,12 +104,14 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 		user, err := userFunc(ctx, loginData.Username)
 		if err != nil || user == nil {
 			if errors.Is(err, sql.ErrNoRows) {
-				s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+				errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+				s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 				return
 			}
 
 			observability.AcknowledgeError(err, logger, span, "fetching user")
-			s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, http.StatusInternalServerError)
+			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 			return
 		}
 
@@ -116,7 +119,8 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 		tracing.AttachUserToSpan(span, user)
 
 		if user.IsBanned() {
-			s.encoderDecoder.EncodeErrorResponse(ctx, res, "user is banned", http.StatusForbidden)
+			errRes := types.NewAPIErrorResponse("user is banned", types.ErrUserIsBanned, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusForbidden)
 			return
 		}
 
@@ -154,7 +158,8 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 		defaultHouseholdID, err := s.householdMembershipManager.GetDefaultHouseholdIDForUser(ctx, user.ID)
 		if err != nil {
 			observability.AcknowledgeError(err, logger, span, "fetching user memberships")
-			s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, http.StatusInternalServerError)
+			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 			return
 		}
 
@@ -308,8 +313,7 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 		return
 	}
 
-	err = validateState(req, sess)
-	if err != nil {
+	if err = validateState(req, sess); err != nil {
 		observability.AcknowledgeError(err, logger, span, "validating state")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "failed to validate state", http.StatusInternalServerError)
 		return
@@ -340,14 +344,16 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 	user, err := s.userDataManager.GetUserByEmail(ctx, providedUser.Email)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "getting user by email")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "failed to get user by email", http.StatusInternalServerError)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
 	defaultHouseholdID, err := s.householdMembershipManager.GetDefaultHouseholdIDForUser(ctx, user.ID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching user memberships")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, http.StatusInternalServerError)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -439,7 +445,8 @@ func (s *service) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *htt
 	authorizedForHousehold, err := s.householdMembershipManager.UserIsMemberOfHousehold(ctx, requesterID, householdID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "checking permissions")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, http.StatusInternalServerError)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -458,7 +465,8 @@ func (s *service) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *htt
 	cookie, err := s.issueSessionManagedCookie(ctx, householdID, requesterID, requestedCookieDomain)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "issuing cookie")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, http.StatusInternalServerError)
+		errRes := types.NewAPIErrorResponse(staticError, types.ErrNothingSpecific, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -509,13 +517,15 @@ func (s *service) EndSessionHandler(res http.ResponseWriter, req *http.Request) 
 	if loadErr != nil {
 		// this can literally never happen in this version of scs, because the token is empty
 		observability.AcknowledgeError(loadErr, logger, span, "loading token")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("error", types.ErrMisbehavingDependency, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
 	if destroyErr := s.sessionManager.Destroy(ctx); destroyErr != nil {
 		observability.AcknowledgeError(destroyErr, logger, span, "destroying session")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("error", types.ErrMisbehavingDependency, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -527,7 +537,8 @@ func (s *service) EndSessionHandler(res http.ResponseWriter, req *http.Request) 
 	newCookie, cookieBuildingErr := s.buildLogoutCookie(ctx, req)
 	if cookieBuildingErr != nil || newCookie == nil {
 		observability.AcknowledgeError(cookieBuildingErr, logger, span, "building cookie")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("building cookie", types.ErrMisbehavingDependency, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 

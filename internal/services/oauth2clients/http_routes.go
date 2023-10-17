@@ -118,13 +118,15 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	// set some data.
 	if dbInput.ClientID, err = s.secretGenerator.GenerateHexEncodedString(ctx, clientIDSize); err != nil {
 		observability.AcknowledgeError(err, logger, span, "generating client id")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("generating value", types.ErrSecretGeneration, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
 	if dbInput.ClientSecret, err = s.secretGenerator.GenerateHexEncodedString(ctx, clientSecretSize); err != nil {
 		observability.AcknowledgeError(err, logger, span, "generating client secret")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("generating value", types.ErrSecretGeneration, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -193,7 +195,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	// fetch OAuth2 client from database.
 	x, err := s.oauth2ClientDataManager.GetOAuth2ClientByDatabaseID(ctx, oauth2ClientID)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching OAuth2 client from database")
@@ -238,7 +241,8 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	// archive the OAuth2 client in the database.
 	err = s.oauth2ClientDataManager.ArchiveOAuth2Client(ctx, oauth2ClientID)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving OAuth2 client")

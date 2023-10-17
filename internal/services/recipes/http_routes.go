@@ -128,7 +128,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	// fetch recipe from database.
 	x, err := s.recipeDataManager.GetRecipe(ctx, recipeID)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving recipe")
@@ -307,7 +308,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	// fetch recipe from database.
 	recipe, err := s.recipeDataManager.GetRecipe(ctx, recipeID)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving recipe for update")
@@ -317,7 +319,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	if recipe.CreatedByUser != sessionCtxData.Requester.UserID {
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthorized", http.StatusUnauthorized)
+		errRes := types.NewAPIErrorResponse("user is not creator", types.ErrUserIsNotAuthorized, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
 
@@ -382,7 +385,8 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	}
 
@@ -440,7 +444,8 @@ func (s *service) DAGHandler(res http.ResponseWriter, req *http.Request) {
 	// fetch recipe from database.
 	x, err := s.recipeDataManager.GetRecipe(ctx, recipeID)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving recipe")
@@ -452,14 +457,16 @@ func (s *service) DAGHandler(res http.ResponseWriter, req *http.Request) {
 	dag, err := s.recipeAnalyzer.GenerateDAGDiagramForRecipe(ctx, x)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "generating DAG for recipe")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("generating secret", types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
 	res.Header().Set("Content-type", "image/png")
 	if err = png.Encode(res, dag); err != nil {
 		observability.AcknowledgeError(err, logger, span, "encoding response")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("encode error", types.ErrMisbehavingDependency, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 }
@@ -496,7 +503,8 @@ func (s *service) EstimatedPrepStepsHandler(res http.ResponseWriter, req *http.R
 	// fetch recipe from database.
 	x, err := s.recipeDataManager.GetRecipe(ctx, recipeID)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving recipe")
@@ -571,7 +579,8 @@ func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 
 		if err = s.uploadManager.SaveFile(ctx, internalPath, img.Data); err != nil {
 			observability.AcknowledgeError(err, logger, span, "saving provided image")
-			s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+			errRes := types.NewAPIErrorResponse("saving image", types.ErrMisbehavingDependency, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 			return
 		}
 
@@ -643,7 +652,8 @@ func (s *service) MermaidHandler(res http.ResponseWriter, req *http.Request) {
 	// fetch recipe from database.
 	x, err := s.recipeDataManager.GetRecipe(ctx, recipeID)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving recipe")
@@ -692,7 +702,8 @@ func (s *service) CloneHandler(res http.ResponseWriter, req *http.Request) {
 	// fetch recipe from database.
 	x, err := s.recipeDataManager.GetRecipe(ctx, recipeID)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving recipe")

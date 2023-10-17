@@ -125,7 +125,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	// fetch valid ingredient preparation from database.
 	x, err := s.validIngredientPreparationDataManager.GetValidIngredientPreparation(ctx, validIngredientPreparationID)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient preparation")
@@ -177,7 +178,9 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		validIngredientPreparations = &types.QueryFilteredResult[types.ValidIngredientPreparation]{Data: []*types.ValidIngredientPreparation{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient preparations")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -239,11 +242,14 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	// fetch valid ingredient preparation from database.
 	validIngredientPreparation, err := s.validIngredientPreparationDataManager.GetValidIngredientPreparation(ctx, validIngredientPreparationID)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient preparation for update")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -252,7 +258,9 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if err = s.validIngredientPreparationDataManager.UpdateValidIngredientPreparation(ctx, validIngredientPreparation); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating valid ingredient preparation")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -307,16 +315,21 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	exists, existenceCheckErr := s.validIngredientPreparationDataManager.ValidIngredientPreparationExists(ctx, validIngredientPreparationID)
 	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
 		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking valid ingredient preparation existence")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	}
 
 	if err = s.validIngredientPreparationDataManager.ArchiveValidIngredientPreparation(ctx, validIngredientPreparationID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving valid ingredient preparation")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -372,7 +385,9 @@ func (s *service) SearchByIngredientHandler(res http.ResponseWriter, req *http.R
 	validIngredientPreparations, err := s.validIngredientPreparationDataManager.GetValidIngredientPreparationsForIngredient(ctx, validIngredientID, filter)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "searching for valid ingredient preparations")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -420,7 +435,8 @@ func (s *service) SearchByPreparationHandler(res http.ResponseWriter, req *http.
 	validIngredientPreparations, err := s.validIngredientPreparationDataManager.GetValidIngredientPreparationsForPreparation(ctx, validPreparationID, filter)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "searching for valid ingredient preparations")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 

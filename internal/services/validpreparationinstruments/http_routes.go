@@ -70,7 +70,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	validPreparationInstrument, err := s.validPreparationInstrumentDataManager.CreateValidPreparationInstrument(ctx, input)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating valid preparation instrument")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -124,11 +125,13 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	// fetch valid preparation instrument from database.
 	x, err := s.validPreparationInstrumentDataManager.GetValidPreparationInstrument(ctx, validPreparationInstrumentID)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving valid preparation instrument")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -175,7 +178,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		validPreparationInstruments = &types.QueryFilteredResult[types.ValidPreparationInstrument]{Data: []*types.ValidPreparationInstrument{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving valid preparation instruments")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -237,11 +241,13 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	// fetch valid preparation instrument from database.
 	validPreparationInstrument, err := s.validPreparationInstrumentDataManager.GetValidPreparationInstrument(ctx, validPreparationInstrumentID)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving valid preparation instrument for update")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -250,7 +256,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if err = s.validPreparationInstrumentDataManager.UpdateValidPreparationInstrument(ctx, validPreparationInstrument); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating valid preparation instrument")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -305,16 +312,19 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	exists, existenceCheckErr := s.validPreparationInstrumentDataManager.ValidPreparationInstrumentExists(ctx, validPreparationInstrumentID)
 	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
 		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking valid preparation instrument existence")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	}
 
 	if err = s.validPreparationInstrumentDataManager.ArchiveValidPreparationInstrument(ctx, validPreparationInstrumentID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving valid preparation instrument")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -327,8 +337,12 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
+	responseValue := &types.APIResponse[*types.ValidPreparationInstrument]{
+		Details: responseDetails,
+	}
+
 	// encode our response and peace.
-	res.WriteHeader(http.StatusNoContent)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // SearchByPreparationHandler is our valid preparation instrument search route for preparations.
@@ -365,7 +379,8 @@ func (s *service) SearchByPreparationHandler(res http.ResponseWriter, req *http.
 	validPreparationInstruments, err := s.validPreparationInstrumentDataManager.GetValidPreparationInstrumentsForPreparation(ctx, validPreparationID, filter)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "searching for valid preparation instruments")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -412,7 +427,8 @@ func (s *service) SearchByInstrumentHandler(res http.ResponseWriter, req *http.R
 	validPreparationInstruments, err := s.validPreparationInstrumentDataManager.GetValidPreparationInstrumentsForInstrument(ctx, validInstrumentID, filter)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "searching for valid preparation instruments")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 

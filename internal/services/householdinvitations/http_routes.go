@@ -86,7 +86,8 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 	token, err := s.secretGenerator.GenerateBase64EncodedString(ctx, 64)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "generating invitation token")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("generating invitation token", types.ErrSecretGeneration, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 	input.Token = token
@@ -160,7 +161,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	householdInvitation, err := s.householdInvitationDataManager.GetHouseholdInvitationByHouseholdAndID(ctx, sessionCtxData.ActiveHouseholdID, householdInvitationID)
 	if errors.Is(err, sql.ErrNoRows) {
 		logger.Debug("No rows found in household invitation database")
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching household invitation from database")
@@ -308,7 +310,8 @@ func (s *service) AcceptInviteHandler(res http.ResponseWriter, req *http.Request
 
 	invitation, err := s.householdInvitationDataManager.GetHouseholdInvitationByTokenAndID(ctx, providedInput.Token, householdInvitationID)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving invitation")
@@ -319,7 +322,8 @@ func (s *service) AcceptInviteHandler(res http.ResponseWriter, req *http.Request
 
 	if err = s.householdInvitationDataManager.AcceptHouseholdInvitation(ctx, invitation.ID, providedInput.Token, providedInput.Note); err != nil {
 		observability.AcknowledgeError(err, logger, span, "accepting invitation")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "error accepting invitation", http.StatusInternalServerError)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -385,7 +389,8 @@ func (s *service) CancelInviteHandler(res http.ResponseWriter, req *http.Request
 
 	invitation, err := s.householdInvitationDataManager.GetHouseholdInvitationByTokenAndID(ctx, providedInput.Token, householdInvitationID)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving invitation")
@@ -396,7 +401,8 @@ func (s *service) CancelInviteHandler(res http.ResponseWriter, req *http.Request
 
 	if err = s.householdInvitationDataManager.CancelHouseholdInvitation(ctx, invitation.ID, providedInput.Note); err != nil {
 		observability.AcknowledgeError(err, logger, span, "cancelling invitation")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "error cancelling invitation", http.StatusInternalServerError)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -461,7 +467,8 @@ func (s *service) RejectInviteHandler(res http.ResponseWriter, req *http.Request
 
 	invitation, err := s.householdInvitationDataManager.GetHouseholdInvitationByTokenAndID(ctx, providedInput.Token, householdInvitationID)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving invitation")
@@ -472,7 +479,8 @@ func (s *service) RejectInviteHandler(res http.ResponseWriter, req *http.Request
 
 	if err = s.householdInvitationDataManager.RejectHouseholdInvitation(ctx, invitation.ID, providedInput.Note); err != nil {
 		observability.AcknowledgeError(err, logger, span, "rejecting invitation")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "error rejecting invitation", http.StatusInternalServerError)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 

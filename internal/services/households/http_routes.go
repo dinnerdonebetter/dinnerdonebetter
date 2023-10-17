@@ -119,7 +119,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input.WebhookEncryptionKey, err = s.secretGenerator.GenerateHexEncodedString(ctx, 128)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "generating webhook encryption key")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("encryption key error", types.ErrSecretGeneration, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -188,11 +189,10 @@ func (s *service) CurrentInfoHandler(res http.ResponseWriter, req *http.Request)
 	// fetch household from database.
 	household, err := s.householdDataManager.GetHousehold(ctx, householdID)
 	if errors.Is(err, sql.ErrNoRows) {
-		logger.Info("household ID is invalid")
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
-		logger.Info("something is fucked!")
 		observability.AcknowledgeError(err, logger, span, "fetching household from database")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
@@ -237,7 +237,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	// fetch household from database.
 	household, err := s.householdDataManager.GetHousehold(ctx, householdID)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching household from database")
@@ -316,7 +317,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	// fetch household from database.
 	household, err := s.householdDataManager.GetHousehold(ctx, householdID)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching household from database")
@@ -383,7 +385,8 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	// archive the household in the database.
 	err = s.householdDataManager.ArchiveHousehold(ctx, householdID, requester)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving household")

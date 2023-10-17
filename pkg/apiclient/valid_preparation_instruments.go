@@ -32,6 +32,10 @@ func (c *Client) GetValidPreparationInstrument(ctx context.Context, validPrepara
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient preparation")
 	}
 
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
 	return apiResponse.Data, nil
 }
 
@@ -52,6 +56,10 @@ func (c *Client) GetValidPreparationInstruments(ctx context.Context, filter *typ
 	var apiResponse *types.APIResponse[[]*types.ValidPreparationInstrument]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid preparation instruments")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
 	}
 
 	response := &types.QueryFilteredResult[types.ValidPreparationInstrument]{
@@ -86,6 +94,10 @@ func (c *Client) GetValidPreparationInstrumentsForPreparation(ctx context.Contex
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid preparation instruments")
 	}
 
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
 	response := &types.QueryFilteredResult[types.ValidPreparationInstrument]{
 		Data:       apiResponse.Data,
 		Pagination: *apiResponse.Pagination,
@@ -116,6 +128,10 @@ func (c *Client) GetValidPreparationInstrumentsForInstrument(ctx context.Context
 	var apiResponse *types.APIResponse[[]*types.ValidPreparationInstrument]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid preparation instruments")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
 	}
 
 	response := &types.QueryFilteredResult[types.ValidPreparationInstrument]{
@@ -151,6 +167,10 @@ func (c *Client) CreateValidPreparationInstrument(ctx context.Context, input *ty
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid ingredient preparation")
 	}
 
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
 	return apiResponse.Data, nil
 }
 
@@ -177,6 +197,10 @@ func (c *Client) UpdateValidPreparationInstrument(ctx context.Context, validPrep
 		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient preparation %s", validPreparationInstrument.ID)
 	}
 
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -198,8 +222,13 @@ func (c *Client) ArchiveValidPreparationInstrument(ctx context.Context, validPre
 		return observability.PrepareAndLogError(err, logger, span, "building archive valid ingredient preparation request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.ValidPreparationInstrument]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient preparation %s", validPreparationInstrumentID)
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil

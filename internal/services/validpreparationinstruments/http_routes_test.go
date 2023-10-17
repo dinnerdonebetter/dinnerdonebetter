@@ -79,6 +79,10 @@ func TestValidPreparationInstrumentsService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with invalid input attached", func(t *testing.T) {
@@ -98,6 +102,10 @@ func TestValidPreparationInstrumentsService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -119,6 +127,10 @@ func TestValidPreparationInstrumentsService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
@@ -146,6 +158,10 @@ func TestValidPreparationInstrumentsService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dbManager)
 	})
@@ -183,6 +199,9 @@ func TestValidPreparationInstrumentsService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleValidPreparationInstrument)
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -223,6 +242,10 @@ func TestValidPreparationInstrumentsService_ReadHandler(T *testing.T) {
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with no such valid preparation instrument in the database", func(t *testing.T) {
@@ -241,6 +264,10 @@ func TestValidPreparationInstrumentsService_ReadHandler(T *testing.T) {
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, validPreparationInstrumentDataManager)
 	})
@@ -261,6 +288,10 @@ func TestValidPreparationInstrumentsService_ReadHandler(T *testing.T) {
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, validPreparationInstrumentDataManager)
 	})
@@ -304,6 +335,10 @@ func TestValidPreparationInstrumentsService_ListHandler(T *testing.T) {
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with no rows returned", func(t *testing.T) {
@@ -322,6 +357,10 @@ func TestValidPreparationInstrumentsService_ListHandler(T *testing.T) {
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, validPreparationInstrumentDataManager)
 	})
@@ -342,6 +381,10 @@ func TestValidPreparationInstrumentsService_ListHandler(T *testing.T) {
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, validPreparationInstrumentDataManager)
 	})
@@ -413,6 +456,10 @@ func TestValidPreparationInstrumentsService_UpdateHandler(T *testing.T) {
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -424,6 +471,10 @@ func TestValidPreparationInstrumentsService_UpdateHandler(T *testing.T) {
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("without input attached to context", func(t *testing.T) {
@@ -440,6 +491,10 @@ func TestValidPreparationInstrumentsService_UpdateHandler(T *testing.T) {
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with no such valid preparation instrument", func(t *testing.T) {
@@ -467,6 +522,10 @@ func TestValidPreparationInstrumentsService_UpdateHandler(T *testing.T) {
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, validPreparationInstrumentDataManager)
 	})
@@ -496,6 +555,10 @@ func TestValidPreparationInstrumentsService_UpdateHandler(T *testing.T) {
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, validPreparationInstrumentDataManager)
 	})
@@ -531,6 +594,10 @@ func TestValidPreparationInstrumentsService_UpdateHandler(T *testing.T) {
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dbManager)
 	})
@@ -574,6 +641,9 @@ func TestValidPreparationInstrumentsService_UpdateHandler(T *testing.T) {
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleValidPreparationInstrument)
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -611,7 +681,10 @@ func TestValidPreparationInstrumentsService_ArchiveHandler(T *testing.T) {
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusNoContent, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -625,6 +698,10 @@ func TestValidPreparationInstrumentsService_ArchiveHandler(T *testing.T) {
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with no such valid preparation instrument in the database", func(t *testing.T) {
@@ -643,6 +720,10 @@ func TestValidPreparationInstrumentsService_ArchiveHandler(T *testing.T) {
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, validPreparationInstrumentDataManager)
 	})
@@ -663,6 +744,10 @@ func TestValidPreparationInstrumentsService_ArchiveHandler(T *testing.T) {
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, validPreparationInstrumentDataManager)
 	})
@@ -689,6 +774,10 @@ func TestValidPreparationInstrumentsService_ArchiveHandler(T *testing.T) {
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dbManager)
 	})
@@ -722,7 +811,10 @@ func TestValidPreparationInstrumentsService_ArchiveHandler(T *testing.T) {
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusNoContent, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -770,6 +862,10 @@ func TestValidPreparationInstrumentsService_SearchByPreparationHandler(T *testin
 		helper.service.SearchByPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with error fetching data from database", func(t *testing.T) {
@@ -789,6 +885,10 @@ func TestValidPreparationInstrumentsService_SearchByPreparationHandler(T *testin
 		helper.service.SearchByPreparationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, validPreparationInstrumentDataManager)
 	})
@@ -835,6 +935,10 @@ func TestValidPreparationInstrumentsService_SearchByInstrumentHandler(T *testing
 		helper.service.SearchByInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with error fetching data from database", func(t *testing.T) {
@@ -854,6 +958,10 @@ func TestValidPreparationInstrumentsService_SearchByInstrumentHandler(T *testing
 		helper.service.SearchByInstrumentHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidPreparationInstrument]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, validPreparationInstrumentDataManager)
 	})

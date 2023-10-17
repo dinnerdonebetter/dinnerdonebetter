@@ -64,12 +64,13 @@ func (s *service) UserAccountStatusChangeHandler(res http.ResponseWriter, req *h
 	}
 
 	requester := sessionCtxData.Requester.UserID
-	logger = logger.WithValue("ban_giver", requester)
-	logger = logger.WithValue("status_change_recipient", input.TargetUserID)
+	logger = logger.WithValue("ban_giver", requester).WithValue("status_change_recipient", input.TargetUserID)
 
 	if err = s.userDB.UpdateUserAccountStatus(ctx, input.TargetUserID, input); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+			errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
+			return
 		} else {
 			observability.AcknowledgeError(err, logger, span, "retrieving session context data")
 			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)

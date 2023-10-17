@@ -362,7 +362,7 @@ func (s *validPreparationInstrumentsTestSuite) TestClient_ArchiveValidPreparatio
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, s.exampleValidPreparationInstrument.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationInstrumentResponse)
 
 		err := c.ArchiveValidPreparationInstrument(s.ctx, s.exampleValidPreparationInstrument.ID)
 		assert.NoError(t, err)
