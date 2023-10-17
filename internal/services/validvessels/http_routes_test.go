@@ -237,7 +237,6 @@ func TestValidVesselsService_ReadHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ReadHandler(helper.res, helper.req)
@@ -331,7 +330,6 @@ func TestValidVesselsService_ListHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ListHandler(helper.res, helper.req)
@@ -474,16 +472,15 @@ func TestValidVesselsService_SearchHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.SearchHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Nil(t, actual.Data)
 		assert.Error(t, actual.Error)
-
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
 
 	T.Run("with no rows returned", func(t *testing.T) {
@@ -507,6 +504,9 @@ func TestValidVesselsService_SearchHandler(T *testing.T) {
 		helper.service.SearchHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.ValidVessel]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
 
 		mock.AssertExpectationsForObjects(t, validVesselDataManager)
 	})
@@ -831,7 +831,10 @@ func TestValidVesselsService_ArchiveHandler(T *testing.T) {
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusNoContent, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.ValidVessel]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Nil(t, actual.Data)
 
 		mock.AssertExpectationsForObjects(t, validVesselDataManager, dataChangesPublisher)
 	})
@@ -840,7 +843,6 @@ func TestValidVesselsService_ArchiveHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
@@ -959,7 +961,10 @@ func TestValidVesselsService_ArchiveHandler(T *testing.T) {
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusNoContent, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.ValidVessel]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Nil(t, actual.Data)
 
 		mock.AssertExpectationsForObjects(t, validVesselDataManager, dataChangesPublisher)
 	})

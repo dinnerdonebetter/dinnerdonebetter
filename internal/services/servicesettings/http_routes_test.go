@@ -44,7 +44,6 @@ func TestServiceSettingsService_ReadHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ReadHandler(helper.res, helper.req)
@@ -122,7 +121,6 @@ func TestServiceSettingsService_ListHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ListHandler(helper.res, helper.req)
@@ -207,7 +205,6 @@ func TestServiceSettingsService_SearchHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.SearchHandler(helper.res, helper.req)

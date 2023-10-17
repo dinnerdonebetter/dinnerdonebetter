@@ -125,7 +125,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	// fetch valid preparation vessel from database.
 	x, err := s.validPreparationVesselDataManager.GetValidPreparationVessel(ctx, validPreparationVesselID)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving valid preparation vessel")
@@ -240,7 +241,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	// fetch valid preparation vessel from database.
 	validPreparationVessel, err := s.validPreparationVesselDataManager.GetValidPreparationVessel(ctx, validPreparationVesselID)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving valid preparation vessel for update")
@@ -309,17 +311,19 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	exists, existenceCheckErr := s.validPreparationVesselDataManager.ValidPreparationVesselExists(ctx, validPreparationVesselID)
 	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
-		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking valid preparation vessel existence")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	}
 
 	if err = s.validPreparationVesselDataManager.ArchiveValidPreparationVessel(ctx, validPreparationVesselID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving valid preparation vessel")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -332,8 +336,12 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
+	responseValue := &types.APIResponse[*types.ValidPreparationVessel]{
+		Details: responseDetails,
+	}
+
 	// encode our response and peace.
-	res.WriteHeader(http.StatusNoContent)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // SearchByPreparationHandler is our valid preparation vessel search route for preparations.
@@ -370,7 +378,8 @@ func (s *service) SearchByPreparationHandler(res http.ResponseWriter, req *http.
 	validPreparationVessels, err := s.validPreparationVesselDataManager.GetValidPreparationVesselsForPreparation(ctx, validPreparationID, filter)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "searching for valid preparation vessels")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -418,7 +427,8 @@ func (s *service) SearchByVesselHandler(res http.ResponseWriter, req *http.Reque
 	validPreparationVessels, err := s.validPreparationVesselDataManager.GetValidPreparationVesselsForVessel(ctx, validVesselID, filter)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "searching for valid preparation vessels")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 

@@ -218,7 +218,6 @@ func TestValidMeasurementUnitConversionsService_ReadHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ReadHandler(helper.res, helper.req)
@@ -540,7 +539,6 @@ func TestValidMeasurementUnitConversionsService_ArchiveHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
@@ -680,7 +678,6 @@ func TestValidMeasurementUnitConversionsService_FromMeasurementUnitHandler(T *te
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.FromMeasurementUnitHandler(helper.res, helper.req)
@@ -760,7 +757,6 @@ func TestValidMeasurementUnitConversionsService_ToMeasurementUnitHandler(T *test
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ToMeasurementUnitHandler(helper.res, helper.req)

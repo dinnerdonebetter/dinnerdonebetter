@@ -293,7 +293,6 @@ func TestHouseholdsService_InfoHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.CurrentInfoHandler(helper.res, helper.req)
@@ -369,7 +368,6 @@ func TestHouseholdsService_ReadHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ReadHandler(helper.res, helper.req)

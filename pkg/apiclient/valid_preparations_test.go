@@ -339,7 +339,7 @@ func (s *validPreparationsTestSuite) TestClient_ArchiveValidPreparation() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, s.exampleValidPreparation.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationResponse)
 
 		err := c.ArchiveValidPreparation(s.ctx, s.exampleValidPreparation.ID)
 		assert.NoError(t, err)

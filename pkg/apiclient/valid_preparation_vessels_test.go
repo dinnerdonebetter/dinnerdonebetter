@@ -360,7 +360,7 @@ func (s *validPreparationVesselsTestSuite) TestClient_ArchiveValidPreparationVes
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, s.exampleValidPreparationVessel.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationVesselResponse)
 
 		err := c.ArchiveValidPreparationVessel(s.ctx, s.exampleValidPreparationVessel.ID)
 		assert.NoError(t, err)

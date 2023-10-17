@@ -122,7 +122,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	// fetch valid preparation from database.
 	x, err := s.validPreparationDataManager.GetValidPreparation(ctx, validPreparationID)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving valid preparation")
@@ -311,7 +312,8 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	// fetch valid preparation from database.
 	validPreparation, err := s.validPreparationDataManager.GetValidPreparation(ctx, validPreparationID)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving valid preparation for update")
@@ -385,7 +387,8 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	}
 
@@ -405,8 +408,12 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
+	responseValue := &types.APIResponse[*types.ValidPreparation]{
+		Details: responseDetails,
+	}
+
 	// encode our response and peace.
-	res.WriteHeader(http.StatusNoContent)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // RandomHandler returns a GET handler that returns a valid preparation.
@@ -436,7 +443,8 @@ func (s *service) RandomHandler(res http.ResponseWriter, req *http.Request) {
 	// fetch valid preparation from database.
 	x, err := s.validPreparationDataManager.GetRandomValidPreparation(ctx)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving valid preparation")

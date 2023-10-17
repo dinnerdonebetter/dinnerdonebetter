@@ -220,7 +220,6 @@ func TestRecipesService_ReadHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ReadHandler(helper.res, helper.req)
@@ -304,7 +303,6 @@ func TestRecipesService_ListHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ListHandler(helper.res, helper.req)
@@ -751,7 +749,6 @@ func TestRecipesService_ArchiveHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
@@ -1045,7 +1042,6 @@ func TestRecipesService_MermaidHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.MermaidHandler(helper.res, helper.req)

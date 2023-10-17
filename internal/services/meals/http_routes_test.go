@@ -219,7 +219,6 @@ func TestMealsService_ReadMealHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ReadMealHandler(helper.res, helper.req)
@@ -303,7 +302,6 @@ func TestMealsService_ListMealsHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ListMealsHandler(helper.res, helper.req)
@@ -521,7 +519,6 @@ func TestMealsService_ArchiveMealHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ArchiveMealHandler(helper.res, helper.req)

@@ -214,7 +214,6 @@ func TestRecipeStepProductsService_ReadHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ReadHandler(helper.res, helper.req)
@@ -298,7 +297,6 @@ func TestRecipeStepProductsService_ListHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ListHandler(helper.res, helper.req)
@@ -663,7 +661,6 @@ func TestRecipeStepProductsService_ArchiveHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ArchiveHandler(helper.res, helper.req)

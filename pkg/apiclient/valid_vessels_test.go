@@ -343,7 +343,7 @@ func (s *validVesselsTestSuite) TestClient_ArchiveValidVessel() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, s.exampleValidVessel.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidVesselResponse)
 
 		err := c.ArchiveValidVessel(s.ctx, s.exampleValidVessel.ID)
 		assert.NoError(t, err)

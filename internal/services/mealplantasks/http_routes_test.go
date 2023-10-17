@@ -46,7 +46,6 @@ func TestMealPlanTasksService_ReadHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ReadHandler(helper.res, helper.req)
@@ -124,7 +123,6 @@ func TestMealPlanTasksService_ListHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ListByMealPlanHandler(helper.res, helper.req)
@@ -227,7 +225,6 @@ func TestMealPlanTasksService_StatusChangeHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.StatusChangeHandler(helper.res, helper.req)

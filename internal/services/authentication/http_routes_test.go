@@ -1101,7 +1101,6 @@ func TestAuthenticationService_ChangeActiveHouseholdHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ChangeActiveHouseholdHandler(helper.res, helper.req)
@@ -1566,7 +1565,6 @@ func TestAuthenticationService_StatusHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.StatusHandler(helper.res, helper.req)
@@ -1601,7 +1599,6 @@ func TestAuthenticationService_CycleSecretHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.ctx, helper.req, _ = attachCookieToRequestForTest(t, helper.service, helper.req, helper.exampleUser)

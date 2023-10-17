@@ -213,7 +213,6 @@ func TestServiceSettingConfigurationsService_ByNameHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ForUserByNameHandler(helper.res, helper.req)
@@ -292,7 +291,6 @@ func TestServiceSettingConfigurationsService_ForUserHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ForUserHandler(helper.res, helper.req)
@@ -371,7 +369,6 @@ func TestServiceSettingConfigurationsService_ForHouseholdHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ForHouseholdHandler(helper.res, helper.req)
@@ -692,7 +689,6 @@ func TestServiceSettingConfigurationsService_ArchiveHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ArchiveHandler(helper.res, helper.req)

@@ -51,7 +51,6 @@ func TestOAuth2ClientsService_ListHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ListHandler(helper.res, helper.req)

@@ -413,10 +413,9 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.Webhook]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
 		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dataManager, dataChangesPublisher)
@@ -546,7 +545,10 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dataManager, dataChangesPublisher)
 	})

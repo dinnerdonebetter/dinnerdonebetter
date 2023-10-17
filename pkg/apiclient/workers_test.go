@@ -90,7 +90,9 @@ func (s *workersTestSuite) TestClient_RunMealPlanGroceryListInitializationWorker
 		t := s.T()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, nil)
+		c, _ := buildTestClientWithJSONResponse(t, spec, &types.APIResponse[*types.FinalizeMealPlansResponse]{
+			Data: fakes.BuildFakeFinalizeMealPlansResponse(),
+		})
 
 		assert.NoError(t, c.RunMealPlanGroceryListInitializationWorker(s.ctx))
 	})
@@ -127,7 +129,7 @@ func (s *workersTestSuite) TestClient_RunMealPlanTaskCreationWorker() {
 		t := s.T()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, nil)
+		c, _ := buildTestClientWithJSONResponse(t, spec, &types.APIResponse[any]{})
 
 		assert.NoError(t, c.RunMealPlanTaskCreationWorker(s.ctx))
 	})

@@ -269,5 +269,5 @@ func (s *service) ArchiveWebhookHandler(res http.ResponseWriter, req *http.Reque
 	}
 
 	// let everybody go home.
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
