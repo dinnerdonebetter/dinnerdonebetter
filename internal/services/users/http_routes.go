@@ -1121,8 +1121,12 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	// we're all good.
-	res.WriteHeader(http.StatusNoContent)
+	responseValue := &types.APIResponse[*types.Webhook]{
+		Details: responseDetails,
+	}
+
+	// let everybody go home.
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // RequestUsernameReminderHandler checks for a user with a given email address and notifies them via email if there is a username associated with it.
