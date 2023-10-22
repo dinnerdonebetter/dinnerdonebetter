@@ -65,6 +65,7 @@ func TestValidPreparationsService_CreateHandler(T *testing.T) {
 		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, helper.exampleValidPreparation)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -206,6 +207,7 @@ func TestValidPreparationsService_CreateHandler(T *testing.T) {
 		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, helper.exampleValidPreparation)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -233,6 +235,7 @@ func TestValidPreparationsService_ReadHandler(T *testing.T) {
 		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, helper.exampleValidPreparation)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
 	})
@@ -326,6 +329,7 @@ func TestValidPreparationsService_ListHandler(T *testing.T) {
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, exampleValidPreparationList.Data)
 		assert.Equal(t, *actual.Pagination, exampleValidPreparationList.Pagination)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
 	})
@@ -424,6 +428,7 @@ func TestValidPreparationsService_SearchHandler(T *testing.T) {
 		var actual *types.APIResponse[[]*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, exampleValidPreparationList.Data)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
 	})
@@ -468,6 +473,7 @@ func TestValidPreparationsService_SearchHandler(T *testing.T) {
 		var actual *types.APIResponse[[]*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, exampleValidPreparationList.Data)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, validPreparationDataManager, searchIndex)
 	})
@@ -590,6 +596,7 @@ func TestValidPreparationsService_UpdateHandler(T *testing.T) {
 		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, helper.exampleValidPreparation)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -993,6 +1000,7 @@ func TestValidPreparationsService_RandomHandler(T *testing.T) {
 		var actual *types.APIResponse[*types.ValidPreparation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, helper.exampleValidPreparation)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, validPreparationDataManager)
 	})

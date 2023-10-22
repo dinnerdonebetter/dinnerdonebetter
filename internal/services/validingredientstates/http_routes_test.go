@@ -65,6 +65,7 @@ func TestValidIngredientStatesService_CreateHandler(T *testing.T) {
 		var actual *types.APIResponse[*types.ValidIngredientState]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, helper.exampleValidIngredientState)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -214,6 +215,7 @@ func TestValidIngredientStatesService_ReadHandler(T *testing.T) {
 		var actual *types.APIResponse[*types.ValidIngredientState]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, helper.exampleValidIngredientState)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, validIngredientStateDataManager)
 	})
@@ -294,6 +296,7 @@ func TestValidIngredientStatesService_ListHandler(T *testing.T) {
 		var actual *types.APIResponse[[]*types.ValidIngredientState]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, exampleValidIngredientStateList.Data)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, validIngredientStateDataManager)
 	})
@@ -381,6 +384,7 @@ func TestValidIngredientStatesService_SearchHandler(T *testing.T) {
 		var actual *types.APIResponse[[]*types.ValidIngredientState]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, exampleValidIngredientStateList.Data)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, validIngredientStateDataManager)
 	})
@@ -532,6 +536,7 @@ func TestValidIngredientStatesService_UpdateHandler(T *testing.T) {
 		var actual *types.APIResponse[*types.ValidIngredientState]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, helper.exampleValidIngredientState)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})

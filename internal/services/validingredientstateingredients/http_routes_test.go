@@ -61,6 +61,7 @@ func TestValidIngredientStateIngredientsService_CreateHandler(T *testing.T) {
 		var actual *types.APIResponse[*types.ValidIngredientStateIngredient]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, helper.exampleValidIngredientStateIngredient)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -210,6 +211,7 @@ func TestValidIngredientStateIngredientsService_ReadHandler(T *testing.T) {
 		var actual *types.APIResponse[*types.ValidIngredientStateIngredient]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, helper.exampleValidIngredientStateIngredient)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, validIngredientStateIngredientDataManager)
 	})
@@ -291,6 +293,7 @@ func TestValidIngredientStateIngredientsService_ListHandler(T *testing.T) {
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, exampleValidIngredientStateIngredientList.Data)
 		assert.Equal(t, *actual.Pagination, exampleValidIngredientStateIngredientList.Pagination)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, validIngredientStateIngredientDataManager)
 	})
@@ -392,6 +395,7 @@ func TestValidIngredientStateIngredientsService_UpdateHandler(T *testing.T) {
 		var actual *types.APIResponse[*types.ValidIngredientStateIngredient]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, helper.exampleValidIngredientStateIngredient)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -754,6 +758,7 @@ func TestValidIngredientStateIngredientsService_SearchByIngredientHandler(T *tes
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, exampleValidIngredientStateIngredientList.Data)
 		assert.Equal(t, *actual.Pagination, exampleValidIngredientStateIngredientList.Pagination)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, validIngredientStateIngredientDataManager)
 	})
@@ -820,6 +825,7 @@ func TestValidIngredientStateIngredientsService_SearchByPreparationHandler(T *te
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, exampleValidIngredientStateIngredientList.Data)
 		assert.Equal(t, *actual.Pagination, exampleValidIngredientStateIngredientList.Pagination)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, validIngredientStateIngredientDataManager)
 	})

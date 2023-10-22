@@ -61,6 +61,7 @@ func TestValidPreparationVesselsService_CreateHandler(T *testing.T) {
 		var actual *types.APIResponse[*types.ValidPreparationVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, helper.exampleValidPreparationVessel)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -202,6 +203,7 @@ func TestValidPreparationVesselsService_CreateHandler(T *testing.T) {
 		var actual *types.APIResponse[*types.ValidPreparationVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, helper.exampleValidPreparationVessel)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -229,6 +231,7 @@ func TestValidPreparationVesselsService_ReadHandler(T *testing.T) {
 		var actual *types.APIResponse[*types.ValidPreparationVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, helper.exampleValidPreparationVessel)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, validPreparationVesselDataManager)
 	})
@@ -322,6 +325,7 @@ func TestValidPreparationVesselsService_ListHandler(T *testing.T) {
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, exampleValidPreparationVesselList.Data)
 		assert.Equal(t, *actual.Pagination, exampleValidPreparationVesselList.Pagination)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, validPreparationVesselDataManager)
 	})
@@ -435,6 +439,7 @@ func TestValidPreparationVesselsService_UpdateHandler(T *testing.T) {
 		var actual *types.APIResponse[*types.ValidPreparationVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, helper.exampleValidPreparationVessel)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -644,6 +649,7 @@ func TestValidPreparationVesselsService_UpdateHandler(T *testing.T) {
 		var actual *types.APIResponse[*types.ValidPreparationVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, helper.exampleValidPreparationVessel)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -846,6 +852,7 @@ func TestValidPreparationVesselsService_SearchByPreparationHandler(T *testing.T)
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, exampleValidPreparationVesselList.Data)
 		assert.Equal(t, *actual.Pagination, exampleValidPreparationVesselList.Pagination)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, validPreparationVesselDataManager)
 	})
@@ -920,6 +927,7 @@ func TestValidPreparationVesselsService_SearchByVesselHandler(T *testing.T) {
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, exampleValidPreparationVesselList.Data)
 		assert.Equal(t, *actual.Pagination, exampleValidPreparationVesselList.Pagination)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, validPreparationVesselDataManager)
 	})

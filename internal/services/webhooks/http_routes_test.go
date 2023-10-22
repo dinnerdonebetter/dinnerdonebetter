@@ -191,6 +191,7 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 		var actual *types.APIResponse[*types.Webhook]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, helper.exampleWebhook)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})

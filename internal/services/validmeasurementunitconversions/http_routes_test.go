@@ -61,6 +61,7 @@ func TestValidMeasurementUnitConversionsService_CreateHandler(T *testing.T) {
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, helper.exampleValidMeasurementUnitConversion)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -210,6 +211,7 @@ func TestValidMeasurementUnitConversionsService_ReadHandler(T *testing.T) {
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, helper.exampleValidMeasurementUnitConversion)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, validMeasurementUnitConversionDataManager)
 	})
@@ -311,6 +313,7 @@ func TestValidMeasurementUnitConversionsService_UpdateHandler(T *testing.T) {
 		var actual *types.APIResponse[*types.ValidMeasurementUnitConversion]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, helper.exampleValidMeasurementUnitConversion)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -670,6 +673,7 @@ func TestValidMeasurementUnitConversionsService_FromMeasurementUnitHandler(T *te
 		var actual *types.APIResponse[[]*types.ValidMeasurementUnitConversion]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, expected)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, validMeasurementUnitConversionDataManager)
 	})
@@ -749,6 +753,7 @@ func TestValidMeasurementUnitConversionsService_ToMeasurementUnitHandler(T *test
 		var actual *types.APIResponse[[]*types.ValidMeasurementUnitConversion]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Equal(t, actual.Data, expected)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, validMeasurementUnitConversionDataManager)
 	})
