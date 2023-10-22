@@ -32,6 +32,10 @@ func (c *Client) GetValidMeasurementUnit(ctx context.Context, validMeasurementUn
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid measurement unit")
 	}
 
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
 	return apiResponse.Data, nil
 }
 
@@ -60,6 +64,10 @@ func (c *Client) SearchValidMeasurementUnits(ctx context.Context, query string, 
 	var apiResponse *types.APIResponse[[]*types.ValidMeasurementUnit]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid measurement units")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
 	}
 
 	return apiResponse.Data, nil
@@ -93,6 +101,10 @@ func (c *Client) SearchValidMeasurementUnitsByIngredientID(ctx context.Context, 
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid measurement units")
 	}
 
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
 	response := &types.QueryFilteredResult[types.ValidMeasurementUnit]{
 		Data:       apiResponse.Data,
 		Pagination: *apiResponse.Pagination,
@@ -118,6 +130,10 @@ func (c *Client) GetValidMeasurementUnits(ctx context.Context, filter *types.Que
 	var apiResponse *types.APIResponse[[]*types.ValidMeasurementUnit]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid measurement units")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
 	}
 
 	response := &types.QueryFilteredResult[types.ValidMeasurementUnit]{
@@ -151,6 +167,10 @@ func (c *Client) CreateValidMeasurementUnit(ctx context.Context, input *types.Va
 	var apiResponse *types.APIResponse[*types.ValidMeasurementUnit]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid measurement unit")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
 	}
 
 	return apiResponse.Data, nil
@@ -200,8 +220,13 @@ func (c *Client) ArchiveValidMeasurementUnit(ctx context.Context, validMeasureme
 		return observability.PrepareAndLogError(err, logger, span, "building archive valid measurement unit request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.ValidMeasurementUnit]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid measurement unit %s", validMeasurementUnitID)
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil

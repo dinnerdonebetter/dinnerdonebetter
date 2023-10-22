@@ -363,7 +363,7 @@ func (s *validMeasurementUnitsTestSuite) TestClient_ArchiveValidMeasurementUnit(
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, s.exampleValidMeasurementUnit.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidMeasurementUnitResponse)
 
 		err := c.ArchiveValidMeasurementUnit(s.ctx, s.exampleValidMeasurementUnit.ID)
 		assert.NoError(t, err)
