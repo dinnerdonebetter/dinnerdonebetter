@@ -32,6 +32,10 @@ func (c *Client) GetValidMeasurementUnitConversion(ctx context.Context, validMea
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid measurement conversion")
 	}
 
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
 	return apiResponse.Data, nil
 }
 
@@ -58,6 +62,10 @@ func (c *Client) GetValidMeasurementUnitConversionsFromUnit(ctx context.Context,
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid measurement conversion")
 	}
 
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
 	return apiResponse.Data, nil
 }
 
@@ -82,6 +90,10 @@ func (c *Client) GetValidMeasurementUnitConversionToUnit(ctx context.Context, va
 	var apiResponse *types.APIResponse[[]*types.ValidMeasurementUnitConversion]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid measurement conversion")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
 	}
 
 	return apiResponse.Data, nil
@@ -112,6 +124,10 @@ func (c *Client) CreateValidMeasurementUnitConversion(ctx context.Context, input
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid measurement conversion")
 	}
 
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
 	return apiResponse.Data, nil
 }
 
@@ -138,6 +154,10 @@ func (c *Client) UpdateValidMeasurementUnitConversion(ctx context.Context, valid
 		return observability.PrepareAndLogError(err, logger, span, "updating valid measurement conversion %s", validMeasurementUnitConversion.ID)
 	}
 
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -159,8 +179,13 @@ func (c *Client) ArchiveValidMeasurementUnitConversion(ctx context.Context, vali
 		return observability.PrepareAndLogError(err, logger, span, "building archive valid measurement conversion request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.ValidMeasurementUnitConversion]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid measurement conversion %s", validMeasurementUnitConversionID)
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil

@@ -266,7 +266,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 			return
 		}
-
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -406,7 +405,6 @@ func (s *service) SelfHandler(res http.ResponseWriter, req *http.Request) {
 	user, err := s.userDataManager.GetUser(ctx, requester)
 	if errors.Is(err, sql.ErrNoRows) {
 		logger.Debug("no such user")
-
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
@@ -489,7 +487,6 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	x, err := s.userDataManager.GetUser(ctx, userID)
 	if errors.Is(err, sql.ErrNoRows) {
 		logger.Debug("no such user")
-
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
@@ -1329,7 +1326,6 @@ func (s *service) PasswordResetTokenRedemptionHandler(res http.ResponseWriter, r
 		}
 
 		observability.AcknowledgeError(err, logger, span, "updating user")
-
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -1343,7 +1339,6 @@ func (s *service) PasswordResetTokenRedemptionHandler(res http.ResponseWriter, r
 		}
 
 		observability.AcknowledgeError(err, logger, span, "redeeming password reset token")
-
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return

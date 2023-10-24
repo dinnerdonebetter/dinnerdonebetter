@@ -338,7 +338,7 @@ func (s *validInstrumentsTestSuite) TestClient_ArchiveValidInstrument() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, s.exampleValidInstrument.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidInstrumentResponse)
 
 		err := c.ArchiveValidInstrument(s.ctx, s.exampleValidInstrument.ID)
 		assert.NoError(t, err)

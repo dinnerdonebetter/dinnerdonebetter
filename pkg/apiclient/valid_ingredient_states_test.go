@@ -302,7 +302,7 @@ func (s *validIngredientStatesTestSuite) TestClient_ArchiveValidIngredientState(
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, s.exampleValidIngredientState.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientStateResponse)
 
 		err := c.ArchiveValidIngredientState(s.ctx, s.exampleValidIngredientState.ID)
 		assert.NoError(t, err)

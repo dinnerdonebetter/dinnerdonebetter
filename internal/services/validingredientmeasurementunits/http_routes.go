@@ -70,7 +70,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	validIngredientMeasurementUnit, err := s.validIngredientMeasurementUnitDataManager.CreateValidIngredientMeasurementUnit(ctx, input)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating valid ingredient measurement unit")
-
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -86,7 +85,13 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validIngredientMeasurementUnit, http.StatusCreated)
+	responseValue := &types.APIResponse[*types.ValidIngredientMeasurementUnit]{
+		Details: responseDetails,
+		Data:    validIngredientMeasurementUnit,
+	}
+
+	// encode the response.
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a valid ingredient measurement unit.
@@ -126,14 +131,18 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient measurement unit")
-
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
-	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
+	responseValue := &types.APIResponse[*types.ValidIngredientMeasurementUnit]{
+		Details: responseDetails,
+		Data:    x,
+	}
+
+	// encode the response.
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ListHandler is our list route.
@@ -170,14 +179,19 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		validIngredientMeasurementUnits = &types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]{Data: []*types.ValidIngredientMeasurementUnit{}}
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient measurement units")
-
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.ValidIngredientMeasurementUnit]{
+		Details:    responseDetails,
+		Pagination: &validIngredientMeasurementUnits.Pagination,
+		Data:       validIngredientMeasurementUnits.Data,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, validIngredientMeasurementUnits)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // UpdateHandler returns a handler that updates a valid ingredient measurement unit.
@@ -233,7 +247,6 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving valid ingredient measurement unit for update")
-
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -244,7 +257,6 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if err = s.validIngredientMeasurementUnitDataManager.UpdateValidIngredientMeasurementUnit(ctx, validIngredientMeasurementUnit); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating valid ingredient measurement unit")
-
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -260,8 +272,13 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
+	responseValue := &types.APIResponse[*types.ValidIngredientMeasurementUnit]{
+		Details: responseDetails,
+		Data:    validIngredientMeasurementUnit,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, validIngredientMeasurementUnit)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ArchiveHandler returns a handler that archives a valid ingredient measurement unit.
@@ -296,7 +313,6 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	exists, existenceCheckErr := s.validIngredientMeasurementUnitDataManager.ValidIngredientMeasurementUnitExists(ctx, validIngredientMeasurementUnitID)
 	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
 		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking valid ingredient measurement unit existence")
-
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -308,7 +324,6 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	if err = s.validIngredientMeasurementUnitDataManager.ArchiveValidIngredientMeasurementUnit(ctx, validIngredientMeasurementUnitID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving valid ingredient measurement unit")
-
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -365,13 +380,18 @@ func (s *service) SearchByIngredientHandler(res http.ResponseWriter, req *http.R
 	validIngredientMeasurementUnits, err := s.validIngredientMeasurementUnitDataManager.GetValidIngredientMeasurementUnitsForIngredient(ctx, validIngredientID, filter)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "searching for valid ingredient measurement units")
-
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validIngredientMeasurementUnits, http.StatusOK)
+	responseValue := &types.APIResponse[[]*types.ValidIngredientMeasurementUnit]{
+		Details:    responseDetails,
+		Pagination: &validIngredientMeasurementUnits.Pagination,
+		Data:       validIngredientMeasurementUnits.Data,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }
 
 // SearchByMeasurementUnitHandler is our valid ingredient measurement unit search route.
@@ -409,11 +429,16 @@ func (s *service) SearchByMeasurementUnitHandler(res http.ResponseWriter, req *h
 	validIngredientMeasurementUnits, err := s.validIngredientMeasurementUnitDataManager.GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx, validMeasurementUnitID, filter)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "searching for valid ingredient measurement units")
-
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, validIngredientMeasurementUnits, http.StatusOK)
+	responseValue := &types.APIResponse[[]*types.ValidIngredientMeasurementUnit]{
+		Details:    responseDetails,
+		Pagination: &validIngredientMeasurementUnits.Pagination,
+		Data:       validIngredientMeasurementUnits.Data,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusOK)
 }

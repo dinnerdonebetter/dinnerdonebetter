@@ -241,7 +241,6 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	exists, existenceCheckErr := s.userIngredientPreferenceDataManager.UserIngredientPreferenceExists(ctx, userIngredientPreferenceID, requester)
 	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
 		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking user ingredient preference existence")
-
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -253,7 +252,6 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	if err = s.userIngredientPreferenceDataManager.ArchiveUserIngredientPreference(ctx, userIngredientPreferenceID, requester); err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving user ingredient preferences")
-
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return

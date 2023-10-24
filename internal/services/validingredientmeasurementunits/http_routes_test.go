@@ -218,6 +218,10 @@ func TestValidIngredientMeasurementUnitsService_ReadHandler(T *testing.T) {
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidIngredientMeasurementUnit]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleValidIngredientMeasurementUnit)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, validIngredientMeasurementUnitDataManager)
 	})
@@ -290,19 +294,24 @@ func TestValidIngredientMeasurementUnitsService_ListHandler(T *testing.T) {
 
 		helper := buildTestHelper(t)
 
-		exampleValidIngredientMeasurementUnitList := fakes.BuildFakeValidIngredientMeasurementUnitList()
+		exampleResponse := fakes.BuildFakeValidIngredientMeasurementUnitList()
 
 		validIngredientMeasurementUnitDataManager := &mocktypes.ValidIngredientMeasurementUnitDataManagerMock{}
 		validIngredientMeasurementUnitDataManager.On(
 			"GetValidIngredientMeasurementUnits",
 			testutils.ContextMatcher,
 			mock.IsType(&types.QueryFilter{}),
-		).Return(exampleValidIngredientMeasurementUnitList, nil)
+		).Return(exampleResponse, nil)
 		helper.service.validIngredientMeasurementUnitDataManager = validIngredientMeasurementUnitDataManager
 
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.ValidIngredientMeasurementUnit]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, exampleResponse.Data)
+		assert.Equal(t, *actual.Pagination, exampleResponse.Pagination)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, validIngredientMeasurementUnitDataManager)
 	})
@@ -338,6 +347,10 @@ func TestValidIngredientMeasurementUnitsService_ListHandler(T *testing.T) {
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.ValidIngredientMeasurementUnit]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, validIngredientMeasurementUnitDataManager)
 	})
@@ -797,6 +810,11 @@ func TestValidIngredientMeasurementUnitsService_SearchByIngredientHandler(T *tes
 		helper.service.SearchByIngredientHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.ValidIngredientMeasurementUnit]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, exampleResponse.Data)
+		assert.Equal(t, *actual.Pagination, exampleResponse.Pagination)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, validIngredientMeasurementUnitDataManager)
 	})
@@ -867,6 +885,11 @@ func TestValidIngredientMeasurementUnitsService_SearchByMeasurementUnitHandler(T
 		helper.service.SearchByMeasurementUnitHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.ValidIngredientMeasurementUnit]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, exampleResponse.Data)
+		assert.Equal(t, *actual.Pagination, exampleResponse.Pagination)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, validIngredientMeasurementUnitDataManager)
 	})
