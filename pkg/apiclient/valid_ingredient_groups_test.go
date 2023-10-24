@@ -23,8 +23,11 @@ func TestValidIngredientGroups(t *testing.T) {
 type validIngredientGroupsBaseSuite struct {
 	suite.Suite
 
-	ctx                         context.Context
-	exampleValidIngredientGroup *types.ValidIngredientGroup
+	ctx                                     context.Context
+	exampleValidIngredientGroup             *types.ValidIngredientGroup
+	exampleValidIngredientGroupResponse     *types.APIResponse[*types.ValidIngredientGroup]
+	exampleValidIngredientGroupList         []*types.ValidIngredientGroup
+	exampleValidIngredientGroupListResponse *types.APIResponse[[]*types.ValidIngredientGroup]
 }
 
 var _ suite.SetupTestSuite = (*validIngredientGroupsBaseSuite)(nil)
@@ -32,6 +35,16 @@ var _ suite.SetupTestSuite = (*validIngredientGroupsBaseSuite)(nil)
 func (s *validIngredientGroupsBaseSuite) SetupTest() {
 	s.ctx = context.Background()
 	s.exampleValidIngredientGroup = fakes.BuildFakeValidIngredientGroup()
+	s.exampleValidIngredientGroupResponse = &types.APIResponse[*types.ValidIngredientGroup]{
+		Data: s.exampleValidIngredientGroup,
+	}
+
+	exampleList := fakes.BuildFakeValidIngredientGroupList()
+	s.exampleValidIngredientGroupList = exampleList.Data
+	s.exampleValidIngredientGroupListResponse = &types.APIResponse[[]*types.ValidIngredientGroup]{
+		Data:       s.exampleValidIngredientGroupList,
+		Pagination: &exampleList.Pagination,
+	}
 }
 
 type validIngredientGroupsTestSuite struct {
@@ -47,7 +60,7 @@ func (s *validIngredientGroupsTestSuite) TestClient_GetValidIngredientGroup() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleValidIngredientGroup.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientGroup)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientGroupResponse)
 		actual, err := c.GetValidIngredientGroup(s.ctx, s.exampleValidIngredientGroup.ID)
 
 		require.NotNil(t, actual)
@@ -93,17 +106,15 @@ func (s *validIngredientGroupsTestSuite) TestClient_GetValidIngredientGroups() {
 	s.Run("standard", func() {
 		t := s.T()
 
-		filter := (*types.QueryFilter)(nil)
-
-		exampleValidIngredientGroupList := fakes.BuildFakeValidIngredientGroupList()
-
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientGroupList)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientGroupListResponse)
+
+		filter := (*types.QueryFilter)(nil)
 		actual, err := c.GetValidIngredientGroups(s.ctx, filter)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidIngredientGroupList, actual)
+		assert.Equal(t, s.exampleValidIngredientGroupList, actual.Data)
 	})
 
 	s.Run("with error building request", func() {
@@ -140,15 +151,13 @@ func (s *validIngredientGroupsTestSuite) TestClient_SearchValidIngredientGroups(
 	s.Run("standard", func() {
 		t := s.T()
 
-		exampleValidIngredientGroupList := fakes.BuildFakeValidIngredientGroupList()
-
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&q=whatever", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientGroupList.Data)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientGroupListResponse)
 		actual, err := c.SearchValidIngredientGroups(s.ctx, exampleQuery, 0)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidIngredientGroupList.Data, actual)
+		assert.Equal(t, s.exampleValidIngredientGroupList, actual)
 	})
 
 	s.Run("with empty query", func() {
@@ -193,7 +202,7 @@ func (s *validIngredientGroupsTestSuite) TestClient_CreateValidIngredientGroup()
 		exampleInput := fakes.BuildFakeValidIngredientGroupCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientGroup)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientGroupResponse)
 
 		actual, err := c.CreateValidIngredientGroup(s.ctx, exampleInput)
 		require.NotEmpty(t, actual)
@@ -254,7 +263,7 @@ func (s *validIngredientGroupsTestSuite) TestClient_UpdateValidIngredientGroup()
 		t := s.T()
 
 		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, s.exampleValidIngredientGroup.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientGroup)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientGroupResponse)
 
 		err := c.UpdateValidIngredientGroup(s.ctx, s.exampleValidIngredientGroup)
 		assert.NoError(t, err)
@@ -295,7 +304,7 @@ func (s *validIngredientGroupsTestSuite) TestClient_ArchiveValidIngredientGroup(
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, s.exampleValidIngredientGroup.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientGroupResponse)
 
 		err := c.ArchiveValidIngredientGroup(s.ctx, s.exampleValidIngredientGroup.ID)
 		assert.NoError(t, err)
