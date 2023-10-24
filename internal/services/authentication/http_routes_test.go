@@ -1569,6 +1569,10 @@ func TestAuthenticationService_StatusHandler(T *testing.T) {
 
 		helper.service.StatusHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 }
 

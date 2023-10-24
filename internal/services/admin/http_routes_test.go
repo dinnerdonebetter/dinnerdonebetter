@@ -123,6 +123,10 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.UserAccountStatusChangeHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with no input attached to request", func(t *testing.T) {
@@ -137,8 +141,11 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.UserAccountStatusChangeHandler(helper.res, helper.req)
-
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with invalid input attached to request", func(t *testing.T) {
@@ -294,6 +301,10 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 
 		helper.service.UserAccountStatusChangeHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, userDataManager)
 	})

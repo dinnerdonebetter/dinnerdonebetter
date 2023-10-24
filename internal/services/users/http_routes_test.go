@@ -258,6 +258,10 @@ func TestService_UsernameSearchHandler(T *testing.T) {
 		helper.service.UsernameSearchHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -304,6 +308,10 @@ func TestService_ListHandler(T *testing.T) {
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -415,8 +423,11 @@ func TestService_CreateHandler(T *testing.T) {
 
 		helper.service.authSettings.EnableUserSignup = true
 		helper.service.CreateHandler(helper.res, helper.req)
-
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -439,8 +450,11 @@ func TestService_CreateHandler(T *testing.T) {
 
 		helper.service.authSettings.EnableUserSignup = true
 		helper.service.CreateHandler(helper.res, helper.req)
-
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with error validating password", func(t *testing.T) {
@@ -471,8 +485,11 @@ func TestService_CreateHandler(T *testing.T) {
 
 		helper.service.authSettings.EnableUserSignup = true
 		helper.service.CreateHandler(helper.res, helper.req)
-
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with invitation", func(t *testing.T) {
@@ -672,6 +689,10 @@ func TestService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, db)
 	})
@@ -710,6 +731,10 @@ func TestService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, auth)
 	})
@@ -1053,6 +1078,10 @@ func TestService_SelfHandler(T *testing.T) {
 		helper.service.SelfHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with no rows found", func(t *testing.T) {
@@ -1091,6 +1120,10 @@ func TestService_SelfHandler(T *testing.T) {
 		helper.service.SelfHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -1126,6 +1159,10 @@ func TestService_PermissionsHandler(T *testing.T) {
 		helper.service.PermissionsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with error decoding input", func(t *testing.T) {
@@ -1225,6 +1262,10 @@ func TestService_ReadHandler(T *testing.T) {
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -1291,8 +1332,11 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		helper.exampleUser.TwoFactorSecretVerifiedAt = nil
 
 		helper.service.TOTPSecretVerificationHandler(helper.res, helper.req)
-
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("without valid input attached", func(t *testing.T) {
@@ -1353,6 +1397,10 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		helper.service.TOTPSecretVerificationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -1489,6 +1537,10 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		helper.service.TOTPSecretVerificationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -1670,6 +1722,10 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		helper.service.NewTOTPSecretHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -1918,8 +1974,11 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.UpdatePasswordHandler(helper.res, helper.req)
-
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with invalid input attached to request", func(t *testing.T) {
@@ -1937,8 +1996,11 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.UpdatePasswordHandler(helper.res, helper.req)
-
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with input but without user info", func(t *testing.T) {
@@ -1959,6 +2021,10 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		helper.service.UpdatePasswordHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with error validating login", func(t *testing.T) {
@@ -2386,6 +2452,10 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 		helper.service.AvatarUploadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with error fetching user", func(t *testing.T) {
@@ -2412,6 +2482,10 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 		helper.service.AvatarUploadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -2446,6 +2520,10 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 		helper.service.AvatarUploadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -2518,6 +2596,10 @@ func TestService_ArchiveHandler(T *testing.T) {
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -2577,8 +2659,11 @@ func TestService_RequestUsernameReminderHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.RequestUsernameReminderHandler(helper.res, helper.req)
-
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -2596,8 +2681,11 @@ func TestService_RequestUsernameReminderHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.RequestUsernameReminderHandler(helper.res, helper.req)
-
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with no such user in the database", func(t *testing.T) {
@@ -2658,6 +2746,10 @@ func TestService_RequestUsernameReminderHandler(T *testing.T) {
 		helper.service.RequestUsernameReminderHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -2772,8 +2864,11 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.CreatePasswordResetTokenHandler(helper.res, helper.req)
-
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -2791,8 +2886,11 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.CreatePasswordResetTokenHandler(helper.res, helper.req)
-
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with error generating secret", func(t *testing.T) {
@@ -3093,8 +3191,11 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.PasswordResetTokenRedemptionHandler(helper.res, helper.req)
-
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -3111,8 +3212,11 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 		helper.service.PasswordResetTokenRedemptionHandler(helper.res, helper.req)
-
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with missing password reset token", func(t *testing.T) {
@@ -3179,6 +3283,10 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 		helper.service.PasswordResetTokenRedemptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -3219,6 +3327,10 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 		helper.service.PasswordResetTokenRedemptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -3308,6 +3420,10 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 		helper.service.PasswordResetTokenRedemptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -3363,6 +3479,10 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 		helper.service.PasswordResetTokenRedemptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -3424,6 +3544,10 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 		helper.service.PasswordResetTokenRedemptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -3553,8 +3677,11 @@ func TestService_VerifyUserEmailAddressHandler(T *testing.T) {
 		helper := newTestHelper(t)
 
 		helper.service.VerifyUserEmailAddressHandler(helper.res, helper.req)
-
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -3572,8 +3699,11 @@ func TestService_VerifyUserEmailAddressHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.VerifyUserEmailAddressHandler(helper.res, helper.req)
-
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with error fetching user by token", func(t *testing.T) {
@@ -3603,6 +3733,10 @@ func TestService_VerifyUserEmailAddressHandler(T *testing.T) {
 		helper.service.VerifyUserEmailAddressHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -3672,6 +3806,10 @@ func TestService_VerifyUserEmailAddressHandler(T *testing.T) {
 		helper.service.VerifyUserEmailAddressHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})

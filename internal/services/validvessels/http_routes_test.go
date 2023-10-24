@@ -82,8 +82,11 @@ func TestValidVesselsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.CreateHandler(helper.res, helper.req)
-
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.ValidVessel]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with invalid input attached", func(t *testing.T) {
@@ -101,12 +104,11 @@ func TestValidVesselsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.CreateHandler(helper.res, helper.req)
+		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Nil(t, actual.Data)
 		assert.Error(t, actual.Error)
-
-		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -126,12 +128,11 @@ func TestValidVesselsService_CreateHandler(T *testing.T) {
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.CreateHandler(helper.res, helper.req)
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidVessel]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Nil(t, actual.Data)
+		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
-
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
