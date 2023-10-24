@@ -1278,7 +1278,8 @@ func (s *service) PasswordResetTokenRedemptionHandler(res http.ResponseWriter, r
 
 	t, err := s.passwordResetTokenDataManager.GetPasswordResetTokenByToken(ctx, input.Token)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusNotFound)
+		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching password reset token")

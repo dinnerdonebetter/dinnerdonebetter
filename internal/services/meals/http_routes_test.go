@@ -263,6 +263,10 @@ func TestMealsService_ReadMealHandler(T *testing.T) {
 		helper.service.ReadMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+		var actual *types.APIResponse[*types.Meal]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mealDataManager)
 	})
@@ -584,6 +588,10 @@ func TestMealsService_ArchiveMealHandler(T *testing.T) {
 		helper.service.ArchiveMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+		var actual *types.APIResponse[*types.Meal]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mealDataManager)
 	})

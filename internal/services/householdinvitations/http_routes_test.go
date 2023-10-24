@@ -472,6 +472,10 @@ func Test_service_ReadHandler(T *testing.T) {
 
 		helper.service.ReadHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, wd)
 	})
@@ -753,6 +757,10 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 
 		helper.service.AcceptInviteHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dataManager)
 	})
@@ -982,6 +990,10 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 
 		helper.service.CancelInviteHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dataManager)
 	})
@@ -1210,6 +1222,10 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 
 		helper.service.RejectInviteHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dataManager)
 	})
