@@ -111,8 +111,13 @@ func (s *service) UsernameSearchHandler(res http.ResponseWriter, req *http.Reque
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.User]{
+		Details: responseDetails,
+		Data:    users,
+	}
+
 	// encode response.
-	s.encoderDecoder.RespondWithData(ctx, res, users)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ListHandler is a handler for responding with a list of users.
@@ -139,8 +144,14 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.User]{
+		Details:    responseDetails,
+		Data:       users.Data,
+		Pagination: &users.Pagination,
+	}
+
 	// encode response.
-	s.encoderDecoder.RespondWithData(ctx, res, users)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // CreateHandler is our user creation route.
@@ -328,8 +339,13 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		TwoFactorQRCode: s.buildQRCode(ctx, user.Username, user.TwoFactorSecret),
 	}
 
+	responseValue := &types.APIResponse[*types.UserCreationResponse]{
+		Details: responseDetails,
+		Data:    ucr,
+	}
+
 	// encode and peace.
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, ucr, http.StatusCreated)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
 // buildQRCode builds a QR code for a given username and secret.
@@ -415,8 +431,13 @@ func (s *service) SelfHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[*types.User]{
+		Details: responseDetails,
+		Data:    user,
+	}
+
 	// encode response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, user)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // PermissionsHandler returns information about the user making the request.
@@ -462,8 +483,13 @@ func (s *service) PermissionsHandler(res http.ResponseWriter, req *http.Request)
 		body.Permissions[perm] = hasHouseholdPerm || hasServicePerm
 	}
 
+	responseValue := &types.APIResponse[*types.UserPermissionsResponse]{
+		Details: responseDetails,
+		Data:    body,
+	}
+
 	// encode response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, body)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ReadHandler is our read route.
@@ -497,8 +523,13 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[*types.User]{
+		Details: responseDetails,
+		Data:    x,
+	}
+
 	// encode response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // TOTPSecretVerificationHandler accepts a TOTP token as input and returns 200 if the TOTP token
@@ -547,7 +578,9 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 		// I suppose if this happens too many times, we might want to keep track of that
 		logger.Debug("two factor secret already verified")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "TOTP secret already verified", http.StatusAlreadyReported)
-		earlyRes := &types.APIResponse[any]{Details: responseDetails}
+		earlyRes := &types.APIResponse[any]{
+			Details: responseDetails,
+		}
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, earlyRes, http.StatusAlreadyReported)
 		return
 	}
@@ -574,7 +607,12 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	res.WriteHeader(http.StatusAccepted)
+	responseValue := &types.APIResponse[*types.User]{
+		Details: responseDetails,
+		Data:    user,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // NewTOTPSecretHandler fetches a user, and issues them a new TOTP secret, after validating
@@ -690,7 +728,12 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 		TwoFactorQRCode: s.buildQRCode(ctx, user.Username, user.TwoFactorSecret),
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, result, http.StatusAccepted)
+	responseValue := &types.APIResponse[*types.TOTPSecretRefreshResponse]{
+		Details: responseDetails,
+		Data:    result,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // UpdatePasswordHandler updates a user's password.
@@ -785,7 +828,12 @@ func (s *service) UpdatePasswordHandler(res http.ResponseWriter, req *http.Reque
 
 	// we're all good, log the user out
 	http.SetCookie(res, &http.Cookie{MaxAge: -1})
-	res.WriteHeader(http.StatusAccepted)
+
+	responseValue := &types.APIResponse[any]{
+		Details: responseDetails,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // UpdateUserEmailAddressHandler updates a user's email address.
@@ -860,7 +908,12 @@ func (s *service) UpdateUserEmailAddressHandler(res http.ResponseWriter, req *ht
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	res.WriteHeader(http.StatusAccepted)
+	responseValue := &types.APIResponse[*types.User]{
+		Details: responseDetails,
+		Data:    user,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // UpdateUserUsernameHandler updates a user's username.
@@ -935,7 +988,12 @@ func (s *service) UpdateUserUsernameHandler(res http.ResponseWriter, req *http.R
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	res.WriteHeader(http.StatusAccepted)
+	responseValue := &types.APIResponse[*types.User]{
+		Details: responseDetails,
+		Data:    user,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // UpdateUserDetailsHandler updates a user's basic information.
@@ -1011,7 +1069,12 @@ func (s *service) UpdateUserDetailsHandler(res http.ResponseWriter, req *http.Re
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	res.WriteHeader(http.StatusAccepted)
+	responseValue := &types.APIResponse[*types.User]{
+		Details: responseDetails,
+		Data:    user,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // AvatarUploadHandler updates a user's avatar.
@@ -1064,6 +1127,12 @@ func (s *service) AvatarUploadHandler(res http.ResponseWriter, req *http.Request
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+
+	responseValue := &types.APIResponse[*types.User]{
+		Details: responseDetails,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // ArchiveHandler is a handler for archiving a user.
@@ -1118,7 +1187,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	responseValue := &types.APIResponse[*types.Webhook]{
+	responseValue := &types.APIResponse[*types.User]{
 		Details: responseDetails,
 	}
 
@@ -1173,7 +1242,11 @@ func (s *service) RequestUsernameReminderHandler(res http.ResponseWriter, req *h
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	res.WriteHeader(http.StatusAccepted)
+	responseValue := &types.APIResponse[*types.User]{
+		Details: responseDetails,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // CreatePasswordResetTokenHandler rotates the cookie building secret with a new random secret.
@@ -1246,7 +1319,11 @@ func (s *service) CreatePasswordResetTokenHandler(res http.ResponseWriter, req *
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	res.WriteHeader(http.StatusAccepted)
+	responseValue := &types.APIResponse[*types.User]{
+		Details: responseDetails,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // PasswordResetTokenRedemptionHandler rotates the cookie building secret with a new random secret.
@@ -1354,7 +1431,11 @@ func (s *service) PasswordResetTokenRedemptionHandler(res http.ResponseWriter, r
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	res.WriteHeader(http.StatusAccepted)
+	responseValue := &types.APIResponse[*types.User]{
+		Details: responseDetails,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // VerifyUserEmailAddressHandler checks for a user with a given email address and notifies them via email if there is a username associated with it.
@@ -1420,7 +1501,11 @@ func (s *service) VerifyUserEmailAddressHandler(res http.ResponseWriter, req *ht
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	res.WriteHeader(http.StatusAccepted)
+	responseValue := &types.APIResponse[*types.User]{
+		Details: responseDetails,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // RequestEmailVerificationEmailHandler submits a request for an email verification email.
@@ -1464,7 +1549,9 @@ func (s *service) RequestEmailVerificationEmailHandler(res http.ResponseWriter, 
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	logger.WithValue("data_change_message", dcm).Debug("published data change message")
+	responseValue := &types.APIResponse[*types.User]{
+		Details: responseDetails,
+	}
 
-	res.WriteHeader(http.StatusAccepted)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }

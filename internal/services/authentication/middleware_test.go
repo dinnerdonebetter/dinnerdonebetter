@@ -109,6 +109,10 @@ func TestAuthenticationService_UserAttributionMiddleware(T *testing.T) {
 		helper.service.UserAttributionMiddleware(mh).ServeHTTP(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[any]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockHouseholdMembershipManager, mh)
 	})

@@ -22,12 +22,11 @@ func TestValidIngredientGroups(t *testing.T) {
 
 type validIngredientGroupsBaseSuite struct {
 	suite.Suite
-
 	ctx                                     context.Context
 	exampleValidIngredientGroup             *types.ValidIngredientGroup
 	exampleValidIngredientGroupResponse     *types.APIResponse[*types.ValidIngredientGroup]
-	exampleValidIngredientGroupList         []*types.ValidIngredientGroup
 	exampleValidIngredientGroupListResponse *types.APIResponse[[]*types.ValidIngredientGroup]
+	exampleValidIngredientGroupList         []*types.ValidIngredientGroup
 }
 
 var _ suite.SetupTestSuite = (*validIngredientGroupsBaseSuite)(nil)

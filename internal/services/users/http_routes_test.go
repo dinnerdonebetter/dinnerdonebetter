@@ -234,6 +234,10 @@ func TestService_UsernameSearchHandler(T *testing.T) {
 		helper.service.UsernameSearchHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, exampleUserList.Data)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -288,6 +292,10 @@ func TestService_ListHandler(T *testing.T) {
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, exampleUserList.Data)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -386,6 +394,10 @@ func TestService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleUser)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, auth, db, dataChangesPublisher)
 	})
@@ -570,6 +582,10 @@ func TestService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleUser)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, auth, db, dataChangesPublisher)
 	})
@@ -806,6 +822,10 @@ func TestService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, auth, db, sg)
 	})
@@ -852,6 +872,10 @@ func TestService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, auth, db)
 	})
@@ -898,6 +922,10 @@ func TestService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, auth, db)
 	})
@@ -968,6 +996,10 @@ func TestService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleUser)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, auth, db, dataChangesPublisher)
 	})
@@ -1030,6 +1062,10 @@ func TestService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, auth, db)
 	})
@@ -1069,6 +1105,10 @@ func TestService_SelfHandler(T *testing.T) {
 		helper.service.SelfHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleUser)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -1156,6 +1196,10 @@ func TestService_PermissionsHandler(T *testing.T) {
 		helper.service.PermissionsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.UserPermissionsResponse]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NotNil(t, actual.Data)
+		assert.NoError(t, actual.Error.AsError())
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -1206,6 +1250,10 @@ func TestService_PermissionsHandler(T *testing.T) {
 		helper.service.PermissionsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, encoderDecoder)
 	})
@@ -1230,6 +1278,10 @@ func TestService_ReadHandler(T *testing.T) {
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleUser)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -1326,6 +1378,10 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		helper.service.TOTPSecretVerificationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleUser)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, mockDB, dataChangesPublisher)
 	})
@@ -1378,6 +1434,10 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		helper.service.TOTPSecretVerificationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -1481,6 +1541,9 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		helper.service.TOTPSecretVerificationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAlreadyReported, helper.res.Code)
+		var actual *types.APIResponse[any]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -1513,6 +1576,10 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		helper.service.TOTPSecretVerificationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -1597,6 +1664,10 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		helper.service.TOTPSecretVerificationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleUser)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, mockDB, dataChangesPublisher)
 	})
@@ -1665,6 +1736,9 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		helper.service.NewTOTPSecretHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[*types.TOTPSecretRefreshResponse]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, mockDB, auth, sg, dataChangesPublisher)
 	})
@@ -1705,6 +1779,10 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		helper.service.NewTOTPSecretHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB, auth)
 	})
@@ -1786,6 +1864,10 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		helper.service.NewTOTPSecretHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB, auth, sg)
 	})
@@ -1842,6 +1924,10 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		helper.service.NewTOTPSecretHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB, auth, sg)
 	})
@@ -1906,6 +1992,9 @@ func TestService_NewTOTPSecretHandler(T *testing.T) {
 		helper.service.NewTOTPSecretHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[*types.TOTPSecretRefreshResponse]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, mockDB, auth, sg, dataChangesPublisher)
 	})
@@ -1970,6 +2059,9 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		helper.service.UpdatePasswordHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[any]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, mockDB, auth, dataChangesPublisher)
 	})
@@ -2081,6 +2173,10 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		helper.service.UpdatePasswordHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB, auth)
 	})
@@ -2122,6 +2218,10 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		helper.service.UpdatePasswordHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB, auth)
 	})
@@ -2173,6 +2273,10 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		helper.service.UpdatePasswordHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB, auth)
 	})
@@ -2224,6 +2328,10 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		helper.service.UpdatePasswordHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB, auth)
 	})
@@ -2283,6 +2391,9 @@ func TestService_UpdateUserEmailAddressHandler(T *testing.T) {
 		helper.service.UpdateUserEmailAddressHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[any]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, mockDB, auth, dataChangesPublisher)
 	})
@@ -2342,6 +2453,9 @@ func TestService_UpdateUserUsernameHandler(T *testing.T) {
 		helper.service.UpdateUserUsernameHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[any]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, mockDB, auth, dataChangesPublisher)
 	})
@@ -2401,6 +2515,9 @@ func TestService_UpdateUserDetailsHandler(T *testing.T) {
 		helper.service.UpdateUserDetailsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[any]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, mockDB, auth, dataChangesPublisher)
 	})
@@ -2442,6 +2559,9 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 		helper.service.AvatarUploadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[any]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -2568,6 +2688,9 @@ func TestService_ArchiveHandler(T *testing.T) {
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[any]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, mockDB, dataChangesPublisher)
 	})
@@ -2659,6 +2782,9 @@ func TestService_RequestUsernameReminderHandler(T *testing.T) {
 		helper.service.RequestUsernameReminderHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[any]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, mockDB, dataChangesPublisher)
 	})
@@ -2731,6 +2857,9 @@ func TestService_RequestUsernameReminderHandler(T *testing.T) {
 		helper.service.RequestUsernameReminderHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[any]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -2805,6 +2934,9 @@ func TestService_RequestUsernameReminderHandler(T *testing.T) {
 		helper.service.RequestUsernameReminderHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[any]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, mockDB, dataChangesPublisher)
 	})
@@ -2864,6 +2996,9 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		helper.service.CreatePasswordResetTokenHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[any]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, sg, mockDB, dataChangesPublisher)
 	})
@@ -2934,6 +3069,10 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		helper.service.CreatePasswordResetTokenHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, sg)
 	})
@@ -2975,6 +3114,9 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		helper.service.CreatePasswordResetTokenHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[any]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, sg, mockDB)
 	})
@@ -3016,6 +3158,10 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		helper.service.CreatePasswordResetTokenHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, sg, mockDB)
 	})
@@ -3063,6 +3209,10 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		helper.service.CreatePasswordResetTokenHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, sg, mockDB)
 	})
@@ -3118,6 +3268,9 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		helper.service.CreatePasswordResetTokenHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[any]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, sg, mockDB, dataChangesPublisher)
 	})
@@ -3191,6 +3344,9 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 		helper.service.PasswordResetTokenRedemptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[any]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, mockDB, dataChangesPublisher, auth)
 	})
@@ -3392,6 +3548,10 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 		helper.service.PasswordResetTokenRedemptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -3637,6 +3797,9 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 		helper.service.PasswordResetTokenRedemptionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[any]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, mockDB, dataChangesPublisher, auth)
 	})
@@ -3687,6 +3850,9 @@ func TestService_VerifyUserEmailAddressHandler(T *testing.T) {
 		helper.service.VerifyUserEmailAddressHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[any]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, mockDB, dataChangesPublisher)
 	})
@@ -3880,6 +4046,9 @@ func TestService_VerifyUserEmailAddressHandler(T *testing.T) {
 		helper.service.VerifyUserEmailAddressHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[any]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, mockDB, dataChangesPublisher)
 	})
@@ -3915,6 +4084,9 @@ func TestService_RequestEmailVerificationEmailHandler(T *testing.T) {
 		helper.service.RequestEmailVerificationEmailHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[any]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, mockDB, dataChangesPublisher)
 	})

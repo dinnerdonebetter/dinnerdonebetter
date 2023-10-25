@@ -127,6 +127,10 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 
 		helper.service.InviteMemberHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, ed)
 	})
@@ -213,6 +217,10 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 
 		helper.service.InviteMemberHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, udm, sg)
 	})
@@ -257,6 +265,10 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 
 		helper.service.InviteMemberHandler(helper.res, helper.req)
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, udm, sg, dbManager)
 	})

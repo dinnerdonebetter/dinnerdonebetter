@@ -355,7 +355,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	responseValue := &types.APIResponse[*types.Webhook]{
+	responseValue := &types.APIResponse[*types.RecipeStep]{
 		Details: responseDetails,
 	}
 

@@ -1050,6 +1050,10 @@ func TestRecipesService_DAGHandler(T *testing.T) {
 		helper.service.DAGHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.Recipe]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, recipeDataManager, mockGrapher)
 	})
