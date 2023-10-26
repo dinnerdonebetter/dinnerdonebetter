@@ -18,12 +18,16 @@ func (c *Client) GetSelf(ctx context.Context) (*types.User, error) {
 		return nil, observability.PrepareError(err, span, "building get self request")
 	}
 
-	var user *types.User
-	if err = c.fetchAndUnmarshal(ctx, req, &user); err != nil {
+	var apiResponse *types.APIResponse[*types.User]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "fetching self")
 	}
 
-	return user, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // GetUser retrieves a user.
@@ -40,12 +44,16 @@ func (c *Client) GetUser(ctx context.Context, userID string) (*types.User, error
 		return nil, observability.PrepareError(err, span, "building get user request")
 	}
 
-	var user *types.User
-	if err = c.fetchAndUnmarshal(ctx, req, &user); err != nil {
+	var apiResponse *types.APIResponse[*types.User]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "fetching user")
 	}
 
-	return user, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // GetUsers retrieves a list of users.
@@ -60,12 +68,21 @@ func (c *Client) GetUsers(ctx context.Context, filter *types.QueryFilter) (*type
 		return nil, observability.PrepareError(err, span, "building users list request")
 	}
 
-	var users *types.QueryFilteredResult[types.User]
-	if err = c.fetchAndUnmarshal(ctx, req, &users); err != nil {
+	var apiResponse *types.APIResponse[[]*types.User]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "retrieving users")
 	}
 
-	return users, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	response := &types.QueryFilteredResult[types.User]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
+	}
+
+	return response, nil
 }
 
 // SearchForUsersByUsername searches for a user from a list of users by their username.
@@ -82,12 +99,16 @@ func (c *Client) SearchForUsersByUsername(ctx context.Context, username string) 
 		return nil, observability.PrepareError(err, span, "building username search request")
 	}
 
-	var users []*types.User
-	if err = c.fetchAndUnmarshal(ctx, req, &users); err != nil {
+	var apiResponse *types.APIResponse[[]*types.User]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "searching for users")
 	}
 
-	return users, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // CreateUser creates a new user.
@@ -107,12 +128,16 @@ func (c *Client) CreateUser(ctx context.Context, input *types.UserRegistrationIn
 		return nil, observability.PrepareError(err, span, "building create user request")
 	}
 
-	var user *types.UserCreationResponse
-	if err = c.fetchAndUnmarshalWithoutAuthentication(ctx, req, &user); err != nil {
+	var apiResponse *types.APIResponse[*types.UserCreationResponse]
+	if err = c.fetchAndUnmarshalWithoutAuthentication(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "creating user")
 	}
 
-	return user, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // ArchiveUser archives a user.
@@ -129,8 +154,13 @@ func (c *Client) ArchiveUser(ctx context.Context, userID string) error {
 		return observability.PrepareError(err, span, "building archive user request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.User]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareError(err, span, "archiving user")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -150,8 +180,13 @@ func (c *Client) UploadNewAvatar(ctx context.Context, input *types.AvatarUpdateI
 		return observability.PrepareError(err, span, "building avatar upload request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.User]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareError(err, span, "uploading avatar")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -171,12 +206,16 @@ func (c *Client) CheckUserPermissions(ctx context.Context, permissions ...string
 		return nil, observability.PrepareError(err, span, "building permission check request")
 	}
 
-	var res *types.UserPermissionsResponse
-	if err = c.fetchAndUnmarshal(ctx, req, &res); err != nil {
+	var apiResponse *types.APIResponse[*types.UserPermissionsResponse]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "checking permission")
 	}
 
-	return res, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // UpdateUserEmailAddress updates a user's email address.
@@ -193,8 +232,13 @@ func (c *Client) UpdateUserEmailAddress(ctx context.Context, input *types.UserEm
 		return observability.PrepareError(err, span, "building archive user request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.User]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareError(err, span, "archiving user")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -214,8 +258,13 @@ func (c *Client) UpdateUserUsername(ctx context.Context, input *types.UsernameUp
 		return observability.PrepareError(err, span, "building archive user request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.User]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareError(err, span, "archiving user")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -235,8 +284,13 @@ func (c *Client) UpdateUserDetails(ctx context.Context, input *types.UserDetails
 		return observability.PrepareError(err, span, "building archive user request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.User]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareError(err, span, "archiving user")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil

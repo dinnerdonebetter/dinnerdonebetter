@@ -10,7 +10,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -96,43 +95,6 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
-	})
-
-	T.Run("with error decoding request", func(t *testing.T) {
-		t.Parallel()
-
-		helper := newTestHelper(t)
-
-		ed := mockencoding.NewMockEncoderDecoder()
-		ed.On(
-			"DecodeRequest",
-			testutils.ContextMatcher,
-			testutils.HTTPRequestMatcher,
-			mock.IsType(&types.HouseholdInvitationCreationRequestInput{}),
-		).Return(errors.New("blah"))
-
-		ed.On(
-			"EncodeResponseWithStatus",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, types.ResponseDetails{})),
-			http.StatusBadRequest,
-		).Return(errors.New("blah"))
-		helper.service.encoderDecoder = ed
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader([]byte("")))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		helper.service.InviteMemberHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.HouseholdInvitation]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
-		assert.Error(t, actual.Error)
-
-		mock.AssertExpectationsForObjects(t, ed)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {

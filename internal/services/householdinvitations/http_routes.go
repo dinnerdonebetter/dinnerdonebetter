@@ -118,11 +118,17 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 		HouseholdID:         householdID,
 		UserID:              userID,
 	}
+
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, householdInvitation, http.StatusCreated)
+	responseValue := &types.APIResponse[*types.HouseholdInvitation]{
+		Details: responseDetails,
+		Data:    householdInvitation,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a household invitation.

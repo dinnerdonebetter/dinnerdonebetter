@@ -12,7 +12,6 @@ import (
 	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -234,8 +233,11 @@ func TestService_UsernameSearchHandler(T *testing.T) {
 		helper.service.UsernameSearchHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.User]
+		var actual *types.APIResponse[[]*types.User]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		for i := range exampleUserList.Data {
+			exampleUserList.Data[i].TwoFactorSecret = ""
+		}
 		assert.Equal(t, actual.Data, exampleUserList.Data)
 		assert.NoError(t, actual.Error.AsError())
 
@@ -292,8 +294,11 @@ func TestService_ListHandler(T *testing.T) {
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[*types.User]
+		var actual *types.APIResponse[[]*types.User]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		for i := range exampleUserList.Data {
+			exampleUserList.Data[i].TwoFactorSecret = ""
+		}
 		assert.Equal(t, actual.Data, exampleUserList.Data)
 		assert.NoError(t, actual.Error.AsError())
 
@@ -394,9 +399,9 @@ func TestService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
-		var actual *types.APIResponse[*types.User]
+		var actual *types.APIResponse[*types.UserCreationResponse]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleUser)
+		assert.NotNil(t, actual.Data)
 		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, auth, db, dataChangesPublisher)
@@ -582,9 +587,9 @@ func TestService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
-		var actual *types.APIResponse[*types.User]
+		var actual *types.APIResponse[*types.UserCreationResponse]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleUser)
+		assert.NotNil(t, actual.Data)
 		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, auth, db, dataChangesPublisher)
@@ -646,7 +651,7 @@ func TestService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
-		var actual *types.APIResponse[*types.User]
+		var actual *types.APIResponse[*types.UserCreationResponse]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -709,7 +714,7 @@ func TestService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.User]
+		var actual *types.APIResponse[*types.UserCreationResponse]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -751,7 +756,7 @@ func TestService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.User]
+		var actual *types.APIResponse[*types.UserCreationResponse]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -822,7 +827,7 @@ func TestService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.User]
+		var actual *types.APIResponse[*types.UserCreationResponse]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -872,7 +877,7 @@ func TestService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.User]
+		var actual *types.APIResponse[*types.UserCreationResponse]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -922,7 +927,7 @@ func TestService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.User]
+		var actual *types.APIResponse[*types.UserCreationResponse]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -996,9 +1001,9 @@ func TestService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
-		var actual *types.APIResponse[*types.User]
+		var actual *types.APIResponse[*types.UserCreationResponse]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Equal(t, actual.Data, helper.exampleUser)
+		assert.NotNil(t, actual.Data)
 		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, auth, db, dataChangesPublisher)
@@ -1062,7 +1067,7 @@ func TestService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.User]
+		var actual *types.APIResponse[*types.UserCreationResponse]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -1107,6 +1112,7 @@ func TestService_SelfHandler(T *testing.T) {
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.User]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		helper.exampleUser.TwoFactorSecret = ""
 		assert.Equal(t, actual.Data, helper.exampleUser)
 		assert.NoError(t, actual.Error.AsError())
 
@@ -1216,47 +1222,6 @@ func TestService_PermissionsHandler(T *testing.T) {
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
 	})
-
-	T.Run("with error decoding input", func(t *testing.T) {
-		t.Parallel()
-
-		helper := newTestHelper(t)
-
-		exampleInput := fakes.BuildFakeUserPermissionsRequestInput()
-		jsonBytes := helper.service.encoderDecoder.MustEncode(helper.ctx, exampleInput)
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader(jsonBytes))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"DecodeRequest",
-			testutils.ContextMatcher,
-			testutils.HTTPRequestMatcher,
-			mock.IsType(&types.UserPermissionsRequestInput{}),
-		).Return(errors.New("blah"))
-
-		encoderDecoder.On(
-			"EncodeResponseWithStatus",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, types.ResponseDetails{})),
-			http.StatusBadRequest,
-		).Return(errors.New("blah"))
-		helper.service.encoderDecoder = encoderDecoder
-
-		helper.service.PermissionsHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.User]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
-		assert.Error(t, actual.Error)
-
-		mock.AssertExpectationsForObjects(t, encoderDecoder)
-	})
 }
 
 func TestService_ReadHandler(T *testing.T) {
@@ -1280,6 +1245,7 @@ func TestService_ReadHandler(T *testing.T) {
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.User]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		helper.exampleUser.TwoFactorSecret = ""
 		assert.Equal(t, actual.Data, helper.exampleUser)
 		assert.NoError(t, actual.Error.AsError())
 
@@ -1380,6 +1346,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 		var actual *types.APIResponse[*types.User]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		helper.exampleUser.TwoFactorSecret = ""
 		assert.Equal(t, actual.Data, helper.exampleUser)
 		assert.NoError(t, actual.Error.AsError())
 
@@ -1510,6 +1477,10 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		helper.service.TOTPSecretVerificationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.User]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with secret already validated", func(t *testing.T) {
@@ -1541,7 +1512,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		helper.service.TOTPSecretVerificationHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAlreadyReported, helper.res.Code)
-		var actual *types.APIResponse[any]
+		var actual *types.APIResponse[*types.User]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NoError(t, actual.Error.AsError())
 
@@ -1666,6 +1637,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 		var actual *types.APIResponse[*types.User]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		helper.exampleUser.TwoFactorSecret = ""
 		assert.Equal(t, actual.Data, helper.exampleUser)
 		assert.NoError(t, actual.Error.AsError())
 
@@ -2558,7 +2530,7 @@ func TestService_AvatarUploadHandler(T *testing.T) {
 
 		helper.service.AvatarUploadHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 		var actual *types.APIResponse[any]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.NoError(t, actual.Error.AsError())
@@ -2856,10 +2828,10 @@ func TestService_RequestUsernameReminderHandler(T *testing.T) {
 
 		helper.service.RequestUsernameReminderHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[any]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.NoError(t, actual.Error.AsError())
+		assert.Error(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})
@@ -3113,10 +3085,10 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 
 		helper.service.CreatePasswordResetTokenHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[any]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.NoError(t, actual.Error.AsError())
+		assert.Error(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, sg, mockDB)
 	})

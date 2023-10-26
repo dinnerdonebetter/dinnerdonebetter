@@ -577,8 +577,7 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 	if user.TwoFactorSecretVerifiedAt != nil {
 		// I suppose if this happens too many times, we might want to keep track of that
 		logger.Debug("two factor secret already verified")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "TOTP secret already verified", http.StatusAlreadyReported)
-		earlyRes := &types.APIResponse[any]{
+		earlyRes := &types.APIResponse[*types.User]{
 			Details: responseDetails,
 		}
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, earlyRes, http.StatusAlreadyReported)
@@ -587,7 +586,8 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 
 	totpValid := totp.Validate(input.TOTPToken, user.TwoFactorSecret)
 	if !totpValid {
-		s.encoderDecoder.EncodeInvalidInputResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("totp invalid", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
@@ -786,7 +786,8 @@ func (s *service) UpdatePasswordHandler(res http.ResponseWriter, req *http.Reque
 
 	// if the above function returns something other than 200, it means some error occurred.
 	if httpStatus != http.StatusOK {
-		res.WriteHeader(httpStatus)
+		errRes := types.NewAPIErrorResponse("internal error", types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, httpStatus)
 		return
 	}
 
@@ -1224,7 +1225,8 @@ func (s *service) RequestUsernameReminderHandler(res http.ResponseWriter, req *h
 
 	u, err := s.userDataManager.GetUserByEmail(ctx, input.EmailAddress)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, nil, http.StatusAccepted)
+		errRes := types.NewAPIErrorResponse("no such user found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching user")
@@ -1279,13 +1281,15 @@ func (s *service) CreatePasswordResetTokenHandler(res http.ResponseWriter, req *
 	token, err := s.secretGenerator.GenerateBase32EncodedString(ctx, passwordResetTokenSize)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "generating secret")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusInternalServerError)
+		errRes := types.NewAPIErrorResponse("internal error", types.ErrSecretGeneration, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
 	u, err := s.userDataManager.GetUserByEmail(ctx, input.EmailAddress)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, nil, http.StatusAccepted)
+		errRes := types.NewAPIErrorResponse("user not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching user")
@@ -1382,7 +1386,8 @@ func (s *service) PasswordResetTokenRedemptionHandler(res http.ResponseWriter, r
 	// ensure the password isn't garbage-tier
 	if err = passwordvalidator.Validate(strings.TrimSpace(input.NewPassword), minimumPasswordEntropy); err != nil {
 		logger.WithValue("password_validation_error", err).Debug("invalid password provided")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "new password is too weak!", http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse("new password is too weak!", types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
