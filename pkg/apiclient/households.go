@@ -188,12 +188,16 @@ func (c *Client) InviteUserToHousehold(ctx context.Context, destinationHousehold
 		return nil, observability.PrepareError(err, span, "building add user to household request")
 	}
 
-	var householdInvitation *types.HouseholdInvitation
-	if err = c.fetchAndUnmarshal(ctx, req, &householdInvitation); err != nil {
+	var apiResponse *types.APIResponse[*types.HouseholdInvitation]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "adding user to household")
 	}
 
-	return householdInvitation, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // MarkAsDefault marks a given household as the default for a given user.

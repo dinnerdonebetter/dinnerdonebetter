@@ -177,8 +177,13 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[*types.HouseholdInvitation]{
+		Details: responseDetails,
+		Data:    householdInvitation,
+	}
+
 	// encode the response.
-	s.encoderDecoder.RespondWithData(ctx, res, householdInvitation)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 func (s *service) InboundInvitesHandler(res http.ResponseWriter, req *http.Request) {
@@ -220,7 +225,14 @@ func (s *service) InboundInvitesHandler(res http.ResponseWriter, req *http.Reque
 		return
 	}
 
-	s.encoderDecoder.RespondWithData(ctx, res, invitations)
+	responseValue := &types.APIResponse[[]*types.HouseholdInvitation]{
+		Details:    responseDetails,
+		Data:       invitations.Data,
+		Pagination: &invitations.Pagination,
+	}
+
+	// encode the response.
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 func (s *service) OutboundInvitesHandler(res http.ResponseWriter, req *http.Request) {
@@ -266,7 +278,13 @@ func (s *service) OutboundInvitesHandler(res http.ResponseWriter, req *http.Requ
 
 	logger.Debug("responding with outbound invites for household")
 
-	s.encoderDecoder.RespondWithData(ctx, res, invitations)
+	responseValue := &types.APIResponse[[]*types.HouseholdInvitation]{
+		Details:    responseDetails,
+		Data:       invitations.Data,
+		Pagination: &invitations.Pagination,
+	}
+
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 func (s *service) AcceptInviteHandler(res http.ResponseWriter, req *http.Request) {
@@ -344,7 +362,12 @@ func (s *service) AcceptInviteHandler(res http.ResponseWriter, req *http.Request
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	res.WriteHeader(http.StatusAccepted)
+	responseValue := &types.APIResponse[[]*types.HouseholdInvitation]{
+		Details: responseDetails,
+	}
+
+	// encode the response.
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 func (s *service) CancelInviteHandler(res http.ResponseWriter, req *http.Request) {
@@ -423,7 +446,12 @@ func (s *service) CancelInviteHandler(res http.ResponseWriter, req *http.Request
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	res.WriteHeader(http.StatusAccepted)
+	responseValue := &types.APIResponse[[]*types.HouseholdInvitation]{
+		Details: responseDetails,
+	}
+
+	// encode the response.
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 func (s *service) RejectInviteHandler(res http.ResponseWriter, req *http.Request) {
@@ -501,5 +529,10 @@ func (s *service) RejectInviteHandler(res http.ResponseWriter, req *http.Request
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	res.WriteHeader(http.StatusAccepted)
+	responseValue := &types.APIResponse[[]*types.HouseholdInvitation]{
+		Details: responseDetails,
+	}
+
+	// encode the response.
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
