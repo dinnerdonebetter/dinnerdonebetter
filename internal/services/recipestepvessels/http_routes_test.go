@@ -58,6 +58,10 @@ func TestRecipeStepVesselsService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.RecipeStepVessel]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleRecipeStepVessel)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -194,6 +198,10 @@ func TestRecipeStepVesselsService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.RecipeStepVessel]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleRecipeStepVessel)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -220,6 +228,10 @@ func TestRecipeStepVesselsService_ReadHandler(T *testing.T) {
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.RecipeStepVessel]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleRecipeStepVessel)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, recipeStepVesselDataManager)
 	})
@@ -315,6 +327,10 @@ func TestRecipeStepVesselsService_ListHandler(T *testing.T) {
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.RecipeStepVessel]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, exampleRecipeStepVesselList.Data)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, recipeStepVesselDataManager)
 	})
@@ -352,6 +368,10 @@ func TestRecipeStepVesselsService_ListHandler(T *testing.T) {
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.RecipeStepVessel]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, recipeStepVesselDataManager)
 	})
@@ -428,6 +448,10 @@ func TestRecipeStepVesselsService_UpdateHandler(T *testing.T) {
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.RecipeStepVessel]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleRecipeStepVessel)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -642,6 +666,10 @@ func TestRecipeStepVesselsService_UpdateHandler(T *testing.T) {
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.RecipeStepVessel]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleRecipeStepVessel)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -683,6 +711,9 @@ func TestRecipeStepVesselsService_ArchiveHandler(T *testing.T) {
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.RecipeStepVessel]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -820,6 +851,9 @@ func TestRecipeStepVesselsService_ArchiveHandler(T *testing.T) {
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.RecipeStepVessel]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})

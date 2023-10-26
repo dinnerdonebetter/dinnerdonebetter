@@ -102,7 +102,12 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, recipeStep, http.StatusAccepted)
+	responseValue := &types.APIResponse[*types.RecipeStep]{
+		Details: responseDetails,
+		Data:    recipeStep,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a recipe step.
@@ -152,8 +157,13 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[*types.RecipeStep]{
+		Details: responseDetails,
+		Data:    x,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ListHandler is our list route.
@@ -200,8 +210,14 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.RecipeStep]{
+		Details:    responseDetails,
+		Data:       recipeSteps.Data,
+		Pagination: &recipeSteps.Pagination,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, recipeSteps)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // UpdateHandler returns a handler that updates a recipe step.
@@ -288,8 +304,13 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
+	responseValue := &types.APIResponse[*types.RecipeStep]{
+		Details: responseDetails,
+		Data:    recipeStep,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, recipeStep)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ArchiveHandler returns a handler that archives a recipe step.
@@ -405,6 +426,7 @@ func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 
 	logger = logger.WithValue("image_qty", len(images))
 
+	createdImages := []*types.RecipeMedia{}
 	for _, img := range images {
 		internalPath := fmt.Sprintf("%s/steps/%s/%d_%s", recipeID, recipeStepID, time.Now().Unix(), img.Filename)
 		logger = logger.WithValue("internal_path", internalPath).WithValue("file_size", len(img.Data))
@@ -426,15 +448,23 @@ func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 			ExternalPath:        fmt.Sprintf("%s/%s", s.cfg.PublicMediaURLPrefix, internalPath),
 		}
 
-		if _, dbWriteErr := s.recipeMediaDataManager.CreateRecipeMedia(ctx, input); dbWriteErr != nil {
-			observability.AcknowledgeError(dbWriteErr, logger, span, "saving recipe media record")
+		var created *types.RecipeMedia
+		created, err = s.recipeMediaDataManager.CreateRecipeMedia(ctx, input)
+		if err != nil {
+			observability.AcknowledgeError(err, logger, span, "saving recipe media record")
 			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 			return
 		}
+		createdImages = append(createdImages, created)
 	}
 
 	logger.Info("media data saved in database")
 
-	res.WriteHeader(http.StatusCreated)
+	responseValue := &types.APIResponse[[]*types.RecipeMedia]{
+		Details: responseDetails,
+		Data:    createdImages,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
