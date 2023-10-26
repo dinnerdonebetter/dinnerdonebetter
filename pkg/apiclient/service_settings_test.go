@@ -21,9 +21,11 @@ func TestServiceSettings(t *testing.T) {
 
 type serviceSettingsBaseSuite struct {
 	suite.Suite
-
-	ctx                   context.Context
-	exampleServiceSetting *types.ServiceSetting
+	ctx                               context.Context
+	exampleServiceSetting             *types.ServiceSetting
+	exampleServiceSettingResponse     *types.APIResponse[*types.ServiceSetting]
+	exampleServiceSettingListResponse *types.APIResponse[[]*types.ServiceSetting]
+	exampleServiceSettingList         []*types.ServiceSetting
 }
 
 var _ suite.SetupTestSuite = (*serviceSettingsBaseSuite)(nil)
@@ -31,6 +33,16 @@ var _ suite.SetupTestSuite = (*serviceSettingsBaseSuite)(nil)
 func (s *serviceSettingsBaseSuite) SetupTest() {
 	s.ctx = context.Background()
 	s.exampleServiceSetting = fakes.BuildFakeServiceSetting()
+	s.exampleServiceSettingResponse = &types.APIResponse[*types.ServiceSetting]{
+		Data: s.exampleServiceSetting,
+	}
+
+	exampleList := fakes.BuildFakeServiceSettingList()
+	s.exampleServiceSettingList = exampleList.Data
+	s.exampleServiceSettingListResponse = &types.APIResponse[[]*types.ServiceSetting]{
+		Data:       s.exampleServiceSettingList,
+		Pagination: &exampleList.Pagination,
+	}
 }
 
 type serviceSettingsTestSuite struct {
@@ -46,7 +58,7 @@ func (s *serviceSettingsTestSuite) TestClient_GetServiceSetting() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleServiceSetting.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleServiceSetting)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleServiceSettingResponse)
 		actual, err := c.GetServiceSetting(s.ctx, s.exampleServiceSetting.ID)
 
 		require.NotNil(t, actual)
@@ -89,26 +101,22 @@ func (s *serviceSettingsTestSuite) TestClient_GetServiceSetting() {
 func (s *serviceSettingsTestSuite) TestClient_GetServiceSettings() {
 	const expectedPath = "/api/v1/settings"
 
+	filter := (*types.QueryFilter)(nil)
+
 	s.Run("standard", func() {
 		t := s.T()
 
-		filter := (*types.QueryFilter)(nil)
-
-		exampleServiceSettingList := fakes.BuildFakeServiceSettingList()
-
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleServiceSettingList)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleServiceSettingListResponse)
 		actual, err := c.GetServiceSettings(s.ctx, filter)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleServiceSettingList, actual)
+		assert.Equal(t, s.exampleServiceSettingList, actual.Data)
 	})
 
 	s.Run("with error building request", func() {
 		t := s.T()
-
-		filter := (*types.QueryFilter)(nil)
 
 		c := buildTestClientWithInvalidURL(t)
 		actual, err := c.GetServiceSettings(s.ctx, filter)
@@ -119,8 +127,6 @@ func (s *serviceSettingsTestSuite) TestClient_GetServiceSettings() {
 
 	s.Run("with error executing request", func() {
 		t := s.T()
-
-		filter := (*types.QueryFilter)(nil)
 
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
 		c := buildTestClientWithInvalidResponse(t, spec)
@@ -139,15 +145,13 @@ func (s *serviceSettingsTestSuite) TestClient_SearchServiceSettings() {
 	s.Run("standard", func() {
 		t := s.T()
 
-		exampleServiceSettingList := fakes.BuildFakeServiceSettingList()
-
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&q=whatever", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleServiceSettingList.Data)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleServiceSettingListResponse)
 		actual, err := c.SearchServiceSettings(s.ctx, exampleQuery, 0)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleServiceSettingList.Data, actual)
+		assert.Equal(t, s.exampleServiceSettingList, actual)
 	})
 
 	s.Run("with empty query", func() {

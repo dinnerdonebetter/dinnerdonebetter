@@ -39,12 +39,14 @@ func TestUserIngredientPreferencesService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
+		expected := []*types.UserIngredientPreference{helper.exampleUserIngredientPreference}
+
 		dbManager := database.NewMockDatabase()
 		dbManager.UserIngredientPreferenceDataManagerMock.On(
 			"CreateUserIngredientPreference",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.UserIngredientPreferenceDatabaseCreationInput) bool { return true }),
-		).Return([]*types.UserIngredientPreference{helper.exampleUserIngredientPreference}, nil)
+		).Return(expected, nil)
 		helper.service.userIngredientPreferenceDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
@@ -58,6 +60,10 @@ func TestUserIngredientPreferencesService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[[]*types.UserIngredientPreference]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, expected)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -175,12 +181,14 @@ func TestUserIngredientPreferencesService_CreateHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 
+		expected := []*types.UserIngredientPreference{helper.exampleUserIngredientPreference}
+
 		dbManager := database.NewMockDatabase()
 		dbManager.UserIngredientPreferenceDataManagerMock.On(
 			"CreateUserIngredientPreference",
 			testutils.ContextMatcher,
 			mock.MatchedBy(func(*types.UserIngredientPreferenceDatabaseCreationInput) bool { return true }),
-		).Return([]*types.UserIngredientPreference{helper.exampleUserIngredientPreference}, nil)
+		).Return(expected, nil)
 		helper.service.userIngredientPreferenceDataManager = dbManager
 
 		dataChangesPublisher := &mockpublishers.Publisher{}
@@ -194,6 +202,10 @@ func TestUserIngredientPreferencesService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[[]*types.UserIngredientPreference]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, expected)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -221,6 +233,10 @@ func TestUserIngredientPreferencesService_ListHandler(T *testing.T) {
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.UserIngredientPreference]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, exampleUserIngredientPreferenceList.Data)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, userIngredientPreferenceDataManager)
 	})
@@ -330,6 +346,10 @@ func TestUserIngredientPreferencesService_UpdateHandler(T *testing.T) {
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.UserIngredientPreference]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleUserIngredientPreference)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -538,6 +558,10 @@ func TestUserIngredientPreferencesService_UpdateHandler(T *testing.T) {
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.UserIngredientPreference]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleUserIngredientPreference)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -578,6 +602,9 @@ func TestUserIngredientPreferencesService_ArchiveHandler(T *testing.T) {
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.UserIngredientPreference]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -711,6 +738,9 @@ func TestUserIngredientPreferencesService_ArchiveHandler(T *testing.T) {
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.UserIngredientPreference]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})

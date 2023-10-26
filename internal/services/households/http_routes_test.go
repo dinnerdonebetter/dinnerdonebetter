@@ -45,6 +45,16 @@ func TestHouseholdsService_ListHandler(T *testing.T) {
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.Household]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		for i := range exampleHouseholdList.Data {
+			exampleHouseholdList.Data[i].WebhookEncryptionKey = ""
+			for j := range exampleHouseholdList.Data[i].Members {
+				exampleHouseholdList.Data[i].Members[j].BelongsToUser.TwoFactorSecret = ""
+			}
+		}
+		assert.Equal(t, actual.Data, exampleHouseholdList.Data)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, householdDataManager)
 	})
@@ -81,6 +91,10 @@ func TestHouseholdsService_ListHandler(T *testing.T) {
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.Household]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, householdDataManager)
 	})
@@ -147,6 +161,11 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.Household]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		helper.exampleHousehold.WebhookEncryptionKey = ""
+		assert.Equal(t, actual.Data, helper.exampleHousehold)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, householdDataManager, dataChangesPublisher)
 	})
@@ -283,6 +302,11 @@ func TestHouseholdsService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.Household]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		helper.exampleHousehold.WebhookEncryptionKey = ""
+		assert.Equal(t, actual.Data, helper.exampleHousehold)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, householdDataManager, dataChangesPublisher)
 	})
@@ -307,6 +331,11 @@ func TestHouseholdsService_InfoHandler(T *testing.T) {
 		helper.service.CurrentInfoHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.Household]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		helper.exampleHousehold.WebhookEncryptionKey = ""
+		assert.Equal(t, actual.Data, helper.exampleHousehold)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, householdDataManager)
 	})
@@ -394,6 +423,11 @@ func TestHouseholdsService_ReadHandler(T *testing.T) {
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.Household]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		helper.exampleHousehold.WebhookEncryptionKey = ""
+		assert.Equal(t, actual.Data, helper.exampleHousehold)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, householdDataManager)
 	})
@@ -503,6 +537,11 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.Household]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		helper.exampleHousehold.WebhookEncryptionKey = ""
+		assert.Equal(t, actual.Data, helper.exampleHousehold)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, householdDataManager, dataChangesPublisher)
 	})
@@ -718,6 +757,11 @@ func TestHouseholdsService_UpdateHandler(T *testing.T) {
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.Household]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		helper.exampleHousehold.WebhookEncryptionKey = ""
+		assert.Equal(t, actual.Data, helper.exampleHousehold)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, householdDataManager, dataChangesPublisher)
 	})
@@ -751,6 +795,9 @@ func TestHouseholdsService_ArchiveHandler(T *testing.T) {
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.Household]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, householdDataManager, dataChangesPublisher)
 	})
@@ -845,6 +892,9 @@ func TestHouseholdsService_ArchiveHandler(T *testing.T) {
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.Household]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, householdDataManager, dataChangesPublisher)
 	})
@@ -888,6 +938,9 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		helper.service.ModifyMemberPermissionsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[*types.Household]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, householdMembershipDataManager, dataChangesPublisher)
 	})
@@ -1027,6 +1080,9 @@ func TestHouseholdsService_ModifyMemberPermissionsHandler(T *testing.T) {
 		helper.service.ModifyMemberPermissionsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[*types.Household]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, householdMembershipDataManager, dataChangesPublisher)
 	})
@@ -1069,6 +1125,9 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		helper.service.TransferHouseholdOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[*types.Household]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, householdMembershipDataManager, dataChangesPublisher)
 	})
@@ -1206,6 +1265,9 @@ func TestHouseholdsService_TransferHouseholdOwnershipHandler(T *testing.T) {
 		helper.service.TransferHouseholdOwnershipHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[*types.Household]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, householdMembershipDataManager, dataChangesPublisher)
 	})
@@ -1243,6 +1305,9 @@ func TestHouseholdsService_RemoveMemberHandler(T *testing.T) {
 		helper.service.RemoveMemberHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[*types.Household]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, householdMembershipDataManager, dataChangesPublisher)
 	})
@@ -1319,6 +1384,9 @@ func TestHouseholdsService_RemoveMemberHandler(T *testing.T) {
 		helper.service.RemoveMemberHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[*types.Household]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, householdMembershipDataManager, dataChangesPublisher)
 	})
@@ -1352,6 +1420,9 @@ func TestHouseholdsService_MarkAsDefaultHouseholdHandler(T *testing.T) {
 		helper.service.MarkAsDefaultHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[*types.Household]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, householdMembershipDataManager, dataChangesPublisher)
 	})
@@ -1421,6 +1492,9 @@ func TestHouseholdsService_MarkAsDefaultHouseholdHandler(T *testing.T) {
 		helper.service.MarkAsDefaultHouseholdHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[*types.Household]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, householdMembershipDataManager, dataChangesPublisher)
 	})

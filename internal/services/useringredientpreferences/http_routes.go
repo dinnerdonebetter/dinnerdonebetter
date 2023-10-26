@@ -78,7 +78,12 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, userIngredientPreference, http.StatusCreated)
+	responseValue := &types.APIResponse[[]*types.UserIngredientPreference]{
+		Details: responseDetails,
+		Data:    userIngredientPreference,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
 // ListHandler is our list route.
@@ -121,8 +126,14 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.UserIngredientPreference]{
+		Details:    responseDetails,
+		Data:       userIngredientPreferences.Data,
+		Pagination: &userIngredientPreferences.Pagination,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, userIngredientPreferences)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // UpdateHandler returns a handler that updates a user ingredient preference.
@@ -204,8 +215,13 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
+	responseValue := &types.APIResponse[*types.UserIngredientPreference]{
+		Details: responseDetails,
+		Data:    userIngredientPreference,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, userIngredientPreference)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ArchiveHandler returns a handler that archives a user ingredient preference.

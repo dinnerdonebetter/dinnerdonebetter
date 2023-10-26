@@ -64,8 +64,14 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.Household]{
+		Details:    responseDetails,
+		Data:       households.Data,
+		Pagination: &households.Pagination,
+	}
+
 	// encode our response and say farewell.
-	s.encoderDecoder.RespondWithData(ctx, res, households)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // CreateHandler is our household creation route.
@@ -151,7 +157,12 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message for created household")
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, household, http.StatusCreated)
+	responseValue := &types.APIResponse[*types.Household]{
+		Details: responseDetails,
+		Data:    household,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
 // CurrentInfoHandler returns a handler that returns the current household.
@@ -201,8 +212,13 @@ func (s *service) CurrentInfoHandler(res http.ResponseWriter, req *http.Request)
 
 	logger.Debug("responding with current household info")
 
+	responseValue := &types.APIResponse[*types.Household]{
+		Details: responseDetails,
+		Data:    household,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, household)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ReadHandler returns a GET handler that returns a household.
@@ -261,8 +277,13 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	household.Members = append(household.Members, admins...)
 	household.Members = append(household.Members, plainUsers...)
 
+	responseValue := &types.APIResponse[*types.Household]{
+		Details: responseDetails,
+		Data:    household,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, household)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // UpdateHandler returns a handler that updates a household.
@@ -348,8 +369,13 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message for created household")
 	}
 
+	responseValue := &types.APIResponse[*types.Household]{
+		Details: responseDetails,
+		Data:    household,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, household)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ArchiveHandler returns a handler that archives a household.
@@ -481,7 +507,11 @@ func (s *service) ModifyMemberPermissionsHandler(res http.ResponseWriter, req *h
 		observability.AcknowledgeError(err, logger, span, "publishing data change message for created household")
 	}
 
-	res.WriteHeader(http.StatusAccepted)
+	responseValue := &types.APIResponse[*types.Webhook]{
+		Details: responseDetails,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // TransferHouseholdOwnershipHandler is our household creation route.
@@ -549,7 +579,11 @@ func (s *service) TransferHouseholdOwnershipHandler(res http.ResponseWriter, req
 		observability.AcknowledgeError(err, logger, span, "publishing data change message for created household")
 	}
 
-	res.WriteHeader(http.StatusAccepted)
+	responseValue := &types.APIResponse[*types.Webhook]{
+		Details: responseDetails,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // RemoveMemberHandler is our household creation route.
@@ -608,7 +642,11 @@ func (s *service) RemoveMemberHandler(res http.ResponseWriter, req *http.Request
 		observability.AcknowledgeError(err, logger, span, "publishing data change message for created household")
 	}
 
-	res.WriteHeader(http.StatusAccepted)
+	responseValue := &types.APIResponse[*types.Webhook]{
+		Details: responseDetails,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // MarkAsDefaultHouseholdHandler is our household creation route.
@@ -657,5 +695,9 @@ func (s *service) MarkAsDefaultHouseholdHandler(res http.ResponseWriter, req *ht
 		observability.AcknowledgeError(err, logger, span, "publishing data change message for created household")
 	}
 
-	res.WriteHeader(http.StatusAccepted)
+	responseValue := &types.APIResponse[*types.Webhook]{
+		Details: responseDetails,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
