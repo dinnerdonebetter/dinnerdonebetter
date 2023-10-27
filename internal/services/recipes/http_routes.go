@@ -93,7 +93,12 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, recipe, http.StatusCreated)
+	responseValue := &types.APIResponse[*types.Recipe]{
+		Details: responseDetails,
+		Data:    recipe,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a recipe.
@@ -138,8 +143,13 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[*types.Recipe]{
+		Details: responseDetails,
+		Data:    x,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ListHandler is our list route.
@@ -181,8 +191,14 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.Recipe]{
+		Details:    responseDetails,
+		Data:       recipes.Data,
+		Pagination: &recipes.Pagination,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, recipes)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // SearchHandler is our list route.
@@ -191,7 +207,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	defer span.End()
 
 	tracing.AttachRequestToSpan(span, req)
-	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get("useDB"))) == "true"
+	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.SearchWithDatabaseQueryKey))) == "true"
 
 	query := req.URL.Query().Get(types.SearchQueryKey)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
@@ -256,8 +272,14 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.Recipe]{
+		Details:    responseDetails,
+		Data:       recipes.Data,
+		Pagination: &recipes.Pagination,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, recipes)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // UpdateHandler returns a handler that updates a recipe.
@@ -345,8 +367,13 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
+	responseValue := &types.APIResponse[*types.Recipe]{
+		Details: responseDetails,
+		Data:    recipe,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, recipe)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ArchiveHandler returns a handler that archives a recipe.
@@ -533,8 +560,13 @@ func (s *service) EstimatedPrepStepsHandler(res http.ResponseWriter, req *http.R
 		})
 	}
 
+	responseValue := &types.APIResponse[[]*types.MealPlanTaskDatabaseCreationEstimate]{
+		Details: responseDetails,
+		Data:    responseEvents,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, responseEvents)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ImageUploadHandler updates a user's avatar.
@@ -577,6 +609,7 @@ func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 	logger = logger.WithValue("image_qty", len(images))
 	logger.Info("processed images, saving files")
 
+	var created []*types.RecipeMedia
 	for _, img := range images {
 		internalPath := fmt.Sprintf("%s/%d_%s", recipeID, time.Now().Unix(), img.Filename)
 		logger = logger.WithValue("internal_path", internalPath).WithValue("file_size", len(img.Data))
@@ -599,12 +632,15 @@ func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 			ExternalPath:        fmt.Sprintf("%s/%s", s.cfg.PublicMediaURLPrefix, internalPath),
 		}
 
-		if _, dbWriteErr := s.recipeMediaDataManager.CreateRecipeMedia(ctx, input); dbWriteErr != nil {
-			observability.AcknowledgeError(dbWriteErr, logger, span, "saving recipe media record")
+		var createdMedia *types.RecipeMedia
+		createdMedia, err = s.recipeMediaDataManager.CreateRecipeMedia(ctx, input)
+		if err != nil {
+			observability.AcknowledgeError(err, logger, span, "saving recipe media record")
 			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 			return
 		}
+		created = append(created, createdMedia)
 
 		dcm := &types.DataChangeMessage{
 			EventType:     types.RecipeMediaCreatedCustomerEventType,
@@ -621,7 +657,12 @@ func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 		logger.Info("image info saved in database")
 	}
 
-	res.WriteHeader(http.StatusCreated)
+	responseValue := &types.APIResponse[[]*types.RecipeMedia]{
+		Details: responseDetails,
+		Data:    created,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
 // MermaidHandler returns a GET handler that returns a recipe in Mermaid format.
@@ -802,6 +843,22 @@ func (s *service) CloneHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	dcm := &types.DataChangeMessage{
+		EventType:   types.RecipeClonedCustomerEventType,
+		Recipe:      created,
+		HouseholdID: sessionCtxData.ActiveHouseholdID,
+		UserID:      sessionCtxData.Requester.UserID,
+	}
+
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
+	}
+
+	responseValue := &types.APIResponse[*types.Recipe]{
+		Details: responseDetails,
+		Data:    created,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, created)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }

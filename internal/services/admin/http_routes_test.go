@@ -49,6 +49,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		helper.service.userDB = userDataManager
 
 		helper.service.UserAccountStatusChangeHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, userDataManager)
@@ -80,6 +81,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.UserAccountStatusChangeHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusForbidden, helper.res.Code)
 	})
 
@@ -108,6 +110,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		helper.service.userDB = userDataManager
 
 		helper.service.UserAccountStatusChangeHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, userDataManager)
@@ -122,6 +125,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		helper.exampleInput.NewStatus = string(types.BannedUserAccountStatus)
 
 		helper.service.UserAccountStatusChangeHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.Webhook]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -141,8 +145,9 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.UserAccountStatusChangeHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[*types.Webhook]
+		var actual *types.APIResponse[any]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
 		assert.Empty(t, actual.Data)
 		assert.Error(t, actual.Error)
@@ -164,7 +169,12 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.UserAccountStatusChangeHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with inadequate admin user attempting to ban", func(t *testing.T) {
@@ -193,6 +203,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		}
 
 		helper.service.UserAccountStatusChangeHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusForbidden, helper.res.Code)
 	})
 
@@ -222,6 +233,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		}
 
 		helper.service.UserAccountStatusChangeHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusForbidden, helper.res.Code)
 	})
 
@@ -242,6 +254,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.UserAccountStatusChangeHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusForbidden, helper.res.Code)
 	})
 
@@ -270,6 +283,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		helper.service.userDB = userDataManager
 
 		helper.service.UserAccountStatusChangeHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, userDataManager)
@@ -300,6 +314,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		helper.service.userDB = userDataManager
 
 		helper.service.UserAccountStatusChangeHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.Webhook]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -338,6 +353,7 @@ func TestAdminService_UserHouseholdStatusChangeHandler(T *testing.T) {
 		helper.service.userDB = userDataManager
 
 		helper.service.UserAccountStatusChangeHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, userDataManager)

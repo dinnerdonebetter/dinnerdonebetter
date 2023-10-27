@@ -1558,6 +1558,7 @@ func TestAuthenticationService_StatusHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 
 		helper.service.StatusHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 	})
 
@@ -1568,6 +1569,7 @@ func TestAuthenticationService_StatusHandler(T *testing.T) {
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.StatusHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.Webhook]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -1665,5 +1667,9 @@ func Test_service_SSOProviderHandler(T *testing.T) {
 
 		assert.Empty(t, helper.res.Header().Get("Location"))
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[any]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 }

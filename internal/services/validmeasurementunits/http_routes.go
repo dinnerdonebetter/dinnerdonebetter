@@ -197,7 +197,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get("useDB"))) == "true"
+	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.SearchWithDatabaseQueryKey))) == "true"
 
 	query := req.URL.Query().Get(types.SearchQueryKey)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)

@@ -74,6 +74,7 @@ func TestValidIngredientMeasurementUnitsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.CreateHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -96,6 +97,7 @@ func TestValidIngredientMeasurementUnitsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.CreateHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -445,6 +447,7 @@ func TestValidIngredientMeasurementUnitsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.UpdateHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -479,6 +482,7 @@ func TestValidIngredientMeasurementUnitsService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.UpdateHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.ValidIngredientMeasurementUnit]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))

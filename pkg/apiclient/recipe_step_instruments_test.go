@@ -25,10 +25,10 @@ type recipeStepInstrumentsBaseSuite struct {
 	ctx                                     context.Context
 	exampleRecipeStepInstrument             *types.RecipeStepInstrument
 	exampleRecipeStepInstrumentResponse     *types.APIResponse[*types.RecipeStepInstrument]
-	exampleRecipeStepInstrumentList         []*types.RecipeStepInstrument
 	exampleRecipeStepInstrumentListResponse *types.APIResponse[[]*types.RecipeStepInstrument]
 	exampleRecipeID                         string
 	exampleRecipeStepID                     string
+	exampleRecipeStepInstrumentList         []*types.RecipeStepInstrument
 }
 
 var _ suite.SetupTestSuite = (*recipeStepInstrumentsBaseSuite)(nil)

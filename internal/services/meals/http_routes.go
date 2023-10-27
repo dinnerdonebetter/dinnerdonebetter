@@ -86,7 +86,12 @@ func (s *service) CreateMealHandler(res http.ResponseWriter, req *http.Request) 
 		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, meal, http.StatusCreated)
+	responseValue := &types.APIResponse[*types.Meal]{
+		Details: responseDetails,
+		Data:    meal,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
 // ReadMealHandler returns a GET handler that returns a meal.
@@ -131,8 +136,13 @@ func (s *service) ReadMealHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[*types.Meal]{
+		Details: responseDetails,
+		Data:    x,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ListMealsHandler is our list route.
@@ -174,8 +184,14 @@ func (s *service) ListMealsHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.Meal]{
+		Details:    responseDetails,
+		Data:       meals.Data,
+		Pagination: &meals.Pagination,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, meals)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // SearchMealsHandler is our list route.
@@ -185,7 +201,7 @@ func (s *service) SearchMealsHandler(res http.ResponseWriter, req *http.Request)
 
 	tracing.AttachRequestToSpan(span, req)
 
-	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get("useDB"))) == "true"
+	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.SearchWithDatabaseQueryKey))) == "true"
 
 	query := req.URL.Query().Get(types.SearchQueryKey)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
@@ -250,8 +266,14 @@ func (s *service) SearchMealsHandler(res http.ResponseWriter, req *http.Request)
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.Meal]{
+		Details:    responseDetails,
+		Data:       meals.Data,
+		Pagination: &meals.Pagination,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, meals)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ArchiveMealHandler returns a handler that archives a meal.

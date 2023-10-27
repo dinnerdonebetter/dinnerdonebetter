@@ -23,52 +23,6 @@ const (
 	clientSecretSize = 16
 )
 
-// ListHandler is a handler that returns a list of OAuth2 clients.
-func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
-	ctx, span := s.tracer.StartSpan(req.Context())
-	defer span.End()
-
-	filter := types.ExtractQueryFilterFromRequest(req)
-	logger := s.logger.WithRequest(req)
-	logger = filter.AttachToLogger(logger)
-
-	responseDetails := types.ResponseDetails{
-		TraceID: span.SpanContext().TraceID().String(),
-	}
-
-	tracing.AttachRequestToSpan(span, req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
-
-	// determine user.
-	sessionCtxData, err := s.sessionContextDataFetcher(req)
-	if err != nil {
-		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
-		return
-	}
-
-	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
-	logger = sessionCtxData.AttachToLogger(logger)
-
-	// fetch OAuth2 clients.
-	oauth2Clients, err := s.oauth2ClientDataManager.GetOAuth2Clients(ctx, filter)
-	if errors.Is(err, sql.ErrNoRows) {
-		// just return an empty list if there are no results.
-		oauth2Clients = &types.QueryFilteredResult[types.OAuth2Client]{
-			Data: []*types.OAuth2Client{},
-		}
-	} else if err != nil {
-		observability.AcknowledgeError(err, logger, span, "fetching OAuth2 clients from database")
-		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
-		return
-	}
-
-	// encode response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, oauth2Clients)
-}
-
 // CreateHandler is our OAuth2 client creation route.
 func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
@@ -160,7 +114,12 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		ClientSecret: client.ClientSecret,
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, resObj, http.StatusCreated)
+	responseValue := &types.APIResponse[*types.OAuth2ClientCreationResponse]{
+		Details: responseDetails,
+		Data:    resObj,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns an OAuth2 client.
@@ -205,8 +164,65 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[*types.OAuth2Client]{
+		Details: responseDetails,
+		Data:    x,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+}
+
+// ListHandler is a handler that returns a list of OAuth2 clients.
+func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	filter := types.ExtractQueryFilterFromRequest(req)
+	logger := s.logger.WithRequest(req)
+	logger = filter.AttachToLogger(logger)
+
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
+	tracing.AttachRequestToSpan(span, req)
+	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+
+	// determine user.
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
+		return
+	}
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+
+	// fetch OAuth2 clients.
+	oauth2Clients, err := s.oauth2ClientDataManager.GetOAuth2Clients(ctx, filter)
+	if errors.Is(err, sql.ErrNoRows) {
+		// just return an empty list if there are no results.
+		oauth2Clients = &types.QueryFilteredResult[types.OAuth2Client]{
+			Data: []*types.OAuth2Client{},
+		}
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "fetching OAuth2 clients from database")
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
+		return
+	}
+
+	responseValue := &types.APIResponse[[]*types.OAuth2Client]{
+		Details:    responseDetails,
+		Data:       oauth2Clients.Data,
+		Pagination: &oauth2Clients.Pagination,
+	}
+
+	// encode response and peace.
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ArchiveHandler returns a handler that archives an OAuth2 client.

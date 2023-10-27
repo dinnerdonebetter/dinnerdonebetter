@@ -440,6 +440,7 @@ func TestService_CreateHandler(T *testing.T) {
 
 		helper.service.authSettings.EnableUserSignup = true
 		helper.service.CreateHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.User]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -467,6 +468,7 @@ func TestService_CreateHandler(T *testing.T) {
 
 		helper.service.authSettings.EnableUserSignup = true
 		helper.service.CreateHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.User]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -502,6 +504,7 @@ func TestService_CreateHandler(T *testing.T) {
 
 		helper.service.authSettings.EnableUserSignup = true
 		helper.service.CreateHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.User]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -1367,6 +1370,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		helper.exampleUser.TwoFactorSecretVerifiedAt = nil
 
 		helper.service.TOTPSecretVerificationHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.User]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -2050,6 +2054,7 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.UpdatePasswordHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.User]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -2072,6 +2077,7 @@ func TestService_UpdatePasswordHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.UpdatePasswordHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.User]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -2773,6 +2779,7 @@ func TestService_RequestUsernameReminderHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.RequestUsernameReminderHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.User]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -2795,6 +2802,7 @@ func TestService_RequestUsernameReminderHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.RequestUsernameReminderHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.User]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -2987,6 +2995,7 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.CreatePasswordResetTokenHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.User]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -3009,6 +3018,7 @@ func TestService_CreatePasswordResetTokenHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.CreatePasswordResetTokenHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.User]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -3335,6 +3345,7 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.PasswordResetTokenRedemptionHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.User]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -3356,6 +3367,7 @@ func TestService_PasswordResetTokenRedemptionHandler(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, helper.req)
 		helper.service.PasswordResetTokenRedemptionHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.User]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -3835,6 +3847,7 @@ func TestService_VerifyUserEmailAddressHandler(T *testing.T) {
 		helper := newTestHelper(t)
 
 		helper.service.VerifyUserEmailAddressHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.User]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -3857,6 +3870,7 @@ func TestService_VerifyUserEmailAddressHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.VerifyUserEmailAddressHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.User]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))

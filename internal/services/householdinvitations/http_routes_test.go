@@ -75,6 +75,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.InviteMemberHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -96,6 +97,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		}
 
 		helper.service.InviteMemberHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -118,6 +120,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.InviteMemberHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -148,6 +151,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.secretGenerator = sg
 
 		helper.service.InviteMemberHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -188,6 +192,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.userDataManager = udm
 
 		helper.service.InviteMemberHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -236,6 +241,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.householdInvitationDataManager = dbManager
 
 		helper.service.InviteMemberHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -292,6 +298,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.InviteMemberHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -350,6 +357,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.InviteMemberHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -408,6 +416,7 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.InviteMemberHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -438,6 +447,7 @@ func Test_service_ReadHandler(T *testing.T) {
 		helper.service.householdInvitationDataManager = wd
 
 		helper.service.ReadHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -479,6 +489,7 @@ func Test_service_ReadHandler(T *testing.T) {
 		helper.service.householdInvitationDataManager = wd
 
 		helper.service.ReadHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -503,6 +514,7 @@ func Test_service_ReadHandler(T *testing.T) {
 		helper.service.householdInvitationDataManager = wd
 
 		helper.service.ReadHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -532,6 +544,7 @@ func Test_service_InboundInvitesHandler(T *testing.T) {
 		helper.service.householdInvitationDataManager = wd
 
 		helper.service.InboundInvitesHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -550,6 +563,7 @@ func Test_service_InboundInvitesHandler(T *testing.T) {
 		}
 
 		helper.service.InboundInvitesHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -572,6 +586,7 @@ func Test_service_InboundInvitesHandler(T *testing.T) {
 		helper.service.householdInvitationDataManager = wd
 
 		helper.service.InboundInvitesHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -601,6 +616,7 @@ func Test_service_OutboundInvitesHandler(T *testing.T) {
 		helper.service.householdInvitationDataManager = wd
 
 		helper.service.OutboundInvitesHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -619,6 +635,7 @@ func Test_service_OutboundInvitesHandler(T *testing.T) {
 		}
 
 		helper.service.OutboundInvitesHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -641,6 +658,7 @@ func Test_service_OutboundInvitesHandler(T *testing.T) {
 		helper.service.householdInvitationDataManager = wd
 
 		helper.service.OutboundInvitesHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -694,6 +712,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.AcceptInviteHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -711,6 +730,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		}
 
 		helper.service.AcceptInviteHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -730,6 +750,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.AcceptInviteHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -752,6 +773,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.AcceptInviteHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -783,6 +805,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		helper.service.householdInvitationDataManager = dataManager
 
 		helper.service.AcceptInviteHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -816,6 +839,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		helper.service.householdInvitationDataManager = dataManager
 
 		helper.service.AcceptInviteHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -857,6 +881,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		helper.service.householdInvitationDataManager = dataManager
 
 		helper.service.AcceptInviteHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -906,6 +931,7 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.AcceptInviteHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -957,6 +983,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.CancelInviteHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -980,6 +1007,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.CancelInviteHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -999,6 +1027,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.CancelInviteHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -1030,6 +1059,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		helper.service.householdInvitationDataManager = dataManager
 
 		helper.service.CancelInviteHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -1063,6 +1093,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		helper.service.householdInvitationDataManager = dataManager
 
 		helper.service.CancelInviteHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -1081,6 +1112,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		}
 
 		helper.service.CancelInviteHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -1119,6 +1151,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		helper.service.householdInvitationDataManager = dataManager
 
 		helper.service.CancelInviteHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -1167,6 +1200,7 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.CancelInviteHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -1218,6 +1252,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.RejectInviteHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -1241,6 +1276,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.RejectInviteHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -1272,6 +1308,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		helper.service.householdInvitationDataManager = dataManager
 
 		helper.service.RejectInviteHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -1306,6 +1343,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		helper.service.householdInvitationDataManager = dataManager
 
 		helper.service.RejectInviteHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -1324,6 +1362,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		}
 
 		helper.service.RejectInviteHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -1343,6 +1382,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.RejectInviteHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -1381,6 +1421,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		helper.service.householdInvitationDataManager = dataManager
 
 		helper.service.RejectInviteHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -1429,6 +1470,7 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.RejectInviteHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 		var actual *types.APIResponse[*types.HouseholdInvitation]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))

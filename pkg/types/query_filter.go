@@ -21,6 +21,8 @@ const (
 
 	// SearchQueryKey is the query param key to find search queries in requests.
 	SearchQueryKey = "q"
+	// SearchWithDatabaseQueryKey is the query param key to find search queries in requests.
+	SearchWithDatabaseQueryKey = "useDB"
 	// LimitQueryKey is the query param key to specify a limit in a query.
 	LimitQueryKey = "limit"
 

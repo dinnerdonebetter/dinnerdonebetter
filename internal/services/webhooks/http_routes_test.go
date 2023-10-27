@@ -56,6 +56,7 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.CreateWebhookHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.Webhook]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -95,6 +96,7 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 		helper := newTestHelper(t)
 
 		helper.service.CreateWebhookHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.Webhook]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -117,6 +119,7 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.CreateWebhookHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.Webhook]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -147,6 +150,7 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 		helper.service.webhookDataManager = dbManager
 
 		helper.service.CreateWebhookHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.Webhook]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -187,6 +191,7 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.CreateWebhookHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
 		var actual *types.APIResponse[*types.Webhook]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -217,6 +222,7 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 		helper.service.webhookDataManager = wd
 
 		helper.service.ListWebhooksHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.Webhook]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -256,6 +262,7 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 		helper.service.webhookDataManager = wd
 
 		helper.service.ListWebhooksHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.Webhook]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -280,6 +287,7 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 		helper.service.webhookDataManager = wd
 
 		helper.service.ListWebhooksHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[[]*types.Webhook]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -308,6 +316,7 @@ func TestWebhooksService_ReadWebhookHandler(T *testing.T) {
 		helper.service.webhookDataManager = wd
 
 		helper.service.ReadWebhookHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.Webhook]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -347,6 +356,7 @@ func TestWebhooksService_ReadWebhookHandler(T *testing.T) {
 		helper.service.webhookDataManager = wd
 
 		helper.service.ReadWebhookHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.Webhook]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -371,6 +381,7 @@ func TestWebhooksService_ReadWebhookHandler(T *testing.T) {
 		helper.service.webhookDataManager = wd
 
 		helper.service.ReadWebhookHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.Webhook]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -414,6 +425,7 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.Webhook]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -452,6 +464,7 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 		helper.service.webhookDataManager = wd
 
 		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.Webhook]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -476,6 +489,7 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 		helper.service.webhookDataManager = wd
 
 		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 		var actual *types.APIResponse[*types.Webhook]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -507,6 +521,7 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 		helper.service.webhookDataManager = dataManager
 
 		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.Webhook]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -546,6 +561,7 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[*types.Webhook]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))

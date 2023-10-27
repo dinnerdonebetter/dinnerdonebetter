@@ -63,6 +63,10 @@ func TestRecipesService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.Recipe]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleRecipe)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -79,6 +83,7 @@ func TestRecipesService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.CreateHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.Recipe]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -101,6 +106,7 @@ func TestRecipesService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.CreateHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.Recipe]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -199,6 +205,10 @@ func TestRecipesService_CreateHandler(T *testing.T) {
 		helper.service.CreateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.Recipe]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleRecipe)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -226,6 +236,10 @@ func TestRecipesService_ReadHandler(T *testing.T) {
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.Recipe]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleRecipe)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, recipeDataManager)
 	})
@@ -321,6 +335,10 @@ func TestRecipesService_ListHandler(T *testing.T) {
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.Recipe]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, exampleRecipeList.Data)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, recipeDataManager)
 	})
@@ -356,6 +374,10 @@ func TestRecipesService_ListHandler(T *testing.T) {
 		helper.service.ListHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.Recipe]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, recipeDataManager)
 	})
@@ -409,6 +431,10 @@ func TestRecipesService_SearchHandler(T *testing.T) {
 		helper.service.SearchHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.Recipe]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, exampleRecipeList.Data)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, recipeDataManager)
 	})
@@ -452,6 +478,10 @@ func TestRecipesService_SearchHandler(T *testing.T) {
 		helper.service.SearchHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.Recipe]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, exampleRecipeList.Data)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, recipeDataManager, searchIndex)
 	})
@@ -489,6 +519,10 @@ func TestRecipesService_SearchHandler(T *testing.T) {
 		helper.service.SearchHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.Recipe]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, recipeDataManager)
 	})
@@ -562,6 +596,10 @@ func TestRecipesService_UpdateHandler(T *testing.T) {
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.Recipe]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleRecipe)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -581,6 +619,7 @@ func TestRecipesService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.UpdateHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.Recipe]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -615,6 +654,7 @@ func TestRecipesService_UpdateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.UpdateHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 		var actual *types.APIResponse[*types.Recipe]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
@@ -766,6 +806,10 @@ func TestRecipesService_UpdateHandler(T *testing.T) {
 		helper.service.UpdateHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.Recipe]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleRecipe)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -805,6 +849,9 @@ func TestRecipesService_ArchiveHandler(T *testing.T) {
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.Recipe]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -934,6 +981,9 @@ func TestRecipesService_ArchiveHandler(T *testing.T) {
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.Recipe]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -1090,6 +1140,9 @@ func TestRecipesService_EstimatedPrepStepsHandler(T *testing.T) {
 		helper.service.EstimatedPrepStepsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.MealPlanTaskDatabaseCreationEstimate]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, recipeDataManager, mockGrapher)
 	})
@@ -1227,11 +1280,23 @@ func TestRecipesService_CloneHandler(T *testing.T) {
 		).Return(helper.exampleRecipe, nil)
 		helper.service.recipeDataManager = recipeDataManager
 
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
+		).Return(nil)
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
 		helper.service.CloneHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.Recipe]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleRecipe)
+		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, recipeDataManager)
+		mock.AssertExpectationsForObjects(t, recipeDataManager, dataChangesPublisher)
 	})
 
 	T.Run("with error getting recipe", func(t *testing.T) {
@@ -1294,5 +1359,48 @@ func TestRecipesService_CloneHandler(T *testing.T) {
 		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, recipeDataManager)
+	})
+
+	T.Run("with error publishing data change event", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.recipeIDFetcher = func(_ *http.Request) string {
+			return helper.exampleRecipe.ID
+		}
+
+		recipeDataManager := &mocktypes.RecipeDataManagerMock{}
+		recipeDataManager.On(
+			"GetRecipe",
+			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
+		).Return(helper.exampleRecipe, nil)
+
+		recipeDataManager.On(
+			"CreateRecipe",
+			testutils.ContextMatcher,
+			mock.MatchedBy(func(recipe *types.RecipeDatabaseCreationInput) bool {
+				return assert.NotEqual(t, helper.exampleRecipe.ID, recipe.ID)
+			}),
+		).Return(helper.exampleRecipe, nil)
+		helper.service.recipeDataManager = recipeDataManager
+
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
+		).Return(errors.New("blah"))
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
+		helper.service.CloneHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.Recipe]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleRecipe)
+		assert.NoError(t, actual.Error.AsError())
+
+		mock.AssertExpectationsForObjects(t, recipeDataManager, dataChangesPublisher)
 	})
 }
