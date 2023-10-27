@@ -283,9 +283,9 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (http.Server, error)
 	if err != nil {
 		return nil, err
 	}
-	validmeasurementconversionsConfig := &servicesConfig.ValidMeasurementUnitConversions
+	validmeasurementunitconversionsConfig := &servicesConfig.ValidMeasurementUnitConversions
 	validMeasurementUnitConversionDataManager := database.ProvideValidMeasurementUnitConversionDataManager(dataManager)
-	validMeasurementUnitConversionDataService, err := validmeasurementunitconversions.ProvideService(ctx, logger, validmeasurementconversionsConfig, validMeasurementUnitConversionDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
+	validMeasurementUnitConversionDataService, err := validmeasurementunitconversions.ProvideService(ctx, logger, validmeasurementunitconversionsConfig, validMeasurementUnitConversionDataManager, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider)
 	if err != nil {
 		return nil, err
 	}
