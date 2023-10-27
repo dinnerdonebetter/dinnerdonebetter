@@ -68,6 +68,8 @@ type (
 	}
 
 	NamedID struct {
+		_ struct{} `json:"-"`
+
 		ID   string `json:"id,omitempty"`
 		Name string `json:"name,omitempty"`
 	}
