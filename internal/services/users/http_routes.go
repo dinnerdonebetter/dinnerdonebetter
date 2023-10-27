@@ -563,9 +563,9 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 
 	logger = logger.WithValue(keys.UserIDKey, input.UserID)
 
-	user, fetchUserErr := s.userDataManager.GetUserWithUnverifiedTwoFactorSecret(ctx, input.UserID)
-	if fetchUserErr != nil {
-		observability.AcknowledgeError(fetchUserErr, logger, span, "fetching user to verify two factor secret")
+	user, err := s.userDataManager.GetUserWithUnverifiedTwoFactorSecret(ctx, input.UserID)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "fetching user to verify two factor secret")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -584,26 +584,33 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 		return
 	}
 
+	logger.WithValue("user.TwoFactorSecret", user.TwoFactorSecret).Info("validating token")
+
 	totpValid := totp.Validate(input.TOTPToken, user.TwoFactorSecret)
 	if !totpValid {
-		errRes := types.NewAPIErrorResponse("totp invalid", types.ErrTalkingToDatabase, responseDetails)
+		logger.Info("invalid totp token")
+		errRes := types.NewAPIErrorResponse("totp invalid", types.ErrValidatingRequestInput, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
-	if err := s.userDataManager.MarkUserTwoFactorSecretAsVerified(ctx, user.ID); err != nil {
+	logger.Info("token validated")
+
+	if err = s.userDataManager.MarkUserTwoFactorSecretAsVerified(ctx, user.ID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "verifying user two factor secret")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
+	logger.Info("two factor secret marked as verified")
+
 	dcm := &types.DataChangeMessage{
 		EventType: types.TwoFactorSecretVerifiedCustomerEventType,
 		UserID:    user.ID,
 	}
 
-	if err := s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
@@ -727,6 +734,8 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 		TwoFactorSecret: user.TwoFactorSecret,
 		TwoFactorQRCode: s.buildQRCode(ctx, user.Username, user.TwoFactorSecret),
 	}
+
+	logger.WithValue("user.TwoFactorSecret", user.TwoFactorSecret).Info("cycled")
 
 	responseValue := &types.APIResponse[*types.TOTPSecretRefreshResponse]{
 		Details: responseDetails,

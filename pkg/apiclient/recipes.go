@@ -245,7 +245,7 @@ func (c *Client) UploadRecipeMedia(ctx context.Context, files map[string][]byte,
 		return observability.PrepareError(err, span, "building media upload request")
 	}
 
-	var apiResponse *types.APIResponse[*types.RecipeMedia]
+	var apiResponse *types.APIResponse[[]*types.RecipeMedia]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareError(err, span, "uploading media")
 	}

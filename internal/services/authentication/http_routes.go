@@ -497,7 +497,12 @@ func (s *service) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *htt
 	logger.Info("successfully changed active session household")
 	http.SetCookie(res, cookie)
 
-	res.WriteHeader(http.StatusAccepted)
+	responseValue := &types.APIResponse[*types.ValidIngredientGroup]{
+		Details: responseDetails,
+	}
+
+	// let everybody go home.
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // EndSessionHandler is our logout route.
