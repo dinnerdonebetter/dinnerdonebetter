@@ -51,7 +51,6 @@ func (s *householdsTestSuite) SetupTest() {
 	s.exampleHouseholdResponse = &types.APIResponse[*types.Household]{
 		Data: s.exampleHousehold,
 	}
-
 }
 
 func (s *householdsTestSuite) TestClient_SwitchActiveHousehold() {

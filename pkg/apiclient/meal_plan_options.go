@@ -39,12 +39,16 @@ func (c *Client) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanEven
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get meal plan option request")
 	}
 
-	var mealPlanOption *types.MealPlanOption
-	if err = c.fetchAndUnmarshal(ctx, req, &mealPlanOption); err != nil {
+	var apiResponse *types.APIResponse[*types.MealPlanOption]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving meal plan option")
 	}
 
-	return mealPlanOption, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // GetMealPlanOptions retrieves a list of meal plan options.
@@ -72,12 +76,21 @@ func (c *Client) GetMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEve
 		return nil, observability.PrepareAndLogError(err, logger, span, "building meal plan options list request")
 	}
 
-	var mealPlanOptions *types.QueryFilteredResult[types.MealPlanOption]
-	if err = c.fetchAndUnmarshal(ctx, req, &mealPlanOptions); err != nil {
+	var apiResponse *types.APIResponse[[]*types.MealPlanOption]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving meal plan options")
 	}
 
-	return mealPlanOptions, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	response := &types.QueryFilteredResult[types.MealPlanOption]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
+	}
+
+	return response, nil
 }
 
 // CreateMealPlanOption creates a meal plan option.
@@ -112,12 +125,16 @@ func (c *Client) CreateMealPlanOption(ctx context.Context, mealPlanID, mealPlanE
 		return nil, observability.PrepareAndLogError(err, logger, span, "building create meal plan option request")
 	}
 
-	var mealPlanOption *types.MealPlanOption
-	if err = c.fetchAndUnmarshal(ctx, req, &mealPlanOption); err != nil {
+	var apiResponse *types.APIResponse[*types.MealPlanOption]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan option")
 	}
 
-	return mealPlanOption, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // UpdateMealPlanOption updates a meal plan option.
@@ -144,8 +161,13 @@ func (c *Client) UpdateMealPlanOption(ctx context.Context, mealPlanID string, me
 		return observability.PrepareAndLogError(err, logger, span, "building update meal plan option request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, &mealPlanOption); err != nil {
+	var apiResponse *types.APIResponse[*types.MealPlanOption]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating meal plan option %s", mealPlanOption.ID)
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -181,8 +203,13 @@ func (c *Client) ArchiveMealPlanOption(ctx context.Context, mealPlanID, mealPlan
 		return observability.PrepareAndLogError(err, logger, span, "building archive meal plan option request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.MealPlanOption]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal plan option %s", mealPlanOptionID)
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil

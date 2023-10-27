@@ -48,7 +48,6 @@ func (s *recipeStepIngredientsBaseSuite) SetupTest() {
 		Data:       exampleRecipeStepIngredientList.Data,
 		Pagination: &exampleRecipeStepIngredientList.Pagination,
 	}
-
 }
 
 type recipeStepIngredientsTestSuite struct {

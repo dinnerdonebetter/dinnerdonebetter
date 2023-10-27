@@ -19,13 +19,12 @@ func (c *Client) UserStatus(ctx context.Context) (*types.UserStatusResponse, err
 		return nil, observability.PrepareError(err, span, "building user status request")
 	}
 
-	var output *types.UserStatusResponse
-
-	if err = c.fetchAndUnmarshal(ctx, req, &output); err != nil {
+	var apiResponse *types.APIResponse[*types.UserStatusResponse]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "retrieving user status")
 	}
 
-	return output, nil
+	return apiResponse.Data, nil
 }
 
 // BeginSession fetches a login cookie.

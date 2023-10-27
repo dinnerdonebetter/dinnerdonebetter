@@ -48,7 +48,6 @@ func (s *recipeStepVesselsBaseSuite) SetupTest() {
 		Data:       s.exampleRecipeStepVesselsList,
 		Pagination: &exampleRecipeStepVesselsList.Pagination,
 	}
-
 }
 
 type recipeStepVesselsTestSuite struct {

@@ -22,10 +22,13 @@ func TestMealPlanOptions(t *testing.T) {
 
 type mealPlanOptionsBaseSuite struct {
 	suite.Suite
-	ctx                    context.Context
-	exampleMealPlanOption  *types.MealPlanOption
-	exampleMealPlanEventID string
-	exampleMealPlanID      string
+	ctx                               context.Context
+	exampleMealPlanOption             *types.MealPlanOption
+	exampleMealPlanOptionResponse     *types.APIResponse[*types.MealPlanOption]
+	exampleMealPlanOptionListResponse *types.APIResponse[[]*types.MealPlanOption]
+	exampleMealPlanEventID            string
+	exampleMealPlanID                 string
+	exampleMealPlanOptionList         []*types.MealPlanOption
 }
 
 var _ suite.SetupTestSuite = (*mealPlanOptionsBaseSuite)(nil)
@@ -36,6 +39,15 @@ func (s *mealPlanOptionsBaseSuite) SetupTest() {
 	s.exampleMealPlanEventID = fakes.BuildFakeID()
 	s.exampleMealPlanOption = fakes.BuildFakeMealPlanOption()
 	s.exampleMealPlanOption.BelongsToMealPlanEvent = s.exampleMealPlanID
+	s.exampleMealPlanOptionResponse = &types.APIResponse[*types.MealPlanOption]{
+		Data: s.exampleMealPlanOption,
+	}
+	exampleMealPlanOptionList := fakes.BuildFakeMealPlanOptionList()
+	s.exampleMealPlanOptionList = exampleMealPlanOptionList.Data
+	s.exampleMealPlanOptionListResponse = &types.APIResponse[[]*types.MealPlanOption]{
+		Data:       s.exampleMealPlanOptionList,
+		Pagination: &exampleMealPlanOptionList.Pagination,
+	}
 }
 
 type mealPlanOptionsTestSuite struct {
@@ -50,7 +62,7 @@ func (s *mealPlanOptionsTestSuite) TestClient_GetMealPlanOption() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleMealPlanID, s.exampleMealPlanEventID, s.exampleMealPlanOption.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanOption)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanOptionResponse)
 		actual, err := c.GetMealPlanOption(s.ctx, s.exampleMealPlanID, s.exampleMealPlanEventID, s.exampleMealPlanOption.ID)
 
 		require.NotNil(t, actual)
@@ -103,26 +115,22 @@ func (s *mealPlanOptionsTestSuite) TestClient_GetMealPlanOption() {
 func (s *mealPlanOptionsTestSuite) TestClient_GetMealPlanOptions() {
 	const expectedPath = "/api/v1/meal_plans/%s/events/%s/options"
 
+	filter := (*types.QueryFilter)(nil)
+
 	s.Run("standard", func() {
 		t := s.T()
 
-		filter := (*types.QueryFilter)(nil)
-
-		exampleMealPlanOptionList := fakes.BuildFakeMealPlanOptionList()
-
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, s.exampleMealPlanID, s.exampleMealPlanEventID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleMealPlanOptionList)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanOptionListResponse)
 		actual, err := c.GetMealPlanOptions(s.ctx, s.exampleMealPlanID, s.exampleMealPlanEventID, filter)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleMealPlanOptionList, actual)
+		assert.Equal(t, s.exampleMealPlanOptionList, actual.Data)
 	})
 
 	s.Run("with invalid meal plan ID", func() {
 		t := s.T()
-
-		filter := (*types.QueryFilter)(nil)
 
 		c, _ := buildSimpleTestClient(t)
 		actual, err := c.GetMealPlanOptions(s.ctx, "", s.exampleMealPlanEventID, filter)
@@ -134,8 +142,6 @@ func (s *mealPlanOptionsTestSuite) TestClient_GetMealPlanOptions() {
 	s.Run("with error building request", func() {
 		t := s.T()
 
-		filter := (*types.QueryFilter)(nil)
-
 		c := buildTestClientWithInvalidURL(t)
 		actual, err := c.GetMealPlanOptions(s.ctx, s.exampleMealPlanID, s.exampleMealPlanEventID, filter)
 
@@ -145,8 +151,6 @@ func (s *mealPlanOptionsTestSuite) TestClient_GetMealPlanOptions() {
 
 	s.Run("with error executing request", func() {
 		t := s.T()
-
-		filter := (*types.QueryFilter)(nil)
 
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, s.exampleMealPlanID, s.exampleMealPlanEventID)
 		c := buildTestClientWithInvalidResponse(t, spec)
@@ -166,7 +170,7 @@ func (s *mealPlanOptionsTestSuite) TestClient_CreateMealPlanOption() {
 		exampleInput := fakes.BuildFakeMealPlanOptionCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, s.exampleMealPlanID, s.exampleMealPlanEventID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanOption)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanOptionResponse)
 
 		actual, err := c.CreateMealPlanOption(s.ctx, s.exampleMealPlanID, s.exampleMealPlanEventID, exampleInput)
 		assert.NoError(t, err)
@@ -225,7 +229,7 @@ func (s *mealPlanOptionsTestSuite) TestClient_UpdateMealPlanOption() {
 		t := s.T()
 
 		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, s.exampleMealPlanID, s.exampleMealPlanOption.BelongsToMealPlanEvent, s.exampleMealPlanOption.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanOption)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanOptionResponse)
 
 		err := c.UpdateMealPlanOption(s.ctx, s.exampleMealPlanID, s.exampleMealPlanOption)
 		assert.NoError(t, err)
@@ -266,7 +270,7 @@ func (s *mealPlanOptionsTestSuite) TestClient_ArchiveMealPlanOption() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, s.exampleMealPlanID, s.exampleMealPlanEventID, s.exampleMealPlanOption.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanOptionResponse)
 
 		err := c.ArchiveMealPlanOption(s.ctx, s.exampleMealPlanID, s.exampleMealPlanEventID, s.exampleMealPlanOption.ID)
 		assert.NoError(t, err)

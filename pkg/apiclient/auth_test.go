@@ -56,8 +56,12 @@ func (s *authTestSuite) TestClient_UserStatus() {
 			AccountStatusExplanation: s.exampleUser.AccountStatusExplanation,
 			UserIsAuthenticated:      true,
 		}
+		expectedResponse := &types.APIResponse[*types.UserStatusResponse]{
+			Data: expected,
+		}
+
 		spec := newRequestSpec(false, http.MethodGet, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
+		c, _ := buildTestClientWithJSONResponse(t, spec, expectedResponse)
 
 		actual, err := c.UserStatus(s.ctx)
 		assert.NoError(t, err)

@@ -47,7 +47,6 @@ func (s *recipeStepsBaseSuite) SetupTest() {
 		Data:       s.exampleRecipeStepList,
 		Pagination: &exampleList.Pagination,
 	}
-
 }
 
 type recipeStepsTestSuite struct {

@@ -27,12 +27,16 @@ func (c *Client) GetHouseholdInstrumentOwnership(ctx context.Context, validInstr
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get household instrument ownership request")
 	}
 
-	var validInstrument *types.HouseholdInstrumentOwnership
-	if err = c.fetchAndUnmarshal(ctx, req, &validInstrument); err != nil {
+	var apiResponse *types.APIResponse[*types.HouseholdInstrumentOwnership]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving household instrument ownership")
 	}
 
-	return validInstrument, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // GetHouseholdInstrumentOwnerships retrieves a list of household instrument ownerships.
@@ -49,12 +53,21 @@ func (c *Client) GetHouseholdInstrumentOwnerships(ctx context.Context, filter *t
 		return nil, observability.PrepareAndLogError(err, logger, span, "building household instrument ownerships list request")
 	}
 
-	var validInstruments *types.QueryFilteredResult[types.HouseholdInstrumentOwnership]
-	if err = c.fetchAndUnmarshal(ctx, req, &validInstruments); err != nil {
+	var apiResponse *types.APIResponse[[]*types.HouseholdInstrumentOwnership]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving household instrument ownerships")
 	}
 
-	return validInstruments, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	response := &types.QueryFilteredResult[types.HouseholdInstrumentOwnership]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
+	}
+
+	return response, nil
 }
 
 // CreateHouseholdInstrumentOwnership creates a household instrument ownership.
@@ -77,59 +90,73 @@ func (c *Client) CreateHouseholdInstrumentOwnership(ctx context.Context, input *
 		return nil, observability.PrepareAndLogError(err, logger, span, "building create household instrument ownership request")
 	}
 
-	var validInstrument *types.HouseholdInstrumentOwnership
-	if err = c.fetchAndUnmarshal(ctx, req, &validInstrument); err != nil {
+	var apiResponse *types.APIResponse[*types.HouseholdInstrumentOwnership]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating household instrument ownership")
 	}
 
-	return validInstrument, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // UpdateHouseholdInstrumentOwnership updates a household instrument ownership.
-func (c *Client) UpdateHouseholdInstrumentOwnership(ctx context.Context, validInstrument *types.HouseholdInstrumentOwnership) error {
+func (c *Client) UpdateHouseholdInstrumentOwnership(ctx context.Context, instrumentOwnership *types.HouseholdInstrumentOwnership) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
 
-	if validInstrument == nil {
+	if instrumentOwnership == nil {
 		return ErrNilInputProvided
 	}
-	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, validInstrument.ID)
-	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, validInstrument.ID)
+	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, instrumentOwnership.ID)
+	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, instrumentOwnership.ID)
 
-	req, err := c.requestBuilder.BuildUpdateHouseholdInstrumentOwnershipRequest(ctx, validInstrument)
+	req, err := c.requestBuilder.BuildUpdateHouseholdInstrumentOwnershipRequest(ctx, instrumentOwnership)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "building update household instrument ownership request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, &validInstrument); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "updating household instrument ownership %s", validInstrument.ID)
+	var apiResponse *types.APIResponse[*types.HouseholdInstrumentOwnership]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "updating household instrument ownership %s", instrumentOwnership.ID)
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
 }
 
 // ArchiveHouseholdInstrumentOwnership archives a household instrument ownership.
-func (c *Client) ArchiveHouseholdInstrumentOwnership(ctx context.Context, validInstrumentID string) error {
+func (c *Client) ArchiveHouseholdInstrumentOwnership(ctx context.Context, householdInstrumentOwnershipID string) error {
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := c.logger.Clone()
 
-	if validInstrumentID == "" {
+	if householdInstrumentOwnershipID == "" {
 		return ErrInvalidIDProvided
 	}
-	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, validInstrumentID)
-	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, validInstrumentID)
+	logger = logger.WithValue(keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
+	tracing.AttachToSpan(span, keys.HouseholdInstrumentOwnershipIDKey, householdInstrumentOwnershipID)
 
-	req, err := c.requestBuilder.BuildArchiveHouseholdInstrumentOwnershipRequest(ctx, validInstrumentID)
+	req, err := c.requestBuilder.BuildArchiveHouseholdInstrumentOwnershipRequest(ctx, householdInstrumentOwnershipID)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "building archive household instrument ownership request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving household instrument ownership %s", validInstrumentID)
+	var apiResponse *types.APIResponse[*types.HouseholdInstrumentOwnership]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving household instrument ownership %s", householdInstrumentOwnershipID)
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil

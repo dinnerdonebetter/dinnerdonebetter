@@ -45,7 +45,6 @@ func (s *recipeRatingsBaseSuite) SetupTest() {
 		Data:       s.exampleRecipeRatingList,
 		Pagination: &exampleList.Pagination,
 	}
-
 }
 
 type recipeRatingsTestSuite struct {
