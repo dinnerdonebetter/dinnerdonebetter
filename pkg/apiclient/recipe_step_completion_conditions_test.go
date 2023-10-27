@@ -40,7 +40,6 @@ func (s *recipeStepCompletionConditionsBaseSuite) SetupTest() {
 
 type recipeStepCompletionConditionsTestSuite struct {
 	suite.Suite
-
 	recipeStepCompletionConditionsBaseSuite
 }
 

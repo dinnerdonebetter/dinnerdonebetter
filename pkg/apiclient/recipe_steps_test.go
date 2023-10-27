@@ -52,7 +52,6 @@ func (s *recipeStepsBaseSuite) SetupTest() {
 
 type recipeStepsTestSuite struct {
 	suite.Suite
-
 	recipeStepsBaseSuite
 }
 

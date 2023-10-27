@@ -88,7 +88,12 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, recipeStepInstrument, http.StatusCreated)
+	responseValue := &types.APIResponse[*types.RecipeStepInstrument]{
+		Details: responseDetails,
+		Data:    recipeStepInstrument,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a recipe step instrument.
@@ -145,8 +150,13 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	logger.WithValue("response", x).Info("responding with fetched recipe step instrument")
 
+	responseValue := &types.APIResponse[*types.RecipeStepInstrument]{
+		Details: responseDetails,
+		Data:    x,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ListHandler is our list route.
@@ -198,8 +208,14 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.RecipeStepInstrument]{
+		Details:    responseDetails,
+		Data:       recipeStepInstruments.Data,
+		Pagination: &recipeStepInstruments.Pagination,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, recipeStepInstruments)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // UpdateHandler returns a handler that updates a recipe step instrument.
@@ -291,8 +307,13 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
+	responseValue := &types.APIResponse[*types.RecipeStepInstrument]{
+		Details: responseDetails,
+		Data:    recipeStepInstrument,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, recipeStepInstrument)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ArchiveHandler returns a handler that archives a recipe step instrument.

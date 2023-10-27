@@ -48,7 +48,6 @@ func (s *validInstrumentsBaseSuite) SetupTest() {
 
 type validInstrumentsTestSuite struct {
 	suite.Suite
-
 	validInstrumentsBaseSuite
 }
 

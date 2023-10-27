@@ -48,7 +48,6 @@ func (s *serviceSettingConfigurationsBaseSuite) SetupTest() {
 
 type serviceSettingConfigurationsTestSuite struct {
 	suite.Suite
-
 	serviceSettingConfigurationsBaseSuite
 }
 

@@ -36,7 +36,6 @@ func (s *householdInstrumentOwnershipsBaseSuite) SetupTest() {
 
 type householdInstrumentOwnershipsTestSuite struct {
 	suite.Suite
-
 	householdInstrumentOwnershipsBaseSuite
 }
 

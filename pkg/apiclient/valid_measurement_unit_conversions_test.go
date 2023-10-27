@@ -51,7 +51,6 @@ func (s *validMeasurementUnitConversionsBaseSuite) SetupTest() {
 
 type validMeasurementUnitConversionsTestSuite struct {
 	suite.Suite
-
 	validMeasurementUnitConversionsBaseSuite
 }
 

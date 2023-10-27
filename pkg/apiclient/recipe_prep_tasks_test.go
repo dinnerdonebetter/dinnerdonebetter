@@ -38,7 +38,6 @@ func (s *recipePrepTasksBaseSuite) SetupTest() {
 
 type recipePrepTasksTestSuite struct {
 	suite.Suite
-
 	recipePrepTasksBaseSuite
 }
 

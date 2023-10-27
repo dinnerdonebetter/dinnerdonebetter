@@ -53,7 +53,6 @@ func (s *recipeStepVesselsBaseSuite) SetupTest() {
 
 type recipeStepVesselsTestSuite struct {
 	suite.Suite
-
 	recipeStepVesselsBaseSuite
 }
 

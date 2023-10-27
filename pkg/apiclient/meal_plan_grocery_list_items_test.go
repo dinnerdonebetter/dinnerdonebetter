@@ -37,7 +37,6 @@ func (s *mealPlanGroceryListItemsBaseSuite) SetupTest() {
 
 type mealPlanGroceryListItemsTestSuite struct {
 	suite.Suite
-
 	mealPlanGroceryListItemsBaseSuite
 }
 

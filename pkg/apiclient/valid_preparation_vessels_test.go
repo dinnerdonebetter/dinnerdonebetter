@@ -47,7 +47,6 @@ func (s *validPreparationVesselsBaseSuite) SetupTest() {
 
 type validPreparationVesselsTestSuite struct {
 	suite.Suite
-
 	validPreparationVesselsBaseSuite
 }
 

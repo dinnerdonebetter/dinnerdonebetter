@@ -40,7 +40,6 @@ func (s *recipeStepIngredientsBaseSuite) SetupTest() {
 
 type recipeStepIngredientsTestSuite struct {
 	suite.Suite
-
 	recipeStepIngredientsBaseSuite
 }
 

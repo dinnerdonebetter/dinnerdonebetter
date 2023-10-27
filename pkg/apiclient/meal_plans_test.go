@@ -36,7 +36,6 @@ func (s *mealPlansBaseSuite) SetupTest() {
 
 type mealPlansTestSuite struct {
 	suite.Suite
-
 	mealPlansBaseSuite
 }
 

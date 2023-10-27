@@ -49,7 +49,6 @@ func (s *validPreparationInstrumentsBaseSuite) SetupTest() {
 
 type validPreparationInstrumentsTestSuite struct {
 	suite.Suite
-
 	validPreparationInstrumentsBaseSuite
 }
 

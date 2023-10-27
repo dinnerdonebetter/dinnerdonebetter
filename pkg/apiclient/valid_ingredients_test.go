@@ -47,7 +47,6 @@ func (s *validIngredientsBaseSuite) SetupTest() {
 
 type validIngredientsTestSuite struct {
 	suite.Suite
-
 	validIngredientsBaseSuite
 }
 

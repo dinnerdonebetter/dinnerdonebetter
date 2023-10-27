@@ -74,7 +74,6 @@ func (s *usersBaseSuite) SetupTest() {
 
 type usersTestSuite struct {
 	suite.Suite
-
 	usersBaseSuite
 }
 

@@ -40,7 +40,6 @@ func (s *mealPlanOptionsBaseSuite) SetupTest() {
 
 type mealPlanOptionsTestSuite struct {
 	suite.Suite
-
 	mealPlanOptionsBaseSuite
 }
 
