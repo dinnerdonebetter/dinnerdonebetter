@@ -79,5 +79,5 @@ func (s *service) UserAccountStatusChangeHandler(res http.ResponseWriter, req *h
 		return
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, nil, http.StatusAccepted)
+	res.WriteHeader(http.StatusAccepted)
 }

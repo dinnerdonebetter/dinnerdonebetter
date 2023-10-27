@@ -130,18 +130,21 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 		if err != nil {
 			if errors.Is(err, authentication.ErrInvalidTOTPToken) {
 				observability.AcknowledgeError(err, logger, span, "validating TOTP token")
-				s.encoderDecoder.EncodeErrorResponse(ctx, res, "login was invalid", http.StatusUnauthorized)
+				errRes := types.NewAPIErrorResponse("login was invalid", types.ErrValidatingRequestInput, responseDetails)
+				s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 				return
 			}
 
 			if errors.Is(err, authentication.ErrPasswordDoesNotMatch) {
 				observability.AcknowledgeError(err, logger, span, "validating password")
-				s.encoderDecoder.EncodeErrorResponse(ctx, res, "login was invalid", http.StatusUnauthorized)
+				errRes := types.NewAPIErrorResponse("login was invalid", types.ErrValidatingRequestInput, responseDetails)
+				s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 				return
 			}
 
 			observability.AcknowledgeError(err, logger, span, "validating login")
-			s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, http.StatusInternalServerError)
+			errRes := types.NewAPIErrorResponse(staticError, types.ErrValidatingRequestInput, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 			return
 		} else if !loginValid {
 			logger.Debug("login was invalid")
@@ -151,7 +154,8 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 
 		if loginValid && user.TwoFactorSecretVerifiedAt != nil && loginData.TOTPToken == "" {
 			logger.Debug("user with two factor verification active attempted to log in without providing TOTP")
-			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, "TOTP required", http.StatusResetContent)
+			errRes := types.NewAPIErrorResponse("TOTP required", types.ErrValidatingRequestInput, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusResetContent)
 			return
 		}
 
@@ -166,7 +170,8 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 		responseCode, err := s.postLogin(ctx, user, defaultHouseholdID, req, res)
 		if err != nil {
 			observability.AcknowledgeError(err, logger, span, "handling login status")
-			s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, responseCode)
+			errRes := types.NewAPIErrorResponse(staticError, types.ErrTalkingToDatabase, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, responseCode)
 			return
 		}
 
@@ -178,7 +183,12 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 			AccountStatusExplanation: user.AccountStatusExplanation,
 		}
 
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, statusResponse, responseCode)
+		responseValue := &types.APIResponse[*types.UserStatusResponse]{
+			Details: responseDetails,
+			Data:    statusResponse,
+		}
+
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, responseCode)
 		logger.Debug("user logged in")
 	}
 }
@@ -203,7 +213,8 @@ func (s *service) postLogin(ctx context.Context, user *types.User, defaultHouseh
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		return http.StatusAccepted, observability.PrepareError(err, span, "publishing data change message")
+		observability.AcknowledgeError(err, s.logger, span, "publishing data change message")
+		return http.StatusAccepted, nil
 	}
 
 	if err = s.analyticsReporter.AddUser(ctx, user.ID, map[string]any{
@@ -589,7 +600,12 @@ func (s *service) StatusHandler(res http.ResponseWriter, req *http.Request) {
 		UserIsAuthenticated:      true,
 	}
 
-	s.encoderDecoder.RespondWithData(ctx, res, statusResponse)
+	responseValue := &types.APIResponse[*types.UserStatusResponse]{
+		Details: responseDetails,
+		Data:    statusResponse,
+	}
+
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // CycleCookieSecretHandler rotates the cookie building secret with a new random secret.

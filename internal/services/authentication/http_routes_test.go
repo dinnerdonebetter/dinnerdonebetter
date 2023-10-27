@@ -228,6 +228,10 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 		assert.NotEmpty(t, helper.res.Header().Get("Set-Cookie"))
+		var actual *types.APIResponse[*types.UserStatusResponse]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NotEmpty(t, actual.Data)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, userDataManager, authenticator, membershipDB, dataChangesPublisher)
 	})
@@ -284,6 +288,10 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 		assert.NotEmpty(t, helper.res.Header().Get("Set-Cookie"))
+		var actual *types.APIResponse[*types.UserStatusResponse]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NotEmpty(t, actual.Data)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, userDataManager, authenticator, membershipDB, dataChangesPublisher)
 	})
@@ -345,6 +353,11 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 
 		rawCookie := helper.res.Header().Get("Set-Cookie")
 		assert.Contains(t, rawCookie, fmt.Sprintf("Domain=%s", strings.TrimPrefix(expectedCookieDomain, ".")))
+
+		var actual *types.APIResponse[*types.UserStatusResponse]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NotEmpty(t, actual.Data)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, userDataManager, authenticator, membershipDB, dataChangesPublisher)
 	})
@@ -1050,6 +1063,10 @@ func TestAuthenticationService_BuildLoginHandler_WithoutAdminRestriction(T *test
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
 		assert.NotEmpty(t, helper.res.Header().Get("Set-Cookie"))
+		var actual *types.APIResponse[*types.UserStatusResponse]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NotNil(t, actual.Data)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, userDataManager, authenticator, membershipDB, dataChangesPublisher)
 	})
@@ -1560,6 +1577,10 @@ func TestAuthenticationService_StatusHandler(T *testing.T) {
 		helper.service.StatusHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.UserStatusResponse]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NotEmpty(t, actual.Data)
+		assert.NoError(t, actual.Error.AsError())
 	})
 
 	T.Run("with problem fetching session context data", func(t *testing.T) {
@@ -1667,9 +1688,5 @@ func Test_service_SSOProviderHandler(T *testing.T) {
 
 		assert.Empty(t, helper.res.Header().Get("Location"))
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
-		var actual *types.APIResponse[any]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
-		assert.Error(t, actual.Error)
 	})
 }
