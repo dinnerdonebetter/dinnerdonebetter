@@ -27,12 +27,12 @@ func (c *Client) GetMeal(ctx context.Context, mealID string) (*types.Meal, error
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get meal request")
 	}
 
-	var meal *types.Meal
-	if err = c.fetchAndUnmarshal(ctx, req, &meal); err != nil {
+	var apiResponse *types.APIResponse[*types.Meal]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving meal")
 	}
 
-	return meal, nil
+	return apiResponse.Data, nil
 }
 
 // GetMeals retrieves a list of meals.
@@ -49,12 +49,17 @@ func (c *Client) GetMeals(ctx context.Context, filter *types.QueryFilter) (*type
 		return nil, observability.PrepareAndLogError(err, logger, span, "building meals list request")
 	}
 
-	var meals *types.QueryFilteredResult[types.Meal]
-	if err = c.fetchAndUnmarshal(ctx, req, &meals); err != nil {
+	var apiResponse *types.APIResponse[[]*types.Meal]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving meals")
 	}
 
-	return meals, nil
+	response := &types.QueryFilteredResult[types.Meal]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
+	}
+
+	return response, nil
 }
 
 // SearchForMeals retrieves a list of meals.
@@ -72,12 +77,17 @@ func (c *Client) SearchForMeals(ctx context.Context, query string, filter *types
 		return nil, observability.PrepareAndLogError(err, logger, span, "building meals list request")
 	}
 
-	var meals *types.QueryFilteredResult[types.Meal]
-	if err = c.fetchAndUnmarshal(ctx, req, &meals); err != nil {
+	var apiResponse *types.APIResponse[[]*types.Meal]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving meals")
 	}
 
-	return meals, nil
+	response := &types.QueryFilteredResult[types.Meal]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
+	}
+
+	return response, nil
 }
 
 // CreateMeal creates a meal.
@@ -100,12 +110,12 @@ func (c *Client) CreateMeal(ctx context.Context, input *types.MealCreationReques
 		return nil, observability.PrepareAndLogError(err, logger, span, "building create meal request")
 	}
 
-	var meal *types.Meal
-	if err = c.fetchAndUnmarshal(ctx, req, &meal); err != nil {
+	var apiResponse *types.APIResponse[*types.Meal]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal")
 	}
 
-	return meal, nil
+	return apiResponse.Data, nil
 }
 
 // ArchiveMeal archives a meal.
@@ -126,7 +136,8 @@ func (c *Client) ArchiveMeal(ctx context.Context, mealID string) error {
 		return observability.PrepareAndLogError(err, logger, span, "building archive meal request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.Meal]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving meal %s", mealID)
 	}
 

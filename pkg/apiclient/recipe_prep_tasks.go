@@ -33,12 +33,12 @@ func (c *Client) GetRecipePrepTask(ctx context.Context, recipeID, recipePrepTask
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get recipe prep task request")
 	}
 
-	var recipePrepTask *types.RecipePrepTask
-	if err = c.fetchAndUnmarshal(ctx, req, &recipePrepTask); err != nil {
+	var apiResponse *types.APIResponse[*types.RecipePrepTask]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe prep task")
 	}
 
-	return recipePrepTask, nil
+	return apiResponse.Data, nil
 }
 
 // GetRecipePrepTasks retrieves a list of recipe prep tasks.
@@ -60,12 +60,12 @@ func (c *Client) GetRecipePrepTasks(ctx context.Context, recipeID string, filter
 		return nil, observability.PrepareAndLogError(err, logger, span, "building recipe prep tasks list request")
 	}
 
-	var recipePrepTasks []*types.RecipePrepTask
-	if err = c.fetchAndUnmarshal(ctx, req, &recipePrepTasks); err != nil {
+	var apiResponse *types.APIResponse[[]*types.RecipePrepTask]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe prep tasks")
 	}
 
-	return recipePrepTasks, nil
+	return apiResponse.Data, nil
 }
 
 // CreateRecipePrepTask creates a recipe prep task.
@@ -88,12 +88,12 @@ func (c *Client) CreateRecipePrepTask(ctx context.Context, input *types.RecipePr
 		return nil, observability.PrepareAndLogError(err, logger, span, "building create recipe prep task request")
 	}
 
-	var recipePrepTask *types.RecipePrepTask
-	if err = c.fetchAndUnmarshal(ctx, req, &recipePrepTask); err != nil {
+	var apiResponse *types.APIResponse[*types.RecipePrepTask]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe prep task")
 	}
 
-	return recipePrepTask, nil
+	return apiResponse.Data, nil
 }
 
 // UpdateRecipePrepTask updates a recipe prep task.
@@ -114,7 +114,8 @@ func (c *Client) UpdateRecipePrepTask(ctx context.Context, recipePrepTask *types
 		return observability.PrepareAndLogError(err, logger, span, "building update recipe prep task request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, &recipePrepTask); err != nil {
+	var apiResponse *types.APIResponse[*types.RecipePrepTask]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe prep task %s", recipePrepTask.ID)
 	}
 
@@ -145,7 +146,8 @@ func (c *Client) ArchiveRecipePrepTask(ctx context.Context, recipeID, recipePrep
 		return observability.PrepareAndLogError(err, logger, span, "building archive recipe prep task request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.RecipePrepTask]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe prep task %s", recipePrepTaskID)
 	}
 

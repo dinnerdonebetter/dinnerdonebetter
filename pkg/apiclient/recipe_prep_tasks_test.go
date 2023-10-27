@@ -22,9 +22,12 @@ func TestRecipePrepTasks(t *testing.T) {
 
 type recipePrepTasksBaseSuite struct {
 	suite.Suite
-	ctx                   context.Context
-	exampleRecipePrepTask *types.RecipePrepTask
-	exampleRecipeID       string
+	ctx                               context.Context
+	exampleRecipePrepTask             *types.RecipePrepTask
+	exampleRecipePrepTaskResponse     *types.APIResponse[*types.RecipePrepTask]
+	exampleRecipePrepTaskListResponse *types.APIResponse[[]*types.RecipePrepTask]
+	exampleRecipeID                   string
+	exampleRecipePrepTaskList         []*types.RecipePrepTask
 }
 
 var _ suite.SetupTestSuite = (*recipePrepTasksBaseSuite)(nil)
@@ -34,6 +37,16 @@ func (s *recipePrepTasksBaseSuite) SetupTest() {
 	s.exampleRecipeID = fakes.BuildFakeID()
 	s.exampleRecipePrepTask = fakes.BuildFakeRecipePrepTask()
 	s.exampleRecipePrepTask.BelongsToRecipe = s.exampleRecipeID
+	s.exampleRecipePrepTaskResponse = &types.APIResponse[*types.RecipePrepTask]{
+		Data: s.exampleRecipePrepTask,
+	}
+
+	exampleList := fakes.BuildFakeRecipePrepTaskList()
+	s.exampleRecipePrepTaskList = exampleList.Data
+	s.exampleRecipePrepTaskListResponse = &types.APIResponse[[]*types.RecipePrepTask]{
+		Data:       s.exampleRecipePrepTaskList,
+		Pagination: &exampleList.Pagination,
+	}
 }
 
 type recipePrepTasksTestSuite struct {
@@ -48,7 +61,7 @@ func (s *recipePrepTasksTestSuite) TestClient_GetRecipePrepTask() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleRecipeID, s.exampleRecipePrepTask.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipePrepTask)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipePrepTaskResponse)
 		actual, err := c.GetRecipePrepTask(s.ctx, s.exampleRecipeID, s.exampleRecipePrepTask.ID)
 
 		require.NotNil(t, actual)
@@ -101,26 +114,22 @@ func (s *recipePrepTasksTestSuite) TestClient_GetRecipePrepTask() {
 func (s *recipePrepTasksTestSuite) TestClient_GetRecipePrepTasks() {
 	const expectedPath = "/api/v1/recipes/%s/prep_tasks"
 
+	filter := (*types.QueryFilter)(nil)
+
 	s.Run("standard", func() {
 		t := s.T()
 
-		filter := (*types.QueryFilter)(nil)
-
-		exampleRecipePrepTaskList := fakes.BuildFakeRecipePrepTaskList().Data
-
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, s.exampleRecipeID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleRecipePrepTaskList)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipePrepTaskListResponse)
 		actual, err := c.GetRecipePrepTasks(s.ctx, s.exampleRecipeID, filter)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleRecipePrepTaskList, actual)
+		assert.Equal(t, s.exampleRecipePrepTaskList, actual)
 	})
 
 	s.Run("with invalid recipe ID", func() {
 		t := s.T()
-
-		filter := (*types.QueryFilter)(nil)
 
 		c, _ := buildSimpleTestClient(t)
 		actual, err := c.GetRecipePrepTasks(s.ctx, "", filter)
@@ -132,8 +141,6 @@ func (s *recipePrepTasksTestSuite) TestClient_GetRecipePrepTasks() {
 	s.Run("with error building request", func() {
 		t := s.T()
 
-		filter := (*types.QueryFilter)(nil)
-
 		c := buildTestClientWithInvalidURL(t)
 		actual, err := c.GetRecipePrepTasks(s.ctx, s.exampleRecipeID, filter)
 
@@ -143,8 +150,6 @@ func (s *recipePrepTasksTestSuite) TestClient_GetRecipePrepTasks() {
 
 	s.Run("with error executing request", func() {
 		t := s.T()
-
-		filter := (*types.QueryFilter)(nil)
 
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, s.exampleRecipeID)
 		c := buildTestClientWithInvalidResponse(t, spec)
@@ -165,7 +170,7 @@ func (s *recipePrepTasksTestSuite) TestClient_CreateRecipePrepTask() {
 		exampleInput.BelongsToRecipe = s.exampleRecipeID
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, s.exampleRecipeID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipePrepTask)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipePrepTaskResponse)
 
 		actual, err := c.CreateRecipePrepTask(s.ctx, exampleInput)
 		assert.NoError(t, err)
@@ -224,7 +229,7 @@ func (s *recipePrepTasksTestSuite) TestClient_UpdateRecipePrepTask() {
 		t := s.T()
 
 		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, s.exampleRecipeID, s.exampleRecipePrepTask.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipePrepTask)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipePrepTaskResponse)
 
 		err := c.UpdateRecipePrepTask(s.ctx, s.exampleRecipePrepTask)
 		assert.NoError(t, err)
@@ -265,7 +270,7 @@ func (s *recipePrepTasksTestSuite) TestClient_ArchiveRecipePrepTask() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, s.exampleRecipeID, s.exampleRecipePrepTask.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipePrepTaskResponse)
 
 		err := c.ArchiveRecipePrepTask(s.ctx, s.exampleRecipeID, s.exampleRecipePrepTask.ID)
 		assert.NoError(t, err)

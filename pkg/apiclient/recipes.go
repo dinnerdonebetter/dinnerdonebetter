@@ -29,12 +29,16 @@ func (c *Client) GetRecipe(ctx context.Context, recipeID string) (*types.Recipe,
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get recipe request")
 	}
 
-	var recipe *types.Recipe
-	if err = c.fetchAndUnmarshal(ctx, req, &recipe); err != nil {
+	var apiResponse *types.APIResponse[*types.Recipe]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe")
 	}
 
-	return recipe, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // GetRecipes retrieves a list of recipes.
@@ -51,12 +55,21 @@ func (c *Client) GetRecipes(ctx context.Context, filter *types.QueryFilter) (*ty
 		return nil, observability.PrepareAndLogError(err, logger, span, "building recipes list request")
 	}
 
-	var recipes *types.QueryFilteredResult[types.Recipe]
-	if err = c.fetchAndUnmarshal(ctx, req, &recipes); err != nil {
+	var apiResponse *types.APIResponse[[]*types.Recipe]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipes")
 	}
 
-	return recipes, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	response := &types.QueryFilteredResult[types.Recipe]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
+	}
+
+	return response, nil
 }
 
 // SearchForRecipes retrieves a list of recipes.
@@ -74,12 +87,21 @@ func (c *Client) SearchForRecipes(ctx context.Context, query string, filter *typ
 		return nil, observability.PrepareAndLogError(err, logger, span, "building recipes list request")
 	}
 
-	var recipes *types.QueryFilteredResult[types.Recipe]
-	if err = c.fetchAndUnmarshal(ctx, req, &recipes); err != nil {
+	var apiResponse *types.APIResponse[[]*types.Recipe]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipes")
 	}
 
-	return recipes, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	response := &types.QueryFilteredResult[types.Recipe]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
+	}
+
+	return response, nil
 }
 
 // CreateRecipe creates a recipe.
@@ -102,12 +124,16 @@ func (c *Client) CreateRecipe(ctx context.Context, input *types.RecipeCreationRe
 		return nil, observability.PrepareAndLogError(err, logger, span, "building create recipe request")
 	}
 
-	var recipe *types.Recipe
-	if err = c.fetchAndUnmarshal(ctx, req, &recipe); err != nil {
+	var apiResponse *types.APIResponse[*types.Recipe]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe")
 	}
 
-	return recipe, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // UpdateRecipe updates a recipe.
@@ -128,8 +154,13 @@ func (c *Client) UpdateRecipe(ctx context.Context, recipe *types.Recipe) error {
 		return observability.PrepareAndLogError(err, logger, span, "building update recipe request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, &recipe); err != nil {
+	var apiResponse *types.APIResponse[*types.Recipe]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe %s", recipe.ID)
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -153,8 +184,13 @@ func (c *Client) ArchiveRecipe(ctx context.Context, recipeID string) error {
 		return observability.PrepareAndLogError(err, logger, span, "building archive recipe request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.Recipe]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe %s", recipeID)
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -178,12 +214,16 @@ func (c *Client) GetMealPlanTasksForRecipe(ctx context.Context, recipeID string)
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get recipe request")
 	}
 
-	var prepSteps []*types.MealPlanTaskDatabaseCreationInput
-	if err = c.fetchAndUnmarshal(ctx, req, &prepSteps); err != nil {
+	var apiResponse *types.APIResponse[[]*types.MealPlanTaskDatabaseCreationInput]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe")
 	}
 
-	return prepSteps, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // UploadRecipeMedia uploads a new avatar.
@@ -205,8 +245,13 @@ func (c *Client) UploadRecipeMedia(ctx context.Context, files map[string][]byte,
 		return observability.PrepareError(err, span, "building media upload request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.RecipeMedia]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareError(err, span, "uploading media")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -264,10 +309,14 @@ func (c *Client) CloneRecipe(ctx context.Context, recipeID string) (*types.Recip
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get recipe request")
 	}
 
-	var recipe *types.Recipe
-	if err = c.fetchAndUnmarshal(ctx, req, &recipe); err != nil {
+	var apiResponse *types.APIResponse[*types.Recipe]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe")
 	}
 
-	return recipe, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }

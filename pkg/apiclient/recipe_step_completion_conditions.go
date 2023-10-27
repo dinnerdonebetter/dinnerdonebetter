@@ -39,12 +39,16 @@ func (c *Client) GetRecipeStepCompletionCondition(ctx context.Context, recipeID,
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get recipe step completion condition request")
 	}
 
-	var recipeStepIngredient *types.RecipeStepCompletionCondition
-	if err = c.fetchAndUnmarshal(ctx, req, &recipeStepIngredient); err != nil {
+	var apiResponse *types.APIResponse[*types.RecipeStepCompletionCondition]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe step completion condition")
 	}
 
-	return recipeStepIngredient, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // GetRecipeStepCompletionConditions retrieves a list of recipe step completion conditions.
@@ -72,12 +76,21 @@ func (c *Client) GetRecipeStepCompletionConditions(ctx context.Context, recipeID
 		return nil, observability.PrepareAndLogError(err, logger, span, "building recipe step completion conditions list request")
 	}
 
-	var recipeStepIngredients *types.QueryFilteredResult[types.RecipeStepCompletionCondition]
-	if err = c.fetchAndUnmarshal(ctx, req, &recipeStepIngredients); err != nil {
+	var apiResponse *types.APIResponse[[]*types.RecipeStepCompletionCondition]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe step completion conditions")
 	}
 
-	return recipeStepIngredients, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	response := &types.QueryFilteredResult[types.RecipeStepCompletionCondition]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
+	}
+
+	return response, nil
 }
 
 // CreateRecipeStepCompletionCondition creates a recipe step completion condition.
@@ -112,12 +125,16 @@ func (c *Client) CreateRecipeStepCompletionCondition(ctx context.Context, recipe
 		return nil, observability.PrepareAndLogError(err, logger, span, "building create recipe step completion condition request")
 	}
 
-	var recipeStepIngredient *types.RecipeStepCompletionCondition
-	if err = c.fetchAndUnmarshal(ctx, req, &recipeStepIngredient); err != nil {
+	var apiResponse *types.APIResponse[*types.RecipeStepCompletionCondition]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe step completion condition")
 	}
 
-	return recipeStepIngredient, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // UpdateRecipeStepCompletionCondition updates a recipe step completion condition.
@@ -144,8 +161,13 @@ func (c *Client) UpdateRecipeStepCompletionCondition(ctx context.Context, recipe
 		return observability.PrepareAndLogError(err, logger, span, "building update recipe step completion condition request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, &recipeStepIngredient); err != nil {
+	var apiResponse *types.APIResponse[*types.RecipeStepCompletionCondition]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step completion condition %s", recipeStepIngredient.ID)
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -181,8 +203,13 @@ func (c *Client) ArchiveRecipeStepCompletionCondition(ctx context.Context, recip
 		return observability.PrepareAndLogError(err, logger, span, "building archive recipe step completion condition request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.RecipeStepCompletionCondition]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step completion condition %s", recipeStepIngredientID)
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil

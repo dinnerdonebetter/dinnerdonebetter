@@ -22,10 +22,11 @@ func TestOAuth2Clients(t *testing.T) {
 
 type oauth2ClientsTestSuite struct {
 	suite.Suite
-
-	ctx                     context.Context
-	exampleOAuth2Client     *types.OAuth2Client
-	exampleOAuth2ClientList *types.QueryFilteredResult[types.OAuth2Client]
+	ctx                             context.Context
+	exampleOAuth2Client             *types.OAuth2Client
+	exampleOAuth2ClientResponse     *types.APIResponse[*types.OAuth2Client]
+	exampleOAuth2ClientListResponse *types.APIResponse[[]*types.OAuth2Client]
+	exampleOAuth2ClientList         []*types.OAuth2Client
 }
 
 var _ suite.SetupTestSuite = (*oauth2ClientsTestSuite)(nil)
@@ -34,10 +35,18 @@ func (s *oauth2ClientsTestSuite) SetupTest() {
 	s.ctx = context.Background()
 	s.exampleOAuth2Client = fakes.BuildFakeOAuth2Client()
 	s.exampleOAuth2Client.ClientSecret = ""
-	s.exampleOAuth2ClientList = fakes.BuildFakeOAuth2ClientList()
+	exampleOAuth2ClientList := fakes.BuildFakeOAuth2ClientList()
+	for i := 0; i < len(exampleOAuth2ClientList.Data); i++ {
+		exampleOAuth2ClientList.Data[i].ClientSecret = ""
+	}
 
-	for i := 0; i < len(s.exampleOAuth2ClientList.Data); i++ {
-		s.exampleOAuth2ClientList.Data[i].ClientSecret = ""
+	s.exampleOAuth2ClientList = exampleOAuth2ClientList.Data
+	s.exampleOAuth2ClientResponse = &types.APIResponse[*types.OAuth2Client]{
+		Data: s.exampleOAuth2Client,
+	}
+	s.exampleOAuth2ClientListResponse = &types.APIResponse[[]*types.OAuth2Client]{
+		Data:       exampleOAuth2ClientList.Data,
+		Pagination: &exampleOAuth2ClientList.Pagination,
 	}
 }
 
@@ -48,7 +57,7 @@ func (s *oauth2ClientsTestSuite) TestClient_GetOAuth2Client() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleOAuth2Client.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleOAuth2Client)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleOAuth2ClientResponse)
 
 		actual, err := c.GetOAuth2Client(s.ctx, s.exampleOAuth2Client.ID)
 		require.NotNil(t, actual)
@@ -95,12 +104,12 @@ func (s *oauth2ClientsTestSuite) TestClient_GetOAuth2Clients() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleOAuth2ClientList)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleOAuth2ClientListResponse)
 
 		actual, err := c.GetOAuth2Clients(s.ctx, nil)
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, s.exampleOAuth2ClientList, actual)
+		assert.Equal(t, s.exampleOAuth2ClientList, actual.Data)
 	})
 
 	s.Run("with error building request", func() {
@@ -132,8 +141,11 @@ func (s *oauth2ClientsTestSuite) TestClient_CreateOAuth2Client() {
 
 		exampleInput := converters.ConvertOAuth2ClientToOAuth2ClientCreationInput(s.exampleOAuth2Client)
 		exampleResponse := converters.ConvertOAuth2ClientToOAuth2ClientCreationResponse(s.exampleOAuth2Client)
+
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleResponse)
+		c, _ := buildTestClientWithJSONResponse(t, spec, &types.APIResponse[*types.OAuth2ClientCreationResponse]{
+			Data: exampleResponse,
+		})
 		c.authMethod = cookieAuthMethod
 
 		actual, err := c.CreateOAuth2Client(s.ctx, exampleInput)
@@ -183,7 +195,7 @@ func (s *oauth2ClientsTestSuite) TestClient_ArchiveOAuth2Client() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, s.exampleOAuth2Client.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleOAuth2ClientResponse)
 
 		assert.NoError(t, c.ArchiveOAuth2Client(s.ctx, s.exampleOAuth2Client.ID), "no error should be returned")
 	})

@@ -39,12 +39,16 @@ func (c *Client) GetRecipeStepIngredient(ctx context.Context, recipeID, recipeSt
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get recipe step ingredient request")
 	}
 
-	var recipeStepIngredient *types.RecipeStepIngredient
-	if err = c.fetchAndUnmarshal(ctx, req, &recipeStepIngredient); err != nil {
+	var apiResponse *types.APIResponse[*types.RecipeStepIngredient]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe step ingredient")
 	}
 
-	return recipeStepIngredient, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // GetRecipeStepIngredients retrieves a list of recipe step ingredients.
@@ -72,12 +76,21 @@ func (c *Client) GetRecipeStepIngredients(ctx context.Context, recipeID, recipeS
 		return nil, observability.PrepareAndLogError(err, logger, span, "building recipe step ingredients list request")
 	}
 
-	var recipeStepIngredients *types.QueryFilteredResult[types.RecipeStepIngredient]
-	if err = c.fetchAndUnmarshal(ctx, req, &recipeStepIngredients); err != nil {
+	var apiResponse *types.APIResponse[[]*types.RecipeStepIngredient]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe step ingredients")
 	}
 
-	return recipeStepIngredients, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	response := &types.QueryFilteredResult[types.RecipeStepIngredient]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
+	}
+
+	return response, nil
 }
 
 // CreateRecipeStepIngredient creates a recipe step ingredient.
@@ -112,12 +125,16 @@ func (c *Client) CreateRecipeStepIngredient(ctx context.Context, recipeID, recip
 		return nil, observability.PrepareAndLogError(err, logger, span, "building create recipe step ingredient request")
 	}
 
-	var recipeStepIngredient *types.RecipeStepIngredient
-	if err = c.fetchAndUnmarshal(ctx, req, &recipeStepIngredient); err != nil {
+	var apiResponse *types.APIResponse[*types.RecipeStepIngredient]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe step ingredient")
 	}
 
-	return recipeStepIngredient, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // UpdateRecipeStepIngredient updates a recipe step ingredient.
@@ -144,8 +161,13 @@ func (c *Client) UpdateRecipeStepIngredient(ctx context.Context, recipeID string
 		return observability.PrepareAndLogError(err, logger, span, "building update recipe step ingredient request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, &recipeStepIngredient); err != nil {
+	var apiResponse *types.APIResponse[*types.RecipeStepIngredient]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step ingredient %s", recipeStepIngredient.ID)
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -181,8 +203,13 @@ func (c *Client) ArchiveRecipeStepIngredient(ctx context.Context, recipeID, reci
 		return observability.PrepareAndLogError(err, logger, span, "building archive recipe step ingredient request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.RecipeStepIngredient]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step ingredient %s", recipeStepIngredientID)
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil

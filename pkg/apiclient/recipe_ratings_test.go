@@ -22,10 +22,12 @@ func TestRecipeRatings(t *testing.T) {
 
 type recipeRatingsBaseSuite struct {
 	suite.Suite
-
-	ctx                 context.Context
-	exampleMeal         *types.Meal
-	exampleRecipeRating *types.RecipeRating
+	ctx                             context.Context
+	exampleMeal                     *types.Meal
+	exampleRecipeRating             *types.RecipeRating
+	exampleRecipeRatingResponse     *types.APIResponse[*types.RecipeRating]
+	exampleRecipeRatingListResponse *types.APIResponse[[]*types.RecipeRating]
+	exampleRecipeRatingList         []*types.RecipeRating
 }
 
 var _ suite.SetupTestSuite = (*recipeRatingsBaseSuite)(nil)
@@ -34,6 +36,16 @@ func (s *recipeRatingsBaseSuite) SetupTest() {
 	s.ctx = context.Background()
 	s.exampleMeal = fakes.BuildFakeMeal()
 	s.exampleRecipeRating = fakes.BuildFakeRecipeRating()
+	s.exampleRecipeRatingResponse = &types.APIResponse[*types.RecipeRating]{
+		Data: s.exampleRecipeRating,
+	}
+	exampleList := fakes.BuildFakeRecipeRatingList()
+	s.exampleRecipeRatingList = exampleList.Data
+	s.exampleRecipeRatingListResponse = &types.APIResponse[[]*types.RecipeRating]{
+		Data:       s.exampleRecipeRatingList,
+		Pagination: &exampleList.Pagination,
+	}
+
 }
 
 type recipeRatingsTestSuite struct {
@@ -48,7 +60,7 @@ func (s *recipeRatingsTestSuite) TestClient_GetRecipeRating() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleMeal.ID, s.exampleRecipeRating.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeRating)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeRatingResponse)
 		actual, err := c.GetRecipeRating(s.ctx, s.exampleMeal.ID, s.exampleRecipeRating.ID)
 
 		require.NotNil(t, actual)
@@ -91,26 +103,22 @@ func (s *recipeRatingsTestSuite) TestClient_GetRecipeRating() {
 func (s *recipeRatingsTestSuite) TestClient_GetRecipeRatings() {
 	const expectedPath = "/api/v1/recipes/%s/ratings"
 
+	filter := (*types.QueryFilter)(nil)
+
 	s.Run("standard", func() {
 		t := s.T()
 
-		filter := (*types.QueryFilter)(nil)
-
-		exampleRecipeRatingList := fakes.BuildFakeRecipeRatingList()
-
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, s.exampleMeal.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleRecipeRatingList)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeRatingListResponse)
 		actual, err := c.GetRecipeRatings(s.ctx, s.exampleMeal.ID, filter)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleRecipeRatingList, actual)
+		assert.Equal(t, s.exampleRecipeRatingList, actual.Data)
 	})
 
 	s.Run("with error building request", func() {
 		t := s.T()
-
-		filter := (*types.QueryFilter)(nil)
 
 		c := buildTestClientWithInvalidURL(t)
 		actual, err := c.GetRecipeRatings(s.ctx, s.exampleMeal.ID, filter)
@@ -121,8 +129,6 @@ func (s *recipeRatingsTestSuite) TestClient_GetRecipeRatings() {
 
 	s.Run("with error executing request", func() {
 		t := s.T()
-
-		filter := (*types.QueryFilter)(nil)
 
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, s.exampleMeal.ID)
 		c := buildTestClientWithInvalidResponse(t, spec)
@@ -142,7 +148,7 @@ func (s *recipeRatingsTestSuite) TestClient_CreateRecipeRating() {
 		exampleInput := fakes.BuildFakeRecipeRatingCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, s.exampleMeal.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeRating)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeRatingResponse)
 
 		actual, err := c.CreateRecipeRating(s.ctx, s.exampleMeal.ID, exampleInput)
 		assert.NoError(t, err)
@@ -201,7 +207,7 @@ func (s *recipeRatingsTestSuite) TestClient_UpdateRecipeRating() {
 		t := s.T()
 
 		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, s.exampleRecipeRating.RecipeID, s.exampleRecipeRating.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeRating)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeRatingResponse)
 
 		err := c.UpdateRecipeRating(s.ctx, s.exampleRecipeRating)
 		assert.NoError(t, err)
@@ -242,7 +248,7 @@ func (s *recipeRatingsTestSuite) TestClient_ArchiveRecipeRating() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, s.exampleMeal.ID, s.exampleRecipeRating.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeRatingResponse)
 
 		err := c.ArchiveRecipeRating(s.ctx, s.exampleMeal.ID, s.exampleRecipeRating.ID)
 		assert.NoError(t, err)

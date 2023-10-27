@@ -22,12 +22,16 @@ func (c *Client) GetOAuth2Client(ctx context.Context, oauth2ClientDatabaseID str
 		return nil, observability.PrepareError(err, span, "building retrieve OAuth2 client request")
 	}
 
-	var oauth2Client *types.OAuth2Client
-	if err = c.fetchAndUnmarshal(ctx, req, &oauth2Client); err != nil {
+	var apiResponse *types.APIResponse[*types.OAuth2Client]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "fetching oauth2 client")
 	}
 
-	return oauth2Client, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // GetOAuth2Clients gets a list of OAuth2 clients.
@@ -42,12 +46,21 @@ func (c *Client) GetOAuth2Clients(ctx context.Context, filter *types.QueryFilter
 		return nil, observability.PrepareError(err, span, "building OAuth2 clients list request")
 	}
 
-	var oauth2Clients *types.QueryFilteredResult[types.OAuth2Client]
-	if err = c.fetchAndUnmarshal(ctx, req, &oauth2Clients); err != nil {
+	var apiResponse *types.APIResponse[[]*types.OAuth2Client]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "fetching api clients")
 	}
 
-	return oauth2Clients, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	response := &types.QueryFilteredResult[types.OAuth2Client]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
+	}
+
+	return response, nil
 }
 
 // CreateOAuth2Client creates an OAuth2 client.
@@ -63,18 +76,21 @@ func (c *Client) CreateOAuth2Client(ctx context.Context, input *types.OAuth2Clie
 		return nil, ErrNilInputProvided
 	}
 
-	var oauth2ClientResponse *types.OAuth2ClientCreationResponse
-
 	req, err := c.requestBuilder.BuildCreateOAuth2ClientRequest(ctx, input)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "building create OAuth2 client request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, &oauth2ClientResponse); err != nil {
+	var apiResponse *types.APIResponse[*types.OAuth2ClientCreationResponse]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "creating oauth2 client")
 	}
 
-	return oauth2ClientResponse, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // ArchiveOAuth2Client archives an OAuth2 client.
@@ -91,8 +107,13 @@ func (c *Client) ArchiveOAuth2Client(ctx context.Context, oauth2ClientDatabaseID
 		return observability.PrepareError(err, span, "building archive OAuth2 client request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.OAuth2Client]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareError(err, span, "archiving oauth2 client")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
