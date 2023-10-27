@@ -16,8 +16,6 @@ import (
 const (
 	// MealPlanOptionIDURIParamKey is a standard string that we'll use to refer to meal plan option IDs with.
 	MealPlanOptionIDURIParamKey = "mealPlanOptionID"
-	// MealPlanEventIDURIParamKey is a standard string that we'll use to refer to meal plan event IDs with.
-	MealPlanEventIDURIParamKey = "mealPlanEventID"
 )
 
 // CreateHandler is our meal plan option creation route.
@@ -96,7 +94,12 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, mealPlanOption, http.StatusCreated)
+	responseValue := &types.APIResponse[*types.MealPlanOption]{
+		Details: responseDetails,
+		Data:    mealPlanOption,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a meal plan option.
@@ -151,8 +154,13 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[*types.MealPlanOption]{
+		Details: responseDetails,
+		Data:    x,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ListHandler is our list route.
@@ -204,8 +212,14 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.MealPlanOption]{
+		Details:    responseDetails,
+		Data:       mealPlanOptions.Data,
+		Pagination: &mealPlanOptions.Pagination,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, mealPlanOptions)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // UpdateHandler returns a handler that updates a meal plan option.
@@ -300,8 +314,13 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
+	responseValue := &types.APIResponse[*types.MealPlanOption]{
+		Details: responseDetails,
+		Data:    mealPlanOption,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, mealPlanOption)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ArchiveHandler returns a handler that archives a meal plan option.

@@ -82,7 +82,12 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, householdInstrumentOwnership, http.StatusCreated)
+	responseValue := &types.APIResponse[*types.HouseholdInstrumentOwnership]{
+		Details: responseDetails,
+		Data:    householdInstrumentOwnership,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a household instrument ownership.
@@ -128,8 +133,13 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[*types.HouseholdInstrumentOwnership]{
+		Details: responseDetails,
+		Data:    x,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ListHandler is our list route.
@@ -172,8 +182,14 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.HouseholdInstrumentOwnership]{
+		Details:    responseDetails,
+		Data:       householdInstrumentOwnerships.Data,
+		Pagination: &householdInstrumentOwnerships.Pagination,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, householdInstrumentOwnerships)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // UpdateHandler returns a handler that updates a household instrument ownership.
@@ -255,8 +271,13 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
+	responseValue := &types.APIResponse[*types.HouseholdInstrumentOwnership]{
+		Details: responseDetails,
+		Data:    householdInstrumentOwnership,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, householdInstrumentOwnership)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ArchiveHandler returns a handler that archives a household instrument ownership.

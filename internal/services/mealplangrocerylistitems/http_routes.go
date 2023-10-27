@@ -90,7 +90,12 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, mealPlanGroceryListItem, http.StatusCreated)
+	responseValue := &types.APIResponse[*types.MealPlanGroceryListItem]{
+		Details: responseDetails,
+		Data:    mealPlanGroceryListItem,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a meal plan grocery list item.
@@ -140,8 +145,13 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[*types.MealPlanGroceryListItem]{
+		Details: responseDetails,
+		Data:    x,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ListByMealPlanHandler is our list route.
@@ -188,8 +198,13 @@ func (s *service) ListByMealPlanHandler(res http.ResponseWriter, req *http.Reque
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.MealPlanGroceryListItem]{
+		Details: responseDetails,
+		Data:    mealPlanGroceryListItems,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, mealPlanGroceryListItems)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // UpdateHandler returns a handler that updates a meal plan grocery list item.
@@ -276,7 +291,12 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	s.encoderDecoder.RespondWithData(ctx, res, mealPlanGroceryListItem)
+	responseValue := &types.APIResponse[*types.MealPlanGroceryListItem]{
+		Details: responseDetails,
+		Data:    mealPlanGroceryListItem,
+	}
+
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ArchiveHandler returns a GET handler that returns a meal plan grocery list item.

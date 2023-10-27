@@ -89,7 +89,12 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing to data changes topic")
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, mealPlanTask, http.StatusCreated)
+	responseValue := &types.APIResponse[*types.MealPlanTask]{
+		Details: responseDetails,
+		Data:    mealPlanTask,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a meal plan task.
@@ -139,8 +144,13 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[*types.MealPlanTask]{
+		Details: responseDetails,
+		Data:    x,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ListByMealPlanHandler is our list route.
@@ -187,8 +197,13 @@ func (s *service) ListByMealPlanHandler(res http.ResponseWriter, req *http.Reque
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.MealPlanTask]{
+		Details: responseDetails,
+		Data:    mealPlanTasks,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, mealPlanTasks)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // StatusChangeHandler returns a handler that updates a meal plan task.
@@ -275,5 +290,10 @@ func (s *service) StatusChangeHandler(res http.ResponseWriter, req *http.Request
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	s.encoderDecoder.RespondWithData(ctx, res, mealPlanTask)
+	responseValue := &types.APIResponse[*types.MealPlanTask]{
+		Details: responseDetails,
+		Data:    mealPlanTask,
+	}
+
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }

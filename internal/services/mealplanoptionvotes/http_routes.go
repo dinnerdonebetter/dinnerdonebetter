@@ -171,7 +171,12 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, mealPlanOptionVotes, http.StatusCreated)
+	responseValue := &types.APIResponse[[]*types.MealPlanOptionVote]{
+		Details: responseDetails,
+		Data:    mealPlanOptionVotes,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
 // ReadHandler returns a GET handler that returns a meal plan option vote.
@@ -231,8 +236,13 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[*types.MealPlanOptionVote]{
+		Details: responseDetails,
+		Data:    x,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ListHandler is our list route.
@@ -289,8 +299,14 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.MealPlanOptionVote]{
+		Details:    responseDetails,
+		Data:       mealPlanOptionVotes.Data,
+		Pagination: &mealPlanOptionVotes.Pagination,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, mealPlanOptionVotes)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // UpdateHandler returns a handler that updates a meal plan option vote.
@@ -390,8 +406,13 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
+	responseValue := &types.APIResponse[*types.MealPlanOptionVote]{
+		Details: responseDetails,
+		Data:    mealPlanOptionVote,
+	}
+
 	// encode our response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, mealPlanOptionVote)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ArchiveHandler returns a handler that archives a meal plan option vote.
