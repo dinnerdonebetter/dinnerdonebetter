@@ -1518,7 +1518,7 @@ func TestService_TOTPSecretVerificationHandler(T *testing.T) {
 		assert.Equal(t, http.StatusAlreadyReported, helper.res.Code)
 		var actual *types.APIResponse[*types.User]
 		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.NoError(t, actual.Error.AsError())
+		assert.Error(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, mockDB)
 	})

@@ -265,8 +265,12 @@ func (s *authTestSuite) TestClient_CycleTwoFactorSecret() {
 			TwoFactorQRCode: t.Name(),
 			TwoFactorSecret: t.Name(),
 		}
+		expectedResponse := &types.APIResponse[*types.TOTPSecretRefreshResponse]{
+			Data: expected,
+		}
+
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, expected)
+		c, _ := buildTestClientWithJSONResponse(t, spec, expectedResponse)
 		exampleInput := fakes.BuildFakeTOTPSecretRefreshInput()
 
 		actual, err := c.CycleTwoFactorSecret(s.ctx, s.exampleCookie, exampleInput)
