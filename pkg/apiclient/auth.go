@@ -134,12 +134,12 @@ func (c *Client) CycleTwoFactorSecret(ctx context.Context, cookie *http.Cookie, 
 		return nil, observability.PrepareError(err, span, "building cycle two factor secret request")
 	}
 
-	var output *types.TOTPSecretRefreshResponse
-	if err = c.fetchAndUnmarshal(ctx, req, &output); err != nil {
+	var apiResponse *types.APIResponse[*types.TOTPSecretRefreshResponse]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "cycling two factor secret")
 	}
 
-	return output, nil
+	return apiResponse.Data, nil
 }
 
 // VerifyTOTPSecret verifies a 2FA secret.

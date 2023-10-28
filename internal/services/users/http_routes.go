@@ -549,15 +549,13 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 	input := new(types.TOTPSecretVerificationInput)
 	if err := s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
-		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
 		return
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
-		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -566,8 +564,7 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 	user, err := s.userDataManager.GetUserWithUnverifiedTwoFactorSecret(ctx, input.UserID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching user to verify two factor secret")
-		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
 
@@ -577,33 +574,21 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 	if user.TwoFactorSecretVerifiedAt != nil {
 		// I suppose if this happens too many times, we might want to keep track of that
 		logger.Debug("two factor secret already verified")
-		earlyRes := &types.APIResponse[*types.User]{
-			Details: responseDetails,
-		}
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, earlyRes, http.StatusAlreadyReported)
+		s.encoderDecoder.EncodeErrorResponse(ctx, res, "TOTP secret already verified", http.StatusAlreadyReported)
 		return
 	}
-
-	logger.WithValue("user.TwoFactorSecret", user.TwoFactorSecret).Info("validating token")
 
 	totpValid := totp.Validate(input.TOTPToken, user.TwoFactorSecret)
 	if !totpValid {
-		logger.Info("invalid totp token")
-		errRes := types.NewAPIErrorResponse("totp invalid", types.ErrValidatingRequestInput, responseDetails)
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
+		s.encoderDecoder.EncodeInvalidInputResponse(ctx, res)
 		return
 	}
-
-	logger.Info("token validated")
 
 	if err = s.userDataManager.MarkUserTwoFactorSecretAsVerified(ctx, user.ID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "verifying user two factor secret")
-		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
+		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
 		return
 	}
-
-	logger.Info("two factor secret marked as verified")
 
 	dcm := &types.DataChangeMessage{
 		EventType: types.TwoFactorSecretVerifiedCustomerEventType,
@@ -613,10 +598,8 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
-
 	responseValue := &types.APIResponse[*types.User]{
 		Details: responseDetails,
-		Data:    user,
 	}
 
 	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
@@ -734,8 +717,6 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 		TwoFactorSecret: user.TwoFactorSecret,
 		TwoFactorQRCode: s.buildQRCode(ctx, user.Username, user.TwoFactorSecret),
 	}
-
-	logger.WithValue("user.TwoFactorSecret", user.TwoFactorSecret).Info("cycled")
 
 	responseValue := &types.APIResponse[*types.TOTPSecretRefreshResponse]{
 		Details: responseDetails,
