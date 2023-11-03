@@ -84,6 +84,7 @@ require (
 	gonum.org/v1/gonum v0.14.0
 	google.golang.org/api v0.146.0
 	google.golang.org/grpc v1.58.3
+	gopkg.in/matryer/try.v1 v1.0.0-20150601225556-312d2599e12e
 	resenje.org/schulze v0.4.2
 )
 
@@ -128,6 +129,7 @@ require (
 	github.com/buger/jsonparser v1.1.1 // indirect
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
+	github.com/cheekybits/is v0.0.0-20150225183255-68e9c0620927 // indirect
 	github.com/containerd/containerd v1.7.6 // indirect
 	github.com/cpuguy83/dockercfg v0.3.1 // indirect
 	github.com/cznic/mathutil v0.0.0-20181122101859-297441e03548 // indirect
@@ -185,6 +187,7 @@ require (
 	github.com/magiconair/properties v1.8.7 // indirect
 	github.com/mailjet/mailjet-apiv3-go/v3 v3.2.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
+	github.com/matryer/try v0.0.0-20161228173917-9ac251b645a2 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
 	github.com/mattn/go-runewidth v0.0.15 // indirect

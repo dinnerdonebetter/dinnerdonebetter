@@ -27,6 +27,7 @@ import (
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
 	"github.com/testcontainers/testcontainers-go/wait"
+	try "gopkg.in/matryer/try.v1"
 )
 
 const (
@@ -136,15 +137,20 @@ func buildDatabaseClientForTest(t *testing.T, ctx context.Context) (*Querier, *p
 	dbUsername := fmt.Sprintf("%d", hashStringToNumber(t.Name()))
 	testcontainers.Logger = log.New(io.Discard, "", log.LstdFlags)
 
-	container, err := postgres.RunContainer(
-		ctx,
-		testcontainers.WithImage(defaultImage),
-		postgres.WithDatabase(splitReverseConcat(dbUsername)),
-		postgres.WithUsername(dbUsername),
-		postgres.WithPassword(reverseString(dbUsername)),
-		testcontainers.WithWaitStrategyAndDeadline(2*time.Minute, wait.ForLog("database system is ready to accept connections").WithOccurrence(2)),
-	)
+	var container *postgres.PostgresContainer
+	err := try.Do(func(attempt int) (bool, error) {
+		var containerErr error
+		container, containerErr = postgres.RunContainer(
+			ctx,
+			testcontainers.WithImage(defaultImage),
+			postgres.WithDatabase(splitReverseConcat(dbUsername)),
+			postgres.WithUsername(dbUsername),
+			postgres.WithPassword(reverseString(dbUsername)),
+			testcontainers.WithWaitStrategyAndDeadline(2*time.Minute, wait.ForLog("database system is ready to accept connections").WithOccurrence(2)),
+		)
 
+		return attempt < 5, containerErr
+	})
 	require.NoError(t, err)
 	require.NotNil(t, container)
 
