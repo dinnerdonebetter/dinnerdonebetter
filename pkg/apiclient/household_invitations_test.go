@@ -20,12 +20,13 @@ func TestHouseholdInvitations(t *testing.T) {
 
 type householdInvitationsTestSuite struct {
 	suite.Suite
-
-	ctx                        context.Context
-	exampleHousehold           *types.Household
-	exampleHouseholdInvitation *types.HouseholdInvitation
-	exampleUser                *types.User
-	exampleHouseholdList       *types.QueryFilteredResult[types.Household]
+	ctx                                    context.Context
+	exampleHousehold                       *types.Household
+	exampleHouseholdInvitation             *types.HouseholdInvitation
+	exampleHouseholdInvitationResponse     *types.APIResponse[*types.HouseholdInvitation]
+	exampleUser                            *types.User
+	exampleHouseholdInvitationListResponse *types.APIResponse[[]*types.HouseholdInvitation]
+	exampleHouseholdInvitationList         []*types.HouseholdInvitation
 }
 
 var _ suite.SetupTestSuite = (*householdInvitationsTestSuite)(nil)
@@ -38,7 +39,15 @@ func (s *householdInvitationsTestSuite) SetupTest() {
 	s.exampleHouseholdInvitation = fakes.BuildFakeHouseholdInvitation()
 	s.exampleHouseholdInvitation.FromUser = *s.exampleUser
 	s.exampleHouseholdInvitation.ToUser = func(s string) *string { return &s }(fakes.BuildFakeUser().ID)
-	s.exampleHouseholdList = fakes.BuildFakeHouseholdList()
+	s.exampleHouseholdInvitationResponse = &types.APIResponse[*types.HouseholdInvitation]{
+		Data: s.exampleHouseholdInvitation,
+	}
+	exampleList := fakes.BuildFakeHouseholdInvitationList()
+	s.exampleHouseholdInvitationList = exampleList.Data
+	s.exampleHouseholdInvitationListResponse = &types.APIResponse[[]*types.HouseholdInvitation]{
+		Data:       s.exampleHouseholdInvitationList,
+		Pagination: &exampleList.Pagination,
+	}
 }
 
 func (s *householdInvitationsTestSuite) TestClient_GetHouseholdInvitation() {
@@ -50,7 +59,7 @@ func (s *householdInvitationsTestSuite) TestClient_GetHouseholdInvitation() {
 		s.exampleHousehold.BelongsToUser = ""
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPath, s.exampleHousehold.ID, s.exampleHouseholdInvitation.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdInvitation)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdInvitationResponse)
 
 		actual, err := c.GetHouseholdInvitation(s.ctx, s.exampleHousehold.ID, s.exampleHouseholdInvitation.ID)
 		assert.NoError(t, err)
@@ -118,7 +127,7 @@ func (s *householdInvitationsTestSuite) TestClient_GetPendingHouseholdInvitation
 		s.exampleHousehold.BelongsToUser = ""
 
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdInvitation)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdInvitationListResponse)
 
 		actual, err := c.GetPendingHouseholdInvitationsForUser(s.ctx, filter)
 		assert.NoError(t, err)
@@ -160,7 +169,7 @@ func (s *householdInvitationsTestSuite) TestClient_GetPendingHouseholdInvitation
 		s.exampleHousehold.BelongsToUser = ""
 
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdInvitation)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdInvitationListResponse)
 
 		actual, err := c.GetPendingHouseholdInvitationsFromUser(s.ctx, filter)
 		assert.NoError(t, err)
@@ -201,7 +210,7 @@ func (s *householdInvitationsTestSuite) TestClient_AcceptHouseholdInvitation() {
 		s.exampleHousehold.BelongsToUser = ""
 
 		spec := newRequestSpec(false, http.MethodPut, "", expectedPath, s.exampleHouseholdInvitation.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdInvitationResponse)
 
 		assert.NoError(t, c.AcceptHouseholdInvitation(s.ctx, s.exampleHouseholdInvitation.ID, s.exampleHouseholdInvitation.Token, t.Name()))
 	})
@@ -212,7 +221,7 @@ func (s *householdInvitationsTestSuite) TestClient_AcceptHouseholdInvitation() {
 		s.exampleHousehold.BelongsToUser = ""
 
 		spec := newRequestSpec(false, http.MethodPut, "", expectedPath, s.exampleHouseholdInvitation.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdInvitationResponse)
 
 		assert.Error(t, c.AcceptHouseholdInvitation(s.ctx, s.exampleHouseholdInvitation.ID, "", t.Name()))
 	})
@@ -223,7 +232,7 @@ func (s *householdInvitationsTestSuite) TestClient_AcceptHouseholdInvitation() {
 		s.exampleHousehold.BelongsToUser = ""
 
 		spec := newRequestSpec(false, http.MethodPut, "", expectedPath, s.exampleHouseholdInvitation.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdInvitationResponse)
 
 		assert.Error(t, c.AcceptHouseholdInvitation(s.ctx, "", s.exampleHouseholdInvitation.Token, t.Name()))
 	})
@@ -254,7 +263,7 @@ func (s *householdInvitationsTestSuite) TestClient_CancelHouseholdInvitation() {
 		s.exampleHousehold.BelongsToUser = ""
 
 		spec := newRequestSpec(false, http.MethodPut, "", expectedPath, s.exampleHouseholdInvitation.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdInvitationResponse)
 
 		assert.NoError(t, c.CancelHouseholdInvitation(s.ctx, s.exampleHouseholdInvitation.ID, s.exampleHouseholdInvitation.Token, t.Name()))
 	})
@@ -265,7 +274,7 @@ func (s *householdInvitationsTestSuite) TestClient_CancelHouseholdInvitation() {
 		s.exampleHousehold.BelongsToUser = ""
 
 		spec := newRequestSpec(false, http.MethodPut, "", expectedPath, s.exampleHouseholdInvitation.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdInvitationResponse)
 
 		assert.Error(t, c.CancelHouseholdInvitation(s.ctx, "", s.exampleHouseholdInvitation.ID, t.Name()))
 	})
@@ -276,7 +285,7 @@ func (s *householdInvitationsTestSuite) TestClient_CancelHouseholdInvitation() {
 		s.exampleHousehold.BelongsToUser = ""
 
 		spec := newRequestSpec(false, http.MethodPut, "", expectedPath, s.exampleHouseholdInvitation.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdInvitationResponse)
 
 		assert.Error(t, c.CancelHouseholdInvitation(s.ctx, s.exampleHouseholdInvitation.ID, "", t.Name()))
 	})
@@ -309,7 +318,7 @@ func (s *householdInvitationsTestSuite) TestClient_RejectHouseholdInvitation() {
 		s.exampleHousehold.BelongsToUser = ""
 
 		spec := newRequestSpec(false, http.MethodPut, "", expectedPath, s.exampleHouseholdInvitation.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdInvitationResponse)
 
 		assert.NoError(t, c.RejectHouseholdInvitation(s.ctx, s.exampleHouseholdInvitation.ID, s.exampleHouseholdInvitation.Token, t.Name()))
 	})
@@ -320,7 +329,7 @@ func (s *householdInvitationsTestSuite) TestClient_RejectHouseholdInvitation() {
 		s.exampleHousehold.BelongsToUser = ""
 
 		spec := newRequestSpec(false, http.MethodPut, "", expectedPath, s.exampleHouseholdInvitation.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdInvitationResponse)
 
 		assert.Error(t, c.RejectHouseholdInvitation(s.ctx, "", s.exampleHouseholdInvitation.ID, t.Name()))
 	})
@@ -331,7 +340,7 @@ func (s *householdInvitationsTestSuite) TestClient_RejectHouseholdInvitation() {
 		s.exampleHousehold.BelongsToUser = ""
 
 		spec := newRequestSpec(false, http.MethodPut, "", expectedPath, s.exampleHouseholdInvitation.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdInvitationResponse)
 
 		assert.Error(t, c.RejectHouseholdInvitation(s.ctx, s.exampleHouseholdInvitation.ID, "", t.Name()))
 	})

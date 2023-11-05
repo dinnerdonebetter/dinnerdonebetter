@@ -9,7 +9,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -23,120 +22,6 @@ import (
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
 )
-
-func TestOAuth2ClientsService_ListHandler(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		exampleOAuth2ClientList := fakes.BuildFakeOAuth2ClientList()
-
-		mockDB := database.NewMockDatabase()
-		mockDB.OAuth2ClientDataManagerMock.On(
-			"GetOAuth2Clients",
-			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return(exampleOAuth2ClientList, nil)
-		helper.service.oauth2ClientDataManager = mockDB
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.QueryFilteredResult[types.OAuth2Client]{}),
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
-		helper.service.ListHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, mockDB, encoderDecoder)
-	})
-
-	T.Run("with error retrieving session context data", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
-		helper.service.ListHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, encoderDecoder)
-	})
-
-	T.Run("with no results returned from datastore", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		mockDB := database.NewMockDatabase()
-		mockDB.OAuth2ClientDataManagerMock.On(
-			"GetOAuth2Clients",
-			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.OAuth2Client])(nil), sql.ErrNoRows)
-		helper.service.oauth2ClientDataManager = mockDB
-		helper.service.userDataManager = mockDB
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.QueryFilteredResult[types.OAuth2Client]{}),
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
-		helper.service.ListHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, mockDB, encoderDecoder)
-	})
-
-	T.Run("with error retrieving clients from the datastore", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		mockDB := database.NewMockDatabase()
-		mockDB.OAuth2ClientDataManagerMock.On(
-			"GetOAuth2Clients",
-			testutils.ContextMatcher,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.OAuth2Client])(nil), errors.New("blah"))
-		helper.service.oauth2ClientDataManager = mockDB
-		helper.service.userDataManager = mockDB
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
-		helper.service.ListHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, mockDB, encoderDecoder)
-	})
-}
 
 var oauth2ClientCreationInputMatcher any = mock.MatchedBy(func(input *types.OAuth2ClientDatabaseCreationInput) bool {
 	return true
@@ -195,7 +80,12 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.CreateHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.OAuth2ClientCreationResponse]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NotEmpty(t, actual.Data)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, mockDB, sg, dataChangesPublisher)
 	})
@@ -208,7 +98,12 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 		helper.service.CreateHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.OAuth2Client]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("without input attached to request", func(t *testing.T) {
@@ -223,7 +118,12 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.CreateHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.OAuth2Client]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with invalid input attached to request", func(t *testing.T) {
@@ -241,7 +141,12 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.CreateHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.OAuth2Client]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with error generating client ID", func(t *testing.T) {
@@ -282,7 +187,12 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		helper.service.userDataManager = mockDB
 
 		helper.service.CreateHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.OAuth2Client]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB, sg)
 	})
@@ -324,7 +234,12 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		helper.service.oauth2ClientDataManager = mockDB
 
 		helper.service.CreateHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.OAuth2Client]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB, sg)
 	})
@@ -372,7 +287,12 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		helper.service.userDataManager = mockDB
 
 		helper.service.CreateHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.OAuth2Client]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockDB, sg)
 	})
@@ -427,7 +347,12 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.CreateHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.OAuth2ClientCreationResponse]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NotEmpty(t, actual.Data)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, mockDB, sg, dataChangesPublisher)
 	})
@@ -449,20 +374,15 @@ func TestOAuth2ClientsService_ReadHandler(T *testing.T) {
 		).Return(helper.exampleOAuth2Client, nil)
 		helper.service.oauth2ClientDataManager = oauth2ClientDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.OAuth2Client{}),
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.ReadHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.OAuth2Client]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleOAuth2Client)
+		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, oauth2ClientDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, oauth2ClientDataManager)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -471,21 +391,13 @@ func TestOAuth2ClientsService_ReadHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.ReadHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, encoderDecoder)
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.OAuth2Client]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with no such OAuth2 client in the database", func(t *testing.T) {
@@ -501,19 +413,15 @@ func TestOAuth2ClientsService_ReadHandler(T *testing.T) {
 		).Return((*types.OAuth2Client)(nil), sql.ErrNoRows)
 		helper.service.oauth2ClientDataManager = oauth2ClientDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeNotFoundResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.ReadHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusNotFound, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+		var actual *types.APIResponse[*types.OAuth2Client]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, oauth2ClientDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, oauth2ClientDataManager)
 	})
 
 	T.Run("with error fetching from database", func(t *testing.T) {
@@ -529,19 +437,110 @@ func TestOAuth2ClientsService_ReadHandler(T *testing.T) {
 		).Return((*types.OAuth2Client)(nil), errors.New("blah"))
 		helper.service.oauth2ClientDataManager = oauth2ClientDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		)
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.ReadHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.OAuth2Client]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, oauth2ClientDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, oauth2ClientDataManager)
+	})
+}
+
+func TestOAuth2ClientsService_ListHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		exampleOAuth2ClientList := fakes.BuildFakeOAuth2ClientList()
+
+		mockDB := database.NewMockDatabase()
+		mockDB.OAuth2ClientDataManagerMock.On(
+			"GetOAuth2Clients",
+			testutils.ContextMatcher,
+			mock.IsType(&types.QueryFilter{}),
+		).Return(exampleOAuth2ClientList, nil)
+		helper.service.oauth2ClientDataManager = mockDB
+
+		helper.service.ListHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.OAuth2Client]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, exampleOAuth2ClientList.Data)
+		assert.NoError(t, actual.Error.AsError())
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+
+	T.Run("with error retrieving session context data", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
+
+		helper.service.ListHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.OAuth2Client]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
+	})
+
+	T.Run("with no results returned from datastore", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		mockDB := database.NewMockDatabase()
+		mockDB.OAuth2ClientDataManagerMock.On(
+			"GetOAuth2Clients",
+			testutils.ContextMatcher,
+			mock.IsType(&types.QueryFilter{}),
+		).Return((*types.QueryFilteredResult[types.OAuth2Client])(nil), sql.ErrNoRows)
+		helper.service.oauth2ClientDataManager = mockDB
+		helper.service.userDataManager = mockDB
+
+		helper.service.ListHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.OAuth2Client]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.NoError(t, actual.Error.AsError())
+
+		mock.AssertExpectationsForObjects(t, mockDB)
+	})
+
+	T.Run("with error retrieving clients from the datastore", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper(t)
+
+		mockDB := database.NewMockDatabase()
+		mockDB.OAuth2ClientDataManagerMock.On(
+			"GetOAuth2Clients",
+			testutils.ContextMatcher,
+			mock.IsType(&types.QueryFilter{}),
+		).Return((*types.QueryFilteredResult[types.OAuth2Client])(nil), errors.New("blah"))
+		helper.service.oauth2ClientDataManager = mockDB
+		helper.service.userDataManager = mockDB
+
+		helper.service.ListHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.OAuth2Client]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
+
+		mock.AssertExpectationsForObjects(t, mockDB)
 	})
 }
 
@@ -571,7 +570,10 @@ func TestOAuth2ClientsService_ArchiveHandler(T *testing.T) {
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusNoContent, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.OAuth2Client]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, oauth2ClientDataManager, dataChangesPublisher)
 	})
@@ -582,21 +584,13 @@ func TestOAuth2ClientsService_ArchiveHandler(T *testing.T) {
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, encoderDecoder)
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.OAuth2Client]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with no such OAuth2 client in the database", func(t *testing.T) {
@@ -612,19 +606,15 @@ func TestOAuth2ClientsService_ArchiveHandler(T *testing.T) {
 		).Return(sql.ErrNoRows)
 		helper.service.oauth2ClientDataManager = oauth2ClientDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeNotFoundResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusNotFound, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+		var actual *types.APIResponse[*types.OAuth2Client]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, oauth2ClientDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, oauth2ClientDataManager)
 	})
 
 	T.Run("with error fetching from database", func(t *testing.T) {
@@ -640,19 +630,15 @@ func TestOAuth2ClientsService_ArchiveHandler(T *testing.T) {
 		).Return(errors.New("blah"))
 		helper.service.oauth2ClientDataManager = oauth2ClientDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		)
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.OAuth2Client]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, oauth2ClientDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, oauth2ClientDataManager)
 	})
 
 	T.Run("with error publishing service event", func(t *testing.T) {
@@ -678,7 +664,10 @@ func TestOAuth2ClientsService_ArchiveHandler(T *testing.T) {
 
 		helper.service.ArchiveHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusNoContent, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.OAuth2Client]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, oauth2ClientDataManager, dataChangesPublisher)
 	})

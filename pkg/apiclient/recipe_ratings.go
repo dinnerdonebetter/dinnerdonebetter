@@ -33,12 +33,12 @@ func (c *Client) GetRecipeRating(ctx context.Context, mealID, recipeRatingID str
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get recipe rating request")
 	}
 
-	var recipeRating *types.RecipeRating
-	if err = c.fetchAndUnmarshal(ctx, req, &recipeRating); err != nil {
+	var apiResponse *types.APIResponse[*types.RecipeRating]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe rating")
 	}
 
-	return recipeRating, nil
+	return apiResponse.Data, nil
 }
 
 // GetRecipeRatings retrieves a list of recipe ratings.
@@ -61,12 +61,17 @@ func (c *Client) GetRecipeRatings(ctx context.Context, mealID string, filter *ty
 		return nil, observability.PrepareAndLogError(err, logger, span, "building recipe ratings list request")
 	}
 
-	var recipeRatings *types.QueryFilteredResult[types.RecipeRating]
-	if err = c.fetchAndUnmarshal(ctx, req, &recipeRatings); err != nil {
+	var apiResponse *types.APIResponse[[]*types.RecipeRating]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe ratings")
 	}
 
-	return recipeRatings, nil
+	response := &types.QueryFilteredResult[types.RecipeRating]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
+	}
+
+	return response, nil
 }
 
 // CreateRecipeRating creates a recipe rating.
@@ -95,12 +100,12 @@ func (c *Client) CreateRecipeRating(ctx context.Context, mealID string, input *t
 		return nil, observability.PrepareAndLogError(err, logger, span, "building create recipe rating request")
 	}
 
-	var recipeRating *types.RecipeRating
-	if err = c.fetchAndUnmarshal(ctx, req, &recipeRating); err != nil {
+	var apiResponse *types.APIResponse[*types.RecipeRating]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe rating")
 	}
 
-	return recipeRating, nil
+	return apiResponse.Data, nil
 }
 
 // UpdateRecipeRating updates a recipe rating.
@@ -121,7 +126,8 @@ func (c *Client) UpdateRecipeRating(ctx context.Context, recipeRating *types.Rec
 		return observability.PrepareAndLogError(err, logger, span, "building update recipe rating request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, &recipeRating); err != nil {
+	var apiResponse *types.APIResponse[*types.RecipeRating]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe rating %s", recipeRating.ID)
 	}
 
@@ -152,7 +158,8 @@ func (c *Client) ArchiveRecipeRating(ctx context.Context, mealID, recipeRatingID
 		return observability.PrepareAndLogError(err, logger, span, "building archive recipe rating request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.RecipeRating]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe rating %s", recipeRatingID)
 	}
 

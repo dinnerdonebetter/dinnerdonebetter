@@ -10,7 +10,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -76,7 +75,14 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.InviteMemberHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusCreated, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		helper.exampleHouseholdInvitation.FromUser.TwoFactorSecret = ""
+		helper.exampleHouseholdInvitation.DestinationHousehold.WebhookEncryptionKey = ""
+		assert.Equal(t, actual.Data, helper.exampleHouseholdInvitation)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, udm, sg, dbManager, dataChangesPublisher)
 	})
@@ -91,38 +97,12 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		}
 
 		helper.service.InviteMemberHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
-	})
 
-	T.Run("with error decoding request", func(t *testing.T) {
-		t.Parallel()
-
-		helper := newTestHelper(t)
-
-		ed := mockencoding.NewMockEncoderDecoder()
-		ed.On(
-			"DecodeRequest",
-			testutils.ContextMatcher,
-			testutils.HTTPRequestMatcher,
-			mock.IsType(&types.HouseholdInvitationCreationRequestInput{}),
-		).Return(errors.New("blah"))
-
-		ed.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"invalid request content",
-			http.StatusBadRequest,
-		).Return(errors.New("blah"))
-		helper.service.encoderDecoder = ed
-
-		var err error
-		helper.req, err = http.NewRequestWithContext(helper.ctx, http.MethodPost, "https://whatever.whocares.gov", bytes.NewReader([]byte("")))
-		require.NoError(t, err)
-		require.NotNil(t, helper.req)
-
-		helper.service.InviteMemberHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusBadRequest, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -140,7 +120,12 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.InviteMemberHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusBadRequest, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with error generating invitation token", func(t *testing.T) {
@@ -166,7 +151,12 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.secretGenerator = sg
 
 		helper.service.InviteMemberHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, sg)
 	})
@@ -202,7 +192,12 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.userDataManager = udm
 
 		helper.service.InviteMemberHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, udm, sg)
 	})
@@ -246,7 +241,12 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.householdInvitationDataManager = dbManager
 
 		helper.service.InviteMemberHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, udm, sg, dbManager)
 	})
@@ -298,7 +298,14 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.InviteMemberHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusCreated, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		helper.exampleHouseholdInvitation.FromUser.TwoFactorSecret = ""
+		helper.exampleHouseholdInvitation.DestinationHousehold.WebhookEncryptionKey = ""
+		assert.Equal(t, actual.Data, helper.exampleHouseholdInvitation)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, udm, sg, dbManager, dataChangesPublisher)
 	})
@@ -350,7 +357,14 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.InviteMemberHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusCreated, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		helper.exampleHouseholdInvitation.FromUser.TwoFactorSecret = ""
+		helper.exampleHouseholdInvitation.DestinationHousehold.WebhookEncryptionKey = ""
+		assert.Equal(t, actual.Data, helper.exampleHouseholdInvitation)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, udm, sg, dbManager, dataChangesPublisher)
 	})
@@ -402,7 +416,14 @@ func Test_service_InviteMemberHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.InviteMemberHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusCreated, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		helper.exampleHouseholdInvitation.FromUser.TwoFactorSecret = ""
+		helper.exampleHouseholdInvitation.DestinationHousehold.WebhookEncryptionKey = ""
+		assert.Equal(t, actual.Data, helper.exampleHouseholdInvitation)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, udm, sg, dbManager, dataChangesPublisher)
 	})
@@ -425,19 +446,17 @@ func Test_service_ReadHandler(T *testing.T) {
 		).Return(helper.exampleHouseholdInvitation, nil)
 		helper.service.householdInvitationDataManager = wd
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.HouseholdInvitation{}),
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.ReadHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		helper.exampleHouseholdInvitation.FromUser.TwoFactorSecret = ""
+		helper.exampleHouseholdInvitation.DestinationHousehold.WebhookEncryptionKey = ""
+		assert.Equal(t, actual.Data, helper.exampleHouseholdInvitation)
+		assert.NoError(t, actual.Error.AsError())
+
+		mock.AssertExpectationsForObjects(t, wd)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -449,6 +468,10 @@ func Test_service_ReadHandler(T *testing.T) {
 		helper.service.ReadHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with no such household invitation in database", func(t *testing.T) {
@@ -465,18 +488,15 @@ func Test_service_ReadHandler(T *testing.T) {
 		).Return((*types.HouseholdInvitation)(nil), sql.ErrNoRows)
 		helper.service.householdInvitationDataManager = wd
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeNotFoundResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.ReadHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
+		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
+
+		mock.AssertExpectationsForObjects(t, wd)
 	})
 
 	T.Run("with error fetching household invitation from database", func(t *testing.T) {
@@ -493,18 +513,15 @@ func Test_service_ReadHandler(T *testing.T) {
 		).Return((*types.HouseholdInvitation)(nil), errors.New("blah"))
 		helper.service.householdInvitationDataManager = wd
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.ReadHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
+
+		mock.AssertExpectationsForObjects(t, wd)
 	})
 }
 
@@ -526,19 +543,15 @@ func Test_service_InboundInvitesHandler(T *testing.T) {
 		).Return(exampleHouseholdInvitations, nil)
 		helper.service.householdInvitationDataManager = wd
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.QueryFilteredResult[types.HouseholdInvitation]{}),
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.InboundInvitesHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NotEmpty(t, actual.Data)
+		assert.NoError(t, actual.Error.AsError())
+
+		mock.AssertExpectationsForObjects(t, wd)
 	})
 
 	T.Run("with error fetching session context data", func(t *testing.T) {
@@ -550,7 +563,12 @@ func Test_service_InboundInvitesHandler(T *testing.T) {
 		}
 
 		helper.service.InboundInvitesHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with error reading from database", func(t *testing.T) {
@@ -568,7 +586,12 @@ func Test_service_InboundInvitesHandler(T *testing.T) {
 		helper.service.householdInvitationDataManager = wd
 
 		helper.service.InboundInvitesHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, wd)
 	})
@@ -592,19 +615,15 @@ func Test_service_OutboundInvitesHandler(T *testing.T) {
 		).Return(exampleHouseholdInvitations, nil)
 		helper.service.householdInvitationDataManager = wd
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.QueryFilteredResult[types.HouseholdInvitation]{}),
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.OutboundInvitesHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NotEmpty(t, actual.Data)
+		assert.NoError(t, actual.Error.AsError())
+
+		mock.AssertExpectationsForObjects(t, wd)
 	})
 
 	T.Run("with error fetching session context data", func(t *testing.T) {
@@ -616,7 +635,12 @@ func Test_service_OutboundInvitesHandler(T *testing.T) {
 		}
 
 		helper.service.OutboundInvitesHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with error reading from database", func(t *testing.T) {
@@ -634,7 +658,12 @@ func Test_service_OutboundInvitesHandler(T *testing.T) {
 		helper.service.householdInvitationDataManager = wd
 
 		helper.service.OutboundInvitesHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, wd)
 	})
@@ -683,7 +712,11 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.AcceptInviteHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusAccepted, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dataManager, dataChangesPublisher)
 	})
@@ -697,10 +730,15 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		}
 
 		helper.service.AcceptInviteHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
-	T.Run("with unparseable input", func(t *testing.T) {
+	T.Run("with invalid input", func(t *testing.T) {
 		t.Parallel()
 
 		helper := newTestHelper(t)
@@ -712,7 +750,12 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.AcceptInviteHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusBadRequest, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -730,7 +773,12 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.AcceptInviteHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusBadRequest, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with no matching invitation", func(t *testing.T) {
@@ -757,7 +805,12 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		helper.service.householdInvitationDataManager = dataManager
 
 		helper.service.AcceptInviteHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusNotFound, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dataManager)
 	})
@@ -786,7 +839,12 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		helper.service.householdInvitationDataManager = dataManager
 
 		helper.service.AcceptInviteHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dataManager)
 	})
@@ -823,7 +881,12 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		helper.service.householdInvitationDataManager = dataManager
 
 		helper.service.AcceptInviteHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dataManager)
 	})
@@ -868,7 +931,11 @@ func Test_service_AcceptInviteHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.AcceptInviteHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusAccepted, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dataManager, dataChangesPublisher)
 	})
@@ -916,7 +983,11 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.CancelInviteHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusAccepted, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dataManager, dataChangesPublisher)
 	})
@@ -936,7 +1007,12 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.CancelInviteHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusBadRequest, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with unparseable input", func(t *testing.T) {
@@ -951,7 +1027,12 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.CancelInviteHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusBadRequest, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with no rows returned", func(t *testing.T) {
@@ -978,7 +1059,12 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		helper.service.householdInvitationDataManager = dataManager
 
 		helper.service.CancelInviteHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusNotFound, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dataManager)
 	})
@@ -1007,7 +1093,12 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		helper.service.householdInvitationDataManager = dataManager
 
 		helper.service.CancelInviteHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dataManager)
 	})
@@ -1021,7 +1112,12 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		}
 
 		helper.service.CancelInviteHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
@@ -1055,7 +1151,12 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		helper.service.householdInvitationDataManager = dataManager
 
 		helper.service.CancelInviteHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dataManager)
 	})
@@ -1099,7 +1200,11 @@ func Test_service_CancelInviteHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.CancelInviteHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusAccepted, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dataManager, dataChangesPublisher)
 	})
@@ -1147,7 +1252,11 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.RejectInviteHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusAccepted, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dataManager, dataChangesPublisher)
 	})
@@ -1167,7 +1276,12 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.RejectInviteHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusBadRequest, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with no rows returned", func(t *testing.T) {
@@ -1194,7 +1308,12 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		helper.service.householdInvitationDataManager = dataManager
 
 		helper.service.RejectInviteHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusNotFound, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dataManager)
 	})
@@ -1224,7 +1343,12 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		helper.service.householdInvitationDataManager = dataManager
 
 		helper.service.RejectInviteHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dataManager)
 	})
@@ -1238,7 +1362,12 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		}
 
 		helper.service.RejectInviteHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with invalid input", func(t *testing.T) {
@@ -1253,7 +1382,12 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.RejectInviteHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusBadRequest, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
@@ -1287,7 +1421,12 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		helper.service.householdInvitationDataManager = dataManager
 
 		helper.service.RejectInviteHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dataManager)
 	})
@@ -1331,7 +1470,11 @@ func Test_service_RejectInviteHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.RejectInviteHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusAccepted, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+
+		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[*types.HouseholdInvitation]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dataManager, dataChangesPublisher)
 	})

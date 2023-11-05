@@ -22,10 +22,13 @@ func TestRecipeStepInstruments(t *testing.T) {
 
 type recipeStepInstrumentsBaseSuite struct {
 	suite.Suite
-	ctx                         context.Context
-	exampleRecipeStepInstrument *types.RecipeStepInstrument
-	exampleRecipeID             string
-	exampleRecipeStepID         string
+	ctx                                     context.Context
+	exampleRecipeStepInstrument             *types.RecipeStepInstrument
+	exampleRecipeStepInstrumentResponse     *types.APIResponse[*types.RecipeStepInstrument]
+	exampleRecipeStepInstrumentListResponse *types.APIResponse[[]*types.RecipeStepInstrument]
+	exampleRecipeID                         string
+	exampleRecipeStepID                     string
+	exampleRecipeStepInstrumentList         []*types.RecipeStepInstrument
 }
 
 var _ suite.SetupTestSuite = (*recipeStepInstrumentsBaseSuite)(nil)
@@ -36,11 +39,19 @@ func (s *recipeStepInstrumentsBaseSuite) SetupTest() {
 	s.exampleRecipeStepID = fakes.BuildFakeID()
 	s.exampleRecipeStepInstrument = fakes.BuildFakeRecipeStepInstrument()
 	s.exampleRecipeStepInstrument.BelongsToRecipeStep = s.exampleRecipeStepID
+	s.exampleRecipeStepInstrumentResponse = &types.APIResponse[*types.RecipeStepInstrument]{
+		Data: s.exampleRecipeStepInstrument,
+	}
+	exampleList := fakes.BuildFakeRecipeStepInstrumentList()
+	s.exampleRecipeStepInstrumentList = exampleList.Data
+	s.exampleRecipeStepInstrumentListResponse = &types.APIResponse[[]*types.RecipeStepInstrument]{
+		Data:       s.exampleRecipeStepInstrumentList,
+		Pagination: &exampleList.Pagination,
+	}
 }
 
 type recipeStepInstrumentsTestSuite struct {
 	suite.Suite
-
 	recipeStepInstrumentsBaseSuite
 }
 
@@ -51,7 +62,7 @@ func (s *recipeStepInstrumentsTestSuite) TestClient_GetRecipeStepInstrument() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleRecipeID, s.exampleRecipeStepID, s.exampleRecipeStepInstrument.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeStepInstrument)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeStepInstrumentResponse)
 		actual, err := c.GetRecipeStepInstrument(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, s.exampleRecipeStepInstrument.ID)
 
 		require.NotNil(t, actual)
@@ -114,26 +125,22 @@ func (s *recipeStepInstrumentsTestSuite) TestClient_GetRecipeStepInstrument() {
 func (s *recipeStepInstrumentsTestSuite) TestClient_GetRecipeStepInstruments() {
 	const expectedPath = "/api/v1/recipes/%s/steps/%s/instruments"
 
+	filter := (*types.QueryFilter)(nil)
+
 	s.Run("standard", func() {
 		t := s.T()
 
-		filter := (*types.QueryFilter)(nil)
-
-		exampleRecipeStepInstrumentList := fakes.BuildFakeRecipeStepInstrumentList()
-
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, s.exampleRecipeID, s.exampleRecipeStepID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleRecipeStepInstrumentList)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeStepInstrumentListResponse)
 		actual, err := c.GetRecipeStepInstruments(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, filter)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleRecipeStepInstrumentList, actual)
+		assert.Equal(t, s.exampleRecipeStepInstrumentList, actual.Data)
 	})
 
 	s.Run("with invalid recipe ID", func() {
 		t := s.T()
-
-		filter := (*types.QueryFilter)(nil)
 
 		c, _ := buildSimpleTestClient(t)
 		actual, err := c.GetRecipeStepInstruments(s.ctx, "", s.exampleRecipeStepID, filter)
@@ -145,8 +152,6 @@ func (s *recipeStepInstrumentsTestSuite) TestClient_GetRecipeStepInstruments() {
 	s.Run("with invalid recipe step ID", func() {
 		t := s.T()
 
-		filter := (*types.QueryFilter)(nil)
-
 		c, _ := buildSimpleTestClient(t)
 		actual, err := c.GetRecipeStepInstruments(s.ctx, s.exampleRecipeID, "", filter)
 
@@ -157,8 +162,6 @@ func (s *recipeStepInstrumentsTestSuite) TestClient_GetRecipeStepInstruments() {
 	s.Run("with error building request", func() {
 		t := s.T()
 
-		filter := (*types.QueryFilter)(nil)
-
 		c := buildTestClientWithInvalidURL(t)
 		actual, err := c.GetRecipeStepInstruments(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, filter)
 
@@ -168,8 +171,6 @@ func (s *recipeStepInstrumentsTestSuite) TestClient_GetRecipeStepInstruments() {
 
 	s.Run("with error executing request", func() {
 		t := s.T()
-
-		filter := (*types.QueryFilter)(nil)
 
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, s.exampleRecipeID, s.exampleRecipeStepID)
 		c := buildTestClientWithInvalidResponse(t, spec)
@@ -189,7 +190,7 @@ func (s *recipeStepInstrumentsTestSuite) TestClient_CreateRecipeStepInstrument()
 		exampleInput := fakes.BuildFakeRecipeStepInstrumentCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, s.exampleRecipeID, s.exampleRecipeStepID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeStepInstrument)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeStepInstrumentResponse)
 
 		actual, err := c.CreateRecipeStepInstrument(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, exampleInput)
 		assert.NoError(t, err)
@@ -260,7 +261,7 @@ func (s *recipeStepInstrumentsTestSuite) TestClient_UpdateRecipeStepInstrument()
 		t := s.T()
 
 		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, s.exampleRecipeID, s.exampleRecipeStepID, s.exampleRecipeStepInstrument.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeStepInstrument)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeStepInstrumentResponse)
 
 		err := c.UpdateRecipeStepInstrument(s.ctx, s.exampleRecipeID, s.exampleRecipeStepInstrument)
 		assert.NoError(t, err)
@@ -310,7 +311,7 @@ func (s *recipeStepInstrumentsTestSuite) TestClient_ArchiveRecipeStepInstrument(
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, s.exampleRecipeID, s.exampleRecipeStepID, s.exampleRecipeStepInstrument.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeStepInstrumentResponse)
 
 		err := c.ArchiveRecipeStepInstrument(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, s.exampleRecipeStepInstrument.ID)
 		assert.NoError(t, err)

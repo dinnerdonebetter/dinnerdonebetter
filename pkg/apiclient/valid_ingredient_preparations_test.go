@@ -23,9 +23,11 @@ func TestValidIngredientPreparations(t *testing.T) {
 
 type validIngredientPreparationsBaseSuite struct {
 	suite.Suite
-
-	ctx                               context.Context
-	exampleValidIngredientPreparation *types.ValidIngredientPreparation
+	ctx                                           context.Context
+	exampleValidIngredientPreparation             *types.ValidIngredientPreparation
+	exampleValidIngredientPreparationResponse     *types.APIResponse[*types.ValidIngredientPreparation]
+	exampleValidIngredientPreparationListResponse *types.APIResponse[[]*types.ValidIngredientPreparation]
+	exampleValidIngredientPreparationList         []*types.ValidIngredientPreparation
 }
 
 var _ suite.SetupTestSuite = (*validIngredientPreparationsBaseSuite)(nil)
@@ -33,11 +35,20 @@ var _ suite.SetupTestSuite = (*validIngredientPreparationsBaseSuite)(nil)
 func (s *validIngredientPreparationsBaseSuite) SetupTest() {
 	s.ctx = context.Background()
 	s.exampleValidIngredientPreparation = fakes.BuildFakeValidIngredientPreparation()
+	s.exampleValidIngredientPreparationResponse = &types.APIResponse[*types.ValidIngredientPreparation]{
+		Data: s.exampleValidIngredientPreparation,
+	}
+
+	exampleList := fakes.BuildFakeValidIngredientPreparationList()
+	s.exampleValidIngredientPreparationList = exampleList.Data
+	s.exampleValidIngredientPreparationListResponse = &types.APIResponse[[]*types.ValidIngredientPreparation]{
+		Data:       s.exampleValidIngredientPreparationList,
+		Pagination: &exampleList.Pagination,
+	}
 }
 
 type validIngredientPreparationsTestSuite struct {
 	suite.Suite
-
 	validIngredientPreparationsBaseSuite
 }
 
@@ -48,7 +59,7 @@ func (s *validIngredientPreparationsTestSuite) TestClient_GetValidIngredientPrep
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleValidIngredientPreparation.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientPreparation)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientPreparationResponse)
 		actual, err := c.GetValidIngredientPreparation(s.ctx, s.exampleValidIngredientPreparation.ID)
 
 		require.NotNil(t, actual)
@@ -96,15 +107,13 @@ func (s *validIngredientPreparationsTestSuite) TestClient_GetValidIngredientPrep
 
 		filter := (*types.QueryFilter)(nil)
 
-		exampleValidIngredientPreparationList := fakes.BuildFakeValidIngredientPreparationList()
-
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientPreparationList)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientPreparationListResponse)
 		actual, err := c.GetValidIngredientPreparations(s.ctx, filter)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidIngredientPreparationList, actual)
+		assert.Equal(t, s.exampleValidIngredientPreparationList, actual.Data)
 	})
 
 	s.Run("with error building request", func() {
@@ -133,7 +142,7 @@ func (s *validIngredientPreparationsTestSuite) TestClient_GetValidIngredientPrep
 	})
 }
 
-func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidIngredientPreparationsForIngredient() {
+func (s *validIngredientPreparationsTestSuite) TestClient_GetValidIngredientPreparationsForIngredient() {
 	const expectedPath = "/api/v1/valid_ingredient_preparations/by_ingredient/%s"
 
 	exampleValidIngredient := fakes.BuildFakeValidIngredient()
@@ -143,15 +152,13 @@ func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidIngredient
 
 		filter := (*types.QueryFilter)(nil)
 
-		exampleValidIngredientMeasurementUnitList := fakes.BuildFakeValidIngredientPreparationList()
-
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, exampleValidIngredient.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientMeasurementUnitList)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientPreparationListResponse)
 		actual, err := c.GetValidIngredientPreparationsForIngredient(s.ctx, exampleValidIngredient.ID, filter)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidIngredientMeasurementUnitList, actual)
+		assert.Equal(t, s.exampleValidIngredientPreparationList, actual.Data)
 	})
 
 	s.Run("with invalid ID", func() {
@@ -190,7 +197,7 @@ func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidIngredient
 	})
 }
 
-func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidIngredientPreparationsForPreparation() {
+func (s *validIngredientPreparationsTestSuite) TestClient_GetValidIngredientPreparationsForPreparation() {
 	const expectedPath = "/api/v1/valid_ingredient_preparations/by_preparation/%s"
 
 	exampleValidPreparation := fakes.BuildFakeValidPreparation()
@@ -200,15 +207,13 @@ func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidIngredient
 
 		filter := (*types.QueryFilter)(nil)
 
-		exampleValidIngredientMeasurementUnitList := fakes.BuildFakeValidIngredientPreparationList()
-
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, exampleValidPreparation.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientMeasurementUnitList)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientPreparationListResponse)
 		actual, err := c.GetValidIngredientPreparationsForPreparation(s.ctx, exampleValidPreparation.ID, filter)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidIngredientMeasurementUnitList, actual)
+		assert.Equal(t, s.exampleValidIngredientPreparationList, actual.Data)
 	})
 
 	s.Run("with invalid ID", func() {
@@ -247,7 +252,7 @@ func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidIngredient
 	})
 }
 
-func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidIngredientPreparationsForPreparationAndIngredientName() {
+func (s *validIngredientPreparationsTestSuite) TestClient_GetValidIngredientPreparationsForPreparationAndIngredientName() {
 	const expectedPath = "/api/v1/valid_ingredients/by_preparation/%s"
 
 	exampleValidPreparation := fakes.BuildFakeValidPreparation()
@@ -258,15 +263,13 @@ func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidIngredient
 
 		filter := (*types.QueryFilter)(nil)
 
-		exampleValidIngredientMeasurementUnitList := fakes.BuildFakeValidIngredientPreparationList()
-
 		spec := newRequestSpec(true, http.MethodGet, fmt.Sprintf("limit=50&page=1&q=%s&sortBy=asc", exampleQuery), expectedPath, exampleValidPreparation.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientMeasurementUnitList)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientPreparationListResponse)
 		actual, err := c.GetValidIngredientPreparationsForPreparationAndIngredientName(s.ctx, exampleValidPreparation.ID, exampleQuery, filter)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidIngredientMeasurementUnitList, actual)
+		assert.Equal(t, s.exampleValidIngredientPreparationList, actual.Data)
 	})
 
 	s.Run("with invalid ID", func() {
@@ -314,7 +317,7 @@ func (s *validIngredientPreparationsTestSuite) TestClient_CreateValidIngredientP
 		exampleInput := fakes.BuildFakeValidIngredientPreparationCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientPreparation)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientPreparationResponse)
 
 		actual, err := c.CreateValidIngredientPreparation(s.ctx, exampleInput)
 		assert.NoError(t, err)
@@ -373,7 +376,7 @@ func (s *validIngredientPreparationsTestSuite) TestClient_UpdateValidIngredientP
 		t := s.T()
 
 		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, s.exampleValidIngredientPreparation.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientPreparation)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientPreparationResponse)
 
 		err := c.UpdateValidIngredientPreparation(s.ctx, s.exampleValidIngredientPreparation)
 		assert.NoError(t, err)
@@ -414,7 +417,7 @@ func (s *validIngredientPreparationsTestSuite) TestClient_ArchiveValidIngredient
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, s.exampleValidIngredientPreparation.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientPreparationResponse)
 
 		err := c.ArchiveValidIngredientPreparation(s.ctx, s.exampleValidIngredientPreparation.ID)
 		assert.NoError(t, err)

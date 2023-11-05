@@ -18,6 +18,8 @@ const (
 	RecipeUpdatedCustomerEventType CustomerEventType = "recipe_updated"
 	// RecipeArchivedCustomerEventType indicates a recipe was archived.
 	RecipeArchivedCustomerEventType CustomerEventType = "recipe_archived"
+	// RecipeClonedCustomerEventType indicates a recipe was cloned.
+	RecipeClonedCustomerEventType CustomerEventType = "recipe_cloned"
 )
 
 func init() {

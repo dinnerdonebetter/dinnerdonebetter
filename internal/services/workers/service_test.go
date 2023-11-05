@@ -7,6 +7,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/analytics"
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
@@ -21,7 +22,7 @@ func buildTestService() *service {
 	return &service{
 		logger:         logging.NewNoopLogger(),
 		dataManager:    database.NewMockDatabase(),
-		encoderDecoder: mockencoding.NewMockEncoderDecoder(),
+		encoderDecoder: encoding.ProvideServerEncoderDecoder(nil, nil, encoding.ContentTypeJSON),
 		tracer:         tracing.NewTracerForTest("test"),
 		cfg:            &Config{},
 	}

@@ -85,7 +85,7 @@ func TestAuthenticationService_UserAttributionMiddleware(T *testing.T) {
 
 		helper.service.UserAttributionMiddleware(h).ServeHTTP(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mockHouseholdMembershipManager, h)
 	})
@@ -108,7 +108,11 @@ func TestAuthenticationService_UserAttributionMiddleware(T *testing.T) {
 		mh := &testutils.MockHTTPHandler{}
 		helper.service.UserAttributionMiddleware(mh).ServeHTTP(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[any]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mockHouseholdMembershipManager, mh)
 	})
@@ -152,7 +156,7 @@ func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
 
 		helper.service.AuthorizationMiddleware(h).ServeHTTP(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, h)
 	})
@@ -243,7 +247,7 @@ func TestAuthenticationService_AuthorizationMiddleware(T *testing.T) {
 
 		helper.service.AuthorizationMiddleware(&testutils.MockHTTPHandler{}).ServeHTTP(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
 }
 
@@ -280,7 +284,7 @@ func TestAuthenticationService_PermissionFilterMiddleware(T *testing.T) {
 
 		helper.service.PermissionFilterMiddleware(authorization.InviteUserToHouseholdPermission)(mockHandler).ServeHTTP(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mockHandler)
 	})
@@ -299,7 +303,7 @@ func TestAuthenticationService_PermissionFilterMiddleware(T *testing.T) {
 
 		helper.service.PermissionFilterMiddleware(authorization.InviteUserToHouseholdPermission)(nil).ServeHTTP(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
 
 	T.Run("unauthorized for household", func(t *testing.T) {
@@ -328,7 +332,7 @@ func TestAuthenticationService_PermissionFilterMiddleware(T *testing.T) {
 
 		helper.service.PermissionFilterMiddleware(authorization.InviteUserToHouseholdPermission)(nil).ServeHTTP(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
 
 	T.Run("without permission to perform action", func(t *testing.T) {
@@ -359,7 +363,7 @@ func TestAuthenticationService_PermissionFilterMiddleware(T *testing.T) {
 
 		helper.service.PermissionFilterMiddleware(authorization.ArchiveHouseholdPermission)(nil).ServeHTTP(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 	})
 }
 
@@ -396,7 +400,7 @@ func TestAuthenticationService_AdminMiddleware(T *testing.T) {
 
 		helper.service.ServiceAdminMiddleware(mockHandler).ServeHTTP(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mockHandler)
 	})
@@ -425,7 +429,7 @@ func TestAuthenticationService_AdminMiddleware(T *testing.T) {
 		mockHandler := &testutils.MockHTTPHandler{}
 		helper.service.ServiceAdminMiddleware(mockHandler).ServeHTTP(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 
 		mock.AssertExpectationsForObjects(t, mockHandler)
 	})

@@ -22,9 +22,11 @@ func TestValidPreparationInstruments(t *testing.T) {
 
 type validPreparationInstrumentsBaseSuite struct {
 	suite.Suite
-
-	ctx                               context.Context
-	exampleValidPreparationInstrument *types.ValidPreparationInstrument
+	ctx                                           context.Context
+	exampleValidPreparationInstrument             *types.ValidPreparationInstrument
+	exampleValidPreparationInstrumentResponse     *types.APIResponse[*types.ValidPreparationInstrument]
+	exampleValidPreparationInstrumentListResponse *types.APIResponse[[]*types.ValidPreparationInstrument]
+	exampleValidPreparationInstrumentList         []*types.ValidPreparationInstrument
 }
 
 var _ suite.SetupTestSuite = (*validPreparationInstrumentsBaseSuite)(nil)
@@ -32,11 +34,21 @@ var _ suite.SetupTestSuite = (*validPreparationInstrumentsBaseSuite)(nil)
 func (s *validPreparationInstrumentsBaseSuite) SetupTest() {
 	s.ctx = context.Background()
 	s.exampleValidPreparationInstrument = fakes.BuildFakeValidPreparationInstrument()
+	s.exampleValidPreparationInstrumentResponse = &types.APIResponse[*types.ValidPreparationInstrument]{
+		Data: s.exampleValidPreparationInstrument,
+	}
+
+	exampleList := fakes.BuildFakeValidPreparationInstrumentList()
+
+	s.exampleValidPreparationInstrumentList = exampleList.Data
+	s.exampleValidPreparationInstrumentListResponse = &types.APIResponse[[]*types.ValidPreparationInstrument]{
+		Data:       s.exampleValidPreparationInstrumentList,
+		Pagination: &exampleList.Pagination,
+	}
 }
 
 type validPreparationInstrumentsTestSuite struct {
 	suite.Suite
-
 	validPreparationInstrumentsBaseSuite
 }
 
@@ -47,7 +59,7 @@ func (s *validPreparationInstrumentsTestSuite) TestClient_GetValidPreparationIns
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleValidPreparationInstrument.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationInstrument)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationInstrumentResponse)
 		actual, err := c.GetValidPreparationInstrument(s.ctx, s.exampleValidPreparationInstrument.ID)
 
 		require.NotNil(t, actual)
@@ -95,15 +107,13 @@ func (s *validPreparationInstrumentsTestSuite) TestClient_GetValidPreparationIns
 
 		filter := (*types.QueryFilter)(nil)
 
-		exampleValidPreparationInstrumentList := fakes.BuildFakeValidPreparationInstrumentList()
-
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidPreparationInstrumentList)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationInstrumentListResponse)
 		actual, err := c.GetValidPreparationInstruments(s.ctx, filter)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidPreparationInstrumentList, actual)
+		assert.Equal(t, s.exampleValidPreparationInstrumentList, actual.Data)
 	})
 
 	s.Run("with error building request", func() {
@@ -132,7 +142,7 @@ func (s *validPreparationInstrumentsTestSuite) TestClient_GetValidPreparationIns
 	})
 }
 
-func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidPreparationInstrumentsForPreparation() {
+func (s *validPreparationInstrumentsTestSuite) TestClient_GetValidPreparationInstrumentsForPreparation() {
 	const expectedPath = "/api/v1/valid_preparation_instruments/by_preparation/%s"
 
 	exampleValidPreparation := fakes.BuildFakeValidPreparation()
@@ -142,15 +152,13 @@ func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidPreparatio
 
 		filter := (*types.QueryFilter)(nil)
 
-		exampleValidIngredientMeasurementUnitList := fakes.BuildFakeValidPreparationInstrumentList()
-
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, exampleValidPreparation.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientMeasurementUnitList)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationInstrumentListResponse)
 		actual, err := c.GetValidPreparationInstrumentsForPreparation(s.ctx, exampleValidPreparation.ID, filter)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidIngredientMeasurementUnitList, actual)
+		assert.Equal(t, s.exampleValidPreparationInstrumentList, actual.Data)
 	})
 
 	s.Run("with invalid ID", func() {
@@ -189,7 +197,7 @@ func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidPreparatio
 	})
 }
 
-func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidPreparationInstrumentsForInstrument() {
+func (s *validPreparationInstrumentsTestSuite) TestClient_GetValidPreparationInstrumentsForInstrument() {
 	const expectedPath = "/api/v1/valid_preparation_instruments/by_instrument/%s"
 
 	exampleValidInstrument := fakes.BuildFakeValidInstrument()
@@ -199,15 +207,13 @@ func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidPreparatio
 
 		filter := (*types.QueryFilter)(nil)
 
-		exampleValidIngredientMeasurementUnitList := fakes.BuildFakeValidPreparationInstrumentList()
-
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, exampleValidInstrument.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientMeasurementUnitList)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationInstrumentListResponse)
 		actual, err := c.GetValidPreparationInstrumentsForInstrument(s.ctx, exampleValidInstrument.ID, filter)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidIngredientMeasurementUnitList, actual)
+		assert.Equal(t, s.exampleValidPreparationInstrumentList, actual.Data)
 	})
 
 	s.Run("with invalid ID", func() {
@@ -255,7 +261,7 @@ func (s *validPreparationInstrumentsTestSuite) TestClient_CreateValidPreparation
 		exampleInput := fakes.BuildFakeValidPreparationInstrumentCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationInstrument)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationInstrumentResponse)
 
 		actual, err := c.CreateValidPreparationInstrument(s.ctx, exampleInput)
 		assert.NoError(t, err)
@@ -314,7 +320,7 @@ func (s *validPreparationInstrumentsTestSuite) TestClient_UpdateValidPreparation
 		t := s.T()
 
 		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, s.exampleValidPreparationInstrument.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationInstrument)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationInstrumentResponse)
 
 		err := c.UpdateValidPreparationInstrument(s.ctx, s.exampleValidPreparationInstrument)
 		assert.NoError(t, err)
@@ -355,7 +361,7 @@ func (s *validPreparationInstrumentsTestSuite) TestClient_ArchiveValidPreparatio
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, s.exampleValidPreparationInstrument.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationInstrumentResponse)
 
 		err := c.ArchiveValidPreparationInstrument(s.ctx, s.exampleValidPreparationInstrument.ID)
 		assert.NoError(t, err)

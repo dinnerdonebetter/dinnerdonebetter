@@ -27,12 +27,16 @@ func (c *Client) GetValidIngredientGroup(ctx context.Context, validIngredientGro
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid ingredient group request")
 	}
 
-	var validIngredientGroup *types.ValidIngredientGroup
-	if err = c.fetchAndUnmarshal(ctx, req, &validIngredientGroup); err != nil {
+	var apiResponse *types.APIResponse[*types.ValidIngredientGroup]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient group")
 	}
 
-	return validIngredientGroup, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // SearchValidIngredientGroups searches through a list of valid ingredient groups.
@@ -57,12 +61,16 @@ func (c *Client) SearchValidIngredientGroups(ctx context.Context, query string, 
 		return nil, observability.PrepareAndLogError(err, logger, span, "building search for valid ingredient groups request")
 	}
 
-	var validIngredientGroups []*types.ValidIngredientGroup
-	if err = c.fetchAndUnmarshal(ctx, req, &validIngredientGroups); err != nil {
+	var apiResponse *types.APIResponse[[]*types.ValidIngredientGroup]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient groups")
 	}
 
-	return validIngredientGroups, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // GetValidIngredientGroups retrieves a list of valid ingredient groups.
@@ -79,12 +87,21 @@ func (c *Client) GetValidIngredientGroups(ctx context.Context, filter *types.Que
 		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredients list request")
 	}
 
-	var validIngredientGroups *types.QueryFilteredResult[types.ValidIngredientGroup]
-	if err = c.fetchAndUnmarshal(ctx, req, &validIngredientGroups); err != nil {
+	var apiResponse *types.APIResponse[[]*types.ValidIngredientGroup]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredients")
 	}
 
-	return validIngredientGroups, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	response := &types.QueryFilteredResult[types.ValidIngredientGroup]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
+	}
+
+	return response, nil
 }
 
 // CreateValidIngredientGroup creates a valid ingredient.
@@ -107,12 +124,16 @@ func (c *Client) CreateValidIngredientGroup(ctx context.Context, input *types.Va
 		return nil, observability.PrepareAndLogError(err, logger, span, "building create valid ingredient request")
 	}
 
-	var validIngredientGroup *types.ValidIngredientGroup
-	if err = c.fetchAndUnmarshal(ctx, req, &validIngredientGroup); err != nil {
+	var apiResponse *types.APIResponse[*types.ValidIngredientGroup]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid ingredient group")
 	}
 
-	return validIngredientGroup, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // UpdateValidIngredientGroup updates a valid ingredient group.
@@ -133,8 +154,13 @@ func (c *Client) UpdateValidIngredientGroup(ctx context.Context, validIngredient
 		return observability.PrepareAndLogError(err, logger, span, "building update valid ingredient group request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, &validIngredientGroup); err != nil {
+	var apiResponse *types.APIResponse[*types.ValidIngredientGroup]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient group %s", validIngredientGroup.ID)
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -158,8 +184,13 @@ func (c *Client) ArchiveValidIngredientGroup(ctx context.Context, validIngredien
 		return observability.PrepareAndLogError(err, logger, span, "building archive valid ingredient group request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.ValidIngredientGroup]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient group %s", validIngredientGroupID)
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil

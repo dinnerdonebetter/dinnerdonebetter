@@ -11,7 +11,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -63,6 +62,10 @@ func TestMealsService_CreateMealHandler(T *testing.T) {
 		helper.service.CreateMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.Meal]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleMeal)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -81,6 +84,10 @@ func TestMealsService_CreateMealHandler(T *testing.T) {
 		helper.service.CreateMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.Meal]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with invalid input attached", func(t *testing.T) {
@@ -100,6 +107,10 @@ func TestMealsService_CreateMealHandler(T *testing.T) {
 		helper.service.CreateMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.Meal]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -121,6 +132,10 @@ func TestMealsService_CreateMealHandler(T *testing.T) {
 		helper.service.CreateMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.Meal]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
@@ -148,6 +163,10 @@ func TestMealsService_CreateMealHandler(T *testing.T) {
 		helper.service.CreateMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.Meal]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dbManager)
 	})
@@ -185,6 +204,10 @@ func TestMealsService_CreateMealHandler(T *testing.T) {
 		helper.service.CreateMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.Meal]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleMeal)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -209,44 +232,30 @@ func TestMealsService_ReadMealHandler(T *testing.T) {
 		).Return(helper.exampleMeal, nil)
 		helper.service.mealDataManager = mealDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.Meal{}),
-		)
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.ReadMealHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.Meal]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleMeal)
+		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, mealDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mealDataManager)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		)
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ReadMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, encoderDecoder)
+		var actual *types.APIResponse[*types.Meal]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with no such meal in the database", func(t *testing.T) {
@@ -265,19 +274,15 @@ func TestMealsService_ReadMealHandler(T *testing.T) {
 		).Return((*types.Meal)(nil), sql.ErrNoRows)
 		helper.service.mealDataManager = mealDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeNotFoundResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.ReadMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+		var actual *types.APIResponse[*types.Meal]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, mealDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mealDataManager)
 	})
 
 	T.Run("with error fetching from database", func(t *testing.T) {
@@ -296,19 +301,15 @@ func TestMealsService_ReadMealHandler(T *testing.T) {
 		).Return((*types.Meal)(nil), errors.New("blah"))
 		helper.service.mealDataManager = mealDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		)
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.ReadMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.Meal]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, mealDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mealDataManager)
 	})
 }
 
@@ -330,44 +331,30 @@ func TestMealsService_ListMealsHandler(T *testing.T) {
 		).Return(exampleMealList, nil)
 		helper.service.mealDataManager = mealDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.QueryFilteredResult[types.Meal]{}),
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.ListMealsHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.Meal]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, exampleMealList.Data)
+		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, mealDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mealDataManager)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		)
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ListMealsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, encoderDecoder)
+		var actual *types.APIResponse[*types.Meal]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with no rows returned", func(t *testing.T) {
@@ -383,20 +370,15 @@ func TestMealsService_ListMealsHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.Meal])(nil), sql.ErrNoRows)
 		helper.service.mealDataManager = mealDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.QueryFilteredResult[types.Meal]{}),
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.ListMealsHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.Meal]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, mealDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mealDataManager)
 	})
 
 	T.Run("with error retrieving meals from database", func(t *testing.T) {
@@ -412,19 +394,15 @@ func TestMealsService_ListMealsHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.Meal])(nil), errors.New("blah"))
 		helper.service.mealDataManager = mealDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.ListMealsHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.Meal]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, mealDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mealDataManager)
 	})
 }
 
@@ -449,20 +427,15 @@ func TestMealsService_SearchMealsHandler(T *testing.T) {
 		).Return(exampleMealList, nil)
 		helper.service.mealDataManager = mealDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.QueryFilteredResult[types.Meal]{}),
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.SearchMealsHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.Meal]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, exampleMealList.Data)
+		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, mealDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mealDataManager)
 	})
 
 	T.Run("using external service", func(t *testing.T) {
@@ -503,7 +476,11 @@ func TestMealsService_SearchMealsHandler(T *testing.T) {
 
 		helper.service.SearchMealsHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.Meal]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, exampleMealList.Data)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, mealDataManager, searchIndex)
 	})
@@ -516,7 +493,11 @@ func TestMealsService_SearchMealsHandler(T *testing.T) {
 
 		helper.service.SearchMealsHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.Meal]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with no rows returned", func(t *testing.T) {
@@ -534,20 +515,15 @@ func TestMealsService_SearchMealsHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.Meal])(nil), sql.ErrNoRows)
 		helper.service.mealDataManager = mealDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.QueryFilteredResult[types.Meal]{}),
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.SearchMealsHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.Meal]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.NoError(t, actual.Error.AsError())
 
-		mock.AssertExpectationsForObjects(t, mealDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mealDataManager)
 	})
 
 	T.Run("with error reading from database", func(t *testing.T) {
@@ -567,7 +543,11 @@ func TestMealsService_SearchMealsHandler(T *testing.T) {
 
 		helper.service.SearchMealsHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.Meal]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mealDataManager)
 	})
@@ -606,7 +586,10 @@ func TestMealsService_ArchiveMealHandler(T *testing.T) {
 
 		helper.service.ArchiveMealHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusNoContent, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.Meal]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -615,24 +598,15 @@ func TestMealsService_ArchiveMealHandler(T *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
-
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			"unauthenticated",
-			http.StatusUnauthorized,
-		)
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
 		helper.service.ArchiveMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-
-		mock.AssertExpectationsForObjects(t, encoderDecoder)
+		var actual *types.APIResponse[*types.Meal]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with no such meal in the database", func(t *testing.T) {
@@ -648,19 +622,15 @@ func TestMealsService_ArchiveMealHandler(T *testing.T) {
 		).Return(false, nil)
 		helper.service.mealDataManager = mealDataManager
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeNotFoundResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.ArchiveMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+		var actual *types.APIResponse[*types.Meal]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
-		mock.AssertExpectationsForObjects(t, mealDataManager, encoderDecoder)
+		mock.AssertExpectationsForObjects(t, mealDataManager)
 	})
 
 	T.Run("with error checking for item in database", func(t *testing.T) {
@@ -679,6 +649,10 @@ func TestMealsService_ArchiveMealHandler(T *testing.T) {
 		helper.service.ArchiveMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.Meal]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, mealDataManager)
 	})
@@ -706,6 +680,10 @@ func TestMealsService_ArchiveMealHandler(T *testing.T) {
 		helper.service.ArchiveMealHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.Meal]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dbManager)
 	})
@@ -740,7 +718,10 @@ func TestMealsService_ArchiveMealHandler(T *testing.T) {
 
 		helper.service.ArchiveMealHandler(helper.res, helper.req)
 
-		assert.Equal(t, http.StatusNoContent, helper.res.Code)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.Meal]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})

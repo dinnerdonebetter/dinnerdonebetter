@@ -23,9 +23,13 @@ func TestUsers(t *testing.T) {
 type usersBaseSuite struct {
 	suite.Suite
 
-	ctx             context.Context
-	exampleUser     *types.User
-	exampleUserList *types.QueryFilteredResult[types.User]
+	ctx                         context.Context
+	exampleUser                 *types.User
+	exampleUserResponse         *types.APIResponse[*types.User]
+	exampleUserCreationResponse *types.APIResponse[*types.UserCreationResponse]
+	exampleUserList             *types.QueryFilteredResult[types.User]
+	exampleUserListResponse     *types.APIResponse[[]*types.User]
+	examplePermissionsResponse  *types.APIResponse[*types.UserPermissionsResponse]
 }
 
 var _ suite.SetupTestSuite = (*usersBaseSuite)(nil)
@@ -49,11 +53,27 @@ func (s *usersBaseSuite) SetupTest() {
 		// the two factor secret validation is never transmitted over the wire.
 		s.exampleUserList.Data[i].TwoFactorSecretVerifiedAt = nil
 	}
+
+	s.exampleUserResponse = &types.APIResponse[*types.User]{
+		Data: s.exampleUser,
+	}
+
+	s.exampleUserCreationResponse = &types.APIResponse[*types.UserCreationResponse]{
+		Data: converters.ConvertUserToUserCreationResponse(s.exampleUser),
+	}
+
+	s.exampleUserListResponse = &types.APIResponse[[]*types.User]{
+		Data:       s.exampleUserList.Data,
+		Pagination: &s.exampleUserList.Pagination,
+	}
+
+	s.examplePermissionsResponse = &types.APIResponse[*types.UserPermissionsResponse]{
+		Data: &types.UserPermissionsResponse{Permissions: map[string]bool{"things": true}},
+	}
 }
 
 type usersTestSuite struct {
 	suite.Suite
-
 	usersBaseSuite
 }
 
@@ -64,7 +84,7 @@ func (s *usersTestSuite) TestClient_GetSelf() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleUser)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleUserResponse)
 
 		actual, err := c.GetSelf(s.ctx)
 		assert.NoError(t, err)
@@ -99,7 +119,7 @@ func (s *usersTestSuite) TestClient_GetUser() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleUser.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleUser)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleUserResponse)
 
 		actual, err := c.GetUser(s.ctx, s.exampleUser.ID)
 		assert.NoError(t, err)
@@ -144,7 +164,7 @@ func (s *usersTestSuite) TestClient_GetUsers() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleUserList)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleUserListResponse)
 
 		actual, err := c.GetUsers(s.ctx, nil)
 		assert.NoError(t, err)
@@ -180,7 +200,7 @@ func (s *usersTestSuite) TestClient_SearchForUsersByUsername() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, fmt.Sprintf("q=%s", exampleUsername), expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleUserList.Data)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleUserListResponse)
 
 		actual, err := c.SearchForUsersByUsername(s.ctx, exampleUsername)
 		assert.NoError(t, err)
@@ -224,14 +244,13 @@ func (s *usersTestSuite) TestClient_CreateUser() {
 	s.Run("standard", func() {
 		t := s.T()
 
-		expected := converters.ConvertUserToUserCreationResponse(s.exampleUser)
 		exampleInput := fakes.BuildFakeUserRegistrationInputFromUser(s.exampleUser)
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c := buildTestClientWithRequestBodyValidation(t, spec, &types.UserRegistrationInput{}, exampleInput, expected)
+		c := buildTestClientWithRequestBodyValidation(t, spec, &types.UserRegistrationInput{}, exampleInput, s.exampleUserCreationResponse)
 
 		actual, err := c.CreateUser(s.ctx, exampleInput)
 		assert.NoError(t, err)
-		assert.Equal(t, expected, actual)
+		assert.Equal(t, s.exampleUserCreationResponse.Data, actual)
 	})
 
 	s.Run("with nil input", func() {
@@ -274,7 +293,7 @@ func (s *usersTestSuite) TestClient_ArchiveUser() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, s.exampleUser.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleUserResponse)
 
 		err := c.ArchiveUser(s.ctx, s.exampleUser.ID)
 		assert.NoError(t, err)
@@ -316,7 +335,7 @@ func (s *usersTestSuite) TestClient_UploadNewAvatar() {
 		t := s.T()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleUserResponse)
 
 		err := c.UploadNewAvatar(s.ctx, exampleInput)
 		assert.NoError(t, err)
@@ -365,10 +384,8 @@ func (s *usersTestSuite) TestClient_CheckUserPermissions() {
 	s.Run("standard", func() {
 		t := s.T()
 
-		exampleResponse := &types.UserPermissionsResponse{Permissions: map[string]bool{"things": true}}
-
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleResponse)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.examplePermissionsResponse)
 
 		perms, err := c.CheckUserPermissions(s.ctx, t.Name())
 		assert.NoError(t, err)
@@ -417,7 +434,7 @@ func (s *usersTestSuite) TestClient_UpdateUserEmailAddress() {
 		exampleInput := fakes.BuildFakeUserEmailAddressUpdateInput()
 
 		spec := newRequestSpec(true, http.MethodPut, "", expectedPathFormat)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleUser)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleUserResponse)
 
 		err := c.UpdateUserEmailAddress(s.ctx, exampleInput)
 		assert.NoError(t, err)
@@ -462,7 +479,7 @@ func (s *usersTestSuite) TestClient_UpdateUserUsername() {
 		exampleInput := fakes.BuildFakeUsernameUpdateInput()
 
 		spec := newRequestSpec(true, http.MethodPut, "", expectedPathFormat)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleUser)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleUserResponse)
 
 		err := c.UpdateUserUsername(s.ctx, exampleInput)
 		assert.NoError(t, err)
@@ -507,7 +524,7 @@ func (s *usersTestSuite) TestClient_UpdateUserDetails() {
 		exampleInput := fakes.BuildFakeUserDetailsUpdateInput()
 
 		spec := newRequestSpec(true, http.MethodPut, "", expectedPathFormat)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleUser)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleUserResponse)
 
 		err := c.UpdateUserDetails(s.ctx, exampleInput)
 		assert.NoError(t, err)

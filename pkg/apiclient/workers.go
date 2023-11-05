@@ -23,12 +23,16 @@ func (c *Client) RunFinalizeMealPlansWorker(ctx context.Context, input *types.Fi
 		return nil, observability.PrepareAndLogError(err, logger, span, "building worker execution request")
 	}
 
-	var finalizeResponse *types.FinalizeMealPlansResponse
-	if err = c.fetchAndUnmarshal(ctx, req, &finalizeResponse); err != nil {
+	var apiResponse *types.APIResponse[*types.FinalizeMealPlansResponse]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "finalizing meal plan")
 	}
 
-	return finalizeResponse, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // RunMealPlanGroceryListInitializationWorker runs a worker.
@@ -43,8 +47,13 @@ func (c *Client) RunMealPlanGroceryListInitializationWorker(ctx context.Context)
 		return observability.PrepareAndLogError(err, logger, span, "building worker execution request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.FinalizeMealPlansResponse]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "initializing meal plan grocery lists")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -62,8 +71,13 @@ func (c *Client) RunMealPlanTaskCreationWorker(ctx context.Context) error {
 		return observability.PrepareAndLogError(err, logger, span, "building worker execution request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.FinalizeMealPlansResponse]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "creating meal plan tasks")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil

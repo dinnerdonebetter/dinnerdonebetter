@@ -21,18 +21,25 @@ const (
 	mealPlanTaskCreationEnsurerWorkerName = "meal_plan_task_creation_ensurer"
 )
 
-// MealPlanTaskCreatorWorker ensurers meal plan tasks are created.
-type MealPlanTaskCreatorWorker struct {
-	logger                 logging.Logger
-	tracer                 tracing.Tracer
-	analyzer               recipeanalysis.RecipeAnalyzer
-	encoder                encoding.ClientEncoder
-	dataManager            database.DataManager
-	postUpdatesPublisher   messagequeue.Publisher
-	analyticsEventReporter analytics.EventReporter
-}
+type (
+	// MealPlanTaskCreatorWorker ensures meal plan tasks are created.
+	MealPlanTaskCreatorWorker interface {
+		CreateMealPlanTasksForFinalizedMealPlans(ctx context.Context, _ []byte) error
+	}
 
-// ProvideMealPlanTaskCreationEnsurerWorker provides a MealPlanTaskCreatorWorker.
+	// mealPlanTaskCreatorWorker ensurers meal plan tasks are created.
+	mealPlanTaskCreatorWorker struct {
+		logger                 logging.Logger
+		tracer                 tracing.Tracer
+		analyzer               recipeanalysis.RecipeAnalyzer
+		encoder                encoding.ClientEncoder
+		dataManager            database.DataManager
+		postUpdatesPublisher   messagequeue.Publisher
+		analyticsEventReporter analytics.EventReporter
+	}
+)
+
+// ProvideMealPlanTaskCreationEnsurerWorker provides a mealPlanTaskCreatorWorker.
 func ProvideMealPlanTaskCreationEnsurerWorker(
 	logger logging.Logger,
 	dataManager database.DataManager,
@@ -40,8 +47,8 @@ func ProvideMealPlanTaskCreationEnsurerWorker(
 	postUpdatesPublisher messagequeue.Publisher,
 	analyticsEventReporter analytics.EventReporter,
 	tracerProvider tracing.TracerProvider,
-) *MealPlanTaskCreatorWorker {
-	return &MealPlanTaskCreatorWorker{
+) *mealPlanTaskCreatorWorker {
+	return &mealPlanTaskCreatorWorker{
 		logger:                 logging.EnsureLogger(logger).WithName(mealPlanTaskCreationEnsurerWorkerName),
 		tracer:                 tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(mealPlanTaskCreationEnsurerWorkerName)),
 		encoder:                encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
@@ -53,7 +60,7 @@ func ProvideMealPlanTaskCreationEnsurerWorker(
 }
 
 // CreateMealPlanTasksForFinalizedMealPlans does the main thing.
-func (w *MealPlanTaskCreatorWorker) CreateMealPlanTasksForFinalizedMealPlans(ctx context.Context, _ []byte) error {
+func (w *mealPlanTaskCreatorWorker) CreateMealPlanTasksForFinalizedMealPlans(ctx context.Context, _ []byte) error {
 	ctx, span := w.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -97,7 +104,7 @@ func (w *MealPlanTaskCreatorWorker) CreateMealPlanTasksForFinalizedMealPlans(ctx
 }
 
 // determineCreatableMealPlanTasks determines which meal plan tasks are creatable for a recipe.
-func (w *MealPlanTaskCreatorWorker) determineCreatableMealPlanTasks(ctx context.Context) (map[string][]*types.MealPlanTaskDatabaseCreationInput, error) {
+func (w *mealPlanTaskCreatorWorker) determineCreatableMealPlanTasks(ctx context.Context) (map[string][]*types.MealPlanTaskDatabaseCreationInput, error) {
 	ctx, span := w.tracer.StartSpan(ctx)
 	defer span.End()
 

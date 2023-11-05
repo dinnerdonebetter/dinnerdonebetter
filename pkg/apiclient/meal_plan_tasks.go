@@ -33,12 +33,16 @@ func (c *Client) GetMealPlanTask(ctx context.Context, mealPlanID, mealPlanTaskID
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get meal plan task request")
 	}
 
-	var validIngredient *types.MealPlanTask
-	if err = c.fetchAndUnmarshal(ctx, req, &validIngredient); err != nil {
+	var apiResponse *types.APIResponse[*types.MealPlanTask]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving meal plan task")
 	}
 
-	return validIngredient, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // CreateMealPlanTask creates a meal plan task.
@@ -63,12 +67,16 @@ func (c *Client) CreateMealPlanTask(ctx context.Context, mealPlanID string, inpu
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get meal plan task request")
 	}
 
-	var validIngredient *types.MealPlanTask
-	if err = c.fetchAndUnmarshal(ctx, req, &validIngredient); err != nil {
+	var apiResponse *types.APIResponse[*types.MealPlanTask]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving meal plan task")
 	}
 
-	return validIngredient, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // UpdateMealPlanTaskStatus updates a meal plan task.
@@ -97,10 +105,14 @@ func (c *Client) UpdateMealPlanTaskStatus(ctx context.Context, mealPlanID string
 		return nil, observability.PrepareAndLogError(err, logger, span, "building create meal plan task request")
 	}
 
-	var validIngredient *types.MealPlanTask
-	if err = c.fetchAndUnmarshal(ctx, req, &validIngredient); err != nil {
+	var apiResponse *types.APIResponse[*types.MealPlanTask]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan task")
 	}
 
-	return validIngredient, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }

@@ -27,12 +27,16 @@ func (c *Client) GetValidPreparationVessel(ctx context.Context, validPreparation
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid ingredient vessel request")
 	}
 
-	var validPreparationVessel *types.ValidPreparationVessel
-	if err = c.fetchAndUnmarshal(ctx, req, &validPreparationVessel); err != nil {
+	var apiResponse *types.APIResponse[*types.ValidPreparationVessel]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient vessel")
 	}
 
-	return validPreparationVessel, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // GetValidPreparationVessels retrieves a list of valid preparation vessels.
@@ -49,9 +53,18 @@ func (c *Client) GetValidPreparationVessels(ctx context.Context, filter *types.Q
 		return nil, observability.PrepareAndLogError(err, logger, span, "building valid preparation vessels list request")
 	}
 
-	var validPreparationVessels *types.QueryFilteredResult[types.ValidPreparationVessel]
-	if err = c.fetchAndUnmarshal(ctx, req, &validPreparationVessels); err != nil {
+	var apiResponse *types.APIResponse[[]*types.ValidPreparationVessel]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid preparation vessels")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	validPreparationVessels := &types.QueryFilteredResult[types.ValidPreparationVessel]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
 	}
 
 	return validPreparationVessels, nil
@@ -76,9 +89,18 @@ func (c *Client) GetValidPreparationVesselsForPreparation(ctx context.Context, v
 		return nil, observability.PrepareAndLogError(err, logger, span, "building valid preparation vessels list request")
 	}
 
-	var validPreparationVessels *types.QueryFilteredResult[types.ValidPreparationVessel]
-	if err = c.fetchAndUnmarshal(ctx, req, &validPreparationVessels); err != nil {
+	var apiResponse *types.APIResponse[[]*types.ValidPreparationVessel]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid preparation vessels")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	validPreparationVessels := &types.QueryFilteredResult[types.ValidPreparationVessel]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
 	}
 
 	return validPreparationVessels, nil
@@ -103,9 +125,18 @@ func (c *Client) GetValidPreparationVesselsForVessel(ctx context.Context, validI
 		return nil, observability.PrepareAndLogError(err, logger, span, "building valid preparation vessels list request")
 	}
 
-	var validPreparationVessels *types.QueryFilteredResult[types.ValidPreparationVessel]
-	if err = c.fetchAndUnmarshal(ctx, req, &validPreparationVessels); err != nil {
+	var apiResponse *types.APIResponse[[]*types.ValidPreparationVessel]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid preparation vessels")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	validPreparationVessels := &types.QueryFilteredResult[types.ValidPreparationVessel]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
 	}
 
 	return validPreparationVessels, nil
@@ -131,12 +162,16 @@ func (c *Client) CreateValidPreparationVessel(ctx context.Context, input *types.
 		return nil, observability.PrepareAndLogError(err, logger, span, "building create valid ingredient vessel request")
 	}
 
-	var validPreparationVessel *types.ValidPreparationVessel
-	if err = c.fetchAndUnmarshal(ctx, req, &validPreparationVessel); err != nil {
+	var apiResponse *types.APIResponse[*types.ValidPreparationVessel]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid ingredient vessel")
 	}
 
-	return validPreparationVessel, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // UpdateValidPreparationVessel updates a valid ingredient vessel.
@@ -157,8 +192,13 @@ func (c *Client) UpdateValidPreparationVessel(ctx context.Context, validPreparat
 		return observability.PrepareAndLogError(err, logger, span, "building update valid ingredient vessel request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, &validPreparationVessel); err != nil {
+	var apiResponse *types.APIResponse[*types.ValidPreparationVessel]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient vessel %s", validPreparationVessel.ID)
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -182,8 +222,13 @@ func (c *Client) ArchiveValidPreparationVessel(ctx context.Context, validPrepara
 		return observability.PrepareAndLogError(err, logger, span, "building archive valid ingredient vessel request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.ValidPreparationVessel]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient vessel %s", validPreparationVesselID)
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil

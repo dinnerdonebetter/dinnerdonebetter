@@ -26,12 +26,16 @@ func (c *Client) GetWebhook(ctx context.Context, webhookID string) (*types.Webho
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get webhook request")
 	}
 
-	var webhook *types.Webhook
-	if err = c.fetchAndUnmarshal(ctx, req, &webhook); err != nil {
+	var apiResponse *types.APIResponse[*types.Webhook]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving webhook")
 	}
 
-	return webhook, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // GetWebhooks gets a list of webhooks.
@@ -48,9 +52,18 @@ func (c *Client) GetWebhooks(ctx context.Context, filter *types.QueryFilter) (*t
 		return nil, observability.PrepareAndLogError(err, logger, span, "building webhooks list request")
 	}
 
-	var webhooks *types.QueryFilteredResult[types.Webhook]
-	if err = c.fetchAndUnmarshal(ctx, req, &webhooks); err != nil {
+	var apiResponse *types.APIResponse[[]*types.Webhook]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving webhooks")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	webhooks := &types.QueryFilteredResult[types.Webhook]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
 	}
 
 	return webhooks, nil
@@ -76,12 +89,16 @@ func (c *Client) CreateWebhook(ctx context.Context, input *types.WebhookCreation
 		return nil, observability.PrepareAndLogError(err, logger, span, "building create webhook request")
 	}
 
-	var webhook *types.Webhook
-	if err = c.fetchAndUnmarshal(ctx, req, &webhook); err != nil {
+	var apiResponse *types.APIResponse[*types.Webhook]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating webhook")
 	}
 
-	return webhook, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // ArchiveWebhook archives a webhook.
@@ -101,8 +118,13 @@ func (c *Client) ArchiveWebhook(ctx context.Context, webhookID string) error {
 		return observability.PrepareAndLogError(err, logger, span, "building archive webhook request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.Webhook]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving webhook")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil

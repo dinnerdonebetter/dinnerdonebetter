@@ -22,12 +22,14 @@ func TestMealPlanOptionVotes(t *testing.T) {
 
 type mealPlanOptionVotesBaseSuite struct {
 	suite.Suite
-	ctx                        context.Context
-	exampleMealPlanOptionVote  *types.MealPlanOptionVote
-	exampleMealPlanID          string
-	exampleMealPlanEventID     string
-	exampleMealPlanOptionID    string
-	exampleMealPlanOptionVotes []*types.MealPlanOptionVote
+	ctx                                   context.Context
+	exampleMealPlanOptionVote             *types.MealPlanOptionVote
+	exampleMealPlanOptionVoteResponse     *types.APIResponse[*types.MealPlanOptionVote]
+	exampleMealPlanOptionVoteListResponse *types.APIResponse[[]*types.MealPlanOptionVote]
+	exampleMealPlanID                     string
+	exampleMealPlanEventID                string
+	exampleMealPlanOptionID               string
+	exampleMealPlanOptionVoteList         []*types.MealPlanOptionVote
 }
 
 var _ suite.SetupTestSuite = (*mealPlanOptionVotesBaseSuite)(nil)
@@ -39,12 +41,19 @@ func (s *mealPlanOptionVotesBaseSuite) SetupTest() {
 	s.exampleMealPlanOptionID = fakes.BuildFakeID()
 	s.exampleMealPlanOptionVote = fakes.BuildFakeMealPlanOptionVote()
 	s.exampleMealPlanOptionVote.BelongsToMealPlanOption = s.exampleMealPlanOptionID
-	s.exampleMealPlanOptionVotes = []*types.MealPlanOptionVote{s.exampleMealPlanOptionVote}
+	exampleMealPlanOptionVoteList := fakes.BuildFakeMealPlanOptionVoteList()
+	s.exampleMealPlanOptionVoteList = exampleMealPlanOptionVoteList.Data
+	s.exampleMealPlanOptionVoteResponse = &types.APIResponse[*types.MealPlanOptionVote]{
+		Data: s.exampleMealPlanOptionVote,
+	}
+	s.exampleMealPlanOptionVoteListResponse = &types.APIResponse[[]*types.MealPlanOptionVote]{
+		Data:       s.exampleMealPlanOptionVoteList,
+		Pagination: &exampleMealPlanOptionVoteList.Pagination,
+	}
 }
 
 type mealPlanOptionVotesTestSuite struct {
 	suite.Suite
-
 	mealPlanOptionVotesBaseSuite
 }
 
@@ -55,7 +64,7 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_GetMealPlanOptionVote() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleMealPlanID, s.exampleMealPlanEventID, s.exampleMealPlanOptionID, s.exampleMealPlanOptionVote.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanOptionVote)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanOptionVoteResponse)
 		actual, err := c.GetMealPlanOptionVote(s.ctx, s.exampleMealPlanID, s.exampleMealPlanEventID, s.exampleMealPlanOptionID, s.exampleMealPlanOptionVote.ID)
 
 		require.NotNil(t, actual)
@@ -118,26 +127,22 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_GetMealPlanOptionVote() {
 func (s *mealPlanOptionVotesTestSuite) TestClient_GetMealPlanOptionVotes() {
 	const expectedPath = "/api/v1/meal_plans/%s/events/%s/options/%s/votes"
 
+	filter := (*types.QueryFilter)(nil)
+
 	s.Run("standard", func() {
 		t := s.T()
 
-		filter := (*types.QueryFilter)(nil)
-
-		exampleMealPlanOptionVoteList := fakes.BuildFakeMealPlanOptionVoteList()
-
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, s.exampleMealPlanID, s.exampleMealPlanEventID, s.exampleMealPlanOptionID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleMealPlanOptionVoteList)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanOptionVoteListResponse)
 		actual, err := c.GetMealPlanOptionVotes(s.ctx, s.exampleMealPlanID, s.exampleMealPlanEventID, s.exampleMealPlanOptionID, filter)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleMealPlanOptionVoteList, actual)
+		assert.Equal(t, s.exampleMealPlanOptionVoteList, actual.Data)
 	})
 
 	s.Run("with invalid meal plan ID", func() {
 		t := s.T()
-
-		filter := (*types.QueryFilter)(nil)
 
 		c, _ := buildSimpleTestClient(t)
 		actual, err := c.GetMealPlanOptionVotes(s.ctx, "", s.exampleMealPlanEventID, s.exampleMealPlanOptionID, filter)
@@ -149,8 +154,6 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_GetMealPlanOptionVotes() {
 	s.Run("with invalid meal plan option ID", func() {
 		t := s.T()
 
-		filter := (*types.QueryFilter)(nil)
-
 		c, _ := buildSimpleTestClient(t)
 		actual, err := c.GetMealPlanOptionVotes(s.ctx, s.exampleMealPlanID, s.exampleMealPlanEventID, "", filter)
 
@@ -161,8 +164,6 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_GetMealPlanOptionVotes() {
 	s.Run("with error building request", func() {
 		t := s.T()
 
-		filter := (*types.QueryFilter)(nil)
-
 		c := buildTestClientWithInvalidURL(t)
 		actual, err := c.GetMealPlanOptionVotes(s.ctx, s.exampleMealPlanID, s.exampleMealPlanEventID, s.exampleMealPlanOptionID, filter)
 
@@ -172,8 +173,6 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_GetMealPlanOptionVotes() {
 
 	s.Run("with error executing request", func() {
 		t := s.T()
-
-		filter := (*types.QueryFilter)(nil)
 
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, s.exampleMealPlanID, s.exampleMealPlanEventID, s.exampleMealPlanOptionID)
 		c := buildTestClientWithInvalidResponse(t, spec)
@@ -193,11 +192,11 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_CreateMealPlanOptionVote() {
 		exampleInput := fakes.BuildFakeMealPlanOptionVoteCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, s.exampleMealPlanID, s.exampleMealPlanEventID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, []*types.MealPlanOptionVote{s.exampleMealPlanOptionVote})
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanOptionVoteListResponse)
 
 		actual, err := c.CreateMealPlanOptionVote(s.ctx, s.exampleMealPlanID, s.exampleMealPlanEventID, exampleInput)
 		assert.NoError(t, err)
-		assert.Equal(t, s.exampleMealPlanOptionVotes, actual)
+		assert.Equal(t, s.exampleMealPlanOptionVoteList, actual)
 	})
 
 	s.Run("with invalid meal plan ID", func() {
@@ -264,7 +263,7 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_UpdateMealPlanOptionVote() {
 		t := s.T()
 
 		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, s.exampleMealPlanID, s.exampleMealPlanEventID, s.exampleMealPlanOptionID, s.exampleMealPlanOptionVote.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanOptionVote)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanOptionVoteResponse)
 
 		err := c.UpdateMealPlanOptionVote(s.ctx, s.exampleMealPlanID, s.exampleMealPlanEventID, s.exampleMealPlanOptionVote)
 		assert.NoError(t, err)
@@ -314,7 +313,7 @@ func (s *mealPlanOptionVotesTestSuite) TestClient_ArchiveMealPlanOptionVote() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, s.exampleMealPlanID, s.exampleMealPlanEventID, s.exampleMealPlanOptionID, s.exampleMealPlanOptionVote.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanOptionVoteResponse)
 
 		err := c.ArchiveMealPlanOptionVote(s.ctx, s.exampleMealPlanID, s.exampleMealPlanEventID, s.exampleMealPlanOptionID, s.exampleMealPlanOptionVote.ID)
 		assert.NoError(t, err)

@@ -88,24 +88,36 @@ func (s *service) UsernameSearchHandler(res http.ResponseWriter, req *http.Reque
 	defer span.End()
 
 	query := req.URL.Query().Get(types.SearchQueryKey)
+
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
+
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
 
 	// fetch user data.
 	users, err := s.userDataManager.SearchForUsersByUsername(ctx, query)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+			errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 			return
 		}
 
 		observability.AcknowledgeError(err, logger, span, "searching for users")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.User]{
+		Details: responseDetails,
+		Data:    users,
+	}
+
 	// encode response.
-	s.encoderDecoder.RespondWithData(ctx, res, users)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ListHandler is a handler for responding with a list of users.
@@ -116,6 +128,10 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
 	// determine desired filter.
 	qf := types.ExtractQueryFilterFromRequest(req)
 
@@ -123,12 +139,19 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	users, err := s.userDataManager.GetUsers(ctx, qf)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching users")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
+	responseValue := &types.APIResponse[[]*types.User]{
+		Details:    responseDetails,
+		Data:       users.Data,
+		Pagination: &users.Pagination,
+	}
+
 	// encode response.
-	s.encoderDecoder.RespondWithData(ctx, res, users)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // CreateHandler is our user creation route.
@@ -139,9 +162,14 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
 	// in the event that we don't want new users to be able to sign up (a config setting) just decline the request from the get-go
 	if !s.authSettings.EnableUserSignup || os.Getenv("DISABLE_REGISTRATION") == "true" {
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "user creation is disabled", http.StatusForbidden)
+		errRes := types.NewAPIErrorResponse("user creation is disabled", types.ErrNothingSpecific, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusForbidden)
 		return
 	}
 
@@ -149,7 +177,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	registrationInput := new(types.UserRegistrationInput)
 	if err := s.encoderDecoder.DecodeRequest(ctx, req, registrationInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
@@ -168,14 +197,16 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	if err := registrationInput.ValidateWithContext(ctx, s.authSettings.MinimumUsernameLength, s.authSettings.MinimumPasswordLength); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
 	// ensure the password is not garbage-tier
 	if err := passwordvalidator.Validate(strings.TrimSpace(registrationInput.Password), minimumPasswordEntropy); err != nil {
 		logger.WithValue("password_validation_error", err).Debug("weak password provided to user creation route")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "password too weak", http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse("provided password is too weak", types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
@@ -183,11 +214,13 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	if registrationInput.InvitationID != "" && registrationInput.InvitationToken != "" {
 		i, err := s.householdInvitationDataManager.GetHouseholdInvitationByTokenAndID(ctx, registrationInput.InvitationToken, registrationInput.InvitationID)
 		if errors.Is(err, sql.ErrNoRows) {
-			s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+			errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 			return
 		} else if err != nil {
 			observability.AcknowledgeError(err, logger, span, "retrieving invitation")
-			s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 			return
 		}
 
@@ -202,7 +235,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	hp, err := s.authenticator.HashPassword(ctx, strings.TrimSpace(registrationInput.Password))
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating user")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("hashing password", types.ErrSecretGeneration, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -210,7 +244,8 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	tfs, err := s.secretGenerator.GenerateBase32EncodedString(ctx, totpSecretSize)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "generating two factor secret")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "internal error", http.StatusInternalServerError)
+		errRes := types.NewAPIErrorResponse("internal error", types.ErrNothingSpecific, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -238,11 +273,12 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	if userCreationErr != nil {
 		observability.AcknowledgeError(err, logger, span, "creating user")
 		if errors.Is(userCreationErr, database.ErrUserAlreadyExists) {
-			s.encoderDecoder.EncodeErrorResponse(ctx, res, "username taken", http.StatusBadRequest)
+			errRes := types.NewAPIErrorResponse("username taken", types.ErrValidatingRequestInput, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 			return
 		}
-
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -251,13 +287,15 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	defaultHouseholdID, err := s.householdUserMembershipDataManager.GetDefaultHouseholdIDForUser(ctx, user.ID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching default household ID for user")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
 	emailVerificationToken, emailVerificationTokenErr := s.userDataManager.GetEmailAddressVerificationTokenForUser(ctx, user.ID)
 	if emailVerificationTokenErr != nil {
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -301,8 +339,13 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		TwoFactorQRCode: s.buildQRCode(ctx, user.Username, user.TwoFactorSecret),
 	}
 
+	responseValue := &types.APIResponse[*types.UserCreationResponse]{
+		Details: responseDetails,
+		Data:    ucr,
+	}
+
 	// encode and peace.
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, ucr, http.StatusCreated)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusCreated)
 }
 
 // buildQRCode builds a QR code for a given username and secret.
@@ -354,10 +397,15 @@ func (s *service) SelfHandler(res http.ResponseWriter, req *http.Request) {
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-		s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
 
@@ -373,16 +421,23 @@ func (s *service) SelfHandler(res http.ResponseWriter, req *http.Request) {
 	user, err := s.userDataManager.GetUser(ctx, requester)
 	if errors.Is(err, sql.ErrNoRows) {
 		logger.Debug("no such user")
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching user")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
+	responseValue := &types.APIResponse[*types.User]{
+		Details: responseDetails,
+		Data:    user,
+	}
+
 	// encode response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, user)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // PermissionsHandler returns information about the user making the request.
@@ -393,10 +448,15 @@ func (s *service) PermissionsHandler(res http.ResponseWriter, req *http.Request)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
 	sessionCtxData, sessionCtxDataErr := s.sessionContextDataFetcher(req)
 	if sessionCtxDataErr != nil {
 		observability.AcknowledgeError(sessionCtxDataErr, logger, span, "retrieving session context data")
-		s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
 
@@ -407,7 +467,8 @@ func (s *service) PermissionsHandler(res http.ResponseWriter, req *http.Request)
 	permissionsInput := new(types.UserPermissionsRequestInput)
 	if decodeErr := s.encoderDecoder.DecodeRequest(ctx, req, permissionsInput); decodeErr != nil {
 		observability.AcknowledgeError(decodeErr, logger, span, "decoding request body")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
@@ -422,8 +483,13 @@ func (s *service) PermissionsHandler(res http.ResponseWriter, req *http.Request)
 		body.Permissions[perm] = hasHouseholdPerm || hasServicePerm
 	}
 
+	responseValue := &types.APIResponse[*types.UserPermissionsResponse]{
+		Details: responseDetails,
+		Data:    body,
+	}
+
 	// encode response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, body)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // ReadHandler is our read route.
@@ -434,6 +500,10 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
 	// figure out who this is all for.
 	userID := s.userIDFetcher(req)
 	logger = logger.WithValue(keys.UserIDKey, userID)
@@ -443,16 +513,23 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	x, err := s.userDataManager.GetUser(ctx, userID)
 	if errors.Is(err, sql.ErrNoRows) {
 		logger.Debug("no such user")
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching user from database")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
+	responseValue := &types.APIResponse[*types.User]{
+		Details: responseDetails,
+		Data:    x,
+	}
+
 	// encode response and peace.
-	s.encoderDecoder.RespondWithData(ctx, res, x)
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // TOTPSecretVerificationHandler accepts a TOTP token as input and returns 200 if the TOTP token
@@ -464,26 +541,33 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
 	// decode the request.
 	input := new(types.TOTPSecretVerificationInput)
 	if err := s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
 	logger = logger.WithValue(keys.UserIDKey, input.UserID)
 
-	user, fetchUserErr := s.userDataManager.GetUserWithUnverifiedTwoFactorSecret(ctx, input.UserID)
-	if fetchUserErr != nil {
-		observability.AcknowledgeError(fetchUserErr, logger, span, "fetching user to verify two factor secret")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+	user, err := s.userDataManager.GetUserWithUnverifiedTwoFactorSecret(ctx, input.UserID)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "fetching user to verify two factor secret")
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -493,19 +577,23 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 	if user.TwoFactorSecretVerifiedAt != nil {
 		// I suppose if this happens too many times, we might want to keep track of that
 		logger.Debug("two factor secret already verified")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "TOTP secret already verified", http.StatusAlreadyReported)
+		errRes := types.NewAPIErrorResponse("TOTP secret already verified", types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusAlreadyReported)
 		return
 	}
 
 	totpValid := totp.Validate(input.TOTPToken, user.TwoFactorSecret)
 	if !totpValid {
-		s.encoderDecoder.EncodeInvalidInputResponse(ctx, res)
+		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
+		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
-	if err := s.userDataManager.MarkUserTwoFactorSecretAsVerified(ctx, user.ID); err != nil {
+	if err = s.userDataManager.MarkUserTwoFactorSecretAsVerified(ctx, user.ID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "verifying user two factor secret")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -514,11 +602,16 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 		UserID:    user.ID,
 	}
 
-	if err := s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	res.WriteHeader(http.StatusAccepted)
+	responseValue := &types.APIResponse[*types.User]{
+		Details: responseDetails,
+		Data:    user,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // NewTOTPSecretHandler fetches a user, and issues them a new TOTP secret, after validating
@@ -530,24 +623,31 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
 	// decode the request.
 	input := new(types.TOTPSecretRefreshInput)
 	if err := s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-		s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
 
@@ -558,11 +658,13 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 	user, err := s.userDataManager.GetUser(ctx, sessionCtxData.Requester.UserID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+			errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 			return
 		}
 		observability.AcknowledgeError(err, logger, span, "fetching user from database")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -571,11 +673,13 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 		valid, validationErr := s.authenticator.CredentialsAreValid(ctx, user.HashedPassword, input.CurrentPassword, user.TwoFactorSecret, input.TOTPToken)
 		if validationErr != nil {
 			observability.AcknowledgeError(validationErr, logger, span, "validating credentials")
-			s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+			errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 			return
 		} else if !valid {
 			observability.AcknowledgeError(validationErr, logger, span, "invalid credentials")
-			s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusUnauthorized)
+			errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrUserIsNotAuthorized, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 			return
 		}
 	} else {
@@ -592,14 +696,16 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 	tfs, err := s.secretGenerator.GenerateBase32EncodedString(ctx, totpSecretSize)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "generating 2FA secret")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("generating secret", types.ErrSecretGeneration, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
 	// update the user in the database.
 	if err = s.userDataManager.MarkUserTwoFactorSecretAsUnverified(ctx, user.ID, tfs); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating 2FA secret")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -621,7 +727,12 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 		TwoFactorQRCode: s.buildQRCode(ctx, user.Username, user.TwoFactorSecret),
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, result, http.StatusAccepted)
+	responseValue := &types.APIResponse[*types.TOTPSecretRefreshResponse]{
+		Details: responseDetails,
+		Data:    result,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // UpdatePasswordHandler updates a user's password.
@@ -632,24 +743,31 @@ func (s *service) UpdatePasswordHandler(res http.ResponseWriter, req *http.Reque
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
 	// decode the request.
 	input := new(types.PasswordUpdateInput)
 	if err := s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
 	if err := input.ValidateWithContext(ctx, s.authSettings.MinimumPasswordLength); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-		s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
 
@@ -667,7 +785,8 @@ func (s *service) UpdatePasswordHandler(res http.ResponseWriter, req *http.Reque
 
 	// if the above function returns something other than 200, it means some error occurred.
 	if httpStatus != http.StatusOK {
-		res.WriteHeader(httpStatus)
+		errRes := types.NewAPIErrorResponse("internal error", types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, httpStatus)
 		return
 	}
 
@@ -676,7 +795,8 @@ func (s *service) UpdatePasswordHandler(res http.ResponseWriter, req *http.Reque
 	// ensure the password isn't garbage-tier
 	if err = passwordvalidator.Validate(input.NewPassword, minimumPasswordEntropy); err != nil {
 		logger.WithValue("password_validation_error", err).Debug("invalid password provided")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "new password is too weak!", http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse("password is too weak", types.ErrNothingSpecific, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
@@ -684,14 +804,16 @@ func (s *service) UpdatePasswordHandler(res http.ResponseWriter, req *http.Reque
 	newPasswordHash, err := s.authenticator.HashPassword(ctx, strings.TrimSpace(input.NewPassword))
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "hashing password")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("hashing password", types.ErrSecretGeneration, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
 	// update the user.
 	if err = s.userDataManager.UpdateUserPassword(ctx, user.ID, newPasswordHash); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating user")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -706,7 +828,12 @@ func (s *service) UpdatePasswordHandler(res http.ResponseWriter, req *http.Reque
 
 	// we're all good, log the user out
 	http.SetCookie(res, &http.Cookie{MaxAge: -1})
-	res.WriteHeader(http.StatusAccepted)
+
+	responseValue := &types.APIResponse[any]{
+		Details: responseDetails,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // UpdateUserEmailAddressHandler updates a user's email address.
@@ -717,17 +844,23 @@ func (s *service) UpdateUserEmailAddressHandler(res http.ResponseWriter, req *ht
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
 	// decode the request.
 	input := new(types.UserEmailAddressUpdateInput)
 	if err := s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 	tracing.AttachToSpan(span, keys.UserEmailAddressKey, input.NewEmailAddress)
@@ -735,7 +868,8 @@ func (s *service) UpdateUserEmailAddressHandler(res http.ResponseWriter, req *ht
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-		s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
 
@@ -760,7 +894,8 @@ func (s *service) UpdateUserEmailAddressHandler(res http.ResponseWriter, req *ht
 	// update the user.
 	if err = s.userDataManager.UpdateUserEmailAddress(ctx, user.ID, input.NewEmailAddress); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating user")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -773,7 +908,12 @@ func (s *service) UpdateUserEmailAddressHandler(res http.ResponseWriter, req *ht
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	res.WriteHeader(http.StatusAccepted)
+	responseValue := &types.APIResponse[*types.User]{
+		Details: responseDetails,
+		Data:    user,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // UpdateUserUsernameHandler updates a user's username.
@@ -784,17 +924,23 @@ func (s *service) UpdateUserUsernameHandler(res http.ResponseWriter, req *http.R
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
 	// decode the request.
 	input := new(types.UsernameUpdateInput)
 	if err := s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 	tracing.AttachToSpan(span, keys.UsernameKey, input.NewUsername)
@@ -802,7 +948,8 @@ func (s *service) UpdateUserUsernameHandler(res http.ResponseWriter, req *http.R
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-		s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
 
@@ -827,7 +974,8 @@ func (s *service) UpdateUserUsernameHandler(res http.ResponseWriter, req *http.R
 	// update the user.
 	if err = s.userDataManager.UpdateUserUsername(ctx, user.ID, input.NewUsername); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating user")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -840,7 +988,12 @@ func (s *service) UpdateUserUsernameHandler(res http.ResponseWriter, req *http.R
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	res.WriteHeader(http.StatusAccepted)
+	responseValue := &types.APIResponse[*types.User]{
+		Details: responseDetails,
+		Data:    user,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // UpdateUserDetailsHandler updates a user's basic information.
@@ -851,24 +1004,31 @@ func (s *service) UpdateUserDetailsHandler(res http.ResponseWriter, req *http.Re
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
 	// decode the request.
 	providedInput := new(types.UserDetailsUpdateRequestInput)
 	if err := s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
 	if err := providedInput.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided providedInput was invalid")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-		s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
 
@@ -895,7 +1055,8 @@ func (s *service) UpdateUserDetailsHandler(res http.ResponseWriter, req *http.Re
 	// update the user.
 	if err = s.userDataManager.UpdateUserDetails(ctx, user.ID, dbInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating user")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -908,7 +1069,12 @@ func (s *service) UpdateUserDetailsHandler(res http.ResponseWriter, req *http.Re
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	res.WriteHeader(http.StatusAccepted)
+	responseValue := &types.APIResponse[*types.User]{
+		Details: responseDetails,
+		Data:    user,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // AvatarUploadHandler updates a user's avatar.
@@ -919,10 +1085,15 @@ func (s *service) AvatarUploadHandler(res http.ResponseWriter, req *http.Request
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-		s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
 
@@ -930,7 +1101,8 @@ func (s *service) AvatarUploadHandler(res http.ResponseWriter, req *http.Request
 	input := new(types.AvatarUpdateInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
@@ -941,7 +1113,8 @@ func (s *service) AvatarUploadHandler(res http.ResponseWriter, req *http.Request
 	user, err := s.userDataManager.GetUser(ctx, sessionCtxData.Requester.UserID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching associated user")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -950,9 +1123,16 @@ func (s *service) AvatarUploadHandler(res http.ResponseWriter, req *http.Request
 
 	if err = s.userDataManager.UpdateUserAvatar(ctx, user.ID, input.Base64EncodedData); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating user info")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+
+	responseValue := &types.APIResponse[*types.User]{
+		Details: responseDetails,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // ArchiveHandler is a handler for archiving a user.
@@ -963,10 +1143,15 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-		s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
 
@@ -980,11 +1165,13 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	// do the deed.
 	err = s.userDataManager.ArchiveUser(ctx, userID)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving user")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -1000,8 +1187,12 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	// we're all good.
-	res.WriteHeader(http.StatusNoContent)
+	responseValue := &types.APIResponse[*types.User]{
+		Details: responseDetails,
+	}
+
+	// let everybody go home.
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // RequestUsernameReminderHandler checks for a user with a given email address and notifies them via email if there is a username associated with it.
@@ -1012,26 +1203,34 @@ func (s *service) RequestUsernameReminderHandler(res http.ResponseWriter, req *h
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
 	input := new(types.UsernameReminderRequestInput)
 	if err := s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
 	u, err := s.userDataManager.GetUserByEmail(ctx, input.EmailAddress)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, nil, http.StatusAccepted)
+		errRes := types.NewAPIErrorResponse("no such user found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching user")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusInternalServerError)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -1044,7 +1243,11 @@ func (s *service) RequestUsernameReminderHandler(res http.ResponseWriter, req *h
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	res.WriteHeader(http.StatusAccepted)
+	responseValue := &types.APIResponse[*types.User]{
+		Details: responseDetails,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // CreatePasswordResetTokenHandler rotates the cookie building secret with a new random secret.
@@ -1055,33 +1258,42 @@ func (s *service) CreatePasswordResetTokenHandler(res http.ResponseWriter, req *
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
 	input := new(types.PasswordResetTokenCreationRequestInput)
 	if err := s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
 	token, err := s.secretGenerator.GenerateBase32EncodedString(ctx, passwordResetTokenSize)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "generating secret")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusInternalServerError)
+		errRes := types.NewAPIErrorResponse("internal error", types.ErrSecretGeneration, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
 	u, err := s.userDataManager.GetUserByEmail(ctx, input.EmailAddress)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, nil, http.StatusAccepted)
+		errRes := types.NewAPIErrorResponse("user not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching user")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusInternalServerError)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -1095,7 +1307,8 @@ func (s *service) CreatePasswordResetTokenHandler(res http.ResponseWriter, req *
 	t, err := s.passwordResetTokenDataManager.CreatePasswordResetToken(ctx, dbInput)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating password reset token")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusInternalServerError)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -1109,7 +1322,11 @@ func (s *service) CreatePasswordResetTokenHandler(res http.ResponseWriter, req *
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	res.WriteHeader(http.StatusAccepted)
+	responseValue := &types.APIResponse[*types.User]{
+		Details: responseDetails,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // PasswordResetTokenRedemptionHandler rotates the cookie building secret with a new random secret.
@@ -1120,45 +1337,56 @@ func (s *service) PasswordResetTokenRedemptionHandler(res http.ResponseWriter, r
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
 	input := new(types.PasswordResetTokenRedemptionRequestInput)
 	if err := s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
 	t, err := s.passwordResetTokenDataManager.GetPasswordResetTokenByToken(ctx, input.Token)
 	if errors.Is(err, sql.ErrNoRows) {
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusNotFound)
+		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching password reset token")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusInternalServerError)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
 	u, err := s.userDataManager.GetUser(ctx, t.BelongsToUser)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+			errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 			return
 		}
 
 		observability.AcknowledgeError(err, logger, span, "fetching user")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusInternalServerError)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
 	// ensure the password isn't garbage-tier
 	if err = passwordvalidator.Validate(strings.TrimSpace(input.NewPassword), minimumPasswordEntropy); err != nil {
 		logger.WithValue("password_validation_error", err).Debug("invalid password provided")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "new password is too weak!", http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse("new password is too weak!", types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
@@ -1166,30 +1394,35 @@ func (s *service) PasswordResetTokenRedemptionHandler(res http.ResponseWriter, r
 	newPasswordHash, err := s.authenticator.HashPassword(ctx, strings.TrimSpace(input.NewPassword))
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "hashing password")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("hashing password", types.ErrSecretGeneration, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
 	// update the user.
 	if err = s.userDataManager.UpdateUserPassword(ctx, u.ID, newPasswordHash); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+			errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 			return
 		}
 
 		observability.AcknowledgeError(err, logger, span, "updating user")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
 	if redemptionErr := s.passwordResetTokenDataManager.RedeemPasswordResetToken(ctx, t.ID); redemptionErr != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+			errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 			return
 		}
 
 		observability.AcknowledgeError(err, logger, span, "redeeming password reset token")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -1202,7 +1435,11 @@ func (s *service) PasswordResetTokenRedemptionHandler(res http.ResponseWriter, r
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	res.WriteHeader(http.StatusAccepted)
+	responseValue := &types.APIResponse[*types.User]{
+		Details: responseDetails,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // VerifyUserEmailAddressHandler checks for a user with a given email address and notifies them via email if there is a username associated with it.
@@ -1213,39 +1450,49 @@ func (s *service) VerifyUserEmailAddressHandler(res http.ResponseWriter, req *ht
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
 	input := new(types.EmailAddressVerificationRequestInput)
 	if err := s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
 	user, err := s.userDataManager.GetUserByEmailAddressVerificationToken(ctx, input.Token)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+			errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 			return
 		}
 
 		observability.AcknowledgeError(err, logger, span, "fetching user")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusInternalServerError)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
 	if err = s.userDataManager.MarkUserEmailAddressAsVerified(ctx, user.ID, input.Token); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+			errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 			return
 		}
 
 		observability.AcknowledgeError(err, logger, span, "marking user email as verified")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusInternalServerError)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -1258,7 +1505,11 @@ func (s *service) VerifyUserEmailAddressHandler(res http.ResponseWriter, req *ht
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	res.WriteHeader(http.StatusAccepted)
+	responseValue := &types.APIResponse[*types.User]{
+		Details: responseDetails,
+	}
+
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // RequestEmailVerificationEmailHandler submits a request for an email verification email.
@@ -1269,10 +1520,15 @@ func (s *service) RequestEmailVerificationEmailHandler(res http.ResponseWriter, 
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-		s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
 
@@ -1282,7 +1538,8 @@ func (s *service) RequestEmailVerificationEmailHandler(res http.ResponseWriter, 
 		return
 	} else if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching email address verification token")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusInternalServerError)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -1296,7 +1553,9 @@ func (s *service) RequestEmailVerificationEmailHandler(res http.ResponseWriter, 
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 
-	logger.WithValue("data_change_message", dcm).Debug("published data change message")
+	responseValue := &types.APIResponse[*types.User]{
+		Details: responseDetails,
+	}
 
-	res.WriteHeader(http.StatusAccepted)
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }

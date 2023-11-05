@@ -39,12 +39,16 @@ func (c *Client) GetRecipeStepVessel(ctx context.Context, recipeID, recipeStepID
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get recipe step vessel request")
 	}
 
-	var recipeStepInstrument *types.RecipeStepVessel
-	if err = c.fetchAndUnmarshal(ctx, req, &recipeStepInstrument); err != nil {
+	var apiResponse *types.APIResponse[*types.RecipeStepVessel]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe step vessel")
 	}
 
-	return recipeStepInstrument, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // GetRecipeStepVessels retrieves a list of recipe step vessels.
@@ -72,12 +76,21 @@ func (c *Client) GetRecipeStepVessels(ctx context.Context, recipeID, recipeStepI
 		return nil, observability.PrepareAndLogError(err, logger, span, "building recipe step vessels list request")
 	}
 
-	var recipeStepInstruments *types.QueryFilteredResult[types.RecipeStepVessel]
-	if err = c.fetchAndUnmarshal(ctx, req, &recipeStepInstruments); err != nil {
+	var apiResponse *types.APIResponse[[]*types.RecipeStepVessel]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe step vessels")
 	}
 
-	return recipeStepInstruments, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	response := &types.QueryFilteredResult[types.RecipeStepVessel]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
+	}
+
+	return response, nil
 }
 
 // CreateRecipeStepVessel creates a recipe step vessel.
@@ -112,12 +125,16 @@ func (c *Client) CreateRecipeStepVessel(ctx context.Context, recipeID, recipeSte
 		return nil, observability.PrepareAndLogError(err, logger, span, "building create recipe step vessel request")
 	}
 
-	var recipeStepInstrument *types.RecipeStepVessel
-	if err = c.fetchAndUnmarshal(ctx, req, &recipeStepInstrument); err != nil {
+	var apiResponse *types.APIResponse[*types.RecipeStepVessel]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe step vessel")
 	}
 
-	return recipeStepInstrument, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // UpdateRecipeStepVessel updates a recipe step vessel.
@@ -144,8 +161,13 @@ func (c *Client) UpdateRecipeStepVessel(ctx context.Context, recipeID string, re
 		return observability.PrepareAndLogError(err, logger, span, "building update recipe step vessel request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, &recipeStepInstrument); err != nil {
+	var apiResponse *types.APIResponse[*types.RecipeStepVessel]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step vessel %s", recipeStepInstrument.ID)
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -181,8 +203,13 @@ func (c *Client) ArchiveRecipeStepVessel(ctx context.Context, recipeID, recipeSt
 		return observability.PrepareAndLogError(err, logger, span, "building archive recipe step vessel request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.RecipeStepVessel]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving recipe step vessel %s", recipeStepInstrumentID)
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil

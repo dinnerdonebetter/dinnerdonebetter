@@ -62,6 +62,10 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 		logger := s.logger.WithRequest(req)
 		tracing.AttachRequestToSpan(span, req)
 
+		responseDetails := types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		}
+
 		if adminOnly {
 			logger = logger.WithValue("admin_only", adminOnly)
 		}
@@ -69,7 +73,8 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 		loginData := new(types.UserLoginInput)
 		if err := s.encoderDecoder.DecodeRequest(ctx, req, loginData); err != nil {
 			observability.AcknowledgeError(err, logger, span, "decoding request body")
-			s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+			errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 			return
 		}
 
@@ -79,7 +84,8 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 
 		if err := loginData.ValidateWithContext(ctx, s.config.MinimumUsernameLength, s.config.MinimumPasswordLength); err != nil {
 			observability.AcknowledgeError(err, logger, span, "validating input")
-			s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid login body", http.StatusBadRequest)
+			errRes := types.NewAPIErrorResponse("invalid login body", types.ErrValidatingRequestInput, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 			return
 		}
 
@@ -98,12 +104,14 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 		user, err := userFunc(ctx, loginData.Username)
 		if err != nil || user == nil {
 			if errors.Is(err, sql.ErrNoRows) {
-				s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+				errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+				s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 				return
 			}
 
 			observability.AcknowledgeError(err, logger, span, "fetching user")
-			s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, http.StatusInternalServerError)
+			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 			return
 		}
 
@@ -111,7 +119,8 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 		tracing.AttachUserToSpan(span, user)
 
 		if user.IsBanned() {
-			s.encoderDecoder.EncodeErrorResponse(ctx, res, "user is banned", http.StatusForbidden)
+			errRes := types.NewAPIErrorResponse("user is banned", types.ErrUserIsBanned, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusForbidden)
 			return
 		}
 
@@ -121,18 +130,21 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 		if err != nil {
 			if errors.Is(err, authentication.ErrInvalidTOTPToken) {
 				observability.AcknowledgeError(err, logger, span, "validating TOTP token")
-				s.encoderDecoder.EncodeErrorResponse(ctx, res, "login was invalid", http.StatusUnauthorized)
+				errRes := types.NewAPIErrorResponse("login was invalid", types.ErrValidatingRequestInput, responseDetails)
+				s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 				return
 			}
 
 			if errors.Is(err, authentication.ErrPasswordDoesNotMatch) {
 				observability.AcknowledgeError(err, logger, span, "validating password")
-				s.encoderDecoder.EncodeErrorResponse(ctx, res, "login was invalid", http.StatusUnauthorized)
+				errRes := types.NewAPIErrorResponse("login was invalid", types.ErrValidatingRequestInput, responseDetails)
+				s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 				return
 			}
 
 			observability.AcknowledgeError(err, logger, span, "validating login")
-			s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, http.StatusInternalServerError)
+			errRes := types.NewAPIErrorResponse(staticError, types.ErrValidatingRequestInput, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 			return
 		} else if !loginValid {
 			logger.Debug("login was invalid")
@@ -142,21 +154,24 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 
 		if loginValid && user.TwoFactorSecretVerifiedAt != nil && loginData.TOTPToken == "" {
 			logger.Debug("user with two factor verification active attempted to log in without providing TOTP")
-			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, "TOTP required", http.StatusResetContent)
+			errRes := types.NewAPIErrorResponse("TOTP required", types.ErrValidatingRequestInput, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusResetContent)
 			return
 		}
 
 		defaultHouseholdID, err := s.householdMembershipManager.GetDefaultHouseholdIDForUser(ctx, user.ID)
 		if err != nil {
 			observability.AcknowledgeError(err, logger, span, "fetching user memberships")
-			s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, http.StatusInternalServerError)
+			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 			return
 		}
 
 		responseCode, err := s.postLogin(ctx, user, defaultHouseholdID, req, res)
 		if err != nil {
 			observability.AcknowledgeError(err, logger, span, "handling login status")
-			s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, responseCode)
+			errRes := types.NewAPIErrorResponse(staticError, types.ErrTalkingToDatabase, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, responseCode)
 			return
 		}
 
@@ -168,7 +183,12 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 			AccountStatusExplanation: user.AccountStatusExplanation,
 		}
 
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, statusResponse, responseCode)
+		responseValue := &types.APIResponse[*types.UserStatusResponse]{
+			Details: responseDetails,
+			Data:    statusResponse,
+		}
+
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, responseCode)
 		logger.Debug("user logged in")
 	}
 }
@@ -193,7 +213,8 @@ func (s *service) postLogin(ctx context.Context, user *types.User, defaultHouseh
 	}
 
 	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
-		return http.StatusAccepted, observability.PrepareError(err, span, "publishing data change message")
+		observability.AcknowledgeError(err, s.logger, span, "publishing data change message")
+		return http.StatusAccepted, nil
 	}
 
 	if err = s.analyticsReporter.AddUser(ctx, user.ID, map[string]any{
@@ -219,9 +240,14 @@ func (s *service) SSOLoginHandler(res http.ResponseWriter, req *http.Request) {
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
 	providerName := s.authProviderFetcher(req)
 	if providerName == "" {
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "provider name is missing", http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse("provider name is missing", types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
@@ -266,9 +292,14 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
 	providerName := s.authProviderFetcher(req)
 	if providerName == "" {
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "provider name is missing", http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse("provider name is missing", types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
@@ -293,8 +324,7 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 		return
 	}
 
-	err = validateState(req, sess)
-	if err != nil {
+	if err = validateState(req, sess); err != nil {
 		observability.AcknowledgeError(err, logger, span, "validating state")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "failed to validate state", http.StatusInternalServerError)
 		return
@@ -325,14 +355,16 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 	user, err := s.userDataManager.GetUserByEmail(ctx, providedUser.Email)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "getting user by email")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "failed to get user by email", http.StatusInternalServerError)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
 	defaultHouseholdID, err := s.householdMembershipManager.GetDefaultHouseholdIDForUser(ctx, user.ID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching user memberships")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, http.StatusInternalServerError)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -384,11 +416,16 @@ func (s *service) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *htt
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
 	// determine user ID.
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching session context data")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
 
@@ -398,13 +435,15 @@ func (s *service) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *htt
 	input := new(types.ChangeActiveHouseholdInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
 	if err = input.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
@@ -417,13 +456,15 @@ func (s *service) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *htt
 	authorizedForHousehold, err := s.householdMembershipManager.UserIsMemberOfHousehold(ctx, requesterID, householdID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "checking permissions")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, http.StatusInternalServerError)
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
 	if !authorizedForHousehold {
 		logger.Debug("invalid household ID requested for activation")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
 
@@ -435,7 +476,8 @@ func (s *service) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *htt
 	cookie, err := s.issueSessionManagedCookie(ctx, householdID, requesterID, requestedCookieDomain)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "issuing cookie")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, http.StatusInternalServerError)
+		errRes := types.NewAPIErrorResponse(staticError, types.ErrNothingSpecific, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -455,7 +497,12 @@ func (s *service) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *htt
 	logger.Info("successfully changed active session household")
 	http.SetCookie(res, cookie)
 
-	res.WriteHeader(http.StatusAccepted)
+	responseValue := &types.APIResponse[*types.ValidIngredientGroup]{
+		Details: responseDetails,
+	}
+
+	// let everybody go home.
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // EndSessionHandler is our logout route.
@@ -466,11 +513,16 @@ func (s *service) EndSessionHandler(res http.ResponseWriter, req *http.Request) 
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
 	// determine user ID.
 	sessionCtxData, fetchSessionContextErr := s.sessionContextDataFetcher(req)
 	if fetchSessionContextErr != nil {
 		observability.AcknowledgeError(fetchSessionContextErr, logger, span, "fetching session context data")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
 
@@ -481,13 +533,15 @@ func (s *service) EndSessionHandler(res http.ResponseWriter, req *http.Request) 
 	if loadErr != nil {
 		// this can literally never happen in this version of scs, because the token is empty
 		observability.AcknowledgeError(loadErr, logger, span, "loading token")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("error", types.ErrMisbehavingDependency, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
 	if destroyErr := s.sessionManager.Destroy(ctx); destroyErr != nil {
 		observability.AcknowledgeError(destroyErr, logger, span, "destroying session")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("error", types.ErrMisbehavingDependency, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -499,7 +553,8 @@ func (s *service) EndSessionHandler(res http.ResponseWriter, req *http.Request) 
 	newCookie, cookieBuildingErr := s.buildLogoutCookie(ctx, req)
 	if cookieBuildingErr != nil || newCookie == nil {
 		observability.AcknowledgeError(cookieBuildingErr, logger, span, "building cookie")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("building cookie", types.ErrMisbehavingDependency, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
 
@@ -516,7 +571,12 @@ func (s *service) EndSessionHandler(res http.ResponseWriter, req *http.Request) 
 
 	logger.Debug("user logged out")
 
-	res.WriteHeader(http.StatusAccepted)
+	responseValue := &types.APIResponse[*types.UserStatusResponse]{
+		Details: responseDetails,
+	}
+
+	// let everybody go home.
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // StatusHandler returns the user info for the user making the request.
@@ -527,12 +587,17 @@ func (s *service) StatusHandler(res http.ResponseWriter, req *http.Request) {
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
 	var statusResponse *types.UserStatusResponse
 
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching session context data")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
 
@@ -545,7 +610,12 @@ func (s *service) StatusHandler(res http.ResponseWriter, req *http.Request) {
 		UserIsAuthenticated:      true,
 	}
 
-	s.encoderDecoder.RespondWithData(ctx, res, statusResponse)
+	responseValue := &types.APIResponse[*types.UserStatusResponse]{
+		Details: responseDetails,
+		Data:    statusResponse,
+	}
+
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
 }
 
 // CycleCookieSecretHandler rotates the cookie building secret with a new random secret.
@@ -556,13 +626,18 @@ func (s *service) CycleCookieSecretHandler(res http.ResponseWriter, req *http.Re
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
 	logger.Info("cycling cookie secret!")
 
 	// determine user ID.
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching session context data")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "unauthenticated", http.StatusUnauthorized)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
 

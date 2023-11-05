@@ -27,12 +27,16 @@ func (c *Client) GetValidIngredientMeasurementUnit(ctx context.Context, validIng
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid ingredient preparation request")
 	}
 
-	var validIngredientMeasurementUnit *types.ValidIngredientMeasurementUnit
-	if err = c.fetchAndUnmarshal(ctx, req, &validIngredientMeasurementUnit); err != nil {
+	var apiResponse *types.APIResponse[*types.ValidIngredientMeasurementUnit]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient preparation")
 	}
 
-	return validIngredientMeasurementUnit, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // GetValidIngredientMeasurementUnits retrieves a list of valid ingredient preparations.
@@ -49,12 +53,21 @@ func (c *Client) GetValidIngredientMeasurementUnits(ctx context.Context, filter 
 		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredient preparations list request")
 	}
 
-	var validIngredientMeasurementUnits *types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]
-	if err = c.fetchAndUnmarshal(ctx, req, &validIngredientMeasurementUnits); err != nil {
+	var apiResponse *types.APIResponse[[]*types.ValidIngredientMeasurementUnit]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient preparations")
 	}
 
-	return validIngredientMeasurementUnits, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	response := &types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
+	}
+
+	return response, nil
 }
 
 // GetValidIngredientMeasurementUnitsForIngredient retrieves a list of valid ingredient preparations.
@@ -76,12 +89,21 @@ func (c *Client) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Con
 		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredient preparations list request")
 	}
 
-	var validPreparationInstruments *types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]
-	if err = c.fetchAndUnmarshal(ctx, req, &validPreparationInstruments); err != nil {
+	var apiResponse *types.APIResponse[[]*types.ValidIngredientMeasurementUnit]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient preparations")
 	}
 
-	return validPreparationInstruments, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	response := &types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
+	}
+
+	return response, nil
 }
 
 // GetValidIngredientMeasurementUnitsForMeasurementUnit retrieves a list of valid ingredient preparations.
@@ -103,12 +125,21 @@ func (c *Client) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx contex
 		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredient preparations list request")
 	}
 
-	var validPreparationInstruments *types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]
-	if err = c.fetchAndUnmarshal(ctx, req, &validPreparationInstruments); err != nil {
+	var apiResponse *types.APIResponse[[]*types.ValidIngredientMeasurementUnit]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient preparations")
 	}
 
-	return validPreparationInstruments, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	response := &types.QueryFilteredResult[types.ValidIngredientMeasurementUnit]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
+	}
+
+	return response, nil
 }
 
 // CreateValidIngredientMeasurementUnit creates a valid ingredient preparation.
@@ -131,12 +162,16 @@ func (c *Client) CreateValidIngredientMeasurementUnit(ctx context.Context, input
 		return nil, observability.PrepareAndLogError(err, logger, span, "building create valid ingredient preparation request")
 	}
 
-	var validIngredientMeasurementUnit *types.ValidIngredientMeasurementUnit
-	if err = c.fetchAndUnmarshal(ctx, req, &validIngredientMeasurementUnit); err != nil {
+	var apiResponse *types.APIResponse[*types.ValidIngredientMeasurementUnit]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid ingredient preparation")
 	}
 
-	return validIngredientMeasurementUnit, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // UpdateValidIngredientMeasurementUnit updates a valid ingredient preparation.
@@ -157,8 +192,13 @@ func (c *Client) UpdateValidIngredientMeasurementUnit(ctx context.Context, valid
 		return observability.PrepareAndLogError(err, logger, span, "building update valid ingredient preparation request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, &validIngredientMeasurementUnit); err != nil {
+	var apiResponse *types.APIResponse[*types.ValidIngredientMeasurementUnit]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient preparation %s", validIngredientMeasurementUnit.ID)
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -182,8 +222,13 @@ func (c *Client) ArchiveValidIngredientMeasurementUnit(ctx context.Context, vali
 		return observability.PrepareAndLogError(err, logger, span, "building archive valid ingredient preparation request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.ValidIngredientMeasurementUnit]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving valid ingredient preparation %s", validIngredientMeasurementUnitID)
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil

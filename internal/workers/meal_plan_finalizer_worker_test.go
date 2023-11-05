@@ -18,7 +18,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func newTestChoresWorker(t *testing.T) *MealPlanFinalizationWorker {
+func newTestChoresWorker(t *testing.T) *mealPlanFinalizationWorker {
 	t.Helper()
 
 	worker := ProvideMealPlanFinalizationWorker(
@@ -29,7 +29,7 @@ func newTestChoresWorker(t *testing.T) *MealPlanFinalizationWorker {
 	)
 	assert.NotNil(t, worker)
 
-	return worker
+	return worker.(*mealPlanFinalizationWorker)
 }
 
 func TestProvideChoresWorker(T *testing.T) {

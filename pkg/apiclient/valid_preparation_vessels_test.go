@@ -22,9 +22,11 @@ func TestValidPreparationVessels(t *testing.T) {
 
 type validPreparationVesselsBaseSuite struct {
 	suite.Suite
-
-	ctx                           context.Context
-	exampleValidPreparationVessel *types.ValidPreparationVessel
+	ctx                                       context.Context
+	exampleValidPreparationVessel             *types.ValidPreparationVessel
+	exampleValidPreparationVesselResponse     *types.APIResponse[*types.ValidPreparationVessel]
+	exampleValidPreparationVesselListResponse *types.APIResponse[[]*types.ValidPreparationVessel]
+	exampleValidPreparationVesselList         []*types.ValidPreparationVessel
 }
 
 var _ suite.SetupTestSuite = (*validPreparationVesselsBaseSuite)(nil)
@@ -32,11 +34,19 @@ var _ suite.SetupTestSuite = (*validPreparationVesselsBaseSuite)(nil)
 func (s *validPreparationVesselsBaseSuite) SetupTest() {
 	s.ctx = context.Background()
 	s.exampleValidPreparationVessel = fakes.BuildFakeValidPreparationVessel()
+	s.exampleValidPreparationVesselResponse = &types.APIResponse[*types.ValidPreparationVessel]{
+		Data: s.exampleValidPreparationVessel,
+	}
+	exampleList := fakes.BuildFakeValidPreparationVesselList()
+	s.exampleValidPreparationVesselList = exampleList.Data
+	s.exampleValidPreparationVesselListResponse = &types.APIResponse[[]*types.ValidPreparationVessel]{
+		Data:       exampleList.Data,
+		Pagination: &exampleList.Pagination,
+	}
 }
 
 type validPreparationVesselsTestSuite struct {
 	suite.Suite
-
 	validPreparationVesselsBaseSuite
 }
 
@@ -47,7 +57,7 @@ func (s *validPreparationVesselsTestSuite) TestClient_GetValidPreparationVessel(
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleValidPreparationVessel.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationVessel)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationVesselResponse)
 		actual, err := c.GetValidPreparationVessel(s.ctx, s.exampleValidPreparationVessel.ID)
 
 		require.NotNil(t, actual)
@@ -95,15 +105,13 @@ func (s *validPreparationVesselsTestSuite) TestClient_GetValidPreparationVessels
 
 		filter := (*types.QueryFilter)(nil)
 
-		exampleValidPreparationVesselList := fakes.BuildFakeValidPreparationVesselList()
-
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidPreparationVesselList)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationVesselListResponse)
 		actual, err := c.GetValidPreparationVessels(s.ctx, filter)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidPreparationVesselList, actual)
+		assert.Equal(t, s.exampleValidPreparationVesselList, actual.Data)
 	})
 
 	s.Run("with error building request", func() {
@@ -132,7 +140,7 @@ func (s *validPreparationVesselsTestSuite) TestClient_GetValidPreparationVessels
 	})
 }
 
-func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidPreparationVesselsForPreparation() {
+func (s *validPreparationVesselsTestSuite) TestClient_GetValidPreparationVesselsForPreparation() {
 	const expectedPath = "/api/v1/valid_preparation_vessels/by_preparation/%s"
 
 	exampleValidPreparation := fakes.BuildFakeValidPreparation()
@@ -142,15 +150,13 @@ func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidPreparatio
 
 		filter := (*types.QueryFilter)(nil)
 
-		exampleValidIngredientMeasurementUnitList := fakes.BuildFakeValidPreparationVesselList()
-
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, exampleValidPreparation.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientMeasurementUnitList)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationVesselListResponse)
 		actual, err := c.GetValidPreparationVesselsForPreparation(s.ctx, exampleValidPreparation.ID, filter)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidIngredientMeasurementUnitList, actual)
+		assert.Equal(t, s.exampleValidPreparationVesselList, actual.Data)
 	})
 
 	s.Run("with invalid ID", func() {
@@ -189,7 +195,7 @@ func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidPreparatio
 	})
 }
 
-func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidPreparationVesselsForVessel() {
+func (s *validPreparationVesselsTestSuite) TestClient_GetValidPreparationVesselsForVessel() {
 	const expectedPath = "/api/v1/valid_preparation_vessels/by_vessel/%s"
 
 	exampleValidInstrument := fakes.BuildFakeValidInstrument()
@@ -199,15 +205,13 @@ func (s *validIngredientMeasurementUnitsTestSuite) TestClient_GetValidPreparatio
 
 		filter := (*types.QueryFilter)(nil)
 
-		exampleValidIngredientMeasurementUnitList := fakes.BuildFakeValidPreparationVesselList()
-
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, exampleValidInstrument.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientMeasurementUnitList)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationVesselListResponse)
 		actual, err := c.GetValidPreparationVesselsForVessel(s.ctx, exampleValidInstrument.ID, filter)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidIngredientMeasurementUnitList, actual)
+		assert.Equal(t, s.exampleValidPreparationVesselList, actual.Data)
 	})
 
 	s.Run("with invalid ID", func() {
@@ -255,7 +259,7 @@ func (s *validPreparationVesselsTestSuite) TestClient_CreateValidPreparationVess
 		exampleInput := fakes.BuildFakeValidPreparationVesselCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationVessel)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationVesselResponse)
 
 		actual, err := c.CreateValidPreparationVessel(s.ctx, exampleInput)
 		assert.NoError(t, err)
@@ -314,7 +318,7 @@ func (s *validPreparationVesselsTestSuite) TestClient_UpdateValidPreparationVess
 		t := s.T()
 
 		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, s.exampleValidPreparationVessel.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationVessel)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationVesselResponse)
 
 		err := c.UpdateValidPreparationVessel(s.ctx, s.exampleValidPreparationVessel)
 		assert.NoError(t, err)
@@ -355,7 +359,7 @@ func (s *validPreparationVesselsTestSuite) TestClient_ArchiveValidPreparationVes
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, s.exampleValidPreparationVessel.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationVesselResponse)
 
 		err := c.ArchiveValidPreparationVessel(s.ctx, s.exampleValidPreparationVessel.ID)
 		assert.NoError(t, err)

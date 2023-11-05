@@ -26,8 +26,13 @@ func (c *Client) SwitchActiveHousehold(ctx context.Context, householdID string) 
 			return observability.PrepareError(err, span, "building household switch request")
 		}
 
-		if err = c.executeAndUnmarshal(ctx, req, c.authedClient, nil); err != nil {
+		var apiResponse *types.APIResponse[*types.Household]
+		if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 			return observability.PrepareError(err, span, "executing household switch request")
+		}
+
+		if err = apiResponse.Error.AsError(); err != nil {
+			return err
 		}
 	}
 
@@ -46,12 +51,16 @@ func (c *Client) GetCurrentHousehold(ctx context.Context) (*types.Household, err
 		return nil, observability.PrepareError(err, span, "building household retrieval request")
 	}
 
-	var household *types.Household
-	if err = c.fetchAndUnmarshal(ctx, req, &household); err != nil {
+	var apiResponse *types.APIResponse[*types.Household]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "retrieving household")
 	}
 
-	return household, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // GetHousehold retrieves a household.
@@ -70,12 +79,16 @@ func (c *Client) GetHousehold(ctx context.Context, householdID string) (*types.H
 		return nil, observability.PrepareError(err, span, "building household retrieval request")
 	}
 
-	var household *types.Household
-	if err = c.fetchAndUnmarshal(ctx, req, &household); err != nil {
+	var apiResponse *types.APIResponse[*types.Household]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "retrieving household")
 	}
 
-	return household, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // GetHouseholds retrieves a list of households.
@@ -90,12 +103,21 @@ func (c *Client) GetHouseholds(ctx context.Context, filter *types.QueryFilter) (
 		return nil, observability.PrepareError(err, span, "building household list request")
 	}
 
-	var households *types.QueryFilteredResult[types.Household]
-	if err = c.fetchAndUnmarshal(ctx, req, &households); err != nil {
+	var apiResponse *types.APIResponse[[]*types.Household]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "retrieving households")
 	}
 
-	return households, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	result := &types.QueryFilteredResult[types.Household]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
+	}
+
+	return result, nil
 }
 
 // CreateHousehold creates a household.
@@ -116,12 +138,16 @@ func (c *Client) CreateHousehold(ctx context.Context, input *types.HouseholdCrea
 		return nil, observability.PrepareError(err, span, "building household creation request")
 	}
 
-	var household *types.Household
-	if err = c.fetchAndUnmarshal(ctx, req, &household); err != nil {
+	var apiResponse *types.APIResponse[*types.Household]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "creating household")
 	}
 
-	return household, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // UpdateHousehold updates a household.
@@ -140,8 +166,13 @@ func (c *Client) UpdateHousehold(ctx context.Context, household *types.Household
 		return observability.PrepareError(err, span, "building household update request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, &household); err != nil {
+	var apiResponse *types.APIResponse[*types.Household]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareError(err, span, "updating household")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -163,8 +194,13 @@ func (c *Client) ArchiveHousehold(ctx context.Context, householdID string) error
 		return observability.PrepareError(err, span, "building household archive request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.Household]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareError(err, span, "archiving household")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -188,12 +224,20 @@ func (c *Client) InviteUserToHousehold(ctx context.Context, destinationHousehold
 		return nil, observability.PrepareError(err, span, "building add user to household request")
 	}
 
-	var householdInvitation *types.HouseholdInvitation
-	if err = c.fetchAndUnmarshal(ctx, req, &householdInvitation); err != nil {
+	var apiResponse *types.APIResponse[*types.HouseholdInvitation]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareError(err, span, "adding user to household")
 	}
 
-	return householdInvitation, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // MarkAsDefault marks a given household as the default for a given user.
@@ -212,8 +256,13 @@ func (c *Client) MarkAsDefault(ctx context.Context, householdID string) error {
 		return observability.PrepareError(err, span, "building mark household as default request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.Household]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareError(err, span, "marking household as default")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -240,8 +289,13 @@ func (c *Client) RemoveUserFromHousehold(ctx context.Context, householdID, userI
 		return observability.PrepareError(err, span, "building remove user from household request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.Household]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareError(err, span, "removing user from household")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -276,8 +330,13 @@ func (c *Client) ModifyMemberPermissions(ctx context.Context, householdID, userI
 		return observability.PrepareError(err, span, "building modify household member permissions request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.Household]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareError(err, span, "modifying user household permissions")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -308,8 +367,13 @@ func (c *Client) TransferHouseholdOwnership(ctx context.Context, householdID str
 		return observability.PrepareError(err, span, "building transfer household ownership request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.Household]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareError(err, span, "transferring household to user")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil

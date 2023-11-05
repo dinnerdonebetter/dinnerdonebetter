@@ -240,15 +240,13 @@ func (s *TestSuite) TestTOTPSecretChanging() {
 			CurrentPassword: testUser.HashedPassword,
 			TOTPToken:       generateTOTPTokenForUser(t, testUser),
 		})
-		assert.NoError(t, err)
+		require.NoError(t, err)
 
-		secretVerificationToken, err := totp.GenerateCode(r.TwoFactorSecret, time.Now().UTC())
-		requireNotNilAndNoProblems(t, secretVerificationToken, err)
-
-		assert.NoError(t, testClient.VerifyTOTPSecret(ctx, testUser.ID, secretVerificationToken))
+		testUser.TwoFactorSecret = r.TwoFactorSecret
+		require.NoError(t, testClient.VerifyTOTPSecret(ctx, testUser.ID, generateTOTPTokenForUser(t, testUser)))
 
 		// logout.
-		assert.NoError(t, testClient.EndSession(ctx))
+		require.NoError(t, testClient.EndSession(ctx))
 
 		// create login request.
 		newToken, err := totp.GenerateCode(r.TwoFactorSecret, time.Now().UTC())

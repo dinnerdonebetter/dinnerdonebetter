@@ -9,7 +9,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
-	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -57,7 +56,12 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.CreateWebhookHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleWebhook)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -80,6 +84,10 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 		helper.service.CreateWebhookHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with error decoding request", func(t *testing.T) {
@@ -87,27 +95,13 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 
 		helper := newTestHelper(t)
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"DecodeRequest",
-			testutils.ContextMatcher,
-			testutils.HTTPRequestMatcher,
-			mock.IsType(&types.WebhookCreationRequestInput{}),
-		).Return(errors.New("blah"))
-
-		encoderDecoder.On(
-			"EncodeErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(""),
-			http.StatusBadRequest,
-		).Return(nil)
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.CreateWebhookHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, encoderDecoder)
+		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with invalid content attached to request", func(t *testing.T) {
@@ -125,7 +119,12 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		helper.service.CreateWebhookHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusBadRequest, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with error writing to database", func(t *testing.T) {
@@ -151,7 +150,12 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 		helper.service.webhookDataManager = dbManager
 
 		helper.service.CreateWebhookHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dbManager)
 	})
@@ -187,7 +191,12 @@ func TestWebhooksService_CreateWebhookHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.CreateWebhookHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusCreated, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleWebhook)
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dbManager, dataChangesPublisher)
 	})
@@ -212,19 +221,15 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 		).Return(exampleWebhookList, nil)
 		helper.service.webhookDataManager = wd
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.QueryFilteredResult[types.Webhook]{}),
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.ListWebhooksHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, exampleWebhookList.Data)
+		assert.NoError(t, actual.Error.AsError())
+
+		mock.AssertExpectationsForObjects(t, wd)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -236,6 +241,10 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 		helper.service.ListWebhooksHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[[]*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with no rows returned", func(t *testing.T) {
@@ -252,19 +261,15 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.Webhook])(nil), sql.ErrNoRows)
 		helper.service.webhookDataManager = wd
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.QueryFilteredResult[types.Webhook]{}),
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.ListWebhooksHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[[]*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.NoError(t, actual.Error.AsError())
+
+		mock.AssertExpectationsForObjects(t, wd)
 	})
 
 	T.Run("with error fetching webhooks from database", func(t *testing.T) {
@@ -281,18 +286,15 @@ func TestWebhooksService_ListWebhooksHandler(T *testing.T) {
 		).Return((*types.QueryFilteredResult[types.Webhook])(nil), errors.New("blah"))
 		helper.service.webhookDataManager = wd
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.ListWebhooksHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[[]*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
+
+		mock.AssertExpectationsForObjects(t, wd)
 	})
 }
 
@@ -313,19 +315,15 @@ func TestWebhooksService_ReadWebhookHandler(T *testing.T) {
 		).Return(helper.exampleWebhook, nil)
 		helper.service.webhookDataManager = wd
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"RespondWithData",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-			mock.IsType(&types.Webhook{}),
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.ReadWebhookHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusOK, helper.res.Code, "expected %d in status response, got %d", http.StatusOK, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Equal(t, actual.Data, helper.exampleWebhook)
+		assert.NoError(t, actual.Error.AsError())
+
+		mock.AssertExpectationsForObjects(t, wd)
 	})
 
 	T.Run("with error retrieving session context data", func(t *testing.T) {
@@ -337,6 +335,10 @@ func TestWebhooksService_ReadWebhookHandler(T *testing.T) {
 		helper.service.ReadWebhookHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with no such webhook in database", func(t *testing.T) {
@@ -353,18 +355,15 @@ func TestWebhooksService_ReadWebhookHandler(T *testing.T) {
 		).Return((*types.Webhook)(nil), sql.ErrNoRows)
 		helper.service.webhookDataManager = wd
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeNotFoundResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.ReadWebhookHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
+		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
+
+		mock.AssertExpectationsForObjects(t, wd)
 	})
 
 	T.Run("with error fetching webhook from database", func(t *testing.T) {
@@ -381,18 +380,15 @@ func TestWebhooksService_ReadWebhookHandler(T *testing.T) {
 		).Return((*types.Webhook)(nil), errors.New("blah"))
 		helper.service.webhookDataManager = wd
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.ReadWebhookHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
+
+		mock.AssertExpectationsForObjects(t, wd)
 	})
 }
 
@@ -429,7 +425,11 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusNoContent, helper.res.Code)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dataManager, dataChangesPublisher)
 	})
@@ -443,6 +443,10 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 	})
 
 	T.Run("with error checking webhook existence", func(t *testing.T) {
@@ -459,16 +463,13 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 		).Return(false, errors.New("blah"))
 		helper.service.webhookDataManager = wd
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeUnspecifiedInternalServerErrorResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, wd)
 	})
@@ -487,18 +488,15 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 		).Return(false, sql.ErrNoRows)
 		helper.service.webhookDataManager = wd
 
-		encoderDecoder := mockencoding.NewMockEncoderDecoder()
-		encoderDecoder.On(
-			"EncodeNotFoundResponse",
-			testutils.ContextMatcher,
-			testutils.HTTPResponseWriterMatcher,
-		).Return()
-		helper.service.encoderDecoder = encoderDecoder
-
 		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusNotFound, helper.res.Code)
 
-		mock.AssertExpectationsForObjects(t, wd, encoderDecoder)
+		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
+
+		mock.AssertExpectationsForObjects(t, wd)
 	})
 
 	T.Run("with error archiving in database", func(t *testing.T) {
@@ -523,7 +521,12 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 		helper.service.webhookDataManager = dataManager
 
 		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
+
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
 
 		mock.AssertExpectationsForObjects(t, dataManager)
 	})
@@ -558,7 +561,11 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 		helper.service.dataChangesPublisher = dataChangesPublisher
 
 		helper.service.ArchiveWebhookHandler(helper.res, helper.req)
-		assert.Equal(t, http.StatusNoContent, helper.res.Code)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 
 		mock.AssertExpectationsForObjects(t, dataManager, dataChangesPublisher)
 	})

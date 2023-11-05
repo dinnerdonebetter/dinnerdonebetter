@@ -30,12 +30,16 @@ func (c *Client) GetHouseholdInvitation(ctx context.Context, householdID, househ
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get invitation request")
 	}
 
-	var invitation *types.HouseholdInvitation
-	if err = c.fetchAndUnmarshal(ctx, req, &invitation); err != nil {
+	var apiResponse *types.APIResponse[*types.HouseholdInvitation]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving invitation")
 	}
 
-	return invitation, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // GetPendingHouseholdInvitationsFromUser retrieves household invitations sent by the user.
@@ -51,12 +55,21 @@ func (c *Client) GetPendingHouseholdInvitationsFromUser(ctx context.Context, fil
 		return nil, observability.PrepareAndLogError(err, logger, span, "building reject invitation request")
 	}
 
-	var invitationList *types.QueryFilteredResult[types.HouseholdInvitation]
-	if err = c.fetchAndUnmarshal(ctx, req, &invitationList); err != nil {
+	var apiResponse *types.APIResponse[[]*types.HouseholdInvitation]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "rejecting invitation")
 	}
 
-	return invitationList, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	response := &types.QueryFilteredResult[types.HouseholdInvitation]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
+	}
+
+	return response, nil
 }
 
 // GetPendingHouseholdInvitationsForUser retrieves household invitations received by the user.
@@ -72,12 +85,21 @@ func (c *Client) GetPendingHouseholdInvitationsForUser(ctx context.Context, filt
 		return nil, observability.PrepareAndLogError(err, logger, span, "building reject invitation request")
 	}
 
-	var invitationList *types.QueryFilteredResult[types.HouseholdInvitation]
-	if err = c.fetchAndUnmarshal(ctx, req, &invitationList); err != nil {
+	var apiResponse *types.APIResponse[[]*types.HouseholdInvitation]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "rejecting invitation")
 	}
 
-	return invitationList, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	response := &types.QueryFilteredResult[types.HouseholdInvitation]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
+	}
+
+	return response, nil
 }
 
 // AcceptHouseholdInvitation accepts a given household invitation.
@@ -101,8 +123,13 @@ func (c *Client) AcceptHouseholdInvitation(ctx context.Context, householdInvitat
 		return observability.PrepareAndLogError(err, logger, span, "building reject invitation request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.HouseholdInvitation]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "rejecting invitation")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -129,8 +156,13 @@ func (c *Client) CancelHouseholdInvitation(ctx context.Context, householdInvitat
 		return observability.PrepareAndLogError(err, logger, span, "building reject invitation request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.HouseholdInvitation]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "rejecting invitation")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -157,8 +189,13 @@ func (c *Client) RejectHouseholdInvitation(ctx context.Context, householdInvitat
 		return observability.PrepareAndLogError(err, logger, span, "building reject invitation request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.HouseholdInvitation]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "rejecting invitation")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil

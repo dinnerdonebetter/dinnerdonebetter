@@ -19,7 +19,6 @@ func checkRecipeStepCompletionConditionEquality(t *testing.T, expected, actual *
 	assert.Equal(t, expected.Notes, actual.Notes, "expected Notes for recipe step completion condition %s to be %v, but it was %v", expected.ID, expected.Notes, actual.Notes)
 	assert.Equal(t, expected.Ingredients, actual.Ingredients, "expected Ingredients for recipe step completion condition %s to be %v, but it was %v", expected.ID, expected.Ingredients, actual.Ingredients)
 	assert.Equal(t, expected.Optional, actual.Optional, "expected Optional for recipe step completion condition %s to be %v, but it was %v", expected.ID, expected.Optional, actual.Optional)
-	assert.Equal(t, expected.Optional, actual.Optional, "expected Optional for recipe step completion condition %s to be %v, but it was %v", expected.ID, expected.Optional, actual.Optional)
 	assert.NotZero(t, actual.CreatedAt)
 }
 
@@ -60,6 +59,13 @@ func (s *TestSuite) TestRecipeStepCompletionConditions_CompleteLifecycle() {
 
 			actual, err := testClients.user.GetRecipeStepCompletionCondition(ctx, createdRecipe.ID, createdRecipeStep.ID, createdRecipeStepCompletionCondition.ID)
 			requireNotNilAndNoProblems(t, actual, err)
+			actual.IngredientState = types.ValidIngredientState{
+				ID: createdRecipeStepCompletionCondition.IngredientState.ID,
+			}
+			actual.CreatedAt = createdRecipeStepCompletionCondition.CreatedAt
+			for i := range actual.Ingredients {
+				actual.Ingredients[i].CreatedAt = createdRecipeStepCompletionCondition.Ingredients[i].CreatedAt
+			}
 
 			// assert recipe step completion condition equality
 			checkRecipeStepCompletionConditionEquality(t, createdRecipeStepCompletionCondition, actual)

@@ -17,15 +17,17 @@ import (
 )
 
 type validIngredientsServiceHTTPRoutesTestHelper struct {
-	ctx                    context.Context
-	req                    *http.Request
-	res                    *httptest.ResponseRecorder
-	service                *service
-	exampleUser            *types.User
-	exampleHousehold       *types.Household
-	exampleValidIngredient *types.ValidIngredient
-	exampleCreationInput   *types.ValidIngredientCreationRequestInput
-	exampleUpdateInput     *types.ValidIngredientUpdateRequestInput
+	ctx                         context.Context
+	req                         *http.Request
+	res                         *httptest.ResponseRecorder
+	service                     *service
+	exampleUser                 *types.User
+	exampleHousehold            *types.Household
+	exampleValidIngredient      *types.ValidIngredient
+	exampleValidIngredientState *types.ValidIngredientState
+	exampleValidPreparation     *types.ValidPreparation
+	exampleCreationInput        *types.ValidIngredientCreationRequestInput
+	exampleUpdateInput          *types.ValidIngredientUpdateRequestInput
 }
 
 func buildTestHelper(t *testing.T) *validIngredientsServiceHTTPRoutesTestHelper {
@@ -39,11 +41,19 @@ func buildTestHelper(t *testing.T) *validIngredientsServiceHTTPRoutesTestHelper 
 	helper.exampleHousehold = fakes.BuildFakeHousehold()
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
 	helper.exampleValidIngredient = fakes.BuildFakeValidIngredient()
+	helper.exampleValidIngredientState = fakes.BuildFakeValidIngredientState()
+	helper.exampleValidPreparation = fakes.BuildFakeValidPreparation()
 	helper.exampleCreationInput = converters.ConvertValidIngredientToValidIngredientCreationRequestInput(helper.exampleValidIngredient)
 	helper.exampleUpdateInput = converters.ConvertValidIngredientToValidIngredientUpdateRequestInput(helper.exampleValidIngredient)
 
 	helper.service.validIngredientIDFetcher = func(*http.Request) string {
 		return helper.exampleValidIngredient.ID
+	}
+	helper.service.validIngredientStateIDFetcher = func(*http.Request) string {
+		return helper.exampleValidIngredientState.ID
+	}
+	helper.service.validPreparationIDFetcher = func(*http.Request) string {
+		return helper.exampleValidPreparation.ID
 	}
 
 	sessionCtxData := &types.SessionContextData{

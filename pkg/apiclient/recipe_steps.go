@@ -33,12 +33,16 @@ func (c *Client) GetRecipeStep(ctx context.Context, recipeID, recipeStepID strin
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get recipe step request")
 	}
 
-	var recipeStep *types.RecipeStep
-	if err = c.fetchAndUnmarshal(ctx, req, &recipeStep); err != nil {
+	var apiResponse *types.APIResponse[*types.RecipeStep]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe step")
 	}
 
-	return recipeStep, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // GetRecipeSteps retrieves a list of recipe steps.
@@ -60,12 +64,21 @@ func (c *Client) GetRecipeSteps(ctx context.Context, recipeID string, filter *ty
 		return nil, observability.PrepareAndLogError(err, logger, span, "building recipe steps list request")
 	}
 
-	var recipeSteps *types.QueryFilteredResult[types.RecipeStep]
-	if err = c.fetchAndUnmarshal(ctx, req, &recipeSteps); err != nil {
+	var apiResponse *types.APIResponse[[]*types.RecipeStep]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving recipe steps")
 	}
 
-	return recipeSteps, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	response := &types.QueryFilteredResult[types.RecipeStep]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
+	}
+
+	return response, nil
 }
 
 // CreateRecipeStep creates a recipe step.
@@ -94,12 +107,16 @@ func (c *Client) CreateRecipeStep(ctx context.Context, recipeID string, input *t
 		return nil, observability.PrepareAndLogError(err, logger, span, "building create recipe step request")
 	}
 
-	var recipeStep *types.RecipeStep
-	if err = c.fetchAndUnmarshal(ctx, req, &recipeStep); err != nil {
+	var apiResponse *types.APIResponse[*types.RecipeStep]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating recipe step")
 	}
 
-	return recipeStep, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // UpdateRecipeStep updates a recipe step.
@@ -120,8 +137,13 @@ func (c *Client) UpdateRecipeStep(ctx context.Context, recipeStep *types.RecipeS
 		return observability.PrepareAndLogError(err, logger, span, "building update recipe step request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, &recipeStep); err != nil {
+	var apiResponse *types.APIResponse[*types.RecipeStep]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating recipe step %s", recipeStep.ID)
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -147,8 +169,13 @@ func (c *Client) ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID s
 		return observability.PrepareError(err, span, "building archive recipe step request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.RecipeStep]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareError(err, span, "archiving recipe step %s", recipeStepID)
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -178,8 +205,13 @@ func (c *Client) UploadRecipeMediaForStep(ctx context.Context, files map[string]
 		return observability.PrepareError(err, span, "building media upload request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[[]*types.RecipeMedia]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareError(err, span, "uploading media")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil

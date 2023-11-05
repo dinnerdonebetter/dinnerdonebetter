@@ -22,11 +22,12 @@ func TestHouseholds(t *testing.T) {
 
 type householdsTestSuite struct {
 	suite.Suite
-
-	ctx                  context.Context
-	exampleHousehold     *types.Household
-	exampleUser          *types.User
-	exampleHouseholdList *types.QueryFilteredResult[types.Household]
+	ctx                          context.Context
+	exampleUser                  *types.User
+	exampleHousehold             *types.Household
+	exampleHouseholdResponse     *types.APIResponse[*types.Household]
+	exampleHouseholdListResponse *types.APIResponse[[]*types.Household]
+	exampleHouseholdList         []*types.Household
 }
 
 var _ suite.SetupTestSuite = (*householdsTestSuite)(nil)
@@ -37,9 +38,18 @@ func (s *householdsTestSuite) SetupTest() {
 	s.exampleHousehold = fakes.BuildFakeHousehold()
 	s.exampleHousehold.WebhookEncryptionKey = ""
 	s.exampleHousehold.BelongsToUser = s.exampleUser.ID
-	s.exampleHouseholdList = fakes.BuildFakeHouseholdList()
-	for i := range s.exampleHouseholdList.Data {
-		s.exampleHouseholdList.Data[i].WebhookEncryptionKey = ""
+	exampleHouseholdList := fakes.BuildFakeHouseholdList()
+	for i := range exampleHouseholdList.Data {
+		exampleHouseholdList.Data[i].WebhookEncryptionKey = ""
+	}
+
+	s.exampleHouseholdList = exampleHouseholdList.Data
+	s.exampleHouseholdListResponse = &types.APIResponse[[]*types.Household]{
+		Data:       exampleHouseholdList.Data,
+		Pagination: &exampleHouseholdList.Pagination,
+	}
+	s.exampleHouseholdResponse = &types.APIResponse[*types.Household]{
+		Data: s.exampleHousehold,
 	}
 }
 
@@ -52,7 +62,7 @@ func (s *householdsTestSuite) TestClient_SwitchActiveHousehold() {
 		s.exampleHousehold.BelongsToUser = ""
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusAccepted)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdResponse)
 		c.authMethod = cookieAuthMethod
 
 		assert.NoError(t, c.SwitchActiveHousehold(s.ctx, s.exampleHousehold.ID))
@@ -93,8 +103,7 @@ func (s *householdsTestSuite) TestClient_GetCurrentHousehold() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat)
-
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHousehold)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdResponse)
 
 		actual, err := c.GetCurrentHousehold(s.ctx)
 
@@ -137,8 +146,7 @@ func (s *householdsTestSuite) TestClient_GetHousehold() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleHousehold.ID)
-
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHousehold)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdResponse)
 
 		actual, err := c.GetHousehold(s.ctx, s.exampleHousehold.ID)
 
@@ -193,18 +201,18 @@ func (s *householdsTestSuite) TestClient_GetHouseholds() {
 	s.Run("standard", func() {
 		t := s.T()
 
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdList)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdListResponse)
 		actual, err := c.GetHouseholds(s.ctx, filter)
 
 		for i, household := range actual.Data {
 			for j := range household.Members {
-				actual.Data[i].Members[j].BelongsToUser.TwoFactorSecretVerifiedAt = s.exampleHouseholdList.Data[i].Members[j].BelongsToUser.TwoFactorSecretVerifiedAt
+				actual.Data[i].Members[j].BelongsToUser.TwoFactorSecretVerifiedAt = s.exampleHouseholdList[i].Members[j].BelongsToUser.TwoFactorSecretVerifiedAt
 			}
 		}
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, s.exampleHouseholdList, actual)
+		assert.Equal(t, s.exampleHouseholdList, actual.Data)
 	})
 
 	s.Run("with error building request", func() {
@@ -239,7 +247,7 @@ func (s *householdsTestSuite) TestClient_CreateHousehold() {
 		s.exampleHousehold.BelongsToUser = ""
 		exampleInput := converters.ConvertHouseholdToHouseholdCreationRequestInput(s.exampleHousehold)
 
-		c := buildTestClientWithRequestBodyValidation(t, spec, exampleInput, exampleInput, s.exampleHousehold)
+		c := buildTestClientWithRequestBodyValidation(t, spec, exampleInput, exampleInput, s.exampleHouseholdResponse)
 		actual, err := c.CreateHousehold(s.ctx, exampleInput)
 
 		for i := range actual.Members {
@@ -304,7 +312,7 @@ func (s *householdsTestSuite) TestClient_UpdateHousehold() {
 		t := s.T()
 
 		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, s.exampleHousehold.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHousehold)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdResponse)
 
 		assert.NoError(t, c.UpdateHousehold(s.ctx, s.exampleHousehold), "no error should be returned")
 	})
@@ -342,7 +350,7 @@ func (s *householdsTestSuite) TestClient_ArchiveHousehold() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, s.exampleHousehold.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdResponse)
 
 		assert.NoError(t, c.ArchiveHousehold(s.ctx, s.exampleHousehold.ID), "no error should be returned")
 	})
@@ -381,10 +389,13 @@ func (s *householdsTestSuite) TestClient_InviteUserToHousehold() {
 		exampleHouseholdID := fakes.BuildFakeID()
 		invitation.FromUser.TwoFactorSecret = ""
 		invitation.DestinationHousehold.WebhookEncryptionKey = ""
+		invitationResponse := &types.APIResponse[*types.HouseholdInvitation]{
+			Data: invitation,
+		}
 
 		exampleInput := converters.ConvertHouseholdInvitationToHouseholdInvitationCreationInput(invitation)
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, exampleHouseholdID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, invitation)
+		c, _ := buildTestClientWithJSONResponse(t, spec, invitationResponse)
 
 		householdInvite, err := c.InviteUserToHousehold(s.ctx, exampleHouseholdID, exampleInput)
 		assert.Equal(t, invitation, householdInvite)
@@ -449,7 +460,7 @@ func (s *householdsTestSuite) TestClient_MarkAsDefault() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodPost, "", expectedPathFormat, s.exampleHousehold.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdResponse)
 
 		assert.NoError(t, c.MarkAsDefault(s.ctx, s.exampleHousehold.ID))
 	})
@@ -486,7 +497,7 @@ func (s *householdsTestSuite) TestClient_RemoveUserFromHousehold() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, s.exampleHousehold.ID, s.exampleUser.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdResponse)
 
 		assert.NoError(t, c.RemoveUserFromHousehold(s.ctx, s.exampleHousehold.ID, s.exampleUser.ID))
 	})
@@ -531,7 +542,7 @@ func (s *householdsTestSuite) TestClient_ModifyMemberPermissions() {
 		t := s.T()
 
 		spec := newRequestSpec(false, http.MethodPatch, "", expectedPathFormat, s.exampleHousehold.ID, s.exampleUser.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdResponse)
 		exampleInput := fakes.BuildFakeUserPermissionModificationInput()
 
 		assert.NoError(t, c.ModifyMemberPermissions(s.ctx, s.exampleHousehold.ID, s.exampleUser.ID, exampleInput))
@@ -598,7 +609,7 @@ func (s *householdsTestSuite) TestClient_TransferHouseholdOwnership() {
 		t := s.T()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, s.exampleHousehold.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdResponse)
 		exampleInput := fakes.BuildFakeTransferHouseholdOwnershipInput()
 
 		assert.NoError(t, c.TransferHouseholdOwnership(s.ctx, s.exampleHousehold.ID, exampleInput))

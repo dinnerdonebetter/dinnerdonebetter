@@ -27,12 +27,12 @@ func (c *Client) GetValidInstrument(ctx context.Context, validInstrumentID strin
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid instrument request")
 	}
 
-	var validInstrument *types.ValidInstrument
-	if err = c.fetchAndUnmarshal(ctx, req, &validInstrument); err != nil {
+	var apiResponse *types.APIResponse[*types.ValidInstrument]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid instrument")
 	}
 
-	return validInstrument, nil
+	return apiResponse.Data, nil
 }
 
 // GetRandomValidInstrument gets a valid instrument.
@@ -47,12 +47,12 @@ func (c *Client) GetRandomValidInstrument(ctx context.Context) (*types.ValidInst
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid instrument request")
 	}
 
-	var validInstrument *types.ValidInstrument
-	if err = c.fetchAndUnmarshal(ctx, req, &validInstrument); err != nil {
+	var apiResponse *types.APIResponse[*types.ValidInstrument]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid instrument")
 	}
 
-	return validInstrument, nil
+	return apiResponse.Data, nil
 }
 
 // SearchValidInstruments searches through a list of valid instruments.
@@ -77,12 +77,12 @@ func (c *Client) SearchValidInstruments(ctx context.Context, query string, limit
 		return nil, observability.PrepareAndLogError(err, logger, span, "building search for valid instruments request")
 	}
 
-	var validInstruments []*types.ValidInstrument
-	if err = c.fetchAndUnmarshal(ctx, req, &validInstruments); err != nil {
+	var apiResponse *types.APIResponse[[]*types.ValidInstrument]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid instruments")
 	}
 
-	return validInstruments, nil
+	return apiResponse.Data, nil
 }
 
 // GetValidInstruments retrieves a list of valid instruments.
@@ -99,12 +99,17 @@ func (c *Client) GetValidInstruments(ctx context.Context, filter *types.QueryFil
 		return nil, observability.PrepareAndLogError(err, logger, span, "building valid instruments list request")
 	}
 
-	var validInstruments *types.QueryFilteredResult[types.ValidInstrument]
-	if err = c.fetchAndUnmarshal(ctx, req, &validInstruments); err != nil {
+	var apiResponse *types.APIResponse[[]*types.ValidInstrument]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid instruments")
 	}
 
-	return validInstruments, nil
+	result := &types.QueryFilteredResult[types.ValidInstrument]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
+	}
+
+	return result, nil
 }
 
 // CreateValidInstrument creates a valid instrument.
@@ -127,12 +132,12 @@ func (c *Client) CreateValidInstrument(ctx context.Context, input *types.ValidIn
 		return nil, observability.PrepareAndLogError(err, logger, span, "building create valid instrument request")
 	}
 
-	var validInstrument *types.ValidInstrument
-	if err = c.fetchAndUnmarshal(ctx, req, &validInstrument); err != nil {
+	var apiResponse *types.APIResponse[*types.ValidInstrument]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid instrument")
 	}
 
-	return validInstrument, nil
+	return apiResponse.Data, nil
 }
 
 // UpdateValidInstrument updates a valid instrument.
@@ -153,7 +158,8 @@ func (c *Client) UpdateValidInstrument(ctx context.Context, validInstrument *typ
 		return observability.PrepareAndLogError(err, logger, span, "building update valid instrument request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, &validInstrument); err != nil {
+	var apiResponse *types.APIResponse[*types.ValidInstrument]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid instrument %s", validInstrument.ID)
 	}
 

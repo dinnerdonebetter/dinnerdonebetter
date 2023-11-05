@@ -14,8 +14,8 @@ func (c *Client) GetServiceSettingConfigurationForUserByName(ctx context.Context
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger.Clone()
-	logger = filter.AttachToLogger(logger).WithValue(keys.ServiceSettingNameKey, settingName)
+	logger := c.logger.WithValue(keys.ServiceSettingNameKey, settingName)
+	logger = filter.AttachToLogger(logger)
 	tracing.AttachQueryFilterToSpan(span, filter)
 	tracing.AttachToSpan(span, keys.ServiceSettingNameKey, settingName)
 
@@ -24,12 +24,16 @@ func (c *Client) GetServiceSettingConfigurationForUserByName(ctx context.Context
 		return nil, observability.PrepareAndLogError(err, logger, span, "building service settings list request")
 	}
 
-	var serviceSettingConfigurations *types.ServiceSettingConfiguration
-	if err = c.fetchAndUnmarshal(ctx, req, &serviceSettingConfigurations); err != nil {
+	var apiResponse *types.APIResponse[*types.ServiceSettingConfiguration]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving service settings")
 	}
 
-	return serviceSettingConfigurations, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // GetServiceSettingConfigurationsForUser retrieves a list of service settings.
@@ -46,12 +50,21 @@ func (c *Client) GetServiceSettingConfigurationsForUser(ctx context.Context, fil
 		return nil, observability.PrepareAndLogError(err, logger, span, "building service settings list request")
 	}
 
-	var serviceSettingConfigurations *types.QueryFilteredResult[types.ServiceSettingConfiguration]
-	if err = c.fetchAndUnmarshal(ctx, req, &serviceSettingConfigurations); err != nil {
+	var apiResponse *types.APIResponse[[]*types.ServiceSettingConfiguration]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving service settings")
 	}
 
-	return serviceSettingConfigurations, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	response := &types.QueryFilteredResult[types.ServiceSettingConfiguration]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
+	}
+
+	return response, nil
 }
 
 // GetServiceSettingConfigurationsForHousehold retrieves a list of service settings.
@@ -68,12 +81,21 @@ func (c *Client) GetServiceSettingConfigurationsForHousehold(ctx context.Context
 		return nil, observability.PrepareAndLogError(err, logger, span, "building service settings list request")
 	}
 
-	var serviceSettingConfigurations *types.QueryFilteredResult[types.ServiceSettingConfiguration]
-	if err = c.fetchAndUnmarshal(ctx, req, &serviceSettingConfigurations); err != nil {
+	var apiResponse *types.APIResponse[[]*types.ServiceSettingConfiguration]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving service settings")
 	}
 
-	return serviceSettingConfigurations, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	response := &types.QueryFilteredResult[types.ServiceSettingConfiguration]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
+	}
+
+	return response, nil
 }
 
 // CreateServiceSettingConfiguration creates a service setting.
@@ -96,12 +118,16 @@ func (c *Client) CreateServiceSettingConfiguration(ctx context.Context, input *t
 		return nil, observability.PrepareAndLogError(err, logger, span, "building create service setting request")
 	}
 
-	var serviceSettingConfiguration *types.ServiceSettingConfiguration
-	if err = c.fetchAndUnmarshal(ctx, req, &serviceSettingConfiguration); err != nil {
+	var apiResponse *types.APIResponse[*types.ServiceSettingConfiguration]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating service setting")
 	}
 
-	return serviceSettingConfiguration, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // UpdateServiceSettingConfiguration updates a service setting.
@@ -122,8 +148,13 @@ func (c *Client) UpdateServiceSettingConfiguration(ctx context.Context, serviceS
 		return observability.PrepareAndLogError(err, logger, span, "building update service setting request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, &serviceSettingConfiguration); err != nil {
+	var apiResponse *types.APIResponse[*types.ServiceSettingConfiguration]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating service setting %s", serviceSettingConfiguration.ID)
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -147,8 +178,13 @@ func (c *Client) ArchiveServiceSettingConfiguration(ctx context.Context, service
 		return observability.PrepareAndLogError(err, logger, span, "building archive service setting request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[*types.ServiceSettingConfiguration]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving service setting %s", serviceSettingConfigurationID)
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil

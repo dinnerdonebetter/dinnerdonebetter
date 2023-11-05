@@ -22,21 +22,31 @@ func TestValidIngredientStates(t *testing.T) {
 
 type validIngredientStatesBaseSuite struct {
 	suite.Suite
-
-	ctx                         context.Context
-	exampleValidIngredientState *types.ValidIngredientState
+	ctx                                     context.Context
+	exampleValidIngredientState             *types.ValidIngredientState
+	exampleValidIngredientStateResponse     *types.APIResponse[*types.ValidIngredientState]
+	exampleValidIngredientStateListResponse *types.APIResponse[[]*types.ValidIngredientState]
+	exampleValidIngredientStateList         []*types.ValidIngredientState
 }
 
 var _ suite.SetupTestSuite = (*validIngredientStatesBaseSuite)(nil)
 
 func (s *validIngredientStatesBaseSuite) SetupTest() {
 	s.ctx = context.Background()
+	exampleList := fakes.BuildFakeValidIngredientStateList()
 	s.exampleValidIngredientState = fakes.BuildFakeValidIngredientState()
+	s.exampleValidIngredientStateList = exampleList.Data
+	s.exampleValidIngredientStateResponse = &types.APIResponse[*types.ValidIngredientState]{
+		Data: s.exampleValidIngredientState,
+	}
+	s.exampleValidIngredientStateListResponse = &types.APIResponse[[]*types.ValidIngredientState]{
+		Data:       s.exampleValidIngredientStateList,
+		Pagination: &exampleList.Pagination,
+	}
 }
 
 type validIngredientStatesTestSuite struct {
 	suite.Suite
-
 	validIngredientStatesBaseSuite
 }
 
@@ -47,7 +57,7 @@ func (s *validIngredientStatesTestSuite) TestClient_GetValidIngredientState() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleValidIngredientState.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientState)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientStateResponse)
 		actual, err := c.GetValidIngredientState(s.ctx, s.exampleValidIngredientState.ID)
 
 		require.NotNil(t, actual)
@@ -95,15 +105,13 @@ func (s *validIngredientStatesTestSuite) TestClient_GetValidIngredientStates() {
 
 		filter := (*types.QueryFilter)(nil)
 
-		exampleValidIngredientStateList := fakes.BuildFakeValidIngredientStateList()
-
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientStateList)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientStateListResponse)
 		actual, err := c.GetValidIngredientStates(s.ctx, filter)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidIngredientStateList, actual)
+		assert.Equal(t, s.exampleValidIngredientStateList, actual.Data)
 	})
 
 	s.Run("with error building request", func() {
@@ -140,15 +148,13 @@ func (s *validIngredientStatesTestSuite) TestClient_SearchValidIngredientStates(
 	s.Run("standard", func() {
 		t := s.T()
 
-		exampleValidIngredientStateList := fakes.BuildFakeValidIngredientStateList()
-
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&q=whatever", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidIngredientStateList.Data)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientStateListResponse)
 		actual, err := c.SearchValidIngredientStates(s.ctx, exampleQuery, 0)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidIngredientStateList.Data, actual)
+		assert.Equal(t, s.exampleValidIngredientStateList, actual)
 	})
 
 	s.Run("with empty query", func() {
@@ -193,7 +199,7 @@ func (s *validIngredientStatesTestSuite) TestClient_CreateValidIngredientState()
 		exampleInput := fakes.BuildFakeValidIngredientStateCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientState)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientStateResponse)
 
 		actual, err := c.CreateValidIngredientState(s.ctx, exampleInput)
 		require.NotEmpty(t, actual)
@@ -254,7 +260,7 @@ func (s *validIngredientStatesTestSuite) TestClient_UpdateValidIngredientState()
 		t := s.T()
 
 		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, s.exampleValidIngredientState.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientState)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientStateResponse)
 
 		err := c.UpdateValidIngredientState(s.ctx, s.exampleValidIngredientState)
 		assert.NoError(t, err)
@@ -295,7 +301,7 @@ func (s *validIngredientStatesTestSuite) TestClient_ArchiveValidIngredientState(
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, s.exampleValidIngredientState.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidIngredientStateResponse)
 
 		err := c.ArchiveValidIngredientState(s.ctx, s.exampleValidIngredientState.ID)
 		assert.NoError(t, err)

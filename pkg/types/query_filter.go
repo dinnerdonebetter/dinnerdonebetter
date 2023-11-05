@@ -21,6 +21,8 @@ const (
 
 	// SearchQueryKey is the query param key to find search queries in requests.
 	SearchQueryKey = "q"
+	// SearchWithDatabaseQueryKey is the query param key to find search queries in requests.
+	SearchWithDatabaseQueryKey = "useDB"
 	// LimitQueryKey is the query param key to specify a limit in a query.
 	LimitQueryKey = "limit"
 
@@ -212,7 +214,7 @@ func (qf *QueryFilter) ToPagination() Pagination {
 
 // ExtractQueryFilterFromRequest can extract a QueryFilter from a request.
 func ExtractQueryFilterFromRequest(req *http.Request) *QueryFilter {
-	qf := &QueryFilter{}
+	qf := DefaultQueryFilter()
 	qf.FromParams(req.URL.Query())
 
 	if qf.Limit != nil {

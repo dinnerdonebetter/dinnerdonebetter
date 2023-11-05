@@ -27,12 +27,12 @@ func (c *Client) GetValidIngredientStateIngredient(ctx context.Context, validIng
 		return nil, observability.PrepareAndLogError(err, logger, span, "building get valid ingredient state ingredient request")
 	}
 
-	var validIngredientStateIngredient *types.ValidIngredientStateIngredient
-	if err = c.fetchAndUnmarshal(ctx, req, &validIngredientStateIngredient); err != nil {
+	var apiResponse *types.APIResponse[*types.ValidIngredientStateIngredient]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient state ingredient")
 	}
 
-	return validIngredientStateIngredient, nil
+	return apiResponse.Data, nil
 }
 
 // GetValidIngredientStateIngredients retrieves a list of valid ingredient state ingredient.
@@ -49,12 +49,17 @@ func (c *Client) GetValidIngredientStateIngredients(ctx context.Context, filter 
 		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredient state ingredient list request")
 	}
 
-	var validIngredientStateIngredients *types.QueryFilteredResult[types.ValidIngredientStateIngredient]
-	if err = c.fetchAndUnmarshal(ctx, req, &validIngredientStateIngredients); err != nil {
+	var apiResponse *types.APIResponse[[]*types.ValidIngredientStateIngredient]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient state ingredient")
 	}
 
-	return validIngredientStateIngredients, nil
+	response := &types.QueryFilteredResult[types.ValidIngredientStateIngredient]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
+	}
+
+	return response, nil
 }
 
 // GetValidIngredientStateIngredientsForIngredient retrieves a list of valid ingredient state ingredient.
@@ -76,12 +81,17 @@ func (c *Client) GetValidIngredientStateIngredientsForIngredient(ctx context.Con
 		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredient state ingredient list request")
 	}
 
-	var validPreparationInstruments *types.QueryFilteredResult[types.ValidIngredientStateIngredient]
-	if err = c.fetchAndUnmarshal(ctx, req, &validPreparationInstruments); err != nil {
+	var apiResponse *types.APIResponse[[]*types.ValidIngredientStateIngredient]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient state ingredient")
 	}
 
-	return validPreparationInstruments, nil
+	response := &types.QueryFilteredResult[types.ValidIngredientStateIngredient]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
+	}
+
+	return response, nil
 }
 
 // GetValidIngredientStateIngredientsForIngredientState retrieves a list of valid ingredient state ingredient.
@@ -103,12 +113,17 @@ func (c *Client) GetValidIngredientStateIngredientsForIngredientState(ctx contex
 		return nil, observability.PrepareAndLogError(err, logger, span, "building valid ingredient state ingredient list request")
 	}
 
-	var validPreparationInstruments *types.QueryFilteredResult[types.ValidIngredientStateIngredient]
-	if err = c.fetchAndUnmarshal(ctx, req, &validPreparationInstruments); err != nil {
+	var apiResponse *types.APIResponse[[]*types.ValidIngredientStateIngredient]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient state ingredient")
 	}
 
-	return validPreparationInstruments, nil
+	response := &types.QueryFilteredResult[types.ValidIngredientStateIngredient]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
+	}
+
+	return response, nil
 }
 
 // CreateValidIngredientStateIngredient creates a valid ingredient state ingredient.
@@ -131,12 +146,12 @@ func (c *Client) CreateValidIngredientStateIngredient(ctx context.Context, input
 		return nil, observability.PrepareAndLogError(err, logger, span, "building create valid ingredient state ingredient request")
 	}
 
-	var validIngredientStateIngredient *types.ValidIngredientStateIngredient
-	if err = c.fetchAndUnmarshal(ctx, req, &validIngredientStateIngredient); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "creating valid ingredient state ingredient")
+	var apiResponse *types.APIResponse[*types.ValidIngredientStateIngredient]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving valid ingredient state ingredient")
 	}
 
-	return validIngredientStateIngredient, nil
+	return apiResponse.Data, nil
 }
 
 // UpdateValidIngredientStateIngredient updates a valid ingredient state ingredient.
@@ -156,8 +171,8 @@ func (c *Client) UpdateValidIngredientStateIngredient(ctx context.Context, valid
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "building update valid ingredient state ingredient request")
 	}
-
-	if err = c.fetchAndUnmarshal(ctx, req, &validIngredientStateIngredient); err != nil {
+	var apiResponse *types.APIResponse[*types.ValidIngredientStateIngredient]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient state ingredient %s", validIngredientStateIngredient.ID)
 	}
 

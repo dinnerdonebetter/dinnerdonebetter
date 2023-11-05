@@ -11,16 +11,20 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+
+	servertiming "github.com/mitchellh/go-server-timing"
 )
 
 // CookieRequirementMiddleware requires every request have a valid cookie.
 func (s *service) CookieRequirementMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
-		_, span := s.tracer.StartSpan(req.Context())
+		ctx, span := s.tracer.StartSpan(req.Context())
 		defer span.End()
 
+		timing := servertiming.FromContext(ctx)
 		logger := s.logger.WithRequest(req)
 
+		cookieFetchTimer := timing.NewMetric("cookie fetch").WithDesc("decoding cookie from request").Start()
 		if cookie, cookieErr := req.Cookie(s.config.Cookies.Name); !errors.Is(cookieErr, http.ErrNoCookie) && cookie != nil {
 			var token string
 			if err := s.cookieManager.Decode(s.config.Cookies.Name, cookie.Value, &token); err == nil {
@@ -30,6 +34,7 @@ func (s *service) CookieRequirementMiddleware(next http.Handler) http.Handler {
 				observability.AcknowledgeError(err, logger, span, "decoding cookie")
 			}
 		}
+		cookieFetchTimer.Stop()
 
 		logger.Info("no cookie attached to request")
 
@@ -44,12 +49,18 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 		ctx, span := s.tracer.StartSpan(req.Context())
 		defer span.End()
 
+		timing := servertiming.FromContext(ctx)
 		logger := s.logger.WithRequest(req).WithValue("cookie", req.Header[s.config.Cookies.Name])
 		for _, cookie := range req.Cookies() {
 			logger = logger.WithValue(fmt.Sprintf("cookie.%s", cookie.Name), cookie.Value)
 		}
 
+		responseDetails := types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		}
+
 		// handle cookies if relevant.
+		cookieTimer := timing.NewMetric("cookie fetch").WithDesc("decoding cookie from request").Start()
 		if cookieContext, userID, err := s.getUserIDFromCookie(ctx, req); err == nil && userID != "" {
 			ctx = cookieContext
 
@@ -59,7 +70,8 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 			sessionCtxData, sessionCtxDataErr := s.householdMembershipManager.BuildSessionContextDataForUser(ctx, userID)
 			if sessionCtxDataErr != nil {
 				observability.AcknowledgeError(sessionCtxDataErr, logger, span, "fetching user info for cookie")
-				s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+				errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+				s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 				return
 			}
 
@@ -68,21 +80,27 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 			next.ServeHTTP(res, req.WithContext(context.WithValue(ctx, types.SessionContextDataKey, sessionCtxData)))
 			return
 		}
+		cookieTimer.Stop()
 
 		// validate bearer token.
+		tokenTimer := timing.NewMetric("token validation").WithDesc("validating bearer token from request").Start()
 		token, err := s.oauth2Server.ValidationBearerToken(req)
 		if err != nil {
 			s.logger.Error(err, "determining user ID")
 		}
+		tokenTimer.Stop()
 
 		if token != nil {
 			if userID := token.GetUserID(); userID != "" {
+				userAttributionTimer := timing.NewMetric("user attribution").WithDesc("attributing user to request").Start()
 				sessionCtxData, sessionCtxDataErr := s.householdMembershipManager.BuildSessionContextDataForUser(ctx, userID)
 				if sessionCtxDataErr != nil {
 					observability.AcknowledgeError(sessionCtxDataErr, logger, span, "fetching user info for cookie")
-					s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+					errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+					s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 					return
 				}
+				userAttributionTimer.Stop()
 
 				if sessionCtxData != nil {
 					next.ServeHTTP(res, req.WithContext(context.WithValue(ctx, types.SessionContextDataKey, sessionCtxData)))
@@ -136,6 +154,7 @@ func (s *service) PermissionFilterMiddleware(permissions ...authorization.Permis
 			ctx, span := s.tracer.StartSpan(req.Context())
 			defer span.End()
 
+			timing := servertiming.FromContext(ctx)
 			logger := s.logger.WithRequest(req)
 			logger.Debug("checking permissions in middleware")
 
@@ -147,6 +166,8 @@ func (s *service) PermissionFilterMiddleware(permissions ...authorization.Permis
 				return
 			}
 
+			permissionCheckTimer := timing.NewMetric("permissions check").WithDesc("checking user permissions").Start()
+			defer permissionCheckTimer.Stop()
 			logger = sessionContextData.AttachToLogger(logger)
 			isServiceAdmin := sessionContextData.Requester.ServicePermissions.IsServiceAdmin()
 			logger = logger.WithValue("is_service_admin", isServiceAdmin)
@@ -174,18 +195,21 @@ func (s *service) PermissionFilterMiddleware(permissions ...authorization.Permis
 
 // ServiceAdminMiddleware restricts requests to admin users only.
 func (s *service) ServiceAdminMiddleware(next http.Handler) http.Handler {
-	const staticError = "admin status required"
-
 	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 		ctx, span := s.tracer.StartSpan(req.Context())
 		defer span.End()
 
 		logger := s.logger.WithRequest(req)
 
+		responseDetails := types.ResponseDetails{
+			TraceID: span.SpanContext().TraceID().String(),
+		}
+
 		sessionCtxData, err := s.sessionContextDataFetcher(req)
 		if err != nil {
 			observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-			s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, http.StatusUnauthorized)
+			errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 			return
 		}
 
@@ -194,7 +218,8 @@ func (s *service) ServiceAdminMiddleware(next http.Handler) http.Handler {
 
 		if !sessionCtxData.Requester.ServicePermissions.IsServiceAdmin() {
 			logger.Debug("ServiceAdminMiddleware called by non-admin user")
-			s.encoderDecoder.EncodeErrorResponse(ctx, res, staticError, http.StatusUnauthorized)
+			errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrUserIsNotAuthorized, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 			return
 		}
 

@@ -34,9 +34,9 @@ type (
 		dataChangesPublisher           messagequeue.Publisher
 		encoderDecoder                 encoding.ServerEncoderDecoder
 		tracer                         tracing.Tracer
-		mealPlanFinalizationWorker     *workers.MealPlanFinalizationWorker
-		mealPlanGroceryListInitializer *workers.MealPlanGroceryListInitializer
-		mealPlanTaskCreatorWorker      *workers.MealPlanTaskCreatorWorker
+		mealPlanFinalizationWorker     workers.MealPlanFinalizationWorker
+		mealPlanGroceryListInitializer workers.MealPlanGroceryListInitializer
+		mealPlanTaskCreatorWorker      workers.MealPlanTaskCreatorWorker
 	}
 )
 

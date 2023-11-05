@@ -22,9 +22,11 @@ func TestHouseholdInstrumentOwnerships(t *testing.T) {
 
 type householdInstrumentOwnershipsBaseSuite struct {
 	suite.Suite
-
-	ctx                                 context.Context
-	exampleHouseholdInstrumentOwnership *types.HouseholdInstrumentOwnership
+	ctx                                             context.Context
+	exampleHouseholdInstrumentOwnership             *types.HouseholdInstrumentOwnership
+	exampleHouseholdInstrumentOwnershipResponse     *types.APIResponse[*types.HouseholdInstrumentOwnership]
+	exampleHouseholdInstrumentOwnershipListResponse *types.APIResponse[[]*types.HouseholdInstrumentOwnership]
+	exampleHouseholdInstrumentOwnershipList         []*types.HouseholdInstrumentOwnership
 }
 
 var _ suite.SetupTestSuite = (*householdInstrumentOwnershipsBaseSuite)(nil)
@@ -32,11 +34,19 @@ var _ suite.SetupTestSuite = (*householdInstrumentOwnershipsBaseSuite)(nil)
 func (s *householdInstrumentOwnershipsBaseSuite) SetupTest() {
 	s.ctx = context.Background()
 	s.exampleHouseholdInstrumentOwnership = fakes.BuildFakeHouseholdInstrumentOwnership()
+	s.exampleHouseholdInstrumentOwnershipResponse = &types.APIResponse[*types.HouseholdInstrumentOwnership]{
+		Data: s.exampleHouseholdInstrumentOwnership,
+	}
+	exampleHouseholdInstrumentOwnershipList := fakes.BuildFakeHouseholdInstrumentOwnershipList()
+	s.exampleHouseholdInstrumentOwnershipList = exampleHouseholdInstrumentOwnershipList.Data
+	s.exampleHouseholdInstrumentOwnershipListResponse = &types.APIResponse[[]*types.HouseholdInstrumentOwnership]{
+		Data:       s.exampleHouseholdInstrumentOwnershipList,
+		Pagination: &exampleHouseholdInstrumentOwnershipList.Pagination,
+	}
 }
 
 type householdInstrumentOwnershipsTestSuite struct {
 	suite.Suite
-
 	householdInstrumentOwnershipsBaseSuite
 }
 
@@ -47,7 +57,7 @@ func (s *householdInstrumentOwnershipsTestSuite) TestClient_GetHouseholdInstrume
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleHouseholdInstrumentOwnership.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdInstrumentOwnership)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdInstrumentOwnershipResponse)
 		actual, err := c.GetHouseholdInstrumentOwnership(s.ctx, s.exampleHouseholdInstrumentOwnership.ID)
 
 		require.NotNil(t, actual)
@@ -90,26 +100,22 @@ func (s *householdInstrumentOwnershipsTestSuite) TestClient_GetHouseholdInstrume
 func (s *householdInstrumentOwnershipsTestSuite) TestClient_GetHouseholdInstrumentOwnerships() {
 	const expectedPath = "/api/v1/households/instruments"
 
+	filter := (*types.QueryFilter)(nil)
+
 	s.Run("standard", func() {
 		t := s.T()
 
-		filter := (*types.QueryFilter)(nil)
-
-		exampleHouseholdInstrumentOwnershipList := fakes.BuildFakeHouseholdInstrumentOwnershipList()
-
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleHouseholdInstrumentOwnershipList)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdInstrumentOwnershipListResponse)
 		actual, err := c.GetHouseholdInstrumentOwnerships(s.ctx, filter)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleHouseholdInstrumentOwnershipList, actual)
+		assert.Equal(t, s.exampleHouseholdInstrumentOwnershipList, actual.Data)
 	})
 
 	s.Run("with error building request", func() {
 		t := s.T()
-
-		filter := (*types.QueryFilter)(nil)
 
 		c := buildTestClientWithInvalidURL(t)
 		actual, err := c.GetHouseholdInstrumentOwnerships(s.ctx, filter)
@@ -120,8 +126,6 @@ func (s *householdInstrumentOwnershipsTestSuite) TestClient_GetHouseholdInstrume
 
 	s.Run("with error executing request", func() {
 		t := s.T()
-
-		filter := (*types.QueryFilter)(nil)
 
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
 		c := buildTestClientWithInvalidResponse(t, spec)
@@ -141,7 +145,7 @@ func (s *householdInstrumentOwnershipsTestSuite) TestClient_CreateHouseholdInstr
 		exampleInput := fakes.BuildFakeHouseholdInstrumentOwnershipCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdInstrumentOwnership)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdInstrumentOwnershipResponse)
 
 		actual, err := c.CreateHouseholdInstrumentOwnership(s.ctx, exampleInput)
 		assert.NoError(t, err)
@@ -200,7 +204,7 @@ func (s *householdInstrumentOwnershipsTestSuite) TestClient_UpdateHouseholdInstr
 		t := s.T()
 
 		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, s.exampleHouseholdInstrumentOwnership.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdInstrumentOwnership)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdInstrumentOwnershipResponse)
 
 		err := c.UpdateHouseholdInstrumentOwnership(s.ctx, s.exampleHouseholdInstrumentOwnership)
 		assert.NoError(t, err)
@@ -241,7 +245,7 @@ func (s *householdInstrumentOwnershipsTestSuite) TestClient_ArchiveHouseholdInst
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, s.exampleHouseholdInstrumentOwnership.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleHouseholdInstrumentOwnershipResponse)
 
 		err := c.ArchiveHouseholdInstrumentOwnership(s.ctx, s.exampleHouseholdInstrumentOwnership.ID)
 		assert.NoError(t, err)

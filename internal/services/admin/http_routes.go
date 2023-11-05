@@ -24,10 +24,15 @@ func (s *service) UserAccountStatusChangeHandler(res http.ResponseWriter, req *h
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-		s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
 
@@ -38,13 +43,15 @@ func (s *service) UserAccountStatusChangeHandler(res http.ResponseWriter, req *h
 	input := new(types.UserAccountStatusUpdateInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, "invalid request content", http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
 	if err = input.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
-		s.encoderDecoder.EncodeErrorResponse(ctx, res, err.Error(), http.StatusBadRequest)
+		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
@@ -57,18 +64,20 @@ func (s *service) UserAccountStatusChangeHandler(res http.ResponseWriter, req *h
 	}
 
 	requester := sessionCtxData.Requester.UserID
-	logger = logger.WithValue("ban_giver", requester)
-	logger = logger.WithValue("status_change_recipient", input.TargetUserID)
+	logger = logger.WithValue("ban_giver", requester).WithValue("status_change_recipient", input.TargetUserID)
 
 	if err = s.userDB.UpdateUserAccountStatus(ctx, input.TargetUserID, input); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			s.encoderDecoder.EncodeNotFoundResponse(ctx, res)
+			errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
+			return
 		} else {
 			observability.AcknowledgeError(err, logger, span, "retrieving session context data")
-			s.encoderDecoder.EncodeUnspecifiedInternalServerErrorResponse(ctx, res)
+			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		}
 		return
 	}
 
-	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, nil, http.StatusAccepted)
+	res.WriteHeader(http.StatusAccepted)
 }

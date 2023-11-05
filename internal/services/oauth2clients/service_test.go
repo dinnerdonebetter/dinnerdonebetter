@@ -6,6 +6,7 @@ import (
 
 	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
 	"github.com/dinnerdonebetter/backend/internal/database"
+	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
@@ -26,7 +27,7 @@ func buildTestService(t *testing.T) *service {
 	return &service{
 		oauth2ClientDataManager:   database.NewMockDatabase(),
 		logger:                    logging.NewNoopLogger(),
-		encoderDecoder:            mockencoding.NewMockEncoderDecoder(),
+		encoderDecoder:            encoding.ProvideServerEncoderDecoder(nil, nil, encoding.ContentTypeJSON),
 		authenticator:             &mockauthn.Authenticator{},
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,
 		urlClientIDExtractor:      func(req *http.Request) string { return "" },

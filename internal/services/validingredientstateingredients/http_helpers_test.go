@@ -24,7 +24,7 @@ type validIngredientStateIngredientsServiceHTTPRoutesTestHelper struct {
 	exampleUser                           *types.User
 	exampleHousehold                      *types.Household
 	exampleValidIngredient                *types.ValidIngredient
-	exampleValidPreparation               *types.ValidPreparation
+	exampleValidIngredientState           *types.ValidIngredientState
 	exampleValidIngredientStateIngredient *types.ValidIngredientStateIngredient
 	exampleCreationInput                  *types.ValidIngredientStateIngredientCreationRequestInput
 	exampleUpdateInput                    *types.ValidIngredientStateIngredientUpdateRequestInput
@@ -41,7 +41,7 @@ func buildTestHelper(t *testing.T) *validIngredientStateIngredientsServiceHTTPRo
 	helper.exampleHousehold = fakes.BuildFakeHousehold()
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
 	helper.exampleValidIngredient = fakes.BuildFakeValidIngredient()
-	helper.exampleValidPreparation = fakes.BuildFakeValidPreparation()
+	helper.exampleValidIngredientState = fakes.BuildFakeValidIngredientState()
 	helper.exampleValidIngredientStateIngredient = fakes.BuildFakeValidIngredientStateIngredient()
 	helper.exampleCreationInput = converters.ConvertValidIngredientStateIngredientToValidIngredientStateIngredientCreationRequestInput(helper.exampleValidIngredientStateIngredient)
 	helper.exampleUpdateInput = converters.ConvertValidIngredientStateIngredientToValidIngredientStateIngredientUpdateRequestInput(helper.exampleValidIngredientStateIngredient)
@@ -55,7 +55,7 @@ func buildTestHelper(t *testing.T) *validIngredientStateIngredientsServiceHTTPRo
 	}
 
 	helper.service.validIngredientStateIDFetcher = func(*http.Request) string {
-		return helper.exampleValidPreparation.ID
+		return helper.exampleValidIngredientState.ID
 	}
 
 	sessionCtxData := &types.SessionContextData{

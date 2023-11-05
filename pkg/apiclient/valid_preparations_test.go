@@ -22,9 +22,11 @@ func TestValidPreparations(t *testing.T) {
 
 type validPreparationsBaseSuite struct {
 	suite.Suite
-
-	ctx                     context.Context
-	exampleValidPreparation *types.ValidPreparation
+	ctx                                 context.Context
+	exampleValidPreparation             *types.ValidPreparation
+	exampleValidPreparationResponse     *types.APIResponse[*types.ValidPreparation]
+	exampleValidPreparationListResponse *types.APIResponse[[]*types.ValidPreparation]
+	exampleValidPreparationList         []*types.ValidPreparation
 }
 
 var _ suite.SetupTestSuite = (*validPreparationsBaseSuite)(nil)
@@ -32,11 +34,19 @@ var _ suite.SetupTestSuite = (*validPreparationsBaseSuite)(nil)
 func (s *validPreparationsBaseSuite) SetupTest() {
 	s.ctx = context.Background()
 	s.exampleValidPreparation = fakes.BuildFakeValidPreparation()
+	s.exampleValidPreparationResponse = &types.APIResponse[*types.ValidPreparation]{
+		Data: s.exampleValidPreparation,
+	}
+	exampleValidPreparations := fakes.BuildFakeValidPreparationList()
+	s.exampleValidPreparationList = exampleValidPreparations.Data
+	s.exampleValidPreparationListResponse = &types.APIResponse[[]*types.ValidPreparation]{
+		Data:       s.exampleValidPreparationList,
+		Pagination: &exampleValidPreparations.Pagination,
+	}
 }
 
 type validPreparationsTestSuite struct {
 	suite.Suite
-
 	validPreparationsBaseSuite
 }
 
@@ -47,7 +57,7 @@ func (s *validPreparationsTestSuite) TestClient_GetValidPreparation() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleValidPreparation.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparation)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationResponse)
 		actual, err := c.GetValidPreparation(s.ctx, s.exampleValidPreparation.ID)
 
 		require.NotNil(t, actual)
@@ -94,7 +104,7 @@ func (s *validPreparationsTestSuite) TestClient_GetRandomValidPreparation() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparation)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationResponse)
 		actual, err := c.GetRandomValidPreparation(s.ctx)
 
 		require.NotNil(t, actual)
@@ -132,15 +142,13 @@ func (s *validPreparationsTestSuite) TestClient_GetValidPreparations() {
 
 		filter := (*types.QueryFilter)(nil)
 
-		exampleValidPreparationList := fakes.BuildFakeValidPreparationList()
-
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidPreparationList)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationListResponse)
 		actual, err := c.GetValidPreparations(s.ctx, filter)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidPreparationList, actual)
+		assert.Equal(t, s.exampleValidPreparationList, actual.Data)
 	})
 
 	s.Run("with error building request", func() {
@@ -177,15 +185,13 @@ func (s *validPreparationsTestSuite) TestClient_SearchValidPreparations() {
 	s.Run("standard", func() {
 		t := s.T()
 
-		exampleValidPreparationList := fakes.BuildFakeValidPreparationList()
-
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&q=whatever", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleValidPreparationList.Data)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationListResponse)
 		actual, err := c.SearchValidPreparations(s.ctx, exampleQuery, 0)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleValidPreparationList.Data, actual)
+		assert.Equal(t, s.exampleValidPreparationList, actual)
 	})
 
 	s.Run("with empty query", func() {
@@ -230,7 +236,7 @@ func (s *validPreparationsTestSuite) TestClient_CreateValidPreparation() {
 		exampleInput := fakes.BuildFakeValidPreparationCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparation)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationResponse)
 
 		actual, err := c.CreateValidPreparation(s.ctx, exampleInput)
 		require.NotEmpty(t, actual)
@@ -291,7 +297,7 @@ func (s *validPreparationsTestSuite) TestClient_UpdateValidPreparation() {
 		t := s.T()
 
 		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, s.exampleValidPreparation.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparation)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationResponse)
 
 		err := c.UpdateValidPreparation(s.ctx, s.exampleValidPreparation)
 		assert.NoError(t, err)
@@ -332,7 +338,7 @@ func (s *validPreparationsTestSuite) TestClient_ArchiveValidPreparation() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, s.exampleValidPreparation.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleValidPreparationResponse)
 
 		err := c.ArchiveValidPreparation(s.ctx, s.exampleValidPreparation.ID)
 		assert.NoError(t, err)

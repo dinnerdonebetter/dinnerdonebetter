@@ -2,13 +2,12 @@ package apiclient
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"net/http"
 	"reflect"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
 // errorFromResponse returns library errors according to a response's status code.
@@ -81,15 +80,7 @@ func (c *Client) unmarshalBody(ctx context.Context, res *http.Response, dest any
 	}
 
 	if res.StatusCode >= http.StatusBadRequest {
-		apiErr := &types.APIError{Code: res.StatusCode}
-
-		if err = c.encoder.Unmarshal(ctx, bodyBytes, &apiErr); err != nil {
-			observability.AcknowledgeError(err, logger, span, "unmarshalling error response")
-			logger.Error(err, "unmarshalling error response")
-			tracing.AttachErrorToSpan(span, "", err)
-		}
-
-		return apiErr
+		return fmt.Errorf("unexpected status: %d", res.StatusCode)
 	}
 
 	if err = c.encoder.Unmarshal(ctx, bodyBytes, &dest); err != nil {

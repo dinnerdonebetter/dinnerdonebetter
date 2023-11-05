@@ -12,8 +12,13 @@ import (
 )
 
 type (
-	// MealPlanFinalizationWorker finalizes meal plans.
-	MealPlanFinalizationWorker struct {
+	MealPlanFinalizationWorker interface {
+		FinalizeExpiredMealPlans(ctx context.Context, _ []byte) (int, error)
+		FinalizeExpiredMealPlansWithoutReturningCount(ctx context.Context, _ []byte) error
+	}
+
+	// mealPlanFinalizationWorker finalizes meal plans.
+	mealPlanFinalizationWorker struct {
 		logger               logging.Logger
 		tracer               tracing.Tracer
 		encoder              encoding.ClientEncoder
@@ -22,16 +27,16 @@ type (
 	}
 )
 
-// ProvideMealPlanFinalizationWorker provides a MealPlanFinalizationWorker.
+// ProvideMealPlanFinalizationWorker provides a mealPlanFinalizationWorker.
 func ProvideMealPlanFinalizationWorker(
 	logger logging.Logger,
 	dataManager database.DataManager,
 	postUpdatesPublisher messagequeue.Publisher,
 	tracerProvider tracing.TracerProvider,
-) *MealPlanFinalizationWorker {
+) MealPlanFinalizationWorker {
 	n := "meal_plan_finalizer"
 
-	return &MealPlanFinalizationWorker{
+	return &mealPlanFinalizationWorker{
 		logger:               logging.EnsureLogger(logger).WithName(n),
 		tracer:               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(n)),
 		encoder:              encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
@@ -41,7 +46,7 @@ func ProvideMealPlanFinalizationWorker(
 }
 
 // finalizeExpiredMealPlans handles a message ordering the finalization of expired meal plans.
-func (w *MealPlanFinalizationWorker) finalizeExpiredMealPlans(ctx context.Context) (int, error) {
+func (w *mealPlanFinalizationWorker) finalizeExpiredMealPlans(ctx context.Context) (int, error) {
 	_, span := w.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -76,12 +81,12 @@ func (w *MealPlanFinalizationWorker) finalizeExpiredMealPlans(ctx context.Contex
 }
 
 // FinalizeExpiredMealPlans handles a message ordering the finalization of expired meal plans.
-func (w *MealPlanFinalizationWorker) FinalizeExpiredMealPlans(ctx context.Context, _ []byte) (int, error) {
+func (w *mealPlanFinalizationWorker) FinalizeExpiredMealPlans(ctx context.Context, _ []byte) (int, error) {
 	return w.finalizeExpiredMealPlans(ctx)
 }
 
 // FinalizeExpiredMealPlansWithoutReturningCount handles a message ordering the finalization of expired meal plans.
-func (w *MealPlanFinalizationWorker) FinalizeExpiredMealPlansWithoutReturningCount(ctx context.Context, _ []byte) error {
+func (w *mealPlanFinalizationWorker) FinalizeExpiredMealPlansWithoutReturningCount(ctx context.Context, _ []byte) error {
 	_, err := w.finalizeExpiredMealPlans(ctx)
 	return err
 }

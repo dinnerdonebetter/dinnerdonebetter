@@ -22,9 +22,12 @@ func TestMealPlanGroceryListItems(t *testing.T) {
 
 type mealPlanGroceryListItemsBaseSuite struct {
 	suite.Suite
-	ctx                            context.Context
-	exampleMealPlanGroceryListItem *types.MealPlanGroceryListItem
-	exampleMealPlanID              string
+	ctx                                        context.Context
+	exampleMealPlanGroceryListItem             *types.MealPlanGroceryListItem
+	exampleMealPlanGroceryListItemResponse     *types.APIResponse[*types.MealPlanGroceryListItem]
+	exampleMealPlanGroceryListItemListResponse *types.APIResponse[[]*types.MealPlanGroceryListItem]
+	exampleMealPlanID                          string
+	exampleMealPlanGroceryListItemList         []*types.MealPlanGroceryListItem
 }
 
 var _ suite.SetupTestSuite = (*mealPlanGroceryListItemsBaseSuite)(nil)
@@ -33,11 +36,19 @@ func (s *mealPlanGroceryListItemsBaseSuite) SetupTest() {
 	s.ctx = context.Background()
 	s.exampleMealPlanID = fakes.BuildFakeID()
 	s.exampleMealPlanGroceryListItem = fakes.BuildFakeMealPlanGroceryListItem()
+	s.exampleMealPlanGroceryListItemResponse = &types.APIResponse[*types.MealPlanGroceryListItem]{
+		Data: s.exampleMealPlanGroceryListItem,
+	}
+	exampleList := fakes.BuildFakeMealPlanGroceryListItemList()
+	s.exampleMealPlanGroceryListItemList = exampleList.Data
+	s.exampleMealPlanGroceryListItemListResponse = &types.APIResponse[[]*types.MealPlanGroceryListItem]{
+		Data:       s.exampleMealPlanGroceryListItemList,
+		Pagination: &exampleList.Pagination,
+	}
 }
 
 type mealPlanGroceryListItemsTestSuite struct {
 	suite.Suite
-
 	mealPlanGroceryListItemsBaseSuite
 }
 
@@ -48,7 +59,7 @@ func (s *mealPlanGroceryListItemsTestSuite) TestClient_GetMealPlanGroceryListIte
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleMealPlanID, s.exampleMealPlanGroceryListItem.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanGroceryListItem)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanGroceryListItemResponse)
 		actual, err := c.GetMealPlanGroceryListItem(s.ctx, s.exampleMealPlanID, s.exampleMealPlanGroceryListItem.ID)
 
 		require.NotNil(t, actual)
@@ -104,15 +115,13 @@ func (s *mealPlanGroceryListItemsTestSuite) TestClient_GetMealPlanGroceryListIte
 	s.Run("standard", func() {
 		t := s.T()
 
-		exampleMealPlanGroceryListItemList := fakes.BuildFakeMealPlanGroceryListItemList()
-
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPath, s.exampleMealPlanID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleMealPlanGroceryListItemList.Data)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanGroceryListItemListResponse)
 		actual, err := c.GetMealPlanGroceryListItemsForMealPlan(s.ctx, s.exampleMealPlanID)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleMealPlanGroceryListItemList.Data, actual)
+		assert.Equal(t, s.exampleMealPlanGroceryListItemList, actual)
 	})
 
 	s.Run("with invalid meal plan ID", func() {
@@ -156,7 +165,7 @@ func (s *mealPlanGroceryListItemsTestSuite) TestClient_CreateMealPlanGroceryList
 		exampleInput := fakes.BuildFakeMealPlanGroceryListItemCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, s.exampleMealPlanID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanGroceryListItem)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanGroceryListItemResponse)
 
 		actual, err := c.CreateMealPlanGroceryListItem(s.ctx, s.exampleMealPlanID, exampleInput)
 		assert.NoError(t, err)
@@ -216,7 +225,7 @@ func (s *mealPlanGroceryListItemsTestSuite) TestClient_UpdateMealPlanGroceryList
 
 		exampleInput := converters.ConvertMealPlanGroceryListItemToMealPlanGroceryListItemUpdateRequestInput(s.exampleMealPlanGroceryListItem)
 		spec := newRequestSpec(false, http.MethodPatch, "", expectedPathFormat, s.exampleMealPlanID, s.exampleMealPlanGroceryListItem.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanGroceryListItem)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanGroceryListItemResponse)
 
 		err := c.UpdateMealPlanGroceryListItem(s.ctx, s.exampleMealPlanID, s.exampleMealPlanGroceryListItem.ID, exampleInput)
 		assert.NoError(t, err)
@@ -259,7 +268,7 @@ func (s *mealPlanGroceryListItemsTestSuite) TestClient_ArchiveMealPlanGroceryLis
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, s.exampleMealPlanID, s.exampleMealPlanGroceryListItem.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleMealPlanGroceryListItemResponse)
 
 		err := c.ArchiveMealPlanGroceryListItem(s.ctx, s.exampleMealPlanID, s.exampleMealPlanGroceryListItem.ID)
 		assert.NoError(t, err)

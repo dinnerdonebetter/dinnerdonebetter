@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
@@ -27,7 +28,7 @@ func buildTestService() *service {
 		logger:            logging.NewNoopLogger(),
 		recipeDataManager: &mocktypes.RecipeDataManagerMock{},
 		recipeIDFetcher:   func(req *http.Request) string { return "" },
-		encoderDecoder:    mockencoding.NewMockEncoderDecoder(),
+		encoderDecoder:    encoding.ProvideServerEncoderDecoder(nil, nil, encoding.ContentTypeJSON),
 		tracer:            tracing.NewTracerForTest("test"),
 		cfg: &Config{
 			UseSearchService: false,

@@ -22,10 +22,13 @@ func TestRecipeStepVessels(t *testing.T) {
 
 type recipeStepVesselsBaseSuite struct {
 	suite.Suite
-	ctx                     context.Context
-	exampleRecipeStepVessel *types.RecipeStepVessel
-	exampleRecipeID         string
-	exampleRecipeStepID     string
+	ctx                                  context.Context
+	exampleRecipeStepVessel              *types.RecipeStepVessel
+	exampleRecipeStepVesselResponse      *types.APIResponse[*types.RecipeStepVessel]
+	exampleRecipeStepVesselsListResponse *types.APIResponse[[]*types.RecipeStepVessel]
+	exampleRecipeID                      string
+	exampleRecipeStepID                  string
+	exampleRecipeStepVesselsList         []*types.RecipeStepVessel
 }
 
 var _ suite.SetupTestSuite = (*recipeStepVesselsBaseSuite)(nil)
@@ -36,11 +39,19 @@ func (s *recipeStepVesselsBaseSuite) SetupTest() {
 	s.exampleRecipeStepID = fakes.BuildFakeID()
 	s.exampleRecipeStepVessel = fakes.BuildFakeRecipeStepVessel()
 	s.exampleRecipeStepVessel.BelongsToRecipeStep = s.exampleRecipeStepID
+	exampleRecipeStepVesselsList := fakes.BuildFakeRecipeStepVesselList()
+	s.exampleRecipeStepVesselsList = exampleRecipeStepVesselsList.Data
+	s.exampleRecipeStepVesselResponse = &types.APIResponse[*types.RecipeStepVessel]{
+		Data: s.exampleRecipeStepVessel,
+	}
+	s.exampleRecipeStepVesselsListResponse = &types.APIResponse[[]*types.RecipeStepVessel]{
+		Data:       s.exampleRecipeStepVesselsList,
+		Pagination: &exampleRecipeStepVesselsList.Pagination,
+	}
 }
 
 type recipeStepVesselsTestSuite struct {
 	suite.Suite
-
 	recipeStepVesselsBaseSuite
 }
 
@@ -51,7 +62,7 @@ func (s *recipeStepVesselsTestSuite) TestClient_GetRecipeStepVessel() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodGet, "", expectedPathFormat, s.exampleRecipeID, s.exampleRecipeStepID, s.exampleRecipeStepVessel.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeStepVessel)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeStepVesselResponse)
 		actual, err := c.GetRecipeStepVessel(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, s.exampleRecipeStepVessel.ID)
 
 		require.NotNil(t, actual)
@@ -114,26 +125,22 @@ func (s *recipeStepVesselsTestSuite) TestClient_GetRecipeStepVessel() {
 func (s *recipeStepVesselsTestSuite) TestClient_GetRecipeStepVessels() {
 	const expectedPath = "/api/v1/recipes/%s/steps/%s/vessels"
 
+	filter := (*types.QueryFilter)(nil)
+
 	s.Run("standard", func() {
 		t := s.T()
 
-		filter := (*types.QueryFilter)(nil)
-
-		exampleRecipeStepVesselList := fakes.BuildFakeRecipeStepVesselList()
-
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, s.exampleRecipeID, s.exampleRecipeStepID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleRecipeStepVesselList)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeStepVesselsListResponse)
 		actual, err := c.GetRecipeStepVessels(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, filter)
 
 		require.NotNil(t, actual)
 		assert.NoError(t, err)
-		assert.Equal(t, exampleRecipeStepVesselList, actual)
+		assert.Equal(t, s.exampleRecipeStepVesselsList, actual.Data)
 	})
 
 	s.Run("with invalid recipe ID", func() {
 		t := s.T()
-
-		filter := (*types.QueryFilter)(nil)
 
 		c, _ := buildSimpleTestClient(t)
 		actual, err := c.GetRecipeStepVessels(s.ctx, "", s.exampleRecipeStepID, filter)
@@ -145,8 +152,6 @@ func (s *recipeStepVesselsTestSuite) TestClient_GetRecipeStepVessels() {
 	s.Run("with invalid recipe step ID", func() {
 		t := s.T()
 
-		filter := (*types.QueryFilter)(nil)
-
 		c, _ := buildSimpleTestClient(t)
 		actual, err := c.GetRecipeStepVessels(s.ctx, s.exampleRecipeID, "", filter)
 
@@ -157,8 +162,6 @@ func (s *recipeStepVesselsTestSuite) TestClient_GetRecipeStepVessels() {
 	s.Run("with error building request", func() {
 		t := s.T()
 
-		filter := (*types.QueryFilter)(nil)
-
 		c := buildTestClientWithInvalidURL(t)
 		actual, err := c.GetRecipeStepVessels(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, filter)
 
@@ -168,8 +171,6 @@ func (s *recipeStepVesselsTestSuite) TestClient_GetRecipeStepVessels() {
 
 	s.Run("with error executing request", func() {
 		t := s.T()
-
-		filter := (*types.QueryFilter)(nil)
 
 		spec := newRequestSpec(true, http.MethodGet, "limit=50&page=1&sortBy=asc", expectedPath, s.exampleRecipeID, s.exampleRecipeStepID)
 		c := buildTestClientWithInvalidResponse(t, spec)
@@ -189,7 +190,7 @@ func (s *recipeStepVesselsTestSuite) TestClient_CreateRecipeStepVessel() {
 		exampleInput := fakes.BuildFakeRecipeStepVesselCreationRequestInput()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath, s.exampleRecipeID, s.exampleRecipeStepID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeStepVessel)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeStepVesselResponse)
 
 		actual, err := c.CreateRecipeStepVessel(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, exampleInput)
 		assert.NoError(t, err)
@@ -260,7 +261,7 @@ func (s *recipeStepVesselsTestSuite) TestClient_UpdateRecipeStepVessel() {
 		t := s.T()
 
 		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, s.exampleRecipeID, s.exampleRecipeStepID, s.exampleRecipeStepVessel.ID)
-		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeStepVessel)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeStepVesselResponse)
 
 		err := c.UpdateRecipeStepVessel(s.ctx, s.exampleRecipeID, s.exampleRecipeStepVessel)
 		assert.NoError(t, err)
@@ -310,7 +311,7 @@ func (s *recipeStepVesselsTestSuite) TestClient_ArchiveRecipeStepVessel() {
 		t := s.T()
 
 		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, s.exampleRecipeID, s.exampleRecipeStepID, s.exampleRecipeStepVessel.ID)
-		c, _ := buildTestClientWithStatusCodeResponse(t, spec, http.StatusOK)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleRecipeStepVesselResponse)
 
 		err := c.ArchiveRecipeStepVessel(s.ctx, s.exampleRecipeID, s.exampleRecipeStepID, s.exampleRecipeStepVessel.ID)
 		assert.NoError(t, err)

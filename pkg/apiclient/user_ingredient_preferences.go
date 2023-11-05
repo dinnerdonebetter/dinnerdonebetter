@@ -23,12 +23,21 @@ func (c *Client) GetUserIngredientPreferences(ctx context.Context, filter *types
 		return nil, observability.PrepareAndLogError(err, logger, span, "building user ingredient preferences list request")
 	}
 
-	var userIngredientPreferences *types.QueryFilteredResult[types.UserIngredientPreference]
-	if err = c.fetchAndUnmarshal(ctx, req, &userIngredientPreferences); err != nil {
+	var apiResponse *types.APIResponse[[]*types.UserIngredientPreference]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving user ingredient preferences")
 	}
 
-	return userIngredientPreferences, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	response := &types.QueryFilteredResult[types.UserIngredientPreference]{
+		Data:       apiResponse.Data,
+		Pagination: *apiResponse.Pagination,
+	}
+
+	return response, nil
 }
 
 // CreateUserIngredientPreference creates a user ingredient preference.
@@ -51,12 +60,16 @@ func (c *Client) CreateUserIngredientPreference(ctx context.Context, input *type
 		return nil, observability.PrepareAndLogError(err, logger, span, "building create user ingredient preference request")
 	}
 
-	var userIngredientPreferences []*types.UserIngredientPreference
-	if err = c.fetchAndUnmarshal(ctx, req, &userIngredientPreferences); err != nil {
+	var apiResponse *types.APIResponse[[]*types.UserIngredientPreference]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating user ingredient preference")
 	}
 
-	return userIngredientPreferences, nil
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
 }
 
 // UpdateUserIngredientPreference updates a user ingredient preference.
@@ -77,8 +90,13 @@ func (c *Client) UpdateUserIngredientPreference(ctx context.Context, userIngredi
 		return observability.PrepareAndLogError(err, logger, span, "building update user ingredient preference request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, &userIngredientPreference); err != nil {
+	var apiResponse *types.APIResponse[types.UserIngredientPreference]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating user ingredient preference %s", userIngredientPreference.ID)
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil
@@ -102,8 +120,13 @@ func (c *Client) ArchiveUserIngredientPreference(ctx context.Context, userIngred
 		return observability.PrepareAndLogError(err, logger, span, "building archive user ingredient preference request")
 	}
 
-	if err = c.fetchAndUnmarshal(ctx, req, nil); err != nil {
+	var apiResponse *types.APIResponse[types.UserIngredientPreference]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "archiving user ingredient preference %s", userIngredientPreferenceID)
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
 	}
 
 	return nil

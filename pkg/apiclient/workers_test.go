@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
@@ -37,9 +38,12 @@ func (s *workersTestSuite) TestClient_RunFinalizeMealPlansWorker() {
 
 		exampleInput := fakes.BuildFakeFinalizeMealPlansRequest()
 		exampleResponse := fakes.BuildFakeFinalizeMealPlansResponse()
+		exampleAPIResponse := &types.APIResponse[*types.FinalizeMealPlansResponse]{
+			Data: exampleResponse,
+		}
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, exampleResponse)
+		c, _ := buildTestClientWithJSONResponse(t, spec, exampleAPIResponse)
 
 		actual, err := c.RunFinalizeMealPlansWorker(s.ctx, exampleInput)
 		assert.NoError(t, err)
@@ -86,7 +90,9 @@ func (s *workersTestSuite) TestClient_RunMealPlanGroceryListInitializationWorker
 		t := s.T()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, nil)
+		c, _ := buildTestClientWithJSONResponse(t, spec, &types.APIResponse[*types.FinalizeMealPlansResponse]{
+			Data: fakes.BuildFakeFinalizeMealPlansResponse(),
+		})
 
 		assert.NoError(t, c.RunMealPlanGroceryListInitializationWorker(s.ctx))
 	})
@@ -123,7 +129,7 @@ func (s *workersTestSuite) TestClient_RunMealPlanTaskCreationWorker() {
 		t := s.T()
 
 		spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
-		c, _ := buildTestClientWithJSONResponse(t, spec, nil)
+		c, _ := buildTestClientWithJSONResponse(t, spec, &types.APIResponse[any]{})
 
 		assert.NoError(t, c.RunMealPlanTaskCreationWorker(s.ctx))
 	})
