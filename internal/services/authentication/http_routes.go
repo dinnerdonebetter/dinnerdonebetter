@@ -571,7 +571,12 @@ func (s *service) EndSessionHandler(res http.ResponseWriter, req *http.Request) 
 
 	logger.Debug("user logged out")
 
-	res.WriteHeader(http.StatusAccepted)
+	responseValue := &types.APIResponse[*types.UserStatusResponse]{
+		Details: responseDetails,
+	}
+
+	// let everybody go home.
+	s.encoderDecoder.EncodeResponseWithStatus(ctx, res, responseValue, http.StatusAccepted)
 }
 
 // StatusHandler returns the user info for the user making the request.

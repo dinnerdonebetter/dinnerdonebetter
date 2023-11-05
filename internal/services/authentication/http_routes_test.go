@@ -1470,6 +1470,9 @@ func TestAuthenticationService_EndSessionHandler(T *testing.T) {
 		helper.service.EndSessionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[*types.UserStatusResponse]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 		actualCookie := helper.res.Header().Get("Set-Cookie")
 		assert.Contains(t, actualCookie, "Max-Age=0")
 
@@ -1485,6 +1488,9 @@ func TestAuthenticationService_EndSessionHandler(T *testing.T) {
 		helper.service.EndSessionHandler(helper.res, helper.req)
 
 		assert.Empty(t, helper.res.Header().Get("Set-Cookie"))
+		var actual *types.APIResponse[*types.UserStatusResponse]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Error(t, actual.Error.AsError())
 	})
 
 	T.Run("with error loading from session manager", func(t *testing.T) {
@@ -1501,6 +1507,9 @@ func TestAuthenticationService_EndSessionHandler(T *testing.T) {
 		helper.service.EndSessionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.UserStatusResponse]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Error(t, actual.Error.AsError())
 		actualCookie := helper.res.Header().Get("Set-Cookie")
 		assert.Empty(t, actualCookie)
 
@@ -1520,6 +1529,9 @@ func TestAuthenticationService_EndSessionHandler(T *testing.T) {
 		helper.service.EndSessionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.UserStatusResponse]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Error(t, actual.Error.AsError())
 		actualCookie := helper.res.Header().Get("Set-Cookie")
 		assert.Empty(t, actualCookie)
 
@@ -1540,6 +1552,9 @@ func TestAuthenticationService_EndSessionHandler(T *testing.T) {
 		helper.service.EndSessionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.UserStatusResponse]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Error(t, actual.Error.AsError())
 	})
 
 	T.Run("with error publishing service event", func(t *testing.T) {
@@ -1559,6 +1574,9 @@ func TestAuthenticationService_EndSessionHandler(T *testing.T) {
 		helper.service.EndSessionHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusAccepted, helper.res.Code)
+		var actual *types.APIResponse[*types.UserStatusResponse]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
 		actualCookie := helper.res.Header().Get("Set-Cookie")
 		assert.Contains(t, actualCookie, "Max-Age=0")
 
