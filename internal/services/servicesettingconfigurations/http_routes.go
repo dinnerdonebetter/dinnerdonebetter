@@ -11,6 +11,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
+
+	servertiming "github.com/mitchellh/go-server-timing"
 )
 
 const (
@@ -25,6 +27,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -33,6 +36,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -40,6 +44,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
@@ -67,6 +72,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, input.ID)
 
+	createTimer := timing.NewMetric("database").WithDesc("create").Start()
 	serviceSettingConfiguration, err := s.serviceSettingConfigurationDataManager.CreateServiceSettingConfiguration(ctx, input)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating service setting configurations")
@@ -74,6 +80,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
 		EventType:                   types.ServiceSettingConfigurationCreatedCustomerEventType,
@@ -98,6 +105,7 @@ func (s *service) ForUserByNameHandler(res http.ResponseWriter, req *http.Reques
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -106,6 +114,7 @@ func (s *service) ForUserByNameHandler(res http.ResponseWriter, req *http.Reques
 	}
 
 	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -113,6 +122,7 @@ func (s *service) ForUserByNameHandler(res http.ResponseWriter, req *http.Reques
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
@@ -147,6 +157,7 @@ func (s *service) ForUserHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -155,6 +166,7 @@ func (s *service) ForUserHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -162,6 +174,7 @@ func (s *service) ForUserHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
@@ -196,6 +209,7 @@ func (s *service) ForHouseholdHandler(res http.ResponseWriter, req *http.Request
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -204,6 +218,7 @@ func (s *service) ForHouseholdHandler(res http.ResponseWriter, req *http.Request
 	}
 
 	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -211,6 +226,7 @@ func (s *service) ForHouseholdHandler(res http.ResponseWriter, req *http.Request
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
@@ -250,6 +266,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -258,6 +275,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -265,6 +283,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
@@ -337,6 +356,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -345,6 +365,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -352,6 +373,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)

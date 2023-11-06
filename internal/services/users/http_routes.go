@@ -24,6 +24,7 @@ import (
 
 	"github.com/boombuler/barcode"
 	"github.com/boombuler/barcode/qr"
+	servertiming "github.com/mitchellh/go-server-timing"
 	"github.com/pquerna/otp/totp"
 	passwordvalidator "github.com/wagslane/go-password-validator"
 )
@@ -125,6 +126,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -136,6 +138,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	qf := types.ExtractQueryFilterFromRequest(req)
 
 	// fetch user data.
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	users, err := s.userDataManager.GetUsers(ctx, qf)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching users")
@@ -143,6 +146,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	responseValue := &types.APIResponse[[]*types.User]{
 		Details:    responseDetails,
@@ -159,6 +163,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -174,6 +179,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// decode the request.
+	decodeTimer := timing.NewMetric("decode").WithDesc("decode input").Start()
 	registrationInput := new(types.UserRegistrationInput)
 	if err := s.encoderDecoder.DecodeRequest(ctx, req, registrationInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
@@ -181,6 +187,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
+	decodeTimer.Stop()
 
 	registrationInput.Username = strings.TrimSpace(registrationInput.Username)
 	tracing.AttachToSpan(span, keys.UsernameKey, registrationInput.Username)
@@ -269,10 +276,11 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// create the user.
-	user, userCreationErr := s.userDataManager.CreateUser(ctx, input)
-	if userCreationErr != nil {
+	createTimer := timing.NewMetric("database").WithDesc("create").Start()
+	user, err := s.userDataManager.CreateUser(ctx, input)
+	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating user")
-		if errors.Is(userCreationErr, database.ErrUserAlreadyExists) {
+		if errors.Is(err, database.ErrUserAlreadyExists) {
 			errRes := types.NewAPIErrorResponse("username taken", types.ErrValidatingRequestInput, responseDetails)
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 			return
@@ -281,6 +289,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	createTimer.Stop()
 
 	logger.Debug("user created")
 
@@ -394,6 +403,7 @@ func (s *service) SelfHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -401,6 +411,7 @@ func (s *service) SelfHandler(res http.ResponseWriter, req *http.Request) {
 		TraceID: span.SpanContext().TraceID().String(),
 	}
 
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -408,6 +419,7 @@ func (s *service) SelfHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
@@ -445,6 +457,7 @@ func (s *service) PermissionsHandler(res http.ResponseWriter, req *http.Request)
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -452,13 +465,15 @@ func (s *service) PermissionsHandler(res http.ResponseWriter, req *http.Request)
 		TraceID: span.SpanContext().TraceID().String(),
 	}
 
-	sessionCtxData, sessionCtxDataErr := s.sessionContextDataFetcher(req)
-	if sessionCtxDataErr != nil {
-		observability.AcknowledgeError(sessionCtxDataErr, logger, span, "retrieving session context data")
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
 		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
@@ -497,6 +512,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -510,6 +526,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
 	// fetch user data.
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	x, err := s.userDataManager.GetUser(ctx, userID)
 	if errors.Is(err, sql.ErrNoRows) {
 		logger.Debug("no such user")
@@ -522,6 +539,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	responseValue := &types.APIResponse[*types.User]{
 		Details: responseDetails,
@@ -538,6 +556,7 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -546,6 +565,7 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 	}
 
 	// decode the request.
+	decodeTimer := timing.NewMetric("decode").WithDesc("decode input").Start()
 	input := new(types.TOTPSecretVerificationInput)
 	if err := s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
@@ -553,6 +573,7 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
+	decodeTimer.Stop()
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
@@ -620,6 +641,7 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -643,6 +665,7 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 		return
 	}
 
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -650,6 +673,7 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
@@ -740,6 +764,7 @@ func (s *service) UpdatePasswordHandler(res http.ResponseWriter, req *http.Reque
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -763,6 +788,7 @@ func (s *service) UpdatePasswordHandler(res http.ResponseWriter, req *http.Reque
 		return
 	}
 
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -770,6 +796,7 @@ func (s *service) UpdatePasswordHandler(res http.ResponseWriter, req *http.Reque
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	// determine relevant user ID.
 	tracing.AttachToSpan(span, keys.RequesterIDKey, sessionCtxData.Requester.UserID)
@@ -841,6 +868,7 @@ func (s *service) UpdateUserEmailAddressHandler(res http.ResponseWriter, req *ht
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -865,6 +893,7 @@ func (s *service) UpdateUserEmailAddressHandler(res http.ResponseWriter, req *ht
 	}
 	tracing.AttachToSpan(span, keys.UserEmailAddressKey, input.NewEmailAddress)
 
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -872,6 +901,7 @@ func (s *service) UpdateUserEmailAddressHandler(res http.ResponseWriter, req *ht
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	// determine relevant user ID.
 	tracing.AttachToSpan(span, keys.RequesterIDKey, sessionCtxData.Requester.UserID)
@@ -921,6 +951,7 @@ func (s *service) UpdateUserUsernameHandler(res http.ResponseWriter, req *http.R
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -945,6 +976,7 @@ func (s *service) UpdateUserUsernameHandler(res http.ResponseWriter, req *http.R
 	}
 	tracing.AttachToSpan(span, keys.UsernameKey, input.NewUsername)
 
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -952,6 +984,7 @@ func (s *service) UpdateUserUsernameHandler(res http.ResponseWriter, req *http.R
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	// determine relevant user ID.
 	tracing.AttachToSpan(span, keys.RequesterIDKey, sessionCtxData.Requester.UserID)
@@ -1001,6 +1034,7 @@ func (s *service) UpdateUserDetailsHandler(res http.ResponseWriter, req *http.Re
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -1024,6 +1058,7 @@ func (s *service) UpdateUserDetailsHandler(res http.ResponseWriter, req *http.Re
 		return
 	}
 
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -1031,6 +1066,7 @@ func (s *service) UpdateUserDetailsHandler(res http.ResponseWriter, req *http.Re
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	// determine relevant user ID.
 	tracing.AttachToSpan(span, keys.RequesterIDKey, sessionCtxData.Requester.UserID)
@@ -1082,6 +1118,7 @@ func (s *service) AvatarUploadHandler(res http.ResponseWriter, req *http.Request
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -1089,6 +1126,7 @@ func (s *service) AvatarUploadHandler(res http.ResponseWriter, req *http.Request
 		TraceID: span.SpanContext().TraceID().String(),
 	}
 
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -1096,6 +1134,7 @@ func (s *service) AvatarUploadHandler(res http.ResponseWriter, req *http.Request
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	// decode the request.
 	input := new(types.AvatarUpdateInput)
@@ -1140,6 +1179,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -1147,6 +1187,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		TraceID: span.SpanContext().TraceID().String(),
 	}
 
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -1154,6 +1195,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	// figure out who this is for.
 	userID := s.userIDFetcher(req)
@@ -1200,6 +1242,7 @@ func (s *service) RequestUsernameReminderHandler(res http.ResponseWriter, req *h
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -1207,6 +1250,7 @@ func (s *service) RequestUsernameReminderHandler(res http.ResponseWriter, req *h
 		TraceID: span.SpanContext().TraceID().String(),
 	}
 
+	decodeTimer := timing.NewMetric("decode").WithDesc("decode input").Start()
 	input := new(types.UsernameReminderRequestInput)
 	if err := s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
@@ -1214,6 +1258,7 @@ func (s *service) RequestUsernameReminderHandler(res http.ResponseWriter, req *h
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
+	decodeTimer.Stop()
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
@@ -1255,6 +1300,7 @@ func (s *service) CreatePasswordResetTokenHandler(res http.ResponseWriter, req *
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -1262,6 +1308,7 @@ func (s *service) CreatePasswordResetTokenHandler(res http.ResponseWriter, req *
 		TraceID: span.SpanContext().TraceID().String(),
 	}
 
+	decodeTimer := timing.NewMetric("decode").WithDesc("decode input").Start()
 	input := new(types.PasswordResetTokenCreationRequestInput)
 	if err := s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
@@ -1269,6 +1316,7 @@ func (s *service) CreatePasswordResetTokenHandler(res http.ResponseWriter, req *
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
+	decodeTimer.Stop()
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
@@ -1304,6 +1352,7 @@ func (s *service) CreatePasswordResetTokenHandler(res http.ResponseWriter, req *
 		ExpiresAt:     time.Now().Add(30 * time.Minute),
 	}
 
+	createTimer := timing.NewMetric("database").WithDesc("create").Start()
 	t, err := s.passwordResetTokenDataManager.CreatePasswordResetToken(ctx, dbInput)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating password reset token")
@@ -1311,6 +1360,7 @@ func (s *service) CreatePasswordResetTokenHandler(res http.ResponseWriter, req *
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
 		EventType:          types.PasswordResetTokenCreatedEventType,
@@ -1334,6 +1384,7 @@ func (s *service) PasswordResetTokenRedemptionHandler(res http.ResponseWriter, r
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -1341,6 +1392,7 @@ func (s *service) PasswordResetTokenRedemptionHandler(res http.ResponseWriter, r
 		TraceID: span.SpanContext().TraceID().String(),
 	}
 
+	decodeTimer := timing.NewMetric("decode").WithDesc("decode input").Start()
 	input := new(types.PasswordResetTokenRedemptionRequestInput)
 	if err := s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
@@ -1348,6 +1400,7 @@ func (s *service) PasswordResetTokenRedemptionHandler(res http.ResponseWriter, r
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
+	decodeTimer.Stop()
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
@@ -1447,6 +1500,7 @@ func (s *service) VerifyUserEmailAddressHandler(res http.ResponseWriter, req *ht
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -1454,6 +1508,7 @@ func (s *service) VerifyUserEmailAddressHandler(res http.ResponseWriter, req *ht
 		TraceID: span.SpanContext().TraceID().String(),
 	}
 
+	decodeTimer := timing.NewMetric("decode").WithDesc("decode input").Start()
 	input := new(types.EmailAddressVerificationRequestInput)
 	if err := s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
@@ -1461,6 +1516,7 @@ func (s *service) VerifyUserEmailAddressHandler(res http.ResponseWriter, req *ht
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
+	decodeTimer.Stop()
 
 	if err := input.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("invalid input attached to request")
@@ -1517,6 +1573,7 @@ func (s *service) RequestEmailVerificationEmailHandler(res http.ResponseWriter, 
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -1524,6 +1581,7 @@ func (s *service) RequestEmailVerificationEmailHandler(res http.ResponseWriter, 
 		TraceID: span.SpanContext().TraceID().String(),
 	}
 
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -1531,6 +1589,7 @@ func (s *service) RequestEmailVerificationEmailHandler(res http.ResponseWriter, 
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	verificationToken, err := s.userDataManager.GetEmailAddressVerificationTokenForUser(ctx, sessionCtxData.Requester.UserID)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {

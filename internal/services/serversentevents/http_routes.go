@@ -6,6 +6,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+
+	servertiming "github.com/mitchellh/go-server-timing"
 )
 
 // StreamSubscriptionHandler subscribes to a stream.
@@ -13,6 +15,7 @@ func (s *service) StreamSubscriptionHandler(res http.ResponseWriter, req *http.R
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -21,6 +24,7 @@ func (s *service) StreamSubscriptionHandler(res http.ResponseWriter, req *http.R
 	}
 
 	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -28,6 +32,7 @@ func (s *service) StreamSubscriptionHandler(res http.ResponseWriter, req *http.R
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	s.eventsServer.CreateStream(sessionCtxData.Requester.UserID)
 	q := req.URL.Query()

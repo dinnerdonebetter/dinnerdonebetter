@@ -16,6 +16,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
+
+	servertiming "github.com/mitchellh/go-server-timing"
 )
 
 const (
@@ -28,6 +30,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -36,6 +39,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -43,6 +47,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
@@ -74,6 +79,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	input.CreatedByUser = sessionCtxData.Requester.UserID
 	tracing.AttachToSpan(span, keys.RecipeIDKey, input.ID)
 
+	createTimer := timing.NewMetric("database").WithDesc("create").Start()
 	recipe, err := s.recipeDataManager.CreateRecipe(ctx, input)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating recipe")
@@ -81,6 +87,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
 		EventType:   types.RecipeCreatedCustomerEventType,
@@ -106,6 +113,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -114,6 +122,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -121,6 +130,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
@@ -157,6 +167,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	filter := types.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req)
 	logger = filter.AttachToLogger(logger)
@@ -169,6 +180,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
 
 	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -176,6 +188,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
@@ -206,7 +219,10 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
+	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
+
 	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.SearchWithDatabaseQueryKey))) == "true"
 
 	query := req.URL.Query().Get(types.SearchQueryKey)
@@ -215,9 +231,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	filter := types.ExtractQueryFilterFromRequest(req)
 	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
 
-	logger := s.logger.WithRequest(req).
-		WithValue(keys.SearchQueryKey, query).
-		WithValue("using_database", useDB)
+	logger = logger.WithValue(keys.SearchQueryKey, query).WithValue("using_database", useDB)
 	logger = filter.AttachToLogger(logger)
 
 	responseDetails := types.ResponseDetails{
@@ -225,6 +239,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -232,6 +247,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
@@ -287,6 +303,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -295,6 +312,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -302,6 +320,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
@@ -381,6 +400,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -389,6 +409,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -396,6 +417,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
@@ -448,6 +470,7 @@ func (s *service) DAGHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -456,6 +479,7 @@ func (s *service) DAGHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -463,6 +487,7 @@ func (s *service) DAGHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
@@ -507,6 +532,7 @@ func (s *service) EstimatedPrepStepsHandler(res http.ResponseWriter, req *http.R
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -515,6 +541,7 @@ func (s *service) EstimatedPrepStepsHandler(res http.ResponseWriter, req *http.R
 	}
 
 	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -522,6 +549,7 @@ func (s *service) EstimatedPrepStepsHandler(res http.ResponseWriter, req *http.R
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
@@ -574,6 +602,7 @@ func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -581,6 +610,7 @@ func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 		TraceID: span.SpanContext().TraceID().String(),
 	}
 
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -588,6 +618,7 @@ func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
@@ -610,7 +641,7 @@ func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 	logger.Info("processed images, saving files")
 
 	var created []*types.RecipeMedia
-	for _, img := range images {
+	for i, img := range images {
 		internalPath := fmt.Sprintf("%s/%d_%s", recipeID, time.Now().Unix(), img.Filename)
 		logger = logger.WithValue("internal_path", internalPath).WithValue("file_size", len(img.Data))
 
@@ -633,6 +664,7 @@ func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 		}
 
 		var createdMedia *types.RecipeMedia
+		createTimer := timing.NewMetric("database").WithDesc(fmt.Sprintf("create #%d", i)).Start()
 		createdMedia, err = s.recipeMediaDataManager.CreateRecipeMedia(ctx, input)
 		if err != nil {
 			observability.AcknowledgeError(err, logger, span, "saving recipe media record")
@@ -640,6 +672,7 @@ func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 			return
 		}
+		createTimer.Stop()
 		created = append(created, createdMedia)
 
 		dcm := &types.DataChangeMessage{
@@ -670,6 +703,7 @@ func (s *service) MermaidHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -678,6 +712,7 @@ func (s *service) MermaidHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -685,6 +720,7 @@ func (s *service) MermaidHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
@@ -720,6 +756,7 @@ func (s *service) CloneHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -728,6 +765,7 @@ func (s *service) CloneHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -735,6 +773,7 @@ func (s *service) CloneHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
@@ -835,6 +874,7 @@ func (s *service) CloneHandler(res http.ResponseWriter, req *http.Request) {
 		}
 	}
 
+	createTimer := timing.NewMetric("database").WithDesc("create").Start()
 	created, err := s.recipeDataManager.CreateRecipe(ctx, cloneInput)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "cloning recipe")
@@ -842,6 +882,7 @@ func (s *service) CloneHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
 		EventType:   types.RecipeClonedCustomerEventType,

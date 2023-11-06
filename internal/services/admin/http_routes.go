@@ -9,6 +9,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+
+	servertiming "github.com/mitchellh/go-server-timing"
 )
 
 const (
@@ -21,6 +23,7 @@ func (s *service) UserAccountStatusChangeHandler(res http.ResponseWriter, req *h
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -28,6 +31,7 @@ func (s *service) UserAccountStatusChangeHandler(res http.ResponseWriter, req *h
 		TraceID: span.SpanContext().TraceID().String(),
 	}
 
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -35,6 +39,7 @@ func (s *service) UserAccountStatusChangeHandler(res http.ResponseWriter, req *h
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)

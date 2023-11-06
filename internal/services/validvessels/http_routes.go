@@ -50,7 +50,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// read parsed input struct from request body.
-	decodeTimer := timing.NewMetric("decode").WithDesc("decode and validate").Start()
+	decodeTimer := timing.NewMetric("decode").WithDesc("decode input").Start()
 	providedInput := new(types.ValidVesselCreationRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request")
@@ -58,6 +58,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
+	decodeTimer.Stop()
 
 	if err = providedInput.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
@@ -65,7 +66,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
-	decodeTimer.Stop()
 
 	input := converters.ConvertValidVesselCreationRequestInputToValidVesselDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
@@ -315,7 +315,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// check for parsed input attached to session context data.
-	decodeTimer := timing.NewMetric("decode").WithDesc("decode and validate").Start()
+	decodeTimer := timing.NewMetric("decode").WithDesc("decode input").Start()
 	input := new(types.ValidVesselUpdateRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		logger.Error(err, "error encountered decoding request body")
@@ -323,6 +323,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
+	decodeTimer.Stop()
 
 	if err = input.ValidateWithContext(ctx); err != nil {
 		logger.Error(err, "provided input was invalid")
@@ -330,7 +331,6 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
-	decodeTimer.Stop()
 
 	// determine valid vessel ID.
 	validVesselID := s.validVesselIDFetcher(req)
@@ -355,7 +355,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	// update the valid vessel.
 	validVessel.Update(input)
 
-	updateTimer := timing.NewMetric("database").WithDesc("fetch").Start()
+	updateTimer := timing.NewMetric("database").WithDesc("update").Start()
 	if err = s.validVesselDataManager.UpdateValidVessel(ctx, validVessel); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating valid vessel")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
