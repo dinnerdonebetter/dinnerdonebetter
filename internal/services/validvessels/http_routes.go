@@ -50,7 +50,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// read parsed input struct from request body.
-	decodeTimer := timing.NewMetric("decode").WithDesc("decode and validate").Start()
+	decodeTimer := timing.NewMetric("decode").WithDesc("decode input").Start()
 	providedInput := new(types.ValidVesselCreationRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request")
@@ -58,6 +58,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
+	decodeTimer.Stop()
 
 	if err = providedInput.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
@@ -65,7 +66,6 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
-	decodeTimer.Stop()
 
 	input := converters.ConvertValidVesselCreationRequestInputToValidVesselDatabaseCreationInput(providedInput)
 	input.ID = identifiers.New()
@@ -134,6 +134,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
 
 	// fetch valid vessel from database.
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	x, err := s.validVesselDataManager.GetValidVessel(ctx, validVesselID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrDataNotFound, responseDetails)
@@ -145,6 +146,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	responseValue := &types.APIResponse[*types.ValidVessel]{
 		Details: responseDetails,
@@ -160,10 +162,9 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	filter := types.ExtractQueryFilterFromRequest(req)
-
 	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
+	filter := types.ExtractQueryFilterFromRequest(req)
 	logger = filter.AttachToLogger(logger)
 
 	responseDetails := types.ResponseDetails{
@@ -188,6 +189,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	validVessels, err := s.validVesselDataManager.GetValidVessels(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
@@ -198,6 +200,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	responseValue := &types.APIResponse[[]*types.ValidVessel]{
 		Details:    responseDetails,
@@ -214,19 +217,19 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.SearchWithDatabaseQueryKey))) == "true"
+	timing := servertiming.FromContext(ctx)
+	logger := s.logger.WithRequest(req)
+
+	filter := types.ExtractQueryFilterFromRequest(req)
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
 
 	query := req.URL.Query().Get(types.SearchQueryKey)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
+	logger = logger.WithValue(keys.SearchQueryKey, query)
 
-	filter := types.ExtractQueryFilterFromRequest(req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
-
-	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req).
-		WithValue(keys.SearchQueryKey, query).
-		WithValue("using_database", useDB)
-	logger = filter.AttachToLogger(logger)
+	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.SearchWithDatabaseQueryKey))) == "true"
+	logger = logger.WithValue("using_database", useDB)
 
 	responseDetails := types.ResponseDetails{
 		TraceID: span.SpanContext().TraceID().String(),
@@ -249,7 +252,9 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 
 	var validVessels []*types.ValidVessel
 	if useDB {
+		readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 		validVessels, err = s.validVesselDataManager.SearchForValidVessels(ctx, query)
+		readTimer.Stop()
 	} else {
 		var validVesselSubsets []*types.ValidVesselSearchSubset
 		validVesselSubsets, err = s.searchIndex.Search(ctx, query)
@@ -265,7 +270,9 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 			ids = append(ids, validVesselSubset.ID)
 		}
 
+		readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 		validVessels, err = s.validVesselDataManager.GetValidVesselsWithIDs(ctx, ids)
+		readTimer.Stop()
 	}
 
 	if errors.Is(err, sql.ErrNoRows) {
@@ -316,7 +323,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// check for parsed input attached to session context data.
-	decodeTimer := timing.NewMetric("decode").WithDesc("decode and validate").Start()
+	decodeTimer := timing.NewMetric("decode").WithDesc("decode input").Start()
 	input := new(types.ValidVesselUpdateRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		logger.Error(err, "error encountered decoding request body")
@@ -324,6 +331,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
+	decodeTimer.Stop()
 
 	if err = input.ValidateWithContext(ctx); err != nil {
 		logger.Error(err, "provided input was invalid")
@@ -331,7 +339,6 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
-	decodeTimer.Stop()
 
 	// determine valid vessel ID.
 	validVesselID := s.validVesselIDFetcher(req)
@@ -356,7 +363,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	// update the valid vessel.
 	validVessel.Update(input)
 
-	updateTimer := timing.NewMetric("database").WithDesc("fetch").Start()
+	updateTimer := timing.NewMetric("database").WithDesc("update").Start()
 	if err = s.validVesselDataManager.UpdateValidVessel(ctx, validVessel); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating valid vessel")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
@@ -418,13 +425,13 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
 
 	existenceTimer := timing.NewMetric("database").WithDesc("check existence").Start()
-	exists, existenceCheckErr := s.validVesselDataManager.ValidVesselExists(ctx, validVesselID)
-	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
-		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking valid vessel existence")
+	exists, err := s.validVesselDataManager.ValidVesselExists(ctx, validVesselID)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		observability.AcknowledgeError(err, logger, span, "checking valid vessel existence")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
-	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
+	} else if !exists || errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return

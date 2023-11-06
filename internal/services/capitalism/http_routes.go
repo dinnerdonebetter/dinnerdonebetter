@@ -4,21 +4,26 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+
+	servertiming "github.com/mitchellh/go-server-timing"
 )
 
 // IncomingWebhookHandler is our webhook handling route.
 func (s *service) IncomingWebhookHandler(res http.ResponseWriter, req *http.Request) {
-	_, span := s.tracer.StartSpan(req.Context())
+	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
+	webhookHandleTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	statusToWrite := http.StatusOK
 	if err := s.paymentManager.HandleEventWebhook(req); err != nil {
 		logger.Error(err, "handling subscription event webhook")
 		statusToWrite = http.StatusInternalServerError
 	}
+	webhookHandleTimer.Stop()
 
 	res.WriteHeader(statusToWrite)
 }

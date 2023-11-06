@@ -12,6 +12,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
+
+	servertiming "github.com/mitchellh/go-server-timing"
 )
 
 const (
@@ -26,6 +28,7 @@ func (s *service) CreateMealHandler(res http.ResponseWriter, req *http.Request) 
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -34,6 +37,7 @@ func (s *service) CreateMealHandler(res http.ResponseWriter, req *http.Request) 
 	}
 
 	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -41,6 +45,7 @@ func (s *service) CreateMealHandler(res http.ResponseWriter, req *http.Request) 
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
@@ -67,6 +72,7 @@ func (s *service) CreateMealHandler(res http.ResponseWriter, req *http.Request) 
 	input.CreatedByUser = sessionCtxData.Requester.UserID
 	tracing.AttachToSpan(span, keys.MealIDKey, input.ID)
 
+	createTimer := timing.NewMetric("database").WithDesc("create").Start()
 	meal, err := s.mealDataManager.CreateMeal(ctx, input)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "creating meal")
@@ -74,6 +80,7 @@ func (s *service) CreateMealHandler(res http.ResponseWriter, req *http.Request) 
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
 		EventType:   types.MealCreatedCustomerEventType,
@@ -99,6 +106,7 @@ func (s *service) ReadMealHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -107,6 +115,7 @@ func (s *service) ReadMealHandler(res http.ResponseWriter, req *http.Request) {
 	}
 
 	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -114,6 +123,7 @@ func (s *service) ReadMealHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
@@ -124,6 +134,7 @@ func (s *service) ReadMealHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.MealIDKey, mealID)
 
 	// fetch meal from database.
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	x, err := s.mealDataManager.GetMeal(ctx, mealID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
@@ -135,6 +146,7 @@ func (s *service) ReadMealHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	responseValue := &types.APIResponse[*types.Meal]{
 		Details: responseDetails,
@@ -150,6 +162,7 @@ func (s *service) ListMealsHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	filter := types.ExtractQueryFilterFromRequest(req)
 	logger := s.logger.WithRequest(req)
 	logger = filter.AttachToLogger(logger)
@@ -162,6 +175,7 @@ func (s *service) ListMealsHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
 
 	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -169,10 +183,12 @@ func (s *service) ListMealsHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	meals, err := s.mealDataManager.GetMeals(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
@@ -183,6 +199,7 @@ func (s *service) ListMealsHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	responseValue := &types.APIResponse[[]*types.Meal]{
 		Details:    responseDetails,
@@ -199,26 +216,26 @@ func (s *service) SearchMealsHandler(res http.ResponseWriter, req *http.Request)
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
+	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
-
-	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.SearchWithDatabaseQueryKey))) == "true"
 
 	query := req.URL.Query().Get(types.SearchQueryKey)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 
 	filter := types.ExtractQueryFilterFromRequest(req)
 	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
-
-	logger := s.logger.WithRequest(req).
-		WithValue(keys.SearchQueryKey, query).
-		WithValue("using_database", useDB)
 	logger = filter.AttachToLogger(logger)
+
+	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.SearchWithDatabaseQueryKey))) == "true"
+	logger = logger.WithValue(keys.SearchQueryKey, query).WithValue("using_database", useDB)
 
 	responseDetails := types.ResponseDetails{
 		TraceID: span.SpanContext().TraceID().String(),
 	}
 
 	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -226,6 +243,7 @@ func (s *service) SearchMealsHandler(res http.ResponseWriter, req *http.Request)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
@@ -233,6 +251,8 @@ func (s *service) SearchMealsHandler(res http.ResponseWriter, req *http.Request)
 	meals := &types.QueryFilteredResult[types.Meal]{
 		Pagination: filter.ToPagination(),
 	}
+
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	if useDB {
 		meals, err = s.mealDataManager.SearchForMeals(ctx, query, filter)
 	} else {
@@ -265,6 +285,7 @@ func (s *service) SearchMealsHandler(res http.ResponseWriter, req *http.Request)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	responseValue := &types.APIResponse[[]*types.Meal]{
 		Details:    responseDetails,
@@ -281,6 +302,7 @@ func (s *service) ArchiveMealHandler(res http.ResponseWriter, req *http.Request)
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -289,6 +311,7 @@ func (s *service) ArchiveMealHandler(res http.ResponseWriter, req *http.Request)
 	}
 
 	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -296,6 +319,7 @@ func (s *service) ArchiveMealHandler(res http.ResponseWriter, req *http.Request)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
@@ -305,24 +329,28 @@ func (s *service) ArchiveMealHandler(res http.ResponseWriter, req *http.Request)
 	tracing.AttachToSpan(span, keys.MealIDKey, mealID)
 	logger = logger.WithValue(keys.MealIDKey, mealID)
 
-	exists, existenceCheckErr := s.mealDataManager.MealExists(ctx, mealID)
-	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
-		observability.AcknowledgeError(existenceCheckErr, logger, span, "checking meal existence")
+	existenceTimer := timing.NewMetric("database").WithDesc("existence check").Start()
+	exists, err := s.mealDataManager.MealExists(ctx, mealID)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		observability.AcknowledgeError(err, logger, span, "checking meal existence")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
-	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
+	} else if !exists || errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	}
+	existenceTimer.Stop()
 
+	archiveTimer := timing.NewMetric("database").WithDesc("archive").Start()
 	if err = s.mealDataManager.ArchiveMeal(ctx, mealID, sessionCtxData.Requester.UserID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving meal")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
 		EventType:   types.MealArchivedCustomerEventType,

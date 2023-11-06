@@ -11,6 +11,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
+
+	servertiming "github.com/mitchellh/go-server-timing"
 )
 
 const (
@@ -27,6 +29,7 @@ func (s *service) CreateWebhookHandler(res http.ResponseWriter, req *http.Reques
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -35,6 +38,7 @@ func (s *service) CreateWebhookHandler(res http.ResponseWriter, req *http.Reques
 	}
 
 	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching session context data")
@@ -42,6 +46,7 @@ func (s *service) CreateWebhookHandler(res http.ResponseWriter, req *http.Reques
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
@@ -66,6 +71,7 @@ func (s *service) CreateWebhookHandler(res http.ResponseWriter, req *http.Reques
 	tracing.AttachToSpan(span, keys.WebhookIDKey, input.ID)
 	input.BelongsToHousehold = sessionCtxData.ActiveHouseholdID
 
+	createTimer := timing.NewMetric("database").WithDesc("create").Start()
 	webhook, err := s.webhookDataManager.CreateWebhook(ctx, input)
 	logger.Debug("database call executed")
 	if err != nil {
@@ -74,6 +80,7 @@ func (s *service) CreateWebhookHandler(res http.ResponseWriter, req *http.Reques
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	createTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
 		EventType:   types.WebhookCreatedCustomerEventType,
@@ -99,6 +106,7 @@ func (s *service) ListWebhooksHandler(res http.ResponseWriter, req *http.Request
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	filter := types.ExtractQueryFilterFromRequest(req)
 	logger := filter.AttachToLogger(s.logger)
 
@@ -110,6 +118,7 @@ func (s *service) ListWebhooksHandler(res http.ResponseWriter, req *http.Request
 	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
 
 	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -117,11 +126,13 @@ func (s *service) ListWebhooksHandler(res http.ResponseWriter, req *http.Request
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// find the webhooks.
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	webhooks, err := s.webhookDataManager.GetWebhooks(ctx, sessionCtxData.ActiveHouseholdID, filter)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -135,6 +146,7 @@ func (s *service) ListWebhooksHandler(res http.ResponseWriter, req *http.Request
 			return
 		}
 	}
+	readTimer.Stop()
 
 	responseValue := &types.APIResponse[[]*types.Webhook]{
 		Details:    responseDetails,
@@ -151,6 +163,7 @@ func (s *service) ReadWebhookHandler(res http.ResponseWriter, req *http.Request)
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -159,6 +172,7 @@ func (s *service) ReadWebhookHandler(res http.ResponseWriter, req *http.Request)
 	}
 
 	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
@@ -166,6 +180,7 @@ func (s *service) ReadWebhookHandler(res http.ResponseWriter, req *http.Request)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
@@ -179,6 +194,7 @@ func (s *service) ReadWebhookHandler(res http.ResponseWriter, req *http.Request)
 	logger = logger.WithValue(keys.HouseholdIDKey, sessionCtxData.ActiveHouseholdID)
 
 	// fetch the webhook from the database.
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	webhook, err := s.webhookDataManager.GetWebhook(ctx, webhookID, sessionCtxData.ActiveHouseholdID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -193,6 +209,7 @@ func (s *service) ReadWebhookHandler(res http.ResponseWriter, req *http.Request)
 			return
 		}
 	}
+	readTimer.Stop()
 
 	responseValue := &types.APIResponse[*types.Webhook]{
 		Details: responseDetails,
@@ -208,6 +225,7 @@ func (s *service) ArchiveWebhookHandler(res http.ResponseWriter, req *http.Reque
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -216,6 +234,7 @@ func (s *service) ArchiveWebhookHandler(res http.ResponseWriter, req *http.Reque
 	}
 
 	// determine relevant user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching session context data")
@@ -223,6 +242,7 @@ func (s *service) ArchiveWebhookHandler(res http.ResponseWriter, req *http.Reque
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	userID := sessionCtxData.Requester.UserID
 	logger = logger.WithValue(keys.UserIDKey, userID)
@@ -235,24 +255,28 @@ func (s *service) ArchiveWebhookHandler(res http.ResponseWriter, req *http.Reque
 	tracing.AttachToSpan(span, keys.WebhookIDKey, webhookID)
 	logger = logger.WithValue(keys.WebhookIDKey, webhookID)
 
-	exists, webhookExistenceCheckErr := s.webhookDataManager.WebhookExists(ctx, webhookID, householdID)
-	if webhookExistenceCheckErr != nil && !errors.Is(webhookExistenceCheckErr, sql.ErrNoRows) {
+	existenceTimer := timing.NewMetric("database").WithDesc("existence check").Start()
+	exists, err := s.webhookDataManager.WebhookExists(ctx, webhookID, householdID)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
-		observability.AcknowledgeError(webhookExistenceCheckErr, logger, span, "checking item existence")
+		observability.AcknowledgeError(err, logger, span, "checking item existence")
 		return
-	} else if !exists || errors.Is(webhookExistenceCheckErr, sql.ErrNoRows) {
+	} else if !exists || errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	}
+	existenceTimer.Stop()
 
+	archiveTimer := timing.NewMetric("database").WithDesc("archive").Start()
 	if err = s.webhookDataManager.ArchiveWebhook(ctx, webhookID, householdID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving webhook in database")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
 		EventType:   types.WebhookArchivedCustomerEventType,

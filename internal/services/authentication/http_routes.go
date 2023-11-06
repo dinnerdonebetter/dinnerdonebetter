@@ -18,6 +18,7 @@ import (
 	"github.com/gorilla/securecookie"
 	"github.com/markbates/goth"
 	"github.com/markbates/goth/gothic"
+	servertiming "github.com/mitchellh/go-server-timing"
 )
 
 var (
@@ -59,6 +60,7 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 		ctx, span := s.tracer.StartSpan(req.Context())
 		defer span.End()
 
+		timing := servertiming.FromContext(ctx)
 		logger := s.logger.WithRequest(req)
 		tracing.AttachRequestToSpan(span, req)
 
@@ -101,19 +103,21 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 			userFunc = s.userDataManager.GetAdminUserByUsername
 		}
 
+		readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 		user, err := userFunc(ctx, loginData.Username)
 		if err != nil || user == nil {
+			observability.AcknowledgeError(err, logger, span, "fetching user")
 			if errors.Is(err, sql.ErrNoRows) {
 				errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 				s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 				return
 			}
 
-			observability.AcknowledgeError(err, logger, span, "fetching user")
 			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 			return
 		}
+		readTimer.Stop()
 
 		logger = logger.WithValue(keys.UserIDKey, user.ID)
 		tracing.AttachUserToSpan(span, user)
@@ -237,6 +241,7 @@ func (s *service) SSOLoginHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -265,12 +270,14 @@ func (s *service) SSOLoginHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	loadSessionTimer := timing.NewMetric("session manager").WithDesc("load").Start()
 	ctx, err = s.sessionManager.Load(ctx, providerName)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "loading session")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "failed to load session", http.StatusInternalServerError)
 		return
 	}
+	loadSessionTimer.Stop()
 
 	s.sessionManager.Put(ctx, providerName, sess.Marshal())
 
@@ -289,6 +296,7 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -330,12 +338,14 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 		return
 	}
 
+	fetchUserTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	providedUser, err := provider.FetchUser(sess)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching user")
 		s.encoderDecoder.EncodeErrorResponse(ctx, res, "failed to fetch user", http.StatusInternalServerError)
 		return
 	}
+	fetchUserTimer.Stop()
 
 	params := req.URL.Query()
 	if params.Encode() == "" && req.Method == "POST" {
@@ -352,6 +362,7 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 		return
 	}
 
+	getUserTimer := timing.NewMetric("database").WithDesc("get user by email").Start()
 	user, err := s.userDataManager.GetUserByEmail(ctx, providedUser.Email)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "getting user by email")
@@ -359,7 +370,9 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	getUserTimer.Stop()
 
+	defaultHouseholdTimer := timing.NewMetric("database").WithDesc("get default household for user").Start()
 	defaultHouseholdID, err := s.householdMembershipManager.GetDefaultHouseholdIDForUser(ctx, user.ID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching user memberships")
@@ -367,6 +380,7 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	defaultHouseholdTimer.Stop()
 
 	responseCode, err := s.postLogin(ctx, user, defaultHouseholdID, req, res)
 	if err != nil {
@@ -413,6 +427,7 @@ func (s *service) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *htt
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -421,6 +436,7 @@ func (s *service) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *htt
 	}
 
 	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching session context data")
@@ -428,6 +444,7 @@ func (s *service) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *htt
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
@@ -510,6 +527,7 @@ func (s *service) EndSessionHandler(res http.ResponseWriter, req *http.Request) 
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -518,13 +536,15 @@ func (s *service) EndSessionHandler(res http.ResponseWriter, req *http.Request) 
 	}
 
 	// determine user ID.
-	sessionCtxData, fetchSessionContextErr := s.sessionContextDataFetcher(req)
-	if fetchSessionContextErr != nil {
-		observability.AcknowledgeError(fetchSessionContextErr, logger, span, "fetching session context data")
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "fetching session context data")
 		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
@@ -584,6 +604,7 @@ func (s *service) StatusHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -591,8 +612,7 @@ func (s *service) StatusHandler(res http.ResponseWriter, req *http.Request) {
 		TraceID: span.SpanContext().TraceID().String(),
 	}
 
-	var statusResponse *types.UserStatusResponse
-
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching session context data")
@@ -600,10 +620,11 @@ func (s *service) StatusHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 
-	statusResponse = &types.UserStatusResponse{
+	statusResponse := &types.UserStatusResponse{
 		ActiveHousehold:          sessionCtxData.ActiveHouseholdID,
 		AccountStatus:            sessionCtxData.Requester.AccountStatus,
 		AccountStatusExplanation: sessionCtxData.Requester.AccountStatusExplanation,
@@ -623,6 +644,7 @@ func (s *service) CycleCookieSecretHandler(res http.ResponseWriter, req *http.Re
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
@@ -633,6 +655,7 @@ func (s *service) CycleCookieSecretHandler(res http.ResponseWriter, req *http.Re
 	logger.Info("cycling cookie secret!")
 
 	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching session context data")
@@ -640,6 +663,7 @@ func (s *service) CycleCookieSecretHandler(res http.ResponseWriter, req *http.Re
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
 	}
+	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
