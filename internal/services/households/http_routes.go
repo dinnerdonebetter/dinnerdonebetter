@@ -440,6 +440,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 
 	// archive the household in the database.
+	archiveTimer := timing.NewMetric("database").WithDesc("archive").Start()
 	err = s.householdDataManager.ArchiveHousehold(ctx, householdID, requester)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
@@ -451,6 +452,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
 		EventType:   types.HouseholdArchivedCustomerEventType,

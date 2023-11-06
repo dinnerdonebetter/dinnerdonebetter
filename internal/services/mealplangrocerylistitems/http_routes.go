@@ -355,6 +355,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.MealPlanGroceryListItemIDKey, mealPlanGroceryListItemID)
 
 	// check that meal plan grocery list item exists in database.
+	existenceTimer := timing.NewMetric("database").WithDesc("existence check").Start()
 	x, err := s.mealPlanGroceryListItemDataManager.MealPlanGroceryListItemExists(ctx, mealPlanID, mealPlanGroceryListItemID)
 	if errors.Is(err, sql.ErrNoRows) || !x {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
@@ -366,8 +367,10 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	existenceTimer.Stop()
 
 	// fetch meal plan grocery list item from database.
+	archiveTimer := timing.NewMetric("database").WithDesc("archive").Start()
 	err = s.mealPlanGroceryListItemDataManager.ArchiveMealPlanGroceryListItem(ctx, mealPlanGroceryListItemID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving meal plan grocery list item")
@@ -375,6 +378,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
 		EventType:                 types.MealPlanGroceryListItemArchivedCustomerEventType,

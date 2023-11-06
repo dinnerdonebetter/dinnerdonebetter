@@ -330,23 +330,27 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachToSpan(span, keys.ValidVesselIDKey, validPreparationVesselID)
 	logger = logger.WithValue(keys.ValidPreparationVesselIDKey, validPreparationVesselID)
 
-	exists, existenceCheckErr := s.validPreparationVesselDataManager.ValidPreparationVesselExists(ctx, validPreparationVesselID)
-	if existenceCheckErr != nil && !errors.Is(existenceCheckErr, sql.ErrNoRows) {
+	existenceTimer := timing.NewMetric("database").WithDesc("existence check").Start()
+	exists, err := s.validPreparationVesselDataManager.ValidPreparationVesselExists(ctx, validPreparationVesselID)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
-	} else if !exists || errors.Is(existenceCheckErr, sql.ErrNoRows) {
+	} else if !exists || errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	}
+	existenceTimer.Stop()
 
+	archiveTimer := timing.NewMetric("database").WithDesc("archive").Start()
 	if err = s.validPreparationVesselDataManager.ArchiveValidPreparationVessel(ctx, validPreparationVesselID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving valid preparation vessel")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
 		EventType: types.ValidPreparationVesselArchivedCustomerEventType,

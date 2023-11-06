@@ -275,6 +275,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachToSpan(span, keys.OAuth2ClientClientIDKey, oauth2ClientID)
 
 	// archive the OAuth2 client in the database.
+	archiveTimer := timing.NewMetric("database").WithDesc("archive").Start()
 	err = s.oauth2ClientDataManager.ArchiveOAuth2Client(ctx, oauth2ClientID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
@@ -286,6 +287,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
 		EventType:      types.OAuth2ClientArchivedCustomerEventType,

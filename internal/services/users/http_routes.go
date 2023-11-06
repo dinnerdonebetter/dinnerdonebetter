@@ -1232,6 +1232,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	logger.Debug("archiving user")
 
 	// do the deed.
+	archiveTimer := timing.NewMetric("database").WithDesc("archive").Start()
 	err = s.userDataManager.ArchiveUser(ctx, userID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
@@ -1243,6 +1244,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	archiveTimer.Stop()
 
 	logger.Info("user archived")
 

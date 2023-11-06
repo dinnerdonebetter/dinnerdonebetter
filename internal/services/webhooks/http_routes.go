@@ -255,24 +255,28 @@ func (s *service) ArchiveWebhookHandler(res http.ResponseWriter, req *http.Reque
 	tracing.AttachToSpan(span, keys.WebhookIDKey, webhookID)
 	logger = logger.WithValue(keys.WebhookIDKey, webhookID)
 
-	exists, webhookExistenceCheckErr := s.webhookDataManager.WebhookExists(ctx, webhookID, householdID)
-	if webhookExistenceCheckErr != nil && !errors.Is(webhookExistenceCheckErr, sql.ErrNoRows) {
+	existenceTimer := timing.NewMetric("database").WithDesc("existence check").Start()
+	exists, err := s.webhookDataManager.WebhookExists(ctx, webhookID, householdID)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
-		observability.AcknowledgeError(webhookExistenceCheckErr, logger, span, "checking item existence")
+		observability.AcknowledgeError(err, logger, span, "checking item existence")
 		return
-	} else if !exists || errors.Is(webhookExistenceCheckErr, sql.ErrNoRows) {
+	} else if !exists || errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	}
+	existenceTimer.Stop()
 
+	archiveTimer := timing.NewMetric("database").WithDesc("archive").Start()
 	if err = s.webhookDataManager.ArchiveWebhook(ctx, webhookID, householdID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving webhook in database")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
 		EventType:   types.WebhookArchivedCustomerEventType,
