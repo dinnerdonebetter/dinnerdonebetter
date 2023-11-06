@@ -448,6 +448,7 @@ func (s *service) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *htt
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	input := new(types.ChangeActiveHouseholdInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
@@ -548,6 +549,7 @@ func (s *service) EndSessionHandler(res http.ResponseWriter, req *http.Request) 
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	ctx, loadErr := s.sessionManager.Load(ctx, "")
 	if loadErr != nil {
@@ -623,6 +625,7 @@ func (s *service) StatusHandler(res http.ResponseWriter, req *http.Request) {
 	sessionContextTimer.Stop()
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	statusResponse := &types.UserStatusResponse{
 		ActiveHousehold:          sessionCtxData.ActiveHouseholdID,
@@ -667,6 +670,7 @@ func (s *service) CycleCookieSecretHandler(res http.ResponseWriter, req *http.Re
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	if !sessionCtxData.Requester.ServicePermissions.CanCycleCookieSecrets() {
 		logger.Debug("invalid permissions")

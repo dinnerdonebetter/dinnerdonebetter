@@ -432,6 +432,7 @@ func (s *service) SelfHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// figure out who this is all for.
 	requester := sessionCtxData.Requester.UserID
@@ -488,6 +489,7 @@ func (s *service) PermissionsHandler(res http.ResponseWriter, req *http.Request)
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// decode the request.
 	permissionsInput := new(types.UserPermissionsRequestInput)
@@ -690,6 +692,7 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// fetch user
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()

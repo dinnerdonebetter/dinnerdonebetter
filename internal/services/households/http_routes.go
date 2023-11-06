@@ -106,8 +106,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-
-	// read parsed input struct from request body.
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID // read parsed input struct from request body.
 	providedInput := new(types.HouseholdCreationRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
@@ -333,6 +332,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	input := new(types.HouseholdUpdateRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
@@ -497,8 +497,7 @@ func (s *service) ModifyMemberPermissionsHandler(res http.ResponseWriter, req *h
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-
-	// read parsed input struct from request body.
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID // read parsed input struct from request body.
 	input := new(types.ModifyUserPermissionsInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")
@@ -576,8 +575,7 @@ func (s *service) TransferHouseholdOwnershipHandler(res http.ResponseWriter, req
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-
-	// read parsed input struct from request body.
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID // read parsed input struct from request body.
 	input := new(types.HouseholdOwnershipTransferInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, input); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request body")

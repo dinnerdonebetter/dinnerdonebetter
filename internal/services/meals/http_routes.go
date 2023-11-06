@@ -49,6 +49,7 @@ func (s *service) CreateMealHandler(res http.ResponseWriter, req *http.Request) 
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// read parsed input struct from request body.
 	providedInput := new(types.MealCreationRequestInput)
@@ -127,6 +128,7 @@ func (s *service) ReadMealHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// determine meal ID.
 	mealID := s.mealIDFetcher(req)
@@ -187,6 +189,7 @@ func (s *service) ListMealsHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	meals, err := s.mealDataManager.GetMeals(ctx, filter)
@@ -247,6 +250,7 @@ func (s *service) SearchMealsHandler(res http.ResponseWriter, req *http.Request)
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	meals := &types.QueryFilteredResult[types.Meal]{
 		Pagination: filter.ToPagination(),
@@ -323,6 +327,7 @@ func (s *service) ArchiveMealHandler(res http.ResponseWriter, req *http.Request)
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// determine meal ID.
 	mealID := s.mealIDFetcher(req)

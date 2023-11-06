@@ -50,6 +50,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// read parsed input struct from request body.
 	providedInput := new(types.ValidIngredientMeasurementUnitCreationRequestInput)
@@ -127,6 +128,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// determine valid ingredient measurement unit ID.
 	validIngredientMeasurementUnitID := s.validIngredientMeasurementUnitIDFetcher(req)
@@ -185,6 +187,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	validIngredientMeasurementUnits, err := s.validIngredientMeasurementUnitDataManager.GetValidIngredientMeasurementUnits(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
@@ -233,6 +236,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// check for parsed input attached to session context data.
 	input := new(types.ValidIngredientMeasurementUnitUpdateRequestInput)
@@ -325,6 +329,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// determine valid ingredient measurement unit ID.
 	validIngredientMeasurementUnitID := s.validIngredientMeasurementUnitIDFetcher(req)
@@ -403,6 +408,7 @@ func (s *service) SearchByIngredientHandler(res http.ResponseWriter, req *http.R
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	validIngredientMeasurementUnits, err := s.validIngredientMeasurementUnitDataManager.GetValidIngredientMeasurementUnitsForIngredient(ctx, validIngredientID, filter)
 	if err != nil {
@@ -454,6 +460,7 @@ func (s *service) SearchByMeasurementUnitHandler(res http.ResponseWriter, req *h
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	validIngredientMeasurementUnits, err := s.validIngredientMeasurementUnitDataManager.GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx, validMeasurementUnitID, filter)
 	if err != nil {

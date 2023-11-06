@@ -49,6 +49,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// read parsed input struct from request body.
 	providedInput := new(types.ValidMeasurementUnitCreationRequestInput)
@@ -125,6 +126,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// determine valid measurement unit ID.
 	validMeasurementUnitID := s.validMeasurementUnitIDFetcher(req)
@@ -183,6 +185,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	validMeasurementUnits, err := s.validMeasurementUnitDataManager.GetValidMeasurementUnits(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
@@ -236,7 +239,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
-		logger.Error(err, "retrieving session context data")
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
 		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
@@ -245,6 +248,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	var validMeasurementUnits []*types.ValidMeasurementUnit
 	if useDB {
@@ -322,7 +326,7 @@ func (s *service) SearchByIngredientIDHandler(res http.ResponseWriter, req *http
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
 	sessionCtxData, err := s.sessionContextDataFetcher(req)
 	if err != nil {
-		logger.Error(err, "retrieving session context data")
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
 		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
 		return
@@ -331,6 +335,7 @@ func (s *service) SearchByIngredientIDHandler(res http.ResponseWriter, req *http
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	validMeasurementUnits, err := s.validMeasurementUnitDataManager.ValidMeasurementUnitsForIngredientID(ctx, validIngredientID, filter)
 	if errors.Is(err, sql.ErrNoRows) {
@@ -379,6 +384,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// check for parsed input attached to session context data.
 	input := new(types.ValidMeasurementUnitUpdateRequestInput)
@@ -471,6 +477,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// determine valid measurement unit ID.
 	validMeasurementUnitID := s.validMeasurementUnitIDFetcher(req)

@@ -25,7 +25,9 @@ func (s *service) CookieRequirementMiddleware(next http.Handler) http.Handler {
 		logger := s.logger.WithRequest(req)
 
 		cookieFetchTimer := timing.NewMetric("cookie fetch").WithDesc("decoding cookie from request").Start()
-		if cookie, cookieErr := req.Cookie(s.config.Cookies.Name); !errors.Is(cookieErr, http.ErrNoCookie) && cookie != nil {
+		cookie, cookieErr := req.Cookie(s.config.Cookies.Name)
+		cookieFetchTimer.Stop()
+		if !errors.Is(cookieErr, http.ErrNoCookie) && cookie != nil {
 			var token string
 			if err := s.cookieManager.Decode(s.config.Cookies.Name, cookie.Value, &token); err == nil {
 				next.ServeHTTP(res, req)
@@ -34,7 +36,6 @@ func (s *service) CookieRequirementMiddleware(next http.Handler) http.Handler {
 				observability.AcknowledgeError(err, logger, span, "decoding cookie")
 			}
 		}
-		cookieFetchTimer.Stop()
 
 		logger.Info("no cookie attached to request")
 
@@ -167,12 +168,13 @@ func (s *service) PermissionFilterMiddleware(permissions ...authorization.Permis
 			}
 
 			permissionCheckTimer := timing.NewMetric("permissions check").WithDesc("checking user permissions").Start()
-			defer permissionCheckTimer.Stop()
 			logger = sessionContextData.AttachToLogger(logger)
 			isServiceAdmin := sessionContextData.Requester.ServicePermissions.IsServiceAdmin()
 			logger = logger.WithValue("is_service_admin", isServiceAdmin)
 
-			if _, allowed := sessionContextData.HouseholdPermissions[sessionContextData.ActiveHouseholdID]; !allowed && !isServiceAdmin {
+			_, allowed := sessionContextData.HouseholdPermissions[sessionContextData.ActiveHouseholdID]
+			if !allowed && !isServiceAdmin {
+				permissionCheckTimer.Stop()
 				logger.Info("not authorized for household")
 				s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
 				return
@@ -182,12 +184,14 @@ func (s *service) PermissionFilterMiddleware(permissions ...authorization.Permis
 				doesNotHaveServicePermission := !sessionContextData.ServiceRolePermissionChecker().HasPermission(perm)
 				doesNotHaveHouseholdPermission := !sessionContextData.HouseholdRolePermissionsChecker().HasPermission(perm)
 				if doesNotHaveServicePermission && doesNotHaveHouseholdPermission {
+					permissionCheckTimer.Stop()
 					logger.WithValue("deficient_permission", perm.ID()).Info("request filtered out")
 					s.encoderDecoder.EncodeUnauthorizedResponse(ctx, res)
 					return
 				}
 			}
 
+			permissionCheckTimer.Stop()
 			next.ServeHTTP(res, req)
 		})
 	}

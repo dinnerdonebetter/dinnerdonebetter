@@ -51,6 +51,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// read parsed input struct from request body.
 	providedInput := new(types.RecipeCreationRequestInput)
@@ -134,6 +135,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
@@ -194,6 +196,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	recipes, err := s.recipeDataManager.GetRecipes(ctx, filter)
@@ -227,16 +230,16 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
-	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.SearchWithDatabaseQueryKey))) == "true"
-
 	query := req.URL.Query().Get(types.SearchQueryKey)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
+	logger = logger.WithValue(keys.SearchQueryKey, query)
 
 	filter := types.ExtractQueryFilterFromRequest(req)
 	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
-
-	logger = logger.WithValue(keys.SearchQueryKey, query).WithValue("using_database", useDB)
 	logger = filter.AttachToLogger(logger)
+
+	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.SearchWithDatabaseQueryKey))) == "true"
+	logger = logger.WithValue("using_database", useDB)
 
 	responseDetails := types.ResponseDetails{
 		TraceID: span.SpanContext().TraceID().String(),
@@ -255,6 +258,7 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	recipes := &types.QueryFilteredResult[types.Recipe]{
 		Pagination: filter.ToPagination(),
@@ -331,6 +335,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// check for parsed input attached to session context data.
 	input := new(types.RecipeUpdateRequestInput)
@@ -432,6 +437,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
@@ -506,6 +512,7 @@ func (s *service) DAGHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
@@ -570,6 +577,7 @@ func (s *service) EstimatedPrepStepsHandler(res http.ResponseWriter, req *http.R
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
@@ -641,6 +649,7 @@ func (s *service) ImageUploadHandler(res http.ResponseWriter, req *http.Request)
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
@@ -743,6 +752,7 @@ func (s *service) MermaidHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
@@ -798,6 +808,7 @@ func (s *service) CloneHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
