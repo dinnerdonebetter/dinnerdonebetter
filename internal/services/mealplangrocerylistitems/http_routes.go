@@ -259,28 +259,28 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// read parsed input struct from request body.
 	providedInput := new(types.MealPlanGroceryListItemUpdateRequestInput)
-	if err := s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
+	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request")
 		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
-	if err := providedInput.ValidateWithContext(ctx); err != nil {
+	if err = providedInput.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
 		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
-	mealPlanGroceryListItem, fetchMealPlanGroceryListItemErr := s.mealPlanGroceryListItemDataManager.GetMealPlanGroceryListItem(ctx, mealPlanID, mealPlanGroceryListItemID)
-	if fetchMealPlanGroceryListItemErr != nil {
-		if errors.Is(fetchMealPlanGroceryListItemErr, sql.ErrNoRows) {
+	mealPlanGroceryListItem, err := s.mealPlanGroceryListItemDataManager.GetMealPlanGroceryListItem(ctx, mealPlanID, mealPlanGroceryListItemID)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "checking meal plan grocery list item existence")
+		if errors.Is(err, sql.ErrNoRows) {
 			errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 			return
 		}
-		observability.AcknowledgeError(fetchMealPlanGroceryListItemErr, logger, span, "checking meal plan grocery list item existence")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
@@ -288,12 +288,14 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	mealPlanGroceryListItem.Update(providedInput)
 
-	if err := s.mealPlanGroceryListItemDataManager.UpdateMealPlanGroceryListItem(ctx, mealPlanGroceryListItem); err != nil {
+	updateTimer := timing.NewMetric("database").WithDesc("update").Start()
+	if err = s.mealPlanGroceryListItemDataManager.UpdateMealPlanGroceryListItem(ctx, mealPlanGroceryListItem); err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving meal plan grocery list item")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	updateTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
 		EventType:                 types.MealPlanGroceryListItemUpdatedCustomerEventType,
@@ -303,7 +305,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		UserID:                    sessionCtxData.Requester.UserID,
 	}
 
-	if err := s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 

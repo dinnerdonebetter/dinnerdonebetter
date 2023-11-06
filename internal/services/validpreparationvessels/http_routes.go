@@ -270,12 +270,14 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	// update the valid preparation vessel.
 	validPreparationVessel.Update(input)
 
+	updateTimer := timing.NewMetric("database").WithDesc("update").Start()
 	if err = s.validPreparationVesselDataManager.UpdateValidPreparationVessel(ctx, validPreparationVessel); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating valid preparation vessel")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	updateTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
 		EventType:              types.ValidPreparationVesselUpdatedCustomerEventType,

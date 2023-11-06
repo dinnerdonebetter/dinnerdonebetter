@@ -132,6 +132,7 @@ func (s *service) ListWebhooksHandler(res http.ResponseWriter, req *http.Request
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// find the webhooks.
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	webhooks, err := s.webhookDataManager.GetWebhooks(ctx, sessionCtxData.ActiveHouseholdID, filter)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -145,6 +146,7 @@ func (s *service) ListWebhooksHandler(res http.ResponseWriter, req *http.Request
 			return
 		}
 	}
+	readTimer.Stop()
 
 	responseValue := &types.APIResponse[[]*types.Webhook]{
 		Details:    responseDetails,
@@ -192,6 +194,7 @@ func (s *service) ReadWebhookHandler(res http.ResponseWriter, req *http.Request)
 	logger = logger.WithValue(keys.HouseholdIDKey, sessionCtxData.ActiveHouseholdID)
 
 	// fetch the webhook from the database.
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	webhook, err := s.webhookDataManager.GetWebhook(ctx, webhookID, sessionCtxData.ActiveHouseholdID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -206,6 +209,7 @@ func (s *service) ReadWebhookHandler(res http.ResponseWriter, req *http.Request)
 			return
 		}
 	}
+	readTimer.Stop()
 
 	responseValue := &types.APIResponse[*types.Webhook]{
 		Details: responseDetails,

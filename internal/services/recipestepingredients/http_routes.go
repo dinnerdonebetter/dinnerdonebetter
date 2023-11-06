@@ -151,6 +151,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 
 	// fetch recipe step ingredient from database.
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	x, err := s.recipeStepIngredientDataManager.GetRecipeStepIngredient(ctx, recipeID, recipeStepID, recipeStepIngredientID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
@@ -162,6 +163,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	responseValue := &types.APIResponse[*types.RecipeStepIngredient]{
 		Details: responseDetails,
@@ -213,6 +215,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 	logger = logger.WithValue(keys.RecipeStepIDKey, recipeStepID)
 
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	recipeStepIngredients, err := s.recipeStepIngredientDataManager.GetRecipeStepIngredients(ctx, recipeID, recipeStepID, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
@@ -223,6 +226,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	responseValue := &types.APIResponse[[]*types.RecipeStepIngredient]{
 		Details:    responseDetails,
@@ -293,6 +297,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.RecipeStepIngredientIDKey, recipeStepIngredientID)
 
 	// fetch recipe step ingredient from database.
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	recipeStepIngredient, err := s.recipeStepIngredientDataManager.GetRecipeStepIngredient(ctx, recipeID, recipeStepID, recipeStepIngredientID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
@@ -304,16 +309,19 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	// update the recipe step ingredient.
 	recipeStepIngredient.Update(input)
 
+	updateTimer := timing.NewMetric("database").WithDesc("update").Start()
 	if err = s.recipeStepIngredientDataManager.UpdateRecipeStepIngredient(ctx, recipeStepIngredient); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating recipe step ingredients")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	updateTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
 		EventType:            types.RecipeStepIngredientUpdatedCustomerEventType,

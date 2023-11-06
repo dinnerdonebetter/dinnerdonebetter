@@ -134,6 +134,7 @@ func (s *service) ReadMealHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.MealIDKey, mealID)
 
 	// fetch meal from database.
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	x, err := s.mealDataManager.GetMeal(ctx, mealID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
@@ -145,6 +146,7 @@ func (s *service) ReadMealHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	responseValue := &types.APIResponse[*types.Meal]{
 		Details: responseDetails,
@@ -186,6 +188,7 @@ func (s *service) ListMealsHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	meals, err := s.mealDataManager.GetMeals(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
@@ -196,6 +199,7 @@ func (s *service) ListMealsHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	responseValue := &types.APIResponse[[]*types.Meal]{
 		Details:    responseDetails,
@@ -247,6 +251,8 @@ func (s *service) SearchMealsHandler(res http.ResponseWriter, req *http.Request)
 	meals := &types.QueryFilteredResult[types.Meal]{
 		Pagination: filter.ToPagination(),
 	}
+
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	if useDB {
 		meals, err = s.mealDataManager.SearchForMeals(ctx, query, filter)
 	} else {
@@ -279,6 +285,7 @@ func (s *service) SearchMealsHandler(res http.ResponseWriter, req *http.Request)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	responseValue := &types.APIResponse[[]*types.Meal]{
 		Details:    responseDetails,

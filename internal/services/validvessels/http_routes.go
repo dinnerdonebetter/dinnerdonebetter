@@ -134,6 +134,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.ValidVesselIDKey, validVesselID)
 
 	// fetch valid vessel from database.
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	x, err := s.validVesselDataManager.GetValidVessel(ctx, validVesselID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrDataNotFound, responseDetails)
@@ -145,6 +146,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	responseValue := &types.APIResponse[*types.ValidVessel]{
 		Details: responseDetails,
@@ -187,6 +189,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
 
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	validVessels, err := s.validVesselDataManager.GetValidVessels(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
@@ -197,6 +200,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	responseValue := &types.APIResponse[[]*types.ValidVessel]{
 		Details:    responseDetails,
@@ -248,7 +252,9 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 
 	var validVessels []*types.ValidVessel
 	if useDB {
+		readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 		validVessels, err = s.validVesselDataManager.SearchForValidVessels(ctx, query)
+		readTimer.Stop()
 	} else {
 		var validVesselSubsets []*types.ValidVesselSearchSubset
 		validVesselSubsets, err = s.searchIndex.Search(ctx, query)
@@ -264,7 +270,9 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 			ids = append(ids, validVesselSubset.ID)
 		}
 
+		readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 		validVessels, err = s.validVesselDataManager.GetValidVesselsWithIDs(ctx, ids)
+		readTimer.Stop()
 	}
 
 	if errors.Is(err, sql.ErrNoRows) {

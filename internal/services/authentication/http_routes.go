@@ -60,6 +60,7 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 		ctx, span := s.tracer.StartSpan(req.Context())
 		defer span.End()
 
+		timing := servertiming.FromContext(ctx)
 		logger := s.logger.WithRequest(req)
 		tracing.AttachRequestToSpan(span, req)
 
@@ -102,19 +103,21 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 			userFunc = s.userDataManager.GetAdminUserByUsername
 		}
 
+		readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 		user, err := userFunc(ctx, loginData.Username)
 		if err != nil || user == nil {
+			observability.AcknowledgeError(err, logger, span, "fetching user")
 			if errors.Is(err, sql.ErrNoRows) {
 				errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 				s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 				return
 			}
 
-			observability.AcknowledgeError(err, logger, span, "fetching user")
 			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 			return
 		}
+		readTimer.Stop()
 
 		logger = logger.WithValue(keys.UserIDKey, user.ID)
 		tracing.AttachUserToSpan(span, user)

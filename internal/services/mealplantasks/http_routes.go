@@ -142,6 +142,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.MealPlanTaskIDKey, mealPlanTaskID)
 
 	// fetch meal plan task from database.
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	x, err := s.mealPlanTaskDataManager.GetMealPlanTask(ctx, mealPlanTaskID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
@@ -153,6 +154,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	responseValue := &types.APIResponse[*types.MealPlanTask]{
 		Details: responseDetails,
@@ -199,6 +201,7 @@ func (s *service) ListByMealPlanHandler(res http.ResponseWriter, req *http.Reque
 	tracing.AttachToSpan(span, keys.MealPlanIDKey, mealPlanID)
 	logger = logger.WithValue(keys.MealPlanIDKey, mealPlanID)
 
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	mealPlanTasks, err := s.mealPlanTaskDataManager.GetMealPlanTasksForMealPlan(ctx, mealPlanID)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
@@ -209,6 +212,7 @@ func (s *service) ListByMealPlanHandler(res http.ResponseWriter, req *http.Reque
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	responseValue := &types.APIResponse[[]*types.MealPlanTask]{
 		Details: responseDetails,
@@ -258,7 +262,7 @@ func (s *service) StatusChangeHandler(res http.ResponseWriter, req *http.Request
 
 	// read parsed input struct from request body.
 	providedInput := new(types.MealPlanTaskStatusChangeRequestInput)
-	if err := s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
+	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request")
 		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
@@ -266,28 +270,30 @@ func (s *service) StatusChangeHandler(res http.ResponseWriter, req *http.Request
 	}
 	providedInput.ID = mealPlanTaskID
 
-	if err := providedInput.ValidateWithContext(ctx); err != nil {
+	if err = providedInput.ValidateWithContext(ctx); err != nil {
 		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
 		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
 		return
 	}
 
-	mealPlanTask, fetchMealPlanTaskErr := s.mealPlanTaskDataManager.GetMealPlanTask(ctx, mealPlanTaskID)
-	if fetchMealPlanTaskErr != nil && !errors.Is(fetchMealPlanTaskErr, sql.ErrNoRows) {
-		observability.AcknowledgeError(fetchMealPlanTaskErr, logger, span, "checking meal plan task existence")
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
+	mealPlanTask, err := s.mealPlanTaskDataManager.GetMealPlanTask(ctx, mealPlanTaskID)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		observability.AcknowledgeError(err, logger, span, "checking meal plan task existence")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
-	} else if errors.Is(fetchMealPlanTaskErr, sql.ErrNoRows) {
+	} else if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 		return
 	}
+	readTimer.Stop()
 
 	mealPlanTask.Update(providedInput)
 
-	if err := s.mealPlanTaskDataManager.ChangeMealPlanTaskStatus(ctx, providedInput); err != nil {
+	if err = s.mealPlanTaskDataManager.ChangeMealPlanTaskStatus(ctx, providedInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving meal plan task")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
@@ -302,7 +308,7 @@ func (s *service) StatusChangeHandler(res http.ResponseWriter, req *http.Request
 		UserID:         sessionCtxData.Requester.UserID,
 	}
 
-	if err := s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
 		observability.AcknowledgeError(err, logger, span, "publishing data change message")
 	}
 

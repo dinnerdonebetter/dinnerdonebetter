@@ -47,9 +47,11 @@ func (s *service) validateCredentialsForUpdateRequest(ctx context.Context, userI
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithValue(keys.UserIDKey, userID)
 
 	// fetch user data.
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	user, err := s.userDataManager.GetUser(ctx, userID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -59,6 +61,7 @@ func (s *service) validateCredentialsForUpdateRequest(ctx context.Context, userI
 		logger.Error(err, "error encountered fetching user")
 		return nil, http.StatusInternalServerError
 	}
+	readTimer.Stop()
 
 	if user.TwoFactorSecretVerifiedAt != nil && totpToken == "" {
 		return nil, http.StatusResetContent
@@ -219,6 +222,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	var invitation *types.HouseholdInvitation
 	if registrationInput.InvitationID != "" && registrationInput.InvitationToken != "" {
+		readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 		i, err := s.householdInvitationDataManager.GetHouseholdInvitationByTokenAndID(ctx, registrationInput.InvitationToken, registrationInput.InvitationID)
 		if errors.Is(err, sql.ErrNoRows) {
 			errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
@@ -230,6 +234,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 			return
 		}
+		readTimer.Stop()
 
 		invitation = i
 		logger = logger.WithValue(keys.HouseholdInvitationIDKey, invitation.ID)
@@ -293,6 +298,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	logger.Debug("user created")
 
+	readTimer := timing.NewMetric("database").WithDesc("get default household").Start()
 	defaultHouseholdID, err := s.householdUserMembershipDataManager.GetDefaultHouseholdIDForUser(ctx, user.ID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching default household ID for user")
@@ -300,13 +306,16 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
+	readTimer = timing.NewMetric("database").WithDesc("get token").Start()
 	emailVerificationToken, emailVerificationTokenErr := s.userDataManager.GetEmailAddressVerificationTokenForUser(ctx, user.ID)
 	if emailVerificationTokenErr != nil {
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	// notify the relevant parties.
 	tracing.AttachToSpan(span, keys.UserIDKey, user.ID)
@@ -430,6 +439,7 @@ func (s *service) SelfHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachToSpan(span, keys.RequesterIDKey, requester)
 
 	// fetch user data.
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	user, err := s.userDataManager.GetUser(ctx, requester)
 	if errors.Is(err, sql.ErrNoRows) {
 		logger.Debug("no such user")
@@ -442,6 +452,7 @@ func (s *service) SelfHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	responseValue := &types.APIResponse[*types.User]{
 		Details: responseDetails,
@@ -584,6 +595,7 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 
 	logger = logger.WithValue(keys.UserIDKey, input.UserID)
 
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	user, err := s.userDataManager.GetUserWithUnverifiedTwoFactorSecret(ctx, input.UserID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching user to verify two factor secret")
@@ -591,6 +603,7 @@ func (s *service) TOTPSecretVerificationHandler(res http.ResponseWriter, req *ht
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	tracing.AttachToSpan(span, keys.UserIDKey, user.ID)
 	tracing.AttachToSpan(span, keys.UsernameKey, user.Username)
@@ -679,18 +692,20 @@ func (s *service) NewTOTPSecretHandler(res http.ResponseWriter, req *http.Reques
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// fetch user
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	user, err := s.userDataManager.GetUser(ctx, sessionCtxData.Requester.UserID)
 	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "fetching user from database")
 		if errors.Is(err, sql.ErrNoRows) {
 			errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 			return
 		}
-		observability.AcknowledgeError(err, logger, span, "fetching user from database")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	if user.TwoFactorSecretVerifiedAt != nil {
 		// validate login.
@@ -837,12 +852,14 @@ func (s *service) UpdatePasswordHandler(res http.ResponseWriter, req *http.Reque
 	}
 
 	// update the user.
+	updateTimer := timing.NewMetric("database").WithDesc("update").Start()
 	if err = s.userDataManager.UpdateUserPassword(ctx, user.ID, newPasswordHash); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating user")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	updateTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
 		EventType: types.PasswordChangedEventType,
@@ -922,12 +939,14 @@ func (s *service) UpdateUserEmailAddressHandler(res http.ResponseWriter, req *ht
 	}
 
 	// update the user.
+	updateTimer := timing.NewMetric("database").WithDesc("update").Start()
 	if err = s.userDataManager.UpdateUserEmailAddress(ctx, user.ID, input.NewEmailAddress); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating user")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	updateTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
 		EventType: types.EmailAddressChangedEventType,
@@ -1005,12 +1024,14 @@ func (s *service) UpdateUserUsernameHandler(res http.ResponseWriter, req *http.R
 	}
 
 	// update the user.
+	updateTimer := timing.NewMetric("database").WithDesc("update").Start()
 	if err = s.userDataManager.UpdateUserUsername(ctx, user.ID, input.NewUsername); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating user")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	updateTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
 		EventType: types.UsernameChangedEventType,
@@ -1089,12 +1110,14 @@ func (s *service) UpdateUserDetailsHandler(res http.ResponseWriter, req *http.Re
 	dbInput := converters.ConvertUserDetailsUpdateRequestInputToUserDetailsUpdateInput(providedInput)
 
 	// update the user.
+	updateTimer := timing.NewMetric("database").WithDesc("update").Start()
 	if err = s.userDataManager.UpdateUserDetails(ctx, user.ID, dbInput); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating user")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	updateTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
 		EventType: types.UserDetailsChangedEventType,
@@ -1149,6 +1172,7 @@ func (s *service) AvatarUploadHandler(res http.ResponseWriter, req *http.Request
 	logger = sessionCtxData.AttachToLogger(logger)
 	logger.Debug("session context data extracted")
 
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	user, err := s.userDataManager.GetUser(ctx, sessionCtxData.Requester.UserID)
 	if err != nil {
 		observability.AcknowledgeError(err, logger, span, "fetching associated user")
@@ -1156,16 +1180,19 @@ func (s *service) AvatarUploadHandler(res http.ResponseWriter, req *http.Request
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	logger = logger.WithValue(keys.UserIDKey, user.ID)
 	logger.Debug("retrieved user from database")
 
+	updateTimer := timing.NewMetric("database").WithDesc("update").Start()
 	if err = s.userDataManager.UpdateUserAvatar(ctx, user.ID, input.Base64EncodedData); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating user info")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	updateTimer.Stop()
 
 	responseValue := &types.APIResponse[*types.User]{
 		Details: responseDetails,
@@ -1267,6 +1294,7 @@ func (s *service) RequestUsernameReminderHandler(res http.ResponseWriter, req *h
 		return
 	}
 
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	u, err := s.userDataManager.GetUserByEmail(ctx, input.EmailAddress)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("no such user found", types.ErrDataNotFound, responseDetails)
@@ -1278,6 +1306,7 @@ func (s *service) RequestUsernameReminderHandler(res http.ResponseWriter, req *h
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
 		EventType: types.UsernameReminderRequestedEventType,
@@ -1333,6 +1362,7 @@ func (s *service) CreatePasswordResetTokenHandler(res http.ResponseWriter, req *
 		return
 	}
 
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	u, err := s.userDataManager.GetUserByEmail(ctx, input.EmailAddress)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("user not found", types.ErrDataNotFound, responseDetails)
@@ -1344,6 +1374,7 @@ func (s *service) CreatePasswordResetTokenHandler(res http.ResponseWriter, req *
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	dbInput := &types.PasswordResetTokenDatabaseCreationInput{
 		ID:            identifiers.New(),
@@ -1409,6 +1440,7 @@ func (s *service) PasswordResetTokenRedemptionHandler(res http.ResponseWriter, r
 		return
 	}
 
+	readTimer := timing.NewMetric("database").WithDesc("fetch password reset token").Start()
 	t, err := s.passwordResetTokenDataManager.GetPasswordResetTokenByToken(ctx, input.Token)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrDataNotFound, responseDetails)
@@ -1420,7 +1452,9 @@ func (s *service) PasswordResetTokenRedemptionHandler(res http.ResponseWriter, r
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
+	readTimer = timing.NewMetric("database").WithDesc("fetch user").Start()
 	u, err := s.userDataManager.GetUser(ctx, t.BelongsToUser)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -1434,6 +1468,7 @@ func (s *service) PasswordResetTokenRedemptionHandler(res http.ResponseWriter, r
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	// ensure the password isn't garbage-tier
 	if err = passwordvalidator.Validate(strings.TrimSpace(input.NewPassword), minimumPasswordEntropy); err != nil {
@@ -1453,31 +1488,35 @@ func (s *service) PasswordResetTokenRedemptionHandler(res http.ResponseWriter, r
 	}
 
 	// update the user.
+	updateTimer := timing.NewMetric("database").WithDesc("update").Start()
 	if err = s.userDataManager.UpdateUserPassword(ctx, u.ID, newPasswordHash); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
-			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
-			return
-		}
-
 		observability.AcknowledgeError(err, logger, span, "updating user")
-		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
-		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
-		return
-	}
-
-	if redemptionErr := s.passwordResetTokenDataManager.RedeemPasswordResetToken(ctx, t.ID); redemptionErr != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
 			return
 		}
 
-		observability.AcknowledgeError(err, logger, span, "redeeming password reset token")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	updateTimer.Stop()
+
+	redeemTimer := timing.NewMetric("database").WithDesc("redeem password reset token").Start()
+	if redemptionErr := s.passwordResetTokenDataManager.RedeemPasswordResetToken(ctx, t.ID); redemptionErr != nil {
+		observability.AcknowledgeError(err, logger, span, "redeeming password reset token")
+		if errors.Is(err, sql.ErrNoRows) {
+			errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
+			return
+		}
+
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
+		return
+	}
+	redeemTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
 		EventType: types.PasswordResetTokenRedeemedEventType,
@@ -1525,6 +1564,7 @@ func (s *service) VerifyUserEmailAddressHandler(res http.ResponseWriter, req *ht
 		return
 	}
 
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	user, err := s.userDataManager.GetUserByEmailAddressVerificationToken(ctx, input.Token)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -1538,6 +1578,7 @@ func (s *service) VerifyUserEmailAddressHandler(res http.ResponseWriter, req *ht
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	if err = s.userDataManager.MarkUserEmailAddressAsVerified(ctx, user.ID, input.Token); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -1591,6 +1632,7 @@ func (s *service) RequestEmailVerificationEmailHandler(res http.ResponseWriter, 
 	}
 	sessionContextTimer.Stop()
 
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	verificationToken, err := s.userDataManager.GetEmailAddressVerificationTokenForUser(ctx, sessionCtxData.Requester.UserID)
 	if err != nil && errors.Is(err, sql.ErrNoRows) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, nil, http.StatusAccepted)
@@ -1601,6 +1643,7 @@ func (s *service) RequestEmailVerificationEmailHandler(res http.ResponseWriter, 
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
 		EventType:              types.UserEmailAddressVerificationEmailRequestedEventType,

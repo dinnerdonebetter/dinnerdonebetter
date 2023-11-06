@@ -341,12 +341,14 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	// update the valid ingredient state.
 	validIngredientState.Update(input)
 
+	updateTimer := timing.NewMetric("database").WithDesc("update").Start()
 	if err = s.validIngredientStateDataManager.UpdateValidIngredientState(ctx, validIngredientState); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating valid ingredient states")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	updateTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
 		EventType:            types.ValidIngredientStateUpdatedCustomerEventType,

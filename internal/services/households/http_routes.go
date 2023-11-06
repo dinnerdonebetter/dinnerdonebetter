@@ -57,6 +57,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 
 	filter.AttachToLogger(logger)
 
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	households, err := s.householdDataManager.GetHouseholds(ctx, requester, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
@@ -67,6 +68,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	responseValue := &types.APIResponse[[]*types.Household]{
 		Details:    responseDetails,
@@ -210,6 +212,7 @@ func (s *service) CurrentInfoHandler(res http.ResponseWriter, req *http.Request)
 	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	// fetch household from database.
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	household, err := s.householdDataManager.GetHousehold(ctx, householdID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
@@ -221,6 +224,7 @@ func (s *service) CurrentInfoHandler(res http.ResponseWriter, req *http.Request)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	logger.Debug("responding with current household info")
 
@@ -266,6 +270,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	// fetch household from database.
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	household, err := s.householdDataManager.GetHousehold(ctx, householdID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
@@ -277,6 +282,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	admins := []*types.HouseholdUserMembershipWithUser{}
 	plainUsers := []*types.HouseholdUserMembershipWithUser{}
@@ -354,6 +360,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	// fetch household from database.
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	household, err := s.householdDataManager.GetHousehold(ctx, householdID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
@@ -365,17 +372,20 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	// update the data structure.
 	household.Update(input)
 
 	// update household in database.
+	updateTimer := timing.NewMetric("database").WithDesc("update").Start()
 	if err = s.householdDataManager.UpdateHousehold(ctx, household); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating household")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	updateTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
 		EventType:   types.HouseholdUpdatedCustomerEventType,

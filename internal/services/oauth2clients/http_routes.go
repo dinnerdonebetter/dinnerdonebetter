@@ -162,6 +162,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.OAuth2ClientIDKey, oauth2ClientID)
 
 	// fetch OAuth2 client from database.
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	x, err := s.oauth2ClientDataManager.GetOAuth2ClientByDatabaseID(ctx, oauth2ClientID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
@@ -173,6 +174,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	responseValue := &types.APIResponse[*types.OAuth2Client]{
 		Details: responseDetails,
@@ -215,6 +217,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 
 	// fetch OAuth2 clients.
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	oauth2Clients, err := s.oauth2ClientDataManager.GetOAuth2Clients(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// just return an empty list if there are no results.
@@ -227,6 +230,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	responseValue := &types.APIResponse[[]*types.OAuth2Client]{
 		Details:    responseDetails,

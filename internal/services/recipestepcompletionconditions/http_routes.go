@@ -308,12 +308,14 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	// update the recipe step completion condition.
 	recipeStepCompletionCondition.Update(input)
 
+	updateTimer := timing.NewMetric("database").WithDesc("update").Start()
 	if err = s.recipeStepCompletionConditionDataManager.UpdateRecipeStepCompletionCondition(ctx, recipeStepCompletionCondition); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating recipe step completion conditions")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	updateTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
 		EventType:                     types.RecipeStepCompletionConditionUpdatedCustomerEventType,

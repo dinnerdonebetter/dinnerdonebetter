@@ -159,6 +159,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
 
 	// fetch recipe prep task from database.
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	x, err := s.recipePrepTaskDataManager.GetRecipePrepTask(ctx, recipeID, recipePrepTaskID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
@@ -170,6 +171,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	responseValue := &types.APIResponse[*types.RecipePrepTask]{
 		Details: responseDetails,
@@ -216,6 +218,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	recipePrepTasks, err := s.recipePrepTaskDataManager.GetRecipePrepTasksForRecipe(ctx, recipeID)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
@@ -226,6 +229,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	responseValue := &types.APIResponse[[]*types.RecipePrepTask]{
 		Details: responseDetails,
@@ -290,6 +294,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	logger = logger.WithValue(keys.RecipePrepTaskIDKey, recipePrepTaskID)
 
 	// fetch recipe prep task from database.
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	recipePrepTask, err := s.recipePrepTaskDataManager.GetRecipePrepTask(ctx, recipeID, recipePrepTaskID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
@@ -301,16 +306,19 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	readTimer.Stop()
 
 	// update the recipe prep task.
 	recipePrepTask.Update(input)
 
+	updateTimer := timing.NewMetric("database").WithDesc("update").Start()
 	if err = s.recipePrepTaskDataManager.UpdateRecipePrepTask(ctx, recipePrepTask); err != nil {
 		observability.AcknowledgeError(err, logger, span, "updating recipe prep task")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
 		return
 	}
+	updateTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
 		EventType:      types.RecipePrepTaskUpdatedCustomerEventType,
