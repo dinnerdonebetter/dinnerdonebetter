@@ -50,6 +50,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// read parsed input struct from request body.
 	providedInput := new(types.ValidIngredientStateIngredientCreationRequestInput)
@@ -126,6 +127,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// determine valid ingredient state ingredient ID.
 	validIngredientStateIngredientID := s.validIngredientStateIngredientIDFetcher(req)
@@ -184,6 +186,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	validIngredientStateIngredients, err := s.validIngredientStateIngredientDataManager.GetValidIngredientStateIngredients(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
@@ -232,6 +235,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// check for parsed input attached to session context data.
 	input := new(types.ValidIngredientStateIngredientUpdateRequestInput)
@@ -324,6 +328,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// determine valid ingredient state ingredient ID.
 	validIngredientStateIngredientID := s.validIngredientStateIngredientIDFetcher(req)
@@ -403,6 +408,7 @@ func (s *service) SearchByIngredientHandler(res http.ResponseWriter, req *http.R
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	validIngredientStateIngredients, err := s.validIngredientStateIngredientDataManager.GetValidIngredientStateIngredientsForIngredient(ctx, validIngredientID, filter)
 	if err != nil {
@@ -454,6 +460,7 @@ func (s *service) SearchByIngredientStateHandler(res http.ResponseWriter, req *h
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	validIngredientStateIngredients, err := s.validIngredientStateIngredientDataManager.GetValidIngredientStateIngredientsForIngredientState(ctx, validIngredientStateID, filter)
 	if err != nil {

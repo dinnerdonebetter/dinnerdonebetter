@@ -47,6 +47,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// read parsed input struct from request body.
 	providedInput := new(types.ValidIngredientStateCreationRequestInput)
@@ -123,6 +124,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// determine valid ingredient state ID.
 	validIngredientStateID := s.validIngredientStateIDFetcher(req)
@@ -181,6 +183,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	validIngredientStates, err := s.validIngredientStateDataManager.GetValidIngredientStates(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
@@ -303,6 +306,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// check for parsed input attached to session context data.
 	input := new(types.ValidIngredientStateUpdateRequestInput)
@@ -395,6 +399,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// determine valid ingredient state ID.
 	validIngredientStateID := s.validIngredientStateIDFetcher(req)

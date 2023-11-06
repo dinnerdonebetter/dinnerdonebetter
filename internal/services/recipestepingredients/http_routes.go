@@ -46,6 +46,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// read parsed input struct from request body.
 	providedInput := new(types.RecipeStepIngredientCreationRequestInput)
@@ -134,6 +135,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
@@ -204,6 +206,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)
@@ -264,6 +267,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// check for parsed input attached to session context data.
 	input := new(types.RecipeStepIngredientUpdateRequestInput)
@@ -369,6 +373,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// determine recipe ID.
 	recipeID := s.recipeIDFetcher(req)

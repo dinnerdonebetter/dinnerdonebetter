@@ -50,6 +50,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// read parsed input struct from request body.
 	providedInput := new(types.ValidPreparationInstrumentCreationRequestInput)
@@ -126,6 +127,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// determine valid preparation instrument ID.
 	validPreparationInstrumentID := s.validPreparationInstrumentIDFetcher(req)
@@ -184,6 +186,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	validPreparationInstruments, err := s.validPreparationInstrumentDataManager.GetValidPreparationInstruments(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
@@ -232,6 +235,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// check for parsed input attached to session context data.
 	input := new(types.ValidPreparationInstrumentUpdateRequestInput)
@@ -324,6 +328,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// determine valid preparation instrument ID.
 	validPreparationInstrumentID := s.validPreparationInstrumentIDFetcher(req)
@@ -402,6 +407,7 @@ func (s *service) SearchByPreparationHandler(res http.ResponseWriter, req *http.
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	validPreparationInstruments, err := s.validPreparationInstrumentDataManager.GetValidPreparationInstrumentsForPreparation(ctx, validPreparationID, filter)
 	if err != nil {
@@ -453,6 +459,7 @@ func (s *service) SearchByInstrumentHandler(res http.ResponseWriter, req *http.R
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	validPreparationInstruments, err := s.validPreparationInstrumentDataManager.GetValidPreparationInstrumentsForInstrument(ctx, validInstrumentID, filter)
 	if err != nil {

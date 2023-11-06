@@ -51,6 +51,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// fetch creation input from session context data.
 	input := new(types.OAuth2ClientCreationRequestInput)
@@ -155,6 +156,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// determine OAuth2 client ID.
 	oauth2ClientID := s.urlClientIDExtractor(req)
@@ -215,6 +217,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// fetch OAuth2 clients.
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
@@ -268,6 +271,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// determine OAuth2 client ID.
 	oauth2ClientID := s.urlClientIDExtractor(req)

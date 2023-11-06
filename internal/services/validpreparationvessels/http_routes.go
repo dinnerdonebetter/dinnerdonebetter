@@ -50,6 +50,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// read parsed input struct from request body.
 	providedInput := new(types.ValidPreparationVesselCreationRequestInput)
@@ -126,6 +127,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// determine valid preparation vessel ID.
 	validPreparationVesselID := s.validPreparationVesselIDFetcher(req)
@@ -184,6 +186,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	validPreparationVessels, err := s.validPreparationVesselDataManager.GetValidPreparationVessels(ctx, filter)
 	if errors.Is(err, sql.ErrNoRows) {
@@ -232,6 +235,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// check for parsed input attached to session context data.
 	input := new(types.ValidPreparationVesselUpdateRequestInput)
@@ -324,6 +328,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// determine valid preparation vessel ID.
 	validPreparationVesselID := s.validPreparationVesselIDFetcher(req)
@@ -401,6 +406,7 @@ func (s *service) SearchByPreparationHandler(res http.ResponseWriter, req *http.
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	validPreparationVessels, err := s.validPreparationVesselDataManager.GetValidPreparationVesselsForPreparation(ctx, validPreparationID, filter)
 	if err != nil {
@@ -453,6 +459,7 @@ func (s *service) SearchByVesselHandler(res http.ResponseWriter, req *http.Reque
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	validPreparationVessels, err := s.validPreparationVesselDataManager.GetValidPreparationVesselsForVessel(ctx, validVesselID, filter)
 	if err != nil {

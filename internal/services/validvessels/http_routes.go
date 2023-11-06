@@ -45,9 +45,9 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 	sessionContextTimer.Stop()
 
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// read parsed input struct from request body.
 	decodeTimer := timing.NewMetric("decode").WithDesc("decode input").Start()
@@ -124,9 +124,9 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	}
 	sessionContextTimer.Stop()
 
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// determine valid vessel ID.
 	validVesselID := s.validVesselIDFetcher(req)
@@ -185,9 +185,9 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	}
 	sessionContextTimer.Stop()
 
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	validVessels, err := s.validVesselDataManager.GetValidVessels(ctx, filter)
@@ -246,9 +246,9 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	}
 	sessionContextTimer.Stop()
 
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	var validVessels []*types.ValidVessel
 	if useDB {
@@ -318,9 +318,9 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	}
 	sessionContextTimer.Stop()
 
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// check for parsed input attached to session context data.
 	decodeTimer := timing.NewMetric("decode").WithDesc("decode input").Start()
@@ -415,9 +415,9 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	}
 	sessionContextTimer.Stop()
 
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// determine valid vessel ID.
 	validVesselID := s.validVesselIDFetcher(req)
@@ -488,9 +488,9 @@ func (s *service) RandomHandler(res http.ResponseWriter, req *http.Request) {
 	}
 	sessionContextTimer.Stop()
 
-	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// fetch valid vessel from database.
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()

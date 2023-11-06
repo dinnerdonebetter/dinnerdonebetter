@@ -17,7 +17,7 @@ func (s *service) IncomingWebhookHandler(res http.ResponseWriter, req *http.Requ
 	logger := s.logger.WithRequest(req)
 	tracing.AttachRequestToSpan(span, req)
 
-	webhookHandleTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
+	webhookHandleTimer := timing.NewMetric("handler").WithDesc("handle webhook event").Start()
 	statusToWrite := http.StatusOK
 	if err := s.paymentManager.HandleEventWebhook(req); err != nil {
 		logger.Error(err, "handling subscription event webhook")

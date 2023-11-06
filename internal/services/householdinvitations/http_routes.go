@@ -51,6 +51,7 @@ func (s *service) InviteMemberHandler(res http.ResponseWriter, req *http.Request
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	userID := sessionCtxData.Requester.UserID
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
@@ -166,8 +167,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
-
-	// determine relevant household invitation ID.
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID // determine relevant household invitation ID.
 	householdInvitationID := s.householdInvitationIDFetcher(req)
 	tracing.AttachToSpan(span, keys.HouseholdInvitationIDKey, householdInvitationID)
 	logger = logger.WithValue(keys.HouseholdInvitationIDKey, householdInvitationID)

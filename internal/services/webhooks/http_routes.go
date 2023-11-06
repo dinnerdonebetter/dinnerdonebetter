@@ -50,6 +50,7 @@ func (s *service) CreateWebhookHandler(res http.ResponseWriter, req *http.Reques
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	providedInput := new(types.WebhookCreationRequestInput)
 	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
@@ -130,6 +131,7 @@ func (s *service) ListWebhooksHandler(res http.ResponseWriter, req *http.Request
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// find the webhooks.
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
@@ -184,6 +186,7 @@ func (s *service) ReadWebhookHandler(res http.ResponseWriter, req *http.Request)
 
 	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
 	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
 	// determine relevant webhook ID.
 	webhookID := s.webhookIDFetcher(req)
