@@ -62,7 +62,9 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 
 		// handle cookies if relevant.
 		cookieTimer := timing.NewMetric("cookie fetch").WithDesc("decoding cookie from request").Start()
-		if cookieContext, userID, err := s.getUserIDFromCookie(ctx, req); err == nil && userID != "" {
+		cookieContext, userID, err := s.getUserIDFromCookie(ctx, req)
+		cookieTimer.Stop()
+		if err == nil && userID != "" {
 			ctx = cookieContext
 
 			tracing.AttachToSpan(span, keys.RequesterIDKey, userID)
@@ -81,7 +83,6 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 			next.ServeHTTP(res, req.WithContext(context.WithValue(ctx, types.SessionContextDataKey, sessionCtxData)))
 			return
 		}
-		cookieTimer.Stop()
 
 		// validate bearer token.
 		tokenTimer := timing.NewMetric("token validation").WithDesc("validating bearer token from request").Start()
@@ -92,7 +93,7 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 		tokenTimer.Stop()
 
 		if token != nil {
-			if userID := token.GetUserID(); userID != "" {
+			if userID = token.GetUserID(); userID != "" {
 				userAttributionTimer := timing.NewMetric("user attribution").WithDesc("attributing user to request").Start()
 				sessionCtxData, sessionCtxDataErr := s.householdMembershipManager.BuildSessionContextDataForUser(ctx, userID)
 				if sessionCtxDataErr != nil {
