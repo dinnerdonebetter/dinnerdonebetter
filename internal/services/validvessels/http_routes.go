@@ -160,10 +160,9 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	filter := types.ExtractQueryFilterFromRequest(req)
-
 	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req)
+	filter := types.ExtractQueryFilterFromRequest(req)
 	logger = filter.AttachToLogger(logger)
 
 	responseDetails := types.ResponseDetails{
@@ -214,19 +213,19 @@ func (s *service) SearchHandler(res http.ResponseWriter, req *http.Request) {
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.SearchWithDatabaseQueryKey))) == "true"
+	timing := servertiming.FromContext(ctx)
+	logger := s.logger.WithRequest(req)
+
+	filter := types.ExtractQueryFilterFromRequest(req)
+	logger = filter.AttachToLogger(logger)
+	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
 
 	query := req.URL.Query().Get(types.SearchQueryKey)
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
+	logger = logger.WithValue(keys.SearchQueryKey, query)
 
-	filter := types.ExtractQueryFilterFromRequest(req)
-	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
-
-	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req).
-		WithValue(keys.SearchQueryKey, query).
-		WithValue("using_database", useDB)
-	logger = filter.AttachToLogger(logger)
+	useDB := !s.cfg.UseSearchService || strings.TrimSpace(strings.ToLower(req.URL.Query().Get(types.SearchWithDatabaseQueryKey))) == "true"
+	logger = logger.WithValue("using_database", useDB)
 
 	responseDetails := types.ResponseDetails{
 		TraceID: span.SpanContext().TraceID().String(),
