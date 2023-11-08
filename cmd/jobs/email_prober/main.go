@@ -16,6 +16,7 @@ import (
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
+	_ "github.com/KimMachineGun/automemlimit"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel"
 	_ "go.uber.org/automaxprocs"

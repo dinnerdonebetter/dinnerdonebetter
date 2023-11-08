@@ -16,6 +16,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/server/http/build"
 
 	secretmanager "cloud.google.com/go/secretmanager/apiv1"
+	_ "github.com/KimMachineGun/automemlimit"
 	_ "go.uber.org/automaxprocs"
 )
 
