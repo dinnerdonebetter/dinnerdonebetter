@@ -61,7 +61,7 @@ func (s *service) BuildLoginHandler(adminOnly bool) func(http.ResponseWriter, *h
 		defer span.End()
 
 		timing := servertiming.FromContext(ctx)
-		logger := s.logger.WithRequest(req)
+		logger := s.logger.WithRequest(req).WithSpan(span)
 		tracing.AttachRequestToSpan(span, req)
 
 		responseDetails := types.ResponseDetails{
@@ -242,7 +242,7 @@ func (s *service) SSOLoginHandler(res http.ResponseWriter, req *http.Request) {
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
 	responseDetails := types.ResponseDetails{
@@ -297,7 +297,7 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
 	responseDetails := types.ResponseDetails{
@@ -428,7 +428,7 @@ func (s *service) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *htt
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
 	responseDetails := types.ResponseDetails{
@@ -529,7 +529,7 @@ func (s *service) EndSessionHandler(res http.ResponseWriter, req *http.Request) 
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
 	responseDetails := types.ResponseDetails{
@@ -607,7 +607,7 @@ func (s *service) StatusHandler(res http.ResponseWriter, req *http.Request) {
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
 	responseDetails := types.ResponseDetails{
@@ -648,7 +648,7 @@ func (s *service) CycleCookieSecretHandler(res http.ResponseWriter, req *http.Re
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
 	responseDetails := types.ResponseDetails{

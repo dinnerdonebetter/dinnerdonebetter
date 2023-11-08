@@ -224,7 +224,7 @@ func (c *Client) fetchResponseToRequest(ctx context.Context, client *http.Client
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger.WithRequest(req)
+	logger := c.logger.WithRequest(req).WithSpan(span)
 
 	if command, err := http2curl.GetCurlCommand(req); err == nil && c.debug {
 		logger = logger.WithValue("curl", command.String())
@@ -244,7 +244,7 @@ func (c *Client) executeAndUnmarshal(ctx context.Context, req *http.Request, htt
 	ctx, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := c.logger.WithRequest(req)
+	logger := c.logger.WithRequest(req).WithSpan(span)
 	logger.Debug("executing request")
 
 	res, err := c.fetchResponseToRequest(ctx, httpClient, req)

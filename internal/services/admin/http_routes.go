@@ -24,7 +24,7 @@ func (s *service) UserAccountStatusChangeHandler(res http.ResponseWriter, req *h
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
 	responseDetails := types.ResponseDetails{

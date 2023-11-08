@@ -26,7 +26,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
 	responseDetails := types.ResponseDetails{
@@ -110,7 +110,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
 	responseDetails := types.ResponseDetails{
@@ -180,7 +180,7 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 
 	timing := servertiming.FromContext(ctx)
 	filter := types.ExtractQueryFilterFromRequest(req)
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	logger = filter.AttachToLogger(logger)
 
 	responseDetails := types.ResponseDetails{
@@ -244,7 +244,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
 	responseDetails := types.ResponseDetails{
@@ -350,7 +350,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
 	responseDetails := types.ResponseDetails{

@@ -12,7 +12,7 @@ func (s *service) MealPlanFinalizationHandler(res http.ResponseWriter, req *http
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	logger.Info("meal plan finalization worker invoked")
 
 	responseDetails := types.ResponseDetails{
@@ -62,7 +62,7 @@ func (s *service) MealPlanGroceryListInitializationHandler(res http.ResponseWrit
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	logger.Info("meal plan grocery list initialization worker invoked")
 
 	responseDetails := types.ResponseDetails{
@@ -90,7 +90,7 @@ func (s *service) MealPlanTaskCreationHandler(res http.ResponseWriter, req *http
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	logger.Info("meal plan task creation worker invoked")
 
 	responseDetails := types.ResponseDetails{

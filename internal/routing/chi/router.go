@@ -75,7 +75,7 @@ func buildChiMux(logger logging.Logger, tracer tracing.Tracer, cfg *routing.Conf
 		chimiddleware.RequestID,
 		chimiddleware.RealIP,
 		chimiddleware.Timeout(maxTimeout),
-		buildLoggingMiddleware(logging.EnsureLogger(logger).WithName("router"), cfg.SilenceRouteLogging),
+		buildLoggingMiddleware(logging.EnsureLogger(logger).WithName("router"), tracer, cfg.SilenceRouteLogging),
 		corsHandler.Handler,
 		func(next http.Handler) http.Handler {
 			return servertiming.Middleware(next, nil)

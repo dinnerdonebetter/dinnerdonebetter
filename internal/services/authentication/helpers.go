@@ -30,7 +30,7 @@ func (s *service) getUserIDFromCookie(ctx context.Context, req *http.Request) (c
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithRequest(req).WithValue("cookie", req.Header[s.config.Cookies.Name])
+	logger := s.logger.WithRequest(req).WithSpan(span).WithValue("cookie", req.Header[s.config.Cookies.Name])
 
 	if cookie, cookieErr := req.Cookie(s.config.Cookies.Name); !errors.Is(cookieErr, http.ErrNoCookie) && cookie != nil {
 		var (
@@ -130,7 +130,7 @@ func (s *service) buildLogoutCookie(ctx context.Context, req *http.Request) (*ht
 	ctx, span := s.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 
 	requestedCookieDomain := s.determineCookieDomain(ctx, req)
 	if requestedCookieDomain != "" {

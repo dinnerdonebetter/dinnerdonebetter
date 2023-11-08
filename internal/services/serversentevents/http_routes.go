@@ -16,7 +16,7 @@ func (s *service) StreamSubscriptionHandler(res http.ResponseWriter, req *http.R
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
 	responseDetails := types.ResponseDetails{
