@@ -47,20 +47,20 @@ const (
 	URLKey = "url"
 	// PasswordResetTokenIDKey is the standard key for referring to a password reset token's ID.
 	PasswordResetTokenIDKey = "password_reset_token.id"
-	// RequestHeadersKey is the standard key for referring to an http.Request's Headers.
+	// RequestHeadersKey is the standard key for referring to a http.Request's Headers.
 	RequestHeadersKey = "request.headers"
-	// RequestMethodKey is the standard key for referring to an http.Request's Method.
+	// RequestMethodKey is the standard key for referring to a http.Request's Method.
 	RequestMethodKey = "request.method"
-	// RequestURIKey is the standard key for referring to an http.Request's URI.
+	// RequestURIKey is the standard key for referring to a http.Request's URI.
 	RequestURIKey = "request.uri"
-	// ResponseStatusKey is the standard key for referring to an http.Request's URI.
+	// ResponseStatusKey is the standard key for referring to a http.Request's status.
 	ResponseStatusKey = "response.status"
-	// ResponseHeadersKey is the standard key for referring to an http.Response's Headers.
+	// ResponseBytesWrittenKey is the standard key for referring to a http.Request's bytes written.
+	ResponseBytesWrittenKey = "response.bytes_written"
+	// ResponseHeadersKey is the standard key for referring to a http.Response's Headers.
 	ResponseHeadersKey = "response.headers"
 	// ReasonKey is the standard key for referring to a reason for a change.
 	ReasonKey = "reason"
-	// DatabaseQueryKey is the standard key for referring to a database query.
-	DatabaseQueryKey = "database_query"
 	// URLQueryKey is the standard key for referring to a URL query.
 	URLQueryKey = "url.query"
 	// SearchQueryKey is the standard key for referring to a search query parameter value.
@@ -71,8 +71,6 @@ const (
 	UserAgentBotKey = "is_bot"
 	// UserAgentMobileKey is the standard key for referring to user agent's mobile status.
 	UserAgentMobileKey = "is_mobile"
-	// QueryErrorKey is the standard key for referring to an error building a query.
-	QueryErrorKey = "QUERY_ERROR"
 	// ValidationErrorKey is the standard key for referring to a struct validation error.
 	ValidationErrorKey = "validation_error"
 

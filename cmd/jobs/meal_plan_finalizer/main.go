@@ -18,6 +18,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/workers"
 
+	_ "github.com/KimMachineGun/automemlimit"
 	"go.opentelemetry.io/otel"
 	_ "go.uber.org/automaxprocs"
 )
