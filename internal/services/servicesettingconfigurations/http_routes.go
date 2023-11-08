@@ -28,7 +28,7 @@ func (s *service) CreateHandler(res http.ResponseWriter, req *http.Request) {
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
 	responseDetails := types.ResponseDetails{
@@ -107,7 +107,7 @@ func (s *service) ForUserByNameHandler(res http.ResponseWriter, req *http.Reques
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
 	responseDetails := types.ResponseDetails{
@@ -160,7 +160,7 @@ func (s *service) ForUserHandler(res http.ResponseWriter, req *http.Request) {
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
 	responseDetails := types.ResponseDetails{
@@ -213,7 +213,7 @@ func (s *service) ForHouseholdHandler(res http.ResponseWriter, req *http.Request
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
 	responseDetails := types.ResponseDetails{
@@ -271,7 +271,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
 	responseDetails := types.ResponseDetails{
@@ -364,7 +364,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
 	responseDetails := types.ResponseDetails{

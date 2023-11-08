@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -16,7 +17,8 @@ func TestBuildLoggingMiddleware(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		middleware := buildLoggingMiddleware(logging.NewNoopLogger(), false)
+		tracer := tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer(""))
+		middleware := buildLoggingMiddleware(logging.NewNoopLogger(), tracer, false)
 
 		assert.NotNil(t, middleware)
 
@@ -30,7 +32,8 @@ func TestBuildLoggingMiddleware(T *testing.T) {
 	T.Run("with non-logged route", func(t *testing.T) {
 		t.Parallel()
 
-		middleware := buildLoggingMiddleware(logging.NewNoopLogger(), false)
+		tracer := tracing.NewTracer(tracing.NewNoopTracerProvider().Tracer(""))
+		middleware := buildLoggingMiddleware(logging.NewNoopLogger(), tracer, false)
 
 		assert.NotNil(t, middleware)
 

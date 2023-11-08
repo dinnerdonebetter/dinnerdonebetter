@@ -29,7 +29,7 @@ func (s *service) CreateMealHandler(res http.ResponseWriter, req *http.Request) 
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
 	responseDetails := types.ResponseDetails{
@@ -108,7 +108,7 @@ func (s *service) ReadMealHandler(res http.ResponseWriter, req *http.Request) {
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
 	responseDetails := types.ResponseDetails{
@@ -166,7 +166,7 @@ func (s *service) ListMealsHandler(res http.ResponseWriter, req *http.Request) {
 
 	timing := servertiming.FromContext(ctx)
 	filter := types.ExtractQueryFilterFromRequest(req)
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	logger = filter.AttachToLogger(logger)
 
 	responseDetails := types.ResponseDetails{
@@ -220,7 +220,7 @@ func (s *service) SearchMealsHandler(res http.ResponseWriter, req *http.Request)
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
 	query := req.URL.Query().Get(types.SearchQueryKey)
@@ -307,7 +307,7 @@ func (s *service) ArchiveMealHandler(res http.ResponseWriter, req *http.Request)
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
 	responseDetails := types.ResponseDetails{

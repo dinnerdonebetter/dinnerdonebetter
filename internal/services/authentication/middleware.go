@@ -22,7 +22,7 @@ func (s *service) CookieRequirementMiddleware(next http.Handler) http.Handler {
 		defer span.End()
 
 		timing := servertiming.FromContext(ctx)
-		logger := s.logger.WithRequest(req)
+		logger := s.logger.WithRequest(req).WithSpan(span)
 
 		cookieFetchTimer := timing.NewMetric("cookie fetch").WithDesc("decoding cookie from request").Start()
 		cookie, cookieErr := req.Cookie(s.config.Cookies.Name)
@@ -51,7 +51,7 @@ func (s *service) UserAttributionMiddleware(next http.Handler) http.Handler {
 		defer span.End()
 
 		timing := servertiming.FromContext(ctx)
-		logger := s.logger.WithRequest(req).WithValue("cookie", req.Header[s.config.Cookies.Name])
+		logger := s.logger.WithRequest(req).WithSpan(span).WithValue("cookie", req.Header[s.config.Cookies.Name])
 		for _, cookie := range req.Cookies() {
 			logger = logger.WithValue(fmt.Sprintf("cookie.%s", cookie.Name), cookie.Value)
 		}
@@ -121,7 +121,7 @@ func (s *service) AuthorizationMiddleware(next http.Handler) http.Handler {
 		_, span := s.tracer.StartSpan(req.Context())
 		defer span.End()
 
-		logger := s.logger.WithRequest(req)
+		logger := s.logger.WithRequest(req).WithSpan(span)
 
 		// UserAttributionMiddleware should be called before this middleware.
 		if sessionCtxData, err := s.sessionContextDataFetcher(req); err == nil && sessionCtxData != nil {
@@ -157,7 +157,7 @@ func (s *service) PermissionFilterMiddleware(permissions ...authorization.Permis
 			defer span.End()
 
 			timing := servertiming.FromContext(ctx)
-			logger := s.logger.WithRequest(req)
+			logger := s.logger.WithRequest(req).WithSpan(span)
 			logger.Debug("checking permissions in middleware")
 
 			// check for a session context data first.
@@ -204,7 +204,7 @@ func (s *service) ServiceAdminMiddleware(next http.Handler) http.Handler {
 		ctx, span := s.tracer.StartSpan(req.Context())
 		defer span.End()
 
-		logger := s.logger.WithRequest(req)
+		logger := s.logger.WithRequest(req).WithSpan(span)
 
 		responseDetails := types.ResponseDetails{
 			TraceID: span.SpanContext().TraceID().String(),

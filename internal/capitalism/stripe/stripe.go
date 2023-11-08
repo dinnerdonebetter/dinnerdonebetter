@@ -56,7 +56,7 @@ func (s *stripePaymentManager) HandleEventWebhook(req *http.Request) error {
 	_, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 
 	payload, err := io.ReadAll(req.Body)
 	if err != nil {

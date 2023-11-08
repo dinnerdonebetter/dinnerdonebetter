@@ -30,7 +30,7 @@ func (s *service) CreateWebhookHandler(res http.ResponseWriter, req *http.Reques
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
 	responseDetails := types.ResponseDetails{
@@ -166,7 +166,7 @@ func (s *service) ReadWebhookHandler(res http.ResponseWriter, req *http.Request)
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
 	responseDetails := types.ResponseDetails{
@@ -229,7 +229,7 @@ func (s *service) ArchiveWebhookHandler(res http.ResponseWriter, req *http.Reque
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
 	responseDetails := types.ResponseDetails{

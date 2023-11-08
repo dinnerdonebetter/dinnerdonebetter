@@ -14,7 +14,7 @@ func (s *service) IncomingWebhookHandler(res http.ResponseWriter, req *http.Requ
 	defer span.End()
 
 	timing := servertiming.FromContext(ctx)
-	logger := s.logger.WithRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
 	tracing.AttachRequestToSpan(span, req)
 
 	webhookHandleTimer := timing.NewMetric("handler").WithDesc("handle webhook event").Start()
