@@ -106,7 +106,7 @@ var (
 	devRoutingConfig = routing.Config{
 		Provider:               routing.ChiProvider,
 		EnableCORSForLocalhost: true,
-		SilenceRouteLogging:    true,
+		SilenceRouteLogging:    false,
 	}
 
 	devEnvLogConfig = logcfg.Config{
