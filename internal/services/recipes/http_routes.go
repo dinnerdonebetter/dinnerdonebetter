@@ -157,6 +157,8 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	}
 	readTimer.Stop()
 
+	logger.Info("recipe retrieved")
+
 	responseValue := &types.APIResponse[*types.Recipe]{
 		Details: responseDetails,
 		Data:    x,
