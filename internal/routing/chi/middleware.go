@@ -16,11 +16,6 @@ import (
 	"go.opentelemetry.io/otel/propagation"
 )
 
-var doNotLog = map[string]struct{}{
-	"/_meta_/ready": {}, // ready checks
-	"/metrics":      {}, // metrics scrapes
-}
-
 // buildLoggingMiddleware builds a logging middleware.
 func buildLoggingMiddleware(logger logging.Logger, tracer tracing.Tracer, silenceRouteLogging bool) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
@@ -29,26 +24,16 @@ func buildLoggingMiddleware(logger logging.Logger, tracer tracing.Tracer, silenc
 			defer span.End()
 
 			ww := chimiddleware.NewWrapResponseWriter(res, req.ProtoMajor)
-
 			start := time.Now()
+
 			next.ServeHTTP(ww, req)
 
 			if !silenceRouteLogging {
-				shouldLog := true
-				for route := range doNotLog {
-					if strings.HasPrefix(req.URL.Path, route) || req.URL.Path == route {
-						shouldLog = false
-						break
-					}
-				}
-
-				if shouldLog {
-					logger.WithRequest(req).WithSpan(span).WithValues(map[string]any{
-						"status":  ww.Status(),
-						"elapsed": time.Since(start).Milliseconds(),
-						"written": ww.BytesWritten(),
-					}).Debug("response served")
-				}
+				logger.WithRequest(req).WithSpan(span).WithValues(map[string]any{
+					"status":  ww.Status(),
+					"elapsed": time.Since(start).Milliseconds(),
+					"written": ww.BytesWritten(),
+				}).Debug("response served")
 			}
 		})
 	}
