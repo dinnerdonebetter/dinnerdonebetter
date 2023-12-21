@@ -168,9 +168,6 @@
 		"validPreparationVessels": {
 			"dataChangesTopicName": "data_changes"
 		},
-		"serverSentEvents": {
-			"dataChangesTopicName": "data_changes"
-		},
 		"workers": {
 			"dataChangesTopicName": "data_changes"
 		},

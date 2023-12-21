@@ -63,7 +63,6 @@ var (
 			"ValidVessels",
 			"ValidPreparationVessels",
 			"Workers",
-			"SSE",
 		),
 	)
 )
