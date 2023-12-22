@@ -46,7 +46,6 @@ import (
 	recipestepproductsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepproducts"
 	recipestepsservice "github.com/dinnerdonebetter/backend/internal/services/recipesteps"
 	recipestepvesselsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepvessels"
-	serversenteventsservice "github.com/dinnerdonebetter/backend/internal/services/serversentevents"
 	servicesettingconfigurationsservice "github.com/dinnerdonebetter/backend/internal/services/servicesettingconfigurations"
 	servicesettingsservice "github.com/dinnerdonebetter/backend/internal/services/servicesettings"
 	useringredientpreferencesservice "github.com/dinnerdonebetter/backend/internal/services/useringredientpreferences"
@@ -137,7 +136,6 @@ func Build(
 		validpreparationvesselsservice.Providers,
 		analyticscfg.ProvidersAnalytics,
 		workersservice.Providers,
-		serversenteventsservice.Providers,
 	)
 
 	return nil, nil

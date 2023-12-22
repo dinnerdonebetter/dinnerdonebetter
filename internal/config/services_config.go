@@ -25,7 +25,6 @@ import (
 	recipestepproductsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepproducts"
 	recipestepsservice "github.com/dinnerdonebetter/backend/internal/services/recipesteps"
 	recipestepvesselsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepvessels"
-	serversenteventsservice "github.com/dinnerdonebetter/backend/internal/services/serversentevents"
 	servicesettingconfigurationsservice "github.com/dinnerdonebetter/backend/internal/services/servicesettingconfigurations"
 	servicesettingsservice "github.com/dinnerdonebetter/backend/internal/services/servicesettings"
 	useringredientpreferencesservice "github.com/dinnerdonebetter/backend/internal/services/useringredientpreferences"
@@ -78,7 +77,6 @@ type (
 		ValidMeasurementUnitConversions validmeasurementunitconversions.Config        `json:"validMeasurementUnitConversions" toml:"valid_measurement_conversions,omitempty"`
 		ServiceSettingConfigurations    servicesettingconfigurationsservice.Config    `json:"serviceSettingConfigurations"    toml:"service_setting_configurations,omitempty"`
 		ValidPreparationVessels         validpreparationvessels.Config                `json:"validPreparationVessels"         toml:"valid_preparation_vessels,omitempty"`
-		SSE                             serversenteventsservice.Config                `json:"serverSentEvents"                toml:"server_sent_events,omitempty"`
 		Workers                         workersservice.Config                         `json:"workers"                         toml:"workers,omitempty"`
 		Users                           usersservice.Config                           `json:"users"                           toml:"users,omitempty"`
 		RecipeSteps                     recipestepsservice.Config                     `json:"recipeSteps"                     toml:"recipe_steps,omitempty"`
@@ -134,7 +132,6 @@ func (cfg *ServicesConfig) ValidateWithContext(ctx context.Context) error {
 		"ValidVessels":                    cfg.ValidVessels.ValidateWithContext,
 		"ValidPreparationVessels":         cfg.ValidPreparationVessels.ValidateWithContext,
 		"Workers":                         cfg.Workers.ValidateWithContext,
-		"SSE":                             cfg.SSE.ValidateWithContext,
 	}
 
 	for name, validator := range validatorsToRun {

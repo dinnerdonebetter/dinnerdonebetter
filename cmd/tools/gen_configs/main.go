@@ -49,7 +49,6 @@ import (
 	recipestepproductsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepproducts"
 	recipestepsservice "github.com/dinnerdonebetter/backend/internal/services/recipesteps"
 	recipestepvesselsservice "github.com/dinnerdonebetter/backend/internal/services/recipestepvessels"
-	serversenteventsservice "github.com/dinnerdonebetter/backend/internal/services/serversentevents"
 	"github.com/dinnerdonebetter/backend/internal/services/servicesettingconfigurations"
 	"github.com/dinnerdonebetter/backend/internal/services/servicesettings"
 	useringredientpreferencesservice "github.com/dinnerdonebetter/backend/internal/services/useringredientpreferences"
@@ -559,9 +558,6 @@ func buildDevConfig() *config.InstanceConfig {
 			Workers: workersservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
-			SSE: serversenteventsservice.Config{
-				DataChangesTopicName: dataChangesTopicName,
-			},
 		},
 	}
 }
@@ -790,9 +786,6 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			Workers: workersservice.Config{
-				DataChangesTopicName: dataChangesTopicName,
-			},
-			SSE: serversenteventsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 		},
