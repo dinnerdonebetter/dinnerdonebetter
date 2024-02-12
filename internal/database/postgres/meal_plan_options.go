@@ -3,7 +3,7 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	"math/rand"
+	"math/rand/v2"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
@@ -432,7 +432,7 @@ func (q *Querier) determineWinner(winners []schulze.Result[string]) string {
 	}
 
 	/* #nosec: G404 */
-	return scoreWinners[rand.Intn(len(scoreWinners))]
+	return scoreWinners[rand.N(len(scoreWinners))]
 }
 
 func (q *Querier) decideOptionWinner(ctx context.Context, options []*types.MealPlanOption) (_ string, _, _ bool) {
