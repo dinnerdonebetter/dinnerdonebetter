@@ -143,12 +143,12 @@ queries_lint:
 		--volume $(PWD):/src \
 		--workdir /src \
 		--user $(MYSELF):$(MY_GROUP) \
-		$(SQL_GENERATOR_IMAGE) compile --no-database --no-remote
+		$(SQL_GENERATOR_IMAGE) compile --no-remote
 	docker run --rm \
 		--volume $(PWD):/src \
 		--workdir /src \
 		--user $(MYSELF):$(MY_GROUP) \
-		$(SQL_GENERATOR_IMAGE) vet --no-database --no-remote
+		$(SQL_GENERATOR_IMAGE) vet --no-remote
 
 .PHONY: golang_lint
 golang_lint:
@@ -203,7 +203,7 @@ querier: queries queries_lint
 		--volume $(PWD):/src \
 		--workdir /src \
 		--user $(MYSELF):$(MY_GROUP) \
-	$(SQL_GENERATOR_IMAGE) generate --no-database --no-remote
+	$(SQL_GENERATOR_IMAGE) generate --no-remote
 
 .PHONY: sqlc_struct_check
 sqlc_struct_check:
