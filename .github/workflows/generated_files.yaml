@@ -15,7 +15,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        go-version: [ '1.21.x' ]
+        go-version: [ '1.22.x' ]
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
@@ -39,7 +39,7 @@ jobs:
     timeout-minutes: 10
     strategy:
       matrix:
-        go-version: [ '1.21.x' ]
+        go-version: [ '1.22.x' ]
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
@@ -60,7 +60,7 @@ jobs:
     timeout-minutes: 10
     strategy:
      matrix:
-       go-version: [ '1.21.x' ]
+       go-version: [ '1.22.x' ]
     runs-on: ubuntu-latest
     steps:
       - name: Install Go

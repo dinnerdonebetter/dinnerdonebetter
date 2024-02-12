@@ -18,7 +18,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.22.x'
+          go-version: [ '1.22.x' ]
 
       - name: authenticate with GCP
         uses: google-github-actions/auth@v1
@@ -112,7 +112,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.22.x'
+          go-version: [ '1.22.x' ]
 
       - name: authenticate with GCP
         uses: google-github-actions/auth@v1
@@ -142,7 +142,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.22.x'
+          go-version: [ '1.22.x' ]
 
       - name: authenticate with GCP
         uses: google-github-actions/auth@v1
@@ -172,7 +172,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.22.x'
+          go-version: [ '1.22.x' ]
 
       - name: authenticate with GCP
         uses: google-github-actions/auth@v1
@@ -202,7 +202,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.22.x'
+          go-version: [ '1.22.x' ]
 
       - name: authenticate with GCP
         uses: google-github-actions/auth@v1
@@ -232,7 +232,7 @@ jobs:
       - name: Install Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.22.x'
+          go-version: [ '1.22.x' ]
 
       - name: authenticate with GCP
         uses: google-github-actions/auth@v1
