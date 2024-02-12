@@ -23,7 +23,7 @@ func (r chiRouteParamManager) BuildRouteParamIDFetcher(logger logging.Logger, ke
 	return func(req *http.Request) uint64 {
 		// this should never happen
 		u, err := strconv.ParseUint(chi.URLParam(req, key), 10, 64)
-		if err != nil && len(logDescription) > 0 {
+		if err != nil && logDescription != "" {
 			logger.Error(err, fmt.Sprintf("fetching %s ID from request", logDescription))
 		}
 

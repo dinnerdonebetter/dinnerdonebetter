@@ -96,7 +96,7 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (http.Server, error)
 	authenticationConfig := &servicesConfig.Auth
 	authenticator := authentication.ProvideArgon2Authenticator(logger, tracerProvider)
 	householdUserMembershipDataManager := database.ProvideHouseholdUserMembershipDataManager(dataManager)
-	cookieConfig := authenticationConfig.Cookies
+	cookieConfig := &authenticationConfig.Cookies
 	sessionManager, err := config4.ProvideSessionManager(cookieConfig, dataManager)
 	if err != nil {
 		return nil, err

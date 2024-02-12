@@ -33,7 +33,7 @@ func TestProvideSessionManager(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		cookieConfig := authservice.CookieConfig{}
+		cookieConfig := &authservice.CookieConfig{}
 		store := memstore.New()
 
 		mdm := &database.MockDatabase{}

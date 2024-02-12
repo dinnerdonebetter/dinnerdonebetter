@@ -254,7 +254,7 @@ func (r *router) BuildRouteParamIDFetcher(logger logging.Logger, key, logDescrip
 		v := chi.URLParam(req, key)
 		u, err := strconv.ParseUint(v, 10, 64)
 		// this should never happen
-		if err != nil && len(logDescription) > 0 {
+		if err != nil && logDescription != "" {
 			logger.Error(err, fmt.Sprintf("fetching %s ID from request", logDescription))
 		}
 
