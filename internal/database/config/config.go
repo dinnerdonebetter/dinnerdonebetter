@@ -42,7 +42,7 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 // ProvideSessionManager provides a session manager based on some settings.
 // There's not a great place to put this function. I don't think it belongs in Auth because it accepts a DB connection,
 // but it obviously doesn't belong in the database package, or maybe it does.
-func ProvideSessionManager(cookieConfig authservice.CookieConfig, dm database.DataManager) (*scs.SessionManager, error) {
+func ProvideSessionManager(cookieConfig *authservice.CookieConfig, dm database.DataManager) (*scs.SessionManager, error) {
 	sessionManager := scs.New()
 
 	sessionManager.Lifetime = cookieConfig.Lifetime
