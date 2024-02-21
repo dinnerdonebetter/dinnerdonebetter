@@ -7,11 +7,13 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/identifiers"
 
-	fake "github.com/brianvoe/gofakeit/v6"
+	fake "github.com/brianvoe/gofakeit/v7"
 )
 
 func init() {
-	fake.Seed(time.Now().UnixNano())
+	if err := fake.Seed(time.Now().UnixNano()); err != nil {
+		panic(err)
+	}
 }
 
 const (

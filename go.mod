@@ -17,7 +17,7 @@ require (
 	github.com/aws/aws-sdk-go v1.45.24
 	github.com/boombuler/barcode v1.0.1
 	github.com/brianvoe/gofakeit/v5 v5.11.2
-	github.com/brianvoe/gofakeit/v6 v6.23.2
+	github.com/brianvoe/gofakeit/v7 v7.0.0
 	github.com/cristalhq/builq v0.10.0
 	github.com/dustin/go-humanize v1.0.1
 	github.com/elastic/go-elasticsearch/v8 v8.10.0

@@ -39,9 +39,9 @@ var _ validation.ValidatableWithContext = (*Config)(nil)
 func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, cfg,
 		validation.Field(&cfg.Provider, validation.In(ProviderSegment, ProviderRudderstack, ProviderPostHog)),
-		validation.Field(&cfg.Segment, validation.When(cfg.Provider == ProviderSegment, validation.Required)),
-		validation.Field(&cfg.Posthog, validation.When(cfg.Provider == ProviderPostHog, validation.Required)),
-		validation.Field(&cfg.Rudderstack, validation.When(cfg.Provider == ProviderRudderstack, validation.Required)),
+		validation.Field(&cfg.Segment, validation.When(cfg.Provider == ProviderSegment, validation.Required), validation.When(cfg.Provider != ProviderSegment, validation.Nil)),
+		validation.Field(&cfg.Posthog, validation.When(cfg.Provider == ProviderPostHog, validation.Required), validation.When(cfg.Provider != ProviderPostHog, validation.Nil)),
+		validation.Field(&cfg.Rudderstack, validation.When(cfg.Provider == ProviderRudderstack, validation.Required), validation.When(cfg.Provider != ProviderRudderstack, validation.Nil)),
 	)
 }
 
@@ -53,7 +53,7 @@ func (cfg *Config) ProvideCollector(logger logging.Logger, tracerProvider tracin
 	case ProviderRudderstack:
 		return rudderstack.NewRudderstackEventReporter(logger, tracerProvider, cfg.Rudderstack)
 	case ProviderPostHog:
-		return posthog.NewPostHogEventReporter(logger, tracerProvider, cfg.Posthog.APIKey)
+		return posthog.NewPostHogEventReporter(logger, tracerProvider, cfg.Posthog)
 	default:
 		return analytics.NewNoopEventReporter(), nil
 	}
