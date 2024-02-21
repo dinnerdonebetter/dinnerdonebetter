@@ -57,6 +57,39 @@ func (q *Queries) CreateUserNotification(ctx context.Context, db DBTX, arg *Crea
 	return err
 }
 
+const getUserNotification = `-- name: GetUserNotification :one
+
+SELECT
+	user_notifications.id,
+	user_notifications.content,
+	user_notifications.status,
+	user_notifications.belongs_to_user,
+	user_notifications.created_at,
+	user_notifications.last_updated_at
+FROM user_notifications
+WHERE belongs_to_user = $1
+AND user_notifications.id = $2
+`
+
+type GetUserNotificationParams struct {
+	BelongsToUser string
+	ID            string
+}
+
+func (q *Queries) GetUserNotification(ctx context.Context, db DBTX, arg *GetUserNotificationParams) (*UserNotifications, error) {
+	row := db.QueryRowContext(ctx, getUserNotification, arg.BelongsToUser, arg.ID)
+	var i UserNotifications
+	err := row.Scan(
+		&i.ID,
+		&i.Content,
+		&i.Status,
+		&i.BelongsToUser,
+		&i.CreatedAt,
+		&i.LastUpdatedAt,
+	)
+	return &i, err
+}
+
 const getUserNotificationsForUser = `-- name: GetUserNotificationsForUser :many
 
 SELECT
@@ -181,6 +214,27 @@ type MarkUserNotificationAsDismissedParams struct {
 
 func (q *Queries) MarkUserNotificationAsDismissed(ctx context.Context, db DBTX, arg *MarkUserNotificationAsDismissedParams) (int64, error) {
 	result, err := db.ExecContext(ctx, markUserNotificationAsDismissed, arg.ID, arg.BelongsToUser)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
+
+const updateUserNotification = `-- name: UpdateUserNotification :execrows
+
+UPDATE user_notifications SET
+	status = $1,
+	last_updated_at = NOW()
+WHERE id = $2
+`
+
+type UpdateUserNotificationParams struct {
+	Status UserNotificationStatus
+	ID     string
+}
+
+func (q *Queries) UpdateUserNotification(ctx context.Context, db DBTX, arg *UpdateUserNotificationParams) (int64, error) {
+	result, err := db.ExecContext(ctx, updateUserNotification, arg.Status, arg.ID)
 	if err != nil {
 		return 0, err
 	}

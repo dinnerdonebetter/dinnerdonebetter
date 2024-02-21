@@ -11,9 +11,9 @@ import (
 
 const (
 	// MealPlanTaskCreatedCustomerEventType indicates a meal plan task was created.
-	MealPlanTaskCreatedCustomerEventType CustomerEventType = "meal_plan_task_created"
+	MealPlanTaskCreatedCustomerEventType ServiceEventType = "meal_plan_task_created"
 	// MealPlanTaskStatusChangedCustomerEventType indicates a meal plan task was created.
-	MealPlanTaskStatusChangedCustomerEventType CustomerEventType = "meal_plan_task_status_changed"
+	MealPlanTaskStatusChangedCustomerEventType ServiceEventType = "meal_plan_task_status_changed"
 
 	// MealPlanTaskStatusUnfinished represents the unfinished enum member for meal plan task status in the DB.
 	MealPlanTaskStatusUnfinished = "unfinished"

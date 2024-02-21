@@ -10,13 +10,13 @@ import (
 
 const (
 	// HouseholdInvitationCreatedCustomerEventType indicates a household invitation was created.
-	HouseholdInvitationCreatedCustomerEventType CustomerEventType = "household_invitation_created"
+	HouseholdInvitationCreatedCustomerEventType ServiceEventType = "household_invitation_created"
 	// HouseholdInvitationCanceledCustomerEventType indicates a household invitation was created.
-	HouseholdInvitationCanceledCustomerEventType CustomerEventType = "household_invitation_canceled"
+	HouseholdInvitationCanceledCustomerEventType ServiceEventType = "household_invitation_canceled"
 	// HouseholdInvitationAcceptedCustomerEventType indicates a household invitation was created.
-	HouseholdInvitationAcceptedCustomerEventType CustomerEventType = "household_invitation_accepted"
+	HouseholdInvitationAcceptedCustomerEventType ServiceEventType = "household_invitation_accepted"
 	// HouseholdInvitationRejectedCustomerEventType indicates a household invitation was created.
-	HouseholdInvitationRejectedCustomerEventType CustomerEventType = "household_invitation_rejected"
+	HouseholdInvitationRejectedCustomerEventType ServiceEventType = "household_invitation_rejected"
 
 	// PendingHouseholdInvitationStatus indicates a household invitation is pending.
 	PendingHouseholdInvitationStatus HouseholdInvitationStatus = "pending"

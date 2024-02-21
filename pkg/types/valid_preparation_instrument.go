@@ -11,11 +11,11 @@ import (
 
 const (
 	// ValidPreparationInstrumentCreatedCustomerEventType indicates a valid preparation instrument was created.
-	ValidPreparationInstrumentCreatedCustomerEventType CustomerEventType = "valid_preparation_instrument_created"
+	ValidPreparationInstrumentCreatedCustomerEventType ServiceEventType = "valid_preparation_instrument_created"
 	// ValidPreparationInstrumentUpdatedCustomerEventType indicates a valid preparation instrument was updated.
-	ValidPreparationInstrumentUpdatedCustomerEventType CustomerEventType = "valid_preparation_instrument_updated"
+	ValidPreparationInstrumentUpdatedCustomerEventType ServiceEventType = "valid_preparation_instrument_updated"
 	// ValidPreparationInstrumentArchivedCustomerEventType indicates a valid preparation instrument was archived.
-	ValidPreparationInstrumentArchivedCustomerEventType CustomerEventType = "valid_preparation_instrument_archived"
+	ValidPreparationInstrumentArchivedCustomerEventType ServiceEventType = "valid_preparation_instrument_archived"
 )
 
 func init() {

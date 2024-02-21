@@ -13,6 +13,8 @@ const (
 	ActiveHouseholdIDKey = "active_household.id"
 	// UserIDKey is the standard key for referring to a user ID.
 	UserIDKey = "user.id"
+	// UserNotificationIDKey is the standard key for referring to a user notification ID.
+	UserNotificationIDKey = "user_notification.id"
 	// UserEmailAddressKey is the standard key for referring to a user's email address.
 	UserEmailAddressKey = "user.email_address"
 	// UserIsServiceAdminKey is the standard key for referring to a user's admin status.

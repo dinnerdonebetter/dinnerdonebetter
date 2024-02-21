@@ -8,8 +8,8 @@ const (
 )
 
 type (
-	// CustomerEventType enumerates valid customer event types.
-	CustomerEventType string
+	// ServiceEventType enumerates valid service event types.
+	ServiceEventType string
 
 	// DataChangeMessage represents an event that asks a worker to write data to the datastore.
 	DataChangeMessage struct {
@@ -71,7 +71,7 @@ type (
 		RecipeMediaID                    string                          `json:"recipeMediaID,omitempty"`
 		MealID                           string                          `json:"mealID,omitempty"`
 		MealPlanGroceryListItemID        string                          `json:"mealPlanGroceryListItemID,omitempty"`
-		EventType                        CustomerEventType               `json:"messageType"`
+		EventType                        ServiceEventType                `json:"messageType"`
 		ValidIngredientStateIngredientID string                          `json:"validIngredientStateIngredientID"`
 		ValidMeasurementUnitConversionID string                          `json:"validMeasurementUnitConversionID,omitempty"`
 		ValidIngredientStateID           string                          `json:"validIngredientStateID,omitempty"`

@@ -44,7 +44,7 @@ func init() {
 var (
 	errRequiredDataIsNil = errors.New("required data is nil")
 
-	nonWebhookEventTypes = []types.CustomerEventType{
+	nonWebhookEventTypes = []types.ServiceEventType{
 		types.UserSignedUpCustomerEventType,
 		types.UserArchivedCustomerEventType,
 		types.TwoFactorSecretVerifiedCustomerEventType,

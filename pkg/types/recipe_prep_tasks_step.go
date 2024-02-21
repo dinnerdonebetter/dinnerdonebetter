@@ -6,11 +6,11 @@ import (
 
 const (
 	// RecipePrepTaskStepCreatedCustomerEventType indicates a recipe prep task step was created.
-	RecipePrepTaskStepCreatedCustomerEventType CustomerEventType = "recipe_prep_task_step_created"
+	RecipePrepTaskStepCreatedCustomerEventType ServiceEventType = "recipe_prep_task_step_created"
 	// RecipePrepTaskStepUpdatedCustomerEventType indicates a recipe prep task step was updated.
-	RecipePrepTaskStepUpdatedCustomerEventType CustomerEventType = "recipe_prep_task_step_updated"
+	RecipePrepTaskStepUpdatedCustomerEventType ServiceEventType = "recipe_prep_task_step_updated"
 	// RecipePrepTaskStepArchivedCustomerEventType indicates a recipe prep task step was archived.
-	RecipePrepTaskStepArchivedCustomerEventType CustomerEventType = "recipe_prep_task_step_archived"
+	RecipePrepTaskStepArchivedCustomerEventType ServiceEventType = "recipe_prep_task_step_archived"
 )
 
 func init() {

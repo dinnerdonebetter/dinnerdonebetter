@@ -12,11 +12,11 @@ import (
 
 const (
 	// MealPlanOptionVoteCreatedCustomerEventType indicates a meal plan option vote was created.
-	MealPlanOptionVoteCreatedCustomerEventType CustomerEventType = "meal_plan_option_vote_created"
+	MealPlanOptionVoteCreatedCustomerEventType ServiceEventType = "meal_plan_option_vote_created"
 	// MealPlanOptionVoteUpdatedCustomerEventType indicates a meal plan option vote was updated.
-	MealPlanOptionVoteUpdatedCustomerEventType CustomerEventType = "meal_plan_option_vote_updated"
+	MealPlanOptionVoteUpdatedCustomerEventType ServiceEventType = "meal_plan_option_vote_updated"
 	// MealPlanOptionVoteArchivedCustomerEventType indicates a meal plan option vote was archived.
-	MealPlanOptionVoteArchivedCustomerEventType CustomerEventType = "meal_plan_option_vote_archived"
+	MealPlanOptionVoteArchivedCustomerEventType ServiceEventType = "meal_plan_option_vote_archived"
 )
 
 func init() {

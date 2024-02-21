@@ -22,11 +22,11 @@ const (
 	MealPlanGroceryListItemStatusAcquired = "acquired"
 
 	// MealPlanGroceryListItemCreatedCustomerEventType indicates a meal plan grocery list item was created.
-	MealPlanGroceryListItemCreatedCustomerEventType CustomerEventType = "meal_plan_grocery_list_item_created"
+	MealPlanGroceryListItemCreatedCustomerEventType ServiceEventType = "meal_plan_grocery_list_item_created"
 	// MealPlanGroceryListItemUpdatedCustomerEventType indicates a meal plan grocery list item was updated.
-	MealPlanGroceryListItemUpdatedCustomerEventType CustomerEventType = "meal_plan_grocery_list_item_updated"
+	MealPlanGroceryListItemUpdatedCustomerEventType ServiceEventType = "meal_plan_grocery_list_item_updated"
 	// MealPlanGroceryListItemArchivedCustomerEventType indicates a meal plan grocery list item was archived.
-	MealPlanGroceryListItemArchivedCustomerEventType CustomerEventType = "meal_plan_grocery_list_item_archived"
+	MealPlanGroceryListItemArchivedCustomerEventType ServiceEventType = "meal_plan_grocery_list_item_archived"
 )
 
 func init() {

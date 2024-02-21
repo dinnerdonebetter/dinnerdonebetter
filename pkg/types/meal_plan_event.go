@@ -11,12 +11,12 @@ import (
 
 const (
 	// MealPlanEventCreatedCustomerEventType indicates a meal plan was created.
-	MealPlanEventCreatedCustomerEventType CustomerEventType = "meal_plan_event_created"
+	MealPlanEventCreatedCustomerEventType ServiceEventType = "meal_plan_event_created"
 	// MealPlanEventUpdatedCustomerEventType indicates a meal plan was updated.
-	MealPlanEventUpdatedCustomerEventType CustomerEventType = "meal_plan_event_updated"
+	MealPlanEventUpdatedCustomerEventType ServiceEventType = "meal_plan_event_updated"
 	// MealPlanEventArchivedCustomerEventType indicates a meal plan was archived.
 	/* #nosec G101 */
-	MealPlanEventArchivedCustomerEventType CustomerEventType = "meal_plan_event_archived"
+	MealPlanEventArchivedCustomerEventType ServiceEventType = "meal_plan_event_archived"
 
 	// BreakfastMealName represents breakfast.
 	BreakfastMealName = "breakfast"

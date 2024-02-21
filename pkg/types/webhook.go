@@ -11,9 +11,9 @@ import (
 
 const (
 	// WebhookCreatedCustomerEventType indicates a webhook was created.
-	WebhookCreatedCustomerEventType CustomerEventType = "webhook_created"
+	WebhookCreatedCustomerEventType ServiceEventType = "webhook_created"
 	// WebhookArchivedCustomerEventType indicates a webhook was archived.
-	WebhookArchivedCustomerEventType CustomerEventType = "webhook_archived"
+	WebhookArchivedCustomerEventType ServiceEventType = "webhook_archived"
 )
 
 type (
@@ -92,7 +92,7 @@ type (
 		WebhookExists(ctx context.Context, webhookID, householdID string) (bool, error)
 		GetWebhook(ctx context.Context, webhookID, householdID string) (*Webhook, error)
 		GetWebhooks(ctx context.Context, householdID string, filter *QueryFilter) (*QueryFilteredResult[Webhook], error)
-		GetWebhooksForHouseholdAndEvent(ctx context.Context, householdID string, eventType CustomerEventType) ([]*Webhook, error)
+		GetWebhooksForHouseholdAndEvent(ctx context.Context, householdID string, eventType ServiceEventType) ([]*Webhook, error)
 		CreateWebhook(ctx context.Context, input *WebhookDatabaseCreationInput) (*Webhook, error)
 		ArchiveWebhook(ctx context.Context, webhookID, householdID string) error
 	}

@@ -9,6 +9,7 @@ import (
 
 const (
 	userNotificationsTableName      = "user_notifications"
+	contentColumn                   = "content"
 	statusColumn                    = "status"
 	userNotificationStatusUnread    = "unread"
 	userNotificationStatusRead      = "read"
@@ -69,6 +70,24 @@ WHERE %s = sqlc.arg(%s)
 		},
 		{
 			Annotation: QueryAnnotation{
+				Name: "GetUserNotification",
+				Type: OneType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+	%s
+FROM %s
+WHERE %s = sqlc.arg(%s)
+AND %s.%s = sqlc.arg(%s);`,
+				strings.Join(applyToEach(userNotificationsColumns, func(i int, s string) string {
+					return fmt.Sprintf("%s.%s", userNotificationsTableName, s)
+				}), ",\n\t"),
+				userNotificationsTableName,
+				belongsToUserColumn, belongsToUserColumn,
+				userNotificationsTableName, idColumn, idColumn,
+			)),
+		},
+		{
+			Annotation: QueryAnnotation{
 				Name: "CheckUserNotificationExistence",
 				Type: OneType,
 			},
@@ -113,6 +132,23 @@ WHERE %s
 					"user_notifications.belongs_to_user = sqlc.arg(user_id)",
 				), "AND "),
 				offsetLimitAddendum,
+			)),
+		},
+		{
+			Annotation: QueryAnnotation{
+				Name: "UpdateUserNotification",
+				Type: ExecRowsType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+	%s,
+	%s = %s
+WHERE %s = sqlc.arg(%s);`,
+				userNotificationsTableName,
+				strings.Join(applyToEach(filterForUpdate(userNotificationsColumns, contentColumn, belongsToUserColumn), func(i int, s string) string {
+					return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
+				}), ",\n\t"),
+				lastUpdatedAtColumn, currentTimeExpression,
+				idColumn, idColumn,
 			)),
 		},
 	}

@@ -11,17 +11,17 @@ import (
 
 const (
 	// HouseholdCreatedCustomerEventType indicates a household was created.
-	HouseholdCreatedCustomerEventType CustomerEventType = "household_created"
+	HouseholdCreatedCustomerEventType ServiceEventType = "household_created"
 	// HouseholdUpdatedCustomerEventType indicates a household was updated.
-	HouseholdUpdatedCustomerEventType CustomerEventType = "household_updated"
+	HouseholdUpdatedCustomerEventType ServiceEventType = "household_updated"
 	// HouseholdArchivedCustomerEventType indicates a household was archived.
-	HouseholdArchivedCustomerEventType CustomerEventType = "household_archived"
+	HouseholdArchivedCustomerEventType ServiceEventType = "household_archived"
 	// HouseholdMemberRemovedCustomerEventType indicates a household member was removed.
-	HouseholdMemberRemovedCustomerEventType CustomerEventType = "household_member_removed"
+	HouseholdMemberRemovedCustomerEventType ServiceEventType = "household_member_removed"
 	// HouseholdMembershipPermissionsUpdatedCustomerEventType indicates a household member's permissions were modified.
-	HouseholdMembershipPermissionsUpdatedCustomerEventType CustomerEventType = "household_membership_permissions_updated"
+	HouseholdMembershipPermissionsUpdatedCustomerEventType ServiceEventType = "household_membership_permissions_updated"
 	// HouseholdOwnershipTransferredCustomerEventType indicates a household was transferred to another owner.
-	HouseholdOwnershipTransferredCustomerEventType CustomerEventType = "household_ownership_transferred"
+	HouseholdOwnershipTransferredCustomerEventType ServiceEventType = "household_ownership_transferred"
 
 	// UnpaidHouseholdBillingStatus indicates a household is not paid.
 	UnpaidHouseholdBillingStatus = "unpaid"

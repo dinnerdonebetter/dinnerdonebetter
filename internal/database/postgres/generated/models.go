@@ -1160,6 +1160,15 @@ type ServiceSettings struct {
 	ArchivedAt    sql.NullTime
 }
 
+type UserNotifications struct {
+	ID            string
+	Content       string
+	Status        UserNotificationStatus
+	BelongsToUser string
+	CreatedAt     time.Time
+	LastUpdatedAt sql.NullTime
+}
+
 type ValidVessels struct {
 	ID                             string
 	Name                           string

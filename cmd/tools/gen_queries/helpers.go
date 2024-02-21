@@ -86,10 +86,6 @@ func mergeColumns(columns1, columns2 []string, indexToInsertSecondSet uint) []st
 }
 
 func buildFilterConditions(tableName string, withUpdateColumn bool, conditions ...string) string {
-	if tableName == userNotificationsTableName {
-		println("")
-	}
-
 	updateAddendum := ""
 	if withUpdateColumn {
 		updateAddendum = fmt.Sprintf("\n\t%s", strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`

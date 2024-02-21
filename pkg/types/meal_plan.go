@@ -16,13 +16,13 @@ const (
 	MealPlanElectionMethodInstantRunoff = "instant-runoff"
 
 	// MealPlanCreatedCustomerEventType indicates a meal plan was created.
-	MealPlanCreatedCustomerEventType CustomerEventType = "meal_plan_created"
+	MealPlanCreatedCustomerEventType ServiceEventType = "meal_plan_created"
 	// MealPlanUpdatedCustomerEventType indicates a meal plan was updated.
-	MealPlanUpdatedCustomerEventType CustomerEventType = "meal_plan_updated"
+	MealPlanUpdatedCustomerEventType ServiceEventType = "meal_plan_updated"
 	// MealPlanArchivedCustomerEventType indicates a meal plan was archived.
-	MealPlanArchivedCustomerEventType CustomerEventType = "meal_plan_archived"
+	MealPlanArchivedCustomerEventType ServiceEventType = "meal_plan_archived"
 	// MealPlanFinalizedCustomerEventType indicates a meal plan was finalized.
-	MealPlanFinalizedCustomerEventType CustomerEventType = "meal_plan_finalized"
+	MealPlanFinalizedCustomerEventType ServiceEventType = "meal_plan_finalized"
 
 	// MealPlanStatusAwaitingVotes indicates a household invitation is pending.
 	MealPlanStatusAwaitingVotes MealPlanStatus = "awaiting_votes"

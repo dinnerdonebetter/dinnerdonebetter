@@ -11,11 +11,11 @@ import (
 
 const (
 	// ValidPreparationVesselCreatedCustomerEventType indicates a valid preparation instrument was created.
-	ValidPreparationVesselCreatedCustomerEventType CustomerEventType = "valid_preparation_instrument_created"
+	ValidPreparationVesselCreatedCustomerEventType ServiceEventType = "valid_preparation_instrument_created"
 	// ValidPreparationVesselUpdatedCustomerEventType indicates a valid preparation instrument was updated.
-	ValidPreparationVesselUpdatedCustomerEventType CustomerEventType = "valid_preparation_instrument_updated"
+	ValidPreparationVesselUpdatedCustomerEventType ServiceEventType = "valid_preparation_instrument_updated"
 	// ValidPreparationVesselArchivedCustomerEventType indicates a valid preparation instrument was archived.
-	ValidPreparationVesselArchivedCustomerEventType CustomerEventType = "valid_preparation_instrument_archived"
+	ValidPreparationVesselArchivedCustomerEventType ServiceEventType = "valid_preparation_instrument_archived"
 )
 
 func init() {

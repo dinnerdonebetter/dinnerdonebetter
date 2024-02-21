@@ -90,6 +90,6 @@ func TestSegmentEventReporter_EventOccurred(T *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 
-		require.NoError(t, collector.EventOccurred(ctx, types.CustomerEventType(t.Name()), exampleUserID, properties))
+		require.NoError(t, collector.EventOccurred(ctx, types.ServiceEventType(t.Name()), exampleUserID, properties))
 	})
 }

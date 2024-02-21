@@ -11,11 +11,11 @@ import (
 
 const (
 	// ValidIngredientCreatedCustomerEventType indicates a valid ingredient was created.
-	ValidIngredientCreatedCustomerEventType CustomerEventType = "valid_ingredient_created"
+	ValidIngredientCreatedCustomerEventType ServiceEventType = "valid_ingredient_created"
 	// ValidIngredientUpdatedCustomerEventType indicates a valid ingredient was updated.
-	ValidIngredientUpdatedCustomerEventType CustomerEventType = "valid_ingredient_updated"
+	ValidIngredientUpdatedCustomerEventType ServiceEventType = "valid_ingredient_updated"
 	// ValidIngredientArchivedCustomerEventType indicates a valid ingredient was archived.
-	ValidIngredientArchivedCustomerEventType CustomerEventType = "valid_ingredient_archived"
+	ValidIngredientArchivedCustomerEventType ServiceEventType = "valid_ingredient_archived"
 )
 
 func init() {
