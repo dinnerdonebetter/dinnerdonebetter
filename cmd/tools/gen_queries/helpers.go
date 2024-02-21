@@ -86,6 +86,10 @@ func mergeColumns(columns1, columns2 []string, indexToInsertSecondSet uint) []st
 }
 
 func buildFilterConditions(tableName string, withUpdateColumn bool, conditions ...string) string {
+	if tableName == userNotificationsTableName {
+		println("")
+	}
+
 	updateAddendum := ""
 	if withUpdateColumn {
 		updateAddendum = fmt.Sprintf("\n\t%s", strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`
@@ -116,7 +120,7 @@ func buildFilterConditions(tableName string, withUpdateColumn bool, conditions .
 		allConditions += fmt.Sprintf("\n\tAND %s", condition)
 	}
 
-	return strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`AND %s.%s > COALESCE(sqlc.narg(created_after), (SELECT %s - '999 years'::INTERVAL))
+	rv := strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`AND %s.%s > COALESCE(sqlc.narg(created_after), (SELECT %s - '999 years'::INTERVAL))
 	AND %s.%s < COALESCE(sqlc.narg(created_before), (SELECT %s + '999 years'::INTERVAL))%s%s`,
 		tableName,
 		createdAtColumn,
@@ -127,6 +131,8 @@ func buildFilterConditions(tableName string, withUpdateColumn bool, conditions .
 		updateAddendum,
 		allConditions,
 	)))
+
+	return rv
 }
 
 func buildFilterCountSelect(tableName string, withUpdateColumn bool, conditions ...string) string {
