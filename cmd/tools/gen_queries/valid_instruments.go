@@ -103,13 +103,8 @@ ORDER BY %s.%s
 				strings.Join(applyToEach(validInstrumentsColumns, func(i int, s string) string {
 					return fmt.Sprintf("%s.%s", validInstrumentsTableName, s)
 				}), ",\n\t"),
-				buildFilterCountSelect(
-					validInstrumentsTableName,
-					true,
-				),
-				buildTotalCountSelect(
-					validInstrumentsTableName,
-				),
+				buildFilterCountSelect(validInstrumentsTableName, true, true),
+				buildTotalCountSelect(validInstrumentsTableName, true),
 				validInstrumentsTableName,
 				validInstrumentsTableName,
 				archivedAtColumn,

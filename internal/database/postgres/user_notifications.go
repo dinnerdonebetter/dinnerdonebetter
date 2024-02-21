@@ -75,17 +75,26 @@ func (q *Querier) GetUserNotification(ctx context.Context, userID, userNotificat
 		CreatedAt:     result.CreatedAt,
 		LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
 		ID:            result.ID,
+		Content:       result.Content,
+		Status:        string(result.Status),
+		BelongsToUser: result.BelongsToUser,
 	}
 
 	return userNotification, nil
 }
 
 // GetUserNotifications fetches a list of user notifications from the database that meet a particular filter.
-func (q *Querier) GetUserNotifications(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.UserNotification], err error) {
+func (q *Querier) GetUserNotifications(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.UserNotification], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
+
+	if userID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.UserIDKey, userID)
+	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
 	if filter == nil {
 		filter = types.DefaultQueryFilter()
@@ -98,6 +107,7 @@ func (q *Querier) GetUserNotifications(ctx context.Context, filter *types.QueryF
 	}
 
 	results, err := q.generatedQuerier.GetUserNotificationsForUser(ctx, q.db, &generated.GetUserNotificationsForUserParams{
+		UserID:        userID,
 		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
 		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
@@ -137,16 +147,20 @@ func (q *Querier) CreateUserNotification(ctx context.Context, input *types.UserN
 
 	// create the user notification.
 	if err := q.generatedQuerier.CreateUserNotification(ctx, q.db, &generated.CreateUserNotificationParams{
-		ID: input.ID,
+		ID:            input.ID,
+		Content:       input.Content,
+		BelongsToUser: input.BelongsToUser,
 	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing user notification creation query")
 	}
 
 	x := &types.UserNotification{
-		ID:        input.ID,
-		CreatedAt: q.currentTime(),
+		ID:            input.ID,
+		CreatedAt:     q.currentTime(),
+		Content:       input.Content,
+		Status:        types.UserNotificationStatusTypeUnread,
+		BelongsToUser: input.BelongsToUser,
 	}
-
 	tracing.AttachToSpan(span, keys.UserNotificationIDKey, x.ID)
 	logger.Info("user notification created")
 

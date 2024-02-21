@@ -86,14 +86,14 @@ type CreateRecipePrepTaskParams struct {
 	Name                                   string
 	Description                            string
 	Notes                                  string
-	Optional                               bool
 	ExplicitStorageInstructions            string
-	MinimumTimeBufferBeforeRecipeInSeconds int32
-	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
+	BelongsToRecipe                        string
 	StorageType                            NullStorageContainerType
 	MinimumStorageTemperatureInCelsius     sql.NullString
 	MaximumStorageTemperatureInCelsius     sql.NullString
-	BelongsToRecipe                        string
+	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
+	MinimumTimeBufferBeforeRecipeInSeconds int32
+	Optional                               bool
 }
 
 func (q *Queries) CreateRecipePrepTask(ctx context.Context, db DBTX, arg *CreateRecipePrepTaskParams) error {
@@ -143,24 +143,24 @@ WHERE recipe_prep_tasks.archived_at IS NULL
 `
 
 type GetRecipePrepTaskRow struct {
-	ID                                     string
-	Name                                   string
-	Description                            string
-	Notes                                  string
-	Optional                               bool
-	ExplicitStorageInstructions            string
-	MinimumTimeBufferBeforeRecipeInSeconds int32
-	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
-	StorageType                            NullStorageContainerType
-	MinimumStorageTemperatureInCelsius     sql.NullString
-	MaximumStorageTemperatureInCelsius     sql.NullString
 	CreatedAt                              time.Time
 	LastUpdatedAt                          sql.NullTime
 	ArchivedAt                             sql.NullTime
-	BelongsToRecipe                        string
-	TaskStepID                             string
-	TaskStepBelongsToRecipeStep            string
+	Name                                   string
+	Description                            string
+	Notes                                  string
 	TaskStepBelongsToRecipePrepTask        string
+	ExplicitStorageInstructions            string
+	TaskStepBelongsToRecipeStep            string
+	TaskStepID                             string
+	ID                                     string
+	BelongsToRecipe                        string
+	StorageType                            NullStorageContainerType
+	MaximumStorageTemperatureInCelsius     sql.NullString
+	MinimumStorageTemperatureInCelsius     sql.NullString
+	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
+	MinimumTimeBufferBeforeRecipeInSeconds int32
+	Optional                               bool
 	TaskStepSatisfiesRecipeStep            bool
 }
 
@@ -240,24 +240,24 @@ WHERE recipe_prep_tasks.archived_at IS NULL
 `
 
 type ListAllRecipePrepTasksByRecipeRow struct {
-	ID                                     string
-	Name                                   string
-	Description                            string
-	Notes                                  string
-	Optional                               bool
-	ExplicitStorageInstructions            string
-	MinimumTimeBufferBeforeRecipeInSeconds int32
-	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
-	StorageType                            NullStorageContainerType
-	MinimumStorageTemperatureInCelsius     sql.NullString
-	MaximumStorageTemperatureInCelsius     sql.NullString
 	CreatedAt                              time.Time
 	LastUpdatedAt                          sql.NullTime
 	ArchivedAt                             sql.NullTime
-	BelongsToRecipe                        string
-	TaskStepID                             string
-	TaskStepBelongsToRecipeStep            string
+	Name                                   string
+	Description                            string
+	Notes                                  string
 	TaskStepBelongsToRecipePrepTask        string
+	ExplicitStorageInstructions            string
+	TaskStepBelongsToRecipeStep            string
+	TaskStepID                             string
+	ID                                     string
+	BelongsToRecipe                        string
+	StorageType                            NullStorageContainerType
+	MaximumStorageTemperatureInCelsius     sql.NullString
+	MinimumStorageTemperatureInCelsius     sql.NullString
+	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
+	MinimumTimeBufferBeforeRecipeInSeconds int32
+	Optional                               bool
 	TaskStepSatisfiesRecipeStep            bool
 }
 
@@ -327,15 +327,15 @@ type UpdateRecipePrepTaskParams struct {
 	Name                                   string
 	Description                            string
 	Notes                                  string
-	Optional                               bool
 	ExplicitStorageInstructions            string
-	MinimumTimeBufferBeforeRecipeInSeconds int32
-	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
+	BelongsToRecipe                        string
+	ID                                     string
 	StorageType                            NullStorageContainerType
 	MinimumStorageTemperatureInCelsius     sql.NullString
 	MaximumStorageTemperatureInCelsius     sql.NullString
-	BelongsToRecipe                        string
-	ID                                     string
+	MaximumTimeBufferBeforeRecipeInSeconds sql.NullInt32
+	MinimumTimeBufferBeforeRecipeInSeconds int32
+	Optional                               bool
 }
 
 func (q *Queries) UpdateRecipePrepTask(ctx context.Context, db DBTX, arg *UpdateRecipePrepTaskParams) (int64, error) {

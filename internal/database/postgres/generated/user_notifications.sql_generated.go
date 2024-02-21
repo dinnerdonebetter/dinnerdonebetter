@@ -102,8 +102,7 @@ SELECT
 	(
 		SELECT COUNT(user_notifications.id)
 		FROM user_notifications
-		WHERE user_notifications.archived_at IS NULL
-			AND user_notifications.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+		WHERE user_notifications.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 			AND user_notifications.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 			AND (
 				user_notifications.last_updated_at IS NULL
@@ -113,16 +112,19 @@ SELECT
 				user_notifications.last_updated_at IS NULL
 				OR user_notifications.last_updated_at < COALESCE($4, (SELECT NOW() + '999 years'::INTERVAL))
 			)
+			AND user_notifications.status != 'dismissed'
 			AND user_notifications.belongs_to_user = $5
 	) AS filtered_count,
 	(
 		SELECT COUNT(user_notifications.id)
 		FROM user_notifications
-		WHERE user_notifications.archived_at IS NULL
+		WHERE
+			user_notifications.status != 'dismissed'
 			AND user_notifications.belongs_to_user = $5
 	) AS total_count
 FROM user_notifications
-WHERE user_notifications.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+WHERE user_notifications.status != 'dismissed'
+	AND user_notifications.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 	AND user_notifications.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND (
 		user_notifications.last_updated_at IS NULL
@@ -196,28 +198,6 @@ func (q *Queries) GetUserNotificationsForUser(ctx context.Context, db DBTX, arg 
 		return nil, err
 	}
 	return items, nil
-}
-
-const markUserNotificationAsDismissed = `-- name: MarkUserNotificationAsDismissed :execrows
-
-UPDATE user_notifications SET
-	last_updated_at = NOW(),
-	status = dismissed
-WHERE id = $1
-	AND belongs_to_user = $2
-`
-
-type MarkUserNotificationAsDismissedParams struct {
-	ID            string
-	BelongsToUser string
-}
-
-func (q *Queries) MarkUserNotificationAsDismissed(ctx context.Context, db DBTX, arg *MarkUserNotificationAsDismissedParams) (int64, error) {
-	result, err := db.ExecContext(ctx, markUserNotificationAsDismissed, arg.ID, arg.BelongsToUser)
-	if err != nil {
-		return 0, err
-	}
-	return result.RowsAffected()
 }
 
 const updateUserNotification = `-- name: UpdateUserNotification :execrows

@@ -147,13 +147,8 @@ WHERE
 				strings.Join(applyToEach(mealsColumns, func(i int, s string) string {
 					return fmt.Sprintf("%s.%s", mealsTableName, s)
 				}), ",\n\t"),
-				buildFilterCountSelect(
-					mealsTableName,
-					true,
-				),
-				buildTotalCountSelect(
-					mealsTableName,
-				),
+				buildFilterCountSelect(mealsTableName, true, true),
+				buildTotalCountSelect(mealsTableName, true),
 				mealsTableName,
 				mealsTableName, archivedAtColumn,
 				buildFilterConditions(
@@ -180,13 +175,8 @@ WHERE
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
-				buildFilterCountSelect(
-					mealsTableName,
-					true,
-				),
-				buildTotalCountSelect(
-					mealsTableName,
-				),
+				buildFilterCountSelect(mealsTableName, true, true),
+				buildTotalCountSelect(mealsTableName, true),
 				mealsTableName,
 				mealComponentsTableName, mealComponentsTableName, mealIDColumn, mealsTableName, idColumn,
 				mealsTableName, archivedAtColumn,

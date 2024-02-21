@@ -168,8 +168,8 @@ FROM %s
 				strings.Join(applyToEach(recipesColumns, func(i int, s string) string {
 					return fmt.Sprintf("%s.%s", recipesTableName, s)
 				}), ",\n\t"),
-				buildFilterCountSelect(recipesTableName, true),
-				buildTotalCountSelect(recipesTableName),
+				buildFilterCountSelect(recipesTableName, true, true),
+				buildTotalCountSelect(recipesTableName, true),
 				recipesTableName,
 				recipesTableName, archivedAtColumn,
 				buildFilterConditions(recipesTableName, true),
@@ -193,8 +193,8 @@ WHERE %s.%s IS NULL
 				strings.Join(applyToEach(recipesColumns, func(i int, s string) string {
 					return fmt.Sprintf("%s.%s", recipesTableName, s)
 				}), ",\n\t"),
-				buildFilterCountSelect(recipesTableName, true),
-				buildTotalCountSelect(recipesTableName),
+				buildFilterCountSelect(recipesTableName, true, true),
+				buildTotalCountSelect(recipesTableName, true),
 				recipesTableName,
 				recipesTableName, archivedAtColumn,
 				recipesTableName, nameColumn, buildILIKEForArgument("query"),

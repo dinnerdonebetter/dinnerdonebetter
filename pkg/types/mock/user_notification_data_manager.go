@@ -28,8 +28,8 @@ func (m *UserNotificationDataManagerMock) GetUserNotification(ctx context.Contex
 }
 
 // GetUserNotifications is a mock function.
-func (m *UserNotificationDataManagerMock) GetUserNotifications(ctx context.Context, filter *types.QueryFilter) (*types.QueryFilteredResult[types.UserNotification], error) {
-	args := m.Called(ctx, filter)
+func (m *UserNotificationDataManagerMock) GetUserNotifications(ctx context.Context, userID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.UserNotification], error) {
+	args := m.Called(ctx, userID, filter)
 	return args.Get(0).(*types.QueryFilteredResult[types.UserNotification]), args.Error(1)
 }
 

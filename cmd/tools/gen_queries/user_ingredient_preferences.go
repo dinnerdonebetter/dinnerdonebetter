@@ -108,8 +108,8 @@ WHERE %s.%s IS NULL
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
-				buildFilterCountSelect(userIngredientPreferencesTableName, true),
-				buildTotalCountSelect(userIngredientPreferencesTableName),
+				buildFilterCountSelect(userIngredientPreferencesTableName, true, true),
+				buildTotalCountSelect(userIngredientPreferencesTableName, true),
 				userIngredientPreferencesTableName,
 				validIngredientsTableName, validIngredientsTableName, idColumn, userIngredientPreferencesTableName, userIngredientPreferencesIngredientColumn,
 				userIngredientPreferencesTableName, archivedAtColumn,

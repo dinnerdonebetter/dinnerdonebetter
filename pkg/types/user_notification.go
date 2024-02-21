@@ -59,7 +59,6 @@ type (
 
 		ID            string
 		Content       string
-		Status        string
 		BelongsToUser string
 	}
 
@@ -74,7 +73,7 @@ type (
 	UserNotificationDataManager interface {
 		UserNotificationExists(ctx context.Context, userID, userNotificationID string) (bool, error)
 		GetUserNotification(ctx context.Context, userID, userNotificationID string) (*UserNotification, error)
-		GetUserNotifications(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[UserNotification], error)
+		GetUserNotifications(ctx context.Context, userID string, filter *QueryFilter) (*QueryFilteredResult[UserNotification], error)
 		CreateUserNotification(ctx context.Context, input *UserNotificationDatabaseCreationInput) (*UserNotification, error)
 		UpdateUserNotification(ctx context.Context, updated *UserNotification) error
 	}
@@ -120,11 +119,6 @@ func (x *UserNotificationDatabaseCreationInput) ValidateWithContext(ctx context.
 		x,
 		validation.Field(&x.ID, validation.Required),
 		validation.Field(&x.Content, validation.Required),
-		validation.Field(&x.Status, validation.In(
-			UserNotificationStatusTypeUnread,
-			UserNotificationStatusTypeRead,
-			UserNotificationStatusTypeDismissed,
-		)),
 	)
 }
 
@@ -135,7 +129,7 @@ func (x *UserNotificationUpdateRequestInput) ValidateWithContext(ctx context.Con
 	return validation.ValidateStructWithContext(
 		ctx,
 		x,
-		validation.Field(&x.Status, validation.In(
+		validation.Field(&x.Status, validation.Required, validation.In(
 			UserNotificationStatusTypeUnread,
 			UserNotificationStatusTypeRead,
 			UserNotificationStatusTypeDismissed,

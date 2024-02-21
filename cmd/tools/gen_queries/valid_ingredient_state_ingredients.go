@@ -110,13 +110,8 @@ WHERE
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
-				buildFilterCountSelect(
-					validIngredientStateIngredientsTableName,
-					true,
-				),
-				buildTotalCountSelect(
-					validIngredientStateIngredientsTableName,
-				),
+				buildFilterCountSelect(validIngredientStateIngredientsTableName, true, true),
+				buildTotalCountSelect(validIngredientStateIngredientsTableName, true),
 				validIngredientStateIngredientsTableName,
 				validIngredientsTableName, validIngredientStateIngredientsTableName, validIngredientColumn, validIngredientsTableName, idColumn,
 				validIngredientStatesTableName, validIngredientStateIngredientsTableName, validIngredientStateColumn, validIngredientStatesTableName, idColumn,
@@ -148,13 +143,8 @@ WHERE
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
-				buildFilterCountSelect(
-					validIngredientStateIngredientsTableName,
-					true,
-				),
-				buildTotalCountSelect(
-					validIngredientStateIngredientsTableName,
-				),
+				buildFilterCountSelect(validIngredientStateIngredientsTableName, true, true),
+				buildTotalCountSelect(validIngredientStateIngredientsTableName, true),
 				validIngredientStateIngredientsTableName,
 				validIngredientsTableName, validIngredientStateIngredientsTableName, validIngredientColumn, validIngredientsTableName, idColumn,
 				validIngredientStatesTableName, validIngredientStateIngredientsTableName, validIngredientStateColumn, validIngredientStatesTableName, idColumn,
@@ -185,13 +175,8 @@ WHERE
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
-				buildFilterCountSelect(
-					validIngredientStateIngredientsTableName,
-					true,
-				),
-				buildTotalCountSelect(
-					validIngredientStateIngredientsTableName,
-				),
+				buildFilterCountSelect(validIngredientStateIngredientsTableName, true, true),
+				buildTotalCountSelect(validIngredientStateIngredientsTableName, true),
 				validIngredientStateIngredientsTableName,
 				validIngredientsTableName, validIngredientStateIngredientsTableName, validIngredientColumn, validIngredientsTableName, idColumn,
 				validIngredientStatesTableName, validIngredientStateIngredientsTableName, validIngredientStateColumn, validIngredientStatesTableName, idColumn,

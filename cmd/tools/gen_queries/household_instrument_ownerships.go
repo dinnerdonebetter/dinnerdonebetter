@@ -111,15 +111,8 @@ ORDER BY
 	%s.%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
-				buildFilterCountSelect(
-					householdInstrumentOwnershipsTableName,
-					true,
-					"household_instrument_ownerships.belongs_to_household = sqlc.arg(household_id)",
-				),
-				buildTotalCountSelect(
-					householdInstrumentOwnershipsTableName,
-					"household_instrument_ownerships.belongs_to_household = sqlc.arg(household_id)",
-				),
+				buildFilterCountSelect(householdInstrumentOwnershipsTableName, true, true, "household_instrument_ownerships.belongs_to_household = sqlc.arg(household_id)"),
+				buildTotalCountSelect(householdInstrumentOwnershipsTableName, true, "household_instrument_ownerships.belongs_to_household = sqlc.arg(household_id)"),
 				householdInstrumentOwnershipsTableName,
 				validInstrumentsTableName, householdInstrumentOwnershipsTableName, validInstrumentIDColumn, validInstrumentsTableName, idColumn,
 				householdInstrumentOwnershipsTableName, archivedAtColumn,

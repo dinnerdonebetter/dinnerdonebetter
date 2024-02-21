@@ -307,7 +307,6 @@ type Querier interface {
 	MarkMealPlanAsPrepTasksCreated(ctx context.Context, db DBTX, id string) error
 	MarkTwoFactorSecretAsUnverified(ctx context.Context, db DBTX, arg *MarkTwoFactorSecretAsUnverifiedParams) error
 	MarkTwoFactorSecretAsVerified(ctx context.Context, db DBTX, id string) error
-	MarkUserNotificationAsDismissed(ctx context.Context, db DBTX, arg *MarkUserNotificationAsDismissedParams) (int64, error)
 	MealPlanEventIsEligibleForVoting(ctx context.Context, db DBTX, arg *MealPlanEventIsEligibleForVotingParams) (bool, error)
 	ModifyHouseholdUserPermissions(ctx context.Context, db DBTX, arg *ModifyHouseholdUserPermissionsParams) error
 	RecipeSearch(ctx context.Context, db DBTX, arg *RecipeSearchParams) ([]*RecipeSearchRow, error)

@@ -236,15 +236,8 @@ WHERE %s.%s IS NULL
 				strings.Join(applyToEach(mealPlansColumns, func(i int, s string) string {
 					return fmt.Sprintf("%s.%s", mealPlansTableName, s)
 				}), ",\n\t"),
-				buildFilterCountSelect(
-					mealPlansTableName,
-					true,
-					"meal_plans.belongs_to_household = sqlc.arg(household_id)",
-				),
-				buildTotalCountSelect(
-					mealPlansTableName,
-					"meal_plans.belongs_to_household = sqlc.arg(household_id)",
-				),
+				buildFilterCountSelect(mealPlansTableName, true, true, "meal_plans.belongs_to_household = sqlc.arg(household_id)"),
+				buildTotalCountSelect(mealPlansTableName, true, "meal_plans.belongs_to_household = sqlc.arg(household_id)"),
 				mealPlansTableName,
 				mealPlansTableName, archivedAtColumn,
 				buildFilterConditions(

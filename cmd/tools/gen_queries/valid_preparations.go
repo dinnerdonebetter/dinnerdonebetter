@@ -111,13 +111,8 @@ ORDER BY %s.%s
 				strings.Join(applyToEach(validPreparationsColumns, func(i int, s string) string {
 					return fmt.Sprintf("%s.%s", validPreparationsTableName, s)
 				}), ",\n\t"),
-				buildFilterCountSelect(
-					validPreparationsTableName,
-					true,
-				),
-				buildTotalCountSelect(
-					validPreparationsTableName,
-				),
+				buildFilterCountSelect(validPreparationsTableName, true, true),
+				buildTotalCountSelect(validPreparationsTableName, true),
 				validPreparationsTableName,
 				validPreparationsTableName, archivedAtColumn,
 				buildFilterConditions(

@@ -199,13 +199,8 @@ WHERE %s.%s IS NULL
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
-				buildFilterCountSelect(
-					householdInvitationsTableName,
-					true,
-				),
-				buildTotalCountSelect(
-					householdInvitationsTableName,
-				),
+				buildFilterCountSelect(householdInvitationsTableName, true, true),
+				buildTotalCountSelect(householdInvitationsTableName, true),
 				householdInvitationsTableName,
 
 				householdsTableName, householdInvitationsTableName, destinationHouseholdColumn, householdsTableName, idColumn,
@@ -239,13 +234,8 @@ WHERE %s.%s IS NULL
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
-				buildFilterCountSelect(
-					householdInvitationsTableName,
-					true,
-				),
-				buildTotalCountSelect(
-					householdInvitationsTableName,
-				),
+				buildFilterCountSelect(householdInvitationsTableName, true, true),
+				buildTotalCountSelect(householdInvitationsTableName, true),
 				householdInvitationsTableName,
 				householdsTableName, householdInvitationsTableName, destinationHouseholdColumn, householdsTableName, idColumn,
 				usersTableName, householdInvitationsTableName, fromUserColumn, usersTableName, idColumn,

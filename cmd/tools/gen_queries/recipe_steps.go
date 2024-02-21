@@ -150,8 +150,8 @@ WHERE %s.%s IS NULL
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
-				buildFilterCountSelect(recipeStepsTableName, true),
-				buildTotalCountSelect(recipeStepsTableName),
+				buildFilterCountSelect(recipeStepsTableName, true, true),
+				buildTotalCountSelect(recipeStepsTableName, true),
 				recipeStepsTableName,
 				recipesTableName, recipeStepsTableName, belongsToRecipeColumn, recipesTableName, idColumn,
 				validPreparationsTableName, recipeStepsTableName, preparationIDColumn, validPreparationsTableName, idColumn,

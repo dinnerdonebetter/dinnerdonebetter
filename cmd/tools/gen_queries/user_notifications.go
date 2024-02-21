@@ -36,23 +36,6 @@ func buildUserNotificationQueries() []*Query {
 	return []*Query{
 		{
 			Annotation: QueryAnnotation{
-				Name: "MarkUserNotificationAsDismissed",
-				Type: ExecRowsType,
-			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
-	%s = %s,
-	%s = %s
-WHERE %s = sqlc.arg(%s)
-	AND %s = sqlc.arg(%s);`,
-				userNotificationsTableName,
-				lastUpdatedAtColumn, currentTimeExpression,
-				statusColumn, userNotificationStatusDismissed,
-				idColumn, idColumn,
-				belongsToUserColumn, belongsToUserColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
 				Name: "CreateUserNotification",
 				Type: ExecType,
 			},
@@ -113,24 +96,29 @@ AND %s.%s = sqlc.arg(%s);`,
 	%s,
 	%s
 FROM %s
-WHERE %s
+WHERE %s%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
 				buildFilterCountSelect(
 					userNotificationsTableName,
 					true,
+					false,
+					fmt.Sprintf("user_notifications.status != '%s'", userNotificationStatusDismissed),
 					"user_notifications.belongs_to_user = sqlc.arg(user_id)",
 				),
 				buildTotalCountSelect(
 					userNotificationsTableName,
+					false,
+					fmt.Sprintf("user_notifications.status != '%s'", userNotificationStatusDismissed),
 					"user_notifications.belongs_to_user = sqlc.arg(user_id)",
 				),
 				userNotificationsTableName,
-				strings.TrimPrefix(buildFilterConditions(
+				fmt.Sprintf("user_notifications.status != '%s'\n\t", userNotificationStatusDismissed),
+				buildFilterConditions(
 					userNotificationsTableName,
 					true,
 					"user_notifications.belongs_to_user = sqlc.arg(user_id)",
-				), "AND "),
+				),
 				offsetLimitAddendum,
 			)),
 		},

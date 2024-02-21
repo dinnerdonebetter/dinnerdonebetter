@@ -205,8 +205,8 @@ WHERE %s.%s IS NULL
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
-				buildFilterCountSelect(recipeStepVesselsTableName, true),
-				buildTotalCountSelect(recipeStepVesselsTableName),
+				buildFilterCountSelect(recipeStepVesselsTableName, true, true),
+				buildTotalCountSelect(recipeStepVesselsTableName, true),
 				recipeStepVesselsTableName,
 				validVesselsTableName, recipeStepVesselsTableName, validVesselIDColumn, validVesselsTableName, idColumn,
 				validMeasurementUnitsTableName, validVesselsTableName, capacityUnitColumn, validMeasurementUnitsTableName, idColumn,

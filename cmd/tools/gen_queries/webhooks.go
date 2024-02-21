@@ -106,13 +106,10 @@ WHERE %s.%s IS NULL
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
-				buildFilterCountSelect(
-					webhooksTableName,
-					true,
-					"webhooks.belongs_to_household = sqlc.arg(household_id)",
-				),
+				buildFilterCountSelect(webhooksTableName, true, true, "webhooks.belongs_to_household = sqlc.arg(household_id)"),
 				buildTotalCountSelect(
 					webhooksTableName,
+					true,
 					"webhooks.belongs_to_household = sqlc.arg(household_id)",
 					"webhook_trigger_events.archived_at IS NULL",
 				),

@@ -131,7 +131,7 @@ func buildFilterConditions(tableName string, withUpdateColumn bool, conditions .
 	return rv
 }
 
-func buildFilterCountSelect(tableName string, withUpdateColumn bool, conditions ...string) string {
+func buildFilterCountSelect(tableName string, withUpdateColumn, withArchivedAtColumn bool, conditions ...string) string {
 	updateAddendum := ""
 	if withUpdateColumn {
 		updateAddendum = fmt.Sprintf("\n\t\t\t%s", strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`
@@ -159,108 +159,53 @@ func buildFilterCountSelect(tableName string, withUpdateColumn bool, conditions 
 
 	allConditions := ""
 	for _, condition := range conditions {
-		allConditions += fmt.Sprintf("\n\t\t\tAND %s", condition)
+		allConditions += fmt.Sprintf("\n\t\t\tAND %s", strings.TrimSpace(condition))
+	}
+
+	archivedAtAddendum := "WHERE"
+	if withArchivedAtColumn {
+		archivedAtAddendum = fmt.Sprintf("WHERE %s.%s IS NULL\n\t\t\tAND", tableName, archivedAtColumn)
 	}
 
 	return strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`(
 		SELECT COUNT(%s.%s)
 		FROM %s
-		WHERE %s.%s IS NULL
-			AND %s.%s > COALESCE(sqlc.narg(created_after), (SELECT %s - '999 years'::INTERVAL))
+		%s %s.%s > COALESCE(sqlc.narg(created_after), (SELECT %s - '999 years'::INTERVAL))
 			AND %s.%s < COALESCE(sqlc.narg(created_before), (SELECT %s + '999 years'::INTERVAL))%s%s
 	) AS filtered_count`,
+		tableName, idColumn,
 		tableName,
-		idColumn,
-		tableName,
-		tableName,
-		archivedAtColumn,
-		tableName,
-		createdAtColumn,
-		currentTimeExpression,
-		tableName,
-		createdAtColumn,
-		currentTimeExpression,
+		archivedAtAddendum,
+		tableName, createdAtColumn, currentTimeExpression,
+		tableName, createdAtColumn, currentTimeExpression,
 		updateAddendum,
 		allConditions,
 	)))
 }
 
-func buildFilterCountSelectWithJoins(tableName string, withUpdateColumn bool, joins []string, conditions ...string) string {
-	updateAddendum := ""
-	if withUpdateColumn {
-		updateAddendum = fmt.Sprintf("\n\t\t\t%s", strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`
-			AND (
-				%s.%s IS NULL
-				OR %s.%s > COALESCE(sqlc.narg(updated_before), (SELECT %s - '999 years'::INTERVAL))
-			)
-			AND (
-				%s.%s IS NULL
-				OR %s.%s < COALESCE(sqlc.narg(updated_after), (SELECT %s + '999 years'::INTERVAL))
-			)
-		`,
-			tableName,
-			lastUpdatedAtColumn,
-			tableName,
-			lastUpdatedAtColumn,
-			currentTimeExpression,
-			tableName,
-			lastUpdatedAtColumn,
-			tableName,
-			lastUpdatedAtColumn,
-			currentTimeExpression,
-		))))
-	}
-
-	allConditions := ""
-	for _, condition := range conditions {
-		allConditions += fmt.Sprintf("\n\t\t\tAND %s", condition)
-	}
-
-	joinStatement := ""
-	for _, join := range joins {
-		joinStatement += fmt.Sprintf("\n\t\t\t%s", join)
-	}
-
-	return strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`(
-		SELECT COUNT(%s.%s)
-		FROM %s%s
-		WHERE %s.%s IS NULL%s
-			AND %s.%s > COALESCE(sqlc.narg(created_after), (SELECT %s - '999 years'::INTERVAL))
-			AND %s.%s < COALESCE(sqlc.narg(created_before), (SELECT %s + '999 years'::INTERVAL))%s%s
-	) AS filtered_count`,
-		tableName,
-		idColumn,
-		tableName,
-		joinStatement,
-		tableName,
-		archivedAtColumn,
-		tableName,
-		createdAtColumn,
-		currentTimeExpression,
-		tableName,
-		createdAtColumn,
-		currentTimeExpression,
-		updateAddendum,
-		allConditions,
-	)))
-}
-
-func buildTotalCountSelect(tableName string, conditions ...string) string {
+func buildTotalCountSelect(tableName string, withArchivedAtColumn bool, conditions ...string) string {
 	allConditons := ""
-	for _, condition := range conditions {
-		allConditons += fmt.Sprintf("\n\t\t\tAND %s", condition)
+	for i, condition := range conditions {
+		prefix := "AND "
+		if !withArchivedAtColumn && i == 0 {
+			prefix = ""
+		}
+		allConditons += fmt.Sprintf("\n\t\t\t%s%s", prefix, strings.TrimSpace(condition))
+	}
+
+	archivedAtAddendum := "WHERE"
+	if withArchivedAtColumn {
+		archivedAtAddendum = fmt.Sprintf("WHERE %s.%s IS NULL", tableName, archivedAtColumn)
 	}
 
 	return strings.TrimSpace(buildRawQuery((&builq.Builder{}).Addf(`(
 		SELECT COUNT(%s.%s)
 		FROM %s
-		WHERE %s.%s IS NULL%s
+		%s%s
 	) AS total_count`,
+		tableName, idColumn,
 		tableName,
-		idColumn,
-		tableName,
-		tableName,
-		archivedAtColumn,
+		archivedAtAddendum,
 		allConditons,
 	)))
 }

@@ -91,13 +91,8 @@ WHERE %s.%s IS NULL
 				strings.Join(applyToEach(serviceSettingsColumns, func(i int, s string) string {
 					return fmt.Sprintf("%s.%s", serviceSettingsTableName, s)
 				}), ",\n\t"),
-				buildFilterCountSelect(
-					serviceSettingsTableName,
-					true,
-				),
-				buildTotalCountSelect(
-					serviceSettingsTableName,
-				),
+				buildFilterCountSelect(serviceSettingsTableName, true, true),
+				buildTotalCountSelect(serviceSettingsTableName, true),
 				serviceSettingsTableName,
 				serviceSettingsTableName, archivedAtColumn,
 				buildFilterConditions(

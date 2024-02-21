@@ -302,13 +302,8 @@ WHERE %s.%s IS NULL
 				strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
 					return fmt.Sprintf("%s.%s", usersTableName, s)
 				}), ",\n\t"),
-				buildFilterCountSelect(
-					usersTableName,
-					true,
-				),
-				buildTotalCountSelect(
-					usersTableName,
-				),
+				buildFilterCountSelect(usersTableName, true, true),
+				buildTotalCountSelect(usersTableName, true),
 				usersTableName,
 				usersTableName, archivedAtColumn,
 				buildFilterConditions(

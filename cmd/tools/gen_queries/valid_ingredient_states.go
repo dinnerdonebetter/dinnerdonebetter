@@ -99,13 +99,8 @@ ORDER BY %s.%s
 				strings.Join(applyToEach(validIngredientStatesColumns, func(i int, s string) string {
 					return fmt.Sprintf("%s.%s", validIngredientStatesTableName, s)
 				}), ",\n\t"),
-				buildFilterCountSelect(
-					validIngredientStatesTableName,
-					true,
-				),
-				buildTotalCountSelect(
-					validIngredientStatesTableName,
-				),
+				buildFilterCountSelect(validIngredientStatesTableName, true, true),
+				buildTotalCountSelect(validIngredientStatesTableName, true),
 				validIngredientStatesTableName,
 				validIngredientStatesTableName,
 				archivedAtColumn,

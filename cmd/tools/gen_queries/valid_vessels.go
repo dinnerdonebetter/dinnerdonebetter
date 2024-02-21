@@ -119,13 +119,8 @@ ORDER BY %s.%s
 				strings.Join(applyToEach(validVesselsColumns, func(i int, s string) string {
 					return fmt.Sprintf("%s.%s", validVesselsTableName, s)
 				}), ",\n\t"),
-				buildFilterCountSelect(
-					validVesselsTableName,
-					true,
-				),
-				buildTotalCountSelect(
-					validVesselsTableName,
-				),
+				buildFilterCountSelect(validVesselsTableName, true, true),
+				buildTotalCountSelect(validVesselsTableName, true),
 				validVesselsTableName,
 				validVesselsTableName,
 				archivedAtColumn,

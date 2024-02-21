@@ -128,9 +128,7 @@ WHERE %s.%s IS NULL
 					), "\n"),
 					"\n\t\t",
 				),
-				buildTotalCountSelect(
-					usersTableName,
-				),
+				buildTotalCountSelect(usersTableName, true),
 				oauth2ClientsTableName,
 				oauth2ClientsTableName, archivedAtColumn,
 				buildFilterConditions(
