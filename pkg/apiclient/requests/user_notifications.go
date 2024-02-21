@@ -110,7 +110,7 @@ func (b *Builder) BuildUpdateUserNotificationRequest(ctx context.Context, userNo
 
 	input := converters.ConvertUserNotificationToUserNotificationUpdateRequestInput(userNotification)
 
-	req, err := b.buildDataRequest(ctx, http.MethodPut, uri, input)
+	req, err := b.buildDataRequest(ctx, http.MethodPatch, uri, input)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "building request")
 	}
