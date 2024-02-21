@@ -50,6 +50,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/services/servicesettingconfigurations"
 	"github.com/dinnerdonebetter/backend/internal/services/servicesettings"
 	"github.com/dinnerdonebetter/backend/internal/services/useringredientpreferences"
+	"github.com/dinnerdonebetter/backend/internal/services/usernotifications"
 	"github.com/dinnerdonebetter/backend/internal/services/users"
 	"github.com/dinnerdonebetter/backend/internal/services/validingredientgroups"
 	"github.com/dinnerdonebetter/backend/internal/services/validingredientmeasurementunits"
@@ -367,7 +368,13 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (http.Server, error)
 	if err != nil {
 		return nil, err
 	}
-	server, err := http.ProvideHTTPServer(ctx, httpConfig, dataManager, logger, serverEncoderDecoder, router, tracerProvider, authService, userDataService, householdDataService, householdInvitationDataService, validInstrumentDataService, validIngredientDataService, validIngredientGroupDataService, validPreparationDataService, validIngredientPreparationDataService, mealDataService, recipeDataService, recipeStepDataService, recipeStepProductDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, validMeasurementUnitDataService, validIngredientStateDataService, validPreparationInstrumentDataService, validIngredientMeasurementUnitDataService, mealPlanEventDataService, mealPlanTaskDataService, recipePrepTaskDataService, mealPlanGroceryListItemDataService, validMeasurementUnitConversionDataService, recipeStepCompletionConditionDataService, validIngredientStateIngredientDataService, recipeStepVesselDataService, webhookDataService, adminService, serviceSettingDataService, serviceSettingConfigurationDataService, userIngredientPreferenceDataService, recipeRatingDataService, householdInstrumentOwnershipDataService, oAuth2ClientDataService, validVesselDataService, validPreparationVesselDataService, workerService)
+	usernotificationsConfig := &servicesConfig.UserNotifications
+	userNotificationDataManager := database.ProvideUserNotificationDataManager(dataManager)
+	userNotificationDataService, err := usernotifications.ProvideService(ctx, logger, usernotificationsConfig, serverEncoderDecoder, routeParamManager, publisherProvider, tracerProvider, userNotificationDataManager)
+	if err != nil {
+		return nil, err
+	}
+	server, err := http.ProvideHTTPServer(ctx, httpConfig, dataManager, logger, serverEncoderDecoder, router, tracerProvider, authService, userDataService, householdDataService, householdInvitationDataService, validInstrumentDataService, validIngredientDataService, validIngredientGroupDataService, validPreparationDataService, validIngredientPreparationDataService, mealDataService, recipeDataService, recipeStepDataService, recipeStepProductDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, validMeasurementUnitDataService, validIngredientStateDataService, validPreparationInstrumentDataService, validIngredientMeasurementUnitDataService, mealPlanEventDataService, mealPlanTaskDataService, recipePrepTaskDataService, mealPlanGroceryListItemDataService, validMeasurementUnitConversionDataService, recipeStepCompletionConditionDataService, validIngredientStateIngredientDataService, recipeStepVesselDataService, webhookDataService, adminService, serviceSettingDataService, serviceSettingConfigurationDataService, userIngredientPreferenceDataService, recipeRatingDataService, householdInstrumentOwnershipDataService, oAuth2ClientDataService, validVesselDataService, validPreparationVesselDataService, workerService, userNotificationDataService)
 	if err != nil {
 		return nil, err
 	}

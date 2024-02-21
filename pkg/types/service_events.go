@@ -54,6 +54,8 @@ type (
 		RecipeRating                     *RecipeRating                   `json:"recipeRating,omitempty"`
 		ValidVessel                      *ValidVessel                    `json:"validVessel,omitempty"`
 		ValidPreparationVessel           *ValidPreparationVessel         `json:"validPreparationVessel,omitempty"`
+		UserNotification                 *UserNotification               `json:"userNotification,omitempty"`
+		UserNotificationID               string                          `json:"userNotificationID"`
 		RecipeStepVesselID               string                          `json:"recipeStepVesselID,omitempty"`
 		HouseholdInvitationID            string                          `json:"householdInvitationID,omitempty"`
 		UserID                           string                          `json:"userID"`

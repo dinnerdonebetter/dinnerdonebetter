@@ -62,6 +62,7 @@ var (
 			"HouseholdInstrumentOwnerships",
 			"ValidVessels",
 			"ValidPreparationVessels",
+			"UserNotifications",
 			"Workers",
 		),
 	)

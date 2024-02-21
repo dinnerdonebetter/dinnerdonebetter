@@ -32,6 +32,7 @@ import (
 	servicesettingconfigurationsservice "github.com/dinnerdonebetter/backend/internal/services/servicesettingconfigurations"
 	servicesettingsservice "github.com/dinnerdonebetter/backend/internal/services/servicesettings"
 	useringredientpreferencesservice "github.com/dinnerdonebetter/backend/internal/services/useringredientpreferences"
+	usernotificationsservice "github.com/dinnerdonebetter/backend/internal/services/usernotifications"
 	usersservice "github.com/dinnerdonebetter/backend/internal/services/users"
 	validingredientgroupsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientgroups"
 	validingredientmeasurementunitsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientmeasurementunits"
@@ -1277,6 +1278,28 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 				settingConfigurationRouter.
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveServiceSettingConfigurationsPermission)).
 					Delete(serviceSettingConfigurationIDRouteParam, s.serviceSettingConfigurationsService.ArchiveHandler)
+			})
+		})
+
+		// User Notifications
+		userNotificationPath := "user_notifications"
+		userNotificationsRouteWithPrefix := fmt.Sprintf("/%s", userNotificationPath)
+		userNotificationIDRouteParam := buildURLVarChunk(usernotificationsservice.UserNotificationIDURIParamKey, "")
+		v1Router.Route(userNotificationsRouteWithPrefix, func(userNotificationsRouter routing.Router) {
+			userNotificationsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.CreateUserNotificationsPermission)).
+				Post(root, s.userNotificationsService.CreateHandler)
+			userNotificationsRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadUserNotificationsPermission)).
+				Get(root, s.userNotificationsService.ListHandler)
+
+			userNotificationsRouter.Route(userNotificationIDRouteParam, func(singleUserNotificationRouter routing.Router) {
+				singleUserNotificationRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadUserNotificationsPermission)).
+					Get(root, s.userNotificationsService.ReadHandler)
+				singleUserNotificationRouter.
+					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.UpdateUserNotificationsPermission)).
+					Patch(root, s.userNotificationsService.UpdateHandler)
 			})
 		})
 	})

@@ -385,6 +385,13 @@ const (
 	ReadOAuth2ClientsPermission Permission = "read.oauth2_clients"
 	// ArchiveOAuth2ClientsPermission is a household admin permission.
 	ArchiveOAuth2ClientsPermission Permission = "archive.oauth2_clients"
+
+	// CreateUserNotificationsPermission is an admin user permission.
+	CreateUserNotificationsPermission Permission = "create.user_notifications"
+	// ReadUserNotificationsPermission is a household user permission.
+	ReadUserNotificationsPermission Permission = "read.user_notifications"
+	// UpdateUserNotificationsPermission is a household user permission.
+	UpdateUserNotificationsPermission Permission = "update.user_notifications"
 )
 
 // ID implements the gorbac Permission interface.
@@ -447,6 +454,7 @@ var (
 		CreateValidIngredientStatesPermission,
 		UpdateValidIngredientStatesPermission,
 		ArchiveValidIngredientStatesPermission,
+		CreateUserNotificationsPermission,
 		// only admins can arbitrarily create these via the API, this is exclusively for integration test purposes.
 		CreateServiceSettingsPermission,
 		CreateMealPlanTasksPermission,
@@ -578,6 +586,8 @@ var (
 		ReadRecipeRatingsPermission,
 		UpdateRecipeRatingsPermission,
 		ArchiveRecipeRatingsPermission,
+		ReadUserNotificationsPermission,
+		UpdateUserNotificationsPermission,
 	}
 )
 

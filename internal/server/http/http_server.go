@@ -75,6 +75,7 @@ type (
 		householdInstrumentOwnershipService    types.HouseholdInstrumentOwnershipDataService
 		oauth2ClientsService                   types.OAuth2ClientDataService
 		validPreparationVesselsService         types.ValidPreparationVesselDataService
+		userNotificationsService               types.UserNotificationDataService
 		workerService                          types.WorkerService
 		encoder                                encoding.ServerEncoderDecoder
 		logger                                 logging.Logger
@@ -138,6 +139,7 @@ func ProvideHTTPServer(
 	validVesselsService types.ValidVesselDataService,
 	validPreparationVesselsService types.ValidPreparationVesselDataService,
 	workerService types.WorkerService,
+	userNotificationsService types.UserNotificationDataService,
 ) (Server, error) {
 	srv := &server{
 		config: serverSettings,
@@ -193,6 +195,7 @@ func ProvideHTTPServer(
 		validVesselsService:                    validVesselsService,
 		validPreparationVesselsService:         validPreparationVesselsService,
 		workerService:                          workerService,
+		userNotificationsService:               userNotificationsService,
 	}
 
 	srv.setupRouter(ctx, router)

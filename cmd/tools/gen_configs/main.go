@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	usernotificationsservice "github.com/dinnerdonebetter/backend/internal/services/usernotifications"
 	"log"
 	"os"
 	"path/filepath"
@@ -558,6 +559,9 @@ func buildDevConfig() *config.InstanceConfig {
 			Workers: workersservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
+			UserNotifications: usernotificationsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
 		},
 	}
 }
@@ -786,6 +790,9 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			Workers: workersservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			UserNotifications: usernotificationsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 		},
