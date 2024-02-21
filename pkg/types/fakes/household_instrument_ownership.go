@@ -13,7 +13,7 @@ func BuildFakeHouseholdInstrumentOwnership() *types.HouseholdInstrumentOwnership
 		Notes:              buildUniqueString(),
 		BelongsToHousehold: buildUniqueString(),
 		Instrument:         *BuildFakeValidInstrument(),
-		Quantity:           uint16(BuildFakeNumber()),
+		Quantity:           uint16(buildFakeNumber()),
 	}
 }
 

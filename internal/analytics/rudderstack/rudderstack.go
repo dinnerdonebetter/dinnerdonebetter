@@ -44,7 +44,7 @@ func NewRudderstackEventReporter(logger logging.Logger, tracerProvider tracing.T
 		return nil, ErrEmptyAPIToken
 	}
 
-	if cfg.APIKey == "" {
+	if cfg.DataPlaneURL == "" {
 		return nil, ErrEmptyDataPlaneURL
 	}
 

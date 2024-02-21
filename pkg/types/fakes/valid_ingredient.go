@@ -5,7 +5,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
-	fake "github.com/brianvoe/gofakeit/v6"
+	fake "github.com/brianvoe/gofakeit/v7"
 )
 
 // BuildFakeValidIngredient builds a faked valid ingredient.
@@ -33,8 +33,8 @@ func BuildFakeValidIngredient() *types.ValidIngredient {
 		PluralName:                              buildUniqueString(),
 		AnimalDerived:                           fake.Bool(),
 		RestrictToPreparations:                  fake.Bool(),
-		MinimumIdealStorageTemperatureInCelsius: pointers.Pointer(float32(BuildFakeNumber())),
-		MaximumIdealStorageTemperatureInCelsius: pointers.Pointer(float32(BuildFakeNumber())),
+		MinimumIdealStorageTemperatureInCelsius: pointers.Pointer(float32(buildFakeNumber())),
+		MaximumIdealStorageTemperatureInCelsius: pointers.Pointer(float32(buildFakeNumber())),
 		StorageInstructions:                     buildUniqueString(),
 		Slug:                                    buildUniqueString(),
 		ContainsAlcohol:                         fake.Bool(),

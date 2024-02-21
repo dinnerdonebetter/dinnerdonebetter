@@ -17,6 +17,8 @@ const (
 )
 
 var (
+	// ErrNilConfig indicates a nil config was provided.
+	ErrNilConfig = errors.New("nil Posthog configuration")
 	// ErrEmptyAPIToken indicates an empty API token was provided.
 	ErrEmptyAPIToken = errors.New("empty API token")
 )
@@ -31,8 +33,12 @@ type (
 )
 
 // NewPostHogEventReporter returns a new PostHog-backed EventReporter.
-func NewPostHogEventReporter(logger logging.Logger, tracerProvider tracing.TracerProvider, apiKey string, configModifiers ...func(*posthog.Config)) (analytics.EventReporter, error) {
-	if apiKey == "" {
+func NewPostHogEventReporter(logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *Config, configModifiers ...func(*posthog.Config)) (analytics.EventReporter, error) {
+	if cfg == nil {
+		return nil, ErrNilConfig
+	}
+
+	if cfg.APIKey == "" {
 		return nil, ErrEmptyAPIToken
 	}
 
@@ -41,7 +47,7 @@ func NewPostHogEventReporter(logger logging.Logger, tracerProvider tracing.Trace
 		f(&phc)
 	}
 
-	client, err := posthog.NewWithConfig(apiKey, phc)
+	client, err := posthog.NewWithConfig(cfg.APIKey, phc)
 	if err != nil {
 		return nil, err
 	}

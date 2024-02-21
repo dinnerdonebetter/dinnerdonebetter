@@ -463,7 +463,7 @@ func (q *Querier) decideOptionWinner(ctx context.Context, options []*types.MealP
 		candidates = append(candidates, c)
 	}
 
-	e := schulze.NewVoting[string](candidates)
+	e := schulze.NewVoting(candidates)
 	for _, vote := range votesByUser {
 		if _, err := e.Vote(vote); err != nil {
 			// this actually can never happen because we use uints for ranks, lol
@@ -471,7 +471,7 @@ func (q *Querier) decideOptionWinner(ctx context.Context, options []*types.MealP
 		}
 	}
 
-	winners, tie := e.Compute()
+	winners, _, tie := e.Compute()
 	if tie {
 		return q.determineWinner(winners), true, true
 	}

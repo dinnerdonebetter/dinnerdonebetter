@@ -8,6 +8,7 @@ import (
 
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/trace"
+	"go.opentelemetry.io/otel/trace/noop"
 )
 
 type errorHandler struct {
@@ -35,10 +36,12 @@ type TracerProvider interface {
 	ForceFlush(ctx context.Context) error
 }
 
-type noopTracerProvider struct{}
+type noopTracerProvider struct {
+	noop.TracerProvider
+}
 
 func (n *noopTracerProvider) Tracer(instrumentationName string, opts ...trace.TracerOption) trace.Tracer {
-	return trace.NewNoopTracerProvider().Tracer(instrumentationName, opts...)
+	return noop.NewTracerProvider().Tracer(instrumentationName, opts...)
 }
 
 func (n *noopTracerProvider) ForceFlush(_ context.Context) error {

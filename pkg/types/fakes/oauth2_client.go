@@ -5,7 +5,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
-	fake "github.com/brianvoe/gofakeit/v6"
+	fake "github.com/brianvoe/gofakeit/v7"
 )
 
 // BuildFakeOAuth2Client builds a faked OAuth2Client.
@@ -14,7 +14,7 @@ func BuildFakeOAuth2Client() *types.OAuth2Client {
 		ID:           BuildFakeID(),
 		Name:         fake.Password(true, true, true, false, false, 32),
 		ClientID:     BuildFakeID(),
-		ClientSecret: BuildFakePassword(),
+		ClientSecret: buildFakePassword(),
 		CreatedAt:    BuildFakeTime(),
 	}
 }

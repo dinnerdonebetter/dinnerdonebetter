@@ -5,14 +5,14 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
-	fake "github.com/brianvoe/gofakeit/v6"
+	fake "github.com/brianvoe/gofakeit/v7"
 )
 
 // BuildFakeValidPreparation builds a faked valid preparation.
 func BuildFakeValidPreparation() *types.ValidPreparation {
-	minIngredients := BuildFakeNumber()
-	minInstruments := BuildFakeNumber()
-	minVessels := BuildFakeNumber()
+	minIngredients := buildFakeNumber()
+	minInstruments := buildFakeNumber()
+	minVessels := buildFakeNumber()
 
 	return &types.ValidPreparation{
 		ID:                          BuildFakeID(),

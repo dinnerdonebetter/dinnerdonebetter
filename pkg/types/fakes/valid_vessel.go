@@ -4,7 +4,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
-	fake "github.com/brianvoe/gofakeit/v6"
+	fake "github.com/brianvoe/gofakeit/v7"
 )
 
 // BuildFakeValidVessel builds a faked valid instrument.
@@ -19,11 +19,11 @@ func BuildFakeValidVessel() *types.ValidVessel {
 		DisplayInSummaryLists:          fake.Bool(),
 		IncludeInGeneratedInstructions: fake.Bool(),
 		UsableForStorage:               fake.Bool(),
-		Capacity:                       float32(BuildFakeNumber()),
+		Capacity:                       float32(buildFakeNumber()),
 		CapacityUnit:                   BuildFakeValidMeasurementUnit(),
-		WidthInMillimeters:             float32(BuildFakeNumber()),
-		LengthInMillimeters:            float32(BuildFakeNumber()),
-		HeightInMillimeters:            float32(BuildFakeNumber()),
+		WidthInMillimeters:             float32(buildFakeNumber()),
+		LengthInMillimeters:            float32(buildFakeNumber()),
+		HeightInMillimeters:            float32(buildFakeNumber()),
 		Shape:                          "other",
 		CreatedAt:                      BuildFakeTime(),
 	}

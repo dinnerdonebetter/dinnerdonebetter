@@ -12,7 +12,7 @@ func BuildFakeValidMeasurementUnitConversion() *types.ValidMeasurementUnitConver
 		From:              *BuildFakeValidMeasurementUnit(),
 		To:                *BuildFakeValidMeasurementUnit(),
 		OnlyForIngredient: nil,
-		Modifier:          float32(BuildFakeNumber()),
+		Modifier:          float32(buildFakeNumber()),
 		Notes:             buildUniqueString(),
 		CreatedAt:         BuildFakeTime(),
 	}

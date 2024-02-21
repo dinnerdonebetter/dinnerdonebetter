@@ -8,7 +8,7 @@ import (
 
 // BuildFakeValidIngredientMeasurementUnit builds a faked valid ingredient measurement unit.
 func BuildFakeValidIngredientMeasurementUnit() *types.ValidIngredientMeasurementUnit {
-	minQty := BuildFakeNumber()
+	minQty := buildFakeNumber()
 
 	return &types.ValidIngredientMeasurementUnit{
 		ID:                       BuildFakeID(),

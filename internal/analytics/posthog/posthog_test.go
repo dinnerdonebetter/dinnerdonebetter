@@ -19,8 +19,9 @@ func TestNewSegmentEventReporter(T *testing.T) {
 		t.Parallel()
 
 		logger := logging.NewNoopLogger()
+		cfg := &Config{APIKey: t.Name()}
 
-		collector, err := NewPostHogEventReporter(logger, tracing.NewNoopTracerProvider(), t.Name())
+		collector, err := NewPostHogEventReporter(logger, tracing.NewNoopTracerProvider(), cfg)
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 	})
@@ -29,8 +30,9 @@ func TestNewSegmentEventReporter(T *testing.T) {
 		t.Parallel()
 
 		logger := logging.NewNoopLogger()
+		cfg := &Config{}
 
-		collector, err := NewPostHogEventReporter(logger, tracing.NewNoopTracerProvider(), "")
+		collector, err := NewPostHogEventReporter(logger, tracing.NewNoopTracerProvider(), cfg)
 		require.Error(t, err)
 		require.Nil(t, collector)
 	})
@@ -43,8 +45,9 @@ func TestSegmentEventReporter_Close(T *testing.T) {
 		t.Parallel()
 
 		logger := logging.NewNoopLogger()
+		cfg := &Config{APIKey: t.Name()}
 
-		collector, err := NewPostHogEventReporter(logger, tracing.NewNoopTracerProvider(), t.Name())
+		collector, err := NewPostHogEventReporter(logger, tracing.NewNoopTracerProvider(), cfg)
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 
@@ -60,12 +63,13 @@ func TestSegmentEventReporter_AddUser(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
+		cfg := &Config{APIKey: t.Name()}
 		exampleUserID := fakes.BuildFakeID()
 		properties := map[string]any{
 			"test.name": t.Name(),
 		}
 
-		collector, err := NewPostHogEventReporter(logger, tracing.NewNoopTracerProvider(), t.Name())
+		collector, err := NewPostHogEventReporter(logger, tracing.NewNoopTracerProvider(), cfg)
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 
@@ -81,12 +85,13 @@ func TestSegmentEventReporter_EventOccurred(T *testing.T) {
 
 		ctx := context.Background()
 		logger := logging.NewNoopLogger()
+		cfg := &Config{APIKey: t.Name()}
 		exampleUserID := fakes.BuildFakeID()
 		properties := map[string]any{
 			"test.name": t.Name(),
 		}
 
-		collector, err := NewPostHogEventReporter(logger, tracing.NewNoopTracerProvider(), t.Name())
+		collector, err := NewPostHogEventReporter(logger, tracing.NewNoopTracerProvider(), cfg)
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 

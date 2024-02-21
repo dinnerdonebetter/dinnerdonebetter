@@ -6,7 +6,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
-	fake "github.com/brianvoe/gofakeit/v6"
+	fake "github.com/brianvoe/gofakeit/v7"
 )
 
 // BuildFakeRecipeMedia builds a faked valid preparation.
@@ -16,7 +16,7 @@ func BuildFakeRecipeMedia() *types.RecipeMedia {
 		BelongsToRecipe:     nil,
 		BelongsToRecipeStep: nil,
 		MimeType:            fake.FileMimeType(),
-		InternalPath:        fmt.Sprintf("%s.%s", BuildFakePassword(), fake.FileExtension()),
+		InternalPath:        fmt.Sprintf("%s.%s", buildFakePassword(), fake.FileExtension()),
 		ExternalPath:        "",
 		CreatedAt:           BuildFakeTime(),
 	}
