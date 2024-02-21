@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
@@ -66,8 +66,8 @@ func TestHouseholdInstrumentOwnershipUpdateRequestInput_ValidateWithContext(T *t
 
 		ctx := context.Background()
 		x := &HouseholdInstrumentOwnershipUpdateRequestInput{
-			Quantity:          pointers.Pointer[uint16](1),
-			ValidInstrumentID: pointers.Pointer(t.Name()),
+			Quantity:          pointer.To[uint16](1),
+			ValidInstrumentID: pointer.To(t.Name()),
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))

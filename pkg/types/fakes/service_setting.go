@@ -1,7 +1,7 @@
 package fakes
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 )
@@ -16,7 +16,7 @@ func BuildFakeServiceSetting() *types.ServiceSetting {
 		Type:         "user",
 		Description:  buildUniqueString(),
 		Enumeration:  []string{defaultValue},
-		DefaultValue: pointers.Pointer(defaultValue),
+		DefaultValue: pointer.To(defaultValue),
 		AdminsOnly:   true,
 		CreatedAt:    BuildFakeTime(),
 	}

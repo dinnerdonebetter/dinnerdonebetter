@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -350,8 +350,8 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 							Name:                            productName,
 							MeasurementUnitID:               fakes.BuildFakeValidMeasurementUnit().ID,
 							MinimumQuantity:                 1000,
-							ProductOfRecipeStepProductIndex: pointers.Pointer(uint64(0)),
-							ProductOfRecipeStepIndex:        pointers.Pointer(uint64(0)),
+							ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
+							ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
 						},
 						{
 							IngredientID:      &garlicPaste.ID,
@@ -426,8 +426,8 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 							Name:                            productName,
 							MeasurementUnitID:               fakes.BuildFakeValidMeasurementUnit().ID,
 							MinimumQuantity:                 1000,
-							ProductOfRecipeStepIndex:        pointers.Pointer(uint64(0)),
-							ProductOfRecipeStepProductIndex: pointers.Pointer(uint64(0)),
+							ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
+							ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
 						},
 						{
 							IngredientID:      &garlicPaste.ID,
@@ -480,8 +480,8 @@ func Test_findCreatedRecipeStepProductsForIngredients(T *testing.T) {
 							Name:                            productName,
 							MeasurementUnitID:               fakes.BuildFakeValidMeasurementUnit().ID,
 							MinimumQuantity:                 1000,
-							ProductOfRecipeStepIndex:        pointers.Pointer(uint64(2)),
-							ProductOfRecipeStepProductIndex: pointers.Pointer(uint64(0)),
+							ProductOfRecipeStepIndex:        pointer.To(uint64(2)),
+							ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
 						},
 						{
 							Name:              "pressure cooked beans",
@@ -568,8 +568,8 @@ func Test_findCreatedRecipeStepProductsForInstruments(T *testing.T) {
 							InstrumentID:                    &bakingSheet.ID,
 							RecipeStepProductID:             nil,
 							Name:                            productName,
-							ProductOfRecipeStepIndex:        pointers.Pointer(uint64(0)),
-							ProductOfRecipeStepProductIndex: pointers.Pointer(uint64(0)),
+							ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
+							ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
 						},
 					},
 					Notes:         "second step",

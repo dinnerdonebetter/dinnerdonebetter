@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	fake "github.com/brianvoe/gofakeit/v7"
@@ -24,7 +24,7 @@ func BuildFakeUser() *types.User {
 		LastName:                  fake.LastName(),
 		EmailAddress:              fake.Email(),
 		Username:                  fmt.Sprintf("%s_%d_%s", fake.Username(), fake.Uint8(), fake.Username()),
-		Birthday:                  pointers.Pointer(BuildFakeTime()),
+		Birthday:                  pointer.To(BuildFakeTime()),
 		AccountStatus:             string(types.UnverifiedHouseholdStatus),
 		TwoFactorSecret:           base32.StdEncoding.EncodeToString([]byte(fake.Password(false, true, true, false, false, 32))),
 		TwoFactorSecretVerifiedAt: &fakeDate,

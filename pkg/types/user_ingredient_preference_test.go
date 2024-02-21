@@ -5,7 +5,7 @@ import (
 	"math"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
@@ -99,8 +99,8 @@ func TestUserIngredientPreferenceUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &UserIngredientPreferenceUpdateRequestInput{
-			IngredientID: pointers.Pointer(t.Name()),
-			Rating:       pointers.Pointer(minRating),
+			IngredientID: pointer.To(t.Name()),
+			Rating:       pointer.To(minRating),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

@@ -11,7 +11,7 @@ import (
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	testutils "github.com/dinnerdonebetter/backend/tests/utils"
@@ -145,7 +145,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 							RecipeStepProductID: nil,
 							Ingredient: &types.ValidIngredient{
 								MaximumIdealStorageTemperatureInCelsius: nil,
-								MinimumIdealStorageTemperatureInCelsius: pointers.Pointer(float32(2.5)),
+								MinimumIdealStorageTemperatureInCelsius: pointer.To(float32(2.5)),
 								PluralName:                              "chicken breasts",
 								StorageInstructions:                     "keep frozen",
 								Name:                                    "chicken breast",
@@ -156,7 +156,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 							BelongsToRecipeStep: recipeStepID,
 							MeasurementUnit:     types.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
 							MinimumQuantity:     900,
-							MaximumQuantity:     pointers.Pointer(float32(900)),
+							MaximumQuantity:     pointer.To(float32(900)),
 							Optional:            false,
 						},
 					},
@@ -307,7 +307,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 							BelongsToRecipeStep: recipeStep1ID,
 							MeasurementUnit:     types.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
 							MinimumQuantity:     500,
-							MaximumQuantity:     pointers.Pointer(float32(1000)),
+							MaximumQuantity:     pointer.To(float32(1000)),
 						},
 					},
 					Products: []*types.RecipeStepProduct{
@@ -323,7 +323,7 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 							MeasurementUnit: &types.ValidMeasurementUnit{
 								Name: "gram", PluralName: "gram",
 							},
-							MaximumStorageDurationInSeconds: pointers.Pointer(uint32(259200)),
+							MaximumStorageDurationInSeconds: pointer.To(uint32(259200)),
 							MaximumQuantity:                 nil,
 							MinimumQuantity:                 nil,
 							Compostable:                     false,
@@ -342,14 +342,14 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 					Preparation:                   types.ValidPreparation{Name: "sautee"},
 					Ingredients: []*types.RecipeStepIngredient{
 						{
-							RecipeStepProductID: pointers.Pointer(recipeStep2ID),
+							RecipeStepProductID: pointer.To(recipeStep2ID),
 							Ingredient:          nil,
 							Name:                "massaged kale",
 							ID:                  fakes.BuildFakeID(),
 							BelongsToRecipeStep: recipeStep1ID,
 							MeasurementUnit:     types.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
 							MinimumQuantity:     500,
-							MaximumQuantity:     pointers.Pointer(float32(1000)),
+							MaximumQuantity:     pointer.To(float32(1000)),
 						},
 					},
 					Products: []*types.RecipeStepProduct{

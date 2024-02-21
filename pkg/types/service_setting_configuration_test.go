@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
@@ -92,8 +92,8 @@ func TestServiceSettingConfigurationUpdateRequestInput_ValidateWithContext(T *te
 
 		ctx := context.Background()
 		x := &ServiceSettingConfigurationUpdateRequestInput{
-			Value:            pointers.Pointer(t.Name()),
-			ServiceSettingID: pointers.Pointer(t.Name()),
+			Value:            pointer.To(t.Name()),
+			ServiceSettingID: pointer.To(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(ctx)

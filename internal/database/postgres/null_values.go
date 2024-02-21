@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 )
 
 func timePointerFromNullTime(nt sql.NullTime) *time.Time {
@@ -115,7 +115,7 @@ func nullBoolFromBool(b bool) sql.NullBool {
 func float32PointerFromNullString(f sql.NullString) *float32 {
 	if f.Valid {
 		if parsedFloat, err := strconv.ParseFloat(f.String, 64); err == nil {
-			return pointers.Pointer(float32(parsedFloat))
+			return pointer.To(float32(parsedFloat))
 		}
 	}
 
@@ -186,7 +186,7 @@ func nullInt64FromUint32Pointer(f *uint32) sql.NullInt64 {
 
 func uint16PointerFromNullInt32(f sql.NullInt32) *uint16 {
 	if f.Valid {
-		return pointers.Pointer(uint16(f.Int32))
+		return pointer.To(uint16(f.Int32))
 	}
 
 	return nil
@@ -194,7 +194,7 @@ func uint16PointerFromNullInt32(f sql.NullInt32) *uint16 {
 
 func uint32PointerFromNullInt32(f sql.NullInt32) *uint32 {
 	if f.Valid {
-		return pointers.Pointer(uint32(f.Int32))
+		return pointer.To(uint32(f.Int32))
 	}
 
 	return nil
@@ -202,7 +202,7 @@ func uint32PointerFromNullInt32(f sql.NullInt32) *uint32 {
 
 func uint32PointerFromNullInt64(f sql.NullInt64) *uint32 {
 	if f.Valid {
-		return pointers.Pointer(uint32(f.Int64))
+		return pointer.To(uint32(f.Int64))
 	}
 
 	return nil

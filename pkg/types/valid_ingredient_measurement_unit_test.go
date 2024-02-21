@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
@@ -17,12 +17,12 @@ func TestValidIngredientMeasurementUnit_Update(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidIngredientMeasurementUnit{
-			MaximumAllowableQuantity: pointers.Pointer(float32(3.21)),
+			MaximumAllowableQuantity: pointer.To(float32(3.21)),
 		}
 		input := &ValidIngredientMeasurementUnitUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
-		input.MaximumAllowableQuantity = pointers.Pointer(float32(1.23))
+		input.MaximumAllowableQuantity = pointer.To(float32(1.23))
 
 		x.Update(input)
 	})
@@ -39,7 +39,7 @@ func TestValidIngredientMeasurementUnitCreationRequestInput_Validate(T *testing.
 			ValidMeasurementUnitID:   t.Name(),
 			ValidIngredientID:        t.Name(),
 			MinimumAllowableQuantity: fake.Float32(),
-			MaximumAllowableQuantity: pointers.Pointer(fake.Float32()),
+			MaximumAllowableQuantity: pointer.To(fake.Float32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -90,11 +90,11 @@ func TestValidIngredientMeasurementUnitUpdateRequestInput_Validate(T *testing.T)
 		t.Parallel()
 
 		x := &ValidIngredientMeasurementUnitUpdateRequestInput{
-			Notes:                    pointers.Pointer(t.Name()),
-			ValidMeasurementUnitID:   pointers.Pointer(t.Name()),
-			ValidIngredientID:        pointers.Pointer(t.Name()),
-			MinimumAllowableQuantity: pointers.Pointer(fake.Float32()),
-			MaximumAllowableQuantity: pointers.Pointer(fake.Float32()),
+			Notes:                    pointer.To(t.Name()),
+			ValidMeasurementUnitID:   pointer.To(t.Name()),
+			ValidIngredientID:        pointer.To(t.Name()),
+			MinimumAllowableQuantity: pointer.To(fake.Float32()),
+			MaximumAllowableQuantity: pointer.To(fake.Float32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
@@ -129,8 +129,8 @@ func TestRecipe_Update(T *testing.T) {
 		input := &RecipeUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
-		input.SealOfApproval = pointers.Pointer(true)
-		input.EligibleForMeals = pointers.Pointer(true)
+		input.SealOfApproval = pointer.To(true)
+		input.EligibleForMeals = pointer.To(true)
 
 		x.Update(input)
 	})
@@ -150,7 +150,7 @@ func TestRecipeCreationRequestInput_Validate(T *testing.T) {
 			PluralPortionName:   t.Name(),
 			Description:         t.Name(),
 			YieldsComponentType: MealComponentTypesMain,
-			InspiredByRecipeID:  pointers.Pointer(t.Name()),
+			InspiredByRecipeID:  pointer.To(t.Name()),
 			Steps: []*RecipeStepCreationRequestInput{
 				buildValidRecipeStepCreationRequestInput(),
 				buildValidRecipeStepCreationRequestInput(),
@@ -191,7 +191,7 @@ func TestRecipeCreationRequestInput_Validate(T *testing.T) {
 			PluralPortionName:   t.Name(),
 			Description:         t.Name(),
 			YieldsComponentType: MealComponentTypesMain,
-			InspiredByRecipeID:  pointers.Pointer(t.Name()),
+			InspiredByRecipeID:  pointer.To(t.Name()),
 			Steps: []*RecipeStepCreationRequestInput{
 				buildValidRecipeStepCreationRequestInput(),
 				buildValidRecipeStepCreationRequestInput(),
@@ -314,12 +314,12 @@ func TestRecipeUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeUpdateRequestInput{
-			Name:                     pointers.Pointer(t.Name()),
-			Source:                   pointers.Pointer(t.Name()),
-			Description:              pointers.Pointer(t.Name()),
-			InspiredByRecipeID:       pointers.Pointer(t.Name()),
-			SealOfApproval:           pointers.Pointer(fake.Bool()),
-			MinimumEstimatedPortions: pointers.Pointer(fake.Float32()),
+			Name:                     pointer.To(t.Name()),
+			Source:                   pointer.To(t.Name()),
+			Description:              pointer.To(t.Name()),
+			InspiredByRecipeID:       pointer.To(t.Name()),
+			SealOfApproval:           pointer.To(fake.Bool()),
+			MinimumEstimatedPortions: pointer.To(fake.Float32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

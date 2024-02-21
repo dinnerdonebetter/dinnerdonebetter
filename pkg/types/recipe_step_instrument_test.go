@@ -5,7 +5,7 @@ import (
 	"math"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
@@ -18,15 +18,15 @@ func TestRecipeStepInstrument_Update(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepInstrument{
-			RecipeStepProductID: pointers.Pointer(t.Name()),
-			MaximumQuantity:     pointers.Pointer(uint32(321)),
+			RecipeStepProductID: pointer.To(t.Name()),
+			MaximumQuantity:     pointer.To(uint32(321)),
 		}
 		input := &RecipeStepInstrumentUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
-		input.Optional = pointers.Pointer(true)
-		input.RecipeStepProductID = pointers.Pointer("whatever")
-		input.MaximumQuantity = pointers.Pointer(uint32(123))
+		input.Optional = pointer.To(true)
+		input.RecipeStepProductID = pointer.To("whatever")
+		input.MaximumQuantity = pointer.To(uint32(123))
 
 		x.Update(input)
 	})
@@ -39,14 +39,14 @@ func TestRecipeStepInstrumentCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepInstrumentCreationRequestInput{
-			InstrumentID:        pointers.Pointer(t.Name()),
+			InstrumentID:        pointer.To(t.Name()),
 			Name:                t.Name(),
-			RecipeStepProductID: pointers.Pointer(t.Name()),
+			RecipeStepProductID: pointer.To(t.Name()),
 			Notes:               t.Name(),
 			PreferenceRank:      uint8(fake.Number(1, math.MaxUint8)),
 			Optional:            fake.Bool(),
 			MinimumQuantity:     fake.Uint32(),
-			MaximumQuantity:     pointers.Pointer(fake.Uint32()),
+			MaximumQuantity:     pointer.To(fake.Uint32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -71,7 +71,7 @@ func TestRecipeStepInstrumentDatabaseCreationInput_Validate(T *testing.T) {
 
 		x := &RecipeStepInstrumentDatabaseCreationInput{
 			ID:                  t.Name(),
-			InstrumentID:        pointers.Pointer(t.Name()),
+			InstrumentID:        pointer.To(t.Name()),
 			BelongsToRecipeStep: t.Name(),
 		}
 
@@ -96,15 +96,15 @@ func TestRecipeStepInstrumentUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepInstrumentUpdateRequestInput{
-			InstrumentID:        pointers.Pointer(t.Name()),
-			Name:                pointers.Pointer(t.Name()),
-			BelongsToRecipeStep: pointers.Pointer(t.Name()),
-			RecipeStepProductID: pointers.Pointer(t.Name()),
-			Notes:               pointers.Pointer(t.Name()),
-			PreferenceRank:      pointers.Pointer(uint8(fake.Number(1, math.MaxUint8))),
-			Optional:            pointers.Pointer(fake.Bool()),
-			MinimumQuantity:     pointers.Pointer(fake.Uint32()),
-			MaximumQuantity:     pointers.Pointer(fake.Uint32()),
+			InstrumentID:        pointer.To(t.Name()),
+			Name:                pointer.To(t.Name()),
+			BelongsToRecipeStep: pointer.To(t.Name()),
+			RecipeStepProductID: pointer.To(t.Name()),
+			Notes:               pointer.To(t.Name()),
+			PreferenceRank:      pointer.To(uint8(fake.Number(1, math.MaxUint8))),
+			Optional:            pointer.To(fake.Bool()),
+			MinimumQuantity:     pointer.To(fake.Uint32()),
+			MaximumQuantity:     pointer.To(fake.Uint32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

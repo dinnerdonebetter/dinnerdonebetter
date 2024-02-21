@@ -6,7 +6,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
@@ -49,7 +49,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient:      onion,
 															MinimumQuantity: 100,
-															MaximumQuantity: pointers.Pointer(float32(100)),
+															MaximumQuantity: pointer.To(float32(100)),
 															MeasurementUnit: *grams,
 														},
 													},
@@ -78,7 +78,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient:      carrot,
 															MinimumQuantity: 100,
-															MaximumQuantity: pointers.Pointer(float32(100)),
+															MaximumQuantity: pointer.To(float32(100)),
 															MeasurementUnit: *grams,
 														},
 													},
@@ -107,7 +107,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient:      celery,
 															MinimumQuantity: 100,
-															MaximumQuantity: pointers.Pointer(float32(100)),
+															MaximumQuantity: pointer.To(float32(100)),
 															MeasurementUnit: *grams,
 														},
 													},
@@ -136,7 +136,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient:      salt,
 															MinimumQuantity: 100,
-															MaximumQuantity: pointers.Pointer(float32(100)),
+															MaximumQuantity: pointer.To(float32(100)),
 															MeasurementUnit: *grams,
 														},
 													},
@@ -165,7 +165,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient:      onion,
 															MinimumQuantity: 100,
-															MaximumQuantity: pointers.Pointer(float32(100)),
+															MaximumQuantity: pointer.To(float32(100)),
 															MeasurementUnit: *grams,
 														},
 													},
@@ -190,7 +190,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				ValidIngredientID:      onion.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
 				MinimumQuantityNeeded:  200,
-				MaximumQuantityNeeded:  pointers.Pointer(float32(200)),
+				MaximumQuantityNeeded:  pointer.To(float32(200)),
 			},
 			carrot.ID: {
 				Status:                 types.MealPlanGroceryListItemStatusNeeds,
@@ -198,7 +198,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				ValidIngredientID:      carrot.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
 				MinimumQuantityNeeded:  100,
-				MaximumQuantityNeeded:  pointers.Pointer(float32(100)),
+				MaximumQuantityNeeded:  pointer.To(float32(100)),
 			},
 			celery.ID: {
 				Status:                 types.MealPlanGroceryListItemStatusNeeds,
@@ -206,7 +206,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				ValidIngredientID:      celery.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
 				MinimumQuantityNeeded:  100,
-				MaximumQuantityNeeded:  pointers.Pointer(float32(100)),
+				MaximumQuantityNeeded:  pointer.To(float32(100)),
 			},
 			salt.ID: {
 				Status:                 types.MealPlanGroceryListItemStatusNeeds,
@@ -214,7 +214,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				ValidIngredientID:      salt.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
 				MinimumQuantityNeeded:  100,
-				MaximumQuantityNeeded:  pointers.Pointer(float32(100)),
+				MaximumQuantityNeeded:  pointer.To(float32(100)),
 			},
 		}
 
@@ -262,7 +262,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient:      onion,
 															MinimumQuantity: 100,
-															MaximumQuantity: pointers.Pointer(float32(100)),
+															MaximumQuantity: pointer.To(float32(100)),
 															MeasurementUnit: *grams,
 														},
 													},
@@ -291,7 +291,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient:      carrot,
 															MinimumQuantity: 100,
-															MaximumQuantity: pointers.Pointer(float32(100)),
+															MaximumQuantity: pointer.To(float32(100)),
 															MeasurementUnit: *grams,
 														},
 													},
@@ -320,7 +320,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 														{
 															Ingredient:      celery,
 															MinimumQuantity: 100,
-															MaximumQuantity: pointers.Pointer(float32(100)),
+															MaximumQuantity: pointer.To(float32(100)),
 															MeasurementUnit: *grams,
 														},
 													},
@@ -345,7 +345,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				ValidIngredientID:      onion.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
 				MinimumQuantityNeeded:  100,
-				MaximumQuantityNeeded:  pointers.Pointer(float32(100)),
+				MaximumQuantityNeeded:  pointer.To(float32(100)),
 			},
 			carrot.ID: {
 				Status:                 types.MealPlanGroceryListItemStatusNeeds,
@@ -353,7 +353,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				ValidIngredientID:      carrot.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
 				MinimumQuantityNeeded:  200,
-				MaximumQuantityNeeded:  pointers.Pointer(float32(200)),
+				MaximumQuantityNeeded:  pointer.To(float32(200)),
 			},
 			celery.ID: {
 				Status:                 types.MealPlanGroceryListItemStatusNeeds,
@@ -361,7 +361,7 @@ func Test_groceryListCreator_GenerateGroceryListInputs(T *testing.T) {
 				ValidIngredientID:      celery.ID,
 				BelongsToMealPlan:      expectedMealPlan.ID,
 				MinimumQuantityNeeded:  300,
-				MaximumQuantityNeeded:  pointers.Pointer(float32(300)),
+				MaximumQuantityNeeded:  pointer.To(float32(300)),
 			},
 		}
 

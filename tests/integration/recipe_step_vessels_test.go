@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -163,7 +163,7 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 								Type:            types.RecipeStepProductVesselType,
 								MeasurementUnit: unit,
 								QuantityNotes:   "",
-								MinimumQuantity: pointers.Pointer(float32(1)),
+								MinimumQuantity: pointer.To(float32(1)),
 							},
 						},
 						Notes:       "first step",
@@ -200,7 +200,7 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 								Type:            types.RecipeStepProductIngredientType,
 								MeasurementUnit: head,
 								QuantityNotes:   "",
-								MinimumQuantity: pointers.Pointer(float32(1)),
+								MinimumQuantity: pointer.To(float32(1)),
 							},
 						},
 						Notes: "second step",
@@ -218,8 +218,8 @@ func (s *TestSuite) TestRecipeStepVessels_AsRecipeStepProducts() {
 			}
 
 			exampleRecipeInput := converters.ConvertRecipeToRecipeCreationRequestInput(expected)
-			exampleRecipeInput.Steps[1].Vessels[0].ProductOfRecipeStepIndex = pointers.Pointer(uint64(0))
-			exampleRecipeInput.Steps[1].Vessels[0].ProductOfRecipeStepProductIndex = pointers.Pointer(uint64(0))
+			exampleRecipeInput.Steps[1].Vessels[0].ProductOfRecipeStepIndex = pointer.To(uint64(0))
+			exampleRecipeInput.Steps[1].Vessels[0].ProductOfRecipeStepProductIndex = pointer.To(uint64(0))
 
 			created, err := testClients.admin.CreateRecipe(ctx, exampleRecipeInput)
 			require.NoError(t, err)

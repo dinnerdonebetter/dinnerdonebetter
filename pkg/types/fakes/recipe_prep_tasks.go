@@ -1,7 +1,7 @@
 package fakes
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -32,9 +32,9 @@ func BuildFakeRecipePrepTask() *types.RecipePrepTask {
 		}),
 		TaskSteps:                              recipePrepTaskSteps,
 		MinimumTimeBufferBeforeRecipeInSeconds: uint32(minTimeBuffer),
-		MaximumTimeBufferBeforeRecipeInSeconds: pointers.Pointer(uint32(minTimeBuffer + 1)),
-		MinimumStorageTemperatureInCelsius:     pointers.Pointer(float32(minStorageTemp)),
-		MaximumStorageTemperatureInCelsius:     pointers.Pointer(float32(minStorageTemp + 1)),
+		MaximumTimeBufferBeforeRecipeInSeconds: pointer.To(uint32(minTimeBuffer + 1)),
+		MinimumStorageTemperatureInCelsius:     pointer.To(float32(minStorageTemp)),
+		MaximumStorageTemperatureInCelsius:     pointer.To(float32(minStorageTemp + 1)),
 		BelongsToRecipe:                        BuildFakeID(),
 		CreatedAt:                              BuildFakeTime(),
 		LastUpdatedAt:                          nil,
@@ -69,9 +69,9 @@ func BuildFakeRecipePrepTaskStepCreationRequestInput() *types.RecipePrepTaskStep
 
 func BuildFakeRecipePrepTaskStepUpdateRequestInput() *types.RecipePrepTaskStepUpdateRequestInput {
 	return &types.RecipePrepTaskStepUpdateRequestInput{
-		BelongsToRecipeStep:     pointers.Pointer(BuildFakeID()),
-		BelongsToRecipePrepTask: pointers.Pointer(BuildFakeID()),
-		SatisfiesRecipeStep:     pointers.Pointer(fake.Bool()),
+		BelongsToRecipeStep:     pointer.To(BuildFakeID()),
+		BelongsToRecipePrepTask: pointer.To(BuildFakeID()),
+		SatisfiesRecipeStep:     pointer.To(fake.Bool()),
 	}
 }
 
@@ -93,10 +93,10 @@ func BuildFakeRecipePrepTaskCreationRequestInput() *types.RecipePrepTaskCreation
 		StorageType:                            types.RecipePrepTaskStorageTypeUncovered,
 		BelongsToRecipe:                        BuildFakeID(),
 		TaskSteps:                              taskSteps,
-		MaximumTimeBufferBeforeRecipeInSeconds: pointers.Pointer(uint32(minTimeBuffer) + 1),
+		MaximumTimeBufferBeforeRecipeInSeconds: pointer.To(uint32(minTimeBuffer) + 1),
 		MinimumTimeBufferBeforeRecipeInSeconds: uint32(minTimeBuffer),
-		MinimumStorageTemperatureInCelsius:     pointers.Pointer(float32(minStorageTemp)),
-		MaximumStorageTemperatureInCelsius:     pointers.Pointer(float32(minStorageTemp + 1)),
+		MinimumStorageTemperatureInCelsius:     pointer.To(float32(minStorageTemp)),
+		MaximumStorageTemperatureInCelsius:     pointer.To(float32(minStorageTemp + 1)),
 	}
 }
 
@@ -109,17 +109,17 @@ func BuildFakeRecipePrepTaskUpdateRequestInput() *types.RecipePrepTaskUpdateRequ
 	}
 
 	return &types.RecipePrepTaskUpdateRequestInput{
-		Notes:                                  pointers.Pointer(buildUniqueString()),
-		ExplicitStorageInstructions:            pointers.Pointer(buildUniqueString()),
-		Name:                                   pointers.Pointer(buildUniqueString()),
-		Description:                            pointers.Pointer(buildUniqueString()),
-		Optional:                               pointers.Pointer(fake.Bool()),
-		StorageType:                            pointers.Pointer(types.RecipePrepTaskStorageTypeUncovered),
-		BelongsToRecipe:                        pointers.Pointer(BuildFakeID()),
-		MaximumTimeBufferBeforeRecipeInSeconds: pointers.Pointer(fake.Uint32()),
-		MinimumStorageTemperatureInCelsius:     pointers.Pointer(float32(minTemp)),
-		MaximumStorageTemperatureInCelsius:     pointers.Pointer(float32(minTemp + 1)),
-		MinimumTimeBufferBeforeRecipeInSeconds: pointers.Pointer(fake.Uint32()),
+		Notes:                                  pointer.To(buildUniqueString()),
+		ExplicitStorageInstructions:            pointer.To(buildUniqueString()),
+		Name:                                   pointer.To(buildUniqueString()),
+		Description:                            pointer.To(buildUniqueString()),
+		Optional:                               pointer.To(fake.Bool()),
+		StorageType:                            pointer.To(types.RecipePrepTaskStorageTypeUncovered),
+		BelongsToRecipe:                        pointer.To(BuildFakeID()),
+		MaximumTimeBufferBeforeRecipeInSeconds: pointer.To(fake.Uint32()),
+		MinimumStorageTemperatureInCelsius:     pointer.To(float32(minTemp)),
+		MaximumStorageTemperatureInCelsius:     pointer.To(float32(minTemp + 1)),
+		MinimumTimeBufferBeforeRecipeInSeconds: pointer.To(fake.Uint32()),
 		TaskSteps:                              taskSteps,
 	}
 }
@@ -133,17 +133,17 @@ func BuildFakeRecipePrepTaskUpdateRequestInputFromRecipePrepTask(input *types.Re
 	}
 
 	return &types.RecipePrepTaskUpdateRequestInput{
-		Notes:                                  pointers.Pointer(buildUniqueString()),
-		ExplicitStorageInstructions:            pointers.Pointer(buildUniqueString()),
-		Name:                                   pointers.Pointer(buildUniqueString()),
-		Description:                            pointers.Pointer(buildUniqueString()),
-		Optional:                               pointers.Pointer(fake.Bool()),
-		StorageType:                            pointers.Pointer(types.RecipePrepTaskStorageTypeUncovered),
-		BelongsToRecipe:                        pointers.Pointer(BuildFakeID()),
+		Notes:                                  pointer.To(buildUniqueString()),
+		ExplicitStorageInstructions:            pointer.To(buildUniqueString()),
+		Name:                                   pointer.To(buildUniqueString()),
+		Description:                            pointer.To(buildUniqueString()),
+		Optional:                               pointer.To(fake.Bool()),
+		StorageType:                            pointer.To(types.RecipePrepTaskStorageTypeUncovered),
+		BelongsToRecipe:                        pointer.To(BuildFakeID()),
 		TaskSteps:                              taskSteps,
-		MaximumTimeBufferBeforeRecipeInSeconds: pointers.Pointer(fake.Uint32()),
-		MinimumStorageTemperatureInCelsius:     pointers.Pointer(float32(minTemp)),
-		MaximumStorageTemperatureInCelsius:     pointers.Pointer(float32(minTemp + 1)),
-		MinimumTimeBufferBeforeRecipeInSeconds: pointers.Pointer(fake.Uint32()),
+		MaximumTimeBufferBeforeRecipeInSeconds: pointer.To(fake.Uint32()),
+		MinimumStorageTemperatureInCelsius:     pointer.To(float32(minTemp)),
+		MaximumStorageTemperatureInCelsius:     pointer.To(float32(minTemp + 1)),
+		MinimumTimeBufferBeforeRecipeInSeconds: pointer.To(fake.Uint32()),
 	}
 }

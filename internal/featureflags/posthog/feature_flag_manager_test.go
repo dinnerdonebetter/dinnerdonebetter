@@ -9,7 +9,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/posthog/posthog-go"
@@ -95,7 +95,7 @@ func TestFeatureFlagManager_CanUseFeature(T *testing.T) {
 						},
 					},
 				},
-				GroupTypeMapping: pointers.Pointer(map[string]string{}),
+				GroupTypeMapping: pointer.To(map[string]string{}),
 			})
 			require.NoError(t, err)
 

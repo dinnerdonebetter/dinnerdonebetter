@@ -1,7 +1,7 @@
 package fakes
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -17,8 +17,8 @@ func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
 		ID:                                 BuildFakeID(),
 		Name:                               buildUniqueString(),
 		Type:                               types.RecipeStepProductIngredientType,
-		MinimumQuantity:                    pointers.Pointer(minQty),
-		MaximumQuantity:                    pointers.Pointer(minQty + 1),
+		MinimumQuantity:                    pointer.To(minQty),
+		MaximumQuantity:                    pointer.To(minQty + 1),
 		QuantityNotes:                      buildUniqueString(),
 		MeasurementUnit:                    BuildFakeValidMeasurementUnit(),
 		CreatedAt:                          BuildFakeTime(),
@@ -26,12 +26,12 @@ func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
 		Compostable:                        fake.Bool(),
 		IsLiquid:                           fake.Bool(),
 		IsWaste:                            fake.Bool(),
-		MaximumStorageDurationInSeconds:    pointers.Pointer(fake.Uint32()),
-		MinimumStorageTemperatureInCelsius: pointers.Pointer(float32(storageTemp)),
-		MaximumStorageTemperatureInCelsius: pointers.Pointer(float32(storageTemp + 1)),
+		MaximumStorageDurationInSeconds:    pointer.To(fake.Uint32()),
+		MinimumStorageTemperatureInCelsius: pointer.To(float32(storageTemp)),
+		MaximumStorageTemperatureInCelsius: pointer.To(float32(storageTemp + 1)),
 		StorageInstructions:                buildUniqueString(),
 		Index:                              fake.Uint16(),
-		ContainedInVesselIndex:             pointers.Pointer(fake.Uint16()),
+		ContainedInVesselIndex:             pointer.To(fake.Uint16()),
 	}
 }
 

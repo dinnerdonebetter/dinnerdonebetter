@@ -1,7 +1,7 @@
 package fakes
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -25,16 +25,16 @@ func BuildFakeValidPreparation() *types.ValidPreparation {
 		PastTense:                   buildUniqueString(),
 		CreatedAt:                   BuildFakeTime(),
 		MinimumIngredientCount:      int32(minIngredients),
-		MaximumIngredientCount:      pointers.Pointer(int32(minIngredients + 1)),
+		MaximumIngredientCount:      pointer.To(int32(minIngredients + 1)),
 		MinimumInstrumentCount:      int32(minInstruments),
-		MaximumInstrumentCount:      pointers.Pointer(int32(minInstruments + 1)),
+		MaximumInstrumentCount:      pointer.To(int32(minInstruments + 1)),
 		TemperatureRequired:         fake.Bool(),
 		TimeEstimateRequired:        fake.Bool(),
 		ConditionExpressionRequired: fake.Bool(),
 		ConsumesVessel:              fake.Bool(),
 		OnlyForVessels:              fake.Bool(),
 		MinimumVesselCount:          int32(minVessels),
-		MaximumVesselCount:          pointers.Pointer(int32(minVessels + 1)),
+		MaximumVesselCount:          pointer.To(int32(minVessels + 1)),
 	}
 }
 

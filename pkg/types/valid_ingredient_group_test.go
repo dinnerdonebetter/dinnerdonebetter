@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -42,9 +42,9 @@ func TestValidIngredientGroupUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidIngredientGroupUpdateRequestInput{
-			Name:        pointers.Pointer(t.Name()),
-			Description: pointers.Pointer(t.Name()),
-			Slug:        pointers.Pointer(t.Name()),
+			Name:        pointer.To(t.Name()),
+			Description: pointer.To(t.Name()),
+			Slug:        pointer.To(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -100,7 +100,7 @@ func TestValidIngredientGroupUpdateRequestInput_ValidateWithContext(T *testing.T
 
 		ctx := context.Background()
 		x := &ValidIngredientGroupUpdateRequestInput{
-			Name: pointers.Pointer(t.Name()),
+			Name: pointer.To(t.Name()),
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))
@@ -120,9 +120,9 @@ func TestValidIngredientGroup_Update(T *testing.T) {
 		}
 
 		input := &ValidIngredientGroupUpdateRequestInput{
-			Name:        pointers.Pointer(t.Name()),
-			Description: pointers.Pointer(t.Name()),
-			Slug:        pointers.Pointer(t.Name()),
+			Name:        pointer.To(t.Name()),
+			Description: pointer.To(t.Name()),
+			Slug:        pointer.To(t.Name()),
 		}
 
 		expected := &ValidIngredientGroup{

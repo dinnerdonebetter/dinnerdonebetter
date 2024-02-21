@@ -1,4 +1,4 @@
-package pointers
+package pointer
 
 import (
 	"testing"
@@ -14,7 +14,7 @@ func TestPointer(T *testing.T) {
 		t.Parallel()
 
 		expected := false
-		actual := Pointer(expected)
+		actual := To(expected)
 
 		require.NotNil(t, actual)
 		assert.Equal(t, expected, *actual)

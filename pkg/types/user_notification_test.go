@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
@@ -82,7 +82,7 @@ func TestUserNotificationUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &UserNotificationUpdateRequestInput{
-			Status: pointers.Pointer(UserNotificationStatusTypeUnread),
+			Status: pointer.To(UserNotificationStatusTypeUnread),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

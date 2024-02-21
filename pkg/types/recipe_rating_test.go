@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
@@ -85,9 +85,9 @@ func TestRecipeRatingUpdateRequestInput_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		x := &RecipeRatingUpdateRequestInput{
-			ByUser:     pointers.Pointer(t.Name()),
-			RecipeID:   pointers.Pointer(t.Name()),
-			Difficulty: pointers.Pointer[float32](1.0),
+			ByUser:     pointer.To(t.Name()),
+			RecipeID:   pointer.To(t.Name()),
+			Difficulty: pointer.To[float32](1.0),
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))

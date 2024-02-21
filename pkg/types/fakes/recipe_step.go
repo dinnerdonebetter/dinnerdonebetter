@@ -1,7 +1,7 @@
 package fakes
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -66,8 +66,8 @@ func BuildFakeRecipeStep() *types.RecipeStep {
 		Preparation:                   *BuildFakeValidPreparation(),
 		MinimumEstimatedTimeInSeconds: func(x uint32) *uint32 { return &x }(fake.Uint32()),
 		MaximumEstimatedTimeInSeconds: func(x uint32) *uint32 { return &x }(fake.Uint32()),
-		MinimumTemperatureInCelsius:   pointers.Pointer(float32(minTemp)),
-		MaximumTemperatureInCelsius:   pointers.Pointer(float32(minTemp + 1)),
+		MinimumTemperatureInCelsius:   pointer.To(float32(minTemp)),
+		MaximumTemperatureInCelsius:   pointer.To(float32(minTemp + 1)),
 		Notes:                         buildUniqueString(),
 		Products:                      products,
 		Optional:                      false,

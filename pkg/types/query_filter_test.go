@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -24,14 +24,14 @@ func TestQueryFilter_AttachToLogger(T *testing.T) {
 		logger := logging.NewNoopLogger()
 
 		qf := &QueryFilter{
-			Page:            pointers.Pointer(uint16(100)),
-			Limit:           pointers.Pointer(uint8(MaxLimit)),
-			CreatedAfter:    pointers.Pointer(time.Now().Truncate(time.Second)),
-			CreatedBefore:   pointers.Pointer(time.Now().Truncate(time.Second)),
-			UpdatedAfter:    pointers.Pointer(time.Now().Truncate(time.Second)),
-			UpdatedBefore:   pointers.Pointer(time.Now().Truncate(time.Second)),
+			Page:            pointer.To(uint16(100)),
+			Limit:           pointer.To(uint8(MaxLimit)),
+			CreatedAfter:    pointer.To(time.Now().Truncate(time.Second)),
+			CreatedBefore:   pointer.To(time.Now().Truncate(time.Second)),
+			UpdatedAfter:    pointer.To(time.Now().Truncate(time.Second)),
+			UpdatedBefore:   pointer.To(time.Now().Truncate(time.Second)),
 			SortBy:          SortDescending,
-			IncludeArchived: pointers.Pointer(true),
+			IncludeArchived: pointer.To(true),
 		}
 
 		assert.NotNil(t, qf.AttachToLogger(logger))
@@ -57,14 +57,14 @@ func TestQueryFilter_FromParams(T *testing.T) {
 
 		actual := &QueryFilter{}
 		expected := &QueryFilter{
-			Page:            pointers.Pointer(uint16(100)),
-			Limit:           pointers.Pointer(uint8(MaxLimit)),
-			CreatedAfter:    pointers.Pointer(tt),
-			CreatedBefore:   pointers.Pointer(tt),
-			UpdatedAfter:    pointers.Pointer(tt),
-			UpdatedBefore:   pointers.Pointer(tt),
+			Page:            pointer.To(uint16(100)),
+			Limit:           pointer.To(uint8(MaxLimit)),
+			CreatedAfter:    pointer.To(tt),
+			CreatedBefore:   pointer.To(tt),
+			UpdatedAfter:    pointer.To(tt),
+			UpdatedBefore:   pointer.To(tt),
 			SortBy:          SortDescending,
-			IncludeArchived: pointers.Pointer(true),
+			IncludeArchived: pointer.To(true),
 		}
 
 		exampleInput := url.Values{
@@ -109,8 +109,8 @@ func TestQueryFilter_QueryPage(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 		qf := &QueryFilter{
-			Limit: pointers.Pointer(uint8(10)),
-			Page:  pointers.Pointer(uint16(11)),
+			Limit: pointer.To(uint8(10)),
+			Page:  pointer.To(uint16(11)),
 		}
 		expected := uint16(100)
 		actual := qf.QueryOffset()
@@ -138,14 +138,14 @@ func TestQueryFilter_ToValues(T *testing.T) {
 		require.NoError(t, err)
 
 		qf := &QueryFilter{
-			Page:            pointers.Pointer(uint16(100)),
-			Limit:           pointers.Pointer(uint8(MaxLimit)),
-			CreatedAfter:    pointers.Pointer(tt),
-			CreatedBefore:   pointers.Pointer(tt),
-			UpdatedAfter:    pointers.Pointer(tt),
-			UpdatedBefore:   pointers.Pointer(tt),
+			Page:            pointer.To(uint16(100)),
+			Limit:           pointer.To(uint8(MaxLimit)),
+			CreatedAfter:    pointer.To(tt),
+			CreatedBefore:   pointer.To(tt),
+			UpdatedAfter:    pointer.To(tt),
+			UpdatedBefore:   pointer.To(tt),
 			SortBy:          SortDescending,
-			IncludeArchived: pointers.Pointer(true),
+			IncludeArchived: pointer.To(true),
 		}
 
 		expected := url.Values{
@@ -184,12 +184,12 @@ func TestExtractQueryFilter(T *testing.T) {
 		require.NoError(t, err)
 
 		expected := &QueryFilter{
-			Page:          pointers.Pointer(uint16(100)),
-			Limit:         pointers.Pointer(uint8(MaxLimit)),
-			CreatedAfter:  pointers.Pointer(tt),
-			CreatedBefore: pointers.Pointer(tt),
-			UpdatedAfter:  pointers.Pointer(tt),
-			UpdatedBefore: pointers.Pointer(tt),
+			Page:          pointer.To(uint16(100)),
+			Limit:         pointer.To(uint8(MaxLimit)),
+			CreatedAfter:  pointer.To(tt),
+			CreatedBefore: pointer.To(tt),
+			UpdatedAfter:  pointer.To(tt),
+			UpdatedBefore: pointer.To(tt),
 			SortBy:        SortDescending,
 		}
 		exampleInput := url.Values{
@@ -217,8 +217,8 @@ func TestExtractQueryFilter(T *testing.T) {
 		ctx := context.Background()
 
 		expected := &QueryFilter{
-			Page:   pointers.Pointer(uint16(1)),
-			Limit:  pointers.Pointer(uint8(DefaultLimit)),
+			Page:   pointer.To(uint16(1)),
+			Limit:  pointer.To(uint8(DefaultLimit)),
 			SortBy: SortAscending,
 		}
 		exampleInput := url.Values{
@@ -243,8 +243,8 @@ func TestQueryFilter_ToPagination(T *testing.T) {
 		t.Parallel()
 
 		qf := &QueryFilter{
-			Page:  pointers.Pointer(uint16(100)),
-			Limit: pointers.Pointer(uint8(MaxLimit)),
+			Page:  pointer.To(uint16(100)),
+			Limit: pointer.To(uint8(MaxLimit)),
 		}
 
 		expected := Pagination{
