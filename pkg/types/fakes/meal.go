@@ -16,7 +16,7 @@ func BuildFakeMeal() *types.Meal {
 		ID:                       BuildFakeID(),
 		Name:                     buildUniqueString(),
 		Description:              buildUniqueString(),
-		MinimumEstimatedPortions: float32(BuildFakeNumber()),
+		MinimumEstimatedPortions: float32(buildFakeNumber()),
 		CreatedAt:                BuildFakeTime(),
 		CreatedByUser:            BuildFakeID(),
 		Components:               recipes,

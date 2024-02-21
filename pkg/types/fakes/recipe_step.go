@@ -12,7 +12,7 @@ import (
 func BuildFakeRecipeStep() *types.RecipeStep {
 	recipeStepID := BuildFakeID()
 
-	minTemp := BuildFakeNumber()
+	minTemp := buildFakeNumber()
 
 	var ingredients []*types.RecipeStepIngredient
 	for i := 0; i < exampleQuantity; i++ {

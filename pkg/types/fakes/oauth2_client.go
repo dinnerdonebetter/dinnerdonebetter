@@ -14,7 +14,7 @@ func BuildFakeOAuth2Client() *types.OAuth2Client {
 		ID:           BuildFakeID(),
 		Name:         fake.Password(true, true, true, false, false, 32),
 		ClientID:     BuildFakeID(),
-		ClientSecret: BuildFakePassword(),
+		ClientSecret: buildFakePassword(),
 		CreatedAt:    BuildFakeTime(),
 	}
 }

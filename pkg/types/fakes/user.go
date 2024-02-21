@@ -60,7 +60,7 @@ func BuildFakeUserCreationInput() *types.UserRegistrationInput {
 		EmailAddress: fake.Email(),
 		FirstName:    exampleUser.FirstName,
 		LastName:     exampleUser.LastName,
-		Password:     BuildFakePassword(),
+		Password:     buildFakePassword(),
 		Birthday:     exampleUser.Birthday,
 	}
 }
@@ -72,7 +72,7 @@ func BuildFakeUserRegistrationInputFromUser(user *types.User) *types.UserRegistr
 		FirstName:    user.FirstName,
 		LastName:     user.LastName,
 		EmailAddress: user.EmailAddress,
-		Password:     BuildFakePassword(),
+		Password:     buildFakePassword(),
 		Birthday:     user.Birthday,
 	}
 }
@@ -84,7 +84,7 @@ func BuildFakeUserRegistrationInputWithInviteFromUser(user *types.User) *types.U
 		FirstName:       user.FirstName,
 		LastName:        user.LastName,
 		EmailAddress:    user.EmailAddress,
-		Password:        BuildFakePassword(),
+		Password:        buildFakePassword(),
 		Birthday:        user.Birthday,
 		InvitationToken: fake.UUID(),
 		InvitationID:    BuildFakeID(),
@@ -104,7 +104,7 @@ func BuildFakeUserAccountStatusUpdateInputFromUser(user *types.User) *types.User
 func BuildFakeUserLoginInputFromUser(user *types.User) *types.UserLoginInput {
 	return &types.UserLoginInput{
 		Username:  user.Username,
-		Password:  BuildFakePassword(),
+		Password:  buildFakePassword(),
 		TOTPToken: fmt.Sprintf("0%s", fake.Zip()),
 	}
 }
@@ -112,8 +112,8 @@ func BuildFakeUserLoginInputFromUser(user *types.User) *types.UserLoginInput {
 // BuildFakePasswordUpdateInput builds a faked PasswordUpdateInput.
 func BuildFakePasswordUpdateInput() *types.PasswordUpdateInput {
 	return &types.PasswordUpdateInput{
-		NewPassword:     BuildFakePassword(),
-		CurrentPassword: BuildFakePassword(),
+		NewPassword:     buildFakePassword(),
+		CurrentPassword: buildFakePassword(),
 		TOTPToken:       fmt.Sprintf("0%s", fake.Zip()),
 	}
 }
@@ -128,7 +128,7 @@ func BuildFakeAvatarUpdateInput() *types.AvatarUpdateInput {
 // BuildFakeTOTPSecretRefreshInput builds a faked TOTPSecretRefreshInput.
 func BuildFakeTOTPSecretRefreshInput() *types.TOTPSecretRefreshInput {
 	return &types.TOTPSecretRefreshInput{
-		CurrentPassword: BuildFakePassword(),
+		CurrentPassword: buildFakePassword(),
 		TOTPToken:       fmt.Sprintf("0%s", fake.Zip()),
 	}
 }
@@ -186,7 +186,7 @@ func BuildFakePasswordResetTokenCreationRequestInput() *types.PasswordResetToken
 func BuildFakePasswordResetTokenRedemptionRequestInput() *types.PasswordResetTokenRedemptionRequestInput {
 	return &types.PasswordResetTokenRedemptionRequestInput{
 		Token:       buildUniqueString(),
-		NewPassword: BuildFakePassword(),
+		NewPassword: buildFakePassword(),
 	}
 }
 

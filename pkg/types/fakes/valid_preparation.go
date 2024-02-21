@@ -10,9 +10,9 @@ import (
 
 // BuildFakeValidPreparation builds a faked valid preparation.
 func BuildFakeValidPreparation() *types.ValidPreparation {
-	minIngredients := BuildFakeNumber()
-	minInstruments := BuildFakeNumber()
-	minVessels := BuildFakeNumber()
+	minIngredients := buildFakeNumber()
+	minInstruments := buildFakeNumber()
+	minVessels := buildFakeNumber()
 
 	return &types.ValidPreparation{
 		ID:                          BuildFakeID(),

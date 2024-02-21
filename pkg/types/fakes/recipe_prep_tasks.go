@@ -14,8 +14,8 @@ func BuildFakeRecipePrepTask() *types.RecipePrepTask {
 		recipePrepTaskSteps = append(recipePrepTaskSteps, BuildFakeRecipePrepTaskStep())
 	}
 
-	minStorageTemp := BuildFakeNumber()
-	minTimeBuffer := BuildFakeNumber()
+	minStorageTemp := buildFakeNumber()
+	minTimeBuffer := buildFakeNumber()
 
 	return &types.RecipePrepTask{
 		ID:                          BuildFakeID(),
@@ -81,8 +81,8 @@ func BuildFakeRecipePrepTaskCreationRequestInput() *types.RecipePrepTaskCreation
 		taskSteps = append(taskSteps, BuildFakeRecipePrepTaskStepCreationRequestInput())
 	}
 
-	minStorageTemp := BuildFakeNumber()
-	minTimeBuffer := BuildFakeNumber()
+	minStorageTemp := buildFakeNumber()
+	minTimeBuffer := buildFakeNumber()
 
 	return &types.RecipePrepTaskCreationRequestInput{
 		Notes:                                  buildUniqueString(),
@@ -101,7 +101,7 @@ func BuildFakeRecipePrepTaskCreationRequestInput() *types.RecipePrepTaskCreation
 }
 
 func BuildFakeRecipePrepTaskUpdateRequestInput() *types.RecipePrepTaskUpdateRequestInput {
-	minTemp := BuildFakeNumber()
+	minTemp := buildFakeNumber()
 
 	taskSteps := []*types.RecipePrepTaskStepUpdateRequestInput{}
 	for i := 0; i < exampleQuantity; i++ {
@@ -125,7 +125,7 @@ func BuildFakeRecipePrepTaskUpdateRequestInput() *types.RecipePrepTaskUpdateRequ
 }
 
 func BuildFakeRecipePrepTaskUpdateRequestInputFromRecipePrepTask(input *types.RecipePrepTask) *types.RecipePrepTaskUpdateRequestInput {
-	minTemp := BuildFakeNumber()
+	minTemp := buildFakeNumber()
 
 	taskSteps := []*types.RecipePrepTaskStepUpdateRequestInput{}
 	for _, x := range input.TaskSteps {

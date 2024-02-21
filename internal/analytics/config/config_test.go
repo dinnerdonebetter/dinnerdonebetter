@@ -2,13 +2,13 @@ package config
 
 import (
 	"context"
-	"github.com/dinnerdonebetter/backend/internal/analytics/posthog"
-	"github.com/dinnerdonebetter/backend/internal/analytics/rudderstack"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/analytics/posthog"
+	"github.com/dinnerdonebetter/backend/internal/analytics/rudderstack"
 	"github.com/dinnerdonebetter/backend/internal/analytics/segment"
+	"github.com/dinnerdonebetter/backend/internal/observability/logging"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	"github.com/stretchr/testify/require"
 )

@@ -16,6 +16,6 @@ func BuildFakeFinalizeMealPlansRequest() *types.FinalizeMealPlansRequest {
 // BuildFakeFinalizeMealPlansResponse builds a faked FinalizeMealPlansResponse.
 func BuildFakeFinalizeMealPlansResponse() *types.FinalizeMealPlansResponse {
 	return &types.FinalizeMealPlansResponse{
-		Count: int(BuildFakeNumber()),
+		Count: int(buildFakeNumber()),
 	}
 }

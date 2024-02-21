@@ -7,7 +7,7 @@ import (
 )
 
 func BuildFakeMealPlanGroceryListItem() *types.MealPlanGroceryListItem {
-	minQty := BuildFakeNumber()
+	minQty := buildFakeNumber()
 
 	return &types.MealPlanGroceryListItem{
 		ID:                       BuildFakeID(),

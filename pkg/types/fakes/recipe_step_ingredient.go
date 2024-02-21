@@ -16,8 +16,8 @@ func BuildFakeRecipeStepIngredient() *types.RecipeStepIngredient {
 		Name:                   buildUniqueString(),
 		Ingredient:             BuildFakeValidIngredient(),
 		MeasurementUnit:        *BuildFakeValidMeasurementUnit(),
-		MinimumQuantity:        float32(BuildFakeNumber()),
-		MaximumQuantity:        pointers.Pointer(float32(BuildFakeNumber())),
+		MinimumQuantity:        float32(buildFakeNumber()),
+		MaximumQuantity:        pointers.Pointer(float32(buildFakeNumber())),
 		QuantityNotes:          buildUniqueString(),
 		Optional:               fake.Bool(),
 		IngredientNotes:        buildUniqueString(),
@@ -25,7 +25,7 @@ func BuildFakeRecipeStepIngredient() *types.RecipeStepIngredient {
 		BelongsToRecipeStep:    BuildFakeID(),
 		VesselIndex:            pointers.Pointer(fake.Uint16()),
 		ToTaste:                fake.Bool(),
-		ProductPercentageToUse: pointers.Pointer(float32(BuildFakeNumber())),
+		ProductPercentageToUse: pointers.Pointer(float32(buildFakeNumber())),
 	}
 }
 

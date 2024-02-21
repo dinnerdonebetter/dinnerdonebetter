@@ -16,7 +16,7 @@ func BuildFakeRecipeMedia() *types.RecipeMedia {
 		BelongsToRecipe:     nil,
 		BelongsToRecipeStep: nil,
 		MimeType:            fake.FileMimeType(),
-		InternalPath:        fmt.Sprintf("%s.%s", BuildFakePassword(), fake.FileExtension()),
+		InternalPath:        fmt.Sprintf("%s.%s", buildFakePassword(), fake.FileExtension()),
 		ExternalPath:        "",
 		CreatedAt:           BuildFakeTime(),
 	}

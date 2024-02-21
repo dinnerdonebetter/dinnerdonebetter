@@ -29,6 +29,16 @@ func TestNewRudderstackEventReporter(T *testing.T) {
 		require.NotNil(t, collector)
 	})
 
+	T.Run("with nil config", func(t *testing.T) {
+		t.Parallel()
+
+		logger := logging.NewNoopLogger()
+
+		collector, err := NewRudderstackEventReporter(logger, tracing.NewNoopTracerProvider(), nil)
+		require.Error(t, err)
+		require.Nil(t, collector)
+	})
+
 	T.Run("with empty API key", func(t *testing.T) {
 		t.Parallel()
 
@@ -36,6 +46,20 @@ func TestNewRudderstackEventReporter(T *testing.T) {
 		cfg := &Config{
 			APIKey:       "",
 			DataPlaneURL: t.Name(),
+		}
+
+		collector, err := NewRudderstackEventReporter(logger, tracing.NewNoopTracerProvider(), cfg)
+		require.Error(t, err)
+		require.Nil(t, collector)
+	})
+
+	T.Run("with empty DataPlane URL", func(t *testing.T) {
+		t.Parallel()
+
+		logger := logging.NewNoopLogger()
+		cfg := &Config{
+			APIKey:       t.Name(),
+			DataPlaneURL: "",
 		}
 
 		collector, err := NewRudderstackEventReporter(logger, tracing.NewNoopTracerProvider(), cfg)

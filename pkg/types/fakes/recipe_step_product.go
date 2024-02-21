@@ -10,8 +10,8 @@ import (
 
 // BuildFakeRecipeStepProduct builds a faked recipe step product.
 func BuildFakeRecipeStepProduct() *types.RecipeStepProduct {
-	minQty := float32(BuildFakeNumber())
-	storageTemp := BuildFakeNumber()
+	minQty := float32(buildFakeNumber())
+	storageTemp := buildFakeNumber()
 
 	return &types.RecipeStepProduct{
 		ID:                                 BuildFakeID(),

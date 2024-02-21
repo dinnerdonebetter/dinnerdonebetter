@@ -13,11 +13,11 @@ func BuildFakeRecipeRating() *types.RecipeRating {
 		ID:           buildUniqueString(),
 		RecipeID:     buildUniqueString(),
 		ByUser:       buildUniqueString(),
-		Taste:        float32(BuildFakeNumber()),
-		Instructions: float32(BuildFakeNumber()),
-		Overall:      float32(BuildFakeNumber()),
-		Cleanup:      float32(BuildFakeNumber()),
-		Difficulty:   float32(BuildFakeNumber()),
+		Taste:        float32(buildFakeNumber()),
+		Instructions: float32(buildFakeNumber()),
+		Overall:      float32(buildFakeNumber()),
+		Cleanup:      float32(buildFakeNumber()),
+		Difficulty:   float32(buildFakeNumber()),
 	}
 }
 
