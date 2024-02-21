@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	usernotificationsservice "github.com/dinnerdonebetter/backend/internal/services/usernotifications"
 	"log"
 	"os"
 	"path/filepath"
@@ -53,6 +52,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/services/servicesettingconfigurations"
 	"github.com/dinnerdonebetter/backend/internal/services/servicesettings"
 	useringredientpreferencesservice "github.com/dinnerdonebetter/backend/internal/services/useringredientpreferences"
+	usernotificationsservice "github.com/dinnerdonebetter/backend/internal/services/usernotifications"
 	usersservice "github.com/dinnerdonebetter/backend/internal/services/users"
 	validingredientgroupsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientgroups"
 	validingredientmeasurementunitsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientmeasurementunits"
