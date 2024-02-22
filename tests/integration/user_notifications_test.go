@@ -50,18 +50,23 @@ func (s *TestSuite) TestUserNotifications_CompleteLifecycle() {
 
 			user, _, userClient, _ := createUserAndClientForTest(ctx, t, nil)
 
+			exampleUserNotification := fakes.BuildFakeUserNotification()
+			exampleUserNotification.BelongsToUser = user.ID
+			exampleUserNotificationInput := converters.ConvertUserNotificationToUserNotificationCreationRequestInput(exampleUserNotification)
+			_, err := userClient.CreateUserNotification(ctx, exampleUserNotificationInput)
+			require.Error(t, err)
+
 			createdUserNotification := createUserNotificationForTest(t, ctx, user, userClient, testClients.admin)
 
-			newUserNotification := fakes.BuildFakeUserNotification()
-			newUserNotification.BelongsToUser = user.ID
-			createdUserNotification.Update(converters.ConvertUserNotificationToUserNotificationUpdateRequestInput(newUserNotification))
+			createdUserNotification.Status = types.UserNotificationStatusTypeRead
+			createdUserNotification.Update(converters.ConvertUserNotificationToUserNotificationUpdateRequestInput(createdUserNotification))
 			require.NoError(t, userClient.UpdateUserNotification(ctx, createdUserNotification))
 
 			actual, err := userClient.GetUserNotification(ctx, createdUserNotification.ID)
 			requireNotNilAndNoProblems(t, actual, err)
 
 			// assert user notification equality
-			checkUserNotificationEquality(t, newUserNotification, actual)
+			checkUserNotificationEquality(t, createdUserNotification, actual)
 			assert.NotNil(t, actual.LastUpdatedAt)
 
 			createdUserNotification.Status = types.UserNotificationStatusTypeRead

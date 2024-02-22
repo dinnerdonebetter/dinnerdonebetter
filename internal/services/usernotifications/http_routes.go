@@ -185,13 +185,8 @@ func (s *service) ListHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
-	// determine user notification ID.
-	userNotificationID := s.userNotificationIDFetcher(req)
-	tracing.AttachToSpan(span, keys.UserNotificationIDKey, userNotificationID)
-	logger = logger.WithValue(keys.UserNotificationIDKey, userNotificationID)
-
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	userNotifications, err := s.userNotificationDataManager.GetUserNotifications(ctx, userNotificationID, filter)
+	userNotifications, err := s.userNotificationDataManager.GetUserNotifications(ctx, sessionCtxData.Requester.UserID, filter)
 	if errors.Is(err, sql.ErrNoRows) {
 		// in the event no rows exist, return an empty list.
 		userNotifications = &types.QueryFilteredResult[types.UserNotification]{Data: []*types.UserNotification{}}
