@@ -317,7 +317,7 @@ func TestUserNotificationsService_ListHandler(T *testing.T) {
 		userNotificationDataManager.On(
 			"GetUserNotifications",
 			testutils.ContextMatcher,
-			helper.exampleUserNotification.ID,
+			helper.exampleUser.ID,
 			mock.IsType(&types.QueryFilter{}),
 		).Return(exampleUserNotificationList, nil)
 		helper.service.userNotificationDataManager = userNotificationDataManager
@@ -357,7 +357,7 @@ func TestUserNotificationsService_ListHandler(T *testing.T) {
 		userNotificationDataManager.On(
 			"GetUserNotifications",
 			testutils.ContextMatcher,
-			helper.exampleUserNotification.ID,
+			helper.exampleUser.ID,
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.QueryFilteredResult[types.UserNotification])(nil), sql.ErrNoRows)
 		helper.service.userNotificationDataManager = userNotificationDataManager
@@ -382,7 +382,7 @@ func TestUserNotificationsService_ListHandler(T *testing.T) {
 		userNotificationDataManager.On(
 			"GetUserNotifications",
 			testutils.ContextMatcher,
-			helper.exampleUserNotification.ID,
+			helper.exampleUser.ID,
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.QueryFilteredResult[types.UserNotification])(nil), errors.New("blah"))
 		helper.service.userNotificationDataManager = userNotificationDataManager
