@@ -209,7 +209,7 @@ func (s *userNotificationsTestSuite) TestClient_UpdateUserNotification() {
 	s.Run("standard", func() {
 		t := s.T()
 
-		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, s.exampleUserNotification.ID)
+		spec := newRequestSpec(false, http.MethodPatch, "", expectedPathFormat, s.exampleUserNotification.ID)
 		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleUserNotificationResponse)
 
 		err := c.UpdateUserNotification(s.ctx, s.exampleUserNotification)

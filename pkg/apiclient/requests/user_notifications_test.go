@@ -153,7 +153,7 @@ func TestBuilder_BuildUpdateUserNotificationRequest(T *testing.T) {
 
 		exampleUserNotification := fakes.BuildFakeUserNotification()
 
-		spec := newRequestSpec(false, http.MethodPut, "", expectedPathFormat, exampleUserNotification.ID)
+		spec := newRequestSpec(false, http.MethodPatch, "", expectedPathFormat, exampleUserNotification.ID)
 
 		actual, err := helper.builder.BuildUpdateUserNotificationRequest(helper.ctx, exampleUserNotification)
 		assert.NoError(t, err)
