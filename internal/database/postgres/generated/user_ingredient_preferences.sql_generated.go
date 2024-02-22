@@ -74,10 +74,10 @@ INSERT INTO user_ingredient_preferences (
 type CreateUserIngredientPreferenceParams struct {
 	ID            string
 	Ingredient    string
-	Rating        int16
 	Notes         string
-	Allergy       bool
 	BelongsToUser string
+	Rating        int16
+	Allergy       bool
 }
 
 func (q *Queries) CreateUserIngredientPreference(ctx context.Context, db DBTX, arg *CreateUserIngredientPreferenceParams) error {
@@ -156,53 +156,53 @@ type GetUserIngredientPreferenceParams struct {
 }
 
 type GetUserIngredientPreferenceRow struct {
-	ID                                                     string
+	CreatedAt                                              time.Time
+	ValidIngredientCreatedAt                               time.Time
+	ValidIngredientLastIndexedAt                           sql.NullTime
+	ValidIngredientArchivedAt                              sql.NullTime
+	ValidIngredientLastUpdatedAt                           sql.NullTime
+	ArchivedAt                                             sql.NullTime
+	LastUpdatedAt                                          sql.NullTime
+	BelongsToUser                                          string
 	ValidIngredientID                                      string
-	ValidIngredientName                                    string
-	ValidIngredientDescription                             string
-	ValidIngredientWarning                                 string
-	ValidIngredientContainsEgg                             bool
-	ValidIngredientContainsDairy                           bool
-	ValidIngredientContainsPeanut                          bool
-	ValidIngredientContainsTreeNut                         bool
-	ValidIngredientContainsSoy                             bool
-	ValidIngredientContainsWheat                           bool
-	ValidIngredientContainsShellfish                       bool
-	ValidIngredientContainsSesame                          bool
-	ValidIngredientContainsFish                            bool
-	ValidIngredientContainsGluten                          bool
-	ValidIngredientAnimalFlesh                             bool
-	ValidIngredientVolumetric                              bool
-	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientIconPath                                string
-	ValidIngredientAnimalDerived                           bool
-	ValidIngredientPluralName                              string
-	ValidIngredientRestrictToPreparations                  bool
-	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
+	Notes                                                  string
 	ValidIngredientStorageInstructions                     string
-	ValidIngredientSlug                                    string
-	ValidIngredientContainsAlcohol                         bool
+	ID                                                     string
+	ValidIngredientName                                    string
+	ValidIngredientWarning                                 string
+	ValidIngredientDescription                             string
+	ValidIngredientPluralName                              string
 	ValidIngredientShoppingSuggestions                     string
+	ValidIngredientSlug                                    string
+	ValidIngredientIconPath                                string
+	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
+	Rating                                                 int16
+	ValidIngredientIsLiquid                                sql.NullBool
+	ValidIngredientContainsShellfish                       bool
+	ValidIngredientIsAcid                                  bool
+	ValidIngredientAnimalDerived                           bool
+	ValidIngredientContainsAlcohol                         bool
+	ValidIngredientVolumetric                              bool
 	ValidIngredientIsStarch                                bool
 	ValidIngredientIsProtein                               bool
 	ValidIngredientIsGrain                                 bool
 	ValidIngredientIsFruit                                 bool
 	ValidIngredientIsSalt                                  bool
 	ValidIngredientIsFat                                   bool
-	ValidIngredientIsAcid                                  bool
+	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientIsHeat                                  bool
-	ValidIngredientLastIndexedAt                           sql.NullTime
-	ValidIngredientCreatedAt                               time.Time
-	ValidIngredientLastUpdatedAt                           sql.NullTime
-	ValidIngredientArchivedAt                              sql.NullTime
-	Rating                                                 int16
-	Notes                                                  string
+	ValidIngredientAnimalFlesh                             bool
+	ValidIngredientContainsGluten                          bool
+	ValidIngredientContainsFish                            bool
+	ValidIngredientContainsSesame                          bool
+	ValidIngredientContainsWheat                           bool
+	ValidIngredientContainsSoy                             bool
 	Allergy                                                bool
-	BelongsToUser                                          string
-	CreatedAt                                              time.Time
-	LastUpdatedAt                                          sql.NullTime
-	ArchivedAt                                             sql.NullTime
+	ValidIngredientContainsTreeNut                         bool
+	ValidIngredientContainsPeanut                          bool
+	ValidIngredientContainsDairy                           bool
+	ValidIngredientContainsEgg                             bool
 }
 
 func (q *Queries) GetUserIngredientPreference(ctx context.Context, db DBTX, arg *GetUserIngredientPreferenceParams) (*GetUserIngredientPreferenceRow, error) {
@@ -360,35 +360,35 @@ type GetUserIngredientPreferencesForUserParams struct {
 }
 
 type GetUserIngredientPreferencesForUserRow struct {
+	CreatedAt                                              time.Time
+	ValidIngredientCreatedAt                               time.Time
+	ValidIngredientLastIndexedAt                           sql.NullTime
+	ArchivedAt                                             sql.NullTime
+	LastUpdatedAt                                          sql.NullTime
+	ValidIngredientArchivedAt                              sql.NullTime
+	ValidIngredientLastUpdatedAt                           sql.NullTime
+	ValidIngredientStorageInstructions                     string
+	ValidIngredientPluralName                              string
 	ID                                                     string
+	ValidIngredientShoppingSuggestions                     string
 	ValidIngredientID                                      string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
+	BelongsToUser                                          string
+	Notes                                                  string
+	ValidIngredientSlug                                    string
 	ValidIngredientWarning                                 string
-	ValidIngredientContainsEgg                             bool
-	ValidIngredientContainsDairy                           bool
-	ValidIngredientContainsPeanut                          bool
-	ValidIngredientContainsTreeNut                         bool
-	ValidIngredientContainsSoy                             bool
-	ValidIngredientContainsWheat                           bool
-	ValidIngredientContainsShellfish                       bool
-	ValidIngredientContainsSesame                          bool
-	ValidIngredientContainsFish                            bool
-	ValidIngredientContainsGluten                          bool
-	ValidIngredientAnimalFlesh                             bool
-	ValidIngredientVolumetric                              bool
-	ValidIngredientIsLiquid                                sql.NullBool
 	ValidIngredientIconPath                                string
-	ValidIngredientAnimalDerived                           bool
-	ValidIngredientPluralName                              string
-	ValidIngredientRestrictToPreparations                  bool
 	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientStorageInstructions                     string
-	ValidIngredientSlug                                    string
-	ValidIngredientContainsAlcohol                         bool
-	ValidIngredientShoppingSuggestions                     string
+	FilteredCount                                          int64
+	TotalCount                                             int64
+	Rating                                                 int16
+	ValidIngredientIsLiquid                                sql.NullBool
 	ValidIngredientIsStarch                                bool
+	ValidIngredientContainsPeanut                          bool
+	ValidIngredientRestrictToPreparations                  bool
+	ValidIngredientContainsTreeNut                         bool
 	ValidIngredientIsProtein                               bool
 	ValidIngredientIsGrain                                 bool
 	ValidIngredientIsFruit                                 bool
@@ -396,19 +396,19 @@ type GetUserIngredientPreferencesForUserRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
-	ValidIngredientLastIndexedAt                           sql.NullTime
-	ValidIngredientCreatedAt                               time.Time
-	ValidIngredientLastUpdatedAt                           sql.NullTime
-	ValidIngredientArchivedAt                              sql.NullTime
-	Rating                                                 int16
-	Notes                                                  string
+	ValidIngredientContainsAlcohol                         bool
+	ValidIngredientContainsDairy                           bool
+	ValidIngredientContainsEgg                             bool
+	ValidIngredientAnimalDerived                           bool
+	ValidIngredientVolumetric                              bool
+	ValidIngredientAnimalFlesh                             bool
 	Allergy                                                bool
-	BelongsToUser                                          string
-	CreatedAt                                              time.Time
-	LastUpdatedAt                                          sql.NullTime
-	ArchivedAt                                             sql.NullTime
-	FilteredCount                                          int64
-	TotalCount                                             int64
+	ValidIngredientContainsGluten                          bool
+	ValidIngredientContainsFish                            bool
+	ValidIngredientContainsSesame                          bool
+	ValidIngredientContainsShellfish                       bool
+	ValidIngredientContainsWheat                           bool
+	ValidIngredientContainsSoy                             bool
 }
 
 func (q *Queries) GetUserIngredientPreferencesForUser(ctx context.Context, db DBTX, arg *GetUserIngredientPreferencesForUserParams) ([]*GetUserIngredientPreferencesForUserRow, error) {
@@ -507,11 +507,11 @@ WHERE archived_at IS NULL
 
 type UpdateUserIngredientPreferenceParams struct {
 	Ingredient    string
-	Rating        int16
 	Notes         string
-	Allergy       bool
 	BelongsToUser string
 	ID            string
+	Rating        int16
+	Allergy       bool
 }
 
 func (q *Queries) UpdateUserIngredientPreference(ctx context.Context, db DBTX, arg *UpdateUserIngredientPreferenceParams) (int64, error) {

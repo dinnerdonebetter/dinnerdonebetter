@@ -11,11 +11,11 @@ import (
 
 const (
 	// ValidMeasurementUnitConversionCreatedCustomerEventType indicates a valid measurement conversion was created.
-	ValidMeasurementUnitConversionCreatedCustomerEventType CustomerEventType = "valid_measurement_unit_conversion_created"
+	ValidMeasurementUnitConversionCreatedCustomerEventType ServiceEventType = "valid_measurement_unit_conversion_created"
 	// ValidMeasurementUnitConversionUpdatedCustomerEventType indicates a valid measurement conversion was updated.
-	ValidMeasurementUnitConversionUpdatedCustomerEventType CustomerEventType = "valid_measurement_unit_conversion_updated"
+	ValidMeasurementUnitConversionUpdatedCustomerEventType ServiceEventType = "valid_measurement_unit_conversion_updated"
 	// ValidMeasurementUnitConversionArchivedCustomerEventType indicates a valid measurement conversion was archived.
-	ValidMeasurementUnitConversionArchivedCustomerEventType CustomerEventType = "valid_measurement_unit_conversion_archived"
+	ValidMeasurementUnitConversionArchivedCustomerEventType ServiceEventType = "valid_measurement_unit_conversion_archived"
 )
 
 func init() {

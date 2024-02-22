@@ -1,7 +1,7 @@
 package fakes
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -22,7 +22,7 @@ func BuildFakeRecipeStepInstrument() *types.RecipeStepInstrument {
 		Optional:            fake.Bool(),
 		OptionIndex:         uint16(fake.Uint8()),
 		MinimumQuantity:     fake.Uint32(),
-		MaximumQuantity:     pointers.Pointer(fake.Uint32()),
+		MaximumQuantity:     pointer.To(fake.Uint32()),
 	}
 }
 

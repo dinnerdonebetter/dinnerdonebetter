@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -18,11 +19,12 @@ var (
 func main() {
 	pflag.Parse()
 
-	var errors *multierror.Error
+	var runErrors *multierror.Error
 
 	queryOutput := map[string][]*Query{
 		"admin.sql":                                        buildAdminQueries(),
 		"webhooks.sql":                                     buildWebhooksQueries(),
+		"user_notifications.sql":                           buildUserNotificationQueries(),
 		"users.sql":                                        buildUsersQueries(),
 		"households.sql":                                   buildHouseholdsQueries(),
 		"household_user_memberships.sql":                   buildHouseholdUserMembershipsQueries(),
@@ -76,7 +78,14 @@ func main() {
 		localFilePath := path.Join("internal", "database", "postgres", "sqlc_queries", filePath)
 		existingFile, err := os.ReadFile(localFilePath)
 		if err != nil {
-			log.Fatal(err)
+			if errors.Is(err, os.ErrNotExist) {
+				if _, err = os.Create(localFilePath); err != nil {
+					log.Fatal(err)
+				}
+			}
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 
 		var fileContent string
@@ -93,17 +102,17 @@ func main() {
 		}
 
 		if string(existingFile) != fileOutput && checkOnly {
-			errors = multierror.Append(errors, fmt.Errorf("files don't match: %s", filePath))
+			runErrors = multierror.Append(runErrors, fmt.Errorf("files don't match: %s", filePath))
 		}
 
 		if !checkOnly {
 			if err = os.WriteFile(localFilePath, []byte(fileOutput), 0o600); err != nil {
-				errors = multierror.Append(errors, err)
+				runErrors = multierror.Append(runErrors, err)
 			}
 		}
 	}
 
-	if errors.ErrorOrNil() != nil {
-		log.Fatal(errors)
+	if runErrors.ErrorOrNil() != nil {
+		log.Fatal(runErrors)
 	}
 }

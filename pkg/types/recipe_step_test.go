@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
@@ -13,14 +13,14 @@ import (
 func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput {
 	return &RecipeStepCreationRequestInput{
 		PreparationID:                 "PreparationID",
-		MinimumEstimatedTimeInSeconds: pointers.Pointer(fake.Uint32()),
-		MaximumEstimatedTimeInSeconds: pointers.Pointer(fake.Uint32()),
-		MinimumTemperatureInCelsius:   pointers.Pointer(float32(123.45)),
+		MinimumEstimatedTimeInSeconds: pointer.To(fake.Uint32()),
+		MaximumEstimatedTimeInSeconds: pointer.To(fake.Uint32()),
+		MinimumTemperatureInCelsius:   pointer.To(float32(123.45)),
 		Notes:                         "Notes",
 		ExplicitInstructions:          "ExplicitInstructions",
 		Instruments: []*RecipeStepInstrumentCreationRequestInput{
 			{
-				InstrumentID:    pointers.Pointer("InstrumentID"),
+				InstrumentID:    pointer.To("InstrumentID"),
 				Name:            "Name",
 				MinimumQuantity: fake.Uint32(),
 			},
@@ -29,8 +29,8 @@ func buildValidRecipeStepCreationRequestInput() *RecipeStepCreationRequestInput 
 			{
 				Name:              "Name",
 				Type:              RecipeStepProductIngredientType,
-				MeasurementUnitID: pointers.Pointer("MeasurementUnitID"),
-				MinimumQuantity:   pointers.Pointer(fake.Float32()),
+				MeasurementUnitID: pointer.To("MeasurementUnitID"),
+				MinimumQuantity:   pointer.To(fake.Float32()),
 				QuantityNotes:     "QuantityNotes",
 			},
 		},
@@ -53,15 +53,15 @@ func TestRecipeStep_Update(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStep{
-			MinimumTemperatureInCelsius: pointers.Pointer(float32(123.45)),
+			MinimumTemperatureInCelsius: pointer.To(float32(123.45)),
 		}
 
 		input := &RecipeStepUpdateRequestInput{}
 		assert.NoError(t, fake.Struct(&input))
-		input.Optional = pointers.Pointer(true)
-		input.StartTimerAutomatically = pointers.Pointer(true)
-		input.MinimumTemperatureInCelsius = pointers.Pointer(float32(543.21))
-		input.MaximumTemperatureInCelsius = pointers.Pointer(float32(123.45))
+		input.Optional = pointer.To(true)
+		input.StartTimerAutomatically = pointer.To(true)
+		input.MinimumTemperatureInCelsius = pointer.To(float32(543.21))
+		input.MaximumTemperatureInCelsius = pointer.To(float32(123.45))
 
 		x.Update(input)
 	})
@@ -93,9 +93,9 @@ func TestRecipeStepCreationRequestInput_Validate(T *testing.T) {
 
 		x := &RecipeStepCreationRequestInput{
 			PreparationID:                 t.Name(),
-			MinimumEstimatedTimeInSeconds: pointers.Pointer(fake.Uint32()),
-			MaximumEstimatedTimeInSeconds: pointers.Pointer(fake.Uint32()),
-			MinimumTemperatureInCelsius:   pointers.Pointer(float32(123.45)),
+			MinimumEstimatedTimeInSeconds: pointer.To(fake.Uint32()),
+			MaximumEstimatedTimeInSeconds: pointer.To(fake.Uint32()),
+			MinimumTemperatureInCelsius:   pointer.To(float32(123.45)),
 			Notes:                         t.Name(),
 			ExplicitInstructions:          t.Name(),
 			Products: []*RecipeStepProductCreationRequestInput{
@@ -161,13 +161,13 @@ func TestRecipeStepUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepUpdateRequestInput{
-			Index:                         pointers.Pointer(fake.Uint32()),
+			Index:                         pointer.To(fake.Uint32()),
 			Preparation:                   &ValidPreparation{},
-			MinimumEstimatedTimeInSeconds: pointers.Pointer(fake.Uint32()),
-			MaximumEstimatedTimeInSeconds: pointers.Pointer(fake.Uint32()),
-			MinimumTemperatureInCelsius:   pointers.Pointer(float32(123.45)),
-			Notes:                         pointers.Pointer(t.Name()),
-			ExplicitInstructions:          pointers.Pointer(t.Name()),
+			MinimumEstimatedTimeInSeconds: pointer.To(fake.Uint32()),
+			MaximumEstimatedTimeInSeconds: pointer.To(fake.Uint32()),
+			MinimumTemperatureInCelsius:   pointer.To(float32(123.45)),
+			Notes:                         pointer.To(t.Name()),
+			ExplicitInstructions:          pointer.To(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

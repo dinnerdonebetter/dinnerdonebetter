@@ -10,7 +10,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 )
 
 const (
@@ -52,8 +52,8 @@ type QueryFilter struct {
 // DefaultQueryFilter builds the default query filter.
 func DefaultQueryFilter() *QueryFilter {
 	return &QueryFilter{
-		Page:   pointers.Pointer(uint16(1)),
-		Limit:  pointers.Pointer(uint8(DefaultLimit)),
+		Page:   pointer.To(uint16(1)),
+		Limit:  pointer.To(uint8(DefaultLimit)),
 		SortBy: SortAscending,
 	}
 }
@@ -100,11 +100,11 @@ func (qf *QueryFilter) AttachToLogger(logger logging.Logger) logging.Logger {
 // FromParams overrides the core QueryFilter values with values retrieved from url.Params.
 func (qf *QueryFilter) FromParams(params url.Values) {
 	if i, err := strconv.ParseUint(params.Get(pageQueryKey), 10, 64); err == nil {
-		qf.Page = pointers.Pointer(uint16(math.Max(float64(i), 1)))
+		qf.Page = pointer.To(uint16(math.Max(float64(i), 1)))
 	}
 
 	if i, err := strconv.ParseUint(params.Get(LimitQueryKey), 10, 64); err == nil {
-		qf.Limit = pointers.Pointer(uint8(math.Min(math.Max(float64(i), 0), MaxLimit)))
+		qf.Limit = pointer.To(uint8(math.Min(math.Max(float64(i), 0), MaxLimit)))
 	}
 
 	if t, err := time.Parse(time.RFC3339Nano, params.Get(createdBeforeQueryKey)); err == nil {
@@ -138,7 +138,7 @@ func (qf *QueryFilter) FromParams(params url.Values) {
 // SetPage sets the current page with certain constraints.
 func (qf *QueryFilter) SetPage(page *uint16) {
 	if page != nil {
-		qf.Page = pointers.Pointer(uint16(math.Max(1, float64(*page))))
+		qf.Page = pointer.To(uint16(math.Max(1, float64(*page))))
 	}
 }
 
@@ -219,7 +219,7 @@ func ExtractQueryFilterFromRequest(req *http.Request) *QueryFilter {
 
 	if qf.Limit != nil {
 		if *qf.Limit == 0 {
-			qf.Limit = pointers.Pointer(uint8(DefaultLimit))
+			qf.Limit = pointer.To(uint8(DefaultLimit))
 		}
 	}
 

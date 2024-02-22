@@ -167,12 +167,8 @@ WHERE %s.%s IS NULL
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
-				buildFilterCountSelect(
-					recipeStepCompletionConditionIngredientsTableName,
-					true,
-					"recipe_step_completion_conditions.belongs_to_recipe_step = sqlc.arg(recipe_step_id)",
-				),
-				buildTotalCountSelect(recipeStepCompletionConditionIngredientsTableName),
+				buildFilterCountSelect(recipeStepCompletionConditionIngredientsTableName, true, true, "recipe_step_completion_conditions.belongs_to_recipe_step = sqlc.arg(recipe_step_id)"),
+				buildTotalCountSelect(recipeStepCompletionConditionIngredientsTableName, true),
 				recipeStepCompletionConditionIngredientsTableName,
 				recipeStepCompletionConditionsTableName, recipeStepCompletionConditionIngredientsTableName, belongsToRecipeStepCompletionConditionColumn, recipeStepCompletionConditionsTableName, idColumn,
 				recipeStepsTableName, recipeStepCompletionConditionsTableName, belongsToRecipeStepColumn, recipeStepsTableName, idColumn,

@@ -59,5 +59,10 @@ var (
 			Description: "service types and tables",
 			Script:      fetchMigration("00002_initial"),
 		},
+		{
+			Version:     3,
+			Description: "user notifications table",
+			Script:      fetchMigration("00003_user_notifications"),
+		},
 	}
 )

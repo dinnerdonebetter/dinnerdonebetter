@@ -21,11 +21,11 @@ const (
 	RecipePrepTaskStorageTypeAirtightContainer = "in an airtight container"
 
 	// RecipePrepTaskCreatedCustomerEventType indicates a recipe prep task was created.
-	RecipePrepTaskCreatedCustomerEventType CustomerEventType = "recipe_created"
+	RecipePrepTaskCreatedCustomerEventType ServiceEventType = "recipe_created"
 	// RecipePrepTaskUpdatedCustomerEventType indicates a recipe prep task was updated.
-	RecipePrepTaskUpdatedCustomerEventType CustomerEventType = "recipe_updated"
+	RecipePrepTaskUpdatedCustomerEventType ServiceEventType = "recipe_updated"
 	// RecipePrepTaskArchivedCustomerEventType indicates a recipe prep task was archived.
-	RecipePrepTaskArchivedCustomerEventType CustomerEventType = "recipe_archived"
+	RecipePrepTaskArchivedCustomerEventType ServiceEventType = "recipe_archived"
 )
 
 func init() {

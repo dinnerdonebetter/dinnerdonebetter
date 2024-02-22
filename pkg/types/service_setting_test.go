@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
@@ -20,7 +20,7 @@ func TestServiceSetting_Update(T *testing.T) {
 		input := &ServiceSettingUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
-		input.AdminsOnly = pointers.Pointer(true)
+		input.AdminsOnly = pointer.To(true)
 
 		x.Update(input)
 	})
@@ -40,7 +40,7 @@ func TestServiceSettingCreationRequestInput_ValidateWithContext(T *testing.T) {
 			Enumeration: []string{
 				t.Name(),
 			},
-			DefaultValue: pointers.Pointer(t.Name()),
+			DefaultValue: pointer.To(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(ctx)
@@ -70,7 +70,7 @@ func TestServiceSettingCreationRequestInput_ValidateWithContext(T *testing.T) {
 			Enumeration: []string{
 				t.Name(),
 			},
-			DefaultValue: pointers.Pointer("whatever"),
+			DefaultValue: pointer.To("whatever"),
 		}
 
 		actual := x.ValidateWithContext(ctx)
@@ -94,7 +94,7 @@ func TestServiceSettingDatabaseCreationInput_ValidateWithContext(T *testing.T) {
 			Enumeration: []string{
 				t.Name(),
 			},
-			DefaultValue: pointers.Pointer(t.Name()),
+			DefaultValue: pointer.To(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(ctx)
@@ -111,12 +111,12 @@ func TestServiceSettingUpdateRequestInput_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		x := &ServiceSettingUpdateRequestInput{
-			Name:        pointers.Pointer(t.Name()),
-			Description: pointers.Pointer(t.Name()),
+			Name:        pointer.To(t.Name()),
+			Description: pointer.To(t.Name()),
 			Enumeration: []string{
 				t.Name(),
 			},
-			DefaultValue: pointers.Pointer(t.Name()),
+			DefaultValue: pointer.To(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(ctx)
@@ -140,12 +140,12 @@ func TestServiceSettingUpdateRequestInput_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		x := &ServiceSettingUpdateRequestInput{
-			Name:        pointers.Pointer(t.Name()),
-			Description: pointers.Pointer(t.Name()),
+			Name:        pointer.To(t.Name()),
+			Description: pointer.To(t.Name()),
 			Enumeration: []string{
 				t.Name(),
 			},
-			DefaultValue: pointers.Pointer("whatever"),
+			DefaultValue: pointer.To("whatever"),
 		}
 
 		actual := x.ValidateWithContext(ctx)

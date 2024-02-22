@@ -24,37 +24,37 @@ const (
 
 	// TwoFactorSecretVerifiedCustomerEventType indicates a user's two factor secret was verified.
 	/* #nosec G101 */
-	TwoFactorSecretVerifiedCustomerEventType CustomerEventType = "two_factor_secret_verified"
+	TwoFactorSecretVerifiedCustomerEventType ServiceEventType = "two_factor_secret_verified"
 	// TwoFactorDeactivatedCustomerEventType indicates a user's two factor secret was changed and verified_at timestamp was reset.
 	/* #nosec G101 */
-	TwoFactorDeactivatedCustomerEventType CustomerEventType = "two_factor_deactivated"
+	TwoFactorDeactivatedCustomerEventType ServiceEventType = "two_factor_deactivated"
 	// TwoFactorSecretChangedCustomerEventType indicates a user's two factor secret was changed and verified_at timestamp was reset.
 	/* #nosec G101 */
-	TwoFactorSecretChangedCustomerEventType CustomerEventType = "two_factor_secret_changed"
+	TwoFactorSecretChangedCustomerEventType ServiceEventType = "two_factor_secret_changed"
 	// PasswordResetTokenCreatedEventType indicates a user created a password reset token.
-	PasswordResetTokenCreatedEventType CustomerEventType = "password_reset_token_created"
+	PasswordResetTokenCreatedEventType ServiceEventType = "password_reset_token_created"
 	// PasswordResetTokenRedeemedEventType indicates a user created a password reset token.
-	PasswordResetTokenRedeemedEventType CustomerEventType = "password_reset_token_redeemed"
+	PasswordResetTokenRedeemedEventType ServiceEventType = "password_reset_token_redeemed"
 	// PasswordChangedEventType indicates a user changed their password.
-	PasswordChangedEventType CustomerEventType = "password_changed"
+	PasswordChangedEventType ServiceEventType = "password_changed"
 	// EmailAddressChangedEventType indicates a user changed their email address.
-	EmailAddressChangedEventType CustomerEventType = "email_address_changed"
+	EmailAddressChangedEventType ServiceEventType = "email_address_changed"
 	// UsernameChangedEventType indicates a user changed their username.
-	UsernameChangedEventType CustomerEventType = "username_changed"
+	UsernameChangedEventType ServiceEventType = "username_changed"
 	// UserDetailsChangedEventType indicates a user changed their information.
-	UserDetailsChangedEventType CustomerEventType = "user_details_changed"
+	UserDetailsChangedEventType ServiceEventType = "user_details_changed"
 	// UsernameReminderRequestedEventType indicates a user requested a username reminder.
-	UsernameReminderRequestedEventType CustomerEventType = "username_reminder_requested"
+	UsernameReminderRequestedEventType ServiceEventType = "username_reminder_requested"
 	// UserLoggedInCustomerEventType indicates a user has logged in.
-	UserLoggedInCustomerEventType CustomerEventType = "user_logged_in"
+	UserLoggedInCustomerEventType ServiceEventType = "user_logged_in"
 	// UserLoggedOutCustomerEventType indicates a user has logged in.
-	UserLoggedOutCustomerEventType CustomerEventType = "user_logged_out"
+	UserLoggedOutCustomerEventType ServiceEventType = "user_logged_out"
 	// UserChangedActiveHouseholdCustomerEventType indicates a user has logged in.
-	UserChangedActiveHouseholdCustomerEventType CustomerEventType = "changed_active_household"
+	UserChangedActiveHouseholdCustomerEventType ServiceEventType = "changed_active_household"
 	// UserEmailAddressVerifiedEventType indicates a user created a password reset token.
-	UserEmailAddressVerifiedEventType CustomerEventType = "user_email_address_verified"
+	UserEmailAddressVerifiedEventType ServiceEventType = "user_email_address_verified"
 	// UserEmailAddressVerificationEmailRequestedEventType indicates a user created a password reset token.
-	UserEmailAddressVerificationEmailRequestedEventType CustomerEventType = "user_email_address_verification_email_requested"
+	UserEmailAddressVerificationEmailRequestedEventType ServiceEventType = "user_email_address_verification_email_requested"
 )
 
 func init() {

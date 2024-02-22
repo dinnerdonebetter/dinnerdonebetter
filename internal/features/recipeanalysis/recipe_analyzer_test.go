@@ -9,7 +9,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
@@ -125,7 +125,7 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 							RecipeStepProductID: nil,
 							Ingredient: &types.ValidIngredient{
 								MaximumIdealStorageTemperatureInCelsius: nil,
-								MinimumIdealStorageTemperatureInCelsius: pointers.Pointer(float32(2.5)),
+								MinimumIdealStorageTemperatureInCelsius: pointer.To(float32(2.5)),
 								PluralName:                              "chicken breasts",
 								StorageInstructions:                     "keep frozen",
 								Name:                                    "chicken breast",
@@ -136,7 +136,7 @@ func TestRecipeAnalyzer_GenerateMealPlanTasksForRecipe(T *testing.T) {
 							BelongsToRecipeStep: recipeStepID,
 							MeasurementUnit:     types.ValidMeasurementUnit{Name: "gram", PluralName: "grams"},
 							MinimumQuantity:     900,
-							MaximumQuantity:     pointers.Pointer(float32(900)),
+							MaximumQuantity:     pointer.To(float32(900)),
 							Optional:            false,
 						},
 					},
@@ -268,15 +268,15 @@ func Test_recipeAnalyzer_RenderMermaidDiagramForRecipe(T *testing.T) {
 					Ingredients: []*types.RecipeStepIngredient{
 						{
 							Name:                "diced onion",
-							RecipeStepProductID: pointers.Pointer(dicedOnionRecipeStepProductID),
+							RecipeStepProductID: pointer.To(dicedOnionRecipeStepProductID),
 						},
 						{
 							Name:                "diced carrot",
-							RecipeStepProductID: pointers.Pointer(dicedCarrotRecipeStepProductID),
+							RecipeStepProductID: pointer.To(dicedCarrotRecipeStepProductID),
 						},
 						{
 							Name:                "diced celery",
-							RecipeStepProductID: pointers.Pointer(dicedCeleryRecipeStepProductID),
+							RecipeStepProductID: pointer.To(dicedCeleryRecipeStepProductID),
 						},
 					},
 					Products: []*types.RecipeStepProduct{

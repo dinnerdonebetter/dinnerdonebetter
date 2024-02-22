@@ -15,7 +15,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	loggingcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/internal/search"
 	"github.com/dinnerdonebetter/backend/internal/search/algolia"
 	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
@@ -96,7 +96,7 @@ func main() {
 		}
 
 		filter := types.DefaultQueryFilter()
-		filter.Limit = pointers.Pointer(uint8(50))
+		filter.Limit = pointer.To(uint8(50))
 		thresholdMet := false
 
 		switch index {

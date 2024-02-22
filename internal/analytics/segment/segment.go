@@ -72,7 +72,7 @@ func (c *EventReporter) AddUser(ctx context.Context, userID string, properties m
 }
 
 // EventOccurred associates events with a user.
-func (c *EventReporter) EventOccurred(ctx context.Context, event types.CustomerEventType, userID string, properties map[string]any) error {
+func (c *EventReporter) EventOccurred(ctx context.Context, event types.ServiceEventType, userID string, properties map[string]any) error {
 	_, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 

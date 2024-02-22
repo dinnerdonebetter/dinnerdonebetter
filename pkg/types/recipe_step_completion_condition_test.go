@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
@@ -20,7 +20,7 @@ func TestRecipeStepCompletionCondition_Update(T *testing.T) {
 		input := &RecipeStepCompletionConditionUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
-		input.Optional = pointers.Pointer(true)
+		input.Optional = pointer.To(true)
 
 		x.Update(input)
 	})
@@ -194,9 +194,9 @@ func TestRecipeStepCompletionConditionUpdateRequestInput_Validate(T *testing.T) 
 		t.Parallel()
 
 		x := &RecipeStepCompletionConditionUpdateRequestInput{
-			IngredientStateID:   pointers.Pointer(t.Name()),
-			BelongsToRecipeStep: pointers.Pointer(t.Name()),
-			Optional:            pointers.Pointer(fake.Bool()),
+			IngredientStateID:   pointer.To(t.Name()),
+			BelongsToRecipeStep: pointer.To(t.Name()),
+			Optional:            pointer.To(fake.Bool()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

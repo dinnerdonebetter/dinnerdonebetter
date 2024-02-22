@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
@@ -196,7 +196,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 								Type:            types.RecipeStepProductIngredientType,
 								MeasurementUnit: grams,
 								QuantityNotes:   "",
-								MinimumQuantity: pointers.Pointer(float32(1000)),
+								MinimumQuantity: pointer.To(float32(1000)),
 							},
 						},
 						Notes:       "first step",
@@ -230,7 +230,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 								Type:            types.RecipeStepProductIngredientType,
 								MeasurementUnit: grams,
 								QuantityNotes:   "",
-								MinimumQuantity: pointers.Pointer(float32(1010)),
+								MinimumQuantity: pointer.To(float32(1010)),
 							},
 						},
 						Notes:       "second step",
@@ -284,7 +284,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						Instruments: []*types.RecipeStepInstrumentCreationRequestInput{
 							{
 								Name:         "whatever",
-								InstrumentID: pointers.Pointer(createdValidInstrument.ID),
+								InstrumentID: pointer.To(createdValidInstrument.ID),
 							},
 						},
 						Ingredients: []*types.RecipeStepIngredientCreationRequestInput{
@@ -319,7 +319,7 @@ func (s *TestSuite) TestRecipes_Realistic() {
 						Instruments: []*types.RecipeStepInstrumentCreationRequestInput{
 							{
 								Name:         "whatever",
-								InstrumentID: pointers.Pointer(createdValidInstrument.ID),
+								InstrumentID: pointer.To(createdValidInstrument.ID),
 							},
 						},
 						Ingredients: []*types.RecipeStepIngredientCreationRequestInput{
@@ -327,8 +327,8 @@ func (s *TestSuite) TestRecipes_Realistic() {
 								Name:                            expected.Steps[1].Ingredients[0].Name,
 								MeasurementUnitID:               expected.Steps[1].Ingredients[0].MeasurementUnit.ID,
 								MinimumQuantity:                 expected.Steps[1].Ingredients[0].MinimumQuantity,
-								ProductOfRecipeStepIndex:        pointers.Pointer(uint64(0)),
-								ProductOfRecipeStepProductIndex: pointers.Pointer(uint64(0)),
+								ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
+								ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
 							},
 							{
 								IngredientID:      &expected.Steps[1].Ingredients[1].Ingredient.ID,
@@ -578,7 +578,7 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 
 			chickenBreastBase := fakes.BuildFakeValidIngredient()
 			chickenBreastInput := converters.ConvertValidIngredientToValidIngredientCreationRequestInput(chickenBreastBase)
-			chickenBreastInput.MinimumIdealStorageTemperatureInCelsius = pointers.Pointer(float32(2.5))
+			chickenBreastInput.MinimumIdealStorageTemperatureInCelsius = pointer.To(float32(2.5))
 			chickenBreast, createdValidIngredientErr := testClients.admin.CreateValidIngredient(ctx, chickenBreastInput)
 			require.NoError(t, createdValidIngredientErr)
 
@@ -609,7 +609,7 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 								Type:            types.RecipeStepProductIngredientType,
 								MeasurementUnit: grams,
 								QuantityNotes:   "",
-								MinimumQuantity: pointers.Pointer(float32(1000)),
+								MinimumQuantity: pointer.To(float32(1000)),
 							},
 						},
 						Notes:       "first step",
@@ -639,7 +639,7 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 								Type:            types.RecipeStepProductIngredientType,
 								MeasurementUnit: grams,
 								QuantityNotes:   "",
-								MinimumQuantity: pointers.Pointer(float32(1010)),
+								MinimumQuantity: pointer.To(float32(1010)),
 							},
 						},
 						Notes:       "second step",
@@ -678,7 +678,7 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 								Type:              types.RecipeStepProductIngredientType,
 								MeasurementUnitID: &grams.ID,
 								QuantityNotes:     "",
-								MinimumQuantity:   pointers.Pointer(float32(1000)),
+								MinimumQuantity:   pointer.To(float32(1000)),
 							},
 						},
 						Notes:         "first step",
@@ -686,7 +686,7 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 						Instruments: []*types.RecipeStepInstrumentCreationRequestInput{
 							{
 								Name:         "whatever",
-								InstrumentID: pointers.Pointer(createdValidInstrument.ID),
+								InstrumentID: pointer.To(createdValidInstrument.ID),
 							},
 						},
 						Ingredients: []*types.RecipeStepIngredientCreationRequestInput{
@@ -707,7 +707,7 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 								Type:              types.RecipeStepProductIngredientType,
 								MeasurementUnitID: &grams.ID,
 								QuantityNotes:     "",
-								MinimumQuantity:   pointers.Pointer(float32(1010)),
+								MinimumQuantity:   pointer.To(float32(1010)),
 							},
 						},
 						Notes:         "second step",
@@ -715,7 +715,7 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 						Instruments: []*types.RecipeStepInstrumentCreationRequestInput{
 							{
 								Name:         "whatever",
-								InstrumentID: pointers.Pointer(createdValidInstrument.ID),
+								InstrumentID: pointer.To(createdValidInstrument.ID),
 							},
 						},
 						Ingredients: []*types.RecipeStepIngredientCreationRequestInput{
@@ -723,8 +723,8 @@ func (s *TestSuite) TestRecipes_GetMealPlanTasksForRecipe() {
 								Name:                            "diced chicken breast",
 								MeasurementUnitID:               grams.ID,
 								MinimumQuantity:                 1000,
-								ProductOfRecipeStepIndex:        pointers.Pointer(uint64(0)),
-								ProductOfRecipeStepProductIndex: pointers.Pointer(uint64(0)),
+								ProductOfRecipeStepIndex:        pointer.To(uint64(0)),
+								ProductOfRecipeStepProductIndex: pointer.To(uint64(0)),
 							},
 						},
 						Index: 1,

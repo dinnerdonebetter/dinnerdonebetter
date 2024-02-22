@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
@@ -18,16 +18,16 @@ func TestRecipeStepVessel_Update(T *testing.T) {
 
 		x := &RecipeStepVessel{
 			MinimumQuantity: 1234,
-			MaximumQuantity: pointers.Pointer(uint32(1234)),
+			MaximumQuantity: pointer.To(uint32(1234)),
 			Vessel:          &ValidVessel{},
 		}
 		input := &RecipeStepVesselUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
-		input.UnavailableAfterStep = pointers.Pointer(true)
-		input.MinimumQuantity = pointers.Pointer(uint32(1))
-		input.MaximumQuantity = pointers.Pointer(uint32(1))
-		input.VesselID = pointers.Pointer(t.Name())
+		input.UnavailableAfterStep = pointer.To(true)
+		input.MinimumQuantity = pointer.To(uint32(1))
+		input.MaximumQuantity = pointer.To(uint32(1))
+		input.VesselID = pointer.To(t.Name())
 
 		x.Update(input)
 	})
@@ -41,10 +41,10 @@ func TestRecipeStepVesselCreationRequestInput_Validate(T *testing.T) {
 
 		x := &RecipeStepVesselCreationRequestInput{
 			Name:                t.Name(),
-			RecipeStepProductID: pointers.Pointer(t.Name()),
+			RecipeStepProductID: pointer.To(t.Name()),
 			Notes:               t.Name(),
 			MinimumQuantity:     fake.Uint32(),
-			MaximumQuantity:     pointers.Pointer(fake.Uint32()),
+			MaximumQuantity:     pointer.To(fake.Uint32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -93,12 +93,12 @@ func TestRecipeStepVesselUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepVesselUpdateRequestInput{
-			Name:                pointers.Pointer(t.Name()),
-			BelongsToRecipeStep: pointers.Pointer(t.Name()),
-			RecipeStepProductID: pointers.Pointer(t.Name()),
-			Notes:               pointers.Pointer(t.Name()),
-			MinimumQuantity:     pointers.Pointer(fake.Uint32()),
-			MaximumQuantity:     pointers.Pointer(fake.Uint32()),
+			Name:                pointer.To(t.Name()),
+			BelongsToRecipeStep: pointer.To(t.Name()),
+			RecipeStepProductID: pointer.To(t.Name()),
+			Notes:               pointer.To(t.Name()),
+			MinimumQuantity:     pointer.To(fake.Uint32()),
+			MaximumQuantity:     pointer.To(fake.Uint32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

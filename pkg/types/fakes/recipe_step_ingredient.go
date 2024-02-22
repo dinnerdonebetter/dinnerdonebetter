@@ -1,7 +1,7 @@
 package fakes
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -17,15 +17,15 @@ func BuildFakeRecipeStepIngredient() *types.RecipeStepIngredient {
 		Ingredient:             BuildFakeValidIngredient(),
 		MeasurementUnit:        *BuildFakeValidMeasurementUnit(),
 		MinimumQuantity:        float32(buildFakeNumber()),
-		MaximumQuantity:        pointers.Pointer(float32(buildFakeNumber())),
+		MaximumQuantity:        pointer.To(float32(buildFakeNumber())),
 		QuantityNotes:          buildUniqueString(),
 		Optional:               fake.Bool(),
 		IngredientNotes:        buildUniqueString(),
 		CreatedAt:              BuildFakeTime(),
 		BelongsToRecipeStep:    BuildFakeID(),
-		VesselIndex:            pointers.Pointer(fake.Uint16()),
+		VesselIndex:            pointer.To(fake.Uint16()),
 		ToTaste:                fake.Bool(),
-		ProductPercentageToUse: pointers.Pointer(float32(buildFakeNumber())),
+		ProductPercentageToUse: pointer.To(float32(buildFakeNumber())),
 	}
 }
 

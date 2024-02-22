@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -93,7 +93,7 @@ func TestQuerier_Integration_MealPlanTasks(t *testing.T) {
 	// delete
 	for _, mealPlanTask := range createdMealPlanTasks {
 		assert.NoError(t, dbc.ChangeMealPlanTaskStatus(ctx, &types.MealPlanTaskStatusChangeRequestInput{
-			Status:            pointers.Pointer(types.MealPlanTaskStatusFinished),
+			Status:            pointer.To(types.MealPlanTaskStatusFinished),
 			StatusExplanation: t.Name(),
 			AssignedToUser:    &user.ID,
 			ID:                mealPlanTask.ID,

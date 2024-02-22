@@ -13,7 +13,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -865,21 +865,21 @@ func (s *service) CloneHandler(res http.ResponseWriter, req *http.Request) {
 		cloneInput.Steps[i].ID = newRecipeStepID
 		for j := range cloneInput.Steps[i].Ingredients {
 			if index, ok := ingredientProductIndicies[x.Steps[i].Ingredients[j].ID]; ok {
-				cloneInput.Steps[i].Ingredients[j].ProductOfRecipeStepIndex = pointers.Pointer(uint64(index))
+				cloneInput.Steps[i].Ingredients[j].ProductOfRecipeStepIndex = pointer.To(uint64(index))
 			}
 			cloneInput.Steps[i].Ingredients[j].ID = identifiers.New()
 			cloneInput.Steps[i].Ingredients[j].BelongsToRecipeStep = newRecipeStepID
 		}
 		for j := range cloneInput.Steps[i].Instruments {
 			if index, ok := instrumentProductIndicies[x.Steps[i].Instruments[j].ID]; ok {
-				cloneInput.Steps[i].Instruments[j].ProductOfRecipeStepIndex = pointers.Pointer(uint64(index))
+				cloneInput.Steps[i].Instruments[j].ProductOfRecipeStepIndex = pointer.To(uint64(index))
 			}
 			cloneInput.Steps[i].Instruments[j].ID = identifiers.New()
 			cloneInput.Steps[i].Instruments[j].BelongsToRecipeStep = newRecipeStepID
 		}
 		for j := range cloneInput.Steps[i].Vessels {
 			if index, ok := vesselProductIndicies[x.Steps[i].Vessels[j].ID]; ok {
-				cloneInput.Steps[i].Vessels[j].ProductOfRecipeStepIndex = pointers.Pointer(uint64(index))
+				cloneInput.Steps[i].Vessels[j].ProductOfRecipeStepIndex = pointer.To(uint64(index))
 			}
 			cloneInput.Steps[i].Vessels[j].ID = identifiers.New()
 			cloneInput.Steps[i].Vessels[j].BelongsToRecipeStep = newRecipeStepID

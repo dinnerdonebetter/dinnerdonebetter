@@ -11,11 +11,11 @@ import (
 
 const (
 	// RecipeStepVesselCreatedCustomerEventType indicates a recipe step instrument was created.
-	RecipeStepVesselCreatedCustomerEventType CustomerEventType = "recipe_step_vessel_created"
+	RecipeStepVesselCreatedCustomerEventType ServiceEventType = "recipe_step_vessel_created"
 	// RecipeStepVesselUpdatedCustomerEventType indicates a recipe step instrument was updated.
-	RecipeStepVesselUpdatedCustomerEventType CustomerEventType = "recipe_step_vessel_updated"
+	RecipeStepVesselUpdatedCustomerEventType ServiceEventType = "recipe_step_vessel_updated"
 	// RecipeStepVesselArchivedCustomerEventType indicates a recipe step instrument was archived.
-	RecipeStepVesselArchivedCustomerEventType CustomerEventType = "recipe_step_vessel_archived"
+	RecipeStepVesselArchivedCustomerEventType ServiceEventType = "recipe_step_vessel_archived"
 )
 
 func init() {

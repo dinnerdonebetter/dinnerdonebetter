@@ -116,13 +116,8 @@ WHERE
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
-				buildFilterCountSelect(
-					validPreparationVesselsTableName,
-					true,
-				),
-				buildTotalCountSelect(
-					validPreparationVesselsTableName,
-				),
+				buildFilterCountSelect(validPreparationVesselsTableName, true, true),
+				buildTotalCountSelect(validPreparationVesselsTableName, true),
 				validPreparationVesselsTableName,
 				validVesselsTableName, validPreparationVesselsTableName, validVesselIDColumn, validVesselsTableName, idColumn,
 				validPreparationsTableName, validPreparationVesselsTableName, validPreparationIDColumn, validPreparationsTableName, idColumn,
@@ -158,13 +153,8 @@ WHERE
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
-				buildFilterCountSelect(
-					validPreparationVesselsTableName,
-					true,
-				),
-				buildTotalCountSelect(
-					validPreparationVesselsTableName,
-				),
+				buildFilterCountSelect(validPreparationVesselsTableName, true, true),
+				buildTotalCountSelect(validPreparationVesselsTableName, true),
 				validPreparationVesselsTableName,
 
 				validVesselsTableName, validPreparationVesselsTableName, validVesselIDColumn, validVesselsTableName, idColumn,
@@ -200,13 +190,8 @@ WHERE
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
-				buildFilterCountSelect(
-					validPreparationVesselsTableName,
-					true,
-				),
-				buildTotalCountSelect(
-					validPreparationVesselsTableName,
-				),
+				buildFilterCountSelect(validPreparationVesselsTableName, true, true),
+				buildTotalCountSelect(validPreparationVesselsTableName, true),
 				validPreparationVesselsTableName,
 				validVesselsTableName, validPreparationVesselsTableName, validVesselIDColumn, validVesselsTableName, idColumn,
 				validPreparationsTableName, validPreparationVesselsTableName, validPreparationIDColumn, validPreparationsTableName, idColumn,

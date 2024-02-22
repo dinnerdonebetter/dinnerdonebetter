@@ -209,7 +209,7 @@ WHERE
 				recipeStepInstrumentsTableName, archivedAtColumn,
 				recipeStepInstrumentsTableName, belongsToRecipeStepColumn, recipeStepIDColumn,
 				strings.Join(strings.Split(buildFilterConditions(recipeStepInstrumentsTableName, true), "\n"), "\n\t\t"),
-				buildTotalCountSelect(recipeStepInstrumentsTableName),
+				buildTotalCountSelect(recipeStepInstrumentsTableName, true),
 				recipeStepInstrumentsTableName,
 				validInstrumentsTableName, recipeStepInstrumentsTableName, instrumentIDColumn, validInstrumentsTableName, idColumn,
 				recipeStepsTableName, recipeStepInstrumentsTableName, belongsToRecipeStepColumn, recipeStepsTableName, idColumn,

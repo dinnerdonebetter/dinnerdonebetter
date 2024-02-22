@@ -111,13 +111,8 @@ WHERE
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
-				buildFilterCountSelect(
-					validIngredientMeasurementUnitsTableName,
-					true,
-				),
-				buildTotalCountSelect(
-					validIngredientMeasurementUnitsTableName,
-				),
+				buildFilterCountSelect(validIngredientMeasurementUnitsTableName, true, true),
+				buildTotalCountSelect(validIngredientMeasurementUnitsTableName, true),
 				validIngredientMeasurementUnitsTableName,
 				validMeasurementUnitsTableName, validIngredientMeasurementUnitsTableName, validMeasurementUnitIDColumn, validMeasurementUnitsTableName, idColumn,
 				validIngredientsTableName, validIngredientMeasurementUnitsTableName, validIngredientIDColumn, validIngredientsTableName, idColumn,
@@ -149,13 +144,8 @@ WHERE
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
-				buildFilterCountSelect(
-					validIngredientMeasurementUnitsTableName,
-					true,
-				),
-				buildTotalCountSelect(
-					validIngredientMeasurementUnitsTableName,
-				),
+				buildFilterCountSelect(validIngredientMeasurementUnitsTableName, true, true),
+				buildTotalCountSelect(validIngredientMeasurementUnitsTableName, true),
 				validIngredientMeasurementUnitsTableName,
 				validMeasurementUnitsTableName, validIngredientMeasurementUnitsTableName, validMeasurementUnitIDColumn, validMeasurementUnitsTableName, idColumn,
 				validIngredientsTableName, validIngredientMeasurementUnitsTableName, validIngredientIDColumn, validIngredientsTableName, idColumn,
@@ -186,13 +176,8 @@ WHERE
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
-				buildFilterCountSelect(
-					validIngredientMeasurementUnitsTableName,
-					true,
-				),
-				buildTotalCountSelect(
-					validIngredientMeasurementUnitsTableName,
-				),
+				buildFilterCountSelect(validIngredientMeasurementUnitsTableName, true, true),
+				buildTotalCountSelect(validIngredientMeasurementUnitsTableName, true),
 				validIngredientMeasurementUnitsTableName,
 				validMeasurementUnitsTableName, validIngredientMeasurementUnitsTableName, validMeasurementUnitIDColumn, validMeasurementUnitsTableName, idColumn,
 				validIngredientsTableName, validIngredientMeasurementUnitsTableName, validIngredientIDColumn, validIngredientsTableName, idColumn,

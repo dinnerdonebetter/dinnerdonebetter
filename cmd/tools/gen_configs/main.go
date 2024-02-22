@@ -52,6 +52,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/services/servicesettingconfigurations"
 	"github.com/dinnerdonebetter/backend/internal/services/servicesettings"
 	useringredientpreferencesservice "github.com/dinnerdonebetter/backend/internal/services/useringredientpreferences"
+	usernotificationsservice "github.com/dinnerdonebetter/backend/internal/services/usernotifications"
 	usersservice "github.com/dinnerdonebetter/backend/internal/services/users"
 	validingredientgroupsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientgroups"
 	validingredientmeasurementunitsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientmeasurementunits"
@@ -558,6 +559,9 @@ func buildDevConfig() *config.InstanceConfig {
 			Workers: workersservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
+			UserNotifications: usernotificationsservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
 		},
 	}
 }
@@ -786,6 +790,9 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 				DataChangesTopicName: dataChangesTopicName,
 			},
 			Workers: workersservice.Config{
+				DataChangesTopicName: dataChangesTopicName,
+			},
+			UserNotifications: usernotificationsservice.Config{
 				DataChangesTopicName: dataChangesTopicName,
 			},
 		},

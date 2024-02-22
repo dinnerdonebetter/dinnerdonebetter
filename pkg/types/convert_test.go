@@ -3,7 +3,7 @@ package types
 import (
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -21,8 +21,8 @@ func TestConvert(T *testing.T) {
 			OnlyForVessels: true,
 		}
 		updateInput := ValidPreparationUpdateRequestInput{
-			Slug:      pointers.Pointer("Slug"),
-			PastTense: pointers.Pointer("PastTense"),
+			Slug:      pointer.To("Slug"),
+			PastTense: pointer.To("PastTense"),
 		}
 		updated := ValidPreparation{
 			Name:           "Name",

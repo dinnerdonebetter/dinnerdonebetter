@@ -218,7 +218,7 @@ SELECT
 				valid_measurement_units.last_updated_at IS NULL
 				OR valid_measurement_units.last_updated_at < COALESCE(sqlc.narg(updated_after), (SELECT NOW() + '999 years'::INTERVAL))
 			)
-			AND  (
+			AND (
 				valid_ingredient_measurement_units.valid_ingredient_id = sqlc.arg(valid_ingredient_id)
 				OR valid_measurement_units.universal = true
 			)

@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
@@ -84,9 +84,9 @@ func TestValidIngredientStateIngredientUpdateRequestInput_Validate(T *testing.T)
 		t.Parallel()
 
 		x := &ValidIngredientStateIngredientUpdateRequestInput{
-			Notes:                  pointers.Pointer(t.Name()),
-			ValidIngredientStateID: pointers.Pointer(t.Name()),
-			ValidIngredientID:      pointers.Pointer(t.Name()),
+			Notes:                  pointer.To(t.Name()),
+			ValidIngredientStateID: pointer.To(t.Name()),
+			ValidIngredientID:      pointer.To(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

@@ -11,11 +11,11 @@ import (
 
 const (
 	// UserIngredientPreferenceCreatedCustomerEventType indicates a user ingredient preference was created.
-	UserIngredientPreferenceCreatedCustomerEventType CustomerEventType = "user_ingredient_preference_created"
+	UserIngredientPreferenceCreatedCustomerEventType ServiceEventType = "user_ingredient_preference_created"
 	// UserIngredientPreferenceUpdatedCustomerEventType indicates a user ingredient preference was updated.
-	UserIngredientPreferenceUpdatedCustomerEventType CustomerEventType = "user_ingredient_preference_updated"
+	UserIngredientPreferenceUpdatedCustomerEventType ServiceEventType = "user_ingredient_preference_updated"
 	// UserIngredientPreferenceArchivedCustomerEventType indicates a user ingredient preference was archived.
-	UserIngredientPreferenceArchivedCustomerEventType CustomerEventType = "user_ingredient_preference_archived"
+	UserIngredientPreferenceArchivedCustomerEventType ServiceEventType = "user_ingredient_preference_archived"
 
 	minRating int8 = -10
 	maxRating int8 = 10

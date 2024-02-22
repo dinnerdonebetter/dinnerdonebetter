@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/dinnerdonebetter/backend/internal/identifiers"
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -189,9 +189,9 @@ func ConvertRecipePrepTaskStepToRecipePrepTaskStepWithinRecipeCreationRequestInp
 
 func ConvertRecipePrepTaskStepToRecipePrepTaskStepUpdateRequestInput(input *types.RecipePrepTaskStep) *types.RecipePrepTaskStepUpdateRequestInput {
 	return &types.RecipePrepTaskStepUpdateRequestInput{
-		BelongsToRecipeStep:     pointers.Pointer(input.BelongsToRecipeStep),
-		BelongsToRecipePrepTask: pointers.Pointer(input.BelongsToRecipePrepTask),
-		SatisfiesRecipeStep:     pointers.Pointer(input.SatisfiesRecipeStep),
+		BelongsToRecipeStep:     pointer.To(input.BelongsToRecipeStep),
+		BelongsToRecipePrepTask: pointer.To(input.BelongsToRecipePrepTask),
+		SatisfiesRecipeStep:     pointer.To(input.SatisfiesRecipeStep),
 	}
 }
 

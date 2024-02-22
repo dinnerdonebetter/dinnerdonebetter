@@ -154,58 +154,58 @@ WHERE
 `
 
 type GetValidIngredientPreparationRow struct {
-	ValidIngredientPreparationID                           string
-	ValidIngredientPreparationNotes                        string
-	ValidPreparationID                                     string
-	ValidPreparationName                                   string
-	ValidPreparationDescription                            string
-	ValidPreparationIconPath                               string
-	ValidPreparationYieldsNothing                          bool
-	ValidPreparationRestrictToIngredients                  bool
-	ValidPreparationPastTense                              string
-	ValidPreparationSlug                                   string
-	ValidPreparationMinimumIngredientCount                 int32
-	ValidPreparationMaximumIngredientCount                 sql.NullInt32
-	ValidPreparationMinimumInstrumentCount                 int32
-	ValidPreparationMaximumInstrumentCount                 sql.NullInt32
-	ValidPreparationTemperatureRequired                    bool
-	ValidPreparationTimeEstimateRequired                   bool
-	ValidPreparationConditionExpressionRequired            bool
-	ValidPreparationConsumesVessel                         bool
-	ValidPreparationOnlyForVessels                         bool
-	ValidPreparationMinimumVesselCount                     int32
-	ValidPreparationMaximumVesselCount                     sql.NullInt32
-	ValidPreparationLastIndexedAt                          sql.NullTime
+	ValidIngredientPreparationCreatedAt                    time.Time
 	ValidPreparationCreatedAt                              time.Time
-	ValidPreparationLastUpdatedAt                          sql.NullTime
+	ValidIngredientCreatedAt                               time.Time
+	ValidIngredientLastIndexedAt                           sql.NullTime
 	ValidPreparationArchivedAt                             sql.NullTime
+	ValidPreparationLastUpdatedAt                          sql.NullTime
+	ValidPreparationLastIndexedAt                          sql.NullTime
+	ValidIngredientPreparationArchivedAt                   sql.NullTime
+	ValidIngredientPreparationLastUpdatedAt                sql.NullTime
+	ValidIngredientLastUpdatedAt                           sql.NullTime
+	ValidIngredientArchivedAt                              sql.NullTime
+	ValidPreparationSlug                                   string
+	ValidPreparationID                                     string
+	ValidIngredientIconPath                                string
+	ValidIngredientPluralName                              string
+	ValidIngredientStorageInstructions                     string
+	ValidIngredientPreparationID                           string
+	ValidIngredientSlug                                    string
+	ValidPreparationPastTense                              string
+	ValidIngredientShoppingSuggestions                     string
+	ValidIngredientPreparationNotes                        string
+	ValidPreparationIconPath                               string
+	ValidPreparationDescription                            string
+	ValidPreparationName                                   string
+	ValidIngredientWarning                                 string
 	ValidIngredientID                                      string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
-	ValidIngredientWarning                                 string
-	ValidIngredientContainsEgg                             bool
-	ValidIngredientContainsDairy                           bool
-	ValidIngredientContainsPeanut                          bool
-	ValidIngredientContainsTreeNut                         bool
-	ValidIngredientContainsSoy                             bool
-	ValidIngredientContainsWheat                           bool
-	ValidIngredientContainsShellfish                       bool
-	ValidIngredientContainsSesame                          bool
-	ValidIngredientContainsFish                            bool
+	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
+	ValidPreparationMaximumVesselCount                     sql.NullInt32
+	ValidPreparationMaximumIngredientCount                 sql.NullInt32
+	ValidPreparationMaximumInstrumentCount                 sql.NullInt32
+	ValidPreparationMinimumInstrumentCount                 int32
+	ValidPreparationMinimumVesselCount                     int32
+	ValidPreparationMinimumIngredientCount                 int32
+	ValidIngredientIsLiquid                                sql.NullBool
+	ValidPreparationConditionExpressionRequired            bool
 	ValidIngredientContainsGluten                          bool
 	ValidIngredientAnimalFlesh                             bool
 	ValidIngredientVolumetric                              bool
-	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientIconPath                                string
+	ValidIngredientContainsFish                            bool
+	ValidIngredientContainsSesame                          bool
 	ValidIngredientAnimalDerived                           bool
-	ValidIngredientPluralName                              string
+	ValidIngredientContainsShellfish                       bool
 	ValidIngredientRestrictToPreparations                  bool
-	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientStorageInstructions                     string
-	ValidIngredientSlug                                    string
+	ValidIngredientContainsWheat                           bool
+	ValidIngredientContainsSoy                             bool
+	ValidIngredientContainsTreeNut                         bool
+	ValidIngredientContainsPeanut                          bool
 	ValidIngredientContainsAlcohol                         bool
-	ValidIngredientShoppingSuggestions                     string
+	ValidIngredientContainsDairy                           bool
 	ValidIngredientIsStarch                                bool
 	ValidIngredientIsProtein                               bool
 	ValidIngredientIsGrain                                 bool
@@ -214,13 +214,13 @@ type GetValidIngredientPreparationRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
-	ValidIngredientLastIndexedAt                           sql.NullTime
-	ValidIngredientCreatedAt                               time.Time
-	ValidIngredientLastUpdatedAt                           sql.NullTime
-	ValidIngredientArchivedAt                              sql.NullTime
-	ValidIngredientPreparationCreatedAt                    time.Time
-	ValidIngredientPreparationLastUpdatedAt                sql.NullTime
-	ValidIngredientPreparationArchivedAt                   sql.NullTime
+	ValidIngredientContainsEgg                             bool
+	ValidPreparationOnlyForVessels                         bool
+	ValidPreparationConsumesVessel                         bool
+	ValidPreparationTimeEstimateRequired                   bool
+	ValidPreparationTemperatureRequired                    bool
+	ValidPreparationRestrictToIngredients                  bool
+	ValidPreparationYieldsNothing                          bool
 }
 
 func (q *Queries) GetValidIngredientPreparation(ctx context.Context, db DBTX, id string) (*GetValidIngredientPreparationRow, error) {
@@ -417,58 +417,58 @@ type GetValidIngredientPreparationsParams struct {
 }
 
 type GetValidIngredientPreparationsRow struct {
-	ValidIngredientPreparationID                           string
-	ValidIngredientPreparationNotes                        string
-	ValidPreparationID                                     string
-	ValidPreparationName                                   string
-	ValidPreparationDescription                            string
-	ValidPreparationIconPath                               string
-	ValidPreparationYieldsNothing                          bool
-	ValidPreparationRestrictToIngredients                  bool
-	ValidPreparationPastTense                              string
-	ValidPreparationSlug                                   string
-	ValidPreparationMinimumIngredientCount                 int32
-	ValidPreparationMaximumIngredientCount                 sql.NullInt32
-	ValidPreparationMinimumInstrumentCount                 int32
-	ValidPreparationMaximumInstrumentCount                 sql.NullInt32
-	ValidPreparationTemperatureRequired                    bool
-	ValidPreparationTimeEstimateRequired                   bool
-	ValidPreparationConditionExpressionRequired            bool
-	ValidPreparationConsumesVessel                         bool
-	ValidPreparationOnlyForVessels                         bool
-	ValidPreparationMinimumVesselCount                     int32
-	ValidPreparationMaximumVesselCount                     sql.NullInt32
-	ValidPreparationLastIndexedAt                          sql.NullTime
+	ValidIngredientCreatedAt                               time.Time
 	ValidPreparationCreatedAt                              time.Time
-	ValidPreparationLastUpdatedAt                          sql.NullTime
+	ValidIngredientPreparationCreatedAt                    time.Time
+	ValidIngredientPreparationArchivedAt                   sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
 	ValidPreparationArchivedAt                             sql.NullTime
+	ValidPreparationLastUpdatedAt                          sql.NullTime
+	ValidPreparationLastIndexedAt                          sql.NullTime
+	ValidIngredientLastUpdatedAt                           sql.NullTime
+	ValidIngredientArchivedAt                              sql.NullTime
+	ValidIngredientPreparationLastUpdatedAt                sql.NullTime
+	ValidPreparationSlug                                   string
+	ValidIngredientPreparationNotes                        string
+	ValidIngredientIconPath                                string
+	ValidIngredientPluralName                              string
+	ValidIngredientPreparationID                           string
+	ValidIngredientStorageInstructions                     string
+	ValidPreparationPastTense                              string
+	ValidIngredientSlug                                    string
+	ValidIngredientShoppingSuggestions                     string
+	ValidPreparationID                                     string
+	ValidIngredientWarning                                 string
+	ValidPreparationIconPath                               string
+	ValidPreparationDescription                            string
+	ValidPreparationName                                   string
 	ValidIngredientID                                      string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
-	ValidIngredientWarning                                 string
-	ValidIngredientContainsEgg                             bool
-	ValidIngredientContainsDairy                           bool
-	ValidIngredientContainsPeanut                          bool
-	ValidIngredientContainsTreeNut                         bool
-	ValidIngredientContainsSoy                             bool
-	ValidIngredientContainsWheat                           bool
-	ValidIngredientContainsShellfish                       bool
-	ValidIngredientContainsSesame                          bool
-	ValidIngredientContainsFish                            bool
-	ValidIngredientContainsGluten                          bool
-	ValidIngredientAnimalFlesh                             bool
-	ValidIngredientVolumetric                              bool
-	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientIconPath                                string
-	ValidIngredientAnimalDerived                           bool
-	ValidIngredientPluralName                              string
-	ValidIngredientRestrictToPreparations                  bool
-	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientStorageInstructions                     string
-	ValidIngredientSlug                                    string
+	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
+	TotalCount                                             int64
+	FilteredCount                                          int64
+	ValidPreparationMaximumVesselCount                     sql.NullInt32
+	ValidPreparationMaximumIngredientCount                 sql.NullInt32
+	ValidPreparationMaximumInstrumentCount                 sql.NullInt32
+	ValidPreparationMinimumInstrumentCount                 int32
+	ValidPreparationMinimumVesselCount                     int32
+	ValidPreparationMinimumIngredientCount                 int32
+	ValidIngredientIsLiquid                                sql.NullBool
+	ValidIngredientContainsWheat                           bool
+	ValidIngredientVolumetric                              bool
+	ValidIngredientAnimalFlesh                             bool
+	ValidIngredientContainsGluten                          bool
+	ValidIngredientAnimalDerived                           bool
+	ValidIngredientContainsFish                            bool
+	ValidIngredientRestrictToPreparations                  bool
+	ValidIngredientContainsSesame                          bool
+	ValidIngredientContainsShellfish                       bool
+	ValidIngredientContainsSoy                             bool
+	ValidIngredientContainsTreeNut                         bool
 	ValidIngredientContainsAlcohol                         bool
-	ValidIngredientShoppingSuggestions                     string
+	ValidIngredientContainsPeanut                          bool
 	ValidIngredientIsStarch                                bool
 	ValidIngredientIsProtein                               bool
 	ValidIngredientIsGrain                                 bool
@@ -477,15 +477,15 @@ type GetValidIngredientPreparationsRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
-	ValidIngredientLastIndexedAt                           sql.NullTime
-	ValidIngredientCreatedAt                               time.Time
-	ValidIngredientLastUpdatedAt                           sql.NullTime
-	ValidIngredientArchivedAt                              sql.NullTime
-	ValidIngredientPreparationCreatedAt                    time.Time
-	ValidIngredientPreparationLastUpdatedAt                sql.NullTime
-	ValidIngredientPreparationArchivedAt                   sql.NullTime
-	FilteredCount                                          int64
-	TotalCount                                             int64
+	ValidIngredientContainsDairy                           bool
+	ValidIngredientContainsEgg                             bool
+	ValidPreparationOnlyForVessels                         bool
+	ValidPreparationConsumesVessel                         bool
+	ValidPreparationConditionExpressionRequired            bool
+	ValidPreparationTimeEstimateRequired                   bool
+	ValidPreparationTemperatureRequired                    bool
+	ValidPreparationRestrictToIngredients                  bool
+	ValidPreparationYieldsNothing                          bool
 }
 
 func (q *Queries) GetValidIngredientPreparations(ctx context.Context, db DBTX, arg *GetValidIngredientPreparationsParams) ([]*GetValidIngredientPreparationsRow, error) {
@@ -709,58 +709,58 @@ type GetValidIngredientPreparationsForIngredientParams struct {
 }
 
 type GetValidIngredientPreparationsForIngredientRow struct {
-	ValidIngredientPreparationID                           string
-	ValidIngredientPreparationNotes                        string
-	ValidPreparationID                                     string
-	ValidPreparationName                                   string
-	ValidPreparationDescription                            string
-	ValidPreparationIconPath                               string
-	ValidPreparationYieldsNothing                          bool
-	ValidPreparationRestrictToIngredients                  bool
-	ValidPreparationPastTense                              string
-	ValidPreparationSlug                                   string
-	ValidPreparationMinimumIngredientCount                 int32
-	ValidPreparationMaximumIngredientCount                 sql.NullInt32
-	ValidPreparationMinimumInstrumentCount                 int32
-	ValidPreparationMaximumInstrumentCount                 sql.NullInt32
-	ValidPreparationTemperatureRequired                    bool
-	ValidPreparationTimeEstimateRequired                   bool
-	ValidPreparationConditionExpressionRequired            bool
-	ValidPreparationConsumesVessel                         bool
-	ValidPreparationOnlyForVessels                         bool
-	ValidPreparationMinimumVesselCount                     int32
-	ValidPreparationMaximumVesselCount                     sql.NullInt32
-	ValidPreparationLastIndexedAt                          sql.NullTime
+	ValidIngredientCreatedAt                               time.Time
 	ValidPreparationCreatedAt                              time.Time
-	ValidPreparationLastUpdatedAt                          sql.NullTime
+	ValidIngredientPreparationCreatedAt                    time.Time
+	ValidIngredientPreparationArchivedAt                   sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
 	ValidPreparationArchivedAt                             sql.NullTime
+	ValidPreparationLastUpdatedAt                          sql.NullTime
+	ValidPreparationLastIndexedAt                          sql.NullTime
+	ValidIngredientLastUpdatedAt                           sql.NullTime
+	ValidIngredientArchivedAt                              sql.NullTime
+	ValidIngredientPreparationLastUpdatedAt                sql.NullTime
+	ValidPreparationSlug                                   string
+	ValidIngredientPreparationNotes                        string
+	ValidIngredientIconPath                                string
+	ValidIngredientPluralName                              string
+	ValidIngredientPreparationID                           string
+	ValidIngredientStorageInstructions                     string
+	ValidPreparationPastTense                              string
+	ValidIngredientSlug                                    string
+	ValidIngredientShoppingSuggestions                     string
+	ValidPreparationID                                     string
+	ValidIngredientWarning                                 string
+	ValidPreparationIconPath                               string
+	ValidPreparationDescription                            string
+	ValidPreparationName                                   string
 	ValidIngredientID                                      string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
-	ValidIngredientWarning                                 string
-	ValidIngredientContainsEgg                             bool
-	ValidIngredientContainsDairy                           bool
-	ValidIngredientContainsPeanut                          bool
-	ValidIngredientContainsTreeNut                         bool
-	ValidIngredientContainsSoy                             bool
-	ValidIngredientContainsWheat                           bool
-	ValidIngredientContainsShellfish                       bool
-	ValidIngredientContainsSesame                          bool
-	ValidIngredientContainsFish                            bool
-	ValidIngredientContainsGluten                          bool
-	ValidIngredientAnimalFlesh                             bool
-	ValidIngredientVolumetric                              bool
-	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientIconPath                                string
-	ValidIngredientAnimalDerived                           bool
-	ValidIngredientPluralName                              string
-	ValidIngredientRestrictToPreparations                  bool
-	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientStorageInstructions                     string
-	ValidIngredientSlug                                    string
+	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
+	TotalCount                                             int64
+	FilteredCount                                          int64
+	ValidPreparationMaximumVesselCount                     sql.NullInt32
+	ValidPreparationMaximumIngredientCount                 sql.NullInt32
+	ValidPreparationMaximumInstrumentCount                 sql.NullInt32
+	ValidPreparationMinimumInstrumentCount                 int32
+	ValidPreparationMinimumVesselCount                     int32
+	ValidPreparationMinimumIngredientCount                 int32
+	ValidIngredientIsLiquid                                sql.NullBool
+	ValidIngredientContainsWheat                           bool
+	ValidIngredientVolumetric                              bool
+	ValidIngredientAnimalFlesh                             bool
+	ValidIngredientContainsGluten                          bool
+	ValidIngredientAnimalDerived                           bool
+	ValidIngredientContainsFish                            bool
+	ValidIngredientRestrictToPreparations                  bool
+	ValidIngredientContainsSesame                          bool
+	ValidIngredientContainsShellfish                       bool
+	ValidIngredientContainsSoy                             bool
+	ValidIngredientContainsTreeNut                         bool
 	ValidIngredientContainsAlcohol                         bool
-	ValidIngredientShoppingSuggestions                     string
+	ValidIngredientContainsPeanut                          bool
 	ValidIngredientIsStarch                                bool
 	ValidIngredientIsProtein                               bool
 	ValidIngredientIsGrain                                 bool
@@ -769,15 +769,15 @@ type GetValidIngredientPreparationsForIngredientRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
-	ValidIngredientLastIndexedAt                           sql.NullTime
-	ValidIngredientCreatedAt                               time.Time
-	ValidIngredientLastUpdatedAt                           sql.NullTime
-	ValidIngredientArchivedAt                              sql.NullTime
-	ValidIngredientPreparationCreatedAt                    time.Time
-	ValidIngredientPreparationLastUpdatedAt                sql.NullTime
-	ValidIngredientPreparationArchivedAt                   sql.NullTime
-	FilteredCount                                          int64
-	TotalCount                                             int64
+	ValidIngredientContainsDairy                           bool
+	ValidIngredientContainsEgg                             bool
+	ValidPreparationOnlyForVessels                         bool
+	ValidPreparationConsumesVessel                         bool
+	ValidPreparationConditionExpressionRequired            bool
+	ValidPreparationTimeEstimateRequired                   bool
+	ValidPreparationTemperatureRequired                    bool
+	ValidPreparationRestrictToIngredients                  bool
+	ValidPreparationYieldsNothing                          bool
 }
 
 func (q *Queries) GetValidIngredientPreparationsForIngredient(ctx context.Context, db DBTX, arg *GetValidIngredientPreparationsForIngredientParams) ([]*GetValidIngredientPreparationsForIngredientRow, error) {
@@ -1002,58 +1002,58 @@ type GetValidIngredientPreparationsForPreparationParams struct {
 }
 
 type GetValidIngredientPreparationsForPreparationRow struct {
-	ValidIngredientPreparationID                           string
-	ValidIngredientPreparationNotes                        string
-	ValidPreparationID                                     string
-	ValidPreparationName                                   string
-	ValidPreparationDescription                            string
-	ValidPreparationIconPath                               string
-	ValidPreparationYieldsNothing                          bool
-	ValidPreparationRestrictToIngredients                  bool
-	ValidPreparationPastTense                              string
-	ValidPreparationSlug                                   string
-	ValidPreparationMinimumIngredientCount                 int32
-	ValidPreparationMaximumIngredientCount                 sql.NullInt32
-	ValidPreparationMinimumInstrumentCount                 int32
-	ValidPreparationMaximumInstrumentCount                 sql.NullInt32
-	ValidPreparationTemperatureRequired                    bool
-	ValidPreparationTimeEstimateRequired                   bool
-	ValidPreparationConditionExpressionRequired            bool
-	ValidPreparationConsumesVessel                         bool
-	ValidPreparationOnlyForVessels                         bool
-	ValidPreparationMinimumVesselCount                     int32
-	ValidPreparationMaximumVesselCount                     sql.NullInt32
-	ValidPreparationLastIndexedAt                          sql.NullTime
+	ValidIngredientCreatedAt                               time.Time
 	ValidPreparationCreatedAt                              time.Time
-	ValidPreparationLastUpdatedAt                          sql.NullTime
+	ValidIngredientPreparationCreatedAt                    time.Time
+	ValidIngredientPreparationArchivedAt                   sql.NullTime
+	ValidIngredientLastIndexedAt                           sql.NullTime
 	ValidPreparationArchivedAt                             sql.NullTime
+	ValidPreparationLastUpdatedAt                          sql.NullTime
+	ValidPreparationLastIndexedAt                          sql.NullTime
+	ValidIngredientLastUpdatedAt                           sql.NullTime
+	ValidIngredientArchivedAt                              sql.NullTime
+	ValidIngredientPreparationLastUpdatedAt                sql.NullTime
+	ValidPreparationSlug                                   string
+	ValidIngredientPreparationNotes                        string
+	ValidIngredientIconPath                                string
+	ValidIngredientPluralName                              string
+	ValidIngredientPreparationID                           string
+	ValidIngredientStorageInstructions                     string
+	ValidPreparationPastTense                              string
+	ValidIngredientSlug                                    string
+	ValidIngredientShoppingSuggestions                     string
+	ValidPreparationID                                     string
+	ValidIngredientWarning                                 string
+	ValidPreparationIconPath                               string
+	ValidPreparationDescription                            string
+	ValidPreparationName                                   string
 	ValidIngredientID                                      string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
-	ValidIngredientWarning                                 string
-	ValidIngredientContainsEgg                             bool
-	ValidIngredientContainsDairy                           bool
-	ValidIngredientContainsPeanut                          bool
-	ValidIngredientContainsTreeNut                         bool
-	ValidIngredientContainsSoy                             bool
-	ValidIngredientContainsWheat                           bool
-	ValidIngredientContainsShellfish                       bool
-	ValidIngredientContainsSesame                          bool
-	ValidIngredientContainsFish                            bool
-	ValidIngredientContainsGluten                          bool
-	ValidIngredientAnimalFlesh                             bool
-	ValidIngredientVolumetric                              bool
-	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientIconPath                                string
-	ValidIngredientAnimalDerived                           bool
-	ValidIngredientPluralName                              string
-	ValidIngredientRestrictToPreparations                  bool
-	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
 	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientStorageInstructions                     string
-	ValidIngredientSlug                                    string
+	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
+	TotalCount                                             int64
+	FilteredCount                                          int64
+	ValidPreparationMaximumVesselCount                     sql.NullInt32
+	ValidPreparationMaximumIngredientCount                 sql.NullInt32
+	ValidPreparationMaximumInstrumentCount                 sql.NullInt32
+	ValidPreparationMinimumInstrumentCount                 int32
+	ValidPreparationMinimumVesselCount                     int32
+	ValidPreparationMinimumIngredientCount                 int32
+	ValidIngredientIsLiquid                                sql.NullBool
+	ValidIngredientContainsWheat                           bool
+	ValidIngredientVolumetric                              bool
+	ValidIngredientAnimalFlesh                             bool
+	ValidIngredientContainsGluten                          bool
+	ValidIngredientAnimalDerived                           bool
+	ValidIngredientContainsFish                            bool
+	ValidIngredientRestrictToPreparations                  bool
+	ValidIngredientContainsSesame                          bool
+	ValidIngredientContainsShellfish                       bool
+	ValidIngredientContainsSoy                             bool
+	ValidIngredientContainsTreeNut                         bool
 	ValidIngredientContainsAlcohol                         bool
-	ValidIngredientShoppingSuggestions                     string
+	ValidIngredientContainsPeanut                          bool
 	ValidIngredientIsStarch                                bool
 	ValidIngredientIsProtein                               bool
 	ValidIngredientIsGrain                                 bool
@@ -1062,15 +1062,15 @@ type GetValidIngredientPreparationsForPreparationRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
-	ValidIngredientLastIndexedAt                           sql.NullTime
-	ValidIngredientCreatedAt                               time.Time
-	ValidIngredientLastUpdatedAt                           sql.NullTime
-	ValidIngredientArchivedAt                              sql.NullTime
-	ValidIngredientPreparationCreatedAt                    time.Time
-	ValidIngredientPreparationLastUpdatedAt                sql.NullTime
-	ValidIngredientPreparationArchivedAt                   sql.NullTime
-	FilteredCount                                          int64
-	TotalCount                                             int64
+	ValidIngredientContainsDairy                           bool
+	ValidIngredientContainsEgg                             bool
+	ValidPreparationOnlyForVessels                         bool
+	ValidPreparationConsumesVessel                         bool
+	ValidPreparationConditionExpressionRequired            bool
+	ValidPreparationTimeEstimateRequired                   bool
+	ValidPreparationTemperatureRequired                    bool
+	ValidPreparationRestrictToIngredients                  bool
+	ValidPreparationYieldsNothing                          bool
 }
 
 func (q *Queries) GetValidIngredientPreparationsForPreparation(ctx context.Context, db DBTX, arg *GetValidIngredientPreparationsForPreparationParams) ([]*GetValidIngredientPreparationsForPreparationRow, error) {
@@ -1261,58 +1261,58 @@ type SearchValidIngredientPreparationsByPreparationAndIngredientNameParams struc
 }
 
 type SearchValidIngredientPreparationsByPreparationAndIngredientNameRow struct {
-	ValidIngredientPreparationID                           string
-	ValidIngredientPreparationNotes                        string
-	ValidPreparationID                                     string
-	ValidPreparationName                                   string
-	ValidPreparationDescription                            string
-	ValidPreparationIconPath                               string
-	ValidPreparationYieldsNothing                          bool
-	ValidPreparationRestrictToIngredients                  bool
-	ValidPreparationPastTense                              string
-	ValidPreparationSlug                                   string
-	ValidPreparationMinimumIngredientCount                 int32
-	ValidPreparationMaximumIngredientCount                 sql.NullInt32
-	ValidPreparationMinimumInstrumentCount                 int32
-	ValidPreparationMaximumInstrumentCount                 sql.NullInt32
-	ValidPreparationTemperatureRequired                    bool
-	ValidPreparationTimeEstimateRequired                   bool
-	ValidPreparationConditionExpressionRequired            bool
-	ValidPreparationConsumesVessel                         bool
-	ValidPreparationOnlyForVessels                         bool
-	ValidPreparationMinimumVesselCount                     int32
-	ValidPreparationMaximumVesselCount                     sql.NullInt32
-	ValidPreparationLastIndexedAt                          sql.NullTime
+	ValidIngredientPreparationCreatedAt                    time.Time
 	ValidPreparationCreatedAt                              time.Time
-	ValidPreparationLastUpdatedAt                          sql.NullTime
+	ValidIngredientCreatedAt                               time.Time
+	ValidIngredientLastIndexedAt                           sql.NullTime
 	ValidPreparationArchivedAt                             sql.NullTime
+	ValidPreparationLastUpdatedAt                          sql.NullTime
+	ValidPreparationLastIndexedAt                          sql.NullTime
+	ValidIngredientPreparationArchivedAt                   sql.NullTime
+	ValidIngredientPreparationLastUpdatedAt                sql.NullTime
+	ValidIngredientLastUpdatedAt                           sql.NullTime
+	ValidIngredientArchivedAt                              sql.NullTime
+	ValidPreparationSlug                                   string
+	ValidPreparationID                                     string
+	ValidIngredientIconPath                                string
+	ValidIngredientPluralName                              string
+	ValidIngredientStorageInstructions                     string
+	ValidIngredientPreparationID                           string
+	ValidIngredientSlug                                    string
+	ValidPreparationPastTense                              string
+	ValidIngredientShoppingSuggestions                     string
+	ValidIngredientPreparationNotes                        string
+	ValidPreparationIconPath                               string
+	ValidPreparationDescription                            string
+	ValidPreparationName                                   string
+	ValidIngredientWarning                                 string
 	ValidIngredientID                                      string
 	ValidIngredientName                                    string
 	ValidIngredientDescription                             string
-	ValidIngredientWarning                                 string
-	ValidIngredientContainsEgg                             bool
-	ValidIngredientContainsDairy                           bool
-	ValidIngredientContainsPeanut                          bool
-	ValidIngredientContainsTreeNut                         bool
-	ValidIngredientContainsSoy                             bool
-	ValidIngredientContainsWheat                           bool
-	ValidIngredientContainsShellfish                       bool
-	ValidIngredientContainsSesame                          bool
-	ValidIngredientContainsFish                            bool
+	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
+	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
+	ValidPreparationMaximumVesselCount                     sql.NullInt32
+	ValidPreparationMaximumIngredientCount                 sql.NullInt32
+	ValidPreparationMaximumInstrumentCount                 sql.NullInt32
+	ValidPreparationMinimumInstrumentCount                 int32
+	ValidPreparationMinimumVesselCount                     int32
+	ValidPreparationMinimumIngredientCount                 int32
+	ValidIngredientIsLiquid                                sql.NullBool
+	ValidPreparationConditionExpressionRequired            bool
 	ValidIngredientContainsGluten                          bool
 	ValidIngredientAnimalFlesh                             bool
 	ValidIngredientVolumetric                              bool
-	ValidIngredientIsLiquid                                sql.NullBool
-	ValidIngredientIconPath                                string
+	ValidIngredientContainsFish                            bool
+	ValidIngredientContainsSesame                          bool
 	ValidIngredientAnimalDerived                           bool
-	ValidIngredientPluralName                              string
+	ValidIngredientContainsShellfish                       bool
 	ValidIngredientRestrictToPreparations                  bool
-	ValidIngredientMinimumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientMaximumIdealStorageTemperatureInCelsius sql.NullString
-	ValidIngredientStorageInstructions                     string
-	ValidIngredientSlug                                    string
+	ValidIngredientContainsWheat                           bool
+	ValidIngredientContainsSoy                             bool
+	ValidIngredientContainsTreeNut                         bool
+	ValidIngredientContainsPeanut                          bool
 	ValidIngredientContainsAlcohol                         bool
-	ValidIngredientShoppingSuggestions                     string
+	ValidIngredientContainsDairy                           bool
 	ValidIngredientIsStarch                                bool
 	ValidIngredientIsProtein                               bool
 	ValidIngredientIsGrain                                 bool
@@ -1321,13 +1321,13 @@ type SearchValidIngredientPreparationsByPreparationAndIngredientNameRow struct {
 	ValidIngredientIsFat                                   bool
 	ValidIngredientIsAcid                                  bool
 	ValidIngredientIsHeat                                  bool
-	ValidIngredientLastIndexedAt                           sql.NullTime
-	ValidIngredientCreatedAt                               time.Time
-	ValidIngredientLastUpdatedAt                           sql.NullTime
-	ValidIngredientArchivedAt                              sql.NullTime
-	ValidIngredientPreparationCreatedAt                    time.Time
-	ValidIngredientPreparationLastUpdatedAt                sql.NullTime
-	ValidIngredientPreparationArchivedAt                   sql.NullTime
+	ValidIngredientContainsEgg                             bool
+	ValidPreparationOnlyForVessels                         bool
+	ValidPreparationConsumesVessel                         bool
+	ValidPreparationTimeEstimateRequired                   bool
+	ValidPreparationTemperatureRequired                    bool
+	ValidPreparationRestrictToIngredients                  bool
+	ValidPreparationYieldsNothing                          bool
 }
 
 func (q *Queries) SearchValidIngredientPreparationsByPreparationAndIngredientName(ctx context.Context, db DBTX, arg *SearchValidIngredientPreparationsByPreparationAndIngredientNameParams) ([]*SearchValidIngredientPreparationsByPreparationAndIngredientNameRow, error) {

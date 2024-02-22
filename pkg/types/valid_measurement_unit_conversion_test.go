@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
@@ -87,9 +87,9 @@ func TestValidMeasurementUnitConversionUpdateRequestInput_Validate(T *testing.T)
 		t.Parallel()
 
 		x := &ValidMeasurementUnitConversionUpdateRequestInput{
-			From:     pointers.Pointer("from"),
-			To:       pointers.Pointer("to"),
-			Modifier: pointers.Pointer(float32(1.0)),
+			From:     pointer.To("from"),
+			To:       pointer.To("to"),
+			Modifier: pointer.To(float32(1.0)),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

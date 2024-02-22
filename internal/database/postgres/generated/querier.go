@@ -81,6 +81,7 @@ type Querier interface {
 	CheckServiceSettingConfigurationExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckServiceSettingExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckUserIngredientPreferenceExistence(ctx context.Context, db DBTX, arg *CheckUserIngredientPreferenceExistenceParams) (bool, error)
+	CheckUserNotificationExistence(ctx context.Context, db DBTX, arg *CheckUserNotificationExistenceParams) (bool, error)
 	CheckValidIngredientExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckValidIngredientGroupExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckValidIngredientMeasurementUnitExistence(ctx context.Context, db DBTX, id string) (bool, error)
@@ -127,6 +128,7 @@ type Querier interface {
 	CreateServiceSettingConfiguration(ctx context.Context, db DBTX, arg *CreateServiceSettingConfigurationParams) error
 	CreateUser(ctx context.Context, db DBTX, arg *CreateUserParams) error
 	CreateUserIngredientPreference(ctx context.Context, db DBTX, arg *CreateUserIngredientPreferenceParams) error
+	CreateUserNotification(ctx context.Context, db DBTX, arg *CreateUserNotificationParams) error
 	CreateValidIngredient(ctx context.Context, db DBTX, arg *CreateValidIngredientParams) error
 	CreateValidIngredientGroup(ctx context.Context, db DBTX, arg *CreateValidIngredientGroupParams) error
 	CreateValidIngredientGroupMember(ctx context.Context, db DBTX, arg *CreateValidIngredientGroupMemberParams) error
@@ -238,6 +240,8 @@ type Querier interface {
 	GetUserIDsNeedingIndexing(ctx context.Context, db DBTX) ([]string, error)
 	GetUserIngredientPreference(ctx context.Context, db DBTX, arg *GetUserIngredientPreferenceParams) (*GetUserIngredientPreferenceRow, error)
 	GetUserIngredientPreferencesForUser(ctx context.Context, db DBTX, arg *GetUserIngredientPreferencesForUserParams) ([]*GetUserIngredientPreferencesForUserRow, error)
+	GetUserNotification(ctx context.Context, db DBTX, arg *GetUserNotificationParams) (*UserNotifications, error)
+	GetUserNotificationsForUser(ctx context.Context, db DBTX, arg *GetUserNotificationsForUserParams) ([]*GetUserNotificationsForUserRow, error)
 	GetUserWithUnverifiedTwoFactor(ctx context.Context, db DBTX, id string) (*GetUserWithUnverifiedTwoFactorRow, error)
 	GetUserWithVerifiedTwoFactor(ctx context.Context, db DBTX, id string) (*GetUserWithVerifiedTwoFactorRow, error)
 	GetUsers(ctx context.Context, db DBTX, arg *GetUsersParams) ([]*GetUsersRow, error)
@@ -351,6 +355,7 @@ type Querier interface {
 	UpdateUserEmailAddress(ctx context.Context, db DBTX, arg *UpdateUserEmailAddressParams) (int64, error)
 	UpdateUserIngredientPreference(ctx context.Context, db DBTX, arg *UpdateUserIngredientPreferenceParams) (int64, error)
 	UpdateUserLastIndexedAt(ctx context.Context, db DBTX, id string) (int64, error)
+	UpdateUserNotification(ctx context.Context, db DBTX, arg *UpdateUserNotificationParams) (int64, error)
 	UpdateUserPassword(ctx context.Context, db DBTX, arg *UpdateUserPasswordParams) (int64, error)
 	UpdateUserTwoFactorSecret(ctx context.Context, db DBTX, arg *UpdateUserTwoFactorSecretParams) (int64, error)
 	UpdateUserUsername(ctx context.Context, db DBTX, arg *UpdateUserUsernameParams) (int64, error)

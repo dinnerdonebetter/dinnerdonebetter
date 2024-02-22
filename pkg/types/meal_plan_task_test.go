@@ -5,7 +5,7 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
@@ -100,7 +100,7 @@ func TestMealPlanTaskStatusChangeRequestInput_ValidateWithContext(T *testing.T) 
 		ctx := context.Background()
 		x := MealPlanTaskStatusChangeRequestInput{
 			ID:     t.Name(),
-			Status: pointers.Pointer(MealPlanTaskStatusUnfinished),
+			Status: pointer.To(MealPlanTaskStatusUnfinished),
 		}
 
 		require.NoError(t, x.ValidateWithContext(ctx))

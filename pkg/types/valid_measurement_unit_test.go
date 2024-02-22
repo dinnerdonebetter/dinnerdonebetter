@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
@@ -22,10 +22,10 @@ func TestValidMeasurementUnit_Update(T *testing.T) {
 		input := &ValidMeasurementUnitUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
-		input.Volumetric = pointers.Pointer(true)
-		input.Universal = pointers.Pointer(true)
-		input.Imperial = pointers.Pointer(false)
-		input.Metric = pointers.Pointer(true)
+		input.Volumetric = pointer.To(true)
+		input.Universal = pointer.To(true)
+		input.Imperial = pointer.To(false)
+		input.Metric = pointer.To(true)
 
 		x.Update(input)
 	})
@@ -116,7 +116,7 @@ func TestValidMeasurementUnitUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidMeasurementUnitUpdateRequestInput{
-			Name: pointers.Pointer(t.Name()),
+			Name: pointer.To(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

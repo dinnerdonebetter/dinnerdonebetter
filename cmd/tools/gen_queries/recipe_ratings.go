@@ -100,10 +100,9 @@ ORDER BY %s.%s
 				buildFilterCountSelect(
 					recipeRatingsTableName,
 					true,
+					true,
 				),
-				buildTotalCountSelect(
-					recipeRatingsTableName,
-				),
+				buildTotalCountSelect(recipeRatingsTableName, true),
 				recipeRatingsTableName,
 				recipeRatingsTableName, archivedAtColumn,
 				buildFilterConditions(

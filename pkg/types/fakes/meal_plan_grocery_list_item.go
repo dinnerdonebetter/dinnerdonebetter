@@ -1,7 +1,7 @@
 package fakes
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 )
@@ -15,7 +15,7 @@ func BuildFakeMealPlanGroceryListItem() *types.MealPlanGroceryListItem {
 		Ingredient:               *BuildFakeValidIngredient(),
 		MeasurementUnit:          *BuildFakeValidMeasurementUnit(),
 		MinimumQuantityNeeded:    float32(minQty),
-		MaximumQuantityNeeded:    pointers.Pointer(float32(minQty + 1)),
+		MaximumQuantityNeeded:    pointer.To(float32(minQty + 1)),
 		QuantityPurchased:        nil,
 		PurchasedMeasurementUnit: nil,
 		PurchasedUPC:             nil,

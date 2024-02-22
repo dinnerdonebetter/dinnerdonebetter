@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
@@ -22,10 +22,10 @@ func TestValidVessel_Update(T *testing.T) {
 		input := &ValidVesselUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
-		input.CapacityUnitID = pointers.Pointer(t.Name())
-		input.UsableForStorage = pointers.Pointer(true)
-		input.DisplayInSummaryLists = pointers.Pointer(true)
-		input.IncludeInGeneratedInstructions = pointers.Pointer(true)
+		input.CapacityUnitID = pointer.To(t.Name())
+		input.UsableForStorage = pointer.To(true)
+		input.DisplayInSummaryLists = pointer.To(true)
+		input.IncludeInGeneratedInstructions = pointer.To(true)
 
 		x.Update(input)
 	})
@@ -42,7 +42,7 @@ func TestValidVesselCreationRequestInput_Validate(T *testing.T) {
 			Description:    t.Name(),
 			IconPath:       t.Name(),
 			Capacity:       exampleQuantity,
-			CapacityUnitID: pointers.Pointer(t.Name()),
+			CapacityUnitID: pointer.To(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -68,7 +68,7 @@ func TestValidVesselDatabaseCreationInput_Validate(T *testing.T) {
 		x := &ValidVesselDatabaseCreationInput{
 			ID:             t.Name(),
 			Name:           t.Name(),
-			CapacityUnitID: pointers.Pointer(t.Name()),
+			CapacityUnitID: pointer.To(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -92,9 +92,9 @@ func TestValidVesselUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidVesselUpdateRequestInput{
-			Name:        pointers.Pointer(t.Name()),
-			Description: pointers.Pointer(t.Name()),
-			IconPath:    pointers.Pointer(t.Name()),
+			Name:        pointer.To(t.Name()),
+			Description: pointer.To(t.Name()),
+			IconPath:    pointer.To(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

@@ -175,14 +175,8 @@ GROUP BY
 				strings.Join(applyToEach(mealPlanOptionVotesColumns, func(i int, s string) string {
 					return fmt.Sprintf("%s.%s", mealPlanOptionVotesTableName, s)
 				}), ",\n\t"),
-				buildFilterCountSelect(
-					mealPlanOptionVotesTableName,
-					true,
-					"meal_plan_option_votes.belongs_to_meal_plan_option = sqlc.arg(meal_plan_option_id)",
-				),
-				buildTotalCountSelect(
-					mealPlanOptionVotesTableName,
-				),
+				buildFilterCountSelect(mealPlanOptionVotesTableName, true, true, "meal_plan_option_votes.belongs_to_meal_plan_option = sqlc.arg(meal_plan_option_id)"),
+				buildTotalCountSelect(mealPlanOptionVotesTableName, true),
 				mealPlanOptionVotesTableName,
 				mealPlanOptionsTableName, mealPlanOptionVotesTableName, belongsToMealPlanOptionColumn, mealPlanOptionsTableName, idColumn,
 				mealPlanEventsTableName, mealPlanOptionsTableName, belongsToMealPlanEventColumn, mealPlanEventsTableName, idColumn,

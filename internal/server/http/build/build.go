@@ -49,6 +49,7 @@ import (
 	servicesettingconfigurationsservice "github.com/dinnerdonebetter/backend/internal/services/servicesettingconfigurations"
 	servicesettingsservice "github.com/dinnerdonebetter/backend/internal/services/servicesettings"
 	useringredientpreferencesservice "github.com/dinnerdonebetter/backend/internal/services/useringredientpreferences"
+	usernotificationsservice "github.com/dinnerdonebetter/backend/internal/services/usernotifications"
 	usersservice "github.com/dinnerdonebetter/backend/internal/services/users"
 	validingredientgroupsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientgroups"
 	validingredientmeasurementunitsservice "github.com/dinnerdonebetter/backend/internal/services/validingredientmeasurementunits"
@@ -136,6 +137,7 @@ func Build(
 		validpreparationvesselsservice.Providers,
 		analyticscfg.ProvidersAnalytics,
 		workersservice.Providers,
+		usernotificationsservice.Providers,
 	)
 
 	return nil, nil

@@ -10,9 +10,9 @@ import (
 
 const (
 	// OAuth2ClientCreatedCustomerEventType indicates an OAuth2 client was created.
-	OAuth2ClientCreatedCustomerEventType CustomerEventType = "oauth2_client_created"
+	OAuth2ClientCreatedCustomerEventType ServiceEventType = "oauth2_client_created"
 	// OAuth2ClientArchivedCustomerEventType indicates an OAuth2 client was archived.
-	OAuth2ClientArchivedCustomerEventType CustomerEventType = "oauth2_client_archived"
+	OAuth2ClientArchivedCustomerEventType ServiceEventType = "oauth2_client_archived"
 )
 
 type (

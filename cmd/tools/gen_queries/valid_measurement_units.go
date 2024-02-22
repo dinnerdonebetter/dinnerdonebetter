@@ -101,13 +101,8 @@ ORDER BY %s.%s
 				strings.Join(applyToEach(validMeasurementUnitsColumns, func(i int, s string) string {
 					return fmt.Sprintf("%s.%s", validMeasurementUnitsTableName, s)
 				}), ",\n\t"),
-				buildFilterCountSelect(
-					validMeasurementUnitsTableName,
-					true,
-				),
-				buildTotalCountSelect(
-					validMeasurementUnitsTableName,
-				),
+				buildFilterCountSelect(validMeasurementUnitsTableName, true, true),
+				buildTotalCountSelect(validMeasurementUnitsTableName, true),
 				validMeasurementUnitsTableName,
 				validMeasurementUnitsTableName,
 				archivedAtColumn,
@@ -253,15 +248,11 @@ WHERE
 					}
 					return fmt.Sprintf("%s.%s", validMeasurementUnitsTableName, s)
 				}), ",\n\t"),
-				buildFilterCountSelect(
-					validMeasurementUnitsTableName,
-					true,
-					` (
+				buildFilterCountSelect(validMeasurementUnitsTableName, true, true, ` (
 				valid_ingredient_measurement_units.valid_ingredient_id = sqlc.arg(valid_ingredient_id)
 				OR valid_measurement_units.universal = true
-			)`,
-				),
-				buildTotalCountSelect(validMeasurementUnitsTableName),
+			)`),
+				buildTotalCountSelect(validMeasurementUnitsTableName, true),
 				validMeasurementUnitsTableName,
 				validIngredientMeasurementUnitsTableName, validIngredientMeasurementUnitsTableName, validMeasurementUnitIDColumn, validMeasurementUnitsTableName, idColumn,
 				validIngredientsTableName, validIngredientMeasurementUnitsTableName, validIngredientIDColumn, validIngredientsTableName, idColumn,

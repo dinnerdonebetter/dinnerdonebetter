@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
@@ -20,8 +20,8 @@ func TestRecipePrepTask_Update(T *testing.T) {
 		input := &RecipePrepTaskUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
-		input.Optional = pointers.Pointer(true)
-		input.BelongsToRecipe = pointers.Pointer(t.Name())
+		input.Optional = pointer.To(true)
+		input.BelongsToRecipe = pointer.To(t.Name())
 
 		x.Update(input)
 	})
@@ -37,10 +37,10 @@ func TestRecipePrepTaskCreationRequestInput_Validate(T *testing.T) {
 			BelongsToRecipe:                        t.Name(),
 			Name:                                   t.Name(),
 			StorageType:                            t.Name(),
-			MinimumStorageTemperatureInCelsius:     pointers.Pointer(fake.Float32()),
-			MaximumStorageTemperatureInCelsius:     pointers.Pointer(fake.Float32()),
+			MinimumStorageTemperatureInCelsius:     pointer.To(fake.Float32()),
+			MaximumStorageTemperatureInCelsius:     pointer.To(fake.Float32()),
 			MinimumTimeBufferBeforeRecipeInSeconds: fake.Uint32(),
-			MaximumTimeBufferBeforeRecipeInSeconds: pointers.Pointer(fake.Uint32()),
+			MaximumTimeBufferBeforeRecipeInSeconds: pointer.To(fake.Uint32()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())
@@ -89,7 +89,7 @@ func TestRecipePrepTaskUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipePrepTaskUpdateRequestInput{
-			BelongsToRecipe: pointers.Pointer(t.Name()),
+			BelongsToRecipe: pointer.To(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

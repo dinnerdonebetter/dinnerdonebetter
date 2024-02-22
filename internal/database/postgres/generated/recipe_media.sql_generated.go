@@ -64,11 +64,11 @@ INSERT INTO recipe_media (
 
 type CreateRecipeMediaParams struct {
 	ID                  string
-	BelongsToRecipe     sql.NullString
-	BelongsToRecipeStep sql.NullString
 	MimeType            string
 	InternalPath        string
 	ExternalPath        string
+	BelongsToRecipe     sql.NullString
+	BelongsToRecipeStep sql.NullString
 	Index               int32
 }
 
@@ -104,16 +104,16 @@ WHERE recipe_media.archived_at IS NULL
 `
 
 type GetRecipeMediaRow struct {
-	ID                  string
-	BelongsToRecipe     sql.NullString
-	BelongsToRecipeStep sql.NullString
-	MimeType            string
-	InternalPath        string
-	ExternalPath        string
-	Index               int32
 	CreatedAt           time.Time
 	LastUpdatedAt       sql.NullTime
 	ArchivedAt          sql.NullTime
+	ID                  string
+	MimeType            string
+	InternalPath        string
+	ExternalPath        string
+	BelongsToRecipe     sql.NullString
+	BelongsToRecipeStep sql.NullString
+	Index               int32
 }
 
 func (q *Queries) GetRecipeMedia(ctx context.Context, db DBTX, id string) (*GetRecipeMediaRow, error) {
@@ -156,16 +156,16 @@ ORDER BY recipe_media.id
 `
 
 type GetRecipeMediaForRecipeRow struct {
-	ID                  string
-	BelongsToRecipe     sql.NullString
-	BelongsToRecipeStep sql.NullString
-	MimeType            string
-	InternalPath        string
-	ExternalPath        string
-	Index               int32
 	CreatedAt           time.Time
 	LastUpdatedAt       sql.NullTime
 	ArchivedAt          sql.NullTime
+	ID                  string
+	MimeType            string
+	InternalPath        string
+	ExternalPath        string
+	BelongsToRecipe     sql.NullString
+	BelongsToRecipeStep sql.NullString
+	Index               int32
 }
 
 func (q *Queries) GetRecipeMediaForRecipe(ctx context.Context, db DBTX, recipeID sql.NullString) ([]*GetRecipeMediaForRecipeRow, error) {
@@ -229,16 +229,16 @@ type GetRecipeMediaForRecipeStepParams struct {
 }
 
 type GetRecipeMediaForRecipeStepRow struct {
-	ID                  string
-	BelongsToRecipe     sql.NullString
-	BelongsToRecipeStep sql.NullString
-	MimeType            string
-	InternalPath        string
-	ExternalPath        string
-	Index               int32
 	CreatedAt           time.Time
 	LastUpdatedAt       sql.NullTime
 	ArchivedAt          sql.NullTime
+	ID                  string
+	MimeType            string
+	InternalPath        string
+	ExternalPath        string
+	BelongsToRecipe     sql.NullString
+	BelongsToRecipeStep sql.NullString
+	Index               int32
 }
 
 func (q *Queries) GetRecipeMediaForRecipeStep(ctx context.Context, db DBTX, arg *GetRecipeMediaForRecipeStepParams) ([]*GetRecipeMediaForRecipeStepRow, error) {
@@ -290,13 +290,13 @@ WHERE archived_at IS NULL
 `
 
 type UpdateRecipeMediaParams struct {
-	BelongsToRecipe     sql.NullString
-	BelongsToRecipeStep sql.NullString
 	MimeType            string
 	InternalPath        string
 	ExternalPath        string
-	Index               int32
 	ID                  string
+	BelongsToRecipe     sql.NullString
+	BelongsToRecipeStep sql.NullString
+	Index               int32
 }
 
 func (q *Queries) UpdateRecipeMedia(ctx context.Context, db DBTX, arg *UpdateRecipeMediaParams) (int64, error) {

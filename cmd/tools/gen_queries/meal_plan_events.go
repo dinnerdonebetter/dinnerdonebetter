@@ -130,15 +130,8 @@ ORDER BY %s.%s
 				strings.Join(applyToEach(mealPlanEventsColumns, func(i int, s string) string {
 					return fmt.Sprintf("%s.%s", mealPlanEventsTableName, s)
 				}), ",\n\t"),
-				buildFilterCountSelect(
-					mealPlanEventsTableName,
-					true,
-					"meal_plan_events.belongs_to_meal_plan = sqlc.arg(meal_plan_id)",
-				),
-				buildTotalCountSelect(
-					mealPlanEventsTableName,
-					"meal_plan_events.belongs_to_meal_plan = sqlc.arg(meal_plan_id)",
-				),
+				buildFilterCountSelect(mealPlanEventsTableName, true, true, "meal_plan_events.belongs_to_meal_plan = sqlc.arg(meal_plan_id)"),
+				buildTotalCountSelect(mealPlanEventsTableName, true, "meal_plan_events.belongs_to_meal_plan = sqlc.arg(meal_plan_id)"),
 				mealPlanEventsTableName,
 				mealPlanEventsTableName, archivedAtColumn,
 				buildFilterConditions(

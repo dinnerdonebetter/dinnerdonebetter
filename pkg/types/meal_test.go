@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
@@ -60,14 +60,14 @@ func TestMealUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &MealUpdateRequestInput{
-			Name:          pointers.Pointer(t.Name()),
-			Description:   pointers.Pointer(t.Name()),
-			CreatedByUser: pointers.Pointer(t.Name()),
+			Name:          pointer.To(t.Name()),
+			Description:   pointer.To(t.Name()),
+			CreatedByUser: pointer.To(t.Name()),
 			Components: []*MealComponentUpdateRequestInput{
 				{
-					RecipeID:      pointers.Pointer(t.Name()),
-					RecipeScale:   pointers.Pointer(float32(exampleQuantity)),
-					ComponentType: pointers.Pointer(MealComponentTypesAmuseBouche),
+					RecipeID:      pointer.To(t.Name()),
+					RecipeScale:   pointer.To(float32(exampleQuantity)),
+					ComponentType: pointer.To(MealComponentTypesAmuseBouche),
 				},
 			},
 		}
@@ -132,14 +132,14 @@ func TestMealUpdateRequestInput_ValidateWithContext(T *testing.T) {
 
 		ctx := context.Background()
 		x := &MealUpdateRequestInput{
-			Name:        pointers.Pointer(t.Name()),
-			Description: pointers.Pointer(t.Name()),
+			Name:        pointer.To(t.Name()),
+			Description: pointer.To(t.Name()),
 			Components: []*MealComponentUpdateRequestInput{
 				{
-					RecipeID: pointers.Pointer(t.Name()),
+					RecipeID: pointer.To(t.Name()),
 				},
 			},
-			CreatedByUser: pointers.Pointer(t.Name()),
+			CreatedByUser: pointer.To(t.Name()),
 		}
 
 		assert.NoError(t, x.ValidateWithContext(ctx))
@@ -171,7 +171,7 @@ func TestMeal_Update(T *testing.T) {
 		input := &MealUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
-		input.EligibleForMealPlans = pointers.Pointer(true)
+		input.EligibleForMealPlans = pointer.To(true)
 
 		x.Update(input)
 	})

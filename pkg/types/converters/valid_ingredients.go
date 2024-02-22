@@ -5,7 +5,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-// ConvertValidIngredientToValidIngredientUpdateRequestInput creates a DatabaseCreationInput from a CreationInput.
+// ConvertValidIngredientToValidIngredientUpdateRequestInput creates a ValidIngredientUpdateRequestInput from a ValidIngredient.
 func ConvertValidIngredientToValidIngredientUpdateRequestInput(x *types.ValidIngredient) *types.ValidIngredientUpdateRequestInput {
 	out := &types.ValidIngredientUpdateRequestInput{
 		Name:                                    &x.Name,
@@ -47,7 +47,7 @@ func ConvertValidIngredientToValidIngredientUpdateRequestInput(x *types.ValidIng
 	return out
 }
 
-// ConvertValidIngredientCreationRequestInputToValidIngredientDatabaseCreationInput creates a DatabaseCreationInput from a CreationInput.
+// ConvertValidIngredientCreationRequestInputToValidIngredientDatabaseCreationInput creates a DatabaseCreationInput from a ValidIngredientCreationRequestInput.
 func ConvertValidIngredientCreationRequestInputToValidIngredientDatabaseCreationInput(x *types.ValidIngredientCreationRequestInput) *types.ValidIngredientDatabaseCreationInput {
 	out := &types.ValidIngredientDatabaseCreationInput{
 		ID:                                      identifiers.New(),

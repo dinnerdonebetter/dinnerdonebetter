@@ -13,13 +13,13 @@ import (
 
 const (
 	// RecipeCreatedCustomerEventType indicates a recipe was created.
-	RecipeCreatedCustomerEventType CustomerEventType = "recipe_created"
+	RecipeCreatedCustomerEventType ServiceEventType = "recipe_created"
 	// RecipeUpdatedCustomerEventType indicates a recipe was updated.
-	RecipeUpdatedCustomerEventType CustomerEventType = "recipe_updated"
+	RecipeUpdatedCustomerEventType ServiceEventType = "recipe_updated"
 	// RecipeArchivedCustomerEventType indicates a recipe was archived.
-	RecipeArchivedCustomerEventType CustomerEventType = "recipe_archived"
+	RecipeArchivedCustomerEventType ServiceEventType = "recipe_archived"
 	// RecipeClonedCustomerEventType indicates a recipe was cloned.
-	RecipeClonedCustomerEventType CustomerEventType = "recipe_cloned"
+	RecipeClonedCustomerEventType ServiceEventType = "recipe_cloned"
 )
 
 func init() {

@@ -19,7 +19,7 @@ const (
 	defaultEnv = "testing"
 
 	// SentEventType indicates an email was sent.
-	SentEventType types.CustomerEventType = "email_sent"
+	SentEventType types.ServiceEventType = "email_sent"
 
 	// TemplateTypeInvite is used to indicate the invite template.
 	TemplateTypeInvite = "invite"

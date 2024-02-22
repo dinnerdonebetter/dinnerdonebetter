@@ -12,11 +12,11 @@ import (
 
 const (
 	// ValidIngredientGroupCreatedCustomerEventType indicates a valid ingredient group was created.
-	ValidIngredientGroupCreatedCustomerEventType CustomerEventType = "valid_ingredient_group_created"
+	ValidIngredientGroupCreatedCustomerEventType ServiceEventType = "valid_ingredient_group_created"
 	// ValidIngredientGroupUpdatedCustomerEventType indicates a valid ingredient group was updated.
-	ValidIngredientGroupUpdatedCustomerEventType CustomerEventType = "valid_ingredient_group_updated"
+	ValidIngredientGroupUpdatedCustomerEventType ServiceEventType = "valid_ingredient_group_updated"
 	// ValidIngredientGroupArchivedCustomerEventType indicates a valid ingredient group was archived.
-	ValidIngredientGroupArchivedCustomerEventType CustomerEventType = "valid_ingredient_group_archived"
+	ValidIngredientGroupArchivedCustomerEventType ServiceEventType = "valid_ingredient_group_archived"
 )
 
 func init() {

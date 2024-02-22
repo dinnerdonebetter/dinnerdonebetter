@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
@@ -20,11 +20,11 @@ func TestRecipeStepIngredient_Update(T *testing.T) {
 		input := &RecipeStepIngredientUpdateRequestInput{}
 
 		assert.NoError(t, fake.Struct(&input))
-		input.RecipeStepProductRecipeID = pointers.Pointer(t.Name())
-		input.MaximumQuantity = pointers.Pointer(fake.Float32())
-		input.Optional = pointers.Pointer(true)
-		input.VesselIndex = pointers.Pointer(fake.Uint16())
-		input.ProductPercentageToUse = pointers.Pointer(fake.Float32())
+		input.RecipeStepProductRecipeID = pointer.To(t.Name())
+		input.MaximumQuantity = pointer.To(fake.Float32())
+		input.Optional = pointer.To(true)
+		input.VesselIndex = pointer.To(fake.Uint16())
+		input.ProductPercentageToUse = pointer.To(fake.Float32())
 
 		x.Update(input)
 	})
@@ -37,7 +37,7 @@ func TestRecipeStepIngredientCreationRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepIngredientCreationRequestInput{
-			IngredientID:      pointers.Pointer(t.Name()),
+			IngredientID:      pointer.To(t.Name()),
 			MeasurementUnitID: t.Name(),
 			MinimumQuantity:   fake.Float32(),
 			QuantityNotes:     t.Name(),
@@ -92,12 +92,12 @@ func TestRecipeStepIngredientUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &RecipeStepIngredientUpdateRequestInput{
-			IngredientID:      pointers.Pointer(t.Name()),
-			MeasurementUnitID: pointers.Pointer(t.Name()),
-			MinimumQuantity:   pointers.Pointer(fake.Float32()),
-			QuantityNotes:     pointers.Pointer(t.Name()),
-			IngredientNotes:   pointers.Pointer(t.Name()),
-			Optional:          pointers.Pointer(fake.Bool()),
+			IngredientID:      pointer.To(t.Name()),
+			MeasurementUnitID: pointer.To(t.Name()),
+			MinimumQuantity:   pointer.To(fake.Float32()),
+			QuantityNotes:     pointer.To(t.Name()),
+			IngredientNotes:   pointer.To(t.Name()),
+			Optional:          pointer.To(fake.Bool()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

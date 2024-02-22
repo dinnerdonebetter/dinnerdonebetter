@@ -184,9 +184,7 @@ WHERE %s.%s IS NULL
 					}
 					return fmt.Sprintf("\n\t\t%s", s)
 				}), ""),
-				buildTotalCountSelect(
-					householdsTableName,
-				),
+				buildTotalCountSelect(householdsTableName, true),
 				householdsTableName,
 				householdUserMembershipsTableName, householdUserMembershipsTableName, belongsToHouseholdColumn, householdsTableName, idColumn,
 				usersTableName, householdUserMembershipsTableName, belongsToUserColumn, usersTableName, idColumn,

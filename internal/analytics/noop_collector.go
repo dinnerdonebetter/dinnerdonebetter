@@ -27,6 +27,6 @@ func (c *NoopEventReporter) AddUser(context.Context, string, map[string]any) err
 }
 
 // EventOccurred does nothing.
-func (c *NoopEventReporter) EventOccurred(context.Context, types.CustomerEventType, string, map[string]any) error {
+func (c *NoopEventReporter) EventOccurred(context.Context, types.ServiceEventType, string, map[string]any) error {
 	return nil
 }

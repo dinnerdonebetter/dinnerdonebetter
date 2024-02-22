@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/pkg/pointers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 	"github.com/stretchr/testify/assert"
@@ -20,9 +20,9 @@ func TestValidInstrument_Update(T *testing.T) {
 
 		input := &ValidInstrumentUpdateRequestInput{}
 		assert.NoError(t, fake.Struct(&input))
-		input.UsableForStorage = pointers.Pointer(true)
-		input.DisplayInSummaryLists = pointers.Pointer(true)
-		input.IncludeInGeneratedInstructions = pointers.Pointer(true)
+		input.UsableForStorage = pointer.To(true)
+		input.DisplayInSummaryLists = pointer.To(true)
+		input.IncludeInGeneratedInstructions = pointer.To(true)
 
 		x.Update(input)
 	})
@@ -86,9 +86,9 @@ func TestValidInstrumentUpdateRequestInput_Validate(T *testing.T) {
 		t.Parallel()
 
 		x := &ValidInstrumentUpdateRequestInput{
-			Name:        pointers.Pointer(t.Name()),
-			Description: pointers.Pointer(t.Name()),
-			IconPath:    pointers.Pointer(t.Name()),
+			Name:        pointer.To(t.Name()),
+			Description: pointer.To(t.Name()),
+			IconPath:    pointer.To(t.Name()),
 		}
 
 		actual := x.ValidateWithContext(context.Background())

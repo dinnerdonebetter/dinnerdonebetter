@@ -110,13 +110,8 @@ WHERE
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
-				buildFilterCountSelect(
-					validIngredientPreparationsTableName,
-					true,
-				),
-				buildTotalCountSelect(
-					validIngredientPreparationsTableName,
-				),
+				buildFilterCountSelect(validIngredientPreparationsTableName, true, true),
+				buildTotalCountSelect(validIngredientPreparationsTableName, true),
 				validIngredientPreparationsTableName,
 				validIngredientsTableName,
 				validIngredientPreparationsTableName,
@@ -155,13 +150,8 @@ WHERE
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
-				buildFilterCountSelect(
-					validIngredientPreparationsTableName,
-					true,
-				),
-				buildTotalCountSelect(
-					validIngredientPreparationsTableName,
-				),
+				buildFilterCountSelect(validIngredientPreparationsTableName, true, true),
+				buildTotalCountSelect(validIngredientPreparationsTableName, true),
 				validIngredientPreparationsTableName,
 				validIngredientsTableName,
 				validIngredientPreparationsTableName,
@@ -199,13 +189,8 @@ WHERE
 	%s
 %s;`,
 				strings.Join(fullSelectColumns, ",\n\t"),
-				buildFilterCountSelect(
-					validIngredientPreparationsTableName,
-					true,
-				),
-				buildTotalCountSelect(
-					validIngredientPreparationsTableName,
-				),
+				buildFilterCountSelect(validIngredientPreparationsTableName, true, true),
+				buildTotalCountSelect(validIngredientPreparationsTableName, true),
 				validIngredientPreparationsTableName,
 				validIngredientsTableName,
 				validIngredientPreparationsTableName,

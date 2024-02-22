@@ -31,11 +31,11 @@ const (
 	MealComponentTypesDessert = "dessert"
 
 	// MealCreatedCustomerEventType indicates a meal was created.
-	MealCreatedCustomerEventType CustomerEventType = "meal_created"
+	MealCreatedCustomerEventType ServiceEventType = "meal_created"
 	// MealUpdatedCustomerEventType indicates a meal was updated.
-	MealUpdatedCustomerEventType CustomerEventType = "meal_updated"
+	MealUpdatedCustomerEventType ServiceEventType = "meal_updated"
 	// MealArchivedCustomerEventType indicates a meal was archived.
-	MealArchivedCustomerEventType CustomerEventType = "meal_archived"
+	MealArchivedCustomerEventType ServiceEventType = "meal_archived"
 )
 
 func init() {
