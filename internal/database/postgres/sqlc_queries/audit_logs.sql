@@ -1,4 +1,4 @@
--- name: CreateAuditLog :exec
+-- name: CreateAuditLogEntry :exec
 
 INSERT INTO audit_log (
 	id,
@@ -18,7 +18,7 @@ INSERT INTO audit_log (
 	sqlc.arg(belongs_to_household)
 );
 
--- name: GetAuditLog :one
+-- name: GetAuditLogEntry :one
 
 SELECT
 	audit_log.id as audit_log_id,
@@ -32,7 +32,7 @@ SELECT
 FROM audit_log
 WHERE audit_log.id = sqlc.arg(id);
 
--- name: GetAuditLogsForUser :many
+-- name: GetAuditLogEntriesForUser :many
 
 SELECT
 	audit_log.id,
@@ -63,7 +63,7 @@ WHERE audit_log.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - 
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
 
--- name: GetAuditLogsForUserAndResourceType :many
+-- name: GetAuditLogEntriesForUserAndResourceType :many
 
 SELECT
 	audit_log.id,
@@ -97,7 +97,7 @@ WHERE audit_log.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - 
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
 
--- name: GetAuditLogsForHousehold :many
+-- name: GetAuditLogEntriesForHousehold :many
 
 SELECT
 	audit_log.id,
@@ -128,7 +128,7 @@ WHERE audit_log.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - 
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
 
--- name: GetAuditLogsForHouseholdAndResourceType :many
+-- name: GetAuditLogEntriesForHouseholdAndResourceType :many
 
 SELECT
 	audit_log.id,

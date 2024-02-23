@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-const createAuditLog = `-- name: CreateAuditLog :exec
+const createAuditLogEntry = `-- name: CreateAuditLogEntry :exec
 
 INSERT INTO audit_log (
 	id,
@@ -33,7 +33,7 @@ INSERT INTO audit_log (
 )
 `
 
-type CreateAuditLogParams struct {
+type CreateAuditLogEntryParams struct {
 	ID                 string
 	ResourceType       string
 	RelevantID         string
@@ -43,8 +43,8 @@ type CreateAuditLogParams struct {
 	BelongsToHousehold sql.NullString
 }
 
-func (q *Queries) CreateAuditLog(ctx context.Context, db DBTX, arg *CreateAuditLogParams) error {
-	_, err := db.ExecContext(ctx, createAuditLog,
+func (q *Queries) CreateAuditLogEntry(ctx context.Context, db DBTX, arg *CreateAuditLogEntryParams) error {
+	_, err := db.ExecContext(ctx, createAuditLogEntry,
 		arg.ID,
 		arg.ResourceType,
 		arg.RelevantID,
@@ -56,7 +56,389 @@ func (q *Queries) CreateAuditLog(ctx context.Context, db DBTX, arg *CreateAuditL
 	return err
 }
 
-const getAuditLog = `-- name: GetAuditLog :one
+const getAuditLogEntriesForHousehold = `-- name: GetAuditLogEntriesForHousehold :many
+
+SELECT
+	audit_log.id,
+	audit_log.resource_type,
+	audit_log.relevant_id,
+	audit_log.event_type,
+	audit_log.changes,
+	audit_log.belongs_to_user,
+	audit_log.belongs_to_household,
+	audit_log.created_at,
+	(
+		SELECT COUNT(audit_log.id)
+		FROM audit_log
+		WHERE audit_log.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND audit_log.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND audit_log.belongs_to_household = $3
+	) AS filtered_count,
+	(
+		SELECT COUNT(audit_log.id)
+		FROM audit_log
+		WHERE
+			audit_log.belongs_to_household = $3
+	) AS total_count
+FROM audit_log
+WHERE audit_log.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND audit_log.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND audit_log.belongs_to_household = $3
+LIMIT $5
+OFFSET $4
+`
+
+type GetAuditLogEntriesForHouseholdParams struct {
+	CreatedAfter       sql.NullTime
+	CreatedBefore      sql.NullTime
+	BelongsToHousehold sql.NullString
+	QueryOffset        sql.NullInt32
+	QueryLimit         sql.NullInt32
+}
+
+type GetAuditLogEntriesForHouseholdRow struct {
+	CreatedAt          time.Time
+	ID                 string
+	ResourceType       string
+	RelevantID         string
+	EventType          AuditLogEventType
+	BelongsToUser      string
+	Changes            json.RawMessage
+	BelongsToHousehold sql.NullString
+	FilteredCount      int64
+	TotalCount         int64
+}
+
+func (q *Queries) GetAuditLogEntriesForHousehold(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForHouseholdParams) ([]*GetAuditLogEntriesForHouseholdRow, error) {
+	rows, err := db.QueryContext(ctx, getAuditLogEntriesForHousehold,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.BelongsToHousehold,
+		arg.QueryOffset,
+		arg.QueryLimit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetAuditLogEntriesForHouseholdRow{}
+	for rows.Next() {
+		var i GetAuditLogEntriesForHouseholdRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.ResourceType,
+			&i.RelevantID,
+			&i.EventType,
+			&i.Changes,
+			&i.BelongsToUser,
+			&i.BelongsToHousehold,
+			&i.CreatedAt,
+			&i.FilteredCount,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAuditLogEntriesForHouseholdAndResourceType = `-- name: GetAuditLogEntriesForHouseholdAndResourceType :many
+
+SELECT
+	audit_log.id,
+	audit_log.resource_type,
+	audit_log.relevant_id,
+	audit_log.event_type,
+	audit_log.changes,
+	audit_log.belongs_to_user,
+	audit_log.belongs_to_household,
+	audit_log.created_at,
+	(
+		SELECT COUNT(audit_log.id)
+		FROM audit_log
+		WHERE audit_log.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND audit_log.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND audit_log.belongs_to_household = $3
+			AND audit_log.resource_type = $4
+	) AS filtered_count,
+	(
+		SELECT COUNT(audit_log.id)
+		FROM audit_log
+		WHERE
+			audit_log.belongs_to_household = $3
+			AND audit_log.resource_type = $4
+	) AS total_count
+FROM audit_log
+WHERE audit_log.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND audit_log.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND audit_log.belongs_to_household = $3
+	AND audit_log.resource_type = $4
+LIMIT $6
+OFFSET $5
+`
+
+type GetAuditLogEntriesForHouseholdAndResourceTypeParams struct {
+	CreatedAfter       sql.NullTime
+	CreatedBefore      sql.NullTime
+	ResourceType       string
+	BelongsToHousehold sql.NullString
+	QueryOffset        sql.NullInt32
+	QueryLimit         sql.NullInt32
+}
+
+type GetAuditLogEntriesForHouseholdAndResourceTypeRow struct {
+	CreatedAt          time.Time
+	ID                 string
+	ResourceType       string
+	RelevantID         string
+	EventType          AuditLogEventType
+	BelongsToUser      string
+	Changes            json.RawMessage
+	BelongsToHousehold sql.NullString
+	FilteredCount      int64
+	TotalCount         int64
+}
+
+func (q *Queries) GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForHouseholdAndResourceTypeParams) ([]*GetAuditLogEntriesForHouseholdAndResourceTypeRow, error) {
+	rows, err := db.QueryContext(ctx, getAuditLogEntriesForHouseholdAndResourceType,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.BelongsToHousehold,
+		arg.ResourceType,
+		arg.QueryOffset,
+		arg.QueryLimit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetAuditLogEntriesForHouseholdAndResourceTypeRow{}
+	for rows.Next() {
+		var i GetAuditLogEntriesForHouseholdAndResourceTypeRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.ResourceType,
+			&i.RelevantID,
+			&i.EventType,
+			&i.Changes,
+			&i.BelongsToUser,
+			&i.BelongsToHousehold,
+			&i.CreatedAt,
+			&i.FilteredCount,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAuditLogEntriesForUser = `-- name: GetAuditLogEntriesForUser :many
+
+SELECT
+	audit_log.id,
+	audit_log.resource_type,
+	audit_log.relevant_id,
+	audit_log.event_type,
+	audit_log.changes,
+	audit_log.belongs_to_user,
+	audit_log.belongs_to_household,
+	audit_log.created_at,
+	(
+		SELECT COUNT(audit_log.id)
+		FROM audit_log
+		WHERE audit_log.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND audit_log.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND audit_log.belongs_to_user = $3
+	) AS filtered_count,
+	(
+		SELECT COUNT(audit_log.id)
+		FROM audit_log
+		WHERE
+			audit_log.belongs_to_user = $3
+	) AS total_count
+FROM audit_log
+WHERE audit_log.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND audit_log.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND audit_log.belongs_to_user = $3
+LIMIT $5
+OFFSET $4
+`
+
+type GetAuditLogEntriesForUserParams struct {
+	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
+	BelongsToUser string
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
+}
+
+type GetAuditLogEntriesForUserRow struct {
+	CreatedAt          time.Time
+	ID                 string
+	ResourceType       string
+	RelevantID         string
+	EventType          AuditLogEventType
+	BelongsToUser      string
+	Changes            json.RawMessage
+	BelongsToHousehold sql.NullString
+	FilteredCount      int64
+	TotalCount         int64
+}
+
+func (q *Queries) GetAuditLogEntriesForUser(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForUserParams) ([]*GetAuditLogEntriesForUserRow, error) {
+	rows, err := db.QueryContext(ctx, getAuditLogEntriesForUser,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.BelongsToUser,
+		arg.QueryOffset,
+		arg.QueryLimit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetAuditLogEntriesForUserRow{}
+	for rows.Next() {
+		var i GetAuditLogEntriesForUserRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.ResourceType,
+			&i.RelevantID,
+			&i.EventType,
+			&i.Changes,
+			&i.BelongsToUser,
+			&i.BelongsToHousehold,
+			&i.CreatedAt,
+			&i.FilteredCount,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAuditLogEntriesForUserAndResourceType = `-- name: GetAuditLogEntriesForUserAndResourceType :many
+
+SELECT
+	audit_log.id,
+	audit_log.resource_type,
+	audit_log.relevant_id,
+	audit_log.event_type,
+	audit_log.changes,
+	audit_log.belongs_to_user,
+	audit_log.belongs_to_household,
+	audit_log.created_at,
+	(
+		SELECT COUNT(audit_log.id)
+		FROM audit_log
+		WHERE audit_log.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND audit_log.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND audit_log.belongs_to_user = $3
+			AND audit_log.resource_type = $4
+	) AS filtered_count,
+	(
+		SELECT COUNT(audit_log.id)
+		FROM audit_log
+		WHERE
+			audit_log.belongs_to_user = $3
+			AND audit_log.resource_type = $4
+	) AS total_count
+FROM audit_log
+WHERE audit_log.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND audit_log.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND audit_log.belongs_to_user = $3
+	AND audit_log.resource_type = $4
+LIMIT $6
+OFFSET $5
+`
+
+type GetAuditLogEntriesForUserAndResourceTypeParams struct {
+	CreatedAfter  sql.NullTime
+	CreatedBefore sql.NullTime
+	BelongsToUser string
+	ResourceType  string
+	QueryOffset   sql.NullInt32
+	QueryLimit    sql.NullInt32
+}
+
+type GetAuditLogEntriesForUserAndResourceTypeRow struct {
+	CreatedAt          time.Time
+	ID                 string
+	ResourceType       string
+	RelevantID         string
+	EventType          AuditLogEventType
+	BelongsToUser      string
+	Changes            json.RawMessage
+	BelongsToHousehold sql.NullString
+	FilteredCount      int64
+	TotalCount         int64
+}
+
+func (q *Queries) GetAuditLogEntriesForUserAndResourceType(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForUserAndResourceTypeParams) ([]*GetAuditLogEntriesForUserAndResourceTypeRow, error) {
+	rows, err := db.QueryContext(ctx, getAuditLogEntriesForUserAndResourceType,
+		arg.CreatedAfter,
+		arg.CreatedBefore,
+		arg.BelongsToUser,
+		arg.ResourceType,
+		arg.QueryOffset,
+		arg.QueryLimit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []*GetAuditLogEntriesForUserAndResourceTypeRow{}
+	for rows.Next() {
+		var i GetAuditLogEntriesForUserAndResourceTypeRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.ResourceType,
+			&i.RelevantID,
+			&i.EventType,
+			&i.Changes,
+			&i.BelongsToUser,
+			&i.BelongsToHousehold,
+			&i.CreatedAt,
+			&i.FilteredCount,
+			&i.TotalCount,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, &i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAuditLogEntry = `-- name: GetAuditLogEntry :one
 
 SELECT
 	audit_log.id as audit_log_id,
@@ -71,7 +453,7 @@ FROM audit_log
 WHERE audit_log.id = $1
 `
 
-type GetAuditLogRow struct {
+type GetAuditLogEntryRow struct {
 	AuditLogCreatedAt          time.Time
 	AuditLogID                 string
 	AuditLogResourceType       string
@@ -82,9 +464,9 @@ type GetAuditLogRow struct {
 	AuditLogBelongsToHousehold sql.NullString
 }
 
-func (q *Queries) GetAuditLog(ctx context.Context, db DBTX, id string) (*GetAuditLogRow, error) {
-	row := db.QueryRowContext(ctx, getAuditLog, id)
-	var i GetAuditLogRow
+func (q *Queries) GetAuditLogEntry(ctx context.Context, db DBTX, id string) (*GetAuditLogEntryRow, error) {
+	row := db.QueryRowContext(ctx, getAuditLogEntry, id)
+	var i GetAuditLogEntryRow
 	err := row.Scan(
 		&i.AuditLogID,
 		&i.AuditLogResourceType,
@@ -96,386 +478,4 @@ func (q *Queries) GetAuditLog(ctx context.Context, db DBTX, id string) (*GetAudi
 		&i.AuditLogCreatedAt,
 	)
 	return &i, err
-}
-
-const getAuditLogsForHousehold = `-- name: GetAuditLogsForHousehold :many
-
-SELECT
-	audit_log.id,
-	audit_log.resource_type,
-	audit_log.relevant_id,
-	audit_log.event_type,
-	audit_log.changes,
-	audit_log.belongs_to_user,
-	audit_log.belongs_to_household,
-	audit_log.created_at,
-	(
-		SELECT COUNT(audit_log.id)
-		FROM audit_log
-		WHERE audit_log.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-			AND audit_log.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
-			AND audit_log.belongs_to_household = $3
-	) AS filtered_count,
-	(
-		SELECT COUNT(audit_log.id)
-		FROM audit_log
-		WHERE
-			audit_log.belongs_to_household = $3
-	) AS total_count
-FROM audit_log
-WHERE audit_log.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-	AND audit_log.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
-	AND audit_log.belongs_to_household = $3
-LIMIT $5
-OFFSET $4
-`
-
-type GetAuditLogsForHouseholdParams struct {
-	CreatedAfter       sql.NullTime
-	CreatedBefore      sql.NullTime
-	BelongsToHousehold sql.NullString
-	QueryOffset        sql.NullInt32
-	QueryLimit         sql.NullInt32
-}
-
-type GetAuditLogsForHouseholdRow struct {
-	CreatedAt          time.Time
-	ID                 string
-	ResourceType       string
-	RelevantID         string
-	EventType          AuditLogEventType
-	BelongsToUser      string
-	Changes            json.RawMessage
-	BelongsToHousehold sql.NullString
-	FilteredCount      int64
-	TotalCount         int64
-}
-
-func (q *Queries) GetAuditLogsForHousehold(ctx context.Context, db DBTX, arg *GetAuditLogsForHouseholdParams) ([]*GetAuditLogsForHouseholdRow, error) {
-	rows, err := db.QueryContext(ctx, getAuditLogsForHousehold,
-		arg.CreatedAfter,
-		arg.CreatedBefore,
-		arg.BelongsToHousehold,
-		arg.QueryOffset,
-		arg.QueryLimit,
-	)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []*GetAuditLogsForHouseholdRow{}
-	for rows.Next() {
-		var i GetAuditLogsForHouseholdRow
-		if err := rows.Scan(
-			&i.ID,
-			&i.ResourceType,
-			&i.RelevantID,
-			&i.EventType,
-			&i.Changes,
-			&i.BelongsToUser,
-			&i.BelongsToHousehold,
-			&i.CreatedAt,
-			&i.FilteredCount,
-			&i.TotalCount,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, &i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getAuditLogsForHouseholdAndResourceType = `-- name: GetAuditLogsForHouseholdAndResourceType :many
-
-SELECT
-	audit_log.id,
-	audit_log.resource_type,
-	audit_log.relevant_id,
-	audit_log.event_type,
-	audit_log.changes,
-	audit_log.belongs_to_user,
-	audit_log.belongs_to_household,
-	audit_log.created_at,
-	(
-		SELECT COUNT(audit_log.id)
-		FROM audit_log
-		WHERE audit_log.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-			AND audit_log.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
-			AND audit_log.belongs_to_household = $3
-			AND audit_log.resource_type = $4
-	) AS filtered_count,
-	(
-		SELECT COUNT(audit_log.id)
-		FROM audit_log
-		WHERE
-			audit_log.belongs_to_household = $3
-			AND audit_log.resource_type = $4
-	) AS total_count
-FROM audit_log
-WHERE audit_log.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-	AND audit_log.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
-	AND audit_log.belongs_to_household = $3
-	AND audit_log.resource_type = $4
-LIMIT $6
-OFFSET $5
-`
-
-type GetAuditLogsForHouseholdAndResourceTypeParams struct {
-	CreatedAfter       sql.NullTime
-	CreatedBefore      sql.NullTime
-	ResourceType       string
-	BelongsToHousehold sql.NullString
-	QueryOffset        sql.NullInt32
-	QueryLimit         sql.NullInt32
-}
-
-type GetAuditLogsForHouseholdAndResourceTypeRow struct {
-	CreatedAt          time.Time
-	ID                 string
-	ResourceType       string
-	RelevantID         string
-	EventType          AuditLogEventType
-	BelongsToUser      string
-	Changes            json.RawMessage
-	BelongsToHousehold sql.NullString
-	FilteredCount      int64
-	TotalCount         int64
-}
-
-func (q *Queries) GetAuditLogsForHouseholdAndResourceType(ctx context.Context, db DBTX, arg *GetAuditLogsForHouseholdAndResourceTypeParams) ([]*GetAuditLogsForHouseholdAndResourceTypeRow, error) {
-	rows, err := db.QueryContext(ctx, getAuditLogsForHouseholdAndResourceType,
-		arg.CreatedAfter,
-		arg.CreatedBefore,
-		arg.BelongsToHousehold,
-		arg.ResourceType,
-		arg.QueryOffset,
-		arg.QueryLimit,
-	)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []*GetAuditLogsForHouseholdAndResourceTypeRow{}
-	for rows.Next() {
-		var i GetAuditLogsForHouseholdAndResourceTypeRow
-		if err := rows.Scan(
-			&i.ID,
-			&i.ResourceType,
-			&i.RelevantID,
-			&i.EventType,
-			&i.Changes,
-			&i.BelongsToUser,
-			&i.BelongsToHousehold,
-			&i.CreatedAt,
-			&i.FilteredCount,
-			&i.TotalCount,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, &i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getAuditLogsForUser = `-- name: GetAuditLogsForUser :many
-
-SELECT
-	audit_log.id,
-	audit_log.resource_type,
-	audit_log.relevant_id,
-	audit_log.event_type,
-	audit_log.changes,
-	audit_log.belongs_to_user,
-	audit_log.belongs_to_household,
-	audit_log.created_at,
-	(
-		SELECT COUNT(audit_log.id)
-		FROM audit_log
-		WHERE audit_log.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-			AND audit_log.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
-			AND audit_log.belongs_to_user = $3
-	) AS filtered_count,
-	(
-		SELECT COUNT(audit_log.id)
-		FROM audit_log
-		WHERE
-			audit_log.belongs_to_user = $3
-	) AS total_count
-FROM audit_log
-WHERE audit_log.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-	AND audit_log.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
-	AND audit_log.belongs_to_user = $3
-LIMIT $5
-OFFSET $4
-`
-
-type GetAuditLogsForUserParams struct {
-	CreatedAfter  sql.NullTime
-	CreatedBefore sql.NullTime
-	BelongsToUser string
-	QueryOffset   sql.NullInt32
-	QueryLimit    sql.NullInt32
-}
-
-type GetAuditLogsForUserRow struct {
-	CreatedAt          time.Time
-	ID                 string
-	ResourceType       string
-	RelevantID         string
-	EventType          AuditLogEventType
-	BelongsToUser      string
-	Changes            json.RawMessage
-	BelongsToHousehold sql.NullString
-	FilteredCount      int64
-	TotalCount         int64
-}
-
-func (q *Queries) GetAuditLogsForUser(ctx context.Context, db DBTX, arg *GetAuditLogsForUserParams) ([]*GetAuditLogsForUserRow, error) {
-	rows, err := db.QueryContext(ctx, getAuditLogsForUser,
-		arg.CreatedAfter,
-		arg.CreatedBefore,
-		arg.BelongsToUser,
-		arg.QueryOffset,
-		arg.QueryLimit,
-	)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []*GetAuditLogsForUserRow{}
-	for rows.Next() {
-		var i GetAuditLogsForUserRow
-		if err := rows.Scan(
-			&i.ID,
-			&i.ResourceType,
-			&i.RelevantID,
-			&i.EventType,
-			&i.Changes,
-			&i.BelongsToUser,
-			&i.BelongsToHousehold,
-			&i.CreatedAt,
-			&i.FilteredCount,
-			&i.TotalCount,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, &i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getAuditLogsForUserAndResourceType = `-- name: GetAuditLogsForUserAndResourceType :many
-
-SELECT
-	audit_log.id,
-	audit_log.resource_type,
-	audit_log.relevant_id,
-	audit_log.event_type,
-	audit_log.changes,
-	audit_log.belongs_to_user,
-	audit_log.belongs_to_household,
-	audit_log.created_at,
-	(
-		SELECT COUNT(audit_log.id)
-		FROM audit_log
-		WHERE audit_log.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-			AND audit_log.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
-			AND audit_log.belongs_to_user = $3
-			AND audit_log.resource_type = $4
-	) AS filtered_count,
-	(
-		SELECT COUNT(audit_log.id)
-		FROM audit_log
-		WHERE
-			audit_log.belongs_to_user = $3
-			AND audit_log.resource_type = $4
-	) AS total_count
-FROM audit_log
-WHERE audit_log.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-	AND audit_log.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
-	AND audit_log.belongs_to_user = $3
-	AND audit_log.resource_type = $4
-LIMIT $6
-OFFSET $5
-`
-
-type GetAuditLogsForUserAndResourceTypeParams struct {
-	CreatedAfter  sql.NullTime
-	CreatedBefore sql.NullTime
-	BelongsToUser string
-	ResourceType  string
-	QueryOffset   sql.NullInt32
-	QueryLimit    sql.NullInt32
-}
-
-type GetAuditLogsForUserAndResourceTypeRow struct {
-	CreatedAt          time.Time
-	ID                 string
-	ResourceType       string
-	RelevantID         string
-	EventType          AuditLogEventType
-	BelongsToUser      string
-	Changes            json.RawMessage
-	BelongsToHousehold sql.NullString
-	FilteredCount      int64
-	TotalCount         int64
-}
-
-func (q *Queries) GetAuditLogsForUserAndResourceType(ctx context.Context, db DBTX, arg *GetAuditLogsForUserAndResourceTypeParams) ([]*GetAuditLogsForUserAndResourceTypeRow, error) {
-	rows, err := db.QueryContext(ctx, getAuditLogsForUserAndResourceType,
-		arg.CreatedAfter,
-		arg.CreatedBefore,
-		arg.BelongsToUser,
-		arg.ResourceType,
-		arg.QueryOffset,
-		arg.QueryLimit,
-	)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []*GetAuditLogsForUserAndResourceTypeRow{}
-	for rows.Next() {
-		var i GetAuditLogsForUserAndResourceTypeRow
-		if err := rows.Scan(
-			&i.ID,
-			&i.ResourceType,
-			&i.RelevantID,
-			&i.EventType,
-			&i.Changes,
-			&i.BelongsToUser,
-			&i.BelongsToHousehold,
-			&i.CreatedAt,
-			&i.FilteredCount,
-			&i.TotalCount,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, &i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
 }

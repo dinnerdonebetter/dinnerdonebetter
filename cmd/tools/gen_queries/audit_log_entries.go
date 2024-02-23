@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	auditLogsTableName = "audit_log"
+	auditLogsTableName = "audit_log_entries"
 	resourceTypeColumn = "resource_type"
 	eventTypeColumn    = "event_type"
 )
@@ -26,7 +26,7 @@ var (
 	}
 )
 
-func buildAuditLogQueries() []*Query {
+func buildAuditLogEntryQueries() []*Query {
 	insertColumns := filterForInsert(auditLogsColumns)
 	fullSelectColumns := applyToEach(auditLogsColumns, func(_ int, s string) string {
 		return fullColumnName(auditLogsTableName, s)
@@ -35,7 +35,7 @@ func buildAuditLogQueries() []*Query {
 	return []*Query{
 		{
 			Annotation: QueryAnnotation{
-				Name: "CreateAuditLog",
+				Name: "CreateAuditLogEntry",
 				Type: ExecType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
@@ -52,7 +52,7 @@ func buildAuditLogQueries() []*Query {
 		},
 		{
 			Annotation: QueryAnnotation{
-				Name: "GetAuditLog",
+				Name: "GetAuditLogEntry",
 				Type: OneType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT 
@@ -71,7 +71,7 @@ WHERE %s.%s = sqlc.arg(%s);`,
 		},
 		{
 			Annotation: QueryAnnotation{
-				Name: "GetAuditLogsForUser",
+				Name: "GetAuditLogEntriesForUser",
 				Type: ManyType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
@@ -104,7 +104,7 @@ WHERE %s
 		},
 		{
 			Annotation: QueryAnnotation{
-				Name: "GetAuditLogsForUserAndResourceType",
+				Name: "GetAuditLogEntriesForUserAndResourceType",
 				Type: ManyType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
@@ -140,7 +140,7 @@ WHERE %s
 		},
 		{
 			Annotation: QueryAnnotation{
-				Name: "GetAuditLogsForHousehold",
+				Name: "GetAuditLogEntriesForHousehold",
 				Type: ManyType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
@@ -173,7 +173,7 @@ WHERE %s
 		},
 		{
 			Annotation: QueryAnnotation{
-				Name: "GetAuditLogsForHouseholdAndResourceType",
+				Name: "GetAuditLogEntriesForHouseholdAndResourceType",
 				Type: ManyType,
 			},
 			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT

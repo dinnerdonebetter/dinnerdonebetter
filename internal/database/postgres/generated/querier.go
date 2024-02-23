@@ -97,7 +97,7 @@ type Querier interface {
 	CheckValidVesselExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckValidityOfValidIngredientStateIngredientPair(ctx context.Context, db DBTX, arg *CheckValidityOfValidIngredientStateIngredientPairParams) (bool, error)
 	CheckWebhookExistence(ctx context.Context, db DBTX, arg *CheckWebhookExistenceParams) (bool, error)
-	CreateAuditLog(ctx context.Context, db DBTX, arg *CreateAuditLogParams) error
+	CreateAuditLogEntry(ctx context.Context, db DBTX, arg *CreateAuditLogEntryParams) error
 	CreateHousehold(ctx context.Context, db DBTX, arg *CreateHouseholdParams) error
 	CreateHouseholdInstrumentOwnership(ctx context.Context, db DBTX, arg *CreateHouseholdInstrumentOwnershipParams) error
 	CreateHouseholdInvitation(ctx context.Context, db DBTX, arg *CreateHouseholdInvitationParams) error
@@ -156,11 +156,11 @@ type Querier interface {
 	GetAllRecipeStepIngredientsForRecipe(ctx context.Context, db DBTX, recipeID string) ([]*GetAllRecipeStepIngredientsForRecipeRow, error)
 	GetAllValidMeasurementUnitConversionsFromMeasurementUnit(ctx context.Context, db DBTX, id string) ([]*GetAllValidMeasurementUnitConversionsFromMeasurementUnitRow, error)
 	GetAllValidMeasurementUnitConversionsToMeasurementUnit(ctx context.Context, db DBTX, id string) ([]*GetAllValidMeasurementUnitConversionsToMeasurementUnitRow, error)
-	GetAuditLog(ctx context.Context, db DBTX, id string) (*GetAuditLogRow, error)
-	GetAuditLogsForHousehold(ctx context.Context, db DBTX, arg *GetAuditLogsForHouseholdParams) ([]*GetAuditLogsForHouseholdRow, error)
-	GetAuditLogsForHouseholdAndResourceType(ctx context.Context, db DBTX, arg *GetAuditLogsForHouseholdAndResourceTypeParams) ([]*GetAuditLogsForHouseholdAndResourceTypeRow, error)
-	GetAuditLogsForUser(ctx context.Context, db DBTX, arg *GetAuditLogsForUserParams) ([]*GetAuditLogsForUserRow, error)
-	GetAuditLogsForUserAndResourceType(ctx context.Context, db DBTX, arg *GetAuditLogsForUserAndResourceTypeParams) ([]*GetAuditLogsForUserAndResourceTypeRow, error)
+	GetAuditLogEntriesForHousehold(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForHouseholdParams) ([]*GetAuditLogEntriesForHouseholdRow, error)
+	GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForHouseholdAndResourceTypeParams) ([]*GetAuditLogEntriesForHouseholdAndResourceTypeRow, error)
+	GetAuditLogEntriesForUser(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForUserParams) ([]*GetAuditLogEntriesForUserRow, error)
+	GetAuditLogEntriesForUserAndResourceType(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForUserAndResourceTypeParams) ([]*GetAuditLogEntriesForUserAndResourceTypeRow, error)
+	GetAuditLogEntry(ctx context.Context, db DBTX, id string) (*GetAuditLogEntryRow, error)
 	GetDefaultHouseholdIDForUser(ctx context.Context, db DBTX, belongsToUser string) (string, error)
 	GetEmailVerificationTokenByUserID(ctx context.Context, db DBTX, id string) (sql.NullString, error)
 	GetExpiredAndUnresolvedMealPlans(ctx context.Context, db DBTX) ([]*GetExpiredAndUnresolvedMealPlansRow, error)

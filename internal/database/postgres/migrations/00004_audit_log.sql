@@ -5,7 +5,7 @@ CREATE TYPE audit_log_event_type AS ENUM (
     'archived'
 );
 
-CREATE TABLE IF NOT EXISTS audit_log (
+CREATE TABLE IF NOT EXISTS audit_log_entries (
     id TEXT NOT NULL PRIMARY KEY,
     resource_type TEXT NOT NULL,
     relevant_id TEXT NOT NULL,

@@ -70,7 +70,7 @@ func main() {
 		"recipe_step_vessels.sql":                          buildRecipeStepVesselsQueries(),
 		"user_ingredient_preferences.sql":                  buildUserIngredientPreferencesQueries(),
 		"meal_plan_grocery_list_items.sql":                 buildMealPlanGroceryListItemsQueries(),
-		"audit_logs.sql":                                   buildAuditLogQueries(),
+		"audit_logs.sql":                                   buildAuditLogEntryQueries(),
 	}
 
 	checkOnly := *checkOnlyFlag
