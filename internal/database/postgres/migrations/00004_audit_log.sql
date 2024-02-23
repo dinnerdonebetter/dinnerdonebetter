@@ -1,0 +1,17 @@
+CREATE TYPE audit_log_event_type AS ENUM (
+    'other',
+    'created',
+    'updated',
+    'archived'
+);
+
+CREATE TABLE IF NOT EXISTS audit_log (
+    id TEXT NOT NULL PRIMARY KEY,
+    resource_type TEXT NOT NULL,
+    relevant_id TEXT NOT NULL,
+    event_type audit_log_event_type NOT NULL DEFAULT 'other',
+    changes JSONB NOT NULL,
+    belongs_to_household TEXT REFERENCES households("id") ON DELETE CASCADE,
+    belongs_to_user TEXT NOT NULL REFERENCES users("id") ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
+);

@@ -64,5 +64,10 @@ var (
 			Description: "user notifications table",
 			Script:      fetchMigration("00003_user_notifications"),
 		},
+		{
+			Version:     4,
+			Description: "audit log table",
+			Script:      fetchMigration("00004_audit_log"),
+		},
 	}
 )
