@@ -40,16 +40,16 @@ func (q *Querier) GetAuditLogEntry(ctx context.Context, auditLogEntryID, househo
 	}
 
 	auditLogEntry := &types.AuditLogEntry{
-		CreatedAt:          result.AuditLogCreatedAt,
-		BelongsToHousehold: stringPointerFromNullString(result.AuditLogBelongsToHousehold),
-		ID:                 result.AuditLogID,
-		ResourceType:       result.AuditLogResourceType,
-		RelevantID:         result.AuditLogRelevantID,
-		EventType:          types.AuditLogEventType(result.AuditLogEventType),
-		BelongsToUser:      result.AuditLogBelongsToUser,
+		CreatedAt:          result.CreatedAt,
+		BelongsToHousehold: stringPointerFromNullString(result.BelongsToHousehold),
+		ID:                 result.ID,
+		ResourceType:       result.ResourceType,
+		RelevantID:         result.RelevantID,
+		EventType:          types.AuditLogEntryEventType(result.EventType),
+		BelongsToUser:      result.BelongsToUser,
 	}
 
-	if err = json.Unmarshal(result.AuditLogChanges, &auditLogEntry.Changes); err != nil {
+	if err = json.Unmarshal(result.Changes, &auditLogEntry.Changes); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "parsing audit log entry JSON data")
 	}
 
@@ -96,7 +96,7 @@ func (q *Querier) GetAuditLogEntriesForUser(ctx context.Context, userID string, 
 			ID:                 result.ID,
 			ResourceType:       result.ResourceType,
 			RelevantID:         result.RelevantID,
-			EventType:          types.AuditLogEventType(result.EventType),
+			EventType:          types.AuditLogEntryEventType(result.EventType),
 			BelongsToUser:      result.BelongsToUser,
 		}
 
@@ -159,7 +159,7 @@ func (q *Querier) GetAuditLogEntriesForUserAndResourceType(ctx context.Context, 
 			ID:                 result.ID,
 			ResourceType:       result.ResourceType,
 			RelevantID:         result.RelevantID,
-			EventType:          types.AuditLogEventType(result.EventType),
+			EventType:          types.AuditLogEntryEventType(result.EventType),
 			BelongsToUser:      result.BelongsToUser,
 		}
 
@@ -215,7 +215,7 @@ func (q *Querier) GetAuditLogEntriesForHousehold(ctx context.Context, householdI
 			ID:                 result.ID,
 			ResourceType:       result.ResourceType,
 			RelevantID:         result.RelevantID,
-			EventType:          types.AuditLogEventType(result.EventType),
+			EventType:          types.AuditLogEntryEventType(result.EventType),
 			BelongsToUser:      result.BelongsToUser,
 		}
 
@@ -278,7 +278,7 @@ func (q *Querier) GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Cont
 			ID:                 result.ID,
 			ResourceType:       result.ResourceType,
 			RelevantID:         result.RelevantID,
-			EventType:          types.AuditLogEventType(result.EventType),
+			EventType:          types.AuditLogEntryEventType(result.EventType),
 			BelongsToUser:      result.BelongsToUser,
 		}
 

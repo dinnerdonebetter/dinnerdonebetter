@@ -14,7 +14,7 @@ const (
 )
 
 type (
-	AuditLogEventType string
+	AuditLogEntryEventType string
 
 	ChangeLog struct {
 		OldValue string `json:"oldValue"`
@@ -24,26 +24,26 @@ type (
 	AuditLogEntry struct {
 		_ struct{} `json:"-"`
 
-		CreatedAt          time.Time            `json:"createdAt"`
-		Changes            map[string]ChangeLog `json:"changes"`
-		BelongsToHousehold *string              `json:"belongsToHousehold"`
-		ID                 string               `json:"id"`
-		ResourceType       string               `json:"resourceType"`
-		RelevantID         string               `json:"relevantID"`
-		EventType          AuditLogEventType    `json:"eventType"`
-		BelongsToUser      string               `json:"belongsToUser"`
+		CreatedAt          time.Time              `json:"createdAt"`
+		Changes            map[string]ChangeLog   `json:"changes"`
+		BelongsToHousehold *string                `json:"belongsToHousehold"`
+		ID                 string                 `json:"id"`
+		ResourceType       string                 `json:"resourceType"`
+		RelevantID         string                 `json:"relevantID"`
+		EventType          AuditLogEntryEventType `json:"eventType"`
+		BelongsToUser      string                 `json:"belongsToUser"`
 	}
 
 	AuditLogEntryDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
 
-		Changes            map[string]ChangeLog `json:"changes"`
-		BelongsToHousehold *string              `json:"belongsToHousehold"`
-		ID                 string               `json:"id"`
-		ResourceType       string               `json:"resourceType"`
-		RelevantID         string               `json:"relevantID"`
-		EventType          AuditLogEventType    `json:"eventType"`
-		BelongsToUser      string               `json:"belongsToUser"`
+		Changes            map[string]ChangeLog   `json:"changes"`
+		BelongsToHousehold *string                `json:"belongsToHousehold"`
+		ID                 string                 `json:"id"`
+		ResourceType       string                 `json:"resourceType"`
+		RelevantID         string                 `json:"relevantID"`
+		EventType          AuditLogEntryEventType `json:"eventType"`
+		BelongsToUser      string                 `json:"belongsToUser"`
 	}
 
 	// AuditLogEntryDataManager describes a structure capable of storing audit log entries.

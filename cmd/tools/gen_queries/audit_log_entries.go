@@ -59,12 +59,7 @@ func buildAuditLogEntryQueries() []*Query {
 	%s
 FROM %s
 WHERE %s.%s = sqlc.arg(%s);`,
-				strings.Join(applyToEach(fullSelectColumns, func(_ int, s string) string {
-					parts := strings.Split(s, ".")
-					return fmt.Sprintf("%s as %s_%s",
-						s, strings.TrimSuffix(parts[0], "s"), parts[1],
-					)
-				}), ",\n\t"),
+				strings.Join(fullSelectColumns, ",\n\t"),
 				auditLogsTableName,
 				auditLogsTableName, idColumn, idColumn,
 			)),

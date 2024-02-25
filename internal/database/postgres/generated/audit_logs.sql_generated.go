@@ -14,7 +14,7 @@ import (
 
 const createAuditLogEntry = `-- name: CreateAuditLogEntry :exec
 
-INSERT INTO audit_log (
+INSERT INTO audit_log_entries (
 	id,
 	resource_type,
 	relevant_id,
@@ -59,31 +59,31 @@ func (q *Queries) CreateAuditLogEntry(ctx context.Context, db DBTX, arg *CreateA
 const getAuditLogEntriesForHousehold = `-- name: GetAuditLogEntriesForHousehold :many
 
 SELECT
-	audit_log.id,
-	audit_log.resource_type,
-	audit_log.relevant_id,
-	audit_log.event_type,
-	audit_log.changes,
-	audit_log.belongs_to_user,
-	audit_log.belongs_to_household,
-	audit_log.created_at,
+	audit_log_entries.id,
+	audit_log_entries.resource_type,
+	audit_log_entries.relevant_id,
+	audit_log_entries.event_type,
+	audit_log_entries.changes,
+	audit_log_entries.belongs_to_user,
+	audit_log_entries.belongs_to_household,
+	audit_log_entries.created_at,
 	(
-		SELECT COUNT(audit_log.id)
-		FROM audit_log
-		WHERE audit_log.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-			AND audit_log.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
-			AND audit_log.belongs_to_household = $3
+		SELECT COUNT(audit_log_entries.id)
+		FROM audit_log_entries
+		WHERE audit_log_entries.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND audit_log_entries.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND audit_log_entries.belongs_to_household = $3
 	) AS filtered_count,
 	(
-		SELECT COUNT(audit_log.id)
-		FROM audit_log
+		SELECT COUNT(audit_log_entries.id)
+		FROM audit_log_entries
 		WHERE
-			audit_log.belongs_to_household = $3
+			audit_log_entries.belongs_to_household = $3
 	) AS total_count
-FROM audit_log
-WHERE audit_log.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-	AND audit_log.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
-	AND audit_log.belongs_to_household = $3
+FROM audit_log_entries
+WHERE audit_log_entries.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND audit_log_entries.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND audit_log_entries.belongs_to_household = $3
 LIMIT $5
 OFFSET $4
 `
@@ -152,34 +152,34 @@ func (q *Queries) GetAuditLogEntriesForHousehold(ctx context.Context, db DBTX, a
 const getAuditLogEntriesForHouseholdAndResourceType = `-- name: GetAuditLogEntriesForHouseholdAndResourceType :many
 
 SELECT
-	audit_log.id,
-	audit_log.resource_type,
-	audit_log.relevant_id,
-	audit_log.event_type,
-	audit_log.changes,
-	audit_log.belongs_to_user,
-	audit_log.belongs_to_household,
-	audit_log.created_at,
+	audit_log_entries.id,
+	audit_log_entries.resource_type,
+	audit_log_entries.relevant_id,
+	audit_log_entries.event_type,
+	audit_log_entries.changes,
+	audit_log_entries.belongs_to_user,
+	audit_log_entries.belongs_to_household,
+	audit_log_entries.created_at,
 	(
-		SELECT COUNT(audit_log.id)
-		FROM audit_log
-		WHERE audit_log.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-			AND audit_log.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
-			AND audit_log.belongs_to_household = $3
-			AND audit_log.resource_type = $4
+		SELECT COUNT(audit_log_entries.id)
+		FROM audit_log_entries
+		WHERE audit_log_entries.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND audit_log_entries.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND audit_log_entries.belongs_to_household = $3
+			AND audit_log_entries.resource_type = $4
 	) AS filtered_count,
 	(
-		SELECT COUNT(audit_log.id)
-		FROM audit_log
+		SELECT COUNT(audit_log_entries.id)
+		FROM audit_log_entries
 		WHERE
-			audit_log.belongs_to_household = $3
-			AND audit_log.resource_type = $4
+			audit_log_entries.belongs_to_household = $3
+			AND audit_log_entries.resource_type = $4
 	) AS total_count
-FROM audit_log
-WHERE audit_log.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-	AND audit_log.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
-	AND audit_log.belongs_to_household = $3
-	AND audit_log.resource_type = $4
+FROM audit_log_entries
+WHERE audit_log_entries.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND audit_log_entries.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND audit_log_entries.belongs_to_household = $3
+	AND audit_log_entries.resource_type = $4
 LIMIT $6
 OFFSET $5
 `
@@ -250,31 +250,31 @@ func (q *Queries) GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Cont
 const getAuditLogEntriesForUser = `-- name: GetAuditLogEntriesForUser :many
 
 SELECT
-	audit_log.id,
-	audit_log.resource_type,
-	audit_log.relevant_id,
-	audit_log.event_type,
-	audit_log.changes,
-	audit_log.belongs_to_user,
-	audit_log.belongs_to_household,
-	audit_log.created_at,
+	audit_log_entries.id,
+	audit_log_entries.resource_type,
+	audit_log_entries.relevant_id,
+	audit_log_entries.event_type,
+	audit_log_entries.changes,
+	audit_log_entries.belongs_to_user,
+	audit_log_entries.belongs_to_household,
+	audit_log_entries.created_at,
 	(
-		SELECT COUNT(audit_log.id)
-		FROM audit_log
-		WHERE audit_log.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-			AND audit_log.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
-			AND audit_log.belongs_to_user = $3
+		SELECT COUNT(audit_log_entries.id)
+		FROM audit_log_entries
+		WHERE audit_log_entries.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND audit_log_entries.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND audit_log_entries.belongs_to_user = $3
 	) AS filtered_count,
 	(
-		SELECT COUNT(audit_log.id)
-		FROM audit_log
+		SELECT COUNT(audit_log_entries.id)
+		FROM audit_log_entries
 		WHERE
-			audit_log.belongs_to_user = $3
+			audit_log_entries.belongs_to_user = $3
 	) AS total_count
-FROM audit_log
-WHERE audit_log.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-	AND audit_log.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
-	AND audit_log.belongs_to_user = $3
+FROM audit_log_entries
+WHERE audit_log_entries.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND audit_log_entries.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND audit_log_entries.belongs_to_user = $3
 LIMIT $5
 OFFSET $4
 `
@@ -343,34 +343,34 @@ func (q *Queries) GetAuditLogEntriesForUser(ctx context.Context, db DBTX, arg *G
 const getAuditLogEntriesForUserAndResourceType = `-- name: GetAuditLogEntriesForUserAndResourceType :many
 
 SELECT
-	audit_log.id,
-	audit_log.resource_type,
-	audit_log.relevant_id,
-	audit_log.event_type,
-	audit_log.changes,
-	audit_log.belongs_to_user,
-	audit_log.belongs_to_household,
-	audit_log.created_at,
+	audit_log_entries.id,
+	audit_log_entries.resource_type,
+	audit_log_entries.relevant_id,
+	audit_log_entries.event_type,
+	audit_log_entries.changes,
+	audit_log_entries.belongs_to_user,
+	audit_log_entries.belongs_to_household,
+	audit_log_entries.created_at,
 	(
-		SELECT COUNT(audit_log.id)
-		FROM audit_log
-		WHERE audit_log.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-			AND audit_log.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
-			AND audit_log.belongs_to_user = $3
-			AND audit_log.resource_type = $4
+		SELECT COUNT(audit_log_entries.id)
+		FROM audit_log_entries
+		WHERE audit_log_entries.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+			AND audit_log_entries.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+			AND audit_log_entries.belongs_to_user = $3
+			AND audit_log_entries.resource_type = $4
 	) AS filtered_count,
 	(
-		SELECT COUNT(audit_log.id)
-		FROM audit_log
+		SELECT COUNT(audit_log_entries.id)
+		FROM audit_log_entries
 		WHERE
-			audit_log.belongs_to_user = $3
-			AND audit_log.resource_type = $4
+			audit_log_entries.belongs_to_user = $3
+			AND audit_log_entries.resource_type = $4
 	) AS total_count
-FROM audit_log
-WHERE audit_log.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
-	AND audit_log.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
-	AND audit_log.belongs_to_user = $3
-	AND audit_log.resource_type = $4
+FROM audit_log_entries
+WHERE audit_log_entries.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
+	AND audit_log_entries.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
+	AND audit_log_entries.belongs_to_user = $3
+	AND audit_log_entries.resource_type = $4
 LIMIT $6
 OFFSET $5
 `
@@ -441,41 +441,41 @@ func (q *Queries) GetAuditLogEntriesForUserAndResourceType(ctx context.Context, 
 const getAuditLogEntry = `-- name: GetAuditLogEntry :one
 
 SELECT
-	audit_log.id as audit_log_id,
-	audit_log.resource_type as audit_log_resource_type,
-	audit_log.relevant_id as audit_log_relevant_id,
-	audit_log.event_type as audit_log_event_type,
-	audit_log.changes as audit_log_changes,
-	audit_log.belongs_to_user as audit_log_belongs_to_user,
-	audit_log.belongs_to_household as audit_log_belongs_to_household,
-	audit_log.created_at as audit_log_created_at
-FROM audit_log
-WHERE audit_log.id = $1
+	audit_log_entries.id,
+	audit_log_entries.resource_type,
+	audit_log_entries.relevant_id,
+	audit_log_entries.event_type,
+	audit_log_entries.changes,
+	audit_log_entries.belongs_to_user,
+	audit_log_entries.belongs_to_household,
+	audit_log_entries.created_at
+FROM audit_log_entries
+WHERE audit_log_entries.id = $1
 `
 
 type GetAuditLogEntryRow struct {
-	AuditLogCreatedAt          time.Time
-	AuditLogID                 string
-	AuditLogResourceType       string
-	AuditLogRelevantID         string
-	AuditLogEventType          AuditLogEventType
-	AuditLogBelongsToUser      string
-	AuditLogChanges            json.RawMessage
-	AuditLogBelongsToHousehold sql.NullString
+	CreatedAt          time.Time
+	ID                 string
+	ResourceType       string
+	RelevantID         string
+	EventType          AuditLogEventType
+	BelongsToUser      string
+	Changes            json.RawMessage
+	BelongsToHousehold sql.NullString
 }
 
 func (q *Queries) GetAuditLogEntry(ctx context.Context, db DBTX, id string) (*GetAuditLogEntryRow, error) {
 	row := db.QueryRowContext(ctx, getAuditLogEntry, id)
 	var i GetAuditLogEntryRow
 	err := row.Scan(
-		&i.AuditLogID,
-		&i.AuditLogResourceType,
-		&i.AuditLogRelevantID,
-		&i.AuditLogEventType,
-		&i.AuditLogChanges,
-		&i.AuditLogBelongsToUser,
-		&i.AuditLogBelongsToHousehold,
-		&i.AuditLogCreatedAt,
+		&i.ID,
+		&i.ResourceType,
+		&i.RelevantID,
+		&i.EventType,
+		&i.Changes,
+		&i.BelongsToUser,
+		&i.BelongsToHousehold,
+		&i.CreatedAt,
 	)
 	return &i, err
 }
