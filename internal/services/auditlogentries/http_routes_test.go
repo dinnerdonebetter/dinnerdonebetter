@@ -138,76 +138,7 @@ func TestAuditLogEntriesService_ListUserAuditLogEntriesHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, auditLogEntryDataManager)
 	})
 
-	T.Run("with error retrieving session context data", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
-
-		helper.service.ListUserAuditLogEntriesHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.AuditLogEntry]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
-		assert.Error(t, actual.Error)
-	})
-
-	T.Run("with no rows returned", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		auditLogEntryDataManager := &mocktypes.AuditLogEntryDataManagerMock{}
-		auditLogEntryDataManager.On(
-			"GetAuditLogEntriesForUser",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.AuditLogEntry])(nil), sql.ErrNoRows)
-		helper.service.auditLogEntryDataManager = auditLogEntryDataManager
-
-		helper.service.ListUserAuditLogEntriesHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[[]*types.AuditLogEntry]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
-		assert.NoError(t, actual.Error.AsError())
-
-		mock.AssertExpectationsForObjects(t, auditLogEntryDataManager)
-	})
-
-	T.Run("with error retrieving audit log entries from database", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		auditLogEntryDataManager := &mocktypes.AuditLogEntryDataManagerMock{}
-		auditLogEntryDataManager.On(
-			"GetAuditLogEntriesForUser",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.AuditLogEntry])(nil), errors.New("blah"))
-		helper.service.auditLogEntryDataManager = auditLogEntryDataManager
-
-		helper.service.ListUserAuditLogEntriesHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.AuditLogEntry]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
-		assert.Error(t, actual.Error)
-
-		mock.AssertExpectationsForObjects(t, auditLogEntryDataManager)
-	})
-}
-
-func TestAuditLogEntriesService_ListUserAuditLogEntriesForResourceTypeHandler(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
+	T.Run("with specified resource type", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
@@ -224,7 +155,11 @@ func TestAuditLogEntriesService_ListUserAuditLogEntriesForResourceTypeHandler(T 
 		).Return(exampleAuditLogEntryList, nil)
 		helper.service.auditLogEntryDataManager = auditLogEntryDataManager
 
-		helper.service.ListUserAuditLogEntriesForResourceTypeHandler(helper.res, helper.req)
+		q := helper.req.URL.Query()
+		q.Set(AuditLogEntryResourceTypeURIPathKey, helper.exampleAuditLogEntry.ResourceType)
+		helper.req.URL.RawQuery = q.Encode()
+
+		helper.service.ListUserAuditLogEntriesHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.AuditLogEntry]
@@ -242,7 +177,7 @@ func TestAuditLogEntriesService_ListUserAuditLogEntriesForResourceTypeHandler(T 
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ListUserAuditLogEntriesForResourceTypeHandler(helper.res, helper.req)
+		helper.service.ListUserAuditLogEntriesHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.AuditLogEntry]
@@ -258,15 +193,14 @@ func TestAuditLogEntriesService_ListUserAuditLogEntriesForResourceTypeHandler(T 
 
 		auditLogEntryDataManager := &mocktypes.AuditLogEntryDataManagerMock{}
 		auditLogEntryDataManager.On(
-			"GetAuditLogEntriesForUserAndResourceType",
+			"GetAuditLogEntriesForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			helper.exampleAuditLogEntry.ResourceType,
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.QueryFilteredResult[types.AuditLogEntry])(nil), sql.ErrNoRows)
 		helper.service.auditLogEntryDataManager = auditLogEntryDataManager
 
-		helper.service.ListUserAuditLogEntriesForResourceTypeHandler(helper.res, helper.req)
+		helper.service.ListUserAuditLogEntriesHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.AuditLogEntry]
@@ -284,15 +218,14 @@ func TestAuditLogEntriesService_ListUserAuditLogEntriesForResourceTypeHandler(T 
 
 		auditLogEntryDataManager := &mocktypes.AuditLogEntryDataManagerMock{}
 		auditLogEntryDataManager.On(
-			"GetAuditLogEntriesForUserAndResourceType",
+			"GetAuditLogEntriesForUser",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			helper.exampleAuditLogEntry.ResourceType,
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.QueryFilteredResult[types.AuditLogEntry])(nil), errors.New("blah"))
 		helper.service.auditLogEntryDataManager = auditLogEntryDataManager
 
-		helper.service.ListUserAuditLogEntriesForResourceTypeHandler(helper.res, helper.req)
+		helper.service.ListUserAuditLogEntriesHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.AuditLogEntry]
@@ -335,76 +268,7 @@ func TestAuditLogEntriesService_ListHouseholdAuditLogEntriesHandler(T *testing.T
 		mock.AssertExpectationsForObjects(t, auditLogEntryDataManager)
 	})
 
-	T.Run("with error retrieving session context data", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
-
-		helper.service.ListHouseholdAuditLogEntriesHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
-		var actual *types.APIResponse[*types.AuditLogEntry]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
-		assert.Error(t, actual.Error)
-	})
-
-	T.Run("with no rows returned", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		auditLogEntryDataManager := &mocktypes.AuditLogEntryDataManagerMock{}
-		auditLogEntryDataManager.On(
-			"GetAuditLogEntriesForHousehold",
-			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.AuditLogEntry])(nil), sql.ErrNoRows)
-		helper.service.auditLogEntryDataManager = auditLogEntryDataManager
-
-		helper.service.ListHouseholdAuditLogEntriesHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusOK, helper.res.Code)
-		var actual *types.APIResponse[[]*types.AuditLogEntry]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
-		assert.NoError(t, actual.Error.AsError())
-
-		mock.AssertExpectationsForObjects(t, auditLogEntryDataManager)
-	})
-
-	T.Run("with error retrieving audit log entries from database", func(t *testing.T) {
-		t.Parallel()
-
-		helper := buildTestHelper(t)
-
-		auditLogEntryDataManager := &mocktypes.AuditLogEntryDataManagerMock{}
-		auditLogEntryDataManager.On(
-			"GetAuditLogEntriesForHousehold",
-			testutils.ContextMatcher,
-			helper.exampleHousehold.ID,
-			mock.IsType(&types.QueryFilter{}),
-		).Return((*types.QueryFilteredResult[types.AuditLogEntry])(nil), errors.New("blah"))
-		helper.service.auditLogEntryDataManager = auditLogEntryDataManager
-
-		helper.service.ListHouseholdAuditLogEntriesHandler(helper.res, helper.req)
-
-		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
-		var actual *types.APIResponse[*types.AuditLogEntry]
-		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
-		assert.Empty(t, actual.Data)
-		assert.Error(t, actual.Error)
-
-		mock.AssertExpectationsForObjects(t, auditLogEntryDataManager)
-	})
-}
-
-func TestAuditLogEntriesService_ListHouseholdAuditLogEntriesForResourceTypeHandler(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
+	T.Run("with specified resource type", func(t *testing.T) {
 		t.Parallel()
 
 		helper := buildTestHelper(t)
@@ -421,7 +285,11 @@ func TestAuditLogEntriesService_ListHouseholdAuditLogEntriesForResourceTypeHandl
 		).Return(exampleAuditLogEntryList, nil)
 		helper.service.auditLogEntryDataManager = auditLogEntryDataManager
 
-		helper.service.ListHouseholdAuditLogEntriesForResourceTypeHandler(helper.res, helper.req)
+		q := helper.req.URL.Query()
+		q.Set(AuditLogEntryResourceTypeURIPathKey, helper.exampleAuditLogEntry.ResourceType)
+		helper.req.URL.RawQuery = q.Encode()
+
+		helper.service.ListHouseholdAuditLogEntriesHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.AuditLogEntry]
@@ -439,7 +307,7 @@ func TestAuditLogEntriesService_ListHouseholdAuditLogEntriesForResourceTypeHandl
 		helper := buildTestHelper(t)
 		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
 
-		helper.service.ListHouseholdAuditLogEntriesForResourceTypeHandler(helper.res, helper.req)
+		helper.service.ListHouseholdAuditLogEntriesHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
 		var actual *types.APIResponse[*types.AuditLogEntry]
@@ -455,15 +323,14 @@ func TestAuditLogEntriesService_ListHouseholdAuditLogEntriesForResourceTypeHandl
 
 		auditLogEntryDataManager := &mocktypes.AuditLogEntryDataManagerMock{}
 		auditLogEntryDataManager.On(
-			"GetAuditLogEntriesForHouseholdAndResourceType",
+			"GetAuditLogEntriesForHousehold",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
-			helper.exampleAuditLogEntry.ResourceType,
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.QueryFilteredResult[types.AuditLogEntry])(nil), sql.ErrNoRows)
 		helper.service.auditLogEntryDataManager = auditLogEntryDataManager
 
-		helper.service.ListHouseholdAuditLogEntriesForResourceTypeHandler(helper.res, helper.req)
+		helper.service.ListHouseholdAuditLogEntriesHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusOK, helper.res.Code)
 		var actual *types.APIResponse[[]*types.AuditLogEntry]
@@ -481,15 +348,14 @@ func TestAuditLogEntriesService_ListHouseholdAuditLogEntriesForResourceTypeHandl
 
 		auditLogEntryDataManager := &mocktypes.AuditLogEntryDataManagerMock{}
 		auditLogEntryDataManager.On(
-			"GetAuditLogEntriesForHouseholdAndResourceType",
+			"GetAuditLogEntriesForHousehold",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
-			helper.exampleAuditLogEntry.ResourceType,
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.QueryFilteredResult[types.AuditLogEntry])(nil), errors.New("blah"))
 		helper.service.auditLogEntryDataManager = auditLogEntryDataManager
 
-		helper.service.ListHouseholdAuditLogEntriesForResourceTypeHandler(helper.res, helper.req)
+		helper.service.ListHouseholdAuditLogEntriesHandler(helper.res, helper.req)
 
 		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
 		var actual *types.APIResponse[*types.AuditLogEntry]

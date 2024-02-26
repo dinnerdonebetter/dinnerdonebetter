@@ -41,10 +41,6 @@ func TestProvideAuditLogEntriesService(T *testing.T) {
 			"BuildRouteParamStringIDFetcher",
 			AuditLogEntryIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
-		rpm.On(
-			"BuildRouteParamStringIDFetcher",
-			AuditLogEntryResourceTypeURIParamKey,
-		).Return(func(*http.Request) string { return "" })
 		cfg := &Config{}
 
 		s, err := ProvideService(

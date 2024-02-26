@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	auditlogentriesservice "github.com/dinnerdonebetter/backend/internal/services/auditlogentries"
 	"log"
 	"os"
 	"path/filepath"
@@ -250,6 +251,7 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 			},
 		},
 		Services: config.ServicesConfig{
+			AuditLogEntries: auditlogentriesservice.Config{},
 			Auth: authservice.Config{
 				OAuth2: authservice.OAuth2Config{
 					Domain:               "https://dinnerdonebetter.dev",
@@ -388,6 +390,7 @@ func buildDevConfig() *config.InstanceConfig {
 			Tracing: localTracingConfig,
 		},
 		Services: config.ServicesConfig{
+			AuditLogEntries: auditlogentriesservice.Config{},
 			Auth: authservice.Config{
 				OAuth2: authservice.OAuth2Config{
 					Domain:               "http://localhost:9000",
@@ -631,6 +634,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			Tracing: localTracingConfig,
 		},
 		Services: config.ServicesConfig{
+			AuditLogEntries: auditlogentriesservice.Config{},
 			Auth: authservice.Config{
 				OAuth2: authservice.OAuth2Config{
 					Domain:               "http://localhost:9000",

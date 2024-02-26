@@ -60,8 +60,6 @@ type (
 	AuditLogEntryDataService interface {
 		ReadAuditLogEntryHandler(http.ResponseWriter, *http.Request)
 		ListUserAuditLogEntriesHandler(http.ResponseWriter, *http.Request)
-		ListUserAuditLogEntriesForResourceTypeHandler(http.ResponseWriter, *http.Request)
 		ListHouseholdAuditLogEntriesHandler(http.ResponseWriter, *http.Request)
-		ListHouseholdAuditLogEntriesForResourceTypeHandler(http.ResponseWriter, *http.Request)
 	}
 )

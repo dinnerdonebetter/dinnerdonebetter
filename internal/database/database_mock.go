@@ -59,6 +59,7 @@ func NewMockDatabase() *MockDatabase {
 		ValidVesselDataManagerMock:                    &mocktypes.ValidVesselDataManagerMock{},
 		ValidPreparationVesselDataManagerMock:         &mocktypes.ValidPreparationVesselDataManagerMock{},
 		UserNotificationDataManagerMock:               &mocktypes.UserNotificationDataManagerMock{},
+		AuditLogEntryDataManagerMock:                  &mocktypes.AuditLogEntryDataManagerMock{},
 	}
 }
 
@@ -109,6 +110,7 @@ type MockDatabase struct {
 	*mocktypes.ValidVesselDataManagerMock
 	*mocktypes.ValidPreparationVesselDataManagerMock
 	*mocktypes.UserNotificationDataManagerMock
+	*mocktypes.AuditLogEntryDataManagerMock
 
 	mock.Mock
 }

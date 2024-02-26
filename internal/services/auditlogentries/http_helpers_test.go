@@ -40,9 +40,6 @@ func buildTestHelper(t *testing.T) *auditLogEntriesServiceHTTPRoutesTestHelper {
 	helper.service.auditLogEntryIDFetcher = func(*http.Request) string {
 		return helper.exampleAuditLogEntry.ID
 	}
-	helper.service.resourceTypeFetcher = func(*http.Request) string {
-		return helper.exampleAuditLogEntry.ResourceType
-	}
 
 	sessionCtxData := &types.SessionContextData{
 		Requester: types.RequesterInfo{

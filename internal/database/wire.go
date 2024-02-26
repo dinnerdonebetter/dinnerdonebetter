@@ -52,6 +52,7 @@ var (
 		ProvideValidVesselDataManager,
 		ProvideValidPreparationVesselDataManager,
 		ProvideUserNotificationDataManager,
+		ProvideAuditLogEntryDataManager,
 	)
 )
 
@@ -267,5 +268,10 @@ func ProvideValidPreparationVesselDataManager(db DataManager) types.ValidPrepara
 
 // ProvideUserNotificationDataManager is an arbitrary function for dependency injection's sake.
 func ProvideUserNotificationDataManager(db DataManager) types.UserNotificationDataManager {
+	return db
+}
+
+// ProvideAuditLogEntryDataManager is an arbitrary function for dependency injection's sake.
+func ProvideAuditLogEntryDataManager(db DataManager) types.AuditLogEntryDataManager {
 	return db
 }

@@ -8,6 +8,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/routing"
+	auditlogentriesservice "github.com/dinnerdonebetter/backend/internal/services/auditlogentries"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	householdinstrumentownershipsservice "github.com/dinnerdonebetter/backend/internal/services/householdinstrumentownerships"
 	householdinvitationsservice "github.com/dinnerdonebetter/backend/internal/services/householdinvitations"
@@ -268,6 +269,20 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 					WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveWebhooksPermission)).
 					Delete(root, s.webhooksService.ArchiveWebhookHandler)
 			})
+		})
+
+		// Audit Log Entries
+		v1Router.Route("/audit_log_entries", func(auditLogEntriesRouter routing.Router) {
+			singleAuditLogEntryRoute := buildURLVarChunk(auditlogentriesservice.AuditLogEntryIDURIParamKey, "")
+			auditLogEntriesRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadAuditLogEntriesPermission)).
+				Get(singleAuditLogEntryRoute, s.auditLogEntriesService.ReadAuditLogEntryHandler)
+			auditLogEntriesRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadAuditLogEntriesPermission)).
+				Get("/for_user", s.auditLogEntriesService.ListUserAuditLogEntriesHandler)
+			auditLogEntriesRouter.
+				WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ReadAuditLogEntriesPermission)).
+				Get("/for_household", s.auditLogEntriesService.ListHouseholdAuditLogEntriesHandler)
 		})
 
 		// ValidInstruments
