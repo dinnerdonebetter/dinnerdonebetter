@@ -47,8 +47,8 @@ const (
 	WebhookIDKey = "webhook.id"
 	// AuditLogEntryIDKey is the standard key for referring to an audit log entry's ID.
 	AuditLogEntryIDKey = "audit_log_entry.id"
-	// AuditLogEntryResourceTypeKey is the standard key for referring to an audit log entry's resource type.
-	AuditLogEntryResourceTypeKey = "audit_log_entry.resource_type"
+	// AuditLogEntryResourceTypesKey is the standard key for referring to an audit log entry's resource type.
+	AuditLogEntryResourceTypesKey = "audit_log_entry.resource_types"
 	// URLKey is the standard key for referring to a URL.
 	URLKey = "url"
 	// PasswordResetTokenIDKey is the standard key for referring to a password reset token's ID.

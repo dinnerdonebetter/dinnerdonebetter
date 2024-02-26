@@ -107,7 +107,7 @@ func (q *Querier) GetAuditLogEntriesForUser(ctx context.Context, userID string, 
 }
 
 // GetAuditLogEntriesForUserAndResourceType fetches a list of audit log entries from the database that meet a particular filter.
-func (q *Querier) GetAuditLogEntriesForUserAndResourceType(ctx context.Context, userID, resourceType string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.AuditLogEntry], error) {
+func (q *Querier) GetAuditLogEntriesForUserAndResourceType(ctx context.Context, userID string, resourceTypes []string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.AuditLogEntry], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -119,11 +119,11 @@ func (q *Querier) GetAuditLogEntriesForUserAndResourceType(ctx context.Context, 
 	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 
-	if resourceType == "" {
+	if len(resourceTypes) == 0 {
 		return nil, ErrEmptyInputProvided
 	}
-	logger = logger.WithValue("audit_log_resource_type", resourceType)
-	tracing.AttachToSpan(span, "audit_log_resource_type", resourceType)
+	logger = logger.WithValue(keys.AuditLogEntryResourceTypesKey, resourceTypes)
+	tracing.AttachToSpan(span, keys.AuditLogEntryResourceTypesKey, resourceTypes)
 
 	if filter == nil {
 		filter = types.DefaultQueryFilter()
@@ -136,7 +136,7 @@ func (q *Querier) GetAuditLogEntriesForUserAndResourceType(ctx context.Context, 
 
 	results, err := q.generatedQuerier.GetAuditLogEntriesForUserAndResourceType(ctx, q.db, &generated.GetAuditLogEntriesForUserAndResourceTypeParams{
 		BelongsToUser: userID,
-		ResourceType:  resourceType,
+		Resources:     resourceTypes,
 		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
 		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
@@ -226,7 +226,7 @@ func (q *Querier) GetAuditLogEntriesForHousehold(ctx context.Context, householdI
 }
 
 // GetAuditLogEntriesForHouseholdAndResourceType fetches a list of audit log entries from the database that meet a particular filter.
-func (q *Querier) GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Context, householdID, resourceType string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.AuditLogEntry], error) {
+func (q *Querier) GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Context, householdID string, resourceTypes []string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.AuditLogEntry], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -238,11 +238,11 @@ func (q *Querier) GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Cont
 	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
-	if resourceType == "" {
+	if len(resourceTypes) == 0 {
 		return nil, ErrEmptyInputProvided
 	}
-	logger = logger.WithValue("audit_log_resource_type", resourceType)
-	tracing.AttachToSpan(span, "audit_log_resource_type", resourceType)
+	logger = logger.WithValue(keys.AuditLogEntryResourceTypesKey, resourceTypes)
+	tracing.AttachToSpan(span, keys.AuditLogEntryResourceTypesKey, resourceTypes)
 
 	if filter == nil {
 		filter = types.DefaultQueryFilter()
@@ -255,7 +255,7 @@ func (q *Querier) GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Cont
 
 	results, err := q.generatedQuerier.GetAuditLogEntriesForHouseholdAndResourceType(ctx, q.db, &generated.GetAuditLogEntriesForHouseholdAndResourceTypeParams{
 		BelongsToHousehold: nullStringFromString(householdID),
-		ResourceType:       resourceType,
+		Resources:          resourceTypes,
 		CreatedBefore:      nullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:       nullTimeFromTimePointer(filter.CreatedAfter),
 		QueryOffset:        nullInt32FromUint16(filter.QueryOffset()),

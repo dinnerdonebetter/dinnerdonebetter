@@ -11,6 +11,8 @@ const (
 	AuditLogEventTypeCreated = "created"
 	AuditLogEventTypeUpdated = "updated"
 	AuditLogEventTypeArchive = "archived"
+
+	AuditLogResourceTypesQueryParamKey = "resources"
 )
 
 type (
@@ -50,9 +52,9 @@ type (
 	AuditLogEntryDataManager interface {
 		GetAuditLogEntry(ctx context.Context, auditLogID string) (*AuditLogEntry, error)
 		GetAuditLogEntriesForUser(ctx context.Context, userID string, filter *QueryFilter) (*QueryFilteredResult[AuditLogEntry], error)
-		GetAuditLogEntriesForUserAndResourceType(ctx context.Context, userID, resourceType string, filter *QueryFilter) (*QueryFilteredResult[AuditLogEntry], error)
+		GetAuditLogEntriesForUserAndResourceType(ctx context.Context, userID string, resourceTypes []string, filter *QueryFilter) (*QueryFilteredResult[AuditLogEntry], error)
 		GetAuditLogEntriesForHousehold(ctx context.Context, householdID string, filter *QueryFilter) (*QueryFilteredResult[AuditLogEntry], error)
-		GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Context, householdID, resourceType string, filter *QueryFilter) (*QueryFilteredResult[AuditLogEntry], error)
+		GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Context, householdID string, resourceTypes []string, filter *QueryFilter) (*QueryFilteredResult[AuditLogEntry], error)
 		CreateAuditLogEntry(ctx context.Context, input *AuditLogEntryDatabaseCreationInput) (*AuditLogEntry, error)
 	}
 

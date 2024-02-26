@@ -80,20 +80,20 @@ SELECT
 		WHERE audit_log_entries.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 			AND audit_log_entries.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 			AND audit_log_entries.belongs_to_user = sqlc.arg(belongs_to_user)
-			AND audit_log_entries.resource_type = sqlc.arg(resource_type)
+			AND audit_log_entries.resource_type = ANY(sqlc.arg(resources)::text[])
 	) AS filtered_count,
 	(
 		SELECT COUNT(audit_log_entries.id)
 		FROM audit_log_entries
 		WHERE
 			audit_log_entries.belongs_to_user = sqlc.arg(belongs_to_user)
-			AND audit_log_entries.resource_type = sqlc.arg(resource_type)
+			AND audit_log_entries.resource_type = ANY(sqlc.arg(resources)::text[])
 	) AS total_count
 FROM audit_log_entries
 WHERE audit_log_entries.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 	AND audit_log_entries.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 	AND audit_log_entries.belongs_to_user = sqlc.arg(belongs_to_user)
-	AND audit_log_entries.resource_type = sqlc.arg(resource_type)
+	AND audit_log_entries.resource_type = ANY(sqlc.arg(resources)::text[])
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
 
@@ -145,19 +145,19 @@ SELECT
 		WHERE audit_log_entries.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 			AND audit_log_entries.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 			AND audit_log_entries.belongs_to_household = sqlc.arg(belongs_to_household)
-			AND audit_log_entries.resource_type = sqlc.arg(resource_type)
+			AND audit_log_entries.resource_type = ANY(sqlc.arg(resources)::text[])
 	) AS filtered_count,
 	(
 		SELECT COUNT(audit_log_entries.id)
 		FROM audit_log_entries
 		WHERE
 			audit_log_entries.belongs_to_household = sqlc.arg(belongs_to_household)
-			AND audit_log_entries.resource_type = sqlc.arg(resource_type)
+			AND audit_log_entries.resource_type = ANY(sqlc.arg(resources)::text[])
 	) AS total_count
 FROM audit_log_entries
 WHERE audit_log_entries.created_at > COALESCE(sqlc.narg(created_after), (SELECT NOW() - '999 years'::INTERVAL))
 	AND audit_log_entries.created_at < COALESCE(sqlc.narg(created_before), (SELECT NOW() + '999 years'::INTERVAL))
 	AND audit_log_entries.belongs_to_household = sqlc.arg(belongs_to_household)
-	AND audit_log_entries.resource_type = sqlc.arg(resource_type)
+	AND audit_log_entries.resource_type = ANY(sqlc.arg(resources)::text[])
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);

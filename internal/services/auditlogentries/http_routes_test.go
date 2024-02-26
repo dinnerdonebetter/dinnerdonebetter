@@ -150,13 +150,13 @@ func TestAuditLogEntriesService_ListUserAuditLogEntriesHandler(T *testing.T) {
 			"GetAuditLogEntriesForUserAndResourceType",
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
-			helper.exampleAuditLogEntry.ResourceType,
+			[]string{helper.exampleAuditLogEntry.ResourceType},
 			mock.IsType(&types.QueryFilter{}),
 		).Return(exampleAuditLogEntryList, nil)
 		helper.service.auditLogEntryDataManager = auditLogEntryDataManager
 
 		q := helper.req.URL.Query()
-		q.Set(AuditLogEntryResourceTypeURIPathKey, helper.exampleAuditLogEntry.ResourceType)
+		q.Set(types.AuditLogResourceTypesQueryParamKey, helper.exampleAuditLogEntry.ResourceType)
 		helper.req.URL.RawQuery = q.Encode()
 
 		helper.service.ListUserAuditLogEntriesHandler(helper.res, helper.req)
@@ -280,13 +280,13 @@ func TestAuditLogEntriesService_ListHouseholdAuditLogEntriesHandler(T *testing.T
 			"GetAuditLogEntriesForHouseholdAndResourceType",
 			testutils.ContextMatcher,
 			helper.exampleHousehold.ID,
-			helper.exampleAuditLogEntry.ResourceType,
+			[]string{helper.exampleAuditLogEntry.ResourceType},
 			mock.IsType(&types.QueryFilter{}),
 		).Return(exampleAuditLogEntryList, nil)
 		helper.service.auditLogEntryDataManager = auditLogEntryDataManager
 
 		q := helper.req.URL.Query()
-		q.Set(AuditLogEntryResourceTypeURIPathKey, helper.exampleAuditLogEntry.ResourceType)
+		q.Set(types.AuditLogResourceTypesQueryParamKey, helper.exampleAuditLogEntry.ResourceType)
 		helper.req.URL.RawQuery = q.Encode()
 
 		helper.service.ListHouseholdAuditLogEntriesHandler(helper.res, helper.req)

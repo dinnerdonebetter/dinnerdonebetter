@@ -16,8 +16,6 @@ import (
 const (
 	// AuditLogEntryIDURIParamKey is a standard string that we'll use to refer to audit log entry IDs with.
 	AuditLogEntryIDURIParamKey = "auditLogEntryID"
-	// AuditLogEntryResourceTypeURIPathKey is a standard string that we'll use to refer to audit log entry IDs with.
-	AuditLogEntryResourceTypeURIPathKey = "resource"
 )
 
 // ReadAuditLogEntryHandler returns a GET handler that returns a audit log entry.
@@ -94,9 +92,9 @@ func (s *service) ListUserAuditLogEntriesHandler(res http.ResponseWriter, req *h
 	tracing.AttachRequestToSpan(span, req)
 	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
 
-	resourceType := req.URL.Query().Get(AuditLogEntryResourceTypeURIPathKey)
-	tracing.AttachToSpan(span, keys.AuditLogEntryResourceTypeKey, resourceType)
-	logger = logger.WithValue(keys.AuditLogEntryResourceTypeKey, resourceType)
+	resourceTypes := req.URL.Query()[types.AuditLogResourceTypesQueryParamKey]
+	tracing.AttachToSpan(span, keys.AuditLogEntryResourceTypesKey, resourceTypes)
+	logger = logger.WithValue(keys.AuditLogEntryResourceTypesKey, resourceTypes)
 
 	// determine user ID.
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
@@ -116,10 +114,10 @@ func (s *service) ListUserAuditLogEntriesHandler(res http.ResponseWriter, req *h
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 
 	var auditLogEntries *types.QueryFilteredResult[types.AuditLogEntry]
-	if resourceType == "" {
+	if len(resourceTypes) == 0 {
 		auditLogEntries, err = s.auditLogEntryDataManager.GetAuditLogEntriesForUser(ctx, sessionCtxData.Requester.UserID, filter)
 	} else {
-		auditLogEntries, err = s.auditLogEntryDataManager.GetAuditLogEntriesForUserAndResourceType(ctx, sessionCtxData.Requester.UserID, resourceType, filter)
+		auditLogEntries, err = s.auditLogEntryDataManager.GetAuditLogEntriesForUserAndResourceType(ctx, sessionCtxData.Requester.UserID, resourceTypes, filter)
 	}
 
 	if errors.Is(err, sql.ErrNoRows) {
@@ -159,9 +157,9 @@ func (s *service) ListHouseholdAuditLogEntriesHandler(res http.ResponseWriter, r
 	tracing.AttachRequestToSpan(span, req)
 	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
 
-	resourceType := req.URL.Query().Get(AuditLogEntryResourceTypeURIPathKey)
-	tracing.AttachToSpan(span, keys.AuditLogEntryResourceTypeKey, resourceType)
-	logger = logger.WithValue(keys.AuditLogEntryResourceTypeKey, resourceType)
+	resourceTypes := req.URL.Query()[types.AuditLogResourceTypesQueryParamKey]
+	tracing.AttachToSpan(span, keys.AuditLogEntryResourceTypesKey, resourceTypes)
+	logger = logger.WithValue(keys.AuditLogEntryResourceTypesKey, resourceTypes)
 
 	// determine user ID.
 	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
@@ -180,10 +178,10 @@ func (s *service) ListHouseholdAuditLogEntriesHandler(res http.ResponseWriter, r
 
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
 	var auditLogEntries *types.QueryFilteredResult[types.AuditLogEntry]
-	if resourceType == "" {
+	if len(resourceTypes) == 0 {
 		auditLogEntries, err = s.auditLogEntryDataManager.GetAuditLogEntriesForHousehold(ctx, sessionCtxData.ActiveHouseholdID, filter)
 	} else {
-		auditLogEntries, err = s.auditLogEntryDataManager.GetAuditLogEntriesForHouseholdAndResourceType(ctx, sessionCtxData.ActiveHouseholdID, resourceType, filter)
+		auditLogEntries, err = s.auditLogEntryDataManager.GetAuditLogEntriesForHouseholdAndResourceType(ctx, sessionCtxData.ActiveHouseholdID, resourceTypes, filter)
 	}
 
 	if errors.Is(err, sql.ErrNoRows) {

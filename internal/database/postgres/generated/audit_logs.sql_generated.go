@@ -10,6 +10,8 @@ import (
 	"database/sql"
 	"encoding/json"
 	"time"
+
+	"github.com/lib/pq"
 )
 
 const createAuditLogEntry = `-- name: CreateAuditLogEntry :exec
@@ -166,20 +168,20 @@ SELECT
 		WHERE audit_log_entries.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 			AND audit_log_entries.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 			AND audit_log_entries.belongs_to_household = $3
-			AND audit_log_entries.resource_type = $4
+			AND audit_log_entries.resource_type = ANY($4::text[])
 	) AS filtered_count,
 	(
 		SELECT COUNT(audit_log_entries.id)
 		FROM audit_log_entries
 		WHERE
 			audit_log_entries.belongs_to_household = $3
-			AND audit_log_entries.resource_type = $4
+			AND audit_log_entries.resource_type = ANY($4::text[])
 	) AS total_count
 FROM audit_log_entries
 WHERE audit_log_entries.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 	AND audit_log_entries.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND audit_log_entries.belongs_to_household = $3
-	AND audit_log_entries.resource_type = $4
+	AND audit_log_entries.resource_type = ANY($4::text[])
 LIMIT $6
 OFFSET $5
 `
@@ -187,8 +189,8 @@ OFFSET $5
 type GetAuditLogEntriesForHouseholdAndResourceTypeParams struct {
 	CreatedAfter       sql.NullTime
 	CreatedBefore      sql.NullTime
-	ResourceType       string
 	BelongsToHousehold sql.NullString
+	Resources          []string
 	QueryOffset        sql.NullInt32
 	QueryLimit         sql.NullInt32
 }
@@ -211,7 +213,7 @@ func (q *Queries) GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Cont
 		arg.CreatedAfter,
 		arg.CreatedBefore,
 		arg.BelongsToHousehold,
-		arg.ResourceType,
+		pq.Array(arg.Resources),
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)
@@ -357,20 +359,20 @@ SELECT
 		WHERE audit_log_entries.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 			AND audit_log_entries.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 			AND audit_log_entries.belongs_to_user = $3
-			AND audit_log_entries.resource_type = $4
+			AND audit_log_entries.resource_type = ANY($4::text[])
 	) AS filtered_count,
 	(
 		SELECT COUNT(audit_log_entries.id)
 		FROM audit_log_entries
 		WHERE
 			audit_log_entries.belongs_to_user = $3
-			AND audit_log_entries.resource_type = $4
+			AND audit_log_entries.resource_type = ANY($4::text[])
 	) AS total_count
 FROM audit_log_entries
 WHERE audit_log_entries.created_at > COALESCE($1, (SELECT NOW() - '999 years'::INTERVAL))
 	AND audit_log_entries.created_at < COALESCE($2, (SELECT NOW() + '999 years'::INTERVAL))
 	AND audit_log_entries.belongs_to_user = $3
-	AND audit_log_entries.resource_type = $4
+	AND audit_log_entries.resource_type = ANY($4::text[])
 LIMIT $6
 OFFSET $5
 `
@@ -379,7 +381,7 @@ type GetAuditLogEntriesForUserAndResourceTypeParams struct {
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
 	BelongsToUser string
-	ResourceType  string
+	Resources     []string
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
@@ -402,7 +404,7 @@ func (q *Queries) GetAuditLogEntriesForUserAndResourceType(ctx context.Context, 
 		arg.CreatedAfter,
 		arg.CreatedBefore,
 		arg.BelongsToUser,
-		arg.ResourceType,
+		pq.Array(arg.Resources),
 		arg.QueryOffset,
 		arg.QueryLimit,
 	)

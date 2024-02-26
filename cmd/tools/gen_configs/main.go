@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	auditlogentriesservice "github.com/dinnerdonebetter/backend/internal/services/auditlogentries"
 	"log"
 	"os"
 	"path/filepath"
@@ -29,6 +28,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/search/algolia"
 	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
+	auditlogentriesservice "github.com/dinnerdonebetter/backend/internal/services/auditlogentries"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	householdinstrumentownershipsservice "github.com/dinnerdonebetter/backend/internal/services/householdinstrumentownerships"
 	householdinvitationsservice "github.com/dinnerdonebetter/backend/internal/services/householdinvitations"

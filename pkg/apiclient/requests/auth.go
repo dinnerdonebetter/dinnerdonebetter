@@ -24,7 +24,7 @@ func (b *Builder) BuildUserStatusRequest(ctx context.Context) (*http.Request, er
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building rqeuest")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil
@@ -57,7 +57,7 @@ func (b *Builder) BuildLogoutRequest(ctx context.Context) (*http.Request, error)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, http.NoBody)
 	if err != nil {
-		return nil, observability.PrepareError(err, span, "building rqeuest")
+		return nil, observability.PrepareError(err, span, "building request")
 	}
 
 	return req, nil

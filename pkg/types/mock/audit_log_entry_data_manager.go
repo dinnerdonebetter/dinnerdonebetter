@@ -25,8 +25,8 @@ func (m *AuditLogEntryDataManagerMock) GetAuditLogEntriesForUser(ctx context.Con
 	return args.Get(0).(*types.QueryFilteredResult[types.AuditLogEntry]), args.Error(1)
 }
 
-func (m *AuditLogEntryDataManagerMock) GetAuditLogEntriesForUserAndResourceType(ctx context.Context, user, resourceType string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.AuditLogEntry], error) {
-	args := m.Called(ctx, user, resourceType, filter)
+func (m *AuditLogEntryDataManagerMock) GetAuditLogEntriesForUserAndResourceType(ctx context.Context, userID string, resourceTypes []string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.AuditLogEntry], error) {
+	args := m.Called(ctx, userID, resourceTypes, filter)
 	return args.Get(0).(*types.QueryFilteredResult[types.AuditLogEntry]), args.Error(1)
 }
 
@@ -35,8 +35,8 @@ func (m *AuditLogEntryDataManagerMock) GetAuditLogEntriesForHousehold(ctx contex
 	return args.Get(0).(*types.QueryFilteredResult[types.AuditLogEntry]), args.Error(1)
 }
 
-func (m *AuditLogEntryDataManagerMock) GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Context, householdID, resourceType string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.AuditLogEntry], error) {
-	args := m.Called(ctx, householdID, resourceType, filter)
+func (m *AuditLogEntryDataManagerMock) GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Context, householdID string, resourceTypes []string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.AuditLogEntry], error) {
+	args := m.Called(ctx, householdID, resourceTypes, filter)
 	return args.Get(0).(*types.QueryFilteredResult[types.AuditLogEntry]), args.Error(1)
 }
 
