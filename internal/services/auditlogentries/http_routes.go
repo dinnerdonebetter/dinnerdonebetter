@@ -1,0 +1,303 @@
+package auditlogentries
+
+import (
+	"database/sql"
+	"errors"
+	"net/http"
+
+	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
+
+	servertiming "github.com/mitchellh/go-server-timing"
+)
+
+const (
+	// AuditLogEntryIDURIParamKey is a standard string that we'll use to refer to audit log entry IDs with.
+	AuditLogEntryIDURIParamKey = "auditLogEntryID"
+	// AuditLogEntryResourceTypeURIParamKey is a standard string that we'll use to refer to audit log entry IDs with.
+	AuditLogEntryResourceTypeURIParamKey = "resourceType"
+)
+
+// ReadAuditLogEntryHandler returns a GET handler that returns a audit log entry.
+func (s *service) ReadAuditLogEntryHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	timing := servertiming.FromContext(ctx)
+	logger := s.logger.WithRequest(req).WithSpan(span)
+	tracing.AttachRequestToSpan(span, req)
+
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
+	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
+		return
+	}
+	sessionContextTimer.Stop()
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+
+	// determine audit log entry ID.
+	auditLogEntryID := s.auditLogEntryIDFetcher(req)
+	tracing.AttachToSpan(span, keys.AuditLogEntryIDKey, auditLogEntryID)
+	logger = logger.WithValue(keys.AuditLogEntryIDKey, auditLogEntryID)
+
+	// fetch audit log entry from database.
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
+	x, err := s.auditLogEntryDataManager.GetAuditLogEntry(ctx, auditLogEntryID)
+	if errors.Is(err, sql.ErrNoRows) {
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
+		return
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving audit log entry")
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
+		return
+	}
+	readTimer.Stop()
+
+	responseValue := &types.APIResponse[*types.AuditLogEntry]{
+		Details: responseDetails,
+		Data:    x,
+	}
+
+	// encode our response and peace.
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+}
+
+// ListUserAuditLogEntriesHandler is our list route.
+func (s *service) ListUserAuditLogEntriesHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	timing := servertiming.FromContext(ctx)
+	filter := types.ExtractQueryFilterFromRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
+	logger = filter.AttachToLogger(logger)
+
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
+	tracing.AttachRequestToSpan(span, req)
+	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+
+	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
+		return
+	}
+	sessionContextTimer.Stop()
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
+	auditLogEntries, err := s.auditLogEntryDataManager.GetAuditLogEntriesForUser(ctx, sessionCtxData.Requester.UserID, filter)
+	if errors.Is(err, sql.ErrNoRows) {
+		// in the event no rows exist, return an empty list.
+		auditLogEntries = &types.QueryFilteredResult[types.AuditLogEntry]{Data: []*types.AuditLogEntry{}}
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving audit log entries")
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
+		return
+	}
+	readTimer.Stop()
+
+	responseValue := &types.APIResponse[[]*types.AuditLogEntry]{
+		Details:    responseDetails,
+		Data:       auditLogEntries.Data,
+		Pagination: &auditLogEntries.Pagination,
+	}
+
+	// encode our response and peace.
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+}
+
+func (s *service) ListUserAuditLogEntriesForResourceTypeHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	timing := servertiming.FromContext(ctx)
+	filter := types.ExtractQueryFilterFromRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
+	logger = filter.AttachToLogger(logger)
+
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
+	tracing.AttachRequestToSpan(span, req)
+	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+
+	resourceType := s.resourceTypeFetcher(req)
+	tracing.AttachToSpan(span, keys.AuditLogEntryResourceTypeKey, resourceType)
+	logger = logger.WithValue(keys.AuditLogEntryResourceTypeKey, resourceType)
+
+	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
+		return
+	}
+	sessionContextTimer.Stop()
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
+	auditLogEntries, err := s.auditLogEntryDataManager.GetAuditLogEntriesForUserAndResourceType(ctx, sessionCtxData.Requester.UserID, resourceType, filter)
+	if errors.Is(err, sql.ErrNoRows) {
+		// in the event no rows exist, return an empty list.
+		auditLogEntries = &types.QueryFilteredResult[types.AuditLogEntry]{Data: []*types.AuditLogEntry{}}
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving audit log entries")
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
+		return
+	}
+	readTimer.Stop()
+
+	responseValue := &types.APIResponse[[]*types.AuditLogEntry]{
+		Details:    responseDetails,
+		Data:       auditLogEntries.Data,
+		Pagination: &auditLogEntries.Pagination,
+	}
+
+	// encode our response and peace.
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+}
+
+func (s *service) ListHouseholdAuditLogEntriesHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	timing := servertiming.FromContext(ctx)
+	filter := types.ExtractQueryFilterFromRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
+	logger = filter.AttachToLogger(logger)
+
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
+	tracing.AttachRequestToSpan(span, req)
+	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+
+	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
+		return
+	}
+	sessionContextTimer.Stop()
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
+	auditLogEntries, err := s.auditLogEntryDataManager.GetAuditLogEntriesForHousehold(ctx, sessionCtxData.ActiveHouseholdID, filter)
+	if errors.Is(err, sql.ErrNoRows) {
+		// in the event no rows exist, return an empty list.
+		auditLogEntries = &types.QueryFilteredResult[types.AuditLogEntry]{Data: []*types.AuditLogEntry{}}
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving audit log entries")
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
+		return
+	}
+	readTimer.Stop()
+
+	responseValue := &types.APIResponse[[]*types.AuditLogEntry]{
+		Details:    responseDetails,
+		Data:       auditLogEntries.Data,
+		Pagination: &auditLogEntries.Pagination,
+	}
+
+	// encode our response and peace.
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+}
+
+func (s *service) ListHouseholdAuditLogEntriesForResourceTypeHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	timing := servertiming.FromContext(ctx)
+	filter := types.ExtractQueryFilterFromRequest(req)
+	logger := s.logger.WithRequest(req).WithSpan(span)
+	logger = filter.AttachToLogger(logger)
+
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
+	tracing.AttachRequestToSpan(span, req)
+	tracing.AttachFilterDataToSpan(span, filter.Page, filter.Limit, filter.SortBy)
+
+	resourceType := s.resourceTypeFetcher(req)
+	tracing.AttachToSpan(span, keys.AuditLogEntryResourceTypeKey, resourceType)
+	logger = logger.WithValue(keys.AuditLogEntryResourceTypeKey, resourceType)
+
+	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
+		return
+	}
+	sessionContextTimer.Stop()
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+
+	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
+	auditLogEntries, err := s.auditLogEntryDataManager.GetAuditLogEntriesForHouseholdAndResourceType(ctx, sessionCtxData.ActiveHouseholdID, resourceType, filter)
+	if errors.Is(err, sql.ErrNoRows) {
+		// in the event no rows exist, return an empty list.
+		auditLogEntries = &types.QueryFilteredResult[types.AuditLogEntry]{Data: []*types.AuditLogEntry{}}
+	} else if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving audit log entries")
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
+		return
+	}
+	readTimer.Stop()
+
+	responseValue := &types.APIResponse[[]*types.AuditLogEntry]{
+		Details:    responseDetails,
+		Data:       auditLogEntries.Data,
+		Pagination: &auditLogEntries.Pagination,
+	}
+
+	// encode our response and peace.
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+}

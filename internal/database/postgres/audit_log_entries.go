@@ -16,7 +16,7 @@ var (
 )
 
 // GetAuditLogEntry fetches an audit log entry from the database.
-func (q *Querier) GetAuditLogEntry(ctx context.Context, auditLogEntryID, householdID string) (*types.AuditLogEntry, error) {
+func (q *Querier) GetAuditLogEntry(ctx context.Context, auditLogEntryID string) (*types.AuditLogEntry, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -27,12 +27,6 @@ func (q *Querier) GetAuditLogEntry(ctx context.Context, auditLogEntryID, househo
 	}
 	logger = logger.WithValue(keys.AuditLogEntryIDKey, auditLogEntryID)
 	tracing.AttachToSpan(span, keys.AuditLogEntryIDKey, auditLogEntryID)
-
-	if householdID == "" {
-		return nil, ErrInvalidIDProvided
-	}
-	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
-	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
 	result, err := q.generatedQuerier.GetAuditLogEntry(ctx, q.db, auditLogEntryID)
 	if err != nil {
