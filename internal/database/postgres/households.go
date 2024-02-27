@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/database"
@@ -114,6 +115,7 @@ func (q *Querier) getHouseholdsForUser(ctx context.Context, querier database.SQL
 		return nil, ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+	logger = logger.WithValue(keys.UserIDKey, userID)
 
 	if filter == nil {
 		filter = types.DefaultQueryFilter()
@@ -227,14 +229,39 @@ func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDat
 		CreatedAt:     q.currentTime(),
 	}
 
-	if err = q.generatedQuerier.AddUserToHousehold(ctx, tx, &generated.AddUserToHouseholdParams{
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		BelongsToHousehold: &household.ID,
 		ID:                 identifiers.New(),
-		BelongsToUser:      input.BelongsToUser,
+		ResourceType:       resourceTypeHouseholds,
+		RelevantID:         household.ID,
+		EventType:          types.AuditLogEventTypeCreated,
+		BelongsToUser:      household.BelongsToUser,
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return nil, observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	householdMembershipID := identifiers.New()
+	if err = q.generatedQuerier.AddUserToHousehold(ctx, tx, &generated.AddUserToHouseholdParams{
+		ID:                 householdMembershipID,
+		BelongsToUser:      household.BelongsToUser,
 		BelongsToHousehold: household.ID,
 		HouseholdRole:      authorization.HouseholdAdminRole.String(),
 	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing household membership creation query")
+	}
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		BelongsToHousehold: &household.ID,
+		ID:                 identifiers.New(),
+		ResourceType:       resourceTypeHouseholdUserMemberships,
+		RelevantID:         householdMembershipID,
+		EventType:          types.AuditLogEventTypeCreated,
+		BelongsToUser:      household.BelongsToUser,
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return nil, observability.PrepareError(err, span, "creating audit log entry")
 	}
 
 	if err = tx.Commit(); err != nil {
@@ -258,7 +285,18 @@ func (q *Querier) UpdateHousehold(ctx context.Context, updated *types.Household)
 	logger := q.logger.WithValue(keys.HouseholdIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.HouseholdIDKey, updated.ID)
 
-	if _, err := q.generatedQuerier.UpdateHousehold(ctx, q.db, &generated.UpdateHouseholdParams{
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	household, err := q.GetHousehold(ctx, updated.ID)
+	if err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "fetching household")
+	}
+
+	if _, err = q.generatedQuerier.UpdateHousehold(ctx, q.db, &generated.UpdateHouseholdParams{
 		Name:          updated.Name,
 		ContactPhone:  updated.ContactPhone,
 		AddressLine1:  updated.AddressLine1,
@@ -275,9 +313,102 @@ func (q *Querier) UpdateHousehold(ctx context.Context, updated *types.Household)
 		return observability.PrepareAndLogError(err, logger, span, "updating household")
 	}
 
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		BelongsToHousehold: &updated.ID,
+		ID:                 identifiers.New(),
+		ResourceType:       resourceTypeHouseholds,
+		RelevantID:         updated.ID,
+		EventType:          types.AuditLogEventTypeUpdated,
+		BelongsToUser:      household.BelongsToUser,
+		Changes:            buildChangesForHousehold(household, updated),
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
+	}
+
 	logger.Info("household updated")
 
 	return nil
+}
+
+func buildChangesForHousehold(household, updated *types.Household) map[string]types.ChangeLog {
+	changes := map[string]types.ChangeLog{}
+
+	if household.Name != updated.Name {
+		changes["name"] = types.ChangeLog{
+			OldValue: household.Name,
+			NewValue: updated.Name,
+		}
+	}
+
+	if household.ContactPhone != updated.ContactPhone {
+		changes["contact_phone"] = types.ChangeLog{
+			OldValue: household.ContactPhone,
+			NewValue: updated.ContactPhone,
+		}
+	}
+
+	if household.AddressLine1 != updated.AddressLine1 {
+		changes["address_line_1"] = types.ChangeLog{
+			OldValue: household.AddressLine1,
+			NewValue: updated.AddressLine1,
+		}
+	}
+
+	if household.AddressLine2 != updated.AddressLine2 {
+		changes["address_line_2"] = types.ChangeLog{
+			OldValue: household.AddressLine2,
+			NewValue: updated.AddressLine2,
+		}
+	}
+
+	if household.City != updated.City {
+		changes["city"] = types.ChangeLog{
+			OldValue: household.City,
+			NewValue: updated.City,
+		}
+	}
+
+	if household.State != updated.State {
+		changes["state"] = types.ChangeLog{
+			OldValue: household.State,
+			NewValue: updated.State,
+		}
+	}
+
+	if household.ZipCode != updated.ZipCode {
+		changes["zip_code"] = types.ChangeLog{
+			OldValue: household.ZipCode,
+			NewValue: updated.ZipCode,
+		}
+	}
+
+	if household.Country != updated.Country {
+		changes["country"] = types.ChangeLog{
+			OldValue: household.Country,
+			NewValue: updated.Country,
+		}
+	}
+
+	if household.Latitude != updated.Latitude {
+		changes["latitude"] = types.ChangeLog{
+			OldValue: fmt.Sprintf("%v", household.Latitude),
+			NewValue: fmt.Sprintf("%v", updated.Latitude),
+		}
+	}
+
+	if household.Longitude != updated.Longitude {
+		changes["longitude"] = types.ChangeLog{
+			OldValue: fmt.Sprintf("%v", household.Longitude),
+			NewValue: fmt.Sprintf("%v", updated.Longitude),
+		}
+	}
+
+	return changes
 }
 
 // ArchiveHousehold archives a household from the database by its ID.
@@ -285,22 +416,43 @@ func (q *Querier) ArchiveHousehold(ctx context.Context, householdID, userID stri
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := q.logger.Clone()
+
 	if householdID == "" || userID == "" {
 		return ErrInvalidIDProvided
 	}
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
+	logger = logger.WithValue(keys.UserIDKey, userID)
 	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
 
-	logger := q.logger.WithValues(map[string]any{
-		keys.HouseholdIDKey: householdID,
-		keys.UserIDKey:      userID,
-	})
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
 
-	if _, err := q.generatedQuerier.ArchiveHousehold(ctx, q.db, &generated.ArchiveHouseholdParams{
+	if _, err = q.generatedQuerier.ArchiveHousehold(ctx, q.db, &generated.ArchiveHouseholdParams{
 		BelongsToUser: userID,
 		ID:            householdID,
 	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "archiving household")
+	}
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		BelongsToHousehold: &householdID,
+		ID:                 identifiers.New(),
+		ResourceType:       resourceTypeHouseholds,
+		RelevantID:         householdID,
+		EventType:          types.AuditLogEventTypeCreated,
+		BelongsToUser:      userID,
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	logger.Info("household archived")

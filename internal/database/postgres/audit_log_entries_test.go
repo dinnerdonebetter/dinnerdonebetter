@@ -95,7 +95,7 @@ func TestQuerier_Integration_AuditLogEntries(t *testing.T) {
 	auditLogEntries, err = dbc.GetAuditLogEntriesForHousehold(ctx, household.ID, nil)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, auditLogEntries.Data)
-	assert.Equal(t, len(createdAuditLogEntries), len(auditLogEntries.Data))
+	assert.Equal(t, len(createdAuditLogEntries)+auditLogEntriesCreatedForUsersByDefault-1, len(auditLogEntries.Data))
 }
 
 func TestQuerier_GetAuditLogEntry(T *testing.T) {

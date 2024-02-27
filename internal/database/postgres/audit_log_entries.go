@@ -322,7 +322,7 @@ func (q *Querier) createAuditLogEntry(ctx context.Context, querier database.SQLQ
 		BelongsToUser:      input.BelongsToUser,
 		BelongsToHousehold: nullStringFromStringPointer(input.BelongsToHousehold),
 	}); err != nil {
-		return nil, observability.PrepareAndLogError(err, logger, span, "performing webhook creation query")
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing audit log creation query")
 	}
 
 	x := &types.AuditLogEntry{
