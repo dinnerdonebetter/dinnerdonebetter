@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
+	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -12,6 +13,7 @@ import (
 )
 
 const (
+	resourceTypeServiceSettings  = "service_settings"
 	serviceSettingsEnumDelimiter = "|"
 )
 
@@ -196,8 +198,13 @@ func (q *Querier) CreateServiceSetting(ctx context.Context, input *types.Service
 	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, input.ID)
 	logger := q.logger.WithValue(keys.ServiceSettingIDKey, input.ID)
 
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
 	// create the service setting.
-	if err := q.generatedQuerier.CreateServiceSetting(ctx, q.db, &generated.CreateServiceSettingParams{
+	if err = q.generatedQuerier.CreateServiceSetting(ctx, tx, &generated.CreateServiceSettingParams{
 		ID:           input.ID,
 		Name:         input.Name,
 		Type:         generated.SettingType(input.Type),
@@ -206,6 +213,7 @@ func (q *Querier) CreateServiceSetting(ctx context.Context, input *types.Service
 		DefaultValue: nullStringFromStringPointer(input.DefaultValue),
 		AdminsOnly:   input.AdminsOnly,
 	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing service setting creation query")
 	}
 
@@ -218,6 +226,20 @@ func (q *Querier) CreateServiceSetting(ctx context.Context, input *types.Service
 		AdminsOnly:   input.AdminsOnly,
 		Enumeration:  input.Enumeration,
 		CreatedAt:    q.currentTime(),
+	}
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		ID:           identifiers.New(),
+		ResourceType: resourceTypeServiceSettings,
+		RelevantID:   x.ID,
+		EventType:    types.AuditLogEventTypeCreated,
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return nil, observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	logger.Info("service setting created")
@@ -238,8 +260,28 @@ func (q *Querier) ArchiveServiceSetting(ctx context.Context, serviceSettingID st
 	logger = logger.WithValue(keys.ServiceSettingIDKey, serviceSettingID)
 	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, serviceSettingID)
 
-	if _, err := q.generatedQuerier.ArchiveServiceSetting(ctx, q.db, serviceSettingID); err != nil {
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	if _, err = q.generatedQuerier.ArchiveServiceSetting(ctx, q.db, serviceSettingID); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "updating service setting")
+	}
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		ID:           identifiers.New(),
+		ResourceType: resourceTypeServiceSettings,
+		RelevantID:   serviceSettingID,
+		EventType:    types.AuditLogEventTypeArchived,
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	logger.Info("service setting archived")

@@ -25,9 +25,9 @@ func (b *Builder) BuildGetAuditLogEntryRequest(ctx context.Context, auditLogEntr
 	}
 	tracing.AttachToSpan(span, keys.AuditLogEntryIDKey, auditLogEntryID)
 
-	uri := b.buildUnversionedURL(ctx, nil, auditLogEntriesBasePath, auditLogEntryID)
+	uri := b.buildAPIV1URL(ctx, nil, auditLogEntriesBasePath, auditLogEntryID)
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "building request")
 	}
@@ -46,9 +46,9 @@ func (b *Builder) BuildGetAuditLogEntriesForUserRequest(ctx context.Context, res
 	}
 	tracing.AttachToSpan(span, keys.AuditLogEntryResourceTypesKey, resourceTypes)
 
-	uri := b.buildUnversionedURL(ctx, qp, auditLogEntriesBasePath, "for_user")
+	uri := b.buildAPIV1URL(ctx, qp, auditLogEntriesBasePath, "for_user")
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "building request")
 	}
@@ -67,9 +67,9 @@ func (b *Builder) BuildGetAuditLogEntriesForHouseholdRequest(ctx context.Context
 	}
 	tracing.AttachToSpan(span, keys.AuditLogEntryResourceTypesKey, resourceTypes)
 
-	uri := b.buildUnversionedURL(ctx, qp, auditLogEntriesBasePath, "for_household")
+	uri := b.buildAPIV1URL(ctx, qp, auditLogEntriesBasePath, "for_household")
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, http.NoBody)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), http.NoBody)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "building request")
 	}

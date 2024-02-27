@@ -12,7 +12,7 @@ import (
 func TestBuilder_BuildGetAuditLogEntryRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPath = "/audit_log_entries/%s"
+	const expectedPath = "/api/v1/audit_log_entries/%s"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -43,7 +43,7 @@ func TestBuilder_BuildGetAuditLogEntryRequest(T *testing.T) {
 func TestBuilder_BuildGetAuditLogEntriesForUserRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPath = "/audit_log_entries/for_user"
+	const expectedPath = "/api/v1/audit_log_entries/for_user"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
@@ -86,7 +86,7 @@ func TestBuilder_BuildGetAuditLogEntriesForUserRequest(T *testing.T) {
 func TestBuilder_BuildGetAuditLogEntriesForHouseholdRequest(T *testing.T) {
 	T.Parallel()
 
-	const expectedPath = "/audit_log_entries/for_household"
+	const expectedPath = "/api/v1/audit_log_entries/for_household"
 
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()

@@ -5,10 +5,15 @@ import (
 	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
+	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+)
+
+const (
+	resourceTypeServiceSettingConfigurations = "service_setting_configurations"
 )
 
 var (
@@ -350,8 +355,14 @@ func (q *Querier) CreateServiceSettingConfiguration(ctx context.Context, input *
 	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, input.ID)
 	logger := q.logger.WithValue(keys.ServiceSettingConfigurationIDKey, input.ID)
 
+	// begin household creation transaction
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
 	// create the service setting configuration.
-	if err := q.generatedQuerier.CreateServiceSettingConfiguration(ctx, q.db, &generated.CreateServiceSettingConfigurationParams{
+	if err = q.generatedQuerier.CreateServiceSettingConfiguration(ctx, q.db, &generated.CreateServiceSettingConfigurationParams{
 		ID:                 input.ID,
 		Value:              input.Value,
 		Notes:              input.Notes,
@@ -359,6 +370,7 @@ func (q *Querier) CreateServiceSettingConfiguration(ctx context.Context, input *
 		BelongsToUser:      input.BelongsToUser,
 		BelongsToHousehold: input.BelongsToHousehold,
 	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing service setting configuration creation query")
 	}
 
@@ -370,6 +382,22 @@ func (q *Querier) CreateServiceSettingConfiguration(ctx context.Context, input *
 		BelongsToUser:      input.BelongsToUser,
 		BelongsToHousehold: input.BelongsToHousehold,
 		CreatedAt:          q.currentTime(),
+	}
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		BelongsToHousehold: &input.BelongsToHousehold,
+		ID:                 identifiers.New(),
+		ResourceType:       resourceTypeServiceSettingConfigurations,
+		RelevantID:         x.ID,
+		EventType:          types.AuditLogEventTypeCreated,
+		BelongsToUser:      input.BelongsToUser,
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return nil, observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	logger.Info("service setting configuration created")
@@ -388,7 +416,13 @@ func (q *Querier) UpdateServiceSettingConfiguration(ctx context.Context, updated
 	logger := q.logger.WithValue(keys.ServiceSettingConfigurationIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, updated.ID)
 
-	if _, err := q.generatedQuerier.UpdateServiceSettingConfiguration(ctx, q.db, &generated.UpdateServiceSettingConfigurationParams{
+	// begin household creation transaction
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	if _, err = q.generatedQuerier.UpdateServiceSettingConfiguration(ctx, q.db, &generated.UpdateServiceSettingConfigurationParams{
 		Value:              updated.Value,
 		Notes:              updated.Notes,
 		ServiceSettingID:   updated.ServiceSetting.ID,
@@ -396,7 +430,24 @@ func (q *Querier) UpdateServiceSettingConfiguration(ctx context.Context, updated
 		BelongsToHousehold: updated.BelongsToHousehold,
 		ID:                 updated.ID,
 	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "updating service setting configuration")
+	}
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		BelongsToHousehold: &updated.BelongsToHousehold,
+		ID:                 identifiers.New(),
+		ResourceType:       resourceTypeServiceSettingConfigurations,
+		RelevantID:         updated.ID,
+		EventType:          types.AuditLogEventTypeUpdated,
+		BelongsToUser:      updated.BelongsToUser,
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	logger.Info("service setting configuration updated")
@@ -417,8 +468,19 @@ func (q *Querier) ArchiveServiceSettingConfiguration(ctx context.Context, servic
 	logger = logger.WithValue(keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
 	tracing.AttachToSpan(span, keys.ServiceSettingConfigurationIDKey, serviceSettingConfigurationID)
 
-	if _, err := q.generatedQuerier.ArchiveServiceSettingConfiguration(ctx, q.db, serviceSettingConfigurationID); err != nil {
+	// begin household creation transaction
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	if _, err = q.generatedQuerier.ArchiveServiceSettingConfiguration(ctx, q.db, serviceSettingConfigurationID); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "archiving service setting configuration")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	logger.Info("service setting configuration archived")
