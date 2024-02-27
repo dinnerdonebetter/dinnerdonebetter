@@ -2,7 +2,9 @@ package postgres
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
+	"strings"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
@@ -41,7 +43,7 @@ func (q *Querier) GetAuditLogEntry(ctx context.Context, auditLogEntryID string) 
 		ResourceType:       result.ResourceType,
 		RelevantID:         result.RelevantID,
 		EventType:          types.AuditLogEntryEventType(result.EventType),
-		BelongsToUser:      result.BelongsToUser,
+		BelongsToUser:      stringFromNullString(result.BelongsToUser),
 	}
 
 	if err = json.Unmarshal(result.Changes, &auditLogEntry.Changes); err != nil {
@@ -74,7 +76,7 @@ func (q *Querier) GetAuditLogEntriesForUser(ctx context.Context, userID string, 
 	}
 
 	results, err := q.generatedQuerier.GetAuditLogEntriesForUser(ctx, q.db, &generated.GetAuditLogEntriesForUserParams{
-		BelongsToUser: userID,
+		BelongsToUser: nullStringFromString(userID),
 		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
 		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
@@ -92,7 +94,7 @@ func (q *Querier) GetAuditLogEntriesForUser(ctx context.Context, userID string, 
 			ResourceType:       result.ResourceType,
 			RelevantID:         result.RelevantID,
 			EventType:          types.AuditLogEntryEventType(result.EventType),
-			BelongsToUser:      result.BelongsToUser,
+			BelongsToUser:      stringFromNullString(result.BelongsToUser),
 		}
 
 		if err = json.Unmarshal(result.Changes, &auditLogEntry.Changes); err != nil {
@@ -136,7 +138,7 @@ func (q *Querier) GetAuditLogEntriesForUserAndResourceType(ctx context.Context, 
 	}
 
 	results, err := q.generatedQuerier.GetAuditLogEntriesForUserAndResourceType(ctx, q.db, &generated.GetAuditLogEntriesForUserAndResourceTypeParams{
-		BelongsToUser: userID,
+		BelongsToUser: nullStringFromString(userID),
 		Resources:     resourceTypes,
 		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
 		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
@@ -155,7 +157,7 @@ func (q *Querier) GetAuditLogEntriesForUserAndResourceType(ctx context.Context, 
 			ResourceType:       result.ResourceType,
 			RelevantID:         result.RelevantID,
 			EventType:          types.AuditLogEntryEventType(result.EventType),
-			BelongsToUser:      result.BelongsToUser,
+			BelongsToUser:      stringFromNullString(result.BelongsToUser),
 		}
 
 		if err = json.Unmarshal(result.Changes, &auditLogEntry.Changes); err != nil {
@@ -211,7 +213,7 @@ func (q *Querier) GetAuditLogEntriesForHousehold(ctx context.Context, householdI
 			ResourceType:       result.ResourceType,
 			RelevantID:         result.RelevantID,
 			EventType:          types.AuditLogEntryEventType(result.EventType),
-			BelongsToUser:      result.BelongsToUser,
+			BelongsToUser:      stringFromNullString(result.BelongsToUser),
 		}
 
 		if err = json.Unmarshal(result.Changes, &auditLogEntry.Changes); err != nil {
@@ -274,7 +276,7 @@ func (q *Querier) GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Cont
 			ResourceType:       result.ResourceType,
 			RelevantID:         result.RelevantID,
 			EventType:          types.AuditLogEntryEventType(result.EventType),
-			BelongsToUser:      result.BelongsToUser,
+			BelongsToUser:      stringFromNullString(result.BelongsToUser),
 		}
 
 		if err = json.Unmarshal(result.Changes, &auditLogEntry.Changes); err != nil {
@@ -319,7 +321,7 @@ func (q *Querier) createAuditLogEntry(ctx context.Context, querier database.SQLQ
 		RelevantID:         input.RelevantID,
 		EventType:          generated.AuditLogEventType(input.EventType),
 		Changes:            marshaledChanges,
-		BelongsToUser:      input.BelongsToUser,
+		BelongsToUser:      sql.NullString{String: input.BelongsToUser, Valid: strings.TrimSpace(input.BelongsToUser) != ""},
 		BelongsToHousehold: nullStringFromStringPointer(input.BelongsToHousehold),
 	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing audit log creation query")

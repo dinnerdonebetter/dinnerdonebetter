@@ -46,6 +46,9 @@ func buildAuditLogEntryQueries() []*Query {
 				auditLogsTableName,
 				strings.Join(insertColumns, ",\n\t"),
 				strings.Join(applyToEach(insertColumns, func(_ int, s string) string {
+					if s == belongsToUserColumn || s == belongsToHouseholdColumn {
+						return fmt.Sprintf("sqlc.narg(%s)", s)
+					}
 					return fmt.Sprintf("sqlc.arg(%s)", s)
 				}), ",\n\t"),
 			)),

@@ -41,7 +41,7 @@ type CreateAuditLogEntryParams struct {
 	RelevantID         string
 	EventType          AuditLogEventType
 	Changes            json.RawMessage
-	BelongsToUser      string
+	BelongsToUser      sql.NullString
 	BelongsToHousehold sql.NullString
 }
 
@@ -104,8 +104,8 @@ type GetAuditLogEntriesForHouseholdRow struct {
 	ResourceType       string
 	RelevantID         string
 	EventType          AuditLogEventType
-	BelongsToUser      string
 	Changes            json.RawMessage
+	BelongsToUser      sql.NullString
 	BelongsToHousehold sql.NullString
 	FilteredCount      int64
 	TotalCount         int64
@@ -201,8 +201,8 @@ type GetAuditLogEntriesForHouseholdAndResourceTypeRow struct {
 	ResourceType       string
 	RelevantID         string
 	EventType          AuditLogEventType
-	BelongsToUser      string
 	Changes            json.RawMessage
+	BelongsToUser      sql.NullString
 	BelongsToHousehold sql.NullString
 	FilteredCount      int64
 	TotalCount         int64
@@ -284,7 +284,7 @@ OFFSET $4
 type GetAuditLogEntriesForUserParams struct {
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
-	BelongsToUser string
+	BelongsToUser sql.NullString
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
 }
@@ -295,8 +295,8 @@ type GetAuditLogEntriesForUserRow struct {
 	ResourceType       string
 	RelevantID         string
 	EventType          AuditLogEventType
-	BelongsToUser      string
 	Changes            json.RawMessage
+	BelongsToUser      sql.NullString
 	BelongsToHousehold sql.NullString
 	FilteredCount      int64
 	TotalCount         int64
@@ -380,7 +380,7 @@ OFFSET $5
 type GetAuditLogEntriesForUserAndResourceTypeParams struct {
 	CreatedAfter  sql.NullTime
 	CreatedBefore sql.NullTime
-	BelongsToUser string
+	BelongsToUser sql.NullString
 	Resources     []string
 	QueryOffset   sql.NullInt32
 	QueryLimit    sql.NullInt32
@@ -392,8 +392,8 @@ type GetAuditLogEntriesForUserAndResourceTypeRow struct {
 	ResourceType       string
 	RelevantID         string
 	EventType          AuditLogEventType
-	BelongsToUser      string
 	Changes            json.RawMessage
+	BelongsToUser      sql.NullString
 	BelongsToHousehold sql.NullString
 	FilteredCount      int64
 	TotalCount         int64
@@ -461,8 +461,8 @@ type GetAuditLogEntryRow struct {
 	ResourceType       string
 	RelevantID         string
 	EventType          AuditLogEventType
-	BelongsToUser      string
 	Changes            json.RawMessage
+	BelongsToUser      sql.NullString
 	BelongsToHousehold sql.NullString
 }
 

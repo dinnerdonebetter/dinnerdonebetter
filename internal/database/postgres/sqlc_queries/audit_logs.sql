@@ -14,8 +14,8 @@ INSERT INTO audit_log_entries (
 	sqlc.arg(relevant_id),
 	sqlc.arg(event_type),
 	sqlc.arg(changes),
-	sqlc.arg(belongs_to_user),
-	sqlc.arg(belongs_to_household)
+	sqlc.narg(belongs_to_user),
+	sqlc.narg(belongs_to_household)
 );
 
 -- name: GetAuditLogEntry :one
