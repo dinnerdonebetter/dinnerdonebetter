@@ -14,6 +14,10 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
+const (
+	resourceTypeHouseholds = "households"
+)
+
 var (
 	_ types.HouseholdDataManager = (*Querier)(nil)
 )

@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -13,7 +14,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func createAuditLogEntryForTest(t *testing.T, ctx context.Context, exampleAuditLogEntry *types.AuditLogEntry, user *types.User, household *types.Household, dbc *Querier) *types.AuditLogEntry {
+const (
+	auditLogEntriesCreatedForUsersByDefault = 2
+)
+
+func createAuditLogEntryForTest(t *testing.T, ctx context.Context, querier database.SQLQueryExecutor, exampleAuditLogEntry *types.AuditLogEntry, user *types.User, household *types.Household, dbc *Querier) *types.AuditLogEntry {
 	t.Helper()
 
 	if user == nil {
@@ -32,7 +37,7 @@ func createAuditLogEntryForTest(t *testing.T, ctx context.Context, exampleAuditL
 	exampleAuditLogEntry.BelongsToHousehold = &household.ID
 	dbInput := converters.ConvertAuditLogEntryToAuditLogEntryDatabaseCreationInput(exampleAuditLogEntry)
 
-	created, err := dbc.CreateAuditLogEntry(ctx, dbInput)
+	created, err := dbc.createAuditLogEntry(ctx, querier, dbInput)
 	assert.NoError(t, err)
 	require.NotNil(t, created)
 
@@ -73,19 +78,19 @@ func TestQuerier_Integration_AuditLogEntries(t *testing.T) {
 	createdAuditLogEntries := []*types.AuditLogEntry{}
 
 	// create
-	createdAuditLogEntries = append(createdAuditLogEntries, createAuditLogEntryForTest(t, ctx, exampleAuditLogEntry, user, household, dbc))
+	createdAuditLogEntries = append(createdAuditLogEntries, createAuditLogEntryForTest(t, ctx, dbc.db, exampleAuditLogEntry, user, household, dbc))
 
 	// create more
 	for i := 0; i < exampleQuantity; i++ {
 		input := fakes.BuildFakeAuditLogEntry()
-		createdAuditLogEntries = append(createdAuditLogEntries, createAuditLogEntryForTest(t, ctx, input, user, household, dbc))
+		createdAuditLogEntries = append(createdAuditLogEntries, createAuditLogEntryForTest(t, ctx, dbc.db, input, user, household, dbc))
 	}
 
 	// fetch as list
 	auditLogEntries, err := dbc.GetAuditLogEntriesForUser(ctx, user.ID, nil)
 	assert.NoError(t, err)
 	assert.NotEmpty(t, auditLogEntries.Data)
-	assert.Equal(t, len(createdAuditLogEntries), len(auditLogEntries.Data))
+	assert.Equal(t, len(createdAuditLogEntries)+auditLogEntriesCreatedForUsersByDefault, len(auditLogEntries.Data))
 
 	auditLogEntries, err = dbc.GetAuditLogEntriesForHousehold(ctx, household.ID, nil)
 	assert.NoError(t, err)
@@ -129,7 +134,7 @@ func TestQuerier_CreateAuditLogEntry(T *testing.T) {
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.CreateAuditLogEntry(ctx, nil)
+		actual, err := c.createAuditLogEntry(ctx, c.db, nil)
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})

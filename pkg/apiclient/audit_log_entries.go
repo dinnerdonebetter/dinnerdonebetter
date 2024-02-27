@@ -29,7 +29,7 @@ func (c *Client) GetAuditLogEntry(ctx context.Context, auditLogEntryID string) (
 
 	var apiResponse *types.APIResponse[*types.AuditLogEntry]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return nil, observability.PrepareError(err, span, "retrieving audit log entry")
+		return nil, observability.PrepareAndLogError(err, logger, span, "retrieving audit log entry")
 	}
 
 	return apiResponse.Data, nil

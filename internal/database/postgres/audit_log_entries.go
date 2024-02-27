@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 
+	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
@@ -288,26 +289,31 @@ func (q *Querier) GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Cont
 	return x, nil
 }
 
-// CreateAuditLogEntry creates an audit log entry in a database.
-func (q *Querier) CreateAuditLogEntry(ctx context.Context, input *types.AuditLogEntryDatabaseCreationInput) (*types.AuditLogEntry, error) {
+// createAuditLogEntry creates an audit log entry in a database.
+func (q *Querier) createAuditLogEntry(ctx context.Context, querier database.SQLQueryExecutor, input *types.AuditLogEntryDatabaseCreationInput) (*types.AuditLogEntry, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	logger := q.logger.Clone()
 
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
 
 	tracing.AttachToSpan(span, keys.HouseholdIDKey, input.BelongsToHousehold)
-	logger := q.logger.WithValue(keys.HouseholdIDKey, input.BelongsToHousehold)
+	logger = logger.WithValue(keys.HouseholdIDKey, input.BelongsToHousehold)
 
-	logger.Debug("CreateAuditLogEntry invoked")
+	tracing.AttachToSpan(span, keys.UserIDKey, input.BelongsToUser)
+	logger = logger.WithValue(keys.UserIDKey, input.BelongsToUser)
+
+	logger.Debug("createAuditLogEntry invoked")
 
 	marshaledChanges, err := json.Marshal(input.Changes)
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "serializing audit log change list")
 	}
 
-	if err = q.generatedQuerier.CreateAuditLogEntry(ctx, q.db, &generated.CreateAuditLogEntryParams{
+	if err = q.generatedQuerier.CreateAuditLogEntry(ctx, querier, &generated.CreateAuditLogEntryParams{
 		ID:                 input.ID,
 		ResourceType:       input.ResourceType,
 		RelevantID:         input.RelevantID,

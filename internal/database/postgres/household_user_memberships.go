@@ -15,6 +15,10 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
+const (
+	resourceTypeHouseholdUserMemberships = "household_user_memberships"
+)
+
 var (
 	_ types.HouseholdUserMembershipDataManager = (*Querier)(nil)
 )
@@ -316,7 +320,7 @@ func (q *Querier) removeUserFromHousehold(ctx context.Context, querier database.
 
 	if len(remainingHouseholds.Data) < 1 {
 		logger.Debug("user has no remaining households, creating a new one")
-		if err = q.createHouseholdForUser(ctx, querier, false, "", userID); err != nil {
+		if _, err = q.createHouseholdForUser(ctx, querier, false, "", userID); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "creating household for new user")
 		}
 		return nil

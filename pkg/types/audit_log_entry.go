@@ -55,7 +55,6 @@ type (
 		GetAuditLogEntriesForUserAndResourceType(ctx context.Context, userID string, resourceTypes []string, filter *QueryFilter) (*QueryFilteredResult[AuditLogEntry], error)
 		GetAuditLogEntriesForHousehold(ctx context.Context, householdID string, filter *QueryFilter) (*QueryFilteredResult[AuditLogEntry], error)
 		GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Context, householdID string, resourceTypes []string, filter *QueryFilter) (*QueryFilteredResult[AuditLogEntry], error)
-		CreateAuditLogEntry(ctx context.Context, input *AuditLogEntryDatabaseCreationInput) (*AuditLogEntry, error)
 	}
 
 	// AuditLogEntryDataService describes a structure capable of serving traffic related to audit log entries.

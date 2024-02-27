@@ -14,7 +14,7 @@ import (
 	"github.com/lib/pq"
 )
 
-const createAuditLogEntry = `-- name: CreateAuditLogEntry :exec
+const createAuditLogEntry = `-- name: createAuditLogEntry :exec
 
 INSERT INTO audit_log_entries (
 	id,

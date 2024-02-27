@@ -16,7 +16,9 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-var _ types.HouseholdInvitationDataManager = (*Querier)(nil)
+var (
+	_ types.HouseholdInvitationDataManager = (*Querier)(nil)
+)
 
 // HouseholdInvitationExists fetches whether a household invitation exists from the database.
 func (q *Querier) HouseholdInvitationExists(ctx context.Context, householdInvitationID string) (bool, error) {
