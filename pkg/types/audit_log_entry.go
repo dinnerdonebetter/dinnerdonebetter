@@ -7,10 +7,10 @@ import (
 )
 
 const (
-	AuditLogEventTypeOther   = "other"
-	AuditLogEventTypeCreated = "created"
-	AuditLogEventTypeUpdated = "updated"
-	AuditLogEventTypeArchive = "archived"
+	AuditLogEventTypeOther    = "other"
+	AuditLogEventTypeCreated  = "created"
+	AuditLogEventTypeUpdated  = "updated"
+	AuditLogEventTypeArchived = "archived"
 
 	AuditLogResourceTypesQueryParamKey = "resources"
 )

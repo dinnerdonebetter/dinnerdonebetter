@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	auditLogEntriesCreatedForUsersByDefault = 2
+	auditLogEntriesCreatedForUsersByDefault = 3
 )
 
 func createAuditLogEntryForTest(t *testing.T, ctx context.Context, querier database.SQLQueryExecutor, exampleAuditLogEntry *types.AuditLogEntry, user *types.User, household *types.Household, dbc *Querier) *types.AuditLogEntry {

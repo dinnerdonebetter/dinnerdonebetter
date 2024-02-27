@@ -461,6 +461,17 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 	logger = logger.WithValue(keys.UserIDKey, user.ID)
 	tracing.AttachToSpan(span, keys.UserIDKey, user.ID)
 
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		ID:            identifiers.New(),
+		ResourceType:  resourceTypeUsers,
+		RelevantID:    input.ID,
+		EventType:     types.AuditLogEventTypeCreated,
+		BelongsToUser: input.ID,
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return nil, observability.PrepareError(err, span, "creating audit log entry")
+	}
+
 	if strings.TrimSpace(input.HouseholdName) == "" {
 		input.HouseholdName = fmt.Sprintf("%s's cool household", input.Username)
 	}
@@ -949,8 +960,34 @@ func (q *Querier) MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID 
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 
-	if err := q.generatedQuerier.MarkTwoFactorSecretAsVerified(ctx, q.db, userID); err != nil {
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	if err = q.generatedQuerier.MarkTwoFactorSecretAsVerified(ctx, tx, userID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "writing verified two factor status to database")
+	}
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		ID:            identifiers.New(),
+		ResourceType:  resourceTypeUsers,
+		RelevantID:    userID,
+		EventType:     types.AuditLogEventTypeUpdated,
+		BelongsToUser: userID,
+		Changes: map[string]types.ChangeLog{
+			"two_factor_secret": {
+				OldValue: "unverified",
+				NewValue: "verified",
+			},
+		},
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	logger.Info("user two factor secret verified")
@@ -973,11 +1010,48 @@ func (q *Querier) MarkUserTwoFactorSecretAsUnverified(ctx context.Context, userI
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 
-	if err := q.generatedQuerier.MarkTwoFactorSecretAsUnverified(ctx, q.db, &generated.MarkTwoFactorSecretAsUnverifiedParams{
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	if err = q.generatedQuerier.MarkTwoFactorSecretAsUnverified(ctx, q.db, &generated.MarkTwoFactorSecretAsUnverifiedParams{
 		TwoFactorSecret: newSecret,
 		ID:              userID,
 	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "writing verified two factor status to database")
+	}
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		ID:            identifiers.New(),
+		ResourceType:  resourceTypeUsers,
+		RelevantID:    userID,
+		EventType:     types.AuditLogEventTypeArchived,
+		BelongsToUser: userID,
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		ID:            identifiers.New(),
+		ResourceType:  resourceTypeUsers,
+		RelevantID:    userID,
+		EventType:     types.AuditLogEventTypeCreated,
+		BelongsToUser: userID,
+		Changes: map[string]types.ChangeLog{
+			"two_factor_secret": {
+				OldValue: "verified",
+				NewValue: "unverified",
+			},
+		},
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	logger.Info("user two factor secret unverified")
@@ -1010,6 +1084,17 @@ func (q *Querier) ArchiveUser(ctx context.Context, userID string) error {
 
 	if changed == 0 {
 		return sql.ErrNoRows
+	}
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		ID:            identifiers.New(),
+		ResourceType:  resourceTypeUsers,
+		RelevantID:    userID,
+		EventType:     types.AuditLogEventTypeArchived,
+		BelongsToUser: userID,
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
 	}
 
 	if _, err = q.generatedQuerier.ArchiveUserMemberships(ctx, tx, userID); err != nil {
@@ -1098,10 +1183,16 @@ func (q *Querier) MarkUserEmailAddressAsVerified(ctx context.Context, userID, to
 		return ErrEmptyInputProvided
 	}
 
-	if err := q.generatedQuerier.MarkEmailAddressAsVerified(ctx, q.db, &generated.MarkEmailAddressAsVerifiedParams{
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	if err = q.generatedQuerier.MarkEmailAddressAsVerified(ctx, tx, &generated.MarkEmailAddressAsVerifiedParams{
 		ID:                            userID,
 		EmailAddressVerificationToken: nullStringFromString(token),
 	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		if errors.Is(err, sql.ErrNoRows) {
 			return err
 		}
@@ -1109,12 +1200,34 @@ func (q *Querier) MarkUserEmailAddressAsVerified(ctx context.Context, userID, to
 		return observability.PrepareAndLogError(err, logger, span, "writing verified email address status to database")
 	}
 
-	if err := q.UpdateUserAccountStatus(ctx, userID, &types.UserAccountStatusUpdateInput{
-		NewStatus:    string(types.GoodStandingUserAccountStatus),
-		Reason:       "verified email address",
-		TargetUserID: userID,
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		ID:            identifiers.New(),
+		ResourceType:  resourceTypeUsers,
+		RelevantID:    userID,
+		EventType:     types.AuditLogEventTypeUpdated,
+		BelongsToUser: userID,
+		Changes: map[string]types.ChangeLog{
+			"email_address_verification": {
+				OldValue: "unverified",
+				NewValue: "verified",
+			},
+		},
 	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if _, err = q.generatedQuerier.SetUserAccountStatus(ctx, tx, &generated.SetUserAccountStatusParams{
+		UserAccountStatus:            string(types.GoodStandingUserAccountStatus),
+		UserAccountStatusExplanation: "verified email address",
+		ID:                           userID,
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "updating user account status")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	return nil
@@ -1146,10 +1259,27 @@ func (q *Querier) MarkUserEmailAddressAsUnverified(ctx context.Context, userID s
 		return observability.PrepareAndLogError(err, logger, span, "writing email address verification status to database")
 	}
 
-	if err = q.UpdateUserAccountStatus(ctx, userID, &types.UserAccountStatusUpdateInput{
-		NewStatus:    string(types.UnverifiedHouseholdStatus),
-		Reason:       "unverified email address",
-		TargetUserID: userID,
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		ID:            identifiers.New(),
+		ResourceType:  resourceTypeUsers,
+		RelevantID:    userID,
+		EventType:     types.AuditLogEventTypeUpdated,
+		BelongsToUser: userID,
+		Changes: map[string]types.ChangeLog{
+			"email_address_verification": {
+				OldValue: "verified",
+				NewValue: "unverified",
+			},
+		},
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if _, err = q.generatedQuerier.SetUserAccountStatus(ctx, tx, &generated.SetUserAccountStatusParams{
+		UserAccountStatus:            string(types.UnverifiedHouseholdStatus),
+		UserAccountStatusExplanation: "unverified email address",
+		ID:                           userID,
 	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "updating user account status")
