@@ -967,6 +967,21 @@ func (q *Queries) GetUsers(ctx context.Context, db DBTX, arg *GetUsersParams) ([
 	return items, nil
 }
 
+const markEmailAddressAsUnverified = `-- name: MarkEmailAddressAsUnverified :exec
+
+UPDATE users SET
+	email_address_verified_at = NULL,
+	last_updated_at = NOW()
+WHERE archived_at IS NULL
+	AND email_address_verified_at IS NOT NULL
+	AND id = $1
+`
+
+func (q *Queries) MarkEmailAddressAsUnverified(ctx context.Context, db DBTX, id string) error {
+	_, err := db.ExecContext(ctx, markEmailAddressAsUnverified, id)
+	return err
+}
+
 const markEmailAddressAsVerified = `-- name: MarkEmailAddressAsVerified :exec
 
 UPDATE users SET

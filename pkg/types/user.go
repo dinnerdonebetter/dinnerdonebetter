@@ -246,9 +246,10 @@ type (
 		GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, userID string) (*User, error)
 		MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID string) error
 		MarkUserTwoFactorSecretAsUnverified(ctx context.Context, userID, newSecret string) error
+		GetEmailAddressVerificationTokenForUser(ctx context.Context, userID string) (string, error)
 		GetUserByEmailAddressVerificationToken(ctx context.Context, token string) (*User, error)
 		MarkUserEmailAddressAsVerified(ctx context.Context, userID, token string) error
-		GetEmailAddressVerificationTokenForUser(ctx context.Context, userID string) (string, error)
+		MarkUserEmailAddressAsUnverified(ctx context.Context, userID string) error
 		GetUserIDsThatNeedSearchIndexing(ctx context.Context) ([]string, error)
 		MarkUserAsIndexed(ctx context.Context, userID string) error
 	}

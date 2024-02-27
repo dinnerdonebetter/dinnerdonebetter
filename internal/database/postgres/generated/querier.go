@@ -307,6 +307,7 @@ type Querier interface {
 	ListAllMealPlanTasksByMealPlan(ctx context.Context, db DBTX, mealPlanID string) ([]*ListAllMealPlanTasksByMealPlanRow, error)
 	ListAllRecipePrepTasksByRecipe(ctx context.Context, db DBTX, recipeID string) ([]*ListAllRecipePrepTasksByRecipeRow, error)
 	ListIncompleteMealPlanTasksByMealPlanOption(ctx context.Context, db DBTX, belongsToMealPlanOption string) ([]*ListIncompleteMealPlanTasksByMealPlanOptionRow, error)
+	MarkEmailAddressAsUnverified(ctx context.Context, db DBTX, id string) error
 	MarkEmailAddressAsVerified(ctx context.Context, db DBTX, arg *MarkEmailAddressAsVerifiedParams) error
 	MarkHouseholdUserMembershipAsUserDefault(ctx context.Context, db DBTX, arg *MarkHouseholdUserMembershipAsUserDefaultParams) error
 	MarkMealPlanAsGroceryListInitialized(ctx context.Context, db DBTX, id string) error

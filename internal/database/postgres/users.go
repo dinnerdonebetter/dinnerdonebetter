@@ -1119,3 +1119,45 @@ func (q *Querier) MarkUserEmailAddressAsVerified(ctx context.Context, userID, to
 
 	return nil
 }
+
+func (q *Querier) MarkUserEmailAddressAsUnverified(ctx context.Context, userID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if userID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.UserIDKey, userID)
+
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	if err = q.generatedQuerier.MarkEmailAddressAsUnverified(ctx, tx, userID); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			q.rollbackTransaction(ctx, tx)
+			return err
+		}
+
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareAndLogError(err, logger, span, "writing email address verification status to database")
+	}
+
+	if err = q.UpdateUserAccountStatus(ctx, userID, &types.UserAccountStatusUpdateInput{
+		NewStatus:    string(types.UnverifiedHouseholdStatus),
+		Reason:       "unverified email address",
+		TargetUserID: userID,
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareAndLogError(err, logger, span, "updating user account status")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
+	}
+
+	return nil
+}

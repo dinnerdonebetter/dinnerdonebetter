@@ -69,6 +69,11 @@ func (m *UserDataManagerMock) MarkUserTwoFactorSecretAsVerified(ctx context.Cont
 	return m.Called(ctx, userID).Error(0)
 }
 
+// MarkUserEmailAddressAsUnverified is a mock function.
+func (m *UserDataManagerMock) MarkUserEmailAddressAsUnverified(ctx context.Context, userID string) error {
+	return m.Called(ctx, userID).Error(0)
+}
+
 // MarkUserTwoFactorSecretAsUnverified is a mock function.
 func (m *UserDataManagerMock) MarkUserTwoFactorSecretAsUnverified(ctx context.Context, userID, newSecret string) error {
 	return m.Called(ctx, userID, newSecret).Error(0)

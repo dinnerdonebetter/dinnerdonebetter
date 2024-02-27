@@ -362,6 +362,15 @@ WHERE archived_at IS NULL
 	AND id = sqlc.arg(id)
 	AND email_address_verification_token = sqlc.arg(email_address_verification_token);
 
+-- name: MarkEmailAddressAsUnverified :exec
+
+UPDATE users SET
+	email_address_verified_at = NULL,
+	last_updated_at = NOW()
+WHERE archived_at IS NULL
+	AND email_address_verified_at IS NOT NULL
+	AND id = sqlc.arg(id);
+
 -- name: MarkTwoFactorSecretAsUnverified :exec
 
 UPDATE users SET
