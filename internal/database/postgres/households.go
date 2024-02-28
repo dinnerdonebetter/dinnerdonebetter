@@ -43,9 +43,9 @@ func (q *Querier) GetHousehold(ctx context.Context, householdID string) (*types.
 		if household == nil {
 			household = &types.Household{
 				CreatedAt:                  result.CreatedAt,
-				SubscriptionPlanID:         stringPointerFromNullString(result.SubscriptionPlanID),
-				LastUpdatedAt:              timePointerFromNullTime(result.LastUpdatedAt),
-				ArchivedAt:                 timePointerFromNullTime(result.ArchivedAt),
+				SubscriptionPlanID:         database.StringPointerFromNullString(result.SubscriptionPlanID),
+				LastUpdatedAt:              database.TimePointerFromNullTime(result.LastUpdatedAt),
+				ArchivedAt:                 database.TimePointerFromNullTime(result.ArchivedAt),
 				ContactPhone:               result.ContactPhone,
 				BillingStatus:              result.BillingStatus,
 				AddressLine1:               result.AddressLine1,
@@ -54,8 +54,8 @@ func (q *Querier) GetHousehold(ctx context.Context, householdID string) (*types.
 				State:                      result.State,
 				ZipCode:                    result.ZipCode,
 				Country:                    result.Country,
-				Latitude:                   float64PointerFromNullString(result.Latitude),
-				Longitude:                  float64PointerFromNullString(result.Longitude),
+				Latitude:                   database.Float64PointerFromNullString(result.Latitude),
+				Longitude:                  database.Float64PointerFromNullString(result.Longitude),
 				PaymentProcessorCustomerID: result.PaymentProcessorCustomerID,
 				BelongsToUser:              result.BelongsToUser,
 				ID:                         result.ID,
@@ -67,19 +67,19 @@ func (q *Querier) GetHousehold(ctx context.Context, householdID string) (*types.
 
 		household.Members = append(household.Members, &types.HouseholdUserMembershipWithUser{
 			CreatedAt:     result.MembershipCreatedAt,
-			LastUpdatedAt: timePointerFromNullTime(result.MembershipLastUpdatedAt),
-			ArchivedAt:    timePointerFromNullTime(result.MembershipArchivedAt),
+			LastUpdatedAt: database.TimePointerFromNullTime(result.MembershipLastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.MembershipArchivedAt),
 			ID:            result.MembershipID,
 			BelongsToUser: &types.User{
 				CreatedAt:                  result.UserCreatedAt,
-				PasswordLastChangedAt:      timePointerFromNullTime(result.UserPasswordLastChangedAt),
-				LastUpdatedAt:              timePointerFromNullTime(result.UserLastUpdatedAt),
-				LastAcceptedTermsOfService: timePointerFromNullTime(result.UserLastAcceptedTermsOfService),
-				LastAcceptedPrivacyPolicy:  timePointerFromNullTime(result.UserLastAcceptedPrivacyPolicy),
-				TwoFactorSecretVerifiedAt:  timePointerFromNullTime(result.UserTwoFactorSecretVerifiedAt),
-				AvatarSrc:                  stringPointerFromNullString(result.UserAvatarSrc),
-				Birthday:                   timePointerFromNullTime(result.UserBirthday),
-				ArchivedAt:                 timePointerFromNullTime(result.UserArchivedAt),
+				PasswordLastChangedAt:      database.TimePointerFromNullTime(result.UserPasswordLastChangedAt),
+				LastUpdatedAt:              database.TimePointerFromNullTime(result.UserLastUpdatedAt),
+				LastAcceptedTermsOfService: database.TimePointerFromNullTime(result.UserLastAcceptedTermsOfService),
+				LastAcceptedPrivacyPolicy:  database.TimePointerFromNullTime(result.UserLastAcceptedPrivacyPolicy),
+				TwoFactorSecretVerifiedAt:  database.TimePointerFromNullTime(result.UserTwoFactorSecretVerifiedAt),
+				AvatarSrc:                  database.StringPointerFromNullString(result.UserAvatarSrc),
+				Birthday:                   database.TimePointerFromNullTime(result.UserBirthday),
+				ArchivedAt:                 database.TimePointerFromNullTime(result.UserArchivedAt),
 				AccountStatusExplanation:   result.UserUserAccountStatusExplanation,
 				ID:                         result.UserID,
 				AccountStatus:              result.UserUserAccountStatus,
@@ -87,7 +87,7 @@ func (q *Querier) GetHousehold(ctx context.Context, householdID string) (*types.
 				FirstName:                  result.UserFirstName,
 				LastName:                   result.UserLastName,
 				EmailAddress:               result.UserEmailAddress,
-				EmailAddressVerifiedAt:     timePointerFromNullTime(result.UserEmailAddressVerifiedAt),
+				EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.UserEmailAddressVerifiedAt),
 				ServiceRole:                result.UserServiceRole,
 				RequiresPasswordChange:     result.UserRequiresPasswordChange,
 			},
@@ -129,12 +129,12 @@ func (q *Querier) getHouseholdsForUser(ctx context.Context, querier database.SQL
 
 	results, err := q.generatedQuerier.GetHouseholdsForUser(ctx, querier, &generated.GetHouseholdsForUserParams{
 		BelongsToUser: userID,
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing households list retrieval query")
@@ -143,9 +143,9 @@ func (q *Querier) getHouseholdsForUser(ctx context.Context, querier database.SQL
 	for _, result := range results {
 		x.Data = append(x.Data, &types.Household{
 			CreatedAt:                  result.CreatedAt,
-			SubscriptionPlanID:         stringPointerFromNullString(result.SubscriptionPlanID),
-			LastUpdatedAt:              timePointerFromNullTime(result.LastUpdatedAt),
-			ArchivedAt:                 timePointerFromNullTime(result.ArchivedAt),
+			SubscriptionPlanID:         database.StringPointerFromNullString(result.SubscriptionPlanID),
+			LastUpdatedAt:              database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:                 database.TimePointerFromNullTime(result.ArchivedAt),
 			ContactPhone:               result.ContactPhone,
 			BillingStatus:              result.BillingStatus,
 			AddressLine1:               result.AddressLine1,
@@ -154,8 +154,8 @@ func (q *Querier) getHouseholdsForUser(ctx context.Context, querier database.SQL
 			State:                      result.State,
 			ZipCode:                    result.ZipCode,
 			Country:                    result.Country,
-			Latitude:                   float64PointerFromNullString(result.Latitude),
-			Longitude:                  float64PointerFromNullString(result.Longitude),
+			Latitude:                   database.Float64PointerFromNullString(result.Latitude),
+			Longitude:                  database.Float64PointerFromNullString(result.Longitude),
 			PaymentProcessorCustomerID: result.PaymentProcessorCustomerID,
 			BelongsToUser:              result.BelongsToUser,
 			ID:                         result.ID,
@@ -205,8 +205,8 @@ func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDat
 		Country:           input.Country,
 		BelongsToUser:     input.BelongsToUser,
 		WebhookHmacSecret: input.WebhookEncryptionKey,
-		Latitude:          nullStringFromFloat64Pointer(input.Latitude),
-		Longitude:         nullStringFromFloat64Pointer(input.Longitude),
+		Latitude:          database.NullStringFromFloat64Pointer(input.Latitude),
+		Longitude:         database.NullStringFromFloat64Pointer(input.Longitude),
 	}); writeErr != nil {
 		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareError(writeErr, span, "creating household")
@@ -307,8 +307,8 @@ func (q *Querier) UpdateHousehold(ctx context.Context, updated *types.Household)
 		Country:       updated.Country,
 		BelongsToUser: updated.BelongsToUser,
 		ID:            updated.ID,
-		Latitude:      nullStringFromFloat64Pointer(updated.Latitude),
-		Longitude:     nullStringFromFloat64Pointer(updated.Longitude),
+		Latitude:      database.NullStringFromFloat64Pointer(updated.Latitude),
+		Longitude:     database.NullStringFromFloat64Pointer(updated.Longitude),
 	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating household")
 	}

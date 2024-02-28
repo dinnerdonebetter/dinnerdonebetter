@@ -45,7 +45,7 @@ func (q *Querier) MealPlanOptionExists(ctx context.Context, mealPlanID, mealPlan
 	tracing.AttachToSpan(span, keys.MealPlanOptionIDKey, mealPlanOptionID)
 
 	result, err := q.generatedQuerier.CheckMealPlanOptionExistence(ctx, q.db, &generated.CheckMealPlanOptionExistenceParams{
-		MealPlanEventID:  nullStringFromString(mealPlanEventID),
+		MealPlanEventID:  database.NullStringFromString(mealPlanEventID),
 		MealPlanOptionID: mealPlanOptionID,
 		MealPlanID:       mealPlanID,
 	})
@@ -84,7 +84,7 @@ func (q *Querier) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanEve
 
 	result, err := q.generatedQuerier.GetMealPlanOption(ctx, q.db, &generated.GetMealPlanOptionParams{
 		MealPlanID:       mealPlanID,
-		MealPlanEventID:  nullStringFromString(mealPlanEventID),
+		MealPlanEventID:  database.NullStringFromString(mealPlanEventID),
 		MealPlanOptionID: mealPlanOptionID,
 	})
 	if err != nil {
@@ -93,26 +93,26 @@ func (q *Querier) GetMealPlanOption(ctx context.Context, mealPlanID, mealPlanEve
 
 	mealPlanOption := &types.MealPlanOption{
 		CreatedAt:              result.CreatedAt,
-		LastUpdatedAt:          timePointerFromNullTime(result.LastUpdatedAt),
-		AssignedCook:           stringPointerFromNullString(result.AssignedCook),
-		ArchivedAt:             timePointerFromNullTime(result.ArchivedAt),
-		AssignedDishwasher:     stringPointerFromNullString(result.AssignedDishwasher),
+		LastUpdatedAt:          database.TimePointerFromNullTime(result.LastUpdatedAt),
+		AssignedCook:           database.StringPointerFromNullString(result.AssignedCook),
+		ArchivedAt:             database.TimePointerFromNullTime(result.ArchivedAt),
+		AssignedDishwasher:     database.StringPointerFromNullString(result.AssignedDishwasher),
 		Notes:                  result.Notes,
-		BelongsToMealPlanEvent: stringFromNullString(result.BelongsToMealPlanEvent),
+		BelongsToMealPlanEvent: database.StringFromNullString(result.BelongsToMealPlanEvent),
 		ID:                     result.ID,
 		Meal: types.Meal{
 			CreatedAt:                result.MealCreatedAt,
-			ArchivedAt:               timePointerFromNullTime(result.MealArchivedAt),
-			LastUpdatedAt:            timePointerFromNullTime(result.MealLastUpdatedAt),
-			MaximumEstimatedPortions: float32PointerFromNullString(result.MealMaxEstimatedPortions),
+			ArchivedAt:               database.TimePointerFromNullTime(result.MealArchivedAt),
+			LastUpdatedAt:            database.TimePointerFromNullTime(result.MealLastUpdatedAt),
+			MaximumEstimatedPortions: database.Float32PointerFromNullString(result.MealMaxEstimatedPortions),
 			ID:                       result.MealID,
 			Description:              result.MealDescription,
 			CreatedByUser:            result.MealCreatedByUser,
 			Name:                     result.MealName,
-			MinimumEstimatedPortions: float32FromString(result.MealMinEstimatedPortions),
+			MinimumEstimatedPortions: database.Float32FromString(result.MealMinEstimatedPortions),
 			EligibleForMealPlans:     result.MealEligibleForMealPlans,
 		},
-		MealScale: float32FromString(result.MealScale),
+		MealScale: database.Float32FromString(result.MealScale),
 		Chosen:    result.Chosen,
 		TieBroken: result.Tiebroken,
 	}
@@ -140,28 +140,28 @@ func (q *Querier) getMealPlanOptionByID(ctx context.Context, mealPlanOptionID st
 
 	mealPlanOption := &types.MealPlanOption{
 		CreatedAt:              result.CreatedAt,
-		LastUpdatedAt:          timePointerFromNullTime(result.LastUpdatedAt),
-		AssignedCook:           stringPointerFromNullString(result.AssignedCook),
-		ArchivedAt:             timePointerFromNullTime(result.ArchivedAt),
-		AssignedDishwasher:     stringPointerFromNullString(result.AssignedDishwasher),
+		LastUpdatedAt:          database.TimePointerFromNullTime(result.LastUpdatedAt),
+		AssignedCook:           database.StringPointerFromNullString(result.AssignedCook),
+		ArchivedAt:             database.TimePointerFromNullTime(result.ArchivedAt),
+		AssignedDishwasher:     database.StringPointerFromNullString(result.AssignedDishwasher),
 		Notes:                  result.Notes,
-		BelongsToMealPlanEvent: stringFromNullString(result.BelongsToMealPlanEvent),
+		BelongsToMealPlanEvent: database.StringFromNullString(result.BelongsToMealPlanEvent),
 		ID:                     result.ID,
 		Votes:                  nil,
 		Meal: types.Meal{
 			CreatedAt:                result.MealCreatedAt,
-			ArchivedAt:               timePointerFromNullTime(result.MealArchivedAt),
-			LastUpdatedAt:            timePointerFromNullTime(result.MealLastUpdatedAt),
-			MaximumEstimatedPortions: float32PointerFromNullString(result.MealMaxEstimatedPortions),
+			ArchivedAt:               database.TimePointerFromNullTime(result.MealArchivedAt),
+			LastUpdatedAt:            database.TimePointerFromNullTime(result.MealLastUpdatedAt),
+			MaximumEstimatedPortions: database.Float32PointerFromNullString(result.MealMaxEstimatedPortions),
 			ID:                       result.MealID,
 			Description:              result.MealDescription,
 			CreatedByUser:            result.MealCreatedByUser,
 			Name:                     result.MealName,
 			Components:               []*types.MealComponent{},
-			MinimumEstimatedPortions: float32FromString(result.MealMinEstimatedPortions),
+			MinimumEstimatedPortions: database.Float32FromString(result.MealMinEstimatedPortions),
 			EligibleForMealPlans:     result.MealEligibleForMealPlans,
 		},
-		MealScale: float32FromString(result.MealScale),
+		MealScale: database.Float32FromString(result.MealScale),
 		Chosen:    result.Chosen,
 		TieBroken: result.Tiebroken,
 	}
@@ -190,7 +190,7 @@ func (q *Querier) getMealPlanOptionsForMealPlanEvent(ctx context.Context, mealPl
 
 	results, err := q.generatedQuerier.GetAllMealPlanOptionsForMealPlanEvent(ctx, q.db, &generated.GetAllMealPlanOptionsForMealPlanEventParams{
 		MealPlanID:      mealPlanID,
-		MealPlanEventID: nullStringFromString(mealPlanEventID),
+		MealPlanEventID: database.NullStringFromString(mealPlanEventID),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing meal plan option query")
@@ -200,18 +200,18 @@ func (q *Querier) getMealPlanOptionsForMealPlanEvent(ctx context.Context, mealPl
 	for _, result := range results {
 		x = append(x, &types.MealPlanOption{
 			CreatedAt:              result.CreatedAt,
-			LastUpdatedAt:          timePointerFromNullTime(result.LastUpdatedAt),
-			AssignedCook:           stringPointerFromNullString(result.AssignedCook),
-			ArchivedAt:             timePointerFromNullTime(result.ArchivedAt),
-			AssignedDishwasher:     stringPointerFromNullString(result.AssignedDishwasher),
+			LastUpdatedAt:          database.TimePointerFromNullTime(result.LastUpdatedAt),
+			AssignedCook:           database.StringPointerFromNullString(result.AssignedCook),
+			ArchivedAt:             database.TimePointerFromNullTime(result.ArchivedAt),
+			AssignedDishwasher:     database.StringPointerFromNullString(result.AssignedDishwasher),
 			Notes:                  result.Notes,
-			BelongsToMealPlanEvent: stringFromNullString(result.BelongsToMealPlanEvent),
+			BelongsToMealPlanEvent: database.StringFromNullString(result.BelongsToMealPlanEvent),
 			ID:                     result.ID,
 			Votes:                  nil,
 			Meal: types.Meal{
 				ID: result.MealID,
 			},
-			MealScale: float32FromString(result.MealScale),
+			MealScale: database.Float32FromString(result.MealScale),
 			Chosen:    result.Chosen,
 			TieBroken: result.Tiebroken,
 		})
@@ -266,14 +266,14 @@ func (q *Querier) GetMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEv
 	}
 
 	results, err := q.generatedQuerier.GetMealPlanOptions(ctx, q.db, &generated.GetMealPlanOptionsParams{
-		MealPlanEventID: nullStringFromString(mealPlanEventID),
+		MealPlanEventID: database.NullStringFromString(mealPlanEventID),
 		MealPlanID:      mealPlanID,
-		CreatedBefore:   nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:    nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore:   nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:    nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:     nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:      nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore:   database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:    database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:   database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:    database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:     database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:      database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing meal plan option query")
@@ -282,18 +282,18 @@ func (q *Querier) GetMealPlanOptions(ctx context.Context, mealPlanID, mealPlanEv
 	for _, result := range results {
 		mealPlanOption := &types.MealPlanOption{
 			CreatedAt:              result.CreatedAt,
-			LastUpdatedAt:          timePointerFromNullTime(result.LastUpdatedAt),
-			AssignedCook:           stringPointerFromNullString(result.AssignedCook),
-			ArchivedAt:             timePointerFromNullTime(result.ArchivedAt),
-			AssignedDishwasher:     stringPointerFromNullString(result.AssignedDishwasher),
+			LastUpdatedAt:          database.TimePointerFromNullTime(result.LastUpdatedAt),
+			AssignedCook:           database.StringPointerFromNullString(result.AssignedCook),
+			ArchivedAt:             database.TimePointerFromNullTime(result.ArchivedAt),
+			AssignedDishwasher:     database.StringPointerFromNullString(result.AssignedDishwasher),
 			Notes:                  result.Notes,
-			BelongsToMealPlanEvent: stringFromNullString(result.BelongsToMealPlanEvent),
+			BelongsToMealPlanEvent: database.StringFromNullString(result.BelongsToMealPlanEvent),
 			ID:                     result.ID,
 			Votes:                  nil,
 			Meal: types.Meal{
 				ID: result.MealID,
 			},
-			MealScale: float32FromString(result.MealScale),
+			MealScale: database.Float32FromString(result.MealScale),
 			Chosen:    result.Chosen,
 			TieBroken: result.Tiebroken,
 		}
@@ -319,12 +319,12 @@ func (q *Querier) createMealPlanOption(ctx context.Context, db database.SQLQuery
 	// create the meal plan option.
 	if err := q.generatedQuerier.CreateMealPlanOption(ctx, db, &generated.CreateMealPlanOptionParams{
 		ID:                     input.ID,
-		AssignedCook:           nullStringFromStringPointer(input.AssignedCook),
-		AssignedDishwasher:     nullStringFromStringPointer(input.AssignedDishwasher),
+		AssignedCook:           database.NullStringFromStringPointer(input.AssignedCook),
+		AssignedDishwasher:     database.NullStringFromStringPointer(input.AssignedDishwasher),
 		MealID:                 input.MealID,
 		Notes:                  input.Notes,
-		MealScale:              stringFromFloat32(input.MealScale),
-		BelongsToMealPlanEvent: nullStringFromString(input.BelongsToMealPlanEvent),
+		MealScale:              database.StringFromFloat32(input.MealScale),
+		BelongsToMealPlanEvent: database.NullStringFromString(input.BelongsToMealPlanEvent),
 		Chosen:                 markAsChosen,
 	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating meal plan option")
@@ -365,11 +365,11 @@ func (q *Querier) UpdateMealPlanOption(ctx context.Context, updated *types.MealP
 	if _, err := q.generatedQuerier.UpdateMealPlanOption(ctx, q.db, &generated.UpdateMealPlanOptionParams{
 		MealID:             updated.Meal.ID,
 		Notes:              updated.Notes,
-		MealScale:          stringFromFloat32(updated.MealScale),
+		MealScale:          database.StringFromFloat32(updated.MealScale),
 		MealPlanOptionID:   updated.ID,
-		AssignedCook:       nullStringFromStringPointer(updated.AssignedCook),
-		AssignedDishwasher: nullStringFromStringPointer(updated.AssignedDishwasher),
-		MealPlanEventID:    nullStringFromString(updated.BelongsToMealPlanEvent),
+		AssignedCook:       database.NullStringFromStringPointer(updated.AssignedCook),
+		AssignedDishwasher: database.NullStringFromStringPointer(updated.AssignedDishwasher),
+		MealPlanEventID:    database.NullStringFromString(updated.BelongsToMealPlanEvent),
 	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating meal plan option")
 	}
@@ -559,7 +559,7 @@ func (q *Querier) FinalizeMealPlanOption(ctx context.Context, mealPlanID, mealPl
 	winner, tiebroken, chosen := q.decideOptionWinner(ctx, mealPlanEvent.Options)
 	if chosen {
 		if err = q.generatedQuerier.FinalizeMealPlanOption(ctx, q.db, &generated.FinalizeMealPlanOptionParams{
-			MealPlanEventID: nullStringFromString(mealPlanEventID),
+			MealPlanEventID: database.NullStringFromString(mealPlanEventID),
 			ID:              winner,
 			Tiebroken:       tiebroken,
 		}); err != nil {

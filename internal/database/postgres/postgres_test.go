@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"database/sql"
 	"database/sql/driver"
 	"errors"
 	"fmt"
@@ -326,33 +325,5 @@ func TestQuerier_handleRows(T *testing.T) {
 		err := c.checkRowsForErrorAndClose(ctx, mockRows)
 		assert.Error(t, err)
 		assert.True(t, errors.Is(err, expected))
-	})
-}
-
-func Test_timePointerFromNullTime(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		expected := time.Now()
-		actual := timePointerFromNullTime(sql.NullTime{Time: expected, Valid: true})
-
-		assert.NotNil(t, actual)
-		assert.Equal(t, expected, *actual)
-	})
-}
-
-func Test_stringPointerFromNullString(T *testing.T) {
-	T.Parallel()
-
-	T.Run("standard", func(t *testing.T) {
-		t.Parallel()
-
-		expected := t.Name()
-		actual := stringPointerFromNullString(sql.NullString{String: expected, Valid: true})
-
-		assert.NotNil(t, actual)
-		assert.Equal(t, expected, *actual)
 	})
 }

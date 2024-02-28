@@ -4,6 +4,7 @@ import (
 	"context"
 	"strings"
 
+	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -68,8 +69,8 @@ func (q *Querier) GetServiceSettingConfiguration(ctx context.Context, serviceSet
 
 	serviceSettingConfiguration := &types.ServiceSettingConfiguration{
 		CreatedAt:          result.CreatedAt,
-		LastUpdatedAt:      timePointerFromNullTime(result.LastUpdatedAt),
-		ArchivedAt:         timePointerFromNullTime(result.ArchivedAt),
+		LastUpdatedAt:      database.TimePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:         database.TimePointerFromNullTime(result.ArchivedAt),
 		ID:                 result.ID,
 		Value:              result.Value,
 		Notes:              result.Notes,
@@ -77,9 +78,9 @@ func (q *Querier) GetServiceSettingConfiguration(ctx context.Context, serviceSet
 		BelongsToHousehold: result.BelongsToHousehold,
 		ServiceSetting: types.ServiceSetting{
 			CreatedAt:     result.ServiceSettingCreatedAt,
-			DefaultValue:  stringPointerFromNullString(result.ServiceSettingDefaultValue),
-			LastUpdatedAt: timePointerFromNullTime(result.ServiceSettingLastUpdatedAt),
-			ArchivedAt:    timePointerFromNullTime(result.ServiceSettingArchivedAt),
+			DefaultValue:  database.StringPointerFromNullString(result.ServiceSettingDefaultValue),
+			LastUpdatedAt: database.TimePointerFromNullTime(result.ServiceSettingLastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ServiceSettingArchivedAt),
 			ID:            result.ServiceSettingID,
 			Name:          result.ServiceSettingName,
 			Type:          string(result.ServiceSettingType),
@@ -128,8 +129,8 @@ func (q *Querier) GetServiceSettingConfigurationForUserByName(ctx context.Contex
 
 	serviceSettingConfiguration := &types.ServiceSettingConfiguration{
 		CreatedAt:          result.CreatedAt,
-		LastUpdatedAt:      timePointerFromNullTime(result.LastUpdatedAt),
-		ArchivedAt:         timePointerFromNullTime(result.ArchivedAt),
+		LastUpdatedAt:      database.TimePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:         database.TimePointerFromNullTime(result.ArchivedAt),
 		ID:                 result.ID,
 		Value:              result.Value,
 		Notes:              result.Notes,
@@ -137,9 +138,9 @@ func (q *Querier) GetServiceSettingConfigurationForUserByName(ctx context.Contex
 		BelongsToHousehold: result.BelongsToHousehold,
 		ServiceSetting: types.ServiceSetting{
 			CreatedAt:     result.ServiceSettingCreatedAt,
-			DefaultValue:  stringPointerFromNullString(result.ServiceSettingDefaultValue),
-			LastUpdatedAt: timePointerFromNullTime(result.ServiceSettingLastUpdatedAt),
-			ArchivedAt:    timePointerFromNullTime(result.ServiceSettingArchivedAt),
+			DefaultValue:  database.StringPointerFromNullString(result.ServiceSettingDefaultValue),
+			LastUpdatedAt: database.TimePointerFromNullTime(result.ServiceSettingLastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ServiceSettingArchivedAt),
 			ID:            result.ServiceSettingID,
 			Name:          result.ServiceSettingName,
 			Type:          string(result.ServiceSettingType),
@@ -188,8 +189,8 @@ func (q *Querier) GetServiceSettingConfigurationForHouseholdByName(ctx context.C
 
 	serviceSettingConfiguration := &types.ServiceSettingConfiguration{
 		CreatedAt:          result.CreatedAt,
-		LastUpdatedAt:      timePointerFromNullTime(result.LastUpdatedAt),
-		ArchivedAt:         timePointerFromNullTime(result.ArchivedAt),
+		LastUpdatedAt:      database.TimePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:         database.TimePointerFromNullTime(result.ArchivedAt),
 		ID:                 result.ID,
 		Value:              result.Value,
 		Notes:              result.Notes,
@@ -197,9 +198,9 @@ func (q *Querier) GetServiceSettingConfigurationForHouseholdByName(ctx context.C
 		BelongsToHousehold: result.BelongsToHousehold,
 		ServiceSetting: types.ServiceSetting{
 			CreatedAt:     result.ServiceSettingCreatedAt,
-			DefaultValue:  stringPointerFromNullString(result.ServiceSettingDefaultValue),
-			LastUpdatedAt: timePointerFromNullTime(result.ServiceSettingLastUpdatedAt),
-			ArchivedAt:    timePointerFromNullTime(result.ServiceSettingArchivedAt),
+			DefaultValue:  database.StringPointerFromNullString(result.ServiceSettingDefaultValue),
+			LastUpdatedAt: database.TimePointerFromNullTime(result.ServiceSettingLastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ServiceSettingArchivedAt),
 			ID:            result.ServiceSettingID,
 			Name:          result.ServiceSettingName,
 			Type:          string(result.ServiceSettingType),
@@ -251,8 +252,8 @@ func (q *Querier) GetServiceSettingConfigurationsForUser(ctx context.Context, us
 
 		serviceSettingConfiguration := &types.ServiceSettingConfiguration{
 			CreatedAt:          result.CreatedAt,
-			LastUpdatedAt:      timePointerFromNullTime(result.LastUpdatedAt),
-			ArchivedAt:         timePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt:      database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:         database.TimePointerFromNullTime(result.ArchivedAt),
 			ID:                 result.ID,
 			Value:              result.Value,
 			Notes:              result.Notes,
@@ -260,9 +261,9 @@ func (q *Querier) GetServiceSettingConfigurationsForUser(ctx context.Context, us
 			BelongsToHousehold: result.BelongsToHousehold,
 			ServiceSetting: types.ServiceSetting{
 				CreatedAt:     result.ServiceSettingCreatedAt,
-				DefaultValue:  stringPointerFromNullString(result.ServiceSettingDefaultValue),
-				LastUpdatedAt: timePointerFromNullTime(result.ServiceSettingLastUpdatedAt),
-				ArchivedAt:    timePointerFromNullTime(result.ServiceSettingArchivedAt),
+				DefaultValue:  database.StringPointerFromNullString(result.ServiceSettingDefaultValue),
+				LastUpdatedAt: database.TimePointerFromNullTime(result.ServiceSettingLastUpdatedAt),
+				ArchivedAt:    database.TimePointerFromNullTime(result.ServiceSettingArchivedAt),
 				ID:            result.ServiceSettingID,
 				Name:          result.ServiceSettingName,
 				Type:          string(result.ServiceSettingType),
@@ -317,8 +318,8 @@ func (q *Querier) GetServiceSettingConfigurationsForHousehold(ctx context.Contex
 
 		serviceSettingConfiguration := &types.ServiceSettingConfiguration{
 			CreatedAt:          result.CreatedAt,
-			LastUpdatedAt:      timePointerFromNullTime(result.LastUpdatedAt),
-			ArchivedAt:         timePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt:      database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:         database.TimePointerFromNullTime(result.ArchivedAt),
 			ID:                 result.ID,
 			Value:              result.Value,
 			Notes:              result.Notes,
@@ -326,9 +327,9 @@ func (q *Querier) GetServiceSettingConfigurationsForHousehold(ctx context.Contex
 			BelongsToHousehold: result.BelongsToHousehold,
 			ServiceSetting: types.ServiceSetting{
 				CreatedAt:     result.ServiceSettingCreatedAt,
-				DefaultValue:  stringPointerFromNullString(result.ServiceSettingDefaultValue),
-				LastUpdatedAt: timePointerFromNullTime(result.ServiceSettingLastUpdatedAt),
-				ArchivedAt:    timePointerFromNullTime(result.ServiceSettingArchivedAt),
+				DefaultValue:  database.StringPointerFromNullString(result.ServiceSettingDefaultValue),
+				LastUpdatedAt: database.TimePointerFromNullTime(result.ServiceSettingLastUpdatedAt),
+				ArchivedAt:    database.TimePointerFromNullTime(result.ServiceSettingArchivedAt),
 				ID:            result.ServiceSettingID,
 				Name:          result.ServiceSettingName,
 				Type:          string(result.ServiceSettingType),

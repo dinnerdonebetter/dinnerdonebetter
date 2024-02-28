@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
@@ -55,11 +56,11 @@ func (q *Querier) GetRecipeMedia(ctx context.Context, recipeMediaID string) (*ty
 
 	recipeMedia := &types.RecipeMedia{
 		CreatedAt:           result.CreatedAt,
-		ArchivedAt:          timePointerFromNullTime(result.ArchivedAt),
-		LastUpdatedAt:       timePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:          database.TimePointerFromNullTime(result.ArchivedAt),
+		LastUpdatedAt:       database.TimePointerFromNullTime(result.LastUpdatedAt),
 		ID:                  result.ID,
-		BelongsToRecipe:     stringPointerFromNullString(result.BelongsToRecipe),
-		BelongsToRecipeStep: stringPointerFromNullString(result.BelongsToRecipeStep),
+		BelongsToRecipe:     database.StringPointerFromNullString(result.BelongsToRecipe),
+		BelongsToRecipeStep: database.StringPointerFromNullString(result.BelongsToRecipeStep),
 		MimeType:            result.MimeType,
 		InternalPath:        result.InternalPath,
 		ExternalPath:        result.ExternalPath,
@@ -82,7 +83,7 @@ func (q *Querier) getRecipeMediaForRecipe(ctx context.Context, recipeID string) 
 	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
 	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
-	results, err := q.generatedQuerier.GetRecipeMediaForRecipe(ctx, q.db, nullStringFromString(recipeID))
+	results, err := q.generatedQuerier.GetRecipeMediaForRecipe(ctx, q.db, database.NullStringFromString(recipeID))
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe media list retrieval query")
 	}
@@ -91,11 +92,11 @@ func (q *Querier) getRecipeMediaForRecipe(ctx context.Context, recipeID string) 
 	for i, result := range results {
 		recipeMedia[i] = &types.RecipeMedia{
 			CreatedAt:           result.CreatedAt,
-			ArchivedAt:          timePointerFromNullTime(result.ArchivedAt),
-			LastUpdatedAt:       timePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:          database.TimePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt:       database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ID:                  result.ID,
-			BelongsToRecipe:     stringPointerFromNullString(result.BelongsToRecipe),
-			BelongsToRecipeStep: stringPointerFromNullString(result.BelongsToRecipeStep),
+			BelongsToRecipe:     database.StringPointerFromNullString(result.BelongsToRecipe),
+			BelongsToRecipeStep: database.StringPointerFromNullString(result.BelongsToRecipeStep),
 			MimeType:            result.MimeType,
 			InternalPath:        result.InternalPath,
 			ExternalPath:        result.ExternalPath,
@@ -126,8 +127,8 @@ func (q *Querier) getRecipeMediaForRecipeStep(ctx context.Context, recipeID, rec
 	tracing.AttachToSpan(span, keys.RecipeStepIDKey, recipeStepID)
 
 	results, err := q.generatedQuerier.GetRecipeMediaForRecipeStep(ctx, q.db, &generated.GetRecipeMediaForRecipeStepParams{
-		RecipeID:     nullStringFromString(recipeID),
-		RecipeStepID: nullStringFromString(recipeStepID),
+		RecipeID:     database.NullStringFromString(recipeID),
+		RecipeStepID: database.NullStringFromString(recipeStepID),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe media list retrieval query")
@@ -137,11 +138,11 @@ func (q *Querier) getRecipeMediaForRecipeStep(ctx context.Context, recipeID, rec
 	for _, result := range results {
 		recipeMedia = append(recipeMedia, &types.RecipeMedia{
 			CreatedAt:           result.CreatedAt,
-			ArchivedAt:          timePointerFromNullTime(result.ArchivedAt),
-			LastUpdatedAt:       timePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:          database.TimePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt:       database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ID:                  result.ID,
-			BelongsToRecipe:     stringPointerFromNullString(result.BelongsToRecipe),
-			BelongsToRecipeStep: stringPointerFromNullString(result.BelongsToRecipeStep),
+			BelongsToRecipe:     database.StringPointerFromNullString(result.BelongsToRecipe),
+			BelongsToRecipeStep: database.StringPointerFromNullString(result.BelongsToRecipeStep),
 			MimeType:            result.MimeType,
 			InternalPath:        result.InternalPath,
 			ExternalPath:        result.ExternalPath,
@@ -169,8 +170,8 @@ func (q *Querier) CreateRecipeMedia(ctx context.Context, input *types.RecipeMedi
 		MimeType:            input.MimeType,
 		InternalPath:        input.InternalPath,
 		ExternalPath:        input.ExternalPath,
-		BelongsToRecipe:     nullStringFromStringPointer(input.BelongsToRecipe),
-		BelongsToRecipeStep: nullStringFromStringPointer(input.BelongsToRecipeStep),
+		BelongsToRecipe:     database.NullStringFromStringPointer(input.BelongsToRecipe),
+		BelongsToRecipeStep: database.NullStringFromStringPointer(input.BelongsToRecipeStep),
 		Index:               int32(input.Index),
 	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing recipe media creation query")
@@ -205,8 +206,8 @@ func (q *Querier) UpdateRecipeMedia(ctx context.Context, updated *types.RecipeMe
 	tracing.AttachToSpan(span, keys.RecipeMediaIDKey, updated.ID)
 
 	if _, err := q.generatedQuerier.UpdateRecipeMedia(ctx, q.db, &generated.UpdateRecipeMediaParams{
-		BelongsToRecipe:     nullStringFromStringPointer(updated.BelongsToRecipe),
-		BelongsToRecipeStep: nullStringFromStringPointer(updated.BelongsToRecipeStep),
+		BelongsToRecipe:     database.NullStringFromStringPointer(updated.BelongsToRecipe),
+		BelongsToRecipeStep: database.NullStringFromStringPointer(updated.BelongsToRecipeStep),
 		MimeType:            updated.MimeType,
 		InternalPath:        updated.InternalPath,
 		ExternalPath:        updated.ExternalPath,

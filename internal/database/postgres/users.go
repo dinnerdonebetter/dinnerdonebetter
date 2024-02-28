@@ -46,13 +46,13 @@ func (q *Querier) GetUser(ctx context.Context, userID string) (*types.User, erro
 
 	u := &types.User{
 		CreatedAt:                  result.CreatedAt,
-		PasswordLastChangedAt:      timePointerFromNullTime(result.PasswordLastChangedAt),
-		LastUpdatedAt:              timePointerFromNullTime(result.LastUpdatedAt),
-		LastAcceptedTermsOfService: timePointerFromNullTime(result.LastAcceptedTermsOfService),
-		LastAcceptedPrivacyPolicy:  timePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
-		TwoFactorSecretVerifiedAt:  timePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
-		Birthday:                   timePointerFromNullTime(result.Birthday),
-		ArchivedAt:                 timePointerFromNullTime(result.ArchivedAt),
+		PasswordLastChangedAt:      database.TimePointerFromNullTime(result.PasswordLastChangedAt),
+		LastUpdatedAt:              database.TimePointerFromNullTime(result.LastUpdatedAt),
+		LastAcceptedTermsOfService: database.TimePointerFromNullTime(result.LastAcceptedTermsOfService),
+		LastAcceptedPrivacyPolicy:  database.TimePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
+		TwoFactorSecretVerifiedAt:  database.TimePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
+		Birthday:                   database.TimePointerFromNullTime(result.Birthday),
+		ArchivedAt:                 database.TimePointerFromNullTime(result.ArchivedAt),
 		AccountStatusExplanation:   result.UserAccountStatusExplanation,
 		TwoFactorSecret:            result.TwoFactorSecret,
 		HashedPassword:             result.HashedPassword,
@@ -62,8 +62,8 @@ func (q *Querier) GetUser(ctx context.Context, userID string) (*types.User, erro
 		FirstName:                  result.FirstName,
 		LastName:                   result.LastName,
 		EmailAddress:               result.EmailAddress,
-		EmailAddressVerifiedAt:     timePointerFromNullTime(result.EmailAddressVerifiedAt),
-		AvatarSrc:                  stringPointerFromNullString(result.AvatarSrc),
+		EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.EmailAddressVerifiedAt),
+		AvatarSrc:                  database.StringPointerFromNullString(result.AvatarSrc),
 		ServiceRole:                result.ServiceRole,
 		RequiresPasswordChange:     result.RequiresPasswordChange,
 	}
@@ -88,13 +88,13 @@ func (q *Querier) GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, user
 
 	u := &types.User{
 		CreatedAt:                  result.CreatedAt,
-		PasswordLastChangedAt:      timePointerFromNullTime(result.PasswordLastChangedAt),
-		LastUpdatedAt:              timePointerFromNullTime(result.LastUpdatedAt),
-		LastAcceptedTermsOfService: timePointerFromNullTime(result.LastAcceptedTermsOfService),
-		LastAcceptedPrivacyPolicy:  timePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
-		TwoFactorSecretVerifiedAt:  timePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
-		Birthday:                   timePointerFromNullTime(result.Birthday),
-		ArchivedAt:                 timePointerFromNullTime(result.ArchivedAt),
+		PasswordLastChangedAt:      database.TimePointerFromNullTime(result.PasswordLastChangedAt),
+		LastUpdatedAt:              database.TimePointerFromNullTime(result.LastUpdatedAt),
+		LastAcceptedTermsOfService: database.TimePointerFromNullTime(result.LastAcceptedTermsOfService),
+		LastAcceptedPrivacyPolicy:  database.TimePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
+		TwoFactorSecretVerifiedAt:  database.TimePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
+		Birthday:                   database.TimePointerFromNullTime(result.Birthday),
+		ArchivedAt:                 database.TimePointerFromNullTime(result.ArchivedAt),
 		AccountStatusExplanation:   result.UserAccountStatusExplanation,
 		TwoFactorSecret:            result.TwoFactorSecret,
 		HashedPassword:             result.HashedPassword,
@@ -104,8 +104,8 @@ func (q *Querier) GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, user
 		FirstName:                  result.FirstName,
 		LastName:                   result.LastName,
 		EmailAddress:               result.EmailAddress,
-		EmailAddressVerifiedAt:     timePointerFromNullTime(result.EmailAddressVerifiedAt),
-		AvatarSrc:                  stringPointerFromNullString(result.AvatarSrc),
+		EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.EmailAddressVerifiedAt),
+		AvatarSrc:                  database.StringPointerFromNullString(result.AvatarSrc),
 		ServiceRole:                result.ServiceRole,
 		RequiresPasswordChange:     result.RequiresPasswordChange,
 	}
@@ -130,13 +130,13 @@ func (q *Querier) GetUserByUsername(ctx context.Context, username string) (*type
 
 	u := &types.User{
 		CreatedAt:                  result.CreatedAt,
-		PasswordLastChangedAt:      timePointerFromNullTime(result.PasswordLastChangedAt),
-		LastUpdatedAt:              timePointerFromNullTime(result.LastUpdatedAt),
-		LastAcceptedTermsOfService: timePointerFromNullTime(result.LastAcceptedTermsOfService),
-		LastAcceptedPrivacyPolicy:  timePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
-		TwoFactorSecretVerifiedAt:  timePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
-		Birthday:                   timePointerFromNullTime(result.Birthday),
-		ArchivedAt:                 timePointerFromNullTime(result.ArchivedAt),
+		PasswordLastChangedAt:      database.TimePointerFromNullTime(result.PasswordLastChangedAt),
+		LastUpdatedAt:              database.TimePointerFromNullTime(result.LastUpdatedAt),
+		LastAcceptedTermsOfService: database.TimePointerFromNullTime(result.LastAcceptedTermsOfService),
+		LastAcceptedPrivacyPolicy:  database.TimePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
+		TwoFactorSecretVerifiedAt:  database.TimePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
+		Birthday:                   database.TimePointerFromNullTime(result.Birthday),
+		ArchivedAt:                 database.TimePointerFromNullTime(result.ArchivedAt),
 		AccountStatusExplanation:   result.UserAccountStatusExplanation,
 		TwoFactorSecret:            result.TwoFactorSecret,
 		HashedPassword:             result.HashedPassword,
@@ -146,8 +146,8 @@ func (q *Querier) GetUserByUsername(ctx context.Context, username string) (*type
 		FirstName:                  result.FirstName,
 		LastName:                   result.LastName,
 		EmailAddress:               result.EmailAddress,
-		EmailAddressVerifiedAt:     timePointerFromNullTime(result.EmailAddressVerifiedAt),
-		AvatarSrc:                  stringPointerFromNullString(result.AvatarSrc),
+		EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.EmailAddressVerifiedAt),
+		AvatarSrc:                  database.StringPointerFromNullString(result.AvatarSrc),
 		ServiceRole:                result.ServiceRole,
 		RequiresPasswordChange:     result.RequiresPasswordChange,
 	}
@@ -175,13 +175,13 @@ func (q *Querier) GetAdminUserByUsername(ctx context.Context, username string) (
 
 	u := &types.User{
 		CreatedAt:                  result.CreatedAt,
-		PasswordLastChangedAt:      timePointerFromNullTime(result.PasswordLastChangedAt),
-		LastUpdatedAt:              timePointerFromNullTime(result.LastUpdatedAt),
-		LastAcceptedTermsOfService: timePointerFromNullTime(result.LastAcceptedTermsOfService),
-		LastAcceptedPrivacyPolicy:  timePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
-		TwoFactorSecretVerifiedAt:  timePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
-		Birthday:                   timePointerFromNullTime(result.Birthday),
-		ArchivedAt:                 timePointerFromNullTime(result.ArchivedAt),
+		PasswordLastChangedAt:      database.TimePointerFromNullTime(result.PasswordLastChangedAt),
+		LastUpdatedAt:              database.TimePointerFromNullTime(result.LastUpdatedAt),
+		LastAcceptedTermsOfService: database.TimePointerFromNullTime(result.LastAcceptedTermsOfService),
+		LastAcceptedPrivacyPolicy:  database.TimePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
+		TwoFactorSecretVerifiedAt:  database.TimePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
+		Birthday:                   database.TimePointerFromNullTime(result.Birthday),
+		ArchivedAt:                 database.TimePointerFromNullTime(result.ArchivedAt),
 		AccountStatusExplanation:   result.UserAccountStatusExplanation,
 		TwoFactorSecret:            result.TwoFactorSecret,
 		HashedPassword:             result.HashedPassword,
@@ -191,8 +191,8 @@ func (q *Querier) GetAdminUserByUsername(ctx context.Context, username string) (
 		FirstName:                  result.FirstName,
 		LastName:                   result.LastName,
 		EmailAddress:               result.EmailAddress,
-		EmailAddressVerifiedAt:     timePointerFromNullTime(result.EmailAddressVerifiedAt),
-		AvatarSrc:                  stringPointerFromNullString(result.AvatarSrc),
+		EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.EmailAddressVerifiedAt),
+		AvatarSrc:                  database.StringPointerFromNullString(result.AvatarSrc),
 		ServiceRole:                result.ServiceRole,
 		RequiresPasswordChange:     result.RequiresPasswordChange,
 	}
@@ -217,13 +217,13 @@ func (q *Querier) GetUserByEmail(ctx context.Context, email string) (*types.User
 
 	u := &types.User{
 		CreatedAt:                  result.CreatedAt,
-		PasswordLastChangedAt:      timePointerFromNullTime(result.PasswordLastChangedAt),
-		LastUpdatedAt:              timePointerFromNullTime(result.LastUpdatedAt),
-		LastAcceptedTermsOfService: timePointerFromNullTime(result.LastAcceptedTermsOfService),
-		LastAcceptedPrivacyPolicy:  timePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
-		TwoFactorSecretVerifiedAt:  timePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
-		Birthday:                   timePointerFromNullTime(result.Birthday),
-		ArchivedAt:                 timePointerFromNullTime(result.ArchivedAt),
+		PasswordLastChangedAt:      database.TimePointerFromNullTime(result.PasswordLastChangedAt),
+		LastUpdatedAt:              database.TimePointerFromNullTime(result.LastUpdatedAt),
+		LastAcceptedTermsOfService: database.TimePointerFromNullTime(result.LastAcceptedTermsOfService),
+		LastAcceptedPrivacyPolicy:  database.TimePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
+		TwoFactorSecretVerifiedAt:  database.TimePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
+		Birthday:                   database.TimePointerFromNullTime(result.Birthday),
+		ArchivedAt:                 database.TimePointerFromNullTime(result.ArchivedAt),
 		AccountStatusExplanation:   result.UserAccountStatusExplanation,
 		TwoFactorSecret:            result.TwoFactorSecret,
 		HashedPassword:             result.HashedPassword,
@@ -233,8 +233,8 @@ func (q *Querier) GetUserByEmail(ctx context.Context, email string) (*types.User
 		FirstName:                  result.FirstName,
 		LastName:                   result.LastName,
 		EmailAddress:               result.EmailAddress,
-		EmailAddressVerifiedAt:     timePointerFromNullTime(result.EmailAddressVerifiedAt),
-		AvatarSrc:                  stringPointerFromNullString(result.AvatarSrc),
+		EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.EmailAddressVerifiedAt),
+		AvatarSrc:                  database.StringPointerFromNullString(result.AvatarSrc),
 		ServiceRole:                result.ServiceRole,
 		RequiresPasswordChange:     result.RequiresPasswordChange,
 	}
@@ -261,13 +261,13 @@ func (q *Querier) SearchForUsersByUsername(ctx context.Context, usernameQuery st
 	for i, result := range results {
 		users[i] = &types.User{
 			CreatedAt:                  result.CreatedAt,
-			PasswordLastChangedAt:      timePointerFromNullTime(result.PasswordLastChangedAt),
-			LastUpdatedAt:              timePointerFromNullTime(result.LastUpdatedAt),
-			LastAcceptedTermsOfService: timePointerFromNullTime(result.LastAcceptedTermsOfService),
-			LastAcceptedPrivacyPolicy:  timePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
-			TwoFactorSecretVerifiedAt:  timePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
-			Birthday:                   timePointerFromNullTime(result.Birthday),
-			ArchivedAt:                 timePointerFromNullTime(result.ArchivedAt),
+			PasswordLastChangedAt:      database.TimePointerFromNullTime(result.PasswordLastChangedAt),
+			LastUpdatedAt:              database.TimePointerFromNullTime(result.LastUpdatedAt),
+			LastAcceptedTermsOfService: database.TimePointerFromNullTime(result.LastAcceptedTermsOfService),
+			LastAcceptedPrivacyPolicy:  database.TimePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
+			TwoFactorSecretVerifiedAt:  database.TimePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
+			Birthday:                   database.TimePointerFromNullTime(result.Birthday),
+			ArchivedAt:                 database.TimePointerFromNullTime(result.ArchivedAt),
 			AccountStatusExplanation:   result.UserAccountStatusExplanation,
 			TwoFactorSecret:            result.TwoFactorSecret,
 			HashedPassword:             result.HashedPassword,
@@ -277,8 +277,8 @@ func (q *Querier) SearchForUsersByUsername(ctx context.Context, usernameQuery st
 			FirstName:                  result.FirstName,
 			LastName:                   result.LastName,
 			EmailAddress:               result.EmailAddress,
-			EmailAddressVerifiedAt:     timePointerFromNullTime(result.EmailAddressVerifiedAt),
-			AvatarSrc:                  stringPointerFromNullString(result.AvatarSrc),
+			EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.EmailAddressVerifiedAt),
+			AvatarSrc:                  database.StringPointerFromNullString(result.AvatarSrc),
 			ServiceRole:                result.ServiceRole,
 			RequiresPasswordChange:     result.RequiresPasswordChange,
 		}
@@ -309,12 +309,12 @@ func (q *Querier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x *t
 	}
 
 	results, err := q.generatedQuerier.GetUsers(ctx, q.db, &generated.GetUsersParams{
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "scanning user")
@@ -323,13 +323,13 @@ func (q *Querier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x *t
 	for _, result := range results {
 		u := &types.User{
 			CreatedAt:                  result.CreatedAt,
-			PasswordLastChangedAt:      timePointerFromNullTime(result.PasswordLastChangedAt),
-			LastUpdatedAt:              timePointerFromNullTime(result.LastUpdatedAt),
-			LastAcceptedTermsOfService: timePointerFromNullTime(result.LastAcceptedTermsOfService),
-			LastAcceptedPrivacyPolicy:  timePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
-			TwoFactorSecretVerifiedAt:  timePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
-			Birthday:                   timePointerFromNullTime(result.Birthday),
-			ArchivedAt:                 timePointerFromNullTime(result.ArchivedAt),
+			PasswordLastChangedAt:      database.TimePointerFromNullTime(result.PasswordLastChangedAt),
+			LastUpdatedAt:              database.TimePointerFromNullTime(result.LastUpdatedAt),
+			LastAcceptedTermsOfService: database.TimePointerFromNullTime(result.LastAcceptedTermsOfService),
+			LastAcceptedPrivacyPolicy:  database.TimePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
+			TwoFactorSecretVerifiedAt:  database.TimePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
+			Birthday:                   database.TimePointerFromNullTime(result.Birthday),
+			ArchivedAt:                 database.TimePointerFromNullTime(result.ArchivedAt),
 			AccountStatusExplanation:   result.UserAccountStatusExplanation,
 			TwoFactorSecret:            result.TwoFactorSecret,
 			HashedPassword:             result.HashedPassword,
@@ -339,8 +339,8 @@ func (q *Querier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x *t
 			FirstName:                  result.FirstName,
 			LastName:                   result.LastName,
 			EmailAddress:               result.EmailAddress,
-			EmailAddressVerifiedAt:     timePointerFromNullTime(result.EmailAddressVerifiedAt),
-			AvatarSrc:                  stringPointerFromNullString(result.AvatarSrc),
+			EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.EmailAddressVerifiedAt),
+			AvatarSrc:                  database.StringPointerFromNullString(result.AvatarSrc),
 			ServiceRole:                result.ServiceRole,
 			RequiresPasswordChange:     result.RequiresPasswordChange,
 		}
@@ -425,11 +425,11 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 		EmailAddress:                  input.EmailAddress,
 		HashedPassword:                input.HashedPassword,
 		TwoFactorSecret:               input.TwoFactorSecret,
-		AvatarSrc:                     nullStringFromStringPointer(input.AvatarSrc),
+		AvatarSrc:                     database.NullStringFromStringPointer(input.AvatarSrc),
 		UserAccountStatus:             string(types.UnverifiedHouseholdStatus),
-		Birthday:                      nullTimeFromTimePointer(input.Birthday),
+		Birthday:                      database.NullTimeFromTimePointer(input.Birthday),
 		ServiceRole:                   authorization.ServiceUserRole.String(),
-		EmailAddressVerificationToken: nullStringFromString(token),
+		EmailAddressVerificationToken: database.NullStringFromString(token),
 	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
 
@@ -539,8 +539,8 @@ func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.S
 		ZipCode:       householdCreationInput.ZipCode,
 		Country:       householdCreationInput.Country,
 		BelongsToUser: householdCreationInput.BelongsToUser,
-		Latitude:      nullStringFromFloat64Pointer(householdCreationInput.Latitude),
-		Longitude:     nullStringFromFloat64Pointer(householdCreationInput.Longitude),
+		Latitude:      database.NullStringFromFloat64Pointer(householdCreationInput.Latitude),
+		Longitude:     database.NullStringFromFloat64Pointer(householdCreationInput.Longitude),
 	}); err != nil {
 		q.rollbackTransaction(ctx, querier)
 		return nil, observability.PrepareError(err, span, "creating household")
@@ -755,7 +755,7 @@ func (q *Querier) UpdateUserDetails(ctx context.Context, userID string, input *t
 	if _, err = q.generatedQuerier.UpdateUserDetails(ctx, tx, &generated.UpdateUserDetailsParams{
 		FirstName: input.FirstName,
 		LastName:  input.LastName,
-		Birthday:  nullTimeFromTime(input.Birthday),
+		Birthday:  database.NullTimeFromTime(input.Birthday),
 		ID:        userID,
 	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
@@ -817,7 +817,7 @@ func (q *Querier) UpdateUserAvatar(ctx context.Context, userID, newAvatarSrc str
 	}
 
 	if _, err = q.generatedQuerier.UpdateUserAvatarSrc(ctx, tx, &generated.UpdateUserAvatarSrcParams{
-		AvatarSrc: nullStringFromString(newAvatarSrc),
+		AvatarSrc: database.NullStringFromString(newAvatarSrc),
 		ID:        userID,
 	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
@@ -1136,21 +1136,21 @@ func (q *Querier) GetUserByEmailAddressVerificationToken(ctx context.Context, to
 		return nil, ErrEmptyInputProvided
 	}
 
-	result, err := q.generatedQuerier.GetUserByEmailAddressVerificationToken(ctx, q.db, nullStringFromString(token))
+	result, err := q.generatedQuerier.GetUserByEmailAddressVerificationToken(ctx, q.db, database.NullStringFromString(token))
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "getting user by email address verification token")
 	}
 
 	u := &types.User{
 		CreatedAt:                  result.CreatedAt,
-		PasswordLastChangedAt:      timePointerFromNullTime(result.PasswordLastChangedAt),
-		LastUpdatedAt:              timePointerFromNullTime(result.LastUpdatedAt),
-		LastAcceptedTermsOfService: timePointerFromNullTime(result.LastAcceptedTermsOfService),
-		LastAcceptedPrivacyPolicy:  timePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
-		TwoFactorSecretVerifiedAt:  timePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
-		AvatarSrc:                  stringPointerFromNullString(result.AvatarSrc),
-		Birthday:                   timePointerFromNullTime(result.Birthday),
-		ArchivedAt:                 timePointerFromNullTime(result.ArchivedAt),
+		PasswordLastChangedAt:      database.TimePointerFromNullTime(result.PasswordLastChangedAt),
+		LastUpdatedAt:              database.TimePointerFromNullTime(result.LastUpdatedAt),
+		LastAcceptedTermsOfService: database.TimePointerFromNullTime(result.LastAcceptedTermsOfService),
+		LastAcceptedPrivacyPolicy:  database.TimePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
+		TwoFactorSecretVerifiedAt:  database.TimePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
+		AvatarSrc:                  database.StringPointerFromNullString(result.AvatarSrc),
+		Birthday:                   database.TimePointerFromNullTime(result.Birthday),
+		ArchivedAt:                 database.TimePointerFromNullTime(result.ArchivedAt),
 		AccountStatusExplanation:   result.UserAccountStatusExplanation,
 		TwoFactorSecret:            result.TwoFactorSecret,
 		HashedPassword:             result.HashedPassword,
@@ -1160,7 +1160,7 @@ func (q *Querier) GetUserByEmailAddressVerificationToken(ctx context.Context, to
 		FirstName:                  result.FirstName,
 		LastName:                   result.LastName,
 		EmailAddress:               result.EmailAddress,
-		EmailAddressVerifiedAt:     timePointerFromNullTime(result.EmailAddressVerifiedAt),
+		EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.EmailAddressVerifiedAt),
 		ServiceRole:                result.ServiceRole,
 		RequiresPasswordChange:     result.RequiresPasswordChange,
 	}
@@ -1190,7 +1190,7 @@ func (q *Querier) MarkUserEmailAddressAsVerified(ctx context.Context, userID, to
 
 	if err = q.generatedQuerier.MarkEmailAddressAsVerified(ctx, tx, &generated.MarkEmailAddressAsVerifiedParams{
 		ID:                            userID,
-		EmailAddressVerificationToken: nullStringFromString(token),
+		EmailAddressVerificationToken: database.NullStringFromString(token),
 	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		if errors.Is(err, sql.ErrNoRows) {

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 
+	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
@@ -56,11 +57,11 @@ func (q *Querier) GetValidPreparation(ctx context.Context, validPreparationID st
 
 	validPreparation := &types.ValidPreparation{
 		CreatedAt:                   result.CreatedAt,
-		MaximumInstrumentCount:      int32PointerFromNullInt32(result.MaximumInstrumentCount),
-		ArchivedAt:                  timePointerFromNullTime(result.ArchivedAt),
-		MaximumIngredientCount:      int32PointerFromNullInt32(result.MaximumIngredientCount),
-		LastUpdatedAt:               timePointerFromNullTime(result.LastUpdatedAt),
-		MaximumVesselCount:          int32PointerFromNullInt32(result.MaximumVesselCount),
+		MaximumInstrumentCount:      database.Int32PointerFromNullInt32(result.MaximumInstrumentCount),
+		ArchivedAt:                  database.TimePointerFromNullTime(result.ArchivedAt),
+		MaximumIngredientCount:      database.Int32PointerFromNullInt32(result.MaximumIngredientCount),
+		LastUpdatedAt:               database.TimePointerFromNullTime(result.LastUpdatedAt),
+		MaximumVesselCount:          database.Int32PointerFromNullInt32(result.MaximumVesselCount),
 		IconPath:                    result.IconPath,
 		PastTense:                   result.PastTense,
 		ID:                          result.ID,
@@ -94,11 +95,11 @@ func (q *Querier) GetRandomValidPreparation(ctx context.Context) (*types.ValidPr
 
 	validPreparation := &types.ValidPreparation{
 		CreatedAt:                   result.CreatedAt,
-		MaximumInstrumentCount:      int32PointerFromNullInt32(result.MaximumInstrumentCount),
-		ArchivedAt:                  timePointerFromNullTime(result.ArchivedAt),
-		MaximumIngredientCount:      int32PointerFromNullInt32(result.MaximumIngredientCount),
-		LastUpdatedAt:               timePointerFromNullTime(result.LastUpdatedAt),
-		MaximumVesselCount:          int32PointerFromNullInt32(result.MaximumVesselCount),
+		MaximumInstrumentCount:      database.Int32PointerFromNullInt32(result.MaximumInstrumentCount),
+		ArchivedAt:                  database.TimePointerFromNullTime(result.ArchivedAt),
+		MaximumIngredientCount:      database.Int32PointerFromNullInt32(result.MaximumIngredientCount),
+		LastUpdatedAt:               database.TimePointerFromNullTime(result.LastUpdatedAt),
+		MaximumVesselCount:          database.Int32PointerFromNullInt32(result.MaximumVesselCount),
 		IconPath:                    result.IconPath,
 		PastTense:                   result.PastTense,
 		ID:                          result.ID,
@@ -142,11 +143,11 @@ func (q *Querier) SearchForValidPreparations(ctx context.Context, query string) 
 	for _, result := range results {
 		x = append(x, &types.ValidPreparation{
 			CreatedAt:                   result.CreatedAt,
-			MaximumInstrumentCount:      int32PointerFromNullInt32(result.MaximumInstrumentCount),
-			ArchivedAt:                  timePointerFromNullTime(result.ArchivedAt),
-			MaximumIngredientCount:      int32PointerFromNullInt32(result.MaximumIngredientCount),
-			LastUpdatedAt:               timePointerFromNullTime(result.LastUpdatedAt),
-			MaximumVesselCount:          int32PointerFromNullInt32(result.MaximumVesselCount),
+			MaximumInstrumentCount:      database.Int32PointerFromNullInt32(result.MaximumInstrumentCount),
+			ArchivedAt:                  database.TimePointerFromNullTime(result.ArchivedAt),
+			MaximumIngredientCount:      database.Int32PointerFromNullInt32(result.MaximumIngredientCount),
+			LastUpdatedAt:               database.TimePointerFromNullTime(result.LastUpdatedAt),
+			MaximumVesselCount:          database.Int32PointerFromNullInt32(result.MaximumVesselCount),
 			IconPath:                    result.IconPath,
 			PastTense:                   result.PastTense,
 			ID:                          result.ID,
@@ -187,12 +188,12 @@ func (q *Querier) GetValidPreparations(ctx context.Context, filter *types.QueryF
 	}
 
 	results, err := q.generatedQuerier.GetValidPreparations(ctx, q.db, &generated.GetValidPreparationsParams{
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparations list retrieval query")
@@ -203,11 +204,11 @@ func (q *Querier) GetValidPreparations(ctx context.Context, filter *types.QueryF
 		x.TotalCount = uint64(result.TotalCount)
 		x.Data = append(x.Data, &types.ValidPreparation{
 			CreatedAt:                   result.CreatedAt,
-			MaximumInstrumentCount:      int32PointerFromNullInt32(result.MaximumInstrumentCount),
-			ArchivedAt:                  timePointerFromNullTime(result.ArchivedAt),
-			MaximumIngredientCount:      int32PointerFromNullInt32(result.MaximumIngredientCount),
-			LastUpdatedAt:               timePointerFromNullTime(result.LastUpdatedAt),
-			MaximumVesselCount:          int32PointerFromNullInt32(result.MaximumVesselCount),
+			MaximumInstrumentCount:      database.Int32PointerFromNullInt32(result.MaximumInstrumentCount),
+			ArchivedAt:                  database.TimePointerFromNullTime(result.ArchivedAt),
+			MaximumIngredientCount:      database.Int32PointerFromNullInt32(result.MaximumIngredientCount),
+			LastUpdatedAt:               database.TimePointerFromNullTime(result.LastUpdatedAt),
+			MaximumVesselCount:          database.Int32PointerFromNullInt32(result.MaximumVesselCount),
 			IconPath:                    result.IconPath,
 			PastTense:                   result.PastTense,
 			ID:                          result.ID,
@@ -249,11 +250,11 @@ func (q *Querier) GetValidPreparationsWithIDs(ctx context.Context, ids []string)
 	for _, result := range results {
 		preparations = append(preparations, &types.ValidPreparation{
 			CreatedAt:                   result.CreatedAt,
-			MaximumInstrumentCount:      int32PointerFromNullInt32(result.MaximumInstrumentCount),
-			ArchivedAt:                  timePointerFromNullTime(result.ArchivedAt),
-			MaximumIngredientCount:      int32PointerFromNullInt32(result.MaximumIngredientCount),
-			LastUpdatedAt:               timePointerFromNullTime(result.LastUpdatedAt),
-			MaximumVesselCount:          int32PointerFromNullInt32(result.MaximumVesselCount),
+			MaximumInstrumentCount:      database.Int32PointerFromNullInt32(result.MaximumInstrumentCount),
+			ArchivedAt:                  database.TimePointerFromNullTime(result.ArchivedAt),
+			MaximumIngredientCount:      database.Int32PointerFromNullInt32(result.MaximumIngredientCount),
+			LastUpdatedAt:               database.TimePointerFromNullTime(result.LastUpdatedAt),
+			MaximumVesselCount:          database.Int32PointerFromNullInt32(result.MaximumVesselCount),
 			IconPath:                    result.IconPath,
 			PastTense:                   result.PastTense,
 			ID:                          result.ID,
@@ -309,16 +310,16 @@ func (q *Querier) CreateValidPreparation(ctx context.Context, input *types.Valid
 		YieldsNothing:               input.YieldsNothing,
 		RestrictToIngredients:       input.RestrictToIngredients,
 		MinimumIngredientCount:      input.MinimumIngredientCount,
-		MaximumIngredientCount:      nullInt32FromInt32Pointer(input.MaximumIngredientCount),
+		MaximumIngredientCount:      database.NullInt32FromInt32Pointer(input.MaximumIngredientCount),
 		MinimumInstrumentCount:      input.MinimumInstrumentCount,
-		MaximumInstrumentCount:      nullInt32FromInt32Pointer(input.MaximumInstrumentCount),
+		MaximumInstrumentCount:      database.NullInt32FromInt32Pointer(input.MaximumInstrumentCount),
 		TemperatureRequired:         input.TemperatureRequired,
 		TimeEstimateRequired:        input.TimeEstimateRequired,
 		ConditionExpressionRequired: input.ConditionExpressionRequired,
 		ConsumesVessel:              input.ConsumesVessel,
 		OnlyForVessels:              input.OnlyForVessels,
 		MinimumVesselCount:          input.MinimumVesselCount,
-		MaximumVesselCount:          nullInt32FromInt32Pointer(input.MaximumVesselCount),
+		MaximumVesselCount:          database.NullInt32FromInt32Pointer(input.MaximumVesselCount),
 		PastTense:                   input.PastTense,
 		Slug:                        input.Slug,
 	}); err != nil {
@@ -371,9 +372,9 @@ func (q *Querier) UpdateValidPreparation(ctx context.Context, updated *types.Val
 		Name:                        updated.Name,
 		PastTense:                   updated.PastTense,
 		Slug:                        updated.Slug,
-		MaximumIngredientCount:      nullInt32FromInt32Pointer(updated.MaximumIngredientCount),
-		MaximumInstrumentCount:      nullInt32FromInt32Pointer(updated.MaximumInstrumentCount),
-		MaximumVesselCount:          nullInt32FromInt32Pointer(updated.MaximumVesselCount),
+		MaximumIngredientCount:      database.NullInt32FromInt32Pointer(updated.MaximumIngredientCount),
+		MaximumInstrumentCount:      database.NullInt32FromInt32Pointer(updated.MaximumInstrumentCount),
+		MaximumVesselCount:          database.NullInt32FromInt32Pointer(updated.MaximumVesselCount),
 		MinimumVesselCount:          updated.MinimumVesselCount,
 		MinimumIngredientCount:      updated.MinimumIngredientCount,
 		MinimumInstrumentCount:      updated.MinimumInstrumentCount,

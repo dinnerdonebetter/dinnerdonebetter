@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -78,7 +79,7 @@ func (q *Querier) GetUserNotification(ctx context.Context, userID, userNotificat
 
 	userNotification := &types.UserNotification{
 		CreatedAt:     result.CreatedAt,
-		LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
+		LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 		ID:            result.ID,
 		Content:       result.Content,
 		Status:        string(result.Status),
@@ -113,12 +114,12 @@ func (q *Querier) GetUserNotifications(ctx context.Context, userID string, filte
 
 	results, err := q.generatedQuerier.GetUserNotificationsForUser(ctx, q.db, &generated.GetUserNotificationsForUserParams{
 		UserID:        userID,
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing user notifications list retrieval query")
@@ -127,7 +128,7 @@ func (q *Querier) GetUserNotifications(ctx context.Context, userID string, filte
 	for _, result := range results {
 		userNotification := &types.UserNotification{
 			CreatedAt:     result.CreatedAt,
-			LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
+			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ID:            result.ID,
 		}
 

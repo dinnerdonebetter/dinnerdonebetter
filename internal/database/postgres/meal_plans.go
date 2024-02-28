@@ -76,8 +76,8 @@ func (q *Querier) getMealPlan(ctx context.Context, mealPlanID, householdID strin
 	mealPlan := &types.MealPlan{
 		CreatedAt:              result.CreatedAt,
 		VotingDeadline:         result.VotingDeadline,
-		ArchivedAt:             timePointerFromNullTime(result.ArchivedAt),
-		LastUpdatedAt:          timePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:             database.TimePointerFromNullTime(result.ArchivedAt),
+		LastUpdatedAt:          database.TimePointerFromNullTime(result.LastUpdatedAt),
 		ID:                     result.ID,
 		Status:                 string(result.Status),
 		Notes:                  result.Notes,
@@ -124,12 +124,12 @@ func (q *Querier) GetMealPlans(ctx context.Context, householdID string, filter *
 
 	results, err := q.generatedQuerier.GetMealPlans(ctx, q.db, &generated.GetMealPlansParams{
 		HouseholdID:   householdID,
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing meal plans retrieval")
@@ -139,8 +139,8 @@ func (q *Querier) GetMealPlans(ctx context.Context, householdID string, filter *
 		x.Data = append(x.Data, &types.MealPlan{
 			CreatedAt:              result.CreatedAt,
 			VotingDeadline:         result.VotingDeadline,
-			ArchivedAt:             timePointerFromNullTime(result.ArchivedAt),
-			LastUpdatedAt:          timePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:             database.TimePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt:          database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ID:                     result.ID,
 			Status:                 string(result.Status),
 			Notes:                  result.Notes,
@@ -386,7 +386,7 @@ func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, hou
 			logger = logger.WithValue("winner", winner).WithValue("tiebroken", tiebroken)
 
 			if err = q.generatedQuerier.FinalizeMealPlanOption(ctx, q.db, &generated.FinalizeMealPlanOptionParams{
-				MealPlanEventID: nullStringFromString(event.ID),
+				MealPlanEventID: database.NullStringFromString(event.ID),
 				ID:              winner,
 				Tiebroken:       tiebroken,
 			}); err != nil {
@@ -440,8 +440,8 @@ func (q *Querier) GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context.Co
 		mealPlans = append(mealPlans, &types.MealPlan{
 			CreatedAt:              result.CreatedAt,
 			VotingDeadline:         result.VotingDeadline,
-			ArchivedAt:             timePointerFromNullTime(result.ArchivedAt),
-			LastUpdatedAt:          timePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:             database.TimePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt:          database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ID:                     result.ID,
 			Status:                 string(result.Status),
 			Notes:                  result.Notes,

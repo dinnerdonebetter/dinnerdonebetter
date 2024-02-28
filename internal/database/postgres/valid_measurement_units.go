@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
@@ -55,15 +56,15 @@ func (q *Querier) GetValidMeasurementUnit(ctx context.Context, validMeasurementU
 
 	validMeasurementUnit := &types.ValidMeasurementUnit{
 		CreatedAt:     result.CreatedAt,
-		LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
-		ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+		LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 		Name:          result.Name,
 		IconPath:      result.IconPath,
 		ID:            result.ID,
 		Description:   result.Description,
 		PluralName:    result.PluralName,
 		Slug:          result.Slug,
-		Volumetric:    boolFromNullBool(result.Volumetric),
+		Volumetric:    database.BoolFromNullBool(result.Volumetric),
 		Universal:     result.Universal,
 		Metric:        result.Metric,
 		Imperial:      result.Imperial,
@@ -84,15 +85,15 @@ func (q *Querier) GetRandomValidMeasurementUnit(ctx context.Context) (*types.Val
 
 	validMeasurementUnit := &types.ValidMeasurementUnit{
 		CreatedAt:     result.CreatedAt,
-		LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
-		ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+		LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 		Name:          result.Name,
 		IconPath:      result.IconPath,
 		ID:            result.ID,
 		Description:   result.Description,
 		PluralName:    result.PluralName,
 		Slug:          result.Slug,
-		Volumetric:    boolFromNullBool(result.Volumetric),
+		Volumetric:    database.BoolFromNullBool(result.Volumetric),
 		Universal:     result.Universal,
 		Metric:        result.Metric,
 		Imperial:      result.Imperial,
@@ -123,15 +124,15 @@ func (q *Querier) SearchForValidMeasurementUnits(ctx context.Context, query stri
 	for _, result := range results {
 		x = append(x, &types.ValidMeasurementUnit{
 			CreatedAt:     result.CreatedAt,
-			LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
-			ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 			Name:          result.Name,
 			IconPath:      result.IconPath,
 			ID:            result.ID,
 			Description:   result.Description,
 			PluralName:    result.PluralName,
 			Slug:          result.Slug,
-			Volumetric:    boolFromNullBool(result.Volumetric),
+			Volumetric:    database.BoolFromNullBool(result.Volumetric),
 			Universal:     result.Universal,
 			Metric:        result.Metric,
 			Imperial:      result.Imperial,
@@ -165,12 +166,12 @@ func (q *Querier) ValidMeasurementUnitsForIngredientID(ctx context.Context, vali
 	tracing.AttachToSpan(span, keys.ValidIngredientIDKey, validIngredientID)
 
 	results, err := q.generatedQuerier.SearchValidMeasurementUnitsByIngredientID(ctx, q.db, &generated.SearchValidMeasurementUnitsByIngredientIDParams{
-		CreatedBefore:     nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:      nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore:     nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:      nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:       nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:        nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore:     database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:      database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:     database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:      database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:       database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:        database.NullInt32FromUint8Pointer(filter.Limit),
 		ValidIngredientID: validIngredientID,
 	})
 	if err != nil {
@@ -180,15 +181,15 @@ func (q *Querier) ValidMeasurementUnitsForIngredientID(ctx context.Context, vali
 	for _, result := range results {
 		validMeasurementUnit := &types.ValidMeasurementUnit{
 			CreatedAt:     result.CreatedAt,
-			LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
-			ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 			Name:          result.Name,
 			IconPath:      result.IconPath,
 			ID:            result.ID,
 			Description:   result.Description,
 			PluralName:    result.PluralName,
 			Slug:          result.Slug,
-			Volumetric:    boolFromNullBool(result.Volumetric),
+			Volumetric:    database.BoolFromNullBool(result.Volumetric),
 			Universal:     result.Universal,
 			Metric:        result.Metric,
 			Imperial:      result.Imperial,
@@ -220,12 +221,12 @@ func (q *Querier) GetValidMeasurementUnits(ctx context.Context, filter *types.Qu
 	}
 
 	results, err := q.generatedQuerier.GetValidMeasurementUnits(ctx, q.db, &generated.GetValidMeasurementUnitsParams{
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid measurement units list retrieval query")
@@ -234,15 +235,15 @@ func (q *Querier) GetValidMeasurementUnits(ctx context.Context, filter *types.Qu
 	for _, result := range results {
 		validMeasurementUnit := &types.ValidMeasurementUnit{
 			CreatedAt:     result.CreatedAt,
-			LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
-			ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 			Name:          result.Name,
 			IconPath:      result.IconPath,
 			ID:            result.ID,
 			Description:   result.Description,
 			PluralName:    result.PluralName,
 			Slug:          result.Slug,
-			Volumetric:    boolFromNullBool(result.Volumetric),
+			Volumetric:    database.BoolFromNullBool(result.Volumetric),
 			Universal:     result.Universal,
 			Metric:        result.Metric,
 			Imperial:      result.Imperial,
@@ -272,15 +273,15 @@ func (q *Querier) GetValidMeasurementUnitsWithIDs(ctx context.Context, ids []str
 	for _, result := range results {
 		x = append(x, &types.ValidMeasurementUnit{
 			CreatedAt:     result.CreatedAt,
-			LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
-			ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 			Name:          result.Name,
 			IconPath:      result.IconPath,
 			ID:            result.ID,
 			Description:   result.Description,
 			PluralName:    result.PluralName,
 			Slug:          result.Slug,
-			Volumetric:    boolFromNullBool(result.Volumetric),
+			Volumetric:    database.BoolFromNullBool(result.Volumetric),
 			Universal:     result.Universal,
 			Metric:        result.Metric,
 			Imperial:      result.Imperial,
@@ -322,7 +323,7 @@ func (q *Querier) CreateValidMeasurementUnit(ctx context.Context, input *types.V
 		Slug:        input.Slug,
 		PluralName:  input.PluralName,
 		ID:          input.ID,
-		Volumetric:  nullBoolFromBool(input.Volumetric),
+		Volumetric:  database.NullBoolFromBool(input.Volumetric),
 		Universal:   input.Universal,
 		Metric:      input.Metric,
 		Imperial:    input.Imperial,
@@ -367,7 +368,7 @@ func (q *Querier) UpdateValidMeasurementUnit(ctx context.Context, updated *types
 		Slug:        updated.Slug,
 		PluralName:  updated.PluralName,
 		ID:          updated.ID,
-		Volumetric:  nullBoolFromBool(updated.Volumetric),
+		Volumetric:  database.NullBoolFromBool(updated.Volumetric),
 		Universal:   updated.Universal,
 		Metric:      updated.Metric,
 		Imperial:    updated.Imperial,

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 
+	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
@@ -36,7 +37,7 @@ func (q *Querier) GetOAuth2ClientByClientID(ctx context.Context, clientID string
 
 	client := &types.OAuth2Client{
 		CreatedAt:    result.CreatedAt,
-		ArchivedAt:   timePointerFromNullTime(result.ArchivedAt),
+		ArchivedAt:   database.TimePointerFromNullTime(result.ArchivedAt),
 		Name:         result.Name,
 		Description:  result.Description,
 		ClientID:     result.ClientID,
@@ -67,7 +68,7 @@ func (q *Querier) GetOAuth2ClientByDatabaseID(ctx context.Context, clientID stri
 
 	client := &types.OAuth2Client{
 		CreatedAt:    result.CreatedAt,
-		ArchivedAt:   timePointerFromNullTime(result.ArchivedAt),
+		ArchivedAt:   database.TimePointerFromNullTime(result.ArchivedAt),
 		Name:         result.Name,
 		Description:  result.Description,
 		ClientID:     result.ClientID,
@@ -96,10 +97,10 @@ func (q *Querier) GetOAuth2Clients(ctx context.Context, filter *types.QueryFilte
 	}
 
 	results, err := q.generatedQuerier.GetOAuth2Clients(ctx, q.db, &generated.GetOAuth2ClientsParams{
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching oauth2 clients")
@@ -108,7 +109,7 @@ func (q *Querier) GetOAuth2Clients(ctx context.Context, filter *types.QueryFilte
 	for _, result := range results {
 		x.Data = append(x.Data, &types.OAuth2Client{
 			CreatedAt:    result.CreatedAt,
-			ArchivedAt:   timePointerFromNullTime(result.ArchivedAt),
+			ArchivedAt:   database.TimePointerFromNullTime(result.ArchivedAt),
 			Name:         result.Name,
 			Description:  result.Description,
 			ClientID:     result.ClientID,

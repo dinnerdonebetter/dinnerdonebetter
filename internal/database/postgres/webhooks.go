@@ -88,8 +88,8 @@ func (q *Querier) GetWebhook(ctx context.Context, webhookID, householdID string)
 	}
 	for _, result := range results {
 		webhook.CreatedAt = result.WebhookCreatedAt
-		webhook.ArchivedAt = timePointerFromNullTime(result.WebhookArchivedAt)
-		webhook.LastUpdatedAt = timePointerFromNullTime(result.WebhookLastUpdatedAt)
+		webhook.ArchivedAt = database.TimePointerFromNullTime(result.WebhookArchivedAt)
+		webhook.LastUpdatedAt = database.TimePointerFromNullTime(result.WebhookLastUpdatedAt)
 		webhook.Name = result.WebhookName
 		webhook.URL = result.WebhookUrl
 		webhook.Method = result.WebhookMethod
@@ -99,7 +99,7 @@ func (q *Querier) GetWebhook(ctx context.Context, webhookID, householdID string)
 
 		webhook.Events = append(webhook.Events, &types.WebhookTriggerEvent{
 			CreatedAt:        result.WebhookTriggerEventCreatedAt,
-			ArchivedAt:       timePointerFromNullTime(result.WebhookTriggerEventArchivedAt),
+			ArchivedAt:       database.TimePointerFromNullTime(result.WebhookTriggerEventArchivedAt),
 			ID:               result.WebhookTriggerEventID,
 			BelongsToWebhook: result.WebhookTriggerEventBelongsToWebhook,
 			TriggerEvent:     string(result.WebhookTriggerEventTriggerEvent),
@@ -133,12 +133,12 @@ func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *t
 
 	results, err := q.generatedQuerier.GetWebhooksForHousehold(ctx, q.db, &generated.GetWebhooksForHouseholdParams{
 		HouseholdID:   householdID,
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching webhooks from database")
@@ -147,8 +147,8 @@ func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *t
 	for _, result := range results {
 		x.Data = append(x.Data, &types.Webhook{
 			CreatedAt:          result.CreatedAt,
-			ArchivedAt:         timePointerFromNullTime(result.ArchivedAt),
-			LastUpdatedAt:      timePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:         database.TimePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt:      database.TimePointerFromNullTime(result.LastUpdatedAt),
 			Name:               result.Name,
 			URL:                result.URL,
 			Method:             result.Method,
@@ -189,8 +189,8 @@ func (q *Querier) GetWebhooksForHouseholdAndEvent(ctx context.Context, household
 	for _, result := range databaseResults {
 		results = append(results, &types.Webhook{
 			CreatedAt:          result.CreatedAt,
-			ArchivedAt:         timePointerFromNullTime(result.ArchivedAt),
-			LastUpdatedAt:      timePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:         database.TimePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt:      database.TimePointerFromNullTime(result.LastUpdatedAt),
 			Name:               result.Name,
 			URL:                result.URL,
 			Method:             result.Method,

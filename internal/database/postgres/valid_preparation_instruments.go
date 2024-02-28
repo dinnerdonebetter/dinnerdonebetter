@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
@@ -49,14 +50,14 @@ func (q *Querier) GetValidPreparationInstrument(ctx context.Context, validPrepar
 
 	x := &types.ValidPreparationInstrument{
 		CreatedAt:     result.ValidPreparationInstrumentCreatedAt,
-		LastUpdatedAt: timePointerFromNullTime(result.ValidPreparationInstrumentLastUpdatedAt),
-		ArchivedAt:    timePointerFromNullTime(result.ValidPreparationInstrumentArchivedAt),
+		LastUpdatedAt: database.TimePointerFromNullTime(result.ValidPreparationInstrumentLastUpdatedAt),
+		ArchivedAt:    database.TimePointerFromNullTime(result.ValidPreparationInstrumentArchivedAt),
 		ID:            result.ValidPreparationInstrumentID,
 		Notes:         result.ValidPreparationInstrumentNotes,
 		Instrument: types.ValidInstrument{
 			CreatedAt:                      result.ValidInstrumentCreatedAt,
-			LastUpdatedAt:                  timePointerFromNullTime(result.ValidInstrumentLastUpdatedAt),
-			ArchivedAt:                     timePointerFromNullTime(result.ValidInstrumentArchivedAt),
+			LastUpdatedAt:                  database.TimePointerFromNullTime(result.ValidInstrumentLastUpdatedAt),
+			ArchivedAt:                     database.TimePointerFromNullTime(result.ValidInstrumentArchivedAt),
 			IconPath:                       result.ValidInstrumentIconPath,
 			ID:                             result.ValidInstrumentID,
 			Name:                           result.ValidInstrumentName,
@@ -69,11 +70,11 @@ func (q *Querier) GetValidPreparationInstrument(ctx context.Context, validPrepar
 		},
 		Preparation: types.ValidPreparation{
 			CreatedAt:                   result.ValidPreparationCreatedAt,
-			MaximumInstrumentCount:      int32PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
-			ArchivedAt:                  timePointerFromNullTime(result.ValidPreparationArchivedAt),
-			MaximumIngredientCount:      int32PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
-			LastUpdatedAt:               timePointerFromNullTime(result.ValidPreparationLastUpdatedAt),
-			MaximumVesselCount:          int32PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
+			MaximumInstrumentCount:      database.Int32PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
+			ArchivedAt:                  database.TimePointerFromNullTime(result.ValidPreparationArchivedAt),
+			MaximumIngredientCount:      database.Int32PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
+			LastUpdatedAt:               database.TimePointerFromNullTime(result.ValidPreparationLastUpdatedAt),
+			MaximumVesselCount:          database.Int32PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
 			IconPath:                    result.ValidPreparationIconPath,
 			PastTense:                   result.ValidPreparationPastTense,
 			ID:                          result.ValidPreparationID,
@@ -114,12 +115,12 @@ func (q *Querier) GetValidPreparationInstruments(ctx context.Context, filter *ty
 	}
 
 	results, err := q.generatedQuerier.GetValidPreparationInstruments(ctx, q.db, &generated.GetValidPreparationInstrumentsParams{
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparation instruments list retrieval query")
@@ -128,14 +129,14 @@ func (q *Querier) GetValidPreparationInstruments(ctx context.Context, filter *ty
 	for _, result := range results {
 		validPreparationInstrument := &types.ValidPreparationInstrument{
 			CreatedAt:     result.ValidPreparationInstrumentCreatedAt,
-			LastUpdatedAt: timePointerFromNullTime(result.ValidPreparationInstrumentLastUpdatedAt),
-			ArchivedAt:    timePointerFromNullTime(result.ValidPreparationInstrumentArchivedAt),
+			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidPreparationInstrumentLastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ValidPreparationInstrumentArchivedAt),
 			ID:            result.ValidPreparationInstrumentID,
 			Notes:         result.ValidPreparationInstrumentNotes,
 			Instrument: types.ValidInstrument{
 				CreatedAt:                      result.ValidInstrumentCreatedAt,
-				LastUpdatedAt:                  timePointerFromNullTime(result.ValidInstrumentLastUpdatedAt),
-				ArchivedAt:                     timePointerFromNullTime(result.ValidInstrumentArchivedAt),
+				LastUpdatedAt:                  database.TimePointerFromNullTime(result.ValidInstrumentLastUpdatedAt),
+				ArchivedAt:                     database.TimePointerFromNullTime(result.ValidInstrumentArchivedAt),
 				IconPath:                       result.ValidInstrumentIconPath,
 				ID:                             result.ValidInstrumentID,
 				Name:                           result.ValidInstrumentName,
@@ -148,11 +149,11 @@ func (q *Querier) GetValidPreparationInstruments(ctx context.Context, filter *ty
 			},
 			Preparation: types.ValidPreparation{
 				CreatedAt:                   result.ValidPreparationCreatedAt,
-				MaximumInstrumentCount:      int32PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
-				ArchivedAt:                  timePointerFromNullTime(result.ValidPreparationArchivedAt),
-				MaximumIngredientCount:      int32PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
-				LastUpdatedAt:               timePointerFromNullTime(result.ValidPreparationLastUpdatedAt),
-				MaximumVesselCount:          int32PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
+				MaximumInstrumentCount:      database.Int32PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
+				ArchivedAt:                  database.TimePointerFromNullTime(result.ValidPreparationArchivedAt),
+				MaximumIngredientCount:      database.Int32PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
+				LastUpdatedAt:               database.TimePointerFromNullTime(result.ValidPreparationLastUpdatedAt),
+				MaximumVesselCount:          database.Int32PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
 				IconPath:                    result.ValidPreparationIconPath,
 				PastTense:                   result.ValidPreparationPastTense,
 				ID:                          result.ValidPreparationID,
@@ -204,12 +205,12 @@ func (q *Querier) GetValidPreparationInstrumentsForPreparation(ctx context.Conte
 
 	results, err := q.generatedQuerier.GetValidPreparationInstrumentsForPreparation(ctx, q.db, &generated.GetValidPreparationInstrumentsForPreparationParams{
 		ID:            preparationID,
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparation instruments list retrieval query")
@@ -218,14 +219,14 @@ func (q *Querier) GetValidPreparationInstrumentsForPreparation(ctx context.Conte
 	for _, result := range results {
 		validPreparationInstrument := &types.ValidPreparationInstrument{
 			CreatedAt:     result.ValidPreparationInstrumentCreatedAt,
-			LastUpdatedAt: timePointerFromNullTime(result.ValidPreparationInstrumentLastUpdatedAt),
-			ArchivedAt:    timePointerFromNullTime(result.ValidPreparationInstrumentArchivedAt),
+			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidPreparationInstrumentLastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ValidPreparationInstrumentArchivedAt),
 			ID:            result.ValidPreparationInstrumentID,
 			Notes:         result.ValidPreparationInstrumentNotes,
 			Instrument: types.ValidInstrument{
 				CreatedAt:                      result.ValidInstrumentCreatedAt,
-				LastUpdatedAt:                  timePointerFromNullTime(result.ValidInstrumentLastUpdatedAt),
-				ArchivedAt:                     timePointerFromNullTime(result.ValidInstrumentArchivedAt),
+				LastUpdatedAt:                  database.TimePointerFromNullTime(result.ValidInstrumentLastUpdatedAt),
+				ArchivedAt:                     database.TimePointerFromNullTime(result.ValidInstrumentArchivedAt),
 				IconPath:                       result.ValidInstrumentIconPath,
 				ID:                             result.ValidInstrumentID,
 				Name:                           result.ValidInstrumentName,
@@ -238,11 +239,11 @@ func (q *Querier) GetValidPreparationInstrumentsForPreparation(ctx context.Conte
 			},
 			Preparation: types.ValidPreparation{
 				CreatedAt:                   result.ValidPreparationCreatedAt,
-				MaximumInstrumentCount:      int32PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
-				ArchivedAt:                  timePointerFromNullTime(result.ValidPreparationArchivedAt),
-				MaximumIngredientCount:      int32PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
-				LastUpdatedAt:               timePointerFromNullTime(result.ValidPreparationLastUpdatedAt),
-				MaximumVesselCount:          int32PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
+				MaximumInstrumentCount:      database.Int32PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
+				ArchivedAt:                  database.TimePointerFromNullTime(result.ValidPreparationArchivedAt),
+				MaximumIngredientCount:      database.Int32PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
+				LastUpdatedAt:               database.TimePointerFromNullTime(result.ValidPreparationLastUpdatedAt),
+				MaximumVesselCount:          database.Int32PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
 				IconPath:                    result.ValidPreparationIconPath,
 				PastTense:                   result.ValidPreparationPastTense,
 				ID:                          result.ValidPreparationID,
@@ -295,12 +296,12 @@ func (q *Querier) GetValidPreparationInstrumentsForInstrument(ctx context.Contex
 
 	results, err := q.generatedQuerier.GetValidPreparationInstrumentsForInstrument(ctx, q.db, &generated.GetValidPreparationInstrumentsForInstrumentParams{
 		ID:            instrumentID,
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid preparation instruments list retrieval query")
@@ -309,14 +310,14 @@ func (q *Querier) GetValidPreparationInstrumentsForInstrument(ctx context.Contex
 	for _, result := range results {
 		validPreparationInstrument := &types.ValidPreparationInstrument{
 			CreatedAt:     result.ValidPreparationInstrumentCreatedAt,
-			LastUpdatedAt: timePointerFromNullTime(result.ValidPreparationInstrumentLastUpdatedAt),
-			ArchivedAt:    timePointerFromNullTime(result.ValidPreparationInstrumentArchivedAt),
+			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidPreparationInstrumentLastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ValidPreparationInstrumentArchivedAt),
 			ID:            result.ValidPreparationInstrumentID,
 			Notes:         result.ValidPreparationInstrumentNotes,
 			Instrument: types.ValidInstrument{
 				CreatedAt:                      result.ValidInstrumentCreatedAt,
-				LastUpdatedAt:                  timePointerFromNullTime(result.ValidInstrumentLastUpdatedAt),
-				ArchivedAt:                     timePointerFromNullTime(result.ValidInstrumentArchivedAt),
+				LastUpdatedAt:                  database.TimePointerFromNullTime(result.ValidInstrumentLastUpdatedAt),
+				ArchivedAt:                     database.TimePointerFromNullTime(result.ValidInstrumentArchivedAt),
 				IconPath:                       result.ValidInstrumentIconPath,
 				ID:                             result.ValidInstrumentID,
 				Name:                           result.ValidInstrumentName,
@@ -329,11 +330,11 @@ func (q *Querier) GetValidPreparationInstrumentsForInstrument(ctx context.Contex
 			},
 			Preparation: types.ValidPreparation{
 				CreatedAt:                   result.ValidPreparationCreatedAt,
-				MaximumInstrumentCount:      int32PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
-				ArchivedAt:                  timePointerFromNullTime(result.ValidPreparationArchivedAt),
-				MaximumIngredientCount:      int32PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
-				LastUpdatedAt:               timePointerFromNullTime(result.ValidPreparationLastUpdatedAt),
-				MaximumVesselCount:          int32PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
+				MaximumInstrumentCount:      database.Int32PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
+				ArchivedAt:                  database.TimePointerFromNullTime(result.ValidPreparationArchivedAt),
+				MaximumIngredientCount:      database.Int32PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
+				LastUpdatedAt:               database.TimePointerFromNullTime(result.ValidPreparationLastUpdatedAt),
+				MaximumVesselCount:          database.Int32PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
 				IconPath:                    result.ValidPreparationIconPath,
 				PastTense:                   result.ValidPreparationPastTense,
 				ID:                          result.ValidPreparationID,

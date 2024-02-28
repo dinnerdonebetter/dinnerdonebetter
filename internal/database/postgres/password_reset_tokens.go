@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
@@ -32,8 +33,8 @@ func (q *Querier) GetPasswordResetTokenByToken(ctx context.Context, token string
 	passwordResetToken := &types.PasswordResetToken{
 		CreatedAt:     result.CreatedAt,
 		ExpiresAt:     result.ExpiresAt,
-		RedeemedAt:    timePointerFromNullTime(result.RedeemedAt),
-		LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
+		RedeemedAt:    database.TimePointerFromNullTime(result.RedeemedAt),
+		LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 		ID:            result.ID,
 		Token:         result.Token,
 		BelongsToUser: result.BelongsToUser,

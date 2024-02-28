@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"log"
 
+	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -55,10 +56,10 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID string) (*types.Recipe
 		if x == nil {
 			x = &types.Recipe{
 				CreatedAt:                result.CreatedAt,
-				InspiredByRecipeID:       stringPointerFromNullString(result.InspiredByRecipeID),
-				LastUpdatedAt:            timePointerFromNullTime(result.LastUpdatedAt),
-				ArchivedAt:               timePointerFromNullTime(result.ArchivedAt),
-				MaximumEstimatedPortions: float32PointerFromNullString(result.MaxEstimatedPortions),
+				InspiredByRecipeID:       database.StringPointerFromNullString(result.InspiredByRecipeID),
+				LastUpdatedAt:            database.TimePointerFromNullTime(result.LastUpdatedAt),
+				ArchivedAt:               database.TimePointerFromNullTime(result.ArchivedAt),
+				MaximumEstimatedPortions: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
 				PluralPortionName:        result.PluralPortionName,
 				Description:              result.Description,
 				Name:                     result.Name,
@@ -68,7 +69,7 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID string) (*types.Recipe
 				Source:                   result.Source,
 				Slug:                     result.Slug,
 				YieldsComponentType:      string(result.YieldsComponentType),
-				MinimumEstimatedPortions: float32FromString(result.MinEstimatedPortions),
+				MinimumEstimatedPortions: database.Float32FromString(result.MinEstimatedPortions),
 				SealOfApproval:           result.SealOfApproval,
 				EligibleForMeals:         result.EligibleForMeals,
 				PrepTasks:                []*types.RecipePrepTask{},
@@ -79,12 +80,12 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID string) (*types.Recipe
 
 		x.Steps = append(x.Steps, &types.RecipeStep{
 			CreatedAt:                     result.RecipeStepCreatedAt,
-			MinimumEstimatedTimeInSeconds: uint32PointerFromNullInt64(result.RecipeStepMinimumEstimatedTimeInSeconds),
-			ArchivedAt:                    timePointerFromNullTime(result.RecipeStepArchivedAt),
-			LastUpdatedAt:                 timePointerFromNullTime(result.RecipeStepLastUpdatedAt),
-			MinimumTemperatureInCelsius:   float32PointerFromNullString(result.RecipeStepMinimumTemperatureInCelsius),
-			MaximumTemperatureInCelsius:   float32PointerFromNullString(result.RecipeStepMaximumTemperatureInCelsius),
-			MaximumEstimatedTimeInSeconds: uint32PointerFromNullInt64(result.RecipeStepMaximumEstimatedTimeInSeconds),
+			MinimumEstimatedTimeInSeconds: database.Uint32PointerFromNullInt64(result.RecipeStepMinimumEstimatedTimeInSeconds),
+			ArchivedAt:                    database.TimePointerFromNullTime(result.RecipeStepArchivedAt),
+			LastUpdatedAt:                 database.TimePointerFromNullTime(result.RecipeStepLastUpdatedAt),
+			MinimumTemperatureInCelsius:   database.Float32PointerFromNullString(result.RecipeStepMinimumTemperatureInCelsius),
+			MaximumTemperatureInCelsius:   database.Float32PointerFromNullString(result.RecipeStepMaximumTemperatureInCelsius),
+			MaximumEstimatedTimeInSeconds: database.Uint32PointerFromNullInt64(result.RecipeStepMaximumEstimatedTimeInSeconds),
 			BelongsToRecipe:               result.RecipeStepBelongsToRecipe,
 			ConditionExpression:           result.RecipeStepConditionExpression,
 			ID:                            result.RecipeStepID,
@@ -92,11 +93,11 @@ func (q *Querier) getRecipe(ctx context.Context, recipeID string) (*types.Recipe
 			ExplicitInstructions:          result.RecipeStepExplicitInstructions,
 			Preparation: types.ValidPreparation{
 				CreatedAt:                   result.RecipeStepPreparationCreatedAt,
-				MaximumInstrumentCount:      int32PointerFromNullInt32(result.RecipeStepPreparationMaximumInstrumentCount),
-				ArchivedAt:                  timePointerFromNullTime(result.RecipeStepPreparationArchivedAt),
-				MaximumIngredientCount:      int32PointerFromNullInt32(result.RecipeStepPreparationMaximumIngredientCount),
-				LastUpdatedAt:               timePointerFromNullTime(result.RecipeStepPreparationLastUpdatedAt),
-				MaximumVesselCount:          int32PointerFromNullInt32(result.RecipeStepPreparationMaximumVesselCount),
+				MaximumInstrumentCount:      database.Int32PointerFromNullInt32(result.RecipeStepPreparationMaximumInstrumentCount),
+				ArchivedAt:                  database.TimePointerFromNullTime(result.RecipeStepPreparationArchivedAt),
+				MaximumIngredientCount:      database.Int32PointerFromNullInt32(result.RecipeStepPreparationMaximumIngredientCount),
+				LastUpdatedAt:               database.TimePointerFromNullTime(result.RecipeStepPreparationLastUpdatedAt),
+				MaximumVesselCount:          database.Int32PointerFromNullInt32(result.RecipeStepPreparationMaximumVesselCount),
 				IconPath:                    result.RecipeStepPreparationIconPath,
 				PastTense:                   result.RecipeStepPreparationPastTense,
 				ID:                          result.RecipeStepPreparationID,
@@ -240,12 +241,12 @@ func (q *Querier) GetRecipes(ctx context.Context, filter *types.QueryFilter) (x 
 	}
 
 	results, err := q.generatedQuerier.GetRecipes(ctx, q.db, &generated.GetRecipesParams{
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipes list retrieval query")
@@ -254,10 +255,10 @@ func (q *Querier) GetRecipes(ctx context.Context, filter *types.QueryFilter) (x 
 	for _, result := range results {
 		x.Data = append(x.Data, &types.Recipe{
 			CreatedAt:                result.CreatedAt,
-			InspiredByRecipeID:       stringPointerFromNullString(result.InspiredByRecipeID),
-			LastUpdatedAt:            timePointerFromNullTime(result.LastUpdatedAt),
-			ArchivedAt:               timePointerFromNullTime(result.ArchivedAt),
-			MaximumEstimatedPortions: float32PointerFromNullString(result.MaxEstimatedPortions),
+			InspiredByRecipeID:       database.StringPointerFromNullString(result.InspiredByRecipeID),
+			LastUpdatedAt:            database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:               database.TimePointerFromNullTime(result.ArchivedAt),
+			MaximumEstimatedPortions: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
 			PluralPortionName:        result.PluralPortionName,
 			Description:              result.Description,
 			Name:                     result.Name,
@@ -267,7 +268,7 @@ func (q *Querier) GetRecipes(ctx context.Context, filter *types.QueryFilter) (x 
 			Source:                   result.Source,
 			Slug:                     result.Slug,
 			YieldsComponentType:      string(result.YieldsComponentType),
-			MinimumEstimatedPortions: float32FromString(result.MinEstimatedPortions),
+			MinimumEstimatedPortions: database.Float32FromString(result.MinEstimatedPortions),
 			SealOfApproval:           result.SealOfApproval,
 			EligibleForMeals:         result.EligibleForMeals,
 		})
@@ -329,12 +330,12 @@ func (q *Querier) SearchForRecipes(ctx context.Context, recipeNameQuery string, 
 	}
 
 	results, err := q.generatedQuerier.RecipeSearch(ctx, q.db, &generated.RecipeSearchParams{
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 		Query:         recipeNameQuery,
 	})
 	if err != nil {
@@ -344,10 +345,10 @@ func (q *Querier) SearchForRecipes(ctx context.Context, recipeNameQuery string, 
 	for _, result := range results {
 		x.Data = append(x.Data, &types.Recipe{
 			CreatedAt:                result.CreatedAt,
-			InspiredByRecipeID:       stringPointerFromNullString(result.InspiredByRecipeID),
-			LastUpdatedAt:            timePointerFromNullTime(result.LastUpdatedAt),
-			ArchivedAt:               timePointerFromNullTime(result.ArchivedAt),
-			MaximumEstimatedPortions: float32PointerFromNullString(result.MaxEstimatedPortions),
+			InspiredByRecipeID:       database.StringPointerFromNullString(result.InspiredByRecipeID),
+			LastUpdatedAt:            database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:               database.TimePointerFromNullTime(result.ArchivedAt),
+			MaximumEstimatedPortions: database.Float32PointerFromNullString(result.MaxEstimatedPortions),
 			PluralPortionName:        result.PluralPortionName,
 			Description:              result.Description,
 			Name:                     result.Name,
@@ -357,7 +358,7 @@ func (q *Querier) SearchForRecipes(ctx context.Context, recipeNameQuery string, 
 			Source:                   result.Source,
 			Slug:                     result.Slug,
 			YieldsComponentType:      string(result.YieldsComponentType),
-			MinimumEstimatedPortions: float32FromString(result.MinEstimatedPortions),
+			MinimumEstimatedPortions: database.Float32FromString(result.MinEstimatedPortions),
 			SealOfApproval:           result.SealOfApproval,
 			EligibleForMeals:         result.EligibleForMeals,
 		})
@@ -386,7 +387,7 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 
 	// create the recipe.
 	if err = q.generatedQuerier.CreateRecipe(ctx, tx, &generated.CreateRecipeParams{
-		MinEstimatedPortions: stringFromFloat32(input.MinimumEstimatedPortions),
+		MinEstimatedPortions: database.StringFromFloat32(input.MinimumEstimatedPortions),
 		ID:                   input.ID,
 		Slug:                 input.Slug,
 		Source:               input.Source,
@@ -396,8 +397,8 @@ func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseC
 		YieldsComponentType:  generated.ComponentType(input.YieldsComponentType),
 		PortionName:          input.PortionName,
 		PluralPortionName:    input.PluralPortionName,
-		MaxEstimatedPortions: nullStringFromFloat32Pointer(input.MaximumEstimatedPortions),
-		InspiredByRecipeID:   nullStringFromStringPointer(input.InspiredByRecipeID),
+		MaxEstimatedPortions: database.NullStringFromFloat32Pointer(input.MaximumEstimatedPortions),
+		InspiredByRecipeID:   database.NullStringFromStringPointer(input.InspiredByRecipeID),
 		SealOfApproval:       input.SealOfApproval,
 		EligibleForMeals:     input.EligibleForMeals,
 	}); err != nil {
@@ -552,9 +553,9 @@ func (q *Querier) UpdateRecipe(ctx context.Context, updated *types.Recipe) error
 		Slug:                 updated.Slug,
 		Source:               updated.Source,
 		Description:          updated.Description,
-		InspiredByRecipeID:   nullStringFromStringPointer(updated.InspiredByRecipeID),
-		MinEstimatedPortions: stringFromFloat32(updated.MinimumEstimatedPortions),
-		MaxEstimatedPortions: nullStringFromFloat32Pointer(updated.MaximumEstimatedPortions),
+		InspiredByRecipeID:   database.NullStringFromStringPointer(updated.InspiredByRecipeID),
+		MinEstimatedPortions: database.StringFromFloat32(updated.MinimumEstimatedPortions),
+		MaxEstimatedPortions: database.NullStringFromFloat32Pointer(updated.MaximumEstimatedPortions),
 		PortionName:          updated.PortionName,
 		PluralPortionName:    updated.PluralPortionName,
 		SealOfApproval:       updated.SealOfApproval,

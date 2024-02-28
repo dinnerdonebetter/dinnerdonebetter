@@ -6,7 +6,7 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
-var _ Index[types.ValidPreparationSearchSubset] = (*NoopIndexManager[types.ValidPreparationSearchSubset])(nil)
+var _ Index[types.UserSearchSubset] = (*NoopIndexManager[types.UserSearchSubset])(nil)
 
 // NoopIndexManager is a noop Index.
 type NoopIndexManager[T any] struct{}

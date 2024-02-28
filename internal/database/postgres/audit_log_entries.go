@@ -38,12 +38,12 @@ func (q *Querier) GetAuditLogEntry(ctx context.Context, auditLogEntryID string) 
 
 	auditLogEntry := &types.AuditLogEntry{
 		CreatedAt:          result.CreatedAt,
-		BelongsToHousehold: stringPointerFromNullString(result.BelongsToHousehold),
+		BelongsToHousehold: database.StringPointerFromNullString(result.BelongsToHousehold),
 		ID:                 result.ID,
 		ResourceType:       result.ResourceType,
 		RelevantID:         result.RelevantID,
 		EventType:          types.AuditLogEntryEventType(result.EventType),
-		BelongsToUser:      stringFromNullString(result.BelongsToUser),
+		BelongsToUser:      database.StringFromNullString(result.BelongsToUser),
 	}
 
 	if err = json.Unmarshal(result.Changes, &auditLogEntry.Changes); err != nil {
@@ -76,11 +76,11 @@ func (q *Querier) GetAuditLogEntriesForUser(ctx context.Context, userID string, 
 	}
 
 	results, err := q.generatedQuerier.GetAuditLogEntriesForUser(ctx, q.db, &generated.GetAuditLogEntriesForUserParams{
-		BelongsToUser: nullStringFromString(userID),
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		BelongsToUser: database.NullStringFromString(userID),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching audit log entries from database")
@@ -89,12 +89,12 @@ func (q *Querier) GetAuditLogEntriesForUser(ctx context.Context, userID string, 
 	for _, result := range results {
 		auditLogEntry := &types.AuditLogEntry{
 			CreatedAt:          result.CreatedAt,
-			BelongsToHousehold: stringPointerFromNullString(result.BelongsToHousehold),
+			BelongsToHousehold: database.StringPointerFromNullString(result.BelongsToHousehold),
 			ID:                 result.ID,
 			ResourceType:       result.ResourceType,
 			RelevantID:         result.RelevantID,
 			EventType:          types.AuditLogEntryEventType(result.EventType),
-			BelongsToUser:      stringFromNullString(result.BelongsToUser),
+			BelongsToUser:      database.StringFromNullString(result.BelongsToUser),
 		}
 
 		if err = json.Unmarshal(result.Changes, &auditLogEntry.Changes); err != nil {
@@ -138,12 +138,12 @@ func (q *Querier) GetAuditLogEntriesForUserAndResourceType(ctx context.Context, 
 	}
 
 	results, err := q.generatedQuerier.GetAuditLogEntriesForUserAndResourceType(ctx, q.db, &generated.GetAuditLogEntriesForUserAndResourceTypeParams{
-		BelongsToUser: nullStringFromString(userID),
+		BelongsToUser: database.NullStringFromString(userID),
 		Resources:     resourceTypes,
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching audit log entries from database")
@@ -152,12 +152,12 @@ func (q *Querier) GetAuditLogEntriesForUserAndResourceType(ctx context.Context, 
 	for _, result := range results {
 		auditLogEntry := &types.AuditLogEntry{
 			CreatedAt:          result.CreatedAt,
-			BelongsToHousehold: stringPointerFromNullString(result.BelongsToHousehold),
+			BelongsToHousehold: database.StringPointerFromNullString(result.BelongsToHousehold),
 			ID:                 result.ID,
 			ResourceType:       result.ResourceType,
 			RelevantID:         result.RelevantID,
 			EventType:          types.AuditLogEntryEventType(result.EventType),
-			BelongsToUser:      stringFromNullString(result.BelongsToUser),
+			BelongsToUser:      database.StringFromNullString(result.BelongsToUser),
 		}
 
 		if err = json.Unmarshal(result.Changes, &auditLogEntry.Changes); err != nil {
@@ -195,11 +195,11 @@ func (q *Querier) GetAuditLogEntriesForHousehold(ctx context.Context, householdI
 	}
 
 	results, err := q.generatedQuerier.GetAuditLogEntriesForHousehold(ctx, q.db, &generated.GetAuditLogEntriesForHouseholdParams{
-		BelongsToHousehold: nullStringFromString(householdID),
-		CreatedBefore:      nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:       nullTimeFromTimePointer(filter.CreatedAfter),
-		QueryOffset:        nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:         nullInt32FromUint8Pointer(filter.Limit),
+		BelongsToHousehold: database.NullStringFromString(householdID),
+		CreatedBefore:      database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:       database.NullTimeFromTimePointer(filter.CreatedAfter),
+		QueryOffset:        database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:         database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching audit log entries from database")
@@ -208,12 +208,12 @@ func (q *Querier) GetAuditLogEntriesForHousehold(ctx context.Context, householdI
 	for _, result := range results {
 		auditLogEntry := &types.AuditLogEntry{
 			CreatedAt:          result.CreatedAt,
-			BelongsToHousehold: stringPointerFromNullString(result.BelongsToHousehold),
+			BelongsToHousehold: database.StringPointerFromNullString(result.BelongsToHousehold),
 			ID:                 result.ID,
 			ResourceType:       result.ResourceType,
 			RelevantID:         result.RelevantID,
 			EventType:          types.AuditLogEntryEventType(result.EventType),
-			BelongsToUser:      stringFromNullString(result.BelongsToUser),
+			BelongsToUser:      database.StringFromNullString(result.BelongsToUser),
 		}
 
 		if err = json.Unmarshal(result.Changes, &auditLogEntry.Changes); err != nil {
@@ -257,12 +257,12 @@ func (q *Querier) GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Cont
 	}
 
 	results, err := q.generatedQuerier.GetAuditLogEntriesForHouseholdAndResourceType(ctx, q.db, &generated.GetAuditLogEntriesForHouseholdAndResourceTypeParams{
-		BelongsToHousehold: nullStringFromString(householdID),
+		BelongsToHousehold: database.NullStringFromString(householdID),
 		Resources:          resourceTypes,
-		CreatedBefore:      nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:       nullTimeFromTimePointer(filter.CreatedAfter),
-		QueryOffset:        nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:         nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore:      database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:       database.NullTimeFromTimePointer(filter.CreatedAfter),
+		QueryOffset:        database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:         database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching audit log entries from database")
@@ -271,12 +271,12 @@ func (q *Querier) GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Cont
 	for _, result := range results {
 		auditLogEntry := &types.AuditLogEntry{
 			CreatedAt:          result.CreatedAt,
-			BelongsToHousehold: stringPointerFromNullString(result.BelongsToHousehold),
+			BelongsToHousehold: database.StringPointerFromNullString(result.BelongsToHousehold),
 			ID:                 result.ID,
 			ResourceType:       result.ResourceType,
 			RelevantID:         result.RelevantID,
 			EventType:          types.AuditLogEntryEventType(result.EventType),
-			BelongsToUser:      stringFromNullString(result.BelongsToUser),
+			BelongsToUser:      database.StringFromNullString(result.BelongsToUser),
 		}
 
 		if err = json.Unmarshal(result.Changes, &auditLogEntry.Changes); err != nil {
@@ -322,7 +322,7 @@ func (q *Querier) createAuditLogEntry(ctx context.Context, querier database.SQLQ
 		EventType:          generated.AuditLogEventType(input.EventType),
 		Changes:            marshaledChanges,
 		BelongsToUser:      sql.NullString{String: input.BelongsToUser, Valid: strings.TrimSpace(input.BelongsToUser) != ""},
-		BelongsToHousehold: nullStringFromStringPointer(input.BelongsToHousehold),
+		BelongsToHousehold: database.NullStringFromStringPointer(input.BelongsToHousehold),
 	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing audit log creation query")
 	}

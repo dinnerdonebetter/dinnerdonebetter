@@ -97,12 +97,12 @@ func (q *Querier) GetRecipeStepCompletionCondition(ctx context.Context, recipeID
 		if recipeStepCompletionCondition.ID == "" {
 			recipeStepCompletionCondition = &types.RecipeStepCompletionCondition{
 				CreatedAt:     result.CreatedAt,
-				ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
-				LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
+				ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
+				LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 				IngredientState: types.ValidIngredientState{
 					CreatedAt:     result.ValidIngredientStateCreatedAt,
-					ArchivedAt:    timePointerFromNullTime(result.ValidIngredientStateArchivedAt),
-					LastUpdatedAt: timePointerFromNullTime(result.ValidIngredientStateLastUpdatedAt),
+					ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientStateArchivedAt),
+					LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientStateLastUpdatedAt),
 					PastTense:     result.ValidIngredientStatePastTense,
 					Description:   result.ValidIngredientStateDescription,
 					IconPath:      result.ValidIngredientStateIconPath,
@@ -121,8 +121,8 @@ func (q *Querier) GetRecipeStepCompletionCondition(ctx context.Context, recipeID
 
 		recipeStepCompletionCondition.Ingredients = append(recipeStepCompletionCondition.Ingredients, &types.RecipeStepCompletionConditionIngredient{
 			CreatedAt:                              result.RecipeStepCompletionConditionIngredientCreatedAt,
-			ArchivedAt:                             timePointerFromNullTime(result.RecipeStepCompletionConditionIngredientArchivedAt),
-			LastUpdatedAt:                          timePointerFromNullTime(result.RecipeStepCompletionConditionIngredientLastUpdatedAt),
+			ArchivedAt:                             database.TimePointerFromNullTime(result.RecipeStepCompletionConditionIngredientArchivedAt),
+			LastUpdatedAt:                          database.TimePointerFromNullTime(result.RecipeStepCompletionConditionIngredientLastUpdatedAt),
 			ID:                                     result.RecipeStepCompletionConditionIngredientID,
 			BelongsToRecipeStepCompletionCondition: result.RecipeStepCompletionConditionIngredientBelongsToRecipeS,
 			RecipeStepIngredient:                   result.RecipeStepCompletionConditionIngredientRecipeStepIngredi,
@@ -155,8 +155,8 @@ func (q *Querier) getRecipeStepCompletionConditionsForRecipe(ctx context.Context
 	for _, result := range results {
 		recipeStepCompletionCondition := &types.RecipeStepCompletionCondition{
 			CreatedAt:     result.CreatedAt,
-			ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
-			LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 			IngredientState: types.ValidIngredientState{
 				CreatedAt:     time.Time{},
 				ArchivedAt:    nil,
@@ -227,12 +227,12 @@ func (q *Querier) GetRecipeStepCompletionConditions(ctx context.Context, recipeI
 
 	results, err := q.generatedQuerier.GetRecipeStepCompletionConditions(ctx, q.db, &generated.GetRecipeStepCompletionConditionsParams{
 		RecipeStepID:  recipeStepID,
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "querying for recipe step completion conditions")
@@ -243,12 +243,12 @@ func (q *Querier) GetRecipeStepCompletionConditions(ctx context.Context, recipeI
 	for _, result := range results {
 		recipeStepCompletionCondition := &types.RecipeStepCompletionCondition{
 			CreatedAt:     result.CreatedAt,
-			ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
-			LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 			IngredientState: types.ValidIngredientState{
 				CreatedAt:     result.ValidIngredientStateCreatedAt,
-				ArchivedAt:    timePointerFromNullTime(result.ValidIngredientStateArchivedAt),
-				LastUpdatedAt: timePointerFromNullTime(result.ValidIngredientStateLastUpdatedAt),
+				ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientStateArchivedAt),
+				LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientStateLastUpdatedAt),
 				PastTense:     result.ValidIngredientStatePastTense,
 				Description:   result.ValidIngredientStateDescription,
 				IconPath:      result.ValidIngredientStateIconPath,

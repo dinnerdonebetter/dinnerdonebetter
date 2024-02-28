@@ -1,4 +1,4 @@
-package postgres
+package database
 
 import (
 	"database/sql"
@@ -8,7 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/pkg/pointer"
 )
 
-func timePointerFromNullTime(nt sql.NullTime) *time.Time {
+func TimePointerFromNullTime(nt sql.NullTime) *time.Time {
 	if nt.Valid {
 		return &nt.Time
 	}
@@ -16,7 +16,7 @@ func timePointerFromNullTime(nt sql.NullTime) *time.Time {
 	return nil
 }
 
-func stringPointerFromNullString(nt sql.NullString) *string {
+func StringPointerFromNullString(nt sql.NullString) *string {
 	if nt.Valid {
 		return &nt.String
 	}
@@ -24,7 +24,7 @@ func stringPointerFromNullString(nt sql.NullString) *string {
 	return nil
 }
 
-func stringFromNullString(nt sql.NullString) string {
+func StringFromNullString(nt sql.NullString) string {
 	if nt.Valid {
 		return nt.String
 	}
@@ -32,11 +32,11 @@ func stringFromNullString(nt sql.NullString) string {
 	return ""
 }
 
-func nullStringFromString(s string) sql.NullString {
+func NullStringFromString(s string) sql.NullString {
 	return sql.NullString{String: s, Valid: true}
 }
 
-func nullStringFromStringPointer(s *string) sql.NullString {
+func NullStringFromStringPointer(s *string) sql.NullString {
 	if s == nil {
 		return sql.NullString{}
 	}
@@ -44,11 +44,11 @@ func nullStringFromStringPointer(s *string) sql.NullString {
 	return sql.NullString{String: *s, Valid: true}
 }
 
-func nullTimeFromTime(t time.Time) sql.NullTime {
+func NullTimeFromTime(t time.Time) sql.NullTime {
 	return sql.NullTime{Time: t, Valid: true}
 }
 
-func nullTimeFromTimePointer(t *time.Time) sql.NullTime {
+func NullTimeFromTimePointer(t *time.Time) sql.NullTime {
 	if t == nil {
 		return sql.NullTime{}
 	}
@@ -56,7 +56,7 @@ func nullTimeFromTimePointer(t *time.Time) sql.NullTime {
 	return sql.NullTime{Time: *t, Valid: true}
 }
 
-func nullInt32FromUint8Pointer(i *uint8) sql.NullInt32 {
+func NullInt32FromUint8Pointer(i *uint8) sql.NullInt32 {
 	if i == nil {
 		return sql.NullInt32{}
 	}
@@ -64,7 +64,7 @@ func nullInt32FromUint8Pointer(i *uint8) sql.NullInt32 {
 	return sql.NullInt32{Int32: int32(*i), Valid: true}
 }
 
-func nullInt32FromUint16Pointer(i *uint16) sql.NullInt32 {
+func NullInt32FromUint16Pointer(i *uint16) sql.NullInt32 {
 	if i == nil {
 		return sql.NullInt32{}
 	}
@@ -72,11 +72,15 @@ func nullInt32FromUint16Pointer(i *uint16) sql.NullInt32 {
 	return sql.NullInt32{Int32: int32(*i), Valid: true}
 }
 
-func nullInt32FromUint16(i uint16) sql.NullInt32 {
+func NullInt32FromUint16(i uint16) sql.NullInt32 {
 	return sql.NullInt32{Int32: int32(i), Valid: true}
 }
 
-func boolFromNullBool(b sql.NullBool) bool {
+func NullBoolFromBool(b bool) sql.NullBool {
+	return sql.NullBool{Bool: b, Valid: true}
+}
+
+func BoolFromNullBool(b sql.NullBool) bool {
 	if b.Valid {
 		return b.Bool
 	}
@@ -84,7 +88,7 @@ func boolFromNullBool(b sql.NullBool) bool {
 	return false
 }
 
-func nullInt32FromInt32Pointer(i *int32) sql.NullInt32 {
+func NullInt32FromInt32Pointer(i *int32) sql.NullInt32 {
 	if i == nil {
 		return sql.NullInt32{}
 	}
@@ -92,7 +96,7 @@ func nullInt32FromInt32Pointer(i *int32) sql.NullInt32 {
 	return sql.NullInt32{Int32: *i, Valid: true}
 }
 
-func nullInt32FromUint32Pointer(i *uint32) sql.NullInt32 {
+func NullInt32FromUint32Pointer(i *uint32) sql.NullInt32 {
 	if i == nil {
 		return sql.NullInt32{}
 	}
@@ -100,7 +104,7 @@ func nullInt32FromUint32Pointer(i *uint32) sql.NullInt32 {
 	return sql.NullInt32{Int32: int32(*i), Valid: true}
 }
 
-func int32PointerFromNullInt32(i sql.NullInt32) *int32 {
+func Int32PointerFromNullInt32(i sql.NullInt32) *int32 {
 	if i.Valid {
 		return &i.Int32
 	}
@@ -108,11 +112,7 @@ func int32PointerFromNullInt32(i sql.NullInt32) *int32 {
 	return nil
 }
 
-func nullBoolFromBool(b bool) sql.NullBool {
-	return sql.NullBool{Bool: b, Valid: true}
-}
-
-func float32PointerFromNullString(f sql.NullString) *float32 {
+func Float32PointerFromNullString(f sql.NullString) *float32 {
 	if f.Valid {
 		if parsedFloat, err := strconv.ParseFloat(f.String, 64); err == nil {
 			return pointer.To(float32(parsedFloat))
@@ -122,7 +122,7 @@ func float32PointerFromNullString(f sql.NullString) *float32 {
 	return nil
 }
 
-func float64PointerFromNullString(f sql.NullString) *float64 {
+func Float64PointerFromNullString(f sql.NullString) *float64 {
 	if f.Valid {
 		if parsedFloat, err := strconv.ParseFloat(f.String, 64); err == nil {
 			return &parsedFloat
@@ -132,11 +132,11 @@ func float64PointerFromNullString(f sql.NullString) *float64 {
 	return nil
 }
 
-func stringFromFloat32(f float32) string {
+func StringFromFloat32(f float32) string {
 	return strconv.FormatFloat(float64(f), 'f', -1, 32)
 }
 
-func float32FromString(s string) float32 {
+func Float32FromString(s string) float32 {
 	if parsedFloat, err := strconv.ParseFloat(s, 64); err == nil {
 		return float32(parsedFloat)
 	}
@@ -144,39 +144,39 @@ func float32FromString(s string) float32 {
 	return 0
 }
 
-func float32FromNullString(s sql.NullString) float32 {
+func Float32FromNullString(s sql.NullString) float32 {
 	if s.Valid {
-		return float32FromString(s.String)
+		return Float32FromString(s.String)
 	}
 
 	return 0
 }
 
-func nullStringFromFloat32Pointer(f *float32) sql.NullString {
+func NullStringFromFloat32Pointer(f *float32) sql.NullString {
 	if f == nil {
 		return sql.NullString{}
 	}
 
-	return sql.NullString{String: stringFromFloat32(*f), Valid: true}
+	return sql.NullString{String: StringFromFloat32(*f), Valid: true}
 }
 
-func nullStringFromFloat32(f float32) sql.NullString {
-	return sql.NullString{String: stringFromFloat32(f), Valid: true}
+func NullStringFromFloat32(f float32) sql.NullString {
+	return sql.NullString{String: StringFromFloat32(f), Valid: true}
 }
 
-func stringFromFloat64(f float64) string {
+func StringFromFloat64(f float64) string {
 	return strconv.FormatFloat(f, 'f', -1, 64)
 }
 
-func nullStringFromFloat64Pointer(f *float64) sql.NullString {
+func NullStringFromFloat64Pointer(f *float64) sql.NullString {
 	if f == nil {
 		return sql.NullString{}
 	}
 
-	return sql.NullString{String: stringFromFloat64(*f), Valid: true}
+	return sql.NullString{String: StringFromFloat64(*f), Valid: true}
 }
 
-func nullInt64FromUint32Pointer(f *uint32) sql.NullInt64 {
+func NullInt64FromUint32Pointer(f *uint32) sql.NullInt64 {
 	if f == nil {
 		return sql.NullInt64{}
 	}
@@ -184,7 +184,7 @@ func nullInt64FromUint32Pointer(f *uint32) sql.NullInt64 {
 	return sql.NullInt64{Int64: int64(*f), Valid: true}
 }
 
-func uint16PointerFromNullInt32(f sql.NullInt32) *uint16 {
+func Uint16PointerFromNullInt32(f sql.NullInt32) *uint16 {
 	if f.Valid {
 		return pointer.To(uint16(f.Int32))
 	}
@@ -192,7 +192,7 @@ func uint16PointerFromNullInt32(f sql.NullInt32) *uint16 {
 	return nil
 }
 
-func uint32PointerFromNullInt32(f sql.NullInt32) *uint32 {
+func Uint32PointerFromNullInt32(f sql.NullInt32) *uint32 {
 	if f.Valid {
 		return pointer.To(uint32(f.Int32))
 	}
@@ -200,7 +200,7 @@ func uint32PointerFromNullInt32(f sql.NullInt32) *uint32 {
 	return nil
 }
 
-func uint32PointerFromNullInt64(f sql.NullInt64) *uint32 {
+func Uint32PointerFromNullInt64(f sql.NullInt64) *uint32 {
 	if f.Valid {
 		return pointer.To(uint32(f.Int64))
 	}
