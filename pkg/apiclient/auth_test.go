@@ -89,7 +89,7 @@ func (s *authTestSuite) TestClient_UserStatus() {
 	})
 }
 
-func (s *authTestSuite) TestClient_Login() {
+func (s *authTestSuite) TestClient_BeginSession() {
 	const expectedPath = "/users/login"
 
 	spec := newRequestSpec(false, http.MethodPost, "", expectedPath)
@@ -158,7 +158,7 @@ func (s *authTestSuite) TestClient_Login() {
 	})
 }
 
-func (s *authTestSuite) TestClient_Logout() {
+func (s *authTestSuite) TestClient_EndSession() {
 	const expectedPath = "/users/logout"
 
 	s.Run("standard", func() {

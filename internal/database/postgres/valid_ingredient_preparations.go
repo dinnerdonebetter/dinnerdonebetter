@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
@@ -55,16 +56,16 @@ func (q *Querier) GetValidIngredientPreparation(ctx context.Context, validIngred
 
 	validIngredientPreparation := &types.ValidIngredientPreparation{
 		CreatedAt:     result.ValidIngredientPreparationCreatedAt,
-		LastUpdatedAt: timePointerFromNullTime(result.ValidIngredientPreparationLastUpdatedAt),
-		ArchivedAt:    timePointerFromNullTime(result.ValidIngredientPreparationArchivedAt),
+		LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientPreparationLastUpdatedAt),
+		ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientPreparationArchivedAt),
 		Notes:         result.ValidIngredientPreparationNotes,
 		ID:            result.ValidIngredientPreparationID,
 		Ingredient: types.ValidIngredient{
 			CreatedAt:                               result.ValidIngredientCreatedAt,
-			LastUpdatedAt:                           timePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
-			ArchivedAt:                              timePointerFromNullTime(result.ValidIngredientArchivedAt),
-			MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
-			MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
+			LastUpdatedAt:                           database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
+			ArchivedAt:                              database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
+			MaximumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
+			MinimumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 			IconPath:                                result.ValidIngredientIconPath,
 			Warning:                                 result.ValidIngredientWarning,
 			PluralName:                              result.ValidIngredientPluralName,
@@ -76,7 +77,7 @@ func (q *Querier) GetValidIngredientPreparation(ctx context.Context, validIngred
 			ShoppingSuggestions:                     result.ValidIngredientShoppingSuggestions,
 			ContainsShellfish:                       result.ValidIngredientContainsShellfish,
 			IsMeasuredVolumetrically:                result.ValidIngredientVolumetric,
-			IsLiquid:                                boolFromNullBool(result.ValidIngredientIsLiquid),
+			IsLiquid:                                database.BoolFromNullBool(result.ValidIngredientIsLiquid),
 			ContainsPeanut:                          result.ValidIngredientContainsPeanut,
 			ContainsTreeNut:                         result.ValidIngredientContainsTreeNut,
 			ContainsEgg:                             result.ValidIngredientContainsEgg,
@@ -101,11 +102,11 @@ func (q *Querier) GetValidIngredientPreparation(ctx context.Context, validIngred
 		},
 		Preparation: types.ValidPreparation{
 			CreatedAt:                   result.ValidPreparationCreatedAt,
-			MaximumInstrumentCount:      int32PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
-			ArchivedAt:                  timePointerFromNullTime(result.ValidPreparationArchivedAt),
-			MaximumIngredientCount:      int32PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
-			LastUpdatedAt:               timePointerFromNullTime(result.ValidPreparationLastUpdatedAt),
-			MaximumVesselCount:          int32PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
+			MaximumInstrumentCount:      database.Int32PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
+			ArchivedAt:                  database.TimePointerFromNullTime(result.ValidPreparationArchivedAt),
+			MaximumIngredientCount:      database.Int32PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
+			LastUpdatedAt:               database.TimePointerFromNullTime(result.ValidPreparationLastUpdatedAt),
+			MaximumVesselCount:          database.Int32PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
 			IconPath:                    result.ValidPreparationIconPath,
 			PastTense:                   result.ValidPreparationPastTense,
 			ID:                          result.ValidPreparationID,
@@ -146,12 +147,12 @@ func (q *Querier) GetValidIngredientPreparations(ctx context.Context, filter *ty
 	}
 
 	results, err := q.generatedQuerier.GetValidIngredientPreparations(ctx, q.db, &generated.GetValidIngredientPreparationsParams{
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient preparations list retrieval query")
@@ -160,16 +161,16 @@ func (q *Querier) GetValidIngredientPreparations(ctx context.Context, filter *ty
 	for _, result := range results {
 		x.Data = append(x.Data, &types.ValidIngredientPreparation{
 			CreatedAt:     result.ValidIngredientPreparationCreatedAt,
-			LastUpdatedAt: timePointerFromNullTime(result.ValidIngredientPreparationLastUpdatedAt),
-			ArchivedAt:    timePointerFromNullTime(result.ValidIngredientPreparationArchivedAt),
+			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientPreparationLastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientPreparationArchivedAt),
 			Notes:         result.ValidIngredientPreparationNotes,
 			ID:            result.ValidIngredientPreparationID,
 			Ingredient: types.ValidIngredient{
 				CreatedAt:                               result.ValidIngredientCreatedAt,
-				LastUpdatedAt:                           timePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
-				ArchivedAt:                              timePointerFromNullTime(result.ValidIngredientArchivedAt),
-				MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
-				MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
+				LastUpdatedAt:                           database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
+				ArchivedAt:                              database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
+				MaximumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
+				MinimumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 				IconPath:                                result.ValidIngredientIconPath,
 				Warning:                                 result.ValidIngredientWarning,
 				PluralName:                              result.ValidIngredientPluralName,
@@ -181,7 +182,7 @@ func (q *Querier) GetValidIngredientPreparations(ctx context.Context, filter *ty
 				ShoppingSuggestions:                     result.ValidIngredientShoppingSuggestions,
 				ContainsShellfish:                       result.ValidIngredientContainsShellfish,
 				IsMeasuredVolumetrically:                result.ValidIngredientVolumetric,
-				IsLiquid:                                boolFromNullBool(result.ValidIngredientIsLiquid),
+				IsLiquid:                                database.BoolFromNullBool(result.ValidIngredientIsLiquid),
 				ContainsPeanut:                          result.ValidIngredientContainsPeanut,
 				ContainsTreeNut:                         result.ValidIngredientContainsTreeNut,
 				ContainsEgg:                             result.ValidIngredientContainsEgg,
@@ -206,11 +207,11 @@ func (q *Querier) GetValidIngredientPreparations(ctx context.Context, filter *ty
 			},
 			Preparation: types.ValidPreparation{
 				CreatedAt:                   result.ValidPreparationCreatedAt,
-				MaximumInstrumentCount:      int32PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
-				ArchivedAt:                  timePointerFromNullTime(result.ValidPreparationArchivedAt),
-				MaximumIngredientCount:      int32PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
-				LastUpdatedAt:               timePointerFromNullTime(result.ValidPreparationLastUpdatedAt),
-				MaximumVesselCount:          int32PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
+				MaximumInstrumentCount:      database.Int32PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
+				ArchivedAt:                  database.TimePointerFromNullTime(result.ValidPreparationArchivedAt),
+				MaximumIngredientCount:      database.Int32PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
+				LastUpdatedAt:               database.TimePointerFromNullTime(result.ValidPreparationLastUpdatedAt),
+				MaximumVesselCount:          database.Int32PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
 				IconPath:                    result.ValidPreparationIconPath,
 				PastTense:                   result.ValidPreparationPastTense,
 				ID:                          result.ValidPreparationID,
@@ -261,12 +262,12 @@ func (q *Querier) GetValidIngredientPreparationsForPreparation(ctx context.Conte
 
 	results, err := q.generatedQuerier.GetValidIngredientPreparationsForPreparation(ctx, q.db, &generated.GetValidIngredientPreparationsForPreparationParams{
 		ID:            preparationID,
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient preparations list retrieval query")
@@ -275,16 +276,16 @@ func (q *Querier) GetValidIngredientPreparationsForPreparation(ctx context.Conte
 	for _, result := range results {
 		x.Data = append(x.Data, &types.ValidIngredientPreparation{
 			CreatedAt:     result.ValidIngredientPreparationCreatedAt,
-			LastUpdatedAt: timePointerFromNullTime(result.ValidIngredientPreparationLastUpdatedAt),
-			ArchivedAt:    timePointerFromNullTime(result.ValidIngredientPreparationArchivedAt),
+			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientPreparationLastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientPreparationArchivedAt),
 			Notes:         result.ValidIngredientPreparationNotes,
 			ID:            result.ValidIngredientPreparationID,
 			Ingredient: types.ValidIngredient{
 				CreatedAt:                               result.ValidIngredientCreatedAt,
-				LastUpdatedAt:                           timePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
-				ArchivedAt:                              timePointerFromNullTime(result.ValidIngredientArchivedAt),
-				MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
-				MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
+				LastUpdatedAt:                           database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
+				ArchivedAt:                              database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
+				MaximumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
+				MinimumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 				IconPath:                                result.ValidIngredientIconPath,
 				Warning:                                 result.ValidIngredientWarning,
 				PluralName:                              result.ValidIngredientPluralName,
@@ -296,7 +297,7 @@ func (q *Querier) GetValidIngredientPreparationsForPreparation(ctx context.Conte
 				ShoppingSuggestions:                     result.ValidIngredientShoppingSuggestions,
 				ContainsShellfish:                       result.ValidIngredientContainsShellfish,
 				IsMeasuredVolumetrically:                result.ValidIngredientVolumetric,
-				IsLiquid:                                boolFromNullBool(result.ValidIngredientIsLiquid),
+				IsLiquid:                                database.BoolFromNullBool(result.ValidIngredientIsLiquid),
 				ContainsPeanut:                          result.ValidIngredientContainsPeanut,
 				ContainsTreeNut:                         result.ValidIngredientContainsTreeNut,
 				ContainsEgg:                             result.ValidIngredientContainsEgg,
@@ -321,11 +322,11 @@ func (q *Querier) GetValidIngredientPreparationsForPreparation(ctx context.Conte
 			},
 			Preparation: types.ValidPreparation{
 				CreatedAt:                   result.ValidPreparationCreatedAt,
-				MaximumInstrumentCount:      int32PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
-				ArchivedAt:                  timePointerFromNullTime(result.ValidPreparationArchivedAt),
-				MaximumIngredientCount:      int32PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
-				LastUpdatedAt:               timePointerFromNullTime(result.ValidPreparationLastUpdatedAt),
-				MaximumVesselCount:          int32PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
+				MaximumInstrumentCount:      database.Int32PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
+				ArchivedAt:                  database.TimePointerFromNullTime(result.ValidPreparationArchivedAt),
+				MaximumIngredientCount:      database.Int32PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
+				LastUpdatedAt:               database.TimePointerFromNullTime(result.ValidPreparationLastUpdatedAt),
+				MaximumVesselCount:          database.Int32PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
 				IconPath:                    result.ValidPreparationIconPath,
 				PastTense:                   result.ValidPreparationPastTense,
 				ID:                          result.ValidPreparationID,
@@ -376,12 +377,12 @@ func (q *Querier) GetValidIngredientPreparationsForIngredient(ctx context.Contex
 
 	results, err := q.generatedQuerier.GetValidIngredientPreparationsForIngredient(ctx, q.db, &generated.GetValidIngredientPreparationsForIngredientParams{
 		ID:            ingredientID,
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient preparations list retrieval query")
@@ -390,16 +391,16 @@ func (q *Querier) GetValidIngredientPreparationsForIngredient(ctx context.Contex
 	for _, result := range results {
 		x.Data = append(x.Data, &types.ValidIngredientPreparation{
 			CreatedAt:     result.ValidIngredientPreparationCreatedAt,
-			LastUpdatedAt: timePointerFromNullTime(result.ValidIngredientPreparationLastUpdatedAt),
-			ArchivedAt:    timePointerFromNullTime(result.ValidIngredientPreparationArchivedAt),
+			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidIngredientPreparationLastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ValidIngredientPreparationArchivedAt),
 			Notes:         result.ValidIngredientPreparationNotes,
 			ID:            result.ValidIngredientPreparationID,
 			Ingredient: types.ValidIngredient{
 				CreatedAt:                               result.ValidIngredientCreatedAt,
-				LastUpdatedAt:                           timePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
-				ArchivedAt:                              timePointerFromNullTime(result.ValidIngredientArchivedAt),
-				MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
-				MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
+				LastUpdatedAt:                           database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
+				ArchivedAt:                              database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
+				MaximumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
+				MinimumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 				IconPath:                                result.ValidIngredientIconPath,
 				Warning:                                 result.ValidIngredientWarning,
 				PluralName:                              result.ValidIngredientPluralName,
@@ -411,7 +412,7 @@ func (q *Querier) GetValidIngredientPreparationsForIngredient(ctx context.Contex
 				ShoppingSuggestions:                     result.ValidIngredientShoppingSuggestions,
 				ContainsShellfish:                       result.ValidIngredientContainsShellfish,
 				IsMeasuredVolumetrically:                result.ValidIngredientVolumetric,
-				IsLiquid:                                boolFromNullBool(result.ValidIngredientIsLiquid),
+				IsLiquid:                                database.BoolFromNullBool(result.ValidIngredientIsLiquid),
 				ContainsPeanut:                          result.ValidIngredientContainsPeanut,
 				ContainsTreeNut:                         result.ValidIngredientContainsTreeNut,
 				ContainsEgg:                             result.ValidIngredientContainsEgg,
@@ -436,11 +437,11 @@ func (q *Querier) GetValidIngredientPreparationsForIngredient(ctx context.Contex
 			},
 			Preparation: types.ValidPreparation{
 				CreatedAt:                   result.ValidPreparationCreatedAt,
-				MaximumInstrumentCount:      int32PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
-				ArchivedAt:                  timePointerFromNullTime(result.ValidPreparationArchivedAt),
-				MaximumIngredientCount:      int32PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
-				LastUpdatedAt:               timePointerFromNullTime(result.ValidPreparationLastUpdatedAt),
-				MaximumVesselCount:          int32PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
+				MaximumInstrumentCount:      database.Int32PointerFromNullInt32(result.ValidPreparationMaximumInstrumentCount),
+				ArchivedAt:                  database.TimePointerFromNullTime(result.ValidPreparationArchivedAt),
+				MaximumIngredientCount:      database.Int32PointerFromNullInt32(result.ValidPreparationMaximumIngredientCount),
+				LastUpdatedAt:               database.TimePointerFromNullTime(result.ValidPreparationLastUpdatedAt),
+				MaximumVesselCount:          database.Int32PointerFromNullInt32(result.ValidPreparationMaximumVesselCount),
 				IconPath:                    result.ValidPreparationIconPath,
 				PastTense:                   result.ValidPreparationPastTense,
 				ID:                          result.ValidPreparationID,

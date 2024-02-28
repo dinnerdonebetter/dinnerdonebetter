@@ -45,6 +45,12 @@ const (
 	FilterIsNilKey = "query_filter.is_nil"
 	// WebhookIDKey is the standard key for referring to a webhook's ID.
 	WebhookIDKey = "webhook.id"
+	// WebhookTriggerEventIDKey is the standard key for referring to a webhook trigger event's ID.
+	WebhookTriggerEventIDKey = "webhook_trigger_event.id"
+	// AuditLogEntryIDKey is the standard key for referring to an audit log entry's ID.
+	AuditLogEntryIDKey = "audit_log_entry.id"
+	// AuditLogEntryResourceTypesKey is the standard key for referring to an audit log entry's resource type.
+	AuditLogEntryResourceTypesKey = "audit_log_entry.resource_types"
 	// URLKey is the standard key for referring to a URL.
 	URLKey = "url"
 	// PasswordResetTokenIDKey is the standard key for referring to a password reset token's ID.

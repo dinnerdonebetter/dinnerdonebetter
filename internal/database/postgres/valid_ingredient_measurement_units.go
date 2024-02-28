@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
@@ -55,32 +56,32 @@ func (q *Querier) GetValidIngredientMeasurementUnit(ctx context.Context, validIn
 
 	validIngredientMeasurementUnit := &types.ValidIngredientMeasurementUnit{
 		CreatedAt:                result.ValidIngredientMeasurementUnitCreatedAt,
-		LastUpdatedAt:            timePointerFromNullTime(result.ValidIngredientMeasurementUnitLastUpdatedAt),
-		ArchivedAt:               timePointerFromNullTime(result.ValidIngredientMeasurementUnitArchivedAt),
-		MaximumAllowableQuantity: float32PointerFromNullString(result.ValidIngredientMeasurementUnitMaximumAllowableQuantity),
+		LastUpdatedAt:            database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitLastUpdatedAt),
+		ArchivedAt:               database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitArchivedAt),
+		MaximumAllowableQuantity: database.Float32PointerFromNullString(result.ValidIngredientMeasurementUnitMaximumAllowableQuantity),
 		Notes:                    result.ValidIngredientMeasurementUnitNotes,
 		ID:                       result.ValidIngredientMeasurementUnitID,
 		MeasurementUnit: types.ValidMeasurementUnit{
 			CreatedAt:     result.ValidMeasurementUnitCreatedAt,
-			LastUpdatedAt: timePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
-			ArchivedAt:    timePointerFromNullTime(result.ValidMeasurementUnitArchivedAt),
+			LastUpdatedAt: database.TimePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ValidMeasurementUnitArchivedAt),
 			Name:          result.ValidMeasurementUnitName,
 			IconPath:      result.ValidMeasurementUnitIconPath,
 			ID:            result.ValidMeasurementUnitID,
 			Description:   result.ValidMeasurementUnitDescription,
 			PluralName:    result.ValidMeasurementUnitPluralName,
 			Slug:          result.ValidMeasurementUnitSlug,
-			Volumetric:    boolFromNullBool(result.ValidMeasurementUnitVolumetric),
+			Volumetric:    database.BoolFromNullBool(result.ValidMeasurementUnitVolumetric),
 			Universal:     result.ValidMeasurementUnitUniversal,
 			Metric:        result.ValidMeasurementUnitMetric,
 			Imperial:      result.ValidMeasurementUnitImperial,
 		},
 		Ingredient: types.ValidIngredient{
 			CreatedAt:                               result.ValidIngredientCreatedAt,
-			LastUpdatedAt:                           timePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
-			ArchivedAt:                              timePointerFromNullTime(result.ValidIngredientArchivedAt),
-			MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
-			MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
+			LastUpdatedAt:                           database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
+			ArchivedAt:                              database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
+			MaximumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
+			MinimumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 			IconPath:                                result.ValidIngredientIconPath,
 			Warning:                                 result.ValidIngredientWarning,
 			PluralName:                              result.ValidIngredientPluralName,
@@ -92,7 +93,7 @@ func (q *Querier) GetValidIngredientMeasurementUnit(ctx context.Context, validIn
 			ShoppingSuggestions:                     result.ValidIngredientShoppingSuggestions,
 			ContainsShellfish:                       result.ValidIngredientContainsShellfish,
 			IsMeasuredVolumetrically:                result.ValidIngredientVolumetric,
-			IsLiquid:                                boolFromNullBool(result.ValidIngredientIsLiquid),
+			IsLiquid:                                database.BoolFromNullBool(result.ValidIngredientIsLiquid),
 			ContainsPeanut:                          result.ValidIngredientContainsPeanut,
 			ContainsTreeNut:                         result.ValidIngredientContainsTreeNut,
 			ContainsEgg:                             result.ValidIngredientContainsEgg,
@@ -115,7 +116,7 @@ func (q *Querier) GetValidIngredientMeasurementUnit(ctx context.Context, validIn
 			IsAcid:                                  result.ValidIngredientIsAcid,
 			IsHeat:                                  result.ValidIngredientIsHeat,
 		},
-		MinimumAllowableQuantity: float32FromString(result.ValidIngredientMeasurementUnitMinimumAllowableQuantity),
+		MinimumAllowableQuantity: database.Float32FromString(result.ValidIngredientMeasurementUnitMinimumAllowableQuantity),
 	}
 
 	return validIngredientMeasurementUnit, nil
@@ -147,12 +148,12 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Co
 
 	results, err := q.generatedQuerier.GetValidIngredientMeasurementUnitsForIngredient(ctx, q.db, &generated.GetValidIngredientMeasurementUnitsForIngredientParams{
 		ValidIngredientID: ingredientID,
-		CreatedBefore:     nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:      nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore:     nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:      nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:       nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:        nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore:     database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:      database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:     database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:      database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:       database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:        database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient measurement units list retrieval query")
@@ -161,32 +162,32 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Co
 	for _, result := range results {
 		x.Data = append(x.Data, &types.ValidIngredientMeasurementUnit{
 			CreatedAt:                result.ValidIngredientMeasurementUnitCreatedAt,
-			LastUpdatedAt:            timePointerFromNullTime(result.ValidIngredientMeasurementUnitLastUpdatedAt),
-			ArchivedAt:               timePointerFromNullTime(result.ValidIngredientMeasurementUnitArchivedAt),
-			MaximumAllowableQuantity: float32PointerFromNullString(result.ValidIngredientMeasurementUnitMaximumAllowableQuantity),
+			LastUpdatedAt:            database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitLastUpdatedAt),
+			ArchivedAt:               database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitArchivedAt),
+			MaximumAllowableQuantity: database.Float32PointerFromNullString(result.ValidIngredientMeasurementUnitMaximumAllowableQuantity),
 			Notes:                    result.ValidIngredientMeasurementUnitNotes,
 			ID:                       result.ValidIngredientMeasurementUnitID,
 			MeasurementUnit: types.ValidMeasurementUnit{
 				CreatedAt:     result.ValidMeasurementUnitCreatedAt,
-				LastUpdatedAt: timePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
-				ArchivedAt:    timePointerFromNullTime(result.ValidMeasurementUnitArchivedAt),
+				LastUpdatedAt: database.TimePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
+				ArchivedAt:    database.TimePointerFromNullTime(result.ValidMeasurementUnitArchivedAt),
 				Name:          result.ValidMeasurementUnitName,
 				IconPath:      result.ValidMeasurementUnitIconPath,
 				ID:            result.ValidMeasurementUnitID,
 				Description:   result.ValidMeasurementUnitDescription,
 				PluralName:    result.ValidMeasurementUnitPluralName,
 				Slug:          result.ValidMeasurementUnitSlug,
-				Volumetric:    boolFromNullBool(result.ValidMeasurementUnitVolumetric),
+				Volumetric:    database.BoolFromNullBool(result.ValidMeasurementUnitVolumetric),
 				Universal:     result.ValidMeasurementUnitUniversal,
 				Metric:        result.ValidMeasurementUnitMetric,
 				Imperial:      result.ValidMeasurementUnitImperial,
 			},
 			Ingredient: types.ValidIngredient{
 				CreatedAt:                               result.ValidIngredientCreatedAt,
-				LastUpdatedAt:                           timePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
-				ArchivedAt:                              timePointerFromNullTime(result.ValidIngredientArchivedAt),
-				MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
-				MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
+				LastUpdatedAt:                           database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
+				ArchivedAt:                              database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
+				MaximumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
+				MinimumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 				IconPath:                                result.ValidIngredientIconPath,
 				Warning:                                 result.ValidIngredientWarning,
 				PluralName:                              result.ValidIngredientPluralName,
@@ -198,7 +199,7 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Co
 				ShoppingSuggestions:                     result.ValidIngredientShoppingSuggestions,
 				ContainsShellfish:                       result.ValidIngredientContainsShellfish,
 				IsMeasuredVolumetrically:                result.ValidIngredientVolumetric,
-				IsLiquid:                                boolFromNullBool(result.ValidIngredientIsLiquid),
+				IsLiquid:                                database.BoolFromNullBool(result.ValidIngredientIsLiquid),
 				ContainsPeanut:                          result.ValidIngredientContainsPeanut,
 				ContainsTreeNut:                         result.ValidIngredientContainsTreeNut,
 				ContainsEgg:                             result.ValidIngredientContainsEgg,
@@ -221,7 +222,7 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForIngredient(ctx context.Co
 				IsAcid:                                  result.ValidIngredientIsAcid,
 				IsHeat:                                  result.ValidIngredientIsHeat,
 			},
-			MinimumAllowableQuantity: float32FromString(result.ValidIngredientMeasurementUnitMinimumAllowableQuantity),
+			MinimumAllowableQuantity: database.Float32FromString(result.ValidIngredientMeasurementUnitMinimumAllowableQuantity),
 		})
 
 		x.FilteredCount = uint64(result.FilteredCount)
@@ -257,12 +258,12 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx conte
 
 	results, err := q.generatedQuerier.GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx, q.db, &generated.GetValidIngredientMeasurementUnitsForMeasurementUnitParams{
 		ValidMeasurementUnitID: validMeasurementUnitID,
-		CreatedBefore:          nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:           nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore:          nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:           nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:            nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:             nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore:          database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:           database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:          database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:           database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:            database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:             database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient measurement units list retrieval query")
@@ -271,32 +272,32 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx conte
 	for _, result := range results {
 		x.Data = append(x.Data, &types.ValidIngredientMeasurementUnit{
 			CreatedAt:                result.ValidIngredientMeasurementUnitCreatedAt,
-			LastUpdatedAt:            timePointerFromNullTime(result.ValidIngredientMeasurementUnitLastUpdatedAt),
-			ArchivedAt:               timePointerFromNullTime(result.ValidIngredientMeasurementUnitArchivedAt),
-			MaximumAllowableQuantity: float32PointerFromNullString(result.ValidIngredientMeasurementUnitMaximumAllowableQuantity),
+			LastUpdatedAt:            database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitLastUpdatedAt),
+			ArchivedAt:               database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitArchivedAt),
+			MaximumAllowableQuantity: database.Float32PointerFromNullString(result.ValidIngredientMeasurementUnitMaximumAllowableQuantity),
 			Notes:                    result.ValidIngredientMeasurementUnitNotes,
 			ID:                       result.ValidIngredientMeasurementUnitID,
 			MeasurementUnit: types.ValidMeasurementUnit{
 				CreatedAt:     result.ValidMeasurementUnitCreatedAt,
-				LastUpdatedAt: timePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
-				ArchivedAt:    timePointerFromNullTime(result.ValidMeasurementUnitArchivedAt),
+				LastUpdatedAt: database.TimePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
+				ArchivedAt:    database.TimePointerFromNullTime(result.ValidMeasurementUnitArchivedAt),
 				Name:          result.ValidMeasurementUnitName,
 				IconPath:      result.ValidMeasurementUnitIconPath,
 				ID:            result.ValidMeasurementUnitID,
 				Description:   result.ValidMeasurementUnitDescription,
 				PluralName:    result.ValidMeasurementUnitPluralName,
 				Slug:          result.ValidMeasurementUnitSlug,
-				Volumetric:    boolFromNullBool(result.ValidMeasurementUnitVolumetric),
+				Volumetric:    database.BoolFromNullBool(result.ValidMeasurementUnitVolumetric),
 				Universal:     result.ValidMeasurementUnitUniversal,
 				Metric:        result.ValidMeasurementUnitMetric,
 				Imperial:      result.ValidMeasurementUnitImperial,
 			},
 			Ingredient: types.ValidIngredient{
 				CreatedAt:                               result.ValidIngredientCreatedAt,
-				LastUpdatedAt:                           timePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
-				ArchivedAt:                              timePointerFromNullTime(result.ValidIngredientArchivedAt),
-				MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
-				MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
+				LastUpdatedAt:                           database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
+				ArchivedAt:                              database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
+				MaximumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
+				MinimumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 				IconPath:                                result.ValidIngredientIconPath,
 				Warning:                                 result.ValidIngredientWarning,
 				PluralName:                              result.ValidIngredientPluralName,
@@ -308,7 +309,7 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx conte
 				ShoppingSuggestions:                     result.ValidIngredientShoppingSuggestions,
 				ContainsShellfish:                       result.ValidIngredientContainsShellfish,
 				IsMeasuredVolumetrically:                result.ValidIngredientVolumetric,
-				IsLiquid:                                boolFromNullBool(result.ValidIngredientIsLiquid),
+				IsLiquid:                                database.BoolFromNullBool(result.ValidIngredientIsLiquid),
 				ContainsPeanut:                          result.ValidIngredientContainsPeanut,
 				ContainsTreeNut:                         result.ValidIngredientContainsTreeNut,
 				ContainsEgg:                             result.ValidIngredientContainsEgg,
@@ -331,7 +332,7 @@ func (q *Querier) GetValidIngredientMeasurementUnitsForMeasurementUnit(ctx conte
 				IsAcid:                                  result.ValidIngredientIsAcid,
 				IsHeat:                                  result.ValidIngredientIsHeat,
 			},
-			MinimumAllowableQuantity: float32FromString(result.ValidIngredientMeasurementUnitMinimumAllowableQuantity),
+			MinimumAllowableQuantity: database.Float32FromString(result.ValidIngredientMeasurementUnitMinimumAllowableQuantity),
 		})
 
 		x.FilteredCount = uint64(result.FilteredCount)
@@ -360,12 +361,12 @@ func (q *Querier) GetValidIngredientMeasurementUnits(ctx context.Context, filter
 	}
 
 	results, err := q.generatedQuerier.GetValidIngredientMeasurementUnits(ctx, q.db, &generated.GetValidIngredientMeasurementUnitsParams{
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredient measurement units list retrieval query")
@@ -374,32 +375,32 @@ func (q *Querier) GetValidIngredientMeasurementUnits(ctx context.Context, filter
 	for _, result := range results {
 		x.Data = append(x.Data, &types.ValidIngredientMeasurementUnit{
 			CreatedAt:                result.ValidIngredientMeasurementUnitCreatedAt,
-			LastUpdatedAt:            timePointerFromNullTime(result.ValidIngredientMeasurementUnitLastUpdatedAt),
-			ArchivedAt:               timePointerFromNullTime(result.ValidIngredientMeasurementUnitArchivedAt),
-			MaximumAllowableQuantity: float32PointerFromNullString(result.ValidIngredientMeasurementUnitMaximumAllowableQuantity),
+			LastUpdatedAt:            database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitLastUpdatedAt),
+			ArchivedAt:               database.TimePointerFromNullTime(result.ValidIngredientMeasurementUnitArchivedAt),
+			MaximumAllowableQuantity: database.Float32PointerFromNullString(result.ValidIngredientMeasurementUnitMaximumAllowableQuantity),
 			Notes:                    result.ValidIngredientMeasurementUnitNotes,
 			ID:                       result.ValidIngredientMeasurementUnitID,
 			MeasurementUnit: types.ValidMeasurementUnit{
 				CreatedAt:     result.ValidMeasurementUnitCreatedAt,
-				LastUpdatedAt: timePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
-				ArchivedAt:    timePointerFromNullTime(result.ValidMeasurementUnitArchivedAt),
+				LastUpdatedAt: database.TimePointerFromNullTime(result.ValidMeasurementUnitLastUpdatedAt),
+				ArchivedAt:    database.TimePointerFromNullTime(result.ValidMeasurementUnitArchivedAt),
 				Name:          result.ValidMeasurementUnitName,
 				IconPath:      result.ValidMeasurementUnitIconPath,
 				ID:            result.ValidMeasurementUnitID,
 				Description:   result.ValidMeasurementUnitDescription,
 				PluralName:    result.ValidMeasurementUnitPluralName,
 				Slug:          result.ValidMeasurementUnitSlug,
-				Volumetric:    boolFromNullBool(result.ValidMeasurementUnitVolumetric),
+				Volumetric:    database.BoolFromNullBool(result.ValidMeasurementUnitVolumetric),
 				Universal:     result.ValidMeasurementUnitUniversal,
 				Metric:        result.ValidMeasurementUnitMetric,
 				Imperial:      result.ValidMeasurementUnitImperial,
 			},
 			Ingredient: types.ValidIngredient{
 				CreatedAt:                               result.ValidIngredientCreatedAt,
-				LastUpdatedAt:                           timePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
-				ArchivedAt:                              timePointerFromNullTime(result.ValidIngredientArchivedAt),
-				MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
-				MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
+				LastUpdatedAt:                           database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
+				ArchivedAt:                              database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
+				MaximumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
+				MinimumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 				IconPath:                                result.ValidIngredientIconPath,
 				Warning:                                 result.ValidIngredientWarning,
 				PluralName:                              result.ValidIngredientPluralName,
@@ -411,7 +412,7 @@ func (q *Querier) GetValidIngredientMeasurementUnits(ctx context.Context, filter
 				ShoppingSuggestions:                     result.ValidIngredientShoppingSuggestions,
 				ContainsShellfish:                       result.ValidIngredientContainsShellfish,
 				IsMeasuredVolumetrically:                result.ValidIngredientVolumetric,
-				IsLiquid:                                boolFromNullBool(result.ValidIngredientIsLiquid),
+				IsLiquid:                                database.BoolFromNullBool(result.ValidIngredientIsLiquid),
 				ContainsPeanut:                          result.ValidIngredientContainsPeanut,
 				ContainsTreeNut:                         result.ValidIngredientContainsTreeNut,
 				ContainsEgg:                             result.ValidIngredientContainsEgg,
@@ -434,7 +435,7 @@ func (q *Querier) GetValidIngredientMeasurementUnits(ctx context.Context, filter
 				IsAcid:                                  result.ValidIngredientIsAcid,
 				IsHeat:                                  result.ValidIngredientIsHeat,
 			},
-			MinimumAllowableQuantity: float32FromString(result.ValidIngredientMeasurementUnitMinimumAllowableQuantity),
+			MinimumAllowableQuantity: database.Float32FromString(result.ValidIngredientMeasurementUnitMinimumAllowableQuantity),
 		})
 
 		x.FilteredCount = uint64(result.FilteredCount)
@@ -461,8 +462,8 @@ func (q *Querier) CreateValidIngredientMeasurementUnit(ctx context.Context, inpu
 		Notes:                    input.Notes,
 		ValidMeasurementUnitID:   input.ValidMeasurementUnitID,
 		ValidIngredientID:        input.ValidIngredientID,
-		MinimumAllowableQuantity: stringFromFloat32(input.MinimumAllowableQuantity),
-		MaximumAllowableQuantity: nullStringFromFloat32Pointer(input.MaximumAllowableQuantity),
+		MinimumAllowableQuantity: database.StringFromFloat32(input.MinimumAllowableQuantity),
+		MaximumAllowableQuantity: database.NullStringFromFloat32Pointer(input.MaximumAllowableQuantity),
 	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing valid ingredient measurement unit creation query")
 	}
@@ -497,8 +498,8 @@ func (q *Querier) UpdateValidIngredientMeasurementUnit(ctx context.Context, upda
 		Notes:                    updated.Notes,
 		ValidMeasurementUnitID:   updated.MeasurementUnit.ID,
 		ValidIngredientID:        updated.Ingredient.ID,
-		MinimumAllowableQuantity: stringFromFloat32(updated.MinimumAllowableQuantity),
-		MaximumAllowableQuantity: nullStringFromFloat32Pointer(updated.MaximumAllowableQuantity),
+		MinimumAllowableQuantity: database.StringFromFloat32(updated.MinimumAllowableQuantity),
+		MaximumAllowableQuantity: database.NullStringFromFloat32Pointer(updated.MaximumAllowableQuantity),
 		ID:                       updated.ID,
 	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "updating valid ingredient measurement unit")

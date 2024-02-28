@@ -204,6 +204,19 @@ func TestQuerier_CreateWebhook(T *testing.T) {
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
+
+	T.Run("with msising user ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+
+		input := converters.ConvertWebhookToWebhookDatabaseCreationInput(fakes.BuildFakeWebhook())
+
+		actual, err := c.CreateWebhook(ctx, input)
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+	})
 }
 
 func TestQuerier_createWebhookTriggerEvent(T *testing.T) {
@@ -215,7 +228,21 @@ func TestQuerier_createWebhookTriggerEvent(T *testing.T) {
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		created, err := c.createWebhookTriggerEvent(ctx, c.db, nil)
+		created, err := c.createWebhookTriggerEvent(ctx, c.db, fakes.BuildFakeID(), nil)
+		assert.Error(t, err)
+		assert.Nil(t, created)
+	})
+
+	T.Run("with missing household ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+		fakes.BuildFakeWebhookTriggerEvent()
+
+		input := converters.ConvertWebhookTriggerEventToWebhookTriggerEventDatabaseCreationInput(fakes.BuildFakeWebhookTriggerEvent())
+
+		created, err := c.createWebhookTriggerEvent(ctx, c.db, "", input)
 		assert.Error(t, err)
 		assert.Nil(t, created)
 	})

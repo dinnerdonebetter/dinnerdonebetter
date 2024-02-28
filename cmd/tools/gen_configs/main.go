@@ -28,6 +28,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/search/algolia"
 	searchcfg "github.com/dinnerdonebetter/backend/internal/search/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
+	auditlogentriesservice "github.com/dinnerdonebetter/backend/internal/services/auditlogentries"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	householdinstrumentownershipsservice "github.com/dinnerdonebetter/backend/internal/services/householdinstrumentownerships"
 	householdinvitationsservice "github.com/dinnerdonebetter/backend/internal/services/householdinvitations"
@@ -250,6 +251,7 @@ func buildDevEnvironmentServerConfig() *config.InstanceConfig {
 			},
 		},
 		Services: config.ServicesConfig{
+			AuditLogEntries: auditlogentriesservice.Config{},
 			Auth: authservice.Config{
 				OAuth2: authservice.OAuth2Config{
 					Domain:               "https://dinnerdonebetter.dev",
@@ -388,6 +390,7 @@ func buildDevConfig() *config.InstanceConfig {
 			Tracing: localTracingConfig,
 		},
 		Services: config.ServicesConfig{
+			AuditLogEntries: auditlogentriesservice.Config{},
 			Auth: authservice.Config{
 				OAuth2: authservice.OAuth2Config{
 					Domain:               "http://localhost:9000",
@@ -631,6 +634,7 @@ func buildIntegrationTestsConfig() *config.InstanceConfig {
 			Tracing: localTracingConfig,
 		},
 		Services: config.ServicesConfig{
+			AuditLogEntries: auditlogentriesservice.Config{},
 			Auth: authservice.Config{
 				OAuth2: authservice.OAuth2Config{
 					Domain:               "http://localhost:9000",

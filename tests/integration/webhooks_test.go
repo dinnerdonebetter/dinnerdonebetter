@@ -48,6 +48,9 @@ func (s *TestSuite) TestWebhooks_Creating() {
 			requireNotNilAndNoProblems(t, actual, err)
 			checkWebhookEquality(t, exampleWebhook, actual)
 
+			// Archive trigger event
+			assert.NoError(t, testClients.user.ArchiveWebhookTriggerEvent(ctx, createdWebhook.ID, actual.Events[0].ID))
+
 			// Clean up.
 			assert.NoError(t, testClients.user.ArchiveWebhook(ctx, createdWebhook.ID))
 		}

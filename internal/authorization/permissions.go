@@ -33,6 +33,7 @@ const (
 	RemoveMemberHouseholdPermission Permission = "remove_member.household"
 	// TransferHouseholdPermission is a household admin permission.
 	TransferHouseholdPermission Permission = "transfer.household"
+
 	// CreateWebhooksPermission is a household admin permission.
 	CreateWebhooksPermission Permission = "create.webhooks"
 	// ReadWebhooksPermission is a household admin permission.
@@ -41,6 +42,9 @@ const (
 	UpdateWebhooksPermission Permission = "update.webhooks"
 	// ArchiveWebhooksPermission is a household admin permission.
 	ArchiveWebhooksPermission Permission = "archive.webhooks"
+
+	// ReadAuditLogEntriesPermission is a service permission.
+	ReadAuditLogEntriesPermission Permission = "read.audit_log_entries"
 
 	// CreateValidInstrumentsPermission is a household user permission.
 	CreateValidInstrumentsPermission Permission = "create.valid_instruments"
@@ -489,6 +493,7 @@ var (
 	// household member permissions.
 	householdMemberPermissions = []gorbac.Permission{
 		ReadWebhooksPermission,
+		ReadAuditLogEntriesPermission,
 		ReadOAuth2ClientsPermission,
 		ReadServiceSettingsPermission,
 		SearchServiceSettingsPermission,

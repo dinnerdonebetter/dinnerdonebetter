@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -74,8 +75,8 @@ func (q *Querier) GetUserIngredientPreference(ctx context.Context, userIngredien
 
 	userIngredientPreference := &types.UserIngredientPreference{
 		CreatedAt:     result.CreatedAt,
-		LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
-		ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+		LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 		ID:            result.ID,
 		Notes:         result.Notes,
 		BelongsToUser: result.BelongsToUser,
@@ -83,10 +84,10 @@ func (q *Querier) GetUserIngredientPreference(ctx context.Context, userIngredien
 		Allergy:       result.Allergy,
 		Ingredient: types.ValidIngredient{
 			CreatedAt:                               result.ValidIngredientCreatedAt,
-			LastUpdatedAt:                           timePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
-			ArchivedAt:                              timePointerFromNullTime(result.ValidIngredientArchivedAt),
-			MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
-			MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
+			LastUpdatedAt:                           database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
+			ArchivedAt:                              database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
+			MaximumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
+			MinimumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 			IconPath:                                result.ValidIngredientIconPath,
 			Warning:                                 result.ValidIngredientWarning,
 			PluralName:                              result.ValidIngredientPluralName,
@@ -98,7 +99,7 @@ func (q *Querier) GetUserIngredientPreference(ctx context.Context, userIngredien
 			ShoppingSuggestions:                     result.ValidIngredientShoppingSuggestions,
 			ContainsShellfish:                       result.ValidIngredientContainsShellfish,
 			IsMeasuredVolumetrically:                result.ValidIngredientVolumetric,
-			IsLiquid:                                boolFromNullBool(result.ValidIngredientIsLiquid),
+			IsLiquid:                                database.BoolFromNullBool(result.ValidIngredientIsLiquid),
 			ContainsPeanut:                          result.ValidIngredientContainsPeanut,
 			ContainsTreeNut:                         result.ValidIngredientContainsTreeNut,
 			ContainsEgg:                             result.ValidIngredientContainsEgg,
@@ -150,12 +151,12 @@ func (q *Querier) GetUserIngredientPreferences(ctx context.Context, userID strin
 	}
 
 	results, err := q.generatedQuerier.GetUserIngredientPreferencesForUser(ctx, q.db, &generated.GetUserIngredientPreferencesForUserParams{
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 		BelongsToUser: userID,
 	})
 	if err != nil {
@@ -165,8 +166,8 @@ func (q *Querier) GetUserIngredientPreferences(ctx context.Context, userID strin
 	for _, result := range results {
 		x.Data = append(x.Data, &types.UserIngredientPreference{
 			CreatedAt:     result.CreatedAt,
-			LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
-			ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 			ID:            result.ID,
 			Notes:         result.Notes,
 			BelongsToUser: result.BelongsToUser,
@@ -174,10 +175,10 @@ func (q *Querier) GetUserIngredientPreferences(ctx context.Context, userID strin
 			Allergy:       result.Allergy,
 			Ingredient: types.ValidIngredient{
 				CreatedAt:                               result.ValidIngredientCreatedAt,
-				LastUpdatedAt:                           timePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
-				ArchivedAt:                              timePointerFromNullTime(result.ValidIngredientArchivedAt),
-				MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
-				MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
+				LastUpdatedAt:                           database.TimePointerFromNullTime(result.ValidIngredientLastUpdatedAt),
+				ArchivedAt:                              database.TimePointerFromNullTime(result.ValidIngredientArchivedAt),
+				MaximumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
+				MinimumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 				IconPath:                                result.ValidIngredientIconPath,
 				Warning:                                 result.ValidIngredientWarning,
 				PluralName:                              result.ValidIngredientPluralName,
@@ -189,7 +190,7 @@ func (q *Querier) GetUserIngredientPreferences(ctx context.Context, userID strin
 				ShoppingSuggestions:                     result.ValidIngredientShoppingSuggestions,
 				ContainsShellfish:                       result.ValidIngredientContainsShellfish,
 				IsMeasuredVolumetrically:                result.ValidIngredientVolumetric,
-				IsLiquid:                                boolFromNullBool(result.ValidIngredientIsLiquid),
+				IsLiquid:                                database.BoolFromNullBool(result.ValidIngredientIsLiquid),
 				ContainsPeanut:                          result.ValidIngredientContainsPeanut,
 				ContainsTreeNut:                         result.ValidIngredientContainsTreeNut,
 				ContainsEgg:                             result.ValidIngredientContainsEgg,

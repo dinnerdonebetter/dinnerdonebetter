@@ -89,10 +89,10 @@ func (q *Querier) GetRecipeStepInstrument(ctx context.Context, recipeID, recipeS
 	recipeStepInstrument := &types.RecipeStepInstrument{
 		CreatedAt:           result.CreatedAt,
 		Instrument:          nil,
-		LastUpdatedAt:       timePointerFromNullTime(result.LastUpdatedAt),
-		RecipeStepProductID: stringPointerFromNullString(result.RecipeStepProductID),
-		ArchivedAt:          timePointerFromNullTime(result.ArchivedAt),
-		MaximumQuantity:     uint32PointerFromNullInt32(result.MaximumQuantity),
+		LastUpdatedAt:       database.TimePointerFromNullTime(result.LastUpdatedAt),
+		RecipeStepProductID: database.StringPointerFromNullString(result.RecipeStepProductID),
+		ArchivedAt:          database.TimePointerFromNullTime(result.ArchivedAt),
+		MaximumQuantity:     database.Uint32PointerFromNullInt32(result.MaximumQuantity),
 		Notes:               result.Notes,
 		Name:                result.Name,
 		BelongsToRecipeStep: result.BelongsToRecipeStep,
@@ -106,8 +106,8 @@ func (q *Querier) GetRecipeStepInstrument(ctx context.Context, recipeID, recipeS
 	if result.ValidInstrumentID.Valid {
 		recipeStepInstrument.Instrument = &types.ValidInstrument{
 			CreatedAt:                      result.ValidInstrumentCreatedAt.Time,
-			LastUpdatedAt:                  timePointerFromNullTime(result.ValidInstrumentLastUpdatedAt),
-			ArchivedAt:                     timePointerFromNullTime(result.ValidInstrumentArchivedAt),
+			LastUpdatedAt:                  database.TimePointerFromNullTime(result.ValidInstrumentLastUpdatedAt),
+			ArchivedAt:                     database.TimePointerFromNullTime(result.ValidInstrumentArchivedAt),
 			IconPath:                       result.ValidInstrumentIconPath.String,
 			ID:                             result.ValidInstrumentID.String,
 			Name:                           result.ValidInstrumentName.String,
@@ -155,12 +155,12 @@ func (q *Querier) GetRecipeStepInstruments(ctx context.Context, recipeID, recipe
 	results, err := q.generatedQuerier.GetRecipeStepInstruments(ctx, q.db, &generated.GetRecipeStepInstrumentsParams{
 		RecipeStepID:  recipeStepID,
 		RecipeID:      recipeID,
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing recipe step instruments list retrieval")
@@ -170,10 +170,10 @@ func (q *Querier) GetRecipeStepInstruments(ctx context.Context, recipeID, recipe
 		recipeStepInstrument := &types.RecipeStepInstrument{
 			CreatedAt:           result.CreatedAt,
 			Instrument:          nil,
-			LastUpdatedAt:       timePointerFromNullTime(result.LastUpdatedAt),
-			RecipeStepProductID: stringPointerFromNullString(result.RecipeStepProductID),
-			ArchivedAt:          timePointerFromNullTime(result.ArchivedAt),
-			MaximumQuantity:     uint32PointerFromNullInt32(result.MaximumQuantity),
+			LastUpdatedAt:       database.TimePointerFromNullTime(result.LastUpdatedAt),
+			RecipeStepProductID: database.StringPointerFromNullString(result.RecipeStepProductID),
+			ArchivedAt:          database.TimePointerFromNullTime(result.ArchivedAt),
+			MaximumQuantity:     database.Uint32PointerFromNullInt32(result.MaximumQuantity),
 			Notes:               result.Notes,
 			Name:                result.Name,
 			BelongsToRecipeStep: result.BelongsToRecipeStep,
@@ -187,8 +187,8 @@ func (q *Querier) GetRecipeStepInstruments(ctx context.Context, recipeID, recipe
 		if result.ValidInstrumentID.Valid {
 			recipeStepInstrument.Instrument = &types.ValidInstrument{
 				CreatedAt:                      result.ValidInstrumentCreatedAt.Time,
-				LastUpdatedAt:                  timePointerFromNullTime(result.ValidInstrumentLastUpdatedAt),
-				ArchivedAt:                     timePointerFromNullTime(result.ValidInstrumentArchivedAt),
+				LastUpdatedAt:                  database.TimePointerFromNullTime(result.ValidInstrumentLastUpdatedAt),
+				ArchivedAt:                     database.TimePointerFromNullTime(result.ValidInstrumentArchivedAt),
 				IconPath:                       result.ValidInstrumentIconPath.String,
 				ID:                             result.ValidInstrumentID.String,
 				Name:                           result.ValidInstrumentName.String,
@@ -232,10 +232,10 @@ func (q *Querier) getRecipeStepInstrumentsForRecipe(ctx context.Context, recipeI
 		recipeStepInstrument := &types.RecipeStepInstrument{
 			CreatedAt:           result.CreatedAt,
 			Instrument:          nil,
-			LastUpdatedAt:       timePointerFromNullTime(result.LastUpdatedAt),
-			RecipeStepProductID: stringPointerFromNullString(result.RecipeStepProductID),
-			ArchivedAt:          timePointerFromNullTime(result.ArchivedAt),
-			MaximumQuantity:     uint32PointerFromNullInt32(result.MaximumQuantity),
+			LastUpdatedAt:       database.TimePointerFromNullTime(result.LastUpdatedAt),
+			RecipeStepProductID: database.StringPointerFromNullString(result.RecipeStepProductID),
+			ArchivedAt:          database.TimePointerFromNullTime(result.ArchivedAt),
+			MaximumQuantity:     database.Uint32PointerFromNullInt32(result.MaximumQuantity),
 			Notes:               result.Notes,
 			Name:                result.Name,
 			BelongsToRecipeStep: result.BelongsToRecipeStep,
@@ -249,8 +249,8 @@ func (q *Querier) getRecipeStepInstrumentsForRecipe(ctx context.Context, recipeI
 		if result.ValidInstrumentID.Valid {
 			recipeStepInstrument.Instrument = &types.ValidInstrument{
 				CreatedAt:                      result.ValidInstrumentCreatedAt.Time,
-				LastUpdatedAt:                  timePointerFromNullTime(result.ValidInstrumentLastUpdatedAt),
-				ArchivedAt:                     timePointerFromNullTime(result.ValidInstrumentArchivedAt),
+				LastUpdatedAt:                  database.TimePointerFromNullTime(result.ValidInstrumentLastUpdatedAt),
+				ArchivedAt:                     database.TimePointerFromNullTime(result.ValidInstrumentArchivedAt),
 				IconPath:                       result.ValidInstrumentIconPath.String,
 				ID:                             result.ValidInstrumentID.String,
 				Name:                           result.ValidInstrumentName.String,
@@ -286,9 +286,9 @@ func (q *Querier) createRecipeStepInstrument(ctx context.Context, querier databa
 		Name:                input.Name,
 		Notes:               input.Notes,
 		BelongsToRecipeStep: input.BelongsToRecipeStep,
-		InstrumentID:        nullStringFromStringPointer(input.InstrumentID),
-		RecipeStepProductID: nullStringFromStringPointer(input.RecipeStepProductID),
-		MaximumQuantity:     nullInt32FromUint32Pointer(input.MaximumQuantity),
+		InstrumentID:        database.NullStringFromStringPointer(input.InstrumentID),
+		RecipeStepProductID: database.NullStringFromStringPointer(input.RecipeStepProductID),
+		MaximumQuantity:     database.NullInt32FromUint32Pointer(input.MaximumQuantity),
 		PreferenceRank:      int32(input.PreferenceRank),
 		OptionIndex:         int32(input.OptionIndex),
 		MinimumQuantity:     int32(input.MinimumQuantity),
@@ -343,15 +343,15 @@ func (q *Querier) UpdateRecipeStepInstrument(ctx context.Context, updated *types
 	}
 
 	if _, err := q.generatedQuerier.UpdateRecipeStepInstrument(ctx, q.db, &generated.UpdateRecipeStepInstrumentParams{
-		InstrumentID:        nullStringFromStringPointer(instrumentID),
-		RecipeStepProductID: nullStringFromStringPointer(updated.RecipeStepProductID),
+		InstrumentID:        database.NullStringFromStringPointer(instrumentID),
+		RecipeStepProductID: database.NullStringFromStringPointer(updated.RecipeStepProductID),
 		Name:                updated.Name,
 		Notes:               updated.Notes,
 		PreferenceRank:      int32(updated.PreferenceRank),
 		Optional:            updated.Optional,
 		OptionIndex:         int32(updated.OptionIndex),
 		MinimumQuantity:     int32(updated.MinimumQuantity),
-		MaximumQuantity:     nullInt32FromUint32Pointer(updated.MaximumQuantity),
+		MaximumQuantity:     database.NullInt32FromUint32Pointer(updated.MaximumQuantity),
 		BelongsToRecipeStep: updated.BelongsToRecipeStep,
 		ID:                  updated.ID,
 	}); err != nil {

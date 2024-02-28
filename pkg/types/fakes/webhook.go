@@ -30,6 +30,24 @@ func BuildFakeWebhook() *types.Webhook {
 	}
 }
 
+// BuildFakeWebhookList builds a faked WebhookList.
+func BuildFakeWebhookList() *types.QueryFilteredResult[types.Webhook] {
+	var examples []*types.Webhook
+	for i := 0; i < exampleQuantity; i++ {
+		examples = append(examples, BuildFakeWebhook())
+	}
+
+	return &types.QueryFilteredResult[types.Webhook]{
+		Pagination: types.Pagination{
+			Page:          1,
+			Limit:         50,
+			FilteredCount: exampleQuantity / 2,
+			TotalCount:    exampleQuantity,
+		},
+		Data: examples,
+	}
+}
+
 // BuildFakeWebhookTriggerEvent builds a faked WebhookTriggerEvent.
 func BuildFakeWebhookTriggerEvent() *types.WebhookTriggerEvent {
 	return &types.WebhookTriggerEvent{
@@ -41,14 +59,14 @@ func BuildFakeWebhookTriggerEvent() *types.WebhookTriggerEvent {
 	}
 }
 
-// BuildFakeWebhookList builds a faked WebhookList.
-func BuildFakeWebhookList() *types.QueryFilteredResult[types.Webhook] {
-	var examples []*types.Webhook
+// BuildFakeWebhookTriggerEventList builds a faked WebhookList.
+func BuildFakeWebhookTriggerEventList() *types.QueryFilteredResult[types.WebhookTriggerEvent] {
+	var examples []*types.WebhookTriggerEvent
 	for i := 0; i < exampleQuantity; i++ {
-		examples = append(examples, BuildFakeWebhook())
+		examples = append(examples, BuildFakeWebhookTriggerEvent())
 	}
 
-	return &types.QueryFilteredResult[types.Webhook]{
+	return &types.QueryFilteredResult[types.WebhookTriggerEvent]{
 		Pagination: types.Pagination{
 			Page:          1,
 			Limit:         50,

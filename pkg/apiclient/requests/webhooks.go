@@ -89,3 +89,25 @@ func (b *Builder) BuildArchiveWebhookRequest(ctx context.Context, webhookID stri
 
 	return req, nil
 }
+
+// BuildArchiveWebhookTriggerEventRequest builds an HTTP request for archiving a webhook trigger event.
+func (b *Builder) BuildArchiveWebhookTriggerEventRequest(ctx context.Context, webhookID, webhookTriggerEventID string) (*http.Request, error) {
+	ctx, span := b.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if webhookID == "" || webhookTriggerEventID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+
+	tracing.AttachToSpan(span, keys.WebhookIDKey, webhookID)
+	tracing.AttachToSpan(span, keys.WebhookTriggerEventIDKey, webhookTriggerEventID)
+
+	uri := b.BuildURL(ctx, nil, webhooksBasePath, webhookID, "trigger_events", webhookTriggerEventID)
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, http.NoBody)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "building request")
+	}
+
+	return req, nil
+}

@@ -515,7 +515,7 @@ func (s *service) ChangeActiveHouseholdHandler(res http.ResponseWriter, req *htt
 	logger.Info("successfully changed active session household")
 	http.SetCookie(res, cookie)
 
-	responseValue := &types.APIResponse[*types.ValidIngredientGroup]{
+	responseValue := &types.APIResponse[*types.UserStatusResponse]{
 		Details: responseDetails,
 	}
 

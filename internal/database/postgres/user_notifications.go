@@ -3,11 +3,17 @@ package postgres
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
+	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+)
+
+const (
+	resourceTypeUserNotifications = "user_notifications"
 )
 
 var (
@@ -73,7 +79,7 @@ func (q *Querier) GetUserNotification(ctx context.Context, userID, userNotificat
 
 	userNotification := &types.UserNotification{
 		CreatedAt:     result.CreatedAt,
-		LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
+		LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 		ID:            result.ID,
 		Content:       result.Content,
 		Status:        string(result.Status),
@@ -108,12 +114,12 @@ func (q *Querier) GetUserNotifications(ctx context.Context, userID string, filte
 
 	results, err := q.generatedQuerier.GetUserNotificationsForUser(ctx, q.db, &generated.GetUserNotificationsForUserParams{
 		UserID:        userID,
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing user notifications list retrieval query")
@@ -122,7 +128,7 @@ func (q *Querier) GetUserNotifications(ctx context.Context, userID string, filte
 	for _, result := range results {
 		userNotification := &types.UserNotification{
 			CreatedAt:     result.CreatedAt,
-			LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
+			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ID:            result.ID,
 		}
 
@@ -145,12 +151,18 @@ func (q *Querier) CreateUserNotification(ctx context.Context, input *types.UserN
 	tracing.AttachToSpan(span, keys.UserNotificationIDKey, input.ID)
 	logger := q.logger.WithValue(keys.UserNotificationIDKey, input.ID)
 
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
 	// create the user notification.
-	if err := q.generatedQuerier.CreateUserNotification(ctx, q.db, &generated.CreateUserNotificationParams{
+	if err = q.generatedQuerier.CreateUserNotification(ctx, tx, &generated.CreateUserNotificationParams{
 		ID:            input.ID,
 		Content:       input.Content,
 		BelongsToUser: input.BelongsToUser,
 	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing user notification creation query")
 	}
 
@@ -163,6 +175,21 @@ func (q *Querier) CreateUserNotification(ctx context.Context, input *types.UserN
 	}
 	tracing.AttachToSpan(span, keys.UserNotificationIDKey, x.ID)
 	logger.Info("user notification created")
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		ID:            identifiers.New(),
+		ResourceType:  resourceTypeUserNotifications,
+		RelevantID:    x.ID,
+		EventType:     types.AuditLogEventTypeCreated,
+		BelongsToUser: x.BelongsToUser,
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return nil, observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "committing transaction")
+	}
 
 	return x, nil
 }
@@ -178,11 +205,32 @@ func (q *Querier) UpdateUserNotification(ctx context.Context, updated *types.Use
 	logger := q.logger.WithValue(keys.UserNotificationIDKey, updated.ID)
 	tracing.AttachToSpan(span, keys.UserNotificationIDKey, updated.ID)
 
-	if _, err := q.generatedQuerier.UpdateUserNotification(ctx, q.db, &generated.UpdateUserNotificationParams{
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	if _, err = q.generatedQuerier.UpdateUserNotification(ctx, tx, &generated.UpdateUserNotificationParams{
 		Status: generated.UserNotificationStatus(updated.Status),
 		ID:     updated.ID,
 	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "updating user notification")
+	}
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		ID:            identifiers.New(),
+		ResourceType:  resourceTypeUserNotifications,
+		RelevantID:    updated.ID,
+		EventType:     types.AuditLogEventTypeUpdated,
+		BelongsToUser: updated.BelongsToUser,
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	logger.Info("user notification updated")

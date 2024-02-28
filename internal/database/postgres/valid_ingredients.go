@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
@@ -55,10 +56,10 @@ func (q *Querier) GetValidIngredient(ctx context.Context, validIngredientID stri
 
 	validIngredient := &types.ValidIngredient{
 		CreatedAt:                               result.CreatedAt,
-		LastUpdatedAt:                           timePointerFromNullTime(result.LastUpdatedAt),
-		ArchivedAt:                              timePointerFromNullTime(result.ArchivedAt),
-		MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
-		MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
+		LastUpdatedAt:                           database.TimePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:                              database.TimePointerFromNullTime(result.ArchivedAt),
+		MaximumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
+		MinimumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
 		IconPath:                                result.IconPath,
 		Warning:                                 result.Warning,
 		PluralName:                              result.PluralName,
@@ -70,7 +71,7 @@ func (q *Querier) GetValidIngredient(ctx context.Context, validIngredientID stri
 		ShoppingSuggestions:                     result.ShoppingSuggestions,
 		ContainsShellfish:                       result.ContainsShellfish,
 		IsMeasuredVolumetrically:                result.Volumetric,
-		IsLiquid:                                boolFromNullBool(result.IsLiquid),
+		IsLiquid:                                database.BoolFromNullBool(result.IsLiquid),
 		ContainsPeanut:                          result.ContainsPeanut,
 		ContainsTreeNut:                         result.ContainsTreeNut,
 		ContainsEgg:                             result.ContainsEgg,
@@ -109,10 +110,10 @@ func (q *Querier) GetRandomValidIngredient(ctx context.Context) (*types.ValidIng
 
 	validIngredient := &types.ValidIngredient{
 		CreatedAt:                               result.CreatedAt,
-		LastUpdatedAt:                           timePointerFromNullTime(result.LastUpdatedAt),
-		ArchivedAt:                              timePointerFromNullTime(result.ArchivedAt),
-		MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
-		MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
+		LastUpdatedAt:                           database.TimePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:                              database.TimePointerFromNullTime(result.ArchivedAt),
+		MaximumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
+		MinimumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
 		IconPath:                                result.IconPath,
 		Warning:                                 result.Warning,
 		PluralName:                              result.PluralName,
@@ -124,7 +125,7 @@ func (q *Querier) GetRandomValidIngredient(ctx context.Context) (*types.ValidIng
 		ShoppingSuggestions:                     result.ShoppingSuggestions,
 		ContainsShellfish:                       result.ContainsShellfish,
 		IsMeasuredVolumetrically:                result.Volumetric,
-		IsLiquid:                                boolFromNullBool(result.IsLiquid),
+		IsLiquid:                                database.BoolFromNullBool(result.IsLiquid),
 		ContainsPeanut:                          result.ContainsPeanut,
 		ContainsTreeNut:                         result.ContainsTreeNut,
 		ContainsEgg:                             result.ContainsEgg,
@@ -180,10 +181,10 @@ func (q *Querier) SearchForValidIngredients(ctx context.Context, query string, f
 	for _, result := range results {
 		validIngredient := &types.ValidIngredient{
 			CreatedAt:                               result.CreatedAt,
-			LastUpdatedAt:                           timePointerFromNullTime(result.LastUpdatedAt),
-			ArchivedAt:                              timePointerFromNullTime(result.ArchivedAt),
-			MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
-			MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
+			LastUpdatedAt:                           database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:                              database.TimePointerFromNullTime(result.ArchivedAt),
+			MaximumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
+			MinimumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
 			IconPath:                                result.IconPath,
 			Warning:                                 result.Warning,
 			PluralName:                              result.PluralName,
@@ -195,7 +196,7 @@ func (q *Querier) SearchForValidIngredients(ctx context.Context, query string, f
 			ShoppingSuggestions:                     result.ShoppingSuggestions,
 			ContainsShellfish:                       result.ContainsShellfish,
 			IsMeasuredVolumetrically:                result.Volumetric,
-			IsLiquid:                                boolFromNullBool(result.IsLiquid),
+			IsLiquid:                                database.BoolFromNullBool(result.IsLiquid),
 			ContainsPeanut:                          result.ContainsPeanut,
 			ContainsTreeNut:                         result.ContainsTreeNut,
 			ContainsEgg:                             result.ContainsEgg,
@@ -265,10 +266,10 @@ func (q *Querier) SearchForValidIngredientsForPreparation(ctx context.Context, p
 	for _, result := range results {
 		validIngredient := &types.ValidIngredient{
 			CreatedAt:                               result.CreatedAt,
-			LastUpdatedAt:                           timePointerFromNullTime(result.LastUpdatedAt),
-			ArchivedAt:                              timePointerFromNullTime(result.ArchivedAt),
-			MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
-			MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
+			LastUpdatedAt:                           database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:                              database.TimePointerFromNullTime(result.ArchivedAt),
+			MaximumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
+			MinimumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
 			IconPath:                                result.IconPath,
 			Warning:                                 result.Warning,
 			PluralName:                              result.PluralName,
@@ -280,7 +281,7 @@ func (q *Querier) SearchForValidIngredientsForPreparation(ctx context.Context, p
 			ShoppingSuggestions:                     result.ShoppingSuggestions,
 			ContainsShellfish:                       result.ContainsShellfish,
 			IsMeasuredVolumetrically:                result.Volumetric,
-			IsLiquid:                                boolFromNullBool(result.IsLiquid),
+			IsLiquid:                                database.BoolFromNullBool(result.IsLiquid),
 			ContainsPeanut:                          result.ContainsPeanut,
 			ContainsTreeNut:                         result.ContainsTreeNut,
 			ContainsEgg:                             result.ContainsEgg,
@@ -328,12 +329,12 @@ func (q *Querier) GetValidIngredients(ctx context.Context, filter *types.QueryFi
 	}
 
 	results, err := q.generatedQuerier.GetValidIngredients(ctx, q.db, &generated.GetValidIngredientsParams{
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing valid ingredients list retrieval query")
@@ -342,10 +343,10 @@ func (q *Querier) GetValidIngredients(ctx context.Context, filter *types.QueryFi
 	for _, result := range results {
 		validIngredient := &types.ValidIngredient{
 			CreatedAt:                               result.CreatedAt,
-			LastUpdatedAt:                           timePointerFromNullTime(result.LastUpdatedAt),
-			ArchivedAt:                              timePointerFromNullTime(result.ArchivedAt),
-			MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
-			MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
+			LastUpdatedAt:                           database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:                              database.TimePointerFromNullTime(result.ArchivedAt),
+			MaximumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
+			MinimumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
 			IconPath:                                result.IconPath,
 			Warning:                                 result.Warning,
 			PluralName:                              result.PluralName,
@@ -357,7 +358,7 @@ func (q *Querier) GetValidIngredients(ctx context.Context, filter *types.QueryFi
 			ShoppingSuggestions:                     result.ShoppingSuggestions,
 			ContainsShellfish:                       result.ContainsShellfish,
 			IsMeasuredVolumetrically:                result.Volumetric,
-			IsLiquid:                                boolFromNullBool(result.IsLiquid),
+			IsLiquid:                                database.BoolFromNullBool(result.IsLiquid),
 			ContainsPeanut:                          result.ContainsPeanut,
 			ContainsTreeNut:                         result.ContainsTreeNut,
 			ContainsEgg:                             result.ContainsEgg,
@@ -409,10 +410,10 @@ func (q *Querier) GetValidIngredientsWithIDs(ctx context.Context, ids []string) 
 	for _, result := range results {
 		validIngredient := &types.ValidIngredient{
 			CreatedAt:                               result.CreatedAt,
-			LastUpdatedAt:                           timePointerFromNullTime(result.LastUpdatedAt),
-			ArchivedAt:                              timePointerFromNullTime(result.ArchivedAt),
-			MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
-			MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
+			LastUpdatedAt:                           database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:                              database.TimePointerFromNullTime(result.ArchivedAt),
+			MaximumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.MaximumIdealStorageTemperatureInCelsius),
+			MinimumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(result.MinimumIdealStorageTemperatureInCelsius),
 			IconPath:                                result.IconPath,
 			Warning:                                 result.Warning,
 			PluralName:                              result.PluralName,
@@ -424,7 +425,7 @@ func (q *Querier) GetValidIngredientsWithIDs(ctx context.Context, ids []string) 
 			ShoppingSuggestions:                     result.ShoppingSuggestions,
 			ContainsShellfish:                       result.ContainsShellfish,
 			IsMeasuredVolumetrically:                result.Volumetric,
-			IsLiquid:                                boolFromNullBool(result.IsLiquid),
+			IsLiquid:                                database.BoolFromNullBool(result.IsLiquid),
 			ContainsPeanut:                          result.ContainsPeanut,
 			ContainsTreeNut:                         result.ContainsTreeNut,
 			ContainsEgg:                             result.ContainsEgg,
@@ -496,13 +497,13 @@ func (q *Querier) CreateValidIngredient(ctx context.Context, input *types.ValidI
 		ContainsGluten:                          input.ContainsGluten,
 		AnimalFlesh:                             input.AnimalFlesh,
 		Volumetric:                              input.IsMeasuredVolumetrically,
-		IsLiquid:                                nullBoolFromBool(input.IsLiquid),
+		IsLiquid:                                database.NullBoolFromBool(input.IsLiquid),
 		IconPath:                                input.IconPath,
 		AnimalDerived:                           input.AnimalDerived,
 		PluralName:                              input.PluralName,
 		RestrictToPreparations:                  input.RestrictToPreparations,
-		MaximumIdealStorageTemperatureInCelsius: nullStringFromFloat32Pointer(input.MaximumIdealStorageTemperatureInCelsius),
-		MinimumIdealStorageTemperatureInCelsius: nullStringFromFloat32Pointer(input.MinimumIdealStorageTemperatureInCelsius),
+		MaximumIdealStorageTemperatureInCelsius: database.NullStringFromFloat32Pointer(input.MaximumIdealStorageTemperatureInCelsius),
+		MinimumIdealStorageTemperatureInCelsius: database.NullStringFromFloat32Pointer(input.MinimumIdealStorageTemperatureInCelsius),
 		StorageInstructions:                     input.StorageInstructions,
 		Slug:                                    input.Slug,
 		ContainsAlcohol:                         input.ContainsAlcohol,
@@ -585,9 +586,9 @@ func (q *Querier) UpdateValidIngredient(ctx context.Context, updated *types.Vali
 		Name:                                    updated.Name,
 		PluralName:                              updated.PluralName,
 		IconPath:                                updated.IconPath,
-		MaximumIdealStorageTemperatureInCelsius: nullStringFromFloat32Pointer(updated.MaximumIdealStorageTemperatureInCelsius),
-		MinimumIdealStorageTemperatureInCelsius: nullStringFromFloat32Pointer(updated.MinimumIdealStorageTemperatureInCelsius),
-		IsLiquid:                                nullBoolFromBool(updated.IsLiquid),
+		MaximumIdealStorageTemperatureInCelsius: database.NullStringFromFloat32Pointer(updated.MaximumIdealStorageTemperatureInCelsius),
+		MinimumIdealStorageTemperatureInCelsius: database.NullStringFromFloat32Pointer(updated.MinimumIdealStorageTemperatureInCelsius),
+		IsLiquid:                                database.NullBoolFromBool(updated.IsLiquid),
 		ContainsWheat:                           updated.ContainsWheat,
 		ContainsPeanut:                          updated.ContainsPeanut,
 		Volumetric:                              updated.IsMeasuredVolumetrically,

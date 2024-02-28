@@ -15,6 +15,10 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
+const (
+	resourceTypeHouseholdUserMemberships = "household_user_memberships"
+)
+
 var (
 	_ types.HouseholdUserMembershipDataManager = (*Querier)(nil)
 )
@@ -106,11 +110,37 @@ func (q *Querier) markHouseholdAsUserDefault(ctx context.Context, querier databa
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
-	if err := q.generatedQuerier.MarkHouseholdUserMembershipAsUserDefault(ctx, querier, &generated.MarkHouseholdUserMembershipAsUserDefaultParams{
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	if err = q.generatedQuerier.MarkHouseholdUserMembershipAsUserDefault(ctx, querier, &generated.MarkHouseholdUserMembershipAsUserDefaultParams{
 		BelongsToUser:      userID,
 		BelongsToHousehold: householdID,
 	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "assigning user default household")
+	}
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		BelongsToHousehold: &householdID,
+		ID:                 identifiers.New(),
+		ResourceType:       resourceTypeHouseholdUserMemberships,
+		EventType:          types.AuditLogEventTypeUpdated,
+		BelongsToUser:      userID,
+		Changes: map[string]types.ChangeLog{
+			"default_household": {
+				OldValue: "false",
+				NewValue: "true",
+			},
+		},
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	logger.Debug("household marked as default")
@@ -167,13 +197,54 @@ func (q *Querier) ModifyUserPermissions(ctx context.Context, householdID, userID
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	memberships, err := q.generatedQuerier.GetHouseholdUserMembershipsForUser(ctx, tx, userID)
+	if err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareAndLogError(err, logger, span, "fetching user household memberships")
+	}
+
+	var existingRole string
+	for _, membership := range memberships {
+		if membership.BelongsToUser == userID && membership.BelongsToHousehold == householdID {
+			existingRole = membership.HouseholdRole
+			break
+		}
+	}
+
 	// modify the membership.
-	if err := q.generatedQuerier.ModifyHouseholdUserPermissions(ctx, q.db, &generated.ModifyHouseholdUserPermissionsParams{
+	if err = q.generatedQuerier.ModifyHouseholdUserPermissions(ctx, tx, &generated.ModifyHouseholdUserPermissionsParams{
 		HouseholdRole:      input.NewRole,
 		BelongsToHousehold: householdID,
 		BelongsToUser:      userID,
 	}); err != nil && !errors.Is(err, sql.ErrNoRows) {
+		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "modifying user household permissions")
+	}
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		BelongsToHousehold: &householdID,
+		ID:                 identifiers.New(),
+		ResourceType:       resourceTypeHouseholdUserMemberships,
+		EventType:          types.AuditLogEventTypeUpdated,
+		BelongsToUser:      userID,
+		Changes: map[string]types.ChangeLog{
+			"household_role": {
+				OldValue: existingRole,
+				NewValue: input.NewRole,
+			},
+		},
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	logger.Info("user permissions modified")
@@ -203,7 +274,6 @@ func (q *Querier) TransferHouseholdOwnership(ctx context.Context, householdID st
 	tracing.AttachToSpan(span, keys.UserIDKey, input.NewOwner)
 	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
 
-	// begin household transfer transaction
 	tx, err := q.db.BeginTx(ctx, nil)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
@@ -217,6 +287,23 @@ func (q *Querier) TransferHouseholdOwnership(ctx context.Context, householdID st
 	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "transferring household to new owner")
+	}
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		BelongsToHousehold: &householdID,
+		ID:                 identifiers.New(),
+		ResourceType:       resourceTypeHouseholdUserMemberships,
+		EventType:          types.AuditLogEventTypeUpdated,
+		BelongsToUser:      input.NewOwner,
+		Changes: map[string]types.ChangeLog{
+			"belongs_to_user": {
+				OldValue: input.CurrentOwner,
+				NewValue: input.NewOwner,
+			},
+		},
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
 	}
 
 	isMember, err := q.UserIsMemberOfHousehold(ctx, input.NewOwner, householdID)
@@ -236,11 +323,15 @@ func (q *Querier) TransferHouseholdOwnership(ctx context.Context, householdID st
 			q.rollbackTransaction(ctx, tx)
 			return observability.PrepareAndLogError(err, logger, span, "adding user to household")
 		}
+		// audit log created above
 	}
 
 	if err = q.removeUserFromHousehold(ctx, tx, input.CurrentOwner, householdID); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "removing user from household")
 	}
+
+	// audit log created above
 
 	if err = tx.Commit(); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
@@ -278,6 +369,16 @@ func (q *Querier) addUserToHousehold(ctx context.Context, querier database.SQLQu
 		return observability.PrepareAndLogError(err, logger, span, "performing user household membership creation query")
 	}
 
+	if _, err := q.createAuditLogEntry(ctx, querier, &types.AuditLogEntryDatabaseCreationInput{
+		BelongsToHousehold: &input.HouseholdID,
+		ID:                 identifiers.New(),
+		ResourceType:       resourceTypeHouseholdUserMemberships,
+		EventType:          types.AuditLogEventTypeCreated,
+		BelongsToUser:      input.UserID,
+	}); err != nil {
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
 	logger.Info("user added to household")
 
 	return nil
@@ -308,6 +409,17 @@ func (q *Querier) removeUserFromHousehold(ctx context.Context, querier database.
 		return observability.PrepareAndLogError(err, logger, span, "removing user from household")
 	}
 
+	if _, err := q.createAuditLogEntry(ctx, querier, &types.AuditLogEntryDatabaseCreationInput{
+		BelongsToHousehold: &householdID,
+		ID:                 identifiers.New(),
+		ResourceType:       resourceTypeHouseholdUserMemberships,
+		EventType:          types.AuditLogEventTypeArchived,
+		BelongsToUser:      userID,
+	}); err != nil {
+		q.rollbackTransaction(ctx, querier)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
 	remainingHouseholds, err := q.getHouseholdsForUser(ctx, querier, userID, nil)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		q.rollbackTransaction(ctx, querier)
@@ -316,7 +428,7 @@ func (q *Querier) removeUserFromHousehold(ctx context.Context, querier database.
 
 	if len(remainingHouseholds.Data) < 1 {
 		logger.Debug("user has no remaining households, creating a new one")
-		if err = q.createHouseholdForUser(ctx, querier, false, "", userID); err != nil {
+		if _, err = q.createHouseholdForUser(ctx, querier, false, "", userID); err != nil {
 			return observability.PrepareAndLogError(err, logger, span, "creating household for new user")
 		}
 		return nil
@@ -354,16 +466,18 @@ func (q *Querier) RemoveUserFromHousehold(ctx context.Context, userID, household
 		keys.HouseholdIDKey: householdID,
 	})
 
-	tx, createTransactionErr := q.db.BeginTx(ctx, nil)
-	if createTransactionErr != nil {
-		return observability.PrepareError(createTransactionErr, span, "beginning transaction")
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareError(err, span, "beginning transaction")
 	}
 
-	if err := q.removeUserFromHousehold(ctx, tx, userID, householdID); err != nil {
+	if err = q.removeUserFromHousehold(ctx, tx, userID, householdID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "removing user from household")
 	}
 
-	if err := tx.Commit(); err != nil {
+	// audit log entry created above
+
+	if err = tx.Commit(); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 

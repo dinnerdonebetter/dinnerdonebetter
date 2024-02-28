@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
@@ -55,17 +56,17 @@ func (q *Querier) GetRecipeRating(ctx context.Context, recipeRatingID string) (*
 
 	recipeRating := &types.RecipeRating{
 		CreatedAt:     result.CreatedAt,
-		LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
-		ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+		LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 		Notes:         result.Notes,
 		ID:            result.ID,
 		RecipeID:      result.RecipeID,
 		ByUser:        result.ByUser,
-		Taste:         float32FromNullString(result.Taste),
-		Instructions:  float32FromNullString(result.Instructions),
-		Overall:       float32FromNullString(result.Overall),
-		Cleanup:       float32FromNullString(result.Cleanup),
-		Difficulty:    float32FromNullString(result.Difficulty),
+		Taste:         database.Float32FromNullString(result.Taste),
+		Instructions:  database.Float32FromNullString(result.Instructions),
+		Overall:       database.Float32FromNullString(result.Overall),
+		Cleanup:       database.Float32FromNullString(result.Cleanup),
+		Difficulty:    database.Float32FromNullString(result.Difficulty),
 	}
 
 	return recipeRating, nil
@@ -89,12 +90,12 @@ func (q *Querier) GetRecipeRatings(ctx context.Context, filter *types.QueryFilte
 	}
 
 	results, err := q.generatedQuerier.GetRecipeRatings(ctx, q.db, &generated.GetRecipeRatingsParams{
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing recipe ratings list retrieval query")
@@ -103,17 +104,17 @@ func (q *Querier) GetRecipeRatings(ctx context.Context, filter *types.QueryFilte
 	for _, result := range results {
 		x.Data = append(x.Data, &types.RecipeRating{
 			CreatedAt:     result.CreatedAt,
-			LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
-			ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 			Notes:         result.Notes,
 			ID:            result.ID,
 			RecipeID:      result.RecipeID,
 			ByUser:        result.ByUser,
-			Taste:         float32FromNullString(result.Taste),
-			Instructions:  float32FromNullString(result.Instructions),
-			Overall:       float32FromNullString(result.Overall),
-			Cleanup:       float32FromNullString(result.Cleanup),
-			Difficulty:    float32FromNullString(result.Difficulty),
+			Taste:         database.Float32FromNullString(result.Taste),
+			Instructions:  database.Float32FromNullString(result.Instructions),
+			Overall:       database.Float32FromNullString(result.Overall),
+			Cleanup:       database.Float32FromNullString(result.Cleanup),
+			Difficulty:    database.Float32FromNullString(result.Difficulty),
 		})
 		x.FilteredCount = uint64(result.FilteredCount)
 		x.TotalCount = uint64(result.TotalCount)
@@ -139,11 +140,11 @@ func (q *Querier) CreateRecipeRating(ctx context.Context, input *types.RecipeRat
 		RecipeID:     input.RecipeID,
 		Notes:        input.Notes,
 		ByUser:       input.ByUser,
-		Taste:        nullStringFromFloat32(input.Taste),
-		Difficulty:   nullStringFromFloat32(input.Difficulty),
-		Cleanup:      nullStringFromFloat32(input.Cleanup),
-		Instructions: nullStringFromFloat32(input.Instructions),
-		Overall:      nullStringFromFloat32(input.Overall),
+		Taste:        database.NullStringFromFloat32(input.Taste),
+		Difficulty:   database.NullStringFromFloat32(input.Difficulty),
+		Cleanup:      database.NullStringFromFloat32(input.Cleanup),
+		Instructions: database.NullStringFromFloat32(input.Instructions),
+		Overall:      database.NullStringFromFloat32(input.Overall),
 	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing recipe rating creation query")
 	}
@@ -180,11 +181,11 @@ func (q *Querier) UpdateRecipeRating(ctx context.Context, updated *types.RecipeR
 
 	if _, err := q.generatedQuerier.UpdateRecipeRating(ctx, q.db, &generated.UpdateRecipeRatingParams{
 		RecipeID:     updated.RecipeID,
-		Taste:        nullStringFromFloat32(updated.Taste),
-		Difficulty:   nullStringFromFloat32(updated.Difficulty),
-		Cleanup:      nullStringFromFloat32(updated.Cleanup),
-		Instructions: nullStringFromFloat32(updated.Instructions),
-		Overall:      nullStringFromFloat32(updated.Overall),
+		Taste:        database.NullStringFromFloat32(updated.Taste),
+		Difficulty:   database.NullStringFromFloat32(updated.Difficulty),
+		Cleanup:      database.NullStringFromFloat32(updated.Cleanup),
+		Instructions: database.NullStringFromFloat32(updated.Instructions),
+		Overall:      database.NullStringFromFloat32(updated.Overall),
 		Notes:        updated.Notes,
 		ID:           updated.ID,
 	}); err != nil {

@@ -56,6 +56,7 @@ type Querier interface {
 	ArchiveValidPreparationVessel(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveValidVessel(ctx context.Context, db DBTX, id string) (int64, error)
 	ArchiveWebhook(ctx context.Context, db DBTX, arg *ArchiveWebhookParams) (int64, error)
+	ArchiveWebhookTriggerEvent(ctx context.Context, db DBTX, arg *ArchiveWebhookTriggerEventParams) (int64, error)
 	AttachHouseholdInvitationsToUserID(ctx context.Context, db DBTX, arg *AttachHouseholdInvitationsToUserIDParams) error
 	ChangeMealPlanTaskStatus(ctx context.Context, db DBTX, arg *ChangeMealPlanTaskStatusParams) error
 	CheckHouseholdInstrumentOwnershipExistence(ctx context.Context, db DBTX, arg *CheckHouseholdInstrumentOwnershipExistenceParams) (bool, error)
@@ -97,6 +98,7 @@ type Querier interface {
 	CheckValidVesselExistence(ctx context.Context, db DBTX, id string) (bool, error)
 	CheckValidityOfValidIngredientStateIngredientPair(ctx context.Context, db DBTX, arg *CheckValidityOfValidIngredientStateIngredientPairParams) (bool, error)
 	CheckWebhookExistence(ctx context.Context, db DBTX, arg *CheckWebhookExistenceParams) (bool, error)
+	CreateAuditLogEntry(ctx context.Context, db DBTX, arg *CreateAuditLogEntryParams) error
 	CreateHousehold(ctx context.Context, db DBTX, arg *CreateHouseholdParams) error
 	CreateHouseholdInstrumentOwnership(ctx context.Context, db DBTX, arg *CreateHouseholdInstrumentOwnershipParams) error
 	CreateHouseholdInvitation(ctx context.Context, db DBTX, arg *CreateHouseholdInvitationParams) error
@@ -155,6 +157,11 @@ type Querier interface {
 	GetAllRecipeStepIngredientsForRecipe(ctx context.Context, db DBTX, recipeID string) ([]*GetAllRecipeStepIngredientsForRecipeRow, error)
 	GetAllValidMeasurementUnitConversionsFromMeasurementUnit(ctx context.Context, db DBTX, id string) ([]*GetAllValidMeasurementUnitConversionsFromMeasurementUnitRow, error)
 	GetAllValidMeasurementUnitConversionsToMeasurementUnit(ctx context.Context, db DBTX, id string) ([]*GetAllValidMeasurementUnitConversionsToMeasurementUnitRow, error)
+	GetAuditLogEntriesForHousehold(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForHouseholdParams) ([]*GetAuditLogEntriesForHouseholdRow, error)
+	GetAuditLogEntriesForHouseholdAndResourceType(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForHouseholdAndResourceTypeParams) ([]*GetAuditLogEntriesForHouseholdAndResourceTypeRow, error)
+	GetAuditLogEntriesForUser(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForUserParams) ([]*GetAuditLogEntriesForUserRow, error)
+	GetAuditLogEntriesForUserAndResourceType(ctx context.Context, db DBTX, arg *GetAuditLogEntriesForUserAndResourceTypeParams) ([]*GetAuditLogEntriesForUserAndResourceTypeRow, error)
+	GetAuditLogEntry(ctx context.Context, db DBTX, id string) (*GetAuditLogEntryRow, error)
 	GetDefaultHouseholdIDForUser(ctx context.Context, db DBTX, belongsToUser string) (string, error)
 	GetEmailVerificationTokenByUserID(ctx context.Context, db DBTX, id string) (sql.NullString, error)
 	GetExpiredAndUnresolvedMealPlans(ctx context.Context, db DBTX) ([]*GetExpiredAndUnresolvedMealPlansRow, error)
@@ -301,6 +308,7 @@ type Querier interface {
 	ListAllMealPlanTasksByMealPlan(ctx context.Context, db DBTX, mealPlanID string) ([]*ListAllMealPlanTasksByMealPlanRow, error)
 	ListAllRecipePrepTasksByRecipe(ctx context.Context, db DBTX, recipeID string) ([]*ListAllRecipePrepTasksByRecipeRow, error)
 	ListIncompleteMealPlanTasksByMealPlanOption(ctx context.Context, db DBTX, belongsToMealPlanOption string) ([]*ListIncompleteMealPlanTasksByMealPlanOptionRow, error)
+	MarkEmailAddressAsUnverified(ctx context.Context, db DBTX, id string) error
 	MarkEmailAddressAsVerified(ctx context.Context, db DBTX, arg *MarkEmailAddressAsVerifiedParams) error
 	MarkHouseholdUserMembershipAsUserDefault(ctx context.Context, db DBTX, arg *MarkHouseholdUserMembershipAsUserDefaultParams) error
 	MarkMealPlanAsGroceryListInitialized(ctx context.Context, db DBTX, id string) error

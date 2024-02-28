@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
@@ -48,7 +49,7 @@ func (q *Querier) MealPlanOptionVoteExists(ctx context.Context, mealPlanID, meal
 	result, err := q.generatedQuerier.CheckMealPlanOptionVoteExistence(ctx, q.db, &generated.CheckMealPlanOptionVoteExistenceParams{
 		MealPlanOptionID:     mealPlanOptionID,
 		MealPlanOptionVoteID: mealPlanOptionVoteID,
-		MealPlanEventID:      nullStringFromString(mealPlanEventID),
+		MealPlanEventID:      database.NullStringFromString(mealPlanEventID),
 		MealPlanID:           mealPlanID,
 	})
 	if err != nil {
@@ -87,7 +88,7 @@ func (q *Querier) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPla
 		MealPlanOptionID:     mealPlanOptionID,
 		MealPlanOptionVoteID: mealPlanOptionVoteID,
 		MealPlanID:           mealPlanID,
-		MealPlanEventID:      nullStringFromString(mealPlanEventID),
+		MealPlanEventID:      database.NullStringFromString(mealPlanEventID),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "getting meal plan option vote")
@@ -95,8 +96,8 @@ func (q *Querier) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPla
 
 	mealPlanOptionVote := &types.MealPlanOptionVote{
 		CreatedAt:               result.CreatedAt,
-		ArchivedAt:              timePointerFromNullTime(result.ArchivedAt),
-		LastUpdatedAt:           timePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:              database.TimePointerFromNullTime(result.ArchivedAt),
+		LastUpdatedAt:           database.TimePointerFromNullTime(result.LastUpdatedAt),
 		ID:                      result.ID,
 		Notes:                   result.Notes,
 		BelongsToMealPlanOption: result.BelongsToMealPlanOption,
@@ -136,7 +137,7 @@ func (q *Querier) GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, m
 	results, err := q.generatedQuerier.GetMealPlanOptionVotesForMealPlanOption(ctx, q.db, &generated.GetMealPlanOptionVotesForMealPlanOptionParams{
 		MealPlanID:       mealPlanID,
 		MealPlanOptionID: mealPlanOptionID,
-		MealPlanEventID:  nullStringFromString(mealPlanEventID),
+		MealPlanEventID:  database.NullStringFromString(mealPlanEventID),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "getting meal plan option votes for meal plan option")
@@ -146,8 +147,8 @@ func (q *Querier) GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, m
 	for i, result := range results {
 		x[i] = &types.MealPlanOptionVote{
 			CreatedAt:               result.CreatedAt,
-			ArchivedAt:              timePointerFromNullTime(result.ArchivedAt),
-			LastUpdatedAt:           timePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:              database.TimePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt:           database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ID:                      result.ID,
 			Notes:                   result.Notes,
 			BelongsToMealPlanOption: result.BelongsToMealPlanOption,
@@ -197,14 +198,14 @@ func (q *Querier) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPl
 
 	results, err := q.generatedQuerier.GetMealPlanOptionVotes(ctx, q.db, &generated.GetMealPlanOptionVotesParams{
 		MealPlanOptionID: mealPlanOptionID,
-		MealPlanEventID:  nullStringFromString(mealPlanEventID),
+		MealPlanEventID:  database.NullStringFromString(mealPlanEventID),
 		MealPlanID:       mealPlanID,
-		CreatedBefore:    nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:     nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore:    nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:     nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:      nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:       nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore:    database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:     database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore:    database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:     database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:      database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:       database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "getting meal plan option votes")
@@ -213,8 +214,8 @@ func (q *Querier) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPl
 	for _, result := range results {
 		x.Data = append(x.Data, &types.MealPlanOptionVote{
 			CreatedAt:               result.CreatedAt,
-			ArchivedAt:              timePointerFromNullTime(result.ArchivedAt),
-			LastUpdatedAt:           timePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:              database.TimePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt:           database.TimePointerFromNullTime(result.LastUpdatedAt),
 			ID:                      result.ID,
 			Notes:                   result.Notes,
 			BelongsToMealPlanOption: result.BelongsToMealPlanOption,

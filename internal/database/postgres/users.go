@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
 	"github.com/dinnerdonebetter/backend/internal/database"
@@ -17,6 +18,10 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/jackc/pgx/v5/pgconn"
+)
+
+const (
+	resourceTypeUsers = "users"
 )
 
 var (
@@ -41,13 +46,13 @@ func (q *Querier) GetUser(ctx context.Context, userID string) (*types.User, erro
 
 	u := &types.User{
 		CreatedAt:                  result.CreatedAt,
-		PasswordLastChangedAt:      timePointerFromNullTime(result.PasswordLastChangedAt),
-		LastUpdatedAt:              timePointerFromNullTime(result.LastUpdatedAt),
-		LastAcceptedTermsOfService: timePointerFromNullTime(result.LastAcceptedTermsOfService),
-		LastAcceptedPrivacyPolicy:  timePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
-		TwoFactorSecretVerifiedAt:  timePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
-		Birthday:                   timePointerFromNullTime(result.Birthday),
-		ArchivedAt:                 timePointerFromNullTime(result.ArchivedAt),
+		PasswordLastChangedAt:      database.TimePointerFromNullTime(result.PasswordLastChangedAt),
+		LastUpdatedAt:              database.TimePointerFromNullTime(result.LastUpdatedAt),
+		LastAcceptedTermsOfService: database.TimePointerFromNullTime(result.LastAcceptedTermsOfService),
+		LastAcceptedPrivacyPolicy:  database.TimePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
+		TwoFactorSecretVerifiedAt:  database.TimePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
+		Birthday:                   database.TimePointerFromNullTime(result.Birthday),
+		ArchivedAt:                 database.TimePointerFromNullTime(result.ArchivedAt),
 		AccountStatusExplanation:   result.UserAccountStatusExplanation,
 		TwoFactorSecret:            result.TwoFactorSecret,
 		HashedPassword:             result.HashedPassword,
@@ -57,8 +62,8 @@ func (q *Querier) GetUser(ctx context.Context, userID string) (*types.User, erro
 		FirstName:                  result.FirstName,
 		LastName:                   result.LastName,
 		EmailAddress:               result.EmailAddress,
-		EmailAddressVerifiedAt:     timePointerFromNullTime(result.EmailAddressVerifiedAt),
-		AvatarSrc:                  stringPointerFromNullString(result.AvatarSrc),
+		EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.EmailAddressVerifiedAt),
+		AvatarSrc:                  database.StringPointerFromNullString(result.AvatarSrc),
 		ServiceRole:                result.ServiceRole,
 		RequiresPasswordChange:     result.RequiresPasswordChange,
 	}
@@ -83,13 +88,13 @@ func (q *Querier) GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, user
 
 	u := &types.User{
 		CreatedAt:                  result.CreatedAt,
-		PasswordLastChangedAt:      timePointerFromNullTime(result.PasswordLastChangedAt),
-		LastUpdatedAt:              timePointerFromNullTime(result.LastUpdatedAt),
-		LastAcceptedTermsOfService: timePointerFromNullTime(result.LastAcceptedTermsOfService),
-		LastAcceptedPrivacyPolicy:  timePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
-		TwoFactorSecretVerifiedAt:  timePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
-		Birthday:                   timePointerFromNullTime(result.Birthday),
-		ArchivedAt:                 timePointerFromNullTime(result.ArchivedAt),
+		PasswordLastChangedAt:      database.TimePointerFromNullTime(result.PasswordLastChangedAt),
+		LastUpdatedAt:              database.TimePointerFromNullTime(result.LastUpdatedAt),
+		LastAcceptedTermsOfService: database.TimePointerFromNullTime(result.LastAcceptedTermsOfService),
+		LastAcceptedPrivacyPolicy:  database.TimePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
+		TwoFactorSecretVerifiedAt:  database.TimePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
+		Birthday:                   database.TimePointerFromNullTime(result.Birthday),
+		ArchivedAt:                 database.TimePointerFromNullTime(result.ArchivedAt),
 		AccountStatusExplanation:   result.UserAccountStatusExplanation,
 		TwoFactorSecret:            result.TwoFactorSecret,
 		HashedPassword:             result.HashedPassword,
@@ -99,8 +104,8 @@ func (q *Querier) GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, user
 		FirstName:                  result.FirstName,
 		LastName:                   result.LastName,
 		EmailAddress:               result.EmailAddress,
-		EmailAddressVerifiedAt:     timePointerFromNullTime(result.EmailAddressVerifiedAt),
-		AvatarSrc:                  stringPointerFromNullString(result.AvatarSrc),
+		EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.EmailAddressVerifiedAt),
+		AvatarSrc:                  database.StringPointerFromNullString(result.AvatarSrc),
 		ServiceRole:                result.ServiceRole,
 		RequiresPasswordChange:     result.RequiresPasswordChange,
 	}
@@ -125,13 +130,13 @@ func (q *Querier) GetUserByUsername(ctx context.Context, username string) (*type
 
 	u := &types.User{
 		CreatedAt:                  result.CreatedAt,
-		PasswordLastChangedAt:      timePointerFromNullTime(result.PasswordLastChangedAt),
-		LastUpdatedAt:              timePointerFromNullTime(result.LastUpdatedAt),
-		LastAcceptedTermsOfService: timePointerFromNullTime(result.LastAcceptedTermsOfService),
-		LastAcceptedPrivacyPolicy:  timePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
-		TwoFactorSecretVerifiedAt:  timePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
-		Birthday:                   timePointerFromNullTime(result.Birthday),
-		ArchivedAt:                 timePointerFromNullTime(result.ArchivedAt),
+		PasswordLastChangedAt:      database.TimePointerFromNullTime(result.PasswordLastChangedAt),
+		LastUpdatedAt:              database.TimePointerFromNullTime(result.LastUpdatedAt),
+		LastAcceptedTermsOfService: database.TimePointerFromNullTime(result.LastAcceptedTermsOfService),
+		LastAcceptedPrivacyPolicy:  database.TimePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
+		TwoFactorSecretVerifiedAt:  database.TimePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
+		Birthday:                   database.TimePointerFromNullTime(result.Birthday),
+		ArchivedAt:                 database.TimePointerFromNullTime(result.ArchivedAt),
 		AccountStatusExplanation:   result.UserAccountStatusExplanation,
 		TwoFactorSecret:            result.TwoFactorSecret,
 		HashedPassword:             result.HashedPassword,
@@ -141,8 +146,8 @@ func (q *Querier) GetUserByUsername(ctx context.Context, username string) (*type
 		FirstName:                  result.FirstName,
 		LastName:                   result.LastName,
 		EmailAddress:               result.EmailAddress,
-		EmailAddressVerifiedAt:     timePointerFromNullTime(result.EmailAddressVerifiedAt),
-		AvatarSrc:                  stringPointerFromNullString(result.AvatarSrc),
+		EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.EmailAddressVerifiedAt),
+		AvatarSrc:                  database.StringPointerFromNullString(result.AvatarSrc),
 		ServiceRole:                result.ServiceRole,
 		RequiresPasswordChange:     result.RequiresPasswordChange,
 	}
@@ -170,13 +175,13 @@ func (q *Querier) GetAdminUserByUsername(ctx context.Context, username string) (
 
 	u := &types.User{
 		CreatedAt:                  result.CreatedAt,
-		PasswordLastChangedAt:      timePointerFromNullTime(result.PasswordLastChangedAt),
-		LastUpdatedAt:              timePointerFromNullTime(result.LastUpdatedAt),
-		LastAcceptedTermsOfService: timePointerFromNullTime(result.LastAcceptedTermsOfService),
-		LastAcceptedPrivacyPolicy:  timePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
-		TwoFactorSecretVerifiedAt:  timePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
-		Birthday:                   timePointerFromNullTime(result.Birthday),
-		ArchivedAt:                 timePointerFromNullTime(result.ArchivedAt),
+		PasswordLastChangedAt:      database.TimePointerFromNullTime(result.PasswordLastChangedAt),
+		LastUpdatedAt:              database.TimePointerFromNullTime(result.LastUpdatedAt),
+		LastAcceptedTermsOfService: database.TimePointerFromNullTime(result.LastAcceptedTermsOfService),
+		LastAcceptedPrivacyPolicy:  database.TimePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
+		TwoFactorSecretVerifiedAt:  database.TimePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
+		Birthday:                   database.TimePointerFromNullTime(result.Birthday),
+		ArchivedAt:                 database.TimePointerFromNullTime(result.ArchivedAt),
 		AccountStatusExplanation:   result.UserAccountStatusExplanation,
 		TwoFactorSecret:            result.TwoFactorSecret,
 		HashedPassword:             result.HashedPassword,
@@ -186,8 +191,8 @@ func (q *Querier) GetAdminUserByUsername(ctx context.Context, username string) (
 		FirstName:                  result.FirstName,
 		LastName:                   result.LastName,
 		EmailAddress:               result.EmailAddress,
-		EmailAddressVerifiedAt:     timePointerFromNullTime(result.EmailAddressVerifiedAt),
-		AvatarSrc:                  stringPointerFromNullString(result.AvatarSrc),
+		EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.EmailAddressVerifiedAt),
+		AvatarSrc:                  database.StringPointerFromNullString(result.AvatarSrc),
 		ServiceRole:                result.ServiceRole,
 		RequiresPasswordChange:     result.RequiresPasswordChange,
 	}
@@ -212,13 +217,13 @@ func (q *Querier) GetUserByEmail(ctx context.Context, email string) (*types.User
 
 	u := &types.User{
 		CreatedAt:                  result.CreatedAt,
-		PasswordLastChangedAt:      timePointerFromNullTime(result.PasswordLastChangedAt),
-		LastUpdatedAt:              timePointerFromNullTime(result.LastUpdatedAt),
-		LastAcceptedTermsOfService: timePointerFromNullTime(result.LastAcceptedTermsOfService),
-		LastAcceptedPrivacyPolicy:  timePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
-		TwoFactorSecretVerifiedAt:  timePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
-		Birthday:                   timePointerFromNullTime(result.Birthday),
-		ArchivedAt:                 timePointerFromNullTime(result.ArchivedAt),
+		PasswordLastChangedAt:      database.TimePointerFromNullTime(result.PasswordLastChangedAt),
+		LastUpdatedAt:              database.TimePointerFromNullTime(result.LastUpdatedAt),
+		LastAcceptedTermsOfService: database.TimePointerFromNullTime(result.LastAcceptedTermsOfService),
+		LastAcceptedPrivacyPolicy:  database.TimePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
+		TwoFactorSecretVerifiedAt:  database.TimePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
+		Birthday:                   database.TimePointerFromNullTime(result.Birthday),
+		ArchivedAt:                 database.TimePointerFromNullTime(result.ArchivedAt),
 		AccountStatusExplanation:   result.UserAccountStatusExplanation,
 		TwoFactorSecret:            result.TwoFactorSecret,
 		HashedPassword:             result.HashedPassword,
@@ -228,8 +233,8 @@ func (q *Querier) GetUserByEmail(ctx context.Context, email string) (*types.User
 		FirstName:                  result.FirstName,
 		LastName:                   result.LastName,
 		EmailAddress:               result.EmailAddress,
-		EmailAddressVerifiedAt:     timePointerFromNullTime(result.EmailAddressVerifiedAt),
-		AvatarSrc:                  stringPointerFromNullString(result.AvatarSrc),
+		EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.EmailAddressVerifiedAt),
+		AvatarSrc:                  database.StringPointerFromNullString(result.AvatarSrc),
 		ServiceRole:                result.ServiceRole,
 		RequiresPasswordChange:     result.RequiresPasswordChange,
 	}
@@ -256,13 +261,13 @@ func (q *Querier) SearchForUsersByUsername(ctx context.Context, usernameQuery st
 	for i, result := range results {
 		users[i] = &types.User{
 			CreatedAt:                  result.CreatedAt,
-			PasswordLastChangedAt:      timePointerFromNullTime(result.PasswordLastChangedAt),
-			LastUpdatedAt:              timePointerFromNullTime(result.LastUpdatedAt),
-			LastAcceptedTermsOfService: timePointerFromNullTime(result.LastAcceptedTermsOfService),
-			LastAcceptedPrivacyPolicy:  timePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
-			TwoFactorSecretVerifiedAt:  timePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
-			Birthday:                   timePointerFromNullTime(result.Birthday),
-			ArchivedAt:                 timePointerFromNullTime(result.ArchivedAt),
+			PasswordLastChangedAt:      database.TimePointerFromNullTime(result.PasswordLastChangedAt),
+			LastUpdatedAt:              database.TimePointerFromNullTime(result.LastUpdatedAt),
+			LastAcceptedTermsOfService: database.TimePointerFromNullTime(result.LastAcceptedTermsOfService),
+			LastAcceptedPrivacyPolicy:  database.TimePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
+			TwoFactorSecretVerifiedAt:  database.TimePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
+			Birthday:                   database.TimePointerFromNullTime(result.Birthday),
+			ArchivedAt:                 database.TimePointerFromNullTime(result.ArchivedAt),
 			AccountStatusExplanation:   result.UserAccountStatusExplanation,
 			TwoFactorSecret:            result.TwoFactorSecret,
 			HashedPassword:             result.HashedPassword,
@@ -272,8 +277,8 @@ func (q *Querier) SearchForUsersByUsername(ctx context.Context, usernameQuery st
 			FirstName:                  result.FirstName,
 			LastName:                   result.LastName,
 			EmailAddress:               result.EmailAddress,
-			EmailAddressVerifiedAt:     timePointerFromNullTime(result.EmailAddressVerifiedAt),
-			AvatarSrc:                  stringPointerFromNullString(result.AvatarSrc),
+			EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.EmailAddressVerifiedAt),
+			AvatarSrc:                  database.StringPointerFromNullString(result.AvatarSrc),
 			ServiceRole:                result.ServiceRole,
 			RequiresPasswordChange:     result.RequiresPasswordChange,
 		}
@@ -304,12 +309,12 @@ func (q *Querier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x *t
 	}
 
 	results, err := q.generatedQuerier.GetUsers(ctx, q.db, &generated.GetUsersParams{
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "scanning user")
@@ -318,13 +323,13 @@ func (q *Querier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x *t
 	for _, result := range results {
 		u := &types.User{
 			CreatedAt:                  result.CreatedAt,
-			PasswordLastChangedAt:      timePointerFromNullTime(result.PasswordLastChangedAt),
-			LastUpdatedAt:              timePointerFromNullTime(result.LastUpdatedAt),
-			LastAcceptedTermsOfService: timePointerFromNullTime(result.LastAcceptedTermsOfService),
-			LastAcceptedPrivacyPolicy:  timePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
-			TwoFactorSecretVerifiedAt:  timePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
-			Birthday:                   timePointerFromNullTime(result.Birthday),
-			ArchivedAt:                 timePointerFromNullTime(result.ArchivedAt),
+			PasswordLastChangedAt:      database.TimePointerFromNullTime(result.PasswordLastChangedAt),
+			LastUpdatedAt:              database.TimePointerFromNullTime(result.LastUpdatedAt),
+			LastAcceptedTermsOfService: database.TimePointerFromNullTime(result.LastAcceptedTermsOfService),
+			LastAcceptedPrivacyPolicy:  database.TimePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
+			TwoFactorSecretVerifiedAt:  database.TimePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
+			Birthday:                   database.TimePointerFromNullTime(result.Birthday),
+			ArchivedAt:                 database.TimePointerFromNullTime(result.ArchivedAt),
 			AccountStatusExplanation:   result.UserAccountStatusExplanation,
 			TwoFactorSecret:            result.TwoFactorSecret,
 			HashedPassword:             result.HashedPassword,
@@ -334,8 +339,8 @@ func (q *Querier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x *t
 			FirstName:                  result.FirstName,
 			LastName:                   result.LastName,
 			EmailAddress:               result.EmailAddress,
-			EmailAddressVerifiedAt:     timePointerFromNullTime(result.EmailAddressVerifiedAt),
-			AvatarSrc:                  stringPointerFromNullString(result.AvatarSrc),
+			EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.EmailAddressVerifiedAt),
+			AvatarSrc:                  database.StringPointerFromNullString(result.AvatarSrc),
 			ServiceRole:                result.ServiceRole,
 			RequiresPasswordChange:     result.RequiresPasswordChange,
 		}
@@ -401,17 +406,18 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 	})
 
 	// begin user creation transaction
-	tx, beginTransactionErr := q.db.BeginTx(ctx, nil)
-	if beginTransactionErr != nil {
-		return nil, observability.PrepareError(beginTransactionErr, span, "beginning transaction")
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareError(err, span, "beginning transaction")
 	}
 
 	token, err := q.secretGenerator.GenerateBase64EncodedString(ctx, 32)
 	if err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareError(err, span, "generating email verification token")
 	}
 
-	if writeErr := q.generatedQuerier.CreateUser(ctx, tx, &generated.CreateUserParams{
+	if err = q.generatedQuerier.CreateUser(ctx, tx, &generated.CreateUserParams{
 		ID:                            input.ID,
 		FirstName:                     input.FirstName,
 		LastName:                      input.LastName,
@@ -419,12 +425,12 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 		EmailAddress:                  input.EmailAddress,
 		HashedPassword:                input.HashedPassword,
 		TwoFactorSecret:               input.TwoFactorSecret,
-		AvatarSrc:                     nullStringFromStringPointer(input.AvatarSrc),
+		AvatarSrc:                     database.NullStringFromStringPointer(input.AvatarSrc),
 		UserAccountStatus:             string(types.UnverifiedHouseholdStatus),
-		Birthday:                      nullTimeFromTimePointer(input.Birthday),
+		Birthday:                      database.NullTimeFromTimePointer(input.Birthday),
 		ServiceRole:                   authorization.ServiceUserRole.String(),
-		EmailAddressVerificationToken: nullStringFromString(token),
-	}); writeErr != nil {
+		EmailAddressVerificationToken: database.NullStringFromString(token),
+	}); err != nil {
 		q.rollbackTransaction(ctx, tx)
 
 		var pgErr *pgconn.PgError
@@ -434,7 +440,7 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 			}
 		}
 
-		return nil, observability.PrepareError(writeErr, span, "creating user")
+		return nil, observability.PrepareError(err, span, "creating user")
 	}
 
 	hasValidInvite := input.InvitationToken != "" && input.DestinationHouseholdID != ""
@@ -455,18 +461,32 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 	logger = logger.WithValue(keys.UserIDKey, user.ID)
 	tracing.AttachToSpan(span, keys.UserIDKey, user.ID)
 
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		ID:            identifiers.New(),
+		ResourceType:  resourceTypeUsers,
+		RelevantID:    input.ID,
+		EventType:     types.AuditLogEventTypeCreated,
+		BelongsToUser: input.ID,
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return nil, observability.PrepareError(err, span, "creating audit log entry")
+	}
+
 	if strings.TrimSpace(input.HouseholdName) == "" {
 		input.HouseholdName = fmt.Sprintf("%s's cool household", input.Username)
 	}
 
-	if err = q.createHouseholdForUser(ctx, tx, hasValidInvite, input.HouseholdName, user.ID); err != nil {
+	household, err := q.createHouseholdForUser(ctx, tx, hasValidInvite, input.HouseholdName, user.ID)
+	if err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareAndLogError(err, logger, span, "creating household for new user")
 	}
-
+	logger = logger.WithValue(keys.HouseholdIDKey, household.ID)
 	logger.Debug("household created")
 
 	if hasValidInvite {
 		if err = q.acceptInvitationForUser(ctx, tx, input); err != nil {
+			q.rollbackTransaction(ctx, tx)
 			return nil, observability.PrepareAndLogError(err, logger, span, "accepting household invitation")
 		}
 		logger.Debug("accepted invitation and joined household for user")
@@ -487,7 +507,7 @@ func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreat
 	return user, nil
 }
 
-func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, hasValidInvite bool, householdName, userID string) error {
+func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, hasValidInvite bool, householdName, userID string) (*types.Household, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -519,25 +539,69 @@ func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.S
 		ZipCode:       householdCreationInput.ZipCode,
 		Country:       householdCreationInput.Country,
 		BelongsToUser: householdCreationInput.BelongsToUser,
-		Latitude:      nullStringFromFloat64Pointer(householdCreationInput.Latitude),
-		Longitude:     nullStringFromFloat64Pointer(householdCreationInput.Longitude),
+		Latitude:      database.NullStringFromFloat64Pointer(householdCreationInput.Latitude),
+		Longitude:     database.NullStringFromFloat64Pointer(householdCreationInput.Longitude),
 	}); err != nil {
 		q.rollbackTransaction(ctx, querier)
-		return observability.PrepareError(err, span, "creating household")
+		return nil, observability.PrepareError(err, span, "creating household")
 	}
 
-	if err := q.generatedQuerier.CreateHouseholdUserMembershipForNewUser(ctx, querier, &generated.CreateHouseholdUserMembershipForNewUserParams{
+	if _, err := q.createAuditLogEntry(ctx, querier, &types.AuditLogEntryDatabaseCreationInput{
+		BelongsToHousehold: &householdCreationInput.ID,
 		ID:                 identifiers.New(),
+		ResourceType:       resourceTypeHouseholds,
+		RelevantID:         householdCreationInput.ID,
+		EventType:          types.AuditLogEventTypeCreated,
+		BelongsToUser:      householdCreationInput.BelongsToUser,
+	}); err != nil {
+		q.rollbackTransaction(ctx, querier)
+		return nil, observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	householdMembershipID := identifiers.New()
+	if err := q.generatedQuerier.CreateHouseholdUserMembershipForNewUser(ctx, querier, &generated.CreateHouseholdUserMembershipForNewUserParams{
+		ID:                 householdMembershipID,
 		BelongsToUser:      userID,
 		BelongsToHousehold: householdID,
 		HouseholdRole:      authorization.HouseholdAdminRole.String(),
 		DefaultHousehold:   !hasValidInvite,
 	}); err != nil {
 		q.rollbackTransaction(ctx, querier)
-		return observability.PrepareError(err, span, "writing household user membership")
+		return nil, observability.PrepareError(err, span, "writing household user membership")
 	}
 
-	return nil
+	if _, err := q.createAuditLogEntry(ctx, querier, &types.AuditLogEntryDatabaseCreationInput{
+		BelongsToHousehold: &householdCreationInput.ID,
+		ID:                 identifiers.New(),
+		ResourceType:       resourceTypeHouseholdUserMemberships,
+		RelevantID:         householdMembershipID,
+		EventType:          types.AuditLogEventTypeCreated,
+		BelongsToUser:      householdCreationInput.BelongsToUser,
+	}); err != nil {
+		q.rollbackTransaction(ctx, querier)
+		return nil, observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	household := &types.Household{
+		CreatedAt:            q.currentTime(),
+		Longitude:            householdCreationInput.Longitude,
+		Latitude:             householdCreationInput.Latitude,
+		State:                householdCreationInput.State,
+		ContactPhone:         householdCreationInput.ContactPhone,
+		City:                 householdCreationInput.City,
+		AddressLine1:         householdCreationInput.AddressLine1,
+		ZipCode:              householdCreationInput.ZipCode,
+		Country:              householdCreationInput.Country,
+		BillingStatus:        types.UnpaidHouseholdBillingStatus,
+		AddressLine2:         householdCreationInput.AddressLine2,
+		BelongsToUser:        householdCreationInput.BelongsToUser,
+		ID:                   householdCreationInput.ID,
+		Name:                 householdCreationInput.Name,
+		WebhookEncryptionKey: householdCreationInput.WebhookEncryptionKey,
+		Members:              nil,
+	}
+
+	return household, nil
 }
 
 // UpdateUserUsername updates a user's username.
@@ -559,11 +623,43 @@ func (q *Querier) UpdateUserUsername(ctx context.Context, userID, newUsername st
 	logger = logger.WithValue(keys.UsernameKey, newUsername)
 	tracing.AttachToSpan(span, keys.UsernameKey, newUsername)
 
-	if _, err := q.generatedQuerier.UpdateUserUsername(ctx, q.db, &generated.UpdateUserUsernameParams{
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	user, err := q.GetUser(ctx, userID)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "fetching user")
+	}
+
+	if _, err = q.generatedQuerier.UpdateUserUsername(ctx, tx, &generated.UpdateUserUsernameParams{
 		Username: newUsername,
 		ID:       userID,
 	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "updating username")
+	}
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		ID:            identifiers.New(),
+		ResourceType:  resourceTypeUsers,
+		RelevantID:    userID,
+		EventType:     types.AuditLogEventTypeUpdated,
+		BelongsToUser: userID,
+		Changes: map[string]types.ChangeLog{
+			"username": {
+				OldValue: user.Username,
+				NewValue: newUsername,
+			},
+		},
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	logger.Info("username updated")
@@ -587,11 +683,43 @@ func (q *Querier) UpdateUserEmailAddress(ctx context.Context, userID, newEmailAd
 	}
 	tracing.AttachToSpan(span, keys.UserEmailAddressKey, newEmailAddress)
 
-	if _, err := q.generatedQuerier.UpdateUserEmailAddress(ctx, q.db, &generated.UpdateUserEmailAddressParams{
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	user, err := q.GetUser(ctx, userID)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "fetching user")
+	}
+
+	if _, err = q.generatedQuerier.UpdateUserEmailAddress(ctx, tx, &generated.UpdateUserEmailAddressParams{
 		EmailAddress: newEmailAddress,
 		ID:           userID,
 	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "updating user email address")
+	}
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		ID:            identifiers.New(),
+		ResourceType:  resourceTypeUsers,
+		RelevantID:    userID,
+		EventType:     types.AuditLogEventTypeUpdated,
+		BelongsToUser: userID,
+		Changes: map[string]types.ChangeLog{
+			"email_address": {
+				OldValue: user.EmailAddress,
+				NewValue: newEmailAddress,
+			},
+		},
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	logger.Info("user email address updated")
@@ -614,13 +742,53 @@ func (q *Querier) UpdateUserDetails(ctx context.Context, userID string, input *t
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 
-	if _, err := q.generatedQuerier.UpdateUserDetails(ctx, q.db, &generated.UpdateUserDetailsParams{
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	user, err := q.GetUser(ctx, userID)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "fetching user")
+	}
+
+	if _, err = q.generatedQuerier.UpdateUserDetails(ctx, tx, &generated.UpdateUserDetailsParams{
 		FirstName: input.FirstName,
 		LastName:  input.LastName,
-		Birthday:  nullTimeFromTime(input.Birthday),
+		Birthday:  database.NullTimeFromTime(input.Birthday),
 		ID:        userID,
 	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "updating user details")
+	}
+
+	changes := map[string]types.ChangeLog{}
+	if input.FirstName != user.FirstName {
+		changes["first_name"] = types.ChangeLog{NewValue: input.FirstName, OldValue: user.FirstName}
+	}
+
+	if input.LastName != user.LastName {
+		changes["last_name"] = types.ChangeLog{NewValue: input.LastName, OldValue: user.LastName}
+	}
+
+	if input.Birthday.Format(time.Kitchen) != user.Birthday.Format(time.Kitchen) {
+		changes["birthday"] = types.ChangeLog{NewValue: input.Birthday.Format(time.Kitchen), OldValue: user.Birthday.Format(time.Kitchen)}
+	}
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		ID:            identifiers.New(),
+		ResourceType:  resourceTypeUsers,
+		RelevantID:    userID,
+		EventType:     types.AuditLogEventTypeUpdated,
+		BelongsToUser: userID,
+		Changes:       changes,
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	logger.Info("user details updated")
@@ -643,11 +811,35 @@ func (q *Querier) UpdateUserAvatar(ctx context.Context, userID, newAvatarSrc str
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 
-	if _, err := q.generatedQuerier.UpdateUserAvatarSrc(ctx, q.db, &generated.UpdateUserAvatarSrcParams{
-		AvatarSrc: nullStringFromString(newAvatarSrc),
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	if _, err = q.generatedQuerier.UpdateUserAvatarSrc(ctx, tx, &generated.UpdateUserAvatarSrcParams{
+		AvatarSrc: database.NullStringFromString(newAvatarSrc),
 		ID:        userID,
 	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "updating user avatar")
+	}
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		ID:            identifiers.New(),
+		ResourceType:  resourceTypeUsers,
+		RelevantID:    userID,
+		EventType:     types.AuditLogEventTypeUpdated,
+		BelongsToUser: userID,
+		Changes: map[string]types.ChangeLog{
+			"avatar": {},
+		},
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	logger.Info("user avatar updated")
@@ -670,11 +862,35 @@ func (q *Querier) UpdateUserPassword(ctx context.Context, userID, newHash string
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 
-	if _, err := q.generatedQuerier.UpdateUserPassword(ctx, q.db, &generated.UpdateUserPasswordParams{
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	if _, err = q.generatedQuerier.UpdateUserPassword(ctx, tx, &generated.UpdateUserPasswordParams{
 		HashedPassword: newHash,
 		ID:             userID,
 	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "updating user password")
+	}
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		ID:            identifiers.New(),
+		ResourceType:  resourceTypeUsers,
+		RelevantID:    userID,
+		EventType:     types.AuditLogEventTypeUpdated,
+		BelongsToUser: userID,
+		Changes: map[string]types.ChangeLog{
+			"password": {},
+		},
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	logger.Info("user password updated")
@@ -697,12 +913,37 @@ func (q *Querier) UpdateUserTwoFactorSecret(ctx context.Context, userID, newSecr
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 
-	if _, err := q.generatedQuerier.UpdateUserTwoFactorSecret(ctx, q.db, &generated.UpdateUserTwoFactorSecretParams{
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	if _, err = q.generatedQuerier.UpdateUserTwoFactorSecret(ctx, tx, &generated.UpdateUserTwoFactorSecretParams{
 		TwoFactorSecret: newSecret,
 		ID:              userID,
 	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "updating user 2FA secret")
 	}
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		ID:            identifiers.New(),
+		ResourceType:  resourceTypeUsers,
+		RelevantID:    userID,
+		EventType:     types.AuditLogEventTypeUpdated,
+		BelongsToUser: userID,
+		Changes: map[string]types.ChangeLog{
+			"two_factor_secret": {},
+		},
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
+	}
+
 	logger.Info("user two factor secret updated")
 
 	return nil
@@ -719,8 +960,34 @@ func (q *Querier) MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID 
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 
-	if err := q.generatedQuerier.MarkTwoFactorSecretAsVerified(ctx, q.db, userID); err != nil {
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	if err = q.generatedQuerier.MarkTwoFactorSecretAsVerified(ctx, tx, userID); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "writing verified two factor status to database")
+	}
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		ID:            identifiers.New(),
+		ResourceType:  resourceTypeUsers,
+		RelevantID:    userID,
+		EventType:     types.AuditLogEventTypeUpdated,
+		BelongsToUser: userID,
+		Changes: map[string]types.ChangeLog{
+			"two_factor_secret": {
+				OldValue: "unverified",
+				NewValue: "verified",
+			},
+		},
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	logger.Info("user two factor secret verified")
@@ -743,11 +1010,48 @@ func (q *Querier) MarkUserTwoFactorSecretAsUnverified(ctx context.Context, userI
 	tracing.AttachToSpan(span, keys.UserIDKey, userID)
 	logger := q.logger.WithValue(keys.UserIDKey, userID)
 
-	if err := q.generatedQuerier.MarkTwoFactorSecretAsUnverified(ctx, q.db, &generated.MarkTwoFactorSecretAsUnverifiedParams{
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	if err = q.generatedQuerier.MarkTwoFactorSecretAsUnverified(ctx, q.db, &generated.MarkTwoFactorSecretAsUnverifiedParams{
 		TwoFactorSecret: newSecret,
 		ID:              userID,
 	}); err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "writing verified two factor status to database")
+	}
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		ID:            identifiers.New(),
+		ResourceType:  resourceTypeUsers,
+		RelevantID:    userID,
+		EventType:     types.AuditLogEventTypeArchived,
+		BelongsToUser: userID,
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		ID:            identifiers.New(),
+		ResourceType:  resourceTypeUsers,
+		RelevantID:    userID,
+		EventType:     types.AuditLogEventTypeCreated,
+		BelongsToUser: userID,
+		Changes: map[string]types.ChangeLog{
+			"two_factor_secret": {
+				OldValue: "verified",
+				NewValue: "unverified",
+			},
+		},
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	logger.Info("user two factor secret unverified")
@@ -780,6 +1084,17 @@ func (q *Querier) ArchiveUser(ctx context.Context, userID string) error {
 
 	if changed == 0 {
 		return sql.ErrNoRows
+	}
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		ID:            identifiers.New(),
+		ResourceType:  resourceTypeUsers,
+		RelevantID:    userID,
+		EventType:     types.AuditLogEventTypeArchived,
+		BelongsToUser: userID,
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
 	}
 
 	if _, err = q.generatedQuerier.ArchiveUserMemberships(ctx, tx, userID); err != nil {
@@ -821,21 +1136,21 @@ func (q *Querier) GetUserByEmailAddressVerificationToken(ctx context.Context, to
 		return nil, ErrEmptyInputProvided
 	}
 
-	result, err := q.generatedQuerier.GetUserByEmailAddressVerificationToken(ctx, q.db, nullStringFromString(token))
+	result, err := q.generatedQuerier.GetUserByEmailAddressVerificationToken(ctx, q.db, database.NullStringFromString(token))
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "getting user by email address verification token")
 	}
 
 	u := &types.User{
 		CreatedAt:                  result.CreatedAt,
-		PasswordLastChangedAt:      timePointerFromNullTime(result.PasswordLastChangedAt),
-		LastUpdatedAt:              timePointerFromNullTime(result.LastUpdatedAt),
-		LastAcceptedTermsOfService: timePointerFromNullTime(result.LastAcceptedTermsOfService),
-		LastAcceptedPrivacyPolicy:  timePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
-		TwoFactorSecretVerifiedAt:  timePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
-		AvatarSrc:                  stringPointerFromNullString(result.AvatarSrc),
-		Birthday:                   timePointerFromNullTime(result.Birthday),
-		ArchivedAt:                 timePointerFromNullTime(result.ArchivedAt),
+		PasswordLastChangedAt:      database.TimePointerFromNullTime(result.PasswordLastChangedAt),
+		LastUpdatedAt:              database.TimePointerFromNullTime(result.LastUpdatedAt),
+		LastAcceptedTermsOfService: database.TimePointerFromNullTime(result.LastAcceptedTermsOfService),
+		LastAcceptedPrivacyPolicy:  database.TimePointerFromNullTime(result.LastAcceptedPrivacyPolicy),
+		TwoFactorSecretVerifiedAt:  database.TimePointerFromNullTime(result.TwoFactorSecretVerifiedAt),
+		AvatarSrc:                  database.StringPointerFromNullString(result.AvatarSrc),
+		Birthday:                   database.TimePointerFromNullTime(result.Birthday),
+		ArchivedAt:                 database.TimePointerFromNullTime(result.ArchivedAt),
 		AccountStatusExplanation:   result.UserAccountStatusExplanation,
 		TwoFactorSecret:            result.TwoFactorSecret,
 		HashedPassword:             result.HashedPassword,
@@ -845,7 +1160,7 @@ func (q *Querier) GetUserByEmailAddressVerificationToken(ctx context.Context, to
 		FirstName:                  result.FirstName,
 		LastName:                   result.LastName,
 		EmailAddress:               result.EmailAddress,
-		EmailAddressVerifiedAt:     timePointerFromNullTime(result.EmailAddressVerifiedAt),
+		EmailAddressVerifiedAt:     database.TimePointerFromNullTime(result.EmailAddressVerifiedAt),
 		ServiceRole:                result.ServiceRole,
 		RequiresPasswordChange:     result.RequiresPasswordChange,
 	}
@@ -868,10 +1183,16 @@ func (q *Querier) MarkUserEmailAddressAsVerified(ctx context.Context, userID, to
 		return ErrEmptyInputProvided
 	}
 
-	if err := q.generatedQuerier.MarkEmailAddressAsVerified(ctx, q.db, &generated.MarkEmailAddressAsVerifiedParams{
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	if err = q.generatedQuerier.MarkEmailAddressAsVerified(ctx, tx, &generated.MarkEmailAddressAsVerifiedParams{
 		ID:                            userID,
-		EmailAddressVerificationToken: nullStringFromString(token),
+		EmailAddressVerificationToken: database.NullStringFromString(token),
 	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		if errors.Is(err, sql.ErrNoRows) {
 			return err
 		}
@@ -879,12 +1200,93 @@ func (q *Querier) MarkUserEmailAddressAsVerified(ctx context.Context, userID, to
 		return observability.PrepareAndLogError(err, logger, span, "writing verified email address status to database")
 	}
 
-	if err := q.UpdateUserAccountStatus(ctx, userID, &types.UserAccountStatusUpdateInput{
-		NewStatus:    string(types.GoodStandingUserAccountStatus),
-		Reason:       "verified email address",
-		TargetUserID: userID,
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		ID:            identifiers.New(),
+		ResourceType:  resourceTypeUsers,
+		RelevantID:    userID,
+		EventType:     types.AuditLogEventTypeUpdated,
+		BelongsToUser: userID,
+		Changes: map[string]types.ChangeLog{
+			"email_address_verification": {
+				OldValue: "unverified",
+				NewValue: "verified",
+			},
+		},
 	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if _, err = q.generatedQuerier.SetUserAccountStatus(ctx, tx, &generated.SetUserAccountStatusParams{
+		UserAccountStatus:            string(types.GoodStandingUserAccountStatus),
+		UserAccountStatusExplanation: "verified email address",
+		ID:                           userID,
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "updating user account status")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
+	}
+
+	return nil
+}
+
+func (q *Querier) MarkUserEmailAddressAsUnverified(ctx context.Context, userID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := q.logger.Clone()
+
+	if userID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.UserIDKey, userID)
+
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+
+	if err = q.generatedQuerier.MarkEmailAddressAsUnverified(ctx, tx, userID); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			q.rollbackTransaction(ctx, tx)
+			return err
+		}
+
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareAndLogError(err, logger, span, "writing email address verification status to database")
+	}
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		ID:            identifiers.New(),
+		ResourceType:  resourceTypeUsers,
+		RelevantID:    userID,
+		EventType:     types.AuditLogEventTypeUpdated,
+		BelongsToUser: userID,
+		Changes: map[string]types.ChangeLog{
+			"email_address_verification": {
+				OldValue: "verified",
+				NewValue: "unverified",
+			},
+		},
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if _, err = q.generatedQuerier.SetUserAccountStatus(ctx, tx, &generated.SetUserAccountStatusParams{
+		UserAccountStatus:            string(types.UnverifiedHouseholdStatus),
+		UserAccountStatusExplanation: "unverified email address",
+		ID:                           userID,
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareAndLogError(err, logger, span, "updating user account status")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	return nil

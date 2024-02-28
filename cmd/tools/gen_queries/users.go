@@ -393,6 +393,25 @@ WHERE %s IS NULL
 		},
 		{
 			Annotation: QueryAnnotation{
+				Name: "MarkEmailAddressAsUnverified",
+				Type: ExecType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+	%s = NULL,
+	%s = %s
+WHERE %s IS NULL
+	AND %s IS NOT NULL
+	AND %s = sqlc.arg(%s);`,
+				usersTableName,
+				emailAddressVerifiedAtColumn,
+				lastUpdatedAtColumn, currentTimeExpression,
+				archivedAtColumn,
+				emailAddressVerifiedAtColumn,
+				idColumn, idColumn,
+			)),
+		},
+		{
+			Annotation: QueryAnnotation{
 				Name: "MarkTwoFactorSecretAsUnverified",
 				Type: ExecType,
 			},

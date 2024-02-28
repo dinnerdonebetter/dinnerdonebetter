@@ -77,6 +77,7 @@ type (
 		validPreparationVesselsService         types.ValidPreparationVesselDataService
 		userNotificationsService               types.UserNotificationDataService
 		workerService                          types.WorkerService
+		auditLogEntriesService                 types.AuditLogEntryDataService
 		encoder                                encoding.ServerEncoderDecoder
 		logger                                 logging.Logger
 		router                                 routing.Router
@@ -140,6 +141,7 @@ func ProvideHTTPServer(
 	validPreparationVesselsService types.ValidPreparationVesselDataService,
 	workerService types.WorkerService,
 	userNotificationsService types.UserNotificationDataService,
+	auditLogService types.AuditLogEntryDataService,
 ) (Server, error) {
 	srv := &server{
 		config: serverSettings,
@@ -155,11 +157,16 @@ func ProvideHTTPServer(
 
 		// services,
 		adminService:                           adminService,
-		webhooksService:                        webhooksService,
-		usersService:                           usersService,
+		auditLogEntriesService:                 auditLogService,
+		authService:                            authService,
 		householdsService:                      householdsService,
 		householdInvitationsService:            householdInvitationsService,
-		authService:                            authService,
+		serviceSettingsService:                 serviceSettingDataService,
+		serviceSettingConfigurationsService:    serviceSettingConfigurationsService,
+		usersService:                           usersService,
+		userNotificationsService:               userNotificationsService,
+		webhooksService:                        webhooksService,
+		workerService:                          workerService,
 		validInstrumentsService:                validInstrumentsService,
 		validIngredientsService:                validIngredientsService,
 		validIngredientGroupsService:           validIngredientGroupsService,
@@ -186,16 +193,12 @@ func ProvideHTTPServer(
 		recipeStepCompletionConditionsService:  recipeStepCompletionConditionsService,
 		validIngredientStateIngredientsService: validIngredientStateIngredientsService,
 		recipeStepVesselsService:               recipeStepVesselsService,
-		serviceSettingsService:                 serviceSettingDataService,
-		serviceSettingConfigurationsService:    serviceSettingConfigurationsService,
 		userIngredientPreferencesService:       userIngredientPreferencesService,
 		recipeRatingsService:                   recipeRatingsService,
 		householdInstrumentOwnershipService:    householdInstrumentOwnershipService,
 		oauth2ClientsService:                   oauth2ClientDataService,
 		validVesselsService:                    validVesselsService,
 		validPreparationVesselsService:         validPreparationVesselsService,
-		workerService:                          workerService,
-		userNotificationsService:               userNotificationsService,
 	}
 
 	srv.setupRouter(ctx, router)

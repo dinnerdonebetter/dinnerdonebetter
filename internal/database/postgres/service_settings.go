@@ -4,7 +4,9 @@ import (
 	"context"
 	"strings"
 
+	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
+	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -12,6 +14,7 @@ import (
 )
 
 const (
+	resourceTypeServiceSettings  = "service_settings"
 	serviceSettingsEnumDelimiter = "|"
 )
 
@@ -67,9 +70,9 @@ func (q *Querier) GetServiceSetting(ctx context.Context, serviceSettingID string
 
 	serviceSetting := &types.ServiceSetting{
 		CreatedAt:     result.CreatedAt,
-		DefaultValue:  stringPointerFromNullString(result.DefaultValue),
-		LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
-		ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+		DefaultValue:  database.StringPointerFromNullString(result.DefaultValue),
+		LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 		ID:            result.ID,
 		Name:          result.Name,
 		Type:          string(result.Type),
@@ -111,9 +114,9 @@ func (q *Querier) SearchForServiceSettings(ctx context.Context, query string) ([
 
 		serviceSetting := &types.ServiceSetting{
 			CreatedAt:     result.CreatedAt,
-			DefaultValue:  stringPointerFromNullString(result.DefaultValue),
-			LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
-			ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+			DefaultValue:  database.StringPointerFromNullString(result.DefaultValue),
+			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 			ID:            result.ID,
 			Name:          result.Name,
 			Type:          string(result.Type),
@@ -146,12 +149,12 @@ func (q *Querier) GetServiceSettings(ctx context.Context, filter *types.QueryFil
 	}
 
 	results, err := q.generatedQuerier.GetServiceSettings(ctx, q.db, &generated.GetServiceSettingsParams{
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "executing service settings list retrieval query")
@@ -168,9 +171,9 @@ func (q *Querier) GetServiceSettings(ctx context.Context, filter *types.QueryFil
 
 		x.Data = append(x.Data, &types.ServiceSetting{
 			CreatedAt:     result.CreatedAt,
-			DefaultValue:  stringPointerFromNullString(result.DefaultValue),
-			LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
-			ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+			DefaultValue:  database.StringPointerFromNullString(result.DefaultValue),
+			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 			ID:            result.ID,
 			Name:          result.Name,
 			Type:          string(result.Type),
@@ -196,16 +199,22 @@ func (q *Querier) CreateServiceSetting(ctx context.Context, input *types.Service
 	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, input.ID)
 	logger := q.logger.WithValue(keys.ServiceSettingIDKey, input.ID)
 
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
 	// create the service setting.
-	if err := q.generatedQuerier.CreateServiceSetting(ctx, q.db, &generated.CreateServiceSettingParams{
+	if err = q.generatedQuerier.CreateServiceSetting(ctx, tx, &generated.CreateServiceSettingParams{
 		ID:           input.ID,
 		Name:         input.Name,
 		Type:         generated.SettingType(input.Type),
 		Description:  input.Description,
 		Enumeration:  strings.Join(input.Enumeration, serviceSettingsEnumDelimiter),
-		DefaultValue: nullStringFromStringPointer(input.DefaultValue),
+		DefaultValue: database.NullStringFromStringPointer(input.DefaultValue),
 		AdminsOnly:   input.AdminsOnly,
 	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing service setting creation query")
 	}
 
@@ -218,6 +227,20 @@ func (q *Querier) CreateServiceSetting(ctx context.Context, input *types.Service
 		AdminsOnly:   input.AdminsOnly,
 		Enumeration:  input.Enumeration,
 		CreatedAt:    q.currentTime(),
+	}
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		ID:           identifiers.New(),
+		ResourceType: resourceTypeServiceSettings,
+		RelevantID:   x.ID,
+		EventType:    types.AuditLogEventTypeCreated,
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return nil, observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	logger.Info("service setting created")
@@ -238,8 +261,28 @@ func (q *Querier) ArchiveServiceSetting(ctx context.Context, serviceSettingID st
 	logger = logger.WithValue(keys.ServiceSettingIDKey, serviceSettingID)
 	tracing.AttachToSpan(span, keys.ServiceSettingIDKey, serviceSettingID)
 
-	if _, err := q.generatedQuerier.ArchiveServiceSetting(ctx, q.db, serviceSettingID); err != nil {
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	if _, err = q.generatedQuerier.ArchiveServiceSetting(ctx, q.db, serviceSettingID); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "updating service setting")
+	}
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		ID:           identifiers.New(),
+		ResourceType: resourceTypeServiceSettings,
+		RelevantID:   serviceSettingID,
+		EventType:    types.AuditLogEventTypeArchived,
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing transaction")
 	}
 
 	logger.Info("service setting archived")

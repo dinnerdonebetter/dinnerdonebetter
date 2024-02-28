@@ -86,7 +86,7 @@ func TestQuerier_Integration_HouseholdUserMemberships(t *testing.T) {
 		NewOwner:     memberUserIDs[1],
 	}))
 
-	assert.NoError(t, dbc.ModifyUserPermissions(ctx, memberUserIDs[0], exampleHousehold.ID, &types.ModifyUserPermissionsInput{
+	assert.NoError(t, dbc.ModifyUserPermissions(ctx, exampleHousehold.ID, memberUserIDs[0], &types.ModifyUserPermissionsInput{
 		Reason:  "testing",
 		NewRole: "household_admin",
 	}))

@@ -56,8 +56,8 @@ func (q *Querier) GetValidIngredientGroup(ctx context.Context, validIngredientGr
 
 	validIngredientGroup := &types.ValidIngredientGroup{
 		CreatedAt:     result.CreatedAt,
-		LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
-		ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+		LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
+		ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 		ID:            result.ID,
 		Name:          result.Name,
 		Slug:          result.Slug,
@@ -73,15 +73,15 @@ func (q *Querier) GetValidIngredientGroup(ctx context.Context, validIngredientGr
 	for _, memberResult := range membersResults {
 		validIngredientGroup.Members = append(validIngredientGroup.Members, &types.ValidIngredientGroupMember{
 			CreatedAt:      memberResult.CreatedAt,
-			ArchivedAt:     timePointerFromNullTime(memberResult.ArchivedAt),
+			ArchivedAt:     database.TimePointerFromNullTime(memberResult.ArchivedAt),
 			ID:             memberResult.ID,
 			BelongsToGroup: memberResult.BelongsToGroup,
 			ValidIngredient: types.ValidIngredient{
 				CreatedAt:                               memberResult.ValidIngredientCreatedAt,
-				LastUpdatedAt:                           timePointerFromNullTime(memberResult.ValidIngredientLastUpdatedAt),
-				ArchivedAt:                              timePointerFromNullTime(memberResult.ValidIngredientArchivedAt),
-				MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(memberResult.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
-				MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(memberResult.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
+				LastUpdatedAt:                           database.TimePointerFromNullTime(memberResult.ValidIngredientLastUpdatedAt),
+				ArchivedAt:                              database.TimePointerFromNullTime(memberResult.ValidIngredientArchivedAt),
+				MaximumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(memberResult.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
+				MinimumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(memberResult.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 				IconPath:                                memberResult.ValidIngredientIconPath,
 				Warning:                                 memberResult.ValidIngredientWarning,
 				PluralName:                              memberResult.ValidIngredientPluralName,
@@ -93,7 +93,7 @@ func (q *Querier) GetValidIngredientGroup(ctx context.Context, validIngredientGr
 				ShoppingSuggestions:                     memberResult.ValidIngredientShoppingSuggestions,
 				ContainsShellfish:                       memberResult.ValidIngredientContainsShellfish,
 				IsMeasuredVolumetrically:                memberResult.ValidIngredientVolumetric,
-				IsLiquid:                                boolFromNullBool(memberResult.ValidIngredientIsLiquid),
+				IsLiquid:                                database.BoolFromNullBool(memberResult.ValidIngredientIsLiquid),
 				ContainsPeanut:                          memberResult.ValidIngredientContainsPeanut,
 				ContainsTreeNut:                         memberResult.ValidIngredientContainsTreeNut,
 				ContainsEgg:                             memberResult.ValidIngredientContainsEgg,
@@ -143,12 +143,12 @@ func (q *Querier) SearchForValidIngredientGroups(ctx context.Context, query stri
 
 	results, err := q.generatedQuerier.SearchForValidIngredientGroups(ctx, q.db, &generated.SearchForValidIngredientGroupsParams{
 		Name:          query,
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching webhook from database")
@@ -158,8 +158,8 @@ func (q *Querier) SearchForValidIngredientGroups(ctx context.Context, query stri
 	for _, result := range results {
 		validIngredientGroup := &types.ValidIngredientGroup{
 			CreatedAt:     result.CreatedAt,
-			LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
-			ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 			ID:            result.ID,
 			Name:          result.Name,
 			Slug:          result.Slug,
@@ -176,15 +176,15 @@ func (q *Querier) SearchForValidIngredientGroups(ctx context.Context, query stri
 		for _, memberResult := range membersResults {
 			validIngredientGroup.Members = append(validIngredientGroup.Members, &types.ValidIngredientGroupMember{
 				CreatedAt:      memberResult.CreatedAt,
-				ArchivedAt:     timePointerFromNullTime(memberResult.ArchivedAt),
+				ArchivedAt:     database.TimePointerFromNullTime(memberResult.ArchivedAt),
 				ID:             memberResult.ID,
 				BelongsToGroup: memberResult.BelongsToGroup,
 				ValidIngredient: types.ValidIngredient{
 					CreatedAt:                               memberResult.ValidIngredientCreatedAt,
-					LastUpdatedAt:                           timePointerFromNullTime(memberResult.ValidIngredientLastUpdatedAt),
-					ArchivedAt:                              timePointerFromNullTime(memberResult.ValidIngredientArchivedAt),
-					MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(memberResult.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
-					MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(memberResult.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
+					LastUpdatedAt:                           database.TimePointerFromNullTime(memberResult.ValidIngredientLastUpdatedAt),
+					ArchivedAt:                              database.TimePointerFromNullTime(memberResult.ValidIngredientArchivedAt),
+					MaximumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(memberResult.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
+					MinimumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(memberResult.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 					IconPath:                                memberResult.ValidIngredientIconPath,
 					Warning:                                 memberResult.ValidIngredientWarning,
 					PluralName:                              memberResult.ValidIngredientPluralName,
@@ -196,7 +196,7 @@ func (q *Querier) SearchForValidIngredientGroups(ctx context.Context, query stri
 					ShoppingSuggestions:                     memberResult.ValidIngredientShoppingSuggestions,
 					ContainsShellfish:                       memberResult.ValidIngredientContainsShellfish,
 					IsMeasuredVolumetrically:                memberResult.ValidIngredientVolumetric,
-					IsLiquid:                                boolFromNullBool(memberResult.ValidIngredientIsLiquid),
+					IsLiquid:                                database.BoolFromNullBool(memberResult.ValidIngredientIsLiquid),
 					ContainsPeanut:                          memberResult.ValidIngredientContainsPeanut,
 					ContainsTreeNut:                         memberResult.ValidIngredientContainsTreeNut,
 					ContainsEgg:                             memberResult.ValidIngredientContainsEgg,
@@ -246,12 +246,12 @@ func (q *Querier) GetValidIngredientGroups(ctx context.Context, filter *types.Qu
 	}
 
 	results, err := q.generatedQuerier.GetValidIngredientGroups(ctx, q.db, &generated.GetValidIngredientGroupsParams{
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching webhook from database")
@@ -260,8 +260,8 @@ func (q *Querier) GetValidIngredientGroups(ctx context.Context, filter *types.Qu
 	for _, result := range results {
 		validIngredientGroup := &types.ValidIngredientGroup{
 			CreatedAt:     result.CreatedAt,
-			LastUpdatedAt: timePointerFromNullTime(result.LastUpdatedAt),
-			ArchivedAt:    timePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt: database.TimePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:    database.TimePointerFromNullTime(result.ArchivedAt),
 			ID:            result.ID,
 			Name:          result.Name,
 			Slug:          result.Slug,
@@ -278,15 +278,15 @@ func (q *Querier) GetValidIngredientGroups(ctx context.Context, filter *types.Qu
 		for _, memberResult := range membersResults {
 			validIngredientGroup.Members = append(validIngredientGroup.Members, &types.ValidIngredientGroupMember{
 				CreatedAt:      memberResult.CreatedAt,
-				ArchivedAt:     timePointerFromNullTime(memberResult.ArchivedAt),
+				ArchivedAt:     database.TimePointerFromNullTime(memberResult.ArchivedAt),
 				ID:             memberResult.ID,
 				BelongsToGroup: memberResult.BelongsToGroup,
 				ValidIngredient: types.ValidIngredient{
 					CreatedAt:                               memberResult.ValidIngredientCreatedAt,
-					LastUpdatedAt:                           timePointerFromNullTime(memberResult.ValidIngredientLastUpdatedAt),
-					ArchivedAt:                              timePointerFromNullTime(memberResult.ValidIngredientArchivedAt),
-					MaximumIdealStorageTemperatureInCelsius: float32PointerFromNullString(memberResult.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
-					MinimumIdealStorageTemperatureInCelsius: float32PointerFromNullString(memberResult.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
+					LastUpdatedAt:                           database.TimePointerFromNullTime(memberResult.ValidIngredientLastUpdatedAt),
+					ArchivedAt:                              database.TimePointerFromNullTime(memberResult.ValidIngredientArchivedAt),
+					MaximumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(memberResult.ValidIngredientMaximumIdealStorageTemperatureInCelsius),
+					MinimumIdealStorageTemperatureInCelsius: database.Float32PointerFromNullString(memberResult.ValidIngredientMinimumIdealStorageTemperatureInCelsius),
 					IconPath:                                memberResult.ValidIngredientIconPath,
 					Warning:                                 memberResult.ValidIngredientWarning,
 					PluralName:                              memberResult.ValidIngredientPluralName,
@@ -298,7 +298,7 @@ func (q *Querier) GetValidIngredientGroups(ctx context.Context, filter *types.Qu
 					ShoppingSuggestions:                     memberResult.ValidIngredientShoppingSuggestions,
 					ContainsShellfish:                       memberResult.ValidIngredientContainsShellfish,
 					IsMeasuredVolumetrically:                memberResult.ValidIngredientVolumetric,
-					IsLiquid:                                boolFromNullBool(memberResult.ValidIngredientIsLiquid),
+					IsLiquid:                                database.BoolFromNullBool(memberResult.ValidIngredientIsLiquid),
 					ContainsPeanut:                          memberResult.ValidIngredientContainsPeanut,
 					ContainsTreeNut:                         memberResult.ValidIngredientContainsTreeNut,
 					ContainsEgg:                             memberResult.ValidIngredientContainsEgg,

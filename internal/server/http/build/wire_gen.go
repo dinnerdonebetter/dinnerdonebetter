@@ -26,6 +26,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/routing/chi"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 	"github.com/dinnerdonebetter/backend/internal/services/admin"
+	"github.com/dinnerdonebetter/backend/internal/services/auditlogentries"
 	authentication2 "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	"github.com/dinnerdonebetter/backend/internal/services/householdinstrumentownerships"
 	"github.com/dinnerdonebetter/backend/internal/services/householdinvitations"
@@ -374,7 +375,13 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (http.Server, error)
 	if err != nil {
 		return nil, err
 	}
-	server, err := http.ProvideHTTPServer(ctx, httpConfig, dataManager, logger, serverEncoderDecoder, router, tracerProvider, authService, userDataService, householdDataService, householdInvitationDataService, validInstrumentDataService, validIngredientDataService, validIngredientGroupDataService, validPreparationDataService, validIngredientPreparationDataService, mealDataService, recipeDataService, recipeStepDataService, recipeStepProductDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, validMeasurementUnitDataService, validIngredientStateDataService, validPreparationInstrumentDataService, validIngredientMeasurementUnitDataService, mealPlanEventDataService, mealPlanTaskDataService, recipePrepTaskDataService, mealPlanGroceryListItemDataService, validMeasurementUnitConversionDataService, recipeStepCompletionConditionDataService, validIngredientStateIngredientDataService, recipeStepVesselDataService, webhookDataService, adminService, serviceSettingDataService, serviceSettingConfigurationDataService, userIngredientPreferenceDataService, recipeRatingDataService, householdInstrumentOwnershipDataService, oAuth2ClientDataService, validVesselDataService, validPreparationVesselDataService, workerService, userNotificationDataService)
+	auditlogentriesConfig := &servicesConfig.AuditLogEntries
+	auditLogEntryDataManager := database.ProvideAuditLogEntryDataManager(dataManager)
+	auditLogEntryDataService, err := auditlogentries.ProvideService(ctx, logger, auditlogentriesConfig, auditLogEntryDataManager, serverEncoderDecoder, routeParamManager, tracerProvider)
+	if err != nil {
+		return nil, err
+	}
+	server, err := http.ProvideHTTPServer(ctx, httpConfig, dataManager, logger, serverEncoderDecoder, router, tracerProvider, authService, userDataService, householdDataService, householdInvitationDataService, validInstrumentDataService, validIngredientDataService, validIngredientGroupDataService, validPreparationDataService, validIngredientPreparationDataService, mealDataService, recipeDataService, recipeStepDataService, recipeStepProductDataService, recipeStepInstrumentDataService, recipeStepIngredientDataService, mealPlanDataService, mealPlanOptionDataService, mealPlanOptionVoteDataService, validMeasurementUnitDataService, validIngredientStateDataService, validPreparationInstrumentDataService, validIngredientMeasurementUnitDataService, mealPlanEventDataService, mealPlanTaskDataService, recipePrepTaskDataService, mealPlanGroceryListItemDataService, validMeasurementUnitConversionDataService, recipeStepCompletionConditionDataService, validIngredientStateIngredientDataService, recipeStepVesselDataService, webhookDataService, adminService, serviceSettingDataService, serviceSettingConfigurationDataService, userIngredientPreferenceDataService, recipeRatingDataService, householdInstrumentOwnershipDataService, oAuth2ClientDataService, validVesselDataService, validPreparationVesselDataService, workerService, userNotificationDataService, auditLogEntryDataService)
 	if err != nil {
 		return nil, err
 	}

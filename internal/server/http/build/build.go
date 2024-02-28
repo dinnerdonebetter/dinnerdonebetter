@@ -25,6 +25,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/routing/chi"
 	"github.com/dinnerdonebetter/backend/internal/server/http"
 	adminservice "github.com/dinnerdonebetter/backend/internal/services/admin"
+	auditlogentriesservice "github.com/dinnerdonebetter/backend/internal/services/auditlogentries"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	householdinstrumentownershipsservice "github.com/dinnerdonebetter/backend/internal/services/householdinstrumentownerships"
 	householdinvitationssservice "github.com/dinnerdonebetter/backend/internal/services/householdinvitations"
@@ -138,6 +139,7 @@ func Build(
 		analyticscfg.ProvidersAnalytics,
 		workersservice.Providers,
 		usernotificationsservice.Providers,
+		auditlogentriesservice.Providers,
 	)
 
 	return nil, nil

@@ -38,6 +38,10 @@ func TestProvideWebhooksService(T *testing.T) {
 			"BuildRouteParamStringIDFetcher",
 			WebhookIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
+		rpm.On(
+			"BuildRouteParamStringIDFetcher",
+			WebhookTriggerEventIDURIParamKey,
+		).Return(func(*http.Request) string { return "" })
 
 		cfg := &Config{
 			DataChangesTopicName: "data_changes",

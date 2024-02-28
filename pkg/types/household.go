@@ -130,7 +130,7 @@ type (
 	}
 )
 
-// Update merges a householdUpdateInput with a household.
+// Update merges a HouseholdUpdateRequestInput with a household.
 func (x *Household) Update(input *HouseholdUpdateRequestInput) {
 	if input.Name != nil && *input.Name != x.Name {
 		x.Name = *input.Name

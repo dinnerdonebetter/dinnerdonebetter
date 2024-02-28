@@ -6,10 +6,16 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
+	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+)
+
+const (
+	resourceTypeWebhooks             = "webhooks"
+	resourceTypeWebhookTriggerEvents = "webhook_trigger_events"
 )
 
 var (
@@ -82,8 +88,8 @@ func (q *Querier) GetWebhook(ctx context.Context, webhookID, householdID string)
 	}
 	for _, result := range results {
 		webhook.CreatedAt = result.WebhookCreatedAt
-		webhook.ArchivedAt = timePointerFromNullTime(result.WebhookArchivedAt)
-		webhook.LastUpdatedAt = timePointerFromNullTime(result.WebhookLastUpdatedAt)
+		webhook.ArchivedAt = database.TimePointerFromNullTime(result.WebhookArchivedAt)
+		webhook.LastUpdatedAt = database.TimePointerFromNullTime(result.WebhookLastUpdatedAt)
 		webhook.Name = result.WebhookName
 		webhook.URL = result.WebhookUrl
 		webhook.Method = result.WebhookMethod
@@ -93,7 +99,7 @@ func (q *Querier) GetWebhook(ctx context.Context, webhookID, householdID string)
 
 		webhook.Events = append(webhook.Events, &types.WebhookTriggerEvent{
 			CreatedAt:        result.WebhookTriggerEventCreatedAt,
-			ArchivedAt:       timePointerFromNullTime(result.WebhookTriggerEventArchivedAt),
+			ArchivedAt:       database.TimePointerFromNullTime(result.WebhookTriggerEventArchivedAt),
 			ID:               result.WebhookTriggerEventID,
 			BelongsToWebhook: result.WebhookTriggerEventBelongsToWebhook,
 			TriggerEvent:     string(result.WebhookTriggerEventTriggerEvent),
@@ -127,12 +133,12 @@ func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *t
 
 	results, err := q.generatedQuerier.GetWebhooksForHousehold(ctx, q.db, &generated.GetWebhooksForHouseholdParams{
 		HouseholdID:   householdID,
-		CreatedBefore: nullTimeFromTimePointer(filter.CreatedBefore),
-		CreatedAfter:  nullTimeFromTimePointer(filter.CreatedAfter),
-		UpdatedBefore: nullTimeFromTimePointer(filter.UpdatedBefore),
-		UpdatedAfter:  nullTimeFromTimePointer(filter.UpdatedAfter),
-		QueryOffset:   nullInt32FromUint16(filter.QueryOffset()),
-		QueryLimit:    nullInt32FromUint8Pointer(filter.Limit),
+		CreatedBefore: database.NullTimeFromTimePointer(filter.CreatedBefore),
+		CreatedAfter:  database.NullTimeFromTimePointer(filter.CreatedAfter),
+		UpdatedBefore: database.NullTimeFromTimePointer(filter.UpdatedBefore),
+		UpdatedAfter:  database.NullTimeFromTimePointer(filter.UpdatedAfter),
+		QueryOffset:   database.NullInt32FromUint16(filter.QueryOffset()),
+		QueryLimit:    database.NullInt32FromUint8Pointer(filter.Limit),
 	})
 	if err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "fetching webhooks from database")
@@ -141,8 +147,8 @@ func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *t
 	for _, result := range results {
 		x.Data = append(x.Data, &types.Webhook{
 			CreatedAt:          result.CreatedAt,
-			ArchivedAt:         timePointerFromNullTime(result.ArchivedAt),
-			LastUpdatedAt:      timePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:         database.TimePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt:      database.TimePointerFromNullTime(result.LastUpdatedAt),
 			Name:               result.Name,
 			URL:                result.URL,
 			Method:             result.Method,
@@ -183,8 +189,8 @@ func (q *Querier) GetWebhooksForHouseholdAndEvent(ctx context.Context, household
 	for _, result := range databaseResults {
 		results = append(results, &types.Webhook{
 			CreatedAt:          result.CreatedAt,
-			ArchivedAt:         timePointerFromNullTime(result.ArchivedAt),
-			LastUpdatedAt:      timePointerFromNullTime(result.LastUpdatedAt),
+			ArchivedAt:         database.TimePointerFromNullTime(result.ArchivedAt),
+			LastUpdatedAt:      database.TimePointerFromNullTime(result.LastUpdatedAt),
 			Name:               result.Name,
 			URL:                result.URL,
 			Method:             result.Method,
@@ -202,12 +208,13 @@ func (q *Querier) CreateWebhook(ctx context.Context, input *types.WebhookDatabas
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := q.logger.Clone()
+
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
-
 	tracing.AttachToSpan(span, keys.HouseholdIDKey, input.BelongsToHousehold)
-	logger := q.logger.WithValue(keys.HouseholdIDKey, input.BelongsToHousehold)
+	logger = logger.WithValue(keys.HouseholdIDKey, input.BelongsToHousehold)
 
 	logger.Debug("CreateWebhook invoked")
 
@@ -238,11 +245,22 @@ func (q *Querier) CreateWebhook(ctx context.Context, input *types.WebhookDatabas
 		CreatedAt:          q.currentTime(),
 	}
 
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		BelongsToHousehold: &x.BelongsToHousehold,
+		ID:                 identifiers.New(),
+		ResourceType:       resourceTypeWebhooks,
+		RelevantID:         x.ID,
+		EventType:          types.AuditLogEventTypeCreated,
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return nil, observability.PrepareError(err, span, "creating audit log entry")
+	}
+
 	for i := range input.Events {
 		evt := input.Events[i]
 		evt.BelongsToWebhook = input.ID
 
-		e, webhookTriggerEventCreationErr := q.createWebhookTriggerEvent(ctx, tx, evt)
+		e, webhookTriggerEventCreationErr := q.createWebhookTriggerEvent(ctx, tx, x.BelongsToHousehold, evt)
 		if webhookTriggerEventCreationErr != nil {
 			q.rollbackTransaction(ctx, tx)
 			return nil, observability.PrepareAndLogError(webhookTriggerEventCreationErr, logger, span, "performing webhook creation query")
@@ -261,7 +279,7 @@ func (q *Querier) CreateWebhook(ctx context.Context, input *types.WebhookDatabas
 }
 
 // createWebhookTriggerEvent creates a webhook trigger event in a database.
-func (q *Querier) createWebhookTriggerEvent(ctx context.Context, querier database.SQLQueryExecutor, input *types.WebhookTriggerEventDatabaseCreationInput) (*types.WebhookTriggerEvent, error) {
+func (q *Querier) createWebhookTriggerEvent(ctx context.Context, querier database.SQLQueryExecutor, householdID string, input *types.WebhookTriggerEventDatabaseCreationInput) (*types.WebhookTriggerEvent, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
@@ -272,12 +290,28 @@ func (q *Querier) createWebhookTriggerEvent(ctx context.Context, querier databas
 	}
 	tracing.AttachToSpan(span, keys.WebhookIDKey, input.BelongsToWebhook)
 
+	if householdID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+
 	if err := q.generatedQuerier.CreateWebhookTriggerEvent(ctx, querier, &generated.CreateWebhookTriggerEventParams{
 		ID:               input.ID,
 		TriggerEvent:     generated.WebhookEvent(input.TriggerEvent),
 		BelongsToWebhook: input.BelongsToWebhook,
 	}); err != nil {
 		return nil, observability.PrepareAndLogError(err, logger, span, "performing webhook trigger event creation query")
+	}
+
+	if _, err := q.createAuditLogEntry(ctx, querier, &types.AuditLogEntryDatabaseCreationInput{
+		BelongsToHousehold: &householdID,
+		ID:                 identifiers.New(),
+		ResourceType:       resourceTypeWebhookTriggerEvents,
+		RelevantID:         input.ID,
+		EventType:          types.AuditLogEventTypeCreated,
+	}); err != nil {
+		return nil, observability.PrepareError(err, span, "creating audit log entry")
 	}
 
 	x := &types.WebhookTriggerEvent{
@@ -311,14 +345,87 @@ func (q *Querier) ArchiveWebhook(ctx context.Context, webhookID, householdID str
 		keys.HouseholdIDKey: householdID,
 	})
 
-	if _, err := q.generatedQuerier.ArchiveWebhook(ctx, q.db, &generated.ArchiveWebhookParams{
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	if _, err = q.generatedQuerier.ArchiveWebhook(ctx, tx, &generated.ArchiveWebhookParams{
 		BelongsToHousehold: householdID,
 		ID:                 webhookID,
 	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
 		return observability.PrepareAndLogError(err, logger, span, "archiving webhook")
 	}
 
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		BelongsToHousehold: &householdID,
+		ID:                 identifiers.New(),
+		ResourceType:       resourceTypeWebhooks,
+		RelevantID:         webhookID,
+		EventType:          types.AuditLogEventTypeArchived,
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing database transaction")
+	}
+
 	logger.Info("webhook archived")
+
+	return nil
+}
+
+// ArchiveWebhookTriggerEvent archives a webhook trigger event from the database.
+func (q *Querier) ArchiveWebhookTriggerEvent(ctx context.Context, webhookID, webhookTriggerEventID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if webhookID == "" {
+		return ErrInvalidIDProvided
+	}
+	tracing.AttachToSpan(span, keys.WebhookIDKey, webhookID)
+
+	if webhookTriggerEventID == "" {
+		return ErrInvalidIDProvided
+	}
+	tracing.AttachToSpan(span, keys.WebhookTriggerEventIDKey, webhookTriggerEventID)
+
+	logger := q.logger.WithValues(map[string]any{
+		keys.WebhookIDKey:             webhookID,
+		keys.WebhookTriggerEventIDKey: webhookTriggerEventID,
+	})
+
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	if _, err = q.generatedQuerier.ArchiveWebhookTriggerEvent(ctx, tx, &generated.ArchiveWebhookTriggerEventParams{
+		BelongsToWebhook: webhookID,
+		ID:               webhookTriggerEventID,
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareAndLogError(err, logger, span, "archiving webhook trigger event")
+	}
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		ID:           identifiers.New(),
+		ResourceType: resourceTypeWebhookTriggerEvents,
+		RelevantID:   webhookID,
+		EventType:    types.AuditLogEventTypeArchived,
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing database transaction")
+	}
+
+	logger.Info("webhook trigger event archived")
 
 	return nil
 }

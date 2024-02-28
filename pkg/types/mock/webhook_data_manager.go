@@ -50,12 +50,12 @@ func (m *WebhookDataManagerMock) CreateWebhook(ctx context.Context, input *types
 	return args.Get(0).(*types.Webhook), args.Error(1)
 }
 
-// UpdateWebhook satisfies our WebhookDataManagerMock interface.
-func (m *WebhookDataManagerMock) UpdateWebhook(ctx context.Context, updated *types.Webhook) error {
-	return m.Called(ctx, updated).Error(0)
-}
-
 // ArchiveWebhook satisfies our WebhookDataManagerMock interface.
 func (m *WebhookDataManagerMock) ArchiveWebhook(ctx context.Context, webhookID, householdID string) error {
 	return m.Called(ctx, webhookID, householdID).Error(0)
+}
+
+// ArchiveWebhookTriggerEvent satisfies our WebhookDataManagerMock interface.
+func (m *WebhookDataManagerMock) ArchiveWebhookTriggerEvent(ctx context.Context, webhookID, webhookTriggerEventID string) error {
+	return m.Called(ctx, webhookID, webhookTriggerEventID).Error(0)
 }

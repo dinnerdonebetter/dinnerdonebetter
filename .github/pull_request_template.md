@@ -1,23 +1,28 @@
-## PR Description
-_What does this PR aim to achieve?_
+## What does this PR aim to accomplish?
+_PR description goes here_
 
-## New Feature Checklist
 <!-- delete this section if what is being completed is not part of a new feature --> 
-
+## New Feature Checklist
   - [ ] Migration
   - [ ] Queries
+  - [ ] Observability keys
   - [ ] Types
       - [ ] Definitions
       - [ ] Fakes
+      - [ ] Converters
       - [ ] Mocks
   - [ ] Data Manager
       - [ ] Storage methods
-      - [ ] Unit tests 
+      - [ ] Unit tests
+      - [ ] Mocks
+      - [ ] DB Manager interface
+      - [ ] Wire providers
   - [ ] Service
       - [ ] Service routes
       - [ ] Routes unit tests
       - [ ] Hook service into server with wire
       - [ ] Assign routes to paths
+  - [ ] Permissions
   - [ ] Configs
       - [ ] Service config struct
       - [ ] Config generators
@@ -28,6 +33,6 @@ _What does this PR aim to achieve?_
       - [ ] Request executor tests
   - [ ] Integration tests
 
-## Additional tasks
 <!-- delete this section if there aren't any additional tasks --> 
+## Additional tasks
 - [ ]

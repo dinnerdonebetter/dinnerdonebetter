@@ -129,3 +129,37 @@ func (c *Client) ArchiveWebhook(ctx context.Context, webhookID string) error {
 
 	return nil
 }
+
+// ArchiveWebhookTriggerEvent archives a webhook trigger event.
+func (c *Client) ArchiveWebhookTriggerEvent(ctx context.Context, webhookID, webhookTriggerEventID string) error {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := c.logger.Clone()
+
+	if webhookID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.WebhookIDKey, webhookID)
+
+	if webhookTriggerEventID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.WebhookTriggerEventIDKey, webhookTriggerEventID)
+
+	req, err := c.requestBuilder.BuildArchiveWebhookTriggerEventRequest(ctx, webhookID, webhookTriggerEventID)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "building archive webhook request")
+	}
+
+	var apiResponse *types.APIResponse[*types.Webhook]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "archiving webhook")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return err
+	}
+
+	return nil
+}
