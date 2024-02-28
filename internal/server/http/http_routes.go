@@ -271,7 +271,7 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 					Delete(root, s.webhooksService.ArchiveWebhookHandler)
 
 				singleWebhookTriggerEventRoute := buildURLVarChunk(webhooksservice.WebhookTriggerEventIDURIParamKey, "")
-				webhookRouter.Route("/trigger_events"+singleWebhookTriggerEventRoute, func(singleWebhookRouter routing.Router) {
+				singleWebhookRouter.Route("/trigger_events"+singleWebhookTriggerEventRoute, func(singleWebhookRouter routing.Router) {
 					singleWebhookRouter.
 						WithMiddleware(s.authService.PermissionFilterMiddleware(authorization.ArchiveWebhooksPermission)).
 						Delete(root, s.webhooksService.ArchiveWebhookTriggerEventHandler)
