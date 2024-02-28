@@ -22,10 +22,13 @@ func TestWebhooks(t *testing.T) {
 type webhooksTestSuite struct {
 	suite.Suite
 
-	ctx                    context.Context
-	exampleWebhook         *types.Webhook
-	exampleWebhookResponse *types.APIResponse[*types.Webhook]
-	exampleWebhookList     *types.QueryFilteredResult[types.Webhook]
+	ctx                                context.Context
+	exampleWebhook                     *types.Webhook
+	exampleWebhookResponse             *types.APIResponse[*types.Webhook]
+	exampleWebhookList                 *types.QueryFilteredResult[types.Webhook]
+	exampleWebhookTriggerEvent         *types.WebhookTriggerEvent
+	exampleWebhookTriggerEventResponse *types.APIResponse[*types.WebhookTriggerEvent]
+	exampleWebhookTriggerEventList     *types.QueryFilteredResult[types.WebhookTriggerEvent]
 }
 
 var _ suite.SetupTestSuite = (*webhooksTestSuite)(nil)
@@ -37,6 +40,11 @@ func (s *webhooksTestSuite) SetupTest() {
 		Data: s.exampleWebhook,
 	}
 	s.exampleWebhookList = fakes.BuildFakeWebhookList()
+	s.exampleWebhookTriggerEvent = fakes.BuildFakeWebhookTriggerEvent()
+	s.exampleWebhookTriggerEventResponse = &types.APIResponse[*types.WebhookTriggerEvent]{
+		Data: s.exampleWebhookTriggerEvent,
+	}
+	s.exampleWebhookTriggerEventList = fakes.BuildFakeWebhookTriggerEventList()
 }
 
 func (s *webhooksTestSuite) TestClient_GetWebhook() {
@@ -220,6 +228,56 @@ func (s *webhooksTestSuite) TestClient_ArchiveWebhook() {
 		c, _ := buildTestClientThatWaitsTooLong(t)
 
 		err := c.ArchiveWebhook(s.ctx, s.exampleWebhook.ID)
+		assert.Error(t, err)
+	})
+}
+
+func (s *webhooksTestSuite) TestClient_ArchiveWebhookTriggerEvent() {
+	const expectedPathFormat = "/api/v1/webhooks/%s/trigger_events/%s"
+
+	s.Run("standard", func() {
+		t := s.T()
+
+		spec := newRequestSpec(true, http.MethodDelete, "", expectedPathFormat, s.exampleWebhook.ID, s.exampleWebhookTriggerEvent.ID)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleWebhookResponse)
+
+		err := c.ArchiveWebhookTriggerEvent(s.ctx, s.exampleWebhook.ID, s.exampleWebhookTriggerEvent.ID)
+		assert.NoError(t, err)
+	})
+
+	s.Run("with invalid webhook ID", func() {
+		t := s.T()
+
+		c, _ := buildSimpleTestClient(t)
+
+		err := c.ArchiveWebhookTriggerEvent(s.ctx, "", s.exampleWebhookTriggerEvent.ID)
+		assert.Error(t, err)
+	})
+
+	s.Run("with invalid webhook trigger event ID", func() {
+		t := s.T()
+
+		c, _ := buildSimpleTestClient(t)
+
+		err := c.ArchiveWebhookTriggerEvent(s.ctx, s.exampleWebhook.ID, "")
+		assert.Error(t, err)
+	})
+
+	s.Run("with error building request", func() {
+		t := s.T()
+
+		c := buildTestClientWithInvalidURL(t)
+
+		err := c.ArchiveWebhookTriggerEvent(s.ctx, s.exampleWebhook.ID, s.exampleWebhookTriggerEvent.ID)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error executing request", func() {
+		t := s.T()
+
+		c, _ := buildTestClientThatWaitsTooLong(t)
+
+		err := c.ArchiveWebhookTriggerEvent(s.ctx, s.exampleWebhook.ID, s.exampleWebhookTriggerEvent.ID)
 		assert.Error(t, err)
 	})
 }

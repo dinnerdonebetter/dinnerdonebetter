@@ -57,6 +57,23 @@ WHERE %s IS NULL
 		},
 		{
 			Annotation: QueryAnnotation{
+				Name: "ArchiveWebhookTriggerEvent",
+				Type: ExecRowsType,
+			},
+			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+	%s = %s
+WHERE %s IS NULL
+	AND %s = sqlc.arg(%s)
+	AND %s = sqlc.arg(%s);`,
+				webhookTriggerEventsTableName,
+				archivedAtColumn, currentTimeExpression,
+				archivedAtColumn,
+				idColumn, idColumn,
+				belongsToWebhookColumn, belongsToWebhookColumn,
+			)),
+		},
+		{
+			Annotation: QueryAnnotation{
 				Name: "CreateWebhook",
 				Type: ExecType,
 			},

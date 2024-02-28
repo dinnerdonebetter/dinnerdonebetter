@@ -177,3 +177,59 @@ func TestBuilder_BuildArchiveWebhookRequest(T *testing.T) {
 		assert.Error(t, err)
 	})
 }
+
+func TestBuilder_BuildArchiveWebhookTriggerEventRequest(T *testing.T) {
+	T.Parallel()
+
+	const expectedPathFormat = "/api/v1/webhooks/%s/trigger_events/%s"
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		exampleWebhook := fakes.BuildFakeWebhook()
+		exampleWebhookTriggerEvent := fakes.BuildFakeWebhookTriggerEvent()
+
+		spec := newRequestSpec(false, http.MethodDelete, "", expectedPathFormat, exampleWebhook.ID, exampleWebhookTriggerEvent.ID)
+
+		actual, err := helper.builder.BuildArchiveWebhookTriggerEventRequest(helper.ctx, exampleWebhook.ID, exampleWebhookTriggerEvent.ID)
+		assert.NoError(t, err)
+
+		assertRequestQuality(t, actual, spec)
+	})
+
+	T.Run("with invalid webhook ID", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		exampleWebhookTriggerEvent := fakes.BuildFakeWebhookTriggerEvent()
+
+		actual, err := helper.builder.BuildArchiveWebhookTriggerEventRequest(helper.ctx, "", exampleWebhookTriggerEvent.ID)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	T.Run("with invalid webhook trigger event ID", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		exampleWebhook := fakes.BuildFakeWebhook()
+
+		actual, err := helper.builder.BuildArchiveWebhookTriggerEventRequest(helper.ctx, exampleWebhook.ID, "")
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	T.Run("with invalid request builder", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		helper.builder = buildTestRequestBuilderWithInvalidURL()
+		exampleWebhook := fakes.BuildFakeWebhook()
+		exampleWebhookTriggerEvent := fakes.BuildFakeWebhookTriggerEvent()
+
+		actual, err := helper.builder.BuildArchiveWebhookTriggerEventRequest(helper.ctx, exampleWebhook.ID, exampleWebhookTriggerEvent.ID)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}

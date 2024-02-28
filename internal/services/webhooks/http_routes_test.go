@@ -570,3 +570,182 @@ func TestWebhooksService_ArchiveWebhookHandler(T *testing.T) {
 		mock.AssertExpectationsForObjects(t, dataManager, dataChangesPublisher)
 	})
 }
+
+func TestWebhooksService_ArchiveWebhookTriggerEventHandler(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+
+		dataManager := &mocktypes.WebhookDataManagerMock{}
+		dataManager.On(
+			"WebhookExists",
+			testutils.ContextMatcher,
+			helper.exampleWebhook.ID,
+			helper.exampleHousehold.ID,
+		).Return(true, nil)
+
+		dataManager.On(
+			"ArchiveWebhookTriggerEvent",
+			testutils.ContextMatcher,
+			helper.exampleWebhook.ID,
+			helper.exampleWebhookTriggerEvent.ID,
+		).Return(nil)
+		helper.service.webhookDataManager = dataManager
+
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
+		).Return(nil)
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
+		helper.service.ArchiveWebhookTriggerEventHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
+
+		mock.AssertExpectationsForObjects(t, dataManager, dataChangesPublisher)
+	})
+
+	T.Run("with error retrieving session context data", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+		helper.service.sessionContextDataFetcher = testutils.BrokenSessionContextDataFetcher
+
+		helper.service.ArchiveWebhookTriggerEventHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusUnauthorized, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
+	})
+
+	T.Run("with error checking webhook existence", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+
+		wd := &mocktypes.WebhookDataManagerMock{}
+		wd.On(
+			"WebhookExists",
+			testutils.ContextMatcher,
+			helper.exampleWebhook.ID,
+			helper.exampleHousehold.ID,
+		).Return(false, errors.New("blah"))
+		helper.service.webhookDataManager = wd
+
+		helper.service.ArchiveWebhookTriggerEventHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
+
+		mock.AssertExpectationsForObjects(t, wd)
+	})
+
+	T.Run("with no webhook in database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+
+		wd := &mocktypes.WebhookDataManagerMock{}
+		wd.On(
+			"WebhookExists",
+			testutils.ContextMatcher,
+			helper.exampleWebhook.ID,
+			helper.exampleHousehold.ID,
+		).Return(false, sql.ErrNoRows)
+		helper.service.webhookDataManager = wd
+
+		helper.service.ArchiveWebhookTriggerEventHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusNotFound, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
+
+		mock.AssertExpectationsForObjects(t, wd)
+	})
+
+	T.Run("with error archiving in database", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+
+		dataManager := &mocktypes.WebhookDataManagerMock{}
+		dataManager.On(
+			"WebhookExists",
+			testutils.ContextMatcher,
+			helper.exampleWebhook.ID,
+			helper.exampleHousehold.ID,
+		).Return(true, nil)
+
+		dataManager.On(
+			"ArchiveWebhookTriggerEvent",
+			testutils.ContextMatcher,
+			helper.exampleWebhook.ID,
+			helper.exampleWebhookTriggerEvent.ID,
+		).Return(errors.New("blah"))
+		helper.service.webhookDataManager = dataManager
+
+		helper.service.ArchiveWebhookTriggerEventHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusInternalServerError, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.Empty(t, actual.Data)
+		assert.Error(t, actual.Error)
+
+		mock.AssertExpectationsForObjects(t, dataManager)
+	})
+
+	T.Run("with error publishing to message queue", func(t *testing.T) {
+		t.Parallel()
+
+		helper := newTestHelper(t)
+
+		dataManager := &mocktypes.WebhookDataManagerMock{}
+		dataManager.On(
+			"WebhookExists",
+			testutils.ContextMatcher,
+			helper.exampleWebhook.ID,
+			helper.exampleHousehold.ID,
+		).Return(true, nil)
+
+		dataManager.On(
+			"ArchiveWebhookTriggerEvent",
+			testutils.ContextMatcher,
+			helper.exampleWebhook.ID,
+			helper.exampleWebhookTriggerEvent.ID,
+		).Return(nil)
+		helper.service.webhookDataManager = dataManager
+
+		dataChangesPublisher := &mockpublishers.Publisher{}
+		dataChangesPublisher.On(
+			"Publish",
+			testutils.ContextMatcher,
+			testutils.DataChangeMessageMatcher,
+		).Return(errors.New("blah"))
+		helper.service.dataChangesPublisher = dataChangesPublisher
+
+		helper.service.ArchiveWebhookTriggerEventHandler(helper.res, helper.req)
+
+		assert.Equal(t, http.StatusOK, helper.res.Code)
+		var actual *types.APIResponse[*types.Webhook]
+		require.NoError(t, helper.service.encoderDecoder.DecodeBytes(helper.ctx, helper.res.Body.Bytes(), &actual))
+		assert.NoError(t, actual.Error.AsError())
+
+		mock.AssertExpectationsForObjects(t, dataManager, dataChangesPublisher)
+	})
+}

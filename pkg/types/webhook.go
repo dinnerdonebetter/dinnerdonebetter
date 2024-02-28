@@ -95,6 +95,7 @@ type (
 		GetWebhooksForHouseholdAndEvent(ctx context.Context, householdID string, eventType ServiceEventType) ([]*Webhook, error)
 		CreateWebhook(ctx context.Context, input *WebhookDatabaseCreationInput) (*Webhook, error)
 		ArchiveWebhook(ctx context.Context, webhookID, householdID string) error
+		ArchiveWebhookTriggerEvent(ctx context.Context, webhookID, webhookTriggerEventID string) error
 	}
 
 	// WebhookDataService describes a structure capable of serving traffic related to webhooks.
@@ -103,6 +104,7 @@ type (
 		CreateWebhookHandler(http.ResponseWriter, *http.Request)
 		ReadWebhookHandler(http.ResponseWriter, *http.Request)
 		ArchiveWebhookHandler(http.ResponseWriter, *http.Request)
+		ArchiveWebhookTriggerEventHandler(http.ResponseWriter, *http.Request)
 	}
 )
 

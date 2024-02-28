@@ -377,3 +377,55 @@ func (q *Querier) ArchiveWebhook(ctx context.Context, webhookID, householdID str
 
 	return nil
 }
+
+// ArchiveWebhookTriggerEvent archives a webhook trigger event from the database.
+func (q *Querier) ArchiveWebhookTriggerEvent(ctx context.Context, webhookID, webhookTriggerEventID string) error {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if webhookID == "" {
+		return ErrInvalidIDProvided
+	}
+	tracing.AttachToSpan(span, keys.WebhookIDKey, webhookID)
+
+	if webhookTriggerEventID == "" {
+		return ErrInvalidIDProvided
+	}
+	tracing.AttachToSpan(span, keys.WebhookTriggerEventIDKey, webhookTriggerEventID)
+
+	logger := q.logger.WithValues(map[string]any{
+		keys.WebhookIDKey:             webhookID,
+		keys.WebhookTriggerEventIDKey: webhookTriggerEventID,
+	})
+
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	if _, err = q.generatedQuerier.ArchiveWebhookTriggerEvent(ctx, tx, &generated.ArchiveWebhookTriggerEventParams{
+		BelongsToWebhook: webhookID,
+		ID:               webhookTriggerEventID,
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareAndLogError(err, logger, span, "archiving webhook trigger event")
+	}
+
+	if _, err = q.createAuditLogEntry(ctx, tx, &types.AuditLogEntryDatabaseCreationInput{
+		ID:           identifiers.New(),
+		ResourceType: resourceTypeWebhookTriggerEvents,
+		RelevantID:   webhookID,
+		EventType:    types.AuditLogEventTypeArchived,
+	}); err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return observability.PrepareError(err, span, "creating audit log entry")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return observability.PrepareAndLogError(err, logger, span, "committing database transaction")
+	}
+
+	logger.Info("webhook trigger event archived")
+
+	return nil
+}

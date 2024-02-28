@@ -20,13 +20,14 @@ const (
 type (
 	// service handles webhooks.
 	service struct {
-		logger                    logging.Logger
-		webhookDataManager        types.WebhookDataManager
-		tracer                    tracing.Tracer
-		encoderDecoder            encoding.ServerEncoderDecoder
-		dataChangesPublisher      messagequeue.Publisher
-		webhookIDFetcher          func(*http.Request) string
-		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
+		logger                       logging.Logger
+		webhookDataManager           types.WebhookDataManager
+		tracer                       tracing.Tracer
+		encoderDecoder               encoding.ServerEncoderDecoder
+		dataChangesPublisher         messagequeue.Publisher
+		webhookIDFetcher             func(*http.Request) string
+		webhookTriggerEventIDFetcher func(*http.Request) string
+		sessionContextDataFetcher    func(*http.Request) (*types.SessionContextData, error)
 	}
 )
 
@@ -46,13 +47,14 @@ func ProvideWebhooksService(
 	}
 
 	s := &service{
-		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
-		webhookDataManager:        webhookDataManager,
-		encoderDecoder:            encoder,
-		dataChangesPublisher:      dataChangesPublisher,
-		sessionContextDataFetcher: authservice.FetchContextFromRequest,
-		webhookIDFetcher:          routeParamManager.BuildRouteParamStringIDFetcher(WebhookIDURIParamKey),
-		tracer:                    tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
+		logger:                       logging.EnsureLogger(logger).WithName(serviceName),
+		webhookDataManager:           webhookDataManager,
+		encoderDecoder:               encoder,
+		dataChangesPublisher:         dataChangesPublisher,
+		sessionContextDataFetcher:    authservice.FetchContextFromRequest,
+		webhookIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(WebhookIDURIParamKey),
+		webhookTriggerEventIDFetcher: routeParamManager.BuildRouteParamStringIDFetcher(WebhookTriggerEventIDURIParamKey),
+		tracer:                       tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 	}
 
 	return s, nil
