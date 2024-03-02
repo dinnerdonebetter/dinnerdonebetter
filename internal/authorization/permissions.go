@@ -42,6 +42,10 @@ const (
 	UpdateWebhooksPermission Permission = "update.webhooks"
 	// ArchiveWebhooksPermission is a household admin permission.
 	ArchiveWebhooksPermission Permission = "archive.webhooks"
+	// CreateWebhookTriggerEventsPermission is a household admin permission.
+	CreateWebhookTriggerEventsPermission Permission = "create.webhook_trigger_events"
+	// ArchiveWebhookTriggerEventsPermission is a household admin permission.
+	ArchiveWebhookTriggerEventsPermission Permission = "archive.webhook_trigger_events"
 
 	// ReadAuditLogEntriesPermission is a service permission.
 	ReadAuditLogEntriesPermission Permission = "read.audit_log_entries"

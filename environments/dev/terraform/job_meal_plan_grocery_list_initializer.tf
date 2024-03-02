@@ -131,35 +131,35 @@ resource "google_cloud_run_v2_job" "meal_plan_grocery_list_initializer" {
   lifecycle {
     ignore_changes = [
       launch_stage,
-    ]
+    ]1
   }
 }
 
 
-resource "google_cloud_scheduler_job" "meal_plan_grocery_list_init" {
-  project          = local.project_id
-  region           = local.gcp_region
-  name             = "meal-plan-grocery-list-initializer"
-  description      = "Runs the meal plan grocery list initializer every 15 minutes"
-  schedule         = "*/15 * * * *"
-  time_zone        = "America/Chicago"
-  attempt_deadline = "320s"
-
-  retry_config {
-    retry_count = 1
-  }
-
-  http_target {
-    http_method = "POST"
-    uri         = "https://${google_cloud_run_v2_job.meal_plan_grocery_list_initializer.location}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${data.google_project.project.number}/jobs/${google_cloud_run_v2_job.meal_plan_grocery_list_initializer.name}:run"
-
-    oauth_token {
-      service_account_email = google_service_account.meal_plan_grocery_list_initializer_user_service_account.email
-    }
-  }
-
-  # Use an explicit depends_on clause to wait until API is enabled
-  depends_on = [
-    google_cloud_run_v2_job.meal_plan_grocery_list_initializer,
-  ]
-}
+#resource "google_cloud_scheduler_job" "meal_plan_grocery_list_init" {
+#  project          = local.project_id
+#  region           = local.gcp_region
+#  name             = "meal-plan-grocery-list-initializer"
+#  description      = "Runs the meal plan grocery list initializer every 15 minutes"
+#  schedule         = "*/15 * * * *"
+#  time_zone        = "America/Chicago"
+#  attempt_deadline = "320s"
+#
+#  retry_config {
+#    retry_count = 1
+#  }
+#
+#  http_target {
+#    http_method = "POST"
+#    uri         = "https://${google_cloud_run_v2_job.meal_plan_grocery_list_initializer.location}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${data.google_project.project.number}/jobs/${google_cloud_run_v2_job.meal_plan_grocery_list_initializer.name}:run"
+#
+#    oauth_token {
+#      service_account_email = google_service_account.meal_plan_grocery_list_initializer_user_service_account.email
+#    }
+#  }
+#
+#  # Use an explicit depends_on clause to wait until API is enabled
+#  depends_on = [
+#    google_cloud_run_v2_job.meal_plan_grocery_list_initializer,
+#  ]
+#}

@@ -130,6 +130,43 @@ func (c *Client) ArchiveWebhook(ctx context.Context, webhookID string) error {
 	return nil
 }
 
+// AddWebhookTriggerEvent adds a webhook trigger event.
+func (c *Client) AddWebhookTriggerEvent(ctx context.Context, webhookID string, input *types.WebhookTriggerEventCreationRequestInput) (*types.WebhookTriggerEvent, error) {
+	ctx, span := c.tracer.StartSpan(ctx)
+	defer span.End()
+
+	logger := c.logger.Clone()
+
+	if webhookID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.WebhookIDKey, webhookID)
+
+	if input == nil {
+		return nil, ErrNilInputProvided
+	}
+
+	if err := input.ValidateWithContext(ctx); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "validating input")
+	}
+
+	req, err := c.requestBuilder.BuildAddWebhookTriggerEventRequest(ctx, webhookID, input)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "building add webhook trigger event request")
+	}
+
+	var apiResponse *types.APIResponse[*types.WebhookTriggerEvent]
+	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "adding webhook")
+	}
+
+	if err = apiResponse.Error.AsError(); err != nil {
+		return nil, err
+	}
+
+	return apiResponse.Data, nil
+}
+
 // ArchiveWebhookTriggerEvent archives a webhook trigger event.
 func (c *Client) ArchiveWebhookTriggerEvent(ctx context.Context, webhookID, webhookTriggerEventID string) error {
 	ctx, span := c.tracer.StartSpan(ctx)
@@ -149,12 +186,12 @@ func (c *Client) ArchiveWebhookTriggerEvent(ctx context.Context, webhookID, webh
 
 	req, err := c.requestBuilder.BuildArchiveWebhookTriggerEventRequest(ctx, webhookID, webhookTriggerEventID)
 	if err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "building archive webhook request")
+		return observability.PrepareAndLogError(err, logger, span, "building archive webhook trigger event request")
 	}
 
 	var apiResponse *types.APIResponse[*types.Webhook]
 	if err = c.fetchAndUnmarshal(ctx, req, &apiResponse); err != nil {
-		return observability.PrepareAndLogError(err, logger, span, "archiving webhook")
+		return observability.PrepareAndLogError(err, logger, span, "archiving webhook trigger event")
 	}
 
 	if err = apiResponse.Error.AsError(); err != nil {

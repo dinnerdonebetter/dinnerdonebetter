@@ -17,15 +17,16 @@ import (
 )
 
 type webhooksServiceHTTPRoutesTestHelper struct {
-	ctx                        context.Context
-	req                        *http.Request
-	res                        *httptest.ResponseRecorder
-	service                    *service
-	exampleUser                *types.User
-	exampleHousehold           *types.Household
-	exampleWebhook             *types.Webhook
-	exampleWebhookTriggerEvent *types.WebhookTriggerEvent
-	exampleCreationInput       *types.WebhookCreationRequestInput
+	ctx                              context.Context
+	req                              *http.Request
+	res                              *httptest.ResponseRecorder
+	service                          *service
+	exampleUser                      *types.User
+	exampleHousehold                 *types.Household
+	exampleWebhook                   *types.Webhook
+	exampleWebhookTriggerEvent       *types.WebhookTriggerEvent
+	exampleCreationInput             *types.WebhookCreationRequestInput
+	exampleTriggerEventCreationInput *types.WebhookTriggerEventCreationRequestInput
 }
 
 func newTestHelper(t *testing.T) *webhooksServiceHTTPRoutesTestHelper {
@@ -43,6 +44,7 @@ func newTestHelper(t *testing.T) *webhooksServiceHTTPRoutesTestHelper {
 	helper.exampleWebhookTriggerEvent = fakes.BuildFakeWebhookTriggerEvent()
 	helper.exampleWebhookTriggerEvent.BelongsToWebhook = helper.exampleWebhook.ID
 	helper.exampleCreationInput = converters.ConvertWebhookToWebhookCreationRequestInput(helper.exampleWebhook)
+	helper.exampleTriggerEventCreationInput = converters.ConvertWebhookTriggerEventToWebhookTriggerEventCreationRequestInput(fakes.BuildFakeWebhookTriggerEvent())
 
 	helper.service.webhookIDFetcher = func(*http.Request) string {
 		return helper.exampleWebhook.ID

@@ -284,7 +284,7 @@ func (s *service) ArchiveWebhookHandler(res http.ResponseWriter, req *http.Reque
 	archiveTimer.Stop()
 
 	dcm := &types.DataChangeMessage{
-		EventType:   types.WebhookArchivedCustomerEventType,
+		EventType:   types.WebhookTriggerEventArchivedCustomerEventType,
 		HouseholdID: householdID,
 		UserID:      sessionCtxData.Requester.UserID,
 	}
@@ -294,6 +294,102 @@ func (s *service) ArchiveWebhookHandler(res http.ResponseWriter, req *http.Reque
 	}
 
 	responseValue := &types.APIResponse[*types.Webhook]{
+		Details: responseDetails,
+	}
+
+	// let everybody go home.
+	s.encoderDecoder.RespondWithData(ctx, res, responseValue)
+}
+
+// AddWebhookTriggerEventHandler returns a handler that adds a webhook trigger event.
+func (s *service) AddWebhookTriggerEventHandler(res http.ResponseWriter, req *http.Request) {
+	ctx, span := s.tracer.StartSpan(req.Context())
+	defer span.End()
+
+	timing := servertiming.FromContext(ctx)
+	logger := s.logger.WithRequest(req).WithSpan(span)
+	tracing.AttachRequestToSpan(span, req)
+
+	responseDetails := types.ResponseDetails{
+		TraceID: span.SpanContext().TraceID().String(),
+	}
+
+	// determine relevant user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "fetching session context data")
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
+		return
+	}
+	sessionContextTimer.Stop()
+
+	userID := sessionCtxData.Requester.UserID
+	logger = logger.WithValue(keys.UserIDKey, userID)
+
+	householdID := sessionCtxData.ActiveHouseholdID
+	logger = logger.WithValue(keys.HouseholdIDKey, householdID)
+
+	// determine relevant webhook ID.
+	webhookID := s.webhookIDFetcher(req)
+	tracing.AttachToSpan(span, keys.WebhookIDKey, webhookID)
+	logger = logger.WithValue(keys.WebhookIDKey, webhookID)
+
+	providedInput := new(types.WebhookTriggerEventCreationRequestInput)
+	if err = s.encoderDecoder.DecodeRequest(ctx, req, providedInput); err != nil {
+		observability.AcknowledgeError(err, logger, span, "decoding request body")
+		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
+		return
+	}
+	providedInput.BelongsToWebhook = webhookID
+
+	if err = providedInput.ValidateWithContext(ctx); err != nil {
+		logger.WithValue(keys.ValidationErrorKey, err).Debug("provided input was invalid")
+		errRes := types.NewAPIErrorResponse(err.Error(), types.ErrValidatingRequestInput, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
+		return
+	}
+
+	existenceTimer := timing.NewMetric("database").WithDesc("existence check").Start()
+	exists, err := s.webhookDataManager.WebhookExists(ctx, webhookID, householdID)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
+		observability.AcknowledgeError(err, logger, span, "checking webhook existence")
+		return
+	} else if !exists || errors.Is(err, sql.ErrNoRows) {
+		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
+		return
+	}
+	existenceTimer.Stop()
+
+	input := converters.ConvertWebhookTriggerEventCreationRequestInputToWebhookTriggerEventDatabaseCreationInput(providedInput)
+
+	archiveTimer := timing.NewMetric("database").WithDesc("add").Start()
+	event, err := s.webhookDataManager.AddWebhookTriggerEvent(ctx, householdID, input)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "archiving webhook trigger event in database")
+		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
+		return
+	}
+	archiveTimer.Stop()
+
+	dcm := &types.DataChangeMessage{
+		EventType:   types.WebhookTriggerEventCreatedCustomerEventType,
+		HouseholdID: householdID,
+		UserID:      sessionCtxData.Requester.UserID,
+	}
+
+	if err = s.dataChangesPublisher.Publish(ctx, dcm); err != nil {
+		observability.AcknowledgeError(err, logger, span, "publishing data change message")
+	}
+
+	responseValue := &types.APIResponse[*types.WebhookTriggerEvent]{
+		Data:    event,
 		Details: responseDetails,
 	}
 

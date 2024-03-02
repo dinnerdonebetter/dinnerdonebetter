@@ -14,6 +14,10 @@ const (
 	WebhookCreatedCustomerEventType ServiceEventType = "webhook_created"
 	// WebhookArchivedCustomerEventType indicates a webhook was archived.
 	WebhookArchivedCustomerEventType ServiceEventType = "webhook_archived"
+	// WebhookTriggerEventCreatedCustomerEventType indicates a webhook was created.
+	WebhookTriggerEventCreatedCustomerEventType ServiceEventType = "webhook_trigger_event_created"
+	// WebhookTriggerEventArchivedCustomerEventType indicates a webhook was archived.
+	WebhookTriggerEventArchivedCustomerEventType ServiceEventType = "webhook_trigger_event_archived"
 )
 
 type (
@@ -68,6 +72,14 @@ type (
 		Events             []*WebhookTriggerEventDatabaseCreationInput
 	}
 
+	// WebhookTriggerEventCreationRequestInput represents what a User could set as input for creating a webhook.
+	WebhookTriggerEventCreationRequestInput struct {
+		_ struct{} `json:"-"`
+
+		BelongsToWebhook string `json:"belongsToWebhook"`
+		TriggerEvent     string `json:"triggerEvent"`
+	}
+
 	// WebhookTriggerEventDatabaseCreationInput is used for creating a webhook trigger event.
 	WebhookTriggerEventDatabaseCreationInput struct {
 		_ struct{} `json:"-"`
@@ -95,6 +107,7 @@ type (
 		GetWebhooksForHouseholdAndEvent(ctx context.Context, householdID string, eventType ServiceEventType) ([]*Webhook, error)
 		CreateWebhook(ctx context.Context, input *WebhookDatabaseCreationInput) (*Webhook, error)
 		ArchiveWebhook(ctx context.Context, webhookID, householdID string) error
+		AddWebhookTriggerEvent(ctx context.Context, householdID string, input *WebhookTriggerEventDatabaseCreationInput) (*WebhookTriggerEvent, error)
 		ArchiveWebhookTriggerEvent(ctx context.Context, webhookID, webhookTriggerEventID string) error
 	}
 
@@ -104,6 +117,7 @@ type (
 		CreateWebhookHandler(http.ResponseWriter, *http.Request)
 		ReadWebhookHandler(http.ResponseWriter, *http.Request)
 		ArchiveWebhookHandler(http.ResponseWriter, *http.Request)
+		AddWebhookTriggerEventHandler(http.ResponseWriter, *http.Request)
 		ArchiveWebhookTriggerEventHandler(http.ResponseWriter, *http.Request)
 	}
 )
@@ -118,6 +132,16 @@ func (w *WebhookCreationRequestInput) ValidateWithContext(ctx context.Context) e
 		validation.Field(&w.Method, validation.Required, validation.In(http.MethodGet, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete)),
 		validation.Field(&w.ContentType, validation.Required, validation.In("application/json", "application/xml")),
 		validation.Field(&w.Events, validation.Required),
+	)
+}
+
+var _ validation.ValidatableWithContext = (*WebhookTriggerEventCreationRequestInput)(nil)
+
+// ValidateWithContext validates a WebhookCreationRequestInput.
+func (w *WebhookTriggerEventCreationRequestInput) ValidateWithContext(ctx context.Context) error {
+	return validation.ValidateStructWithContext(ctx, w,
+		validation.Field(&w.BelongsToWebhook, validation.Required),
+		validation.Field(&w.TriggerEvent, validation.Required),
 	)
 }
 
