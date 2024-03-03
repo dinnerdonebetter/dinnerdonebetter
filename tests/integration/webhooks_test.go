@@ -48,6 +48,17 @@ func (s *TestSuite) TestWebhooks_Creating() {
 			requireNotNilAndNoProblems(t, actual, err)
 			checkWebhookEquality(t, exampleWebhook, actual)
 
+			webhookTriggerEvent := fakes.BuildFakeWebhookTriggerEvent()
+			webhookTriggerEvent.BelongsToWebhook = createdWebhook.ID
+			webhookTriggerEvent.TriggerEvent = string(types.WebhookArchivedCustomerEventType)
+			eventInput := converters.ConvertWebhookTriggerEventToWebhookTriggerEventCreationRequestInput(webhookTriggerEvent)
+
+			event, err := testClients.user.AddWebhookTriggerEvent(ctx, createdWebhook.ID, eventInput)
+			requireNotNilAndNoProblems(t, actual, err)
+
+			// Archive trigger event
+			assert.NoError(t, testClients.user.ArchiveWebhookTriggerEvent(ctx, createdWebhook.ID, event.ID))
+
 			// Archive trigger event
 			assert.NoError(t, testClients.user.ArchiveWebhookTriggerEvent(ctx, createdWebhook.ID, actual.Events[0].ID))
 
@@ -115,6 +126,19 @@ func (s *TestSuite) TestWebhooks_Archiving_Returns404ForNonexistentWebhook() {
 			defer span.End()
 
 			assert.Error(t, testClients.user.ArchiveWebhook(ctx, nonexistentID))
+		}
+	})
+}
+
+func (s *TestSuite) TestWebhookTriggerEvents_Archiving_Returns404ForNonexistentWebhook() {
+	s.runForEachClient("should error when archiving a non-existent webhook", func(testClients *testClientWrapper) func() {
+		return func() {
+			t := s.T()
+
+			ctx, span := tracing.StartCustomSpan(s.ctx, t.Name())
+			defer span.End()
+
+			assert.Error(t, testClients.user.ArchiveWebhookTriggerEvent(ctx, nonexistentID, nonexistentID))
 		}
 	})
 }

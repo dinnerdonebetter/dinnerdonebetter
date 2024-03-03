@@ -492,6 +492,8 @@ var (
 		CreateHouseholdInstrumentOwnershipsPermission,
 		UpdateHouseholdInstrumentOwnershipsPermission,
 		ArchiveHouseholdInstrumentOwnershipsPermission,
+		CreateWebhookTriggerEventsPermission,
+		ArchiveWebhookTriggerEventsPermission,
 	}
 
 	// household member permissions.
