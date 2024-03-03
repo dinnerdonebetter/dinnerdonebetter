@@ -33,28 +33,6 @@ func (q *Queries) ArchiveWebhook(ctx context.Context, db DBTX, arg *ArchiveWebho
 	return result.RowsAffected()
 }
 
-const archiveWebhookTriggerEvent = `-- name: ArchiveWebhookTriggerEvent :execrows
-
-UPDATE webhook_trigger_events SET
-	archived_at = NOW()
-WHERE archived_at IS NULL
-	AND id = $1
-	AND belongs_to_webhook = $2
-`
-
-type ArchiveWebhookTriggerEventParams struct {
-	ID               string
-	BelongsToWebhook string
-}
-
-func (q *Queries) ArchiveWebhookTriggerEvent(ctx context.Context, db DBTX, arg *ArchiveWebhookTriggerEventParams) (int64, error) {
-	result, err := db.ExecContext(ctx, archiveWebhookTriggerEvent, arg.ID, arg.BelongsToWebhook)
-	if err != nil {
-		return 0, err
-	}
-	return result.RowsAffected()
-}
-
 const checkWebhookExistence = `-- name: CheckWebhookExistence :one
 
 SELECT EXISTS(
