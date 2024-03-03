@@ -36,7 +36,7 @@ jobs:
         run: make querier
 
       - name: Run make format
-        run: make format sqlc_struct_check
+        run: make format
 
       - name: Run make sqlc_struct_check
         run: make sqlc_struct_check
