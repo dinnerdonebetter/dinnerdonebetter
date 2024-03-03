@@ -55,6 +55,12 @@ func (m *WebhookDataManagerMock) ArchiveWebhook(ctx context.Context, webhookID, 
 	return m.Called(ctx, webhookID, householdID).Error(0)
 }
 
+// AddWebhookTriggerEvent satisfies our WebhookDataManagerMock interface.
+func (m *WebhookDataManagerMock) AddWebhookTriggerEvent(ctx context.Context, householdID string, input *types.WebhookTriggerEventDatabaseCreationInput) (*types.WebhookTriggerEvent, error) {
+	args := m.Called(ctx, householdID, input)
+	return args.Get(0).(*types.WebhookTriggerEvent), args.Error(1)
+}
+
 // ArchiveWebhookTriggerEvent satisfies our WebhookDataManagerMock interface.
 func (m *WebhookDataManagerMock) ArchiveWebhookTriggerEvent(ctx context.Context, webhookID, webhookTriggerEventID string) error {
 	return m.Called(ctx, webhookID, webhookTriggerEventID).Error(0)

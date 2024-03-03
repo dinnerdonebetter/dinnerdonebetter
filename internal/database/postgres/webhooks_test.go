@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
@@ -94,8 +95,22 @@ func TestQuerier_Integration_Webhooks(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, webhooksByHouseholdAndEvent)
 
+	createdEvent, err := dbc.AddWebhookTriggerEvent(ctx, householdID, &types.WebhookTriggerEventDatabaseCreationInput{
+		ID:               identifiers.New(),
+		BelongsToWebhook: createdWebhooks[0].ID,
+		TriggerEvent:     string(types.WebhookArchivedCustomerEventType),
+	})
+	assert.NoError(t, err)
+	assert.NotNil(t, createdEvent)
+
+	createdWebhooks[0].Events = append(createdWebhooks[0].Events, createdEvent)
+
 	// delete
 	for _, webhook := range createdWebhooks {
+		for _, event := range webhook.Events {
+			assert.NoError(t, dbc.ArchiveWebhookTriggerEvent(ctx, webhook.ID, event.ID))
+		}
+
 		assert.NoError(t, dbc.ArchiveWebhook(ctx, webhook.ID, householdID))
 
 		var exists bool
@@ -271,5 +286,31 @@ func TestQuerier_ArchiveWebhook(T *testing.T) {
 		c, _ := buildTestClient(t)
 
 		assert.Error(t, c.ArchiveWebhook(ctx, exampleWebhookID, ""))
+	})
+}
+
+func TestQuerier_ArchiveWebhookTriggerEvent(T *testing.T) {
+	T.Parallel()
+
+	T.Run("with invalid webhook ID", func(t *testing.T) {
+		t.Parallel()
+
+		exampleHouseholdID := fakes.BuildFakeID()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+
+		assert.Error(t, c.ArchiveWebhookTriggerEvent(ctx, "", exampleHouseholdID))
+	})
+
+	T.Run("with invalid webhook trigger event ID", func(t *testing.T) {
+		t.Parallel()
+
+		exampleWebhookID := fakes.BuildFakeID()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+
+		assert.Error(t, c.ArchiveWebhookTriggerEvent(ctx, exampleWebhookID, ""))
 	})
 }

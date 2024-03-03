@@ -232,6 +232,65 @@ func (s *webhooksTestSuite) TestClient_ArchiveWebhook() {
 	})
 }
 
+func (s *webhooksTestSuite) TestClient_AddWebhookTriggerEvent() {
+	const expectedPathFormat = "/api/v1/webhooks/%s/trigger_events"
+
+	s.Run("standard", func() {
+		t := s.T()
+
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, s.exampleWebhook.ID)
+		c, _ := buildTestClientWithJSONResponse(t, spec, s.exampleWebhookTriggerEventResponse)
+		input := converters.ConvertWebhookTriggerEventToWebhookTriggerEventCreationRequestInput(s.exampleWebhookTriggerEvent)
+
+		triggerEvent, err := c.AddWebhookTriggerEvent(s.ctx, s.exampleWebhook.ID, input)
+		assert.NotNil(t, triggerEvent)
+		assert.NoError(t, err)
+	})
+
+	s.Run("with invalid webhook ID", func() {
+		t := s.T()
+
+		c, _ := buildSimpleTestClient(t)
+		input := converters.ConvertWebhookTriggerEventToWebhookTriggerEventCreationRequestInput(s.exampleWebhookTriggerEvent)
+
+		triggerEvent, err := c.AddWebhookTriggerEvent(s.ctx, "", input)
+		assert.Nil(t, triggerEvent)
+		assert.Error(t, err)
+	})
+
+	s.Run("with nil input", func() {
+		t := s.T()
+
+		c, _ := buildSimpleTestClient(t)
+
+		triggerEvent, err := c.AddWebhookTriggerEvent(s.ctx, s.exampleWebhook.ID, nil)
+		assert.Nil(t, triggerEvent)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error building request", func() {
+		t := s.T()
+
+		c := buildTestClientWithInvalidURL(t)
+		input := converters.ConvertWebhookTriggerEventToWebhookTriggerEventCreationRequestInput(s.exampleWebhookTriggerEvent)
+
+		triggerEvent, err := c.AddWebhookTriggerEvent(s.ctx, s.exampleWebhook.ID, input)
+		assert.Nil(t, triggerEvent)
+		assert.Error(t, err)
+	})
+
+	s.Run("with error executing request", func() {
+		t := s.T()
+
+		c, _ := buildTestClientThatWaitsTooLong(t)
+		input := converters.ConvertWebhookTriggerEventToWebhookTriggerEventCreationRequestInput(s.exampleWebhookTriggerEvent)
+
+		triggerEvent, err := c.AddWebhookTriggerEvent(s.ctx, s.exampleWebhook.ID, input)
+		assert.Nil(t, triggerEvent)
+		assert.Error(t, err)
+	})
+}
+
 func (s *webhooksTestSuite) TestClient_ArchiveWebhookTriggerEvent() {
 	const expectedPathFormat = "/api/v1/webhooks/%s/trigger_events/%s"
 

@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/pkg/types"
+	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
 	"github.com/stretchr/testify/assert"
@@ -173,6 +174,62 @@ func TestBuilder_BuildArchiveWebhookRequest(T *testing.T) {
 		exampleWebhook := fakes.BuildFakeWebhook()
 
 		actual, err := helper.builder.BuildArchiveWebhookRequest(helper.ctx, exampleWebhook.ID)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+}
+
+func TestBuilder_BuildAddWebhookTriggerEventRequest(T *testing.T) {
+	T.Parallel()
+
+	const expectedPathFormat = "/api/v1/webhooks/%s/trigger_events"
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		exampleWebhook := fakes.BuildFakeWebhook()
+		input := converters.ConvertWebhookTriggerEventToWebhookTriggerEventCreationRequestInput(fakes.BuildFakeWebhookTriggerEvent())
+
+		spec := newRequestSpec(false, http.MethodPost, "", expectedPathFormat, exampleWebhook.ID)
+
+		actual, err := helper.builder.BuildAddWebhookTriggerEventRequest(helper.ctx, exampleWebhook.ID, input)
+		assert.NoError(t, err)
+
+		assertRequestQuality(t, actual, spec)
+	})
+
+	T.Run("with invalid webhook ID", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		input := converters.ConvertWebhookTriggerEventToWebhookTriggerEventCreationRequestInput(fakes.BuildFakeWebhookTriggerEvent())
+
+		actual, err := helper.builder.BuildAddWebhookTriggerEventRequest(helper.ctx, "", input)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	T.Run("with invalid input", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		exampleWebhook := fakes.BuildFakeWebhook()
+
+		actual, err := helper.builder.BuildAddWebhookTriggerEventRequest(helper.ctx, exampleWebhook.ID, nil)
+		assert.Nil(t, actual)
+		assert.Error(t, err)
+	})
+
+	T.Run("with invalid request builder", func(t *testing.T) {
+		t.Parallel()
+
+		helper := buildTestHelper()
+		helper.builder = buildTestRequestBuilderWithInvalidURL()
+		exampleWebhook := fakes.BuildFakeWebhook()
+		input := converters.ConvertWebhookTriggerEventToWebhookTriggerEventCreationRequestInput(fakes.BuildFakeWebhookTriggerEvent())
+
+		actual, err := helper.builder.BuildAddWebhookTriggerEventRequest(helper.ctx, exampleWebhook.ID, input)
 		assert.Nil(t, actual)
 		assert.Error(t, err)
 	})

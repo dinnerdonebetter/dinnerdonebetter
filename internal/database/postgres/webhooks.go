@@ -378,6 +378,47 @@ func (q *Querier) ArchiveWebhook(ctx context.Context, webhookID, householdID str
 	return nil
 }
 
+// AddWebhookTriggerEvent adds a webhook trigger event from the database.
+func (q *Querier) AddWebhookTriggerEvent(ctx context.Context, householdID string, input *types.WebhookTriggerEventDatabaseCreationInput) (*types.WebhookTriggerEvent, error) {
+	ctx, span := q.tracer.StartSpan(ctx)
+	defer span.End()
+
+	if householdID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
+
+	if input == nil {
+		return nil, ErrNilInputProvided
+	}
+	tracing.AttachToSpan(span, keys.WebhookIDKey, input.BelongsToWebhook)
+
+	logger := q.logger.WithValues(map[string]any{
+		keys.WebhookIDKey:             input.BelongsToWebhook,
+		keys.WebhookTriggerEventIDKey: input.ID,
+		keys.HouseholdIDKey:           householdID,
+	})
+
+	tx, err := q.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "beginning transaction")
+	}
+
+	e, err := q.createWebhookTriggerEvent(ctx, tx, householdID, input)
+	if err != nil {
+		q.rollbackTransaction(ctx, tx)
+		return nil, observability.PrepareAndLogError(err, logger, span, "performing webhook creation query")
+	}
+
+	if err = tx.Commit(); err != nil {
+		return nil, observability.PrepareAndLogError(err, logger, span, "committing database transaction")
+	}
+
+	logger.Info("webhook trigger event archived")
+
+	return e, nil
+}
+
 // ArchiveWebhookTriggerEvent archives a webhook trigger event from the database.
 func (q *Querier) ArchiveWebhookTriggerEvent(ctx context.Context, webhookID, webhookTriggerEventID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)

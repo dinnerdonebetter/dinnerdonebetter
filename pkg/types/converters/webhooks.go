@@ -39,6 +39,23 @@ func ConvertWebhookToWebhookDatabaseCreationInput(webhook *types.Webhook) *types
 	}
 }
 
+// ConvertWebhookTriggerEventToWebhookTriggerEventCreationRequestInput builds a WebhookTriggerEventCreationRequestInput from a WebhookTriggerEvent.
+func ConvertWebhookTriggerEventToWebhookTriggerEventCreationRequestInput(event *types.WebhookTriggerEvent) *types.WebhookTriggerEventCreationRequestInput {
+	return &types.WebhookTriggerEventCreationRequestInput{
+		BelongsToWebhook: event.BelongsToWebhook,
+		TriggerEvent:     event.TriggerEvent,
+	}
+}
+
+// ConvertWebhookTriggerEventCreationRequestInputToWebhookTriggerEventDatabaseCreationInput builds a WebhookTriggerEventCreationRequestInput from a WebhookTriggerEvent.
+func ConvertWebhookTriggerEventCreationRequestInputToWebhookTriggerEventDatabaseCreationInput(event *types.WebhookTriggerEventCreationRequestInput) *types.WebhookTriggerEventDatabaseCreationInput {
+	return &types.WebhookTriggerEventDatabaseCreationInput{
+		ID:               identifiers.New(),
+		BelongsToWebhook: event.BelongsToWebhook,
+		TriggerEvent:     event.TriggerEvent,
+	}
+}
+
 // ConvertWebhookTriggerEventToWebhookTriggerEventDatabaseCreationInput builds a WebhookTriggerEventCreationRequestInput from a WebhookTriggerEvent.
 func ConvertWebhookTriggerEventToWebhookTriggerEventDatabaseCreationInput(event *types.WebhookTriggerEvent) *types.WebhookTriggerEventDatabaseCreationInput {
 	return &types.WebhookTriggerEventDatabaseCreationInput{

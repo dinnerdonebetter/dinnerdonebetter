@@ -6,14 +6,6 @@ WHERE archived_at IS NULL
 	AND id = sqlc.arg(id)
 	AND belongs_to_household = sqlc.arg(belongs_to_household);
 
--- name: ArchiveWebhookTriggerEvent :execrows
-
-UPDATE webhook_trigger_events SET
-	archived_at = NOW()
-WHERE archived_at IS NULL
-	AND id = sqlc.arg(id)
-	AND belongs_to_webhook = sqlc.arg(belongs_to_webhook);
-
 -- name: CreateWebhook :exec
 
 INSERT INTO webhooks (
