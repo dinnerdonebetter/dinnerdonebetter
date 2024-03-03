@@ -131,7 +131,7 @@ resource "google_cloud_run_v2_job" "meal_plan_grocery_list_initializer" {
   lifecycle {
     ignore_changes = [
       launch_stage,
-    ]1
+    ]
   }
 }
 

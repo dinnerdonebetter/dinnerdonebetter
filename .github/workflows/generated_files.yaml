@@ -26,8 +26,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Ensure configs can be generated
-        run: make queries
+      - name: Ensure queries and querier can be generated
+        run: make queries querier format
 
       - name: Check for changes
         run: git diff --exit-code
