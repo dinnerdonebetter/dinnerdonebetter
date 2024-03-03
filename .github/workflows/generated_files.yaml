@@ -26,20 +26,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-#      - name: Ensure queries and querier can be generated
-#        run: make queries querier format sqlc_struct_check
-
-      - name: Run make queries
-        run: make queries
-
-      - name: Run make querier
-        run: make querier
-
-      - name: Run make format
-        run: make format
-
-      - name: Run make sqlc_struct_check
-        run: make sqlc_struct_check
+      - name: Ensure queries and querier can be generated
+        run: make queries sqlc_struct_check
 
       - name: Check for changes
         run: git diff --exit-code
