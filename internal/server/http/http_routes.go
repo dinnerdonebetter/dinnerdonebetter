@@ -70,8 +70,24 @@ func (s *server) setupRouter(ctx context.Context, router routing.Router) {
 
 	router.Route("/_meta_", func(metaRouter routing.Router) {
 		// Expose a readiness check on /ready
-		metaRouter.Get("/ready", func(res http.ResponseWriter, req *http.Request) {
+		metaRouter.Get("/live", func(res http.ResponseWriter, req *http.Request) {
 			res.WriteHeader(http.StatusOK)
+		})
+
+		// Expose a readiness check on /ready
+		metaRouter.Get("/ready", func(res http.ResponseWriter, req *http.Request) {
+			reqCtx, reqSpan := s.tracer.StartSpan(ctx)
+			defer reqSpan.End()
+
+			logger := s.logger.WithRequest(req)
+
+			responseCode := http.StatusOK
+			if err := s.dataManager.DB().PingContext(reqCtx); err != nil {
+				logger.Info("database not responding to ping")
+				responseCode = http.StatusInternalServerError
+			}
+
+			res.WriteHeader(responseCode)
 		})
 	})
 

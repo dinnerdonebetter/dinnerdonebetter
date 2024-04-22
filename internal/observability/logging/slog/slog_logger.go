@@ -126,7 +126,7 @@ func (l *slogLogger) WithSpan(span trace.Span) logging.Logger {
 
 func (l *slogLogger) attachRequestToLog(req *http.Request) *slog.Logger {
 	if req != nil {
-		l2 := l.logger.With(slog.String("method", req.Method))
+		l2 := l.logger.With(slog.String(keys.RequestMethodKey, req.Method))
 
 		if req.URL != nil {
 			l2 = l2.With(slog.String("path", req.URL.Path))
@@ -137,7 +137,7 @@ func (l *slogLogger) attachRequestToLog(req *http.Request) *slog.Logger {
 
 		if l.requestIDFunc != nil {
 			if reqID := l.requestIDFunc(req); reqID != "" {
-				l2 = l2.With(slog.String("request.id", reqID))
+				l2 = l2.With(slog.String(keys.RequestIDKey, reqID))
 			}
 		}
 

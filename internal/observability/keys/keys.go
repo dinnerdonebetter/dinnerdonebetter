@@ -57,6 +57,8 @@ const (
 	PasswordResetTokenIDKey = "password_reset_token.id"
 	// RequestHeadersKey is the standard key for referring to a http.Request's Headers.
 	RequestHeadersKey = "request.headers"
+	// RequestIDKey is the standard key for referring to a http.Request's ID.
+	RequestIDKey = "request.id"
 	// RequestMethodKey is the standard key for referring to a http.Request's Method.
 	RequestMethodKey = "request.method"
 	// RequestURIKey is the standard key for referring to a http.Request's URI.
