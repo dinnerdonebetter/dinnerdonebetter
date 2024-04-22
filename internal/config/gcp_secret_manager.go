@@ -73,8 +73,15 @@ func buildDatabaseURIFromGCPEnvVars() string {
 	)
 }
 
+var getSecretManagerFunc = func(ctx context.Context) (SecretVersionAccessor, error) { return secretmanager.NewClient(ctx) }
+
 // GetAPIServerConfigFromGoogleCloudRunEnvironment fetches an InstanceConfig from GCP Secret Manager.
-func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client SecretVersionAccessor) (*InstanceConfig, error) {
+func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context) (*InstanceConfig, error) {
+	secretManagerClient, err := getSecretManagerFunc(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("instantiating secret manager: %w", err)
+	}
+
 	configBytes, err := os.ReadFile(os.Getenv(gcpConfigFilePathEnvVarKey))
 	if err != nil {
 		return nil, err
@@ -112,7 +119,7 @@ func GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx context.Context, client
 	}
 
 	// TODO: get this from the env var DATA_CHANGES_TOPIC_NAME, dump GOOGLE_CLOUD_SECRET_STORE_PREFIX
-	changesTopic, err := fetchSecretFromSecretStore(ctx, client, dataChangesTopicAccessName)
+	changesTopic, err := fetchSecretFromSecretStore(ctx, secretManagerClient, dataChangesTopicAccessName)
 	if err != nil {
 		return nil, fmt.Errorf("getting data changes topic name from secret store: %w", err)
 	}

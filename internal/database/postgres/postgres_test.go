@@ -26,7 +26,7 @@ import (
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/postgres"
 	"github.com/testcontainers/testcontainers-go/wait"
-	try "gopkg.in/matryer/try.v1"
+	"gopkg.in/matryer/try.v1"
 )
 
 const (

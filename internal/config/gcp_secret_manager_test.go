@@ -164,9 +164,16 @@ func TestGetAPIServerConfigFromGoogleCloudRunEnvironment(T *testing.T) {
 			nil,
 		)
 
-		cfg, err := GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx, client)
+		originalGetSecretManagerFunc := getSecretManagerFunc
+		getSecretManagerFunc = func(context.Context) (SecretVersionAccessor, error) {
+			return client, nil
+		}
+
+		cfg, err := GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx)
 		assert.NoError(t, err)
 		assert.NotNil(t, cfg)
+
+		getSecretManagerFunc = originalGetSecretManagerFunc
 
 		require.NoError(t, os.Unsetenv(gcpConfigFilePathEnvVarKey))
 		require.NoError(t, os.Unsetenv(gcpPortEnvVarKey))

@@ -126,30 +126,30 @@ resource "google_cloud_run_v2_job" "meal_plan_finalizer" {
   }
 }
 
-#resource "google_cloud_scheduler_job" "meal_plan_finalization" {
-#  project          = local.project_id
-#  region           = local.gcp_region
-#  name             = "meal-plan-finalizer"
-#  description      = "Runs the meal plan finalizer every 15 minutes"
-#  schedule         = "*/15 * * * *"
-#  time_zone        = "America/Chicago"
-#  attempt_deadline = "320s"
-#
-#  retry_config {
-#    retry_count = 1
-#  }
-#
-#  http_target {
-#    http_method = "POST"
-#    uri         = "https://${google_cloud_run_v2_job.meal_plan_finalizer.location}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${data.google_project.project.number}/jobs/${google_cloud_run_v2_job.meal_plan_finalizer.name}:run"
-#
-#    oauth_token {
-#      service_account_email = google_service_account.meal_plan_finalizer_user_service_account.email
-#    }
-#  }
-#
-#  # Use an explicit depends_on clause to wait until API is enabled
-#  depends_on = [
-#    google_cloud_run_v2_job.meal_plan_finalizer,
-#  ]
-#}
+resource "google_cloud_scheduler_job" "meal_plan_finalization" {
+  project          = local.project_id
+  region           = local.gcp_region
+  name             = "meal-plan-finalizer"
+  description      = "Runs the meal plan finalizer every 15 minutes"
+  schedule         = "*/15 * * * *"
+  time_zone        = "America/Chicago"
+  attempt_deadline = "320s"
+
+  retry_config {
+    retry_count = 1
+  }
+
+  http_target {
+    http_method = "POST"
+    uri         = "https://${google_cloud_run_v2_job.meal_plan_finalizer.location}-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${data.google_project.project.number}/jobs/${google_cloud_run_v2_job.meal_plan_finalizer.name}:run"
+
+    oauth_token {
+      service_account_email = google_service_account.meal_plan_finalizer_user_service_account.email
+    }
+  }
+
+  # Use an explicit depends_on clause to wait until API is enabled
+  depends_on = [
+    google_cloud_run_v2_job.meal_plan_finalizer,
+  ]
+}

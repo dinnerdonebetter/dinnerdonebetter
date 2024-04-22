@@ -21,7 +21,6 @@ import (
 
 	_ "github.com/GoogleCloudPlatform/functions-framework-go/funcframework"
 	"github.com/GoogleCloudPlatform/functions-framework-go/functions"
-	_ "github.com/KimMachineGun/automemlimit"
 	"github.com/cloudevents/sdk-go/v2/event"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel"

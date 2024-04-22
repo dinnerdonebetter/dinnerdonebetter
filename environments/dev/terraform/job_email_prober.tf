@@ -79,7 +79,7 @@ resource "google_cloud_run_v2_job" "email_prober" {
 
 resource "google_cloud_scheduler_job" "run_email_prober" {
   name             = "email-prober-schedule"
-  description      = "Runs the email prober once a month"
+  description      = "Runs the email prober twice a month"
   schedule         = "30 1 1,15 * *"
   time_zone        = "America/Chicago"
   attempt_deadline = "320s"
