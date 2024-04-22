@@ -21,7 +21,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/search"
 	"github.com/dinnerdonebetter/backend/internal/search/indexing"
 
-	_ "github.com/KimMachineGun/automemlimit"
 	"github.com/hashicorp/go-multierror"
 	"go.opentelemetry.io/otel"
 	_ "go.uber.org/automaxprocs"

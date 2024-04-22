@@ -8,7 +8,7 @@ require (
 	github.com/DATA-DOG/go-sqlmock v1.5.0
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.21.0
 	github.com/GuiaBolso/darwin v0.0.0-20191218124601-fd6d2aa3d244
-	github.com/KimMachineGun/automemlimit v0.5.0
+	github.com/KimMachineGun/automemlimit v0.6.0
 	github.com/Masterminds/squirrel v1.5.4
 	github.com/alexedwards/argon2id v1.0.0
 	github.com/alexedwards/scs/postgresstore v0.0.0-20240203174419-a38e822451b6
@@ -252,6 +252,6 @@ require (
 	google.golang.org/genproto v0.0.0-20240213162025-012b6fc9bca9 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240221002015-b0ce06bbee7c // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240213162025-012b6fc9bca9 // indirect
-	google.golang.org/protobuf v1.32.0 // indirect
+	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
@@ -15,8 +16,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/server/http/build"
 
-	secretmanager "cloud.google.com/go/secretmanager/apiv1"
-	_ "github.com/KimMachineGun/automemlimit"
+	"github.com/KimMachineGun/automemlimit/memlimit"
 	_ "go.uber.org/automaxprocs"
 )
 
@@ -25,15 +25,25 @@ const (
 	googleCloudIndicatorEnvVar = "RUNNING_IN_GCP"
 )
 
+func init() {
+	if _, err := memlimit.SetGoMemLimitWithOpts(
+		memlimit.WithRatio(0.9),
+		memlimit.WithProvider(
+			memlimit.ApplyFallback(
+				memlimit.FromCgroup,
+				memlimit.FromSystem,
+			),
+		),
+		memlimit.WithLogger(nil),
+	); err != nil {
+		slog.Error("failed to set go mem limit provider")
+	}
+}
+
 func getConfig(ctx context.Context) (*config.InstanceConfig, error) {
 	var cfg *config.InstanceConfig
 	if os.Getenv(googleCloudIndicatorEnvVar) != "" {
-		client, err := secretmanager.NewClient(ctx)
-		if err != nil {
-			return nil, fmt.Errorf("instantiating secret manager: %w", err)
-		}
-
-		c, err := config.GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx, client)
+		c, err := config.GetAPIServerConfigFromGoogleCloudRunEnvironment(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("fetching config from GCP: %w", err)
 		}
