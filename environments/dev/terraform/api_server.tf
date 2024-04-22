@@ -153,20 +153,6 @@ resource "google_cloud_run_v2_service" "api_server" {
       }
     }
 
-    # containers {
-    #   name  = "otel collector"
-    #   image = "otel/opentelemetry-collector"
-    #   env {
-    #     name  = "PORT"
-    #     value = "8081"
-    #   }
-    #   startup_probe {
-    #     http_get {
-    #       port = 8081
-    #     }
-    #   }
-    # }
-
     containers {
       image = format("%s-docker.pkg.dev/%s/%s/api_server", local.gcp_region, local.project_id, google_artifact_registry_repository.dev_repository.name)
 
