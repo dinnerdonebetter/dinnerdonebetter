@@ -154,7 +154,7 @@ resource "google_cloud_run_v2_service" "api_server" {
     }
 
     containers {
-      image = format("%s-docker.pkg.dev/%s/%s/api_server", local.gcp_region, local.project_id, google_artifact_registry_repository.dev_repository.name)
+      image = format("%s-docker.pkg.dev/%s/containers/api_server", local.gcp_region, local.project_id)
 
       ports {
         name           = "h2c"
