@@ -154,12 +154,7 @@ resource "google_cloud_run_v2_service" "api_server" {
     }
 
     containers {
-      image = format("%s-docker.pkg.dev/%s/%s/api_server", local.gcp_region, local.project_id, google_artifact_registry_repository.dev_repository.name)
-
-      ports {
-        name           = "h2c"
-        container_port = 8888
-      }
+      image = format("%s-docker.pkg.dev/%s/containers/api_server", local.gcp_region, local.project_id)
 
       resources {
         limits = {
@@ -173,11 +168,6 @@ resource "google_cloud_run_v2_service" "api_server" {
       env {
         name  = "RUNNING_IN_GCP"
         value = "true"
-      }
-
-      env {
-        name  = "PORT"
-        value = "8888"
       }
 
       env {
