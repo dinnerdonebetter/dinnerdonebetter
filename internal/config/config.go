@@ -50,8 +50,8 @@ type (
 		Routing       routing.Config            `json:"routing"       toml:"routing,omitempty"`
 		Events        msgconfig.Config          `json:"events"        toml:"events,omitempty"`
 		Server        http.Config               `json:"server"        toml:"server,omitempty"`
-		Database      dbconfig.Config           `json:"database"      toml:"database,omitempty"`
 		Services      ServicesConfig            `json:"services"      toml:"services,omitempty"`
+		Database      dbconfig.Config           `json:"database"      toml:"database,omitempty"`
 	}
 )
 

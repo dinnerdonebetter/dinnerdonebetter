@@ -14,6 +14,7 @@ jobs:
     strategy:
       matrix:
         go-version: [ '1.22.x' ]
+        gcp-region: [ 'us-central1' ]
     steps:
       - name: Install Go
         uses: actions/setup-go@v4
@@ -33,7 +34,7 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1
 
       - name: Authorize Docker push to pkg.dev
-        run: gcloud auth configure-docker us-central1-docker.pkg.dev
+        run: gcloud auth configure-docker ${{ matrix.gcp-region }}-docker.pkg.dev
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -88,14 +89,14 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1
 
       - name: Authorize Docker push to pkg.dev
-        run: gcloud auth configure-docker us-central1-docker.pkg.dev
+        run: gcloud auth configure-docker ${{ matrix.gcp-region }}-docker.pkg.dev
 
       - name: Build and push API server container
         run: |
-          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:${{  github.sha }} --file environments/dev/dockerfiles/api_server.Dockerfile .
-          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
-          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:${{  github.sha }}
-          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:latest
+          docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/api_server:${{  github.sha }} --file environments/dev/dockerfiles/api_server.Dockerfile .
+          docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
+          docker push ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/api_server:${{  github.sha }}
+          docker push ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/api_server:latest
 
       # if this step fails, you need to add the `Service Account User` role to the GitHub Actions IAM Principal.
       - id: deploy-api-server
@@ -103,7 +104,7 @@ jobs:
         with:
           service: 'api-server'
           project_id: 'dinner-done-better-dev'
-          image: 'us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server'
+          image: '${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/api_server'
 
   search-index-scheduler-container:
     needs: [infrastructure]
@@ -121,14 +122,14 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1
 
       - name: Authorize Docker push to pkg.dev
-        run: gcloud auth configure-docker us-central1-docker.pkg.dev
+        run: gcloud auth configure-docker ${{ matrix.gcp-region }}-docker.pkg.dev
 
       - name: Build and push search data index scheduler container
         run: |
-          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:${{  github.sha }} --file environments/dev/dockerfiles/search_data_index_scheduler.Dockerfile .
-          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:latest --file environments/dev/dockerfiles/search_data_index_scheduler.Dockerfile .
-          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:${{  github.sha }}
-          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:latest
+          docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:${{  github.sha }} --file environments/dev/dockerfiles/search_data_index_scheduler.Dockerfile .
+          docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:latest --file environments/dev/dockerfiles/search_data_index_scheduler.Dockerfile .
+          docker push ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:${{  github.sha }}
+          docker push ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:latest
 
   email-prober-container:
     needs: [infrastructure]
@@ -146,14 +147,14 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1
 
       - name: Authorize Docker push to pkg.dev
-        run: gcloud auth configure-docker us-central1-docker.pkg.dev
+        run: gcloud auth configure-docker ${{ matrix.gcp-region }}-docker.pkg.dev
 
       - name: Build and push email prober container
         run: |
-          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/email-prober:${{  github.sha }} --file environments/dev/dockerfiles/email_prober.Dockerfile .
-          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/email-prober:latest --file environments/dev/dockerfiles/email_prober.Dockerfile .
-          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/email-prober:${{  github.sha }}
-          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/email-prober:latest
+          docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/email-prober:${{  github.sha }} --file environments/dev/dockerfiles/email_prober.Dockerfile .
+          docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/email-prober:latest --file environments/dev/dockerfiles/email_prober.Dockerfile .
+          docker push ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/email-prober:${{  github.sha }}
+          docker push ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/email-prober:latest
 
   meal-plan-finalizer-container:
     needs: [infrastructure]
@@ -171,14 +172,14 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1
 
       - name: Authorize Docker push to pkg.dev
-        run: gcloud auth configure-docker us-central1-docker.pkg.dev
+        run: gcloud auth configure-docker ${{ matrix.gcp-region }}-docker.pkg.dev
 
       - name: Build and push meal plan finalizer container
         run: |
-          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:${{  github.sha }} --file environments/dev/dockerfiles/meal_plan_finalizer.Dockerfile .
-          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:latest --file environments/dev/dockerfiles/meal_plan_finalizer.Dockerfile .
-          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:${{  github.sha }}
-          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:latest
+          docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:${{  github.sha }} --file environments/dev/dockerfiles/meal_plan_finalizer.Dockerfile .
+          docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:latest --file environments/dev/dockerfiles/meal_plan_finalizer.Dockerfile .
+          docker push ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:${{  github.sha }}
+          docker push ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:latest
 
   meal-plan-grocery-list-init-container:
     needs: [infrastructure]
@@ -196,14 +197,14 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1
 
       - name: Authorize Docker push to pkg.dev
-        run: gcloud auth configure-docker us-central1-docker.pkg.dev
+        run: gcloud auth configure-docker ${{ matrix.gcp-region }}-docker.pkg.dev
 
       - name: Build and push meal plan grocery list initializer container
         run: |
-          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-grocery-list-initializer:${{  github.sha }} --file environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .
-          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-grocery-list-initializer:latest --file environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .
-          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-grocery-list-initializer:${{  github.sha }}
-          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-grocery-list-initializer:latest
+          docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-grocery-list-initializer:${{  github.sha }} --file environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .
+          docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-grocery-list-initializer:latest --file environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .
+          docker push ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-grocery-list-initializer:${{  github.sha }}
+          docker push ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-grocery-list-initializer:latest
 
   meal-plan-task-creator-container:
     needs: [infrastructure]
@@ -221,11 +222,11 @@ jobs:
         uses: google-github-actions/setup-gcloud@v1
 
       - name: Authorize Docker push to pkg.dev
-        run: gcloud auth configure-docker us-central1-docker.pkg.dev
+        run: gcloud auth configure-docker ${{ matrix.gcp-region }}-docker.pkg.dev
 
       - name: Build and push meal plan task creator container
         run: |
-          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-task-creator:${{  github.sha }} --file environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .
-          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-task-creator:latest --file environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .
-          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-task-creator:${{  github.sha }}
-          docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-task-creator:latest
+          docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-task-creator:${{  github.sha }} --file environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .
+          docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-task-creator:latest --file environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .
+          docker push ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-task-creator:${{  github.sha }}
+          docker push ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-task-creator:latest

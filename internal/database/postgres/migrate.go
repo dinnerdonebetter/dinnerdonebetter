@@ -29,13 +29,13 @@ func (q *Querier) migrationFunc() {
 }
 
 // Migrate is a simple wrapper around the core querier Migrate call.
-func (q *Querier) Migrate(ctx context.Context, waitPeriod time.Duration, maxAttempts uint64) error {
+func (q *Querier) Migrate(ctx context.Context, waitPeriod time.Duration) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	q.logger.Info("migrating db")
 
-	if !q.IsReady(ctx, waitPeriod, maxAttempts) {
+	if !q.IsReady(ctx, waitPeriod) {
 		return database.ErrDatabaseNotReady
 	}
 
@@ -58,16 +58,6 @@ var (
 			Version:     2,
 			Description: "service types and tables",
 			Script:      fetchMigration("00002_initial"),
-		},
-		{
-			Version:     3,
-			Description: "user notifications table",
-			Script:      fetchMigration("00003_user_notifications"),
-		},
-		{
-			Version:     4,
-			Description: "audit log table",
-			Script:      fetchMigration("00004_audit_log"),
 		},
 	}
 )

@@ -156,7 +156,7 @@ func buildDatabaseClientForTest(t *testing.T, ctx context.Context) (*Querier, *p
 	connStr, err := container.ConnectionString(ctx, "sslmode=disable")
 	require.NoError(t, err)
 
-	dbc, err := ProvideDatabaseClient(ctx, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), &config.Config{ConnectionDetails: connStr, RunMigrations: true, OAuth2TokenEncryptionKey: "blahblahblahblahblahblahblahblah"})
+	dbc, err := ProvideDatabaseClient(ctx, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), &config.Config{ConnectionDetails: connStr, RunMigrations: true, PingWaitPeriod: 50, OAuth2TokenEncryptionKey: "blahblahblahblahblahblahblahblah"})
 	require.NoError(t, err)
 	require.NotNil(t, dbc)
 
@@ -173,10 +173,11 @@ func TestQuerier_IsReady(T *testing.T) {
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
+		c.config.MaxPingAttempts = 1
 
 		db.ExpectPing().WillDelayFor(0)
 
-		assert.True(t, c.IsReady(ctx, time.Second, 1))
+		assert.True(t, c.IsReady(ctx, time.Second))
 	})
 
 	T.Run("with error pinging database", func(t *testing.T) {
@@ -184,10 +185,11 @@ func TestQuerier_IsReady(T *testing.T) {
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
+		c.config.MaxPingAttempts = 1
 
 		db.ExpectPing().WillReturnError(errors.New("blah"))
 
-		assert.False(t, c.IsReady(ctx, time.Second, 1))
+		assert.False(t, c.IsReady(ctx, time.Second))
 	})
 
 	T.Run("exhausting all available queries", func(t *testing.T) {
@@ -197,12 +199,13 @@ func TestQuerier_IsReady(T *testing.T) {
 		defer cancel()
 
 		c, db := buildTestClient(t)
+		c.config.MaxPingAttempts = 1
 
-		c.IsReady(ctx, time.Second, 1)
+		c.IsReady(ctx, time.Second)
 
 		db.ExpectPing().WillReturnError(errors.New("blah"))
 
-		assert.False(t, c.IsReady(ctx, time.Second, 1))
+		assert.False(t, c.IsReady(ctx, time.Second))
 	})
 }
 

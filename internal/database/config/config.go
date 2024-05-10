@@ -17,13 +17,15 @@ type (
 	Config struct {
 		_ struct{} `json:"-"`
 
-		OAuth2TokenEncryptionKey string        `json:"oauth2TokenEncryptionKey" toml:"oauth2_token_encryption_key,omitempty"`
-		ConnectionDetails        string        `json:"connectionDetails"        toml:"connection_details,omitempty"`
-		Debug                    bool          `json:"debug"                    toml:"debug,omitempty"`
-		LogQueries               bool          `json:"logQueries"               toml:"log_queries,omitempty"`
-		RunMigrations            bool          `json:"runMigrations"            toml:"run_migrations,omitempty"`
-		MaxPingAttempts          uint64        `json:"maxPingAttempts"          toml:"max_ping_attempts,omitempty"`
-		PingWaitPeriod           time.Duration `json:"pingWaitPeriod"           toml:"ping_wait_period,omitempty"`
+		OAuth2TokenEncryptionKey             string        `json:"oauth2TokenEncryptionKey"             toml:"oauth2_token_encryption_key,omitempty"`
+		ConnectionDetails                    string        `json:"connectionDetails"                    toml:"connection_details,omitempty"`
+		Debug                                bool          `json:"debug"                                toml:"debug,omitempty"`
+		LogQueries                           bool          `json:"logQueries"                           toml:"log_queries,omitempty"`
+		RunMigrations                        bool          `json:"runMigrations"                        toml:"run_migrations,omitempty"`
+		MaxPingAttempts                      uint8         `json:"maxPingAttempts"                      toml:"max_ping_attempts,omitempty"`
+		PingWaitPeriod                       time.Duration `json:"pingWaitPeriod"                       toml:"ping_wait_period,omitempty"`
+		CircuitBreakerFailureRate            float64       `json:"circuitBreakerFailureRate"            toml:"circuit_breaker_failure_rate,omitempty"`
+		CircuitBreakerFailureSampleThreshold int64         `json:"circuitBreakerFailureSampleThreshold" toml:"circuit_breaker_failure_sample_threshold,omitempty"`
 	}
 )
 

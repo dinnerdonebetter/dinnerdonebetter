@@ -224,7 +224,7 @@ func AllGroceryListItemStatusValues() []GroceryListItemStatus {
 type IngredientAttributeType string
 
 const (
-	IngredientAttributeTypeTEXTure     IngredientAttributeType = "TEXTure"
+	IngredientAttributeTypeTexture     IngredientAttributeType = "texture"
 	IngredientAttributeTypeConsistency IngredientAttributeType = "consistency"
 	IngredientAttributeTypeColor       IngredientAttributeType = "color"
 	IngredientAttributeTypeAppearance  IngredientAttributeType = "appearance"
@@ -272,7 +272,7 @@ func (ns NullIngredientAttributeType) Value() (driver.Value, error) {
 
 func (e IngredientAttributeType) Valid() bool {
 	switch e {
-	case IngredientAttributeTypeTEXTure,
+	case IngredientAttributeTypeTexture,
 		IngredientAttributeTypeConsistency,
 		IngredientAttributeTypeColor,
 		IngredientAttributeTypeAppearance,
@@ -288,7 +288,7 @@ func (e IngredientAttributeType) Valid() bool {
 
 func AllIngredientAttributeTypeValues() []IngredientAttributeType {
 	return []IngredientAttributeType{
-		IngredientAttributeTypeTEXTure,
+		IngredientAttributeTypeTexture,
 		IngredientAttributeTypeConsistency,
 		IngredientAttributeTypeColor,
 		IngredientAttributeTypeAppearance,

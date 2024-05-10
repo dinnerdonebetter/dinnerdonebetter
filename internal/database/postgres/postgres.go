@@ -20,6 +20,7 @@ import (
 	"github.com/alexedwards/scs/postgresstore"
 	"github.com/alexedwards/scs/v2"
 	_ "github.com/jackc/pgx/v5/stdlib"
+	"github.com/rubyist/circuitbreaker"
 )
 
 const (
@@ -41,18 +42,28 @@ type Querier struct {
 	timeFunc                func() time.Time
 	config                  *dbconfig.Config
 	db                      *sql.DB
+	circuitBreaker          *circuit.Breaker
 	migrateOnce             sync.Once
 }
 
 // ProvideDatabaseClient provides a new DataManager client.
 func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *dbconfig.Config) (database.DataManager, error) {
 	tracer := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(tracingName))
-
 	ctx, span := tracer.StartSpan(ctx)
 	defer span.End()
 
+	if cfg == nil {
+		return nil, database.ErrConfigRequired
+	}
+
+	if err := cfg.ValidateWithContext(ctx); err != nil {
+		tracing.AttachErrorToSpan(span, "validating database config", err)
+		return nil, fmt.Errorf("invalid database configuration: %w", err)
+	}
+
 	db, err := sql.Open("pgx", cfg.ConnectionDetails)
 	if err != nil {
+		tracing.AttachErrorToSpan(span, "connecting to database", err)
 		return nil, fmt.Errorf("connecting to postgres database: %w", err)
 	}
 
@@ -74,12 +85,18 @@ func ProvideDatabaseClient(ctx context.Context, logger logging.Logger, tracerPro
 		secretGenerator:         random.NewGenerator(logger, tracerProvider),
 		logger:                  logging.EnsureLogger(logger).WithName("querier"),
 		oauth2ClientTokenEncDec: encDec,
+		circuitBreaker: circuit.NewBreakerWithOptions(&circuit.Options{
+			ShouldTrip: func(cb *circuit.Breaker) bool {
+				samples := cb.Failures() + cb.Successes()
+				return samples >= cfg.CircuitBreakerFailureSampleThreshold && cb.ErrorRate() >= cfg.CircuitBreakerFailureRate
+			},
+		}),
 	}
 
 	if cfg.RunMigrations {
 		c.logger.Debug("migrating querier")
 
-		if err = c.Migrate(ctx, cfg.PingWaitPeriod, cfg.MaxPingAttempts); err != nil {
+		if err = c.Migrate(ctx, cfg.PingWaitPeriod); err != nil {
 			return nil, observability.PrepareAndLogError(err, logger, span, "migrating database")
 		}
 
@@ -108,27 +125,18 @@ func (q *Querier) ProvideSessionStore() scs.Store {
 }
 
 // IsReady is a simple wrapper around the core querier IsReady call.
-func (q *Querier) IsReady(ctx context.Context, waitPeriod time.Duration, maxAttempts uint64) (ready bool) {
+func (q *Querier) IsReady(ctx context.Context, waitPeriod time.Duration) bool {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
-	attemptCount := 0
-
 	logger := q.logger.WithValue("connection_url", q.config.ConnectionDetails)
 
-	for !ready {
-		err := q.db.PingContext(ctx)
-		if err != nil {
-			logger.WithValue("attempt_count", attemptCount).Debug("ping failed, waiting for db")
+	for attempt := 0; attempt < int(q.config.MaxPingAttempts); attempt++ {
+		if err := q.db.PingContext(ctx); err != nil {
+			logger.WithValue("attempt_count", attempt+1).Debug("ping failed, waiting for db")
 			time.Sleep(waitPeriod)
-
-			attemptCount++
-			if attemptCount >= int(maxAttempts) {
-				break
-			}
 		} else {
-			ready = true
-			return ready
+			return true
 		}
 	}
 

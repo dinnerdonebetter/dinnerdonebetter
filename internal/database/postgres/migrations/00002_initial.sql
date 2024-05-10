@@ -21,7 +21,7 @@ CREATE TYPE grocery_list_item_status AS ENUM (
 );
 
 CREATE TYPE ingredient_attribute_type AS ENUM (
-    'TEXTure',
+    'texture',
     'consistency',
     'color',
     'appearance',

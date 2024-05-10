@@ -3,21 +3,12 @@ package database
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"io"
 	"time"
 
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/alexedwards/scs/v2"
-)
-
-var (
-	// ErrDatabaseNotReady indicates the given database is not ready.
-	ErrDatabaseNotReady = errors.New("database is not ready yet")
-
-	// ErrUserAlreadyExists indicates that a user with that username has already been created.
-	ErrUserAlreadyExists = errors.New("user already exists")
 )
 
 type (
@@ -57,8 +48,8 @@ type (
 	DataManager interface {
 		DB() *sql.DB
 		Close()
-		Migrate(ctx context.Context, waitPeriod time.Duration, maxAttempts uint64) error
-		IsReady(ctx context.Context, waitPeriod time.Duration, maxAttempts uint64) (ready bool)
+		Migrate(ctx context.Context, waitPeriod time.Duration) error
+		IsReady(ctx context.Context, waitPeriod time.Duration) (ready bool)
 		ProvideSessionStore() scs.Store
 
 		types.MealPlanTaskDataManager

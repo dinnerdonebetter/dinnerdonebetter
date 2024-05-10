@@ -25,6 +25,7 @@ func TestQuerier_Migrate(T *testing.T) {
 
 		ctx := context.Background()
 		c, db := buildTestClient(t)
+		c.config.MaxPingAttempts = 1
 
 		c.timeFunc = func() time.Time {
 			return exampleCreationTime
@@ -35,7 +36,7 @@ func TestQuerier_Migrate(T *testing.T) {
 
 		c.migrateOnce.Do(func() {})
 
-		err := c.Migrate(ctx, time.Second, 1)
+		err := c.Migrate(ctx, time.Second)
 		assert.NoError(t, err)
 
 		mock.AssertExpectationsForObjects(t, db)

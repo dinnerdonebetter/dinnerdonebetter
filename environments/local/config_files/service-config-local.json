@@ -83,15 +83,6 @@
 		"httpPort": 8000,
 		"debug": true
 	},
-	"database": {
-		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
-		"connectionDetails": "postgres://dbuser:hunter2@localhost:5432/dinner-done-better?sslmode=disable",
-		"debug": true,
-		"logQueries": true,
-		"runMigrations": true,
-		"maxPingAttempts": 50,
-		"pingWaitPeriod": 1000000000
-	},
 	"services": {
 		"auditLogEntries": {},
 		"recipeStepProducts": {
@@ -286,5 +277,16 @@
 			"minimumUsernameLength": 3,
 			"minimumPasswordLength": 8
 		}
+	},
+	"database": {
+		"oauth2TokenEncryptionKey": "HEREISA32CHARSECRETWHICHISMADEUP",
+		"connectionDetails": "postgres://dbuser:hunter2@localhost:5432/dinner-done-better?sslmode=disable",
+		"debug": true,
+		"logQueries": true,
+		"runMigrations": true,
+		"maxPingAttempts": 50,
+		"pingWaitPeriod": 1000000000,
+		"circuitBreakerFailureRate": 0.5,
+		"circuitBreakerFailureSampleThreshold": 10
 	}
 }

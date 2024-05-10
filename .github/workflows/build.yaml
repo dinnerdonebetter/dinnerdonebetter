@@ -14,7 +14,7 @@ concurrency:
 
 name: build
 jobs:
-  run:
+  code:
     timeout-minutes: 10
     runs-on: ubuntu-latest
     strategy:
@@ -29,10 +29,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: authenticate with GCP
-        uses: google-github-actions/auth@v1
-        with:
-          credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
+      - name: Build code
+        run: make build
 
       - name: Build data changes cloud function directory
         run: ./scripts/build_cloud_function.sh data_changes
@@ -42,3 +40,36 @@ jobs:
 
       - name: Build search indexer cloud function directory
         run: ./scripts/build_cloud_function.sh search_indexer
+
+  containers:
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        go-version: [ '1.22.x' ]
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build api_server
+        run: docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/api_server:${{  github.sha }} --file environments/dev/dockerfiles/api_server.Dockerfile .
+
+      - name: Build search-data-index-scheduler
+        run: docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:${{  github.sha }} --file environments/dev/dockerfiles/search_data_index_scheduler.Dockerfile .
+
+      - name: Build email-prober
+        run: docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/email-prober:${{  github.sha }} --file environments/dev/dockerfiles/email_prober.Dockerfile .
+
+      - name: Build meal-plan-finalizer
+        run: docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:${{  github.sha }} --file environments/dev/dockerfiles/meal_plan_finalizer.Dockerfile .
+
+      - name: Build meal-plan-grocery-list-initializer
+        run: docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-grocery-list-initializer:${{  github.sha }} --file environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .
+
+      - name: Build meal-plan-task-creator
+        run: docker build --tag ${{ matrix.gcp-region }}-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-task-creator:${{  github.sha }} --file environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .

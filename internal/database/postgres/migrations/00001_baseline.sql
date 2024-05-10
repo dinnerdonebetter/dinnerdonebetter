@@ -28,11 +28,23 @@ CREATE TYPE setting_type AS ENUM (
     'membership'
 );
 
-
 CREATE TYPE webhook_event AS ENUM (
     'webhook_created',
     'webhook_updated',
     'webhook_archived'
+);
+
+CREATE TYPE user_notification_status AS ENUM (
+    'unread',
+    'read',
+    'dismissed'
+);
+
+CREATE TYPE audit_log_event_type AS ENUM (
+    'other',
+    'created',
+    'updated',
+    'archived'
 );
 
 CREATE TABLE IF NOT EXISTS users (
@@ -62,6 +74,15 @@ CREATE TABLE IF NOT EXISTS users (
     UNIQUE(username)
 );
 
+CREATE TABLE IF NOT EXISTS user_notifications (
+    id TEXT NOT NULL PRIMARY KEY,
+    content TEXT NOT NULL,
+    status user_notification_status NOT NULL DEFAULT 'unread'::user_notification_status,
+    belongs_to_user TEXT NOT NULL REFERENCES users("id") ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+    last_updated_at TIMESTAMP WITH TIME ZONE
+);
+
 CREATE TABLE IF NOT EXISTS households (
     id TEXT NOT NULL PRIMARY KEY,
     name TEXT NOT NULL,
@@ -85,6 +106,17 @@ CREATE TABLE IF NOT EXISTS households (
     last_payment_provider_sync_occurred_at TIMESTAMP WITH TIME ZONE,
     webhook_hmac_secret TEXT DEFAULT ''::TEXT NOT NULL,
     UNIQUE(belongs_to_user, name)
+);
+
+CREATE TABLE IF NOT EXISTS audit_log_entries (
+    id TEXT NOT NULL PRIMARY KEY,
+    resource_type TEXT NOT NULL,
+    relevant_id TEXT NOT NULL DEFAULT '',
+    event_type audit_log_event_type NOT NULL DEFAULT 'other',
+    changes JSONB NOT NULL,
+    belongs_to_household TEXT REFERENCES households("id") ON DELETE CASCADE,
+    belongs_to_user TEXT REFERENCES users("id") ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS household_user_memberships (

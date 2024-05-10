@@ -66,7 +66,7 @@ func init() {
 		ConnectionDetails:        dbAddr,
 		Debug:                    false,
 		RunMigrations:            false,
-		MaxPingAttempts:          500,
+		MaxPingAttempts:          50,
 	}
 
 	var err error
