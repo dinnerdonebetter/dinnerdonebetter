@@ -21,6 +21,10 @@ func (q *Querier) ValidPreparationVesselExists(ctx context.Context, validPrepara
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return false, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if validPreparationVesselID == "" {
 		return false, ErrInvalidIDProvided
 	}
@@ -38,6 +42,10 @@ func (q *Querier) ValidPreparationVesselExists(ctx context.Context, validPrepara
 func (q *Querier) GetValidPreparationVessel(ctx context.Context, validPreparationVesselID string) (*types.ValidPreparationVessel, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if validPreparationVesselID == "" {
 		return nil, ErrInvalidIDProvided
@@ -122,6 +130,10 @@ func (q *Querier) GetValidPreparationVessel(ctx context.Context, validPreparatio
 func (q *Querier) GetValidPreparationVessels(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidPreparationVessel], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -234,6 +246,10 @@ func (q *Querier) GetValidPreparationVessels(ctx context.Context, filter *types.
 func (q *Querier) GetValidPreparationVesselsForPreparation(ctx context.Context, preparationID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidPreparationVessel], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -354,6 +370,10 @@ func (q *Querier) GetValidPreparationVesselsForVessel(ctx context.Context, vesse
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if vesselID == "" {
@@ -472,6 +492,10 @@ func (q *Querier) CreateValidPreparationVessel(ctx context.Context, input *types
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
@@ -506,6 +530,10 @@ func (q *Querier) UpdateValidPreparationVessel(ctx context.Context, updated *typ
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if updated == nil {
 		return ErrNilInputProvided
 	}
@@ -530,6 +558,10 @@ func (q *Querier) UpdateValidPreparationVessel(ctx context.Context, updated *typ
 func (q *Querier) ArchiveValidPreparationVessel(ctx context.Context, validPreparationVesselID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if validPreparationVesselID == "" {
 		return ErrInvalidIDProvided

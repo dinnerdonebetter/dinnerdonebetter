@@ -22,6 +22,10 @@ func (q *Querier) MealExists(ctx context.Context, mealID string) (exists bool, e
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return false, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if mealID == "" {
@@ -42,6 +46,10 @@ func (q *Querier) MealExists(ctx context.Context, mealID string) (exists bool, e
 func (q *Querier) GetMeal(ctx context.Context, mealID string) (*types.Meal, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -105,6 +113,10 @@ func (q *Querier) GetMeals(ctx context.Context, filter *types.QueryFilter) (x *t
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if filter == nil {
@@ -156,6 +168,10 @@ func (q *Querier) GetMealsWithIDs(ctx context.Context, ids []string) ([]*types.M
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	meals := []*types.Meal{}
@@ -176,6 +192,10 @@ func (q *Querier) GetMealIDsThatNeedSearchIndexing(ctx context.Context) ([]strin
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	results, err := q.generatedQuerier.GetMealsNeedingIndexing(ctx, q.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing meals list retrieval query")
@@ -188,6 +208,10 @@ func (q *Querier) GetMealIDsThatNeedSearchIndexing(ctx context.Context) ([]strin
 func (q *Querier) SearchForMeals(ctx context.Context, mealNameQuery string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.Meal], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -261,6 +285,10 @@ func (q *Querier) createMeal(ctx context.Context, querier database.SQLQueryExecu
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
@@ -309,6 +337,10 @@ func (q *Querier) CreateMeal(ctx context.Context, input *types.MealDatabaseCreat
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
@@ -334,6 +366,10 @@ func (q *Querier) CreateMeal(ctx context.Context, input *types.MealDatabaseCreat
 func (q *Querier) CreateMealComponent(ctx context.Context, querier database.SQLQueryExecutor, mealID string, input *types.MealComponentDatabaseCreationInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -366,6 +402,10 @@ func (q *Querier) MarkMealAsIndexed(ctx context.Context, mealID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if mealID == "" {
@@ -387,6 +427,10 @@ func (q *Querier) MarkMealAsIndexed(ctx context.Context, mealID string) error {
 func (q *Querier) ArchiveMeal(ctx context.Context, mealID, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 

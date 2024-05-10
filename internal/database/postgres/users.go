@@ -33,6 +33,10 @@ func (q *Querier) GetUser(ctx context.Context, userID string) (*types.User, erro
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if userID == "" {
 		return nil, ErrInvalidIDProvided
 	}
@@ -76,6 +80,10 @@ func (q *Querier) GetUserWithUnverifiedTwoFactorSecret(ctx context.Context, user
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if userID == "" {
 		return nil, ErrInvalidIDProvided
 	}
@@ -118,6 +126,10 @@ func (q *Querier) GetUserByUsername(ctx context.Context, username string) (*type
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if username == "" {
 		return nil, ErrEmptyInputProvided
 	}
@@ -159,6 +171,10 @@ func (q *Querier) GetUserByUsername(ctx context.Context, username string) (*type
 func (q *Querier) GetAdminUserByUsername(ctx context.Context, username string) (*types.User, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if username == "" {
 		return nil, ErrEmptyInputProvided
@@ -205,6 +221,10 @@ func (q *Querier) GetUserByEmail(ctx context.Context, email string) (*types.User
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if email == "" {
 		return nil, ErrEmptyInputProvided
 	}
@@ -246,6 +266,10 @@ func (q *Querier) GetUserByEmail(ctx context.Context, email string) (*types.User
 func (q *Querier) SearchForUsersByUsername(ctx context.Context, usernameQuery string) ([]*types.User, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if usernameQuery == "" {
 		return []*types.User{}, ErrEmptyInputProvided
@@ -295,6 +319,10 @@ func (q *Querier) SearchForUsersByUsername(ctx context.Context, usernameQuery st
 func (q *Querier) GetUsers(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.User], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -358,6 +386,10 @@ func (q *Querier) GetUserIDsThatNeedSearchIndexing(ctx context.Context) ([]strin
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	results, err := q.generatedQuerier.GetUserIDsNeedingIndexing(ctx, q.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing users list retrieval query")
@@ -370,6 +402,10 @@ func (q *Querier) GetUserIDsThatNeedSearchIndexing(ctx context.Context) ([]strin
 func (q *Querier) MarkUserAsIndexed(ctx context.Context, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -392,6 +428,10 @@ func (q *Querier) MarkUserAsIndexed(ctx context.Context, userID string) error {
 func (q *Querier) CreateUser(ctx context.Context, input *types.UserDatabaseCreationInput) (*types.User, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -511,6 +551,10 @@ func (q *Querier) createHouseholdForUser(ctx context.Context, querier database.S
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	// standard registration: we need to create the household
 	householdID := identifiers.New()
 	tracing.AttachToSpan(span, keys.HouseholdIDKey, householdID)
@@ -609,6 +653,10 @@ func (q *Querier) UpdateUserUsername(ctx context.Context, userID, newUsername st
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if userID == "" {
@@ -672,6 +720,10 @@ func (q *Querier) UpdateUserEmailAddress(ctx context.Context, userID, newEmailAd
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if userID == "" {
 		return ErrInvalidIDProvided
 	}
@@ -731,6 +783,10 @@ func (q *Querier) UpdateUserEmailAddress(ctx context.Context, userID, newEmailAd
 func (q *Querier) UpdateUserDetails(ctx context.Context, userID string, input *types.UserDetailsDatabaseUpdateInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if input == nil {
 		return ErrEmptyInputProvided
@@ -801,6 +857,10 @@ func (q *Querier) UpdateUserAvatar(ctx context.Context, userID, newAvatarSrc str
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if newAvatarSrc == "" {
 		return ErrEmptyInputProvided
 	}
@@ -851,6 +911,10 @@ func (q *Querier) UpdateUserAvatar(ctx context.Context, userID, newAvatarSrc str
 func (q *Querier) UpdateUserPassword(ctx context.Context, userID, newHash string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if newHash == "" {
 		return ErrEmptyInputProvided
@@ -903,6 +967,10 @@ func (q *Querier) UpdateUserTwoFactorSecret(ctx context.Context, userID, newSecr
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if newSecret == "" {
 		return ErrEmptyInputProvided
 	}
@@ -954,6 +1022,10 @@ func (q *Querier) MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID 
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if userID == "" {
 		return ErrInvalidIDProvided
 	}
@@ -999,6 +1071,10 @@ func (q *Querier) MarkUserTwoFactorSecretAsVerified(ctx context.Context, userID 
 func (q *Querier) MarkUserTwoFactorSecretAsUnverified(ctx context.Context, userID, newSecret string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if newSecret == "" {
 		return ErrEmptyInputProvided
@@ -1064,6 +1140,10 @@ func (q *Querier) ArchiveUser(ctx context.Context, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if userID == "" {
 		return ErrInvalidIDProvided
 	}
@@ -1115,6 +1195,10 @@ func (q *Querier) GetEmailAddressVerificationTokenForUser(ctx context.Context, u
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return "", database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if userID == "" {
 		return "", ErrInvalidIDProvided
 	}
@@ -1131,6 +1215,10 @@ func (q *Querier) GetEmailAddressVerificationTokenForUser(ctx context.Context, u
 func (q *Querier) GetUserByEmailAddressVerificationToken(ctx context.Context, token string) (*types.User, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if token == "" {
 		return nil, ErrEmptyInputProvided
@@ -1171,6 +1259,10 @@ func (q *Querier) GetUserByEmailAddressVerificationToken(ctx context.Context, to
 func (q *Querier) MarkUserEmailAddressAsVerified(ctx context.Context, userID, token string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -1236,6 +1328,10 @@ func (q *Querier) MarkUserEmailAddressAsVerified(ctx context.Context, userID, to
 func (q *Querier) MarkUserEmailAddressAsUnverified(ctx context.Context, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 

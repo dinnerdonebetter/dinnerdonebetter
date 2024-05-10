@@ -20,6 +20,10 @@ func (q *Querier) MealPlanOptionVoteExists(ctx context.Context, mealPlanID, meal
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return false, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if mealPlanID == "" {
@@ -63,6 +67,10 @@ func (q *Querier) MealPlanOptionVoteExists(ctx context.Context, mealPlanID, meal
 func (q *Querier) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) (*types.MealPlanOptionVote, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -113,6 +121,10 @@ func (q *Querier) GetMealPlanOptionVote(ctx context.Context, mealPlanID, mealPla
 func (q *Querier) GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string) (x []*types.MealPlanOptionVote, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -165,6 +177,10 @@ func (q *Querier) GetMealPlanOptionVotesForMealPlanOption(ctx context.Context, m
 func (q *Querier) GetMealPlanOptionVotes(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.MealPlanOptionVote], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -233,6 +249,10 @@ func (q *Querier) CreateMealPlanOptionVote(ctx context.Context, input *types.Mea
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
@@ -292,6 +312,10 @@ func (q *Querier) UpdateMealPlanOptionVote(ctx context.Context, updated *types.M
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if updated == nil {
 		return ErrNilInputProvided
 	}
@@ -318,6 +342,10 @@ func (q *Querier) UpdateMealPlanOptionVote(ctx context.Context, updated *types.M
 func (q *Querier) ArchiveMealPlanOptionVote(ctx context.Context, mealPlanID, mealPlanEventID, mealPlanOptionID, mealPlanOptionVoteID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 

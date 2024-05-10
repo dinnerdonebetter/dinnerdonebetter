@@ -21,6 +21,10 @@ func (q *Querier) UserIngredientPreferenceExists(ctx context.Context, userIngred
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return false, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if userIngredientPreferenceID == "" {
@@ -50,6 +54,10 @@ func (q *Querier) UserIngredientPreferenceExists(ctx context.Context, userIngred
 func (q *Querier) GetUserIngredientPreference(ctx context.Context, userIngredientPreferenceID, userID string) (*types.UserIngredientPreference, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -131,6 +139,10 @@ func (q *Querier) GetUserIngredientPreference(ctx context.Context, userIngredien
 func (q *Querier) GetUserIngredientPreferences(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.UserIngredientPreference], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -227,6 +239,10 @@ func (q *Querier) CreateUserIngredientPreference(ctx context.Context, input *typ
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
@@ -305,6 +321,10 @@ func (q *Querier) UpdateUserIngredientPreference(ctx context.Context, updated *t
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if updated == nil {
 		return ErrNilInputProvided
 	}
@@ -331,6 +351,10 @@ func (q *Querier) UpdateUserIngredientPreference(ctx context.Context, updated *t
 func (q *Querier) ArchiveUserIngredientPreference(ctx context.Context, userIngredientPreferenceID, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 

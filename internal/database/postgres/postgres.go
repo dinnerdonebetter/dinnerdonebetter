@@ -129,6 +129,10 @@ func (q *Querier) IsReady(ctx context.Context, waitPeriod time.Duration) bool {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return false
+	}
+
 	logger := q.logger.WithValue("connection_url", q.config.ConnectionDetails)
 
 	for attempt := 0; attempt < int(q.config.MaxPingAttempts); attempt++ {

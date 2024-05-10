@@ -21,6 +21,10 @@ func (q *Querier) ValidPreparationExists(ctx context.Context, validPreparationID
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return false, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if validPreparationID == "" {
@@ -41,6 +45,10 @@ func (q *Querier) ValidPreparationExists(ctx context.Context, validPreparationID
 func (q *Querier) GetValidPreparation(ctx context.Context, validPreparationID string) (*types.ValidPreparation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -88,6 +96,10 @@ func (q *Querier) GetRandomValidPreparation(ctx context.Context) (*types.ValidPr
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	result, err := q.generatedQuerier.GetRandomValidPreparation(ctx, q.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "getting random valid preparation")
@@ -125,6 +137,10 @@ func (q *Querier) GetRandomValidPreparation(ctx context.Context) (*types.ValidPr
 func (q *Querier) SearchForValidPreparations(ctx context.Context, query string) ([]*types.ValidPreparation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -174,6 +190,10 @@ func (q *Querier) SearchForValidPreparations(ctx context.Context, query string) 
 func (q *Querier) GetValidPreparations(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidPreparation], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -236,6 +256,10 @@ func (q *Querier) GetValidPreparationsWithIDs(ctx context.Context, ids []string)
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if len(ids) == 0 {
 		return nil, sql.ErrNoRows
 	}
@@ -282,6 +306,10 @@ func (q *Querier) GetValidPreparationIDsThatNeedSearchIndexing(ctx context.Conte
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	results, err := q.generatedQuerier.GetValidPreparationsNeedingIndexing(ctx, q.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing valid preparations list retrieval query")
@@ -294,6 +322,10 @@ func (q *Querier) GetValidPreparationIDsThatNeedSearchIndexing(ctx context.Conte
 func (q *Querier) CreateValidPreparation(ctx context.Context, input *types.ValidPreparationDatabaseCreationInput) (*types.ValidPreparation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -359,6 +391,10 @@ func (q *Querier) UpdateValidPreparation(ctx context.Context, updated *types.Val
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if updated == nil {
 		return ErrNilInputProvided
 	}
@@ -399,6 +435,10 @@ func (q *Querier) MarkValidPreparationAsIndexed(ctx context.Context, validPrepar
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if validPreparationID == "" {
@@ -420,6 +460,10 @@ func (q *Querier) MarkValidPreparationAsIndexed(ctx context.Context, validPrepar
 func (q *Querier) ArchiveValidPreparation(ctx context.Context, validPreparationID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 

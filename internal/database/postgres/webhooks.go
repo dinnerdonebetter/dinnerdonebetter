@@ -27,6 +27,10 @@ func (q *Querier) WebhookExists(ctx context.Context, webhookID, householdID stri
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return false, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if webhookID == "" {
@@ -56,6 +60,10 @@ func (q *Querier) WebhookExists(ctx context.Context, webhookID, householdID stri
 func (q *Querier) GetWebhook(ctx context.Context, webhookID, householdID string) (*types.Webhook, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -114,6 +122,10 @@ func (q *Querier) GetWebhooks(ctx context.Context, householdID string, filter *t
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if householdID == "" {
@@ -169,6 +181,10 @@ func (q *Querier) GetWebhooksForHouseholdAndEvent(ctx context.Context, household
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if householdID == "" {
@@ -207,6 +223,10 @@ func (q *Querier) GetWebhooksForHouseholdAndEvent(ctx context.Context, household
 func (q *Querier) CreateWebhook(ctx context.Context, input *types.WebhookDatabaseCreationInput) (*types.Webhook, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -283,6 +303,10 @@ func (q *Querier) createWebhookTriggerEvent(ctx context.Context, querier databas
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if input == nil {
@@ -329,6 +353,10 @@ func (q *Querier) createWebhookTriggerEvent(ctx context.Context, querier databas
 func (q *Querier) ArchiveWebhook(ctx context.Context, webhookID, householdID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if webhookID == "" {
 		return ErrInvalidIDProvided
@@ -383,6 +411,10 @@ func (q *Querier) AddWebhookTriggerEvent(ctx context.Context, householdID string
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if householdID == "" {
 		return nil, ErrInvalidIDProvided
 	}
@@ -423,6 +455,10 @@ func (q *Querier) AddWebhookTriggerEvent(ctx context.Context, householdID string
 func (q *Querier) ArchiveWebhookTriggerEvent(ctx context.Context, webhookID, webhookTriggerEventID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if webhookID == "" {
 		return ErrInvalidIDProvided

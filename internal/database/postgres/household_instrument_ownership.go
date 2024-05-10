@@ -20,6 +20,10 @@ func (q *Querier) HouseholdInstrumentOwnershipExists(ctx context.Context, househ
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return false, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if householdInstrumentOwnershipID == "" {
@@ -49,6 +53,10 @@ func (q *Querier) HouseholdInstrumentOwnershipExists(ctx context.Context, househ
 func (q *Querier) GetHouseholdInstrumentOwnership(ctx context.Context, householdInstrumentOwnershipID, householdID string) (*types.HouseholdInstrumentOwnership, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -103,6 +111,10 @@ func (q *Querier) GetHouseholdInstrumentOwnership(ctx context.Context, household
 func (q *Querier) GetHouseholdInstrumentOwnerships(ctx context.Context, householdID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.HouseholdInstrumentOwnership], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -173,6 +185,10 @@ func (q *Querier) CreateHouseholdInstrumentOwnership(ctx context.Context, input 
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
@@ -209,6 +225,10 @@ func (q *Querier) UpdateHouseholdInstrumentOwnership(ctx context.Context, update
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if updated == nil {
 		return ErrNilInputProvided
 	}
@@ -234,6 +254,10 @@ func (q *Querier) UpdateHouseholdInstrumentOwnership(ctx context.Context, update
 func (q *Querier) ArchiveHouseholdInstrumentOwnership(ctx context.Context, householdInstrumentOwnershipID, householdID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 

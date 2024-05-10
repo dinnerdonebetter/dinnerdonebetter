@@ -21,6 +21,10 @@ func (q *Querier) MealPlanTaskExists(ctx context.Context, mealPlanID, mealPlanTa
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return false, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if mealPlanID == "" {
@@ -52,6 +56,10 @@ func (q *Querier) MealPlanTaskExists(ctx context.Context, mealPlanID, mealPlanTa
 func (q *Querier) GetMealPlanTask(ctx context.Context, mealPlanTaskID string) (*types.MealPlanTask, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -103,6 +111,10 @@ func (q *Querier) createMealPlanTask(ctx context.Context, querier database.SQLQu
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if input == nil {
@@ -150,6 +162,10 @@ func (q *Querier) CreateMealPlanTask(ctx context.Context, input *types.MealPlanT
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if input == nil {
@@ -181,6 +197,10 @@ func (q *Querier) CreateMealPlanTask(ctx context.Context, input *types.MealPlanT
 func (q *Querier) GetMealPlanTasksForMealPlan(ctx context.Context, mealPlanID string) (x []*types.MealPlanTask, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -239,6 +259,10 @@ func (q *Querier) CreateMealPlanTasksForMealPlanOption(ctx context.Context, inpu
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	tx, err := q.db.BeginTx(ctx, nil)
@@ -271,6 +295,10 @@ func (q *Querier) MarkMealPlanAsHavingTasksCreated(ctx context.Context, mealPlan
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if mealPlanID == "" {
@@ -293,6 +321,10 @@ func (q *Querier) MarkMealPlanAsHavingGroceryListInitialized(ctx context.Context
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if mealPlanID == "" {
@@ -314,6 +346,10 @@ func (q *Querier) MarkMealPlanAsHavingGroceryListInitialized(ctx context.Context
 func (q *Querier) ChangeMealPlanTaskStatus(ctx context.Context, input *types.MealPlanTaskStatusChangeRequestInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 

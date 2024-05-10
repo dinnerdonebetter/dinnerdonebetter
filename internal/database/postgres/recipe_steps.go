@@ -20,6 +20,10 @@ func (q *Querier) RecipeStepExists(ctx context.Context, recipeID, recipeStepID s
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return false, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if recipeID == "" {
@@ -49,6 +53,10 @@ func (q *Querier) RecipeStepExists(ctx context.Context, recipeID, recipeStepID s
 func (q *Querier) GetRecipeStep(ctx context.Context, recipeID, recipeStepID string) (*types.RecipeStep, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -128,6 +136,10 @@ func (q *Querier) getRecipeStepByID(ctx context.Context, querier database.SQLQue
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if recipeStepID == "" {
@@ -196,6 +208,10 @@ func (q *Querier) getRecipeStepByID(ctx context.Context, querier database.SQLQue
 func (q *Querier) GetRecipeSteps(ctx context.Context, recipeID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.RecipeStep], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -289,6 +305,10 @@ func (q *Querier) GetRecipeSteps(ctx context.Context, recipeID string, filter *t
 func (q *Querier) createRecipeStep(ctx context.Context, db database.SQLQueryExecutor, input *types.RecipeStepDatabaseCreationInput) (*types.RecipeStep, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -395,6 +415,10 @@ func (q *Querier) UpdateRecipeStep(ctx context.Context, updated *types.RecipeSte
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if updated == nil {
 		return ErrNilInputProvided
 	}
@@ -428,6 +452,10 @@ func (q *Querier) UpdateRecipeStep(ctx context.Context, updated *types.RecipeSte
 func (q *Querier) ArchiveRecipeStep(ctx context.Context, recipeID, recipeStepID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 

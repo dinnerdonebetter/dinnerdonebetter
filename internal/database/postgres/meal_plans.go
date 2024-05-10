@@ -21,6 +21,10 @@ func (q *Querier) MealPlanExists(ctx context.Context, mealPlanID, householdID st
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return false, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if mealPlanID == "" {
@@ -50,6 +54,10 @@ func (q *Querier) MealPlanExists(ctx context.Context, mealPlanID, householdID st
 func (q *Querier) getMealPlan(ctx context.Context, mealPlanID, householdID string) (*types.MealPlan, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -109,6 +117,10 @@ func (q *Querier) GetMealPlan(ctx context.Context, mealPlanID, householdID strin
 func (q *Querier) GetMealPlans(ctx context.Context, householdID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.MealPlan], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -171,6 +183,10 @@ func (q *Querier) GetMealPlans(ctx context.Context, householdID string, filter *
 func (q *Querier) CreateMealPlan(ctx context.Context, input *types.MealPlanDatabaseCreationInput) (*types.MealPlan, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -240,6 +256,10 @@ func (q *Querier) UpdateMealPlan(ctx context.Context, updated *types.MealPlan) e
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if updated == nil {
 		return ErrNilInputProvided
 	}
@@ -266,6 +286,10 @@ func (q *Querier) UpdateMealPlan(ctx context.Context, updated *types.MealPlan) e
 func (q *Querier) ArchiveMealPlan(ctx context.Context, mealPlanID, householdID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -297,6 +321,10 @@ func (q *Querier) ArchiveMealPlan(ctx context.Context, mealPlanID, householdID s
 func (q *Querier) AttemptToFinalizeMealPlan(ctx context.Context, mealPlanID, householdID string) (finalized bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return false, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -430,6 +458,10 @@ func (q *Querier) GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context.Co
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	results, err := q.generatedQuerier.GetExpiredAndUnresolvedMealPlans(ctx, q.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing unfinalized meal plans with expired voting periods retrieval query")
@@ -461,6 +493,10 @@ func (q *Querier) GetUnfinalizedMealPlansWithExpiredVotingPeriods(ctx context.Co
 func (q *Querier) GetFinalizedMealPlanIDsForTheNextWeek(ctx context.Context) ([]*types.FinalizedMealPlanDatabaseResult, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	results, err := q.generatedQuerier.GetFinalizedMealPlansForPlanning(ctx, q.db)
 	if err != nil {
@@ -504,6 +540,10 @@ func (q *Querier) GetFinalizedMealPlansWithUninitializedGroceryLists(ctx context
 	_, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	results, err := q.generatedQuerier.GetFinalizedMealPlansWithoutGroceryListInit(ctx, q.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing finalized meal plans without grocery list initialization query")
@@ -531,6 +571,10 @@ func (q *Querier) GetFinalizedMealPlansWithUninitializedGroceryLists(ctx context
 func (q *Querier) FetchMissingVotesForMealPlan(ctx context.Context, mealPlanID, householdID string) ([]*types.MissingVote, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 

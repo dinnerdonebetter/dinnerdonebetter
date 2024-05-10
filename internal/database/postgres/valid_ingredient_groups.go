@@ -20,6 +20,10 @@ func (q *Querier) ValidIngredientGroupExists(ctx context.Context, validIngredien
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return false, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if validIngredientGroupID == "" {
@@ -40,6 +44,10 @@ func (q *Querier) ValidIngredientGroupExists(ctx context.Context, validIngredien
 func (q *Querier) GetValidIngredientGroup(ctx context.Context, validIngredientGroupID string) (*types.ValidIngredientGroup, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -126,6 +134,10 @@ func (q *Querier) GetValidIngredientGroup(ctx context.Context, validIngredientGr
 func (q *Querier) SearchForValidIngredientGroups(ctx context.Context, query string, filter *types.QueryFilter) ([]*types.ValidIngredientGroup, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -233,6 +245,10 @@ func (q *Querier) GetValidIngredientGroups(ctx context.Context, filter *types.Qu
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if filter == nil {
@@ -337,6 +353,10 @@ func (q *Querier) CreateValidIngredientGroup(ctx context.Context, input *types.V
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
@@ -393,6 +413,10 @@ func (q *Querier) CreateValidIngredientGroupMember(ctx context.Context, db datab
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if input == nil {
@@ -428,6 +452,10 @@ func (q *Querier) UpdateValidIngredientGroup(ctx context.Context, updated *types
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if updated == nil {
 		return ErrNilInputProvided
 	}
@@ -452,6 +480,10 @@ func (q *Querier) UpdateValidIngredientGroup(ctx context.Context, updated *types
 func (q *Querier) ArchiveValidIngredientGroup(ctx context.Context, validIngredientGroupID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 

@@ -28,6 +28,10 @@ func (q *Querier) GetHousehold(ctx context.Context, householdID string) (*types.
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if householdID == "" {
 		return nil, ErrInvalidIDProvided
 	}
@@ -109,6 +113,10 @@ func (q *Querier) getHouseholdsForUser(ctx context.Context, querier database.SQL
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if userID == "" {
@@ -178,6 +186,10 @@ func (q *Querier) GetHouseholds(ctx context.Context, userID string, filter *type
 func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDatabaseCreationInput) (*types.Household, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -278,6 +290,10 @@ func (q *Querier) CreateHousehold(ctx context.Context, input *types.HouseholdDat
 func (q *Querier) UpdateHousehold(ctx context.Context, updated *types.Household) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if updated == nil {
 		return ErrNilInputProvided
@@ -415,6 +431,10 @@ func buildChangesForHousehold(household, updated *types.Household) map[string]ty
 func (q *Querier) ArchiveHousehold(ctx context.Context, householdID, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 

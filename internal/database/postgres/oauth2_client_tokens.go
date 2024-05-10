@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 
+	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
@@ -16,6 +17,10 @@ var _ types.OAuth2ClientTokenDataManager = (*Querier)(nil)
 func (q *Querier) GetOAuth2ClientTokenByCode(ctx context.Context, code string) (*types.OAuth2ClientToken, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -84,6 +89,10 @@ func (q *Querier) GetOAuth2ClientTokenByAccess(ctx context.Context, access strin
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if access == "" {
@@ -151,6 +160,10 @@ func (q *Querier) GetOAuth2ClientTokenByRefresh(ctx context.Context, refresh str
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if refresh == "" {
@@ -217,6 +230,10 @@ func (q *Querier) GetOAuth2ClientTokenByRefresh(ctx context.Context, refresh str
 func (q *Querier) CreateOAuth2ClientToken(ctx context.Context, input *types.OAuth2ClientTokenDatabaseCreationInput) (*types.OAuth2ClientToken, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -291,6 +308,10 @@ func (q *Querier) ArchiveOAuth2ClientTokenByAccess(ctx context.Context, access s
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if access == "" {
@@ -318,6 +339,10 @@ func (q *Querier) ArchiveOAuth2ClientTokenByCode(ctx context.Context, code strin
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if code == "" {
@@ -344,6 +369,10 @@ func (q *Querier) ArchiveOAuth2ClientTokenByCode(ctx context.Context, code strin
 func (q *Querier) ArchiveOAuth2ClientTokenByRefresh(ctx context.Context, refresh string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 

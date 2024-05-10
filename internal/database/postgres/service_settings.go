@@ -27,6 +27,10 @@ func (q *Querier) ServiceSettingExists(ctx context.Context, serviceSettingID str
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return false, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if serviceSettingID == "" {
@@ -47,6 +51,10 @@ func (q *Querier) ServiceSettingExists(ctx context.Context, serviceSettingID str
 func (q *Querier) GetServiceSetting(ctx context.Context, serviceSettingID string) (*types.ServiceSetting, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -88,6 +96,10 @@ func (q *Querier) GetServiceSetting(ctx context.Context, serviceSettingID string
 func (q *Querier) SearchForServiceSettings(ctx context.Context, query string) ([]*types.ServiceSetting, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -135,6 +147,10 @@ func (q *Querier) SearchForServiceSettings(ctx context.Context, query string) ([
 func (q *Querier) GetServiceSettings(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ServiceSetting], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -192,6 +208,10 @@ func (q *Querier) GetServiceSettings(ctx context.Context, filter *types.QueryFil
 func (q *Querier) CreateServiceSetting(ctx context.Context, input *types.ServiceSettingDatabaseCreationInput) (*types.ServiceSetting, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -252,6 +272,10 @@ func (q *Querier) CreateServiceSetting(ctx context.Context, input *types.Service
 func (q *Querier) ArchiveServiceSetting(ctx context.Context, serviceSettingID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 

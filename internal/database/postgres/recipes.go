@@ -23,6 +23,10 @@ func (q *Querier) RecipeExists(ctx context.Context, recipeID string) (exists boo
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return false, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if recipeID == "" {
 		return false, ErrInvalidIDProvided
 	}
@@ -40,6 +44,10 @@ func (q *Querier) RecipeExists(ctx context.Context, recipeID string) (exists boo
 func (q *Querier) getRecipe(ctx context.Context, recipeID string) (*types.Recipe, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if recipeID == "" {
 		return nil, ErrInvalidIDProvided
@@ -228,6 +236,10 @@ func (q *Querier) GetRecipes(ctx context.Context, filter *types.QueryFilter) (x 
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if filter == nil {
@@ -284,6 +296,10 @@ func (q *Querier) GetRecipesWithIDs(ctx context.Context, ids []string) ([]*types
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	recipes := []*types.Recipe{}
@@ -304,6 +320,10 @@ func (q *Querier) GetRecipeIDsThatNeedSearchIndexing(ctx context.Context) ([]str
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	results, err := q.generatedQuerier.GetRecipesNeedingIndexing(ctx, q.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing recipes list retrieval query")
@@ -316,6 +336,10 @@ func (q *Querier) GetRecipeIDsThatNeedSearchIndexing(ctx context.Context) ([]str
 func (q *Querier) SearchForRecipes(ctx context.Context, recipeNameQuery string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.Recipe], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -373,6 +397,10 @@ func (q *Querier) SearchForRecipes(ctx context.Context, recipeNameQuery string, 
 func (q *Querier) CreateRecipe(ctx context.Context, input *types.RecipeDatabaseCreationInput) (*types.Recipe, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -540,6 +568,10 @@ func (q *Querier) UpdateRecipe(ctx context.Context, updated *types.Recipe) error
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if updated == nil {
 		return ErrNilInputProvided
 	}
@@ -577,6 +609,10 @@ func (q *Querier) MarkRecipeAsIndexed(ctx context.Context, recipeID string) erro
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if recipeID == "" {
@@ -598,6 +634,10 @@ func (q *Querier) MarkRecipeAsIndexed(ctx context.Context, recipeID string) erro
 func (q *Querier) ArchiveRecipe(ctx context.Context, recipeID, userID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if recipeID == "" {
 		return ErrInvalidIDProvided

@@ -20,6 +20,10 @@ func (q *Querier) GetPasswordResetTokenByToken(ctx context.Context, token string
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if token == "" {
 		return nil, ErrEmptyInputProvided
 	}
@@ -47,6 +51,10 @@ func (q *Querier) GetPasswordResetTokenByToken(ctx context.Context, token string
 func (q *Querier) CreatePasswordResetToken(ctx context.Context, input *types.PasswordResetTokenDatabaseCreationInput) (*types.PasswordResetToken, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -80,6 +88,10 @@ func (q *Querier) CreatePasswordResetToken(ctx context.Context, input *types.Pas
 func (q *Querier) RedeemPasswordResetToken(ctx context.Context, passwordResetTokenID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 

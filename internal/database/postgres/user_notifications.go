@@ -25,6 +25,10 @@ func (q *Querier) UserNotificationExists(ctx context.Context, userID, userNotifi
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return false, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if userID == "" {
@@ -54,6 +58,10 @@ func (q *Querier) UserNotificationExists(ctx context.Context, userID, userNotifi
 func (q *Querier) GetUserNotification(ctx context.Context, userID, userNotificationID string) (*types.UserNotification, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -93,6 +101,10 @@ func (q *Querier) GetUserNotification(ctx context.Context, userID, userNotificat
 func (q *Querier) GetUserNotifications(ctx context.Context, userID string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.UserNotification], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -144,6 +156,10 @@ func (q *Querier) GetUserNotifications(ctx context.Context, userID string, filte
 func (q *Querier) CreateUserNotification(ctx context.Context, input *types.UserNotificationDatabaseCreationInput) (*types.UserNotification, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -198,6 +214,10 @@ func (q *Querier) CreateUserNotification(ctx context.Context, input *types.UserN
 func (q *Querier) UpdateUserNotification(ctx context.Context, updated *types.UserNotification) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if updated == nil {
 		return ErrNilInputProvided

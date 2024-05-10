@@ -20,6 +20,10 @@ func (q *Querier) ValidMeasurementUnitExists(ctx context.Context, validMeasureme
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return false, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if validMeasurementUnitID == "" {
@@ -40,6 +44,10 @@ func (q *Querier) ValidMeasurementUnitExists(ctx context.Context, validMeasureme
 func (q *Querier) GetValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) (*types.ValidMeasurementUnit, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -78,6 +86,10 @@ func (q *Querier) GetRandomValidMeasurementUnit(ctx context.Context) (*types.Val
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	result, err := q.generatedQuerier.GetRandomValidMeasurementUnit(ctx, q.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "scanning valid measurement unit")
@@ -106,6 +118,10 @@ func (q *Querier) GetRandomValidMeasurementUnit(ctx context.Context) (*types.Val
 func (q *Querier) SearchForValidMeasurementUnits(ctx context.Context, query string) ([]*types.ValidMeasurementUnit, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -146,6 +162,10 @@ func (q *Querier) SearchForValidMeasurementUnits(ctx context.Context, query stri
 func (q *Querier) ValidMeasurementUnitsForIngredientID(ctx context.Context, validIngredientID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidMeasurementUnit], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -208,6 +228,10 @@ func (q *Querier) GetValidMeasurementUnits(ctx context.Context, filter *types.Qu
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if filter == nil {
@@ -262,6 +286,10 @@ func (q *Querier) GetValidMeasurementUnitsWithIDs(ctx context.Context, ids []str
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	results, err := q.generatedQuerier.GetValidMeasurementUnitsWithIDs(ctx, q.db, ids)
@@ -296,6 +324,10 @@ func (q *Querier) GetValidMeasurementUnitIDsThatNeedSearchIndexing(ctx context.C
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	results, err := q.generatedQuerier.GetValidMeasurementUnitsNeedingIndexing(ctx, q.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing valid measurement units list retrieval query")
@@ -308,6 +340,10 @@ func (q *Querier) GetValidMeasurementUnitIDsThatNeedSearchIndexing(ctx context.C
 func (q *Querier) CreateValidMeasurementUnit(ctx context.Context, input *types.ValidMeasurementUnitDatabaseCreationInput) (*types.ValidMeasurementUnit, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -355,6 +391,10 @@ func (q *Querier) UpdateValidMeasurementUnit(ctx context.Context, updated *types
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if updated == nil {
 		return ErrNilInputProvided
 	}
@@ -386,6 +426,10 @@ func (q *Querier) MarkValidMeasurementUnitAsIndexed(ctx context.Context, validMe
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if validMeasurementUnitID == "" {
@@ -407,6 +451,10 @@ func (q *Querier) MarkValidMeasurementUnitAsIndexed(ctx context.Context, validMe
 func (q *Querier) ArchiveValidMeasurementUnit(ctx context.Context, validMeasurementUnitID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 

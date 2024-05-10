@@ -20,6 +20,10 @@ func (q *Querier) ValidInstrumentExists(ctx context.Context, validInstrumentID s
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return false, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if validInstrumentID == "" {
@@ -40,6 +44,10 @@ func (q *Querier) ValidInstrumentExists(ctx context.Context, validInstrumentID s
 func (q *Querier) GetValidInstrument(ctx context.Context, validInstrumentID string) (*types.ValidInstrument, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -77,6 +85,10 @@ func (q *Querier) GetRandomValidInstrument(ctx context.Context) (*types.ValidIns
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	result, err := q.generatedQuerier.GetRandomValidInstrument(ctx, q.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "scanning validInstrument")
@@ -104,6 +116,10 @@ func (q *Querier) GetRandomValidInstrument(ctx context.Context) (*types.ValidIns
 func (q *Querier) SearchForValidInstruments(ctx context.Context, query string) ([]*types.ValidInstrument, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -144,6 +160,10 @@ func (q *Querier) SearchForValidInstruments(ctx context.Context, query string) (
 func (q *Querier) GetValidInstruments(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidInstrument], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -196,6 +216,10 @@ func (q *Querier) GetValidInstrumentsWithIDs(ctx context.Context, ids []string) 
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	results, err := q.generatedQuerier.GetValidInstrumentsWithIDs(ctx, q.db, ids)
@@ -229,6 +253,10 @@ func (q *Querier) GetValidInstrumentIDsThatNeedSearchIndexing(ctx context.Contex
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	results, err := q.generatedQuerier.GetValidInstrumentsNeedingIndexing(ctx, q.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing valid instruments list retrieval query")
@@ -241,6 +269,10 @@ func (q *Querier) GetValidInstrumentIDsThatNeedSearchIndexing(ctx context.Contex
 func (q *Querier) CreateValidInstrument(ctx context.Context, input *types.ValidInstrumentDatabaseCreationInput) (*types.ValidInstrument, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -286,6 +318,10 @@ func (q *Querier) UpdateValidInstrument(ctx context.Context, updated *types.Vali
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if updated == nil {
 		return ErrNilInputProvided
 	}
@@ -316,6 +352,10 @@ func (q *Querier) MarkValidInstrumentAsIndexed(ctx context.Context, validInstrum
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if validInstrumentID == "" {
@@ -337,6 +377,10 @@ func (q *Querier) MarkValidInstrumentAsIndexed(ctx context.Context, validInstrum
 func (q *Querier) ArchiveValidInstrument(ctx context.Context, validInstrumentID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 

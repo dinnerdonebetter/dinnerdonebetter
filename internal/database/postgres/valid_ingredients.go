@@ -20,6 +20,10 @@ func (q *Querier) ValidIngredientExists(ctx context.Context, validIngredientID s
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return false, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if validIngredientID == "" {
@@ -40,6 +44,10 @@ func (q *Querier) ValidIngredientExists(ctx context.Context, validIngredientID s
 func (q *Querier) GetValidIngredient(ctx context.Context, validIngredientID string) (*types.ValidIngredient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -103,6 +111,10 @@ func (q *Querier) GetRandomValidIngredient(ctx context.Context) (*types.ValidIng
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	result, err := q.generatedQuerier.GetRandomValidIngredient(ctx, q.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "fetching random valid ingredient")
@@ -156,6 +168,10 @@ func (q *Querier) GetRandomValidIngredient(ctx context.Context) (*types.ValidIng
 func (q *Querier) SearchForValidIngredients(ctx context.Context, query string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.ValidIngredient], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -230,6 +246,10 @@ func (q *Querier) SearchForValidIngredients(ctx context.Context, query string, f
 func (q *Querier) SearchForValidIngredientsForPreparation(ctx context.Context, preparationID, query string, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidIngredient], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -316,6 +336,10 @@ func (q *Querier) GetValidIngredients(ctx context.Context, filter *types.QueryFi
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if filter == nil {
@@ -395,6 +419,10 @@ func (q *Querier) GetValidIngredientsWithIDs(ctx context.Context, ids []string) 
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if ids == nil {
@@ -460,6 +488,10 @@ func (q *Querier) GetValidIngredientIDsThatNeedSearchIndexing(ctx context.Contex
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	results, err := q.generatedQuerier.GetValidIngredientsNeedingIndexing(ctx, q.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing valid ingredients list retrieval query")
@@ -472,6 +504,10 @@ func (q *Querier) GetValidIngredientIDsThatNeedSearchIndexing(ctx context.Contex
 func (q *Querier) CreateValidIngredient(ctx context.Context, input *types.ValidIngredientDatabaseCreationInput) (*types.ValidIngredient, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -570,6 +606,10 @@ func (q *Querier) UpdateValidIngredient(ctx context.Context, updated *types.Vali
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if updated == nil {
 		return ErrNilInputProvided
 	}
@@ -626,6 +666,10 @@ func (q *Querier) MarkValidIngredientAsIndexed(ctx context.Context, validIngredi
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if validIngredientID == "" {
@@ -647,6 +691,10 @@ func (q *Querier) MarkValidIngredientAsIndexed(ctx context.Context, validIngredi
 func (q *Querier) ArchiveValidIngredient(ctx context.Context, validIngredientID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 

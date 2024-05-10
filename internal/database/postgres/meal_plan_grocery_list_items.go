@@ -20,6 +20,10 @@ func (q *Querier) MealPlanGroceryListItemExists(ctx context.Context, mealPlanID,
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return false, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if mealPlanID == "" {
@@ -48,6 +52,10 @@ func (q *Querier) MealPlanGroceryListItemExists(ctx context.Context, mealPlanID,
 func (q *Querier) fleshOutMealPlanGroceryListItem(ctx context.Context, mealPlanGroceryListItem *types.MealPlanGroceryListItem) (*types.MealPlanGroceryListItem, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -84,6 +92,10 @@ func (q *Querier) fleshOutMealPlanGroceryListItem(ctx context.Context, mealPlanG
 func (q *Querier) GetMealPlanGroceryListItem(ctx context.Context, mealPlanID, mealPlanGroceryListItemID string) (*types.MealPlanGroceryListItem, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -199,6 +211,10 @@ func (q *Querier) GetMealPlanGroceryListItem(ctx context.Context, mealPlanID, me
 func (q *Querier) GetMealPlanGroceryListItemsForMealPlan(ctx context.Context, mealPlanID string) ([]*types.MealPlanGroceryListItem, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -318,6 +334,10 @@ func (q *Querier) createMealPlanGroceryListItem(ctx context.Context, querier dat
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
@@ -377,6 +397,10 @@ func (q *Querier) UpdateMealPlanGroceryListItem(ctx context.Context, updated *ty
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if updated == nil {
 		return ErrNilInputProvided
 	}
@@ -414,6 +438,10 @@ func (q *Querier) UpdateMealPlanGroceryListItem(ctx context.Context, updated *ty
 func (q *Querier) ArchiveMealPlanGroceryListItem(ctx context.Context, mealPlanGroceryListItemID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 

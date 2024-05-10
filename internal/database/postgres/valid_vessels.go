@@ -22,6 +22,10 @@ func (q *Querier) ValidVesselExists(ctx context.Context, validVesselID string) (
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return false, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if validVesselID == "" {
@@ -42,6 +46,10 @@ func (q *Querier) ValidVesselExists(ctx context.Context, validVesselID string) (
 func (q *Querier) GetValidVessel(ctx context.Context, validVesselID string) (*types.ValidVessel, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -99,6 +107,10 @@ func (q *Querier) GetRandomValidVessel(ctx context.Context) (*types.ValidVessel,
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	result, err := q.generatedQuerier.GetRandomValidVessel(ctx, q.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "querying for random valid vessel")
@@ -146,6 +158,10 @@ func (q *Querier) GetRandomValidVessel(ctx context.Context) (*types.ValidVessel,
 func (q *Querier) SearchForValidVessels(ctx context.Context, query string) ([]*types.ValidVessel, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -203,6 +219,10 @@ func (q *Querier) SearchForValidVessels(ctx context.Context, query string) ([]*t
 func (q *Querier) GetValidVessels(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.ValidVessel], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -269,6 +289,10 @@ func (q *Querier) GetValidVesselsWithIDs(ctx context.Context, ids []string) ([]*
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if len(ids) == 0 {
@@ -326,6 +350,10 @@ func (q *Querier) GetValidVesselIDsThatNeedSearchIndexing(ctx context.Context) (
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	results, err := q.generatedQuerier.GetValidVesselIDsNeedingIndexing(ctx, q.db)
 	if err != nil {
 		return nil, observability.PrepareError(err, span, "executing valid vessels list retrieval query")
@@ -338,6 +366,10 @@ func (q *Querier) GetValidVesselIDsThatNeedSearchIndexing(ctx context.Context) (
 func (q *Querier) CreateValidVessel(ctx context.Context, input *types.ValidVesselDatabaseCreationInput) (*types.ValidVessel, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if input == nil {
 		return nil, ErrNilInputProvided
@@ -398,6 +430,10 @@ func (q *Querier) UpdateValidVessel(ctx context.Context, updated *types.ValidVes
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if updated == nil {
 		return ErrNilInputProvided
 	}
@@ -438,6 +474,10 @@ func (q *Querier) MarkValidVesselAsIndexed(ctx context.Context, validVesselID st
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if validVesselID == "" {
@@ -459,6 +499,10 @@ func (q *Querier) MarkValidVesselAsIndexed(ctx context.Context, validVesselID st
 func (q *Querier) ArchiveValidVessel(ctx context.Context, validVesselID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 

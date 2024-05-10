@@ -25,6 +25,10 @@ func (q *Querier) HouseholdInvitationExists(ctx context.Context, householdInvita
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return false, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if householdInvitationID == "" {
@@ -45,6 +49,10 @@ func (q *Querier) HouseholdInvitationExists(ctx context.Context, householdInvita
 func (q *Querier) GetHouseholdInvitationByHouseholdAndID(ctx context.Context, householdID, householdInvitationID string) (*types.HouseholdInvitation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -135,6 +143,10 @@ func (q *Querier) GetHouseholdInvitationByTokenAndID(ctx context.Context, token,
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if token == "" {
@@ -223,6 +235,10 @@ func (q *Querier) GetHouseholdInvitationByTokenAndID(ctx context.Context, token,
 func (q *Querier) GetHouseholdInvitationByEmailAndToken(ctx context.Context, emailAddress, token string) (*types.HouseholdInvitation, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -313,6 +329,10 @@ func (q *Querier) CreateHouseholdInvitation(ctx context.Context, input *types.Ho
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
@@ -361,6 +381,10 @@ func (q *Querier) CreateHouseholdInvitation(ctx context.Context, input *types.Ho
 func (q *Querier) GetPendingHouseholdInvitationsFromUser(ctx context.Context, userID string, filter *types.QueryFilter) (*types.QueryFilteredResult[types.HouseholdInvitation], error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if filter == nil {
 		filter = types.DefaultQueryFilter()
@@ -458,6 +482,10 @@ func (q *Querier) GetPendingHouseholdInvitationsForUser(ctx context.Context, use
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if filter == nil {
 		filter = types.DefaultQueryFilter()
 	}
@@ -553,6 +581,10 @@ func (q *Querier) setInvitationStatus(ctx context.Context, querier database.SQLQ
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.WithValue("new_status", status)
 
 	if householdInvitationID == "" {
@@ -583,6 +615,10 @@ func (q *Querier) CancelHouseholdInvitation(ctx context.Context, householdInvita
 func (q *Querier) AcceptHouseholdInvitation(ctx context.Context, householdInvitationID, token, note string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -639,6 +675,10 @@ func (q *Querier) attachInvitationsToUser(ctx context.Context, querier database.
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger
 
 	if userEmail == "" {
@@ -668,6 +708,10 @@ func (q *Querier) attachInvitationsToUser(ctx context.Context, querier database.
 func (q *Querier) acceptInvitationForUser(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *types.UserDatabaseCreationInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.WithValue(keys.UsernameKey, input.Username).WithValue(keys.UserEmailAddressKey, input.EmailAddress)
 

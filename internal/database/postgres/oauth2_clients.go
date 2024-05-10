@@ -22,6 +22,10 @@ func (q *Querier) GetOAuth2ClientByClientID(ctx context.Context, clientID string
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if clientID == "" {
@@ -53,6 +57,10 @@ func (q *Querier) GetOAuth2ClientByDatabaseID(ctx context.Context, clientID stri
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if clientID == "" {
@@ -83,6 +91,10 @@ func (q *Querier) GetOAuth2ClientByDatabaseID(ctx context.Context, clientID stri
 func (q *Querier) GetOAuth2Clients(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.OAuth2Client], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -128,6 +140,10 @@ func (q *Querier) CreateOAuth2Client(ctx context.Context, input *types.OAuth2Cli
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
@@ -164,6 +180,10 @@ func (q *Querier) CreateOAuth2Client(ctx context.Context, input *types.OAuth2Cli
 func (q *Querier) ArchiveOAuth2Client(ctx context.Context, clientID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if clientID == "" {
 		return ErrNilInputProvided

@@ -156,7 +156,8 @@ func buildDatabaseClientForTest(t *testing.T, ctx context.Context) (*Querier, *p
 	connStr, err := container.ConnectionString(ctx, "sslmode=disable")
 	require.NoError(t, err)
 
-	dbc, err := ProvideDatabaseClient(ctx, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), &config.Config{ConnectionDetails: connStr, RunMigrations: true, PingWaitPeriod: 50, OAuth2TokenEncryptionKey: "blahblahblahblahblahblahblahblah"})
+	dbConfig := &config.Config{ConnectionDetails: connStr, RunMigrations: true, PingWaitPeriod: 50, OAuth2TokenEncryptionKey: "blahblahblahblahblahblahblahblah"}
+	dbc, err := ProvideDatabaseClient(ctx, logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), dbConfig)
 	require.NoError(t, err)
 	require.NotNil(t, dbc)
 

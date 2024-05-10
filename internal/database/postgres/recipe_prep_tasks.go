@@ -21,6 +21,10 @@ func (q *Querier) RecipePrepTaskExists(ctx context.Context, recipeID, recipePrep
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return false, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if recipeID == "" {
@@ -52,6 +56,10 @@ func (q *Querier) RecipePrepTaskExists(ctx context.Context, recipeID, recipePrep
 func (q *Querier) GetRecipePrepTask(ctx context.Context, recipeID, recipePrepTaskID string) (x *types.RecipePrepTask, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -119,6 +127,10 @@ func (q *Querier) createRecipePrepTask(ctx context.Context, querier database.SQL
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if input == nil {
@@ -182,6 +194,10 @@ func (q *Querier) CreateRecipePrepTask(ctx context.Context, input *types.RecipeP
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if input == nil {
@@ -212,6 +228,10 @@ func (q *Querier) CreateRecipePrepTask(ctx context.Context, input *types.RecipeP
 func (q *Querier) createRecipePrepTaskStep(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, input *types.RecipePrepTaskStepDatabaseCreationInput) (*types.RecipePrepTaskStep, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -248,6 +268,10 @@ func (q *Querier) createRecipePrepTaskStep(ctx context.Context, querier database
 func (q *Querier) getRecipePrepTasksForRecipe(ctx context.Context, recipeID string) ([]*types.RecipePrepTask, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -318,6 +342,10 @@ func (q *Querier) UpdateRecipePrepTask(ctx context.Context, updated *types.Recip
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 	if updated == nil {
 		return ErrNilInputProvided
@@ -350,6 +378,10 @@ func (q *Querier) UpdateRecipePrepTask(ctx context.Context, updated *types.Recip
 func (q *Querier) ArchiveRecipePrepTask(ctx context.Context, recipeID, recipePrepTaskID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 

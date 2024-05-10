@@ -20,6 +20,10 @@ func (q *Querier) RecipeRatingExists(ctx context.Context, recipeRatingID string)
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return false, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if recipeRatingID == "" {
@@ -40,6 +44,10 @@ func (q *Querier) RecipeRatingExists(ctx context.Context, recipeRatingID string)
 func (q *Querier) GetRecipeRating(ctx context.Context, recipeRatingID string) (*types.RecipeRating, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -76,6 +84,10 @@ func (q *Querier) GetRecipeRating(ctx context.Context, recipeRatingID string) (*
 func (q *Querier) GetRecipeRatings(ctx context.Context, filter *types.QueryFilter) (x *types.QueryFilteredResult[types.RecipeRating], err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 
@@ -128,6 +140,10 @@ func (q *Querier) CreateRecipeRating(ctx context.Context, input *types.RecipeRat
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if input == nil {
 		return nil, ErrNilInputProvided
 	}
@@ -173,6 +189,10 @@ func (q *Querier) UpdateRecipeRating(ctx context.Context, updated *types.RecipeR
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if updated == nil {
 		return ErrNilInputProvided
 	}
@@ -201,6 +221,10 @@ func (q *Querier) UpdateRecipeRating(ctx context.Context, updated *types.RecipeR
 func (q *Querier) ArchiveRecipeRating(ctx context.Context, recipeRatingID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	logger := q.logger.Clone()
 

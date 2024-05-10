@@ -28,6 +28,10 @@ func (q *Querier) BuildSessionContextDataForUser(ctx context.Context, userID str
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return nil, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if userID == "" {
 		return nil, ErrInvalidIDProvided
 	}
@@ -77,6 +81,10 @@ func (q *Querier) GetDefaultHouseholdIDForUser(ctx context.Context, userID strin
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return "", database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	logger := q.logger.Clone()
 
 	if userID == "" {
@@ -97,6 +105,10 @@ func (q *Querier) GetDefaultHouseholdIDForUser(ctx context.Context, userID strin
 func (q *Querier) markHouseholdAsUserDefault(ctx context.Context, querier database.SQLQueryExecutor, userID, householdID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if userID == "" || householdID == "" {
 		return ErrInvalidIDProvided
@@ -158,6 +170,10 @@ func (q *Querier) UserIsMemberOfHousehold(ctx context.Context, userID, household
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return false, database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if userID == "" || householdID == "" {
 		return false, ErrInvalidIDProvided
 	}
@@ -179,6 +195,10 @@ func (q *Querier) UserIsMemberOfHousehold(ctx context.Context, userID, household
 func (q *Querier) ModifyUserPermissions(ctx context.Context, householdID, userID string, input *types.ModifyUserPermissionsInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if householdID == "" || userID == "" {
 		return ErrInvalidIDProvided
@@ -256,6 +276,10 @@ func (q *Querier) ModifyUserPermissions(ctx context.Context, householdID, userID
 func (q *Querier) TransferHouseholdOwnership(ctx context.Context, householdID string, input *types.HouseholdOwnershipTransferInput) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if householdID == "" {
 		return ErrInvalidIDProvided
@@ -347,6 +371,10 @@ func (q *Querier) addUserToHousehold(ctx context.Context, querier database.SQLQu
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
+
 	if input == nil {
 		return ErrNilInputProvided
 	}
@@ -388,6 +416,10 @@ func (q *Querier) addUserToHousehold(ctx context.Context, querier database.SQLQu
 func (q *Querier) removeUserFromHousehold(ctx context.Context, querier database.SQLQueryExecutorAndTransactionManager, userID, householdID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if userID == "" || householdID == "" {
 		return ErrInvalidIDProvided
@@ -450,6 +482,10 @@ func (q *Querier) removeUserFromHousehold(ctx context.Context, querier database.
 func (q *Querier) RemoveUserFromHousehold(ctx context.Context, userID, householdID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if !q.circuitBreaker.Ready() {
+		return database.ErrDatabaseCircuitBreakerTripped
+	}
 
 	if userID == "" {
 		return ErrInvalidIDProvided
