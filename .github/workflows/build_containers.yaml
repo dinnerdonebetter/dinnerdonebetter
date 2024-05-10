@@ -1,0 +1,35 @@
+on:
+  pull_request:
+    paths:
+      - environments/dev/dockerfiles
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+name: build
+jobs:
+  containers:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build api_server
+        run: docker build --tag api_server:${{ github.sha }} --file environments/dev/dockerfiles/api_server.Dockerfile .
+
+      - name: Build search-data-index-scheduler
+        run: docker build --tag search-data-index-scheduler:${{ github.sha }} --file environments/dev/dockerfiles/search_data_index_scheduler.Dockerfile .
+
+      - name: Build email-prober
+        run: docker build --tag email-prober:${{ github.sha }} --file environments/dev/dockerfiles/email_prober.Dockerfile .
+
+      - name: Build meal-plan-finalizer
+        run: docker build --tag meal-plan-finalizer:${{ github.sha }} --file environments/dev/dockerfiles/meal_plan_finalizer.Dockerfile .
+
+      - name: Build meal-plan-grocery-list-initializer
+        run: docker build --tag meal-plan-grocery-list-initializer:${{ github.sha }} --file environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .
+
+      - name: Build meal-plan-task-creator
+        run: docker build --tag meal-plan-task-creator:${{ github.sha }} --file environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .
