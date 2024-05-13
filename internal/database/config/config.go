@@ -31,14 +31,33 @@ type (
 
 var _ validation.ValidatableWithContext = (*Config)(nil)
 
-// ValidateWithContext validates an DatabaseSettings struct.
+// ValidateWithContext validates a Config struct.
 func (cfg *Config) ValidateWithContext(ctx context.Context) error {
+	cfg.EnsureDefaults()
+
 	return validation.ValidateStructWithContext(
 		ctx,
 		cfg,
+		validation.Field(&cfg.MaxPingAttempts, validation.Required),
 		validation.Field(&cfg.ConnectionDetails, validation.Required),
 		validation.Field(&cfg.OAuth2TokenEncryptionKey, validation.Required),
+		validation.Field(&cfg.CircuitBreakerFailureRate, validation.Required),
+		validation.Field(&cfg.CircuitBreakerFailureSampleThreshold, validation.Required),
 	)
+}
+
+func (cfg *Config) EnsureDefaults() {
+	if cfg.CircuitBreakerFailureRate == 0 {
+		cfg.CircuitBreakerFailureRate = .5
+	}
+
+	if cfg.CircuitBreakerFailureSampleThreshold == 0 {
+		cfg.CircuitBreakerFailureSampleThreshold = 10
+	}
+
+	if cfg.MaxPingAttempts == 0 {
+		cfg.MaxPingAttempts = 1
+	}
 }
 
 // ProvideSessionManager provides a session manager based on some settings.

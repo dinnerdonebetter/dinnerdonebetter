@@ -38,6 +38,8 @@ var _ validation.ValidatableWithContext = (*Config)(nil)
 
 // ValidateWithContext validates a Config struct.
 func (cfg *Config) ValidateWithContext(ctx context.Context) error {
+	cfg.EnsureDefaults()
+
 	return validation.ValidateStructWithContext(ctx, cfg,
 		validation.Field(&cfg.Sendgrid, validation.When(cfg.Provider == ProviderSendgrid, validation.Required)),
 		validation.Field(&cfg.Mailgun, validation.When(cfg.Provider == ProviderMailgun, validation.Required)),
@@ -45,11 +47,21 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 	)
 }
 
+// EnsureDefaults ensures certain default values are set.
+func (cfg *Config) EnsureDefaults() {
+	switch cfg.Provider {
+	case ProviderSendgrid:
+		if cfg.Sendgrid != nil {
+			cfg.Sendgrid.EnsureDefaults()
+		}
+	}
+}
+
 // ProvideEmailer provides an outbound_emailer.
-func (cfg *Config) ProvideEmailer(logger logging.Logger, tracerProvider tracing.TracerProvider, client *http.Client) (email.Emailer, error) {
+func (cfg *Config) ProvideEmailer(ctx context.Context, logger logging.Logger, tracerProvider tracing.TracerProvider, client *http.Client) (email.Emailer, error) {
 	switch strings.ToLower(strings.TrimSpace(cfg.Provider)) {
 	case ProviderSendgrid:
-		return sendgrid.NewSendGridEmailer(cfg.Sendgrid, logger, tracerProvider, client)
+		return sendgrid.NewSendGridEmailer(ctx, cfg.Sendgrid, logger, tracerProvider, client)
 	case ProviderMailgun:
 		return mailgun.NewMailgunEmailer(cfg.Mailgun, logger, tracerProvider, client)
 	case ProviderMailjet:

@@ -142,7 +142,7 @@ func Build(ctx context.Context, cfg *config.InstanceConfig) (http.Server, error)
 	}
 	householdinvitationsConfig := &servicesConfig.HouseholdInvitations
 	config14 := &cfg.Email
-	emailer, err := config8.ProvideEmailer(config14, logger, tracerProvider, client)
+	emailer, err := config8.ProvideEmailer(ctx, config14, logger, tracerProvider, client)
 	if err != nil {
 		return nil, err
 	}

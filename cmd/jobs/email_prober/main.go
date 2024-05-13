@@ -45,7 +45,7 @@ func doTheThing() error {
 	ctx, span := tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("email_prober_job")).StartSpan(ctx)
 	defer span.End()
 
-	emailer, err := emailconfig.ProvideEmailer(&cfg.Email, logger, tracerProvider, otelhttp.DefaultClient)
+	emailer, err := emailconfig.ProvideEmailer(ctx, &cfg.Email, logger, tracerProvider, otelhttp.DefaultClient)
 	if err != nil {
 		return observability.PrepareAndLogError(err, logger, span, "configuring outbound emailer")
 	}

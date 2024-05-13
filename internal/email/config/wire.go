@@ -1,6 +1,7 @@
 package config
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/email"
@@ -18,6 +19,6 @@ var (
 )
 
 // ProvideEmailer provides an email.Emailer from a config.
-func ProvideEmailer(cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider, client *http.Client) (email.Emailer, error) {
-	return cfg.ProvideEmailer(logger, tracerProvider, client)
+func ProvideEmailer(ctx context.Context, cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider, client *http.Client) (email.Emailer, error) {
+	return cfg.ProvideEmailer(ctx, logger, tracerProvider, client)
 }

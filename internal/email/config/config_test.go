@@ -51,7 +51,7 @@ func TestConfig_ProvideEmailer(T *testing.T) {
 			Sendgrid: &sendgrid.Config{APIToken: t.Name()},
 		}
 
-		actual, err := cfg.ProvideEmailer(logger, tracing.NewNoopTracerProvider(), &http.Client{})
+		actual, err := cfg.ProvideEmailer(context.Background(), logger, tracing.NewNoopTracerProvider(), &http.Client{})
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
 	})
@@ -64,7 +64,7 @@ func TestConfig_ProvideEmailer(T *testing.T) {
 			Provider: "",
 		}
 
-		actual, err := cfg.ProvideEmailer(logger, tracing.NewNoopTracerProvider(), &http.Client{})
+		actual, err := cfg.ProvideEmailer(context.Background(), logger, tracing.NewNoopTracerProvider(), &http.Client{})
 		assert.NotNil(t, actual)
 		assert.NoError(t, err)
 	})

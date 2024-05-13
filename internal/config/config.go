@@ -73,6 +73,15 @@ func (cfg *InstanceConfig) EncodeToFile(path string, marshaller func(v any) ([]b
 func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServices bool) error {
 	var result *multierror.Error
 
+	ensurers := map[string]func(){
+		"Database": cfg.Database.EnsureDefaults,
+		"Email":    cfg.Email.EnsureDefaults,
+	}
+
+	for _, ensurer := range ensurers {
+		ensurer()
+	}
+
 	validators := map[string]func(context.Context) error{
 		"Routing":       cfg.Routing.ValidateWithContext,
 		"Meta":          cfg.Meta.ValidateWithContext,
@@ -80,7 +89,7 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 		"Analytics":     cfg.Analytics.ValidateWithContext,
 		"Observability": cfg.Observability.ValidateWithContext,
 		"Database":      cfg.Database.ValidateWithContext,
-		"server":        cfg.Server.ValidateWithContext,
+		"Server":        cfg.Server.ValidateWithContext,
 		"Email":         cfg.Email.ValidateWithContext,
 		"FeatureFlags":  cfg.FeatureFlags.ValidateWithContext,
 		"Search":        cfg.Search.ValidateWithContext,
@@ -98,7 +107,11 @@ func (cfg *InstanceConfig) ValidateWithContext(ctx context.Context, validateServ
 		}
 	}
 
-	return result.ErrorOrNil()
+	if result != nil {
+		return result.ErrorOrNil()
+	}
+
+	return nil
 }
 
 func (cfg *InstanceConfig) Commit() string {

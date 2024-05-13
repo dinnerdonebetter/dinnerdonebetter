@@ -22,9 +22,10 @@ func TestNewSendGridEmailer(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 
-		client, err := NewSendGridEmailer(&Config{APIToken: t.Name()}, logger, tracing.NewNoopTracerProvider(), &http.Client{})
+		client, err := NewSendGridEmailer(ctx, &Config{APIToken: t.Name()}, logger, tracing.NewNoopTracerProvider(), &http.Client{})
 		require.NotNil(t, client)
 		require.NoError(t, err)
 	})
@@ -34,17 +35,17 @@ func TestSendGridEmailer_SendEmail(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		logger := logging.NewNoopLogger()
 
+		ctx := context.Background()
 		ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 			res.WriteHeader(http.StatusAccepted)
 		}))
 
-		c, err := NewSendGridEmailer(&Config{APIToken: t.Name()}, logger, tracing.NewNoopTracerProvider(), ts.Client())
+		c, err := NewSendGridEmailer(ctx, &Config{APIToken: t.Name()}, logger, tracing.NewNoopTracerProvider(), ts.Client())
 		require.NotNil(t, c)
 		require.NoError(t, err)
 
 		c.client.Request.BaseURL = ts.URL
 
-		ctx := context.Background()
 		details := &email.OutboundEmailMessage{
 			ToAddress:   t.Name(),
 			ToName:      t.Name(),
@@ -60,19 +61,19 @@ func TestSendGridEmailer_SendEmail(T *testing.T) {
 	T.Run("with error executing request", func(t *testing.T) {
 		logger := logging.NewNoopLogger()
 
+		ctx := context.Background()
 		ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 			time.Sleep(time.Hour)
 		}))
 		client := ts.Client()
 		client.Timeout = time.Millisecond
 
-		c, err := NewSendGridEmailer(&Config{APIToken: t.Name()}, logger, tracing.NewNoopTracerProvider(), client)
+		c, err := NewSendGridEmailer(ctx, &Config{APIToken: t.Name()}, logger, tracing.NewNoopTracerProvider(), client)
 		require.NotNil(t, c)
 		require.NoError(t, err)
 
 		c.client.Request.BaseURL = ts.URL
 
-		ctx := context.Background()
 		details := &email.OutboundEmailMessage{
 			ToAddress:   t.Name(),
 			ToName:      t.Name(),
@@ -89,17 +90,17 @@ func TestSendGridEmailer_SendEmail(T *testing.T) {
 	T.Run("with invalid response code", func(t *testing.T) {
 		logger := logging.NewNoopLogger()
 
+		ctx := context.Background()
 		ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 			res.WriteHeader(http.StatusInternalServerError)
 		}))
 
-		c, err := NewSendGridEmailer(&Config{APIToken: t.Name()}, logger, tracing.NewNoopTracerProvider(), ts.Client())
+		c, err := NewSendGridEmailer(ctx, &Config{APIToken: t.Name()}, logger, tracing.NewNoopTracerProvider(), ts.Client())
 		require.NotNil(t, c)
 		require.NoError(t, err)
 
 		c.client.Request.BaseURL = ts.URL
 
-		ctx := context.Background()
 		details := &email.OutboundEmailMessage{
 			ToAddress:   t.Name(),
 			ToName:      t.Name(),
@@ -118,17 +119,17 @@ func TestSendGridEmailer_sendDynamicTemplateEmail(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		logger := logging.NewNoopLogger()
 
+		ctx := context.Background()
 		ts := httptest.NewServer(http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 			res.WriteHeader(http.StatusAccepted)
 		}))
 
-		c, err := NewSendGridEmailer(&Config{APIToken: t.Name()}, logger, tracing.NewNoopTracerProvider(), ts.Client())
+		c, err := NewSendGridEmailer(ctx, &Config{APIToken: t.Name()}, logger, tracing.NewNoopTracerProvider(), ts.Client())
 		require.NotNil(t, c)
 		require.NoError(t, err)
 
 		c.client.Request.BaseURL = ts.URL
 
-		ctx := context.Background()
 		to := mail.NewEmail("sender", "sender@fake.com")
 		from := mail.NewEmail("sender", "sender@fake.com")
 

@@ -3,6 +3,7 @@ package sendgrid
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/email"
@@ -10,6 +11,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
+	validation "github.com/go-ozzo/ozzo-validation/v4"
+	circuit "github.com/rubyist/circuitbreaker"
 	"github.com/sendgrid/rest"
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
@@ -21,10 +24,9 @@ const (
 
 var (
 	_ email.Emailer = (*Emailer)(nil)
+
 	// ErrNilConfig indicates an empty API token was provided.
 	ErrNilConfig = errors.New("SendGrid config is nil")
-	// ErrEmptyAPIToken indicates an empty API token was provided.
-	ErrEmptyAPIToken = errors.New("empty API token")
 	// ErrNilHTTPClient indicates a nil HTTP client was provided.
 	ErrNilHTTPClient = errors.New("nil HTTP client")
 )
@@ -32,26 +34,54 @@ var (
 type (
 	// Config configures SendGrid to send email.
 	Config struct {
-		APIToken string `json:"apiToken" toml:"api_token,omitempty"`
+		APIToken                             string  `json:"apiToken"                             toml:"api_token,omitempty"`
+		CircuitBreakerFailureRate            float64 `json:"circuitBreakerFailureRate"            toml:"circuit_breaker_failure_rate,omitempty"`
+		CircuitBreakerFailureSampleThreshold int64   `json:"circuitBreakerFailureSampleThreshold" toml:"circuit_breaker_failure_sample_threshold,omitempty"`
 	}
 
 	// Emailer uses SendGrid to send email.
 	Emailer struct {
-		logger logging.Logger
-		tracer tracing.Tracer
-		client *sendgrid.Client
-		config Config
+		logger         logging.Logger
+		tracer         tracing.Tracer
+		client         *sendgrid.Client
+		circuitBreaker *circuit.Breaker
+		config         Config
 	}
 )
 
+var _ validation.ValidatableWithContext = (*Config)(nil)
+
+// ValidateWithContext validates a Config struct.
+func (cfg *Config) ValidateWithContext(ctx context.Context) error {
+	cfg.EnsureDefaults()
+
+	return validation.ValidateStructWithContext(
+		ctx,
+		cfg,
+		validation.Field(&cfg.APIToken, validation.Required),
+		validation.Field(&cfg.CircuitBreakerFailureRate, validation.Required),
+		validation.Field(&cfg.CircuitBreakerFailureSampleThreshold, validation.Required),
+	)
+}
+
+func (cfg *Config) EnsureDefaults() {
+	if cfg.CircuitBreakerFailureRate == 0 {
+		cfg.CircuitBreakerFailureRate = .5
+	}
+
+	if cfg.CircuitBreakerFailureSampleThreshold == 0 {
+		cfg.CircuitBreakerFailureSampleThreshold = 10
+	}
+}
+
 // NewSendGridEmailer returns a new SendGrid-backed Emailer.
-func NewSendGridEmailer(cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider, client *http.Client) (*Emailer, error) {
+func NewSendGridEmailer(ctx context.Context, cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider, client *http.Client) (*Emailer, error) {
 	if cfg == nil {
 		return nil, ErrNilConfig
 	}
 
-	if cfg.APIToken == "" {
-		return nil, ErrEmptyAPIToken
+	if err := cfg.ValidateWithContext(ctx); err != nil {
+		return nil, fmt.Errorf("invalid config: %w", err)
 	}
 
 	if client == nil {
@@ -67,6 +97,12 @@ func NewSendGridEmailer(cfg *Config, logger logging.Logger, tracerProvider traci
 		tracer: tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(name)),
 		client: sendgrid.NewSendClient(cfg.APIToken),
 		config: *cfg,
+		circuitBreaker: circuit.NewBreakerWithOptions(&circuit.Options{
+			ShouldTrip: func(cb *circuit.Breaker) bool {
+				samples := cb.Failures() + cb.Successes()
+				return samples >= cfg.CircuitBreakerFailureSampleThreshold && cb.ErrorRate() >= cfg.CircuitBreakerFailureRate
+			},
+		}),
 	}
 
 	return e, nil
@@ -80,7 +116,9 @@ func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMes
 	_, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := e.logger.WithValue("to_email", details.ToAddress).WithValue("subject", details.Subject)
 	tracing.AttachToSpan(span, "to_email", details.ToAddress)
+	tracing.AttachToSpan(span, e.config.APIToken, "sendgrid_api_token")
 
 	to := mail.NewEmail(details.ToName, details.ToAddress)
 	from := mail.NewEmail(details.FromName, details.FromAddress)
@@ -88,17 +126,18 @@ func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMes
 
 	res, err := e.client.SendWithContext(ctx, message)
 	if err != nil {
+		e.circuitBreaker.Fail()
 		return observability.PrepareError(err, span, "sending email")
 	}
 
 	// Fun fact: if your account is limited and not able to send an email, there is localhost:9000/accept_invitation?i=cgk80ta23akg00eo8pf0&t=DHriGX_38me7f7NY7yjHjrh47jU9RIbloCAQU4SJhRwDoHSI23dw0kaD2CBHepRnnpbmHxcPOohCC5t8foniGA
 	// no distinguishing feature of the response to let you know. Thanks, SendGrid!
 	if res.StatusCode != http.StatusAccepted {
-		e.logger.WithValue("sendgrid_api_token", e.config.APIToken).Info("sending email yielded an invalid response")
-		tracing.AttachToSpan(span, e.config.APIToken, "sendgrid_api_token")
-		return observability.PrepareError(ErrSendgridAPIIssue, span, "sending email yielded a %d response", res.StatusCode)
+		e.circuitBreaker.Fail()
+		return observability.PrepareAndLogError(ErrSendgridAPIIssue, logger, span, "sending email yielded a %d response", res.StatusCode)
 	}
 
+	e.circuitBreaker.Success()
 	return nil
 }
 

@@ -20,6 +20,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/pkg/cryptography/encryption/aes"
 
 	"github.com/DATA-DOG/go-sqlmock"
+	circuit "github.com/rubyist/circuitbreaker"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/require"
@@ -82,6 +83,12 @@ func buildTestClient(t *testing.T) (*Querier, *sqlmockExpecterWrapper) {
 		timeFunc:                defaultTimeFunc,
 		tracer:                  tracing.NewTracerForTest("test"),
 		oauth2ClientTokenEncDec: encDec,
+		circuitBreaker: circuit.NewBreakerWithOptions(&circuit.Options{
+			ShouldTrip: func(cb *circuit.Breaker) bool {
+				samples := cb.Failures() + cb.Successes()
+				return samples >= 10 && cb.ErrorRate() >= .5
+			},
+		}),
 	}
 
 	return c, &sqlmockExpecterWrapper{Sqlmock: sqlMock}
@@ -221,6 +228,7 @@ func TestProvideDatabaseClient(T *testing.T) {
 		exampleConfig := &config.Config{
 			Debug:                    true,
 			OAuth2TokenEncryptionKey: "blahblahblahblahblahblahblahblah",
+			ConnectionDetails:        "postgres://username:password@host/table",
 			RunMigrations:            false,
 			MaxPingAttempts:          1,
 		}
