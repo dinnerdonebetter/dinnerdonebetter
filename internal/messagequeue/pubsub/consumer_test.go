@@ -34,7 +34,7 @@ func buildPubSubBackedConsumer(t *testing.T, ctx context.Context, topic string, 
 		panic(err)
 	}
 
-	conn, err := grpc.Dial(pubsubContainer.URI, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	conn, err := grpc.NewClient(pubsubContainer.URI, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	require.NoError(t, err)
 	require.NotNil(t, conn)
 

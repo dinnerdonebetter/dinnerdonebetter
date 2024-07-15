@@ -86,7 +86,7 @@ func TestFeatureFlagManager_CanUseFeature(T *testing.T) {
 						IsSimpleFlag: true,
 						Active:       true,
 						Filters: posthog.Filter{
-							Groups: []posthog.PropertyGroup{
+							Groups: []posthog.FeatureFlagCondition{
 								{
 									Properties:        nil,
 									RolloutPercentage: nil,
