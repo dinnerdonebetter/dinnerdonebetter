@@ -7,8 +7,8 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-/* #nosec G101 */
 const (
+	/* #nosec G101 */
 	oauth2ClientTokensTableName = "oauth2_client_tokens"
 	codeColumn                  = "code"
 	accessColumn                = "access"

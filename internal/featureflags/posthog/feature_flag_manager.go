@@ -6,6 +6,8 @@ import (
 	"fmt"
 
 	"github.com/dinnerdonebetter/backend/internal/featureflags"
+	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
@@ -80,8 +82,10 @@ func NewFeatureFlagManager(cfg *Config, logger logging.Logger, tracerProvider tr
 
 // CanUseFeature returns whether a user can use a feature or not.
 func (f *featureFlagManager) CanUseFeature(ctx context.Context, userID, feature string) (bool, error) {
-	_, span := tracing.StartSpan(ctx)
+	_, span := f.tracer.StartSpan(ctx)
 	defer span.End()
+
+	logger := f.logger.WithValue(keys.UserIDKey, userID).WithValue("feature", feature)
 
 	if !f.circuitBreaker.CanProceed() {
 		return false, types.ErrCircuitBroken
@@ -93,7 +97,7 @@ func (f *featureFlagManager) CanUseFeature(ctx context.Context, userID, feature 
 	})
 	if err != nil {
 		f.circuitBreaker.Failed()
-		return false, fmt.Errorf("failed to determine if feature is enabled: %w", err)
+		return false, observability.PrepareAndLogError(err, logger, span, "checking feature flag eligibility")
 	}
 
 	if enabled, ok := flagEnabled.(bool); ok {
@@ -106,7 +110,7 @@ func (f *featureFlagManager) CanUseFeature(ctx context.Context, userID, feature 
 
 // Identify identifies a user in PostHog.
 func (f *featureFlagManager) Identify(ctx context.Context, user *types.User) error {
-	_, span := tracing.StartSpan(ctx)
+	_, span := f.tracer.StartSpan(ctx)
 	defer span.End()
 
 	if !f.circuitBreaker.CanProceed() {
@@ -116,6 +120,8 @@ func (f *featureFlagManager) Identify(ctx context.Context, user *types.User) err
 	if user == nil {
 		return ErrNilUser
 	}
+
+	logger := f.logger.WithValue(keys.UserIDKey, user.ID)
 
 	err := f.posthogClient.Enqueue(posthog.Identify{
 		DistinctId: user.ID,
@@ -127,7 +133,7 @@ func (f *featureFlagManager) Identify(ctx context.Context, user *types.User) err
 	})
 	if err != nil {
 		f.circuitBreaker.Failed()
-		return err
+		return observability.PrepareAndLogError(err, logger, span, "identifying user")
 	}
 
 	f.circuitBreaker.Succeeded()

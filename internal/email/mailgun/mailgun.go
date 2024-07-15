@@ -84,6 +84,7 @@ func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMes
 	_, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 
+	logger := e.logger.WithValue("email.subject", details.Subject).WithValue("email.to_address", details.ToAddress)
 	tracing.AttachToSpan(span, "to_email", details.ToAddress)
 
 	if e.circuitBreaker.CannotProceed() {
@@ -91,10 +92,9 @@ func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMes
 	}
 
 	msg := e.client.NewMessage(details.FromName, details.Subject, details.HTMLContent, details.ToAddress)
-
 	if _, _, err := e.client.Send(ctx, msg); err != nil {
 		e.circuitBreaker.Failed()
-		return observability.PrepareError(err, span, "sending email")
+		return observability.PrepareAndLogError(err, logger, span, "sending email")
 	}
 
 	e.circuitBreaker.Succeeded()

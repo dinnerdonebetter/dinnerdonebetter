@@ -3,8 +3,6 @@ package tracing
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-
 	"github.com/luna-duclos/instrumentedsql"
 )
 
@@ -28,17 +26,4 @@ func (t *instrumentedSQLTracerWrapper) GetSpan(ctx context.Context) instrumented
 		tracer: t.tracer,
 		span:   span,
 	}
-}
-
-// NewInstrumentedSQLLogger wraps a logging.Logger for instrumentedsql.
-func NewInstrumentedSQLLogger(logger logging.Logger) instrumentedsql.Logger {
-	return &instrumentedSQLLoggerWrapper{logger: logging.EnsureLogger(logger).WithName("sql")}
-}
-
-type instrumentedSQLLoggerWrapper struct {
-	logger logging.Logger
-}
-
-func (w *instrumentedSQLLoggerWrapper) Log(_ context.Context, msg string, keyvals ...any) {
-	// this is noisy AF, log at your own peril
 }

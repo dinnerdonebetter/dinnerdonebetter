@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
-	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/panicking"
@@ -78,7 +77,6 @@ type (
 		userNotificationsService               types.UserNotificationDataService
 		workerService                          types.WorkerService
 		auditLogEntriesService                 types.AuditLogEntryDataService
-		encoder                                encoding.ServerEncoderDecoder
 		logger                                 logging.Logger
 		router                                 routing.Router
 		tracer                                 tracing.Tracer
@@ -96,7 +94,6 @@ func ProvideHTTPServer(
 	serverSettings Config,
 	dataManager database.DataManager,
 	logger logging.Logger,
-	encoder encoding.ServerEncoderDecoder,
 	router routing.Router,
 	tracerProvider tracing.TracerProvider,
 	authService types.AuthService,
@@ -148,7 +145,6 @@ func ProvideHTTPServer(
 
 		// infra things,
 		tracer:         tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(loggerName)),
-		encoder:        encoder,
 		logger:         logging.EnsureLogger(logger).WithName(loggerName),
 		panicker:       panicking.NewProductionPanicker(),
 		httpServer:     provideStdLibHTTPServer(serverSettings.HTTPPort),

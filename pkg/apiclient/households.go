@@ -36,8 +36,6 @@ func (c *Client) SwitchActiveHousehold(ctx context.Context, householdID string) 
 		}
 	}
 
-	c.householdID = householdID
-
 	return nil
 }
 

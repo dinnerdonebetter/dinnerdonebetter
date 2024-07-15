@@ -16,14 +16,14 @@ type RecipeRatingDataManagerMock struct {
 }
 
 // RecipeRatingExists is a mock function.
-func (m *RecipeRatingDataManagerMock) RecipeRatingExists(ctx context.Context, recipeRatingID string) (bool, error) {
-	args := m.Called(ctx, recipeRatingID)
+func (m *RecipeRatingDataManagerMock) RecipeRatingExists(ctx context.Context, recipeID, recipeRatingID string) (bool, error) {
+	args := m.Called(ctx, recipeID, recipeRatingID)
 	return args.Bool(0), args.Error(1)
 }
 
 // GetRecipeRating is a mock function.
-func (m *RecipeRatingDataManagerMock) GetRecipeRating(ctx context.Context, recipeRatingID string) (*types.RecipeRating, error) {
-	args := m.Called(ctx, recipeRatingID)
+func (m *RecipeRatingDataManagerMock) GetRecipeRating(ctx context.Context, recipeID, recipeRatingID string) (*types.RecipeRating, error) {
+	args := m.Called(ctx, recipeID, recipeRatingID)
 	return args.Get(0).(*types.RecipeRating), args.Error(1)
 }
 
@@ -45,6 +45,6 @@ func (m *RecipeRatingDataManagerMock) UpdateRecipeRating(ctx context.Context, up
 }
 
 // ArchiveRecipeRating is a mock function.
-func (m *RecipeRatingDataManagerMock) ArchiveRecipeRating(ctx context.Context, recipeRatingID string) error {
-	return m.Called(ctx, recipeRatingID).Error(0)
+func (m *RecipeRatingDataManagerMock) ArchiveRecipeRating(ctx context.Context, recipeID, recipeRatingID string) error {
+	return m.Called(ctx, recipeID, recipeRatingID).Error(0)
 }

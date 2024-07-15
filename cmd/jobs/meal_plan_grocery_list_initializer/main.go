@@ -12,7 +12,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
 	"github.com/dinnerdonebetter/backend/internal/features/grocerylistpreparation"
-	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
@@ -25,13 +24,12 @@ import (
 )
 
 func doTheThing() error {
-	ctx := context.Background()
-
 	if strings.TrimSpace(strings.ToLower(os.Getenv("CEASE_OPERATION"))) == "true" {
 		slog.Info("CEASE_OPERATION is set to true, exiting")
 		return nil
 	}
 
+	ctx := context.Background()
 	logger := (&loggingcfg.Config{Level: logging.DebugLevel, Provider: loggingcfg.ProviderSlog}).ProvideLogger()
 
 	cfg, err := config.GetMealPlanGroceryListInitializerWorkerConfigFromGoogleCloudSecretManager(ctx)
@@ -79,9 +77,7 @@ func doTheThing() error {
 	mealPlanGroceryListInitializationWorker := workers.ProvideMealPlanGroceryListInitializer(
 		logger,
 		dataManager,
-		recipeanalysis.NewRecipeAnalyzer(logger, tracerProvider),
 		dataChangesPublisher,
-		analyticsEventReporter,
 		tracerProvider,
 		grocerylistpreparation.NewGroceryListCreator(logger, tracerProvider),
 	)

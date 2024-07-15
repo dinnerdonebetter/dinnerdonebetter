@@ -12,7 +12,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/database"
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
-	emailcfg "github.com/dinnerdonebetter/backend/internal/email/config"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	featureflagscfg "github.com/dinnerdonebetter/backend/internal/featureflags/config"
 	graphing "github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
@@ -90,7 +89,6 @@ func Build(
 		random.ProvidersRandom,
 		featureflagscfg.ProvidersFeatureFlags,
 		tracing.ProvidersTracing,
-		emailcfg.ProvidersEmail,
 		tracingcfg.ProvidersTracing,
 		observability.ProvidersObservability,
 		postgres.ProvidersPostgres,

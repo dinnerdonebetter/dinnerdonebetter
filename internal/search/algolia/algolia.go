@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -28,7 +27,6 @@ type (
 		circuitBreaker circuitbreaking.CircuitBreaker
 		client         *algolia.Index
 		DataType       *T
-		timeout        time.Duration
 	}
 )
 
@@ -48,7 +46,6 @@ func ProvideIndexManager[T search.Searchable](
 		tracer:         tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(fmt.Sprintf("search_%s", indexName))),
 		logger:         logging.EnsureLogger(logger).WithName(indexName),
 		client:         algolia.NewClient(cfg.AppID, cfg.APIKey).InitIndex(indexName),
-		timeout:        cfg.Timeout,
 		circuitBreaker: circuitBreaker,
 	}
 

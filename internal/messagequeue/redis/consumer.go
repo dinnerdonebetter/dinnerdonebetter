@@ -4,10 +4,9 @@ import (
 	"context"
 	"sync"
 
-	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	"github.com/go-redis/redis/v8"
 )
@@ -22,25 +21,21 @@ type (
 	}
 
 	redisConsumer struct {
-		encoder      encoding.ClientEncoder
 		logger       logging.Logger
 		handlerFunc  func(context.Context, []byte) error
 		subscription channelProvider
-		topic        string
 	}
 )
 
-func provideRedisConsumer(ctx context.Context, logger logging.Logger, redisClient subscriptionProvider, tracerProvider tracing.TracerProvider, topic string, handlerFunc func(context.Context, []byte) error) *redisConsumer {
+func provideRedisConsumer(ctx context.Context, logger logging.Logger, redisClient subscriptionProvider, topic string, handlerFunc func(context.Context, []byte) error) *redisConsumer {
 	subscription := redisClient.Subscribe(ctx, topic)
 
 	logger.Debug("subscribed to topic!")
 
 	return &redisConsumer{
-		topic:        topic,
 		handlerFunc:  handlerFunc,
 		subscription: subscription,
 		logger:       logging.EnsureLogger(logger),
-		encoder:      encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
 	}
 }
 
@@ -71,14 +66,13 @@ type consumerProvider struct {
 	logger           logging.Logger
 	consumerCache    map[string]messagequeue.Consumer
 	redisClient      subscriptionProvider
-	tracerProvider   tracing.TracerProvider
 	consumerCacheHat sync.RWMutex
 }
 
 // ProvideRedisConsumerProvider returns a ConsumerProvider for a given address.
-func ProvideRedisConsumerProvider(logger logging.Logger, tracerProvider tracing.TracerProvider, cfg Config) messagequeue.ConsumerProvider {
+func ProvideRedisConsumerProvider(logger logging.Logger, cfg Config) messagequeue.ConsumerProvider {
 	logger.WithValue("queue_addresses", cfg.QueueAddresses).
-		WithValue("username", cfg.Username).
+		WithValue(keys.UsernameKey, cfg.Username).
 		WithValue("password", cfg.Password).Info("setting up redis consumer")
 
 	var redisClient subscriptionProvider
@@ -97,10 +91,9 @@ func ProvideRedisConsumerProvider(logger logging.Logger, tracerProvider tracing.
 	}
 
 	return &consumerProvider{
-		logger:         logging.EnsureLogger(logger),
-		redisClient:    redisClient,
-		tracerProvider: tracerProvider,
-		consumerCache:  map[string]messagequeue.Consumer{},
+		logger:        logging.EnsureLogger(logger),
+		redisClient:   redisClient,
+		consumerCache: map[string]messagequeue.Consumer{},
 	}
 }
 
@@ -118,7 +111,7 @@ func (p *consumerProvider) ProvideConsumer(ctx context.Context, topic string, ha
 		return cachedPub, nil
 	}
 
-	c := provideRedisConsumer(ctx, logger, p.redisClient, p.tracerProvider, topic, handlerFunc)
+	c := provideRedisConsumer(ctx, logger, p.redisClient, topic, handlerFunc)
 	p.consumerCache[topic] = c
 
 	return c, nil

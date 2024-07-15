@@ -11,7 +11,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	"github.com/stripe/stripe-go/v75"
-	"github.com/stripe/stripe-go/v75/client"
 	"github.com/stripe/stripe-go/v75/webhook"
 )
 
@@ -31,7 +30,6 @@ type (
 	stripePaymentManager struct {
 		logger         logging.Logger
 		tracer         tracing.Tracer
-		client         *client.API
 		encoderDecoder encoding.ServerEncoderDecoder
 		webhookSecret  string
 	}
@@ -44,7 +42,6 @@ func ProvideStripePaymentManager(logger logging.Logger, tracerProvider tracing.T
 	}
 
 	return &stripePaymentManager{
-		client:         client.New(cfg.APIKey, nil),
 		webhookSecret:  cfg.WebhookSecret,
 		encoderDecoder: encoding.ProvideServerEncoderDecoder(logger, tracerProvider, encoding.ContentTypeJSON),
 		logger:         logging.EnsureLogger(logger),

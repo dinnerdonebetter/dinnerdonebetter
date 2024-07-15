@@ -8,7 +8,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -19,7 +18,6 @@ func buildRedisBackedConsumer(t *testing.T, ctx context.Context, cfg *Config, to
 
 	provider := ProvideRedisConsumerProvider(
 		logging.NewNoopLogger(),
-		tracing.NewNoopTracerProvider(),
 		*cfg,
 	)
 
@@ -104,7 +102,7 @@ func Test_consumerProvider_ProvideConsumer(T *testing.T) {
 			QueueAddresses: []string{t.Name()},
 		}
 
-		conPro := ProvideRedisConsumerProvider(logger, tracing.NewNoopTracerProvider(), cfg)
+		conPro := ProvideRedisConsumerProvider(logger, cfg)
 		require.NotNil(t, conPro)
 
 		ctx := context.Background()
@@ -122,7 +120,7 @@ func Test_consumerProvider_ProvideConsumer(T *testing.T) {
 			QueueAddresses: []string{t.Name()},
 		}
 
-		conPro := ProvideRedisConsumerProvider(logger, tracing.NewNoopTracerProvider(), cfg)
+		conPro := ProvideRedisConsumerProvider(logger, cfg)
 		require.NotNil(t, conPro)
 
 		ctx := context.Background()

@@ -20,10 +20,6 @@ const (
 	maxRetryWait  = time.Second
 )
 
-type authHeaderBuilder interface {
-	BuildRequestHeaders(ctx context.Context) (http.Header, error)
-}
-
 type defaultRoundTripper struct {
 	baseRoundTripper http.RoundTripper
 }

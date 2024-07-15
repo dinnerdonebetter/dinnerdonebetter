@@ -5,7 +5,6 @@ import (
 	"testing"
 	"time"
 
-	analyticsmock "github.com/dinnerdonebetter/backend/internal/analytics/mock"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
@@ -31,7 +30,6 @@ func TestProvideMealPlanTaskCreationEnsurerWorker(T *testing.T) {
 			&database.MockDatabase{},
 			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
-			&analyticsmock.EventReporter{},
 			tracing.NewNoopTracerProvider(),
 		)
 		assert.NotNil(t, actual)
@@ -49,7 +47,6 @@ func TestMealPlanTaskCreationEnsurerWorker_HandleMessage(T *testing.T) {
 			&database.MockDatabase{},
 			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
-			&analyticsmock.EventReporter{},
 			tracing.NewNoopTracerProvider(),
 		)
 		assert.NotNil(t, w)
@@ -76,7 +73,6 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 			&database.MockDatabase{},
 			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
-			&analyticsmock.EventReporter{},
 			tracing.NewNoopTracerProvider(),
 		)
 		assert.NotNil(t, w)
@@ -103,7 +99,6 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 			&database.MockDatabase{},
 			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
-			&analyticsmock.EventReporter{},
 			tracing.NewNoopTracerProvider(),
 		)
 		assert.NotNil(t, w)
@@ -252,7 +247,6 @@ func TestMealPlanTaskCreationEnsurerWorker_DetermineCreatableSteps(T *testing.T)
 			&database.MockDatabase{},
 			recipeanalysis.NewRecipeAnalyzer(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 			&mockpublishers.Publisher{},
-			&analyticsmock.EventReporter{},
 			tracing.NewNoopTracerProvider(),
 		)
 		assert.NotNil(t, w)

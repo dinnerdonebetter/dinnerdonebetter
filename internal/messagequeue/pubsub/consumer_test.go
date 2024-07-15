@@ -7,7 +7,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 
 	"cloud.google.com/go/pubsub"
@@ -52,7 +51,7 @@ func buildPubSubBackedConsumer(t *testing.T, ctx context.Context, topic string, 
 	require.NotNil(t, subscription)
 
 	logger := logging.NewNoopLogger()
-	provider := ProvidePubSubConsumerProvider(logger, tracing.NewNoopTracerProvider(), client)
+	provider := ProvidePubSubConsumerProvider(logger, client)
 	require.NotNil(t, provider)
 
 	publisher, err = provider.ProvideConsumer(ctx, topic, handlerFunc)

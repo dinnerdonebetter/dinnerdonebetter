@@ -55,7 +55,7 @@ func main() {
 		if err := os.RemoveAll(destinationDirectory); err != nil {
 			panic(err)
 		}
-		if err := os.MkdirAll(destinationDirectory, os.ModePerm); err != nil {
+		if err := os.MkdirAll(destinationDirectory, 0o750); err != nil {
 			panic(err)
 		}
 	}

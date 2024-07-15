@@ -23,7 +23,6 @@ func buildTestService() *service {
 		auditLogEntryIDFetcher:   func(req *http.Request) string { return "" },
 		encoderDecoder:           encoding.ProvideServerEncoderDecoder(nil, nil, encoding.ContentTypeJSON),
 		tracer:                   tracing.NewTracerForTest("test"),
-		cfg:                      &Config{},
 	}
 }
 
@@ -41,12 +40,10 @@ func TestProvideAuditLogEntriesService(T *testing.T) {
 			"BuildRouteParamStringIDFetcher",
 			AuditLogEntryIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
-		cfg := &Config{}
 
 		s, err := ProvideService(
 			ctx,
 			logger,
-			cfg,
 			&mocktypes.AuditLogEntryDataManagerMock{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,

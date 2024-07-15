@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/featureflags"
+	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
@@ -95,8 +97,10 @@ func NewFeatureFlagManager(cfg *Config, logger logging.Logger, tracerProvider tr
 
 // CanUseFeature returns whether a user can use a feature or not.
 func (f *featureFlagManager) CanUseFeature(ctx context.Context, userID, feature string) (bool, error) {
-	_, span := tracing.StartSpan(ctx)
+	_, span := f.tracer.StartSpan(ctx)
 	defer span.End()
+
+	logger := f.logger.WithValue(keys.UserIDKey, userID).WithValue("feature", feature)
 
 	if !f.circuitBreaker.CanProceed() {
 		return false, types.ErrCircuitBroken
@@ -105,7 +109,7 @@ func (f *featureFlagManager) CanUseFeature(ctx context.Context, userID, feature 
 	result, err := f.launchDarklyClient.BoolVariation(feature, ldcontext.New(userID), false)
 	if err != nil {
 		f.circuitBreaker.Failed()
-		return false, err
+		return false, observability.PrepareAndLogError(err, logger, span, "checking feature flag variation")
 	}
 
 	f.circuitBreaker.Succeeded()
@@ -114,8 +118,10 @@ func (f *featureFlagManager) CanUseFeature(ctx context.Context, userID, feature 
 
 // Identify identifies a user in LaunchDarkly.
 func (f *featureFlagManager) Identify(ctx context.Context, user *types.User) error {
-	_, span := tracing.StartSpan(ctx)
+	_, span := f.tracer.StartSpan(ctx)
 	defer span.End()
+
+	logger := f.logger.WithValue(keys.UserIDKey, user.ID)
 
 	if !f.circuitBreaker.CanProceed() {
 		return types.ErrCircuitBroken
@@ -131,7 +137,7 @@ func (f *featureFlagManager) Identify(ctx context.Context, user *types.User) err
 	)
 	if err != nil {
 		f.circuitBreaker.Failed()
-		return err
+		return observability.PrepareAndLogError(err, logger, span, "identifying user")
 	}
 
 	f.circuitBreaker.Succeeded()

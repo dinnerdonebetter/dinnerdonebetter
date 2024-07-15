@@ -55,8 +55,8 @@ func (g *groceryListCreator) GenerateGroceryListInputs(ctx context.Context, meal
 									minQty := float32(recipeScale.Mul(decimal.NewFromFloat32(ingredient.MinimumQuantity)).Truncate(2).InexactFloat64())
 									var maxQty *float32
 									if ingredient.MaximumQuantity != nil {
-										max := float32(recipeScale.Mul(decimal.NewFromFloat32(*ingredient.MaximumQuantity)).Truncate(2).InexactFloat64())
-										maxQty = &max
+										maximum := float32(recipeScale.Mul(decimal.NewFromFloat32(*ingredient.MaximumQuantity)).Truncate(2).InexactFloat64())
+										maxQty = &maximum
 									}
 
 									inputs[ingredient.Ingredient.ID] = &types.MealPlanGroceryListItemDatabaseCreationInput{

@@ -26,7 +26,7 @@ func writeSchemaToFile(schema *jsonschema.Schema, outputFilepath string) error {
 		return err
 	}
 
-	if writeErr := os.WriteFile(outputFilepath, encodedSchema, os.ModePerm); writeErr != nil {
+	if writeErr := os.WriteFile(outputFilepath, encodedSchema, 0o600); writeErr != nil {
 		return writeErr
 	}
 

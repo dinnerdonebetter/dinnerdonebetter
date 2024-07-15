@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/authentication"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
@@ -25,10 +24,7 @@ type (
 	// service manages our OAuth2 clients via HTTP.
 	service struct {
 		logger                    logging.Logger
-		cfg                       *Config
 		oauth2ClientDataManager   types.OAuth2ClientDataManager
-		userDataManager           types.UserDataManager
-		authenticator             authentication.Authenticator
 		encoderDecoder            encoding.ServerEncoderDecoder
 		urlClientIDExtractor      func(req *http.Request) string
 		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
@@ -42,8 +38,6 @@ type (
 func ProvideOAuth2ClientsService(
 	logger logging.Logger,
 	clientDataManager types.OAuth2ClientDataManager,
-	userDataManager types.UserDataManager,
-	authenticator authentication.Authenticator,
 	encoderDecoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
 	cfg *Config,
@@ -58,10 +52,7 @@ func ProvideOAuth2ClientsService(
 
 	s := &service{
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
-		cfg:                       cfg,
 		oauth2ClientDataManager:   clientDataManager,
-		userDataManager:           userDataManager,
-		authenticator:             authenticator,
 		encoderDecoder:            encoderDecoder,
 		urlClientIDExtractor:      routeParamManager.BuildRouteParamStringIDFetcher(OAuth2ClientIDURIParamKey),
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,

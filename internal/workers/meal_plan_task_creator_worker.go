@@ -3,9 +3,7 @@ package workers
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/analytics"
 	"github.com/dinnerdonebetter/backend/internal/database"
-	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/observability"
@@ -29,13 +27,11 @@ type (
 
 	// mealPlanTaskCreatorWorker ensurers meal plan tasks are created.
 	mealPlanTaskCreatorWorker struct {
-		logger                 logging.Logger
-		tracer                 tracing.Tracer
-		analyzer               recipeanalysis.RecipeAnalyzer
-		encoder                encoding.ClientEncoder
-		dataManager            database.DataManager
-		postUpdatesPublisher   messagequeue.Publisher
-		analyticsEventReporter analytics.EventReporter
+		logger               logging.Logger
+		tracer               tracing.Tracer
+		analyzer             recipeanalysis.RecipeAnalyzer
+		dataManager          database.DataManager
+		postUpdatesPublisher messagequeue.Publisher
 	}
 )
 
@@ -45,17 +41,14 @@ func ProvideMealPlanTaskCreationEnsurerWorker(
 	dataManager database.DataManager,
 	grapher recipeanalysis.RecipeAnalyzer,
 	postUpdatesPublisher messagequeue.Publisher,
-	analyticsEventReporter analytics.EventReporter,
 	tracerProvider tracing.TracerProvider,
 ) *mealPlanTaskCreatorWorker {
 	return &mealPlanTaskCreatorWorker{
-		logger:                 logging.EnsureLogger(logger).WithName(mealPlanTaskCreationEnsurerWorkerName),
-		tracer:                 tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(mealPlanTaskCreationEnsurerWorkerName)),
-		encoder:                encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
-		dataManager:            dataManager,
-		analyzer:               grapher,
-		postUpdatesPublisher:   postUpdatesPublisher,
-		analyticsEventReporter: analyticsEventReporter,
+		logger:               logging.EnsureLogger(logger).WithName(mealPlanTaskCreationEnsurerWorkerName),
+		tracer:               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(mealPlanTaskCreationEnsurerWorkerName)),
+		dataManager:          dataManager,
+		analyzer:             grapher,
+		postUpdatesPublisher: postUpdatesPublisher,
 	}
 }
 

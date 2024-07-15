@@ -348,7 +348,7 @@ func (s *service) SSOLoginCallbackHandler(res http.ResponseWriter, req *http.Req
 	fetchUserTimer.Stop()
 
 	params := req.URL.Query()
-	if params.Encode() == "" && req.Method == "POST" {
+	if params.Encode() == "" && req.Method == http.MethodPost {
 		if err = req.ParseForm(); err != nil {
 			observability.AcknowledgeError(err, logger, span, "parsing form")
 		}

@@ -147,7 +147,7 @@ var (
 
 func saveConfig(ctx context.Context, outputPath string, cfg *config.InstanceConfig, indent, validate bool) error {
 	/* #nosec G301 */
-	if err := os.MkdirAll(filepath.Dir(outputPath), 0o777); err != nil {
+	if err := os.MkdirAll(filepath.Dir(outputPath), 0o750); err != nil {
 		// okay, who gives a shit?
 		_ = err
 	}

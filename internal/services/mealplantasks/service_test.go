@@ -11,7 +11,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/routing/mock"
-	mealplaneventsservice "github.com/dinnerdonebetter/backend/internal/services/mealplanevents"
 	mealplansservice "github.com/dinnerdonebetter/backend/internal/services/mealplans"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 
@@ -39,10 +38,6 @@ func TestProvideMealPlansService(T *testing.T) {
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
 			mealplansservice.MealPlanIDURIParamKey,
-		).Return(func(*http.Request) string { return "" })
-		rpm.On(
-			"BuildRouteParamStringIDFetcher",
-			mealplaneventsservice.MealPlanEventIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",

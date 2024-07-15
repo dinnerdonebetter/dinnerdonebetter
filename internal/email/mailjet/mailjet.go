@@ -92,6 +92,7 @@ func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMes
 		return types.ErrCircuitBroken
 	}
 
+	logger := e.logger.WithValue("email.subject", details.Subject).WithValue("email.to_address", details.ToAddress)
 	tracing.AttachToSpan(span, "to_email", details.ToAddress)
 
 	messagesInfo := []mailjet.InfoMessagesV31{
@@ -113,7 +114,7 @@ func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMes
 
 	if _, err := e.client.SendMailV31(&mailjet.MessagesV31{Info: messagesInfo}); err != nil {
 		e.circuitBreaker.Failed()
-		return observability.PrepareError(err, span, "sending email")
+		return observability.PrepareAndLogError(err, logger, span, "sending email")
 	}
 
 	e.circuitBreaker.Succeeded()

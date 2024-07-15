@@ -4,10 +4,8 @@ import (
 	"context"
 	"testing"
 
-	analyticsmock "github.com/dinnerdonebetter/backend/internal/analytics/mock"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/features/grocerylistpreparation"
-	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
@@ -29,9 +27,7 @@ func TestProvideMealPlanGroceryListInitializer(T *testing.T) {
 		actual := ProvideMealPlanGroceryListInitializer(
 			logging.NewNoopLogger(),
 			&database.MockDatabase{},
-			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
-			&analyticsmock.EventReporter{},
 			tracing.NewNoopTracerProvider(),
 			&grocerylistpreparation.MockGroceryListCreator{},
 		)
@@ -48,9 +44,7 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 		w := ProvideMealPlanGroceryListInitializer(
 			logging.NewNoopLogger(),
 			&database.MockDatabase{},
-			&recipeanalysis.MockRecipeAnalyzer{},
 			&mockpublishers.Publisher{},
-			&analyticsmock.EventReporter{},
 			tracing.NewNoopTracerProvider(),
 			&grocerylistpreparation.MockGroceryListCreator{},
 		).(*mealPlanGroceryListInitializer)
@@ -258,9 +252,12 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 		).Return(firstMealPlanExpectedGroceryListItemInputs, nil)
 		w.groceryListCreator = mglm
 
+		pup := &mockpublishers.Publisher{}
+		w.postUpdatesPublisher = pup
+
 		for _, inputs := range expectedInputSets {
 			for _, input := range inputs {
-				mdm.MealPlanGroceryListItemDataManagerMock.On("CreateMealPlanGroceryListItem", testutils.ContextMatcher, input).Return((*types.MealPlanGroceryListItem)(nil), nil)
+				mdm.MealPlanGroceryListItemDataManagerMock.On("CreateMealPlanGroceryListItem", testutils.ContextMatcher, input).Return(fakes.BuildFakeMealPlanGroceryListItem(), nil)
 			}
 		}
 		w.dataManager = mdm

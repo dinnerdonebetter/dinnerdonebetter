@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
@@ -42,16 +41,11 @@ type (
 		dataChangesPublisher      messagequeue.Publisher
 		searchIndex               search.IndexSearcher[types.RecipeSearchSubset]
 		uploadManager             uploads.UploadManager
-		timeFunc                  func() time.Time
 		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
 		recipeIDFetcher           func(*http.Request) string
 		cfg                       *Config
 	}
 )
-
-func defaultTimeFunc() time.Time {
-	return time.Now()
-}
 
 var errInvalidConfig = errors.New("config cannot be nil")
 
@@ -98,7 +92,6 @@ func ProvideService(
 		recipeMediaDataManager:    recipeMediaDataManager,
 		dataChangesPublisher:      dataChangesPublisher,
 		encoderDecoder:            encoder,
-		timeFunc:                  defaultTimeFunc,
 		recipeAnalyzer:            recipeGrapher,
 		uploadManager:             uploader,
 		imageUploadProcessor:      imageUploadProcessor,

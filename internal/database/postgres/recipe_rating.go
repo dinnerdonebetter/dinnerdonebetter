@@ -16,11 +16,17 @@ var (
 )
 
 // RecipeRatingExists fetches whether a recipe rating exists from the database.
-func (q *Querier) RecipeRatingExists(ctx context.Context, recipeRatingID string) (exists bool, err error) {
+func (q *Querier) RecipeRatingExists(ctx context.Context, recipeID, recipeRatingID string) (exists bool, err error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
+
+	if recipeID == "" {
+		return false, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeRatingID == "" {
 		return false, ErrInvalidIDProvided
@@ -37,11 +43,17 @@ func (q *Querier) RecipeRatingExists(ctx context.Context, recipeRatingID string)
 }
 
 // GetRecipeRating fetches a recipe rating from the database.
-func (q *Querier) GetRecipeRating(ctx context.Context, recipeRatingID string) (*types.RecipeRating, error) {
+func (q *Querier) GetRecipeRating(ctx context.Context, recipeID, recipeRatingID string) (*types.RecipeRating, error) {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
+
+	if recipeID == "" {
+		return nil, ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeRatingID == "" {
 		return nil, ErrInvalidIDProvided
@@ -198,11 +210,17 @@ func (q *Querier) UpdateRecipeRating(ctx context.Context, updated *types.RecipeR
 }
 
 // ArchiveRecipeRating archives a recipe rating from the database by its ID.
-func (q *Querier) ArchiveRecipeRating(ctx context.Context, recipeRatingID string) error {
+func (q *Querier) ArchiveRecipeRating(ctx context.Context, recipeID, recipeRatingID string) error {
 	ctx, span := q.tracer.StartSpan(ctx)
 	defer span.End()
 
 	logger := q.logger.Clone()
+
+	if recipeID == "" {
+		return ErrInvalidIDProvided
+	}
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
 
 	if recipeRatingID == "" {
 		return ErrInvalidIDProvided

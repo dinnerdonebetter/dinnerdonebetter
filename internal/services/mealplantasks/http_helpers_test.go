@@ -46,10 +46,6 @@ func buildTestHelper(t *testing.T) *mealPlanEventsServiceHTTPRoutesTestHelper {
 		return helper.exampleMealPlan.ID
 	}
 
-	helper.service.mealPlanEventIDFetcher = func(*http.Request) string {
-		return helper.exampleMealPlanEvent.ID
-	}
-
 	helper.service.mealPlanTaskIDFetcher = func(*http.Request) string {
 		return helper.exampleMealPlanTask.ID
 	}

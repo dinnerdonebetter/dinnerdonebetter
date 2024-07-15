@@ -3,16 +3,14 @@ package workers
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/analytics"
 	"github.com/dinnerdonebetter/backend/internal/database"
-	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/features/grocerylistpreparation"
-	"github.com/dinnerdonebetter/backend/internal/features/recipeanalysis"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/hashicorp/go-multierror"
 )
@@ -29,14 +27,11 @@ type (
 
 	// mealPlanGroceryListInitializer ensurers meal plan tasks are created.
 	mealPlanGroceryListInitializer struct {
-		logger                 logging.Logger
-		tracer                 tracing.Tracer
-		analyzer               recipeanalysis.RecipeAnalyzer
-		encoder                encoding.ClientEncoder
-		dataManager            database.DataManager
-		postUpdatesPublisher   messagequeue.Publisher
-		analyticsEventReporter analytics.EventReporter
-		groceryListCreator     grocerylistpreparation.GroceryListCreator
+		logger               logging.Logger
+		tracer               tracing.Tracer
+		dataManager          database.DataManager
+		postUpdatesPublisher messagequeue.Publisher
+		groceryListCreator   grocerylistpreparation.GroceryListCreator
 	}
 )
 
@@ -44,21 +39,16 @@ type (
 func ProvideMealPlanGroceryListInitializer(
 	logger logging.Logger,
 	dataManager database.DataManager,
-	grapher recipeanalysis.RecipeAnalyzer,
 	postUpdatesPublisher messagequeue.Publisher,
-	analyticsEventReporter analytics.EventReporter,
 	tracerProvider tracing.TracerProvider,
 	groceryListCreator grocerylistpreparation.GroceryListCreator,
 ) MealPlanGroceryListInitializer {
 	return &mealPlanGroceryListInitializer{
-		logger:                 logging.EnsureLogger(logger).WithName(mealPlanGroceryListInitializerName),
-		tracer:                 tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(mealPlanGroceryListInitializerName)),
-		encoder:                encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
-		dataManager:            dataManager,
-		analyzer:               grapher,
-		postUpdatesPublisher:   postUpdatesPublisher,
-		analyticsEventReporter: analyticsEventReporter,
-		groceryListCreator:     groceryListCreator,
+		logger:               logging.EnsureLogger(logger).WithName(mealPlanGroceryListInitializerName),
+		tracer:               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(mealPlanGroceryListInitializerName)),
+		dataManager:          dataManager,
+		postUpdatesPublisher: postUpdatesPublisher,
+		groceryListCreator:   groceryListCreator,
 	}
 }
 
@@ -85,10 +75,11 @@ func (w *mealPlanGroceryListInitializer) InitializeGroceryListsForFinalizedMealP
 	for _, mealPlan := range mealPlans {
 		l := logger.WithValue(keys.MealPlanIDKey, mealPlan.ID)
 
-		dbInputs, groceryListCreationErr := w.groceryListCreator.GenerateGroceryListInputs(ctx, mealPlan)
-		if groceryListCreationErr != nil {
-			errorResult = multierror.Append(errorResult, groceryListCreationErr)
-			l.Error(groceryListCreationErr, "failed to generate grocery list inputs for meal plan")
+		var dbInputs []*types.MealPlanGroceryListItemDatabaseCreationInput
+		dbInputs, err = w.groceryListCreator.GenerateGroceryListInputs(ctx, mealPlan)
+		if err != nil {
+			errorResult = multierror.Append(errorResult, err)
+			l.Error(err, "failed to generate grocery list inputs for meal plan")
 			continue
 		}
 
@@ -96,10 +87,21 @@ func (w *mealPlanGroceryListInitializer) InitializeGroceryListsForFinalizedMealP
 		l.Info("creating grocery list items for meal plan")
 
 		for _, dbInput := range dbInputs {
-			if _, err = w.dataManager.CreateMealPlanGroceryListItem(ctx, dbInput); err != nil {
+			var createdItem *types.MealPlanGroceryListItem
+			createdItem, err = w.dataManager.CreateMealPlanGroceryListItem(ctx, dbInput)
+			if err != nil {
 				errorResult = multierror.Append(errorResult, err)
-				l.Error(groceryListCreationErr, "failed to create grocery list for meal plan")
+				l.Error(err, "failed to create grocery list for meal plan")
 				continue
+			}
+
+			if err = w.postUpdatesPublisher.Publish(ctx, &types.DataChangeMessage{
+				MealPlanGroceryListItem:   createdItem,
+				MealPlanGroceryListItemID: createdItem.ID,
+				EventType:                 types.MealPlanGroceryListItemCreatedCustomerEventType,
+				MealPlanID:                dbInput.BelongsToMealPlan,
+			}); err != nil {
+				l.Error(err, "failed to write update message for meal plan grocery list item")
 			}
 		}
 	}

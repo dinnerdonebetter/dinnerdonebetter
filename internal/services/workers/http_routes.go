@@ -4,7 +4,10 @@ import (
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/observability"
+	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
+
+	servertiming "github.com/mitchellh/go-server-timing"
 )
 
 // MealPlanFinalizationHandler finalizes a meal plan.
@@ -12,6 +15,7 @@ func (s *service) MealPlanFinalizationHandler(res http.ResponseWriter, req *http
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	logger.Info("meal plan finalization worker invoked")
 
@@ -19,8 +23,23 @@ func (s *service) MealPlanFinalizationHandler(res http.ResponseWriter, req *http
 		TraceID: span.SpanContext().TraceID().String(),
 	}
 
+	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
+		return
+	}
+	sessionContextTimer.Stop()
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+
 	var request *types.FinalizeMealPlansRequest
-	if err := s.encoderDecoder.DecodeRequest(ctx, req, &request); err != nil {
+	if err = s.encoderDecoder.DecodeRequest(ctx, req, &request); err != nil {
 		observability.AcknowledgeError(err, logger, span, "decoding request")
 		errRes := types.NewAPIErrorResponse("invalid request content", types.ErrDecodingRequestInput, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusBadRequest)
@@ -29,7 +48,8 @@ func (s *service) MealPlanFinalizationHandler(res http.ResponseWriter, req *http
 
 	response := &types.FinalizeMealPlansResponse{}
 	if request.ReturnCount {
-		count, err := s.mealPlanFinalizationWorker.FinalizeExpiredMealPlans(ctx, nil)
+		var count int
+		count, err = s.mealPlanFinalizationWorker.FinalizeExpiredMealPlans(ctx, nil)
 		if err != nil {
 			observability.AcknowledgeError(err, logger, span, "finalizing expired meal plans")
 			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
@@ -39,7 +59,7 @@ func (s *service) MealPlanFinalizationHandler(res http.ResponseWriter, req *http
 
 		response.Count = count
 	} else {
-		if err := s.mealPlanFinalizationWorker.FinalizeExpiredMealPlansWithoutReturningCount(ctx, nil); err != nil {
+		if err = s.mealPlanFinalizationWorker.FinalizeExpiredMealPlansWithoutReturningCount(ctx, nil); err != nil {
 			observability.AcknowledgeError(err, logger, span, "finalizing expired meal plans")
 			errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 			s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
@@ -62,6 +82,7 @@ func (s *service) MealPlanGroceryListInitializationHandler(res http.ResponseWrit
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	logger.Info("meal plan grocery list initialization worker invoked")
 
@@ -69,7 +90,22 @@ func (s *service) MealPlanGroceryListInitializationHandler(res http.ResponseWrit
 		TraceID: span.SpanContext().TraceID().String(),
 	}
 
-	if err := s.mealPlanGroceryListInitializer.InitializeGroceryListsForFinalizedMealPlans(ctx, nil); err != nil {
+	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
+		return
+	}
+	sessionContextTimer.Stop()
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+
+	if err = s.mealPlanGroceryListInitializer.InitializeGroceryListsForFinalizedMealPlans(ctx, nil); err != nil {
 		observability.AcknowledgeError(err, logger, span, "finalizing expired meal plans")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)
@@ -90,6 +126,7 @@ func (s *service) MealPlanTaskCreationHandler(res http.ResponseWriter, req *http
 	ctx, span := s.tracer.StartSpan(req.Context())
 	defer span.End()
 
+	timing := servertiming.FromContext(ctx)
 	logger := s.logger.WithRequest(req).WithSpan(span)
 	logger.Info("meal plan task creation worker invoked")
 
@@ -97,7 +134,22 @@ func (s *service) MealPlanTaskCreationHandler(res http.ResponseWriter, req *http
 		TraceID: span.SpanContext().TraceID().String(),
 	}
 
-	if err := s.mealPlanTaskCreatorWorker.CreateMealPlanTasksForFinalizedMealPlans(ctx, nil); err != nil {
+	// determine user ID.
+	sessionContextTimer := timing.NewMetric("session").WithDesc("fetch session context").Start()
+	sessionCtxData, err := s.sessionContextDataFetcher(req)
+	if err != nil {
+		observability.AcknowledgeError(err, logger, span, "retrieving session context data")
+		errRes := types.NewAPIErrorResponse("unauthenticated", types.ErrFetchingSessionContextData, responseDetails)
+		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusUnauthorized)
+		return
+	}
+	sessionContextTimer.Stop()
+
+	tracing.AttachSessionContextDataToSpan(span, sessionCtxData)
+	logger = sessionCtxData.AttachToLogger(logger)
+	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
+
+	if err = s.mealPlanTaskCreatorWorker.CreateMealPlanTasksForFinalizedMealPlans(ctx, nil); err != nil {
 		observability.AcknowledgeError(err, logger, span, "finalizing expired meal plans")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)

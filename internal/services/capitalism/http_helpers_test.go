@@ -7,9 +7,6 @@ import (
 	"testing"
 
 	"github.com/dinnerdonebetter/backend/internal/authorization"
-	"github.com/dinnerdonebetter/backend/internal/encoding"
-	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 	testutils "github.com/dinnerdonebetter/backend/tests/utils"
@@ -46,11 +43,6 @@ func buildTestHelper(t *testing.T) *capitalismServiceHTTPRoutesTestHelper {
 		HouseholdPermissions: map[string]authorization.HouseholdRolePermissionsChecker{
 			helper.exampleHousehold.ID: authorization.NewHouseholdRolePermissionChecker(authorization.HouseholdMemberRole.String()),
 		},
-	}
-
-	helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-	helper.service.sessionContextDataFetcher = func(*http.Request) (*types.SessionContextData, error) {
-		return sessionCtxData, nil
 	}
 
 	req := testutils.BuildTestRequest(t)

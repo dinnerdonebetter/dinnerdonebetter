@@ -21,8 +21,14 @@ type mockMessagePublisher struct {
 	mock.Mock
 }
 
+// Publish implements the interface.
 func (m *mockMessagePublisher) Publish(ctx context.Context, channel string, message any) *redis.IntCmd {
 	return m.Called(ctx, channel, message).Get(0).(*redis.IntCmd)
+}
+
+// Close implements the interface.
+func (m *mockMessagePublisher) Close() error {
+	return m.Called().Error(0)
 }
 
 func buildRedisBackedPublisher(t *testing.T, cfg *Config, topic string) messagequeue.Publisher {

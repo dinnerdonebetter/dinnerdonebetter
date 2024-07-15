@@ -25,7 +25,6 @@ type (
 	service struct {
 		logger                         logging.Logger
 		householdDataManager           types.HouseholdDataManager
-		householdInvitationDataManager types.HouseholdInvitationDataManager
 		householdMembershipDataManager types.HouseholdUserMembershipDataManager
 		tracer                         tracing.Tracer
 		encoderDecoder                 encoding.ServerEncoderDecoder
@@ -42,7 +41,6 @@ func ProvideService(
 	logger logging.Logger,
 	cfg Config,
 	householdDataManager types.HouseholdDataManager,
-	householdInvitationDataManager types.HouseholdInvitationDataManager,
 	householdMembershipDataManager types.HouseholdUserMembershipDataManager,
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
@@ -61,7 +59,6 @@ func ProvideService(
 		userIDFetcher:                  routeParamManager.BuildRouteParamStringIDFetcher(UserIDURIParamKey),
 		sessionContextDataFetcher:      authservice.FetchContextFromRequest,
 		householdDataManager:           householdDataManager,
-		householdInvitationDataManager: householdInvitationDataManager,
 		householdMembershipDataManager: householdMembershipDataManager,
 		encoderDecoder:                 encoder,
 		dataChangesPublisher:           dataChangesPublisher,

@@ -16,9 +16,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
-	"github.com/dinnerdonebetter/backend/internal/uploads"
-	"github.com/dinnerdonebetter/backend/internal/uploads/images"
-	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
@@ -36,7 +33,6 @@ type (
 
 	// service handles our users.
 	service struct {
-		householdDataManager               types.HouseholdDataManager
 		householdUserMembershipDataManager types.HouseholdUserMembershipDataManager
 		householdInvitationDataManager     types.HouseholdInvitationDataManager
 		passwordResetTokenDataManager      types.PasswordResetTokenDataManager
@@ -48,12 +44,9 @@ type (
 		analyticsReporter                  analytics.EventReporter
 		userDataManager                    types.UserDataManager
 		secretGenerator                    random.Generator
-		imageUploadProcessor               images.MediaUploadProcessor
-		uploadManager                      uploads.UploadManager
 		userIDFetcher                      func(*http.Request) string
 		authSettings                       *authservice.Config
 		sessionContextDataFetcher          func(*http.Request) (*types.SessionContextData, error)
-		cfg                                *Config
 		featureFlagManager                 featureflags.FeatureFlagManager
 	}
 )
@@ -63,17 +56,15 @@ var ErrNilConfig = errors.New("nil config provided")
 
 // ProvideUsersService builds a new UsersService.
 func ProvideUsersService(
-	ctx context.Context,
+	_ context.Context,
 	cfg *Config,
 	authSettings *authservice.Config,
 	logger logging.Logger,
 	userDataManager types.UserDataManager,
-	householdDataManager types.HouseholdDataManager,
 	householdInvitationDataManager types.HouseholdInvitationDataManager,
 	householdUserMembershipDataManager types.HouseholdUserMembershipDataManager,
 	authenticator authentication.Authenticator,
 	encoder encoding.ServerEncoderDecoder,
-	imageUploadProcessor images.MediaUploadProcessor,
 	routeParamManager routing.RouteParamManager,
 	tracerProvider tracing.TracerProvider,
 	publisherProvider messagequeue.PublisherProvider,
@@ -91,16 +82,9 @@ func ProvideUsersService(
 		return nil, fmt.Errorf("setting up users service data changes publisher: %w", err)
 	}
 
-	uploadManager, err := objectstorage.NewUploadManager(ctx, logger, tracerProvider, &cfg.Uploads.Storage, routeParamManager)
-	if err != nil {
-		return nil, fmt.Errorf("initializing users service upload manager: %w", err)
-	}
-
 	s := &service{
-		cfg:                                cfg,
 		logger:                             logging.EnsureLogger(logger).WithName(serviceName),
 		userDataManager:                    userDataManager,
-		householdDataManager:               householdDataManager,
 		householdInvitationDataManager:     householdInvitationDataManager,
 		authenticator:                      authenticator,
 		userIDFetcher:                      routeParamManager.BuildRouteParamStringIDFetcher(UserIDURIParamKey),
@@ -110,8 +94,6 @@ func ProvideUsersService(
 		secretGenerator:                    secretGenerator,
 		householdUserMembershipDataManager: householdUserMembershipDataManager,
 		tracer:                             tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
-		imageUploadProcessor:               imageUploadProcessor,
-		uploadManager:                      uploadManager,
 		dataChangesPublisher:               dataChangesPublisher,
 		passwordResetTokenDataManager:      passwordResetTokenDataManager,
 		featureFlagManager:                 featureFlagManager,

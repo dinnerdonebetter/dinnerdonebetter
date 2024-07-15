@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	serviceName string = "recipe_step_ingredients_service"
+	serviceName string = "recipe_step_completion_conditions_service"
 )
 
 var _ types.RecipeStepCompletionConditionDataService = (*service)(nil)

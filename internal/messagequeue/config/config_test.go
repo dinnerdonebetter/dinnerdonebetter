@@ -34,7 +34,7 @@ func TestProvideConsumerProvider(T *testing.T) {
 			},
 		}
 
-		provider, err := ProvideConsumerProvider(ctx, logger, tracing.NewNoopTracerProvider(), cfg)
+		provider, err := ProvideConsumerProvider(ctx, logger, cfg)
 		assert.NoError(t, err)
 		assert.NotNil(t, provider)
 	})
@@ -46,7 +46,7 @@ func TestProvideConsumerProvider(T *testing.T) {
 		logger := logging.NewNoopLogger()
 		cfg := &Config{}
 
-		provider, err := ProvideConsumerProvider(ctx, logger, tracing.NewNoopTracerProvider(), cfg)
+		provider, err := ProvideConsumerProvider(ctx, logger, cfg)
 		assert.Error(t, err)
 		assert.Nil(t, provider)
 	})

@@ -20,11 +20,9 @@ type CircuitBreaker interface {
 
 type BaseCircuitBreaker struct {
 	circuitBreaker *circuit.Breaker
-	name           string
 }
 
 type Config struct {
-	Name                     string  `json:"name"                                     toml:"name"`
 	CircuitBreakerErrorRate  float64 `json:"circuitBreakerErrorPercentage"            toml:"circuitBreaker_error_percentage"`
 	CircuitBreakerMinSamples int64   `json:"circuitBreakerMinimumOccurrenceThreshold" toml:"circuitBreaker_minimum_occurrence_threshold"`
 }
@@ -50,9 +48,12 @@ func ProvideCircuitBreaker(cfg *Config) CircuitBreaker {
 	cfg.EnsureDefaults()
 
 	return &BaseCircuitBreaker{
-		name: cfg.Name,
 		circuitBreaker: circuit.NewBreakerWithOptions(&circuit.Options{
-			ShouldTrip:    circuit.RateTripFunc(cfg.CircuitBreakerErrorRate, cfg.CircuitBreakerMinSamples),
+			ShouldTrip: func(cb *circuit.Breaker) bool {
+				samples := cb.Failures() + cb.Successes()
+				result := samples >= cfg.CircuitBreakerMinSamples && cb.ErrorRate() >= cfg.CircuitBreakerErrorRate
+				return result
+			},
 			WindowTime:    circuit.DefaultWindowTime,
 			WindowBuckets: circuit.DefaultWindowBuckets,
 		}),

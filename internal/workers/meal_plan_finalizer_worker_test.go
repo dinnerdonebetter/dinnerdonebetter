@@ -69,7 +69,7 @@ func TestChoresWorker_FinalizeExpiredMealPlansWithoutReturningCount(T *testing.T
 			testutils.ContextMatcher,
 		).Return(exampleMealPlans, nil)
 
-		mqm := &mockpublishers.Publisher{}
+		pup := &mockpublishers.Publisher{}
 
 		for _, mealPlan := range exampleMealPlans {
 			dbm.MealPlanDataManagerMock.On(
@@ -78,14 +78,16 @@ func TestChoresWorker_FinalizeExpiredMealPlansWithoutReturningCount(T *testing.T
 				mealPlan.ID,
 				mealPlan.BelongsToHousehold,
 			).Return(true, nil)
+
+			pup.On("Publish", testutils.ContextMatcher, mock.AnythingOfType("*types.DataChangeMessage")).Return(nil)
 		}
 
 		worker := newTestChoresWorker(t)
 		worker.dataManager = dbm
-		worker.postUpdatesPublisher = mqm
+		worker.postUpdatesPublisher = pup
 
 		assert.NoError(t, worker.FinalizeExpiredMealPlansWithoutReturningCount(ctx, body))
 
-		mock.AssertExpectationsForObjects(t, dbm, mqm)
+		mock.AssertExpectationsForObjects(t, dbm, pup)
 	})
 }

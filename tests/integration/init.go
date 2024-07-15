@@ -45,9 +45,7 @@ var (
 )
 
 func init() {
-	ctx, span := tracing.StartSpan(context.Background())
-	defer span.End()
-
+	ctx := context.Background()
 	logger := (&logcfg.Config{Provider: logcfg.ProviderSlog}).ProvideLogger()
 
 	parsedURLToUse = serverutils.DetermineServiceURL()

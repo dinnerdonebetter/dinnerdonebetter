@@ -13,7 +13,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 	"github.com/dinnerdonebetter/backend/internal/routing/mock"
 	"github.com/dinnerdonebetter/backend/pkg/types/mock"
 
@@ -56,7 +55,6 @@ func buildTestService(t *testing.T) *service {
 		encoderDecoder,
 		tracing.NewNoopTracerProvider(),
 		pp,
-		random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 		&featureflags.NoopFeatureFlagManager{},
 		analytics.NewNoopEventReporter(),
 		rpm,
@@ -101,7 +99,6 @@ func TestProvideService(T *testing.T) {
 			encoderDecoder,
 			tracing.NewNoopTracerProvider(),
 			pp,
-			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 			&featureflags.NoopFeatureFlagManager{},
 			analytics.NewNoopEventReporter(),
 			rpm,
@@ -148,7 +145,6 @@ func TestProvideService(T *testing.T) {
 			encoderDecoder,
 			tracing.NewNoopTracerProvider(),
 			pp,
-			random.NewGenerator(logging.NewNoopLogger(), tracing.NewNoopTracerProvider()),
 			&featureflags.NoopFeatureFlagManager{},
 			analytics.NewNoopEventReporter(),
 			rpm,

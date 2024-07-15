@@ -2,13 +2,9 @@ package capitalism
 
 import (
 	"context"
-	"errors"
 	"testing"
 
 	capitalismmock "github.com/dinnerdonebetter/backend/internal/capitalism/mock"
-	"github.com/dinnerdonebetter/backend/internal/encoding"
-	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
-	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	mockrouting "github.com/dinnerdonebetter/backend/internal/routing/mock"
@@ -20,12 +16,8 @@ import (
 func buildTestService() *service {
 	return &service{
 		logger:         logging.NewNoopLogger(),
-		encoderDecoder: encoding.ProvideServerEncoderDecoder(nil, nil, encoding.ContentTypeJSON),
 		tracer:         tracing.NewTracerForTest("test"),
 		paymentManager: capitalismmock.NewMockPaymentManager(),
-		cfg: &Config{
-			DataChangesTopicName: "data_changes",
-		},
 	}
 }
 
@@ -39,60 +31,16 @@ func TestProvideValidInstrumentsService(T *testing.T) {
 		logger := logging.NewNoopLogger()
 
 		rpm := mockrouting.NewRouteParamManager()
-
-		cfg := &Config{
-			DataChangesTopicName: "data_changes",
-		}
-
-		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
-
 		mpm := capitalismmock.NewMockPaymentManager()
 
-		s, err := ProvideService(
+		s := ProvideService(
 			ctx,
 			logger,
-			cfg,
-			mockencoding.NewMockEncoderDecoder(),
-			pp,
 			tracing.NewNoopTracerProvider(),
 			mpm,
 		)
-
 		assert.NotNil(t, s)
-		assert.NoError(t, err)
 
-		mock.AssertExpectationsForObjects(t, rpm, pp)
-	})
-
-	T.Run("with error providing data changes producer", func(t *testing.T) {
-		t.Parallel()
-
-		ctx := context.Background()
-		logger := logging.NewNoopLogger()
-
-		cfg := &Config{
-			DataChangesTopicName: "data_changes",
-		}
-
-		pp := &mockpublishers.ProducerProvider{}
-		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
-
-		mpm := capitalismmock.NewMockPaymentManager()
-
-		s, err := ProvideService(
-			ctx,
-			logger,
-			cfg,
-			mockencoding.NewMockEncoderDecoder(),
-			pp,
-			tracing.NewNoopTracerProvider(),
-			mpm,
-		)
-
-		assert.Nil(t, s)
-		assert.Error(t, err)
-
-		mock.AssertExpectationsForObjects(t, pp)
+		mock.AssertExpectationsForObjects(t, rpm)
 	})
 }

@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"sync"
 	"time"
 
@@ -22,8 +23,11 @@ var (
 	ErrEmptyInputProvided = errors.New("empty input provided")
 )
 
+var _ messagePublisher = (*redis.ClusterClient)(nil)
+
 type (
 	messagePublisher interface {
+		io.Closer
 		Publish(ctx context.Context, channel string, message any) *redis.IntCmd
 	}
 
@@ -37,7 +41,11 @@ type (
 )
 
 // Stop implements the Publisher interface.
-func (r *redisPublisher) Stop() {}
+func (r *redisPublisher) Stop() {
+	if err := r.publisher.Close(); err != nil {
+		r.logger.Error(err, "closing redis publisher")
+	}
+}
 
 // Publish implements the Publisher interface.
 func (r *redisPublisher) Publish(ctx context.Context, data any) error {
@@ -46,7 +54,7 @@ func (r *redisPublisher) Publish(ctx context.Context, data any) error {
 
 	var b bytes.Buffer
 	if err := r.encoder.Encode(ctx, &b, data); err != nil {
-		return observability.PrepareError(err, span, "encoding topic message")
+		return observability.PrepareAndLogError(err, r.logger, span, "encoding topic message")
 	}
 
 	return r.publisher.Publish(ctx, r.topic, b.Bytes()).Err()
@@ -127,5 +135,9 @@ func (p *publisherProvider) ProvidePublisher(topic string) (messagequeue.Publish
 	return pub, nil
 }
 
-// Close does nothing.
-func (p *publisherProvider) Close() {}
+// Close closes the publisher.
+func (p *publisherProvider) Close() {
+	if err := p.redisClient.Close(); err != nil {
+		p.logger.Error(err, "closing redis publisher")
+	}
+}

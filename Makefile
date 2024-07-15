@@ -11,13 +11,13 @@ TESTABLE_PACKAGE_LIST  := `go list $(THIS)/... | grep -Ev '(cmd|integration|mock
 ENVIRONMENTS_DIR       := environments
 TEST_COMPOSE_FILES_DIR := $(ENVIRONMENTS_DIR)/testing/compose_files
 GENERATED_QUERIES_DIR  := internal/database/postgres/generated
-SQL_GENERATOR_IMAGE    := sqlc/sqlc:1.25.0
-LINTER_IMAGE           := golangci/golangci-lint:v1.56.1
-CONTAINER_LINTER_IMAGE := openpolicyagent/conftest:v0.49.1
 CLOUD_JOBS             := meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator search_data_index_scheduler
 CLOUD_FUNCTIONS        := data_changes outbound_emailer search_indexer webhook_executor
 WIRE_TARGETS           := server/http/build
 CONTAINER_RUNNER       := docker
+SQL_GENERATOR_IMAGE    := sqlc/sqlc:1.26.0
+LINTER_IMAGE           := golangci/golangci-lint:v1.59.1
+CONTAINER_LINTER_IMAGE := openpolicyagent/conftest:v0.54.0
 
 ## non-PHONY folders/files
 

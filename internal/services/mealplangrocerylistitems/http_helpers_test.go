@@ -15,7 +15,7 @@ import (
 	testutils "github.com/dinnerdonebetter/backend/tests/utils"
 )
 
-type mealPlanEventsServiceHTTPRoutesTestHelper struct {
+type mealPlanGroceryListItemsServiceHTTPRoutesTestHelper struct {
 	ctx                            context.Context
 	req                            *http.Request
 	res                            *httptest.ResponseRecorder
@@ -23,14 +23,13 @@ type mealPlanEventsServiceHTTPRoutesTestHelper struct {
 	exampleUser                    *types.User
 	exampleHousehold               *types.Household
 	exampleMealPlan                *types.MealPlan
-	exampleMealPlanEvent           *types.MealPlanEvent
 	exampleMealPlanGroceryListItem *types.MealPlanGroceryListItem
 }
 
-func buildTestHelper(t *testing.T) *mealPlanEventsServiceHTTPRoutesTestHelper {
+func buildTestHelper(t *testing.T) *mealPlanGroceryListItemsServiceHTTPRoutesTestHelper {
 	t.Helper()
 
-	helper := &mealPlanEventsServiceHTTPRoutesTestHelper{}
+	helper := &mealPlanGroceryListItemsServiceHTTPRoutesTestHelper{}
 
 	helper.ctx = context.Background()
 	helper.service = buildTestService()
@@ -38,16 +37,10 @@ func buildTestHelper(t *testing.T) *mealPlanEventsServiceHTTPRoutesTestHelper {
 	helper.exampleHousehold = fakes.BuildFakeHousehold()
 	helper.exampleHousehold.BelongsToUser = helper.exampleUser.ID
 	helper.exampleMealPlan = fakes.BuildFakeMealPlan()
-	helper.exampleMealPlanEvent = fakes.BuildFakeMealPlanEvent()
-	helper.exampleMealPlanEvent.BelongsToMealPlan = helper.exampleMealPlan.ID
 	helper.exampleMealPlanGroceryListItem = fakes.BuildFakeMealPlanGroceryListItem()
 
 	helper.service.mealPlanIDFetcher = func(*http.Request) string {
 		return helper.exampleMealPlan.ID
-	}
-
-	helper.service.mealPlanEventIDFetcher = func(*http.Request) string {
-		return helper.exampleMealPlanEvent.ID
 	}
 
 	helper.service.mealPlanGroceryListItemIDFetcher = func(*http.Request) string {
