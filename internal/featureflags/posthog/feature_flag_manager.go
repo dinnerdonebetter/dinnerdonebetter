@@ -8,6 +8,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/featureflags"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/posthog/posthog-go"
@@ -21,23 +22,27 @@ var (
 
 type (
 	Config struct {
-		ProjectAPIKey  string `json:"projectAPIKey"  toml:"project_api_key"`
-		PersonalAPIKey string `json:"personalAPIKey" toml:"personal_api_key"`
+		ProjectAPIKey        string                 `json:"projectAPIKey"        toml:"project_api_key"`
+		PersonalAPIKey       string                 `json:"personalAPIKey"       toml:"personal_api_key"`
+		CircuitBreakerConfig circuitbreaking.Config `json:"circuitBreakerConfig" toml:"circuit_breaker_config"`
 	}
 
 	// featureFlagManager implements the feature flag interface.
 	featureFlagManager struct {
-		logger        logging.Logger
-		tracer        tracing.Tracer
-		posthogClient posthog.Client
+		logger         logging.Logger
+		tracer         tracing.Tracer
+		posthogClient  posthog.Client
+		circuitBreaker circuitbreaking.CircuitBreaker
 	}
 )
 
 // NewFeatureFlagManager constructs a new featureFlagManager.
-func NewFeatureFlagManager(cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider, configModifiers ...func(config *posthog.Config)) (featureflags.FeatureFlagManager, error) {
+func NewFeatureFlagManager(cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider, circuitBreaker circuitbreaking.CircuitBreaker, configModifiers ...func(config *posthog.Config)) (featureflags.FeatureFlagManager, error) {
 	if cfg == nil {
 		return nil, ErrNilConfig
 	}
+
+	cfg.CircuitBreakerConfig.EnsureDefaults()
 
 	if cfg.ProjectAPIKey == "" {
 		return nil, fmt.Errorf("missing credential 'ProjectAPIKey': %w", ErrMissingCredentials)
@@ -64,9 +69,10 @@ func NewFeatureFlagManager(cfg *Config, logger logging.Logger, tracerProvider tr
 	}
 
 	ffm := &featureFlagManager{
-		posthogClient: client,
-		logger:        logger,
-		tracer:        tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("posthog_feature_flag_manager")),
+		posthogClient:  client,
+		circuitBreaker: circuitBreaker,
+		logger:         logger,
+		tracer:         tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer("posthog_feature_flag_manager")),
 	}
 
 	return ffm, nil
@@ -77,15 +83,21 @@ func (f *featureFlagManager) CanUseFeature(ctx context.Context, userID, feature 
 	_, span := tracing.StartSpan(ctx)
 	defer span.End()
 
+	if !f.circuitBreaker.CanProceed() {
+		return false, types.ErrServiceHasCircuitBroken
+	}
+
 	flagEnabled, err := f.posthogClient.IsFeatureEnabled(posthog.FeatureFlagPayload{
 		Key:        feature,
 		DistinctId: userID,
 	})
 	if err != nil {
+		f.circuitBreaker.Failed()
 		return false, fmt.Errorf("failed to determine if feature is enabled: %w", err)
 	}
 
 	if enabled, ok := flagEnabled.(bool); ok {
+		f.circuitBreaker.Failed()
 		return enabled, nil
 	}
 
@@ -97,11 +109,15 @@ func (f *featureFlagManager) Identify(ctx context.Context, user *types.User) err
 	_, span := tracing.StartSpan(ctx)
 	defer span.End()
 
+	if !f.circuitBreaker.CanProceed() {
+		return types.ErrServiceHasCircuitBroken
+	}
+
 	if user == nil {
 		return ErrNilUser
 	}
 
-	return f.posthogClient.Enqueue(posthog.Identify{
+	err := f.posthogClient.Enqueue(posthog.Identify{
 		DistinctId: user.ID,
 		Properties: map[string]any{
 			"username":   user.Username,
@@ -109,6 +125,13 @@ func (f *featureFlagManager) Identify(ctx context.Context, user *types.User) err
 			"last_name":  user.LastName,
 		},
 	})
+	if err != nil {
+		f.circuitBreaker.Failed()
+		return err
+	}
+
+	f.circuitBreaker.Succeeded()
+	return nil
 }
 
 // Close closes the PostHog client.

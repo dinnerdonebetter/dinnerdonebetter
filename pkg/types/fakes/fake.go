@@ -4,7 +4,7 @@ import (
 	"math"
 	"time"
 
-	"github.com/dinnerdonebetter/backend/internal/identifiers"
+	"github.com/dinnerdonebetter/backend/internal/pkg/identifiers"
 
 	fake "github.com/brianvoe/gofakeit/v7"
 )
