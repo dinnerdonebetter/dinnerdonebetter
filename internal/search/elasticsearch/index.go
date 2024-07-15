@@ -11,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/elastic/go-elasticsearch/v8/esapi"
 )
@@ -25,12 +26,16 @@ func (sm *indexManager[T]) Index(ctx context.Context, id string, value any) erro
 	_, span := sm.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if sm.circuitBreaker.CannotProceed() {
+		return types.ErrCircuitBroken
+	}
+
 	logger := sm.logger.WithValue("id", id).WithValue("value", value)
 	logger.Debug("adding to index")
 
 	b, err := json.Marshal(value)
 	if err != nil {
-		println("fart")
+		return err
 	}
 
 	res, err := esapi.IndexRequest{
@@ -48,63 +53,27 @@ func (sm *indexManager[T]) Index(ctx context.Context, id string, value any) erro
 		Header:              nil,
 	}.Do(ctx, sm.esClient)
 	if err != nil {
+		sm.circuitBreaker.Failed()
 		return observability.PrepareError(err, span, "indexing value")
 	}
 
 	if res.StatusCode != http.StatusCreated && res.StatusCode != http.StatusOK {
+		sm.circuitBreaker.Failed()
 		return observability.PrepareError(errors.New(res.String()), span, "indexing value")
 	}
 
+	sm.circuitBreaker.Succeeded()
 	return nil
-}
-
-type matchCondition struct {
-	Query string `json:"query"`
-}
-
-type matchQuery map[string]matchCondition
-
-type wildcardCondition struct {
-	Value string `json:"value"`
-}
-
-type wildcardQuery map[string]wildcardCondition
-
-type condition struct {
-	Match    matchQuery     `json:"match,omitempty"`
-	Wildcard *wildcardQuery `json:"wildcard,omitempty"`
-}
-
-type should struct {
-	Should []condition `json:"should"`
-}
-
-type queryContainer struct {
-	Bool should `json:"bool"`
-}
-
-type searchQuery struct {
-	Query queryContainer `json:"query"`
-}
-
-type esHit struct {
-	ID         string          `json:"_id"`
-	Source     json.RawMessage `json:"_source"`
-	Highlights json.RawMessage `json:"highlight"`
-	Sort       []any           `json:"sort"`
-}
-
-type esResponse struct {
-	Hits struct {
-		Hits  []*esHit
-		Total struct{ Value int }
-	}
 }
 
 // search executes search queries.
 func (sm *indexManager[T]) search(ctx context.Context, query string) (results []*T, err error) {
 	_, span := sm.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if sm.circuitBreaker.CannotProceed() {
+		return nil, types.ErrCircuitBroken
+	}
 
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 	logger := sm.logger.WithValue(keys.SearchQueryKey, query)
@@ -140,32 +109,38 @@ func (sm *indexManager[T]) search(ctx context.Context, query string) (results []
 	}()
 
 	if err != nil {
+		sm.circuitBreaker.Failed()
 		return nil, observability.PrepareError(err, span, "querying elasticsearch successfully")
 	}
 
 	if res.IsError() {
 		var e map[string]any
 		if err = json.NewDecoder(res.Body).Decode(&e); err != nil {
+			sm.circuitBreaker.Failed()
 			return nil, observability.PrepareError(err, span, "invalid response from elasticsearch")
 		}
 
 		err = errors.New(strings.Join(res.Warnings(), ", "))
+		sm.circuitBreaker.Failed()
 		return nil, observability.PrepareError(err, span, "querying elasticsearch")
 	}
 
 	var r esResponse
 	if err = json.NewDecoder(res.Body).Decode(&r); err != nil {
+		sm.circuitBreaker.Failed()
 		return nil, observability.PrepareError(err, span, "decoding response")
 	}
 
 	for _, hit := range r.Hits.Hits {
 		var c *T
 		if err = json.Unmarshal(hit.Source, &c); err != nil {
+			sm.circuitBreaker.Failed()
 			return nil, observability.PrepareError(err, span, "decoding response")
 		}
 		resultIDs = append(resultIDs, c)
 	}
 
+	sm.circuitBreaker.Succeeded()
 	return resultIDs, nil
 }
 
@@ -184,6 +159,10 @@ func (sm *indexManager[T]) Delete(ctx context.Context, id string) error {
 	_, span := sm.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if sm.circuitBreaker.CannotProceed() {
+		return types.ErrCircuitBroken
+	}
+
 	logger := sm.logger.WithValue("id", id)
 
 	_, err := esapi.DeleteRequest{
@@ -191,10 +170,12 @@ func (sm *indexManager[T]) Delete(ctx context.Context, id string) error {
 		DocumentID: id,
 	}.Do(ctx, sm.esClient)
 	if err != nil {
+		sm.circuitBreaker.Failed()
 		return observability.PrepareError(err, span, "deleting from elasticsearch")
 	}
 
 	logger.Debug("removed from index")
 
+	sm.circuitBreaker.Succeeded()
 	return nil
 }
