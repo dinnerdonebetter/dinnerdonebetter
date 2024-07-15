@@ -7,6 +7,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/analytics"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/posthog/posthog-go"
@@ -17,8 +18,6 @@ const (
 )
 
 var (
-	// ErrNilConfig indicates a nil config was provided.
-	ErrNilConfig = errors.New("nil Posthog configuration")
 	// ErrEmptyAPIToken indicates an empty API token was provided.
 	ErrEmptyAPIToken = errors.New("empty API token")
 )
@@ -26,19 +25,16 @@ var (
 type (
 	// EventReporter is a PostHog-backed EventReporter.
 	EventReporter struct {
-		tracer tracing.Tracer
-		logger logging.Logger
-		client posthog.Client
+		tracer         tracing.Tracer
+		logger         logging.Logger
+		client         posthog.Client
+		circuitBreaker circuitbreaking.CircuitBreaker
 	}
 )
 
 // NewPostHogEventReporter returns a new PostHog-backed EventReporter.
-func NewPostHogEventReporter(logger logging.Logger, tracerProvider tracing.TracerProvider, cfg *Config, configModifiers ...func(*posthog.Config)) (analytics.EventReporter, error) {
-	if cfg == nil {
-		return nil, ErrNilConfig
-	}
-
-	if cfg.APIKey == "" {
+func NewPostHogEventReporter(logger logging.Logger, tracerProvider tracing.TracerProvider, apiKey string, circuitBreaker circuitbreaking.CircuitBreaker, configModifiers ...func(*posthog.Config)) (analytics.EventReporter, error) {
+	if apiKey == "" {
 		return nil, ErrEmptyAPIToken
 	}
 
@@ -47,15 +43,16 @@ func NewPostHogEventReporter(logger logging.Logger, tracerProvider tracing.Trace
 		f(&phc)
 	}
 
-	client, err := posthog.NewWithConfig(cfg.APIKey, phc)
+	client, err := posthog.NewWithConfig(apiKey, phc)
 	if err != nil {
 		return nil, err
 	}
 
 	c := &EventReporter{
-		tracer: tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(name)),
-		logger: logging.EnsureLogger(logger).WithName(name),
-		client: client,
+		tracer:         tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(name)),
+		logger:         logging.EnsureLogger(logger).WithName(name),
+		client:         client,
+		circuitBreaker: circuitBreaker,
 	}
 
 	return c, nil
@@ -73,15 +70,26 @@ func (c *EventReporter) AddUser(ctx context.Context, userID string, properties m
 	_, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if c.circuitBreaker.CannotProceed() {
+		return types.ErrCircuitBroken
+	}
+
 	props := posthog.NewProperties()
 	for k, v := range properties {
 		props.Set(k, v)
 	}
 
-	return c.client.Enqueue(posthog.Identify{
+	err := c.client.Enqueue(posthog.Identify{
 		DistinctId: userID,
 		Properties: props,
 	})
+	if err != nil {
+		c.circuitBreaker.Failed()
+		return err
+	}
+
+	c.circuitBreaker.Succeeded()
+	return nil
 }
 
 // EventOccurred associates events with a user.
@@ -89,14 +97,25 @@ func (c *EventReporter) EventOccurred(ctx context.Context, event types.ServiceEv
 	_, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if c.circuitBreaker.CannotProceed() {
+		return types.ErrCircuitBroken
+	}
+
 	props := posthog.NewProperties()
 	for k, v := range properties {
 		props.Set(k, v)
 	}
 
-	return c.client.Enqueue(posthog.Capture{
+	err := c.client.Enqueue(posthog.Capture{
 		DistinctId: userID,
 		Event:      string(event),
 		Properties: props,
 	})
+	if err != nil {
+		c.circuitBreaker.Failed()
+		return err
+	}
+
+	c.circuitBreaker.Succeeded()
+	return nil
 }

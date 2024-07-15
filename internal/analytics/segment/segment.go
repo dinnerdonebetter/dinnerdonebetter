@@ -7,6 +7,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/analytics"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	segment "github.com/segmentio/analytics-go/v3"
@@ -24,22 +25,24 @@ var (
 type (
 	// EventReporter is a Segment-backed EventReporter.
 	EventReporter struct {
-		tracer tracing.Tracer
-		logger logging.Logger
-		client segment.Client
+		tracer         tracing.Tracer
+		logger         logging.Logger
+		client         segment.Client
+		circuitBreaker circuitbreaking.CircuitBreaker
 	}
 )
 
 // NewSegmentEventReporter returns a new Segment-backed EventReporter.
-func NewSegmentEventReporter(logger logging.Logger, tracerProvider tracing.TracerProvider, apiKey string) (analytics.EventReporter, error) {
+func NewSegmentEventReporter(logger logging.Logger, tracerProvider tracing.TracerProvider, apiKey string, circuitBreaker circuitbreaking.CircuitBreaker) (analytics.EventReporter, error) {
 	if apiKey == "" {
 		return nil, ErrEmptyAPIToken
 	}
 
 	c := &EventReporter{
-		tracer: tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(name)),
-		logger: logging.EnsureLogger(logger).WithName(name),
-		client: segment.New(apiKey),
+		tracer:         tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(name)),
+		logger:         logging.EnsureLogger(logger).WithName(name),
+		client:         segment.New(apiKey),
+		circuitBreaker: circuitBreaker,
 	}
 
 	return c, nil
@@ -57,6 +60,10 @@ func (c *EventReporter) AddUser(ctx context.Context, userID string, properties m
 	_, span := c.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if c.circuitBreaker.CannotProceed() {
+		return types.ErrCircuitBroken
+	}
+
 	t := segment.NewTraits()
 	for k, v := range properties {
 		t.Set(k, v)
@@ -64,17 +71,28 @@ func (c *EventReporter) AddUser(ctx context.Context, userID string, properties m
 
 	i := segment.NewIntegrations().EnableAll()
 
-	return c.client.Enqueue(segment.Identify{
+	err := c.client.Enqueue(segment.Identify{
 		UserId:       userID,
 		Traits:       t,
 		Integrations: i,
 	})
+	if err != nil {
+		c.circuitBreaker.Failed()
+		return err
+	}
+
+	c.circuitBreaker.Succeeded()
+	return nil
 }
 
 // EventOccurred associates events with a user.
 func (c *EventReporter) EventOccurred(ctx context.Context, event types.ServiceEventType, userID string, properties map[string]any) error {
 	_, span := c.tracer.StartSpan(ctx)
 	defer span.End()
+
+	if c.circuitBreaker.CannotProceed() {
+		return types.ErrCircuitBroken
+	}
 
 	p := segment.NewProperties()
 	for k, v := range properties {
@@ -83,10 +101,17 @@ func (c *EventReporter) EventOccurred(ctx context.Context, event types.ServiceEv
 
 	i := segment.NewIntegrations().EnableAll()
 
-	return c.client.Enqueue(segment.Track{
+	err := c.client.Enqueue(segment.Track{
 		Event:        string(event),
 		UserId:       userID,
 		Properties:   p,
 		Integrations: i,
 	})
+	if err != nil {
+		c.circuitBreaker.Failed()
+		return err
+	}
+
+	c.circuitBreaker.Succeeded()
+	return nil
 }

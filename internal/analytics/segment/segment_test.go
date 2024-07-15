@@ -6,6 +6,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
@@ -20,7 +21,7 @@ func TestNewSegmentEventReporter(T *testing.T) {
 
 		logger := logging.NewNoopLogger()
 
-		collector, err := NewSegmentEventReporter(logger, tracing.NewNoopTracerProvider(), t.Name())
+		collector, err := NewSegmentEventReporter(logger, tracing.NewNoopTracerProvider(), t.Name(), circuitbreaking.NewNoopCircuitBreaker())
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 	})
@@ -30,7 +31,7 @@ func TestNewSegmentEventReporter(T *testing.T) {
 
 		logger := logging.NewNoopLogger()
 
-		collector, err := NewSegmentEventReporter(logger, tracing.NewNoopTracerProvider(), "")
+		collector, err := NewSegmentEventReporter(logger, tracing.NewNoopTracerProvider(), "", circuitbreaking.NewNoopCircuitBreaker())
 		require.Error(t, err)
 		require.Nil(t, collector)
 	})
@@ -44,7 +45,7 @@ func TestSegmentEventReporter_Close(T *testing.T) {
 
 		logger := logging.NewNoopLogger()
 
-		collector, err := NewSegmentEventReporter(logger, tracing.NewNoopTracerProvider(), t.Name())
+		collector, err := NewSegmentEventReporter(logger, tracing.NewNoopTracerProvider(), t.Name(), circuitbreaking.NewNoopCircuitBreaker())
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 
@@ -65,7 +66,7 @@ func TestSegmentEventReporter_AddUser(T *testing.T) {
 			"test.name": t.Name(),
 		}
 
-		collector, err := NewSegmentEventReporter(logger, tracing.NewNoopTracerProvider(), t.Name())
+		collector, err := NewSegmentEventReporter(logger, tracing.NewNoopTracerProvider(), t.Name(), circuitbreaking.NewNoopCircuitBreaker())
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 
@@ -86,7 +87,7 @@ func TestSegmentEventReporter_EventOccurred(T *testing.T) {
 			"test.name": t.Name(),
 		}
 
-		collector, err := NewSegmentEventReporter(logger, tracing.NewNoopTracerProvider(), t.Name())
+		collector, err := NewSegmentEventReporter(logger, tracing.NewNoopTracerProvider(), t.Name(), circuitbreaking.NewNoopCircuitBreaker())
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 
