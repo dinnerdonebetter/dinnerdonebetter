@@ -132,7 +132,7 @@ func TestFeatureFlagManager_CanUseFeature(T *testing.T) {
 		require.NoError(t, err)
 
 		actual, err := ffm.CanUseFeature(ctx, exampleUsername, t.Name())
-		assert.NoError(t, err)
+		assert.Error(t, err)
 		assert.False(t, actual)
 	})
 }
