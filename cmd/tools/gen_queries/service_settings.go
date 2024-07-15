@@ -24,63 +24,66 @@ var serviceSettingsColumns = []string{
 	archivedAtColumn,
 }
 
-func buildServiceSettingQueries() []*Query {
-	insertColumns := filterForInsert(serviceSettingsColumns)
+func buildServiceSettingQueries(database string) []*Query {
+	switch database {
+	case postgres:
 
-	return []*Query{
-		{
-			Annotation: QueryAnnotation{
-				Name: "ArchiveServiceSetting",
-				Type: ExecRowsType,
+		insertColumns := filterForInsert(serviceSettingsColumns)
+
+		return []*Query{
+			{
+				Annotation: QueryAnnotation{
+					Name: "ArchiveServiceSetting",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s = sqlc.arg(%s);`,
+					serviceSettingsTableName,
+					archivedAtColumn,
+					currentTimeExpression,
+					idColumn,
+					idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s = sqlc.arg(%s);`,
-				serviceSettingsTableName,
-				archivedAtColumn,
-				currentTimeExpression,
-				idColumn,
-				idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "CreateServiceSetting",
-				Type: ExecType,
-			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
+			{
+				Annotation: QueryAnnotation{
+					Name: "CreateServiceSetting",
+					Type: ExecType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
 	%s
 ) VALUES (
 	%s
 );`,
-				serviceSettingsTableName,
-				strings.Join(insertColumns, ",\n\t"),
-				strings.Join(applyToEach(insertColumns, func(_ int, s string) string {
-					return fmt.Sprintf("sqlc.arg(%s)", s)
-				}), ",\n\t"),
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "CheckServiceSettingExistence",
-				Type: OneType,
+					serviceSettingsTableName,
+					strings.Join(insertColumns, ",\n\t"),
+					strings.Join(applyToEach(insertColumns, func(_ int, s string) string {
+						return fmt.Sprintf("sqlc.arg(%s)", s)
+					}), ",\n\t"),
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
+			{
+				Annotation: QueryAnnotation{
+					Name: "CheckServiceSettingExistence",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
 	SELECT %s.%s
 	FROM %s
 	WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s)
 );`,
-				serviceSettingsTableName, idColumn,
-				serviceSettingsTableName,
-				serviceSettingsTableName, archivedAtColumn,
-				serviceSettingsTableName, idColumn, idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetServiceSettings",
-				Type: ManyType,
+					serviceSettingsTableName, idColumn,
+					serviceSettingsTableName,
+					serviceSettingsTableName, archivedAtColumn,
+					serviceSettingsTableName, idColumn, idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetServiceSettings",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
 	%s,
 	%s
@@ -88,56 +91,59 @@ FROM %s
 WHERE %s.%s IS NULL
 	%s
 %s;`,
-				strings.Join(applyToEach(serviceSettingsColumns, func(i int, s string) string {
-					return fmt.Sprintf("%s.%s", serviceSettingsTableName, s)
-				}), ",\n\t"),
-				buildFilterCountSelect(serviceSettingsTableName, true, true),
-				buildTotalCountSelect(serviceSettingsTableName, true),
-				serviceSettingsTableName,
-				serviceSettingsTableName, archivedAtColumn,
-				buildFilterConditions(
+					strings.Join(applyToEach(serviceSettingsColumns, func(i int, s string) string {
+						return fmt.Sprintf("%s.%s", serviceSettingsTableName, s)
+					}), ",\n\t"),
+					buildFilterCountSelect(serviceSettingsTableName, true, true),
+					buildTotalCountSelect(serviceSettingsTableName, true),
 					serviceSettingsTableName,
-					true,
-				),
-				offsetLimitAddendum,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetServiceSetting",
-				Type: OneType,
+					serviceSettingsTableName, archivedAtColumn,
+					buildFilterConditions(
+						serviceSettingsTableName,
+						true,
+					),
+					offsetLimitAddendum,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetServiceSetting",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s);`,
-				strings.Join(applyToEach(serviceSettingsColumns, func(i int, s string) string {
-					return fmt.Sprintf("%s.%s", serviceSettingsTableName, s)
-				}), ",\n\t"),
-				serviceSettingsTableName,
-				serviceSettingsTableName, archivedAtColumn,
-				serviceSettingsTableName, idColumn, idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "SearchForServiceSettings",
-				Type: ManyType,
+					strings.Join(applyToEach(serviceSettingsColumns, func(i int, s string) string {
+						return fmt.Sprintf("%s.%s", serviceSettingsTableName, s)
+					}), ",\n\t"),
+					serviceSettingsTableName,
+					serviceSettingsTableName, archivedAtColumn,
+					serviceSettingsTableName, idColumn, idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "SearchForServiceSettings",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 WHERE %s.%s IS NULL
 	AND %s.%s %s
 LIMIT 50;`,
-				strings.Join(applyToEach(serviceSettingsColumns, func(i int, s string) string {
-					return fmt.Sprintf("%s.%s", serviceSettingsTableName, s)
-				}), ",\n\t"),
-				serviceSettingsTableName,
-				serviceSettingsTableName, archivedAtColumn,
-				serviceSettingsTableName, nameColumn, buildILIKEForArgument("name_query"),
-			)),
-		},
+					strings.Join(applyToEach(serviceSettingsColumns, func(i int, s string) string {
+						return fmt.Sprintf("%s.%s", serviceSettingsTableName, s)
+					}), ",\n\t"),
+					serviceSettingsTableName,
+					serviceSettingsTableName, archivedAtColumn,
+					serviceSettingsTableName, nameColumn, buildILIKEForArgument("name_query"),
+				)),
+			},
+		}
+	default:
+		return nil
 	}
 }

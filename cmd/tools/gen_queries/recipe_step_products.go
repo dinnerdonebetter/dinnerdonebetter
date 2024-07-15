@@ -36,59 +36,62 @@ var recipeStepProductsColumns = []string{
 	belongsToRecipeStepColumn,
 }
 
-func buildRecipeStepProductsQueries() []*Query {
-	insertColumns := filterForInsert(recipeStepProductsColumns)
+func buildRecipeStepProductsQueries(database string) []*Query {
+	switch database {
+	case postgres:
 
-	fullSelectColumns := mergeColumns(
-		applyToEach(filterFromSlice(recipeStepProductsColumns, measurementUnitColumn), func(i int, s string) string {
-			return fmt.Sprintf("%s.%s", recipeStepProductsTableName, s)
-		}),
-		applyToEach(validMeasurementUnitsColumns, func(i int, s string) string {
-			return fmt.Sprintf("%s.%s as valid_measurement_unit_%s", validMeasurementUnitsTableName, s, s)
-		}),
-		3,
-	)
+		insertColumns := filterForInsert(recipeStepProductsColumns)
 
-	return []*Query{
-		{
-			Annotation: QueryAnnotation{
-				Name: "ArchiveRecipeStepProduct",
-				Type: ExecRowsType,
+		fullSelectColumns := mergeColumns(
+			applyToEach(filterFromSlice(recipeStepProductsColumns, measurementUnitColumn), func(i int, s string) string {
+				return fmt.Sprintf("%s.%s", recipeStepProductsTableName, s)
+			}),
+			applyToEach(validMeasurementUnitsColumns, func(i int, s string) string {
+				return fmt.Sprintf("%s.%s as valid_measurement_unit_%s", validMeasurementUnitsTableName, s, s)
+			}),
+			3,
+		)
+
+		return []*Query{
+			{
+				Annotation: QueryAnnotation{
+					Name: "ArchiveRecipeStepProduct",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s IS NULL AND %s = sqlc.arg(%s) AND %s = sqlc.arg(%s);`,
+					recipeStepProductsTableName,
+					archivedAtColumn,
+					currentTimeExpression,
+					archivedAtColumn,
+					belongsToRecipeStepColumn,
+					belongsToRecipeStepColumn,
+					idColumn,
+					idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s IS NULL AND %s = sqlc.arg(%s) AND %s = sqlc.arg(%s);`,
-				recipeStepProductsTableName,
-				archivedAtColumn,
-				currentTimeExpression,
-				archivedAtColumn,
-				belongsToRecipeStepColumn,
-				belongsToRecipeStepColumn,
-				idColumn,
-				idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "CreateRecipeStepProduct",
-				Type: ExecType,
-			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
+			{
+				Annotation: QueryAnnotation{
+					Name: "CreateRecipeStepProduct",
+					Type: ExecType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
 	%s
 ) VALUES (
 	%s
 );`,
-				recipeStepProductsTableName,
-				strings.Join(insertColumns, ",\n\t"),
-				strings.Join(applyToEach(insertColumns, func(i int, s string) string {
-					return fmt.Sprintf("sqlc.arg(%s)", s)
-				}), ",\n\t"),
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "CheckRecipeStepProductExistence",
-				Type: OneType,
+					recipeStepProductsTableName,
+					strings.Join(insertColumns, ",\n\t"),
+					strings.Join(applyToEach(insertColumns, func(i int, s string) string {
+						return fmt.Sprintf("sqlc.arg(%s)", s)
+					}), ",\n\t"),
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
+			{
+				Annotation: QueryAnnotation{
+					Name: "CheckRecipeStepProductExistence",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
 	SELECT %s.%s
 	FROM %s
 		JOIN %s ON %s.%s=%s.%s
@@ -102,26 +105,26 @@ func buildRecipeStepProductsQueries() []*Query {
 		AND %s.%s IS NULL
 		AND %s.%s = sqlc.arg(%s)
 );`,
-				recipeStepProductsTableName, idColumn,
-				recipeStepProductsTableName,
-				recipeStepsTableName, recipeStepProductsTableName, belongsToRecipeStepColumn, recipeStepsTableName, idColumn,
-				recipesTableName, recipeStepsTableName, belongsToRecipeColumn, recipesTableName, idColumn,
-				recipeStepProductsTableName, archivedAtColumn,
-				recipeStepProductsTableName, belongsToRecipeStepColumn, recipeStepIDColumn,
-				recipeStepProductsTableName, idColumn, recipeStepProductIDColumn,
-				recipeStepsTableName, archivedAtColumn,
-				recipeStepsTableName, belongsToRecipeColumn, recipeIDColumn,
-				recipeStepsTableName, idColumn, recipeStepIDColumn,
-				recipesTableName, archivedAtColumn,
-				recipesTableName, idColumn, recipeIDColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetRecipeStepProductsForRecipe",
-				Type: ManyType,
+					recipeStepProductsTableName, idColumn,
+					recipeStepProductsTableName,
+					recipeStepsTableName, recipeStepProductsTableName, belongsToRecipeStepColumn, recipeStepsTableName, idColumn,
+					recipesTableName, recipeStepsTableName, belongsToRecipeColumn, recipesTableName, idColumn,
+					recipeStepProductsTableName, archivedAtColumn,
+					recipeStepProductsTableName, belongsToRecipeStepColumn, recipeStepIDColumn,
+					recipeStepProductsTableName, idColumn, recipeStepProductIDColumn,
+					recipeStepsTableName, archivedAtColumn,
+					recipeStepsTableName, belongsToRecipeColumn, recipeIDColumn,
+					recipeStepsTableName, idColumn, recipeStepIDColumn,
+					recipesTableName, archivedAtColumn,
+					recipesTableName, idColumn, recipeIDColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetRecipeStepProductsForRecipe",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 	JOIN %s ON %s.%s=%s.%s
@@ -132,24 +135,24 @@ WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s)
 	AND %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s);`,
-				strings.Join(fullSelectColumns, ",\n\t"),
-				recipeStepProductsTableName,
-				recipeStepsTableName, recipeStepProductsTableName, belongsToRecipeStepColumn, recipeStepsTableName, idColumn,
-				recipesTableName, recipeStepsTableName, belongsToRecipeColumn, recipesTableName, idColumn,
-				validMeasurementUnitsTableName, recipeStepProductsTableName, measurementUnitColumn, validMeasurementUnitsTableName, idColumn,
-				recipeStepProductsTableName, archivedAtColumn,
-				recipeStepsTableName, archivedAtColumn,
-				recipeStepsTableName, belongsToRecipeColumn, recipeIDColumn,
-				recipesTableName, archivedAtColumn,
-				recipesTableName, idColumn, recipeIDColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetRecipeStepProducts",
-				Type: ManyType,
+					strings.Join(fullSelectColumns, ",\n\t"),
+					recipeStepProductsTableName,
+					recipeStepsTableName, recipeStepProductsTableName, belongsToRecipeStepColumn, recipeStepsTableName, idColumn,
+					recipesTableName, recipeStepsTableName, belongsToRecipeColumn, recipesTableName, idColumn,
+					validMeasurementUnitsTableName, recipeStepProductsTableName, measurementUnitColumn, validMeasurementUnitsTableName, idColumn,
+					recipeStepProductsTableName, archivedAtColumn,
+					recipeStepsTableName, archivedAtColumn,
+					recipeStepsTableName, belongsToRecipeColumn, recipeIDColumn,
+					recipesTableName, archivedAtColumn,
+					recipesTableName, idColumn, recipeIDColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetRecipeStepProducts",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
 	(
 		SELECT COUNT(%s.%s)
@@ -178,37 +181,37 @@ WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s)
 	%s
 %s;`,
-				strings.Join(fullSelectColumns, ",\n\t"),
-				recipeStepProductsTableName, idColumn,
-				recipeStepProductsTableName,
-				recipeStepProductsTableName, archivedAtColumn,
-				recipeStepProductsTableName, belongsToRecipeStepColumn, recipeStepIDColumn,
-				strings.Join(strings.Split(buildFilterConditions(recipeStepProductsTableName, true), "\n"), "\n\t\t"),
-				recipeStepProductsTableName, idColumn,
-				recipeStepProductsTableName,
-				recipeStepProductsTableName, archivedAtColumn,
-				recipeStepProductsTableName, belongsToRecipeStepColumn, recipeStepIDColumn,
-				recipeStepProductsTableName,
-				recipeStepsTableName, recipeStepProductsTableName, belongsToRecipeStepColumn, recipeStepsTableName, idColumn,
-				recipesTableName, recipeStepsTableName, belongsToRecipeColumn, recipesTableName, idColumn,
-				validMeasurementUnitsTableName, recipeStepProductsTableName, measurementUnitColumn, validMeasurementUnitsTableName, idColumn,
-				recipeStepProductsTableName, archivedAtColumn,
-				recipeStepProductsTableName, belongsToRecipeStepColumn, recipeStepIDColumn,
-				recipeStepsTableName, archivedAtColumn,
-				recipeStepsTableName, idColumn, recipeStepIDColumn,
-				recipeStepsTableName, belongsToRecipeColumn, recipeIDColumn,
-				recipesTableName, archivedAtColumn,
-				recipesTableName, idColumn, recipeIDColumn,
-				buildFilterConditions(recipeStepProductsTableName, true),
-				offsetLimitAddendum,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetRecipeStepProduct",
-				Type: OneType,
+					strings.Join(fullSelectColumns, ",\n\t"),
+					recipeStepProductsTableName, idColumn,
+					recipeStepProductsTableName,
+					recipeStepProductsTableName, archivedAtColumn,
+					recipeStepProductsTableName, belongsToRecipeStepColumn, recipeStepIDColumn,
+					strings.Join(strings.Split(buildFilterConditions(recipeStepProductsTableName, true), "\n"), "\n\t\t"),
+					recipeStepProductsTableName, idColumn,
+					recipeStepProductsTableName,
+					recipeStepProductsTableName, archivedAtColumn,
+					recipeStepProductsTableName, belongsToRecipeStepColumn, recipeStepIDColumn,
+					recipeStepProductsTableName,
+					recipeStepsTableName, recipeStepProductsTableName, belongsToRecipeStepColumn, recipeStepsTableName, idColumn,
+					recipesTableName, recipeStepsTableName, belongsToRecipeColumn, recipesTableName, idColumn,
+					validMeasurementUnitsTableName, recipeStepProductsTableName, measurementUnitColumn, validMeasurementUnitsTableName, idColumn,
+					recipeStepProductsTableName, archivedAtColumn,
+					recipeStepProductsTableName, belongsToRecipeStepColumn, recipeStepIDColumn,
+					recipeStepsTableName, archivedAtColumn,
+					recipeStepsTableName, idColumn, recipeStepIDColumn,
+					recipeStepsTableName, belongsToRecipeColumn, recipeIDColumn,
+					recipesTableName, archivedAtColumn,
+					recipesTableName, idColumn, recipeIDColumn,
+					buildFilterConditions(recipeStepProductsTableName, true),
+					offsetLimitAddendum,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetRecipeStepProduct",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 	JOIN %s ON %s.%s=%s.%s
@@ -222,41 +225,44 @@ WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s)
 	AND %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s);`,
-				strings.Join(fullSelectColumns, ",\n\t"),
-				recipeStepProductsTableName,
-				recipeStepsTableName, recipeStepProductsTableName, belongsToRecipeStepColumn, recipeStepsTableName, idColumn,
-				recipesTableName, recipeStepsTableName, belongsToRecipeColumn, recipesTableName, idColumn,
-				validMeasurementUnitsTableName, recipeStepProductsTableName, measurementUnitColumn, validMeasurementUnitsTableName, idColumn,
-				recipeStepProductsTableName, archivedAtColumn,
-				recipeStepProductsTableName, belongsToRecipeStepColumn, recipeStepIDColumn,
-				recipeStepProductsTableName, idColumn, recipeStepProductIDColumn,
-				recipeStepsTableName, archivedAtColumn,
-				recipeStepsTableName, belongsToRecipeColumn, recipeIDColumn,
-				recipeStepsTableName, idColumn, recipeStepIDColumn,
-				recipesTableName, archivedAtColumn,
-				recipesTableName, idColumn, recipeIDColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "UpdateRecipeStepProduct",
-				Type: ExecRowsType,
+					strings.Join(fullSelectColumns, ",\n\t"),
+					recipeStepProductsTableName,
+					recipeStepsTableName, recipeStepProductsTableName, belongsToRecipeStepColumn, recipeStepsTableName, idColumn,
+					recipesTableName, recipeStepsTableName, belongsToRecipeColumn, recipesTableName, idColumn,
+					validMeasurementUnitsTableName, recipeStepProductsTableName, measurementUnitColumn, validMeasurementUnitsTableName, idColumn,
+					recipeStepProductsTableName, archivedAtColumn,
+					recipeStepProductsTableName, belongsToRecipeStepColumn, recipeStepIDColumn,
+					recipeStepProductsTableName, idColumn, recipeStepProductIDColumn,
+					recipeStepsTableName, archivedAtColumn,
+					recipeStepsTableName, belongsToRecipeColumn, recipeIDColumn,
+					recipeStepsTableName, idColumn, recipeStepIDColumn,
+					recipesTableName, archivedAtColumn,
+					recipesTableName, idColumn, recipeIDColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+			{
+				Annotation: QueryAnnotation{
+					Name: "UpdateRecipeStepProduct",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s,
 	%s = %s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s)
 	AND %s = sqlc.arg(%s);`,
-				recipeStepProductsTableName,
-				strings.Join(applyToEach(filterForUpdate(recipeStepProductsColumns, belongsToRecipeStepColumn), func(i int, s string) string {
-					return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
-				}), ",\n\t"),
-				lastUpdatedAtColumn, currentTimeExpression,
-				archivedAtColumn,
-				belongsToRecipeStepColumn, belongsToRecipeStepColumn,
-				idColumn, idColumn,
-			)),
-		},
+					recipeStepProductsTableName,
+					strings.Join(applyToEach(filterForUpdate(recipeStepProductsColumns, belongsToRecipeStepColumn), func(i int, s string) string {
+						return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
+					}), ",\n\t"),
+					lastUpdatedAtColumn, currentTimeExpression,
+					archivedAtColumn,
+					belongsToRecipeStepColumn, belongsToRecipeStepColumn,
+					idColumn, idColumn,
+				)),
+			},
+		}
+	default:
+		return nil
 	}
 }

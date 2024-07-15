@@ -110,75 +110,78 @@ WHERE %s IS NULL
 	return buildRawQuery(builder)
 }
 
-func buildUsersQueries() []*Query {
-	insertColumns := filterForInsert(usersColumns,
-		"password_last_changed_at",
-		"email_address_verified_at",
-		lastAcceptedTOSColumn,
-		lastAcceptedPrivacyPolicyColumn,
-		lastIndexedAtColumn,
-	)
+func buildUsersQueries(database string) []*Query {
+	switch database {
+	case postgres:
 
-	return []*Query{
-		{
-			Annotation: QueryAnnotation{
-				Name: "AcceptPrivacyPolicyForUser",
-				Type: ExecType,
+		insertColumns := filterForInsert(usersColumns,
+			"password_last_changed_at",
+			"email_address_verified_at",
+			lastAcceptedTOSColumn,
+			lastAcceptedPrivacyPolicyColumn,
+			lastIndexedAtColumn,
+		)
+
+		return []*Query{
+			{
+				Annotation: QueryAnnotation{
+					Name: "AcceptPrivacyPolicyForUser",
+					Type: ExecType,
+				},
+				Content: buildUserUpdateQuery(lastAcceptedPrivacyPolicyColumn, nil),
 			},
-			Content: buildUserUpdateQuery(lastAcceptedPrivacyPolicyColumn, nil),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "AcceptTermsOfServiceForUser",
-				Type: ExecType,
+			{
+				Annotation: QueryAnnotation{
+					Name: "AcceptTermsOfServiceForUser",
+					Type: ExecType,
+				},
+				Content: buildUserUpdateQuery(lastAcceptedTOSColumn, nil),
 			},
-			Content: buildUserUpdateQuery(lastAcceptedTOSColumn, nil),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "ArchiveUser",
-				Type: ExecRowsType,
+			{
+				Annotation: QueryAnnotation{
+					Name: "ArchiveUser",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s IS NULL AND %s = sqlc.arg(%s);`,
+					usersTableName,
+					archivedAtColumn,
+					currentTimeExpression,
+					archivedAtColumn,
+					idColumn,
+					idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s IS NULL AND %s = sqlc.arg(%s);`,
-				usersTableName,
-				archivedAtColumn,
-				currentTimeExpression,
-				archivedAtColumn,
-				idColumn,
-				idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "ArchiveUserMemberships",
-				Type: ExecRowsType,
+			{
+				Annotation: QueryAnnotation{
+					Name: "ArchiveUserMemberships",
+					Type: ExecRowsType,
+				},
+				Content: buildUpdateHouseholdMembershipsQuery(belongsToUserColumn, []string{}),
 			},
-			Content: buildUpdateHouseholdMembershipsQuery(belongsToUserColumn, []string{}),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "CreateUser",
-				Type: ExecType,
-			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s
+			{
+				Annotation: QueryAnnotation{
+					Name: "CreateUser",
+					Type: ExecType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s
 (
 	%s
 ) VALUES (
 	%s
 );`,
-				usersTableName,
-				strings.Join(insertColumns, ",\n\t"),
-				strings.Join(applyToEach(insertColumns, func(_ int, s string) string {
-					return fmt.Sprintf("sqlc.arg(%s)", s)
-				}), ",\n\t"),
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetAdminUserByUsername",
-				Type: OneType,
+					usersTableName,
+					strings.Join(insertColumns, ",\n\t"),
+					strings.Join(applyToEach(insertColumns, func(_ int, s string) string {
+						return fmt.Sprintf("sqlc.arg(%s)", s)
+					}), ",\n\t"),
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetAdminUserByUsername",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 WHERE %s.%s IS NULL
@@ -186,112 +189,112 @@ WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s)
 	AND %s.%s IS NOT NULL;`,
 
-				strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
-					return fmt.Sprintf("%s.%s", usersTableName, s)
-				}), ",\n\t"),
-				usersTableName,
-				usersTableName, archivedAtColumn,
-				usersTableName, serviceRoleColumn,
-				usersTableName, usernameColumn, usernameColumn,
-				usersTableName, twoFactorSecretVerifiedAtColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetUserByEmail",
-				Type: OneType,
+					strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
+						return fmt.Sprintf("%s.%s", usersTableName, s)
+					}), ",\n\t"),
+					usersTableName,
+					usersTableName, archivedAtColumn,
+					usersTableName, serviceRoleColumn,
+					usersTableName, usernameColumn, usernameColumn,
+					usersTableName, twoFactorSecretVerifiedAtColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetUserByEmail",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s);`,
-				strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
-					return fmt.Sprintf("%s.%s", usersTableName, s)
-				}), ",\n\t"),
-				usersTableName,
-				usersTableName, archivedAtColumn,
-				usersTableName, emailAddressColumn, emailAddressColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetUserByEmailAddressVerificationToken",
-				Type: OneType,
+					strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
+						return fmt.Sprintf("%s.%s", usersTableName, s)
+					}), ",\n\t"),
+					usersTableName,
+					usersTableName, archivedAtColumn,
+					usersTableName, emailAddressColumn, emailAddressColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetUserByEmailAddressVerificationToken",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s);`,
-				strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
-					return fmt.Sprintf("%s.%s", usersTableName, s)
-				}), ",\n\t"),
-				usersTableName,
-				usersTableName, archivedAtColumn,
-				usersTableName, emailAddressVerificationTokenColumn, emailAddressVerificationTokenColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetUserByID",
-				Type: OneType,
+					strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
+						return fmt.Sprintf("%s.%s", usersTableName, s)
+					}), ",\n\t"),
+					usersTableName,
+					usersTableName, archivedAtColumn,
+					usersTableName, emailAddressVerificationTokenColumn, emailAddressVerificationTokenColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetUserByID",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s);`,
-				strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
-					return fmt.Sprintf("%s.%s", usersTableName, s)
-				}), ",\n\t"),
-				usersTableName,
-				usersTableName, archivedAtColumn,
-				usersTableName, idColumn, idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetUserByUsername",
-				Type: OneType,
+					strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
+						return fmt.Sprintf("%s.%s", usersTableName, s)
+					}), ",\n\t"),
+					usersTableName,
+					usersTableName, archivedAtColumn,
+					usersTableName, idColumn, idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetUserByUsername",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s);`,
-				strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
-					return fmt.Sprintf("%s.%s", usersTableName, s)
-				}), ",\n\t"),
-				usersTableName,
-				usersTableName, archivedAtColumn,
-				usersTableName, usernameColumn, usernameColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetEmailVerificationTokenByUserID",
-				Type: OneType,
+					strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
+						return fmt.Sprintf("%s.%s", usersTableName, s)
+					}), ",\n\t"),
+					usersTableName,
+					usersTableName, archivedAtColumn,
+					usersTableName, usernameColumn, usernameColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetEmailVerificationTokenByUserID",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s.%s
 FROM %s
 WHERE %s.%s IS NULL
 	AND %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s);`,
-				usersTableName, emailAddressVerificationTokenColumn,
-				usersTableName,
-				usersTableName, archivedAtColumn,
-				usersTableName, emailAddressVerifiedAtColumn,
-				usersTableName, idColumn, idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetUsers",
-				Type: ManyType,
+					usersTableName, emailAddressVerificationTokenColumn,
+					usersTableName,
+					usersTableName, archivedAtColumn,
+					usersTableName, emailAddressVerifiedAtColumn,
+					usersTableName, idColumn, idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetUsers",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
 	%s,
 	%s
@@ -299,299 +302,302 @@ FROM %s
 WHERE %s.%s IS NULL
 	%s
 %s;`,
-				strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
-					return fmt.Sprintf("%s.%s", usersTableName, s)
-				}), ",\n\t"),
-				buildFilterCountSelect(usersTableName, true, true),
-				buildTotalCountSelect(usersTableName, true),
-				usersTableName,
-				usersTableName, archivedAtColumn,
-				buildFilterConditions(
+					strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
+						return fmt.Sprintf("%s.%s", usersTableName, s)
+					}), ",\n\t"),
+					buildFilterCountSelect(usersTableName, true, true),
+					buildTotalCountSelect(usersTableName, true),
 					usersTableName,
-					true,
-				),
-				offsetLimitAddendum,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetUserIDsNeedingIndexing",
-				Type: ManyType,
+					usersTableName, archivedAtColumn,
+					buildFilterConditions(
+						usersTableName,
+						true,
+					),
+					offsetLimitAddendum,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT %s.%s
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetUserIDsNeedingIndexing",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT %s.%s
 FROM %s
 WHERE %s.%s IS NULL
 	AND %s.%s IS NULL
 	OR %s.%s < %s - '24 hours'::INTERVAL;`,
-				usersTableName, idColumn,
-				usersTableName,
-				usersTableName, archivedAtColumn,
-				usersTableName, lastIndexedAtColumn,
-				usersTableName, lastIndexedAtColumn, currentTimeExpression,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetUserWithUnverifiedTwoFactor",
-				Type: OneType,
+					usersTableName, idColumn,
+					usersTableName,
+					usersTableName, archivedAtColumn,
+					usersTableName, lastIndexedAtColumn,
+					usersTableName, lastIndexedAtColumn, currentTimeExpression,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetUserWithUnverifiedTwoFactor",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s)
 	AND %s.%s IS NULL;`,
-				strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
-					return fmt.Sprintf("%s.%s", usersTableName, s)
-				}), ",\n\t"),
-				usersTableName,
-				usersTableName, archivedAtColumn,
-				usersTableName, idColumn, idColumn,
-				usersTableName, twoFactorSecretVerifiedAtColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetUserWithVerifiedTwoFactor",
-				Type: OneType,
+					strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
+						return fmt.Sprintf("%s.%s", usersTableName, s)
+					}), ",\n\t"),
+					usersTableName,
+					usersTableName, archivedAtColumn,
+					usersTableName, idColumn, idColumn,
+					usersTableName, twoFactorSecretVerifiedAtColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetUserWithVerifiedTwoFactor",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s)
 	AND %s.%s IS NOT NULL;`,
-				strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
-					return fmt.Sprintf("%s.%s", usersTableName, s)
-				}), ",\n\t"),
-				usersTableName,
-				usersTableName, archivedAtColumn,
-				usersTableName, idColumn, idColumn,
-				usersTableName, twoFactorSecretVerifiedAtColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "MarkEmailAddressAsVerified",
-				Type: ExecType,
+					strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
+						return fmt.Sprintf("%s.%s", usersTableName, s)
+					}), ",\n\t"),
+					usersTableName,
+					usersTableName, archivedAtColumn,
+					usersTableName, idColumn, idColumn,
+					usersTableName, twoFactorSecretVerifiedAtColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+			{
+				Annotation: QueryAnnotation{
+					Name: "MarkEmailAddressAsVerified",
+					Type: ExecType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s = %s,
 	%s = %s
 WHERE %s IS NULL
 	AND %s IS NULL
 	AND %s = sqlc.arg(%s)
 	AND %s = sqlc.arg(%s);`,
-				usersTableName,
-				emailAddressVerifiedAtColumn, currentTimeExpression,
-				lastUpdatedAtColumn, currentTimeExpression,
-				archivedAtColumn,
-				emailAddressVerifiedAtColumn,
-				idColumn, idColumn,
-				emailAddressVerificationTokenColumn, emailAddressVerificationTokenColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "MarkEmailAddressAsUnverified",
-				Type: ExecType,
+					usersTableName,
+					emailAddressVerifiedAtColumn, currentTimeExpression,
+					lastUpdatedAtColumn, currentTimeExpression,
+					archivedAtColumn,
+					emailAddressVerifiedAtColumn,
+					idColumn, idColumn,
+					emailAddressVerificationTokenColumn, emailAddressVerificationTokenColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+			{
+				Annotation: QueryAnnotation{
+					Name: "MarkEmailAddressAsUnverified",
+					Type: ExecType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s = NULL,
 	%s = %s
 WHERE %s IS NULL
 	AND %s IS NOT NULL
 	AND %s = sqlc.arg(%s);`,
-				usersTableName,
-				emailAddressVerifiedAtColumn,
-				lastUpdatedAtColumn, currentTimeExpression,
-				archivedAtColumn,
-				emailAddressVerifiedAtColumn,
-				idColumn, idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "MarkTwoFactorSecretAsUnverified",
-				Type: ExecType,
+					usersTableName,
+					emailAddressVerifiedAtColumn,
+					lastUpdatedAtColumn, currentTimeExpression,
+					archivedAtColumn,
+					emailAddressVerifiedAtColumn,
+					idColumn, idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+			{
+				Annotation: QueryAnnotation{
+					Name: "MarkTwoFactorSecretAsUnverified",
+					Type: ExecType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s = NULL,
 	%s = sqlc.arg(%s),
 	%s = %s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
-				usersTableName,
-				twoFactorSecretVerifiedAtColumn,
-				twoFactorSecretColumn, twoFactorSecretColumn,
-				lastUpdatedAtColumn,
-				currentTimeExpression,
-				archivedAtColumn,
-				idColumn,
-				idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "MarkTwoFactorSecretAsVerified",
-				Type: ExecType,
+					usersTableName,
+					twoFactorSecretVerifiedAtColumn,
+					twoFactorSecretColumn, twoFactorSecretColumn,
+					lastUpdatedAtColumn,
+					currentTimeExpression,
+					archivedAtColumn,
+					idColumn,
+					idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+			{
+				Annotation: QueryAnnotation{
+					Name: "MarkTwoFactorSecretAsVerified",
+					Type: ExecType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s = %s,
 	%s = %s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
-				usersTableName,
-				twoFactorSecretVerifiedAtColumn, currentTimeExpression,
-				lastUpdatedAtColumn, currentTimeExpression,
-				archivedAtColumn,
-				idColumn, idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "SearchUsersByUsername",
-				Type: ManyType,
+					usersTableName,
+					twoFactorSecretVerifiedAtColumn, currentTimeExpression,
+					lastUpdatedAtColumn, currentTimeExpression,
+					archivedAtColumn,
+					idColumn, idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "SearchUsersByUsername",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 WHERE %s.%s %s
 AND %s.%s IS NULL;`,
-				strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
-					return fmt.Sprintf("%s.%s", usersTableName, s)
-				}), ",\n\t"),
-				usersTableName,
-				usersTableName, usernameColumn, buildILIKEForArgument(usernameColumn),
-				usersTableName, archivedAtColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "UpdateUserAvatarSrc",
-				Type: ExecRowsType,
+					strings.Join(applyToEach(usersColumns, func(_ int, s string) string {
+						return fmt.Sprintf("%s.%s", usersTableName, s)
+					}), ",\n\t"),
+					usersTableName,
+					usersTableName, usernameColumn, buildILIKEForArgument(usernameColumn),
+					usersTableName, archivedAtColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+			{
+				Annotation: QueryAnnotation{
+					Name: "UpdateUserAvatarSrc",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s = sqlc.arg(%s),
 	%s = %s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
-				usersTableName,
-				avatarSourceColumn, avatarSourceColumn,
-				lastUpdatedAtColumn, currentTimeExpression,
-				archivedAtColumn,
-				idColumn, idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "UpdateUserDetails",
-				Type: ExecRowsType,
+					usersTableName,
+					avatarSourceColumn, avatarSourceColumn,
+					lastUpdatedAtColumn, currentTimeExpression,
+					archivedAtColumn,
+					idColumn, idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+			{
+				Annotation: QueryAnnotation{
+					Name: "UpdateUserDetails",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s = sqlc.arg(%s),
 	%s = sqlc.arg(%s),
 	%s = sqlc.arg(%s),
 	%s = %s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
-				usersTableName,
-				firstNameColumn, firstNameColumn,
-				lastNameColumn, lastNameColumn,
-				birthdayColumn, birthdayColumn,
-				lastUpdatedAtColumn, currentTimeExpression,
-				archivedAtColumn,
-				idColumn, idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "UpdateUserEmailAddress",
-				Type: ExecRowsType,
+					usersTableName,
+					firstNameColumn, firstNameColumn,
+					lastNameColumn, lastNameColumn,
+					birthdayColumn, birthdayColumn,
+					lastUpdatedAtColumn, currentTimeExpression,
+					archivedAtColumn,
+					idColumn, idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+			{
+				Annotation: QueryAnnotation{
+					Name: "UpdateUserEmailAddress",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s = sqlc.arg(%s),
 	%s = NULL,
 	%s = %s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
-				usersTableName,
-				emailAddressColumn, emailAddressColumn,
-				emailAddressVerifiedAtColumn,
-				lastUpdatedAtColumn,
-				currentTimeExpression,
-				archivedAtColumn,
-				idColumn, idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "UpdateUserLastIndexedAt",
-				Type: ExecRowsType,
+					usersTableName,
+					emailAddressColumn, emailAddressColumn,
+					emailAddressVerifiedAtColumn,
+					lastUpdatedAtColumn,
+					currentTimeExpression,
+					archivedAtColumn,
+					idColumn, idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s = sqlc.arg(%s) AND %s IS NULL;`,
-				usersTableName,
-				lastIndexedAtColumn,
-				currentTimeExpression,
-				idColumn,
-				idColumn,
-				archivedAtColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "UpdateUserPassword",
-				Type: ExecRowsType,
+			{
+				Annotation: QueryAnnotation{
+					Name: "UpdateUserLastIndexedAt",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s = sqlc.arg(%s) AND %s IS NULL;`,
+					usersTableName,
+					lastIndexedAtColumn,
+					currentTimeExpression,
+					idColumn,
+					idColumn,
+					archivedAtColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+			{
+				Annotation: QueryAnnotation{
+					Name: "UpdateUserPassword",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s = sqlc.arg(%s),
 	%s = %s,
 	%s = %s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
-				usersTableName,
-				hashedPasswordColumn, hashedPasswordColumn,
-				passwordLastChangedAtColumn, currentTimeExpression,
-				lastUpdatedAtColumn, currentTimeExpression,
-				archivedAtColumn,
-				idColumn, idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "UpdateUserTwoFactorSecret",
-				Type: ExecRowsType,
+					usersTableName,
+					hashedPasswordColumn, hashedPasswordColumn,
+					passwordLastChangedAtColumn, currentTimeExpression,
+					lastUpdatedAtColumn, currentTimeExpression,
+					archivedAtColumn,
+					idColumn, idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+			{
+				Annotation: QueryAnnotation{
+					Name: "UpdateUserTwoFactorSecret",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s = NULL,
 	%s = sqlc.arg(%s),
 	%s = %s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
-				usersTableName,
-				twoFactorSecretVerifiedAtColumn,
-				twoFactorSecretColumn, twoFactorSecretColumn,
-				lastUpdatedAtColumn, currentTimeExpression,
-				archivedAtColumn,
-				idColumn, idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "UpdateUserUsername",
-				Type: ExecRowsType,
+					usersTableName,
+					twoFactorSecretVerifiedAtColumn,
+					twoFactorSecretColumn, twoFactorSecretColumn,
+					lastUpdatedAtColumn, currentTimeExpression,
+					archivedAtColumn,
+					idColumn, idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+			{
+				Annotation: QueryAnnotation{
+					Name: "UpdateUserUsername",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s = sqlc.arg(%s),
 	%s = %s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
-				usersTableName,
-				usernameColumn, usernameColumn,
-				lastUpdatedAtColumn, currentTimeExpression,
-				archivedAtColumn,
-				idColumn, idColumn,
-			)),
-		},
+					usersTableName,
+					usernameColumn, usernameColumn,
+					lastUpdatedAtColumn, currentTimeExpression,
+					archivedAtColumn,
+					idColumn, idColumn,
+				)),
+			},
+		}
+	default:
+		return nil
 	}
 }

@@ -36,85 +36,88 @@ var householdInvitationsColumns = []string{
 	archivedAtColumn,
 }
 
-func buildHouseholdInvitationsQueries() []*Query {
-	insertColumns := filterForInsert(householdInvitationsColumns,
-		"status",
-		"status_note",
-	)
+func buildHouseholdInvitationsQueries(database string) []*Query {
+	switch database {
+	case postgres:
 
-	fullSelectColumns := mergeColumns(mergeColumns(
-		applyToEach(householdInvitationsColumns, func(i int, s string) string {
-			return fmt.Sprintf("%s.%s", householdInvitationsTableName, s)
-		}),
-		applyToEach(usersColumns, func(i int, s string) string {
-			return fmt.Sprintf("%s.%s as user_%s", usersTableName, s, s)
-		}),
-		3,
-	),
-		applyToEach(householdsColumns, func(i int, s string) string {
-			return fmt.Sprintf("%s.%s as household_%s", householdsTableName, s, s)
-		}),
-		1,
-	)
+		insertColumns := filterForInsert(householdInvitationsColumns,
+			"status",
+			"status_note",
+		)
 
-	return []*Query{
-		{
-			Annotation: QueryAnnotation{
-				Name: "AttachHouseholdInvitationsToUserID",
-				Type: ExecType,
-			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+		fullSelectColumns := mergeColumns(mergeColumns(
+			applyToEach(householdInvitationsColumns, func(i int, s string) string {
+				return fmt.Sprintf("%s.%s", householdInvitationsTableName, s)
+			}),
+			applyToEach(usersColumns, func(i int, s string) string {
+				return fmt.Sprintf("%s.%s as user_%s", usersTableName, s, s)
+			}),
+			3,
+		),
+			applyToEach(householdsColumns, func(i int, s string) string {
+				return fmt.Sprintf("%s.%s as household_%s", householdsTableName, s, s)
+			}),
+			1,
+		)
+
+		return []*Query{
+			{
+				Annotation: QueryAnnotation{
+					Name: "AttachHouseholdInvitationsToUserID",
+					Type: ExecType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s = sqlc.arg(%s),
 	%s = %s
 WHERE %s IS NULL
 	AND %s = LOWER(sqlc.arg(%s));`,
-				householdInvitationsTableName,
-				toUserColumn, toUserColumn,
-				lastUpdatedAtColumn, currentTimeExpression,
-				archivedAtColumn,
-				toEmailColumn, toEmailColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "CreateHouseholdInvitation",
-				Type: ExecType,
+					householdInvitationsTableName,
+					toUserColumn, toUserColumn,
+					lastUpdatedAtColumn, currentTimeExpression,
+					archivedAtColumn,
+					toEmailColumn, toEmailColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
+			{
+				Annotation: QueryAnnotation{
+					Name: "CreateHouseholdInvitation",
+					Type: ExecType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
 	%s
 ) VALUES (
 	%s
 );`,
-				householdInvitationsTableName,
-				strings.Join(insertColumns, ",\n\t"),
-				strings.Join(applyToEach(insertColumns, func(_ int, s string) string {
-					return fmt.Sprintf("sqlc.arg(%s)", s)
-				}), ",\n\t"),
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "CheckHouseholdInvitationExistence",
-				Type: OneType,
+					householdInvitationsTableName,
+					strings.Join(insertColumns, ",\n\t"),
+					strings.Join(applyToEach(insertColumns, func(_ int, s string) string {
+						return fmt.Sprintf("sqlc.arg(%s)", s)
+					}), ",\n\t"),
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
+			{
+				Annotation: QueryAnnotation{
+					Name: "CheckHouseholdInvitationExistence",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
 	SELECT %s.%s
 	FROM %s
 	WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s)
 );`,
-				householdInvitationsTableName, idColumn,
-				householdInvitationsTableName,
-				householdInvitationsTableName, archivedAtColumn,
-				householdInvitationsTableName, idColumn, idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetHouseholdInvitationByEmailAndToken",
-				Type: OneType,
+					householdInvitationsTableName, idColumn,
+					householdInvitationsTableName,
+					householdInvitationsTableName, archivedAtColumn,
+					householdInvitationsTableName, idColumn, idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetHouseholdInvitationByEmailAndToken",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 	JOIN %s ON %s.%s = %s.%s
@@ -123,22 +126,22 @@ WHERE %s.%s IS NULL
 	AND %s.%s > %s
 	AND %s.%s = LOWER(sqlc.arg(%s))
 	AND %s.%s = sqlc.arg(%s);`,
-				strings.Join(fullSelectColumns, ",\n\t"),
-				householdInvitationsTableName,
-				householdsTableName, householdInvitationsTableName, destinationHouseholdColumn, householdsTableName, idColumn,
-				usersTableName, householdInvitationsTableName, fromUserColumn, usersTableName, idColumn,
-				householdInvitationsTableName, archivedAtColumn,
-				householdInvitationsTableName, householdInvitationsExpiresAtColumn, currentTimeExpression,
-				householdInvitationsTableName, toEmailColumn, toEmailColumn,
-				householdInvitationsTableName, householdInvitationsTokenColumn, householdInvitationsTokenColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetHouseholdInvitationByHouseholdAndID",
-				Type: OneType,
+					strings.Join(fullSelectColumns, ",\n\t"),
+					householdInvitationsTableName,
+					householdsTableName, householdInvitationsTableName, destinationHouseholdColumn, householdsTableName, idColumn,
+					usersTableName, householdInvitationsTableName, fromUserColumn, usersTableName, idColumn,
+					householdInvitationsTableName, archivedAtColumn,
+					householdInvitationsTableName, householdInvitationsExpiresAtColumn, currentTimeExpression,
+					householdInvitationsTableName, toEmailColumn, toEmailColumn,
+					householdInvitationsTableName, householdInvitationsTokenColumn, householdInvitationsTokenColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetHouseholdInvitationByHouseholdAndID",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 	JOIN %s ON %s.%s = %s.%s
@@ -147,22 +150,22 @@ WHERE %s.%s IS NULL
 	AND %s.%s > %s
 	AND %s.%s = sqlc.arg(%s)
 	AND %s.%s = sqlc.arg(%s);`,
-				strings.Join(fullSelectColumns, ",\n\t"),
-				householdInvitationsTableName,
-				householdsTableName, householdInvitationsTableName, destinationHouseholdColumn, householdsTableName, idColumn,
-				usersTableName, householdInvitationsTableName, fromUserColumn, usersTableName, idColumn,
-				householdInvitationsTableName, archivedAtColumn,
-				householdInvitationsTableName, householdInvitationsExpiresAtColumn, currentTimeExpression,
-				householdInvitationsTableName, destinationHouseholdColumn, destinationHouseholdColumn,
-				householdInvitationsTableName, idColumn, idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetHouseholdInvitationByTokenAndID",
-				Type: OneType,
+					strings.Join(fullSelectColumns, ",\n\t"),
+					householdInvitationsTableName,
+					householdsTableName, householdInvitationsTableName, destinationHouseholdColumn, householdsTableName, idColumn,
+					usersTableName, householdInvitationsTableName, fromUserColumn, usersTableName, idColumn,
+					householdInvitationsTableName, archivedAtColumn,
+					householdInvitationsTableName, householdInvitationsExpiresAtColumn, currentTimeExpression,
+					householdInvitationsTableName, destinationHouseholdColumn, destinationHouseholdColumn,
+					householdInvitationsTableName, idColumn, idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetHouseholdInvitationByTokenAndID",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 	JOIN %s ON %s.%s = %s.%s
@@ -171,22 +174,22 @@ WHERE %s.%s IS NULL
 	AND %s.%s > %s
 	AND %s.%s = sqlc.arg(%s)
 	AND %s.%s = sqlc.arg(%s);`,
-				strings.Join(fullSelectColumns, ",\n\t"),
-				householdInvitationsTableName,
-				householdsTableName, householdInvitationsTableName, destinationHouseholdColumn, householdsTableName, idColumn,
-				usersTableName, householdInvitationsTableName, fromUserColumn, usersTableName, idColumn,
-				householdInvitationsTableName, archivedAtColumn,
-				householdInvitationsTableName, householdInvitationsExpiresAtColumn, currentTimeExpression,
-				householdInvitationsTableName, householdInvitationsTokenColumn, householdInvitationsTokenColumn,
-				householdInvitationsTableName, idColumn, idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetPendingInvitesFromUser",
-				Type: ManyType,
+					strings.Join(fullSelectColumns, ",\n\t"),
+					householdInvitationsTableName,
+					householdsTableName, householdInvitationsTableName, destinationHouseholdColumn, householdsTableName, idColumn,
+					usersTableName, householdInvitationsTableName, fromUserColumn, usersTableName, idColumn,
+					householdInvitationsTableName, archivedAtColumn,
+					householdInvitationsTableName, householdInvitationsExpiresAtColumn, currentTimeExpression,
+					householdInvitationsTableName, householdInvitationsTokenColumn, householdInvitationsTokenColumn,
+					householdInvitationsTableName, idColumn, idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetPendingInvitesFromUser",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
 	%s,
 	%s
@@ -198,30 +201,30 @@ WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s)
 	%s
 %s;`,
-				strings.Join(fullSelectColumns, ",\n\t"),
-				buildFilterCountSelect(householdInvitationsTableName, true, true),
-				buildTotalCountSelect(householdInvitationsTableName, true),
-				householdInvitationsTableName,
-
-				householdsTableName, householdInvitationsTableName, destinationHouseholdColumn, householdsTableName, idColumn,
-				usersTableName, householdInvitationsTableName, fromUserColumn, usersTableName, idColumn,
-				householdInvitationsTableName, archivedAtColumn,
-				householdInvitationsTableName, fromUserColumn, fromUserColumn,
-				householdInvitationsTableName, householdInvitationsStatusColumn, householdInvitationsStatusColumn,
-
-				buildFilterConditions(
+					strings.Join(fullSelectColumns, ",\n\t"),
+					buildFilterCountSelect(householdInvitationsTableName, true, true),
+					buildTotalCountSelect(householdInvitationsTableName, true),
 					householdInvitationsTableName,
-					true,
-				),
-				offsetLimitAddendum,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetPendingInvitesForUser",
-				Type: ManyType,
+
+					householdsTableName, householdInvitationsTableName, destinationHouseholdColumn, householdsTableName, idColumn,
+					usersTableName, householdInvitationsTableName, fromUserColumn, usersTableName, idColumn,
+					householdInvitationsTableName, archivedAtColumn,
+					householdInvitationsTableName, fromUserColumn, fromUserColumn,
+					householdInvitationsTableName, householdInvitationsStatusColumn, householdInvitationsStatusColumn,
+
+					buildFilterConditions(
+						householdInvitationsTableName,
+						true,
+					),
+					offsetLimitAddendum,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetPendingInvitesForUser",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
 	%s,
 	%s
@@ -233,42 +236,45 @@ WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s)
 	%s
 %s;`,
-				strings.Join(fullSelectColumns, ",\n\t"),
-				buildFilterCountSelect(householdInvitationsTableName, true, true),
-				buildTotalCountSelect(householdInvitationsTableName, true),
-				householdInvitationsTableName,
-				householdsTableName, householdInvitationsTableName, destinationHouseholdColumn, householdsTableName, idColumn,
-				usersTableName, householdInvitationsTableName, fromUserColumn, usersTableName, idColumn,
-				householdInvitationsTableName, archivedAtColumn,
-				householdInvitationsTableName, toUserColumn, toUserColumn,
-				householdInvitationsTableName, householdInvitationsStatusColumn, householdInvitationsStatusColumn,
-				buildFilterConditions(
+					strings.Join(fullSelectColumns, ",\n\t"),
+					buildFilterCountSelect(householdInvitationsTableName, true, true),
+					buildTotalCountSelect(householdInvitationsTableName, true),
 					householdInvitationsTableName,
-					true,
-				),
-				offsetLimitAddendum,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "SetHouseholdInvitationStatus",
-				Type: ExecType,
+					householdsTableName, householdInvitationsTableName, destinationHouseholdColumn, householdsTableName, idColumn,
+					usersTableName, householdInvitationsTableName, fromUserColumn, usersTableName, idColumn,
+					householdInvitationsTableName, archivedAtColumn,
+					householdInvitationsTableName, toUserColumn, toUserColumn,
+					householdInvitationsTableName, householdInvitationsStatusColumn, householdInvitationsStatusColumn,
+					buildFilterConditions(
+						householdInvitationsTableName,
+						true,
+					),
+					offsetLimitAddendum,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+			{
+				Annotation: QueryAnnotation{
+					Name: "SetHouseholdInvitationStatus",
+					Type: ExecType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s = sqlc.arg(%s),
 	%s = sqlc.arg(%s),
 	%s = %s,
 	%s = %s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
-				householdInvitationsTableName,
-				householdInvitationsStatusColumn, householdInvitationsStatusColumn,
-				householdInvitationsStatusNoteColumn, householdInvitationsStatusNoteColumn,
-				lastUpdatedAtColumn, currentTimeExpression,
-				archivedAtColumn, currentTimeExpression,
-				archivedAtColumn,
-				idColumn, idColumn,
-			)),
-		},
+					householdInvitationsTableName,
+					householdInvitationsStatusColumn, householdInvitationsStatusColumn,
+					householdInvitationsStatusNoteColumn, householdInvitationsStatusNoteColumn,
+					lastUpdatedAtColumn, currentTimeExpression,
+					archivedAtColumn, currentTimeExpression,
+					archivedAtColumn,
+					idColumn, idColumn,
+				)),
+			},
+		}
+	default:
+		return nil
 	}
 }

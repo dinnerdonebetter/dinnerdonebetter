@@ -18,14 +18,20 @@ var validIngredientGroupMembersColumns = []string{
 	archivedAtColumn,
 }
 
-func buildValidIngredientGroupMembersQueries() []*Query {
-	return []*Query{
-		{
-			Annotation: QueryAnnotation{
-				Name: "",
-				Type: "",
+func buildValidIngredientGroupMembersQueries(database string) []*Query {
+	switch database {
+	case postgres:
+
+		return []*Query{
+			{
+				Annotation: QueryAnnotation{
+					Name: "",
+					Type: "",
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(``)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(``)),
-		},
+		}
+	default:
+		return nil
 	}
 }

@@ -31,81 +31,84 @@ var mealPlanGroceryListItemsColumns = []string{
 	archivedAtColumn,
 }
 
-func buildMealPlanGroceryListItemsQueries() []*Query {
-	insertColumns := filterForInsert(mealPlanGroceryListItemsColumns)
+func buildMealPlanGroceryListItemsQueries(database string) []*Query {
+	switch database {
+	case postgres:
 
-	fullSelectColumns := mergeColumns(
-		applyToEach(filterFromSlice(mealPlanGroceryListItemsColumns, validIngredientColumn, validMeasurementUnitColumn), func(i int, s string) string {
-			return fmt.Sprintf("%s.%s", mealPlanGroceryListItemsTableName, s)
-		}),
-		append(
-			applyToEach(validIngredientsColumns, func(i int, s string) string {
-				return fmt.Sprintf("%s.%s as valid_ingredient_%s", validIngredientsTableName, s, s)
+		insertColumns := filterForInsert(mealPlanGroceryListItemsColumns)
+
+		fullSelectColumns := mergeColumns(
+			applyToEach(filterFromSlice(mealPlanGroceryListItemsColumns, validIngredientColumn, validMeasurementUnitColumn), func(i int, s string) string {
+				return fmt.Sprintf("%s.%s", mealPlanGroceryListItemsTableName, s)
 			}),
-			applyToEach(validMeasurementUnitsColumns, func(i int, s string) string {
-				return fmt.Sprintf("%s.%s as valid_measurement_unit_%s", validMeasurementUnitsTableName, s, s)
-			})...,
-		),
-		2,
-	)
+			append(
+				applyToEach(validIngredientsColumns, func(i int, s string) string {
+					return fmt.Sprintf("%s.%s as valid_ingredient_%s", validIngredientsTableName, s, s)
+				}),
+				applyToEach(validMeasurementUnitsColumns, func(i int, s string) string {
+					return fmt.Sprintf("%s.%s as valid_measurement_unit_%s", validMeasurementUnitsTableName, s, s)
+				})...,
+			),
+			2,
+		)
 
-	return []*Query{
-		{
-			Annotation: QueryAnnotation{
-				Name: "ArchiveMealPlanGroceryListItem",
-				Type: ExecRowsType,
+		return []*Query{
+			{
+				Annotation: QueryAnnotation{
+					Name: "ArchiveMealPlanGroceryListItem",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s IS NULL AND %s = sqlc.arg(%s);`,
+					mealPlanGroceryListItemsTableName,
+					archivedAtColumn,
+					currentTimeExpression,
+					archivedAtColumn,
+					idColumn,
+					idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s IS NULL AND %s = sqlc.arg(%s);`,
-				mealPlanGroceryListItemsTableName,
-				archivedAtColumn,
-				currentTimeExpression,
-				archivedAtColumn,
-				idColumn,
-				idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "CreateMealPlanGroceryListItem",
-				Type: ExecType,
-			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
+			{
+				Annotation: QueryAnnotation{
+					Name: "CreateMealPlanGroceryListItem",
+					Type: ExecType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
 	%s
 ) VALUES (
 	%s
 );`,
-				mealPlanGroceryListItemsTableName,
-				strings.Join(insertColumns, ",\n\t"),
-				strings.Join(applyToEach(insertColumns, func(i int, s string) string {
-					return fmt.Sprintf("sqlc.arg(%s)", s)
-				}), ",\n\t"),
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "CheckMealPlanGroceryListItemExistence",
-				Type: OneType,
+					mealPlanGroceryListItemsTableName,
+					strings.Join(insertColumns, ",\n\t"),
+					strings.Join(applyToEach(insertColumns, func(i int, s string) string {
+						return fmt.Sprintf("sqlc.arg(%s)", s)
+					}), ",\n\t"),
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
+			{
+				Annotation: QueryAnnotation{
+					Name: "CheckMealPlanGroceryListItemExistence",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
 	SELECT %s.%s
 	FROM %s
 	WHERE %s.%s IS NULL
 		AND %s.%s = sqlc.arg(%s)
 		AND %s.%s = sqlc.arg(%s)
 );`,
-				mealPlanGroceryListItemsTableName, idColumn,
-				mealPlanGroceryListItemsTableName,
-				mealPlanGroceryListItemsTableName, archivedAtColumn,
-				mealPlanGroceryListItemsTableName, idColumn, mealPlanGroceryListItemIDColumn,
-				mealPlanGroceryListItemsTableName, belongsToMealPlanColumn, mealPlanIDColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetMealPlanGroceryListItemsForMealPlan",
-				Type: ManyType,
+					mealPlanGroceryListItemsTableName, idColumn,
+					mealPlanGroceryListItemsTableName,
+					mealPlanGroceryListItemsTableName, archivedAtColumn,
+					mealPlanGroceryListItemsTableName, idColumn, mealPlanGroceryListItemIDColumn,
+					mealPlanGroceryListItemsTableName, belongsToMealPlanColumn, mealPlanIDColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetMealPlanGroceryListItemsForMealPlan",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 	JOIN %s ON %s.%s=%s.%s
@@ -122,33 +125,33 @@ GROUP BY %s.%s,
 	%s.%s,
 	%s.%s
 ORDER BY %s.%s;`,
-				strings.Join(fullSelectColumns, ",\n\t"),
-				mealPlanGroceryListItemsTableName,
-				mealPlansTableName, mealPlanGroceryListItemsTableName, belongsToMealPlanColumn, mealPlansTableName, idColumn,
-				validIngredientsTableName, mealPlanGroceryListItemsTableName, validIngredientColumn, validIngredientsTableName, idColumn,
-				validMeasurementUnitsTableName, mealPlanGroceryListItemsTableName, validMeasurementUnitColumn, validMeasurementUnitsTableName, idColumn,
-				mealPlanGroceryListItemsTableName, archivedAtColumn,
-				validMeasurementUnitsTableName, archivedAtColumn,
-				validIngredientsTableName, archivedAtColumn,
+					strings.Join(fullSelectColumns, ",\n\t"),
+					mealPlanGroceryListItemsTableName,
+					mealPlansTableName, mealPlanGroceryListItemsTableName, belongsToMealPlanColumn, mealPlansTableName, idColumn,
+					validIngredientsTableName, mealPlanGroceryListItemsTableName, validIngredientColumn, validIngredientsTableName, idColumn,
+					validMeasurementUnitsTableName, mealPlanGroceryListItemsTableName, validMeasurementUnitColumn, validMeasurementUnitsTableName, idColumn,
+					mealPlanGroceryListItemsTableName, archivedAtColumn,
+					validMeasurementUnitsTableName, archivedAtColumn,
+					validIngredientsTableName, archivedAtColumn,
 
-				mealPlanGroceryListItemsTableName, belongsToMealPlanColumn, mealPlanIDColumn,
-				mealPlansTableName, archivedAtColumn,
-				mealPlansTableName, idColumn, mealPlanIDColumn,
+					mealPlanGroceryListItemsTableName, belongsToMealPlanColumn, mealPlanIDColumn,
+					mealPlansTableName, archivedAtColumn,
+					mealPlansTableName, idColumn, mealPlanIDColumn,
 
-				mealPlanGroceryListItemsTableName, idColumn,
-				validIngredientsTableName, idColumn,
-				validMeasurementUnitsTableName, idColumn,
-				mealPlansTableName, idColumn,
+					mealPlanGroceryListItemsTableName, idColumn,
+					validIngredientsTableName, idColumn,
+					validMeasurementUnitsTableName, idColumn,
+					mealPlansTableName, idColumn,
 
-				mealPlanGroceryListItemsTableName, idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetMealPlanGroceryListItem",
-				Type: OneType,
+					mealPlanGroceryListItemsTableName, idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetMealPlanGroceryListItem",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 	JOIN %s ON %s.%s=%s.%s
@@ -159,36 +162,39 @@ WHERE %s.%s IS NULL
 	AND %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s)
 	AND %s.%s = sqlc.arg(%s);`,
-				strings.Join(fullSelectColumns, ",\n\t"),
-				mealPlanGroceryListItemsTableName,
-				mealPlansTableName, mealPlanGroceryListItemsTableName, belongsToMealPlanColumn, mealPlansTableName, idColumn,
-				validIngredientsTableName, mealPlanGroceryListItemsTableName, validIngredientColumn, validIngredientsTableName, idColumn,
-				validMeasurementUnitsTableName, mealPlanGroceryListItemsTableName, validMeasurementUnitColumn, validMeasurementUnitsTableName, idColumn,
-				mealPlanGroceryListItemsTableName, archivedAtColumn,
-				validMeasurementUnitsTableName, archivedAtColumn,
-				validIngredientsTableName, archivedAtColumn,
-				mealPlanGroceryListItemsTableName, idColumn, mealPlanGroceryListItemIDColumn,
-				mealPlanGroceryListItemsTableName, belongsToMealPlanColumn, mealPlanIDColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "UpdateMealPlanGroceryListItem",
-				Type: ExecRowsType,
+					strings.Join(fullSelectColumns, ",\n\t"),
+					mealPlanGroceryListItemsTableName,
+					mealPlansTableName, mealPlanGroceryListItemsTableName, belongsToMealPlanColumn, mealPlansTableName, idColumn,
+					validIngredientsTableName, mealPlanGroceryListItemsTableName, validIngredientColumn, validIngredientsTableName, idColumn,
+					validMeasurementUnitsTableName, mealPlanGroceryListItemsTableName, validMeasurementUnitColumn, validMeasurementUnitsTableName, idColumn,
+					mealPlanGroceryListItemsTableName, archivedAtColumn,
+					validMeasurementUnitsTableName, archivedAtColumn,
+					validIngredientsTableName, archivedAtColumn,
+					mealPlanGroceryListItemsTableName, idColumn, mealPlanGroceryListItemIDColumn,
+					mealPlanGroceryListItemsTableName, belongsToMealPlanColumn, mealPlanIDColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+			{
+				Annotation: QueryAnnotation{
+					Name: "UpdateMealPlanGroceryListItem",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s,
 	%s = %s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
-				mealPlanGroceryListItemsTableName,
-				strings.Join(applyToEach(filterForUpdate(mealPlanGroceryListItemsColumns, belongsToUserColumn), func(i int, s string) string {
-					return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
-				}), ",\n\t"),
-				lastUpdatedAtColumn, currentTimeExpression,
-				archivedAtColumn,
-				idColumn, idColumn,
-			)),
-		},
+					mealPlanGroceryListItemsTableName,
+					strings.Join(applyToEach(filterForUpdate(mealPlanGroceryListItemsColumns, belongsToUserColumn), func(i int, s string) string {
+						return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
+					}), ",\n\t"),
+					lastUpdatedAtColumn, currentTimeExpression,
+					archivedAtColumn,
+					idColumn, idColumn,
+				)),
+			},
+		}
+	default:
+		return nil
 	}
 }
