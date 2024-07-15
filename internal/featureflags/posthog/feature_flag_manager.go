@@ -84,7 +84,7 @@ func (f *featureFlagManager) CanUseFeature(ctx context.Context, userID, feature 
 	defer span.End()
 
 	if !f.circuitBreaker.CanProceed() {
-		return false, types.ErrServiceHasCircuitBroken
+		return false, types.ErrCircuitBroken
 	}
 
 	flagEnabled, err := f.posthogClient.IsFeatureEnabled(posthog.FeatureFlagPayload{
@@ -110,7 +110,7 @@ func (f *featureFlagManager) Identify(ctx context.Context, user *types.User) err
 	defer span.End()
 
 	if !f.circuitBreaker.CanProceed() {
-		return types.ErrServiceHasCircuitBroken
+		return types.ErrCircuitBroken
 	}
 
 	if user == nil {

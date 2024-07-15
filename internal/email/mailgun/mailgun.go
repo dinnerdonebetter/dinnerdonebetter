@@ -9,6 +9,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/mailgun/mailgun-go/v4"
 )
@@ -39,14 +41,15 @@ type (
 
 	// Emailer uses Mailgun to send email.
 	Emailer struct {
-		logger logging.Logger
-		tracer tracing.Tracer
-		client mailgun.Mailgun
+		logger         logging.Logger
+		tracer         tracing.Tracer
+		client         mailgun.Mailgun
+		circuitBreaker circuitbreaking.CircuitBreaker
 	}
 )
 
 // NewMailgunEmailer returns a new Mailgun-backed Emailer.
-func NewMailgunEmailer(cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider, client *http.Client) (*Emailer, error) {
+func NewMailgunEmailer(cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider, client *http.Client, circuitBreaker circuitbreaking.CircuitBreaker) (*Emailer, error) {
 	if cfg == nil {
 		return nil, ErrNilConfig
 	}
@@ -67,9 +70,10 @@ func NewMailgunEmailer(cfg *Config, logger logging.Logger, tracerProvider tracin
 	mg.SetClient(client)
 
 	e := &Emailer{
-		logger: logging.EnsureLogger(logger).WithName(name),
-		tracer: tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(name)),
-		client: mg,
+		logger:         logging.EnsureLogger(logger).WithName(name),
+		tracer:         tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(name)),
+		client:         mg,
+		circuitBreaker: circuitBreaker,
 	}
 
 	return e, nil
@@ -82,11 +86,17 @@ func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMes
 
 	tracing.AttachToSpan(span, "to_email", details.ToAddress)
 
+	if e.circuitBreaker.CannotProceed() {
+		return types.ErrCircuitBroken
+	}
+
 	msg := e.client.NewMessage(details.FromName, details.Subject, details.HTMLContent, details.ToAddress)
 
 	if _, _, err := e.client.Send(ctx, msg); err != nil {
+		e.circuitBreaker.Failed()
 		return observability.PrepareError(err, span, "sending email")
 	}
 
+	e.circuitBreaker.Succeeded()
 	return nil
 }

@@ -9,6 +9,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/sendgrid/rest"
 	"github.com/sendgrid/sendgrid-go"
@@ -37,15 +39,16 @@ type (
 
 	// Emailer uses SendGrid to send email.
 	Emailer struct {
-		logger logging.Logger
-		tracer tracing.Tracer
-		client *sendgrid.Client
-		config Config
+		logger         logging.Logger
+		tracer         tracing.Tracer
+		circuitBreaker circuitbreaking.CircuitBreaker
+		client         *sendgrid.Client
+		config         Config
 	}
 )
 
 // NewSendGridEmailer returns a new SendGrid-backed Emailer.
-func NewSendGridEmailer(cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider, client *http.Client) (*Emailer, error) {
+func NewSendGridEmailer(cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider, client *http.Client, circuitBreaker circuitbreaking.CircuitBreaker) (*Emailer, error) {
 	if cfg == nil {
 		return nil, ErrNilConfig
 	}
@@ -63,17 +66,18 @@ func NewSendGridEmailer(cfg *Config, logger logging.Logger, tracerProvider traci
 	sendgrid.DefaultClient = &rest.Client{HTTPClient: client}
 
 	e := &Emailer{
-		logger: logging.EnsureLogger(logger).WithName(name),
-		tracer: tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(name)),
-		client: sendgrid.NewSendClient(cfg.APIToken),
-		config: *cfg,
+		logger:         logging.EnsureLogger(logger).WithName(name),
+		tracer:         tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(name)),
+		client:         sendgrid.NewSendClient(cfg.APIToken),
+		config:         *cfg,
+		circuitBreaker: circuitBreaker,
 	}
 
 	return e, nil
 }
 
-// ErrSendgridAPIIssue indicates an error occurred in SendGrid.
-var ErrSendgridAPIIssue = errors.New("making SendGrid request")
+// ErrSendgridAPIResponse indicates an error occurred in SendGrid.
+var ErrSendgridAPIResponse = errors.New("sendgrid request error")
 
 // SendEmail sends an email.
 func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMessage) error {
@@ -81,6 +85,10 @@ func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMes
 	defer span.End()
 
 	tracing.AttachToSpan(span, "to_email", details.ToAddress)
+
+	if e.circuitBreaker.CannotProceed() {
+		return types.ErrCircuitBroken
+	}
 
 	to := mail.NewEmail(details.ToName, details.ToAddress)
 	from := mail.NewEmail(details.FromName, details.FromAddress)
@@ -91,14 +99,16 @@ func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMes
 		return observability.PrepareError(err, span, "sending email")
 	}
 
-	// Fun fact: if your account is limited and not able to send an email, there is localhost:9000/accept_invitation?i=cgk80ta23akg00eo8pf0&t=DHriGX_38me7f7NY7yjHjrh47jU9RIbloCAQU4SJhRwDoHSI23dw0kaD2CBHepRnnpbmHxcPOohCC5t8foniGA
+	// Fun fact: if your account is limited and not able to send an email, there is
 	// no distinguishing feature of the response to let you know. Thanks, SendGrid!
 	if res.StatusCode != http.StatusAccepted {
 		e.logger.WithValue("sendgrid_api_token", e.config.APIToken).Info("sending email yielded an invalid response")
 		tracing.AttachToSpan(span, e.config.APIToken, "sendgrid_api_token")
-		return observability.PrepareError(ErrSendgridAPIIssue, span, "sending email yielded a %d response", res.StatusCode)
+		e.circuitBreaker.Failed()
+		return observability.PrepareError(ErrSendgridAPIResponse, span, "sending email yielded a %d response", res.StatusCode)
 	}
 
+	e.circuitBreaker.Succeeded()
 	return nil
 }
 
@@ -131,7 +141,7 @@ func (e *Emailer) sendDynamicTemplateEmail(ctx context.Context, to, from *mail.E
 	}
 
 	if res.StatusCode != http.StatusAccepted {
-		return observability.PrepareError(ErrSendgridAPIIssue, span, "sending dynamic email yielded a %d response", res.StatusCode)
+		return observability.PrepareError(ErrSendgridAPIResponse, span, "sending dynamic email yielded a %d response", res.StatusCode)
 	}
 
 	return nil

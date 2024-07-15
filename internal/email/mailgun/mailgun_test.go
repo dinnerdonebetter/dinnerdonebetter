@@ -11,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/email"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
 
 	"github.com/stretchr/testify/require"
 )
@@ -34,7 +35,7 @@ func TestNewMailgunEmailer(T *testing.T) {
 
 		config := &Config{Domain: exampleDomain, PrivateAPIKey: t.Name()}
 
-		client, err := NewMailgunEmailer(config, logger, tracing.NewNoopTracerProvider(), &http.Client{})
+		client, err := NewMailgunEmailer(config, logger, tracing.NewNoopTracerProvider(), &http.Client{}, circuitbreaking.NewNoopCircuitBreaker())
 		require.NotNil(t, client)
 		require.NoError(t, err)
 	})
@@ -44,7 +45,7 @@ func TestNewMailgunEmailer(T *testing.T) {
 
 		logger := logging.NewNoopLogger()
 
-		client, err := NewMailgunEmailer(nil, logger, tracing.NewNoopTracerProvider(), &http.Client{})
+		client, err := NewMailgunEmailer(nil, logger, tracing.NewNoopTracerProvider(), &http.Client{}, circuitbreaking.NewNoopCircuitBreaker())
 		require.Nil(t, client)
 		require.Error(t, err)
 	})
@@ -56,7 +57,7 @@ func TestNewMailgunEmailer(T *testing.T) {
 
 		config := &Config{PrivateAPIKey: t.Name()}
 
-		client, err := NewMailgunEmailer(config, logger, tracing.NewNoopTracerProvider(), &http.Client{})
+		client, err := NewMailgunEmailer(config, logger, tracing.NewNoopTracerProvider(), &http.Client{}, circuitbreaking.NewNoopCircuitBreaker())
 		require.Nil(t, client)
 		require.Error(t, err)
 	})
@@ -68,7 +69,7 @@ func TestNewMailgunEmailer(T *testing.T) {
 
 		config := &Config{Domain: exampleDomain}
 
-		client, err := NewMailgunEmailer(config, logger, tracing.NewNoopTracerProvider(), &http.Client{})
+		client, err := NewMailgunEmailer(config, logger, tracing.NewNoopTracerProvider(), &http.Client{}, circuitbreaking.NewNoopCircuitBreaker())
 		require.Nil(t, client)
 		require.Error(t, err)
 	})
@@ -80,7 +81,7 @@ func TestNewMailgunEmailer(T *testing.T) {
 
 		config := &Config{Domain: exampleDomain, PrivateAPIKey: t.Name()}
 
-		client, err := NewMailgunEmailer(config, logger, tracing.NewNoopTracerProvider(), nil)
+		client, err := NewMailgunEmailer(config, logger, tracing.NewNoopTracerProvider(), nil, circuitbreaking.NewNoopCircuitBreaker())
 		require.Nil(t, client)
 		require.Error(t, err)
 	})
@@ -103,7 +104,7 @@ func TestMailgunEmailer_SendEmail(T *testing.T) {
 
 		cfg := &Config{Domain: exampleDomain, PrivateAPIKey: t.Name()}
 
-		c, err := NewMailgunEmailer(cfg, logger, tracing.NewNoopTracerProvider(), ts.Client())
+		c, err := NewMailgunEmailer(cfg, logger, tracing.NewNoopTracerProvider(), ts.Client(), circuitbreaking.NewNoopCircuitBreaker())
 		require.NotNil(t, c)
 		require.NoError(t, err)
 
@@ -136,7 +137,7 @@ func TestMailgunEmailer_SendEmail(T *testing.T) {
 
 		cfg := &Config{Domain: exampleDomain, PrivateAPIKey: t.Name()}
 
-		c, err := NewMailgunEmailer(cfg, logger, tracing.NewNoopTracerProvider(), client)
+		c, err := NewMailgunEmailer(cfg, logger, tracing.NewNoopTracerProvider(), client, circuitbreaking.NewNoopCircuitBreaker())
 		require.NotNil(t, c)
 		require.NoError(t, err)
 		ctx := context.Background()
@@ -164,7 +165,7 @@ func TestMailgunEmailer_SendEmail(T *testing.T) {
 
 		cfg := &Config{Domain: exampleDomain, PrivateAPIKey: t.Name()}
 
-		c, err := NewMailgunEmailer(cfg, logger, tracing.NewNoopTracerProvider(), ts.Client())
+		c, err := NewMailgunEmailer(cfg, logger, tracing.NewNoopTracerProvider(), ts.Client(), circuitbreaking.NewNoopCircuitBreaker())
 		require.NotNil(t, c)
 		require.NoError(t, err)
 

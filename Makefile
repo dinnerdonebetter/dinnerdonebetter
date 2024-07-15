@@ -1,22 +1,23 @@
-PWD                           := $(shell pwd)
-MYSELF                        := $(shell id -u)
-MY_GROUP					  := $(shell id -g)
-GOPATH                        := $(GOPATH)
-ARTIFACTS_DIR                 := artifacts
-COVERAGE_OUT                  := $(ARTIFACTS_DIR)/coverage.out
-GO_FORMAT                     := gofmt -s -w
-THIS                          := github.com/dinnerdonebetter/backend
-TOTAL_PACKAGE_LIST            := `go list $(THIS)/...`
-TESTABLE_PACKAGE_LIST         := `go list $(THIS)/... | grep -Ev '(cmd|integration|mock|fakes|converters|utils|generated)'`
-ENVIRONMENTS_DIR              := environments
-TEST_DOCKER_COMPOSE_FILES_DIR := $(ENVIRONMENTS_DIR)/testing/compose_files
-GENERATED_QUERIES_DIR         := internal/database/postgres/generated
-SQL_GENERATOR_IMAGE           := sqlc/sqlc:1.25.0
-LINTER_IMAGE                  := golangci/golangci-lint:v1.56.1
-CONTAINER_LINTER_IMAGE        := openpolicyagent/conftest:v0.49.1
-CLOUD_JOBS                    := meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator search_data_index_scheduler
-CLOUD_FUNCTIONS               := data_changes outbound_emailer search_indexer webhook_executor
-WIRE_TARGETS                  := server/http/build
+PWD                    := $(shell pwd)
+MYSELF                 := $(shell id -u)
+MY_GROUP               := $(shell id -g)
+GOPATH                 := $(GOPATH)
+ARTIFACTS_DIR          := artifacts
+COVERAGE_OUT           := $(ARTIFACTS_DIR)/coverage.out
+GO_FORMAT              := gofmt -s -w
+THIS                   := github.com/dinnerdonebetter/backend
+TOTAL_PACKAGE_LIST     := `go list $(THIS)/...`
+TESTABLE_PACKAGE_LIST  := `go list $(THIS)/... | grep -Ev '(cmd|integration|mock|fakes|converters|utils|generated)'`
+ENVIRONMENTS_DIR       := environments
+TEST_COMPOSE_FILES_DIR := $(ENVIRONMENTS_DIR)/testing/compose_files
+GENERATED_QUERIES_DIR  := internal/database/postgres/generated
+SQL_GENERATOR_IMAGE    := sqlc/sqlc:1.25.0
+LINTER_IMAGE           := golangci/golangci-lint:v1.56.1
+CONTAINER_LINTER_IMAGE := openpolicyagent/conftest:v0.49.1
+CLOUD_JOBS             := meal_plan_finalizer meal_plan_grocery_list_initializer meal_plan_task_creator search_data_index_scheduler
+CLOUD_FUNCTIONS        := data_changes outbound_emailer search_indexer webhook_executor
+WIRE_TARGETS           := server/http/build
+CONTAINER_RUNNER       := docker
 
 ## non-PHONY folders/files
 
@@ -131,20 +132,20 @@ pre_lint:
 	@until fieldalignment -fix ./...; do true; done > /dev/null
 	@echo ""
 
-.PHONY: lint_docker
-lint_docker:
-	@docker pull --quiet $(CONTAINER_LINTER_IMAGE)
-	docker run --rm --volume $(PWD):$(PWD) --workdir=$(PWD) --user $(MYSELF):$(MY_GROUP) $(CONTAINER_LINTER_IMAGE) test --policy docker_security.rego `find . -type f -name "*.Dockerfile"`
+.PHONY: lint_containers
+lint_containers:
+	@$(CONTAINER_RUNNER) pull --quiet $(CONTAINER_LINTER_IMAGE)
+	$(CONTAINER_RUNNER) run --rm --volume $(PWD):$(PWD) --workdir=$(PWD) --user $(MYSELF):$(MY_GROUP) $(CONTAINER_LINTER_IMAGE) test --policy docker_security.rego `find . -type f -name "*.Dockerfile"`
 
 .PHONY: queries_lint
 queries_lint:
-	@docker pull --quiet $(SQL_GENERATOR_IMAGE)
-	docker run --rm \
+	@$(CONTAINER_RUNNER) pull --quiet $(SQL_GENERATOR_IMAGE)
+	$(CONTAINER_RUNNER) run --rm \
 		--volume $(PWD):/src \
 		--workdir /src \
 		--user $(MYSELF):$(MY_GROUP) \
 		$(SQL_GENERATOR_IMAGE) compile --no-remote
-	docker run --rm \
+	$(CONTAINER_RUNNER) run --rm \
 		--volume $(PWD):/src \
 		--workdir /src \
 		--user $(MYSELF):$(MY_GROUP) \
@@ -152,14 +153,14 @@ queries_lint:
 
 .PHONY: golang_lint
 golang_lint:
-	@docker pull --quiet $(LINTER_IMAGE)
-	docker run --rm \
+	@$(CONTAINER_RUNNER) pull --quiet $(LINTER_IMAGE)
+	$(CONTAINER_RUNNER) run --rm \
 		--volume $(PWD):$(PWD) \
 		--workdir=$(PWD) \
 		$(LINTER_IMAGE) golangci-lint run --config=.golangci.yml --timeout 15m ./...
 
 .PHONY: lint
-lint: lint_docker queries_lint golang_lint
+lint: lint_containers queries_lint golang_lint
 
 .PHONY: clean_coverage
 clean_coverage:
@@ -199,7 +200,7 @@ typescript: clean_ts
 .PHONY: querier
 querier: queries queries_lint
 	rm --recursive --force internal/database/postgres/generated/*.go
-	docker run --rm \
+	$(CONTAINER_RUNNER) run --rm \
 		--volume $(PWD):/src \
 		--workdir /src \
 		--user $(MYSELF):$(MY_GROUP) \
@@ -211,12 +212,12 @@ sqlc_struct_check:
 
 ## Integration tests
 
-.PHONY: wipe_docker
-wipe_docker:
-	@docker stop $(shell docker ps -aq) && docker rm $(shell docker ps -aq)
+.PHONY: wipe_containers
+wipe_containers:
+	@$(CONTAINER_RUNNER) stop $(shell $(CONTAINER_RUNNER) ps -aq) && $(CONTAINER_RUNNER) rm $(shell $(CONTAINER_RUNNER) ps -aq)
 
-.PHONY: docker_wipe
-docker_wipe: wipe_docker
+.PHONY: container_wipe
+container_wipe: wipe_containers
 
 .PHONY: integration-tests
 integration-tests: integration_tests
@@ -227,7 +228,7 @@ integration_tests: integration_tests_postgres
 .PHONY: integration_tests_postgres
 integration_tests_postgres:
 	docker-compose \
-	--file $(TEST_DOCKER_COMPOSE_FILES_DIR)/integration-tests.yaml up \
+	--file $(TEST_COMPOSE_FILES_DIR)/integration-tests.yaml up \
 	--build \
 	--force-recreate \
 	--remove-orphans \
@@ -251,7 +252,7 @@ dev: $(ARTIFACTS_DIR)
 
 .PHONY: tree
 tree:
-	# there are no longargs for tree, but d means "directories only" and I means "ignore pattern"
+	# there are no long args for tree, but d means "directories only" and I means "ignore pattern"
 	tree -d -I vendor
 
 .PHONY: line_count

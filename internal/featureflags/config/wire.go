@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/dinnerdonebetter/backend/internal/featureflags"
@@ -19,10 +18,6 @@ var (
 )
 
 func ProvideFeatureFlagManager(c *Config, logger logging.Logger, tracerProvider tracing.TracerProvider, httpClient *http.Client) (featureflags.FeatureFlagManager, error) {
-	circuitBreaker, err := circuitbreaking.ProvideCircuitBreaker(c.CircuitBreakingConfig)
-	if err != nil {
-		return nil, fmt.Errorf("providing circuit breaker for feature flagging: %w", err)
-	}
-
+	circuitBreaker := circuitbreaking.ProvideCircuitBreaker(c.CircuitBreakingConfig)
 	return c.ProvideFeatureFlagManager(logger, tracerProvider, httpClient, circuitBreaker)
 }

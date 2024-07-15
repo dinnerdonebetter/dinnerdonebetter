@@ -11,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/email"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
 
 	"github.com/mailjet/mailjet-apiv3-go/v4"
 	"github.com/stretchr/testify/require"
@@ -26,7 +27,7 @@ func TestNewMailjetEmailer(T *testing.T) {
 
 		config := &Config{SecretKey: t.Name(), APIKey: t.Name()}
 
-		client, err := NewMailjetEmailer(config, logger, tracing.NewNoopTracerProvider(), &http.Client{})
+		client, err := NewMailjetEmailer(config, logger, tracing.NewNoopTracerProvider(), &http.Client{}, circuitbreaking.NewNoopCircuitBreaker())
 		require.NotNil(t, client)
 		require.NoError(t, err)
 	})
@@ -36,7 +37,7 @@ func TestNewMailjetEmailer(T *testing.T) {
 
 		logger := logging.NewNoopLogger()
 
-		client, err := NewMailjetEmailer(nil, logger, tracing.NewNoopTracerProvider(), &http.Client{})
+		client, err := NewMailjetEmailer(nil, logger, tracing.NewNoopTracerProvider(), &http.Client{}, circuitbreaking.NewNoopCircuitBreaker())
 		require.Nil(t, client)
 		require.Error(t, err)
 	})
@@ -48,7 +49,7 @@ func TestNewMailjetEmailer(T *testing.T) {
 
 		config := &Config{APIKey: t.Name()}
 
-		client, err := NewMailjetEmailer(config, logger, tracing.NewNoopTracerProvider(), &http.Client{})
+		client, err := NewMailjetEmailer(config, logger, tracing.NewNoopTracerProvider(), &http.Client{}, circuitbreaking.NewNoopCircuitBreaker())
 		require.Nil(t, client)
 		require.Error(t, err)
 	})
@@ -60,7 +61,7 @@ func TestNewMailjetEmailer(T *testing.T) {
 
 		config := &Config{SecretKey: t.Name()}
 
-		client, err := NewMailjetEmailer(config, logger, tracing.NewNoopTracerProvider(), &http.Client{})
+		client, err := NewMailjetEmailer(config, logger, tracing.NewNoopTracerProvider(), &http.Client{}, circuitbreaking.NewNoopCircuitBreaker())
 		require.Nil(t, client)
 		require.Error(t, err)
 	})
@@ -72,7 +73,7 @@ func TestNewMailjetEmailer(T *testing.T) {
 
 		config := &Config{SecretKey: t.Name(), APIKey: t.Name()}
 
-		client, err := NewMailjetEmailer(config, logger, tracing.NewNoopTracerProvider(), nil)
+		client, err := NewMailjetEmailer(config, logger, tracing.NewNoopTracerProvider(), nil, circuitbreaking.NewNoopCircuitBreaker())
 		require.Nil(t, client)
 		require.Error(t, err)
 	})
@@ -92,7 +93,7 @@ func TestMailjetEmailer_SendEmail(T *testing.T) {
 
 		config := &Config{SecretKey: t.Name(), APIKey: t.Name()}
 
-		c, err := NewMailjetEmailer(config, logger, tracing.NewNoopTracerProvider(), ts.Client())
+		c, err := NewMailjetEmailer(config, logger, tracing.NewNoopTracerProvider(), ts.Client(), circuitbreaking.NewNoopCircuitBreaker())
 		require.NotNil(t, c)
 		require.NoError(t, err)
 
@@ -123,7 +124,7 @@ func TestMailjetEmailer_SendEmail(T *testing.T) {
 		config := &Config{SecretKey: t.Name(), APIKey: t.Name()}
 		client := ts.Client()
 
-		c, err := NewMailjetEmailer(config, logger, tracing.NewNoopTracerProvider(), client)
+		c, err := NewMailjetEmailer(config, logger, tracing.NewNoopTracerProvider(), client, circuitbreaking.NewNoopCircuitBreaker())
 		require.NotNil(t, c)
 		require.NoError(t, err)
 

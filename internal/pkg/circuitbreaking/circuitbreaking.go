@@ -2,6 +2,7 @@ package circuitbreaking
 
 import (
 	"errors"
+	"log"
 
 	circuit "github.com/rubyist/circuitbreaker"
 )
@@ -23,11 +24,16 @@ type BaseCircuitBreaker struct {
 }
 
 type Config struct {
+	Name                     string  `json:"name"                                     toml:"name"`
 	CircuitBreakerErrorRate  float64 `json:"circuitBreakerErrorPercentage"            toml:"circuitBreaker_error_percentage"`
 	CircuitBreakerMinSamples int64   `json:"circuitBreakerMinimumOccurrenceThreshold" toml:"circuitBreaker_minimum_occurrence_threshold"`
 }
 
-func (cfg Config) EnsureDefaults() {
+func (cfg *Config) EnsureDefaults() {
+	if cfg == nil {
+		cfg = &Config{}
+	}
+
 	if cfg.CircuitBreakerErrorRate == 0 {
 		cfg.CircuitBreakerErrorRate = 200
 	}
@@ -37,18 +43,20 @@ func (cfg Config) EnsureDefaults() {
 	}
 }
 
-func ProvideCircuitBreaker(cfg *Config) (CircuitBreaker, error) {
+func ProvideCircuitBreaker(cfg *Config) CircuitBreaker {
 	if cfg == nil {
-		return nil, ErrNilConfig
+		cfg = &Config{}
 	}
+	cfg.EnsureDefaults()
 
 	return &BaseCircuitBreaker{
+		name: cfg.Name,
 		circuitBreaker: circuit.NewBreakerWithOptions(&circuit.Options{
 			ShouldTrip:    circuit.RateTripFunc(cfg.CircuitBreakerErrorRate, cfg.CircuitBreakerMinSamples),
 			WindowTime:    circuit.DefaultWindowTime,
 			WindowBuckets: circuit.DefaultWindowBuckets,
 		}),
-	}, nil
+	}
 }
 
 func (b *BaseCircuitBreaker) Failed() {
@@ -65,4 +73,14 @@ func (b *BaseCircuitBreaker) CanProceed() bool {
 
 func (b *BaseCircuitBreaker) CannotProceed() bool {
 	return !b.circuitBreaker.Ready()
+}
+
+// EnsureCircuitBreaker ensures a valid CircuitBreaker is made available.
+func EnsureCircuitBreaker(breaker CircuitBreaker) CircuitBreaker {
+	if breaker == nil {
+		log.Println("NOOP CircuitBreaker implementation in use.")
+		return NewNoopCircuitBreaker()
+	}
+
+	return breaker
 }

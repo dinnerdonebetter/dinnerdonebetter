@@ -27,8 +27,8 @@ var (
 type (
 	Config struct {
 		SDKKey               string                 `json:"sdkKey"               toml:"sdk_key"`
-		InitTimeout          time.Duration          `json:"initTimeout"          toml:"init_timeout"`
 		CircuitBreakerConfig circuitbreaking.Config `json:"circuitBreakerConfig" toml:"circuit_breaker_config"`
+		InitTimeout          time.Duration          `json:"initTimeout"          toml:"init_timeout"`
 	}
 
 	launchDarklyClient interface {
@@ -99,7 +99,7 @@ func (f *featureFlagManager) CanUseFeature(ctx context.Context, userID, feature 
 	defer span.End()
 
 	if !f.circuitBreaker.CanProceed() {
-		return false, types.ErrServiceHasCircuitBroken
+		return false, types.ErrCircuitBroken
 	}
 
 	result, err := f.launchDarklyClient.BoolVariation(feature, ldcontext.New(userID), false)
@@ -118,7 +118,7 @@ func (f *featureFlagManager) Identify(ctx context.Context, user *types.User) err
 	defer span.End()
 
 	if !f.circuitBreaker.CanProceed() {
-		return types.ErrServiceHasCircuitBroken
+		return types.ErrCircuitBroken
 	}
 
 	err := f.launchDarklyClient.Identify(

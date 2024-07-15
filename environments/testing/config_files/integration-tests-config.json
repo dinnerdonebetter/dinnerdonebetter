@@ -17,6 +17,7 @@
 		"sendgrid": null,
 		"mailgun": null,
 		"mailjet": null,
+		"circuitBreakerConfig": null,
 		"provider": ""
 	},
 	"analytics": {
@@ -33,6 +34,7 @@
 	"featureFlags": {
 		"LaunchDarkly": null,
 		"PostHog": null,
+		"CircuitBreakingConfig": null,
 		"Provider": ""
 	},
 	"encoding": {
