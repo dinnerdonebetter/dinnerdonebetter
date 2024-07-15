@@ -200,7 +200,7 @@ typescript: clean_ts
 .PHONY: querier
 querier: queries queries_lint  ## TODO: This target is broken
 	rm --recursive --force internal/database/postgres/generated/*.go
-	$(CONTAINER_RUNNER) run
+	$(CONTAINER_RUNNER) run \
 		--rm \
 		--volume $(PWD):/src \
 		--workdir /src \
