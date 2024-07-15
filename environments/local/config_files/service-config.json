@@ -24,6 +24,7 @@
 		"segment": null,
 		"posthog": null,
 		"rudderstack": null,
+		"circuitBreakerConfig": null,
 		"provider": ""
 	},
 	"search": {
