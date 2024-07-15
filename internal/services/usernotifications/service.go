@@ -31,7 +31,6 @@ type (
 		userNotificationDataManager types.UserNotificationDataManager
 		sessionContextDataFetcher   func(*http.Request) (*types.SessionContextData, error)
 		userNotificationIDFetcher   func(*http.Request) string
-		cfg                         Config
 	}
 )
 
@@ -61,7 +60,6 @@ func ProvideService(
 		sessionContextDataFetcher:   authservice.FetchContextFromRequest,
 		dataChangesPublisher:        dataChangesPublisher,
 		encoderDecoder:              encoder,
-		cfg:                         *cfg,
 		userNotificationDataManager: userNotificationDataManager,
 		tracer:                      tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(serviceName)),
 	}

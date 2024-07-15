@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
@@ -28,7 +29,7 @@ func Test_indexManager_CompleteLifecycle(T *testing.T) {
 			require.NoError(t, shutdownFunc(ctx))
 		}()
 
-		im, err := ProvideIndexManager[types.UserSearchSubset](ctx, nil, nil, cfg, "index_test")
+		im, err := ProvideIndexManager[types.UserSearchSubset](ctx, nil, nil, cfg, "index_test", circuitbreaking.NewNoopCircuitBreaker())
 		assert.NoError(t, err)
 		assert.NotNil(t, im)
 

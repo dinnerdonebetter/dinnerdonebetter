@@ -5,7 +5,6 @@ UPDATE household_instrument_ownerships SET
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id)
 	AND belongs_to_household = sqlc.arg(belongs_to_household);
-
 -- name: CreateHouseholdInstrumentOwnership :exec
 
 INSERT INTO household_instrument_ownerships (
@@ -21,7 +20,6 @@ INSERT INTO household_instrument_ownerships (
 	sqlc.arg(valid_instrument_id),
 	sqlc.arg(belongs_to_household)
 );
-
 -- name: CheckHouseholdInstrumentOwnershipExistence :one
 
 SELECT EXISTS (
@@ -31,7 +29,6 @@ SELECT EXISTS (
 		AND household_instrument_ownerships.id = sqlc.arg(id)
 		AND household_instrument_ownerships.belongs_to_household = sqlc.arg(belongs_to_household)
 );
-
 -- name: GetHouseholdInstrumentOwnerships :many
 
 SELECT
@@ -99,7 +96,6 @@ ORDER BY
 	household_instrument_ownerships.id
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: GetHouseholdInstrumentOwnership :one
 
 SELECT
@@ -128,7 +124,6 @@ INNER JOIN valid_instruments ON household_instrument_ownerships.valid_instrument
 WHERE household_instrument_ownerships.archived_at IS NULL
 	AND household_instrument_ownerships.id = sqlc.arg(id)
 	AND household_instrument_ownerships.belongs_to_household = sqlc.arg(belongs_to_household);
-
 -- name: UpdateHouseholdInstrumentOwnership :execrows
 
 UPDATE household_instrument_ownerships SET

@@ -10,7 +10,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	"github.com/dinnerdonebetter/backend/internal/featureflags"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
-	"github.com/dinnerdonebetter/backend/internal/objectstorage"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
@@ -18,7 +17,7 @@ import (
 	mockrouting "github.com/dinnerdonebetter/backend/internal/routing/mock"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	"github.com/dinnerdonebetter/backend/internal/uploads"
-	"github.com/dinnerdonebetter/backend/internal/uploads/images"
+	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 
 	"github.com/stretchr/testify/assert"
@@ -48,12 +47,10 @@ func buildTestService(t *testing.T) *service {
 		&authservice.Config{},
 		logging.NewNoopLogger(),
 		&mocktypes.UserDataManagerMock{},
-		&mocktypes.HouseholdDataManagerMock{},
 		&mocktypes.HouseholdInvitationDataManagerMock{},
 		&mocktypes.HouseholdUserMembershipDataManagerMock{},
 		&mockauthn.Authenticator{},
 		mockencoding.NewMockEncoderDecoder(),
-		&images.MockImageUploadProcessor{},
 		chi.NewRouteParamManager(),
 		tracing.NewNoopTracerProvider(),
 		pp,
@@ -74,12 +71,6 @@ func TestProvideUsersService(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
-		rpm := mockrouting.NewRouteParamManager()
-		rpm.On(
-			"BuildRouteParamStringIDFetcher",
-			UserIDURIParamKey,
-		).Return(func(*http.Request) string { return "" })
-
 		cfg := &Config{
 			Uploads: uploads.Config{
 				Storage: objectstorage.Config{
@@ -90,9 +81,10 @@ func TestProvideUsersService(T *testing.T) {
 			},
 		}
 
+		rpm := mockrouting.NewRouteParamManager()
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
-			cfg.Uploads.Storage.UploadFilenameKey,
+			UserIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 
 		pp := &mockpublishers.ProducerProvider{}
@@ -104,12 +96,10 @@ func TestProvideUsersService(T *testing.T) {
 			&authservice.Config{},
 			logging.NewNoopLogger(),
 			&mocktypes.UserDataManagerMock{},
-			&mocktypes.HouseholdDataManagerMock{},
 			&mocktypes.HouseholdInvitationDataManagerMock{},
 			&mocktypes.HouseholdUserMembershipDataManagerMock{},
 			&mockauthn.Authenticator{},
 			mockencoding.NewMockEncoderDecoder(),
-			&images.MockImageUploadProcessor{},
 			rpm,
 			tracing.NewNoopTracerProvider(),
 			pp,

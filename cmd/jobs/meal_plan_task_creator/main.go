@@ -80,7 +80,6 @@ func doTheThing() error {
 		dataManager,
 		recipeanalysis.NewRecipeAnalyzer(logger, tracerProvider),
 		dataChangesPublisher,
-		analyticsEventReporter,
 		tracerProvider,
 	)
 

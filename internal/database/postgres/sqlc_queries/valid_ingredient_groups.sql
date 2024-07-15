@@ -1,7 +1,6 @@
 -- name: ArchiveValidIngredientGroup :execrows
 
 UPDATE valid_ingredient_groups SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
-
 -- name: ArchiveValidIngredientGroupMember :execrows
 
 UPDATE valid_ingredient_group_members SET
@@ -9,7 +8,6 @@ UPDATE valid_ingredient_group_members SET
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id)
 	AND belongs_to_group = sqlc.arg(belongs_to_group);
-
 -- name: CreateValidIngredientGroup :exec
 
 INSERT INTO valid_ingredient_groups (
@@ -23,7 +21,6 @@ INSERT INTO valid_ingredient_groups (
 	sqlc.arg(description),
 	sqlc.arg(slug)
 );
-
 -- name: CreateValidIngredientGroupMember :exec
 
 INSERT INTO valid_ingredient_group_members (
@@ -35,7 +32,6 @@ INSERT INTO valid_ingredient_group_members (
 	sqlc.arg(belongs_to_group),
 	sqlc.arg(valid_ingredient)
 );
-
 -- name: CheckValidIngredientGroupExistence :one
 
 SELECT EXISTS (
@@ -44,7 +40,6 @@ SELECT EXISTS (
 	WHERE valid_ingredient_groups.archived_at IS NULL
 		AND valid_ingredient_groups.id = sqlc.arg(id)
 );
-
 -- name: GetValidIngredientGroups :many
 
 SELECT
@@ -92,7 +87,6 @@ GROUP BY valid_ingredient_groups.id
 ORDER BY valid_ingredient_groups.id
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: GetValidIngredientGroupMembers :many
 
 SELECT
@@ -146,7 +140,6 @@ WHERE
 	valid_ingredient_groups.archived_at IS NULL
 	AND valid_ingredient_group_members.archived_at IS NULL
 	AND valid_ingredient_group_members.belongs_to_group = sqlc.arg(belongs_to_group);
-
 -- name: GetValidIngredientGroup :one
 
 SELECT
@@ -160,7 +153,6 @@ SELECT
 FROM valid_ingredient_groups
 WHERE valid_ingredient_groups.archived_at IS NULL
 AND valid_ingredient_groups.id = sqlc.arg(id);
-
 -- name: SearchForValidIngredientGroups :many
 
 SELECT
@@ -209,7 +201,6 @@ GROUP BY valid_ingredient_groups.id
 ORDER BY valid_ingredient_groups.id
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: GetValidIngredientGroupsWithIDs :many
 
 SELECT
@@ -223,7 +214,6 @@ SELECT
 FROM valid_ingredient_groups
 WHERE valid_ingredient_groups.archived_at IS NULL
 	AND valid_ingredient_groups.id = ANY(sqlc.arg(ids)::text[]);
-
 -- name: UpdateValidIngredientGroup :execrows
 
 UPDATE valid_ingredient_groups SET

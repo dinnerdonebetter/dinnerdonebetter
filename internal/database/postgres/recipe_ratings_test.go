@@ -29,7 +29,7 @@ func createRecipeRatingForTest(t *testing.T, ctx context.Context, exampleRecipeR
 	exampleRecipeRating.CreatedAt = created.CreatedAt
 	assert.Equal(t, exampleRecipeRating, created)
 
-	recipeRating, err := dbc.GetRecipeRating(ctx, created.ID)
+	recipeRating, err := dbc.GetRecipeRating(ctx, created.RecipeID, created.ID)
 	exampleRecipeRating.CreatedAt = recipeRating.CreatedAt
 
 	assert.NoError(t, err)
@@ -79,15 +79,15 @@ func TestQuerier_Integration_RecipeRatings(t *testing.T) {
 
 	// delete
 	for _, recipeRating := range createdRecipeRatings {
-		assert.NoError(t, dbc.ArchiveRecipeRating(ctx, recipeRating.ID))
+		assert.NoError(t, dbc.ArchiveRecipeRating(ctx, createdRecipe.ID, recipeRating.ID))
 
 		var exists bool
-		exists, err = dbc.RecipeRatingExists(ctx, recipeRating.ID)
+		exists, err = dbc.RecipeRatingExists(ctx, createdRecipe.ID, recipeRating.ID)
 		assert.NoError(t, err)
 		assert.False(t, exists)
 
 		var y *types.RecipeRating
-		y, err = dbc.GetRecipeRating(ctx, recipeRating.ID)
+		y, err = dbc.GetRecipeRating(ctx, createdRecipe.ID, recipeRating.ID)
 		assert.Nil(t, y)
 		assert.Error(t, err)
 		assert.ErrorIs(t, err, sql.ErrNoRows)
@@ -97,13 +97,24 @@ func TestQuerier_Integration_RecipeRatings(t *testing.T) {
 func TestQuerier_RecipeRatingExists(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid household instrument ownership ID", func(t *testing.T) {
+	T.Run("with invalid recipe ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.RecipeRatingExists(ctx, "")
+		actual, err := c.RecipeRatingExists(ctx, "", t.Name())
+		assert.Error(t, err)
+		assert.False(t, actual)
+	})
+
+	T.Run("with invalid recipe rating ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+
+		actual, err := c.RecipeRatingExists(ctx, t.Name(), "")
 		assert.Error(t, err)
 		assert.False(t, actual)
 	})
@@ -112,13 +123,24 @@ func TestQuerier_RecipeRatingExists(T *testing.T) {
 func TestQuerier_GetRecipeRating(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid household instrument ownership ID", func(t *testing.T) {
+	T.Run("with invalid recipe ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		actual, err := c.GetRecipeRating(ctx, "")
+		actual, err := c.GetRecipeRating(ctx, "", t.Name())
+		assert.Error(t, err)
+		assert.Nil(t, actual)
+	})
+
+	T.Run("with invalid recipe rating ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+
+		actual, err := c.GetRecipeRating(ctx, t.Name(), "")
 		assert.Error(t, err)
 		assert.Nil(t, actual)
 	})
@@ -155,12 +177,21 @@ func TestQuerier_UpdateRecipeRating(T *testing.T) {
 func TestQuerier_ArchiveRecipeRating(T *testing.T) {
 	T.Parallel()
 
-	T.Run("with invalid household instrument ownership ID", func(t *testing.T) {
+	T.Run("with invalid recipe ID", func(t *testing.T) {
 		t.Parallel()
 
 		ctx := context.Background()
 		c, _ := buildTestClient(t)
 
-		assert.Error(t, c.ArchiveRecipeRating(ctx, ""))
+		assert.Error(t, c.ArchiveRecipeRating(ctx, "", t.Name()))
+	})
+
+	T.Run("with invalid recipe rating ID", func(t *testing.T) {
+		t.Parallel()
+
+		ctx := context.Background()
+		c, _ := buildTestClient(t)
+
+		assert.Error(t, c.ArchiveRecipeRating(ctx, t.Name(), ""))
 	})
 }

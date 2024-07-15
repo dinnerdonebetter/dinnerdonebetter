@@ -6,6 +6,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
@@ -24,7 +25,7 @@ func TestNewRudderstackEventReporter(T *testing.T) {
 			DataPlaneURL: t.Name(),
 		}
 
-		collector, err := NewRudderstackEventReporter(logger, tracing.NewNoopTracerProvider(), cfg)
+		collector, err := NewRudderstackEventReporter(logger, tracing.NewNoopTracerProvider(), cfg, circuitbreaking.NewNoopCircuitBreaker())
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 	})
@@ -34,7 +35,7 @@ func TestNewRudderstackEventReporter(T *testing.T) {
 
 		logger := logging.NewNoopLogger()
 
-		collector, err := NewRudderstackEventReporter(logger, tracing.NewNoopTracerProvider(), nil)
+		collector, err := NewRudderstackEventReporter(logger, tracing.NewNoopTracerProvider(), nil, circuitbreaking.NewNoopCircuitBreaker())
 		require.Error(t, err)
 		require.Nil(t, collector)
 	})
@@ -48,7 +49,7 @@ func TestNewRudderstackEventReporter(T *testing.T) {
 			DataPlaneURL: t.Name(),
 		}
 
-		collector, err := NewRudderstackEventReporter(logger, tracing.NewNoopTracerProvider(), cfg)
+		collector, err := NewRudderstackEventReporter(logger, tracing.NewNoopTracerProvider(), cfg, circuitbreaking.NewNoopCircuitBreaker())
 		require.Error(t, err)
 		require.Nil(t, collector)
 	})
@@ -62,7 +63,7 @@ func TestNewRudderstackEventReporter(T *testing.T) {
 			DataPlaneURL: "",
 		}
 
-		collector, err := NewRudderstackEventReporter(logger, tracing.NewNoopTracerProvider(), cfg)
+		collector, err := NewRudderstackEventReporter(logger, tracing.NewNoopTracerProvider(), cfg, circuitbreaking.NewNoopCircuitBreaker())
 		require.Error(t, err)
 		require.Nil(t, collector)
 	})
@@ -80,7 +81,7 @@ func TestRudderstackEventReporter_Close(T *testing.T) {
 			DataPlaneURL: t.Name(),
 		}
 
-		collector, err := NewRudderstackEventReporter(logger, tracing.NewNoopTracerProvider(), cfg)
+		collector, err := NewRudderstackEventReporter(logger, tracing.NewNoopTracerProvider(), cfg, circuitbreaking.NewNoopCircuitBreaker())
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 
@@ -106,7 +107,7 @@ func TestRudderstackEventReporter_AddUser(T *testing.T) {
 			DataPlaneURL: t.Name(),
 		}
 
-		collector, err := NewRudderstackEventReporter(logger, tracing.NewNoopTracerProvider(), cfg)
+		collector, err := NewRudderstackEventReporter(logger, tracing.NewNoopTracerProvider(), cfg, circuitbreaking.NewNoopCircuitBreaker())
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 
@@ -132,7 +133,7 @@ func TestRudderstackEventReporter_EventOccurred(T *testing.T) {
 			DataPlaneURL: t.Name(),
 		}
 
-		collector, err := NewRudderstackEventReporter(logger, tracing.NewNoopTracerProvider(), cfg)
+		collector, err := NewRudderstackEventReporter(logger, tracing.NewNoopTracerProvider(), cfg, circuitbreaking.NewNoopCircuitBreaker())
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 

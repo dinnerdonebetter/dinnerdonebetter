@@ -22,26 +22,32 @@ var mealComponentsColumns = []string{
 	archivedAtColumn,
 }
 
-func buildMealComponentsQueries() []*Query {
-	insertColumns := filterForInsert(mealComponentsColumns)
+func buildMealComponentsQueries(database string) []*Query {
+	switch database {
+	case postgres:
 
-	return []*Query{
-		{
-			Annotation: QueryAnnotation{
-				Name: "CreateMealComponent",
-				Type: ExecType,
-			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
+		insertColumns := filterForInsert(mealComponentsColumns)
+
+		return []*Query{
+			{
+				Annotation: QueryAnnotation{
+					Name: "CreateMealComponent",
+					Type: ExecType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
 	%s
 ) VALUES (
 	%s
 );`,
-				mealComponentsTableName,
-				strings.Join(insertColumns, ",\n\t"),
-				strings.Join(applyToEach(insertColumns, func(i int, s string) string {
-					return fmt.Sprintf("sqlc.arg(%s)", s)
-				}), ",\n\t"),
-			)),
-		},
+					mealComponentsTableName,
+					strings.Join(insertColumns, ",\n\t"),
+					strings.Join(applyToEach(insertColumns, func(i int, s string) string {
+						return fmt.Sprintf("sqlc.arg(%s)", s)
+					}), ",\n\t"),
+				)),
+			},
+		}
+	default:
+		return nil
 	}
 }

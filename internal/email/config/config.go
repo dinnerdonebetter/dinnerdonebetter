@@ -11,6 +11,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/email/sendgrid"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -27,10 +28,11 @@ const (
 type (
 	// Config is the configuration structure.
 	Config struct {
-		Sendgrid *sendgrid.Config `json:"sendgrid" toml:"sendgrid,omitempty"`
-		Mailgun  *mailgun.Config  `json:"mailgun"  toml:"mailgun,omitempty"`
-		Mailjet  *mailjet.Config  `json:"mailjet"  toml:"mailjet,omitempty"`
-		Provider string           `json:"provider" toml:"provider,omitempty"`
+		Sendgrid             *sendgrid.Config        `json:"sendgrid"             toml:"sendgrid,omitempty"`
+		Mailgun              *mailgun.Config         `json:"mailgun"              toml:"mailgun,omitempty"`
+		Mailjet              *mailjet.Config         `json:"mailjet"              toml:"mailjet,omitempty"`
+		CircuitBreakerConfig *circuitbreaking.Config `json:"circuitBreakerConfig" toml:"circuit_breaker_config"`
+		Provider             string                  `json:"provider"             toml:"provider,omitempty"`
 	}
 )
 
@@ -46,14 +48,14 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 }
 
 // ProvideEmailer provides an outbound_emailer.
-func (cfg *Config) ProvideEmailer(logger logging.Logger, tracerProvider tracing.TracerProvider, client *http.Client) (email.Emailer, error) {
+func (cfg *Config) ProvideEmailer(logger logging.Logger, tracerProvider tracing.TracerProvider, client *http.Client, circuitBreaker circuitbreaking.CircuitBreaker) (email.Emailer, error) {
 	switch strings.ToLower(strings.TrimSpace(cfg.Provider)) {
 	case ProviderSendgrid:
-		return sendgrid.NewSendGridEmailer(cfg.Sendgrid, logger, tracerProvider, client)
+		return sendgrid.NewSendGridEmailer(cfg.Sendgrid, logger, tracerProvider, client, circuitBreaker)
 	case ProviderMailgun:
-		return mailgun.NewMailgunEmailer(cfg.Mailgun, logger, tracerProvider, client)
+		return mailgun.NewMailgunEmailer(cfg.Mailgun, logger, tracerProvider, client, circuitBreaker)
 	case ProviderMailjet:
-		return mailjet.NewMailjetEmailer(cfg.Mailjet, logger, tracerProvider, client)
+		return mailjet.NewMailjetEmailer(cfg.Mailjet, logger, tracerProvider, client, circuitBreaker)
 	default:
 		logger.Debug("providing noop outbound_emailer")
 		return email.NewNoopEmailer()

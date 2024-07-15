@@ -85,9 +85,5 @@ func buildTestHelper(t *testing.T) *adminServiceHTTPRoutesTestHelper {
 
 	helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
-	helper.service.userIDFetcher = func(req *http.Request) string {
-		return helper.exampleUser.ID
-	}
-
 	return helper
 }

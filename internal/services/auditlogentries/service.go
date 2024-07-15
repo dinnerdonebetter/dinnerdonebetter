@@ -21,7 +21,6 @@ var _ types.AuditLogEntryDataService = (*service)(nil)
 type (
 	// service handles audit log entries.
 	service struct {
-		cfg                       *Config
 		logger                    logging.Logger
 		auditLogEntryDataManager  types.AuditLogEntryDataManager
 		auditLogEntryIDFetcher    func(*http.Request) string
@@ -35,14 +34,12 @@ type (
 func ProvideService(
 	_ context.Context,
 	logger logging.Logger,
-	cfg *Config,
 	auditLogEntryDataManager types.AuditLogEntryDataManager,
 	encoder encoding.ServerEncoderDecoder,
 	routeParamManager routing.RouteParamManager,
 	tracerProvider tracing.TracerProvider,
 ) (types.AuditLogEntryDataService, error) {
 	svc := &service{
-		cfg:                       cfg,
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
 		auditLogEntryIDFetcher:    routeParamManager.BuildRouteParamStringIDFetcher(AuditLogEntryIDURIParamKey),
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,

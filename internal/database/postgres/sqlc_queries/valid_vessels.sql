@@ -1,7 +1,6 @@
 -- name: ArchiveValidVessel :execrows
 
 UPDATE valid_vessels SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
-
 -- name: CreateValidVessel :exec
 
 INSERT INTO valid_vessels (
@@ -37,7 +36,6 @@ INSERT INTO valid_vessels (
 	sqlc.arg(height_in_millimeters),
 	sqlc.arg(shape)
 );
-
 -- name: CheckValidVesselExistence :one
 
 SELECT EXISTS (
@@ -46,7 +44,6 @@ SELECT EXISTS (
 	WHERE valid_vessels.archived_at IS NULL
 		AND valid_vessels.id = sqlc.arg(id)
 );
-
 -- name: GetValidVessels :many
 
 SELECT
@@ -106,7 +103,6 @@ GROUP BY valid_vessels.id
 ORDER BY valid_vessels.id
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: GetValidVesselIDsNeedingIndexing :many
 
 SELECT valid_vessels.id
@@ -116,7 +112,6 @@ WHERE valid_vessels.archived_at IS NULL
 	valid_vessels.last_indexed_at IS NULL
 	OR valid_vessels.last_indexed_at < NOW() - '24 hours'::INTERVAL
 );
-
 -- name: GetValidVessel :one
 
 SELECT
@@ -157,7 +152,6 @@ FROM valid_vessels
 WHERE valid_vessels.archived_at IS NULL
 	AND valid_measurement_units.archived_at IS NULL
 	AND valid_vessels.id = sqlc.arg(id);
-
 -- name: GetRandomValidVessel :one
 
 SELECT
@@ -198,7 +192,6 @@ FROM valid_vessels
 WHERE valid_vessels.archived_at IS NULL
 	AND valid_measurement_units.archived_at IS NULL
 ORDER BY RANDOM() LIMIT 1;
-
 -- name: GetValidVesselsWithIDs :many
 
 SELECT
@@ -239,7 +232,6 @@ FROM valid_vessels
 WHERE valid_vessels.archived_at IS NULL
 	AND valid_measurement_units.archived_at IS NULL
 	AND valid_vessels.id = ANY(sqlc.arg(ids)::text[]);
-
 -- name: SearchForValidVessels :many
 
 SELECT
@@ -266,7 +258,6 @@ FROM valid_vessels
 WHERE valid_vessels.name ILIKE '%' || sqlc.arg(name_query)::text || '%'
 	AND valid_vessels.archived_at IS NULL
 LIMIT 50;
-
 -- name: UpdateValidVessel :execrows
 
 UPDATE valid_vessels SET
@@ -287,7 +278,6 @@ UPDATE valid_vessels SET
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
-
 -- name: UpdateValidVesselLastIndexedAt :execrows
 
 UPDATE valid_vessels SET last_indexed_at = NOW() WHERE id = sqlc.arg(id) AND archived_at IS NULL;

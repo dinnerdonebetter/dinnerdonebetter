@@ -17,22 +17,26 @@
 		"sendgrid": null,
 		"mailgun": null,
 		"mailjet": null,
+		"circuitBreakerConfig": null,
 		"provider": ""
 	},
 	"analytics": {
 		"segment": null,
 		"posthog": null,
 		"rudderstack": null,
+		"circuitBreakerConfig": null,
 		"provider": ""
 	},
 	"search": {
 		"algolia": null,
 		"elasticsearch": null,
+		"circuitBreakerConfig": null,
 		"provider": ""
 	},
 	"featureFlags": {
 		"LaunchDarkly": null,
 		"PostHog": null,
+		"CircuitBreakingConfig": null,
 		"Provider": ""
 	},
 	"encoding": {

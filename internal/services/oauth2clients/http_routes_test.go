@@ -49,7 +49,6 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
-		helper.service.userDataManager = mockDB
 
 		sg := &randommock.Generator{}
 		sg.On(
@@ -184,7 +183,6 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		).Return(helper.exampleOAuth2Client, nil)
 
 		helper.service.oauth2ClientDataManager = mockDB
-		helper.service.userDataManager = mockDB
 
 		helper.service.CreateHandler(helper.res, helper.req)
 
@@ -211,12 +209,6 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		require.NotNil(t, helper.req)
 
 		mockDB := database.NewMockDatabase()
-		mockDB.UserDataManagerMock.On(
-			"GetUser",
-			testutils.ContextMatcher,
-			helper.exampleUser.ID,
-		).Return(helper.exampleUser, nil)
-		helper.service.userDataManager = mockDB
 
 		sg := &randommock.Generator{}
 		sg.On(
@@ -284,7 +276,6 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 		).Return((*types.OAuth2Client)(nil), errors.New("blah"))
 
 		helper.service.oauth2ClientDataManager = mockDB
-		helper.service.userDataManager = mockDB
 
 		helper.service.CreateHandler(helper.res, helper.req)
 
@@ -316,7 +307,6 @@ func TestOAuth2ClientsService_CreateHandler(T *testing.T) {
 			testutils.ContextMatcher,
 			helper.exampleUser.ID,
 		).Return(helper.exampleUser, nil)
-		helper.service.userDataManager = mockDB
 
 		sg := &randommock.Generator{}
 		sg.On(
@@ -505,7 +495,6 @@ func TestOAuth2ClientsService_ListHandler(T *testing.T) {
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.QueryFilteredResult[types.OAuth2Client])(nil), sql.ErrNoRows)
 		helper.service.oauth2ClientDataManager = mockDB
-		helper.service.userDataManager = mockDB
 
 		helper.service.ListHandler(helper.res, helper.req)
 
@@ -530,7 +519,6 @@ func TestOAuth2ClientsService_ListHandler(T *testing.T) {
 			mock.IsType(&types.QueryFilter{}),
 		).Return((*types.QueryFilteredResult[types.OAuth2Client])(nil), errors.New("blah"))
 		helper.service.oauth2ClientDataManager = mockDB
-		helper.service.userDataManager = mockDB
 
 		helper.service.ListHandler(helper.res, helper.req)
 

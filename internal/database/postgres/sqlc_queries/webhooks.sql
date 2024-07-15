@@ -5,7 +5,6 @@ UPDATE webhooks SET
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id)
 	AND belongs_to_household = sqlc.arg(belongs_to_household);
-
 -- name: CreateWebhook :exec
 
 INSERT INTO webhooks (
@@ -23,7 +22,6 @@ INSERT INTO webhooks (
 	sqlc.arg(method),
 	sqlc.arg(belongs_to_household)
 );
-
 -- name: CheckWebhookExistence :one
 
 SELECT EXISTS(
@@ -33,7 +31,6 @@ SELECT EXISTS(
 	AND webhooks.id = sqlc.arg(id)
 	AND webhooks.belongs_to_household = sqlc.arg(belongs_to_household)
 );
-
 -- name: GetWebhooksForHousehold :many
 
 SELECT
@@ -91,7 +88,6 @@ WHERE webhooks.archived_at IS NULL
 	AND webhook_trigger_events.archived_at IS NULL
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: GetWebhooksForHouseholdAndEvent :many
 
 SELECT
@@ -110,7 +106,6 @@ WHERE webhook_trigger_events.archived_at IS NULL
 	AND webhook_trigger_events.trigger_event = sqlc.arg(trigger_event)
 	AND webhooks.belongs_to_household = sqlc.arg(belongs_to_household)
 	AND webhooks.archived_at IS NULL;
-
 -- name: GetWebhook :many
 
 SELECT

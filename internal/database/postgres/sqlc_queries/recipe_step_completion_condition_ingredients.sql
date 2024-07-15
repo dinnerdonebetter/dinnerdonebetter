@@ -9,7 +9,6 @@ INSERT INTO recipe_step_completion_condition_ingredients (
 	sqlc.arg(belongs_to_recipe_step_completion_condition),
 	sqlc.arg(recipe_step_ingredient)
 );
-
 -- name: GetAllRecipeStepCompletionConditionIngredientsForRecipeCompletionIDs :many
 
 SELECT

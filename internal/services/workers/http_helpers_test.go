@@ -48,10 +48,11 @@ func buildTestHelper(t *testing.T) *validVesselsServiceHTTPRoutesTestHelper {
 		},
 	}
 
-	helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
-	helper.service.sessionContextDataFetcher = func(*http.Request) (*types.SessionContextData, error) {
+	helper.service.sessionContextDataFetcher = func(request *http.Request) (*types.SessionContextData, error) {
 		return sessionCtxData, nil
 	}
+
+	helper.service.encoderDecoder = encoding.ProvideServerEncoderDecoder(logging.NewNoopLogger(), tracing.NewNoopTracerProvider(), encoding.ContentTypeJSON)
 
 	req := testutils.BuildTestRequest(t)
 

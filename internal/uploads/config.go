@@ -3,7 +3,7 @@ package uploads
 import (
 	"context"
 
-	"github.com/dinnerdonebetter/backend/internal/objectstorage"
+	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )

@@ -1,7 +1,6 @@
 -- name: ArchiveValidPreparationVessel :execrows
 
 UPDATE valid_preparation_vessels SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
-
 -- name: CreateValidPreparationVessel :exec
 
 INSERT INTO valid_preparation_vessels (
@@ -15,7 +14,6 @@ INSERT INTO valid_preparation_vessels (
 	sqlc.arg(valid_preparation_id),
 	sqlc.arg(valid_vessel_id)
 );
-
 -- name: CheckValidPreparationVesselExistence :one
 
 SELECT EXISTS (
@@ -24,7 +22,6 @@ SELECT EXISTS (
 	WHERE valid_preparation_vessels.archived_at IS NULL
 		AND valid_preparation_vessels.id = sqlc.arg(id)
 );
-
 -- name: GetValidPreparationVesselsForPreparation :many
 
 SELECT
@@ -130,7 +127,6 @@ WHERE
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: GetValidPreparationVesselsForVessel :many
 
 SELECT
@@ -236,7 +232,6 @@ WHERE
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: GetValidPreparationVessels :many
 
 SELECT
@@ -341,7 +336,6 @@ WHERE
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: GetValidPreparationVessel :one
 
 SELECT
@@ -415,7 +409,6 @@ WHERE
 	AND valid_preparations.archived_at IS NULL
 	AND valid_measurement_units.archived_at IS NULL
 	AND valid_preparation_vessels.id = sqlc.arg(id);
-
 -- name: ValidPreparationVesselPairIsValid :one
 
 SELECT EXISTS(
@@ -425,7 +418,6 @@ SELECT EXISTS(
 	AND valid_preparation_id = sqlc.arg(valid_preparation_id)
 	AND archived_at IS NULL
 );
-
 -- name: UpdateValidPreparationVessel :execrows
 
 UPDATE valid_preparation_vessels SET

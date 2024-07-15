@@ -2,14 +2,10 @@ package pubsub
 
 import (
 	"context"
-	"fmt"
-	"log"
 	"sync"
 
-	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
-	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 
 	"cloud.google.com/go/pubsub"
 )
@@ -21,8 +17,6 @@ type (
 	}
 
 	pubSubConsumer struct {
-		tracer      tracing.Tracer
-		encoder     encoding.ClientEncoder
 		logger      logging.Logger
 		consumer    messageConsumer
 		handlerFunc func(context.Context, []byte) error
@@ -34,17 +28,14 @@ type (
 func buildPubSubConsumer(
 	logger logging.Logger,
 	pubsubClient *pubsub.Client,
-	tracerProvider tracing.TracerProvider,
 	topic string,
 	handlerFunc func(context.Context, []byte) error,
 ) messagequeue.Consumer {
 	return &pubSubConsumer{
 		topic:       topic,
-		encoder:     encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
 		logger:      logging.EnsureLogger(logger),
 		consumer:    pubsubClient,
 		handlerFunc: handlerFunc,
-		tracer:      tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(fmt.Sprintf("%s_consumer", topic))),
 	}
 }
 
@@ -56,6 +47,7 @@ func (c *pubSubConsumer) Consume(stopChan chan bool, errors chan error) {
 	ctx := context.Background()
 	sub, err := c.consumer.CreateSubscription(ctx, c.topic, pubsub.SubscriptionConfig{Topic: c.consumer.Topic(c.topic)})
 	if err != nil {
+		c.logger.Error(err, "creating subscription")
 		errors <- err
 		return
 	}
@@ -63,6 +55,7 @@ func (c *pubSubConsumer) Consume(stopChan chan bool, errors chan error) {
 	go func() {
 		<-stopChan
 		if err = sub.Delete(ctx); err != nil {
+			c.logger.Error(err, "deleting subscription")
 			errors <- err
 		}
 	}()
@@ -74,7 +67,7 @@ func (c *pubSubConsumer) Consume(stopChan chan bool, errors chan error) {
 			m.Ack()
 		}
 	}); err != nil {
-		log.Println(err)
+		c.logger.Error(err, "receiving pub/sub data")
 	}
 }
 
@@ -82,17 +75,15 @@ type pubsubConsumerProvider struct {
 	logger           logging.Logger
 	consumerCache    map[string]messagequeue.Consumer
 	pubsubClient     *pubsub.Client
-	tracerProvider   tracing.TracerProvider
 	consumerCacheHat sync.RWMutex
 }
 
 // ProvidePubSubConsumerProvider returns a ConsumerProvider for a given address.
-func ProvidePubSubConsumerProvider(logger logging.Logger, tracerProvider tracing.TracerProvider, client *pubsub.Client) messagequeue.ConsumerProvider {
+func ProvidePubSubConsumerProvider(logger logging.Logger, client *pubsub.Client) messagequeue.ConsumerProvider {
 	return &pubsubConsumerProvider{
-		logger:         logging.EnsureLogger(logger),
-		pubsubClient:   client,
-		consumerCache:  map[string]messagequeue.Consumer{},
-		tracerProvider: tracerProvider,
+		logger:        logging.EnsureLogger(logger),
+		pubsubClient:  client,
+		consumerCache: map[string]messagequeue.Consumer{},
 	}
 }
 
@@ -117,7 +108,7 @@ func (p *pubsubConsumerProvider) ProvideConsumer(_ context.Context, topic string
 		return cachedPub, nil
 	}
 
-	pub := buildPubSubConsumer(logger, p.pubsubClient, p.tracerProvider, topic, handlerFunc)
+	pub := buildPubSubConsumer(logger, p.pubsubClient, topic, handlerFunc)
 	p.consumerCache[topic] = pub
 
 	return pub, nil

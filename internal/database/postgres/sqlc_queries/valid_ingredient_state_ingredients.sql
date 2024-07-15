@@ -1,7 +1,6 @@
 -- name: ArchiveValidIngredientStateIngredient :execrows
 
 UPDATE valid_ingredient_state_ingredients SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
-
 -- name: CreateValidIngredientStateIngredient :exec
 
 INSERT INTO valid_ingredient_state_ingredients (
@@ -15,7 +14,6 @@ INSERT INTO valid_ingredient_state_ingredients (
 	sqlc.arg(valid_ingredient_state),
 	sqlc.arg(valid_ingredient)
 );
-
 -- name: CheckValidIngredientStateIngredientExistence :one
 
 SELECT EXISTS (
@@ -24,7 +22,6 @@ SELECT EXISTS (
 	WHERE valid_ingredient_state_ingredients.archived_at IS NULL
 		AND valid_ingredient_state_ingredients.id = sqlc.arg(id)
 );
-
 -- name: GetValidIngredientStateIngredientsForIngredient :many
 
 SELECT
@@ -125,7 +122,6 @@ WHERE
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: GetValidIngredientStateIngredientsForIngredientState :many
 
 SELECT
@@ -226,7 +222,6 @@ WHERE
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: GetValidIngredientStateIngredients :many
 
 SELECT
@@ -326,7 +321,6 @@ WHERE
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: GetValidIngredientStateIngredient :one
 
 SELECT
@@ -395,7 +389,6 @@ WHERE
 	AND valid_ingredients.archived_at IS NULL
 	AND valid_ingredient_states.archived_at IS NULL
 	AND valid_ingredient_state_ingredients.id = sqlc.arg(id);
-
 -- name: GetValidIngredientStateIngredientsWithIDs :many
 
 SELECT
@@ -464,7 +457,6 @@ WHERE
 	AND valid_ingredients.archived_at IS NULL
 	AND valid_ingredient_states.archived_at IS NULL
 	AND valid_ingredient_state_ingredients.id = ANY(sqlc.arg(ids)::text[]);
-
 -- name: CheckValidityOfValidIngredientStateIngredientPair :one
 
 SELECT EXISTS(
@@ -474,7 +466,6 @@ SELECT EXISTS(
 	AND valid_ingredient_state = sqlc.arg(valid_ingredient_state)
 	AND archived_at IS NULL
 );
-
 -- name: UpdateValidIngredientStateIngredient :execrows
 
 UPDATE valid_ingredient_state_ingredients SET

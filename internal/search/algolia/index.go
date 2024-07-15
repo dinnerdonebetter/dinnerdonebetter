@@ -7,6 +7,12 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
+)
+
+const (
+	objectIDKey = "objectID"
+	idKey       = "id"
 )
 
 var (
@@ -19,7 +25,11 @@ func (m *indexManager[T]) Index(ctx context.Context, id string, value any) error
 	_, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithValue("id", id).WithValue("value", value)
+	if m.circuitBreaker.CannotProceed() {
+		return types.ErrCircuitBroken
+	}
+
+	logger := m.logger.WithValue(idKey, id).WithValue("value", value)
 	logger.Debug("adding to index")
 
 	jsonEncoded, err := json.Marshal(value)
@@ -33,8 +43,8 @@ func (m *indexManager[T]) Index(ctx context.Context, id string, value any) error
 	}
 
 	// we make a huge, albeit safe assumption here.
-	newValue["objectID"] = newValue["id"]
-	delete(newValue, "id")
+	newValue[objectIDKey] = newValue[idKey]
+	delete(newValue, idKey)
 
 	if _, err = m.client.SaveObject(newValue); err != nil {
 		return err
@@ -48,6 +58,10 @@ func (m *indexManager[T]) Search(ctx context.Context, query string) ([]*T, error
 	_, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if m.circuitBreaker.CannotProceed() {
+		return nil, types.ErrCircuitBroken
+	}
+
 	tracing.AttachToSpan(span, keys.SearchQueryKey, query)
 	logger := m.logger.WithValue(keys.SearchQueryKey, query)
 
@@ -57,6 +71,7 @@ func (m *indexManager[T]) Search(ctx context.Context, query string) ([]*T, error
 
 	res, searchErr := m.client.Search(query)
 	if searchErr != nil {
+		m.circuitBreaker.Failed()
 		return nil, searchErr
 	}
 
@@ -65,9 +80,9 @@ func (m *indexManager[T]) Search(ctx context.Context, query string) ([]*T, error
 		var x *T
 
 		// we make the same assumption here, sort of
-		if _, ok := hit["objectID"]; ok {
-			hit["id"] = hit["objectID"]
-			delete(hit, "objectID")
+		if _, ok := hit[objectIDKey]; ok {
+			hit[idKey] = hit[objectIDKey]
+			delete(hit, objectIDKey)
 		}
 
 		var encodedAsJSON []byte
@@ -85,6 +100,7 @@ func (m *indexManager[T]) Search(ctx context.Context, query string) ([]*T, error
 
 	logger.Debug("search performed")
 
+	m.circuitBreaker.Succeeded()
 	return results, nil
 }
 
@@ -93,14 +109,20 @@ func (m *indexManager[T]) Delete(ctx context.Context, id string) error {
 	_, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
-	logger := m.logger.WithValue("id", id)
+	if m.circuitBreaker.CannotProceed() {
+		return types.ErrCircuitBroken
+	}
+
+	logger := m.logger.WithValue(idKey, id)
 
 	if _, err := m.client.DeleteObject(id); err != nil {
+		m.circuitBreaker.Failed()
 		return err
 	}
 
 	logger.Debug("removed from index")
 
+	m.circuitBreaker.Succeeded()
 	return nil
 }
 
@@ -109,9 +131,15 @@ func (m *indexManager[T]) Wipe(ctx context.Context) error {
 	_, span := m.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if m.circuitBreaker.CannotProceed() {
+		return types.ErrCircuitBroken
+	}
+
 	if _, err := m.client.ClearObjects(); err != nil {
+		m.circuitBreaker.Failed()
 		return err
 	}
 
+	m.circuitBreaker.Succeeded()
 	return nil
 }

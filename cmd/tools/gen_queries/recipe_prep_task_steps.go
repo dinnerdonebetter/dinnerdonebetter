@@ -20,26 +20,32 @@ var recipePrepTaskStepsColumns = []string{
 	satisfiesRecipeStepColumn,
 }
 
-func buildRecipePrepTaskStepsQueries() []*Query {
-	insertColumns := filterForInsert(recipePrepTaskStepsColumns)
+func buildRecipePrepTaskStepsQueries(database string) []*Query {
+	switch database {
+	case postgres:
 
-	return []*Query{
-		{
-			Annotation: QueryAnnotation{
-				Name: "CreateRecipePrepTaskStep",
-				Type: ExecType,
-			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
+		insertColumns := filterForInsert(recipePrepTaskStepsColumns)
+
+		return []*Query{
+			{
+				Annotation: QueryAnnotation{
+					Name: "CreateRecipePrepTaskStep",
+					Type: ExecType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
 	%s
 ) VALUES (
 	%s
 );`,
-				recipePrepTaskStepsTableName,
-				strings.Join(insertColumns, ",\n\t"),
-				strings.Join(applyToEach(insertColumns, func(i int, s string) string {
-					return fmt.Sprintf("sqlc.arg(%s)", s)
-				}), ",\n\t"),
-			)),
-		},
+					recipePrepTaskStepsTableName,
+					strings.Join(insertColumns, ",\n\t"),
+					strings.Join(applyToEach(insertColumns, func(i int, s string) string {
+						return fmt.Sprintf("sqlc.arg(%s)", s)
+					}), ",\n\t"),
+				)),
+			},
+		}
+	default:
+		return nil
 	}
 }

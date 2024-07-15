@@ -1,7 +1,6 @@
 -- name: ArchiveValidPreparationInstrument :execrows
 
 UPDATE valid_preparation_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
-
 -- name: CreateValidPreparationInstrument :exec
 
 INSERT INTO valid_preparation_instruments (
@@ -15,7 +14,6 @@ INSERT INTO valid_preparation_instruments (
 	sqlc.arg(valid_preparation_id),
 	sqlc.arg(valid_instrument_id)
 );
-
 -- name: CheckValidPreparationInstrumentExistence :one
 
 SELECT EXISTS (
@@ -24,7 +22,6 @@ SELECT EXISTS (
 	WHERE valid_preparation_instruments.archived_at IS NULL
 		AND valid_preparation_instruments.id = sqlc.arg(id)
 );
-
 -- name: GetValidPreparationInstrumentsForInstrument :many
 
 SELECT
@@ -126,7 +123,6 @@ GROUP BY
 ORDER BY valid_preparation_instruments.id
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: GetValidPreparationInstrumentsForPreparation :many
 
 SELECT
@@ -228,7 +224,6 @@ GROUP BY
 ORDER BY valid_preparation_instruments.id
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: GetValidPreparationInstruments :many
 
 SELECT
@@ -327,7 +322,6 @@ GROUP BY
 ORDER BY valid_preparation_instruments.id
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: GetValidPreparationInstrument :one
 
 SELECT
@@ -381,7 +375,6 @@ WHERE
 	AND valid_instruments.archived_at IS NULL
 	AND valid_preparations.archived_at IS NULL
 	AND valid_preparation_instruments.id = sqlc.arg(id);
-
 -- name: ValidPreparationInstrumentPairIsValid :one
 
 SELECT EXISTS(
@@ -391,7 +384,6 @@ SELECT EXISTS(
 	AND valid_preparation_id = sqlc.arg(valid_preparation_id)
 	AND archived_at IS NULL
 );
-
 -- name: UpdateValidPreparationInstrument :execrows
 
 UPDATE valid_preparation_instruments SET

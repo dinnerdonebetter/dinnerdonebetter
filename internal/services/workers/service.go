@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/analytics"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/features/grocerylistpreparation"
@@ -13,7 +12,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	"github.com/dinnerdonebetter/backend/internal/workers"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
@@ -27,11 +25,8 @@ var _ types.WorkerService = (*service)(nil)
 type (
 	// service handles valid vessels.
 	service struct {
-		cfg                            *Config
 		logger                         logging.Logger
-		dataManager                    database.DataManager
 		sessionContextDataFetcher      func(*http.Request) (*types.SessionContextData, error)
-		dataChangesPublisher           messagequeue.Publisher
 		encoderDecoder                 encoding.ServerEncoderDecoder
 		tracer                         tracing.Tracer
 		mealPlanFinalizationWorker     workers.MealPlanFinalizationWorker
@@ -49,7 +44,6 @@ func ProvideService(
 	encoder encoding.ServerEncoderDecoder,
 	publisherProvider messagequeue.PublisherProvider,
 	tracerProvider tracing.TracerProvider,
-	analyticsEventReporter analytics.EventReporter,
 	grapher recipeanalysis.RecipeAnalyzer,
 ) (types.WorkerService, error) {
 	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
@@ -67,9 +61,7 @@ func ProvideService(
 	mealPlanGroceryListInitializer := workers.ProvideMealPlanGroceryListInitializer(
 		logger,
 		dataManager,
-		grapher,
 		dataChangesPublisher,
-		analyticsEventReporter,
 		tracerProvider,
 		grocerylistpreparation.NewGroceryListCreator(logger, tracerProvider),
 	)
@@ -79,17 +71,12 @@ func ProvideService(
 		dataManager,
 		grapher,
 		dataChangesPublisher,
-		analyticsEventReporter,
 		tracerProvider,
 	)
 
 	svc := &service{
-		cfg:                            cfg,
 		logger:                         logging.EnsureLogger(logger).WithName(serviceName),
-		sessionContextDataFetcher:      authservice.FetchContextFromRequest,
-		dataChangesPublisher:           dataChangesPublisher,
 		encoderDecoder:                 encoder,
-		dataManager:                    dataManager,
 		mealPlanFinalizationWorker:     mealPlanFinalizationWorker,
 		mealPlanGroceryListInitializer: mealPlanGroceryListInitializer,
 		mealPlanTaskCreatorWorker:      mealPlanTaskCreatorWorker,

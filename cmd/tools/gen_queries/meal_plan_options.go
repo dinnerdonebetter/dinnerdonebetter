@@ -31,61 +31,64 @@ var mealPlanOptionsColumns = []string{
 	belongsToMealPlanEventColumn,
 }
 
-func buildMealPlanOptionsQueries() []*Query {
-	insertColumns := filterForInsert(mealPlanOptionsColumns,
-		mealPlanOptionsTiebrokenColumn,
-	)
+func buildMealPlanOptionsQueries(database string) []*Query {
+	switch database {
+	case postgres:
 
-	fullSelectColumns := append(
-		applyToEach(mealPlanOptionsColumns, func(i int, s string) string {
-			return fmt.Sprintf("%s.%s", mealPlanOptionsTableName, s)
-		}),
-		applyToEach(mealsColumns, func(i int, s string) string {
-			return fmt.Sprintf("%s.%s as meal_%s", mealsTableName, s, s)
-		})...,
-	)
+		insertColumns := filterForInsert(mealPlanOptionsColumns,
+			mealPlanOptionsTiebrokenColumn,
+		)
 
-	return []*Query{
-		{
-			Annotation: QueryAnnotation{
-				Name: "ArchiveMealPlanOption",
-				Type: ExecRowsType,
-			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+		fullSelectColumns := append(
+			applyToEach(mealPlanOptionsColumns, func(i int, s string) string {
+				return fmt.Sprintf("%s.%s", mealPlanOptionsTableName, s)
+			}),
+			applyToEach(mealsColumns, func(i int, s string) string {
+				return fmt.Sprintf("%s.%s as meal_%s", mealsTableName, s, s)
+			})...,
+		)
+
+		return []*Query{
+			{
+				Annotation: QueryAnnotation{
+					Name: "ArchiveMealPlanOption",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s = %s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s)
 	AND %s = sqlc.arg(%s);`,
-				mealPlanOptionsTableName,
-				archivedAtColumn, currentTimeExpression,
-				archivedAtColumn,
-				belongsToMealPlanEventColumn, belongsToMealPlanEventColumn,
-				idColumn, idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "CreateMealPlanOption",
-				Type: ExecType,
+					mealPlanOptionsTableName,
+					archivedAtColumn, currentTimeExpression,
+					archivedAtColumn,
+					belongsToMealPlanEventColumn, belongsToMealPlanEventColumn,
+					idColumn, idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
+			{
+				Annotation: QueryAnnotation{
+					Name: "CreateMealPlanOption",
+					Type: ExecType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
 	%s
 ) VALUES (
 	%s
 );`,
-				mealPlanOptionsTableName,
-				strings.Join(insertColumns, ",\n\t"),
-				strings.Join(applyToEach(insertColumns, func(i int, s string) string {
-					return fmt.Sprintf("sqlc.arg(%s)", s)
-				}), ",\n\t"),
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "CheckMealPlanOptionExistence",
-				Type: OneType,
+					mealPlanOptionsTableName,
+					strings.Join(insertColumns, ",\n\t"),
+					strings.Join(applyToEach(insertColumns, func(i int, s string) string {
+						return fmt.Sprintf("sqlc.arg(%s)", s)
+					}), ",\n\t"),
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
+			{
+				Annotation: QueryAnnotation{
+					Name: "CheckMealPlanOptionExistence",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
 	SELECT %s.%s
 	FROM %s
 		JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event = meal_plan_events.id
@@ -99,36 +102,36 @@ WHERE %s IS NULL
 		AND meal_plans.archived_at IS NULL
 		AND meal_plans.id = sqlc.arg(meal_plan_id)
 );`,
-				mealPlanOptionsTableName, idColumn,
-				mealPlanOptionsTableName,
-				mealPlanOptionsTableName, archivedAtColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "FinalizeMealPlanOption",
-				Type: ExecType,
+					mealPlanOptionsTableName, idColumn,
+					mealPlanOptionsTableName,
+					mealPlanOptionsTableName, archivedAtColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+			{
+				Annotation: QueryAnnotation{
+					Name: "FinalizeMealPlanOption",
+					Type: ExecType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s = (%s = sqlc.arg(%s) AND %s = sqlc.arg(%s)),
 	%s = sqlc.arg(%s)
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s)
 	AND %s = sqlc.arg(%s);`,
-				mealPlanOptionsTableName,
-				mealPlanOptionsChosenColumn, belongsToMealPlanEventColumn, mealPlanEventIDColumn, idColumn, idColumn,
-				mealPlanOptionsTiebrokenColumn, mealPlanOptionsTiebrokenColumn,
-				archivedAtColumn,
-				belongsToMealPlanEventColumn, mealPlanEventIDColumn,
-				idColumn, idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetAllMealPlanOptionsForMealPlanEvent",
-				Type: ManyType,
+					mealPlanOptionsTableName,
+					mealPlanOptionsChosenColumn, belongsToMealPlanEventColumn, mealPlanEventIDColumn, idColumn, idColumn,
+					mealPlanOptionsTiebrokenColumn, mealPlanOptionsTiebrokenColumn,
+					archivedAtColumn,
+					belongsToMealPlanEventColumn, mealPlanEventIDColumn,
+					idColumn, idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetAllMealPlanOptionsForMealPlanEvent",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 	JOIN meal_plan_events ON meal_plan_options.belongs_to_meal_plan_event = meal_plan_events.id
@@ -141,16 +144,16 @@ WHERE
 	AND meal_plan_events.belongs_to_meal_plan = sqlc.arg(meal_plan_id)
 	AND meal_plans.archived_at IS NULL
 	AND meal_plans.id = sqlc.arg(meal_plan_id);`,
-				strings.Join(fullSelectColumns, ",\n\t"),
-				mealPlanOptionsTableName,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetMealPlanOptions",
-				Type: ManyType,
+					strings.Join(fullSelectColumns, ",\n\t"),
+					mealPlanOptionsTableName,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetMealPlanOptions",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
 	%s,
 	%s
@@ -167,23 +170,23 @@ WHERE
 	AND meal_plans.id = sqlc.arg(meal_plan_id)
 	%s
 %s;`,
-				strings.Join(fullSelectColumns, ",\n\t"),
-				buildFilterCountSelect(mealPlanOptionsTableName, true, true, "meal_plan_options.belongs_to_meal_plan_event = sqlc.arg(meal_plan_event_id)"),
-				buildTotalCountSelect(mealPlanOptionsTableName, true),
-				buildFilterConditions(
-					mealPlanOptionsTableName,
-					true,
-					"meal_plan_options.belongs_to_meal_plan_event = sqlc.arg(meal_plan_event_id)",
-				),
-				offsetLimitAddendum,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetMealPlanOption",
-				Type: OneType,
+					strings.Join(fullSelectColumns, ",\n\t"),
+					buildFilterCountSelect(mealPlanOptionsTableName, true, true, "meal_plan_options.belongs_to_meal_plan_event = sqlc.arg(meal_plan_event_id)"),
+					buildTotalCountSelect(mealPlanOptionsTableName, true),
+					buildFilterConditions(
+						mealPlanOptionsTableName,
+						true,
+						"meal_plan_options.belongs_to_meal_plan_event = sqlc.arg(meal_plan_event_id)",
+					),
+					offsetLimitAddendum,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetMealPlanOption",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 	JOIN %s ON %s.%s = %s.%s
@@ -196,27 +199,27 @@ WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s)
 	AND %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s);`,
-				strings.Join(fullSelectColumns, ",\n\t"),
-				mealPlanOptionsTableName,
-				mealPlanEventsTableName, mealPlanOptionsTableName, belongsToMealPlanEventColumn, mealPlanEventsTableName, idColumn,
-				mealPlansTableName, mealPlanEventsTableName, belongsToMealPlanColumn, mealPlansTableName, idColumn,
-				mealsTableName, mealPlanOptionsTableName, mealIDColumn, mealsTableName, idColumn,
-				mealPlanOptionsTableName, archivedAtColumn,
+					strings.Join(fullSelectColumns, ",\n\t"),
+					mealPlanOptionsTableName,
+					mealPlanEventsTableName, mealPlanOptionsTableName, belongsToMealPlanEventColumn, mealPlanEventsTableName, idColumn,
+					mealPlansTableName, mealPlanEventsTableName, belongsToMealPlanColumn, mealPlansTableName, idColumn,
+					mealsTableName, mealPlanOptionsTableName, mealIDColumn, mealsTableName, idColumn,
+					mealPlanOptionsTableName, archivedAtColumn,
 
-				mealPlanOptionsTableName, belongsToMealPlanEventColumn, mealPlanEventIDColumn,
-				mealPlanOptionsTableName, idColumn, mealPlanOptionIDColumn,
-				mealPlanEventsTableName, idColumn, mealPlanEventIDColumn,
-				mealPlanEventsTableName, belongsToMealPlanColumn, mealPlanIDColumn,
-				mealPlansTableName, archivedAtColumn,
-				mealPlansTableName, idColumn, mealPlanIDColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetMealPlanOptionByID",
-				Type: OneType,
+					mealPlanOptionsTableName, belongsToMealPlanEventColumn, mealPlanEventIDColumn,
+					mealPlanOptionsTableName, idColumn, mealPlanOptionIDColumn,
+					mealPlanEventsTableName, idColumn, mealPlanEventIDColumn,
+					mealPlanEventsTableName, belongsToMealPlanColumn, mealPlanIDColumn,
+					mealPlansTableName, archivedAtColumn,
+					mealPlansTableName, idColumn, mealPlanIDColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetMealPlanOptionByID",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 	JOIN %s ON %s.%s = %s.%s
@@ -224,36 +227,39 @@ FROM %s
 	JOIN %s ON %s.%s = %s.%s
 WHERE %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s);`,
-				strings.Join(fullSelectColumns, ",\n\t"),
-				mealPlanOptionsTableName,
-				mealPlanEventsTableName, mealPlanOptionsTableName, belongsToMealPlanEventColumn, mealPlanEventsTableName, idColumn,
-				mealPlansTableName, mealPlanEventsTableName, belongsToMealPlanColumn, mealPlansTableName, idColumn,
-				mealsTableName, mealPlanOptionsTableName, mealIDColumn, mealsTableName, idColumn,
-				mealPlanOptionsTableName, archivedAtColumn,
-				mealPlanOptionsTableName, idColumn, mealPlanOptionIDColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "UpdateMealPlanOption",
-				Type: ExecRowsType,
+					strings.Join(fullSelectColumns, ",\n\t"),
+					mealPlanOptionsTableName,
+					mealPlanEventsTableName, mealPlanOptionsTableName, belongsToMealPlanEventColumn, mealPlanEventsTableName, idColumn,
+					mealPlansTableName, mealPlanEventsTableName, belongsToMealPlanColumn, mealPlansTableName, idColumn,
+					mealsTableName, mealPlanOptionsTableName, mealIDColumn, mealsTableName, idColumn,
+					mealPlanOptionsTableName, archivedAtColumn,
+					mealPlanOptionsTableName, idColumn, mealPlanOptionIDColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+			{
+				Annotation: QueryAnnotation{
+					Name: "UpdateMealPlanOption",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s,
 	%s = %s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s)
 	AND %s = sqlc.arg(%s);`,
-				mealPlanOptionsTableName,
-				strings.Join(applyToEach(filterForUpdate(mealPlanOptionsColumns, mealPlanOptionsChosenColumn, mealPlanOptionsTiebrokenColumn, belongsToMealPlanEventColumn), func(i int, s string) string {
-					return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
-				}), ",\n\t"),
-				lastUpdatedAtColumn,
-				currentTimeExpression,
-				archivedAtColumn,
-				belongsToMealPlanEventColumn, mealPlanEventIDColumn,
-				idColumn, mealPlanOptionIDColumn,
-			)),
-		},
+					mealPlanOptionsTableName,
+					strings.Join(applyToEach(filterForUpdate(mealPlanOptionsColumns, mealPlanOptionsChosenColumn, mealPlanOptionsTiebrokenColumn, belongsToMealPlanEventColumn), func(i int, s string) string {
+						return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
+					}), ",\n\t"),
+					lastUpdatedAtColumn,
+					currentTimeExpression,
+					archivedAtColumn,
+					belongsToMealPlanEventColumn, mealPlanEventIDColumn,
+					idColumn, mealPlanOptionIDColumn,
+				)),
+			},
+		}
+	default:
+		return nil
 	}
 }

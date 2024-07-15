@@ -35,77 +35,80 @@ var validVesselsColumns = []string{
 	archivedAtColumn,
 }
 
-func buildValidVesselsQueries() []*Query {
-	insertColumns := filterForInsert(validVesselsColumns)
+func buildValidVesselsQueries(database string) []*Query {
+	switch database {
+	case postgres:
 
-	fullSelectColumns := mergeColumns(
-		applyToEach(filterFromSlice(validVesselsColumns, "capacity_unit"), func(i int, s string) string {
-			return fmt.Sprintf("%s.%s", validVesselsTableName, s)
-		}),
-		applyToEach(validMeasurementUnitsColumns, func(i int, s string) string {
-			return fmt.Sprintf("%s.%s as valid_measurement_unit_%s", validMeasurementUnitsTableName, s, s)
-		}),
-		10,
-	)
+		insertColumns := filterForInsert(validVesselsColumns)
 
-	return []*Query{
-		{
-			Annotation: QueryAnnotation{
-				Name: "ArchiveValidVessel",
-				Type: ExecRowsType,
+		fullSelectColumns := mergeColumns(
+			applyToEach(filterFromSlice(validVesselsColumns, "capacity_unit"), func(i int, s string) string {
+				return fmt.Sprintf("%s.%s", validVesselsTableName, s)
+			}),
+			applyToEach(validMeasurementUnitsColumns, func(i int, s string) string {
+				return fmt.Sprintf("%s.%s as valid_measurement_unit_%s", validMeasurementUnitsTableName, s, s)
+			}),
+			10,
+		)
+
+		return []*Query{
+			{
+				Annotation: QueryAnnotation{
+					Name: "ArchiveValidVessel",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s IS NULL AND %s = sqlc.arg(%s);`,
+					validVesselsTableName,
+					archivedAtColumn,
+					currentTimeExpression,
+					archivedAtColumn,
+					idColumn,
+					idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s IS NULL AND %s = sqlc.arg(%s);`,
-				validVesselsTableName,
-				archivedAtColumn,
-				currentTimeExpression,
-				archivedAtColumn,
-				idColumn,
-				idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "CreateValidVessel",
-				Type: ExecType,
-			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
+			{
+				Annotation: QueryAnnotation{
+					Name: "CreateValidVessel",
+					Type: ExecType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
 	%s
 ) VALUES (
 	%s
 );`,
-				validVesselsTableName,
-				strings.Join(insertColumns, ",\n\t"),
-				strings.Join(applyToEach(insertColumns, func(i int, s string) string {
-					return fmt.Sprintf("sqlc.arg(%s)", s)
-				}), ",\n\t"),
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "CheckValidVesselExistence",
-				Type: OneType,
+					validVesselsTableName,
+					strings.Join(insertColumns, ",\n\t"),
+					strings.Join(applyToEach(insertColumns, func(i int, s string) string {
+						return fmt.Sprintf("sqlc.arg(%s)", s)
+					}), ",\n\t"),
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
+			{
+				Annotation: QueryAnnotation{
+					Name: "CheckValidVesselExistence",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
 	SELECT %s.id
 	FROM %s
 	WHERE %s.%s IS NULL
 		AND %s.%s = sqlc.arg(%s)
 );`,
-				validVesselsTableName,
-				validVesselsTableName,
-				validVesselsTableName,
-				archivedAtColumn,
-				validVesselsTableName,
-				idColumn,
-				idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetValidVessels",
-				Type: ManyType,
+					validVesselsTableName,
+					validVesselsTableName,
+					validVesselsTableName,
+					archivedAtColumn,
+					validVesselsTableName,
+					idColumn,
+					idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetValidVessels",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
 	%s,
 	%s
@@ -116,182 +119,185 @@ WHERE
 GROUP BY %s.%s
 ORDER BY %s.%s
 %s;`,
-				strings.Join(applyToEach(validVesselsColumns, func(i int, s string) string {
-					return fmt.Sprintf("%s.%s", validVesselsTableName, s)
-				}), ",\n\t"),
-				buildFilterCountSelect(validVesselsTableName, true, true),
-				buildTotalCountSelect(validVesselsTableName, true),
-				validVesselsTableName,
-				validVesselsTableName,
-				archivedAtColumn,
-				buildFilterConditions(
+					strings.Join(applyToEach(validVesselsColumns, func(i int, s string) string {
+						return fmt.Sprintf("%s.%s", validVesselsTableName, s)
+					}), ",\n\t"),
+					buildFilterCountSelect(validVesselsTableName, true, true),
+					buildTotalCountSelect(validVesselsTableName, true),
 					validVesselsTableName,
-					true,
-				),
-				validVesselsTableName,
-				idColumn,
-				validVesselsTableName,
-				idColumn,
-				offsetLimitAddendum,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetValidVesselIDsNeedingIndexing",
-				Type: ManyType,
+					validVesselsTableName,
+					archivedAtColumn,
+					buildFilterConditions(
+						validVesselsTableName,
+						true,
+					),
+					validVesselsTableName,
+					idColumn,
+					validVesselsTableName,
+					idColumn,
+					offsetLimitAddendum,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT %s.%s
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetValidVesselIDsNeedingIndexing",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT %s.%s
 FROM %s
 WHERE %s.%s IS NULL
 	AND (
 	%s.%s IS NULL
 	OR %s.%s < %s - '24 hours'::INTERVAL
 );`,
-				validVesselsTableName,
-				idColumn,
-				validVesselsTableName,
-				validVesselsTableName,
-				archivedAtColumn,
-				validVesselsTableName,
-				lastIndexedAtColumn,
-				validVesselsTableName,
-				lastIndexedAtColumn,
-				currentTimeExpression,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetValidVessel",
-				Type: OneType,
+					validVesselsTableName,
+					idColumn,
+					validVesselsTableName,
+					validVesselsTableName,
+					archivedAtColumn,
+					validVesselsTableName,
+					lastIndexedAtColumn,
+					validVesselsTableName,
+					lastIndexedAtColumn,
+					currentTimeExpression,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetValidVessel",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 	JOIN %s ON %s.%s=%s.id
 WHERE %s.%s IS NULL
 	AND %s.%s IS NULL
 	AND %s.%s = sqlc.arg(%s);`,
-				strings.Join(fullSelectColumns, ",\n\t"),
-				validVesselsTableName,
-				validMeasurementUnitsTableName,
-				validVesselsTableName,
-				capacityUnitColumn,
-				validMeasurementUnitsTableName,
-				validVesselsTableName,
-				archivedAtColumn,
-				validMeasurementUnitsTableName,
-				archivedAtColumn,
-				validVesselsTableName,
-				idColumn,
-				idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetRandomValidVessel",
-				Type: OneType,
+					strings.Join(fullSelectColumns, ",\n\t"),
+					validVesselsTableName,
+					validMeasurementUnitsTableName,
+					validVesselsTableName,
+					capacityUnitColumn,
+					validMeasurementUnitsTableName,
+					validVesselsTableName,
+					archivedAtColumn,
+					validMeasurementUnitsTableName,
+					archivedAtColumn,
+					validVesselsTableName,
+					idColumn,
+					idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetRandomValidVessel",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 	JOIN %s ON %s.%s=%s.%s
 WHERE %s.%s IS NULL
 	AND %s.%s IS NULL
 ORDER BY RANDOM() LIMIT 1;`,
-				strings.Join(fullSelectColumns, ",\n\t"),
-				validVesselsTableName,
-				validMeasurementUnitsTableName,
-				validVesselsTableName,
-				capacityUnitColumn,
-				validMeasurementUnitsTableName,
-				idColumn,
-				validVesselsTableName,
-				archivedAtColumn,
-				validMeasurementUnitsTableName,
-				archivedAtColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetValidVesselsWithIDs",
-				Type: ManyType,
+					strings.Join(fullSelectColumns, ",\n\t"),
+					validVesselsTableName,
+					validMeasurementUnitsTableName,
+					validVesselsTableName,
+					capacityUnitColumn,
+					validMeasurementUnitsTableName,
+					idColumn,
+					validVesselsTableName,
+					archivedAtColumn,
+					validMeasurementUnitsTableName,
+					archivedAtColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetValidVesselsWithIDs",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 	JOIN %s ON %s.%s=%s.%s
 WHERE %s.%s IS NULL
 	AND %s.%s IS NULL
 	AND %s.%s = ANY(sqlc.arg(ids)::text[]);`,
-				strings.Join(fullSelectColumns, ",\n\t"),
-				validVesselsTableName,
-				validMeasurementUnitsTableName,
-				validVesselsTableName,
-				capacityUnitColumn,
-				validMeasurementUnitsTableName,
-				idColumn,
-				validVesselsTableName,
-				archivedAtColumn,
-				validMeasurementUnitsTableName,
-				archivedAtColumn,
-				validVesselsTableName,
-				idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "SearchForValidVessels",
-				Type: ManyType,
+					strings.Join(fullSelectColumns, ",\n\t"),
+					validVesselsTableName,
+					validMeasurementUnitsTableName,
+					validVesselsTableName,
+					capacityUnitColumn,
+					validMeasurementUnitsTableName,
+					idColumn,
+					validVesselsTableName,
+					archivedAtColumn,
+					validMeasurementUnitsTableName,
+					archivedAtColumn,
+					validVesselsTableName,
+					idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "SearchForValidVessels",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 WHERE %s.%s %s
 	AND %s.%s IS NULL
 LIMIT 50;`,
-				strings.Join(applyToEach(validVesselsColumns, func(i int, s string) string {
-					return fmt.Sprintf("%s.%s", validVesselsTableName, s)
-				}), ",\n\t"),
-				validVesselsTableName,
-				validVesselsTableName, nameColumn, buildILIKEForArgument("name_query"),
-				validVesselsTableName,
-				archivedAtColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "UpdateValidVessel",
-				Type: ExecRowsType,
+					strings.Join(applyToEach(validVesselsColumns, func(i int, s string) string {
+						return fmt.Sprintf("%s.%s", validVesselsTableName, s)
+					}), ",\n\t"),
+					validVesselsTableName,
+					validVesselsTableName, nameColumn, buildILIKEForArgument("name_query"),
+					validVesselsTableName,
+					archivedAtColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+			{
+				Annotation: QueryAnnotation{
+					Name: "UpdateValidVessel",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s,
 	%s = %s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
-				validVesselsTableName,
-				strings.Join(applyToEach(filterForUpdate(validVesselsColumns), func(i int, s string) string {
-					return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
-				}), ",\n\t"),
-				lastUpdatedAtColumn,
-				currentTimeExpression,
-				archivedAtColumn,
-				idColumn,
-				idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "UpdateValidVesselLastIndexedAt",
-				Type: ExecRowsType,
+					validVesselsTableName,
+					strings.Join(applyToEach(filterForUpdate(validVesselsColumns), func(i int, s string) string {
+						return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
+					}), ",\n\t"),
+					lastUpdatedAtColumn,
+					currentTimeExpression,
+					archivedAtColumn,
+					idColumn,
+					idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s = sqlc.arg(%s) AND %s IS NULL;`,
-				validVesselsTableName,
-				lastIndexedAtColumn,
-				currentTimeExpression,
-				idColumn,
-				idColumn,
-				archivedAtColumn,
-			)),
-		},
+			{
+				Annotation: QueryAnnotation{
+					Name: "UpdateValidVesselLastIndexedAt",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s = sqlc.arg(%s) AND %s IS NULL;`,
+					validVesselsTableName,
+					lastIndexedAtColumn,
+					currentTimeExpression,
+					idColumn,
+					idColumn,
+					archivedAtColumn,
+				)),
+			},
+		}
+	default:
+		return nil
 	}
 }

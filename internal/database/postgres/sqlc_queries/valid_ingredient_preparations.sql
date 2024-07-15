@@ -1,7 +1,6 @@
 -- name: ArchiveValidIngredientPreparation :execrows
 
 UPDATE valid_ingredient_preparations SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
-
 -- name: CreateValidIngredientPreparation :exec
 
 INSERT INTO valid_ingredient_preparations (
@@ -15,7 +14,6 @@ INSERT INTO valid_ingredient_preparations (
 	sqlc.arg(valid_preparation_id),
 	sqlc.arg(valid_ingredient_id)
 );
-
 -- name: CheckValidIngredientPreparationExistence :one
 
 SELECT EXISTS (
@@ -24,7 +22,6 @@ SELECT EXISTS (
 	WHERE valid_ingredient_preparations.archived_at IS NULL
 		AND valid_ingredient_preparations.id = sqlc.arg(id)
 );
-
 -- name: GetValidIngredientPreparationsForIngredient :many
 
 SELECT
@@ -133,7 +130,6 @@ WHERE
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: GetValidIngredientPreparationsForPreparation :many
 
 SELECT
@@ -242,7 +238,6 @@ WHERE
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: GetValidIngredientPreparations :many
 
 SELECT
@@ -350,7 +345,6 @@ WHERE
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: GetValidIngredientPreparation :one
 
 SELECT
@@ -429,7 +423,6 @@ WHERE
 	AND valid_ingredients.archived_at IS NULL
 	AND valid_preparations.archived_at IS NULL
 	AND valid_ingredient_preparations.id = sqlc.arg(id);
-
 -- name: ValidIngredientPreparationPairIsValid :one
 
 SELECT EXISTS(
@@ -439,7 +432,6 @@ SELECT EXISTS(
 	AND valid_preparation_id = sqlc.arg(valid_preparation_id)
 	AND archived_at IS NULL
 );
-
 -- name: SearchValidIngredientPreparationsByPreparationAndIngredientName :many
 
 SELECT
@@ -519,7 +511,6 @@ WHERE
 	AND valid_preparations.archived_at IS NULL
 	AND valid_preparations.id = sqlc.arg(id)
 	AND valid_ingredients.name ILIKE '%' || sqlc.arg(name_query)::text || '%';
-
 -- name: UpdateValidIngredientPreparation :execrows
 
 UPDATE valid_ingredient_preparations SET

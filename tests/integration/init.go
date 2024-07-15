@@ -14,10 +14,10 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/database"
 	dbconfig "github.com/dinnerdonebetter/backend/internal/database/config"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres"
-	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	logcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 	"github.com/dinnerdonebetter/backend/internal/server/http/utils"
 	"github.com/dinnerdonebetter/backend/pkg/types"
@@ -45,9 +45,7 @@ var (
 )
 
 func init() {
-	ctx, span := tracing.StartSpan(context.Background())
-	defer span.End()
-
+	ctx := context.Background()
 	logger := (&logcfg.Config{Provider: logcfg.ProviderSlog}).ProvideLogger()
 
 	parsedURLToUse = serverutils.DetermineServiceURL()

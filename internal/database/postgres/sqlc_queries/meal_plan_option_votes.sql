@@ -1,7 +1,6 @@
 -- name: ArchiveMealPlanOptionVote :execrows
 
 UPDATE meal_plan_option_votes SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_meal_plan_option = sqlc.arg(belongs_to_meal_plan_option) AND id = sqlc.arg(id);
-
 -- name: CreateMealPlanOptionVote :exec
 
 INSERT INTO meal_plan_option_votes (
@@ -19,7 +18,6 @@ INSERT INTO meal_plan_option_votes (
 	sqlc.arg(by_user),
 	sqlc.arg(belongs_to_meal_plan_option)
 );
-
 -- name: CheckMealPlanOptionVoteExistence :one
 
 SELECT EXISTS (
@@ -39,7 +37,6 @@ SELECT EXISTS (
 		AND meal_plans.archived_at IS NULL
 		AND meal_plans.id = sqlc.arg(meal_plan_id)
 );
-
 -- name: GetMealPlanOptionVotesForMealPlanOption :many
 
 SELECT
@@ -66,7 +63,6 @@ WHERE meal_plan_option_votes.archived_at IS NULL
 	AND meal_plan_events.id = sqlc.arg(meal_plan_event_id)
 	AND meal_plans.archived_at IS NULL
 	AND meal_plans.id = sqlc.arg(meal_plan_id);
-
 -- name: GetMealPlanOptionVotes :many
 
 SELECT
@@ -131,7 +127,6 @@ GROUP BY
 	meal_plans.id
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: GetMealPlanOptionVote :one
 
 SELECT
@@ -158,7 +153,6 @@ WHERE meal_plan_option_votes.archived_at IS NULL
 	AND meal_plan_options.id = sqlc.arg(meal_plan_option_id)
 	AND meal_plans.archived_at IS NULL
 	AND meal_plans.id = sqlc.arg(meal_plan_id);
-
 -- name: UpdateMealPlanOptionVote :execrows
 
 UPDATE meal_plan_option_votes SET

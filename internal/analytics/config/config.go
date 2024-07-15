@@ -10,6 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/analytics/segment"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -26,10 +27,11 @@ const (
 type (
 	// Config is the configuration structure.
 	Config struct {
-		Segment     *segment.Config     `json:"segment"     toml:"segment,omitempty"`
-		Posthog     *posthog.Config     `json:"posthog"     toml:"posthog,omitempty"`
-		Rudderstack *rudderstack.Config `json:"rudderstack" toml:"rudderstack,omitempty"`
-		Provider    string              `json:"provider"    toml:"provider,omitempty"`
+		Segment              *segment.Config         `json:"segment"              toml:"segment,omitempty"`
+		Posthog              *posthog.Config         `json:"posthog"              toml:"posthog,omitempty"`
+		Rudderstack          *rudderstack.Config     `json:"rudderstack"          toml:"rudderstack,omitempty"`
+		CircuitBreakerConfig *circuitbreaking.Config `json:"circuitBreakerConfig" toml:"circuit_breaker_config"`
+		Provider             string                  `json:"provider"             toml:"provider,omitempty"`
 	}
 )
 
@@ -47,13 +49,14 @@ func (cfg *Config) ValidateWithContext(ctx context.Context) error {
 
 // ProvideCollector provides a collector.
 func (cfg *Config) ProvideCollector(logger logging.Logger, tracerProvider tracing.TracerProvider) (analytics.EventReporter, error) {
+	cb := circuitbreaking.ProvideCircuitBreaker(cfg.CircuitBreakerConfig)
 	switch strings.ToLower(strings.TrimSpace(cfg.Provider)) {
 	case ProviderSegment:
-		return segment.NewSegmentEventReporter(logger, tracerProvider, cfg.Segment.APIToken)
+		return segment.NewSegmentEventReporter(logger, tracerProvider, cfg.Segment.APIToken, cb)
 	case ProviderRudderstack:
-		return rudderstack.NewRudderstackEventReporter(logger, tracerProvider, cfg.Rudderstack)
+		return rudderstack.NewRudderstackEventReporter(logger, tracerProvider, cfg.Rudderstack, cb)
 	case ProviderPostHog:
-		return posthog.NewPostHogEventReporter(logger, tracerProvider, cfg.Posthog)
+		return posthog.NewPostHogEventReporter(logger, tracerProvider, cfg.Posthog.APIKey, cb)
 	default:
 		return analytics.NewNoopEventReporter(), nil
 	}

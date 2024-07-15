@@ -4,7 +4,6 @@ UPDATE service_setting_configurations SET
 	archived_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
-
 -- name: CreateServiceSettingConfiguration :exec
 
 INSERT INTO service_setting_configurations (
@@ -22,7 +21,6 @@ INSERT INTO service_setting_configurations (
 	sqlc.arg(belongs_to_user),
 	sqlc.arg(belongs_to_household)
 );
-
 -- name: CheckServiceSettingConfigurationExistence :one
 
 SELECT EXISTS (
@@ -31,7 +29,6 @@ SELECT EXISTS (
 	WHERE service_setting_configurations.archived_at IS NULL
 		AND service_setting_configurations.id = sqlc.arg(id)
 );
-
 -- name: GetServiceSettingConfigurationByID :one
 
 SELECT
@@ -58,7 +55,6 @@ FROM service_setting_configurations
 WHERE service_settings.archived_at IS NULL
 	AND service_setting_configurations.archived_at IS NULL
 	AND service_setting_configurations.id = sqlc.arg(id);
-
 -- name: GetServiceSettingConfigurationForHouseholdBySettingName :one
 
 SELECT
@@ -86,7 +82,6 @@ WHERE service_settings.archived_at IS NULL
 	AND service_setting_configurations.archived_at IS NULL
 	AND service_settings.name = sqlc.arg(name)
 	AND service_setting_configurations.belongs_to_household = sqlc.arg(belongs_to_household);
-
 -- name: GetServiceSettingConfigurationForUserBySettingName :one
 
 SELECT
@@ -114,7 +109,6 @@ WHERE service_settings.archived_at IS NULL
 	AND service_setting_configurations.archived_at IS NULL
 	AND service_settings.name = sqlc.arg(name)
 	AND service_setting_configurations.belongs_to_user = sqlc.arg(belongs_to_user);
-
 -- name: GetServiceSettingConfigurationsForHousehold :many
 
 SELECT
@@ -141,7 +135,6 @@ FROM service_setting_configurations
 WHERE service_settings.archived_at IS NULL
 	AND service_setting_configurations.archived_at IS NULL
 	AND service_setting_configurations.belongs_to_household = sqlc.arg(belongs_to_household);
-
 -- name: GetServiceSettingConfigurationsForUser :many
 
 SELECT
@@ -168,7 +161,6 @@ FROM service_setting_configurations
 WHERE service_settings.archived_at IS NULL
 	AND service_setting_configurations.archived_at IS NULL
 	AND service_setting_configurations.belongs_to_user = sqlc.arg(belongs_to_user);
-
 -- name: UpdateServiceSettingConfiguration :execrows
 
 UPDATE service_setting_configurations SET

@@ -5,10 +5,10 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/identifiers"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/identifiers"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/converters"
 
@@ -126,6 +126,11 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
+	// determine recipe ID.
+	recipeID := s.recipeIDFetcher(req)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+
 	// determine recipe rating ID.
 	recipeRatingID := s.recipeRatingIDFetcher(req)
 	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, recipeRatingID)
@@ -133,7 +138,7 @@ func (s *service) ReadHandler(res http.ResponseWriter, req *http.Request) {
 
 	// fetch recipe rating from database.
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	x, err := s.recipeRatingDataManager.GetRecipeRating(ctx, recipeRatingID)
+	x, err := s.recipeRatingDataManager.GetRecipeRating(ctx, recipeID, recipeRatingID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
@@ -254,6 +259,11 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	// determine recipe ID.
+	recipeID := s.recipeIDFetcher(req)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+
 	// determine recipe rating ID.
 	recipeRatingID := s.recipeRatingIDFetcher(req)
 	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, recipeRatingID)
@@ -261,7 +271,7 @@ func (s *service) UpdateHandler(res http.ResponseWriter, req *http.Request) {
 
 	// fetch recipe rating from database.
 	readTimer := timing.NewMetric("database").WithDesc("fetch").Start()
-	recipeRating, err := s.recipeRatingDataManager.GetRecipeRating(ctx, recipeRatingID)
+	recipeRating, err := s.recipeRatingDataManager.GetRecipeRating(ctx, recipeID, recipeRatingID)
 	if errors.Is(err, sql.ErrNoRows) {
 		errRes := types.NewAPIErrorResponse("not found", types.ErrDataNotFound, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusNotFound)
@@ -333,13 +343,18 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	logger = sessionCtxData.AttachToLogger(logger)
 	responseDetails.CurrentHouseholdID = sessionCtxData.ActiveHouseholdID
 
+	// determine recipe ID.
+	recipeID := s.recipeIDFetcher(req)
+	tracing.AttachToSpan(span, keys.RecipeIDKey, recipeID)
+	logger = logger.WithValue(keys.RecipeIDKey, recipeID)
+
 	// determine recipe rating ID.
 	recipeRatingID := s.recipeRatingIDFetcher(req)
 	tracing.AttachToSpan(span, keys.RecipeRatingIDKey, recipeRatingID)
 	logger = logger.WithValue(keys.RecipeRatingIDKey, recipeRatingID)
 
 	existenceTimer := timing.NewMetric("database").WithDesc("existence check").Start()
-	exists, err := s.recipeRatingDataManager.RecipeRatingExists(ctx, recipeRatingID)
+	exists, err := s.recipeRatingDataManager.RecipeRatingExists(ctx, recipeID, recipeRatingID)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		observability.AcknowledgeError(err, logger, span, "checking recipe rating existence")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
@@ -353,7 +368,7 @@ func (s *service) ArchiveHandler(res http.ResponseWriter, req *http.Request) {
 	existenceTimer.Stop()
 
 	archiveTimer := timing.NewMetric("database").WithDesc("archive").Start()
-	if err = s.recipeRatingDataManager.ArchiveRecipeRating(ctx, recipeRatingID); err != nil {
+	if err = s.recipeRatingDataManager.ArchiveRecipeRating(ctx, recipeID, recipeRatingID); err != nil {
 		observability.AcknowledgeError(err, logger, span, "archiving recipe rating")
 		errRes := types.NewAPIErrorResponse("database error", types.ErrTalkingToDatabase, responseDetails)
 		s.encoderDecoder.EncodeResponseWithStatus(ctx, res, errRes, http.StatusInternalServerError)

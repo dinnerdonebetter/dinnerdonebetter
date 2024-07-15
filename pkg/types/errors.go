@@ -16,6 +16,9 @@ var (
 	errMustBeEitherMetricOrImperial         = errors.New("cannot be both metric and imperial")
 	errInvalidType                          = errors.New("unexpected type received")
 
+	// ErrCircuitBroken is returned when a service is circuit broken.
+	ErrCircuitBroken = errors.New("service circuit broken")
+
 	// this just ensures that we don't have any duplicated codes.
 	_ = map[string]ErrorCode{
 		string(ErrFetchingSessionContextData): ErrFetchingSessionContextData,

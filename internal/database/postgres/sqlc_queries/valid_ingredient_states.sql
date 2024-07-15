@@ -1,7 +1,6 @@
 -- name: ArchiveValidIngredientState :execrows
 
 UPDATE valid_ingredient_states SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
-
 -- name: CreateValidIngredientState :exec
 
 INSERT INTO valid_ingredient_states (
@@ -21,7 +20,6 @@ INSERT INTO valid_ingredient_states (
 	sqlc.arg(icon_path),
 	sqlc.arg(attribute_type)
 );
-
 -- name: CheckValidIngredientStateExistence :one
 
 SELECT EXISTS (
@@ -30,7 +28,6 @@ SELECT EXISTS (
 	WHERE valid_ingredient_states.archived_at IS NULL
 		AND valid_ingredient_states.id = sqlc.arg(id)
 );
-
 -- name: GetValidIngredientStates :many
 
 SELECT
@@ -82,7 +79,6 @@ GROUP BY valid_ingredient_states.id
 ORDER BY valid_ingredient_states.id
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: GetValidIngredientStatesNeedingIndexing :many
 
 SELECT valid_ingredient_states.id
@@ -92,7 +88,6 @@ WHERE valid_ingredient_states.archived_at IS NULL
 	valid_ingredient_states.last_indexed_at IS NULL
 	OR valid_ingredient_states.last_indexed_at < NOW() - '24 hours'::INTERVAL
 );
-
 -- name: GetValidIngredientState :one
 
 SELECT
@@ -110,7 +105,6 @@ SELECT
 FROM valid_ingredient_states
 WHERE valid_ingredient_states.archived_at IS NULL
 AND valid_ingredient_states.id = sqlc.arg(id);
-
 -- name: GetValidIngredientStatesWithIDs :many
 
 SELECT
@@ -128,7 +122,6 @@ SELECT
 FROM valid_ingredient_states
 WHERE valid_ingredient_states.archived_at IS NULL
 	AND valid_ingredient_states.id = ANY(sqlc.arg(ids)::text[]);
-
 -- name: SearchForValidIngredientStates :many
 
 SELECT
@@ -147,7 +140,6 @@ FROM valid_ingredient_states
 WHERE valid_ingredient_states.name ILIKE '%' || sqlc.arg(name_query)::text || '%'
 	AND valid_ingredient_states.archived_at IS NULL
 LIMIT 50;
-
 -- name: UpdateValidIngredientState :execrows
 
 UPDATE valid_ingredient_states SET
@@ -160,7 +152,6 @@ UPDATE valid_ingredient_states SET
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
-
 -- name: UpdateValidIngredientStateLastIndexedAt :execrows
 
 UPDATE valid_ingredient_states SET last_indexed_at = NOW() WHERE id = sqlc.arg(id) AND archived_at IS NULL;

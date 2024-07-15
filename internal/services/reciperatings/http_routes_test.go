@@ -221,6 +221,7 @@ func TestRecipeRatingsService_ReadHandler(T *testing.T) {
 		recipeRatingDataManager.On(
 			"GetRecipeRating",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipeRating.ID,
 		).Return(helper.exampleRecipeRating, nil)
 		helper.service.recipeRatingDataManager = recipeRatingDataManager
@@ -260,6 +261,7 @@ func TestRecipeRatingsService_ReadHandler(T *testing.T) {
 		recipeRatingDataManager.On(
 			"GetRecipeRating",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipeRating.ID,
 		).Return((*types.RecipeRating)(nil), sql.ErrNoRows)
 		helper.service.recipeRatingDataManager = recipeRatingDataManager
@@ -284,6 +286,7 @@ func TestRecipeRatingsService_ReadHandler(T *testing.T) {
 		recipeRatingDataManager.On(
 			"GetRecipeRating",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipeRating.ID,
 		).Return((*types.RecipeRating)(nil), errors.New("blah"))
 		helper.service.recipeRatingDataManager = recipeRatingDataManager
@@ -414,6 +417,7 @@ func TestRecipeRatingsService_UpdateHandler(T *testing.T) {
 		dbManager.RecipeRatingDataManagerMock.On(
 			"GetRecipeRating",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipeRating.ID,
 		).Return(helper.exampleRecipeRating, nil)
 
@@ -519,6 +523,7 @@ func TestRecipeRatingsService_UpdateHandler(T *testing.T) {
 		recipeRatingDataManager.On(
 			"GetRecipeRating",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipeRating.ID,
 		).Return((*types.RecipeRating)(nil), sql.ErrNoRows)
 		helper.service.recipeRatingDataManager = recipeRatingDataManager
@@ -552,6 +557,7 @@ func TestRecipeRatingsService_UpdateHandler(T *testing.T) {
 		recipeRatingDataManager.On(
 			"GetRecipeRating",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipeRating.ID,
 		).Return((*types.RecipeRating)(nil), errors.New("blah"))
 		helper.service.recipeRatingDataManager = recipeRatingDataManager
@@ -585,6 +591,7 @@ func TestRecipeRatingsService_UpdateHandler(T *testing.T) {
 		dbManager.RecipeRatingDataManagerMock.On(
 			"GetRecipeRating",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipeRating.ID,
 		).Return(helper.exampleRecipeRating, nil)
 
@@ -624,6 +631,7 @@ func TestRecipeRatingsService_UpdateHandler(T *testing.T) {
 		dbManager.RecipeRatingDataManagerMock.On(
 			"GetRecipeRating",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipeRating.ID,
 		).Return(helper.exampleRecipeRating, nil)
 
@@ -666,12 +674,14 @@ func TestRecipeRatingsService_ArchiveHandler(T *testing.T) {
 		recipeRatingDataManager.On(
 			"RecipeRatingExists",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipeRating.ID,
 		).Return(true, nil)
 
 		recipeRatingDataManager.On(
 			"ArchiveRecipeRating",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipeRating.ID,
 		).Return(nil)
 		helper.service.recipeRatingDataManager = recipeRatingDataManager
@@ -718,6 +728,7 @@ func TestRecipeRatingsService_ArchiveHandler(T *testing.T) {
 		recipeRatingDataManager.On(
 			"RecipeRatingExists",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipeRating.ID,
 		).Return(false, nil)
 		helper.service.recipeRatingDataManager = recipeRatingDataManager
@@ -742,6 +753,7 @@ func TestRecipeRatingsService_ArchiveHandler(T *testing.T) {
 		recipeRatingDataManager.On(
 			"RecipeRatingExists",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipeRating.ID,
 		).Return(false, errors.New("blah"))
 		helper.service.recipeRatingDataManager = recipeRatingDataManager
@@ -766,12 +778,14 @@ func TestRecipeRatingsService_ArchiveHandler(T *testing.T) {
 		recipeRatingDataManager.On(
 			"RecipeRatingExists",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipeRating.ID,
 		).Return(true, nil)
 
 		recipeRatingDataManager.On(
 			"ArchiveRecipeRating",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipeRating.ID,
 		).Return(errors.New("blah"))
 		helper.service.recipeRatingDataManager = recipeRatingDataManager
@@ -796,12 +810,14 @@ func TestRecipeRatingsService_ArchiveHandler(T *testing.T) {
 		recipeRatingDataManager.On(
 			"RecipeRatingExists",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipeRating.ID,
 		).Return(true, nil)
 
 		recipeRatingDataManager.On(
 			"ArchiveRecipeRating",
 			testutils.ContextMatcher,
+			helper.exampleRecipe.ID,
 			helper.exampleRecipeRating.ID,
 		).Return(nil)
 		helper.service.recipeRatingDataManager = recipeRatingDataManager

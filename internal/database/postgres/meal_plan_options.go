@@ -3,6 +3,7 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"math/rand/v2"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/database/postgres/generated"
@@ -11,7 +12,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
-	"math/rand/v2"
 	"resenje.org/schulze"
 )
 

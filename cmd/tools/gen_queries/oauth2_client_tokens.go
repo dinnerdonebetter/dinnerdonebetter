@@ -7,8 +7,8 @@ import (
 	"github.com/cristalhq/builq"
 )
 
-/* #nosec G101 */
 const (
+	/* #nosec G101 */
 	oauth2ClientTokensTableName = "oauth2_client_tokens"
 	codeColumn                  = "code"
 	accessColumn                = "access"
@@ -35,110 +35,116 @@ var oauth2ClientTokensColumns = []string{
 	"refresh_expires_at",
 }
 
-func buildOAuth2ClientTokensQueries() []*Query {
-	return []*Query{
-		{
-			Annotation: QueryAnnotation{
-				Name: "ArchiveOAuth2ClientTokenByAccess",
-				Type: ExecRowsType,
+func buildOAuth2ClientTokensQueries(database string) []*Query {
+	switch database {
+	case postgres:
+
+		return []*Query{
+			{
+				Annotation: QueryAnnotation{
+					Name: "ArchiveOAuth2ClientTokenByAccess",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`DELETE FROM %s WHERE %s = sqlc.arg(%s);`, oauth2ClientTokensTableName, accessColumn, accessColumn)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`DELETE FROM %s WHERE %s = sqlc.arg(%s);`, oauth2ClientTokensTableName, accessColumn, accessColumn)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "ArchiveOAuth2ClientTokenByCode",
-				Type: ExecRowsType,
+			{
+				Annotation: QueryAnnotation{
+					Name: "ArchiveOAuth2ClientTokenByCode",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`DELETE FROM %s WHERE %s = sqlc.arg(%s);`, oauth2ClientTokensTableName, codeColumn, codeColumn)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`DELETE FROM %s WHERE %s = sqlc.arg(%s);`, oauth2ClientTokensTableName, codeColumn, codeColumn)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "ArchiveOAuth2ClientTokenByRefresh",
-				Type: ExecRowsType,
+			{
+				Annotation: QueryAnnotation{
+					Name: "ArchiveOAuth2ClientTokenByRefresh",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`DELETE FROM %s WHERE %s = sqlc.arg(%s);`, oauth2ClientTokensTableName, refreshColumn, refreshColumn)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`DELETE FROM %s WHERE %s = sqlc.arg(%s);`, oauth2ClientTokensTableName, refreshColumn, refreshColumn)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "CreateOAuth2ClientToken",
-				Type: ExecType,
-			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
+			{
+				Annotation: QueryAnnotation{
+					Name: "CreateOAuth2ClientToken",
+					Type: ExecType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
 	%s
 ) VALUES (
 	%s
 );`,
-				oauth2ClientTokensTableName,
-				strings.Join(oauth2ClientTokensColumns, ",\n\t"),
-				strings.Join(applyToEach(oauth2ClientTokensColumns, func(i int, s string) string {
-					return fmt.Sprintf("sqlc.arg(%s)", s)
-				}), ",\n\t"),
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "CheckOAuth2ClientTokenExistence",
-				Type: OneType,
+					oauth2ClientTokensTableName,
+					strings.Join(oauth2ClientTokensColumns, ",\n\t"),
+					strings.Join(applyToEach(oauth2ClientTokensColumns, func(i int, s string) string {
+						return fmt.Sprintf("sqlc.arg(%s)", s)
+					}), ",\n\t"),
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
+			{
+				Annotation: QueryAnnotation{
+					Name: "CheckOAuth2ClientTokenExistence",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
 	SELECT %s.%s
 	FROM %s
 	WHERE %s.%s IS NULL
 		AND %s.%s = sqlc.arg(%s)
 );`,
-				oauth2ClientTokensTableName, idColumn,
-				oauth2ClientTokensTableName,
-				oauth2ClientTokensTableName, archivedAtColumn,
-				oauth2ClientTokensTableName, idColumn, idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetOAuth2ClientTokenByAccess",
-				Type: OneType,
+					oauth2ClientTokensTableName, idColumn,
+					oauth2ClientTokensTableName,
+					oauth2ClientTokensTableName, archivedAtColumn,
+					oauth2ClientTokensTableName, idColumn, idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetOAuth2ClientTokenByAccess",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 WHERE %s.%s = sqlc.arg(%s);`,
-				strings.Join(applyToEach(oauth2ClientTokensColumns, func(i int, s string) string {
-					return fmt.Sprintf("%s.%s", oauth2ClientTokensTableName, s)
-				}), ",\n\t"),
-				oauth2ClientTokensTableName,
-				oauth2ClientTokensTableName, accessColumn, accessColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetOAuth2ClientTokenByCode",
-				Type: OneType,
+					strings.Join(applyToEach(oauth2ClientTokensColumns, func(i int, s string) string {
+						return fmt.Sprintf("%s.%s", oauth2ClientTokensTableName, s)
+					}), ",\n\t"),
+					oauth2ClientTokensTableName,
+					oauth2ClientTokensTableName, accessColumn, accessColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetOAuth2ClientTokenByCode",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 WHERE %s.%s = sqlc.arg(%s);`,
-				strings.Join(applyToEach(oauth2ClientTokensColumns, func(i int, s string) string {
-					return fmt.Sprintf("%s.%s", oauth2ClientTokensTableName, s)
-				}), ",\n\t"),
-				oauth2ClientTokensTableName,
-				oauth2ClientTokensTableName, codeColumn, codeColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetOAuth2ClientTokenByRefresh",
-				Type: OneType,
+					strings.Join(applyToEach(oauth2ClientTokensColumns, func(i int, s string) string {
+						return fmt.Sprintf("%s.%s", oauth2ClientTokensTableName, s)
+					}), ",\n\t"),
+					oauth2ClientTokensTableName,
+					oauth2ClientTokensTableName, codeColumn, codeColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetOAuth2ClientTokenByRefresh",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 WHERE %s.%s = sqlc.arg(%s);`,
-				strings.Join(applyToEach(oauth2ClientTokensColumns, func(i int, s string) string {
-					return fmt.Sprintf("%s.%s", oauth2ClientTokensTableName, s)
-				}), ",\n\t"),
-				oauth2ClientTokensTableName,
-				oauth2ClientTokensTableName, refreshColumn, refreshColumn,
-			)),
-		},
+					strings.Join(applyToEach(oauth2ClientTokensColumns, func(i int, s string) string {
+						return fmt.Sprintf("%s.%s", oauth2ClientTokensTableName, s)
+					}), ",\n\t"),
+					oauth2ClientTokensTableName,
+					oauth2ClientTokensTableName, refreshColumn, refreshColumn,
+				)),
+			},
+		}
+	default:
+		return nil
 	}
 }

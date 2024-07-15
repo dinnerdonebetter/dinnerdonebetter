@@ -54,73 +54,76 @@ var validIngredientsColumns = []string{
 	archivedAtColumn,
 }
 
-func buildValidIngredientsQueries() []*Query {
-	insertColumns := filterForInsert(validIngredientsColumns)
+func buildValidIngredientsQueries(database string) []*Query {
+	switch database {
+	case postgres:
 
-	return []*Query{
-		{
-			Annotation: QueryAnnotation{
-				Name: "ArchiveValidIngredient",
-				Type: ExecRowsType,
+		insertColumns := filterForInsert(validIngredientsColumns)
+
+		return []*Query{
+			{
+				Annotation: QueryAnnotation{
+					Name: "ArchiveValidIngredient",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s IS NULL AND %s = sqlc.arg(%s);`,
+					validIngredientsTableName,
+					archivedAtColumn,
+					currentTimeExpression,
+					archivedAtColumn,
+					idColumn,
+					idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s IS NULL AND %s = sqlc.arg(%s);`,
-				validIngredientsTableName,
-				archivedAtColumn,
-				currentTimeExpression,
-				archivedAtColumn,
-				idColumn,
-				idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "CreateValidIngredient",
-				Type: ExecType,
-			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
+			{
+				Annotation: QueryAnnotation{
+					Name: "CreateValidIngredient",
+					Type: ExecType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
 	%s
 ) VALUES (
 	%s
 );`,
-				validIngredientsTableName,
-				strings.Join(insertColumns, ",\n\t"),
-				strings.Join(applyToEach(insertColumns, func(i int, s string) string {
-					switch s {
-					case "minimum_ideal_storage_temperature_in_celsius",
-						"maximum_ideal_storage_temperature_in_celsius":
-						return fmt.Sprintf("sqlc.narg(%s)", s)
-					default:
-						return fmt.Sprintf("sqlc.arg(%s)", s)
-					}
-				}), ",\n\t"),
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "CheckValidIngredientExistence",
-				Type: OneType,
+					validIngredientsTableName,
+					strings.Join(insertColumns, ",\n\t"),
+					strings.Join(applyToEach(insertColumns, func(i int, s string) string {
+						switch s {
+						case "minimum_ideal_storage_temperature_in_celsius",
+							"maximum_ideal_storage_temperature_in_celsius":
+							return fmt.Sprintf("sqlc.narg(%s)", s)
+						default:
+							return fmt.Sprintf("sqlc.arg(%s)", s)
+						}
+					}), ",\n\t"),
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
+			{
+				Annotation: QueryAnnotation{
+					Name: "CheckValidIngredientExistence",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
 	SELECT %s.%s
 	FROM %s
 	WHERE %s.%s IS NULL
 		AND %s.%s = sqlc.arg(%s)
 );`,
-				validIngredientsTableName, idColumn,
-				validIngredientsTableName,
-				validIngredientsTableName,
-				archivedAtColumn,
-				validIngredientsTableName,
-				idColumn,
-				idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetValidIngredients",
-				Type: ManyType,
+					validIngredientsTableName, idColumn,
+					validIngredientsTableName,
+					validIngredientsTableName,
+					archivedAtColumn,
+					validIngredientsTableName,
+					idColumn,
+					idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetValidIngredients",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
 	%s,
 	%s
@@ -131,135 +134,135 @@ WHERE
 GROUP BY %s.%s
 ORDER BY %s.%s
 %s;`,
-				strings.Join(applyToEach(validIngredientsColumns, func(i int, s string) string {
-					return fmt.Sprintf("%s.%s", validIngredientsTableName, s)
-				}), ",\n\t"),
-				buildFilterCountSelect(validIngredientsTableName, true, true),
-				buildTotalCountSelect(validIngredientsTableName, true),
-				validIngredientsTableName,
-				validIngredientsTableName,
-				archivedAtColumn,
-				buildFilterConditions(
+					strings.Join(applyToEach(validIngredientsColumns, func(i int, s string) string {
+						return fmt.Sprintf("%s.%s", validIngredientsTableName, s)
+					}), ",\n\t"),
+					buildFilterCountSelect(validIngredientsTableName, true, true),
+					buildTotalCountSelect(validIngredientsTableName, true),
 					validIngredientsTableName,
-					true,
-				),
-				validIngredientsTableName,
-				idColumn,
-				validIngredientsTableName,
-				idColumn,
-				offsetLimitAddendum,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetValidIngredientsNeedingIndexing",
-				Type: ManyType,
+					validIngredientsTableName,
+					archivedAtColumn,
+					buildFilterConditions(
+						validIngredientsTableName,
+						true,
+					),
+					validIngredientsTableName,
+					idColumn,
+					validIngredientsTableName,
+					idColumn,
+					offsetLimitAddendum,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT %s.%s
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetValidIngredientsNeedingIndexing",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT %s.%s
 FROM %s
 WHERE %s.%s IS NULL
 	AND (
 	%s.%s IS NULL
 	OR %s.%s < %s - '24 hours'::INTERVAL
 );`,
-				validIngredientsTableName,
-				idColumn,
-				validIngredientsTableName,
-				validIngredientsTableName,
-				archivedAtColumn,
-				validIngredientsTableName,
-				lastIndexedAtColumn,
-				validIngredientsTableName,
-				lastIndexedAtColumn,
-				currentTimeExpression,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetValidIngredient",
-				Type: OneType,
+					validIngredientsTableName,
+					idColumn,
+					validIngredientsTableName,
+					validIngredientsTableName,
+					archivedAtColumn,
+					validIngredientsTableName,
+					lastIndexedAtColumn,
+					validIngredientsTableName,
+					lastIndexedAtColumn,
+					currentTimeExpression,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetValidIngredient",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 WHERE %s.%s IS NULL
 AND %s.%s = sqlc.arg(%s);`,
-				strings.Join(applyToEach(validIngredientsColumns, func(i int, s string) string {
-					return fmt.Sprintf("%s.%s", validIngredientsTableName, s)
-				}), ",\n\t"),
-				validIngredientsTableName,
-				validIngredientsTableName,
-				archivedAtColumn,
-				validIngredientsTableName,
-				idColumn,
-				idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetRandomValidIngredient",
-				Type: OneType,
+					strings.Join(applyToEach(validIngredientsColumns, func(i int, s string) string {
+						return fmt.Sprintf("%s.%s", validIngredientsTableName, s)
+					}), ",\n\t"),
+					validIngredientsTableName,
+					validIngredientsTableName,
+					archivedAtColumn,
+					validIngredientsTableName,
+					idColumn,
+					idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetRandomValidIngredient",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 WHERE %s.%s IS NULL
 ORDER BY RANDOM() LIMIT 1;`,
-				strings.Join(applyToEach(validIngredientsColumns, func(i int, s string) string {
-					return fmt.Sprintf("%s.%s", validIngredientsTableName, s)
-				}), ",\n\t"),
-				validIngredientsTableName,
-				validIngredientsTableName,
-				archivedAtColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetValidIngredientsWithIDs",
-				Type: ManyType,
+					strings.Join(applyToEach(validIngredientsColumns, func(i int, s string) string {
+						return fmt.Sprintf("%s.%s", validIngredientsTableName, s)
+					}), ",\n\t"),
+					validIngredientsTableName,
+					validIngredientsTableName,
+					archivedAtColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetValidIngredientsWithIDs",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 WHERE %s.%s IS NULL
 	AND %s.%s = ANY(sqlc.arg(ids)::text[]);`,
-				strings.Join(applyToEach(validIngredientsColumns, func(i int, s string) string {
-					return fmt.Sprintf("%s.%s", validIngredientsTableName, s)
-				}), ",\n\t"),
-				validIngredientsTableName,
-				validIngredientsTableName,
-				archivedAtColumn,
-				validIngredientsTableName,
-				idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "SearchForValidIngredients",
-				Type: ManyType,
+					strings.Join(applyToEach(validIngredientsColumns, func(i int, s string) string {
+						return fmt.Sprintf("%s.%s", validIngredientsTableName, s)
+					}), ",\n\t"),
+					validIngredientsTableName,
+					validIngredientsTableName,
+					archivedAtColumn,
+					validIngredientsTableName,
+					idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "SearchForValidIngredients",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 WHERE %s.name %s
 	AND %s.%s IS NULL
 LIMIT 50;`,
-				strings.Join(applyToEach(validIngredientsColumns, func(i int, s string) string {
-					return fmt.Sprintf("%s.%s", validIngredientsTableName, s)
-				}), ",\n\t"),
-				validIngredientsTableName,
-				validIngredientsTableName,
-				"ILIKE '%' || sqlc.arg(name_query)::text || '%'",
-				validIngredientsTableName,
-				archivedAtColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "SearchValidIngredientsByPreparationAndIngredientName",
-				Type: ManyType,
+					strings.Join(applyToEach(validIngredientsColumns, func(i int, s string) string {
+						return fmt.Sprintf("%s.%s", validIngredientsTableName, s)
+					}), ",\n\t"),
+					validIngredientsTableName,
+					validIngredientsTableName,
+					"ILIKE '%' || sqlc.arg(name_query)::text || '%'",
+					validIngredientsTableName,
+					archivedAtColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "SearchValidIngredientsByPreparationAndIngredientName",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 	JOIN %s ON %s.%s = %s.%s
@@ -272,63 +275,66 @@ WHERE %s.%s IS NULL
 		OR %s.%s IS FALSE
 	)
 	AND %s.%s %s;`,
-				strings.Join(applyToEach(validIngredientsColumns, func(i int, s string) string {
-					if i == 0 {
-						return fmt.Sprintf("DISTINCT(%s.%s)", validIngredientsTableName, s)
-					}
-					return fmt.Sprintf("%s.%s", validIngredientsTableName, s)
-				}), ",\n\t"),
-				validIngredientPreparationsTableName,
-				validIngredientsTableName, validIngredientPreparationsTableName, validIngredientIDColumn, validIngredientsTableName, idColumn,
-				validPreparationsTableName, validIngredientPreparationsTableName, validPreparationIDColumn, validPreparationsTableName, idColumn,
-				validIngredientPreparationsTableName, archivedAtColumn,
-				validIngredientsTableName, archivedAtColumn,
-				validPreparationsTableName, archivedAtColumn,
-				validIngredientPreparationsTableName, validPreparationIDColumn, validPreparationIDColumn,
-				validPreparationsTableName, restrictToIngredientsColumn,
-				validIngredientsTableName, nameColumn, buildILIKEForArgument("name_query"),
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "UpdateValidIngredient",
-				Type: ExecRowsType,
+					strings.Join(applyToEach(validIngredientsColumns, func(i int, s string) string {
+						if i == 0 {
+							return fmt.Sprintf("DISTINCT(%s.%s)", validIngredientsTableName, s)
+						}
+						return fmt.Sprintf("%s.%s", validIngredientsTableName, s)
+					}), ",\n\t"),
+					validIngredientPreparationsTableName,
+					validIngredientsTableName, validIngredientPreparationsTableName, validIngredientIDColumn, validIngredientsTableName, idColumn,
+					validPreparationsTableName, validIngredientPreparationsTableName, validPreparationIDColumn, validPreparationsTableName, idColumn,
+					validIngredientPreparationsTableName, archivedAtColumn,
+					validIngredientsTableName, archivedAtColumn,
+					validPreparationsTableName, archivedAtColumn,
+					validIngredientPreparationsTableName, validPreparationIDColumn, validPreparationIDColumn,
+					validPreparationsTableName, restrictToIngredientsColumn,
+					validIngredientsTableName, nameColumn, buildILIKEForArgument("name_query"),
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+			{
+				Annotation: QueryAnnotation{
+					Name: "UpdateValidIngredient",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s,
 	%s = %s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
-				validIngredientsTableName,
-				strings.Join(applyToEach(filterForUpdate(validIngredientsColumns), func(i int, s string) string {
-					switch s {
-					case "minimum_ideal_storage_temperature_in_celsius",
-						"maximum_ideal_storage_temperature_in_celsius":
-						return fmt.Sprintf("%s = sqlc.narg(%s)", s, s)
-					default:
-						return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
-					}
-				}), ",\n\t"),
-				lastUpdatedAtColumn,
-				currentTimeExpression,
-				archivedAtColumn,
-				idColumn,
-				idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "UpdateValidIngredientLastIndexedAt",
-				Type: ExecRowsType,
+					validIngredientsTableName,
+					strings.Join(applyToEach(filterForUpdate(validIngredientsColumns), func(i int, s string) string {
+						switch s {
+						case "minimum_ideal_storage_temperature_in_celsius",
+							"maximum_ideal_storage_temperature_in_celsius":
+							return fmt.Sprintf("%s = sqlc.narg(%s)", s, s)
+						default:
+							return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
+						}
+					}), ",\n\t"),
+					lastUpdatedAtColumn,
+					currentTimeExpression,
+					archivedAtColumn,
+					idColumn,
+					idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s = sqlc.arg(%s) AND %s IS NULL;`,
-				validIngredientsTableName,
-				lastIndexedAtColumn,
-				currentTimeExpression,
-				idColumn,
-				idColumn,
-				archivedAtColumn,
-			)),
-		},
+			{
+				Annotation: QueryAnnotation{
+					Name: "UpdateValidIngredientLastIndexedAt",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s = sqlc.arg(%s) AND %s IS NULL;`,
+					validIngredientsTableName,
+					lastIndexedAtColumn,
+					currentTimeExpression,
+					idColumn,
+					idColumn,
+					archivedAtColumn,
+				)),
+			},
+		}
+	default:
+		return nil
 	}
 }

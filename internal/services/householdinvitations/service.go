@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/dinnerdonebetter/backend/internal/email"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
@@ -32,7 +31,6 @@ type (
 		householdInvitationDataManager types.HouseholdInvitationDataManager
 		tracer                         tracing.Tracer
 		encoderDecoder                 encoding.ServerEncoderDecoder
-		emailer                        email.Emailer
 		secretGenerator                random.Generator
 		dataChangesPublisher           messagequeue.Publisher
 		householdIDFetcher             func(*http.Request) string
@@ -51,7 +49,6 @@ func ProvideHouseholdInvitationsService(
 	routeParamManager routing.RouteParamManager,
 	publisherProvider messagequeue.PublisherProvider,
 	tracerProvider tracing.TracerProvider,
-	emailer email.Emailer,
 	secretGenerator random.Generator,
 ) (types.HouseholdInvitationDataService, error) {
 	dataChangesPublisher, err := publisherProvider.ProvidePublisher(cfg.DataChangesTopicName)
@@ -65,7 +62,6 @@ func ProvideHouseholdInvitationsService(
 		householdInvitationDataManager: householdInvitationDataManager,
 		encoderDecoder:                 encoder,
 		dataChangesPublisher:           dataChangesPublisher,
-		emailer:                        emailer,
 		secretGenerator:                secretGenerator,
 		sessionContextDataFetcher:      authservice.FetchContextFromRequest,
 		householdIDFetcher:             routeParamManager.BuildRouteParamStringIDFetcher(householdsservice.HouseholdIDURIParamKey),

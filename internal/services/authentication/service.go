@@ -14,7 +14,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/random"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
@@ -54,7 +53,6 @@ type (
 		userDataManager            types.UserDataManager
 		householdMembershipManager types.HouseholdUserMembershipDataManager
 		encoderDecoder             encoding.ServerEncoderDecoder
-		secretGenerator            random.Generator
 		cookieManager              cookieEncoderDecoder
 		sessionManager             sessionManager
 		sessionContextDataFetcher  func(*http.Request) (*types.SessionContextData, error)
@@ -77,7 +75,6 @@ func ProvideService(
 	encoder encoding.ServerEncoderDecoder,
 	tracerProvider tracing.TracerProvider,
 	publisherProvider messagequeue.PublisherProvider,
-	secretGenerator random.Generator,
 	featureFlagManager featureflags.FeatureFlagManager,
 	analyticsReporter analytics.EventReporter,
 	routeParamManager routing.RouteParamManager,
@@ -102,7 +99,6 @@ func ProvideService(
 		householdMembershipManager: householdMembershipManager,
 		authenticator:              authenticator,
 		sessionManager:             sessionManager,
-		secretGenerator:            secretGenerator,
 		sessionContextDataFetcher:  FetchContextFromRequest,
 		cookieManager:              securecookie.New(hashKey, []byte(cfg.Cookies.BlockKey)),
 		tracer:                     tracer,

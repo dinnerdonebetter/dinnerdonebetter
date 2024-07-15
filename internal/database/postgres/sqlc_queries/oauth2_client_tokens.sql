@@ -1,15 +1,12 @@
 -- name: ArchiveOAuth2ClientTokenByAccess :execrows
 
 DELETE FROM oauth2_client_tokens WHERE access = sqlc.arg(access);
-
 -- name: ArchiveOAuth2ClientTokenByCode :execrows
 
 DELETE FROM oauth2_client_tokens WHERE code = sqlc.arg(code);
-
 -- name: ArchiveOAuth2ClientTokenByRefresh :execrows
 
 DELETE FROM oauth2_client_tokens WHERE refresh = sqlc.arg(refresh);
-
 -- name: CreateOAuth2ClientToken :exec
 
 INSERT INTO oauth2_client_tokens (
@@ -47,7 +44,6 @@ INSERT INTO oauth2_client_tokens (
 	sqlc.arg(refresh_created_at),
 	sqlc.arg(refresh_expires_at)
 );
-
 -- name: CheckOAuth2ClientTokenExistence :one
 
 SELECT EXISTS (
@@ -56,7 +52,6 @@ SELECT EXISTS (
 	WHERE oauth2_client_tokens.archived_at IS NULL
 		AND oauth2_client_tokens.id = sqlc.arg(id)
 );
-
 -- name: GetOAuth2ClientTokenByAccess :one
 
 SELECT
@@ -78,7 +73,6 @@ SELECT
 	oauth2_client_tokens.refresh_expires_at
 FROM oauth2_client_tokens
 WHERE oauth2_client_tokens.access = sqlc.arg(access);
-
 -- name: GetOAuth2ClientTokenByCode :one
 
 SELECT
@@ -100,7 +94,6 @@ SELECT
 	oauth2_client_tokens.refresh_expires_at
 FROM oauth2_client_tokens
 WHERE oauth2_client_tokens.code = sqlc.arg(code);
-
 -- name: GetOAuth2ClientTokenByRefresh :one
 
 SELECT

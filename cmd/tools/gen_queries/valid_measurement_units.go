@@ -30,64 +30,67 @@ var validMeasurementUnitsColumns = []string{
 	archivedAtColumn,
 }
 
-func buildValidMeasurementUnitsQueries() []*Query {
-	insertColumns := filterForInsert(validMeasurementUnitsColumns)
+func buildValidMeasurementUnitsQueries(database string) []*Query {
+	switch database {
+	case postgres:
 
-	return []*Query{
-		{
-			Annotation: QueryAnnotation{
-				Name: "ArchiveValidMeasurementUnit",
-				Type: ExecRowsType,
+		insertColumns := filterForInsert(validMeasurementUnitsColumns)
+
+		return []*Query{
+			{
+				Annotation: QueryAnnotation{
+					Name: "ArchiveValidMeasurementUnit",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s IS NULL AND %s = sqlc.arg(%s);`,
+					validMeasurementUnitsTableName,
+					archivedAtColumn,
+					currentTimeExpression,
+					archivedAtColumn,
+					idColumn,
+					idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s IS NULL AND %s = sqlc.arg(%s);`,
-				validMeasurementUnitsTableName,
-				archivedAtColumn,
-				currentTimeExpression,
-				archivedAtColumn,
-				idColumn,
-				idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "CreateValidMeasurementUnit",
-				Type: ExecType,
-			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
+			{
+				Annotation: QueryAnnotation{
+					Name: "CreateValidMeasurementUnit",
+					Type: ExecType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
 	%s
 ) VALUES (
 	%s
 );`,
-				validMeasurementUnitsTableName,
-				strings.Join(insertColumns, ",\n\t"),
-				strings.Join(applyToEach(insertColumns, func(i int, s string) string {
-					return fmt.Sprintf("sqlc.arg(%s)", s)
-				}), ",\n\t"),
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "CheckValidMeasurementUnitExistence",
-				Type: OneType,
+					validMeasurementUnitsTableName,
+					strings.Join(insertColumns, ",\n\t"),
+					strings.Join(applyToEach(insertColumns, func(i int, s string) string {
+						return fmt.Sprintf("sqlc.arg(%s)", s)
+					}), ",\n\t"),
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
+			{
+				Annotation: QueryAnnotation{
+					Name: "CheckValidMeasurementUnitExistence",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT EXISTS (
 	SELECT %s.%s
 	FROM %s
 	WHERE %s.%s IS NULL
 		AND %s.%s = sqlc.arg(%s)
 );`,
-				validMeasurementUnitsTableName, idColumn,
-				validMeasurementUnitsTableName,
-				validMeasurementUnitsTableName, archivedAtColumn,
-				validMeasurementUnitsTableName, idColumn, idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetValidMeasurementUnits",
-				Type: ManyType,
+					validMeasurementUnitsTableName, idColumn,
+					validMeasurementUnitsTableName,
+					validMeasurementUnitsTableName, archivedAtColumn,
+					validMeasurementUnitsTableName, idColumn, idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetValidMeasurementUnits",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
 	%s,
 	%s
@@ -98,134 +101,134 @@ WHERE
 GROUP BY %s.%s
 ORDER BY %s.%s
 %s;`,
-				strings.Join(applyToEach(validMeasurementUnitsColumns, func(i int, s string) string {
-					return fmt.Sprintf("%s.%s", validMeasurementUnitsTableName, s)
-				}), ",\n\t"),
-				buildFilterCountSelect(validMeasurementUnitsTableName, true, true),
-				buildTotalCountSelect(validMeasurementUnitsTableName, true),
-				validMeasurementUnitsTableName,
-				validMeasurementUnitsTableName,
-				archivedAtColumn,
-				buildFilterConditions(
+					strings.Join(applyToEach(validMeasurementUnitsColumns, func(i int, s string) string {
+						return fmt.Sprintf("%s.%s", validMeasurementUnitsTableName, s)
+					}), ",\n\t"),
+					buildFilterCountSelect(validMeasurementUnitsTableName, true, true),
+					buildTotalCountSelect(validMeasurementUnitsTableName, true),
 					validMeasurementUnitsTableName,
-					true,
-				),
-				validMeasurementUnitsTableName,
-				idColumn,
-				validMeasurementUnitsTableName,
-				idColumn,
-				offsetLimitAddendum,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetValidMeasurementUnitsNeedingIndexing",
-				Type: ManyType,
+					validMeasurementUnitsTableName,
+					archivedAtColumn,
+					buildFilterConditions(
+						validMeasurementUnitsTableName,
+						true,
+					),
+					validMeasurementUnitsTableName,
+					idColumn,
+					validMeasurementUnitsTableName,
+					idColumn,
+					offsetLimitAddendum,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT %s.%s
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetValidMeasurementUnitsNeedingIndexing",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT %s.%s
 FROM %s
 WHERE %s.%s IS NULL
 	AND (
 	%s.%s IS NULL
 	OR %s.%s < %s - '24 hours'::INTERVAL
 );`,
-				validMeasurementUnitsTableName,
-				idColumn,
-				validMeasurementUnitsTableName,
-				validMeasurementUnitsTableName,
-				archivedAtColumn,
-				validMeasurementUnitsTableName,
-				lastIndexedAtColumn,
-				validMeasurementUnitsTableName,
-				lastIndexedAtColumn,
-				currentTimeExpression,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetValidMeasurementUnit",
-				Type: OneType,
+					validMeasurementUnitsTableName,
+					idColumn,
+					validMeasurementUnitsTableName,
+					validMeasurementUnitsTableName,
+					archivedAtColumn,
+					validMeasurementUnitsTableName,
+					lastIndexedAtColumn,
+					validMeasurementUnitsTableName,
+					lastIndexedAtColumn,
+					currentTimeExpression,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetValidMeasurementUnit",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 WHERE %s.%s IS NULL
 AND %s.%s = sqlc.arg(%s);`,
-				strings.Join(applyToEach(validMeasurementUnitsColumns, func(i int, s string) string {
-					return fmt.Sprintf("%s.%s", validMeasurementUnitsTableName, s)
-				}), ",\n\t"),
-				validMeasurementUnitsTableName,
-				validMeasurementUnitsTableName,
-				archivedAtColumn,
-				validMeasurementUnitsTableName,
-				idColumn,
-				idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetRandomValidMeasurementUnit",
-				Type: OneType,
+					strings.Join(applyToEach(validMeasurementUnitsColumns, func(i int, s string) string {
+						return fmt.Sprintf("%s.%s", validMeasurementUnitsTableName, s)
+					}), ",\n\t"),
+					validMeasurementUnitsTableName,
+					validMeasurementUnitsTableName,
+					archivedAtColumn,
+					validMeasurementUnitsTableName,
+					idColumn,
+					idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetRandomValidMeasurementUnit",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 WHERE %s.%s IS NULL
 ORDER BY RANDOM() LIMIT 1;`,
-				strings.Join(applyToEach(validMeasurementUnitsColumns, func(i int, s string) string {
-					return fmt.Sprintf("%s.%s", validMeasurementUnitsTableName, s)
-				}), ",\n\t"),
-				validMeasurementUnitsTableName,
-				validMeasurementUnitsTableName,
-				archivedAtColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetValidMeasurementUnitsWithIDs",
-				Type: ManyType,
+					strings.Join(applyToEach(validMeasurementUnitsColumns, func(i int, s string) string {
+						return fmt.Sprintf("%s.%s", validMeasurementUnitsTableName, s)
+					}), ",\n\t"),
+					validMeasurementUnitsTableName,
+					validMeasurementUnitsTableName,
+					archivedAtColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetValidMeasurementUnitsWithIDs",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 WHERE %s.%s IS NULL
 	AND %s.%s = ANY(sqlc.arg(ids)::text[]);`,
-				strings.Join(applyToEach(validMeasurementUnitsColumns, func(i int, s string) string {
-					return fmt.Sprintf("%s.%s", validMeasurementUnitsTableName, s)
-				}), ",\n\t"),
-				validMeasurementUnitsTableName,
-				validMeasurementUnitsTableName,
-				archivedAtColumn,
-				validMeasurementUnitsTableName,
-				idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "SearchForValidMeasurementUnits",
-				Type: ManyType,
+					strings.Join(applyToEach(validMeasurementUnitsColumns, func(i int, s string) string {
+						return fmt.Sprintf("%s.%s", validMeasurementUnitsTableName, s)
+					}), ",\n\t"),
+					validMeasurementUnitsTableName,
+					validMeasurementUnitsTableName,
+					archivedAtColumn,
+					validMeasurementUnitsTableName,
+					idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "SearchForValidMeasurementUnits",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 WHERE %s.%s %s
 	AND %s.%s IS NULL
 LIMIT 50;`,
-				strings.Join(applyToEach(validMeasurementUnitsColumns, func(i int, s string) string {
-					return fmt.Sprintf("%s.%s", validMeasurementUnitsTableName, s)
-				}), ",\n\t"),
-				validMeasurementUnitsTableName,
-				validMeasurementUnitsTableName, nameColumn, buildILIKEForArgument("name_query"),
-				validMeasurementUnitsTableName,
-				archivedAtColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "SearchValidMeasurementUnitsByIngredientID",
-				Type: ManyType,
+					strings.Join(applyToEach(validMeasurementUnitsColumns, func(i int, s string) string {
+						return fmt.Sprintf("%s.%s", validMeasurementUnitsTableName, s)
+					}), ",\n\t"),
+					validMeasurementUnitsTableName,
+					validMeasurementUnitsTableName, nameColumn, buildILIKEForArgument("name_query"),
+					validMeasurementUnitsTableName,
+					archivedAtColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "SearchValidMeasurementUnitsByIngredientID",
+					Type: ManyType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s,
 	%s,
 	%s
@@ -242,63 +245,66 @@ WHERE
 	AND %s.%s IS NULL
 	%s
 %s;`,
-				strings.Join(applyToEach(validMeasurementUnitsColumns, func(i int, s string) string {
-					if i == 0 {
-						return fmt.Sprintf("DISTINCT(%s.%s)", validMeasurementUnitsTableName, s)
-					}
-					return fmt.Sprintf("%s.%s", validMeasurementUnitsTableName, s)
-				}), ",\n\t"),
-				buildFilterCountSelect(validMeasurementUnitsTableName, true, true, ` (
+					strings.Join(applyToEach(validMeasurementUnitsColumns, func(i int, s string) string {
+						if i == 0 {
+							return fmt.Sprintf("DISTINCT(%s.%s)", validMeasurementUnitsTableName, s)
+						}
+						return fmt.Sprintf("%s.%s", validMeasurementUnitsTableName, s)
+					}), ",\n\t"),
+					buildFilterCountSelect(validMeasurementUnitsTableName, true, true, ` (
 				valid_ingredient_measurement_units.valid_ingredient_id = sqlc.arg(valid_ingredient_id)
 				OR valid_measurement_units.universal = true
 			)`),
-				buildTotalCountSelect(validMeasurementUnitsTableName, true),
-				validMeasurementUnitsTableName,
-				validIngredientMeasurementUnitsTableName, validIngredientMeasurementUnitsTableName, validMeasurementUnitIDColumn, validMeasurementUnitsTableName, idColumn,
-				validIngredientsTableName, validIngredientMeasurementUnitsTableName, validIngredientIDColumn, validIngredientsTableName, idColumn,
-				validIngredientMeasurementUnitsTableName, validIngredientIDColumn, validIngredientIDColumn,
-				validMeasurementUnitsTableName, validMeasurementUnitsUniversalColumn,
-				validMeasurementUnitsTableName, archivedAtColumn,
-				validIngredientsTableName, archivedAtColumn,
-				validIngredientMeasurementUnitsTableName, archivedAtColumn,
-				buildFilterConditions(validMeasurementUnitsTableName, true),
-				offsetLimitAddendum,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "UpdateValidMeasurementUnit",
-				Type: ExecRowsType,
+					buildTotalCountSelect(validMeasurementUnitsTableName, true),
+					validMeasurementUnitsTableName,
+					validIngredientMeasurementUnitsTableName, validIngredientMeasurementUnitsTableName, validMeasurementUnitIDColumn, validMeasurementUnitsTableName, idColumn,
+					validIngredientsTableName, validIngredientMeasurementUnitsTableName, validIngredientIDColumn, validIngredientsTableName, idColumn,
+					validIngredientMeasurementUnitsTableName, validIngredientIDColumn, validIngredientIDColumn,
+					validMeasurementUnitsTableName, validMeasurementUnitsUniversalColumn,
+					validMeasurementUnitsTableName, archivedAtColumn,
+					validIngredientsTableName, archivedAtColumn,
+					validIngredientMeasurementUnitsTableName, archivedAtColumn,
+					buildFilterConditions(validMeasurementUnitsTableName, true),
+					offsetLimitAddendum,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+			{
+				Annotation: QueryAnnotation{
+					Name: "UpdateValidMeasurementUnit",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s,
 	%s = %s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
-				validMeasurementUnitsTableName,
-				strings.Join(applyToEach(filterForUpdate(validMeasurementUnitsColumns), func(i int, s string) string {
-					return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
-				}), ",\n\t"),
-				lastUpdatedAtColumn,
-				currentTimeExpression,
-				archivedAtColumn,
-				idColumn,
-				idColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "UpdateValidMeasurementUnitLastIndexedAt",
-				Type: ExecRowsType,
+					validMeasurementUnitsTableName,
+					strings.Join(applyToEach(filterForUpdate(validMeasurementUnitsColumns), func(i int, s string) string {
+						return fmt.Sprintf("%s = sqlc.arg(%s)", s, s)
+					}), ",\n\t"),
+					lastUpdatedAtColumn,
+					currentTimeExpression,
+					archivedAtColumn,
+					idColumn,
+					idColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s = sqlc.arg(%s) AND %s IS NULL;`,
-				validMeasurementUnitsTableName,
-				lastIndexedAtColumn,
-				currentTimeExpression,
-				idColumn,
-				idColumn,
-				archivedAtColumn,
-			)),
-		},
+			{
+				Annotation: QueryAnnotation{
+					Name: "UpdateValidMeasurementUnitLastIndexedAt",
+					Type: ExecRowsType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET %s = %s WHERE %s = sqlc.arg(%s) AND %s IS NULL;`,
+					validMeasurementUnitsTableName,
+					lastIndexedAtColumn,
+					currentTimeExpression,
+					idColumn,
+					idColumn,
+					archivedAtColumn,
+				)),
+			},
+		}
+	default:
+		return nil
 	}
 }

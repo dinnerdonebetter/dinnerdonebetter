@@ -1,7 +1,6 @@
 -- name: ArchiveServiceSetting :execrows
 
 UPDATE service_settings SET archived_at = NOW() WHERE id = sqlc.arg(id);
-
 -- name: CreateServiceSetting :exec
 
 INSERT INTO service_settings (
@@ -21,7 +20,6 @@ INSERT INTO service_settings (
 	sqlc.arg(enumeration),
 	sqlc.arg(admins_only)
 );
-
 -- name: CheckServiceSettingExistence :one
 
 SELECT EXISTS (
@@ -30,7 +28,6 @@ SELECT EXISTS (
 	WHERE service_settings.archived_at IS NULL
 	AND service_settings.id = sqlc.arg(id)
 );
-
 -- name: GetServiceSettings :many
 
 SELECT
@@ -78,7 +75,6 @@ WHERE service_settings.archived_at IS NULL
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: GetServiceSetting :one
 
 SELECT
@@ -95,7 +91,6 @@ SELECT
 FROM service_settings
 WHERE service_settings.archived_at IS NULL
 	AND service_settings.id = sqlc.arg(id);
-
 -- name: SearchForServiceSettings :many
 
 SELECT

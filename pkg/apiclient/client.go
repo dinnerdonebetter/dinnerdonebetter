@@ -14,11 +14,9 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/keys"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
-	"github.com/dinnerdonebetter/backend/internal/pkg/panicking"
 	"github.com/dinnerdonebetter/backend/pkg/apiclient/requests"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
-	"github.com/gorilla/websocket"
 	"github.com/moul/http2curl"
 )
 
@@ -41,16 +39,12 @@ var (
 type Client struct {
 	logger                logging.Logger
 	tracer                tracing.Tracer
-	panicker              panicking.Panicker
 	url                   *url.URL
 	requestBuilder        *requests.Builder
 	encoder               encoding.ClientEncoder
 	unauthenticatedClient *http.Client
 	authedClient          *http.Client
 	authMethod            *authMethod
-	authHeaderBuilder     authHeaderBuilder
-	websocketDialer       *websocket.Dialer
-	householdID           string
 	debug                 bool
 }
 
@@ -83,11 +77,9 @@ func NewClient(u *url.URL, tracerProvider tracing.TracerProvider, options ...opt
 		logger:                logging.EnsureLogger(nil),
 		debug:                 false,
 		tracer:                tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(clientName)),
-		panicker:              panicking.NewProductionPanicker(),
 		encoder:               encoding.ProvideClientEncoder(l, tracerProvider, encoding.ContentTypeJSON),
 		authedClient:          tracing.BuildTracedHTTPClient(),
 		unauthenticatedClient: tracing.BuildTracedHTTPClient(),
-		websocketDialer:       websocket.DefaultDialer,
 	}
 
 	requestBuilder, err := requests.NewBuilder(c.url, c.logger, tracerProvider, encoding.ProvideClientEncoder(l, tracerProvider, defaultContentType))

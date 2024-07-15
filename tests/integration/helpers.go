@@ -156,9 +156,6 @@ func generateTOTPTokenForUser(t *testing.T, u *types.User) string {
 func buildAdminCookieAndOAuthedClients(ctx context.Context, t *testing.T) (cookieClient *apiclient.Client, oauthedClient *apiclient.Client) {
 	t.Helper()
 
-	ctx, span := tracing.StartSpan(ctx)
-	defer span.End()
-
 	u := serverutils.DetermineServiceURL()
 	urlToUse = u.String()
 

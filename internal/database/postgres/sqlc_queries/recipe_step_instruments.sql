@@ -1,7 +1,6 @@
 -- name: ArchiveRecipeStepInstrument :execrows
 
 UPDATE recipe_step_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = sqlc.arg(belongs_to_recipe_step) AND id = sqlc.arg(id);
-
 -- name: CreateRecipeStepInstrument :exec
 
 INSERT INTO recipe_step_instruments (
@@ -29,7 +28,6 @@ INSERT INTO recipe_step_instruments (
 	sqlc.arg(option_index),
 	sqlc.arg(belongs_to_recipe_step)
 );
-
 -- name: CheckRecipeStepInstrumentExistence :one
 
 SELECT EXISTS (
@@ -46,7 +44,6 @@ SELECT EXISTS (
 		AND recipes.archived_at IS NULL
 		AND recipes.id = sqlc.arg(recipe_id)
 );
-
 -- name: GetRecipeStepInstrumentsForRecipe :many
 
 SELECT
@@ -85,7 +82,6 @@ WHERE recipe_step_instruments.archived_at IS NULL
 	AND recipe_steps.belongs_to_recipe = sqlc.arg(recipe_id)
 	AND recipes.archived_at IS NULL
 	AND recipes.id = sqlc.arg(recipe_id);
-
 -- name: GetRecipeStepInstrument :one
 
 SELECT
@@ -127,7 +123,6 @@ WHERE recipe_step_instruments.archived_at IS NULL
 	AND recipe_steps.id = sqlc.arg(recipe_step_id)
 	AND recipes.archived_at IS NULL
 	AND recipes.id = sqlc.arg(recipe_id);
-
 -- name: GetRecipeStepInstruments :many
 
 SELECT
@@ -203,7 +198,6 @@ WHERE
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: UpdateRecipeStepInstrument :execrows
 
 UPDATE recipe_step_instruments SET

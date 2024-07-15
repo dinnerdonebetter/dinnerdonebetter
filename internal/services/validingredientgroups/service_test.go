@@ -1,6 +1,7 @@
 package validingredientgroups
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"testing"
@@ -19,12 +20,11 @@ import (
 
 func buildTestService() *service {
 	return &service{
-		logger:                             logging.NewNoopLogger(),
-		validIngredientGroupDataManager:    &mocktypes.ValidIngredientGroupDataManagerMock{},
-		validIngredientGroupIDFetcher:      func(req *http.Request) string { return "" },
-		validIngredientGroupStateIDFetcher: func(req *http.Request) string { return "" },
-		encoderDecoder:                     encoding.ProvideServerEncoderDecoder(nil, nil, encoding.ContentTypeJSON),
-		tracer:                             tracing.NewTracerForTest("test"),
+		logger:                          logging.NewNoopLogger(),
+		validIngredientGroupDataManager: &mocktypes.ValidIngredientGroupDataManagerMock{},
+		validIngredientGroupIDFetcher:   func(req *http.Request) string { return "" },
+		encoderDecoder:                  encoding.ProvideServerEncoderDecoder(nil, nil, encoding.ContentTypeJSON),
+		tracer:                          tracing.NewTracerForTest("test"),
 	}
 }
 
@@ -34,20 +34,13 @@ func TestProvideValidIngredientGroupsService(T *testing.T) {
 	T.Run("standard", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 
 		rpm := mockrouting.NewRouteParamManager()
 		rpm.On(
 			"BuildRouteParamStringIDFetcher",
 			ValidIngredientGroupIDURIParamKey,
-		).Return(func(*http.Request) string { return "" })
-		rpm.On(
-			"BuildRouteParamStringIDFetcher",
-			ValidIngredientGroupStateIDURIParamKey,
-		).Return(func(*http.Request) string { return "" })
-		rpm.On(
-			"BuildRouteParamStringIDFetcher",
-			ValidPreparationIDURIParamKey,
 		).Return(func(*http.Request) string { return "" })
 		cfg := &Config{
 			DataChangesTopicName: "data_changes",
@@ -57,6 +50,7 @@ func TestProvideValidIngredientGroupsService(T *testing.T) {
 		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return(&mockpublishers.Publisher{}, nil)
 
 		s, err := ProvideService(
+			ctx,
 			logger,
 			cfg,
 			&mocktypes.ValidIngredientGroupDataManagerMock{},
@@ -75,6 +69,7 @@ func TestProvideValidIngredientGroupsService(T *testing.T) {
 	T.Run("with error providing data changes producer", func(t *testing.T) {
 		t.Parallel()
 
+		ctx := context.Background()
 		logger := logging.NewNoopLogger()
 
 		cfg := &Config{
@@ -85,6 +80,7 @@ func TestProvideValidIngredientGroupsService(T *testing.T) {
 		pp.On("ProvidePublisher", cfg.DataChangesTopicName).Return((*mockpublishers.Publisher)(nil), errors.New("blah"))
 
 		s, err := ProvideService(
+			ctx,
 			logger,
 			cfg,
 			&mocktypes.ValidIngredientGroupDataManagerMock{},

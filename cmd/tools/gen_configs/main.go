@@ -17,7 +17,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	msgconfig "github.com/dinnerdonebetter/backend/internal/messagequeue/config"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue/redis"
-	"github.com/dinnerdonebetter/backend/internal/objectstorage"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	logcfg "github.com/dinnerdonebetter/backend/internal/observability/logging/config"
@@ -71,6 +70,7 @@ import (
 	webhooksservice "github.com/dinnerdonebetter/backend/internal/services/webhooks"
 	workersservice "github.com/dinnerdonebetter/backend/internal/services/workers"
 	"github.com/dinnerdonebetter/backend/internal/uploads"
+	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 )
 
 const (
@@ -147,7 +147,7 @@ var (
 
 func saveConfig(ctx context.Context, outputPath string, cfg *config.InstanceConfig, indent, validate bool) error {
 	/* #nosec G301 */
-	if err := os.MkdirAll(filepath.Dir(outputPath), 0o777); err != nil {
+	if err := os.MkdirAll(filepath.Dir(outputPath), 0o750); err != nil {
 		// okay, who gives a shit?
 		_ = err
 	}

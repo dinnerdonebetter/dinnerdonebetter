@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"testing"
 
-	mockauthn "github.com/dinnerdonebetter/backend/internal/authentication/mock"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
@@ -28,12 +27,10 @@ func buildTestService(t *testing.T) *service {
 		oauth2ClientDataManager:   database.NewMockDatabase(),
 		logger:                    logging.NewNoopLogger(),
 		encoderDecoder:            encoding.ProvideServerEncoderDecoder(nil, nil, encoding.ContentTypeJSON),
-		authenticator:             &mockauthn.Authenticator{},
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,
 		urlClientIDExtractor:      func(req *http.Request) string { return "" },
 		secretGenerator:           &randommock.Generator{},
 		tracer:                    tracing.NewTracerForTest(serviceName),
-		cfg:                       &Config{},
 	}
 }
 
@@ -60,8 +57,6 @@ func TestProvideOAuth2ClientsService(T *testing.T) {
 		s, err := ProvideOAuth2ClientsService(
 			logging.NewNoopLogger(),
 			mockOAuth2ClientDataManager,
-			&mocktypes.UserDataManagerMock{},
-			&mockauthn.Authenticator{},
 			mockencoding.NewMockEncoderDecoder(),
 			rpm,
 			cfg,

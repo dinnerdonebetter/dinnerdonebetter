@@ -6,6 +6,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/stretchr/testify/assert"
@@ -17,6 +18,20 @@ import (
 var (
 	runningContainerTests = strings.ToLower(os.Getenv("RUN_CONTAINER_TESTS")) == "true"
 )
+
+func TestConfig_provideElasticsearchClient(T *testing.T) {
+	T.Parallel()
+
+	T.Run("standard", func(t *testing.T) {
+		t.Parallel()
+
+		cfg := &Config{}
+
+		esClient, err := provideElasticsearchClient(cfg)
+		assert.NoError(t, err)
+		assert.NotNil(t, esClient)
+	})
+}
 
 func buildContainerBackedElasticsearchConfig(t *testing.T, ctx context.Context) (config *Config, shutdownFunction func(context.Context) error) {
 	t.Helper()
@@ -55,7 +70,7 @@ func Test_ProvideIndexManager(T *testing.T) {
 			require.NoError(t, shutdownFunc(ctx))
 		}()
 
-		im, err := ProvideIndexManager[types.UserSearchSubset](ctx, nil, nil, cfg, t.Name())
+		im, err := ProvideIndexManager[types.UserSearchSubset](ctx, nil, nil, cfg, t.Name(), circuitbreaking.NewNoopCircuitBreaker())
 		assert.NoError(t, err)
 		assert.NotNil(t, im)
 	})
@@ -66,7 +81,7 @@ func Test_ProvideIndexManager(T *testing.T) {
 		ctx := context.Background()
 		cfg := &Config{}
 
-		im, err := ProvideIndexManager[types.UserSearchSubset](ctx, nil, nil, cfg, t.Name())
+		im, err := ProvideIndexManager[types.UserSearchSubset](ctx, nil, nil, cfg, t.Name(), circuitbreaking.NewNoopCircuitBreaker())
 		assert.Error(t, err)
 		assert.Nil(t, im)
 	})

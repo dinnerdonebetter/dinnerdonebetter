@@ -25,16 +25,19 @@ var passwordResetTokensColumns = []string{
 	lastUpdatedAtColumn,
 }
 
-func buildPasswordResetTokensQueries() []*Query {
-	insertColumns := filterForInsert(passwordResetTokensColumns, "redeemed_at")
+func buildPasswordResetTokensQueries(database string) []*Query {
+	switch database {
+	case postgres:
 
-	return []*Query{
-		{
-			Annotation: QueryAnnotation{
-				Name: "CreatePasswordResetToken",
-				Type: ExecType,
-			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
+		insertColumns := filterForInsert(passwordResetTokensColumns, "redeemed_at")
+
+		return []*Query{
+			{
+				Annotation: QueryAnnotation{
+					Name: "CreatePasswordResetToken",
+					Type: ExecType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`INSERT INTO %s (
 	%s
 ) VALUES (
 	sqlc.arg(%s),
@@ -42,48 +45,51 @@ func buildPasswordResetTokensQueries() []*Query {
 	%s + (30 * '1 minutes'::INTERVAL),
 	sqlc.arg(%s)
 );`,
-				passwordResetTokensTableName,
-				strings.Join(insertColumns, ",\n\t"),
-				idColumn,
-				passwordResetTokenColumn,
-				currentTimeExpression,
-				belongsToUserColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "GetPasswordResetToken",
-				Type: OneType,
+					passwordResetTokensTableName,
+					strings.Join(insertColumns, ",\n\t"),
+					idColumn,
+					passwordResetTokenColumn,
+					currentTimeExpression,
+					belongsToUserColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
+			{
+				Annotation: QueryAnnotation{
+					Name: "GetPasswordResetToken",
+					Type: OneType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`SELECT
 	%s
 FROM %s
 WHERE %s.%s IS NULL
 	AND %s < %s.%s
 	AND %s.%s = sqlc.arg(%s);`,
-				strings.Join(applyToEach(passwordResetTokensColumns, func(i int, s string) string {
-					return fmt.Sprintf("password_reset_tokens.%s", s)
-				}), ",\n\t"),
-				passwordResetTokensTableName,
-				passwordResetTokensTableName, redeemedAtColumn,
-				currentTimeExpression, passwordResetTokensTableName, passwordResetTokenExpiresAtColumn,
-				passwordResetTokensTableName, passwordResetTokenColumn, passwordResetTokenColumn,
-			)),
-		},
-		{
-			Annotation: QueryAnnotation{
-				Name: "RedeemPasswordResetToken",
-				Type: ExecType,
+					strings.Join(applyToEach(passwordResetTokensColumns, func(i int, s string) string {
+						return fmt.Sprintf("password_reset_tokens.%s", s)
+					}), ",\n\t"),
+					passwordResetTokensTableName,
+					passwordResetTokensTableName, redeemedAtColumn,
+					currentTimeExpression, passwordResetTokensTableName, passwordResetTokenExpiresAtColumn,
+					passwordResetTokensTableName, passwordResetTokenColumn, passwordResetTokenColumn,
+				)),
 			},
-			Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
+			{
+				Annotation: QueryAnnotation{
+					Name: "RedeemPasswordResetToken",
+					Type: ExecType,
+				},
+				Content: buildRawQuery((&builq.Builder{}).Addf(`UPDATE %s SET
 	%s = %s
 WHERE %s IS NULL
 	AND %s = sqlc.arg(%s);`,
-				passwordResetTokensTableName,
-				redeemedAtColumn, currentTimeExpression,
-				redeemedAtColumn,
-				idColumn, idColumn,
-			)),
-		},
+					passwordResetTokensTableName,
+					redeemedAtColumn, currentTimeExpression,
+					redeemedAtColumn,
+					idColumn, idColumn,
+				)),
+			},
+		}
+	default:
+		return nil
 	}
 }

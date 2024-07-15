@@ -10,7 +10,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing"
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
-	mealplaneventsservice "github.com/dinnerdonebetter/backend/internal/services/mealplanevents"
 	mealplansservice "github.com/dinnerdonebetter/backend/internal/services/mealplans"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
@@ -27,7 +26,6 @@ type (
 		logger                    logging.Logger
 		mealPlanTaskDataManager   types.MealPlanTaskDataManager
 		mealPlanIDFetcher         func(*http.Request) string
-		mealPlanEventIDFetcher    func(*http.Request) string
 		mealPlanTaskIDFetcher     func(*http.Request) string
 		sessionContextDataFetcher func(*http.Request) (*types.SessionContextData, error)
 		dataChangesPublisher      messagequeue.Publisher
@@ -54,7 +52,6 @@ func ProvideService(
 	svc := &service{
 		logger:                    logging.EnsureLogger(logger).WithName(serviceName),
 		mealPlanIDFetcher:         routeParamManager.BuildRouteParamStringIDFetcher(mealplansservice.MealPlanIDURIParamKey),
-		mealPlanEventIDFetcher:    routeParamManager.BuildRouteParamStringIDFetcher(mealplaneventsservice.MealPlanEventIDURIParamKey),
 		mealPlanTaskIDFetcher:     routeParamManager.BuildRouteParamStringIDFetcher(MealPlanTaskIDURIParamKey),
 		sessionContextDataFetcher: authservice.FetchContextFromRequest,
 		mealPlanTaskDataManager:   mealPlanTaskDataManager,

@@ -4,11 +4,11 @@ import (
 	"context"
 
 	"github.com/dinnerdonebetter/backend/internal/database"
-	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
 type (
@@ -21,7 +21,6 @@ type (
 	mealPlanFinalizationWorker struct {
 		logger               logging.Logger
 		tracer               tracing.Tracer
-		encoder              encoding.ClientEncoder
 		dataManager          database.DataManager
 		postUpdatesPublisher messagequeue.Publisher
 	}
@@ -39,7 +38,6 @@ func ProvideMealPlanFinalizationWorker(
 	return &mealPlanFinalizationWorker{
 		logger:               logging.EnsureLogger(logger).WithName(n),
 		tracer:               tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(n)),
-		encoder:              encoding.ProvideClientEncoder(logger, tracerProvider, encoding.ContentTypeJSON),
 		dataManager:          dataManager,
 		postUpdatesPublisher: postUpdatesPublisher,
 	}
@@ -72,6 +70,13 @@ func (w *mealPlanFinalizationWorker) finalizeExpiredMealPlans(ctx context.Contex
 
 		if changed {
 			changedCount++
+			if err = w.postUpdatesPublisher.Publish(ctx, &types.DataChangeMessage{
+				MealPlanID:  mealPlan.ID,
+				MealPlan:    mealPlan,
+				HouseholdID: mealPlan.BelongsToHousehold,
+			}); err != nil {
+				logger.Error(err, "writing data change message for finalized meal plan")
+			}
 		}
 	}
 

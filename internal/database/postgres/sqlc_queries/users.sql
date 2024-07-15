@@ -4,25 +4,21 @@ UPDATE users SET
 	last_accepted_privacy_policy = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
-
 -- name: AcceptTermsOfServiceForUser :exec
 
 UPDATE users SET
 	last_accepted_terms_of_service = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
-
 -- name: ArchiveUser :execrows
 
 UPDATE users SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
-
 -- name: ArchiveUserMemberships :execrows
 
 UPDATE household_user_memberships SET
 	archived_at = NOW()
 WHERE archived_at IS NULL
 	AND belongs_to_user = sqlc.arg(id);
-
 -- name: CreateUser :exec
 
 INSERT INTO users
@@ -59,7 +55,6 @@ INSERT INTO users
 	sqlc.arg(first_name),
 	sqlc.arg(last_name)
 );
-
 -- name: GetAdminUserByUsername :one
 
 SELECT
@@ -91,7 +86,6 @@ WHERE users.archived_at IS NULL
 	AND users.service_role = 'service_admin'
 	AND users.username = sqlc.arg(username)
 	AND users.two_factor_secret_verified_at IS NOT NULL;
-
 -- name: GetUserByEmail :one
 
 SELECT
@@ -121,7 +115,6 @@ SELECT
 FROM users
 WHERE users.archived_at IS NULL
 	AND users.email_address = sqlc.arg(email_address);
-
 -- name: GetUserByEmailAddressVerificationToken :one
 
 SELECT
@@ -151,7 +144,6 @@ SELECT
 FROM users
 WHERE users.archived_at IS NULL
 	AND users.email_address_verification_token = sqlc.arg(email_address_verification_token);
-
 -- name: GetUserByID :one
 
 SELECT
@@ -181,7 +173,6 @@ SELECT
 FROM users
 WHERE users.archived_at IS NULL
 	AND users.id = sqlc.arg(id);
-
 -- name: GetUserByUsername :one
 
 SELECT
@@ -211,7 +202,6 @@ SELECT
 FROM users
 WHERE users.archived_at IS NULL
 	AND users.username = sqlc.arg(username);
-
 -- name: GetEmailVerificationTokenByUserID :one
 
 SELECT
@@ -220,7 +210,6 @@ FROM users
 WHERE users.archived_at IS NULL
 	AND users.email_address_verified_at IS NULL
 	AND users.id = sqlc.arg(id);
-
 -- name: GetUsers :many
 
 SELECT
@@ -281,7 +270,6 @@ WHERE users.archived_at IS NULL
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: GetUserIDsNeedingIndexing :many
 
 SELECT users.id
@@ -289,7 +277,6 @@ FROM users
 WHERE users.archived_at IS NULL
 	AND users.last_indexed_at IS NULL
 	OR users.last_indexed_at < NOW() - '24 hours'::INTERVAL;
-
 -- name: GetUserWithUnverifiedTwoFactor :one
 
 SELECT
@@ -320,7 +307,6 @@ FROM users
 WHERE users.archived_at IS NULL
 	AND users.id = sqlc.arg(id)
 	AND users.two_factor_secret_verified_at IS NULL;
-
 -- name: GetUserWithVerifiedTwoFactor :one
 
 SELECT
@@ -351,7 +337,6 @@ FROM users
 WHERE users.archived_at IS NULL
 	AND users.id = sqlc.arg(id)
 	AND users.two_factor_secret_verified_at IS NOT NULL;
-
 -- name: MarkEmailAddressAsVerified :exec
 
 UPDATE users SET
@@ -361,7 +346,6 @@ WHERE archived_at IS NULL
 	AND email_address_verified_at IS NULL
 	AND id = sqlc.arg(id)
 	AND email_address_verification_token = sqlc.arg(email_address_verification_token);
-
 -- name: MarkEmailAddressAsUnverified :exec
 
 UPDATE users SET
@@ -370,7 +354,6 @@ UPDATE users SET
 WHERE archived_at IS NULL
 	AND email_address_verified_at IS NOT NULL
 	AND id = sqlc.arg(id);
-
 -- name: MarkTwoFactorSecretAsUnverified :exec
 
 UPDATE users SET
@@ -379,7 +362,6 @@ UPDATE users SET
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
-
 -- name: MarkTwoFactorSecretAsVerified :exec
 
 UPDATE users SET
@@ -387,7 +369,6 @@ UPDATE users SET
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
-
 -- name: SearchUsersByUsername :many
 
 SELECT
@@ -417,7 +398,6 @@ SELECT
 FROM users
 WHERE users.username ILIKE '%' || sqlc.arg(username)::text || '%'
 AND users.archived_at IS NULL;
-
 -- name: UpdateUserAvatarSrc :execrows
 
 UPDATE users SET
@@ -425,7 +405,6 @@ UPDATE users SET
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
-
 -- name: UpdateUserDetails :execrows
 
 UPDATE users SET
@@ -435,7 +414,6 @@ UPDATE users SET
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
-
 -- name: UpdateUserEmailAddress :execrows
 
 UPDATE users SET
@@ -444,11 +422,9 @@ UPDATE users SET
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
-
 -- name: UpdateUserLastIndexedAt :execrows
 
 UPDATE users SET last_indexed_at = NOW() WHERE id = sqlc.arg(id) AND archived_at IS NULL;
-
 -- name: UpdateUserPassword :execrows
 
 UPDATE users SET
@@ -457,7 +433,6 @@ UPDATE users SET
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
-
 -- name: UpdateUserTwoFactorSecret :execrows
 
 UPDATE users SET
@@ -466,7 +441,6 @@ UPDATE users SET
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
-
 -- name: UpdateUserUsername :execrows
 
 UPDATE users SET

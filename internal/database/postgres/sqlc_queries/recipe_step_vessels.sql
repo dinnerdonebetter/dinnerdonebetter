@@ -1,7 +1,6 @@
 -- name: ArchiveRecipeStepVessel :execrows
 
 UPDATE recipe_step_vessels SET archived_at = NOW() WHERE archived_at IS NULL AND belongs_to_recipe_step = sqlc.arg(belongs_to_recipe_step) AND id = sqlc.arg(id);
-
 -- name: CreateRecipeStepVessel :exec
 
 INSERT INTO recipe_step_vessels (
@@ -27,7 +26,6 @@ INSERT INTO recipe_step_vessels (
 	sqlc.arg(maximum_quantity),
 	sqlc.arg(unavailable_after_step)
 );
-
 -- name: CheckRecipeStepVesselExistence :one
 
 SELECT EXISTS (
@@ -44,7 +42,6 @@ SELECT EXISTS (
 		AND recipes.archived_at IS NULL
 		AND recipes.id = sqlc.arg(recipe_id)
 );
-
 -- name: GetRecipeStepVesselsForRecipe :many
 
 SELECT
@@ -102,7 +99,6 @@ WHERE recipe_step_vessels.archived_at IS NULL
 	AND recipe_steps.belongs_to_recipe = sqlc.arg(recipe_id)
 	AND recipes.archived_at IS NULL
 	AND recipes.id = sqlc.arg(recipe_id);
-
 -- name: GetRecipeStepVessel :one
 
 SELECT
@@ -163,7 +159,6 @@ WHERE recipe_step_vessels.archived_at IS NULL
 	AND recipe_steps.id = sqlc.arg(recipe_step_id)
 	AND recipes.archived_at IS NULL
 	AND recipes.id = sqlc.arg(recipe_id);
-
 -- name: GetRecipeStepVessels :many
 
 SELECT
@@ -255,7 +250,6 @@ WHERE recipe_step_vessels.archived_at IS NULL
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: UpdateRecipeStepVessel :execrows
 
 UPDATE recipe_step_vessels SET

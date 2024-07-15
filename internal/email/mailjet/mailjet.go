@@ -9,6 +9,8 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/observability"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
+	"github.com/dinnerdonebetter/backend/pkg/types"
 
 	"github.com/mailjet/mailjet-apiv3-go/v4"
 )
@@ -43,14 +45,15 @@ type (
 
 	// Emailer uses Mailjet to send email.
 	Emailer struct {
-		logger logging.Logger
-		tracer tracing.Tracer
-		client mailjetClient
+		logger         logging.Logger
+		tracer         tracing.Tracer
+		client         mailjetClient
+		circuitBreaker circuitbreaking.CircuitBreaker
 	}
 )
 
 // NewMailjetEmailer returns a new Mailjet-backed Emailer.
-func NewMailjetEmailer(cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider, client *http.Client) (*Emailer, error) {
+func NewMailjetEmailer(cfg *Config, logger logging.Logger, tracerProvider tracing.TracerProvider, client *http.Client, circuitBreaker circuitbreaking.CircuitBreaker) (*Emailer, error) {
 	if cfg == nil {
 		return nil, ErrNilConfig
 	}
@@ -71,9 +74,10 @@ func NewMailjetEmailer(cfg *Config, logger logging.Logger, tracerProvider tracin
 	mj.SetClient(client)
 
 	e := &Emailer{
-		logger: logging.EnsureLogger(logger).WithName(name),
-		tracer: tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(name)),
-		client: mj,
+		logger:         logging.EnsureLogger(logger).WithName(name),
+		tracer:         tracing.NewTracer(tracing.EnsureTracerProvider(tracerProvider).Tracer(name)),
+		client:         mj,
+		circuitBreaker: circuitBreaker,
 	}
 
 	return e, nil
@@ -84,6 +88,11 @@ func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMes
 	_, span := e.tracer.StartSpan(ctx)
 	defer span.End()
 
+	if e.circuitBreaker.CannotProceed() {
+		return types.ErrCircuitBroken
+	}
+
+	logger := e.logger.WithValue("email.subject", details.Subject).WithValue("email.to_address", details.ToAddress)
 	tracing.AttachToSpan(span, "to_email", details.ToAddress)
 
 	messagesInfo := []mailjet.InfoMessagesV31{
@@ -104,8 +113,10 @@ func (e *Emailer) SendEmail(ctx context.Context, details *email.OutboundEmailMes
 	}
 
 	if _, err := e.client.SendMailV31(&mailjet.MessagesV31{Info: messagesInfo}); err != nil {
-		return observability.PrepareError(err, span, "sending email")
+		e.circuitBreaker.Failed()
+		return observability.PrepareAndLogError(err, logger, span, "sending email")
 	}
 
+	e.circuitBreaker.Succeeded()
 	return nil
 }

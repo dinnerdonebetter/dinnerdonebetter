@@ -33,7 +33,6 @@ var _ routing.Router = (*router)(nil)
 type router struct {
 	router chi.Router
 	cfg    *routing.Config
-	tracer tracing.Tracer
 	logger logging.Logger
 }
 
@@ -98,7 +97,6 @@ func buildRouter(mux chi.Router, l logging.Logger, tracerProvider tracing.Tracer
 
 	r := &router{
 		router: mux,
-		tracer: tracer,
 		logger: logger,
 	}
 

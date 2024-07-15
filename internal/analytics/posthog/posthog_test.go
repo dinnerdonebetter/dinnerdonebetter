@@ -6,6 +6,7 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 	"github.com/dinnerdonebetter/backend/pkg/types/fakes"
 
@@ -21,7 +22,7 @@ func TestNewSegmentEventReporter(T *testing.T) {
 		logger := logging.NewNoopLogger()
 		cfg := &Config{APIKey: t.Name()}
 
-		collector, err := NewPostHogEventReporter(logger, tracing.NewNoopTracerProvider(), cfg)
+		collector, err := NewPostHogEventReporter(logger, tracing.NewNoopTracerProvider(), cfg.APIKey, circuitbreaking.NewNoopCircuitBreaker())
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 	})
@@ -32,7 +33,7 @@ func TestNewSegmentEventReporter(T *testing.T) {
 		logger := logging.NewNoopLogger()
 		cfg := &Config{}
 
-		collector, err := NewPostHogEventReporter(logger, tracing.NewNoopTracerProvider(), cfg)
+		collector, err := NewPostHogEventReporter(logger, tracing.NewNoopTracerProvider(), cfg.APIKey, circuitbreaking.NewNoopCircuitBreaker())
 		require.Error(t, err)
 		require.Nil(t, collector)
 	})
@@ -47,7 +48,7 @@ func TestSegmentEventReporter_Close(T *testing.T) {
 		logger := logging.NewNoopLogger()
 		cfg := &Config{APIKey: t.Name()}
 
-		collector, err := NewPostHogEventReporter(logger, tracing.NewNoopTracerProvider(), cfg)
+		collector, err := NewPostHogEventReporter(logger, tracing.NewNoopTracerProvider(), cfg.APIKey, circuitbreaking.NewNoopCircuitBreaker())
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 
@@ -69,7 +70,7 @@ func TestSegmentEventReporter_AddUser(T *testing.T) {
 			"test.name": t.Name(),
 		}
 
-		collector, err := NewPostHogEventReporter(logger, tracing.NewNoopTracerProvider(), cfg)
+		collector, err := NewPostHogEventReporter(logger, tracing.NewNoopTracerProvider(), cfg.APIKey, circuitbreaking.NewNoopCircuitBreaker())
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 
@@ -91,7 +92,7 @@ func TestSegmentEventReporter_EventOccurred(T *testing.T) {
 			"test.name": t.Name(),
 		}
 
-		collector, err := NewPostHogEventReporter(logger, tracing.NewNoopTracerProvider(), cfg)
+		collector, err := NewPostHogEventReporter(logger, tracing.NewNoopTracerProvider(), cfg.APIKey, circuitbreaking.NewNoopCircuitBreaker())
 		require.NoError(t, err)
 		require.NotNil(t, collector)
 

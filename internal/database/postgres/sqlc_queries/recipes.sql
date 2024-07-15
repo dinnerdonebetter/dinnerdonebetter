@@ -1,7 +1,6 @@
 -- name: ArchiveRecipe :execrows
 
 UPDATE recipes SET archived_at = NOW() WHERE archived_at IS NULL AND created_by_user = sqlc.arg(created_by_user) AND id = sqlc.arg(id);
-
 -- name: CreateRecipe :exec
 
 INSERT INTO recipes (
@@ -35,7 +34,6 @@ INSERT INTO recipes (
 	sqlc.arg(yields_component_type),
 	sqlc.arg(created_by_user)
 );
-
 -- name: CheckRecipeExistence :one
 
 SELECT EXISTS (
@@ -44,7 +42,6 @@ SELECT EXISTS (
 	WHERE recipes.archived_at IS NULL
 		AND recipes.id = sqlc.arg(id)
 );
-
 -- name: GetRecipeByID :many
 
 SELECT
@@ -111,7 +108,6 @@ FROM recipes
 WHERE recipes.archived_at IS NULL
 	AND recipes.id = sqlc.arg(recipe_id)
 ORDER BY recipe_steps.index;
-
 -- name: GetRecipeByIDAndAuthorID :many
 
 SELECT
@@ -179,7 +175,6 @@ WHERE recipes.archived_at IS NULL
 	AND recipes.id = sqlc.arg(recipe_id)
 	AND recipes.created_by_user = sqlc.arg(created_by_user)
 ORDER BY recipe_steps.index;
-
 -- name: GetRecipes :many
 
 SELECT
@@ -236,7 +231,6 @@ FROM recipes
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: RecipeSearch :many
 
 SELECT
@@ -294,7 +288,6 @@ WHERE recipes.archived_at IS NULL
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: GetRecipesNeedingIndexing :many
 
 SELECT recipes.id
@@ -304,7 +297,6 @@ WHERE recipes.archived_at IS NULL
 		recipes.last_indexed_at IS NULL
 		OR recipes.last_indexed_at < NOW() - '24 hours'::INTERVAL
 	);
-
 -- name: GetRecipeIDsForMeal :many
 
 SELECT recipes.id
@@ -316,7 +308,6 @@ WHERE
 	AND meals.id = sqlc.arg(meal_id)
 GROUP BY recipes.id
 ORDER BY recipes.id;
-
 -- name: UpdateRecipe :execrows
 
 UPDATE recipes SET
@@ -336,7 +327,6 @@ UPDATE recipes SET
 WHERE archived_at IS NULL
 	AND created_by_user = sqlc.arg(created_by_user)
 	AND id = sqlc.arg(id);
-
 -- name: UpdateRecipeLastIndexedAt :execrows
 
 UPDATE recipes SET last_indexed_at = NOW() WHERE id = sqlc.arg(id) AND archived_at IS NULL;

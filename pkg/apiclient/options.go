@@ -18,7 +18,6 @@ import (
 	"github.com/dinnerdonebetter/backend/pkg/apiclient/requests"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 
-	"github.com/gorilla/websocket"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"golang.org/x/oauth2"
 )
@@ -130,8 +129,6 @@ func UsingCookie(cookie *http.Cookie) func(*Client) error {
 		crt := newCookieRoundTripper(c.logger, c.tracer, c.authedClient.Timeout, cookie)
 		c.authMethod = cookieAuthMethod
 		c.authedClient.Transport = crt
-		c.authHeaderBuilder = crt
-		c.websocketDialer = websocket.DefaultDialer
 		c.authedClient = buildRetryingClient(c.authedClient, c.logger, c.tracer)
 
 		c.logger.Debug("set client auth cookie")
@@ -171,8 +168,6 @@ func UsingLogin(ctx context.Context, input *types.UserLoginInput) func(*Client) 
 		crt := newCookieRoundTripper(c.logger, c.tracer, c.authedClient.Timeout, cookie)
 		c.authMethod = cookieAuthMethod
 		c.authedClient.Transport = crt
-		c.authHeaderBuilder = crt
-		c.websocketDialer = websocket.DefaultDialer
 		c.authedClient = buildRetryingClient(c.authedClient, c.logger, c.tracer)
 
 		c.logger.Debug("set client auth cookie")

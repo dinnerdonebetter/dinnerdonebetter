@@ -89,12 +89,12 @@ type (
 
 	// RecipeRatingDataManager describes a structure capable of storing recipe ratings permanently.
 	RecipeRatingDataManager interface {
-		RecipeRatingExists(ctx context.Context, recipeRatingID string) (bool, error)
-		GetRecipeRating(ctx context.Context, recipeRatingID string) (*RecipeRating, error)
+		RecipeRatingExists(ctx context.Context, recipeID, recipeRatingID string) (bool, error)
+		GetRecipeRating(ctx context.Context, recipeID, recipeRatingID string) (*RecipeRating, error)
 		GetRecipeRatings(ctx context.Context, filter *QueryFilter) (*QueryFilteredResult[RecipeRating], error)
 		CreateRecipeRating(ctx context.Context, input *RecipeRatingDatabaseCreationInput) (*RecipeRating, error)
 		UpdateRecipeRating(ctx context.Context, updated *RecipeRating) error
-		ArchiveRecipeRating(ctx context.Context, recipeRatingID string) error
+		ArchiveRecipeRating(ctx context.Context, recipeID, recipeRatingID string) error
 	}
 
 	// RecipeRatingDataService describes a structure capable of serving traffic related to recipe ratings.

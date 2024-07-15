@@ -5,7 +5,6 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/dinnerdonebetter/backend/internal/analytics"
 	"github.com/dinnerdonebetter/backend/internal/database"
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
@@ -21,10 +20,8 @@ import (
 func buildTestService() *service {
 	return &service{
 		logger:         logging.NewNoopLogger(),
-		dataManager:    database.NewMockDatabase(),
 		encoderDecoder: encoding.ProvideServerEncoderDecoder(nil, nil, encoding.ContentTypeJSON),
 		tracer:         tracing.NewTracerForTest("test"),
-		cfg:            &Config{},
 	}
 }
 
@@ -52,7 +49,6 @@ func TestProvideValidVesselsService(T *testing.T) {
 			mockencoding.NewMockEncoderDecoder(),
 			pp,
 			tracing.NewNoopTracerProvider(),
-			analytics.NewNoopEventReporter(),
 			&recipeanalysis.MockRecipeAnalyzer{},
 		)
 
@@ -83,7 +79,6 @@ func TestProvideValidVesselsService(T *testing.T) {
 			mockencoding.NewMockEncoderDecoder(),
 			pp,
 			tracing.NewNoopTracerProvider(),
-			analytics.NewNoopEventReporter(),
 			&recipeanalysis.MockRecipeAnalyzer{},
 		)
 

@@ -10,6 +10,7 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/email"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
+	"github.com/dinnerdonebetter/backend/internal/pkg/circuitbreaking"
 
 	"github.com/sendgrid/sendgrid-go"
 	"github.com/sendgrid/sendgrid-go/helpers/mail"
@@ -24,7 +25,7 @@ func TestNewSendGridEmailer(T *testing.T) {
 
 		logger := logging.NewNoopLogger()
 
-		client, err := NewSendGridEmailer(&Config{APIToken: t.Name()}, logger, tracing.NewNoopTracerProvider(), &http.Client{})
+		client, err := NewSendGridEmailer(&Config{APIToken: t.Name()}, logger, tracing.NewNoopTracerProvider(), &http.Client{}, circuitbreaking.NewNoopCircuitBreaker())
 		require.NotNil(t, client)
 		require.NoError(t, err)
 	})
@@ -38,7 +39,7 @@ func TestSendGridEmailer_SendEmail(T *testing.T) {
 			res.WriteHeader(http.StatusAccepted)
 		}))
 
-		c, err := NewSendGridEmailer(&Config{APIToken: t.Name()}, logger, tracing.NewNoopTracerProvider(), ts.Client())
+		c, err := NewSendGridEmailer(&Config{APIToken: t.Name()}, logger, tracing.NewNoopTracerProvider(), ts.Client(), circuitbreaking.NewNoopCircuitBreaker())
 		require.NotNil(t, c)
 		require.NoError(t, err)
 
@@ -66,7 +67,7 @@ func TestSendGridEmailer_SendEmail(T *testing.T) {
 		client := ts.Client()
 		client.Timeout = time.Millisecond
 
-		c, err := NewSendGridEmailer(&Config{APIToken: t.Name()}, logger, tracing.NewNoopTracerProvider(), client)
+		c, err := NewSendGridEmailer(&Config{APIToken: t.Name()}, logger, tracing.NewNoopTracerProvider(), client, circuitbreaking.NewNoopCircuitBreaker())
 		require.NotNil(t, c)
 		require.NoError(t, err)
 
@@ -93,7 +94,7 @@ func TestSendGridEmailer_SendEmail(T *testing.T) {
 			res.WriteHeader(http.StatusInternalServerError)
 		}))
 
-		c, err := NewSendGridEmailer(&Config{APIToken: t.Name()}, logger, tracing.NewNoopTracerProvider(), ts.Client())
+		c, err := NewSendGridEmailer(&Config{APIToken: t.Name()}, logger, tracing.NewNoopTracerProvider(), ts.Client(), circuitbreaking.NewNoopCircuitBreaker())
 		require.NotNil(t, c)
 		require.NoError(t, err)
 
@@ -122,7 +123,7 @@ func TestSendGridEmailer_sendDynamicTemplateEmail(T *testing.T) {
 			res.WriteHeader(http.StatusAccepted)
 		}))
 
-		c, err := NewSendGridEmailer(&Config{APIToken: t.Name()}, logger, tracing.NewNoopTracerProvider(), ts.Client())
+		c, err := NewSendGridEmailer(&Config{APIToken: t.Name()}, logger, tracing.NewNoopTracerProvider(), ts.Client(), circuitbreaking.NewNoopCircuitBreaker())
 		require.NotNil(t, c)
 		require.NoError(t, err)
 

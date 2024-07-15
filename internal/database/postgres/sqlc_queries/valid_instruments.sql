@@ -1,7 +1,6 @@
 -- name: ArchiveValidInstrument :execrows
 
 UPDATE valid_instruments SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
-
 -- name: CreateValidInstrument :exec
 
 INSERT INTO valid_instruments (
@@ -25,7 +24,6 @@ INSERT INTO valid_instruments (
 	sqlc.arg(display_in_summary_lists),
 	sqlc.arg(include_in_generated_instructions)
 );
-
 -- name: CheckValidInstrumentExistence :one
 
 SELECT EXISTS (
@@ -34,7 +32,6 @@ SELECT EXISTS (
 	WHERE valid_instruments.archived_at IS NULL
 		AND valid_instruments.id = sqlc.arg(id)
 );
-
 -- name: GetValidInstruments :many
 
 SELECT
@@ -88,7 +85,6 @@ GROUP BY valid_instruments.id
 ORDER BY valid_instruments.id
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: GetValidInstrumentsNeedingIndexing :many
 
 SELECT valid_instruments.id
@@ -98,7 +94,6 @@ WHERE valid_instruments.archived_at IS NULL
 	valid_instruments.last_indexed_at IS NULL
 	OR valid_instruments.last_indexed_at < NOW() - '24 hours'::INTERVAL
 );
-
 -- name: GetValidInstrument :one
 
 SELECT
@@ -118,7 +113,6 @@ SELECT
 FROM valid_instruments
 WHERE valid_instruments.archived_at IS NULL
 AND valid_instruments.id = sqlc.arg(id);
-
 -- name: GetRandomValidInstrument :one
 
 SELECT
@@ -138,7 +132,6 @@ SELECT
 FROM valid_instruments
 WHERE valid_instruments.archived_at IS NULL
 ORDER BY RANDOM() LIMIT 1;
-
 -- name: GetValidInstrumentsWithIDs :many
 
 SELECT
@@ -158,7 +151,6 @@ SELECT
 FROM valid_instruments
 WHERE valid_instruments.archived_at IS NULL
 	AND valid_instruments.id = ANY(sqlc.arg(ids)::text[]);
-
 -- name: SearchForValidInstruments :many
 
 SELECT
@@ -179,7 +171,6 @@ FROM valid_instruments
 WHERE valid_instruments.name ILIKE '%' || sqlc.arg(name_query)::text || '%'
 	AND valid_instruments.archived_at IS NULL
 LIMIT 50;
-
 -- name: UpdateValidInstrument :execrows
 
 UPDATE valid_instruments SET
@@ -194,7 +185,6 @@ UPDATE valid_instruments SET
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
-
 -- name: UpdateValidInstrumentLastIndexedAt :execrows
 
 UPDATE valid_instruments SET last_indexed_at = NOW() WHERE id = sqlc.arg(id) AND archived_at IS NULL;
