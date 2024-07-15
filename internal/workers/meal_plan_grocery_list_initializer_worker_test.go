@@ -253,13 +253,14 @@ func TestMealPlanGroceryListInitializer_HandleMessage(T *testing.T) {
 		w.groceryListCreator = mglm
 
 		pup := &mockpublishers.Publisher{}
-		w.postUpdatesPublisher = pup
-
 		for _, inputs := range expectedInputSets {
 			for _, input := range inputs {
 				mdm.MealPlanGroceryListItemDataManagerMock.On("CreateMealPlanGroceryListItem", testutils.ContextMatcher, input).Return(fakes.BuildFakeMealPlanGroceryListItem(), nil)
+				pup.On("Publish", testutils.ContextMatcher, mock.AnythingOfType("*types.DataChangeMessage")).Return(nil)
 			}
 		}
+
+		w.postUpdatesPublisher = pup
 		w.dataManager = mdm
 
 		assert.NoError(t, w.InitializeGroceryListsForFinalizedMealPlans(ctx, []byte("{}")))
