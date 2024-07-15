@@ -1,7 +1,7 @@
 package uploads
 
 import (
-	"github.com/dinnerdonebetter/backend/internal/objectstorage"
+	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 
 	"github.com/google/wire"
 )

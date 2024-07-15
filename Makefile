@@ -135,7 +135,7 @@ pre_lint:
 .PHONY: lint_containers
 lint_containers:
 	@$(CONTAINER_RUNNER) pull --quiet $(CONTAINER_LINTER_IMAGE)
-	$(CONTAINER_RUNNER) run --rm --volume $(PWD):$(PWD) --workdir=$(PWD) --user $(MYSELF):$(MY_GROUP) $(CONTAINER_LINTER_IMAGE) test --policy docker_security.rego `find . -type f -name "*.Dockerfile"`
+	$(CONTAINER_RUNNER) run --rm --volume $(PWD):$(PWD) --workdir=$(PWD) --user $(MYSELF):$(MY_GROUP) $(CONTAINER_LINTER_IMAGE) test --policy containers.rego `find . -type f -name "*.Dockerfile"`
 
 .PHONY: queries_lint
 queries_lint:
@@ -228,7 +228,7 @@ integration_tests: integration_tests_postgres
 
 .PHONY: integration_tests_postgres
 integration_tests_postgres:
-	docker-compose \
+	$(CONTAINER_RUNNER) compose \
 	--file $(TEST_COMPOSE_FILES_DIR)/integration-tests.yaml up \
 	--build \
 	--force-recreate \
@@ -243,10 +243,9 @@ integration_tests_postgres:
 
 .PHONY: dev
 dev: $(ARTIFACTS_DIR)
-	docker-compose \
-	--file $(ENVIRONMENTS_DIR)/local/compose_files/docker-compose.yaml up \
+	$(CONTAINER_RUNNER) compose \
+	--file $(ENVIRONMENTS_DIR)/local/compose_files/dev.yaml up \
 	--quiet-pull \
-	--no-recreate \
 	--always-recreate-deps
 
 ## misc

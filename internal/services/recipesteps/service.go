@@ -8,7 +8,6 @@ import (
 
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
-	"github.com/dinnerdonebetter/backend/internal/objectstorage"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/routing"
@@ -16,6 +15,7 @@ import (
 	recipesservice "github.com/dinnerdonebetter/backend/internal/services/recipes"
 	"github.com/dinnerdonebetter/backend/internal/uploads"
 	"github.com/dinnerdonebetter/backend/internal/uploads/images"
+	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 

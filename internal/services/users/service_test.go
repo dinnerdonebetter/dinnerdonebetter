@@ -10,7 +10,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/encoding/mock"
 	"github.com/dinnerdonebetter/backend/internal/featureflags"
 	mockpublishers "github.com/dinnerdonebetter/backend/internal/messagequeue/mock"
-	"github.com/dinnerdonebetter/backend/internal/objectstorage"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
@@ -19,6 +18,7 @@ import (
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	"github.com/dinnerdonebetter/backend/internal/uploads"
 	"github.com/dinnerdonebetter/backend/internal/uploads/images"
+	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 	mocktypes "github.com/dinnerdonebetter/backend/pkg/types/mock"
 
 	"github.com/stretchr/testify/assert"

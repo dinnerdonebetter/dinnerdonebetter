@@ -11,7 +11,6 @@ import (
 	"github.com/dinnerdonebetter/backend/internal/encoding"
 	"github.com/dinnerdonebetter/backend/internal/featureflags"
 	"github.com/dinnerdonebetter/backend/internal/messagequeue"
-	"github.com/dinnerdonebetter/backend/internal/objectstorage"
 	"github.com/dinnerdonebetter/backend/internal/observability/logging"
 	"github.com/dinnerdonebetter/backend/internal/observability/tracing"
 	"github.com/dinnerdonebetter/backend/internal/pkg/random"
@@ -19,6 +18,7 @@ import (
 	authservice "github.com/dinnerdonebetter/backend/internal/services/authentication"
 	"github.com/dinnerdonebetter/backend/internal/uploads"
 	"github.com/dinnerdonebetter/backend/internal/uploads/images"
+	"github.com/dinnerdonebetter/backend/internal/uploads/objectstorage"
 	"github.com/dinnerdonebetter/backend/pkg/types"
 )
 
