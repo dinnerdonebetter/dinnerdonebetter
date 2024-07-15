@@ -30,8 +30,8 @@
 	"search": {
 		"algolia": null,
 		"elasticsearch": null,
-		"provider": "",
-		"circuitBreakerConfig": null
+		"circuitBreakerConfig": null,
+		"provider": ""
 	},
 	"featureFlags": {
 		"LaunchDarkly": null,

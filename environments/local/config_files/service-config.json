@@ -34,8 +34,8 @@
 			"timeout": 0
 		},
 		"elasticsearch": null,
-		"provider": "algolia",
-		"circuitBreakerConfig": null
+		"circuitBreakerConfig": null,
+		"provider": "algolia"
 	},
 	"featureFlags": {
 		"LaunchDarkly": null,
