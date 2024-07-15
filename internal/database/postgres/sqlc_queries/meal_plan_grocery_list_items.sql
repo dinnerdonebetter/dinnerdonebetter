@@ -1,7 +1,6 @@
 -- name: ArchiveMealPlanGroceryListItem :execrows
 
 UPDATE meal_plan_grocery_list_items SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
-
 -- name: CreateMealPlanGroceryListItem :exec
 
 INSERT INTO meal_plan_grocery_list_items (
@@ -31,7 +30,6 @@ INSERT INTO meal_plan_grocery_list_items (
 	sqlc.arg(status_explanation),
 	sqlc.arg(status)
 );
-
 -- name: CheckMealPlanGroceryListItemExistence :one
 
 SELECT EXISTS (
@@ -41,7 +39,6 @@ SELECT EXISTS (
 		AND meal_plan_grocery_list_items.id = sqlc.arg(meal_plan_grocery_list_item_id)
 		AND meal_plan_grocery_list_items.belongs_to_meal_plan = sqlc.arg(meal_plan_id)
 );
-
 -- name: GetMealPlanGroceryListItemsForMealPlan :many
 
 SELECT
@@ -126,7 +123,6 @@ GROUP BY meal_plan_grocery_list_items.id,
 	valid_measurement_units.id,
 	meal_plans.id
 ORDER BY meal_plan_grocery_list_items.id;
-
 -- name: GetMealPlanGroceryListItem :one
 
 SELECT
@@ -205,7 +201,6 @@ WHERE meal_plan_grocery_list_items.archived_at IS NULL
 	AND valid_ingredients.archived_at IS NULL
 	AND meal_plan_grocery_list_items.id = sqlc.arg(meal_plan_grocery_list_item_id)
 	AND meal_plan_grocery_list_items.belongs_to_meal_plan = sqlc.arg(meal_plan_id);
-
 -- name: UpdateMealPlanGroceryListItem :execrows
 
 UPDATE meal_plan_grocery_list_items SET

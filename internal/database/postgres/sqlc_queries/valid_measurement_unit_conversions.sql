@@ -1,7 +1,6 @@
 -- name: ArchiveValidMeasurementUnitConversion :execrows
 
 UPDATE valid_measurement_unit_conversions SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
-
 -- name: CreateValidMeasurementUnitConversion :exec
 
 INSERT INTO valid_measurement_unit_conversions (
@@ -19,7 +18,6 @@ INSERT INTO valid_measurement_unit_conversions (
 	sqlc.arg(modifier),
 	sqlc.arg(notes)
 );
-
 -- name: CheckValidMeasurementUnitConversionExistence :one
 
 SELECT EXISTS (
@@ -28,7 +26,6 @@ SELECT EXISTS (
 	WHERE valid_measurement_unit_conversions.archived_at IS NULL
 		AND valid_measurement_unit_conversions.id = sqlc.arg(id)
 );
-
 -- name: GetAllValidMeasurementUnitConversionsFromMeasurementUnit :many
 
 SELECT
@@ -117,7 +114,6 @@ WHERE
 	AND valid_measurement_unit_conversions.archived_at IS NULL
 	AND valid_measurement_units_from.archived_at IS NULL
 	AND valid_measurement_units_to.archived_at IS NULL;
-
 -- name: GetAllValidMeasurementUnitConversionsToMeasurementUnit :many
 
 SELECT
@@ -206,7 +202,6 @@ WHERE
 	AND valid_measurement_unit_conversions.archived_at IS NULL
 	AND valid_measurement_units_from.archived_at IS NULL
 	AND valid_measurement_units_to.archived_at IS NULL;
-
 -- name: GetValidMeasurementUnitConversion :one
 
 SELECT
@@ -295,7 +290,6 @@ WHERE
 	AND valid_measurement_unit_conversions.archived_at IS NULL
 	AND valid_measurement_units_from.archived_at IS NULL
 	AND valid_measurement_units_to.archived_at IS NULL;
-
 -- name: UpdateValidMeasurementUnitConversion :execrows
 
 UPDATE valid_measurement_unit_conversions SET

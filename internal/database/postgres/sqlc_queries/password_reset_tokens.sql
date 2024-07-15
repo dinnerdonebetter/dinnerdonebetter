@@ -11,7 +11,6 @@ INSERT INTO password_reset_tokens (
 	NOW() + (30 * '1 minutes'::INTERVAL),
 	sqlc.arg(belongs_to_user)
 );
-
 -- name: GetPasswordResetToken :one
 
 SELECT
@@ -26,7 +25,6 @@ FROM password_reset_tokens
 WHERE password_reset_tokens.redeemed_at IS NULL
 	AND NOW() < password_reset_tokens.expires_at
 	AND password_reset_tokens.token = sqlc.arg(token);
-
 -- name: RedeemPasswordResetToken :exec
 
 UPDATE password_reset_tokens SET

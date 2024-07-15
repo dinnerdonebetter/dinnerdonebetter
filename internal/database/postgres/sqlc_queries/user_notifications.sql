@@ -9,7 +9,6 @@ INSERT INTO user_notifications (
 	sqlc.arg(content),
 	sqlc.arg(belongs_to_user)
 );
-
 -- name: GetUserNotification :one
 
 SELECT
@@ -22,7 +21,6 @@ SELECT
 FROM user_notifications
 WHERE belongs_to_user = sqlc.arg(belongs_to_user)
 AND user_notifications.id = sqlc.arg(id);
-
 -- name: CheckUserNotificationExistence :one
 
 SELECT EXISTS(
@@ -31,7 +29,6 @@ SELECT EXISTS(
 	WHERE user_notifications.id = sqlc.arg(id)
 	AND user_notifications.belongs_to_user = sqlc.arg(belongs_to_user)
 );
-
 -- name: GetUserNotificationsForUser :many
 
 SELECT
@@ -79,7 +76,6 @@ WHERE user_notifications.status != 'dismissed'
 	AND user_notifications.belongs_to_user = sqlc.arg(user_id)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: UpdateUserNotification :execrows
 
 UPDATE user_notifications SET

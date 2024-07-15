@@ -9,7 +9,6 @@ INSERT INTO webhook_trigger_events (
 	sqlc.arg(trigger_event),
 	sqlc.arg(belongs_to_webhook)
 );
-
 -- name: ArchiveWebhookTriggerEvent :execrows
 
 UPDATE webhook_trigger_events SET

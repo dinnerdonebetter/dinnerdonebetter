@@ -11,7 +11,6 @@ INSERT INTO household_user_memberships (
 	sqlc.arg(belongs_to_user),
 	sqlc.arg(household_role)
 );
-
 -- name: CreateHouseholdUserMembershipForNewUser :exec
 
 INSERT INTO household_user_memberships (
@@ -27,7 +26,6 @@ INSERT INTO household_user_memberships (
 	sqlc.arg(default_household),
 	sqlc.arg(household_role)
 );
-
 -- name: GetDefaultHouseholdIDForUser :one
 
 SELECT households.id
@@ -35,7 +33,6 @@ FROM households
 	JOIN household_user_memberships ON household_user_memberships.belongs_to_household = households.id
 WHERE household_user_memberships.belongs_to_user = sqlc.arg(belongs_to_user)
 	AND household_user_memberships.default_household = TRUE;
-
 -- name: GetHouseholdUserMembershipsForUser :many
 
 SELECT
@@ -51,21 +48,18 @@ FROM household_user_memberships
 	JOIN households ON households.id = household_user_memberships.belongs_to_household
 WHERE household_user_memberships.archived_at IS NULL
 	AND household_user_memberships.belongs_to_user = sqlc.arg(belongs_to_user);
-
 -- name: MarkHouseholdUserMembershipAsUserDefault :exec
 
 UPDATE household_user_memberships SET
 	default_household = (belongs_to_user = sqlc.arg(belongs_to_user) AND belongs_to_household = sqlc.arg(belongs_to_household))
 WHERE archived_at IS NULL
 	AND belongs_to_user = sqlc.arg(belongs_to_user);
-
 -- name: ModifyHouseholdUserPermissions :exec
 
 UPDATE household_user_memberships SET
 	household_role = sqlc.arg(household_role)
 WHERE belongs_to_household = sqlc.arg(belongs_to_household)
 	AND belongs_to_user = sqlc.arg(belongs_to_user);
-
 -- name: RemoveUserFromHousehold :exec
 
 UPDATE household_user_memberships SET
@@ -74,7 +68,6 @@ UPDATE household_user_memberships SET
 WHERE household_user_memberships.archived_at IS NULL
 	AND household_user_memberships.belongs_to_household = sqlc.arg(belongs_to_household)
 	AND household_user_memberships.belongs_to_user = sqlc.arg(belongs_to_user);
-
 -- name: TransferHouseholdMembership :exec
 
 UPDATE household_user_memberships SET
@@ -82,7 +75,6 @@ UPDATE household_user_memberships SET
 WHERE archived_at IS NULL
 	AND belongs_to_household = sqlc.arg(belongs_to_household)
 	AND belongs_to_user = sqlc.arg(belongs_to_user);
-
 -- name: TransferHouseholdOwnership :exec
 
 UPDATE households SET
@@ -90,7 +82,6 @@ UPDATE households SET
 WHERE archived_at IS NULL
 	AND belongs_to_user = sqlc.arg(old_owner)
 	AND id = sqlc.arg(household_id);
-
 -- name: UserIsHouseholdMember :one
 
 SELECT EXISTS (

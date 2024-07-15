@@ -1,7 +1,6 @@
 -- name: ArchiveMeal :execrows
 
 UPDATE meals SET archived_at = NOW() WHERE archived_at IS NULL AND created_by_user = sqlc.arg(created_by_user) AND id = sqlc.arg(id);
-
 -- name: CreateMeal :exec
 
 INSERT INTO meals (
@@ -21,7 +20,6 @@ INSERT INTO meals (
 	sqlc.arg(eligible_for_meal_plans),
 	sqlc.arg(created_by_user)
 );
-
 -- name: CheckMealExistence :one
 
 SELECT EXISTS (
@@ -30,7 +28,6 @@ SELECT EXISTS (
 	WHERE meals.archived_at IS NULL
 		AND meals.id = sqlc.arg(id)
 );
-
 -- name: GetMealsNeedingIndexing :many
 
 SELECT meals.id
@@ -40,7 +37,6 @@ SELECT meals.id
 		meals.last_indexed_at IS NULL
 		OR meals.last_indexed_at < NOW() - '24 hours'::INTERVAL
 	);
-
 -- name: GetMeal :many
 
 SELECT
@@ -68,7 +64,6 @@ FROM meals
 WHERE meals.archived_at IS NULL
   AND meal_components.archived_at IS NULL
   AND meals.id = sqlc.arg(id);
-
 -- name: GetMeals :many
 
 SELECT
@@ -118,7 +113,6 @@ WHERE
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: SearchForMeals :many
 
 SELECT
@@ -178,7 +172,6 @@ WHERE
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: UpdateMealLastIndexedAt :execrows
 
 UPDATE meals SET last_indexed_at = NOW() WHERE id = sqlc.arg(id) AND archived_at IS NULL;

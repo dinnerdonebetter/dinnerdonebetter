@@ -1,7 +1,6 @@
 -- name: ArchiveValidPreparation :execrows
 
 UPDATE valid_preparations SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
-
 -- name: CreateValidPreparation :exec
 
 INSERT INTO valid_preparations (
@@ -45,7 +44,6 @@ INSERT INTO valid_preparations (
 	sqlc.arg(minimum_vessel_count),
 	sqlc.arg(maximum_vessel_count)
 );
-
 -- name: CheckValidPreparationExistence :one
 
 SELECT EXISTS (
@@ -54,7 +52,6 @@ SELECT EXISTS (
 	WHERE valid_preparations.archived_at IS NULL
 		AND valid_preparations.id = sqlc.arg(id)
 );
-
 -- name: GetValidPreparations :many
 
 SELECT
@@ -118,7 +115,6 @@ GROUP BY valid_preparations.id
 ORDER BY valid_preparations.id
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: GetValidPreparationsNeedingIndexing :many
 
 SELECT valid_preparations.id
@@ -128,7 +124,6 @@ WHERE valid_preparations.archived_at IS NULL
 	valid_preparations.last_indexed_at IS NULL
 	OR valid_preparations.last_indexed_at < NOW() - '24 hours'::INTERVAL
 );
-
 -- name: GetValidPreparation :one
 
 SELECT
@@ -158,7 +153,6 @@ SELECT
 FROM valid_preparations
 WHERE valid_preparations.archived_at IS NULL
 	AND valid_preparations.id = sqlc.arg(id);
-
 -- name: GetRandomValidPreparation :one
 
 SELECT
@@ -188,7 +182,6 @@ SELECT
 FROM valid_preparations
 WHERE valid_preparations.archived_at IS NULL
 ORDER BY RANDOM() LIMIT 1;
-
 -- name: GetValidPreparationsWithIDs :many
 
 SELECT
@@ -218,7 +211,6 @@ SELECT
 FROM valid_preparations
 WHERE valid_preparations.archived_at IS NULL
 	AND valid_preparations.id = ANY(sqlc.arg(ids)::text[]);
-
 -- name: SearchForValidPreparations :many
 
 SELECT
@@ -249,7 +241,6 @@ FROM valid_preparations
 WHERE valid_preparations.name ILIKE '%' || sqlc.arg(name_query)::text || '%'
 	AND valid_preparations.archived_at IS NULL
 LIMIT 50;
-
 -- name: UpdateValidPreparation :execrows
 
 UPDATE valid_preparations SET
@@ -274,7 +265,6 @@ UPDATE valid_preparations SET
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND id = sqlc.arg(id);
-
 -- name: UpdateValidPreparationLastIndexedAt :execrows
 
 UPDATE valid_preparations SET last_indexed_at = NOW() WHERE id = sqlc.arg(id) AND archived_at IS NULL;

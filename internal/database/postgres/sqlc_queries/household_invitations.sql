@@ -5,7 +5,6 @@ UPDATE household_invitations SET
 	last_updated_at = NOW()
 WHERE archived_at IS NULL
 	AND to_email = LOWER(sqlc.arg(to_email));
-
 -- name: CreateHouseholdInvitation :exec
 
 INSERT INTO household_invitations (
@@ -29,7 +28,6 @@ INSERT INTO household_invitations (
 	sqlc.arg(destination_household),
 	sqlc.arg(expires_at)
 );
-
 -- name: CheckHouseholdInvitationExistence :one
 
 SELECT EXISTS (
@@ -38,7 +36,6 @@ SELECT EXISTS (
 	WHERE household_invitations.archived_at IS NULL
 	AND household_invitations.id = sqlc.arg(id)
 );
-
 -- name: GetHouseholdInvitationByEmailAndToken :one
 
 SELECT
@@ -107,7 +104,6 @@ WHERE household_invitations.archived_at IS NULL
 	AND household_invitations.expires_at > NOW()
 	AND household_invitations.to_email = LOWER(sqlc.arg(to_email))
 	AND household_invitations.token = sqlc.arg(token);
-
 -- name: GetHouseholdInvitationByHouseholdAndID :one
 
 SELECT
@@ -176,7 +172,6 @@ WHERE household_invitations.archived_at IS NULL
 	AND household_invitations.expires_at > NOW()
 	AND household_invitations.destination_household = sqlc.arg(destination_household)
 	AND household_invitations.id = sqlc.arg(id);
-
 -- name: GetHouseholdInvitationByTokenAndID :one
 
 SELECT
@@ -245,7 +240,6 @@ WHERE household_invitations.archived_at IS NULL
 	AND household_invitations.expires_at > NOW()
 	AND household_invitations.token = sqlc.arg(token)
 	AND household_invitations.id = sqlc.arg(id);
-
 -- name: GetPendingInvitesFromUser :many
 
 SELECT
@@ -345,7 +339,6 @@ WHERE household_invitations.archived_at IS NULL
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: GetPendingInvitesForUser :many
 
 SELECT
@@ -445,7 +438,6 @@ WHERE household_invitations.archived_at IS NULL
 	)
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: SetHouseholdInvitationStatus :exec
 
 UPDATE household_invitations SET

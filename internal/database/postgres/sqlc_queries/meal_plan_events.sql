@@ -1,7 +1,6 @@
 -- name: ArchiveMealPlanEvent :execrows
 
 UPDATE meal_plan_events SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id) AND belongs_to_meal_plan = sqlc.arg(belongs_to_meal_plan);
-
 -- name: CreateMealPlanEvent :exec
 
 INSERT INTO meal_plan_events (
@@ -19,7 +18,6 @@ INSERT INTO meal_plan_events (
 	sqlc.arg(meal_name),
 	sqlc.arg(belongs_to_meal_plan)
 );
-
 -- name: MealPlanEventIsEligibleForVoting :one
 
 SELECT EXISTS (
@@ -34,7 +32,6 @@ SELECT EXISTS (
 		AND meal_plan_events.id = sqlc.arg(meal_plan_event_id)
 		AND meal_plan_events.archived_at IS NULL
 );
-
 -- name: CheckMealPlanEventExistence :one
 
 SELECT EXISTS (
@@ -44,7 +41,6 @@ SELECT EXISTS (
 		AND meal_plan_events.id = sqlc.arg(id)
 		AND meal_plan_events.belongs_to_meal_plan = sqlc.arg(meal_plan_id)
 );
-
 -- name: GetMealPlanEvents :many
 
 SELECT
@@ -97,7 +93,6 @@ GROUP BY meal_plan_events.id
 ORDER BY meal_plan_events.id
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: GetAllMealPlanEventsForMealPlan :many
 
 SELECT
@@ -114,7 +109,6 @@ FROM meal_plan_events
 WHERE
 	meal_plan_events.archived_at IS NULL
 	AND meal_plan_events.belongs_to_meal_plan = sqlc.arg(meal_plan_id);
-
 -- name: GetMealPlanEvent :one
 
 SELECT
@@ -131,7 +125,6 @@ FROM meal_plan_events
 WHERE meal_plan_events.archived_at IS NULL
 	AND meal_plan_events.id = sqlc.arg(id)
 	AND meal_plan_events.belongs_to_meal_plan = sqlc.arg(belongs_to_meal_plan);
-
 -- name: UpdateMealPlanEvent :execrows
 
 UPDATE meal_plan_events SET

@@ -1,7 +1,6 @@
 -- name: ArchiveRecipeRating :execrows
 
 UPDATE recipe_ratings SET archived_at = NOW() WHERE archived_at IS NULL AND id = sqlc.arg(id);
-
 -- name: CreateRecipeRating :exec
 
 INSERT INTO recipe_ratings (
@@ -25,7 +24,6 @@ INSERT INTO recipe_ratings (
 	sqlc.arg(notes),
 	sqlc.arg(by_user)
 );
-
 -- name: CheckRecipeRatingExistence :one
 
 SELECT EXISTS (
@@ -34,7 +32,6 @@ SELECT EXISTS (
 	WHERE recipe_ratings.archived_at IS NULL
 		AND recipe_ratings.id = sqlc.arg(id)
 );
-
 -- name: GetRecipeRatings :many
 
 SELECT
@@ -87,7 +84,6 @@ GROUP BY recipe_ratings.id
 ORDER BY recipe_ratings.id
 LIMIT sqlc.narg(query_limit)
 OFFSET sqlc.narg(query_offset);
-
 -- name: GetRecipeRating :one
 
 SELECT
@@ -106,7 +102,6 @@ SELECT
 FROM recipe_ratings
 WHERE recipe_ratings.archived_at IS NULL
 	AND recipe_ratings.id = sqlc.arg(id);
-
 -- name: UpdateRecipeRating :execrows
 
 UPDATE recipe_ratings SET
