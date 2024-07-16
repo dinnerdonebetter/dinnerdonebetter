@@ -36,12 +36,12 @@ jobs:
 
       - name: Build data changes cloud function directory
         working-directory: backend/
-        run: ./backend/scripts/build_cloud_function.sh data_changes
+        run: ./scripts/build_cloud_function.sh data_changes
 
       - name: Build outbound outbound_emailer cloud function directory
         working-directory: backend/
-        run: ./backend/scripts/build_cloud_function.sh outbound_emailer
+        run: ./scripts/build_cloud_function.sh outbound_emailer
 
       - name: Build search indexer cloud function directory
         working-directory: backend/
-        run: ./backend/scripts/build_cloud_function.sh search_indexer
+        run: ./scripts/build_cloud_function.sh search_indexer

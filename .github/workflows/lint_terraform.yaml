@@ -39,28 +39,28 @@ jobs:
 
       - name: Build data changes cloud function directory
         working-directory: backend/
-        run: ./backend/scripts/build_cloud_function.sh data_changes
+        run: ./scripts/build_cloud_function.sh data_changes
 
       - name: Build meal plan finalizer cloud function directory
         working-directory: backend/
-        run: ./backend/scripts/build_cloud_function.sh meal_plan_finalizer
+        run: ./scripts/build_cloud_function.sh meal_plan_finalizer
 
       - name: Build meal plan task creator cloud function directory
         working-directory: backend/
-        run: ./backend/scripts/build_cloud_function.sh meal_plan_task_creator
+        run: ./scripts/build_cloud_function.sh meal_plan_task_creator
 
       - name: Build meal plan grocery list initializer cloud function directory
         working-directory: backend/
-        run: ./backend/scripts/build_cloud_function.sh meal_plan_grocery_list_initializer
+        run: ./scripts/build_cloud_function.sh meal_plan_grocery_list_initializer
 
       - name: Build meal plan grocery list initializer cloud function directory
         working-directory: backend/
-        run: ./backend/scripts/build_cloud_function.sh search_indexer
+        run: ./scripts/build_cloud_function.sh search_indexer
 
       - name: copy server config file
         working-directory: backend/environments/dev
         run: |
-          cp backend/config_files/service-config.json terraform/service-config.json
+          cp config_files/service-config.json terraform/service-config.json
 
       # end things have to be done for terraform to succeed
 
