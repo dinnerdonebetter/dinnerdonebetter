@@ -35,10 +35,13 @@ jobs:
           credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
 
       - name: Build data changes cloud function directory
+        working-directory: backend/
         run: ./backend/scripts/build_cloud_function.sh data_changes
 
       - name: Build outbound outbound_emailer cloud function directory
+        working-directory: backend/
         run: ./backend/scripts/build_cloud_function.sh outbound_emailer
 
       - name: Build search indexer cloud function directory
+        working-directory: backend/
         run: ./backend/scripts/build_cloud_function.sh search_indexer
