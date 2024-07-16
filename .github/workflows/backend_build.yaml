@@ -1,12 +1,12 @@
-on:
-  pull_request:
-    paths:
-      - backend/pkg/**
-      - backend/cmd/**
-      - backend/internal/**
-      - backend/tests/**
-      - backend/go.mod
-      - backend/go.sum
+on: [pull_request]
+#  pull_request:
+#    paths:
+#      - backend/pkg/**
+#      - backend/cmd/**
+#      - backend/internal/**
+#      - backend/tests/**
+#      - backend/go.mod
+#      - backend/go.sum
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}

@@ -1,13 +1,13 @@
 concurrency:
   group: ${{ github.ref }}-deploy-admin
 
-on: # [pull_request]
-  push:
-    branches:
-      - dev
-    paths:
-      - frontend/apps/admin/**
-      - frontend/packages/**
+on: [pull_request]
+#  push:
+#    branches:
+#      - dev
+#    paths:
+#      - frontend/apps/admin/**
+#      - frontend/packages/**
 
 name: deploy admin app to dev
 jobs:
