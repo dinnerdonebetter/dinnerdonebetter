@@ -27,6 +27,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Ensure queries and querier can be generated
+        working-directory: backend
         run: make queries sqlc_struct_check # querier
 
       - name: Check for changes
@@ -48,6 +49,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Ensure configs can be generated
+        working-directory: backend
         run: make configs
 
       - name: Check for changes
@@ -72,6 +74,7 @@ jobs:
         run: go install github.com/google/wire/cmd/wire@latest
 
       - name: Ensure dependency injection code can be generated
+        working-directory: backend
         run: make rewire
 
       - name: Check for changes

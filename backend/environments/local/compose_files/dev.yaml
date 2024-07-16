@@ -29,7 +29,7 @@ services:
           target: '/etc/config'
           type: 'bind'
       build:
-        context: '../../..'
+        context: '../../../..'
         dockerfile: 'environments/local/queue_loader.Dockerfile'
     meal_plan_finalizer:
       environment:
@@ -43,7 +43,7 @@ services:
           target: '/etc/config'
           type: 'bind'
       build:
-        context: '../../..'
+        context: '../../../..'
         dockerfile: 'environments/local/meal_plan_finalizer.Dockerfile'
     meal_plan_task_creator:
       environment:
@@ -57,7 +57,7 @@ services:
           target: '/etc/config'
           type: 'bind'
       build:
-        context: '../../..'
+        context: '../../../..'
         dockerfile: 'environments/local/meal_plan_task_creator.Dockerfile'
     api-server:
       container_name: "api_server"
@@ -76,5 +76,5 @@ services:
           target: '/go/src/github.com/dinnerdonebetter/backend'
           type: 'bind'
       build:
-        context: '../../..'
-        dockerfile: 'environments/local/server.Dockerfile'
+        context: '../../../..'
+        dockerfile: '../server.Dockerfile'

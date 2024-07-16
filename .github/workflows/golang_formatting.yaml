@@ -1,10 +1,10 @@
 on: # [gollum]
   pull_request:
     paths:
-      - pkg/**
-      - cmd/**
-      - internal/**
-      - tests/**
+      - backend/pkg/**
+      - backend/cmd/**
+      - backend/internal/**
+      - backend/tests/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -28,4 +28,5 @@ jobs:
         uses: actions/checkout@v3
 
       - name: check formatting
+        working-directory: backend
         run: if [ $(gofmt -l . | grep -Ev '^vendor\/' | head -c1 | wc -c) -ne 0 ]; then exit 1; fi

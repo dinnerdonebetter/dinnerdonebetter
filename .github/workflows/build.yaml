@@ -1,12 +1,12 @@
 on:
   pull_request:
     paths:
-      - pkg/**
-      - cmd/**
-      - internal/**
-      - tests/**
-      - go.mod
-      - go.sum
+      - backend/pkg/**
+      - backend/cmd/**
+      - backend/internal/**
+      - backend/tests/**
+      - backend/go.mod
+      - backend/go.sum
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -35,10 +35,10 @@ jobs:
           credentials_json: '${{ secrets.DEV_GOOGLE_CLOUD_CREDENTIALS }}'
 
       - name: Build data changes cloud function directory
-        run: ./scripts/build_cloud_function.sh data_changes
+        run: ./backend/scripts/build_cloud_function.sh data_changes
 
       - name: Build outbound outbound_emailer cloud function directory
-        run: ./scripts/build_cloud_function.sh outbound_emailer
+        run: ./backend/scripts/build_cloud_function.sh outbound_emailer
 
       - name: Build search indexer cloud function directory
-        run: ./scripts/build_cloud_function.sh search_indexer
+        run: ./backend/scripts/build_cloud_function.sh search_indexer

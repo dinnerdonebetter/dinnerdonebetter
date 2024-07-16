@@ -1,7 +1,7 @@
 on: # [gollum]
   pull_request:
     paths:
-      - environments/dev/terraform/**
+      - backend/environments/dev/terraform/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -31,40 +31,40 @@ jobs:
           cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
 
       - name: Terraform Init
-        working-directory: environments/dev/terraform
+        working-directory: backend/environments/dev/terraform
         id: init
         run: terraform init
 
       # begin things have to be done for terraform to succeed
 
       - name: Build data changes cloud function directory
-        run: ./scripts/build_cloud_function.sh data_changes
+        run: ./backend/scripts/build_cloud_function.sh data_changes
 
       - name: Build meal plan finalizer cloud function directory
-        run: ./scripts/build_cloud_function.sh meal_plan_finalizer
+        run: ./backend/scripts/build_cloud_function.sh meal_plan_finalizer
 
       - name: Build meal plan task creator cloud function directory
-        run: ./scripts/build_cloud_function.sh meal_plan_task_creator
+        run: ./backend/scripts/build_cloud_function.sh meal_plan_task_creator
 
       - name: Build meal plan grocery list initializer cloud function directory
-        run: ./scripts/build_cloud_function.sh meal_plan_grocery_list_initializer
+        run: ./backend/scripts/build_cloud_function.sh meal_plan_grocery_list_initializer
 
       - name: Build meal plan grocery list initializer cloud function directory
-        run: ./scripts/build_cloud_function.sh search_indexer
+        run: ./backend/scripts/build_cloud_function.sh search_indexer
 
       - name: copy server config file
-        working-directory: environments/dev
+        working-directory: backend/environments/dev
         run: |
-          cp config_files/service-config.json terraform/service-config.json
+          cp backend/config_files/service-config.json terraform/service-config.json
 
       # end things have to be done for terraform to succeed
 
       - name: Terraform Validate
-        working-directory: environments/dev/terraform
+        working-directory: backend/environments/dev/terraform
         id: validate
         run: terraform validate -no-color
 
       - name: Check formatting
-        working-directory: environments/dev/terraform
+        working-directory: backend/environments/dev/terraform
         id: fmt
         run: terraform fmt -check

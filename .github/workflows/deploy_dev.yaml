@@ -42,35 +42,35 @@ jobs:
           cli_config_credentials_token: ${{ secrets.TERRAFORM_CLOUD_API_TOKEN  }}
 
       - name: Terraform Init
-        working-directory: environments/dev/terraform
+        working-directory: backend/environments/dev/terraform
         id: init
         run: terraform init
 
       - name: Build data changes cloud function directory
-        run: ./scripts/build_cloud_function.sh data_changes
+        run: ./backend/scripts/build_cloud_function.sh data_changes
 
       - name: Build outbound outbound_emailer cloud function directory
-        run: ./scripts/build_cloud_function.sh outbound_emailer
+        run: ./backend/scripts/build_cloud_function.sh outbound_emailer
 
       - name: Build search indexer cloud function directory
-        run: ./scripts/build_cloud_function.sh search_indexer
+        run: ./backend/scripts/build_cloud_function.sh search_indexer
 
       - name: Build webhook executor cloud function directory
-        run: ./scripts/build_cloud_function.sh webhook_executor
+        run: ./backend/scripts/build_cloud_function.sh webhook_executor
 
       - name: copy API server config file
-        working-directory: environments/dev
+        working-directory: backend/environments/dev
         run: |
-          cp config_files/service-config.json terraform/service-config.json
+          cp backend/config_files/service-config.json terraform/service-config.json
 
       - name: Terraform Validate
-        working-directory: environments/dev/terraform
+        working-directory: backend/environments/dev/terraform
         id: validate
         run: terraform validate -no-color
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
-        working-directory: environments/dev/terraform
+        working-directory: backend/environments/dev/terraform
 
   deploy-api-server:
     needs: [infrastructure]
@@ -92,8 +92,8 @@ jobs:
 
       - name: Build and push API server container
         run: |
-          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:${{  github.sha }} --file environments/dev/dockerfiles/api_server.Dockerfile .
-          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:latest --file environments/dev/dockerfiles/api_server.Dockerfile .
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:${{  github.sha }} --file backend/environments/dev/dockerfiles/api_server.Dockerfile .
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:latest --file backend/environments/dev/dockerfiles/api_server.Dockerfile .
           docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:${{  github.sha }}
           docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/api_server:latest
 
@@ -125,8 +125,8 @@ jobs:
 
       - name: Build and push search data index scheduler container
         run: |
-          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:${{  github.sha }} --file environments/dev/dockerfiles/search_data_index_scheduler.Dockerfile .
-          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:latest --file environments/dev/dockerfiles/search_data_index_scheduler.Dockerfile .
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:${{  github.sha }} --file backend/environments/dev/dockerfiles/search_data_index_scheduler.Dockerfile .
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:latest --file backend/environments/dev/dockerfiles/search_data_index_scheduler.Dockerfile .
           docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:${{  github.sha }}
           docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/search-data-index-scheduler:latest
 
@@ -150,8 +150,8 @@ jobs:
 
       - name: Build and push email prober container
         run: |
-          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/email-prober:${{  github.sha }} --file environments/dev/dockerfiles/email_prober.Dockerfile .
-          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/email-prober:latest --file environments/dev/dockerfiles/email_prober.Dockerfile .
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/email-prober:${{  github.sha }} --file backend/environments/dev/dockerfiles/email_prober.Dockerfile .
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/email-prober:latest --file backend/environments/dev/dockerfiles/email_prober.Dockerfile .
           docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/email-prober:${{  github.sha }}
           docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/email-prober:latest
 
@@ -175,8 +175,8 @@ jobs:
 
       - name: Build and push meal plan finalizer container
         run: |
-          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:${{  github.sha }} --file environments/dev/dockerfiles/meal_plan_finalizer.Dockerfile .
-          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:latest --file environments/dev/dockerfiles/meal_plan_finalizer.Dockerfile .
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:${{  github.sha }} --file backend/environments/dev/dockerfiles/meal_plan_finalizer.Dockerfile .
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:latest --file backend/environments/dev/dockerfiles/meal_plan_finalizer.Dockerfile .
           docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:${{  github.sha }}
           docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-finalizer:latest
 
@@ -200,8 +200,8 @@ jobs:
 
       - name: Build and push meal plan grocery list initializer container
         run: |
-          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-grocery-list-initializer:${{  github.sha }} --file environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .
-          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-grocery-list-initializer:latest --file environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-grocery-list-initializer:${{  github.sha }} --file backend/environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-grocery-list-initializer:latest --file backend/environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .
           docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-grocery-list-initializer:${{  github.sha }}
           docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-grocery-list-initializer:latest
 
@@ -225,7 +225,7 @@ jobs:
 
       - name: Build and push meal plan task creator container
         run: |
-          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-task-creator:${{  github.sha }} --file environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .
-          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-task-creator:latest --file environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-task-creator:${{  github.sha }} --file backend/environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .
+          docker build --tag us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-task-creator:latest --file backend/environments/dev/dockerfiles/meal_plan_grocery_list_initializer.Dockerfile .
           docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-task-creator:${{  github.sha }}
           docker push us-central1-docker.pkg.dev/dinner-done-better-dev/containers/meal-plan-task-creator:latest
