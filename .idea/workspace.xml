@@ -5,9 +5,29 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="28f5aa2b-266f-4815-830b-9b4317d46b1e" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.github/workflows/build.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/build.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.github/workflows/deploy_dev.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/deploy_dev.yaml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.github/workflows/lint_terraform.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/lint_terraform.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.github/workflows/frontend_build_admin.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.github/workflows/frontend_build_landing.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.github/workflows/frontend_build_webapp.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.github/workflows/frontend_deploy_admin_app_dev.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.github/workflows/frontend_deploy_landing_dev.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.github/workflows/frontend_deploy_webapp_dev.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.github/workflows/frontend_ensure_precise_versions.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.github/workflows/frontend_formatting.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.github/workflows/frontend_lint_admin_app_terraform.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.github/workflows/frontend_lint_landing_app_terraform.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.github/workflows/frontend_lint_typescript.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.github/workflows/frontend_lint_webapp_terraform.yaml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.github/workflows/frontend_test.yaml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/workflows/build.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/workflows/deploy_dev.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/workflows/generated_files.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/workflows/golang_formatting.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/workflows/integration_tests.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/workflows/lint.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/workflows/lint_terraform.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.github/workflows/unit_tests.yaml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -50,51 +70,52 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultGoTemplateProperty": "Go File",
-    "Go Build.go build github.com/dinnerdonebetter/backend/cmd/tools/gen_queries.executor": "Debug",
-    "Go Test.TestChoresWorker_FinalizeExpiredMealPlansWithoutReturningCount/standard in github.com/dinnerdonebetter/backend/internal/workers.executor": "Run",
-    "Go Test.TestConfig_ValidateWithContext/standard in github.com/dinnerdonebetter/backend/internal/featureflags/config.executor": "Run",
-    "Go Test.TestGetAPIServerConfigFromGoogleCloudRunEnvironment/standard in github.com/dinnerdonebetter/backend/internal/config.executor": "Run",
-    "Go Test.TestMealPlanGroceryListInitializer_HandleMessage/standard in github.com/dinnerdonebetter/backend/internal/workers.executor": "Run",
-    "Go Test.TestOAuth2ClientsService_CreateHandler/with_error_generating_client_secret in github.com/dinnerdonebetter/backend/internal/services/oauth2clients.executor": "Run",
-    "Go Test.TestParseURL in github.com/dinnerdonebetter/backend/pkg/apiclient.executor": "Run",
-    "Go Test.TestProvideUsersService/standard in github.com/dinnerdonebetter/backend/internal/services/users.executor": "Run",
-    "Go Test.TestQuerier_CreateValidIngredientMeasurementUnit/with_invalid_input in github.com/dinnerdonebetter/backend/internal/database/postgres.executor": "Run",
-    "Go Test.TestRenderToJSON/with_invalid_structure in github.com/dinnerdonebetter/backend/pkg/apiclient/requests.executor": "Run",
-    "Go Test.Test_addNumbers_table in github.com/dinnerdonebetter/backend/pkg/numbers.executor": "Debug",
-    "Go Test.go test featureflags.executor": "Run",
-    "Go Test.go test internal.executor": "Run",
-    "Go Test.go test oauth2clients.executor": "Run",
-    "Go Test.go test postgres.executor": "Run",
-    "Go Test.http_routes_test.go.executor": "Run",
-    "Go Test.service_test.go.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.go.formatter.settings.were.checked": "true",
-    "RunOnceActivity.go.migrated.go.modules.settings": "true",
-    "RunOnceActivity.go.modules.automatic.dependencies.download": "true",
-    "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
-    "git-widget-placeholder": "#811 on circuitbreaker",
-    "go.import.settings.migrated": "true",
-    "go.sdk.automatically.set": "true",
-    "last_opened_file_path": "/home/vgsnv/src/github.com/dinnerdonebetter/backend",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "nodejs_package_manager_path": "yarn",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultGoTemplateProperty&quot;: &quot;Go File&quot;,
+    &quot;Go Build.go build github.com/dinnerdonebetter/backend/cmd/tools/gen_queries.executor&quot;: &quot;Debug&quot;,
+    &quot;Go Test.TestChoresWorker_FinalizeExpiredMealPlansWithoutReturningCount/standard in github.com/dinnerdonebetter/backend/internal/workers.executor&quot;: &quot;Run&quot;,
+    &quot;Go Test.TestConfig_ValidateWithContext/standard in github.com/dinnerdonebetter/backend/internal/featureflags/config.executor&quot;: &quot;Run&quot;,
+    &quot;Go Test.TestGetAPIServerConfigFromGoogleCloudRunEnvironment/standard in github.com/dinnerdonebetter/backend/internal/config.executor&quot;: &quot;Run&quot;,
+    &quot;Go Test.TestMealPlanGroceryListInitializer_HandleMessage/standard in github.com/dinnerdonebetter/backend/internal/workers.executor&quot;: &quot;Run&quot;,
+    &quot;Go Test.TestOAuth2ClientsService_CreateHandler/with_error_generating_client_secret in github.com/dinnerdonebetter/backend/internal/services/oauth2clients.executor&quot;: &quot;Run&quot;,
+    &quot;Go Test.TestParseURL in github.com/dinnerdonebetter/backend/pkg/apiclient.executor&quot;: &quot;Run&quot;,
+    &quot;Go Test.TestProvideUsersService/standard in github.com/dinnerdonebetter/backend/internal/services/users.executor&quot;: &quot;Run&quot;,
+    &quot;Go Test.TestQuerier_CreateValidIngredientMeasurementUnit/with_invalid_input in github.com/dinnerdonebetter/backend/internal/database/postgres.executor&quot;: &quot;Run&quot;,
+    &quot;Go Test.TestRenderToJSON/with_invalid_structure in github.com/dinnerdonebetter/backend/pkg/apiclient/requests.executor&quot;: &quot;Run&quot;,
+    &quot;Go Test.Test_addNumbers_table in github.com/dinnerdonebetter/backend/pkg/numbers.executor&quot;: &quot;Debug&quot;,
+    &quot;Go Test.go test featureflags.executor&quot;: &quot;Run&quot;,
+    &quot;Go Test.go test internal.executor&quot;: &quot;Run&quot;,
+    &quot;Go Test.go test oauth2clients.executor&quot;: &quot;Run&quot;,
+    &quot;Go Test.go test postgres.executor&quot;: &quot;Run&quot;,
+    &quot;Go Test.http_routes_test.go.executor&quot;: &quot;Run&quot;,
+    &quot;Go Test.service_test.go.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.modules.automatic.dependencies.download&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.modules.go.list.on.any.changes.was.set&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;#811 on circuitbreaker&quot;,
+    &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
+    &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/vgsnv/src/github.com/dinnerdonebetter/backend/frontend/.github&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;yarn&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/frontend/.github" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/internal/featureflags" />
       <recent name="$PROJECT_DIR$/internal/pkg/circuitbreaking" />
       <recent name="$PROJECT_DIR$/.github/workflows" />
-      <recent name="$PROJECT_DIR$/internal/database/mysql" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/.github/workflows" />
       <recent name="$PROJECT_DIR$/backend" />
       <recent name="$PROJECT_DIR$/internal/uploads" />
       <recent name="$PROJECT_DIR$/internal/pkg" />
@@ -156,11 +177,6 @@
       <directory value="$PROJECT_DIR$/internal" />
       <filePath value="$PROJECT_DIR$" />
       <framework value="gotest" />
-      <method v="2" />
-    </configuration>
-    <configuration default="true" type="OPA_TEST_RUN_CONFIGURATION" factoryName="Opa configuration factory">
-      <option name="additionalargs" value="" />
-      <envs />
       <method v="2" />
     </configuration>
     <recent_temporary>
