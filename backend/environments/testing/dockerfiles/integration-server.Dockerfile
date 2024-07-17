@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 FROM golang:1.22-bullseye AS build-stage
 
-WORKDIR /go/src/github.com/dinnerdonebetter/backend
+WORKDIR /go/src/github.com/dinnerdonebetter/backend/backend
 
 RUN apt-get update -y && apt-get install -y make git gcc musl-dev
 
