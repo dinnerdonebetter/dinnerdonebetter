@@ -9,8 +9,8 @@ clean:
 	packages/eslint-custom-config/node_modules \
 	packages/models/node_modules packages/models/.turbo
 
-.PHONY: install
-install:
+.PHONY: setup
+setup:
 	$(NODE_PACKAGE_MANAGER) install
 
 .PHONY: lint
